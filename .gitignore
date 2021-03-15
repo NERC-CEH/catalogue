@@ -2,8 +2,6 @@ fixtures/jena
 build
 secrets.env
 /dropbox
-/supporting-documents
-/eidchub-rw
 /datastore/
 mapfiles
 cache
@@ -14,11 +12,6 @@ target
 java/out
 java/bin
 /upload/
-
-supporting-documents
-
-# Ignore the secret configuration file
-puppet/hieradata/secrets.yaml
 
 # Ignore Test output
 test-reports/**

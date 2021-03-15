@@ -4,6 +4,30 @@ The CEH metadata catalogue project.
 
 [Introduction for developers](docs/introduction.md)
 
+## Installation
+
+### Demo current development
+
+The current code can be built and demoed
+
+```commandline
+docker-compose up -d --build
+```
+Browse to http://localhost:8080/eidc/documents to see the catalogue populated with some demo records.
+
+### Standalone installation using published Docker images
+
+```commandline
+mkdir datastore dropbox upload
+cp fixtures/datastore/REV-1/* datastore
+cd datastore
+git init
+git add -A
+git commit -m "loading example data"
+cd -
+
+```
+
 ## Project Structure
 
 - **/docs**       - Documentation
@@ -38,6 +62,8 @@ hubbub.password=
 
 ## Getting started
 
+**NOTE:** This section is currently out-of-date and needs updating.
+
 The catalogue requires a few tools:
 
 - Java (OpenJDK)
@@ -57,20 +83,20 @@ the EIDC catalogue is then available on:
 
     http://localhost:8080/eidc/documents
 
-## Developing Javascript & LESS
+### Developing Javascript & LESS
 
     ./gradlew :web:grunt_concurrent
 
 will run a process that watches the javascript and less directories and recompiles the files on any changes.
 
-## Developing just Javascript
+### Developing just Javascript
 
     ./gradlew
     ./gradlew :web:grunt_copy
 
 Probably need to do first command in one terminal and after it has run do the second.  I used this as I couldn't get ./gradlew :web:grunt_concurrent working.
 
-## Java
+### Java
 
     ./gradlew web
 

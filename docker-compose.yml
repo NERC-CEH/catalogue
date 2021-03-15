@@ -6,14 +6,15 @@ services:
       - solr
       - mapserver
     ports:
-      - 8080
+      - "8080:8080"
     volumes:
-      - ./datastore:/var/ceh-catalogue/datastore
       - ./dropbox:/var/ceh-catalogue/dropbox
       - ./upload:/var/upload/datastore
       - mapfiles:/var/ceh-catalogue/mapfiles
     environment:
-      - spring.profiles.active=development
+      - doi.api=https://api.test.datacite.org/dois
+      - jira.address=https://jira-test.nerc-lancaster.ac.uk/rest/api/2
+      - spring.profiles.active=development,upload:simple
     env_file:
       - secrets.env
   solr:
