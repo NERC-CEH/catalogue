@@ -1,5 +1,14 @@
 *
-!java/build/libs/ROOT.war
+!fixtures/datastore/REV-1
+!java/src
+!java/build.gradle
 !schemas
 !templates
-!web/src
+!web/src/img
+!web/src/less
+!web/src/scripts
+!web/.bowerrc
+!web/bower.json
+!web/Gruntfile.js
+!web/package.json
+!web/package-lock.json

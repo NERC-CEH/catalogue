@@ -2,8 +2,6 @@ plugins {
     id 'war'
     id 'idea'
     id 'com.github.ben-manes.versions' version '0.15.0'
-    id 'org.unbroken-dome.test-sets' version '3.0.1'
-    id 'com.avast.gradle.docker-compose' version '0.6.12'
 }
 
 ext {
@@ -23,11 +21,8 @@ war {
     archiveFileName = 'ROOT.war'
 }
 
-
 sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
-
-composeUp.dependsOn war
 
 repositories {
     mavenLocal()
@@ -49,24 +44,8 @@ dependencyUpdates.resolutionStrategy = {
     }
 }
 
-testSets {
-    integrationTest
-}
-
-dockerCompose {
-    useComposeFiles = ['../docker-compose.yml', '../docker-compose-chrome.yml']
-    forDefault {
-        useComposeFiles = ['../docker-compose.yml', '../docker-compose.override.yml']
-    }
-}
-
-dockerCompose.isRequiredBy(integrationTest)
-
-integrationTest.doFirst {
-    dockerCompose.exposeAsSystemProperties(integrationTest)
-}
-
 dependencies {
+    implementation 'com.jayway.jsonpath:json-path:2.3.0'
     implementation 'com.nimbusds:nimbus-jose-jwt:9.1.2'
     implementation "uk.ac.ceh.components:datastore-git:${cehComponentsVersion}"
     implementation "uk.ac.ceh.components:userstore-crowd:${cehComponentsVersion}"
@@ -103,7 +82,6 @@ dependencies {
     implementation 'jakarta.xml.bind:jakarta.xml.bind-api:2.3.3'
     implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.3'
     implementation "javax.annotation:javax.annotation-api:1.3.2"
-
     testImplementation('junit:junit:4.12') {
         exclude(module: 'org.hamcrest-core')
     }
@@ -119,10 +97,4 @@ dependencies {
     annotationProcessor  "org.projectlombok:lombok:${lombokVersion}"
     testCompileOnly  "org.projectlombok:lombok:${lombokVersion}"
     testAnnotationProcessor  "org.projectlombok:lombok:${lombokVersion}"
-    integrationTestImplementation 'org.seleniumhq.selenium:selenium-remote-driver:3.8.1'
-    integrationTestImplementation 'org.seleniumhq.selenium:selenium-chrome-driver:3.8.1'
-    implementation 'com.jayway.jsonpath:json-path:2.3.0'
-    integrationTestCompileOnly "org.projectlombok:lombok:${lombokVersion}"
-    integrationTestAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
-
 }

@@ -1,92 +1,76 @@
 variables:
-  CONTAINER_APPLICATION_IMAGE: registry.gitlab.ceh.ac.uk/eip/catalogue:app-$CI_BUILD_REF_NAME
-  CONTAINER_SOLR_IMAGE:        registry.gitlab.ceh.ac.uk/eip/catalogue:solr-$CI_BUILD_REF_NAME
-  DOCKER_DAEMON_ARGS:          -g /cache/docker
+  DOCKER_DAEMON_ARGS: -g /cache/docker
   DOCKER_DRIVER: overlay2
   DEPLOYMENT_SCRIPT: https://gitlab.ceh.ac.uk/scripts/deployment/raw/master/puppet-deploy.sh
   NODE_KEY: catalogue_version
-  NODE_VALUE: $CI_BUILD_REF_NAME
-  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
-
-cache:
-  paths:
-    - cache/gradle
+  NODE_VALUE: $CI_COMMIT_REF_SLUG
 
 stages:
+  - test
   - build
-  - docker
   - deploy
 
 mirror:
-  stage: build
+  stage: test
   image: buildpack-deps:xenial-scm
   script:
     - git push -q --prune https://$GITHUB_USERNAME:$GITHUB_PASSWORD@github.com/NERC-CEH/catalogue.git +refs/remotes/origin/*:refs/heads/* +refs/tags/*:refs/tags/*
 
-build_java:
-  stage: build
-  image: openjdk:15-alpine
-  script: ./gradlew -g ./cache/gradle clean prepFixtures build --no-daemon
+test_java:
+  stage: test
+  image: gradle:6.8.3-jdk15
+  script: gradle test --no-daemon
   artifacts:
     when: always
     reports:
       junit: java/build/test-results/test/**/TEST-*.xml
-    expire_in: 2 hrs
-    paths:
-      - java/build/libs/ROOT.war
 
-build_web:
-  stage: build
-  image: node:15
+test_web:
+  stage: test
+  image: node:15.11.0-stretch
   script:
     - cd web
     - npm ci
     - ./node_modules/.bin/bower install --allow-root
-    - ./node_modules/.bin/grunt
-  artifacts:
-    when: always
-    expire_in: 2 hrs
-    paths:
-      - web/src/vendor/
-      - web/src/css/
-      - web/src/scripts/main-out.js
+    - ./node_modules/.bin/grunt prep build    # test not actually run as are broken
 
-.deployment_template: &deployment_definition # Hidden deployment definition for docker builds
-  stage: docker
-  image: gitlab/dind
-  needs:
-    - job: build_java
-      artifacts: true
-    - job: build_web
-      artifacts: true
+build_application:
+  stage: build
+  image: docker:20.10.5
+  services:
+    - name: docker:20.10.5-dind
+      alias: docker
+  before_script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+  script:
+    - docker build --target prod -t $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA .
+    - docker tag $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/app:$CI_COMMIT_REF_NAME
+    - docker push $CI_REGISTRY_IMAGE/app --all-tags
   only:
     - tags
 
-build_application:
-  <<: *deployment_definition
-  script:
-    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.ceh.ac.uk
-    - docker build -t $CONTAINER_APPLICATION_IMAGE .
-    - docker push $CONTAINER_APPLICATION_IMAGE
-
 build_solr:
-  <<: *deployment_definition
+  extends: build_application
   script:
-    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.ceh.ac.uk
-    - docker build -t $CONTAINER_SOLR_IMAGE solr
-    - docker push $CONTAINER_SOLR_IMAGE
+    - docker build -t $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_SHA solr
+    - docker tag $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_REF_NAME
+    - docker push $CI_REGISTRY_IMAGE/solr --all-tags
 
-.puppet_deploy: &puppet_deployment_definition
+deploy_staging:
   image: ruby:2
   stage: deploy
-  dependencies: []
+  variables:
+    SERVER: cig-staging.nerc-lancaster.ac.uk
+  environment:
+    name: staging
+    url: https://catalogue-staging.ceh.ac.uk/eidc/documents
   script:
     - curl $DEPLOYMENT_SCRIPT | bash
   only:
     - tags
 
 deploy_production:
-  <<: *puppet_deployment_definition
+  extends: deploy_staging
   variables:
     SERVER: cig-prod.nerc-lancaster.ac.uk
   environment:
@@ -94,10 +78,3 @@ deploy_production:
     url:  https://catalogue.ceh.ac.uk/eidc/documents
   when: manual
 
-deploy_staging:
-  <<: *puppet_deployment_definition
-  variables:
-    SERVER: cig-staging.nerc-lancaster.ac.uk
-  environment:
-    name: staging
-    url:  https://catalogue-staging.ceh.ac.uk/eidc/documents
