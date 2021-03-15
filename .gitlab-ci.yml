@@ -3,7 +3,7 @@ variables:
   DOCKER_DRIVER: overlay2
   DEPLOYMENT_SCRIPT: https://gitlab.ceh.ac.uk/scripts/deployment/raw/master/puppet-deploy.sh
   NODE_KEY: catalogue_version
-  NODE_VALUE: $CI_COMMIT_REF_SLUG
+  NODE_VALUE: $CI_COMMIT_REF_NAME
 
 stages:
   - test
