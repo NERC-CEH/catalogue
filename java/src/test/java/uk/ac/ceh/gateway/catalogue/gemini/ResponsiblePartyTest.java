@@ -1,9 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
+import org.junit.jupiter.api.Test;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
-import org.junit.Test;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
+
 
 public class ResponsiblePartyTest {
     

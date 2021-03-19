@@ -3,14 +3,14 @@ package uk.ac.ceh.gateway.catalogue.services;
 import java.util.Properties;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class CodeLookupServiceTest {
     private Properties properties;
     private CodeLookupService service;
     
-    @Before
+    @BeforeEach
     public void init() {
         properties = new Properties();
         service = new CodeLookupService(properties);

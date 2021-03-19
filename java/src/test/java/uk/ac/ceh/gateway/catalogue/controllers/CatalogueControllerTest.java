@@ -1,33 +1,30 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import java.util.Arrays;
-import java.util.List;
-import static org.hamcrest.Matchers.contains;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-import org.junit.Test;
-import org.junit.Before;
-import static org.mockito.BDDMockito.given;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import static org.mockito.Mockito.verify;
 import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.model.Catalogue;
-import uk.ac.ceh.gateway.catalogue.model.CatalogueException;
-import uk.ac.ceh.gateway.catalogue.model.CatalogueResource;
-import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 
 public class CatalogueControllerTest {
     private @Mock DocumentRepository documentRepository;
     private @Mock CatalogueService catalogueService;
     private CatalogueController controller;
 
-    @Before
+    @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
         controller = new CatalogueController(
@@ -50,7 +47,9 @@ public class CatalogueControllerTest {
 
         //then
         verify(catalogueService).retrieveAll();
-        assertThat("should be list of catalogues", actual, contains(a, b, c));
+        assertThat("should be list of catalogues", actual.contains(a));
+        assertThat("should be list of catalogues", actual.contains(b));
+        assertThat("should be list of catalogues", actual.contains(c));
     }
 
     @Test
@@ -69,7 +68,8 @@ public class CatalogueControllerTest {
         //then
         verify(catalogueService).retrieveAll();
         verify(catalogueService).retrieve("b");
-        assertThat("should be list of catalogues without B", actual, contains(a, c));
+        assertThat("should be list of catalogues", actual.contains(a));
+        assertThat("should be list of catalogues", actual.contains(c));
     }
     
     @Test
@@ -88,7 +88,9 @@ public class CatalogueControllerTest {
         //then
         verify(catalogueService).retrieveAll();
         verify(catalogueService).retrieve("x");
-        assertThat("should be list of all catalogues", actual, contains(a, b, c));
+        assertThat("should be list of catalogues", actual.contains(a));
+        assertThat("should be list of catalogues", actual.contains(b));
+        assertThat("should be list of catalogues", actual.contains(c));
     }
     
     @Test
@@ -112,7 +114,8 @@ public class CatalogueControllerTest {
         verify(catalogueService).retrieveAll();
         verify(documentRepository).read("identifier");
         verify(catalogueService).retrieve("a");
-        assertThat("should be list of catalogues without identifier's catalogue (A)", actual, contains(b, c));
+        assertThat("should be list of catalogues", actual.contains(b));
+        assertThat("should be list of catalogues", actual.contains(c));
     }
     
     @Test
@@ -131,7 +134,9 @@ public class CatalogueControllerTest {
         //then
         verify(catalogueService).retrieveAll();
         verify(documentRepository).read("unknown");
-        assertThat("should be list of all catalogues", actual, contains(a, b, c));
+        assertThat("should be list of catalogues", actual.contains(a));
+        assertThat("should be list of catalogues", actual.contains(b));
+        assertThat("should be list of catalogues", actual.contains(c));
     }
 
     @Test
@@ -154,19 +159,21 @@ public class CatalogueControllerTest {
         verify(documentRepository).read(file);
     }
 
-    @Test(expected = DocumentRepositoryException.class)
+    @Test
     public void getUnknownFile() throws Exception {
-        //Given
-        String file = "123-456-789";
-        given(documentRepository.read(file)).willThrow(
-            new DocumentRepositoryException("Test", new Exception())
-        );
+        Assertions.assertThrows(DocumentRepositoryException.class, () -> {
+            //Given
+            String file = "123-456-789";
+            given(documentRepository.read(file)).willThrow(
+                    new DocumentRepositoryException("Test", new Exception())
+            );
 
-        //When
-        controller.currentCatalogue(CatalogueUser.PUBLIC_USER, file);
+            //When
+            controller.currentCatalogue(CatalogueUser.PUBLIC_USER, file);
 
-        //Then
-        fail("Expected DocumentRepositoryException");
+            //Then
+            fail("Expected DocumentRepositoryException");
+        });
     }
 
     @Test

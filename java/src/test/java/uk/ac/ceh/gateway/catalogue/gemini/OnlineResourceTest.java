@@ -1,7 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
 import static org.junit.Assert.assertEquals;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class OnlineResourceTest {
     @Test

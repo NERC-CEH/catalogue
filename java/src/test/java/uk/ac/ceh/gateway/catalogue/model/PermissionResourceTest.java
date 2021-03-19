@@ -2,9 +2,10 @@ package uk.ac.ceh.gateway.catalogue.model;
 
 import java.util.HashSet;
 import java.util.Set;
-import static org.hamcrest.Matchers.equalTo;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.PermissionResource.IdentityPermissions;
 

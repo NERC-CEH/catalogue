@@ -1,8 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.model;
 
+import org.junit.jupiter.api.Test;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import org.junit.Test;
 
 public class CatalogueUserTest {
     @Test

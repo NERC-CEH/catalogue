@@ -1,10 +1,13 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.Citation;
@@ -19,13 +22,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class CitationControllerTest {
     @Mock DocumentRepository documentRespository;
     @Mock CitationService citationService;
     private CitationController controller;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         controller = new CitationController(documentRespository, citationService);
     }
@@ -68,29 +71,33 @@ public class CitationControllerTest {
         verify(citationService).getCitation(document);
     }
     
-    @Test(expected=ResourceNotFoundException.class)
+    @Test
     public void checkThatNonGeminiDocumentsFailsToGetCitation() {
-        //Given
-        MetadataDocument document = mock(MetadataDocument.class);
-        
-        //When
-        controller.getCitation(document);
-        
-        //Then
-        fail("Expected to get exception");
+        Assertions.assertThrows(ResourceNotFoundException.class, () -> {
+            //Given
+            MetadataDocument document = mock(MetadataDocument.class);
+
+            //When
+            controller.getCitation(document);
+
+            //Then
+            fail("Expected to get exception");
+        });
     }
     
-    @Test(expected=ResourceNotFoundException.class)
+    @Test
     public void checkThatResourceNotFoundIfGeminiDocumentDoesntHaveCitation() {
-        //Given
-        GeminiDocument document = new GeminiDocument();
-        when(citationService.getCitation(document)).thenReturn(Optional.empty());
-        
-        //When
-        controller.getCitation(document);
-        
-        //Then
-        fail("Expected to get exception");
+        Assertions.assertThrows(ResourceNotFoundException.class, () -> {
+            //Given
+            GeminiDocument document = new GeminiDocument();
+            when(citationService.getCitation(document)).thenReturn(Optional.empty());
+
+            //When
+            controller.getCitation(document);
+
+            //Then
+            fail("Expected to get exception");
+        });
     }
     
     @Test

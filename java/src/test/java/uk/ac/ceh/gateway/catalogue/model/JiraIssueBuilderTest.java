@@ -1,6 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.model;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import lombok.val;
 
 import static org.hamcrest.MatcherAssert.*;

@@ -1,30 +1,25 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import lombok.val;
+import org.apache.jena.ext.com.google.common.collect.Lists;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-
-import lombok.val;
-import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.model.DatasetOffered;
-import uk.ac.ceh.gateway.catalogue.model.DepositRequestDocument;
-import uk.ac.ceh.gateway.catalogue.model.JiraIssueBuilder;
-import uk.ac.ceh.gateway.catalogue.model.JiraIssueCreate;
+import org.mockito.junit.jupiter.MockitoExtension;
+import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.model.DepositRequestDocument.Funded;
+import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.services.DepositRequestService;
 import uk.ac.ceh.gateway.catalogue.services.JiraService;
-import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
-import org.apache.jena.ext.com.google.common.collect.Lists;
 
-import static org.mockito.Mockito.*;
-import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DepositRequestControllerTest {
 
     @Mock
@@ -41,7 +36,7 @@ public class DepositRequestControllerTest {
 
     JiraIssueBuilder jiraIssueBuilder;
 
-    @Before
+    @BeforeEach
     public void before() {
         val jiraIssueCreate = new JiraIssueCreate();
         jiraIssueCreate.setKey("key");

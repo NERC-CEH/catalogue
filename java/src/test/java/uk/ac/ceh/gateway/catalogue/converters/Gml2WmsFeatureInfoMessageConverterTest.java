@@ -1,24 +1,26 @@
 package uk.ac.ceh.gateway.catalogue.converters;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import javax.xml.xpath.XPathExpressionException;
-import static org.hamcrest.Matchers.*;
-import org.junit.Before;
-import org.junit.Test;
-import static org.mockito.Mockito.when;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpInputMessage;
 import uk.ac.ceh.gateway.catalogue.ogc.WmsFeatureInfo;
 import uk.ac.ceh.gateway.catalogue.ogc.WmsFeatureInfo.Layer;
 import uk.ac.ceh.gateway.catalogue.ogc.WmsFeatureInfo.Layer.Feature;
-import static org.junit.Assert.assertThat;
+
+import javax.xml.xpath.XPathExpressionException;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class Gml2WmsFeatureInfoMessageConverterTest {
     private Gml2WmsFeatureInfoMessageConverter reader;
     
-    @Before
+    @BeforeEach
     public void init() throws XPathExpressionException {
         reader = new Gml2WmsFeatureInfoMessageConverter();
     }

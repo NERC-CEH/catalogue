@@ -1,11 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
 import lombok.SneakyThrows;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.DescriptiveKeywords;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -24,13 +24,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class SolrIndexMetadataDocumentGeneratorTest {
 
     @Mock CodeLookupService codeLookupService;
@@ -38,7 +38,7 @@ public class SolrIndexMetadataDocumentGeneratorTest {
     @Mock VocabularyService vocabularyService;
     private SolrIndexMetadataDocumentGenerator generator;
     
-    @Before
+    @BeforeEach
     public void createGeminiDocumentSolrIndexGenerator() {
         generator = new SolrIndexMetadataDocumentGenerator(
             codeLookupService,
@@ -112,7 +112,7 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         SolrIndex actual = generator.generateIndex(document);
         
         //Then
-        assertThat("applicationScale transferred to index", actual.getImpScale(), contains("global"));
+        assertThat(actual.getImpScale().contains("global"), is(true));
     }
     
     @Test
@@ -129,7 +129,8 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         List<String> actual = index.getImpScale();
         
         //Then
-        assertThat("Solr index should have model scale", actual, contains("global", "catchment"));
+        assertThat(actual.contains("global"), is(true));
+        assertThat(actual.contains("catchment"), is(true));
     }
     
     @Test
@@ -150,7 +151,9 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         List<String> actual = index.getImpScale();
         
         //Then
-        assertThat("Solr index should have model application scale", actual, contains("global", "catchment", "plot"));
+        assertThat(actual.contains("global"), is(true));
+        assertThat(actual.contains("catchment"), is(true));
+        assertThat(actual.contains("plot"), is(true));
     }
     
     @Test
@@ -168,7 +171,8 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         List<String> actual = index.getImpTopic();
         
         //Then
-        assertThat("Solr index should have model application topic", actual, contains("nitrogen", "management"));
+        assertThat("Solr index should have model application topic", actual.contains("nitrogen"));
+        assertThat("Solr index should have model application topic", actual.contains("management"));
     }
     
     @Test
@@ -196,7 +200,7 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         SolrIndex index = generator.generateIndex(document);
         
         //Then
-        assertEquals("Expected to get my id", "myid", index.getIdentifier());
+        assertEquals("myid", index.getIdentifier());
     }
 
     @Test
@@ -250,7 +254,7 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         SolrIndex index = generator.generateIndex(document);
         
         //Then
-        assertEquals("Expected to get my description", description, index.getDescription());
+        assertEquals(description, index.getDescription());
     }
     
     @Test
@@ -276,9 +280,8 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         document.setDescription(description);
         
         //Then
-        assertThat("Expected description to be longer than the threshold length of " + maxDescriptionLength, maxDescriptionLength, lessThan(description.length()));
-        assertThat("Shortened description is shorter than original description", description.length(), greaterThan(document.getShortenedDescription().length()));
-    }
+        assertThat(maxDescriptionLength < description.length(), is(true));
+        assertThat(description.length() > document.getShortenedDescription().length(), is(true)); }
     
     @Test
     public void checkThatLongDescriptionWithoutSpacesIsShortened(){
@@ -289,8 +292,9 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         document.setDescription(description);
 
         //Then
-        assertThat("Expected description to be longer than the threshold length of " + maxDescriptionLength, maxDescriptionLength, lessThan(description.length()));
-        assertThat("Shortened description is shorter than original description", description.length(), greaterThan(document.getShortenedDescription().length()));
+        assertThat((maxDescriptionLength < (description.length())), is(true));
+        assertThat((description.length() > document.getShortenedDescription().length()), is(true));
+
     }
     
     @Test
@@ -302,8 +306,8 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         document.setDescription(description);
         
         //Then
-        assertThat("Expected description to be shorter than the threshold length of " + maxDescriptionLength, maxDescriptionLength, greaterThan(description.length()));
-        assertEquals("Shortened description is the same length as the original description", description.length(), document.getShortenedDescription().length());
+        assertThat((maxDescriptionLength > description.length()), is(true));
+        assertEquals(description.length(), document.getShortenedDescription().length());
     }
     
     @Test
@@ -422,8 +426,9 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         SolrIndex index = generator.generateIndex(document);
         
         //Then
-        assertThat("Expected catchment and national indexed", index.getImpScale(), contains("Catchment", "National"));
-        assertThat("Expected to not index Blue", index.getImpScale(), not(contains("Blue")));
+        assertThat(index.getImpScale().contains("Catchment"), is(true));
+        assertThat(index.getImpScale().contains("National"), is(true));
+        assertThat(index.getImpScale().contains("Blue"), is(false));
         
     }
     
@@ -463,8 +468,9 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         SolrIndex index = generator.generateIndex(document);
         
         //Then
-        assertThat("Expected agri-environment and ecosytem response indexed", index.getImpCaMMPIssues(), contains("Agri-environment", "Ecosystem Response"));
-        assertThat("Expected to not index Blue", index.getImpScale(), not(contains("Blue")));
+        assertThat(index.getImpCaMMPIssues().contains("Agri-environment"), is(true));
+        assertThat( index.getImpCaMMPIssues().contains("Ecosystem Response"), is(true));
+        assertThat(index.getImpScale().contains("Blue"), is(false));
         
     }
     
@@ -504,8 +510,9 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         SolrIndex index = generator.generateIndex(document);
         
         //Then
-        assertThat("Expected nitrogen and phosphorous to be indexed", index.getImpWaterPollutant(), contains("Nitrogen", "Phosphorous"));
-        assertThat("Expected to not index Blue", index.getImpWaterPollutant(), not(contains("Blue")));
+        assertThat(index.getImpWaterPollutant().contains("Nitrogen"), is(true));
+        assertThat(index.getImpWaterPollutant().contains("Phosphorous"), is(true));
+        assertThat(index.getImpWaterPollutant().contains("Blue"), is(false));
         
     }
 

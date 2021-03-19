@@ -3,17 +3,18 @@ package uk.ac.ceh.gateway.catalogue.upload.simple;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.IOException;
 import java.util.Arrays;
 
 import static java.lang.String.format;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.fail;
 import static uk.ac.ceh.gateway.catalogue.upload.simple.UploadControllerUtils.ID;
 
@@ -24,7 +25,7 @@ public class FileSystemStorageServiceFilenamesTest {
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
-    @Before
+    @BeforeEach
     public void setup() {
         service = new FileSystemStorageService(folder.getRoot().toString());
     }
@@ -51,15 +52,16 @@ public class FileSystemStorageServiceFilenamesTest {
         assertThat(filenames, equalTo(expected));
     }
 
-    @Test(expected = UserInputException.class)
     public void exceptionIfIdNotKnown() {
-        //given
+        Assertions.assertThrows(UserInputException.class, () -> {
+            //given
 
-        //when
-        service.filenames(ID);
+            //when
+            service.filenames(ID);
 
-        //then
-        fail("Should have thrown exception");
+            //then
+            fail("Should have thrown exception");
+        });
     }
 
 }

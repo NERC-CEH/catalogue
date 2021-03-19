@@ -1,12 +1,15 @@
 package uk.ac.ceh.gateway.catalogue.publication;
 
 import com.google.common.collect.ImmutableSet;
-import java.util.Set;
-import static org.junit.Assert.*;
-import org.junit.Test;
-import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
-import static org.hamcrest.Matchers.*;
+import org.junit.jupiter.api.Test;
 import uk.ac.ceh.gateway.catalogue.config.PublicationConfig;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
+
+import java.util.Set;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.IsNot.not;
 
 public class WorkflowTest {
     private final PublishingRole editor, publisher;

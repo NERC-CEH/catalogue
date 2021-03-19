@@ -1,11 +1,13 @@
 package uk.ac.ceh.gateway.catalogue.util;
 
 import lombok.val;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class HeadersTest {
 
@@ -18,28 +20,32 @@ public class HeadersTest {
 
         //then
         assertTrue(headers.containsKey("Authorization"));
-        assertThat(headers.get("Authorization"), contains("Basic dXNlcm5hbWU6cGFzc3dvcmQ="));
+        assertThat(headers.get("Authorization").toString(), is("[Basic dXNlcm5hbWU6cGFzc3dvcmQ=]"));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testNull() {
-        //given
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            //given
 
-        //when
-        val headers = Headers.withBasicAuth(null, null);
+            //when
+            val headers = Headers.withBasicAuth(null, null);
 
-        //then
-        fail();
+            //then
+            fail();
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testEmptyStrings() {
-        //given
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            //given
 
-        //when
-        val headers = Headers.withBasicAuth("", "");
+            //when
+            val headers = Headers.withBasicAuth("", "");
 
-        //then
-        fail();
+            //then
+            fail();
+        });
     }
 }

@@ -3,10 +3,11 @@ package uk.ac.ceh.gateway.catalogue.converters;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
-import org.junit.Before;
-import org.junit.Test;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.mock.http.MockHttpOutputMessage;
 import uk.ac.ceh.gateway.catalogue.ogc.WmsFeatureInfo.Layer;
 import uk.ac.ceh.gateway.catalogue.ogc.WmsFeatureInfo;
@@ -15,7 +16,7 @@ import uk.ac.ceh.gateway.catalogue.ogc.WmsFeatureInfo.Layer.Feature;
 public class WmsFeatureInfo2XmlMessageConverterTest {
     private WmsFeatureInfo2XmlMessageConverter converter;
     
-    @Before
+    @BeforeEach
     public void init() {
         converter = new WmsFeatureInfo2XmlMessageConverter();
     }

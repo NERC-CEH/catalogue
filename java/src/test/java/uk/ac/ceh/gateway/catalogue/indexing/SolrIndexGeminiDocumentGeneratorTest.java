@@ -1,10 +1,12 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
@@ -13,20 +15,20 @@ import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class SolrIndexGeminiDocumentGeneratorTest {
     @Mock SolrIndexMetadataDocumentGenerator documentIndexer;
     @Mock CodeLookupService codeLookupService;
     private SolrIndexGeminiDocumentGenerator generator;
     
-    @Before
+    @BeforeEach
     public void init() {
         when(documentIndexer.generateIndex(any(MetadataDocument.class))).thenReturn(new SolrIndex());
         generator = new SolrIndexGeminiDocumentGenerator(new ExtractTopicFromDocument(), documentIndexer, codeLookupService);

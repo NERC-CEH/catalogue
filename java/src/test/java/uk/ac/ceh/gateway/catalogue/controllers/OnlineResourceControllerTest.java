@@ -1,7 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.web.servlet.view.RedirectView;
@@ -24,7 +25,8 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -39,7 +41,7 @@ public class OnlineResourceControllerTest {
     
     private OnlineResourceController controller;
     
-    @Before
+    @BeforeEach
     public void createOnlineController() {
         MockitoAnnotations.initMocks(this);
         
@@ -77,34 +79,39 @@ public class OnlineResourceControllerTest {
 //            fail("Expected to fail with execption");
 //        });
 //    }
-    
-    @Test(expected=ResourceNotFoundException.class)
-    public void checkThatFailsWithExceptionIfResourceIsRequestedWhichIsNegative() throws IOException, UnknownContentTypeException, DataRepositoryException, PostProcessingException  {
-        //Given
-        String file = "file";
-        String revision = "revision";
-        doReturn(Collections.EMPTY_LIST).when(controller).getOnlineResources(revision, file);
-        
-        //When
-        OnlineResource resource = controller.getOnlineResource(file, revision, -10);
-        
-        //Then
-        fail("Expected to fail with execption");
+
+    @Test
+    public void checkThatFailsWithExceptionIfResourceIsRequestedWhichIsNegative() throws IOException, UnknownContentTypeException, DataRepositoryException, PostProcessingException {
+        Assertions.assertThrows(ResourceNotFoundException.class, () -> {
+            //Given
+            String file = "file";
+            String revision = "revision";
+            doReturn(Collections.EMPTY_LIST).when(controller).getOnlineResources(revision, file);
+
+            //When
+            OnlineResource resource = controller.getOnlineResource(file, revision, -10);
+
+            //Then
+            fail("Expected to fail with execption");
+        });
     }
     
-    @Test(expected=ResourceNotFoundException.class)
+    @Test
     public void checkThatFailsToGetOnlineResourcesFromUnknownMetadataDocumentType() throws IOException, UnknownContentTypeException, DataRepositoryException, PostProcessingException {
-        //Given
-        MetadataDocument document = mock(MetadataDocument.class);
-        String file = "file";
-        String revision = "revision";
-        doReturn(document).when(documentBundleReader).readBundle(revision, file);
-        
-        //When
-        OnlineResource resource = controller.getOnlineResource(revision, file, 0);
-        
-        //Then
-        fail("Expected an NoSuchOnlineResourceException when dealing with an unknown document type");
+        Assertions.assertThrows(ResourceNotFoundException.class, () -> {
+            //Given
+            MetadataDocument document = mock(MetadataDocument.class);
+            String file = "file";
+            String revision = "revision";
+            doReturn(document).when(documentBundleReader).readBundle(revision, file);
+
+            //When
+            OnlineResource resource = controller.getOnlineResource(revision, file, 0);
+
+            //Then
+            fail("Expected an NoSuchOnlineResourceException when dealing with an unknown document type");
+
+        });
     }
     
     @Test
@@ -194,54 +201,58 @@ public class OnlineResourceControllerTest {
         assertThat("Expected to proxy the legend url", proxy.getUri().toString(), equalTo(legendRewrite) );
     }
     
-    @Test(expected=LegendGraphicMissingException.class)
+    @Test
     public void checkThatExceptionIsThrownWhenNoLegendGraphicIsPresentForGivenLayer() throws IOException, UnknownContentTypeException, URISyntaxException, DataRepositoryException, PostProcessingException {
-        //Given
-        String revision = "revision";
-        String file = "file";
-        int index = 2;
-        String layerName = "layer";
-        
-        OnlineResource onlineResource = OnlineResource.builder().url("http://wms?REQUEST=GetCapabilities").build();
-        doReturn(onlineResource).when(controller).getOnlineResource(eq(revision), eq(file), anyInt());
-        
-        Layer layer = mock(Layer.class);
-        when(layer.getName()).thenReturn(layerName);
-        when(layer.getLegendUrl()).thenReturn(null);
-        
-        WmsCapabilities wmsCapabilities = mock(WmsCapabilities.class);
-        when(wmsCapabilities.getLayers()).thenReturn(Arrays.asList(layer));
-        
-        doReturn(wmsCapabilities).when(getCapabilitiesObtainerService).getWmsCapabilities(onlineResource);
-        
-        //When
-        controller.getMapLayerLegend(revision, file, index, layerName);
-        
-        //Then
-        fail("Expected to fail with legend graphic missing exception");
+        Assertions.assertThrows(LegendGraphicMissingException.class, () -> {
+            //Given
+            String revision = "revision";
+            String file = "file";
+            int index = 2;
+            String layerName = "layer";
+
+            OnlineResource onlineResource = OnlineResource.builder().url("http://wms?REQUEST=GetCapabilities").build();
+            doReturn(onlineResource).when(controller).getOnlineResource(eq(revision), eq(file), anyInt());
+
+            Layer layer = mock(Layer.class);
+            when(layer.getName()).thenReturn(layerName);
+            when(layer.getLegendUrl()).thenReturn(null);
+
+            WmsCapabilities wmsCapabilities = mock(WmsCapabilities.class);
+            when(wmsCapabilities.getLayers()).thenReturn(Arrays.asList(layer));
+
+            doReturn(wmsCapabilities).when(getCapabilitiesObtainerService).getWmsCapabilities(onlineResource);
+
+            //When
+            controller.getMapLayerLegend(revision, file, index, layerName);
+
+            //Then
+            fail("Expected to fail with legend graphic missing exception");
+        });
     }
     
-    @Test(expected=IllegalArgumentException.class)
+    @Test
     public void checkThatIllegalArgumentExceptionIsThrownIfLayerDoesNotExistWhenGettingLegend() throws IOException, UnknownContentTypeException, URISyntaxException, DataRepositoryException, PostProcessingException {
-        //Given
-        String revision = "revision";
-        String file = "file";
-        int index = 2;
-        String layerName = "layer";
-        
-        OnlineResource onlineResource = OnlineResource.builder().url("http://wms?REQUEST=GetCapabilities").build();
-        doReturn(onlineResource).when(controller).getOnlineResource(eq(revision), eq(file), anyInt());
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            //Given
+            String revision = "revision";
+            String file = "file";
+            int index = 2;
+            String layerName = "layer";
 
-        
-        WmsCapabilities wmsCapabilities = mock(WmsCapabilities.class);
-        when(wmsCapabilities.getLayers()).thenReturn(Collections.EMPTY_LIST);
-        
-        doReturn(wmsCapabilities).when(getCapabilitiesObtainerService).getWmsCapabilities(onlineResource);
-        
-        //When
-        controller.getMapLayerLegend(revision, file, index, layerName);
-        
-        //Then
-        fail("Expected to fail with illegal argument exception");
+            OnlineResource onlineResource = OnlineResource.builder().url("http://wms?REQUEST=GetCapabilities").build();
+            doReturn(onlineResource).when(controller).getOnlineResource(eq(revision), eq(file), anyInt());
+
+
+            WmsCapabilities wmsCapabilities = mock(WmsCapabilities.class);
+            when(wmsCapabilities.getLayers()).thenReturn(Collections.EMPTY_LIST);
+
+            doReturn(wmsCapabilities).when(getCapabilitiesObtainerService).getWmsCapabilities(onlineResource);
+
+            //When
+            controller.getMapLayerLegend(revision, file, index, layerName);
+
+            //Then
+            fail("Expected to fail with illegal argument exception");
+        });
     }
 }

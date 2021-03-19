@@ -6,8 +6,9 @@ import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.UpdateResponse;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -22,7 +23,10 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -40,7 +44,7 @@ public class SolrIndexingServiceTest {
     
     private SolrIndexingService service;
     
-    @Before
+    @BeforeEach
     public void createSolrIndexGenerator() {
         MockitoAnnotations.initMocks(this);
         service = spy(new SolrIndexingService(
@@ -134,20 +138,22 @@ public class SolrIndexingServiceTest {
         verify(solrClient).commit();
     }
     
-    @Test(expected=DocumentIndexingException.class)
+    @Test
     public void checkThatExceptionIsThrownIfDocumentFailsToIndex() throws DocumentIndexingException, SolrServerException, IOException, UnknownContentTypeException {
-        //Given
-        String revId = "Latest";
-        List<String> documents = Arrays.asList("doc1", "doc2");
+        Assertions.assertThrows(DocumentIndexingException.class, () -> {
+            //Given
+            String revId = "Latest";
+            List<String> documents = Arrays.asList("doc1", "doc2");
 
-        when(solrClient.addBean(any())).thenThrow(new SolrServerException("Please carry on"))
-                                                   .thenReturn(null);
-        
-        //When
-        service.indexDocuments(documents, revId);
-        
-        //Then
-        fail("Expected to fail with a DocumentIndexingException");
+            when(solrClient.addBean(any())).thenThrow(new SolrServerException("Please carry on"))
+                    .thenReturn(null);
+
+            //When
+            service.indexDocuments(documents, revId);
+
+            //Then
+            fail("Expected to fail with a DocumentIndexingException");
+        });
     }
     
     @Test
@@ -207,7 +213,7 @@ public class SolrIndexingServiceTest {
         //Then
         ArgumentCaptor<SolrQuery> solrQuery = ArgumentCaptor.forClass(SolrQuery.class);
         verify(solrClient).query(solrQuery.capture());
-        assertEquals("Expect a wildcard query for the solr search", "*:*", solrQuery.getValue().getQuery());
+        assertEquals("*:*", solrQuery.getValue().getQuery());
     }
     
     @Test

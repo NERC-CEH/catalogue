@@ -1,10 +1,12 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import java.util.List;
-import static org.hamcrest.Matchers.contains;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
 import uk.ac.ceh.gateway.catalogue.model.Catalogue;
+
+import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+
 
 public class InMemoryCatalogueServiceTest {
     private CatalogueService catalogueService;
@@ -22,7 +24,9 @@ public class InMemoryCatalogueServiceTest {
         List<Catalogue> actual = catalogueService.retrieveAll();
         
         //then
-        assertThat("should equal list of catalogues", actual, contains(t1, t2, t3));
+        assertThat("should equal list of catalogues", actual.contains(t1));
+        assertThat("should equal list of catalogues", actual.contains(t2));
+        assertThat("should equal list of catalogues", actual.contains(t3));
     }
     
 }

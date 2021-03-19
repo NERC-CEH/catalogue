@@ -3,30 +3,30 @@ package uk.ac.ceh.gateway.catalogue.indexing;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
-import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.gateway.catalogue.ef.Activity;
 import uk.ac.ceh.gateway.catalogue.ef.Facility;
 import uk.ac.ceh.gateway.catalogue.ef.Link;
 import uk.ac.ceh.gateway.catalogue.ef.Link.TimedLink;
+
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.*;
 import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.SET_UP_FOR;
 
 public class JenaIndexBaseMonitoringTypeGeneratorTest {
     @Mock JenaIndexMetadataDocumentGenerator generator;
     private JenaIndexBaseMonitoringTypeGenerator service;
     
-    @Before
+    @BeforeEach
     public void init() {
         MockitoAnnotations.initMocks(this);
         service = new JenaIndexBaseMonitoringTypeGenerator(generator);

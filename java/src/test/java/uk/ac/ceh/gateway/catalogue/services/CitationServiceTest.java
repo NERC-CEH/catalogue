@@ -1,6 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
@@ -14,7 +14,8 @@ import java.time.Month;
 import java.util.Arrays;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

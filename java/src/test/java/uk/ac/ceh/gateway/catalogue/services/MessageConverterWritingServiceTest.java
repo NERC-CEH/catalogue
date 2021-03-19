@@ -1,10 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 
@@ -13,15 +14,16 @@ import java.util.ArrayList;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.StrictStubs.class)
+@ExtendWith(MockitoExtension.class)
 public class MessageConverterWritingServiceTest {
     @Mock private HttpMessageConverter converter;
 
     private MessageConverterWritingService service;
     
-    @Before
+    @BeforeEach
     public void init() {
         service = new MessageConverterWritingService(new ArrayList<>());
     }
@@ -40,15 +42,17 @@ public class MessageConverterWritingServiceTest {
         verify(converter).write(eq(test), eq(MediaType.TEXT_HTML), any());
     }
     
-    @Test(expected=UnknownContentTypeException.class)
+    @Test
     public void checkThatThrowsExceptionIfNoConverterIsAMatch() throws Exception {
-        //Given
-        String test = "TestObject";
-        
-        //When
-        service.write(test, MediaType.TEXT_HTML);
-        
-        //Then
-        fail("Expected to fail");
+        Assertions.assertThrows(UnknownContentTypeException.class, () -> {
+            //Given
+            String test = "TestObject";
+
+            //When
+            service.write(test, MediaType.TEXT_HTML);
+
+            //Then
+            fail("Expected to fail");
+        });
     }
 }

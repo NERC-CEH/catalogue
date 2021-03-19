@@ -2,25 +2,11 @@ package uk.ac.ceh.gateway.catalogue.converters;
 
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.Writer;
-import java.util.List;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.Mock;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
@@ -28,10 +14,21 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.Writer;
+import java.util.List;
+
+import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+
 public class Object2TemplatedMessageResolverTest {
     @Mock Configuration configuration;
     
-    @Before
+    @BeforeEach
     public void initMocks() {
         MockitoAnnotations.initMocks(this);
     }
@@ -49,19 +46,21 @@ public class Object2TemplatedMessageResolverTest {
         assertFalse("Expected the writer to not be able to read", canRead);
     }
     
-    @Test(expected=HttpMessageNotReadableException.class)
+    @Test
     public void checkThatExceptionIsThrownIfReadIsAttempted() throws IOException {
-        //Given
-        Object2TemplatedMessageConverter<Object> converter = 
-                new Object2TemplatedMessageConverter(Object.class, configuration);
-        
-        HttpInputMessage in = mock(HttpInputMessage.class);
-        
-        //When
-        converter.readInternal(Object.class, in);
-        
-        //Then
-        fail("Expected http message not readable exception");
+        Assertions.assertThrows(HttpMessageNotReadableException.class, () -> {
+            //Given
+            Object2TemplatedMessageConverter<Object> converter =
+                    new Object2TemplatedMessageConverter(Object.class, configuration);
+
+            HttpInputMessage in = mock(HttpInputMessage.class);
+
+            //When
+            converter.readInternal(Object.class, in);
+
+            //Then
+            fail("Expected http message not readable exception");
+        });
     }
     
     @Test
@@ -115,36 +114,39 @@ public class Object2TemplatedMessageResolverTest {
         verify(freemarkerTemplate).process(eq(dataToProcess), any(Writer.class));
     }
     
-    @Test(expected=HttpMessageNotWritableException.class)
+    @Test
     public void checkTemplateExceptionThrowsHttpNotWritableException() throws IOException, TemplateException {
-        //Given
-        @ConvertUsing(
-            @Template(called="bob",whenRequestedAs="application/xml")
-        )
-        class MyType {}
-        
-        HttpOutputMessage message = mock(HttpOutputMessage.class, RETURNS_DEEP_STUBS);
-        OutputStream out = mock(OutputStream.class);
-        when(message.getBody()).thenReturn(out);
-        when(message.getHeaders().getContentType()).thenReturn(MediaType.APPLICATION_XML);
-        
-        Object2TemplatedMessageConverter<MyType> converter = 
-                new Object2TemplatedMessageConverter(MyType.class, configuration);
-        
-        freemarker.template.Template freemarkerTemplate = mock(freemarker.template.Template.class);
-        when(configuration.getTemplate("bob")).thenReturn(freemarkerTemplate);
-        
-        MyType dataToProcess = new MyType();
-        
-        doThrow(new TemplateException("Epic failure", null))
-            .when(freemarkerTemplate)
-            .process(eq(dataToProcess), any(Writer.class));
-                
-        //When
-        converter.writeInternal(dataToProcess, message);
-        
-        //Then
-        fail("Expected to fail with an http not writable exception");
+        Assertions.assertThrows(HttpMessageNotWritableException.class, () -> {
+            //Given
+            @ConvertUsing(
+                    @Template(called = "bob", whenRequestedAs = "application/xml")
+            )
+            class MyType {
+            }
+
+            HttpOutputMessage message = mock(HttpOutputMessage.class, RETURNS_DEEP_STUBS);
+            OutputStream out = mock(OutputStream.class);
+            when(message.getBody()).thenReturn(out);
+            when(message.getHeaders().getContentType()).thenReturn(MediaType.APPLICATION_XML);
+
+            Object2TemplatedMessageConverter<MyType> converter =
+                    new Object2TemplatedMessageConverter(MyType.class, configuration);
+
+            freemarker.template.Template freemarkerTemplate = mock(freemarker.template.Template.class);
+            when(configuration.getTemplate("bob")).thenReturn(freemarkerTemplate);
+
+            MyType dataToProcess = new MyType();
+
+            doThrow(new TemplateException("Epic failure", null))
+                    .when(freemarkerTemplate)
+                    .process(eq(dataToProcess), any(Writer.class));
+
+            //When
+            converter.writeInternal(dataToProcess, message);
+
+            //Then
+            fail("Expected to fail with an http not writable exception");
+        });
     }
     
     @Test

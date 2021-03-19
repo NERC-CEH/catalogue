@@ -1,46 +1,38 @@
 package uk.ac.ceh.gateway.catalogue.converters;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpInputMessage;
+import uk.ac.ceh.gateway.catalogue.gemini.*;
+import uk.ac.ceh.gateway.catalogue.gemini.Service.CoupledResource;
+import uk.ac.ceh.gateway.catalogue.gemini.Service.OperationMetadata;
+import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
+import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty.Address;
+import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
+
+import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import javax.xml.xpath.XPathExpressionException;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Month;
 import java.util.Properties;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.*;
-import org.junit.Before;
-import org.junit.Test;
-import static org.mockito.Mockito.*;
-import org.springframework.http.HttpInputMessage;
-import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
-import uk.ac.ceh.gateway.catalogue.gemini.DescriptiveKeywords;
-import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
-import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
-import uk.ac.ceh.gateway.catalogue.gemini.DistributionInfo;
-import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
-import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
-import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
-import uk.ac.ceh.gateway.catalogue.gemini.ResourceMaintenance;
-import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
-import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty.Address;
-import uk.ac.ceh.gateway.catalogue.gemini.Service;
-import uk.ac.ceh.gateway.catalogue.gemini.Service.CoupledResource;
-import uk.ac.ceh.gateway.catalogue.gemini.Service.OperationMetadata;
-import uk.ac.ceh.gateway.catalogue.gemini.SpatialReferenceSystem;
-import uk.ac.ceh.gateway.catalogue.gemini.SpatialResolution;
-import uk.ac.ceh.gateway.catalogue.gemini.TimePeriod;
-import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
+import java.util.function.Supplier;
+
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.util.AssertionErrors.assertTrue;
 
 public class Xml2GeminiDocumentMessageConverterTest {
     private Xml2GeminiDocumentMessageConverter geminiReader;
     
-    @Before
+    @BeforeEach
     public void createGeminiDocumentConverter() throws XPathExpressionException {
         Properties props = new Properties();
         props.put("topicCategory.environment.uri", "http://inspire.ec.europa.eu/metadata-codelist/TopicCategory/environment");
@@ -261,7 +253,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
         
         //Then
-        assertEquals("Expected to be able to read the id", "9e7790ab-a37d-4918-8107-5c427798ca68", document.getId());
+        assertEquals("9e7790ab-a37d-4918-8107-5c427798ca68", document.getId());
         assertFalse("Expected id to not be empty string", document.getId().isEmpty());
     }
 
@@ -329,7 +321,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
         Collections.sort(expected);
         
         //Then
-        assertNotNull("Expected title to have content", actual);
+        assertNotNull(actual);
         assertThat("Content of alternateTitles not as expected", actual, is(expected));
     }
     
@@ -455,7 +447,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
         List<DescriptiveKeywords> descriptiveKeywords = document.getDescriptiveKeywords();
         
         //Then
-        assertNotNull("Expected DescriptiveKeywords not to be null", descriptiveKeywords);
+        assertNotNull(descriptiveKeywords);
         assertThat("DescriptiveKeywords list should have 1 DescriptiveKeywords entry", descriptiveKeywords.size(), is(1));
         
         //When
@@ -474,7 +466,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
         );
         
         //Then
-        assertNotNull("Expected Keywords to not be null", actual);
+        assertNotNull(actual);
         assertThat("Content of Keywords is not as expected", actual, is(expected));
     }
     
@@ -490,7 +482,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
         List<DescriptiveKeywords> descriptiveKeywords = document.getDescriptiveKeywords();
         
         //Then
-        assertNotNull("Expected DescriptiveKeywords not to be null", descriptiveKeywords);
+        assertNotNull(descriptiveKeywords);
         assertThat("DescriptiveKeywords list should have 2 DescriptiveKeywords entries", descriptiveKeywords.size(), is(2));
     }
     
@@ -506,7 +498,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
         List<DescriptiveKeywords> descriptiveKeywords = document.getDescriptiveKeywords();
         
         //Then
-        assertNotNull("Expected DescriptiveKeywords not to be null", descriptiveKeywords);
+        assertNotNull(descriptiveKeywords);
         
         //When
         List<Keyword> actualKeywords = descriptiveKeywords.get(0).getKeywords();
@@ -522,7 +514,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
         );
         
         //Then
-        assertNotNull("Expected Keywords to not be null", actualKeywords);
+        assertNotNull(actualKeywords);
         assertThat("Content of Keywords is not as expected", actualKeywords, is(expectedKeywords));
     }
     
@@ -538,7 +530,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
         List<DescriptiveKeywords> descriptiveKeywords = document.getDescriptiveKeywords();
         
         //Then
-        assertNotNull("Expected DescriptiveKeywords not to be null", descriptiveKeywords);
+        assertNotNull(descriptiveKeywords);
         
         //When
         List<Keyword> actualKeywords = descriptiveKeywords.get(0).getKeywords();
@@ -556,7 +548,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
         );
         
         //Then
-        assertNotNull("Expected Keywords to not be null", actualKeywords);
+        assertNotNull(actualKeywords);
         assertThat("Content of Keywrods is not as expected", actualKeywords, is(expectedKeywords));
     }
     
@@ -572,7 +564,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
         List<DescriptiveKeywords> descriptiveKeywords = document.getDescriptiveKeywords();
         
         //Then
-        assertNotNull("Expected DescriptiveKeywords not to be null", descriptiveKeywords);
+        assertNotNull(descriptiveKeywords);
         
         //When
         List<Keyword> actualKeywords = descriptiveKeywords.get(0).getKeywords();
@@ -595,7 +587,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
         );
         
         //Then
-        assertNotNull("Expected Keywords to not be null", actualKeywords);
+        assertNotNull(actualKeywords);
         assertThat("Content of Keywrods is not as expected", actualKeywords, is(expectedKeywords));
     }
     
@@ -612,7 +604,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
         List<DescriptiveKeywords> descriptiveKeywords = document.getDescriptiveKeywords();
         
         //Then
-        assertNotNull("Expected DescriptiveKeywords not to be null", descriptiveKeywords);
+        assertNotNull(descriptiveKeywords);
 
         //When
         String actual = descriptiveKeywords.get(0).getType();
@@ -639,7 +631,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
         String expectedTitle = "Test description text";
         assertNotNull("Expected description to have content", document.getDescription());
         assertFalse("Expected title to not be empty string", document.getDescription().isEmpty());
-        assertEquals(String.format("Expected title to say'%s'.", expectedTitle), expectedTitle, document.getDescription());
+        assertEquals(expectedTitle, document.getDescription());
     }
 
     @Test

@@ -1,18 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-import org.junit.Before;
-import org.junit.Test;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -21,29 +12,41 @@ import uk.ac.ceh.gateway.catalogue.model.ExternalResourceFailureException;
 import uk.ac.ceh.gateway.catalogue.model.NotAGetCapabilitiesResourceException;
 import uk.ac.ceh.gateway.catalogue.ogc.WmsCapabilities;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+
 public class GetCapabilitiesObtainerServiceTest {
     @Mock RestTemplate rest;
     @Mock MapServerDetailsService mapServerDetailsService;
     
     private GetCapabilitiesObtainerService service;
     
-    @Before
+    @BeforeEach
     public void createOnlineController() {
         MockitoAnnotations.initMocks(this);
         
         service = spy(new GetCapabilitiesObtainerService(rest, mapServerDetailsService));
     }
     
-    @Test(expected=NotAGetCapabilitiesResourceException.class)
+    @Test
     public void checkThatGetWMSCapabilitiesDoesntWorkWithIncorrectOnlineResource() throws URISyntaxException {
-        //Given
-        OnlineResource resource = OnlineResource.builder().url("http://not.a.wms").build();
-        
-        //When
-        service.getWmsCapabilities(resource);
-        
-        //Then
-        fail("Expected to fail with invalid capabilites exception");
+        Assertions.assertThrows(NotAGetCapabilitiesResourceException.class, () -> {
+            //Given
+            OnlineResource resource = OnlineResource.builder().url("http://not.a.wms").build();
+
+            //When
+            service.getWmsCapabilities(resource);
+
+            //Then
+            fail("Expected to fail with invalid capabilites exception");
+        });
     }
     
     @Test
@@ -62,7 +65,7 @@ public class GetCapabilitiesObtainerServiceTest {
         assertThat("Expected my wms mock to come out", result, equalTo(wmsCaps));
     }
     
-    @Test(expected=ExternalResourceFailureException.class)
+    @Test
     public void checkExcpetionReturnedWhenRestClientFails() throws URISyntaxException {
         //Given
         OnlineResource resource = OnlineResource.builder().url("https://www.google.com/wms?REQUEST=GetCapabilities&SERVICE=WMS").build();
@@ -78,19 +81,21 @@ public class GetCapabilitiesObtainerServiceTest {
         fail("Expected to fail with exception");
     }
     
-    @Test(expected=ExternalResourceFailureException.class)
+    @Test
     public void checkExcpetionReturnedWhenAnIllegalArgumentExceptionOccurs() throws URISyntaxException {
-        //Given
-        OnlineResource resource = OnlineResource.builder().url("https://www.google.com/wms?REQUEST=GetCapabilities&SERVICE=WMS").build();
-        
-        when(mapServerDetailsService.rewriteToLocalWmsRequest(any(String.class))).thenReturn("Anything");
-        when(rest.getForObject(any(URI.class), eq(WmsCapabilities.class)))
-                .thenThrow(new IllegalArgumentException("failed"));
-        
-        //When
-        service.getWmsCapabilities(resource);
-        
-        //Then
-        fail("Expected to fail with exception");
+        Assertions.assertThrows(ExternalResourceFailureException.class, () -> {
+            //Given
+            OnlineResource resource = OnlineResource.builder().url("https://www.google.com/wms?REQUEST=GetCapabilities&SERVICE=WMS").build();
+
+            when(mapServerDetailsService.rewriteToLocalWmsRequest(any(String.class))).thenReturn("Anything");
+            when(rest.getForObject(any(URI.class), eq(WmsCapabilities.class)))
+                    .thenThrow(new IllegalArgumentException("failed"));
+
+            //When
+            service.getWmsCapabilities(resource);
+
+            //Then
+            fail("Expected to fail with exception");
+        });
     }
 }

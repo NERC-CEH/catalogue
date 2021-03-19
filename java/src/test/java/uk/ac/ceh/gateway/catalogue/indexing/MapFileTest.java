@@ -2,28 +2,28 @@ package uk.ac.ceh.gateway.catalogue.indexing;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import static org.hamcrest.CoreMatchers.is;
+
 import java.io.Writer;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.ArgumentCaptor;
+
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
-import org.mockito.Mock;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import org.mockito.MockitoAnnotations;
-import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import static org.mockito.Mockito.*;
 
 public class MapFileTest {
     @Mock Configuration templateConfig;
     @Mock MetadataDocument document;
     
-    @Before
+    @BeforeEach
     public void init() {
         MockitoAnnotations.initMocks(this);
     }

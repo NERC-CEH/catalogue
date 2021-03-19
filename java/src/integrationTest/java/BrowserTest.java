@@ -1,7 +1,7 @@
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
@@ -9,11 +9,13 @@ import java.net.URL;
 
 import static java.lang.Integer.parseInt;
 import static java.lang.String.format;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.StringContains.containsString;
 
 @Slf4j
-@Ignore("Test breaking")
+@Disabled("Test breaking")
 public class BrowserTest {
     private final RemoteWebDriver driver;
     private final String webHost;
@@ -91,7 +93,7 @@ public class BrowserTest {
 
         //then
         int numRecords = parseInt(driver.findElementById("num-records").getText(), 10);
-        assertThat("Should have found documents", numRecords, greaterThan(minRecords));
+        assertThat("Should have found documents", is(numRecords > minRecords));
     }
 
     @Test

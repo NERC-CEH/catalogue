@@ -1,10 +1,10 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
 import org.apache.solr.client.solrj.SolrQuery;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.model.Catalogue;
@@ -15,11 +15,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.*;
 import static org.mockito.BDDMockito.given;
 
-@RunWith(MockitoJUnitRunner.Strict.class)
+@ExtendWith(MockitoExtension.class)
 public class SearchQueryTest {
     static final String ENDPOINT = "http://catalogue.com/documents";
     static final String DEFAULT_BBOX = null;
@@ -58,11 +61,8 @@ public class SearchQueryTest {
         SolrQuery solrQuery = query.build();
 
         //Then
-        assertThat(
-            "Solr query should have 'eidc' in catalogue filter",
-            solrQuery.getFilterQueries(),
-            hasItemInArray("{!term f=catalogue}eidc")
-        );
+        assertThat(Arrays.asList(solrQuery.getFilterQueries()).contains("{!term f=catalogue}eidc"), is(true));
+
     }
 
     @Test
@@ -92,7 +92,7 @@ public class SearchQueryTest {
         SolrQuery solrQuery = query.build();
         
         //Then
-        assertThat("Solr query should have view filter", solrQuery.getFilterQueries(), hasItemInArray("view:(public OR helen)")); 
+        assertThat(Arrays.asList(solrQuery.getFilterQueries()).contains("view:(public OR helen)"), is(true));
     }
     
     @Test
@@ -124,7 +124,7 @@ public class SearchQueryTest {
         SolrQuery solrQuery = query.build();
         
         //Then
-        assertThat("Solr query should have view filter", solrQuery.getFilterQueries(), hasItemInArray("view:(public OR helen OR ceh OR eidc)")); 
+        assertThat(Arrays.asList(solrQuery.getFilterQueries()).contains("view:(public OR helen OR ceh OR eidc)"), is(true));
     }
     
     @Test
@@ -156,7 +156,7 @@ public class SearchQueryTest {
         SolrQuery solrQuery = query.build();
         
         //Then
-        assertThat("Solr query should have view filter", solrQuery.getFilterQueries(), not(hasItemInArray("view:(public OR publisher OR role_cig_publisher)")));
+        assertThat("Solr query should have view filter", not(solrQuery.getFilterQueries().toString().contains("view:(public OR publisher OR role_cig_publisher)")));
     }
     
     private Group createGroup(String name) {
@@ -200,14 +200,14 @@ public class SearchQueryTest {
         
         //Then
         assertThat("Solr query should be the 'default text'", solrQuery.getQuery(), equalTo(SearchQuery.DEFAULT_SEARCH_TERM));
-        assertThat("Solr query state filter query should be 'public'", solrQuery.getFilterQueries(), hasItemInArray("{!term f=view}public"));
-        assertThat("Solr query state filter query should be 'published'", solrQuery.getFilterQueries(), hasItemInArray("{!term f=state}published"));
-        assertThat("Solr query licence facet fields should be present", solrQuery.getFacetFields(), hasItemInArray("licence"));
-        assertThat("Solr query resourceType facet fields should be present", solrQuery.getFacetFields(), hasItemInArray("resourceType"));
-        assertThat("Solr query start should be 0 for first page", solrQuery.getStart(), equalTo(0));
-        assertThat("Solr query rows should be default", solrQuery.getRows(), equalTo(DEFAULT_ROWS));
-        assertThat("Solr query facet min count should be set", solrQuery.getFacetMinCount(), equalTo(1));
-        assertThat("Solr query sort order should be 'random'", solrQuery.getSorts().get(0).getItem().substring(0, 6), equalTo("random"));
+        assertThat(Arrays.asList(solrQuery.getFilterQueries()).contains("{!term f=view}public"), is(true));
+        assertThat(Arrays.asList(solrQuery.getFilterQueries()).contains("{!term f=state}published"),is(true));
+        assertThat(Arrays.asList(solrQuery.getFacetFields()).contains("licence"), is(true));
+        assertThat(Arrays.asList(solrQuery.getFacetFields()).contains("resourceType"), is(true));
+        assertThat(solrQuery.getStart(), is(equalTo(0)));
+        assertThat(solrQuery.getRows(), is(equalTo(DEFAULT_ROWS)));
+        assertThat(solrQuery.getFacetMinCount(), is(equalTo(1)));
+        assertThat(solrQuery.getSorts().get(0).getItem().substring(0, 6), is(equalTo("random")));
     }
     
     @Test
@@ -296,8 +296,8 @@ public class SearchQueryTest {
         SolrQuery solrQuery = query.build();
         
         //Then
-        assertThat("Solr query should be the default text", solrQuery.getQuery(), equalTo(SearchQuery.DEFAULT_SEARCH_TERM));
-        assertThat("Solr query should have resourceType filter", solrQuery.getFilterQueries(), hasItemInArray("{!term f=resourceType}dataset"));
+        assertThat(Arrays.asList(solrQuery.getQuery()).contains(SearchQuery.DEFAULT_SEARCH_TERM), is(true));
+        assertThat(Arrays.asList(solrQuery.getFilterQueries()).contains("{!term f=resourceType}dataset"), is(true));
     }
     
     @Test
@@ -328,7 +328,7 @@ public class SearchQueryTest {
         SolrQuery solrQuery = query.build();
         
         //Then
-        assertThat("Expected to fild a solr bbox filter", solrQuery.getFilterQueries(), hasItemInArray("locations:\"IsWithin(1.11,2.22,3.33,4.44)\""));
+        assertThat(Arrays.asList(solrQuery.getFilterQueries()).contains("locations:\"IsWithin(1.11,2.22,3.33,4.44)\""), is(true));
     }
     
      @Test
@@ -359,7 +359,7 @@ public class SearchQueryTest {
         SolrQuery solrQuery = query.build();
         
         //Then
-        assertThat("Expected to find a solr bbox filter", solrQuery.getFilterQueries(), hasItemInArray("locations:\"Intersects(1.11,2.22,3.33,4.44)\""));
+        assertThat(Arrays.asList(solrQuery.getFilterQueries()).contains("locations:\"Intersects(1.11,2.22,3.33,4.44)\""), is(true));
     }
     
     @Test
@@ -704,16 +704,12 @@ public class SearchQueryTest {
         
         
         //Then
-        assertThat("",
-            actual,
-            contains(
-                "impCaMMPIssues",
-                "impDataType",
-                "impScale",
-                "impTopic",
-                "impWaterPollutant",
-                "resourceType"
-            )
-        );
+        assertThat(actual.contains("impCaMMPIssues"), is(true));
+        assertThat(actual.contains("impDataType"), is(true));
+        assertThat(actual.contains("impScale"), is(true));
+        assertThat(actual.contains("impTopic"), is(true));
+        assertThat(actual.contains("impWaterPollutant"), is(true));
+        assertThat(actual.contains("resourceType"), is(true));
+
     }
 }

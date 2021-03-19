@@ -2,14 +2,15 @@ import com.jayway.jsonpath.JsonPath;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.hamcrest.core.IsEqual;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import static com.google.common.collect.ImmutableList.of;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
 
 @Slf4j
@@ -51,15 +52,17 @@ public class RestTest {
         assertThat("Media Type should be 'text/plain'", response.getHeaders().getContentType().isCompatibleWith(MediaType.TEXT_PLAIN), is(true));
     }
 
-    @Test(expected = HttpClientErrorException.class)
+    @Test
     @SneakyThrows
     public void getUnknownSitemap() {
-        ResponseEntity<String> response = template.getForEntity(
-            "http://{host}:{port}/unknown/sitemap.txt",
-            String.class,
-            webHost,
-            webPort
-        );
+        Assertions.assertThrows(HttpClientErrorException.class, () -> {
+            ResponseEntity<String> response = template.getForEntity(
+                    "http://{host}:{port}/unknown/sitemap.txt",
+                    String.class,
+                    webHost,
+                    webPort
+            );
+        });
         fail("Response should be Not Found");
     }
 

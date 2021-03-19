@@ -1,14 +1,16 @@
 package uk.ac.ceh.gateway.catalogue.converters;
 
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-import org.junit.Before;
-import org.junit.Test;
 
 public class HardcodedNamespaceResolverTest {
     private HardcodedGeminiNamespaceResolver resolver;
     
-    @Before
+    @BeforeEach
     public void createHardcodedNamespaceResolver() {
         resolver = new HardcodedGeminiNamespaceResolver();
     }
@@ -97,16 +99,18 @@ public class HardcodedNamespaceResolverTest {
         assertEquals("Expected an empty string uri", "", uri);
     }
     
-    @Test(expected=IllegalArgumentException.class)
+    @Test
     public void checkIllegalArgumentExceptionIsThrownOnNullUriLookup() {
-        //Given
-        String prefix = null;
-        
-        //When
-        resolver.getNamespaceURI(prefix);
-        
-        //Then
-        fail("Expected to fail");
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            //Given
+            String prefix = null;
+
+            //When
+            resolver.getNamespaceURI(prefix);
+
+            //Then
+            fail("Expected to fail");
+        });
     }
     
 }

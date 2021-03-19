@@ -3,16 +3,17 @@ package uk.ac.ceh.gateway.catalogue.upload.simple;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import static java.lang.String.format;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static uk.ac.ceh.gateway.catalogue.upload.simple.UploadControllerUtils.ID;
 
 @Slf4j
@@ -23,7 +24,7 @@ public class FileSystemStorageServiceDeleteTest {
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
-    @Before
+    @BeforeEach
     public void setup() {
         service = new FileSystemStorageService(folder.getRoot().toString());
     }
@@ -44,17 +45,18 @@ public class FileSystemStorageServiceDeleteTest {
         assertFalse(Files.exists(deleted));
     }
 
-    @Test(expected = UserInputException.class)
     @SneakyThrows
     public void exceptionIfFileNotKnown() {
-        //given
-        // No files setup
+        Assertions.assertThrows(UserInputException.class, () -> {
+            //given
+            // No files setup
 
-        //when
-        service.delete(ID, filename);
+            //when
+            service.delete(ID, filename);
 
-        //then
-        fail("Should have thrown exception");
+            //then
+            fail("Should have thrown exception");
+        });
     }
 
 }

@@ -3,11 +3,12 @@ package uk.ac.ceh.gateway.catalogue.permission;
 import lombok.SneakyThrows;
 import lombok.Value;
 import lombok.val;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,17 +24,18 @@ import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.model.PermissionDeniedException;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.*;
 
-@RunWith(MockitoJUnitRunner.StrictStubs.class)
+@ExtendWith(MockitoExtension.class)
 public class CrowdPermissionServiceTest {
     @Mock
     private DataRepository<CatalogueUser> repo;
@@ -54,7 +56,14 @@ public class CrowdPermissionServiceTest {
         return MetadataInfo.builder().state("DRAFT").build();
     }
 
-    private CatalogueUser populateSecurityContextHolder(String username, String... roleNames) {
+    private CatalogueUser populateSecurityContextHolder(String username) {
+        val user = new CatalogueUser().setUsername(username);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        SecurityContextHolder.setContext(securityContext);
+        return user;
+    }
+
+    private CatalogueUser populateSecurityContextHolderAndAuthentication(String username, String... roleNames) {
         val user = new CatalogueUser().setUsername(username);
         List<Group> roles = Arrays.stream(roleNames)
                 .map(CrowdGroup::new)
@@ -64,6 +73,17 @@ public class CrowdPermissionServiceTest {
         SecurityContext securityContext = mock(SecurityContext.class);
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(authentication.getPrincipal()).thenReturn(user);
+        SecurityContextHolder.setContext(securityContext);
+        return user;
+    }
+
+    private CatalogueUser publisherCanViewPopulateSecurityContextHolder(String username, String... roleNames) {
+        val user = new CatalogueUser().setUsername(username);
+        List<Group> roles = Arrays.stream(roleNames)
+                .map(CrowdGroup::new)
+                .collect(Collectors.toList());
+        given(groupStore.getGroups(user)).willReturn(roles);
+        SecurityContext securityContext = mock(SecurityContext.class);
         SecurityContextHolder.setContext(securityContext);
         return user;
     }
@@ -78,7 +98,7 @@ public class CrowdPermissionServiceTest {
     @Test
     public void namedUserWithUploadPermissionCanUpload() {
         //given
-        populateSecurityContextHolder("uploader");
+        populateSecurityContextHolderAndAuthentication("uploader");
         val info = MetadataInfo.builder().build();
         info.addPermission(Permission.UPLOAD, "uploader");
         configDocumentInfoMapper(info);
@@ -93,7 +113,7 @@ public class CrowdPermissionServiceTest {
     @Test
     public void namedUserWithEditPermissionCanNotUpload() {
         //given
-        populateSecurityContextHolder("edit");
+        populateSecurityContextHolderAndAuthentication("edit");
         val info = MetadataInfo.builder().build();
         info.addPermission(Permission.EDIT, "edit");
         configDocumentInfoMapper(info);
@@ -109,8 +129,8 @@ public class CrowdPermissionServiceTest {
     @SneakyThrows
     public void adminCanUpload() {
         //given
-        populateSecurityContextHolder("admin", "ROLE_CIG_SYSTEM_ADMIN");
-        configDocumentInfoMapper(MetadataInfo.builder().build());
+        populateSecurityContextHolderAndAuthentication("admin", "ROLE_CIG_SYSTEM_ADMIN");
+      //  configDocumentInfoMapper(MetadataInfo.builder().build());
 
         //when
         val actual = permissionService.userCanUpload("test");
@@ -123,7 +143,7 @@ public class CrowdPermissionServiceTest {
     @Test
     public void publisherCanEditRestricted() {
         //Given
-        populateSecurityContextHolder("publisher", "ROLE_EIDC_PUBLISHER");
+        populateSecurityContextHolderAndAuthentication("publisher", "ROLE_EIDC_PUBLISHER");
 
         //When
         val actual = permissionService.userCanEditRestrictedFields("eidc");
@@ -135,7 +155,7 @@ public class CrowdPermissionServiceTest {
     @Test
     public void editorCanEditRestricted() {
         //Given
-        populateSecurityContextHolder("editor", "ROLE_EIDC_EDITOR");
+        populateSecurityContextHolderAndAuthentication("editor", "ROLE_EIDC_EDITOR");
 
         //When
         val actual = permissionService.userCanEditRestrictedFields("eidc");
@@ -147,8 +167,8 @@ public class CrowdPermissionServiceTest {
     @Test
     public void namedEditorCannotEditRestricted() {
         //Given
-        populateSecurityContextHolder("editor");
-        configDocumentInfoMapper(MetadataInfo.builder().catalogue("eidc").build());
+        populateSecurityContextHolderAndAuthentication("editor");
+       // configDocumentInfoMapper(MetadataInfo.builder().catalogue("eidc").build());
 
         //When
         val actual = permissionService.userCanEditRestrictedFields("eidc");
@@ -160,7 +180,7 @@ public class CrowdPermissionServiceTest {
     @Test
     public void eidcEditorCanCreate() {
         //given
-        populateSecurityContextHolder("eidcEditor", "ROLE_EIDC_EDITOR");
+        populateSecurityContextHolderAndAuthentication("eidcEditor", "ROLE_EIDC_EDITOR");
         
         //when
         val actual = permissionService.userCanCreate("eidc");
@@ -170,23 +190,27 @@ public class CrowdPermissionServiceTest {
     }
 
     @SneakyThrows
-    @Test(expected = PermissionDeniedException.class)
+    @Test
     public void anonymousCanNotAccessUnknownRecord() {
-        //Given
-        given(repo.getData("revision", "test.meta")).willThrow(DataRepositoryException.class);
-        
-        //When
-        permissionService.toAccess(CatalogueUser.PUBLIC_USER, "test", "revision", "VIEW");
-        
-        //Then
-        fail("Should not be able to get metadata record for unknown");
+        Assertions.assertThrows(PermissionDeniedException.class, () -> {
+            //Given
+            given(repo.getData("revision", "test.meta")).willThrow(DataRepositoryException.class);
+
+            //When
+            permissionService.toAccess(CatalogueUser.PUBLIC_USER, "test", "revision", "VIEW");
+
+            //Then
+            fail("Should not be able to get metadata record for unknown");
+        });
     }
 
     @SneakyThrows
     @Test
     public void anonymousCanAccessPublicRecord() {
         //Given
-        configDocumentInfoMapper(publik());
+//        given(repo.getLatestRevision()).willReturn(new DummyRevision("revision"));
+        given(repo.getData("revision", "test.meta")).willAnswer(RETURNS_MOCKS);
+        given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(publik());
         
         //When
         val actual = permissionService.toAccess(CatalogueUser.PUBLIC_USER, "test", "revision", "VIEW");
@@ -200,7 +224,9 @@ public class CrowdPermissionServiceTest {
     public void namedUserCanAccessPublicRecord() {
         //Given
         val namedUser = populateSecurityContextHolder("named");
-        configDocumentInfoMapper(publik());
+       // given(repo.getLatestRevision()).willReturn(new DummyRevision("revision"));
+        given(repo.getData("revision", "test.meta")).willAnswer(RETURNS_MOCKS);
+        given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(publik());
         
         //When
         val actual = permissionService.toAccess(namedUser, "test", "revision", "VIEW");
@@ -213,8 +239,9 @@ public class CrowdPermissionServiceTest {
     @Test
     public void anonymousCanNotAccessDraftRecord() {
         //Given
-        configDocumentInfoMapper(draft());
-        
+        given(repo.getData("revision", "test.meta")).willAnswer(RETURNS_MOCKS);
+        given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(draft());
+
         //When
         val actual = permissionService.toAccess(CatalogueUser.PUBLIC_USER, "test", "revision", "VIEW");
         
@@ -230,7 +257,8 @@ public class CrowdPermissionServiceTest {
 
         val metadataInfo = draft();
         metadataInfo.addPermission(Permission.VIEW, "username");
-        configDocumentInfoMapper(metadataInfo);
+        given(repo.getData("revision", "test.meta")).willAnswer(RETURNS_MOCKS);
+        given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(metadataInfo);
         
         //When
         val actual = permissionService.toAccess(namedUser, "test", "revision", "VIEW");
@@ -238,14 +266,16 @@ public class CrowdPermissionServiceTest {
         //Then
         assertTrue(actual);
     }
-    
+
     @Test
-    public void namedUserCanViewDraftRecordWithGroupPermission() {
+    public void namedUserCanViewDraftRecordWithGroupPermission() throws IOException {
         //Given
-        val namedUser = populateSecurityContextHolder("username","group0");
+        val namedUser = populateSecurityContextHolder("username");
         val metadataInfo = draft();
         metadataInfo.addPermission(Permission.VIEW, "group0");
-        configDocumentInfoMapper(metadataInfo);
+//        given(repo.getLatestRevision()).willReturn(new DummyRevision("revision"));
+        given(repo.getData("revision", "test.meta")).willAnswer(RETURNS_MOCKS);
+        given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(metadataInfo);
         given(groupStore.getGroups(namedUser)).willReturn(Collections.singletonList(new CrowdGroup("group0")));
         
         //When
@@ -260,7 +290,9 @@ public class CrowdPermissionServiceTest {
     public void namedUserCannotWriteDraftRecordWithNoGroupPermission() {
         //Given
         val namedUser = populateSecurityContextHolder("username");
-        configDocumentInfoMapper(draft());
+//        given(repo.getLatestRevision()).willReturn(new DummyRevision("revision"));
+        given(repo.getData("revision", "test.meta")).willAnswer(RETURNS_MOCKS);
+        given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(draft());
         given(groupStore.getGroups(namedUser)).willReturn(Collections.emptyList());
         
         //When
@@ -273,7 +305,7 @@ public class CrowdPermissionServiceTest {
     @Test
     public void editorCanEdit() {
         //Given
-        populateSecurityContextHolder("editor");
+        populateSecurityContextHolderAndAuthentication("editor");
         MetadataInfo info = MetadataInfo.builder().catalogue("eidc").build();
         info.addPermission(Permission.EDIT, "editor");
         configDocumentInfoMapper(info);
@@ -288,7 +320,7 @@ public class CrowdPermissionServiceTest {
     @Test
     public void publisherCanMakePublic() {
         //Given
-        populateSecurityContextHolder("publisher", "ROLE_EIDC_PUBLISHER");
+        populateSecurityContextHolderAndAuthentication("publisher", "ROLE_EIDC_PUBLISHER");
         
         //When
         val actual = permissionService.userCanMakePublic("eidc");
@@ -300,7 +332,7 @@ public class CrowdPermissionServiceTest {
     @Test
     public void publisherCanView() {
         //Given
-        CatalogueUser publisher = populateSecurityContextHolder("publisher","ROLE_EIDC_PUBLISHER");
+        CatalogueUser publisher = publisherCanViewPopulateSecurityContextHolder("publisher","ROLE_EIDC_PUBLISHER");
         configDocumentInfoMapper(MetadataInfo.builder().catalogue("eidc").build());
 
         //When
@@ -313,7 +345,7 @@ public class CrowdPermissionServiceTest {
     @Test
     public void nonPublisherCannotMakePublic() {
         //Given
-        populateSecurityContextHolder("editor","ROLE_EIDC_EDITOR");
+        populateSecurityContextHolderAndAuthentication("editor","ROLE_EIDC_EDITOR");
         
         //When
         val actual = permissionService.userCanMakePublic("eidc");
@@ -325,7 +357,7 @@ public class CrowdPermissionServiceTest {
     @Test
     public void userWithoutEditorPermissionCannotEdit() {
         //Given
-        populateSecurityContextHolder("bob","CEH", "Another");
+        populateSecurityContextHolderAndAuthentication("bob","CEH", "Another");
         configDocumentInfoMapper(MetadataInfo.builder().catalogue("ceh").build());
         
         //When

@@ -2,9 +2,11 @@ package uk.ac.ceh.gateway.catalogue.indexing;
 
 import java.util.Arrays;
 import java.util.List;
-import org.junit.Test;
-import org.junit.Before;
+
+import org.junit.jupiter.api.BeforeEach;
 import static org.mockito.BDDMockito.given;
+
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -35,7 +37,7 @@ public class IndexingFileEventSubscriberTest {
 
     private IndexingFileEventListener eventSubscriber; 
     
-    @Before
+    @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
         eventSubscriber = new IndexingFileEventListener(service, listingService);

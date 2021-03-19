@@ -1,18 +1,21 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.ac.ceh.gateway.catalogue.model.Catalogue;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 
 public class DocumentIdentifierServiceTest {
     private DocumentIdentifierService service;
     private Catalogue ceh;
     
-    @Before
+    @BeforeEach
     public void init() {
         service = new DocumentIdentifierService("https://catalogue.ceh.ac.uk", '-');
     }
@@ -50,7 +53,7 @@ public class DocumentIdentifierServiceTest {
         String fileId = service.generateFileId(id);
         
         //Then
-        assertNull("Expected result to be null", fileId);
+        assertNull(fileId);
     }
     
     @Test
@@ -65,16 +68,18 @@ public class DocumentIdentifierServiceTest {
         assertThat(url, equalTo("https://catalogue.ceh.ac.uk/id/myPath"));
     }
     
-    @Test(expected=NullPointerException.class)
+    @Test
     public void checkThatFailsWhenCreatingAUriWithoutAnId() {
-        //Given
-        String id = null;
-        
-        //When
-        String uri = service.generateUri(id);
-        
-        //Then
-        fail("Expected to fail");
+        Assertions.assertThrows(NullPointerException.class, () -> {
+            //Given
+            String id = null;
+
+            //When
+            String uri = service.generateUri(id);
+
+            //Then
+            fail("Expected to fail");
+        });
     }
     
     @Test

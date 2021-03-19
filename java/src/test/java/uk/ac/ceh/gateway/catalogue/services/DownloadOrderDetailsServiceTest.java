@@ -1,15 +1,17 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.services.DownloadOrderDetailsService.DownloadOrder;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.CoreMatchers.is;
+
 
 public class DownloadOrderDetailsServiceTest {
     String supportingDocUrlPattern = "https:\\/\\/data-package\\.ceh\\.ac\\.uk\\/sd\\/.*";
@@ -19,7 +21,7 @@ public class DownloadOrderDetailsServiceTest {
     );
     private DownloadOrderDetailsService service;
     
-    @Before
+    @BeforeEach
     public void init() {
         service = new DownloadOrderDetailsService(supportingDocUrlPattern, orderManagerUrlPatterns);
     }
@@ -38,7 +40,7 @@ public class DownloadOrderDetailsServiceTest {
         
         //Then
         assertThat(order.isOrderable(), is(true));
-        assertThat(order.getOrderResources(), contains(onlineResource));
+        assertThat(order.getOrderResources().contains(onlineResource), is(true));
     }
 
     @Test
@@ -55,7 +57,7 @@ public class DownloadOrderDetailsServiceTest {
 
         //Then
         assertThat(order.isOrderable(), is(true));
-        assertThat(order.getOrderResources(), contains(onlineResource));
+        assertThat(order.getOrderResources().contains(onlineResource), is(true));
     }
 
     @Test
@@ -72,7 +74,7 @@ public class DownloadOrderDetailsServiceTest {
 
         //Then
         assertThat(order.isOrderable(), is(true));
-        assertThat(order.getOrderResources(), contains(onlineResource));
+        assertThat(order.getOrderResources().contains(onlineResource), is(true));
     }
     
     @Test
@@ -89,7 +91,7 @@ public class DownloadOrderDetailsServiceTest {
         
         //Then
         assertThat(order.isOrderable(), is(true));
-        assertThat(order.getOrderResources(), contains(onlineResource));
+        assertThat(order.getOrderResources().contains(onlineResource), is(true));
     }
     
     @Test
@@ -108,7 +110,7 @@ public class DownloadOrderDetailsServiceTest {
         
         //Then
         assertThat(order.isOrderable(), is(true));
-        assertThat(order.getOrderResources(), contains(orderable));
+        assertThat(order.getOrderResources().contains(orderable), is(true));
     }
     
     @Test
@@ -125,7 +127,7 @@ public class DownloadOrderDetailsServiceTest {
         
         //Then
         assertThat(order.isOrderable(), is(false));
-        assertThat(order.getOrderResources(), contains(onlineResource));
+        assertThat(order.getOrderResources().contains(onlineResource), is(true));
     }
     
     @Test
@@ -140,6 +142,6 @@ public class DownloadOrderDetailsServiceTest {
         DownloadOrder order = service.from(onlineResources);
         
         //Then
-        assertThat(order.getSupportingDocumentsUrl(), equalTo(orderUrl));
+        assertThat(order.getSupportingDocumentsUrl(), is(equalTo(orderUrl)));
     }
 }

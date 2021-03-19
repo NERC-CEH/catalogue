@@ -1,10 +1,12 @@
 package uk.ac.ceh.gateway.catalogue.quality;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.services.MetadataListingService;
 
@@ -16,7 +18,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class QualityControllerTest {
 
     @Mock
@@ -27,7 +29,7 @@ public class QualityControllerTest {
 
     private QualityController qualityController;
 
-    @Before
+    @BeforeEach
     public void setup() {
         qualityController = new QualityController(
             metadataQualityService,

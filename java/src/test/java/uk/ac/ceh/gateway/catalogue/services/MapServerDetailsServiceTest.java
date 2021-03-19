@@ -1,19 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.List;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.MapDataDefinition;
 import uk.ac.ceh.gateway.catalogue.gemini.MapDataDefinition.DataSource;
@@ -22,11 +11,22 @@ import uk.ac.ceh.gateway.catalogue.gemini.MapDataDefinition.Projection;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.services.MapServerDetailsService.MapBucketDetails;
 
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 public class MapServerDetailsServiceTest {
     private @Mock CatalogueService catalogueService;
     private MapServerDetailsService service;
     
-    @Before
+    @BeforeEach
     public void init() {
         service = new MapServerDetailsService("https://catalogue.ceh.ac.uk");
     }

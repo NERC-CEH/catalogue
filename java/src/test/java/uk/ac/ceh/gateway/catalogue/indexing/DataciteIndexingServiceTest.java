@@ -6,8 +6,8 @@ import java.util.List;
 import javax.xml.xpath.XPathExpressionException;
 import org.apache.commons.io.IOUtils;
 import static org.junit.Assert.assertFalse;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.Mock;
@@ -28,7 +28,7 @@ public class DataciteIndexingServiceTest {
     @Mock DataciteService datacite;
     private DataciteIndexingService service;
     
-    @Before
+    @BeforeEach
     public void init() throws XPathExpressionException {
         MockitoAnnotations.initMocks(this);
         service = new DataciteIndexingService(bundleReader, datacite);

@@ -1,11 +1,12 @@
 package uk.ac.ceh.gateway.catalogue.auth.oidc;
 
 import lombok.val;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.security.test.context.annotation.SecurityTestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -15,7 +16,7 @@ import java.util.List;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @SecurityTestExecutionListeners
 public class DataLabsGroupStoreTest {
 
@@ -28,7 +29,7 @@ public class DataLabsGroupStoreTest {
     private GroupStore<CatalogueUser> target;
 
 
-    @Before
+    @BeforeEach
     public void init() {
         target = new DataLabsGroupStore<>();
     }
@@ -63,29 +64,35 @@ public class DataLabsGroupStoreTest {
         assertTrue(groups.isEmpty());
     }
 
-    @Test(expected = Exception.class)
+    @Test
     @WithMockCatalogueUser
     public void userDoesNotMatchPrincipal() {
-        //Given
-        val catalogueUser = new CatalogueUser();
-        catalogueUser.setUsername("not test");
+        Assertions.assertThrows(Exception.class, () -> {
+            //Given
+            val catalogueUser = new CatalogueUser();
+            catalogueUser.setUsername("not test");
 
-        //When
-        target.getGroups(catalogueUser);
+            //When
+            target.getGroups(catalogueUser);
 
-        //Then
-        fail();
+            //Then
+            fail();
+        });
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void getAllGroupsTest() {
-        //When
-        target.getAllGroups();
+        Assertions.assertThrows(UnsupportedOperationException.class, () -> {
+            //When
+            target.getAllGroups();
+        });
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void isGroupInExistenceTest() {
-        //When
-        target.isGroupInExistance(ANY_STRING);
+        Assertions.assertThrows(UnsupportedOperationException.class, () -> {
+            //When
+            target.isGroupInExistance(ANY_STRING);
+        });
     }
 }

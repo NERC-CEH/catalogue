@@ -2,7 +2,7 @@ package uk.ac.ceh.gateway.catalogue.validation;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import static uk.ac.ceh.gateway.catalogue.validation.ValidationLevel.FAILED_TO_READ;
 import static uk.ac.ceh.gateway.catalogue.validation.ValidationLevel.VALID;
 

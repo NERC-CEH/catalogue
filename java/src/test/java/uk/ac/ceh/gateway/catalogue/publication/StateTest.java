@@ -1,10 +1,13 @@
 package uk.ac.ceh.gateway.catalogue.publication;
 
 import com.google.common.collect.ImmutableSet;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import java.util.Set;
-import static org.junit.Assert.*;
-import org.junit.Test;
-import static org.hamcrest.Matchers.*;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class StateTest {
     private final State draft;
@@ -16,13 +19,15 @@ public class StateTest {
         editor = new PublishingRole("ROLE_EDITOR");
     }
     
-    @Test(expected = PublicationException.class)
+    @Test
     public void cannotAddSelfToTransition() {
-        //Given
-        Transition toSelf = Transition.builder().title("To Self").toState(draft).build();
-        
-        //When
-        draft.addTransitions(editor, ImmutableSet.of(toSelf));
+        Assertions.assertThrows(PublicationException.class, () -> {
+            //Given
+            Transition toSelf = Transition.builder().title("To Self").toState(draft).build();
+
+            //When
+            draft.addTransitions(editor, ImmutableSet.of(toSelf));
+        });
     }
     
     @Test
