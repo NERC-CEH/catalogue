@@ -7,9 +7,12 @@ import org.junit.Rule;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 
 import static java.lang.String.format;
@@ -22,22 +25,22 @@ import static uk.ac.ceh.gateway.catalogue.upload.simple.UploadControllerUtils.ID
 public class FileSystemStorageServiceFilenamesTest {
     private FileSystemStorageService service;
 
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    @TempDir
+    Path directory;
 
     @BeforeEach
     public void setup() {
-        service = new FileSystemStorageService(folder.getRoot().toString());
+        service = new FileSystemStorageService(directory.toString());
     }
 
     @Test
     @SneakyThrows(IOException.class)
     public void successfullyGetFilenames() {
         //given
-        folder.newFolder(ID);
-        folder.newFile(format("%s/%s", ID, "data1.csv"));
-        folder.newFile(format("%s/%s", ID, "data2.csv"));
-        folder.newFile(format("%s/%s", ID, "data3.csv"));
+        Path newFolder = Files.createDirectory(directory.resolve(ID));
+        Files.createFile(newFolder.resolve("data1.csv"));
+        Files.createFile(newFolder.resolve("data2.csv"));
+        Files.createFile(newFolder.resolve("data3.csv"));
 
         val expected = Arrays.asList(
                 new FileInfo("data1.csv"),

@@ -77,7 +77,7 @@ public class GitDocumentRepositoryTest {
         String catalogue = "ceh";
         
         given(documentReader.read(any(), any(), any())).willReturn(document);
-        given(documentIdentifierService.generateFileId()).willReturn("test");
+        given(documentIdentifierService.generateFileId(null)).willReturn("test");
         given(documentIdentifierService.generateUri("test")).willReturn("http://localhost:8080/id/test");
 
         //When

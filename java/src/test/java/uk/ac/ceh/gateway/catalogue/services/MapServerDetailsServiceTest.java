@@ -23,7 +23,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class MapServerDetailsServiceTest {
-    private @Mock CatalogueService catalogueService;
     private MapServerDetailsService service;
     
     @BeforeEach

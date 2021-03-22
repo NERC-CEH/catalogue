@@ -66,7 +66,8 @@ public class GetCapabilitiesObtainerServiceTest {
     }
     
     @Test
-    public void checkExcpetionReturnedWhenRestClientFails() throws URISyntaxException {
+    public void checkExcpetionReturnedWhenRestClientFails() {
+        Assertions.assertThrows(ExternalResourceFailureException.class, () -> {
         //Given
         OnlineResource resource = OnlineResource.builder().url("https://www.google.com/wms?REQUEST=GetCapabilities&SERVICE=WMS").build();
         
@@ -79,6 +80,7 @@ public class GetCapabilitiesObtainerServiceTest {
         
         //Then
         fail("Expected to fail with exception");
+        });
     }
     
     @Test

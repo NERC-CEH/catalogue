@@ -3,19 +3,14 @@ package uk.ac.ceh.gateway.catalogue.upload.simple;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.hamcrest.core.StringContains;
-import org.junit.Rule;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static java.lang.String.format;
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static uk.ac.ceh.gateway.catalogue.upload.simple.UploadControllerUtils.*;
 
@@ -25,13 +20,13 @@ public class FileSystemStorageServiceStoreTest {
     private FileSystemStorageService service;
     private Path expected;
 
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    @TempDir
+    Path directory;
 
     @BeforeEach
     public void setup() {
-        service = new FileSystemStorageService(folder.getRoot().toString());
-        expected = folder.getRoot().toPath().resolve(ID).resolve(filename);
+        service = new FileSystemStorageService(directory.toString());
+        expected = directory.resolve(ID).resolve(filename);
     }
 
     /*@Test
@@ -59,10 +54,10 @@ public class FileSystemStorageServiceStoreTest {
     public void fileAlreadyExists() {
         Assertions.assertThrows(FileExitsException.class, () -> {
             //given
-            folder.newFolder(ID);
-            folder.newFile(format("/%s/%s", ID, filename));
+            Path newFolder = Files.createDirectory(directory.resolve(ID));
+            Path file = newFolder.resolve(filename);
+            Files.createFile(file);
 
-            //when
             service.store(ID, dataCsv(getClass()));
 
             //then
@@ -73,8 +68,8 @@ public class FileSystemStorageServiceStoreTest {
     @Test
     public void createdDirectoryOnFirstUploadAndCanUploadMultipleFiles() {
         //given
-        val fileWithSpaces = folder.getRoot().toPath().resolve(ID).resolve("file with spaces.csv");
-        assertFalse(Files.exists(folder.getRoot().toPath().resolve(ID)));
+        val fileWithSpaces = directory.resolve(ID).resolve("file with spaces.csv");
+        assertFalse(Files.exists(directory.resolve(ID)));
 
         //when
         service.store(ID, dataCsv(getClass()));

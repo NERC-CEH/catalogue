@@ -3,12 +3,12 @@ package uk.ac.ceh.gateway.catalogue.services;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import lombok.val;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.MockitoJUnitRunner;
 import uk.ac.ceh.gateway.catalogue.model.JiraIssue;
 import uk.ac.ceh.gateway.catalogue.model.JiraIssueBuilder;
 import uk.ac.ceh.gateway.catalogue.model.JiraIssueCreate;
@@ -24,7 +24,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
-@ExtendWith(MockitoExtension.class)
+@RunWith(MockitoJUnitRunner.class)
 public class JiraServiceTest {
 
     @Mock
@@ -44,7 +44,7 @@ public class JiraServiceTest {
 
     private JiraSearchResults jiraSearchResults;
 
-    @BeforeEach
+    @Before
     public void before() {
         jiraSearchResults = new JiraSearchResults();
         JiraIssue issue = new JiraIssue();
@@ -59,18 +59,18 @@ public class JiraServiceTest {
         doReturn(builder).when(resource).accept(any(MediaType.class));
         doReturn(builder).when(builder).type(any(MediaType.class));
 
-       // doReturn(response).when(builder).get(ClientResponse.class);
+        doReturn(response).when(builder).get(ClientResponse.class);
 
         doReturn(jiraSearchResults).when(response).getEntity(JiraSearchResults.class);
 
-      //  doReturn("jira issue").when(jiraIssueBuilder).build();
+        doReturn("jira issue").when(jiraIssueBuilder).build();
     }
 
     @Test
     public void createingAnIssue() {
         val created = new JiraIssueCreate();
         created.setId("id");
-//        doReturn(created).when(builder).post(eq(JiraIssueCreate.class), anyString());
+        doReturn(created).when(builder).post(eq(JiraIssueCreate.class), anyString());
 
         val issue = jiraService.create(jiraIssueBuilder);
         verify(resource).path(eq("issue"));

@@ -43,7 +43,7 @@ public class MessageConverterWritingServiceTest {
     }
     
     @Test
-    public void checkThatThrowsExceptionIfNoConverterIsAMatch() throws Exception {
+    public void checkThatThrowsExceptionIfNoConverterIsAMatch() {
         Assertions.assertThrows(UnknownContentTypeException.class, () -> {
             //Given
             String test = "TestObject";
