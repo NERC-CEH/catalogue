@@ -20,6 +20,14 @@
     <option value="thirdPartyDataset">Third-party dataset</option>
     <option value="aggregate">Data collection (aggregation)</option>
   </optgroup>
+  <optgroup label="eLTER resource types" class="resourcetypes-elter">
+    <option value="dataset">Dataset</option>
+    <option value="nonGeographicDataset">Dataset (non-geographic)</option>
+    <option value="aggregate">Data collection (aggregation)</option>
+    <option value="application">Model code (application)</option>
+    <option value="signpost">Signpost</option>
+    <option value="service">Web service</option>
+  </optgroup>
   <optgroup label="All ISO 19115 resource types" class="resourcetypes-iso19115">
     <option value="aggregate">Aggregate</option>
     <option value="application">Application</option>
