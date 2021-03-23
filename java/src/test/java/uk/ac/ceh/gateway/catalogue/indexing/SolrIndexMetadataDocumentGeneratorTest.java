@@ -26,7 +26,7 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -185,7 +185,7 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         SolrIndex index = generator.generateIndex(document);
         
         //Then
-        assertEquals("Expected to get my title", "my gemini document", index.getTitle());
+        assertEquals("my gemini document", index.getTitle());
     }
     
     @Test
@@ -220,7 +220,7 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         SolrIndex index = generator.generateIndex(document);
 
         //Then
-        assertEquals("Expected to get my URI", "https://deims.org/266eedce-b67c-4935-a7b7-4dc3c169c902", index.getElterDeimsUri().get(0));
+        assertEquals("https://deims.org/266eedce-b67c-4935-a7b7-4dc3c169c902", index.getElterDeimsUri().get(0));
     }
 
     @Test
@@ -240,7 +240,7 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         SolrIndex index = generator.generateIndex(document);
 
         //Then
-        assertEquals("Expected to get my URI", "Aamotsdalen - Norway", index.getElterDeimsSite().get(0));
+        assertEquals("Aamotsdalen - Norway", index.getElterDeimsSite().get(0));
     }
     
     @Test
@@ -268,7 +268,7 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         SolrIndex index = generator.generateIndex(document);
         
         //Then
-        assertEquals("Expected to get my resourceType", "Dataset", index.getResourceType());
+        assertEquals("Dataset", index.getResourceType());
     }
     
     @Test

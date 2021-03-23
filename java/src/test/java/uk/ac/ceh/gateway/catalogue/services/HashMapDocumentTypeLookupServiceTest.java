@@ -1,7 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 
 import org.junit.jupiter.api.Assertions;
@@ -21,7 +21,7 @@ public class HashMapDocumentTypeLookupServiceTest {
         String type = service.getName(GeminiDocument.class);
         
         //Then
-        assertEquals("Expected to find gemini document", "GEMINI_DOCUMENT", type);
+        assertEquals( "GEMINI_DOCUMENT", type);
     }
     
     @Test
@@ -35,7 +35,7 @@ public class HashMapDocumentTypeLookupServiceTest {
         Class<? extends MetadataDocument> clazz = service.getType("GEMINI_DOCUMENT");
         
         //Then
-        assertEquals("Expected to find gemini document class", GeminiDocument.class, clazz);
+        assertEquals(GeminiDocument.class, clazz);
     }
     
     @Test
@@ -51,7 +51,7 @@ public class HashMapDocumentTypeLookupServiceTest {
         String name = service.getName(subType.getClass());
         
         //Then
-        assertEquals("Expected to get gemini_document for sub type", "GEMINI_DOCUMENT", name);        
+        assertEquals("GEMINI_DOCUMENT", name);
     }
     
     @Test

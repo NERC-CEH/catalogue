@@ -2,8 +2,8 @@ package uk.ac.ceh.gateway.catalogue.model;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CatalogueUserTest {
     @Test
@@ -15,7 +15,7 @@ public class CatalogueUserTest {
         boolean isPublic = user.isPublic();
         
         //Then
-        assertTrue("No username supplied, expected to be public", isPublic);
+        assertTrue(isPublic);
     }
     
     
@@ -29,6 +29,6 @@ public class CatalogueUserTest {
         boolean isPublic = user.isPublic();
         
         //Then
-        assertFalse("Expected user with username to not be public", isPublic);
+        assertFalse(isPublic);
     }
 }

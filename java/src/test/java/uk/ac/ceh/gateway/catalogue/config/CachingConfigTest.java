@@ -1,6 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.cache.Cache;
@@ -31,6 +31,6 @@ public class CachingConfigTest {
         Cache cache = manager.getCache(cacheName);
         
         //Then
-        assertNotNull("Excepted a capabilities cache to be present", cache);
+        assertNotNull(cache);
     }
 }

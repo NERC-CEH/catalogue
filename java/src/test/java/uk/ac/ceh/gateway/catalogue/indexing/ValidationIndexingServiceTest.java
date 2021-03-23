@@ -1,21 +1,23 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import java.util.Arrays;
-import java.util.List;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.mockito.ArgumentMatchers.any;
 import org.mockito.Mock;
-import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class ValidationIndexingServiceTest {
     
@@ -44,7 +46,7 @@ public class ValidationIndexingServiceTest {
         boolean isEmpty = service.isIndexEmpty();
         
         //Then
-        assertTrue("Expected to be empty", isEmpty);
+        assertTrue(isEmpty);
     }
     
     @Test
@@ -61,9 +63,9 @@ public class ValidationIndexingServiceTest {
         }
         catch(DocumentIndexingException ex) {
         //Then
-            assertFalse("Expected the index to be full", service.isIndexEmpty());
-            assertTrue("Expected to find the failure", service.getFailed().contains("1"));
-            assertTrue("Expected to find the failure", service.getFailed().contains("2"));
+            assertFalse(service.isIndexEmpty());
+            assertTrue(service.getFailed().contains("1"));
+            assertTrue(service.getFailed().contains("2"));
         }
         
     }

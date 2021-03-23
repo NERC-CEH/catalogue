@@ -77,7 +77,7 @@ class SolrIndexGeminiDocumentGeneratorTest {
             SolrIndex index = generator.generateIndex(document);
 
             //Then
-            assertEquals("Expected isOgl to be true", "IS OGL", index.getLicence());
+            assertEquals("IS OGL", index.getLicence());
         }
 
         @Test
@@ -99,7 +99,7 @@ class SolrIndexGeminiDocumentGeneratorTest {
             SolrIndex index = generator.generateIndex(document);
 
             //Then
-            assertEquals("Expected isOgl to be true", "IS OGL", index.getLicence());
+            assertEquals("IS OGL", index.getLicence());
         }
 
         @Test
@@ -121,7 +121,7 @@ class SolrIndexGeminiDocumentGeneratorTest {
             SolrIndex index = generator.generateIndex(document);
 
             //Then
-            assertEquals("Expected isOgl to be true", "IS OGL", index.getLicence());
+            assertEquals("IS OGL", index.getLicence());
         }
 
         @Test
@@ -143,7 +143,7 @@ class SolrIndexGeminiDocumentGeneratorTest {
             SolrIndex index = generator.generateIndex(document);
 
             //Then
-            assertEquals("Expected isOgl to be false", "ISNT OGL", index.getLicence());
+            assertEquals("ISNT OGL", index.getLicence());
         }
     }
 }

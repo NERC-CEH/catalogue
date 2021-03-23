@@ -1,17 +1,17 @@
 package uk.ac.ceh.gateway.catalogue.model;
 
-import java.io.IOException;
-import java.io.InputStream;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.components.datastore.DataDocument;
+
+import java.io.IOException;
+import java.io.InputStream;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class DataDocumentResourceTest {
     @Mock DataDocument dataDocument;
@@ -30,7 +30,7 @@ public class DataDocumentResourceTest {
         boolean exists = resource.exists();
         
         //Then
-        assertTrue("Expected all data document resources to exists", exists);
+        assertTrue(exists);
     }
     
     @Test
@@ -45,7 +45,7 @@ public class DataDocumentResourceTest {
         long resourceLength = resource.contentLength();
         
         //Then
-        assertEquals("Expectet the same content legnth", contentLength, resourceLength);
+        assertEquals(contentLength, resourceLength);
     }
     
     @Test
@@ -60,7 +60,7 @@ public class DataDocumentResourceTest {
         InputStream resourceStream = resource.getInputStream();
         
         //Then
-        assertSame("Expectet the same inputstream", stream, resourceStream);
+        assertSame(stream, resourceStream);
     }
     
     @Test
@@ -74,6 +74,6 @@ public class DataDocumentResourceTest {
         String description = resource.getDescription();
         
         //Then
-        assertEquals("Expected concat of rev and filename", "revfile", description);
+        assertEquals("revfile", description);
     }
 }

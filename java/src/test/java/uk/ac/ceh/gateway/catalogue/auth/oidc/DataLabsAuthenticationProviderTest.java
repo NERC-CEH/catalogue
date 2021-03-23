@@ -12,11 +12,9 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
@@ -54,7 +52,7 @@ public class DataLabsAuthenticationProviderTest {
         Authentication actual = target.authenticate(input);
 
         //Then
-        assertTrue(actual.isAuthenticated());
+        assertThat(actual.isAuthenticated(), is(equalTo(true)));
         assertThat(actual.getAuthorities().toString().contains("CIG_SYSTEM_ADMIN"), is(equalTo(true)));
         assertThat(actual.getAuthorities().toString().contains("ROLE_DATALABS_PUBLISHER"), is(equalTo(true)));
         assertThat(actual.getAuthorities().toString().contains("ROLE_DATALABS_EDITOR"), is(equalTo(true)));

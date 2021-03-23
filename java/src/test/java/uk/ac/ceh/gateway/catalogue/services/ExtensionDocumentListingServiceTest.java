@@ -1,12 +1,14 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.spy;
 
 public class ExtensionDocumentListingServiceTest {    
@@ -26,7 +28,7 @@ public class ExtensionDocumentListingServiceTest {
         List<String> docs = service.filterFilenames(empty);
         
         //Then
-        assertTrue("Expected to get no documents", docs.isEmpty());
+        assertTrue(docs.isEmpty());
     }
     
     @Test
@@ -38,7 +40,7 @@ public class ExtensionDocumentListingServiceTest {
         List<String> docs = service.filterFilenames(singleFile);
         
         //Then
-        assertTrue("Expected to get no documents", docs.isEmpty());
+        assertTrue(docs.isEmpty());
     }
     
     @Test
@@ -50,7 +52,7 @@ public class ExtensionDocumentListingServiceTest {
         List<String> docs = service.filterFilenames(singleFile);
         
         //Then
-        assertTrue("Expected to get no documents", docs.isEmpty());
+        assertTrue(docs.isEmpty());
     }
     
     @Test
@@ -62,8 +64,8 @@ public class ExtensionDocumentListingServiceTest {
         List<String> docs = service.filterFilenames(singlePair);
         
         //Then
-        assertEquals("Expected One file", 1, docs.size());
-        assertEquals("Expected that file to be something", "something", docs.get(0));
+        assertEquals(1, docs.size());
+        assertEquals("something", docs.get(0));
     }
     
     @Test
@@ -75,8 +77,8 @@ public class ExtensionDocumentListingServiceTest {
         List<String> docs = service.filterFilenames(singlePair);
         
         //Then
-        assertEquals("Expected One file", 1, docs.size());
-        assertEquals("Expected that file to be some", "some", docs.get(0));
+        assertEquals(1, docs.size());
+        assertEquals("some", docs.get(0));
     }
     
     @Test
@@ -88,9 +90,9 @@ public class ExtensionDocumentListingServiceTest {
         List<String> docs = service.filterFilenames(multiplePairs);
         
         //Then
-        assertEquals("Expected two file", 2, docs.size());
-        assertTrue("Expected to find some", docs.contains("some"));
-        assertTrue("Expected to find some1", docs.contains("some1"));
+        assertEquals(2, docs.size());
+        assertTrue(docs.contains("some"));
+        assertTrue(docs.contains("some1"));
     }
     
     @Test
@@ -102,8 +104,8 @@ public class ExtensionDocumentListingServiceTest {
         List<String> docs = service.filterFilenamesEitherExtension(raw);
         
         //Then
-        assertEquals("Expected One file", 1, docs.size());
-        assertEquals("Expected that file to be some", "some", docs.get(0));
+        assertEquals(1, docs.size());
+        assertEquals("some", docs.get(0));
     }
     
     @Test
@@ -115,6 +117,6 @@ public class ExtensionDocumentListingServiceTest {
         List<String> docs = service.filterFilenamesEitherExtension(unknown);
         
         //Then
-        assertTrue("Expected to get no documents", docs.isEmpty());
+        assertTrue(docs.isEmpty());
     }
 }

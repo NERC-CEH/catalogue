@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -36,7 +36,7 @@ public class AsyncDocumentIndexingServiceTest {
         boolean isEmpty = service.isIndexEmpty();
 
         //Then
-        assertTrue("Expected to get a true value", isEmpty);
+        assertTrue(isEmpty);
     }
 
     @Test
@@ -48,7 +48,7 @@ public class AsyncDocumentIndexingServiceTest {
         boolean isEmpty = service.isIndexEmpty();
 
         //Then
-        assertFalse("Expected to get a false value", isEmpty);
+        assertFalse(isEmpty);
     }
 
     @Test

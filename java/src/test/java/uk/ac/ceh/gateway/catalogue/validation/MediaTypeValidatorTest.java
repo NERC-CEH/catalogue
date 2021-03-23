@@ -1,19 +1,20 @@
 package uk.ac.ceh.gateway.catalogue.validation;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import static org.junit.Assert.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.mockito.ArgumentMatchers.any;
-
 import org.mockito.Mock;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class MediaTypeValidatorTest {
     @Mock DocumentWritingService writer;
@@ -34,7 +35,7 @@ public class MediaTypeValidatorTest {
         ValidationResult result = validator.validate(in);
         
         //Then
-        assertEquals("Expected to have failed", result.getWorstLevel(), ValidationLevel.ERROR);
+        assertEquals(result.getWorstLevel(), ValidationLevel.ERROR);
     }
     
     @Test
@@ -47,6 +48,6 @@ public class MediaTypeValidatorTest {
         ValidationResult result = validator.validate(in);
         
         //Then
-        assertEquals("Expected to have failed", result.getWorstLevel(), ValidationLevel.VALID);
+        assertEquals(result.getWorstLevel(), ValidationLevel.VALID);
     }
 }

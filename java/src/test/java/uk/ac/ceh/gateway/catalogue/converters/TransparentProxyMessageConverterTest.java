@@ -22,9 +22,7 @@ import uk.ac.ceh.gateway.catalogue.model.UpstreamInvalidMediaTypeException;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -75,7 +73,7 @@ public class TransparentProxyMessageConverterTest {
         boolean read = converter.canRead(objectClazz, type);
         
         //Then
-        assertFalse("Didn't expect to be able to read", read);
+        assertFalse(read);
     }
     
     @Test
@@ -88,7 +86,7 @@ public class TransparentProxyMessageConverterTest {
         boolean write = converter.canWrite(objectClass, type);
         
         //Then
-        assertTrue("Expected to be able to write the given message type", write);
+        assertTrue(write);
     }
     
     @Test

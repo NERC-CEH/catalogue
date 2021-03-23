@@ -9,7 +9,7 @@ import java.util.*;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 
@@ -24,7 +24,7 @@ public class MetadataInfoTest {
         MediaType infoType = info.getRawMediaType();
 
         //Then
-        assertEquals("Expected the mediatypes to be equal", type, infoType);
+        assertEquals(type, infoType);
     }
 
     @Test

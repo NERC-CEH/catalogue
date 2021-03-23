@@ -27,7 +27,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -128,7 +128,7 @@ public class MetadataListingServiceTest {
         List<String> ids = service.getPublicDocuments(revision, GeminiDocument.class, defaultResourceTypes);
         
         //Then
-        assertTrue("Expected no matching results", ids.isEmpty());
+        assertTrue(ids.isEmpty());
     }
     
     @Test
@@ -143,7 +143,7 @@ public class MetadataListingServiceTest {
         List<String> ids = service.getPublicDocuments(revision, differentMetadataType, defaultResourceTypes);
         
         //Then
-        assertTrue("Expected no matching results", ids.isEmpty());
+        assertTrue(ids.isEmpty());
     }
     
     @Test
@@ -161,7 +161,7 @@ public class MetadataListingServiceTest {
         List<String> ids = service.getPublicDocuments(revision, GeminiDocument.class, defaultResourceTypes);
         
         //Then
-        assertTrue("Expected no records", ids.isEmpty());
+        assertTrue(ids.isEmpty());
         verify(documentBundleReader).readBundle(id, revision);
     }
     
@@ -186,7 +186,7 @@ public class MetadataListingServiceTest {
         List<String> publicIds = service.getPublicDocuments(revision, GeminiDocument.class,Arrays.asList(resourceType));
         
         //Then
-        assertTrue("Expected one record", publicIds.size() == 1);
+        assertTrue(publicIds.size() == 1);
         verify(documentBundleReader).readBundle("a", revision);
     }
     
@@ -209,7 +209,7 @@ public class MetadataListingServiceTest {
         List<String> publicIds = service.getPublicDocuments(revision, GeminiDocument.class, Arrays.asList(geminiResourceType));
         
         //Then
-        assertTrue("Expected no records", publicIds.isEmpty());
+        assertTrue(publicIds.isEmpty());
         verify(documentBundleReader).readBundle("a", revision);
     }
     
@@ -235,7 +235,7 @@ public class MetadataListingServiceTest {
         List<String> publicIds = service.getPublicDocuments(revision, GeminiDocument.class, Arrays.asList(geminiResourceType));
         
         //Then
-        assertTrue("Expected one record", publicIds.size() == 1);
+        assertTrue(publicIds.size() == 1);
         verify(documentBundleReader).readBundle("a", revision);
     }
     

@@ -25,7 +25,7 @@ public class HubbubServiceTest {
     @SneakyThrows
     public void setup() {
         val restTemplate = new RestTemplate();
-        mockServer = MockRestServiceServer.createServer(restTemplate);
+        mockServer = MockRestServiceServer.bindTo(restTemplate).build();
         hubbubService = new HubbubService(
                 restTemplate,
                 "https://example.com/",

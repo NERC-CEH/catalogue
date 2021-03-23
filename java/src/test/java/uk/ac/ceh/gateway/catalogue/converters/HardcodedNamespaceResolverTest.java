@@ -4,8 +4,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class HardcodedNamespaceResolverTest {
     private HardcodedGeminiNamespaceResolver resolver;
@@ -24,7 +24,7 @@ public class HardcodedNamespaceResolverTest {
         String uri = resolver.getNamespaceURI(prefix);
         
         //Then
-        assertEquals("Expected the srv uri", "http://www.isotc211.org/2005/srv", uri);
+        assertEquals("http://www.isotc211.org/2005/srv", uri);
     }
     
     @Test
@@ -36,7 +36,7 @@ public class HardcodedNamespaceResolverTest {
         String uri = resolver.getNamespaceURI(prefix);
         
         //Then
-        assertEquals("Expected the xlink uri", "http://www.w3.org/1999/xlink", uri);
+        assertEquals("http://www.w3.org/1999/xlink", uri);
     }
     
     @Test
@@ -48,7 +48,7 @@ public class HardcodedNamespaceResolverTest {
         String uri = resolver.getNamespaceURI(prefix);
         
         //Then
-        assertEquals("Expected the gmd uri", "http://www.isotc211.org/2005/gmd", uri);
+        assertEquals("http://www.isotc211.org/2005/gmd", uri);
     }
     
     @Test
@@ -60,7 +60,7 @@ public class HardcodedNamespaceResolverTest {
         String uri = resolver.getNamespaceURI(prefix);
         
         //Then
-        assertEquals("Expected the gco uri", "http://www.isotc211.org/2005/gco", uri);
+        assertEquals("http://www.isotc211.org/2005/gco", uri);
     }
     
     @Test
@@ -72,7 +72,7 @@ public class HardcodedNamespaceResolverTest {
         String uri = resolver.getNamespaceURI(prefix);
         
         //Then
-        assertEquals("Expected the csw uri", "http://www.opengis.net/cat/csw/2.0.2", uri);
+        assertEquals("http://www.opengis.net/cat/csw/2.0.2", uri);
     }
     
     @Test
@@ -84,7 +84,7 @@ public class HardcodedNamespaceResolverTest {
         String uri = resolver.getNamespaceURI(prefix);
         
         //Then
-        assertEquals("Expected an empty string uri", "", uri);
+        assertEquals("", uri);
     }
     
     @Test
@@ -96,7 +96,7 @@ public class HardcodedNamespaceResolverTest {
         String uri = resolver.getNamespaceURI(prefix);
         
         //Then
-        assertEquals("Expected an empty string uri", "", uri);
+        assertEquals("", uri);
     }
     
     @Test

@@ -19,7 +19,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.StringContains.containsString;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
@@ -449,7 +449,7 @@ public class SearchQueryTest {
         SearchQuery newQuery = query.withFacetFilter(filter);
         
         //Then
-        assertTrue("Expected query to contain filter", newQuery.containsFacetFilter(filter));
+        assertTrue(newQuery.containsFacetFilter(filter));
     }
     
     @Test
@@ -479,7 +479,7 @@ public class SearchQueryTest {
         SearchQuery newQuery = query.withoutFacetFilter(filter);
         
         //Then
-        assertFalse("Expected query to not contain filter", newQuery.containsFacetFilter(filter));
+        assertFalse(newQuery.containsFacetFilter(filter));
     }
     
     @Test
@@ -635,7 +635,7 @@ public class SearchQueryTest {
         SearchQuery newQuery = query.withBbox(newBbox);
         
         //Then
-        assertNotSame("Expected the new query to differ from the last", newQuery, query);
+        assertNotSame(newQuery, query);
     }
     
     @Test
@@ -664,7 +664,7 @@ public class SearchQueryTest {
         SearchQuery newQuery = query.withBbox(DEFAULT_BBOX);
         
         //Then
-        assertSame("Expected the new query to be exactly the same", newQuery, query);
+        assertSame(newQuery, query);
     }
     
     @Test

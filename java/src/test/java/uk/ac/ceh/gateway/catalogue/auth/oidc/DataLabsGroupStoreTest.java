@@ -13,8 +13,8 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 import java.util.List;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @ExtendWith(SpringExtension.class)
 @SecurityTestExecutionListeners

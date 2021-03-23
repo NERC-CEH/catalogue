@@ -9,8 +9,8 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
@@ -32,7 +32,7 @@ public class GeminiDocumentTest {
         boolean isMapViewable = document.isMapViewable();
         
         //Then
-        assertTrue("Expected to be map viewable", isMapViewable);
+        assertTrue(isMapViewable);
     }
     
     
@@ -51,7 +51,7 @@ public class GeminiDocumentTest {
         boolean isMapViewable = document.isMapViewable();
         
         //Then
-        assertFalse("Expected to not be map viewable", isMapViewable);
+        assertFalse(isMapViewable);
     }
     
     @Test

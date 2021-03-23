@@ -1,8 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
 import java.util.Properties;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -25,7 +25,7 @@ public class CodeLookupServiceTest {
         String desc = service.lookup("something.which.isnt", "here");
         
         //Then
-        assertNull("Excepected an empty value", desc);
+        assertNull(desc);
     }
     
     @Test
@@ -38,7 +38,7 @@ public class CodeLookupServiceTest {
         String desc = service.lookup("something", true);
         
         //Then
-        assertEquals("Expected to get the text out", desc, text);
+        assertEquals(desc, text);
     }
     
     @Test
@@ -51,7 +51,7 @@ public class CodeLookupServiceTest {
         String desc = service.lookup("something.just", "normal");
         
         //Then
-        assertEquals("Expected to get the text out", desc, text);
+        assertEquals(desc, text);
     }
     
     @Test
@@ -64,6 +64,6 @@ public class CodeLookupServiceTest {
         String desc = service.lookup("something", "just", "normal");
         
         //Then
-        assertEquals("Expected to get the text out", desc, text);
+        assertEquals(desc, text);
     }
 }

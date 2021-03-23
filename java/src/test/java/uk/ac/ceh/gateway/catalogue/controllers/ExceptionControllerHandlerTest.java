@@ -12,7 +12,7 @@ import java.net.URISyntaxException;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -105,7 +105,7 @@ public class ExceptionControllerHandlerTest {
         ClassPathResource body = (ClassPathResource)response.getBody();
         
         //Then
-        assertTrue("Expected image to be present", body.exists());
-        assertThat("Expected content type to be png", headers.getContentType(), equalTo(MediaType.IMAGE_PNG));
+        assertTrue(body.exists());
+        assertThat(headers.getContentType(), equalTo(MediaType.IMAGE_PNG));
     }   
 }

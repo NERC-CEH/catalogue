@@ -23,14 +23,14 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class SolrIndexingServiceTest {
     
@@ -182,7 +182,7 @@ public class SolrIndexingServiceTest {
         boolean isEmpty = service.isIndexEmpty();
         
         //Then
-        assertTrue("Expected the service to return empty", isEmpty);
+        assertTrue(isEmpty);
     }
     
     @Test
@@ -197,7 +197,7 @@ public class SolrIndexingServiceTest {
         boolean isEmpty = service.isIndexEmpty();
         
         //Then
-        assertFalse("Expected the service to not be empty", isEmpty);
+        assertFalse(isEmpty);
     }
     
     @Test

@@ -12,7 +12,7 @@ import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -34,7 +34,7 @@ public class Xml2UKEOFDocumentMessageConverterTest {
         BaseMonitoringType document = (BaseMonitoringType) ukeofReader.readInternal(BaseMonitoringType.class, message);
         
         //Then
-        assertTrue("Expected document type to be activity", document instanceof Activity);
+        assertTrue(document instanceof Activity);
     }
     
     @Test

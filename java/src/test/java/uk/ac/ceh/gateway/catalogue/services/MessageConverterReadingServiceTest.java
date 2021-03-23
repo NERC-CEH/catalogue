@@ -15,8 +15,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.*;
 
 public class MessageConverterReadingServiceTest {
@@ -92,7 +92,7 @@ public class MessageConverterReadingServiceTest {
         //Then
         ArgumentCaptor<HttpInputMessage> argument = ArgumentCaptor.forClass(HttpInputMessage.class);
         verify(converter).read(eq(Object.class), argument.capture());
-        assertEquals("Expected the input stream to be passed to the http message converter", in, argument.getValue().getBody());
+        assertEquals(in, argument.getValue().getBody());
     }
     
     @Test
@@ -110,10 +110,6 @@ public class MessageConverterReadingServiceTest {
         //Then
         ArgumentCaptor<HttpInputMessage> argument = ArgumentCaptor.forClass(HttpInputMessage.class);
         verify(converter).read(eq(Object.class), argument.capture());
-        assertEquals(
-            "Expected the media type to be passed to the underlying http message converter", 
-            MediaType.TEXT_XML, 
-            argument.getValue().getHeaders().getContentType()
-        );
+        assertEquals(MediaType.TEXT_XML, argument.getValue().getHeaders().getContentType());
     }
 }

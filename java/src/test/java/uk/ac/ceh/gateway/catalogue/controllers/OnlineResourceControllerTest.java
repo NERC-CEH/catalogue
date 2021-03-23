@@ -25,10 +25,9 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -149,7 +148,7 @@ public class OnlineResourceControllerTest {
         Object result = controller.processOrRedirectToOnlineResource(revision, file, index);
         
         //Then
-        assertEquals("Expected to the mocked wms capabilities", result, wmsCapabilities);
+        assertEquals(result, wmsCapabilities);
     }
     
     @Test
@@ -169,7 +168,7 @@ public class OnlineResourceControllerTest {
         RedirectView result = (RedirectView)controller.processOrRedirectToOnlineResource(revision, file, index);
         
         //Then
-        assertEquals("Expected to find a redirect view with the correct url", "random url", result.getUrl());
+        assertEquals("random url", result.getUrl());
     }
        
     @Test

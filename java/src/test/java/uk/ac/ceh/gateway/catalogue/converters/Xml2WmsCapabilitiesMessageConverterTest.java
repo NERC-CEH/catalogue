@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -105,7 +105,7 @@ public class Xml2WmsCapabilitiesMessageConverterTest {
         Layer firstLayer = capabilities.getLayers().get(2);
         
         //Then
-        assertNull("Expected to not find any legend info", firstLayer.getLegendUrl());    
+        assertNull(firstLayer.getLegendUrl());
     }
     
     @Test

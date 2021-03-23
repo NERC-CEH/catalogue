@@ -27,8 +27,8 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.util.Arrays;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
@@ -82,7 +82,7 @@ public class DataciteServiceTest {
         boolean dataciteUpdatable = service.isDatacitable(document);
 
         //Then
-        assertTrue("Expected document to be updatable", dataciteUpdatable);
+        assertTrue(dataciteUpdatable);
         verifyNoInteractions(identifierService);
     }
 
@@ -103,7 +103,7 @@ public class DataciteServiceTest {
         boolean dataciteUpdatable = service.isDatacitable(document);
 
         //Then
-        assertFalse("Expected document to not be updatable", dataciteUpdatable);
+        assertFalse(dataciteUpdatable);
         verifyNoInteractions(identifierService);
     }
 
@@ -124,7 +124,7 @@ public class DataciteServiceTest {
         boolean dataciteUpdatable = service.isDatacitable(document);
 
         //Then
-        assertTrue("Expected document to be updatable", dataciteUpdatable);
+        assertTrue(dataciteUpdatable);
         verifyNoInteractions(identifierService);
     }
 
@@ -138,7 +138,7 @@ public class DataciteServiceTest {
         boolean dataciteUpdatable = service.isDatacitable(document);
 
         //Then
-        assertFalse("Expected document to not be updatable", dataciteUpdatable);
+        assertFalse(dataciteUpdatable);
         verifyNoInteractions(identifierService);
     }
 

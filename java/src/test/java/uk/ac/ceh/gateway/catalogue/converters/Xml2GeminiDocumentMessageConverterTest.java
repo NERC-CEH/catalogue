@@ -18,13 +18,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
-import java.util.function.Supplier;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.util.AssertionErrors.assertTrue;
@@ -254,7 +251,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
         
         //Then
         assertEquals("9e7790ab-a37d-4918-8107-5c427798ca68", document.getId());
-        assertFalse("Expected id to not be empty string", document.getId().isEmpty());
+        assertFalse(document.getId().isEmpty());
     }
 
     @Test
@@ -269,8 +266,8 @@ public class Xml2GeminiDocumentMessageConverterTest {
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
         
         //Then
-        assertNotNull("Expected title to have content", document.getTitle());
-        assertFalse("Expected title to not be empty string", document.getTitle().isEmpty());
+        assertNotNull(document.getTitle());
+        assertFalse(document.getTitle().isEmpty());
     }
     
     @Test
@@ -286,8 +283,8 @@ public class Xml2GeminiDocumentMessageConverterTest {
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
         
         //Then
-        assertThat("Expected standard name to equal actual", document.getMetadataStandardName(), equalTo(expectedName));
-        assertThat("Expected standard version equal to actual", document.getMetadataStandardVersion(), equalTo(expectedVersion));
+        assertThat(document.getMetadataStandardName(), equalTo(expectedName));
+        assertThat( document.getMetadataStandardVersion(), equalTo(expectedVersion));
     }
     
     @Test
@@ -301,8 +298,8 @@ public class Xml2GeminiDocumentMessageConverterTest {
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
         
         //Then
-        assertNotNull("Expected lineage to have content", document.getLineage());
-        assertFalse("Expected lineage to not be empty string", document.getLineage().isEmpty());
+        assertNotNull( document.getLineage());
+        assertFalse(document.getLineage().isEmpty());
     }
     
     @Test
@@ -629,8 +626,8 @@ public class Xml2GeminiDocumentMessageConverterTest {
         
         //Then
         String expectedTitle = "Test description text";
-        assertNotNull("Expected description to have content", document.getDescription());
-        assertFalse("Expected title to not be empty string", document.getDescription().isEmpty());
+        assertNotNull(document.getDescription());
+        assertFalse(document.getDescription().isEmpty());
         assertEquals(expectedTitle, document.getDescription());
     }
 

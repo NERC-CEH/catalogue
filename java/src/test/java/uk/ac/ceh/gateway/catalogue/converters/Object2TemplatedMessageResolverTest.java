@@ -19,8 +19,7 @@ import java.io.OutputStream;
 import java.io.Writer;
 import java.util.List;
 
-import static org.junit.Assert.*;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -43,7 +42,7 @@ public class Object2TemplatedMessageResolverTest {
         boolean canRead = converter.canRead(Object.class, MediaType.ALL);
         
         //Then
-        assertFalse("Expected the writer to not be able to read", canRead);
+        assertFalse(canRead);
     }
     
     @Test
@@ -78,8 +77,8 @@ public class Object2TemplatedMessageResolverTest {
         List<MediaType> supportedTypes = converter.getSupportedMediaTypes();
         
         //Then
-        assertEquals("Expected one element", 1, supportedTypes.size() );
-        assertEquals("Expected mediatype to be json", MediaType.APPLICATION_JSON, supportedTypes.get(0));
+        assertEquals(1, supportedTypes.size() );
+        assertEquals(MediaType.APPLICATION_JSON, supportedTypes.get(0));
     }
     
     @Test
@@ -109,7 +108,7 @@ public class Object2TemplatedMessageResolverTest {
         //Then
         ArgumentCaptor<String> template = ArgumentCaptor.forClass(String.class);
         verify(configuration).getTemplate(template.capture());
-        assertEquals("Expected the template, bob", "bob", template.getValue());
+        assertEquals("bob", template.getValue());
         
         verify(freemarkerTemplate).process(eq(dataToProcess), any(Writer.class));
     }
@@ -164,7 +163,7 @@ public class Object2TemplatedMessageResolverTest {
         boolean canWrite = converter.canWrite(MyType.class, MediaType.APPLICATION_XML);
         
         //Then
-        assertTrue("Expected to be able to write xml from type", canWrite);      
+        assertTrue(canWrite);
     }
     
     
@@ -183,7 +182,7 @@ public class Object2TemplatedMessageResolverTest {
         boolean canWrite = converter.canWrite(MyType.class, MediaType.TEXT_HTML);
         
         //Then
-        assertFalse("Didn't expect to be able to write html from type", canWrite);      
+        assertFalse(canWrite);
     }
     
     @Test
@@ -200,7 +199,7 @@ public class Object2TemplatedMessageResolverTest {
         boolean supports = converter.supports(MySubType.class);
         
         //Then
-        assertTrue("Expected to be able to support subtype", supports);
+        assertTrue(supports);
     }
     
     @Test
@@ -215,6 +214,6 @@ public class Object2TemplatedMessageResolverTest {
         boolean supports = converter.supports(String.class);
         
         //Then
-        assertFalse("Didn't expect to be able to support string", supports);
+        assertFalse(supports);
     }
 }

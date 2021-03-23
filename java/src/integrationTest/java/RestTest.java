@@ -11,7 +11,7 @@ import org.springframework.web.client.RestTemplate;
 import static com.google.common.collect.ImmutableList.of;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @Slf4j
 public class RestTest {

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -63,7 +63,7 @@ public class JacksonDocumentInfoMapperTest {
         String readInfo = mapper.readInfo(in);
         
         //Then
-        assertEquals("Expeceted the output from the mapper to be read", "jsonString", readInfo);
+        assertEquals("jsonString", readInfo);
     }
     
     @Test
