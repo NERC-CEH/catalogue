@@ -14,8 +14,8 @@ import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.fail;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
@@ -71,7 +71,7 @@ public class CatalogueControllerTest {
         assertThat("should be list of catalogues", actual.contains(a));
         assertThat("should be list of catalogues", actual.contains(c));
     }
-    
+
     @Test
     public void getCataloguesWithUnknownCatalogue() throws Exception {
         //given
@@ -92,14 +92,14 @@ public class CatalogueControllerTest {
         assertThat("should be list of catalogues", actual.contains(b));
         assertThat("should be list of catalogues", actual.contains(c));
     }
-    
+
     @Test
     public void getCataloguesForIdentifier() throws Exception {
         //given
         Catalogue a = Catalogue.builder().id("a").title("a").url("a").build();
         Catalogue b = Catalogue.builder().id("b").title("b").url("b").build();
         Catalogue c = Catalogue.builder().id("c").title("c").url("c").build();
-        
+
         MetadataDocument document = new GeminiDocument()
             .setMetadata(MetadataInfo.builder().catalogue("a").build());
 
@@ -117,7 +117,7 @@ public class CatalogueControllerTest {
         assertThat("should be list of catalogues", actual.contains(b));
         assertThat("should be list of catalogues", actual.contains(c));
     }
-    
+
     @Test
     public void getCataloguesForUnknownIdentifier() throws Exception {
         //given
