@@ -27,7 +27,7 @@ import javax.xml.xpath.XPathFactory;
 public class Xml2WmsCapabilitiesMessageConverter extends AbstractHttpMessageConverter<WmsCapabilities> {
     private static final String MAP_URL = "//wms:GetMap/*/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href";
     private static final String FEATURE_INFO_URL = "//wms:GetFeatureInfo/*/wms:HTTP/wms:Get/wms:OnlineResource/@xlink:href";
-    
+
     private final LayerConverter layerConverter;
     private final XPathExpression map, featureInfo;
 
@@ -42,7 +42,7 @@ public class Xml2WmsCapabilitiesMessageConverter extends AbstractHttpMessageConv
         this.featureInfo = xpath.compile(FEATURE_INFO_URL);
         log.info("Creating {}", this);
     }
-    
+
     @Override
     @SneakyThrows
     protected WmsCapabilities readInternal(Class<? extends WmsCapabilities> clazz, HttpInputMessage inputMessage) {
@@ -59,11 +59,11 @@ public class Xml2WmsCapabilitiesMessageConverter extends AbstractHttpMessageConv
             return toReturn;
         }
         catch(ParserConfigurationException pce) {
-            throw new HttpMessageNotReadableException("The document reader was not set up correctly", pce);
+            throw new HttpMessageNotReadableException("The document reader was not set up correctly", pce, inputMessage);
         } catch (SAXException se) {
-            throw new HttpMessageNotReadableException("The xml content could not be parsed", se);
+            throw new HttpMessageNotReadableException("The xml content could not be parsed", se, inputMessage);
         } catch (XPathExpressionException ex) {
-            throw new HttpMessageNotReadableException("An xpath failed to evaluate", ex);
+            throw new HttpMessageNotReadableException("An xpath failed to evaluate", ex, inputMessage);
         }
     }
 
@@ -72,7 +72,7 @@ public class Xml2WmsCapabilitiesMessageConverter extends AbstractHttpMessageConv
     protected void writeInternal(WmsCapabilities t, HttpOutputMessage outputMessage) {
         throw new HttpMessageNotWritableException("I will not be able to write that document for you");
     }
-    
+
     @Override
     public boolean canWrite(Class<?> clazz, MediaType mediaType) {
         return false; // I can never write

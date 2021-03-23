@@ -62,7 +62,7 @@ public class DataciteService {
             @Value("${doi.password}") String password,
             @Value("${doi.templateLocation}") String templateLocation,
             @NonNull DocumentIdentifierService identifierService,
-            @NonNull Configuration configuration,
+            @Qualifier("freeMarkerConfiguration") @NonNull Configuration configuration,
             @Qualifier("normal") RestTemplate restTemplate
     ) {
         this.api = api;

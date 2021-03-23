@@ -20,34 +20,34 @@ import static com.google.common.base.Strings.emptyToNull;
 
 /**
  * The following abstracts Springs Jaxb2RootElementHttpMessageConverter and allows
- * documents to be read in the format in which they were sent. That is the full 
+ * documents to be read in the format in which they were sent. That is the full
  * subclass.
- * 
+ *
  * This class therefore adheres the @XmlAlsoSee annotation
  */
 @Slf4j
 @ToString
 public class Jaxb2HttpMessageConverter extends Jaxb2RootElementHttpMessageConverter {
     private final String namespace, schemaLocation;
-    
+
     public Jaxb2HttpMessageConverter(String namespace, String schemaLocation) {
         this.namespace = checkNotNull(emptyToNull(namespace));
         this.schemaLocation = checkNotNull(emptyToNull(schemaLocation));
         log.info("Creating {}", this);
     }
-    
+
     @Override
     protected Object readFromSource(Class<?> clazz, HttpHeaders headers, Source source) throws IOException {
         try {
             Unmarshaller unmarshaller = createUnmarshaller(clazz);
             return unmarshaller.unmarshal(source);
         } catch (UnmarshalException ex) {
-            throw new HttpMessageNotReadableException("Could not unmarshal to [" + clazz + "]: " + ex.getMessage(), ex);
+            throw new HttpMessageNotReadableException("Could not unmarshal to [" + clazz + "]: " + ex.getMessage(), ex, null);
         } catch (JAXBException ex) {
             throw new HttpMessageConversionException("Could not instantiate JAXBContext: " + ex.getMessage(), ex);
         }
     }
-    
+
     @Override
     protected void writeToResult(Object o, HttpHeaders headers, Result result) throws IOException {
         try {

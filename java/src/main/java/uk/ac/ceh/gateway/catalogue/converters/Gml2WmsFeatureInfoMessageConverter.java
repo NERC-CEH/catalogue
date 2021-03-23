@@ -35,7 +35,7 @@ public class Gml2WmsFeatureInfoMessageConverter extends AbstractHttpMessageConve
     private static final String FEATURES = "*[substring(name(),string-length(name())-7) = '_feature']";
     private static final String ATTRIBUTES = "*[not(*)]";
     private final XPathExpression layers, features, attributes;
-    
+
     public Gml2WmsFeatureInfoMessageConverter() throws XPathExpressionException {
         super(MediaType.parseMediaType(MAPSERVER_GML_VALUE));
         XPath xpath = XPathFactory.newInstance().newXPath();
@@ -45,7 +45,7 @@ public class Gml2WmsFeatureInfoMessageConverter extends AbstractHttpMessageConve
         this.attributes = xpath.compile(ATTRIBUTES);
         log.info("Creating {}", this);
     }
-    
+
     @Override
     protected WmsFeatureInfo readInternal(Class<? extends WmsFeatureInfo> clazz, HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
         try {
@@ -56,15 +56,15 @@ public class Gml2WmsFeatureInfoMessageConverter extends AbstractHttpMessageConve
 
             WmsFeatureInfo toReturn = new WmsFeatureInfo();
             toReturn.setLayers(getLayers((NodeList) layers.evaluate(document, XPathConstants.NODESET)));
-            
+
             return toReturn;
         }
         catch(ParserConfigurationException pce) {
-            throw new HttpMessageNotReadableException("The document reader was not set up correctly", pce);
+            throw new HttpMessageNotReadableException("The document reader was not set up correctly", pce, inputMessage);
         } catch (SAXException se) {
-            throw new HttpMessageNotReadableException("The xml content could not be parsed", se);
+            throw new HttpMessageNotReadableException("The xml content could not be parsed", se, inputMessage);
         } catch (XPathExpressionException ex) {
-           throw new HttpMessageNotReadableException("An xpath failed to evaluate", ex);
+           throw new HttpMessageNotReadableException("An xpath failed to evaluate", ex, inputMessage);
         }
     }
 
@@ -100,14 +100,14 @@ public class Gml2WmsFeatureInfoMessageConverter extends AbstractHttpMessageConve
             Node node = nodes.item(i);
             attrs.put(node.getNodeName(), node.getTextContent());
         }
-        return attrs;            
+        return attrs;
     }
 
     @Override
     protected void writeInternal(WmsFeatureInfo t, HttpOutputMessage outputMessage) throws HttpMessageNotWritableException {
         throw new HttpMessageNotWritableException("I will not be able to write that document for you");
     }
-    
+
     @Override
     public boolean canWrite(Class<?> clazz, MediaType mediaType) {
         return false; // I can never write

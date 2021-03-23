@@ -24,7 +24,7 @@ import java.io.IOException;
 
 /**
  * The following HttpMessageConverter is responsible for transforming the
- * WmsFeatureInfo in to the xml format which a client would expect to be 
+ * WmsFeatureInfo in to the xml format which a client would expect to be
  * returned from an esri powered WMS GetFeatureInfo request (with type text/xml)
  */
 @Slf4j
@@ -42,7 +42,7 @@ public class WmsFeatureInfo2XmlMessageConverter extends AbstractHttpMessageConve
 
     @Override
     protected WmsFeatureInfo readInternal(Class<? extends WmsFeatureInfo> clazz, HttpInputMessage inputMessage) throws HttpMessageNotReadableException {
-        throw new HttpMessageNotReadableException("I can not read WmsFeatureInfo");
+        throw new HttpMessageNotReadableException("I can not read WmsFeatureInfo", inputMessage);
     }
 
     @Override
@@ -52,16 +52,16 @@ public class WmsFeatureInfo2XmlMessageConverter extends AbstractHttpMessageConve
             DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
-            
+
             Document doc = docBuilder.newDocument();
             Element rootElement = doc.createElement("FeatureInfoResponse");
-            
+
             info.getLayers().stream().flatMap((l)-> l.getFeatures().stream()).forEach((f) -> {
                 Element fields = doc.createElement("FIELDS");
                 f.getAttributes().forEach(fields::setAttribute);
                 rootElement.appendChild(fields);
             });
-            
+
             doc.appendChild(rootElement);
             transformer.transform(new DOMSource(doc), new StreamResult(outputMessage.getBody()));
         } catch (TransformerException | ParserConfigurationException ex) {

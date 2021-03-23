@@ -22,11 +22,8 @@ import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.http.CacheControl;
@@ -36,7 +33,6 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.ResourceHttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.accept.FixedContentNegotiationStrategy;
 import org.springframework.web.accept.HeaderContentNegotiationStrategy;
@@ -44,9 +40,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 import uk.ac.ceh.components.datastore.DataRepository;
@@ -108,12 +103,7 @@ import static uk.ac.ceh.gateway.catalogue.config.CatalogueServiceConfig.*;
 
 @Slf4j
 @Configuration
-@EnableWebMvc
-@EnableScheduling
-@EnableCaching
-@ComponentScan(basePackages = "uk.ac.ceh.gateway.catalogue")
-@PropertySource("classpath:application.properties")
-public class WebConfig extends WebMvcConfigurerAdapter {
+public class WebConfig implements WebMvcConfigurer {
     public static final String BIBTEX_SHORT                 = "bib";
     public static final String BIBTEX_VALUE                 = "application/x-bibtex";
     public static final String GEMINI_XML_SHORT             = "gemini";
@@ -155,7 +145,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     public static final String OSDP_PUBLICATION_JSON_VALUE  = "application/vnd.osdp.publication+json";
     public static final String OSDP_PUBLICATION_SHORT       = "osdp-publication";
     public static final String OSDP_SAMPLE_JSON_VALUE       = "application/vnd.osdp.sample+json";
-    public static final String OSDP_SAMPLE_SHORT            = "osdp-sample";    
+    public static final String OSDP_SAMPLE_SHORT            = "osdp-sample";
     public static final String ERAMMP_MODEL_SHORT           = "erammp-model";
     public static final String ERAMMP_MODEL_JSON_VALUE      = "application/vnd.erammp-model+json";
     public static final String ERAMMP_DATACUBE_SHORT        = "erammp-datacube";
@@ -318,7 +308,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 
         val config = freemarkerConfiguration();
         config.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
-        config.setSharedVaribles(shared);
+        config.setSharedVariables(shared);
         config.setDefaultEncoding("UTF-8");
         config.setTemplateLoader(new FileTemplateLoader(templates));
     }
@@ -338,7 +328,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         return freemarkerConfig;
     }
 
-    @Bean
+    @Bean("converters")
     public List<HttpMessageConverter<?>> messageConverters() {
         List<HttpMessageConverter<?>> converters = new ArrayList<>();
         MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter();
@@ -653,18 +643,17 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         val requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient());
         return new RestTemplate(requestFactory);
     }
-    
+
     @Bean
     public CommonsMultipartResolver multipartResolver() {
         CommonsMultipartResolver resolver = new CommonsMultipartResolver();
         resolver.setDefaultEncoding("utf-8");
         return resolver;
     }
-    
+
     @Override
     public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
         configurer
-            .favorPathExtension(false)
             .ignoreAcceptHeader(true) // Define accept header handling manually
             .defaultContentTypeStrategy(new ContentNegotiationManager(
                     new ForgivingParameterContentNegotiationStrategy(ImmutableMap.<String, MediaType>builder()
