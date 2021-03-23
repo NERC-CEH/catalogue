@@ -25,18 +25,18 @@ import java.util.List;
 public class Object2TemplatedMessageConverter<T> extends AbstractHttpMessageConverter<T> {
     private final Configuration configuration;
     private final Class<T> clazz;
-    
+
     public Object2TemplatedMessageConverter(Class<T> clazz, Configuration configuration) {
         this.clazz = clazz;
         this.configuration = configuration;
         log.info("Creating {}", this);
-    }  
+    }
 
     @Override
     protected boolean supports(Class<?> supportedClazz) {
         return clazz.isAssignableFrom(supportedClazz);
     }
-    
+
     @Override
     public boolean canRead(Class<?> clazz, MediaType mediaType) {
         return false;
@@ -44,9 +44,9 @@ public class Object2TemplatedMessageConverter<T> extends AbstractHttpMessageConv
 
     @Override
     protected T readInternal(Class<? extends T> clazz, HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
-        throw new HttpMessageNotReadableException("This implementation can not read anything");
+        throw new HttpMessageNotReadableException("This implementation can not read anything", inputMessage);
     }
-    
+
     @Override
     public List<MediaType> getSupportedMediaTypes() {
         ConvertUsing convertUsing = clazz.getAnnotation(ConvertUsing.class);
@@ -58,7 +58,7 @@ public class Object2TemplatedMessageConverter<T> extends AbstractHttpMessageConv
         }
         return toReturn;
     }
-    
+
     @Override
     protected void writeInternal(Object t, HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException {
         try {

@@ -1,10 +1,3 @@
-# Build Java
-FROM gradle:6.8.3-jdk15 AS build-java
-WORKDIR /app
-COPY --chown=gradle:gradle java/src src/
-COPY --chown=gradle:gradle java/build.gradle .
-RUN gradle --no-daemon assemble
-
 # Build web (javascript & css)
 FROM node:15.11.0-stretch AS build-web
 WORKDIR /app
@@ -19,21 +12,28 @@ RUN npm install
 RUN node_modules/.bin/bower install --allow-root
 RUN node_modules/.bin/grunt
 
+# Build Java
+FROM gradle:6.8.3-jdk15 AS build-java
+WORKDIR /app
+COPY --chown=gradle:gradle java/src src/
+COPY --chown=gradle:gradle java/build.gradle .
+COPY --chown=gradle:gradle --from=build-web /app/src/css src/main/resources/static/css
+COPY --chown=gradle:gradle web/src/img src/main/resources/static/img
+COPY --chown=gradle:gradle --from=build-web /app/src/scripts/main-out.js src/main/resources/static/scripts/main-out.js
+COPY --chown=gradle:gradle --from=build-web /app/src/vendor/font-awesome-5/webfonts src/main/resources/static/vendor/font-awesome-5/webfonts
+COPY --chown=gradle:gradle --from=build-web /app/src/vendor/requirejs/require.js src/main/resources/static/vendor/requirejs/require.js
+RUN gradle bootJar
+
 # Create production image
-FROM tomcat:8.5.64-jdk15-openjdk AS prod
+FROM openjdk:15-alpine AS prod
 LABEL maintainer="oss@ceh.ac.uk"
-RUN rm -Rf /usr/local/tomcat/webapps/*
+WORKDIR /app
 COPY schemas /opt/ceh-catalogue/schemas
 COPY templates /opt/ceh-catalogue/templates
-COPY --from=build-java /app/build/libs/ROOT.war /opt/ceh-catalogue/libs/ROOT.war
-RUN unzip -od /usr/local/tomcat/webapps/ROOT /opt/ceh-catalogue/libs/ROOT.war
-COPY --from=build-web /app/src/css /usr/local/tomcat/webapps/ROOT/static/css
-COPY web/src/img /usr/local/tomcat/webapps/ROOT/static/img
-COPY --from=build-web /app/src/scripts/main-out.js /usr/local/tomcat/webapps/ROOT/static/scripts/main-out.js
-COPY --from=build-web /app/src/vendor/font-awesome-5/webfonts /usr/local/tomcat/webapps/ROOT/static/vendor/font-awesome-5/webfonts
-COPY --from=build-web /app/src/vendor/requirejs/require.js /usr/local/tomcat/webapps/ROOT/static/vendor/requirejs/require.js
+COPY --from=build-java /app/build/libs/app.jar .
 VOLUME ["/var/upload/datastore"]
 EXPOSE 8080
+ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app/app.jar"]
 HEALTHCHECK CMD curl --fail http://localhost:8080/eidc/documents || exit 1
 
 # Create resources for development only

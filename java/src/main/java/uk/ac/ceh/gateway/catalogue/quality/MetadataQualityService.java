@@ -33,7 +33,8 @@ public class MetadataQualityService {
         "enquiries@ceh.ac.uk",
         "info@eidc.ac.uk"
     );
-    private final TypeRef<List<Map<String, String>>> typeRefStringString = new TypeRef<List<Map<String, String>>>() {};
+    private final TypeRef<List<Map<String, String>>> typeRefStringString = new TypeRef<>() {
+    };
 
     public MetadataQualityService(@NonNull DocumentReader documentReader, @NonNull ObjectMapper objectMapper) {
         this.documentReader = documentReader;
@@ -137,7 +138,7 @@ public class MetadataQualityService {
             return Optional.empty();
         }
         val toReturn = new ArrayList<MetadataCheck>();
-        
+
         val temporalExtents = parsedDoc.read("$.temporalExtents[*]", typeRefStringString);
         if (temporalExtents ==  null || temporalExtents.isEmpty()) {
             toReturn.add(new MetadataCheck("Temporal extents is missing", INFO));
@@ -205,7 +206,7 @@ public class MetadataQualityService {
         val requiredKeys = ImmutableSet.of("boundingBoxes", "spatialRepresentationTypes");
         Boolean notGEMINI = parsed.read("$.notGEMINI", boolean.class);
         val toReturn = new ArrayList<MetadataCheck>();
-       
+
         checkBoundingBoxes(parsed).ifPresent(toReturn::addAll);
         val spatial = parsed.read(
             "$.['boundingBoxes','spatialRepresentationTypes']",
@@ -216,13 +217,13 @@ public class MetadataQualityService {
                 toReturn.add(new MetadataCheck(key + " is missing", ERROR));
             }
         });
-        
+
         if (notGEMINI ==  null || notGEMINI == false) {
             checkInspireThemes(parsed).ifPresent(toReturn::add);
             checkSpatialResolutions(parsed).ifPresent(toReturn::add);
             checkSpatialReferenceSystems(parsed).ifPresent(toReturn::add);
         }
-        
+
         if (toReturn.isEmpty()) {
             return Optional.empty();
         } else {
@@ -286,11 +287,11 @@ public class MetadataQualityService {
             if (boundingBox.containsKey("westBoundLongitude") && boundingBox.containsKey("eastBoundLongitude")) {
                 val east = boundingBox.get("eastBoundLongitude");
                 val west = boundingBox.get("westBoundLongitude");
-                
+
                 if (east.doubleValue() < -180 || east.doubleValue() > 180) {
                     toReturn.add(new MetadataCheck("Bounding box east boundary is out of range", ERROR));
                 }
-                
+
                 if (west.doubleValue() < -180 || west.doubleValue() > 180 ) {
                     toReturn.add(new MetadataCheck("Bounding box west boundary is out of range", ERROR));
                 }
@@ -327,7 +328,7 @@ public class MetadataQualityService {
             toReturn.add(new MetadataCheck("There should be only ONE licence", ERROR));
         }
 
-        checkAuthors(parsed).ifPresent(toReturn::addAll);        
+        checkAuthors(parsed).ifPresent(toReturn::addAll);
         checkKeywords(parsed).ifPresent(toReturn::add);
         checkTopicCategories(parsed).ifPresent(toReturn::add);
         checkDataFormat(parsed).ifPresent(toReturn::add);
@@ -353,7 +354,7 @@ public class MetadataQualityService {
         checkDataFormat(parsed).ifPresent(toReturn::add);
         checkPointOfContact(parsed).ifPresent(toReturn::addAll);
         checkDistributor(parsed).ifPresent(toReturn::addAll);
-        
+
        val size = parsed.read(
             "$.onlineResources[*][?(@.function in ['information', 'search'])].function",
             List.class
@@ -363,8 +364,8 @@ public class MetadataQualityService {
         }
         if (size > 1){
             toReturn.add(new MetadataCheck("There are more than one search/information links", INFO));
-        } 
-        
+        }
+
         if (toReturn.isEmpty()) {
             return Optional.empty();
         } else {
@@ -392,7 +393,7 @@ public class MetadataQualityService {
         }
         if (distributors.stream().anyMatch(distributor -> fieldIsMissing(distributor, "email"))) {
             toReturn.add(new MetadataCheck("Distributor's email address is missing", ERROR));
-        }  
+        }
 
         if (toReturn.isEmpty()) {
             return Optional.empty();
@@ -676,7 +677,7 @@ public class MetadataQualityService {
         if (!resourceStatusIsAvailable(parsed) || notRequiredResourceTypes(parsed, "dataset", "nonGeographicDataset", "application")) {
             return Optional.empty();
         }
-        
+
         val toReturn = new ArrayList<MetadataCheck>();
         val orders = parsed.read(
             "$.onlineResources[*][?(@.function == 'order')]",
@@ -687,13 +688,13 @@ public class MetadataQualityService {
             typeRefStringString
         );
         val totalOrdersAndDownloads = orders.size() + downloads.size();
-        
+
         if (totalOrdersAndDownloads == 0) {
             toReturn.add(new MetadataCheck("There are no orders/downloads", WARNING));
         } else if (totalOrdersAndDownloads > 1) {
             toReturn.add(new MetadataCheck("There are multiple orders/downloads", INFO));
         }
-        
+
         if(orders.stream()
             .anyMatch(order -> fieldNotStartingWith(order, "url", "https://order-eidc.ceh.ac.uk/resources"))) {
             toReturn.add(new MetadataCheck("Orders do not have a valid EIDC url", INFO));
@@ -713,7 +714,7 @@ public class MetadataQualityService {
         if (!resourceStatusIsEmbargoed(parsed) || notRequiredResourceTypes(parsed, "dataset", "nonGeographicDataset", "application")) {
             return Optional.empty();
         }
-        
+
         val toReturn = new ArrayList<MetadataCheck>();
         val orders = parsed.read(
             "$.onlineResources[*][?(@.function == 'order')]",
@@ -724,7 +725,7 @@ public class MetadataQualityService {
             typeRefStringString
         );
         val totalOrdersAndDownloads = orders.size() + downloads.size();
-        
+
         if (totalOrdersAndDownloads > 0) {
             toReturn.add(new MetadataCheck("This resource is embargoed but it contains orders/downloads", ERROR));
         }

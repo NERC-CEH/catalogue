@@ -1,11 +1,13 @@
 package uk.ac.ceh.gateway.catalogue.validation;
 
-import java.io.IOException;
-import java.io.InputStream;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.output.NullOutputStream;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
+
+import java.io.IOException;
+import java.io.InputStream;
+
+import static org.apache.commons.io.output.NullOutputStream.NULL_OUTPUT_STREAM;
 
 /**
  * This is an example of a validator. This will should be removed
@@ -19,10 +21,10 @@ public class MediaTypeValidator extends AbstractDocumentValidator {
     @Override
     public ValidationResult validate(InputStream stream) {
         try {
-            IOUtils.copy(stream, new NullOutputStream());
+            IOUtils.copy(stream, NULL_OUTPUT_STREAM);
             return new ValidationResult();
         } catch (IOException ex) {
             return new ValidationResult().reject(ex.getMessage(), ValidationLevel.ERROR);
         }
-    }    
+    }
 }
