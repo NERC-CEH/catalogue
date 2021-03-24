@@ -12,8 +12,8 @@ ext {
     jacksonVersion = '2.11.3'
     lombokVersion = '1.18.12'
     mockitoVersion = '3.3.3'
-    springSecurityVersion = '5.0.1.RELEASE'
-    springVersion = '5.0.1.RELEASE'
+    springSecurityVersion = '5.4.5'
+    springVersion = '5.3.5'
 }
 
 tasks.withType(JavaCompile) {

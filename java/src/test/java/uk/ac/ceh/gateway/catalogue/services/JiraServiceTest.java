@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.gateway.catalogue.model.JiraIssue;
 import uk.ac.ceh.gateway.catalogue.model.JiraIssueBuilder;
@@ -53,27 +52,23 @@ public class JiraServiceTest {
         val issues = new ArrayList<JiraIssue>();
         issues.add(issue);
         jiraSearchResults.setIssues(issues);
-
-        doReturn(resource).when(resource).path(anyString());
-        doReturn(resource).when(resource).queryParam(anyString(), anyString());
-
-        doReturn(builder).when(resource).accept(any(MediaType.class));
-        doReturn(builder).when(builder).type(any(MediaType.class));
-
-        doReturn(response).when(builder).get(ClientResponse.class);
-
-        doReturn(jiraSearchResults).when(response).getEntity(JiraSearchResults.class);
-
-        doReturn("jira issue").when(jiraIssueBuilder).build();
     }
 
     @Test
     public void createingAnIssue() {
+        // Given
         val created = new JiraIssueCreate();
         created.setId("id");
         doReturn(created).when(builder).post(eq(JiraIssueCreate.class), anyString());
+        doReturn(resource).when(resource).path(anyString());
+        doReturn(builder).when(resource).accept(any(MediaType.class));
+        doReturn(builder).when(builder).type(any(MediaType.class));;
+        doReturn("jira issue").when(jiraIssueBuilder).build();
 
+        //When
         val issue = jiraService.create(jiraIssueBuilder);
+
+        // Then
         verify(resource).path(eq("issue"));
         verify(resource).accept(eq(MediaType.APPLICATION_JSON_TYPE));
         verify(builder).type(eq(MediaType.APPLICATION_JSON_TYPE));
@@ -83,8 +78,15 @@ public class JiraServiceTest {
 
     @Test
     public void addingACommentToIssueWithKey() {
+        // Given
+        doReturn(resource).when(resource).path(anyString());
+        doReturn(builder).when(resource).accept(any(MediaType.class));
+        doReturn(builder).when(builder).type(any(MediaType.class));
+
+        // When
         jiraService.comment("key", "comment");
 
+        // Then
         verify(resource).path(eq("issue/key"));
         verify(resource).accept(eq(MediaType.APPLICATION_JSON_TYPE));
         verify(builder).type(eq(MediaType.APPLICATION_JSON_TYPE));
@@ -93,8 +95,15 @@ public class JiraServiceTest {
 
     @Test
     public void transitioningIssueWithKeyToTransitionId() {
+        // Given
+        doReturn(resource).when(resource).path(anyString());
+        doReturn(builder).when(resource).accept(any(MediaType.class));
+        doReturn(builder).when(builder).type(any(MediaType.class));
+
+        // When
         jiraService.transition("key", "id");
 
+        // Then
         verify(resource).path(eq("issue/key/transitions"));
         verify(resource).accept(eq(MediaType.APPLICATION_JSON_TYPE));
         verify(builder).type(eq(MediaType.APPLICATION_JSON_TYPE));
@@ -103,14 +112,22 @@ public class JiraServiceTest {
 
     @Test
     public void searchingUsingJql() {
+        // Given
+        doReturn(resource).when(resource).path(anyString());
+        doReturn(resource).when(resource).queryParam(anyString(),anyString());
+        doReturn(builder).when(resource).accept(any(MediaType.class));
+        doReturn(response).when(builder).get(ClientResponse.class);
+        doReturn(jiraSearchResults).when(response).getEntity(JiraSearchResults.class);
+
+        // When
         List<JiraIssue> actual = jiraService.search("jql-query");
 
+        // Then
         verify(resource).path(eq("search"));
         verify(resource).queryParam(eq("jql"), eq("jql-query"));
         verify(resource).accept(eq(MediaType.APPLICATION_JSON_TYPE));
         verify(builder).get(eq(ClientResponse.class));
         verify(response).getEntity(eq(JiraSearchResults.class));
-
         assertThat(actual, equalTo(jiraSearchResults.getIssues()));
     }
 }
