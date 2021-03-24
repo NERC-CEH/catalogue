@@ -1,7 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.upload.hubbub;
 
 import lombok.val;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;

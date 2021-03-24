@@ -3,40 +3,41 @@ package uk.ac.ceh.gateway.catalogue.upload.simple;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 
-import static java.lang.String.format;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 import static uk.ac.ceh.gateway.catalogue.upload.simple.UploadControllerUtils.ID;
 
 @Slf4j
 public class FileSystemStorageServiceFilenamesTest {
     private FileSystemStorageService service;
 
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    @TempDir
+    Path directory;
 
-    @Before
+    @BeforeEach
     public void setup() {
-        service = new FileSystemStorageService(folder.getRoot().toString());
+        service = new FileSystemStorageService(directory.toString());
     }
 
     @Test
     @SneakyThrows(IOException.class)
     public void successfullyGetFilenames() {
         //given
-        folder.newFolder(ID);
-        folder.newFile(format("%s/%s", ID, "data1.csv"));
-        folder.newFile(format("%s/%s", ID, "data2.csv"));
-        folder.newFile(format("%s/%s", ID, "data3.csv"));
+        Path newFolder = Files.createDirectory(directory.resolve(ID));
+        Files.createFile(newFolder.resolve("data1.csv"));
+        Files.createFile(newFolder.resolve("data2.csv"));
+        Files.createFile(newFolder.resolve("data3.csv"));
 
         val expected = Arrays.asList(
                 new FileInfo("data1.csv"),
@@ -51,15 +52,16 @@ public class FileSystemStorageServiceFilenamesTest {
         assertThat(filenames, equalTo(expected));
     }
 
-    @Test(expected = UserInputException.class)
     public void exceptionIfIdNotKnown() {
-        //given
+        Assertions.assertThrows(UserInputException.class, () -> {
+            //given
 
-        //when
-        service.filenames(ID);
+            //when
+            service.filenames(ID);
 
-        //then
-        fail("Should have thrown exception");
+            //then
+            fail("Should have thrown exception");
+        });
     }
 
 }

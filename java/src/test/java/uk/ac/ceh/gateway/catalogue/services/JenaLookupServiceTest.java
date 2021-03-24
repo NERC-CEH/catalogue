@@ -6,8 +6,8 @@ import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.tdb.TDBFactory;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.gateway.catalogue.model.Link;
 
@@ -15,8 +15,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.apache.jena.rdf.model.ResourceFactory.*;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.hamcrest.core.IsNull.nullValue;
 import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
 
 
@@ -26,7 +29,7 @@ public class JenaLookupServiceTest {
 
     private static final Property OSDP_PRODUCES = ResourceFactory.createProperty("http://onto.nerc.ac.uk/CEHMD/rels/produces");
     
-    @Before
+    @BeforeEach
     public void init() {
         MockitoAnnotations.initMocks(this);
         jenaTdb = TDBFactory.createDataset();
@@ -208,6 +211,8 @@ public class JenaLookupServiceTest {
         List<String> actual = service.linked("http://master");
         
         //Then
-        assertThat("should contain two plain identifiers", actual, contains("049283da-ee18-4b46-b714-d76f9a1ee479", "d8234690-1b61-4084-a349-eb53467383fe"));
+        assertThat("should contain two plain identifiers", actual.contains("049283da-ee18-4b46-b714-d76f9a1ee479"));
+        assertThat("should contain two plain identifiers", actual.contains("d8234690-1b61-4084-a349-eb53467383fe"));
+
     }
 }

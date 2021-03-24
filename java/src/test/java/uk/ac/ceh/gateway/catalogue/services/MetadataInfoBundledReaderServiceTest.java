@@ -2,8 +2,8 @@ package uk.ac.ceh.gateway.catalogue.services;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
 import static org.mockito.ArgumentMatchers.any;
 import org.mockito.Mock;
@@ -32,7 +32,7 @@ public class MetadataInfoBundledReaderServiceTest {
     private MetadataInfoBundledReaderService service;
     
     
-    @Before
+    @BeforeEach
     public void initMocks() throws IOException {
         MockitoAnnotations.initMocks(this);
         service = new MetadataInfoBundledReaderService(repo,

@@ -1,25 +1,27 @@
 package uk.ac.ceh.gateway.catalogue.converters;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-import javax.xml.xpath.XPathExpressionException;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import org.junit.Before;
-import org.junit.Test;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpInputMessage;
 import uk.ac.ceh.gateway.catalogue.ogc.Layer;
 import uk.ac.ceh.gateway.catalogue.ogc.WmsCapabilities;
 
+import javax.xml.xpath.XPathExpressionException;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 public class Xml2WmsCapabilitiesMessageConverterTest {
     private Xml2WmsCapabilitiesMessageConverter capabilitiesReader;
     
-    @Before
+    @BeforeEach
     public void createXml2CapabilitiesConverter() throws XPathExpressionException {
         capabilitiesReader = new Xml2WmsCapabilitiesMessageConverter();
     }
@@ -103,7 +105,7 @@ public class Xml2WmsCapabilitiesMessageConverterTest {
         Layer firstLayer = capabilities.getLayers().get(2);
         
         //Then
-        assertNull("Expected to not find any legend info", firstLayer.getLegendUrl());    
+        assertNull(firstLayer.getLegendUrl());
     }
     
     @Test

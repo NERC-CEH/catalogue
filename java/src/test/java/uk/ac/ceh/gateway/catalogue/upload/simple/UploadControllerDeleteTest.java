@@ -2,17 +2,17 @@ package uk.ac.ceh.gateway.catalogue.upload.simple;
 
 import lombok.SneakyThrows;
 import lombok.val;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
@@ -30,12 +30,12 @@ import static uk.ac.ceh.gateway.catalogue.upload.simple.UploadControllerUtils.ex
 /**
  * Test Upload Controller delete file endpoint
  */
-@Ignore
+@Disabled
 @ActiveProfiles({"development", "upload:simple"})
 @TestPropertySource("UploadControllerTest.properties")
 @WebAppConfiguration
 @ContextConfiguration(classes = {WebConfig.class, UploadControllerUtils.TestConfig.class})
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 // DirtiesContext needed as StorageService is a Mock that needs refreshing before each test
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class UploadControllerDeleteTest {
@@ -46,7 +46,7 @@ public class UploadControllerDeleteTest {
     private StorageService storageService;
     private final String filename = "test.csv";
 
-    @Before
+    @BeforeEach
     public void setup() {
         mockMvc = webAppContextSetup(wac)
                 .apply(springSecurity())
@@ -78,7 +78,7 @@ public class UploadControllerDeleteTest {
                 .andExpect(status().isForbidden());
 
         //then
-        verifyZeroInteractions(storageService);
+        verifyNoInteractions(storageService);
     }
 
     @Test

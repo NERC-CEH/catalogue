@@ -1,18 +1,19 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
 import freemarker.template.Configuration;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.services.MapServerDetailsService;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class MapServerIndexGeneratorTest {
     
@@ -20,7 +21,7 @@ public class MapServerIndexGeneratorTest {
     @Mock MapServerDetailsService mapServerDetailsService;
     private MapServerIndexGenerator generator;
     
-    @Before
+    @BeforeEach
     public void init() {
         MockitoAnnotations.initMocks(this);
         generator = new MapServerIndexGenerator(templateConfig, mapServerDetailsService);

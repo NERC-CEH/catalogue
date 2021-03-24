@@ -1,19 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.contains;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import org.junit.Before;
-import org.junit.Test;
-import static org.mockito.Answers.RETURNS_DEEP_STUBS;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import org.springframework.web.servlet.ModelAndView;
 import uk.ac.ceh.components.datastore.DataRepository;
@@ -22,13 +11,26 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.services.MetadataListingService;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+import static org.mockito.Answers.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.util.AssertionErrors.assertTrue;
+
 public class GeminiWafControllerTest {
     @Mock(answer=RETURNS_DEEP_STUBS) DataRepository repo;
     @Mock(answer=RETURNS_DEEP_STUBS) MetadataListingService listingService;
     
     private GeminiWafController controller;
     
-    @Before
+    @BeforeEach
     public void initMocks() {
         MockitoAnnotations.initMocks(this);
         controller = new GeminiWafController(repo, listingService);
@@ -52,7 +54,8 @@ public class GeminiWafControllerTest {
         assertTrue("Expected to find files", model.containsKey("files"));
         
         List<String> filenames = (List<String>)model.get("files");
-        assertThat("files contains files with extensions", filenames, contains("test1.xml", "test2.xml"));
+        assertThat("files contains files with extensions", filenames.contains("test1.xml"));
+        assertThat("files contains files with extensions", filenames.contains("test2.xml"));
     }
     
     @Test

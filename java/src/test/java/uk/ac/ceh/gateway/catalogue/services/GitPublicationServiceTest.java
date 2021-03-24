@@ -1,14 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import static org.mockito.Mockito.*;
 import org.mockito.MockitoAnnotations;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.components.userstore.Group;
@@ -23,6 +18,15 @@ import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.publication.Workflow;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 public class GitPublicationServiceTest {
     @Mock GroupStore<CatalogueUser> groupStore;
     @Mock DocumentRepository documentRepository;
@@ -35,7 +39,7 @@ public class GitPublicationServiceTest {
     private MetadataDocument draft, published;
     private GitPublicationService publicationService;
     
-    @Before
+    @BeforeEach
     public void given() throws IOException {
         workflow = new PublicationConfig().workflow();
         editor = new CatalogueUser()
@@ -129,16 +133,18 @@ public class GitPublicationServiceTest {
         assertThat("State is should be draft", current.getId(), equalTo("draft"));
     }
     
-    @Test(expected = PublicationServiceException.class)
+    @Test
     public void tryToGetFileThatDoesNotExist() throws Exception {
-        //Given 
-        when(documentRepository.read(FILENAME)).thenThrow(new PublicationServiceException("test"));
-        
-        //When
-        publicationService.current(editor, "this file name does not exist");
-        
-        //Then
-        verify(documentRepository).read(FILENAME);
+        Assertions.assertThrows(PublicationServiceException.class, () -> {
+            //Given
+            when(documentRepository.read(FILENAME)).thenThrow(new PublicationServiceException("test"));
+
+            //When
+            publicationService.current(editor, "this file name does not exist");
+
+            //Then
+            verify(documentRepository).read(FILENAME);
+        });
     }
     
     private Group createGroup(String groupname) {

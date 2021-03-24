@@ -1,14 +1,18 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
 
 public class GeminiDocumentTest {
@@ -28,7 +32,7 @@ public class GeminiDocumentTest {
         boolean isMapViewable = document.isMapViewable();
         
         //Then
-        assertTrue("Expected to be map viewable", isMapViewable);
+        assertTrue(isMapViewable);
     }
     
     
@@ -47,7 +51,7 @@ public class GeminiDocumentTest {
         boolean isMapViewable = document.isMapViewable();
         
         //Then
-        assertFalse("Expected to not be map viewable", isMapViewable);
+        assertFalse(isMapViewable);
     }
     
     @Test
@@ -61,7 +65,7 @@ public class GeminiDocumentTest {
         String url = document.getMapViewerUrl();
         
         //Then
-        assertEquals("Expected a map viewer url", "/maps#layers/metadataId", url);
+        assertEquals("/maps#layers/metadataId", url);
     }
     
     @Test
@@ -74,7 +78,7 @@ public class GeminiDocumentTest {
         String url = document.getMapViewerUrl();
         
         //Then
-        assertNull("Expected to get a null url for the map viewer", url);
+        assertNull(url);
     }
     
     @Test

@@ -3,18 +3,16 @@ package uk.ac.ceh.gateway.catalogue.upload.simple;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static java.lang.String.format;
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.hamcrest.Matchers.contains;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static uk.ac.ceh.gateway.catalogue.upload.simple.UploadControllerUtils.*;
 
 @Slf4j
@@ -23,54 +21,53 @@ public class FileSystemStorageServiceStoreTest {
     private FileSystemStorageService service;
     private Path expected;
 
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    @TempDir
+    Path directory;
 
-    @Before
+    @BeforeEach
     public void setup() {
-        service = new FileSystemStorageService(folder.getRoot().toString());
-        expected = folder.getRoot().toPath().resolve(ID).resolve(filename);
+        service = new FileSystemStorageService(directory.toString());
+        expected = directory.resolve(ID).resolve(filename);
     }
 
     @Test
     @SneakyThrows
     public void successfullyStoreFile() {
         //given
-        val expectedLines = new String[]{
-                "\"A\",\"B\",\"C\"",
-                "1,2,3",
-                "4,5,6",
-                "7,8,9"
-        };
 
         //when
         service.store(ID, dataCsv(getClass()));
 
         //then
         assertTrue(Files.exists(expected));
-        val lines = Files.readAllLines(expected, UTF_8);
-        assertThat(lines, contains(expectedLines));
+        val lines = Files.readAllLines(expected, StandardCharsets.UTF_8);
+        assertTrue(lines.contains("\"A\",\"B\",\"C\""));
+        assertTrue(lines.contains("1,2,3"));
+        assertTrue(lines.contains("4,5,6"));
+        assertTrue(lines.contains("7,8,9"));
     }
 
     @SneakyThrows
-    @Test(expected = FileExitsException.class)
+    @Test
     public void fileAlreadyExists() {
-        //given
-        folder.newFolder(ID);
-        folder.newFile(format("/%s/%s", ID, filename));
+        Assertions.assertThrows(FileExitsException.class, () -> {
+            //given
+            Path newFolder = Files.createDirectory(directory.resolve(ID));
+            Path file = newFolder.resolve(filename);
+            Files.createFile(file);
 
-        //when
-        service.store(ID, dataCsv(getClass()));
+            service.store(ID, dataCsv(getClass()));
 
-        //then
-        fail("Should throw FileExistsException");
+            //then
+            fail("Should throw FileExistsException");
+        });
     }
 
     @Test
     public void createdDirectoryOnFirstUploadAndCanUploadMultipleFiles() {
         //given
-        val fileWithSpaces = folder.getRoot().toPath().resolve(ID).resolve("file with spaces.csv");
-        assertFalse(Files.exists(folder.getRoot().toPath().resolve(ID)));
+        val fileWithSpaces = directory.resolve(ID).resolve("file with spaces.csv");
+        assertFalse(Files.exists(directory.resolve(ID)));
 
         //when
         service.store(ID, dataCsv(getClass()));

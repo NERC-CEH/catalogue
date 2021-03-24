@@ -4,11 +4,11 @@ import freemarker.template.Configuration;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.apache.commons.io.IOUtils;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -27,14 +27,14 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.util.Arrays;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 import static uk.ac.ceh.gateway.catalogue.model.MetadataInfo.PUBLIC_GROUP;
 
-@RunWith(MockitoJUnitRunner.StrictStubs.class)
+@ExtendWith(MockitoExtension.class)
 public class DataciteServiceTest {
     private static String ID = "d4bdc836-5b89-44c5-aca2-2880a5d5a5be";
 
@@ -45,7 +45,7 @@ public class DataciteServiceTest {
     Configuration configuration;
     String doiPrefix = "10.8268";
 
-    @Before
+    @BeforeEach
     @SneakyThrows
     public void init() {
         val restTemplate = new RestTemplate();
@@ -82,8 +82,8 @@ public class DataciteServiceTest {
         boolean dataciteUpdatable = service.isDatacitable(document);
 
         //Then
-        assertTrue("Expected document to be updatable", dataciteUpdatable);
-        verifyZeroInteractions(identifierService);
+        assertTrue(dataciteUpdatable);
+        verifyNoInteractions(identifierService);
     }
 
     @Test
@@ -103,8 +103,8 @@ public class DataciteServiceTest {
         boolean dataciteUpdatable = service.isDatacitable(document);
 
         //Then
-        assertFalse("Expected document to not be updatable", dataciteUpdatable);
-        verifyZeroInteractions(identifierService);
+        assertFalse(dataciteUpdatable);
+        verifyNoInteractions(identifierService);
     }
 
     @Test
@@ -124,8 +124,8 @@ public class DataciteServiceTest {
         boolean dataciteUpdatable = service.isDatacitable(document);
 
         //Then
-        assertTrue("Expected document to be updatable", dataciteUpdatable);
-        verifyZeroInteractions(identifierService);
+        assertTrue(dataciteUpdatable);
+        verifyNoInteractions(identifierService);
     }
 
     @Test
@@ -138,8 +138,8 @@ public class DataciteServiceTest {
         boolean dataciteUpdatable = service.isDatacitable(document);
 
         //Then
-        assertFalse("Expected document to not be updatable", dataciteUpdatable);
-        verifyZeroInteractions(identifierService);
+        assertFalse(dataciteUpdatable);
+        verifyNoInteractions(identifierService);
     }
 
     @Test

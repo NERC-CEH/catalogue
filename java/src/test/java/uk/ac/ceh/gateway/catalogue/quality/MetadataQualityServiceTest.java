@@ -14,11 +14,11 @@ import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.util.ResourceUtils;
 import uk.ac.ceh.gateway.catalogue.quality.MetadataQualityService.MetadataCheck;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReader;
@@ -28,15 +28,17 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.ac.ceh.gateway.catalogue.quality.MetadataQualityService.Severity.ERROR;
 import static uk.ac.ceh.gateway.catalogue.quality.MetadataQualityService.Severity.WARNING;
 
 @Slf4j
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class MetadataQualityServiceTest {
     private MetadataQualityService service;
     // Keep ObjectMapper options same as ObjectMapper in config/ApplicationConfig.java
@@ -56,7 +58,7 @@ public class MetadataQualityServiceTest {
     @Mock
     private DocumentReader documentReader;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.service = new MetadataQualityService(documentReader, objectMapper);
     }

@@ -13,8 +13,9 @@ import com.nimbusds.jwt.SignedJWT;
 import com.nimbusds.jwt.proc.BadJWTException;
 import lombok.SneakyThrows;
 import lombok.val;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockServletContext;
@@ -27,8 +28,8 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.Date;
 
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
 
 public class RememberMeServicesDataLabsTest {
 
@@ -55,7 +56,7 @@ public class RememberMeServicesDataLabsTest {
 
     private RememberMeServicesDataLabs target;
 
-    @Before
+    @BeforeEach
     @SneakyThrows
     public void init() {
 
@@ -102,35 +103,37 @@ public class RememberMeServicesDataLabsTest {
         assertThat(authentication, is(nullValue()));
     }
 
-    @Test(expected = BadJWTException.class)
-    public void autoLoginTestExpiredToken() throws JOSEException {
+    @Test
+    public void autoLoginTestExpiredToken() {
+        Assertions.assertThrows(BadJWTException.class, () -> {
+            //Given
+            String token = this.getAccessToken(ISSUER, new Date(new Date().getTime() - 2 * ONE_HOUR),
+                    new Date(new Date().getTime() - ONE_HOUR));
 
-        //Given
-        String token = this.getAccessToken(ISSUER, new Date(new Date().getTime() - 2 * ONE_HOUR),
-                new Date(new Date().getTime() - ONE_HOUR));
-
-        val request = MockMvcRequestBuilders
-                .get(URI.create("https://example.com"))
-                .cookie(new Cookie("token", token))
-                .buildRequest(new MockServletContext());
-        //When
-        target.autoLogin(request, response);
+            val request = MockMvcRequestBuilders
+                    .get(URI.create("https://example.com"))
+                    .cookie(new Cookie("token", token))
+                    .buildRequest(new MockServletContext());
+            //When
+            target.autoLogin(request, response);
+        });
     }
 
-    @Test(expected = BadJWTException.class)
+    @Test
     public void autoLoginTestIssuerDoesNotMatch() throws JOSEException {
+        Assertions.assertThrows(BadJWTException.class, () -> {
+            //Given
+            String token = this.getAccessToken(WRONG_ISSUER, new Date(new Date().getTime() - ONE_HOUR),
+                    new Date(new Date().getTime() + ONE_HOUR));
 
-        //Given
-        String token = this.getAccessToken(WRONG_ISSUER, new Date(new Date().getTime() - ONE_HOUR),
-                new Date(new Date().getTime() + ONE_HOUR));
+            val request = MockMvcRequestBuilders
+                    .get(URI.create("https://example.com"))
+                    .cookie(new Cookie("token", token))
+                    .buildRequest(new MockServletContext());
 
-        val request = MockMvcRequestBuilders
-                .get(URI.create("https://example.com"))
-                .cookie(new Cookie("token", token))
-                .buildRequest(new MockServletContext());
-
-        //When
-        target.autoLogin(request, response);
+            //When
+            target.autoLogin(request, response);
+        });
 
     }
 

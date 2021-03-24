@@ -3,8 +3,8 @@ package uk.ac.ceh.gateway.catalogue.upload.hubbub;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.apache.commons.io.IOUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -21,11 +21,11 @@ public class HubbubServiceTest {
     private MockRestServiceServer mockServer;
     private byte[] success;
 
-    @Before
+    @BeforeEach
     @SneakyThrows
     public void setup() {
         val restTemplate = new RestTemplate();
-        mockServer = MockRestServiceServer.createServer(restTemplate);
+        mockServer = MockRestServiceServer.bindTo(restTemplate).build();
         hubbubService = new HubbubService(
                 restTemplate,
                 "https://example.com/",

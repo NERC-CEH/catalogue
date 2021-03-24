@@ -6,11 +6,11 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
 import org.apache.jena.rdf.model.Statement;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
@@ -18,18 +18,18 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class JenaIndexGeminiDocumentGeneratorTest {
   @Mock private DocumentIdentifierService service;
   private String baseURI = "https://example.com";
   private JenaIndexGeminiDocumentGenerator generator;
 
-  @Before
+  @BeforeEach
   public void setup() {
     generator = new JenaIndexGeminiDocumentGenerator(new JenaIndexMetadataDocumentGenerator(service),baseURI);
   }

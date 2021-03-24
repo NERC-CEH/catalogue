@@ -1,23 +1,25 @@
 package uk.ac.ceh.gateway.catalogue.converters;
 
-import java.io.IOException;
-import java.util.UUID;
-import javax.xml.xpath.XPathExpressionException;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import org.junit.Before;
-import org.junit.Test;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpInputMessage;
 import uk.ac.ceh.gateway.catalogue.ef.Activity;
 import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
 
+import javax.xml.xpath.XPathExpressionException;
+import java.io.IOException;
+import java.util.UUID;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 public class Xml2UKEOFDocumentMessageConverterTest {
     private UkeofXml2EFDocumentMessageConverter ukeofReader;
     
-    @Before
+    @BeforeEach
     public void createXml2UKEOFConverter() throws XPathExpressionException {
         ukeofReader = new UkeofXml2EFDocumentMessageConverter();
     }
@@ -32,7 +34,7 @@ public class Xml2UKEOFDocumentMessageConverterTest {
         BaseMonitoringType document = (BaseMonitoringType) ukeofReader.readInternal(BaseMonitoringType.class, message);
         
         //Then
-        assertTrue("Expected document type to be activity", document instanceof Activity);
+        assertTrue(document instanceof Activity);
     }
     
     @Test

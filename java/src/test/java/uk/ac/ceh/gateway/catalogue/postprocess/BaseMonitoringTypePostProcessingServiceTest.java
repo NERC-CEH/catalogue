@@ -4,38 +4,32 @@ import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
-import static org.apache.jena.rdf.model.ResourceFactory.createResource;
-import static org.apache.jena.rdf.model.ResourceFactory.createStatement;
-import static org.apache.jena.rdf.model.ResourceFactory.createTypedLiteral;
 import org.apache.jena.tdb.TDBFactory;
-import java.time.LocalDate;
-import java.util.List;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import org.junit.Before;
-import org.junit.Test;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.ac.ceh.gateway.catalogue.ef.Activity;
 import uk.ac.ceh.gateway.catalogue.ef.Facility;
 import uk.ac.ceh.gateway.catalogue.ef.Link;
 import uk.ac.ceh.gateway.catalogue.ef.Link.TimedLink;
 import uk.ac.ceh.gateway.catalogue.ef.Metadata;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
-import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.BROADER;
-import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.IDENTIFIER;
-import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.LINKING_TIME;
-import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.TEMPORAL_BEGIN;
-import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.TEMPORAL_END;
-import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.TITLE;
-import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.TRIGGERS;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import static org.apache.jena.rdf.model.ResourceFactory.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.CoreMatchers.is;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
 
 public class BaseMonitoringTypePostProcessingServiceTest {
     private Model tripleStore;
     private BaseMonitoringTypePostProcessingService service;
     
-    @Before
+    @BeforeEach
     public void init() {
         Dataset dataset = TDBFactory.createDataset();
         this.tripleStore = dataset.getDefaultModel();
@@ -61,7 +55,7 @@ public class BaseMonitoringTypePostProcessingServiceTest {
         List<Link> setupfor = activity.getSetUpFor();
         assertThat(setupfor.size(), is(1));
     }
-    
+
     @Test
     public void checkThatFavoursExistingLinks() {
         //Given

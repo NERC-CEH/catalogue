@@ -3,8 +3,8 @@ package uk.ac.ceh.gateway.catalogue.templateHelpers;
 import com.vividsolutions.jts.geom.Envelope;
 import lombok.SneakyThrows;
 import lombok.val;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.DescriptiveKeywords;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -12,16 +12,16 @@ import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 
 import java.util.Arrays;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class GeminiExtractorTest {
     private GeminiExtractor service;
     
-    @Before
+    @BeforeEach
     public void init() {
         service = new GeminiExtractor();
     }

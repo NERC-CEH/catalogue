@@ -1,8 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.repository;
 
 import java.io.OutputStream;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -24,7 +24,7 @@ public class GitRepoWrapperTest {
     
     private GitRepoWrapper repoWrapper;
     
-    @Before
+    @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
         repoWrapper = new GitRepoWrapper(repo, documentInfoMapper);

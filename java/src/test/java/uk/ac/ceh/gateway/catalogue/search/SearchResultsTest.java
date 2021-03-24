@@ -1,21 +1,25 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
-import java.util.Collections;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.util.NamedList;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.*;
-import org.junit.Test;
-import static org.mockito.BDDMockito.given;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+
+import java.util.Collections;
+
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 public class SearchResultsTest {
     @Mock private GroupStore<CatalogueUser> groupStore;
@@ -154,7 +158,7 @@ public class SearchResultsTest {
         String pageUrl = results.getPrevPage();
         
         //Then
-        assertNull("Expected to not get a page url", pageUrl);
+        assertNull(pageUrl);
     }
     
     @Test
@@ -188,7 +192,7 @@ public class SearchResultsTest {
         String pageUrl = new SearchResults(response, query).getNextPage();
         
         //Then
-        assertNull("Expected to not get a page url", pageUrl);
+        assertNull(pageUrl);
     }
     
     @Test
@@ -254,7 +258,7 @@ public class SearchResultsTest {
         String url = results.getWithoutBbox();
         
         //Then
-        assertNull("Expected to not get a url for without bbox", url);
+        assertNull(url);
     }
     
     @Test
@@ -351,7 +355,7 @@ public class SearchResultsTest {
         String url = results.getWithinBbox();
         
         //Then
-        assertNull("Expected not to get a url", url);
+        assertNull(url);
     }
     
     @Test
@@ -416,7 +420,7 @@ public class SearchResultsTest {
         String url = results.getIntersectingBbox();
         
         //Then
-        assertNull("Expected not to get a url", url);
+        assertNull(url);
     }
     
     @Test

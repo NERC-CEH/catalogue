@@ -46,7 +46,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 import uk.ac.ceh.components.datastore.DataRepository;
@@ -113,7 +113,7 @@ import static uk.ac.ceh.gateway.catalogue.config.CatalogueServiceConfig.*;
 @EnableCaching
 @ComponentScan(basePackages = "uk.ac.ceh.gateway.catalogue")
 @PropertySource("classpath:application.properties")
-public class WebConfig extends WebMvcConfigurerAdapter {
+public class WebConfig implements WebMvcConfigurer {
     public static final String BIBTEX_SHORT                 = "bib";
     public static final String BIBTEX_VALUE                 = "application/x-bibtex";
     public static final String GEMINI_XML_SHORT             = "gemini";
@@ -155,7 +155,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     public static final String OSDP_PUBLICATION_JSON_VALUE  = "application/vnd.osdp.publication+json";
     public static final String OSDP_PUBLICATION_SHORT       = "osdp-publication";
     public static final String OSDP_SAMPLE_JSON_VALUE       = "application/vnd.osdp.sample+json";
-    public static final String OSDP_SAMPLE_SHORT            = "osdp-sample";    
+    public static final String OSDP_SAMPLE_SHORT            = "osdp-sample";
     public static final String ERAMMP_MODEL_SHORT           = "erammp-model";
     public static final String ERAMMP_MODEL_JSON_VALUE      = "application/vnd.erammp-model+json";
     public static final String ERAMMP_DATACUBE_SHORT        = "erammp-datacube";
@@ -170,8 +170,8 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     @Value("${documents.baseUri}") private String baseUri;
     @Value("${data.repository.location}") private String dataRepositoryLocation;
     @Value("${maps.location}") private File mapsLocation;
-    @Value("${jena.location}") String location;
-    @Value("${schemas.location}") String schemas;
+    @Value("${jena.location}") private String location;
+    @Value("${schemas.location}") private String schemas;
     @Value("${solr.server.documents.url}") String solrDocumentServerUrl;
     @Value("${sparql.endpoint}") private String sparqlEndpoint;
     @Value("${sparql.graph}") private String sparqlGraph;
@@ -653,14 +653,14 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         val requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient());
         return new RestTemplate(requestFactory);
     }
-    
+
     @Bean
     public CommonsMultipartResolver multipartResolver() {
         CommonsMultipartResolver resolver = new CommonsMultipartResolver();
         resolver.setDefaultEncoding("utf-8");
         return resolver;
     }
-    
+
     @Override
     public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
         configurer

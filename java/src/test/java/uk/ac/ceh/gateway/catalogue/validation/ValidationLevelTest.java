@@ -1,8 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.validation;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.ac.ceh.gateway.catalogue.validation.ValidationLevel.FAILED_TO_READ;
 import static uk.ac.ceh.gateway.catalogue.validation.ValidationLevel.VALID;
 
@@ -17,7 +18,7 @@ public class ValidationLevelTest {
         boolean moreSevere = failed.isMoreSevere(valid);
         
         //Then
-        assertTrue("Expected failed to be more severe", moreSevere);
+        assertTrue(moreSevere);
     }
     
     @Test
@@ -30,7 +31,7 @@ public class ValidationLevelTest {
         boolean moreSevere = valid.isMoreSevere(failed);
         
         //Then
-        assertFalse("Expected failed to be less severe", moreSevere);
+        assertFalse(moreSevere);
     }
     
     @Test
@@ -42,6 +43,6 @@ public class ValidationLevelTest {
         boolean moreSevere = valid.isMoreSevere(valid);
         
         //Then
-        assertFalse("Expected failed to be less severe", moreSevere);
+        assertFalse(moreSevere);
     }
 }

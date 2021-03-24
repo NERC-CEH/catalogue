@@ -1,10 +1,10 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpEntity;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
@@ -13,14 +13,13 @@ import uk.ac.ceh.gateway.catalogue.indexing.MapServerIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.MaintenanceResponse;
 import uk.ac.ceh.gateway.catalogue.services.DataRepositoryOptimizingService;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.Answers.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class MaintenanceControllerTest {
     @Mock(answer=RETURNS_DEEP_STUBS) DataRepositoryOptimizingService repoService;
     @Mock DocumentIndexingService indexService;
@@ -30,7 +29,7 @@ public class MaintenanceControllerTest {
     
     private MaintenanceController controller;
     
-    @Before
+    @BeforeEach
     public void createMaintenanceController() {
         controller = new MaintenanceController(repoService, indexService, linkingService, validationService, mapserverService);
     }
@@ -104,7 +103,7 @@ public class MaintenanceControllerTest {
         
         //Then
         assertThat("Expected one message", response.getMessages().size(), equalTo(1));
-        assertThat("Expected message to exist", response.getMessages(), contains(errorMessage));
+        assertThat("Expected message to exist", response.getMessages().contains(errorMessage));
     }
 
     @Test
@@ -118,6 +117,6 @@ public class MaintenanceControllerTest {
         
         //Then
         assertThat("Expected one message", response.getMessages().size(), equalTo(1));
-        assertThat("Expected message to exist", response.getMessages(), contains(errorMessage));
+        assertThat("Expected message to exist", response.getMessages().contains(errorMessage));
     }
 }

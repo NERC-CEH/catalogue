@@ -3,8 +3,8 @@ package uk.ac.ceh.gateway.catalogue.auth.oidc;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.apache.commons.io.IOUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
@@ -15,7 +15,6 @@ import org.springframework.web.client.RestTemplate;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
@@ -31,7 +30,7 @@ public class DataLabsAuthenticationProviderTest {
 
     private MockRestServiceServer mockServer;
 
-    @Before
+    @BeforeEach
     public void init() {
         val restTemplate = new RestTemplate();
         target = new DataLabsAuthenticationProvider(restTemplate, ADDRESS);
@@ -53,7 +52,7 @@ public class DataLabsAuthenticationProviderTest {
         Authentication actual = target.authenticate(input);
 
         //Then
-        assertTrue(actual.isAuthenticated());
+        assertThat(actual.isAuthenticated(), is(equalTo(true)));
         assertThat(actual.getAuthorities().toString().contains("CIG_SYSTEM_ADMIN"), is(equalTo(true)));
         assertThat(actual.getAuthorities().toString().contains("ROLE_DATALABS_PUBLISHER"), is(equalTo(true)));
         assertThat(actual.getAuthorities().toString().contains("ROLE_DATALABS_EDITOR"), is(equalTo(true)));

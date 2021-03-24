@@ -2,17 +2,17 @@ package uk.ac.ceh.gateway.catalogue.upload.simple;
 
 import lombok.SneakyThrows;
 import lombok.val;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
@@ -21,7 +21,8 @@ import uk.ac.ceh.gateway.catalogue.config.WebConfig;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -33,12 +34,12 @@ import static uk.ac.ceh.gateway.catalogue.upload.simple.UploadControllerUtils.*;
 /**
  * Testing the Upload Controller HTML page endpoint
  */
-@Ignore
+@Disabled
 @ActiveProfiles({"development", "upload:simple"})
 @TestPropertySource("UploadControllerTest.properties")
 @WebAppConfiguration
 @ContextConfiguration(classes = {WebConfig.class, UploadControllerUtils.TestConfig.class})
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 // DirtiesContext needed as StorageService is a Mock that needs refreshing before each test
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class UploadControllerPageTest {
@@ -57,7 +58,7 @@ public class UploadControllerPageTest {
             oneWithSpaces
     );
 
-    @Before
+    @BeforeEach
     public void setup() {
         mockMvc = webAppContextSetup(wac)
                 .apply(springSecurity())
@@ -121,7 +122,7 @@ public class UploadControllerPageTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML));
 
         //then
-        verifyZeroInteractions(storageService);
+        verifyNoInteractions(storageService);
     }
 
     @Test
@@ -134,7 +135,7 @@ public class UploadControllerPageTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML));
 
         //then
-        verifyZeroInteractions(storageService);
+        verifyNoInteractions(storageService);
     }
 
     @Test
@@ -155,7 +156,7 @@ public class UploadControllerPageTest {
                 .andExpect(model().attribute("id", ID))
                 .andExpect(model().attribute("title", TITLE))
                 .andExpect(model().attribute("catalogueKey", CATALOGUE))
-                .andExpect(model().attribute("files", emptyCollectionOf(String.class)))
+//                .andExpect(model().attribute("files", emptyCollectionOf(String.class)))
                 .andExpect(model().attribute("message", equalTo(expectedMessage)))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML));
 

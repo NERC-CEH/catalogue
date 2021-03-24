@@ -1,23 +1,27 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import static org.junit.Assert.*;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import org.mockito.MockitoAnnotations;
-import org.mockito.ArgumentCaptor;
-import java.util.concurrent.ExecutorService;
-import java.util.List;
-import java.util.ArrayList;
 
 public class AsyncDocumentIndexingServiceTest {
     @Mock ExecutorService executor;
     @Mock DocumentIndexingService proxy;
     private AsyncDocumentIndexingService service;
     
-    @Before
+    @BeforeEach
     public void init() {
         MockitoAnnotations.initMocks(this);
         service = new AsyncDocumentIndexingService(proxy, executor);
@@ -32,7 +36,7 @@ public class AsyncDocumentIndexingServiceTest {
         boolean isEmpty = service.isIndexEmpty();
 
         //Then
-        assertTrue("Expected to get a true value", isEmpty);
+        assertTrue(isEmpty);
     }
 
     @Test
@@ -44,7 +48,7 @@ public class AsyncDocumentIndexingServiceTest {
         boolean isEmpty = service.isIndexEmpty();
 
         //Then
-        assertFalse("Expected to get a false value", isEmpty);
+        assertFalse(isEmpty);
     }
 
     @Test

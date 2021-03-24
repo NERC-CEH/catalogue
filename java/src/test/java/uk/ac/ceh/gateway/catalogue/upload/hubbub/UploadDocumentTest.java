@@ -1,15 +1,15 @@
 package uk.ac.ceh.gateway.catalogue.upload.hubbub;
 
 import lombok.val;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
 import static uk.ac.ceh.gateway.catalogue.upload.hubbub.HubbubResponse.FileInfo;
 import static uk.ac.ceh.gateway.catalogue.upload.hubbub.HubbubResponse.Pagination;
 
@@ -28,7 +28,9 @@ public class UploadDocumentTest {
 
         //then
         assertThat(actual.getId(), equalTo(id));
-        assertThat(actual.getUploadFiles().keySet(), containsInAnyOrder("documents", "datastore", "supporting-documents"));
+        assertThat(actual.getUploadFiles().keySet().contains("datastore"), is(true));
+        assertThat(actual.getUploadFiles().keySet().contains("documents"), is(true));
+        assertThat(actual.getUploadFiles().keySet().contains("supporting-documents"), is(true));
 
         val documents = actual.getUploadFiles().get("documents");
         assertThat(documents.getDocuments().size(), equalTo(0));
@@ -36,21 +38,28 @@ public class UploadDocumentTest {
         val datastore = actual.getUploadFiles().get("datastore");
         assertThat(datastore.getDocuments().size(), equalTo(2));
         assertThat(datastore.getInvalid().size(), equalTo(0));
-        assertThat(datastore.getDocuments().keySet(), containsInAnyOrder(
-                "/sdfsdfsdf/dataset0.csv",
+        assertThat(datastore.getDocuments().keySet().contains(
+                "/sdfsdfsdf/dataset0.csv"
+        ), is(true));
+        assertThat(datastore.getDocuments().keySet().contains(
                 "/sdfsdfsdf/dataset1.csv"
-        ));
+        ), is(true));
 
         val supportingDocuments = actual.getUploadFiles().get("supporting-documents");
         assertThat(supportingDocuments.getDocuments().size(), equalTo(2));
         assertThat(supportingDocuments.getInvalid().size(), equalTo(1));
-        assertThat(supportingDocuments.getDocuments().keySet(), containsInAnyOrder(
-                "/sdfsdfsdf/support0.csv",
+        assertThat(supportingDocuments.getDocuments().keySet().contains(
+                "/sdfsdfsdf/support0.csv"
+        ), is(true));
+        assertThat(supportingDocuments.getDocuments().keySet().contains(
                 "/sdfsdfsdf/support1.csv"
-        ));
-        assertThat(supportingDocuments.getInvalid().keySet(), containsInAnyOrder(
-                "/sdfsdfsdf/support2.csv"
-        ));
+        ), is(true));
+        assertThat(datastore.getDocuments().keySet().contains(
+                "/sdfsdfsdf/dataset0.csv"
+        ), is(true));
+        assertThat(datastore.getDocuments().keySet().contains(
+                "/sdfsdfsdf/dataset1.csv"
+        ), is(true));
     }
 
     private List<FileInfo> datastore() {

@@ -4,11 +4,11 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
@@ -24,14 +24,14 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class MetadataListingServiceTest {
     @Mock private DataRepository<CatalogueUser> repo;
     @Mock private DocumentListingService listingService;
@@ -39,7 +39,7 @@ public class MetadataListingServiceTest {
     private MetadataListingService service;
     private final List<String> defaultResourceTypes = Arrays.asList("Dataset","Series","Service");
     
-    @Before
+    @BeforeEach
     @SneakyThrows
     public void initMocks() {
         service = new MetadataListingService(repo,
@@ -87,7 +87,8 @@ public class MetadataListingServiceTest {
         List<String> actual = service.getPublicDocumentsOfCatalogue("eidc");
 
         //then
-        assertThat("should be public documents only", actual, contains("123", "456"));
+        assertThat(actual.contains("123"), is(true));
+        assertThat(actual.contains("456"), is(true));
     }
     
     
@@ -112,7 +113,7 @@ public class MetadataListingServiceTest {
         System.out.println(ids);
         
         //Then
-        assertThat("Expected ids out", ids, contains("uid"));
+        assertThat(ids.contains("uid"), is(true));
     }
     
     @Test
@@ -127,7 +128,7 @@ public class MetadataListingServiceTest {
         List<String> ids = service.getPublicDocuments(revision, GeminiDocument.class, defaultResourceTypes);
         
         //Then
-        assertTrue("Expected no matching results", ids.isEmpty());
+        assertTrue(ids.isEmpty());
     }
     
     @Test
@@ -142,7 +143,7 @@ public class MetadataListingServiceTest {
         List<String> ids = service.getPublicDocuments(revision, differentMetadataType, defaultResourceTypes);
         
         //Then
-        assertTrue("Expected no matching results", ids.isEmpty());
+        assertTrue(ids.isEmpty());
     }
     
     @Test
@@ -160,7 +161,7 @@ public class MetadataListingServiceTest {
         List<String> ids = service.getPublicDocuments(revision, GeminiDocument.class, defaultResourceTypes);
         
         //Then
-        assertTrue("Expected no records", ids.isEmpty());
+        assertTrue(ids.isEmpty());
         verify(documentBundleReader).readBundle(id, revision);
     }
     
@@ -185,7 +186,7 @@ public class MetadataListingServiceTest {
         List<String> publicIds = service.getPublicDocuments(revision, GeminiDocument.class,Arrays.asList(resourceType));
         
         //Then
-        assertTrue("Expected one record", publicIds.size() == 1);
+        assertTrue(publicIds.size() == 1);
         verify(documentBundleReader).readBundle("a", revision);
     }
     
@@ -208,7 +209,7 @@ public class MetadataListingServiceTest {
         List<String> publicIds = service.getPublicDocuments(revision, GeminiDocument.class, Arrays.asList(geminiResourceType));
         
         //Then
-        assertTrue("Expected no records", publicIds.isEmpty());
+        assertTrue(publicIds.isEmpty());
         verify(documentBundleReader).readBundle("a", revision);
     }
     
@@ -234,7 +235,7 @@ public class MetadataListingServiceTest {
         List<String> publicIds = service.getPublicDocuments(revision, GeminiDocument.class, Arrays.asList(geminiResourceType));
         
         //Then
-        assertTrue("Expected one record", publicIds.size() == 1);
+        assertTrue(publicIds.size() == 1);
         verify(documentBundleReader).readBundle("a", revision);
     }
     

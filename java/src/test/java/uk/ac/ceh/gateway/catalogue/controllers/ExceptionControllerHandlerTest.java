@@ -1,7 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -10,16 +10,16 @@ import uk.ac.ceh.gateway.catalogue.model.*;
 
 import java.net.URISyntaxException;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class ExceptionControllerHandlerTest {
     private ExceptionControllerHandler controller;
     
-    @Before
+    @BeforeEach
     public void setup() {
         this.controller = new ExceptionControllerHandler();
     }
@@ -105,7 +105,7 @@ public class ExceptionControllerHandlerTest {
         ClassPathResource body = (ClassPathResource)response.getBody();
         
         //Then
-        assertTrue("Expected image to be present", body.exists());
-        assertThat("Expected content type to be png", headers.getContentType(), equalTo(MediaType.IMAGE_PNG));
+        assertTrue(body.exists());
+        assertThat(headers.getContentType(), equalTo(MediaType.IMAGE_PNG));
     }   
 }

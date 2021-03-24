@@ -1,7 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
-import static org.junit.Assert.assertEquals;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class OnlineResourceTest {
     @Test
@@ -13,7 +14,7 @@ public class OnlineResourceTest {
         OnlineResource.Type type = resource.getType();
         
         //Then
-        assertEquals("Expected to find get capabilites type", OnlineResource.Type.WMS_GET_CAPABILITIES, type);
+        assertEquals(OnlineResource.Type.WMS_GET_CAPABILITIES, type);
     }
     
     @Test
@@ -25,7 +26,7 @@ public class OnlineResourceTest {
         OnlineResource.Type type = resource.getType();
         
         //Then
-        assertEquals("Expected to find get capabilites type", OnlineResource.Type.WMS_GET_CAPABILITIES, type);
+        assertEquals(OnlineResource.Type.WMS_GET_CAPABILITIES, type);
     }
     
     @Test
@@ -37,7 +38,7 @@ public class OnlineResourceTest {
         OnlineResource.Type type = resource.getType();
         
         //Then
-        assertEquals("Expected to not find get capabilites type", OnlineResource.Type.OTHER, type);
+        assertEquals(OnlineResource.Type.OTHER, type);
     }
     
     @Test
@@ -49,7 +50,7 @@ public class OnlineResourceTest {
         OnlineResource.Type type = resource.getType();
         
         //Then
-        assertEquals("Expected to find get capabilites type", OnlineResource.Type.WMS_GET_CAPABILITIES, type);
+        assertEquals(OnlineResource.Type.WMS_GET_CAPABILITIES, type);
     }
     
 }

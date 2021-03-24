@@ -1,26 +1,30 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-import org.junit.Test;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import uk.ac.ceh.gateway.catalogue.util.ClassMap;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 public class IndexGeneratorRegistryTest {
-    @Test(expected = DocumentIndexingException.class)
+    @Test
     public void checkThatThrowsExceptionIfNoClassIsFound() throws DocumentIndexingException {
-        //Given
-        ClassMap<IndexGenerator> classMap = mock(ClassMap.class);
-        IndexGeneratorRegistry registry = new IndexGeneratorRegistry(classMap);
-        when(classMap.get(String.class)).thenReturn(null);
-        
-        //When
-        registry.generateIndex("This would need a string entry");
-        
-        //Then
-        fail("Expected an exception to be thrown");
+        Assertions.assertThrows(DocumentIndexingException.class, () -> {
+            //Given
+            ClassMap<IndexGenerator> classMap = mock(ClassMap.class);
+            IndexGeneratorRegistry registry = new IndexGeneratorRegistry(classMap);
+            when(classMap.get(String.class)).thenReturn(null);
+
+            //When
+            registry.generateIndex("This would need a string entry");
+
+            //Then
+            fail("Expected an exception to be thrown");
+        });
     }
     
     @Test

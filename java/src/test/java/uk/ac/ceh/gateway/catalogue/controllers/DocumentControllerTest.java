@@ -1,7 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
@@ -23,8 +23,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -37,7 +37,7 @@ public class DocumentControllerTest {
     private DocumentController controller;
     private final String linkedDocumentId = "0a6c7c4c-0515-40a8-b84e-7ffe622b2579";
     
-    @Before
+    @BeforeEach
     public void initMocks() throws IOException {
         MockitoAnnotations.initMocks(this);
         controller = new DocumentController(documentRepository);

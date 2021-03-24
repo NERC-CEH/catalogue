@@ -1,6 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
@@ -14,8 +14,9 @@ import java.time.Month;
 import java.util.Arrays;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -55,9 +56,9 @@ public class CitationServiceTest {
         Citation citation = service.getCitation(document).get();
         
         //Then
-        assertNotNull("Expected to get a citation", citation);
-        assertEquals("expected only one author", citation.getAuthors().size(), 1);
-        assertTrue("expected to get author name", citation.getAuthors().contains("Lord Business"));
+        assertNotNull(citation);
+        assertEquals(citation.getAuthors().size(), 1);
+        assertTrue(citation.getAuthors().contains("Lord Business"));
         assertThat("DOI present", citation.getDoi(), equalTo("10.5285/myDoI"));
         assertThat("Title present", citation.getTitle(), equalTo("document title"));
         assertThat("Year is correct", citation.getYear(), equalTo(2000));

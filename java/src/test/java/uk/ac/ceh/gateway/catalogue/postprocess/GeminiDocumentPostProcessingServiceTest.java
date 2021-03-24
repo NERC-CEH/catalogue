@@ -3,26 +3,26 @@ package uk.ac.ceh.gateway.catalogue.postprocess;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.tdb.TDBFactory;
-import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
-import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import static org.apache.jena.rdf.model.ResourceFactory.*;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import uk.ac.ceh.gateway.catalogue.model.Link;
-import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
-import uk.ac.ceh.gateway.catalogue.model.Citation;
-import uk.ac.ceh.gateway.catalogue.services.CitationService;
 import uk.ac.ceh.gateway.catalogue.datacite.DataciteService;
+import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.model.Citation;
+import uk.ac.ceh.gateway.catalogue.model.Link;
+import uk.ac.ceh.gateway.catalogue.services.CitationService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
+
+import java.util.Optional;
+
+import static org.apache.jena.rdf.model.ResourceFactory.createResource;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
 
 public class GeminiDocumentPostProcessingServiceTest {    
     @Mock CitationService citationService;
@@ -31,7 +31,7 @@ public class GeminiDocumentPostProcessingServiceTest {
     private Dataset jenaTdb;
     private GeminiDocumentPostProcessingService service;
     
-    @Before
+    @BeforeEach
     public void init() {
         MockitoAnnotations.initMocks(this);
         when(citationService.getCitation(any(GeminiDocument.class))).thenReturn(Optional.empty());

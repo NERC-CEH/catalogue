@@ -1,11 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.repository;
 
 import lombok.SneakyThrows;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.imp.Model;
@@ -23,7 +23,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class GitDocumentRepositoryTest {
     @Mock DocumentIdentifierService documentIdentifierService;
     @Mock DocumentReadingService documentReader;
@@ -34,7 +34,7 @@ public class GitDocumentRepositoryTest {
     
     private GitDocumentRepository documentRepository;
     
-    @Before
+    @BeforeEach
     public void setup() {
         documentRepository = new GitDocumentRepository(
                             documentTypeLookupService, 
@@ -77,7 +77,7 @@ public class GitDocumentRepositoryTest {
         String catalogue = "ceh";
         
         given(documentReader.read(any(), any(), any())).willReturn(document);
-        given(documentIdentifierService.generateFileId()).willReturn("test");
+        given(documentIdentifierService.generateFileId(null)).willReturn("test");
         given(documentIdentifierService.generateUri("test")).willReturn("http://localhost:8080/id/test");
 
         //When

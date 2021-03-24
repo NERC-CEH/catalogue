@@ -1,8 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.*;
-import org.junit.Test;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+import org.junit.jupiter.api.Test;
 
 public class BoundingBoxTest {
   
@@ -20,7 +21,7 @@ public class BoundingBoxTest {
         String actual = boundingBox.getWkt();
         
         //Then
-        assertThat("WKT Created", actual, 
+        assertThat("WKT Created", actual,
             equalTo("POLYGON((-1.3425 56.1234, -1.3425 57.0021, 2.3492 57.0021, 2.3492 56.1234, -1.3425 56.1234))"));
     }
     

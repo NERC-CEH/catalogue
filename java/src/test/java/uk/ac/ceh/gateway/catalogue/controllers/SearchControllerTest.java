@@ -1,11 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
 import org.apache.solr.client.solrj.SolrClient;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.servlet.view.RedirectView;
 import uk.ac.ceh.components.userstore.GroupStore;
@@ -16,12 +16,12 @@ import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
 
 import javax.servlet.http.HttpServletRequest;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
-@RunWith(MockitoJUnitRunner.Strict.class)
+@ExtendWith(MockitoExtension.class)
 public class SearchControllerTest {
     @Mock private SolrClient solrClient;
     @Mock private GroupStore<CatalogueUser> groupStore;
@@ -29,7 +29,7 @@ public class SearchControllerTest {
     @Mock private FacetFactory facetFactory;
     private SearchController controller;
     
-    @Before
+    @BeforeEach
     public void setup() {
         controller = new SearchController(solrClient, groupStore, catalogueService, facetFactory);
     }

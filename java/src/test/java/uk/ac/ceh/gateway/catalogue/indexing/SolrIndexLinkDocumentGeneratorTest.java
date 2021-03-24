@@ -1,9 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.model.LinkDocument;
@@ -17,7 +17,7 @@ import java.util.Arrays;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class SolrIndexLinkDocumentGeneratorTest {
     private @Mock DocumentRepository documentRepository;
     private @Mock IndexGeneratorRegistry<MetadataDocument, SolrIndex> indexGeneratorRegistry;

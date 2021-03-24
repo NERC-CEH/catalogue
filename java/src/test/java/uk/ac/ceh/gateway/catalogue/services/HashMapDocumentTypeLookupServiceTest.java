@@ -1,9 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 
@@ -19,7 +21,7 @@ public class HashMapDocumentTypeLookupServiceTest {
         String type = service.getName(GeminiDocument.class);
         
         //Then
-        assertEquals("Expected to find gemini document", "GEMINI_DOCUMENT", type);
+        assertEquals( "GEMINI_DOCUMENT", type);
     }
     
     @Test
@@ -33,7 +35,7 @@ public class HashMapDocumentTypeLookupServiceTest {
         Class<? extends MetadataDocument> clazz = service.getType("GEMINI_DOCUMENT");
         
         //Then
-        assertEquals("Expected to find gemini document class", GeminiDocument.class, clazz);
+        assertEquals(GeminiDocument.class, clazz);
     }
     
     @Test
@@ -49,33 +51,37 @@ public class HashMapDocumentTypeLookupServiceTest {
         String name = service.getName(subType.getClass());
         
         //Then
-        assertEquals("Expected to get gemini_document for sub type", "GEMINI_DOCUMENT", name);        
+        assertEquals("GEMINI_DOCUMENT", name);
     }
     
-    @Test(expected=IllegalArgumentException.class)
+    @Test
     public void checkThatUnkownDocumentCantBeGivenAType() {
-        //Given
-        HashMapDocumentTypeLookupService service = 
-                new HashMapDocumentTypeLookupService();
-        
-        //When
-        service.getType("Some random Giberish");
-        
-        //Then
-        fail("Expected to fail with an illegalArgumentException");
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            //Given
+            HashMapDocumentTypeLookupService service =
+                    new HashMapDocumentTypeLookupService();
+
+            //When
+            service.getType("Some random Giberish");
+
+            //Then
+            fail("Expected to fail with an illegalArgumentException");
+        });
     }
     
-    @Test(expected=IllegalArgumentException.class)
+    @Test
     public void checkThatUnknownClassTypeCantBeAssingedADocumentType() {
-        //Given
-        HashMapDocumentTypeLookupService service = 
-                new HashMapDocumentTypeLookupService();
-        MetadataDocument unhandledMetadataDocument = mock(MetadataDocument.class);
-        
-        //When
-        service.getName(unhandledMetadataDocument.getClass());
-        
-        //Then
-        fail("Expectd to fail with an illegal arugment exception");
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            //Given
+            HashMapDocumentTypeLookupService service =
+                    new HashMapDocumentTypeLookupService();
+            MetadataDocument unhandledMetadataDocument = mock(MetadataDocument.class);
+
+            //When
+            service.getName(unhandledMetadataDocument.getClass());
+
+            //Then
+            fail("Expectd to fail with an illegal arugment exception");
+        });
     }    
 }
