@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -29,25 +30,22 @@ public class FileSystemStorageServiceStoreTest {
         expected = directory.resolve(ID).resolve(filename);
     }
 
-    /*@Test
+    @Test
     @SneakyThrows
     public void successfullyStoreFile() {
         //given
-        val expectedLines = new String[]{
-                "\"A\",\"B\",\"C\"",
-                "1,2,3",
-                "4,5,6",
-                "7,8,9"
-        };
 
         //when
         service.store(ID, dataCsv(getClass()));
 
         //then
         assertTrue(Files.exists(expected));
-        val lines = Files.readAllLines(expected, UTF_8);
-        assertThat(lines, IsCollectionContaining(expectedLines));
-    }*/
+        val lines = Files.readAllLines(expected, StandardCharsets.UTF_8);
+        assertTrue(lines.contains("\"A\",\"B\",\"C\""));
+        assertTrue(lines.contains("1,2,3"));
+        assertTrue(lines.contains("4,5,6"));
+        assertTrue(lines.contains("7,8,9"));
+    }
 
     @SneakyThrows
     @Test
