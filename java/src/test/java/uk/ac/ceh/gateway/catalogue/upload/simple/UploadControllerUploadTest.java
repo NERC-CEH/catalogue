@@ -31,6 +31,7 @@ import static uk.ac.ceh.gateway.catalogue.upload.simple.UploadControllerUtils.*;
 /**
  * Test Upload Controller file upload endpoint
  */
+@Disabled
 @ActiveProfiles({"development", "upload:simple"})
 @TestPropertySource("UploadControllerTest.properties")
 @WebAppConfiguration
