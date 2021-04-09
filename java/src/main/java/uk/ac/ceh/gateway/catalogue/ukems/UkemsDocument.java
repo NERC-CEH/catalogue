@@ -11,11 +11,14 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 
+import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.*;
+
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Accessors(chain = true)
 @ConvertUsing({
-    @Template(called="html/ukems/ukems-document.ftlh", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
+    @Template(called="html/ukems/ukems-document.ftlh", whenRequestedAs=MediaType.TEXT_HTML_VALUE),
+    @Template(called="xml/erddap.tplx", whenRequestedAs=ERDDAP_XML_VALUE)
 })
 public class UkemsDocument extends GeminiDocument {}

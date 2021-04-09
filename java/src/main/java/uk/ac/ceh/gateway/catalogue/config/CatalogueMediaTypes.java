@@ -117,4 +117,8 @@ public class CatalogueMediaTypes {
     public static final String UKEMS_DOCUMENT_SHORT = "ukems-document";
     public static final String UKEMS_DOCUMENT_JSON_VALUE = "application/vnd.ukems-document+json";
     public static final MediaType UKEMS_DOCUMENT_JSON = MediaType.parseMediaType(UKEMS_DOCUMENT_JSON_VALUE);
+
+    public static final String ERDDAP = "erddap";
+    public static final String ERDDAP_XML_VALUE = "application/vnd.erddap+xml";
+    public static final MediaType ERDDAP_XML = MediaType.parseMediaType(ERDDAP_XML_VALUE);
 }
