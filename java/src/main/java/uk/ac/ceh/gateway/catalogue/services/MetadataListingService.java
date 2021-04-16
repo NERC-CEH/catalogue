@@ -5,6 +5,7 @@ import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -24,15 +25,17 @@ import java.util.List;
  */
 @Slf4j
 @ToString
+@Service
 public class MetadataListingService {
     private final DataRepository<CatalogueUser> repo;
     private final DocumentListingService listingService;
     private final BundledReaderService<MetadataDocument> documentBundleReader;
     private static final String WAF_CATALOGUE = "eidc";
 
-    public MetadataListingService(DataRepository<CatalogueUser> repo,
-                                  DocumentListingService listingService,
-                                  BundledReaderService<MetadataDocument> documentBundleReader
+    public MetadataListingService(
+        DataRepository<CatalogueUser> repo,
+        DocumentListingService listingService,
+        BundledReaderService<MetadataDocument> documentBundleReader
     ) {
         this.repo = repo;
         this.listingService = listingService;

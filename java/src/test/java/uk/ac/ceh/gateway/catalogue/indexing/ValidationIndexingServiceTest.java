@@ -1,9 +1,10 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
@@ -13,12 +14,11 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
+@ExtendWith(MockitoExtension.class)
 public class ValidationIndexingServiceTest {
     
     @Mock BundledReaderService reader;
@@ -28,14 +28,8 @@ public class ValidationIndexingServiceTest {
     @Mock DocumentIdentifierService documentIdentifierService;
     @Mock IndexGenerator indexGenerator;
     
-    private ValidationIndexingService service;
-    
-    @BeforeEach
-    public void init() {
-        MockitoAnnotations.initMocks(this);
-        
-        service = new ValidationIndexingService(reader, listingService, repo, postProcessingService, documentIdentifierService, indexGenerator);
-    }
+    @InjectMocks private ValidationIndexingService service;
+
     
     @Test
     public void checkThatIndexEmptyIsAtStart() throws Exception {

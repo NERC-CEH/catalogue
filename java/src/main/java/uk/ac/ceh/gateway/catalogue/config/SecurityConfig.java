@@ -35,21 +35,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(HttpSecurity http) throws Exception {
         http
-                .sessionManagement()
+            .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .addFilter(filter)
-                .anonymous()
+            .and()
+            .addFilter(filter)
+            .anonymous()
                 .authenticationFilter(new AnonymousUserAuthenticationFilter("NotSure", CatalogueUser.PUBLIC_USER, "ROLE_ANONYMOUS"))
-                .and()
-                .authorizeRequests()
+            .and()
+            .authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/**").fullyAuthenticated()
                 .antMatchers(HttpMethod.PUT, "/**").fullyAuthenticated()
                 .antMatchers(HttpMethod.DELETE, "/**").fullyAuthenticated()
-                .and()
-                .csrf()
+            .and()
+            .csrf()
                 .disable()
-                .exceptionHandling()
-                .authenticationEntryPoint(new RestAuthenticationEntryPoint());
+            .exceptionHandling()
+            .authenticationEntryPoint(new RestAuthenticationEntryPoint());
     }
 }

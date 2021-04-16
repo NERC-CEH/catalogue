@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
@@ -21,12 +23,16 @@ import java.util.UUID;
  */
 @Slf4j
 @ToString
+@Service
 public class DocumentIdentifierService {
     @Getter
     private final String baseUri;
     private final char replacement;
 
-    public DocumentIdentifierService(String baseUri, char replacement) {
+    public DocumentIdentifierService(
+        @Value("${documents.baseUri}") String baseUri,
+        @Value("${documents.replacement:-}") char replacement
+    ) {
         this.baseUri = baseUri;
         this.replacement = replacement;
         log.info("Creating {}", this);

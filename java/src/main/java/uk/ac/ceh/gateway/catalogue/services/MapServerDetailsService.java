@@ -2,6 +2,8 @@ package uk.ac.ceh.gateway.catalogue.services;
 
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -27,10 +29,13 @@ import static java.util.Objects.nonNull;
  */
 @Slf4j
 @ToString
+@Service
 public class MapServerDetailsService {
     private final String hostUrl;
 
-    public MapServerDetailsService(String hostUrl) {
+    public MapServerDetailsService(
+        @Value("${documents.baseUri}") String hostUrl
+    ) {
         this.hostUrl = hostUrl;
         log.info("Creating {}", this);
     }

@@ -1,11 +1,12 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
+import lombok.val;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.web.util.UriComponentsBuilder;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.config.PublicationConfig;
@@ -19,7 +20,6 @@ import uk.ac.ceh.gateway.catalogue.publication.Workflow;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -27,10 +27,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 public class GitPublicationServiceTest {
     @Mock GroupStore<CatalogueUser> groupStore;
     @Mock DocumentRepository documentRepository;
-    UriComponentsBuilder uriBuilder;
     Workflow workflow;
     CatalogueUser editor;
     private static final String FILENAME = "e5090602-6ff9-4936-8217-857ea6de5774";
@@ -56,15 +56,13 @@ public class GitPublicationServiceTest {
             .setId("db49a6ee-5c9e-4bef-8e6e-196387df4d97")
             .setMetadata(MetadataInfo.builder().state("published").catalogue("eidc").build());
         
-        MockitoAnnotations.initMocks(this);
-        
         this.publicationService = new GitPublicationService(groupStore, workflow, documentRepository);
     }
     
     @Test
     public void successfullyTransitionState() throws Exception {
         //Given
-        when(groupStore.getGroups(editor)).thenReturn(Arrays.asList(createGroup("ROLE_EIDC_EDITOR")));
+        when(groupStore.getGroups(editor)).thenReturn(Collections.singletonList(createGroup("ROLE_EIDC_EDITOR")));
         when(documentRepository.read(FILENAME)).thenReturn(draft);
         
         //When
@@ -78,7 +76,7 @@ public class GitPublicationServiceTest {
     @Test
     public void editorCannotTransitionFromPublic() throws Exception {
         //Given
-        when(groupStore.getGroups(editor)).thenReturn(Arrays.asList(createGroup("ROLE_EIDC_EDITOR")));
+        when(groupStore.getGroups(editor)).thenReturn(Collections.singletonList(createGroup("ROLE_EIDC_EDITOR")));
         when(documentRepository.read(FILENAME)).thenReturn(published);
         
         //When
@@ -93,7 +91,7 @@ public class GitPublicationServiceTest {
     @Test
     public void publisherCanTransitionFromPublic() throws Exception {
         //Given
-        when(groupStore.getGroups(editor)).thenReturn(Arrays.asList(createGroup("ROLE_EIDC_PUBLISHER")));
+        when(groupStore.getGroups(editor)).thenReturn(Collections.singletonList(createGroup("ROLE_EIDC_PUBLISHER")));
         when(documentRepository.read(FILENAME)).thenReturn(published);
         
         //When
@@ -108,7 +106,7 @@ public class GitPublicationServiceTest {
     @Test
     public void unknownCannotTransitionFromPublic() throws Exception {
         //Given
-        when(groupStore.getGroups(editor)).thenReturn(Collections.EMPTY_LIST);
+        when(groupStore.getGroups(editor)).thenReturn(Collections.emptyList());
         when(documentRepository.read(FILENAME)).thenReturn(published);
         
         //When
@@ -134,13 +132,14 @@ public class GitPublicationServiceTest {
     }
     
     @Test
-    public void tryToGetFileThatDoesNotExist() throws Exception {
+    public void tryToGetFileThatDoesNotExist() {
+        val fileDoesNotExist = "this file name does not exist";
         Assertions.assertThrows(PublicationServiceException.class, () -> {
             //Given
-            when(documentRepository.read(FILENAME)).thenThrow(new PublicationServiceException("test"));
+            when(documentRepository.read(fileDoesNotExist)).thenThrow(new PublicationServiceException("test"));
 
             //When
-            publicationService.current(editor, "this file name does not exist");
+            publicationService.current(editor, fileDoesNotExist);
 
             //Then
             verify(documentRepository).read(FILENAME);

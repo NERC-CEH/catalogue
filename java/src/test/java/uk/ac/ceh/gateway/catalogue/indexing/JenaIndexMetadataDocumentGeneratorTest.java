@@ -1,10 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
 import org.apache.jena.rdf.model.Statement;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 
@@ -15,15 +16,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
+@ExtendWith(MockitoExtension.class)
 public class JenaIndexMetadataDocumentGeneratorTest {
-  private JenaIndexMetadataDocumentGenerator generator;
+  @InjectMocks private JenaIndexMetadataDocumentGenerator generator;
   @Mock private DocumentIdentifierService service;
-  
-  @BeforeEach
-  public void setup() {
-    MockitoAnnotations.initMocks(this);
-    generator = new JenaIndexMetadataDocumentGenerator(service);
-  }
 
   @Test
   public void emptyIdentifierDoesNotGetIndexed() {

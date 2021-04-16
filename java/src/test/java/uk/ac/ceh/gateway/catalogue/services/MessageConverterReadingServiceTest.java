@@ -3,9 +3,10 @@ package uk.ac.ceh.gateway.catalogue.services;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -19,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 public class MessageConverterReadingServiceTest {
     @Spy List<HttpMessageConverter<?>> httpConverters;
     
@@ -27,7 +29,6 @@ public class MessageConverterReadingServiceTest {
     @BeforeEach
     public void createMessageConverter() {
         httpConverters = new ArrayList<>();
-        MockitoAnnotations.initMocks(this);
         messageConverter = new MessageConverterReadingService(httpConverters);
     }
     

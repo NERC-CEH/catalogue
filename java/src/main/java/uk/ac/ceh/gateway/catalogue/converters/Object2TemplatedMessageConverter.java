@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-@ToString
+@ToString(exclude = "configuration")
 public class Object2TemplatedMessageConverter<T> extends AbstractHttpMessageConverter<T> {
     private final Configuration configuration;
     private final Class<T> clazz;

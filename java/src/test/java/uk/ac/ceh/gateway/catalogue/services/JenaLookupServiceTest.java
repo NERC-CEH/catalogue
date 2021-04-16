@@ -8,7 +8,6 @@ import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.tdb.TDBFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockitoAnnotations;
 import uk.ac.ceh.gateway.catalogue.model.Link;
 
 import java.util.Arrays;
@@ -22,7 +21,6 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
 import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
 
-
 public class JenaLookupServiceTest {
     private Dataset jenaTdb;
     private JenaLookupService service;
@@ -31,7 +29,6 @@ public class JenaLookupServiceTest {
     
     @BeforeEach
     public void init() {
-        MockitoAnnotations.initMocks(this);
         jenaTdb = TDBFactory.createDataset();
         service = new JenaLookupService(jenaTdb);
     }

@@ -1,9 +1,10 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,6 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -28,20 +28,14 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 public class DocumentControllerTest {
     
     @Mock DocumentRepository documentRepository;
-    private DocumentController controller;
+    @InjectMocks private DocumentController controller;
     private final String linkedDocumentId = "0a6c7c4c-0515-40a8-b84e-7ffe622b2579";
-    
-    @BeforeEach
-    public void initMocks() throws IOException {
-        MockitoAnnotations.initMocks(this);
-        controller = new DocumentController(documentRepository);
-    }
 
     @Test
     public void checkItCanRewriteIdToDocumentWithFileExtension() {
@@ -119,14 +113,14 @@ public class DocumentControllerTest {
     @Test
     public void checkCanEditModelDocument() throws Exception {
         //Given
-        CatalogueUser user = mock(CatalogueUser.class);
-        Model document = mock(Model.class);
+        CatalogueUser user = new CatalogueUser();
+        Model document = new Model();
+        document.setUri("https://catalogue.ceh.ac.uk/id/123-test");
         String fileId = "test";
         String message = "Edited document: test";
         
         given(documentRepository.read(fileId)).willReturn(new Model().setMetadata(MetadataInfo.builder().build()));
         given(documentRepository.save(user, document, fileId, message)).willReturn(document);
-        given(document.getUri()).willReturn("https://catalogue.ceh.ac.uk/id/123-test");
               
         //When
         ResponseEntity<MetadataDocument> actual = controller.updateModelDocument(user, fileId, document);
@@ -160,7 +154,7 @@ public class DocumentControllerTest {
     public void checkCanEditGeminiDocument() throws Exception {
         //Given
         String fileId = "test";
-        String message = "message";
+        String message = "Edited document: test";
         CatalogueUser user = new CatalogueUser();
         MetadataDocument document = new GeminiDocument()
             .setId(fileId)
@@ -207,7 +201,7 @@ public class DocumentControllerTest {
         LinkDocument document = LinkDocument.builder().linkedDocumentId(linkedDocumentId).build();
         document.setUri("https://catalogue.ceh.ac.uk/id/123-test");
         String fileId = "test";
-        String message = "message";
+        String message = "Edited document: test";
         
         given(documentRepository.read(fileId)).willReturn(new Model().setMetadata(MetadataInfo.builder().build()));
         given(documentRepository.save(user, document, fileId, message)).willReturn(document);
@@ -217,7 +211,7 @@ public class DocumentControllerTest {
         
         //Then
         verify(documentRepository).read(fileId);
-        verify(documentRepository).save(user, document, fileId, "Edited document: test");
+        verify(documentRepository).save(user, document, fileId, message);
         assertThat("Should have 200 OK status", actual.getStatusCode(), equalTo(HttpStatus.OK));
     }
 
@@ -260,8 +254,8 @@ public class DocumentControllerTest {
         String file = "myFile";       
         String latestRevisionId = "latestRev";
         MetadataInfo info = MetadataInfo.builder().build();
-        MetadataDocument document = mock(MetadataDocument.class);
-        given(document.getMetadata()).willReturn(info);
+        MetadataDocument document = new GeminiDocument();
+        document.setMetadata(info);
         given(documentRepository.read(file, latestRevisionId))
             .willReturn(document);
         
@@ -278,8 +272,8 @@ public class DocumentControllerTest {
         CatalogueUser user = CatalogueUser.PUBLIC_USER;
         String file = "myFile";
         MetadataInfo info = MetadataInfo.builder().build();
-        MetadataDocument document = mock(MetadataDocument.class);
-        given(document.getMetadata()).willReturn(info);
+        MetadataDocument document = new GeminiDocument();
+        document.setMetadata(info);
         given(documentRepository.read(file))
             .willReturn(document);
         

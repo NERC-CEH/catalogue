@@ -1,31 +1,27 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
 import freemarker.template.Configuration;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.services.MapServerDetailsService;
 
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 public class MapServerIndexGeneratorTest {
     
     @Mock Configuration templateConfig;
     @Mock MapServerDetailsService mapServerDetailsService;
-    private MapServerIndexGenerator generator;
-    
-    @BeforeEach
-    public void init() {
-        MockitoAnnotations.initMocks(this);
-        generator = new MapServerIndexGenerator(templateConfig, mapServerDetailsService);
-    }
+    @InjectMocks private MapServerIndexGenerator generator;
     
     @Test
     public void checkThatCanLocateTheMapServerServiceTemplate() {

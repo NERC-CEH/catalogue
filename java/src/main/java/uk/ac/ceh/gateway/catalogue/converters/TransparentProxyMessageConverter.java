@@ -49,7 +49,7 @@ public class TransparentProxyMessageConverter implements HttpMessageConverter<Tr
 
     @Override
     public TransparentProxy read(Class<? extends TransparentProxy> clazz, HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
-        throw new HttpMessageNotReadableException("Can't read", inputMessage); //To change body of generated methods, choose Tools | Templates.
+        throw new HttpMessageNotReadableException("Can't read", inputMessage);
     }
 
     /**

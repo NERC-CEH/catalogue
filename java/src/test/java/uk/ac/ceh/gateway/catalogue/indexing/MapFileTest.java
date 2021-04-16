@@ -2,31 +2,27 @@ package uk.ac.ceh.gateway.catalogue.indexing;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import static org.hamcrest.CoreMatchers.is;
 
 import java.io.Writer;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 public class MapFileTest {
     @Mock Configuration templateConfig;
     @Mock MetadataDocument document;
-    
-    @BeforeEach
-    public void init() {
-        MockitoAnnotations.initMocks(this);
-    }
     
     @Test
     public void checkThatCanWriteMapFileToWriter() throws Exception {

@@ -1,17 +1,16 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.servlet.ModelAndView;
 import uk.ac.ceh.components.datastore.DataRepository;
-import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.services.MetadataListingService;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -19,11 +18,12 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-
 import static org.mockito.Answers.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.util.AssertionErrors.assertTrue;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
+@ExtendWith(MockitoExtension.class)
 public class GeminiWafControllerTest {
     @Mock(answer=RETURNS_DEEP_STUBS) DataRepository repo;
     @Mock(answer=RETURNS_DEEP_STUBS) MetadataListingService listingService;
@@ -32,13 +32,13 @@ public class GeminiWafControllerTest {
     
     @BeforeEach
     public void initMocks() {
-        MockitoAnnotations.initMocks(this);
         controller = new GeminiWafController(repo, listingService);
     }
     
     
     @Test
-    public void checkThatXmlExtensionIsAppendedToGeminiMetadataRecords() throws DataRepositoryException, IOException, PostProcessingException {
+    @SneakyThrows
+    public void checkThatXmlExtensionIsAppendedToGeminiMetadataRecords() {
         //Given
         List<String> files = Arrays.asList("test1", "test2");
         List<String> resourceTypes = new ArrayList<>(Arrays.asList("dataset", "service"));

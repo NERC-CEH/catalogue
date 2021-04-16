@@ -7,6 +7,7 @@ import com.jayway.jsonpath.spi.json.JacksonJsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.config.CatalogueServiceConfig;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReader;
 
@@ -19,6 +20,7 @@ import static uk.ac.ceh.gateway.catalogue.quality.MetadataQualityService.Severit
 
 @Slf4j
 @ToString
+@Service
 public class MetadataQualityService {
     private final DocumentReader documentReader;
     private final Configuration config;
@@ -36,7 +38,10 @@ public class MetadataQualityService {
     private final TypeRef<List<Map<String, String>>> typeRefStringString = new TypeRef<>() {
     };
 
-    public MetadataQualityService(@NonNull DocumentReader documentReader, @NonNull ObjectMapper objectMapper) {
+    public MetadataQualityService(
+        @NonNull DocumentReader documentReader,
+        @NonNull ObjectMapper objectMapper
+    ) {
         this.documentReader = documentReader;
         this.config = Configuration.defaultConfiguration()
             .jsonProvider(new JacksonJsonProvider(objectMapper))
@@ -593,7 +598,7 @@ public class MetadataQualityService {
     }
 
     Optional<MetadataCheck> checkKeywords(DocumentContext parsed) {
-        val keywords = parsed.read("$.descriptiveKeywords[*]keywords[*]",typeRefStringString);
+        val keywords = parsed.read("$.descriptiveKeywords[*].keywords[*]", typeRefStringString);
         if (keywords.isEmpty()) {
             return Optional.of(new MetadataCheck("Keywords are missing", ERROR));
         }

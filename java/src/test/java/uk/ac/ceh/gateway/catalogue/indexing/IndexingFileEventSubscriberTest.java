@@ -1,16 +1,10 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.junit.jupiter.api.BeforeEach;
-import static org.mockito.BDDMockito.given;
-
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
@@ -19,6 +13,13 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
 
+import java.util.Arrays;
+import java.util.List;
+
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+
+@ExtendWith(MockitoExtension.class)
 public class IndexingFileEventSubscriberTest {
     @Mock
     private SolrIndexingService<MetadataDocument> service;
@@ -35,13 +36,8 @@ public class IndexingFileEventSubscriberTest {
     @Mock
     private DataRevision<CatalogueUser> latestRevision;
 
-    private IndexingFileEventListener eventSubscriber; 
-    
-    @BeforeEach
-    public void setup() {
-        MockitoAnnotations.initMocks(this);
-        eventSubscriber = new IndexingFileEventListener(service, listingService);
-    }
+    @InjectMocks
+    private IndexingFileEventListener eventSubscriber;
 
     @Test
     public void indexFilesThatHaveDuplicateNames() throws DocumentIndexingException, DataRepositoryException {

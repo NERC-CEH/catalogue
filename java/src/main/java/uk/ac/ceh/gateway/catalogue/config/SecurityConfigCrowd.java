@@ -41,6 +41,7 @@ public class SecurityConfigCrowd {
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
+        log.info("Creating AuthenticationProvider");
         return new PreAuthenticatedUsernameAuthenticationProvider<>(userStore, groupStore);
     }
 }

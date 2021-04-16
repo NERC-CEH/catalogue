@@ -17,25 +17,27 @@
  */
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.gateway.catalogue.model.TransparentProxy;
 import uk.ac.ceh.gateway.catalogue.services.MapServerDetailsService;
 
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
 public class MapViewerControllerTest {
     @Mock RestTemplate rest;
     @Mock MapServerDetailsService mapServerDetailsService;
@@ -44,8 +46,6 @@ public class MapViewerControllerTest {
     
     @BeforeEach
     public void init() {
-        MockitoAnnotations.initMocks(this);
-        
         controller = spy(new MapViewerController(rest, mapServerDetailsService));
     }
     

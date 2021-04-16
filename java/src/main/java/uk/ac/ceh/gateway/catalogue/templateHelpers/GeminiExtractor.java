@@ -8,6 +8,7 @@ import com.vividsolutions.jts.io.WKTReader;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.DescriptiveKeywords;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @ToString
+@Service
 public class GeminiExtractor {
     private final static Envelope GLOBAL_EXTENT = new Envelope(-180, 180, -90, 90);
 

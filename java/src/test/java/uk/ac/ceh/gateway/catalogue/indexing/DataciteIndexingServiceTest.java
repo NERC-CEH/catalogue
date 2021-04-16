@@ -3,8 +3,9 @@ package uk.ac.ceh.gateway.catalogue.indexing;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.datacite.DataciteService;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -22,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 public class DataciteIndexingServiceTest {
     @Mock BundledReaderService<MetadataDocument> bundleReader;
     @Mock DataciteService datacite;
@@ -29,7 +31,6 @@ public class DataciteIndexingServiceTest {
     
     @BeforeEach
     public void init() throws XPathExpressionException {
-        MockitoAnnotations.initMocks(this);
         service = new DataciteIndexingService(bundleReader, datacite);
     }
     

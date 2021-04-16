@@ -1,10 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
@@ -14,24 +15,16 @@ import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
+@ExtendWith(MockitoExtension.class)
 public class CatalogueControllerTest {
     private @Mock DocumentRepository documentRepository;
     private @Mock CatalogueService catalogueService;
-    private CatalogueController controller;
-
-    @BeforeEach
-    public void setup() {
-        MockitoAnnotations.initMocks(this);
-        controller = new CatalogueController(
-            documentRepository,
-            catalogueService
-        );
-    }
+    @InjectMocks private CatalogueController controller;
 
     @Test
     public void getAllCatalogues() throws Exception {

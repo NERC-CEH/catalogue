@@ -1,10 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
 import org.apache.jena.ext.com.google.common.collect.Lists;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -19,20 +20,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
+@ExtendWith(MockitoExtension.class)
 public class PermissionControllerTest {
     @Mock private PermissionService permissionService;
     @Mock private DocumentRepository documentRepository;
     
-    private PermissionController permissionController;
-    
-    @BeforeEach
-    public void setup() {
-        MockitoAnnotations.initMocks(this);
-        permissionController = new PermissionController(
-            permissionService,
-            documentRepository
-        );
-    }
+    @InjectMocks private PermissionController permissionController;
     
     @Test
     public void getCurrentPermission() throws Exception {

@@ -3,10 +3,11 @@ package uk.ac.ceh.gateway.catalogue.indexing;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.gateway.catalogue.ef.Activity;
 import uk.ac.ceh.gateway.catalogue.ef.Facility;
 import uk.ac.ceh.gateway.catalogue.ef.Link;
@@ -17,20 +18,15 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.core.Is.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.*;
 import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.SET_UP_FOR;
 
+@ExtendWith(MockitoExtension.class)
 public class JenaIndexBaseMonitoringTypeGeneratorTest {
-    @Mock JenaIndexMetadataDocumentGenerator generator;
-    private JenaIndexBaseMonitoringTypeGenerator service;
-    
-    @BeforeEach
-    public void init() {
-        MockitoAnnotations.initMocks(this);
-        service = new JenaIndexBaseMonitoringTypeGenerator(generator);
-    }
+    @Mock private JenaIndexMetadataDocumentGenerator generator;
+    @InjectMocks private JenaIndexBaseMonitoringTypeGenerator service;
     
     @Test
     public void checkThatCanIndexActivity() throws DocumentIndexingException {

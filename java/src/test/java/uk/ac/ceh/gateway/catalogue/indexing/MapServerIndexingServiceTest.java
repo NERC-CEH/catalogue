@@ -2,9 +2,10 @@ package uk.ac.ceh.gateway.catalogue.indexing;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
@@ -24,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 public class MapServerIndexingServiceTest {
 
     @TempDir Path directory;
@@ -38,8 +40,6 @@ public class MapServerIndexingServiceTest {
     
     @BeforeEach
     public void init() {
-        MockitoAnnotations.initMocks(this);
-        
         service = new MapServerIndexingService(reader, listingService, repo, indexGenerator, directory.toFile());
     }
 
