@@ -166,6 +166,8 @@ public class WebConfig implements WebMvcConfigurer {
     public static final String UPLOAD_DOCUMENT_SHORT        = "Upload";
     public static final String DATA_TYPE_JSON_VALUE         = "application/vnd.data-type+json";
     public static final String DATA_TYPE_SHORT              = "data-type";
+    public static final String ELTER_SHORT        = "elter";
+    public static final String ELTER_JSON_VALUE   = "application/vnd.elter+json";
 
     @Value("${documents.baseUri}") private String baseUri;
     @Value("${data.repository.location}") private String dataRepositoryLocation;
@@ -377,6 +379,9 @@ public class WebConfig implements WebMvcConfigurer {
         //Sample Archive
         converters.add(new Object2TemplatedMessageConverter<>(SampleArchive.class, freemarkerConfiguration()));
 
+        //ELTER
+        converters.add(new Object2TemplatedMessageConverter<>(ElterDocument.class, freemarkerConfiguration()));
+
         // Gemini Message Converters
         converters.add(new Object2TemplatedMessageConverter<>(GeminiDocument.class, freemarkerConfiguration()));
         converters.add(new Object2TemplatedMessageConverter<>(LinkDocument.class, freemarkerConfiguration()));
@@ -446,6 +451,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .register(ERAMMP_MODEL_SHORT, ErammpModel.class)
                 .register(ERAMMP_DATACUBE_SHORT, ErammpDatacube.class)
                 .register(SAMPLE_ARCHIVE_SHORT, SampleArchive.class)
+                .register(ELTER_SHORT, ElterDocument.class)
                 .register(DATA_TYPE_SHORT, DataType.class);
     }
 
@@ -692,6 +698,7 @@ public class WebConfig implements WebMvcConfigurer {
                         .put(SAMPLE_ARCHIVE_SHORT, MediaType.parseMediaType(SAMPLE_ARCHIVE_JSON_VALUE))
                         .put(UPLOAD_DOCUMENT_SHORT, MediaType.parseMediaType(UPLOAD_DOCUMENT_JSON_VALUE))
                         .put(DATA_TYPE_SHORT, MediaType.parseMediaType(DATA_TYPE_JSON_VALUE))
+                        .put(ELTER_SHORT, MediaType.parseMediaType(ELTER_JSON_VALUE))
                         .build()
                     ),
                     new WmsFormatContentNegotiationStrategy("INFO_FORMAT"), // GetFeatureInfo

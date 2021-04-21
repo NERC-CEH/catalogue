@@ -62,6 +62,11 @@ public class CatalogueServiceConfig {
             .type(GEMINI_DOCUMENT)
             .build();
 
+        DocumentType elter = DocumentType.builder()
+            .title("eLTER dataset")
+            .type(ELTER_SHORT)
+            .build();
+
         DocumentType imp = DocumentType.builder()
             .title("Model")
             .type(IMP_DOCUMENT)
@@ -189,7 +194,7 @@ public class CatalogueServiceConfig {
                 .title("eLTER")
                 .url("")
                 .facetKey("elterDeimsSite")
-                .documentType(gemini)
+                .documentType(elter)
                 .fileUpload(false)
                 .build(),
 
