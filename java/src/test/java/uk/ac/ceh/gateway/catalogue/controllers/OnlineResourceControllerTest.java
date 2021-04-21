@@ -3,13 +3,13 @@ package uk.ac.ceh.gateway.catalogue.controllers;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -28,11 +28,16 @@ import java.util.Collections;
 
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
 @ActiveProfiles({"development"})
-@ContextConfiguration(classes = {DevelopmentUserStoreConfig.class, SecurityConfigCrowd.class})
+@ContextConfiguration(classes = {
+    OnlineResourceController.class,
+    DevelopmentUserStoreConfig.class,
+    SecurityConfigCrowd.class
+})
 @DisplayName("OnlineResourceController")
 @WebMvcTest(OnlineResourceController.class)
 public class OnlineResourceControllerTest {
@@ -42,9 +47,6 @@ public class OnlineResourceControllerTest {
     @MockBean private GetCapabilitiesObtainerService getCapabilitiesObtainerService;
     @MockBean private TMSToWMSGetMapService tmsToWMSGetMapService;
     @MockBean private MapServerDetailsService mapServerDetailsService;
-
-    // Needed for WebConfig.java
-    @MockBean private CloseableHttpClient httpClient;
 
     private final String file = "file";
     private final String revision = "revision";
@@ -59,6 +61,7 @@ public class OnlineResourceControllerTest {
         @SneakyThrows
         void checkThatCanGetOnlineResourceWhichExists() {
             //Given
+            val expectedResponse = "[{\"url\":\"a\",\"name\":\"\",\"description\":\"\",\"function\":\"\",\"type\":\"OTHER\"}]";
             val document = new GeminiDocument();
             document.setOnlineResources(Collections.singletonList(
                 OnlineResource.builder().url("a").build()
@@ -66,11 +69,13 @@ public class OnlineResourceControllerTest {
             given(documentBundleReader.readBundle(file)).willReturn(document);
 
             //When
-            val resp = mockMvc.perform(get("/documents/file/onlineResources").accept("application/json"))
+            mockMvc.perform(
+                get("/documents/file/onlineResources")
+                    .accept(MediaType.APPLICATION_JSON)
+            )
                 .andExpect(status().isOk())
-                .andReturn();
-
-            log.info(resp.getResponse().getContentAsString());
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(content().json(expectedResponse));
         }
 
 //        @Test

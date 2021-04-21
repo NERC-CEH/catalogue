@@ -45,7 +45,7 @@ public class OnlineResourceController {
     @SneakyThrows
     @GetMapping("documents/{file}/onlineResources")
     public List<OnlineResource> getOnlineResources(@PathVariable("file") String file) {
-        log.info("hit endpoint {}", file);
+        log.debug("hit endpoint {}", file);
         return getOnlineResources(documentBundleReader.readBundle(file));
     }
 
@@ -59,7 +59,7 @@ public class OnlineResourceController {
     }
 
     private List<OnlineResource> getOnlineResources(MetadataDocument document) {
-        log.info("Looking for {}", document);
+        log.debug("Looking for {}", document);
         if(document instanceof GeminiDocument) {
             GeminiDocument geminiDocument = (GeminiDocument)document;
             return geminiDocument.getOnlineResources();
