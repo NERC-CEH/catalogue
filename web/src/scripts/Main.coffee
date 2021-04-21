@@ -195,6 +195,10 @@ define [
         View: DataTypeEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.data-type+json'
+      'elter':
+        View: ElterEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.elter+json'
 
     # the create document dropdown
     $editorCreate = $ '#editorCreate'
