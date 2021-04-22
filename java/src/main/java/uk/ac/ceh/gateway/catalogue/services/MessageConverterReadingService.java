@@ -1,7 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import lombok.Data;
 import lombok.ToString;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpInputMessage;
@@ -48,10 +48,10 @@ public class MessageConverterReadingService implements DocumentReadingService {
         throw new UnknownContentTypeException("I don't know how to read " + contentType);
     }
     
-    @Data
+    @Value
     private static class DocumentReadingHttpInputMessage implements HttpInputMessage {
-        private final InputStream body;
-        private final MediaType contentType;
+        InputStream body;
+        MediaType contentType;
 
         @Override
         public HttpHeaders getHeaders() {

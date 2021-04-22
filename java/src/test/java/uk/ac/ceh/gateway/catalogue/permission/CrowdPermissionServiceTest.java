@@ -386,7 +386,7 @@ public class CrowdPermissionServiceTest {
     }
 
     @Value
-    private static class DummyRevision implements DataRevision<CatalogueUser> {
+    public static class DummyRevision implements DataRevision<CatalogueUser> {
         String revision;
 
         @Override
