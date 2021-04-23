@@ -38,6 +38,7 @@ define [
   'cs!views/ErammpDatacubeEditorView'
   'cs!views/ClipboardCopyView'
   'cs!views/DataTypeEditorView'
+  'cs!views/ElterEditorView'
   'cs!views/DocumentUploadView'
   'cs!models/DocumentUploadModel'
   'cs!views/upload/simple/AppView'
@@ -47,7 +48,7 @@ define [
     ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata, CehModelEditorView, CehModelApplicationEditorView, OsdpAgentEditorView,
     OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
     OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, ErammpModelEditorView, ErammpDatacubeEditorView,
-    ClipboardCopyView, DataTypeEditorView, DocumentUploadView, DocumentUploadModel, SimpleUploadView
+    ClipboardCopyView, DataTypeEditorView, DocumentUploadView, DocumentUploadModel, SimpleUploadView, ElterEditorView
 ) ->
 
   ###
