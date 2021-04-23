@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
