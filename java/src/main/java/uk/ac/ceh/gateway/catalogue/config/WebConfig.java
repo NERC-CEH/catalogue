@@ -173,6 +173,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Value("${jena.location}") private String location;
     @Value("${schemas.location}") private String schemas;
     @Value("${solr.server.documents.url}") String solrDocumentServerUrl;
+    @Value("${solr.server.diems.url}") String solrDiemsServerUrl;
     @Value("${sparql.endpoint}") private String sparqlEndpoint;
     @Value("${sparql.graph}") private String sparqlGraph;
     @Value("${template.location}") private File templates;
@@ -227,9 +228,16 @@ public class WebConfig implements WebMvcConfigurer {
         return new MapServerDetailsService(baseUri);
     }
 
+    @Qualifier("documents")
     @Bean
-    public SolrClient solrClient(){
+    public SolrClient solrClientDocuments(){
         return new HttpSolrClient.Builder(solrDocumentServerUrl).build();
+    }
+
+    @Qualifier("diems")
+    @Bean
+    public SolrClient solrClientDiems(){
+        return new HttpSolrClient.Builder(solrDiemsServerUrl).build();
     }
 
     @Bean
@@ -551,7 +559,7 @@ public class WebConfig implements WebMvcConfigurer {
                 documentListingService(),
                 dataRepository(),
                 indexGeneratorRegistry,
-                solrClient(),
+                solrClientDocuments(),
                 jenaLookupService(),
                 documentIdentifierService()
         );
