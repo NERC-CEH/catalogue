@@ -28,7 +28,7 @@ class EidcApplicationContextTest {
     @DisplayName("Some critical beans configured")
     void testContext() {
         assertNotNull(applicationContext.getBean("catalogueService"));
-        assertNotNull(applicationContext.getBean("codeNameLookupService"));
+        assertNotNull(applicationContext.getBean("codeLookupService"));
         assertNotNull(applicationContext.getBean("dataciteService"));
         assertNotNull(applicationContext.getBean("jenaLookupService"));
         assertNotNull(applicationContext.getBean("permission"));
@@ -40,9 +40,9 @@ class EidcApplicationContextTest {
         assertNotNull(applicationContext.getBean(UploadController.class));
         assertNotNull(applicationContext.getBean(UploadDocumentService.class));
         assertNotNull(applicationContext.getBean(HubbubService.class));
-        Assertions.assertThrows(NoSuchBeanDefinitionException.class, () -> {
-            applicationContext.getBean(uk.ac.ceh.gateway.catalogue.upload.simple.UploadController.class);
-        });
+        Assertions.assertThrows(NoSuchBeanDefinitionException.class, () ->
+            applicationContext.getBean(uk.ac.ceh.gateway.catalogue.upload.simple.UploadController.class)
+        );
     }
 
     @Test

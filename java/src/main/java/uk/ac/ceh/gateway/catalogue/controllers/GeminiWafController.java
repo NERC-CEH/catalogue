@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_XML_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.GEMINI_XML_SHORT;
 
 /**
  * The following emulates a Web accessible Folder of gemini metadata records 

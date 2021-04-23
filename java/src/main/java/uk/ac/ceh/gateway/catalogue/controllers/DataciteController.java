@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.view.RedirectView;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
+import uk.ac.ceh.gateway.catalogue.datacite.DataciteService;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -18,10 +19,9 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
-import uk.ac.ceh.gateway.catalogue.datacite.DataciteService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.DATACITE_XML_VALUE;
+import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.DATACITE_XML_VALUE;
 
 /**
  * The following controller will handle the generation of Datacite requests.

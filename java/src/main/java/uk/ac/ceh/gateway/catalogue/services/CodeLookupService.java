@@ -1,7 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
+import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.support.PropertiesLoaderUtils;
+import org.springframework.stereotype.Service;
 
 import java.util.Properties;
 
@@ -13,13 +17,23 @@ import java.util.Properties;
  * internal code
  */
 @Slf4j
+@Service
 @ToString
 public class CodeLookupService {
     private final Properties properties;
 
-    public CodeLookupService(Properties properties) {
-        this.properties = properties;
-        log.info("Creating {}", this);
+    @SneakyThrows
+    public CodeLookupService(
+        @Value("${codelist:codelist.properties}") String resourceName
+    ) {
+        this.properties = PropertiesLoaderUtils.loadAllProperties(resourceName);
+        log.info("Creating, properties loaded from {}", resourceName);
+        log.debug("Number of properties loaded: {}", properties.size());
+        if (log.isDebugEnabled()) {
+            properties.forEach((key, value) ->
+                log.debug("{}={}", key, value)
+            );
+        }
     }
 
     /**
@@ -50,11 +64,6 @@ public class CodeLookupService {
      * @return the property value if present, otherwise null
      */
     public String lookup(String key, Object value, String subkey) {
-        return properties.getProperty(new StringBuilder(key)
-            .append(".")
-            .append(value)
-            .append(".")
-            .append(subkey)
-            .toString());
+        return properties.getProperty(key +"." + value + "." + subkey);
     }
 }

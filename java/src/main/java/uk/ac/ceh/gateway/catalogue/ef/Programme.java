@@ -1,18 +1,20 @@
 package uk.ac.ceh.gateway.catalogue.ef;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.springframework.http.MediaType;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.EF_INSPIRE_XML_VALUE;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+import java.util.ArrayList;
+import java.util.List;
+
+import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.EF_INSPIRE_XML_VALUE;
 
 @XmlRootElement
 @Data

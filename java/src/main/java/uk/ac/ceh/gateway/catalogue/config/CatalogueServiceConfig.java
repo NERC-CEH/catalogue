@@ -7,7 +7,7 @@ import uk.ac.ceh.gateway.catalogue.model.Catalogue.DocumentType;
 import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.services.InMemoryCatalogueService;
 
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.*;
+import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.*;
 
 @Configuration
 public class CatalogueServiceConfig {

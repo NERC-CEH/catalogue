@@ -20,7 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.MAPSERVER_GML_VALUE;
+import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.MAPSERVER_GML_VALUE;
 
 /**
  * The following simple controller just hands off a request to on of our 

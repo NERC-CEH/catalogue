@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
 
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.*;
+import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.*;
 
 @Slf4j
 @ToString(callSuper = true)

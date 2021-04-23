@@ -3,16 +3,20 @@ package uk.ac.ceh.gateway.catalogue.controllers;
 import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrRequest;
-import org.apache.solr.client.solrj.SolrServerException;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.servlet.view.RedirectView;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
-import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.search.*;
 import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
@@ -43,7 +47,12 @@ public class SearchController {
     private final CatalogueService catalogueService;
     private final FacetFactory facetFactory;
 
-    public SearchController(SolrClient solrClient, GroupStore<CatalogueUser> groupStore, CatalogueService catalogueService, FacetFactory facetFactory) {
+    public SearchController(
+        SolrClient solrClient,
+        GroupStore<CatalogueUser> groupStore,
+        CatalogueService catalogueService,
+        FacetFactory facetFactory
+    ) {
         this.solrClient = solrClient;
         this.groupStore = groupStore;
         this.catalogueService = catalogueService;
@@ -51,57 +60,72 @@ public class SearchController {
         log.info("Creating {}", this);
     }
 
-    @RequestMapping (value = "documents",
-                     method = RequestMethod.GET)
+    @GetMapping("documents")
     public RedirectView redirectToDefaultCatalogue(
             HttpServletRequest request
     ) {
-        return new RedirectView(
-            ServletUriComponentsBuilder
-                .fromRequest(request)
-                .replacePath("{catalogue}/documents")
-                .buildAndExpand(
-                    catalogueService.defaultCatalogue().getId()
-                )
-                .toUriString()
-        );
+        val defaultCatalogueId = catalogueService.defaultCatalogue().getId();
+        val redirectUrl = ServletUriComponentsBuilder
+            .fromRequest(request)
+            .replacePath("{catalogue}/documents")
+            .buildAndExpand(defaultCatalogueId)
+            .toUriString();
+        log.info("Redirecting to {}", redirectUrl);
+        return new RedirectView(redirectUrl);
+    }
+
+    @GetMapping(value = "{catalogue}/documents", produces = MediaType.TEXT_HTML_VALUE)
+    public String getSearchPage(
+        @ActiveUser
+        CatalogueUser user,
+        @PathVariable("catalogue")
+        String catalogueKey,
+        @RequestParam(value=TERM_QUERY_PARAM, defaultValue=SearchQuery.DEFAULT_SEARCH_TERM)
+        String term,
+        @RequestParam(value=BBOX_QUERY_PARAM, required = false)
+        String bbox,
+        @RequestParam(value=OP_QUERY_PARAM, defaultValue=OP_DEFAULT_STRING)
+        String op,
+        @RequestParam(value=PAGE_QUERY_PARAM, defaultValue=PAGE_DEFAULT_STRING)
+        int page,
+        @RequestParam(value=ROWS_QUERY_PARAM, defaultValue=ROWS_DEFAULT_STRING)
+        int rows,
+        @RequestParam(value=FACET_QUERY_PARAM, defaultValue = "")
+        List<FacetFilter> facetFilters,
+        HttpServletRequest request,
+        Model model
+    ) {
+        log.info("GET search page");
+        val searchResults = search(user, catalogueKey, term, bbox, op, page, rows, facetFilters, request);
+        return "/html/search.ftl";
     }
 
     @SneakyThrows
-    @GetMapping(value = "{catalogue}/documents")
-    public @ResponseBody SearchResults searchDocuments(
-            @ActiveUser CatalogueUser user,
-            @PathVariable("catalogue") String catalogueKey,
-            @RequestParam(
-                value = TERM_QUERY_PARAM,
-                defaultValue=SearchQuery.DEFAULT_SEARCH_TERM
-            ) String term,
-            @RequestParam(
-                value = BBOX_QUERY_PARAM,
-                required = false
-            ) String bbox,
-            @RequestParam(
-                value = OP_QUERY_PARAM,
-                defaultValue = OP_DEFAULT_STRING
-            ) String op,
-            @RequestParam(
-                value = PAGE_QUERY_PARAM,
-                defaultValue = PAGE_DEFAULT_STRING
-            ) int page,
-            @RequestParam(
-                value = ROWS_QUERY_PARAM,
-                defaultValue = ROWS_DEFAULT_STRING
-            ) int rows,
-            @RequestParam(
-                value = FACET_QUERY_PARAM,
-                defaultValue = ""
-            ) List<FacetFilter> facetFilters,
-            HttpServletRequest request
-    ) throws SolrServerException {
+    @ResponseBody
+    @GetMapping(value = "{catalogue}/documents", produces = MediaType.APPLICATION_JSON_VALUE)
+    public SearchResults search(
+        @ActiveUser
+        CatalogueUser user,
+        @PathVariable("catalogue")
+        String catalogueKey,
+        @RequestParam(value=TERM_QUERY_PARAM, defaultValue=SearchQuery.DEFAULT_SEARCH_TERM)
+        String term,
+        @RequestParam(value=BBOX_QUERY_PARAM, required = false)
+        String bbox,
+        @RequestParam(value=OP_QUERY_PARAM, defaultValue=OP_DEFAULT_STRING)
+        String op,
+        @RequestParam(value=PAGE_QUERY_PARAM, defaultValue=PAGE_DEFAULT_STRING)
+        int page,
+        @RequestParam(value=ROWS_QUERY_PARAM, defaultValue=ROWS_DEFAULT_STRING)
+        int rows,
+        @RequestParam(value=FACET_QUERY_PARAM, defaultValue = "")
+        List<FacetFilter> facetFilters,
+        HttpServletRequest request
+    ) {
         
-        Catalogue catalogue = catalogueService.retrieve(catalogueKey);
+        val catalogue = catalogueService.retrieve(catalogueKey);
         
-        SearchQuery searchQuery = new SearchQuery(
+        val searchQuery = new SearchQuery(
             request.getRequestURL().toString(),
             user,
             term,
@@ -114,12 +138,10 @@ public class SearchController {
             catalogue,
             facetFactory.newInstances(catalogue.getFacetKeys())
         );
-        return new SearchResults(
-            solrClient.query(
-                searchQuery.build(),
-                SolrRequest.METHOD.POST
-            ),
-            searchQuery
-        ); 
+        val response = solrClient.query(
+            searchQuery.build(),
+            SolrRequest.METHOD.POST
+        );
+        return new SearchResults(response, searchQuery);
     }
 }

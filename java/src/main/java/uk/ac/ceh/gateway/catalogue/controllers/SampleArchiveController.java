@@ -10,10 +10,9 @@ import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
-import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
 
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.SAMPLE_ARCHIVE_JSON_VALUE;
+import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.SAMPLE_ARCHIVE_JSON_VALUE;
 
 @Slf4j
 @ToString(callSuper = true)
@@ -28,14 +27,14 @@ public class SampleArchiveController extends AbstractDocumentController {
   @PreAuthorize("@permission.userCanCreate(#catalogue)")
   @RequestMapping(value = "documents", method = RequestMethod.POST, consumes = SAMPLE_ARCHIVE_JSON_VALUE)
   public ResponseEntity<MetadataDocument> newSampleArchive(@ActiveUser CatalogueUser user, @RequestBody SampleArchive document,
-      @RequestParam("catalogue") String catalogue) throws DocumentRepositoryException {
+      @RequestParam("catalogue") String catalogue) {
     return saveNewMetadataDocument(user, document, catalogue, "new Sample Archive");
   }
 
   @PreAuthorize("@permission.userCanEdit(#file)")
   @RequestMapping(value = "documents/{file}", method = RequestMethod.PUT, consumes = SAMPLE_ARCHIVE_JSON_VALUE)
   public ResponseEntity<MetadataDocument> updateSampleArchive(@ActiveUser CatalogueUser user, @PathVariable("file") String file,
-      @RequestBody SampleArchive document) throws DocumentRepositoryException {
+      @RequestBody SampleArchive document) {
     return saveMetadataDocument(user, file, document);
   }
 }

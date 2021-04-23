@@ -18,8 +18,9 @@ import java.util.List;
  * HttpMessageConverters
  */
 @Slf4j
-@ToString
+@ToString()
 public class MessageConverterReadingService implements DocumentReadingService {
+    @ToString.Exclude
     private final List<HttpMessageConverter<?>> messageConverters;
     
     public MessageConverterReadingService() {
@@ -28,12 +29,17 @@ public class MessageConverterReadingService implements DocumentReadingService {
     
     protected MessageConverterReadingService(List<HttpMessageConverter<?>> messageConverters) {
         this.messageConverters = messageConverters;
-        log.info("Creating {}", this);
+        log.info("Creating");
+        if (log.isDebugEnabled()) {
+            messageConverters.forEach(httpMessageConverter ->
+                log.debug(httpMessageConverter.toString())
+            );
+        }
     }
     
     public MessageConverterReadingService addMessageConverter(HttpMessageConverter<?> converter) {
         messageConverters.add(converter);
-        log.info("Adding {}", converter);
+        log.info("Adding {}", converter.getClass());
         return this;
     }
     

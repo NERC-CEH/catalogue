@@ -17,7 +17,6 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -31,10 +30,10 @@ public class Xml2GeminiDocumentMessageConverterTest {
     
     @BeforeEach
     public void createGeminiDocumentConverter() throws XPathExpressionException {
-        Properties props = new Properties();
-        props.put("topicCategory.environment.uri", "http://inspire.ec.europa.eu/metadata-codelist/TopicCategory/environment");
-        props.put("topicCategory.imageryBaseMapsEarthCover.uri", "http://inspire.ec.europa.eu/metadata-codelist/TopicCategory/imageryBaseMapsEarthCover");
-        CodeLookupService codeLookupService = new CodeLookupService(props);
+//        Properties props = new Properties();
+//        props.put("topicCategory.environment.uri", "http://inspire.ec.europa.eu/metadata-codelist/TopicCategory/environment");
+//        props.put("topicCategory.imageryBaseMapsEarthCover.uri", "http://inspire.ec.europa.eu/metadata-codelist/TopicCategory/imageryBaseMapsEarthCover");
+        CodeLookupService codeLookupService = new CodeLookupService("codelist.properties");
         geminiReader = new Xml2GeminiDocumentMessageConverter(codeLookupService);
     }
     

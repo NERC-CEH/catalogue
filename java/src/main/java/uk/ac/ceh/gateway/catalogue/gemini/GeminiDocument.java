@@ -18,7 +18,7 @@ import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.*;
+import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.*;
 import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAPABILITIES;
 
 @Data 

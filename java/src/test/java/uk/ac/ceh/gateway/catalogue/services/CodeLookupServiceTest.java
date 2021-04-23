@@ -1,69 +1,47 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import java.util.Properties;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import org.junit.jupiter.api.BeforeEach;
+import lombok.val;
 import org.junit.jupiter.api.Test;
 
-public class CodeLookupServiceTest {
-    private Properties properties;
-    private CodeLookupService service;
-    
-    @BeforeEach
-    public void init() {
-        properties = new Properties();
-        service = new CodeLookupService(properties);
-    }
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+class CodeLookupServiceTest {
+    private final CodeLookupService service = new CodeLookupService("codelist.properties");
     
     @Test
-    public void checkThatTryingToGetValueForMissingContentReturnsNull() {
+    void checkThatTryingToGetValueForMissingContentReturnsNull() {
         //Given
         //Nothing
         
         //When
-        String desc = service.lookup("something.which.isnt", "here");
+        val actual = service.lookup("something.which.isnt", "here");
         
         //Then
-        assertNull(desc);
+        assertNull(actual);
     }
     
     @Test
-    public void checkThatCanLookupBooleanValues() {
+    void checkThatCanLookupNormalValue() {
         //Given
-        String text = "This is so true";
-        properties.setProperty("something.true", text);
+        val expected = "Attribute";
         
         //When
-        String desc = service.lookup("something", true);
+        val actual = service.lookup("metadata.resourceType", "attribute");
         
         //Then
-        assertEquals(desc, text);
+        assertEquals(expected, actual);
     }
     
     @Test
-    public void checkThatCanLookupNormalValue() {
+    void checkThatCanLookupValueWithSubKey() {
         //Given
-        String text = "This is so normal";
-        properties.setProperty("something.just.normal", text);
+        val expected = "Attribute";
         
         //When
-        String desc = service.lookup("something.just", "normal");
+        val actual = service.lookup("metadata", "resourceType", "attribute");
         
         //Then
-        assertEquals(desc, text);
-    }
-    
-    @Test
-    public void checkThatCanLookupValueWithSubkey() {
-        //Given
-        String text = "This is so normal";
-        properties.setProperty("something.just.normal", text);
-        
-        //When
-        String desc = service.lookup("something", "just", "normal");
-        
-        //Then
-        assertEquals(desc, text);
+        assertEquals(expected, actual);
     }
 }

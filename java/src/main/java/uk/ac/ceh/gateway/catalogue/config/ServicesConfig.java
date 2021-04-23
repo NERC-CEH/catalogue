@@ -7,7 +7,6 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.tdb.TDBFactory;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
@@ -16,7 +15,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -36,7 +34,6 @@ import uk.ac.ceh.gateway.catalogue.erammp.ErammpDatacube;
 import uk.ac.ceh.gateway.catalogue.erammp.ErammpModel;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.imp.ImpDocument;
-import uk.ac.ceh.gateway.catalogue.indexing.*;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
@@ -59,46 +56,31 @@ import uk.ac.ceh.gateway.catalogue.templateHelpers.GeminiExtractor;
 import uk.ac.ceh.gateway.catalogue.util.ClassMap;
 import uk.ac.ceh.gateway.catalogue.util.MapServerGetFeatureInfoErrorHandler;
 import uk.ac.ceh.gateway.catalogue.util.PrioritisedClassMap;
-import uk.ac.ceh.gateway.catalogue.validation.MediaTypeValidator;
-import uk.ac.ceh.gateway.catalogue.validation.ValidationReport;
-import uk.ac.ceh.gateway.catalogue.validation.XSDSchemaValidator;
 
 import javax.annotation.PostConstruct;
-import javax.xml.XMLConstants;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.SchemaFactory;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
 
-import static java.util.stream.Stream.of;
+import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.*;
 import static uk.ac.ceh.gateway.catalogue.config.CatalogueServiceConfig.*;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.*;
 
 @Slf4j
 @Configuration
 public class ServicesConfig {
-    @Value("${documents.baseUri}") private String baseUri;
-    @Value("${data.repository.location}") private String dataRepositoryLocation;
-    @Value("${maps.location}") private File mapsLocation;
     @Value("${solr.server.documents.url}") private String solrDocumentServerUrl;
     @Value("${sparql.endpoint}") private String sparqlEndpoint;
     @Value("${sparql.graph}") private String sparqlGraph;
 
-    @Autowired private BundledReaderService<MetadataDocument> bundledReaderService;
     @Autowired private CatalogueService catalogueService;
     @Autowired private CitationService citationService;
+    @Autowired private CodeLookupService codeLookupService;
     @Autowired private DataciteService dataciteService;
     @Autowired private DocumentIdentifierService documentIdentifierService;
-    @Autowired private DocumentListingService documentListingService;
-    @Autowired private DocumentWritingService documentWritingService;
     @Autowired private freemarker.template.Configuration freemarkerConfiguration;
     @Autowired private GeminiExtractor geminiExtractor;
-    @Autowired private GitRepoWrapper gitRepoWrapper;
     @Autowired private JenaLookupService jenaLookupService;
     @Autowired private MapServerDetailsService mapServerDetailsService;
     @Autowired private MetadataQualityService metadataQualityService;
@@ -136,7 +118,7 @@ public class ServicesConfig {
     public void configureFreemarkerSharedVariables() {
         freemarkerConfiguration.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
         freemarkerConfiguration.setSharedVariable("catalogues", catalogueService);
-        freemarkerConfiguration.setSharedVariable("codes", codeNameLookupService());
+        freemarkerConfiguration.setSharedVariable("codes", codeLookupService);
         freemarkerConfiguration.setSharedVariable("downloadOrderDetails", downloadOrderDetailsService());
         freemarkerConfiguration.setSharedVariable("geminiHelper", geminiExtractor);
         freemarkerConfiguration.setSharedVariable("jena", jenaLookupService);
@@ -156,42 +138,6 @@ public class ServicesConfig {
         );
     }
 
-    @Bean(initMethod = "initialIndex") @Qualifier("jena-index")
-    @SuppressWarnings("rawtypes")
-    public JenaIndexingService documentLinkingService() {
-        JenaIndexMetadataDocumentGenerator metadataDocument = new JenaIndexMetadataDocumentGenerator(documentIdentifierService);
-
-        ClassMap<IndexGenerator<?, List<Statement>>> mappings = new PrioritisedClassMap<IndexGenerator<?, List<Statement>>>()
-            .register(BaseMonitoringType.class, new JenaIndexBaseMonitoringTypeGenerator(metadataDocument))
-            .register(GeminiDocument.class, new JenaIndexGeminiDocumentGenerator(metadataDocument, baseUri))
-            .register(LinkDocument.class, new JenaIndexLinkDocumentGenerator(metadataDocument))
-            .register(MetadataDocument.class, metadataDocument);
-
-        return new JenaIndexingService<>(
-            bundledReaderService,
-            documentListingService,
-            dataRepository(),
-            new IndexGeneratorRegistry<>(mappings),
-            documentIdentifierService,
-            tdbModel
-        );
-    }
-
-    @Bean(initMethod = "initialIndex") @Qualifier("mapserver-index")
-    @SuppressWarnings("rawtypes")
-    public MapServerIndexingService mapServerIndexingService(
-        MapServerDetailsService mapServerDetailsService
-    ) {
-        MapServerIndexGenerator generator = new MapServerIndexGenerator(freemarkerConfiguration, mapServerDetailsService);
-        return new MapServerIndexingService<>(
-            bundledReaderService,
-            documentListingService,
-            dataRepository(),
-            generator,
-            mapsLocation);
-    }
-
-
     @Bean
     @SuppressWarnings("rawtypes")
     public PostProcessingService postProcessingService() {
@@ -204,7 +150,7 @@ public class ServicesConfig {
     @Bean
     public DocumentReadingService documentReadingService() {
         return new MessageConverterReadingService()
-            .addMessageConverter(new Xml2GeminiDocumentMessageConverter(codeNameLookupService()))
+            .addMessageConverter(new Xml2GeminiDocumentMessageConverter(codeLookupService))
             .addMessageConverter(new UkeofXml2EFDocumentMessageConverter())
             .addMessageConverter(new MappingJackson2HttpMessageConverter(objectMapper));
     }
@@ -242,12 +188,19 @@ public class ServicesConfig {
     }
 
     @Bean
-    public DocumentRepository documentRepository() {
+    public DocumentRepository documentRepository(
+        BundledReaderService<MetadataDocument> bundledReaderService,
+        DocumentIdentifierService documentIdentifierService,
+        DocumentReadingService documentReadingService,
+        DocumentTypeLookupService documentTypeLookupService,
+        DocumentWritingService documentWritingService,
+        GitRepoWrapper gitRepoWrapper
+    ) {
         return new GitDocumentRepository(
-            metadataRepresentationService(),
-            documentReadingService(),
+            documentTypeLookupService,
+            documentReadingService,
             documentIdentifierService,
-            documentWritingService(),
+            documentWritingService,
             bundledReaderService,
             gitRepoWrapper
         );
@@ -269,34 +222,33 @@ public class ServicesConfig {
         return new SparqlVocabularyService(new SparqlVocabularyRetriever(restTemplate, sparqlEndpoint, sparqlGraph).retrieve());
     }
 
-    @Bean
-    @SuppressWarnings("UnstableApiUsage") // Because EventBus is still @Beta!
-    public EventBus communicationBus() {
-        return new EventBus();
-    }
+    @Configuration
+    public static class DataRepositoryConfig {
 
-    @Bean
-    @SuppressWarnings("UnstableApiUsage")
-    @SneakyThrows
-    public DataRepository<CatalogueUser> dataRepository() {
-        return new GitDataRepository<>(
-            new File(dataRepositoryLocation),
-            new InMemoryUserStore<>(),
-            phantomUserBuilderFactory(),
-            communicationBus()
-        );
-    }
+        @Bean
+        @SuppressWarnings("UnstableApiUsage") // Because EventBus is still @Beta!
+        public EventBus communicationBus() {
+            return new EventBus();
+        }
 
-    @Bean
-    public AnnotatedUserHelper<CatalogueUser> phantomUserBuilderFactory() {
-        return new AnnotatedUserHelper<>(CatalogueUser.class);
-    }
+        @Bean
+        public AnnotatedUserHelper<CatalogueUser> phantomUserBuilderFactory() {
+            return new AnnotatedUserHelper<>(CatalogueUser.class);
+        }
 
-    @Bean
-    @SneakyThrows
-    public CodeLookupService codeNameLookupService() {
-        Properties properties = PropertiesLoaderUtils.loadAllProperties("codelist.properties");
-        return new CodeLookupService(properties);
+        @Bean
+        @SuppressWarnings("UnstableApiUsage")
+        @SneakyThrows
+        public DataRepository<CatalogueUser> dataRepository(
+            @Value("${data.repository.location}") String dataRepositoryLocation
+        ) {
+            return new GitDataRepository<>(
+                new File(dataRepositoryLocation),
+                new InMemoryUserStore<>(),
+                phantomUserBuilderFactory(),
+                communicationBus()
+            );
+        }
     }
 
     @Bean
@@ -320,85 +272,5 @@ public class ServicesConfig {
     @Bean
     DocumentWritingService documentWritingService() {
         return new MessageConverterWritingService(messageConverters);
-    }
-
-    @Bean @Qualifier("datacite-index")
-    public DocumentIndexingService dataciteIndexingService() {
-        return new AsyncDocumentIndexingService(
-            new DataciteIndexingService(bundledReaderService, dataciteService)
-        );
-    }
-
-    @Bean(initMethod = "initialIndex") @Qualifier("solr-index")
-    public SolrIndexingService<MetadataDocument> documentIndexingService(
-        JenaLookupService jenaLookupService
-    ) {
-        val metadataDocumentGenerator = new SolrIndexMetadataDocumentGenerator(
-            codeNameLookupService(),
-            documentIdentifierService,
-            vocabularyService()
-        );
-        val linkDocumentGenerator = new SolrIndexLinkDocumentGenerator();
-        linkDocumentGenerator.setRepository(documentRepository());
-
-        val mappings = new PrioritisedClassMap<IndexGenerator<?, SolrIndex>>()
-            .register(GeminiDocument.class, new SolrIndexGeminiDocumentGenerator(new ExtractTopicFromDocument(), metadataDocumentGenerator, codeNameLookupService()))
-            .register(LinkDocument.class, linkDocumentGenerator)
-            .register(MetadataDocument.class, metadataDocumentGenerator);
-
-        IndexGeneratorRegistry<MetadataDocument, SolrIndex> indexGeneratorRegistry = new IndexGeneratorRegistry<>(mappings);
-        linkDocumentGenerator.setIndexGeneratorRegistry(indexGeneratorRegistry);
-        log.info("Set repository & registry on {}", linkDocumentGenerator);
-
-        return new SolrIndexingService<>(
-            bundledReaderService,
-            documentListingService,
-            dataRepository(),
-            indexGeneratorRegistry,
-            solrClient(),
-            jenaLookupService,
-            documentIdentifierService
-        );
-    }
-
-    @Bean
-    @Qualifier("validation-index")
-    public DocumentIndexingService asyncValidationIndexingService(
-        @Value("${schemas.location}") String schemas
-    ) {
-        return new AsyncDocumentIndexingService(validationIndexingService(schemas));
-    }
-
-
-    @Bean
-    @SneakyThrows
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    public ValidationIndexingService validationIndexingService(
-        @Value("${schemas.location}") String schemas
-    ) {
-        val schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        val sources = of("gemini/srv/srv.xsd", "gemini/gmx/gmx.xsd")
-            .map( (s) -> new StreamSource(new File(schemas, s)))
-            .toArray(Source[]::new);
-
-        val geminiSchema = schemaFactory.newSchema(sources);
-
-        val htmlValidator = new MediaTypeValidator("HTML Generation", MediaType.TEXT_HTML, documentWritingService);
-
-        ClassMap<IndexGenerator<?, ValidationReport>> mappings = new PrioritisedClassMap<IndexGenerator<?, ValidationReport>>()
-            .register(GeminiDocument.class, new ValidationIndexGenerator(Arrays.asList(
-                new XSDSchemaValidator("Gemini", MediaType.parseMediaType(GEMINI_XML_VALUE), documentWritingService, geminiSchema),
-                htmlValidator
-            )))
-            .register(MetadataDocument.class, new ValidationIndexGenerator(Collections.singletonList(htmlValidator)));
-
-        return new ValidationIndexingService<MetadataDocument>(
-            bundledReaderService,
-            documentListingService,
-            dataRepository(),
-            postProcessingService(),
-            documentIdentifierService,
-            new IndexGeneratorRegistry<>(mappings)
-        );
     }
 }
