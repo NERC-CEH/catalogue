@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrRequest;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -43,7 +44,7 @@ public class SearchController {
     private final CatalogueService catalogueService;
     private final FacetFactory facetFactory;
 
-    public SearchController(SolrClient solrClient, GroupStore<CatalogueUser> groupStore, CatalogueService catalogueService, FacetFactory facetFactory) {
+    public SearchController(@Qualifier("documents") SolrClient solrClient, GroupStore<CatalogueUser> groupStore, CatalogueService catalogueService, FacetFactory facetFactory) {
         this.solrClient = solrClient;
         this.groupStore = groupStore;
         this.catalogueService = catalogueService;
