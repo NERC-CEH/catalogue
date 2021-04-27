@@ -24,11 +24,6 @@
         <filter class="solr.StopFilterFactory" words="stopwords.txt"/>
       </analyzer>
     </fieldType>
-    <fieldType name="orcids" class="solr.TextField" sortMissingLast="true" omitNorms="true" multiValued="true">
-      <analyzer>
-        <tokenizer class="solr.PatternTokenizerFactory" pattern="(https?:\/\/orcid.org\/)(\d{4}-\d{4}-\d{4}-\d{3}[\d|X])" group="2"/>
-      </analyzer>
-    </fieldType>
     <fieldType name="pdate" class="solr.DatePointField" docValues="true"/>
     <fieldType name="pdates" class="solr.DatePointField" docValues="true" multiValued="true"/>
     <fieldType name="pdouble" class="solr.DoublePointField" docValues="true"/>
@@ -37,11 +32,6 @@
     <fieldType name="plong" class="solr.LongPointField" docValues="true"/>
     <fieldType name="plongs" class="solr.LongPointField" docValues="true" multiValued="true"/>
     <fieldType name="random" class="solr.RandomSortField"/>
-    <fieldType name="rors" class="solr.TextField" sortMissingLast="true" omitNorms="true" multiValued="true">
-        <analyzer>
-            <tokenizer class="solr.PatternTokenizerFactory" pattern="(https?:\/\/ror.org\/)(\w{8,10})" group="2"/>
-        </analyzer>
-    </fieldType>
     <fieldType name="string" class="solr.StrField" sortMissingLast="true" docValues="true"/>
     <fieldType name="text_general" class="solr.TextField" positionIncrementGap="100" multiValued="true">
       <analyzer type="index">

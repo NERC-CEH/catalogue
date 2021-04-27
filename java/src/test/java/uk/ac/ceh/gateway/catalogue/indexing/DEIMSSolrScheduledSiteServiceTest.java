@@ -5,7 +5,6 @@ import lombok.val;
 import org.apache.commons.io.IOUtils;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.common.SolrInputDocument;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,7 +14,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
-import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
@@ -30,10 +28,10 @@ public class DEIMSSolrScheduledSiteServiceTest {
 
     private static final String ADDRESS = "https://example.com";
 
+    private static final String COLLECTION = "deims";
+
     @Mock
     private SolrClient solrClient;
-
-    @Mock IndexGenerator<GeminiDocument, SolrIndex> indexGenerator;
 
     @BeforeEach
     public void init() {
@@ -58,8 +56,8 @@ public class DEIMSSolrScheduledSiteServiceTest {
 
         //Then
         mockServer.verify();
-        verify(solrClient).deleteByQuery("*:*");
-        verify(solrClient).addBean(any(SolrInputDocument.class));
+        verify(solrClient).deleteByQuery(COLLECTION, "*:*");
+        verify(solrClient).addBean(any(String.class), any(DIEMSSite[].class));
         verify(solrClient).commit();
     }
 
@@ -73,7 +71,7 @@ public class DEIMSSolrScheduledSiteServiceTest {
                     .andExpect(method(HttpMethod.GET))
                     .andRespond(withSuccess(response, MediaType.APPLICATION_JSON));
 
-            when(solrClient.addBean(any(Object.class))).thenThrow(new SolrServerException("Test"));
+            when(solrClient.addBean(any(String.class), any(Object.class))).thenThrow(new SolrServerException("Test"));
 
             //When
             target.fetchDEIMSSitesAndAddToSolr();

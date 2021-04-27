@@ -44,7 +44,7 @@ public class SearchController {
     private final CatalogueService catalogueService;
     private final FacetFactory facetFactory;
 
-    public SearchController(@Qualifier("documents") SolrClient solrClient, GroupStore<CatalogueUser> groupStore, CatalogueService catalogueService, FacetFactory facetFactory) {
+    public SearchController(SolrClient solrClient, GroupStore<CatalogueUser> groupStore, CatalogueService catalogueService, FacetFactory facetFactory) {
         this.solrClient = solrClient;
         this.groupStore = groupStore;
         this.catalogueService = catalogueService;
@@ -117,6 +117,7 @@ public class SearchController {
         );
         return new SearchResults(
             solrClient.query(
+                "documents",
                 searchQuery.build(),
                 SolrRequest.METHOD.POST
             ),

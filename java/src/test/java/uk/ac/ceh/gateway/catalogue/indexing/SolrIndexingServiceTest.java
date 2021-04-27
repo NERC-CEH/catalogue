@@ -41,6 +41,7 @@ public class SolrIndexingServiceTest {
     @Mock SolrClient solrClient;
     @Mock JenaLookupService lookupService;
     @Mock DocumentIdentifierService identifierService;
+    private static final String COLLECTION = "documents";
     
     private SolrIndexingService service;
     
@@ -68,7 +69,7 @@ public class SolrIndexingServiceTest {
         service.rebuildIndex();
         
         //Then
-        verify(solrClient).deleteByQuery("*:*");
+        verify(solrClient).deleteByQuery(COLLECTION, "*:*");
         verify(solrClient).commit();
     }
     
@@ -115,8 +116,8 @@ public class SolrIndexingServiceTest {
         service.indexDocuments(documents, revId);
         
         //Then
-        verify(solrClient).addBean(document1Index);
-        verify(solrClient).addBean(document2Index);
+        verify(solrClient).addBean(COLLECTION, document1Index);
+        verify(solrClient).addBean(COLLECTION, document2Index);
         verify(solrClient).commit();
     }
     
@@ -145,7 +146,7 @@ public class SolrIndexingServiceTest {
             String revId = "Latest";
             List<String> documents = Arrays.asList("doc1", "doc2");
 
-            when(solrClient.addBean(any())).thenThrow(new SolrServerException("Please carry on"))
+            when(solrClient.addBean(any(), any())).thenThrow(new SolrServerException("Please carry on"))
                     .thenReturn(null);
 
             //When
@@ -166,7 +167,7 @@ public class SolrIndexingServiceTest {
         service.unindexDocuments(documents);
         
         //Then
-        verify(solrClient).deleteById(documents);
+        verify(solrClient).deleteById(COLLECTION, documents);
         verify(solrClient).commit();
     }
     

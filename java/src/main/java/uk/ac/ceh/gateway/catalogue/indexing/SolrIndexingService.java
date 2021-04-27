@@ -28,6 +28,7 @@ public class SolrIndexingService<D> extends AbstractIndexingService<D, SolrIndex
     private final SolrClient solrClient;
     private final JenaLookupService lookupService;
     private final DocumentIdentifierService identifierService;
+    private static final String DOCUMENTS = "documents";
 
     public SolrIndexingService(
             BundledReaderService<D> reader,
@@ -69,7 +70,7 @@ public class SolrIndexingService<D> extends AbstractIndexingService<D, SolrIndex
     @Override
     public void unindexDocuments(List<String> documents) throws DocumentIndexingException {
         try {            
-            solrClient.deleteById(documents);
+            solrClient.deleteById(DOCUMENTS, documents);
             commit();
         } catch (IOException | SolrServerException ex) {
             throw new DocumentIndexingException(ex);
@@ -79,7 +80,7 @@ public class SolrIndexingService<D> extends AbstractIndexingService<D, SolrIndex
     @Override
     protected void clearIndex() throws DocumentIndexingException {
         try {
-            solrClient.deleteByQuery("*:*");
+            solrClient.deleteByQuery(DOCUMENTS,"*:*");
         } catch (IOException | SolrServerException ex) {
             throw new DocumentIndexingException(ex);
         }
@@ -87,7 +88,7 @@ public class SolrIndexingService<D> extends AbstractIndexingService<D, SolrIndex
 
     @Override
     protected void index(SolrIndex toIndex) throws Exception {
-        solrClient.addBean(toIndex);
+        solrClient.addBean(DOCUMENTS, toIndex);
     }
     
     @Override
