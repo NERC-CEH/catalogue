@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
@@ -22,6 +23,7 @@ import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 
 import java.net.URISyntaxException;
 
+@Slf4j
 @ControllerAdvice
 public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
     

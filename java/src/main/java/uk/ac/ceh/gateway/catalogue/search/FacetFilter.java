@@ -1,40 +1,32 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import lombok.Value;
 import org.springframework.util.StringUtils;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 @Value
-public final class FacetFilter {
+public class FacetFilter {
     private static final String DELIMITER = "|";
-    private final String field;
-    private final String value;
+    String field;
+    String value;
    
     
-    public FacetFilter(String filter) { 
-        try {
-            filter = URLDecoder.decode(filter, "UTF-8");
-            if(StringUtils.countOccurrencesOf(filter, DELIMITER) == 1){
-                String[] facetFilterParts = filter.split("\\" + DELIMITER);
-                this.field = facetFilterParts[0];
-                this.value = facetFilterParts[1];
-            } else {
-                throw new IllegalArgumentException(
-                    String.format(
-                        "This is an invalid facet filter: %s. It should contain one argument delimiter of the type '|'",
-                        filter
-                    )
-                );
-            }
-        } catch (UnsupportedEncodingException ex) {
-            throw new RuntimeException(
+    public FacetFilter(String filter) {
+        filter = URLDecoder.decode(filter, StandardCharsets.UTF_8);
+        if(StringUtils.countOccurrencesOf(filter, DELIMITER) == 1){
+            String[] facetFilterParts = filter.split("\\" + DELIMITER);
+            this.field = facetFilterParts[0];
+            this.value = facetFilterParts[1];
+        } else {
+            throw new IllegalArgumentException(
                 String.format(
-                    "Cannot url decode filter: %s",
+                    "This is an invalid facet filter: %s. It should contain one argument delimiter of the type '|'",
                     filter
-                ),
-                ex
+                )
             );
         }
     }

@@ -1,32 +1,32 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import uk.ac.ceh.gateway.catalogue.converters.Object2TemplatedMessageConverter;
-import uk.ac.ceh.gateway.catalogue.ef.Activity;
-import uk.ac.ceh.gateway.catalogue.ef.Facility;
-import uk.ac.ceh.gateway.catalogue.ef.Network;
 
 @Configuration
 public class MessageConvertersConfig {
     @Autowired
     private freemarker.template.Configuration freemarkerConfiguration;
 
-    @Bean
-    Object2TemplatedMessageConverter<Activity> efActivity() {
-        return new Object2TemplatedMessageConverter<>(Activity.class, freemarkerConfiguration);
-    }
+//    @Bean
+//    Object2TemplatedMessageConverter<SearchResults> searchResults() {
+//        return new Object2TemplatedMessageConverter<>(SearchResults.class, freemarkerConfiguration);
+//    }
 
-    @Bean
-    Object2TemplatedMessageConverter<Facility> efFacility() {
-        return new Object2TemplatedMessageConverter<>(Facility.class, freemarkerConfiguration);
-    }
-
-    @Bean
-    Object2TemplatedMessageConverter<Network> efNetwork() {
-       return new Object2TemplatedMessageConverter<>(Network.class,  freemarkerConfiguration);
-    }
+//    @Bean
+//    Object2TemplatedMessageConverter<Activity> efActivity() {
+//        return new Object2TemplatedMessageConverter<>(Activity.class, freemarkerConfiguration);
+//    }
+//
+//    @Bean
+//    Object2TemplatedMessageConverter<Facility> efFacility() {
+//        return new Object2TemplatedMessageConverter<>(Facility.class, freemarkerConfiguration);
+//    }
+//
+//    @Bean
+//    Object2TemplatedMessageConverter<Network> efNetwork() {
+//       return new Object2TemplatedMessageConverter<>(Network.class,  freemarkerConfiguration);
+//    }
 
 //    @Bean("converters")
 //    public List<HttpMessageConverter<?>> messageConverters() {

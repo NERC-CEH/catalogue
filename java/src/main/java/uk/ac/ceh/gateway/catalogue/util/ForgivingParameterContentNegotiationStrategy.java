@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.util;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.web.accept.ParameterContentNegotiationStrategy;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -14,6 +15,7 @@ import java.util.Map;
  * This is useful when proxying wms services, as it allows the format parameter 
  * to just pass through.
  */
+@Slf4j
 public class ForgivingParameterContentNegotiationStrategy extends ParameterContentNegotiationStrategy {
     
     public ForgivingParameterContentNegotiationStrategy(Map<String, MediaType> mediaTypes) {
@@ -22,6 +24,7 @@ public class ForgivingParameterContentNegotiationStrategy extends ParameterConte
     
     @Override
     protected MediaType handleNoMatch(NativeWebRequest request, String key) {
+        log.info("No match for {} in {}", key, request);
         return null;
     }
 }

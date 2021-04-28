@@ -17,11 +17,6 @@ FROM gradle:6.8.3-jdk15 AS build-java
 WORKDIR /app
 COPY --chown=gradle:gradle java/src src/
 COPY --chown=gradle:gradle java/build.gradle .
-COPY --chown=gradle:gradle --from=build-web /app/src/css src/main/resources/static/css
-COPY --chown=gradle:gradle web/src/img src/main/resources/static/img
-COPY --chown=gradle:gradle --from=build-web /app/src/scripts/main-out.js src/main/resources/static/scripts/main-out.js
-COPY --chown=gradle:gradle --from=build-web /app/src/vendor/font-awesome-5/webfonts src/main/resources/static/vendor/font-awesome-5/webfonts
-COPY --chown=gradle:gradle --from=build-web /app/src/vendor/requirejs/require.js src/main/resources/static/vendor/requirejs/require.js
 RUN gradle bootJar
 
 # Create production image
@@ -29,6 +24,11 @@ FROM openjdk:15-alpine AS prod
 LABEL maintainer="oss@ceh.ac.uk"
 WORKDIR /app
 COPY schemas /opt/ceh-catalogue/schemas
+COPY --from=build-web /app/src/css /opt/ceh-catalogue/static/css
+COPY web/src/img /opt/ceh-catalogue/static/img
+COPY --from=build-web /app/src/scripts/main-out.js /opt/ceh-catalogue/static/scripts/main-out.js
+COPY --from=build-web /app/src/vendor/font-awesome-5/webfonts /opt/ceh-catalogue/static/vendor/font-awesome-5/webfonts
+COPY --from=build-web /app/src/vendor/requirejs/require.js /opt/ceh-catalogue/static/vendor/requirejs/require.js
 COPY templates /opt/ceh-catalogue/templates
 COPY --from=build-java /app/build/libs/app.jar .
 VOLUME ["/var/upload/datastore"]

@@ -52,7 +52,7 @@ public class DataciteServiceTest {
     public void init() {
         val restTemplate = new RestTemplate();
         configuration = new Configuration(Configuration.VERSION_2_3_23);
-        configuration.setDirectoryForTemplateLoading(new File("../templates"));
+        configuration.setDirectoryForTemplateLoading(new File("../templates-old"));
         service = new DataciteService(
                 "https://example.com/doi",
                 doiPrefix,

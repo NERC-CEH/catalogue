@@ -17,6 +17,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,7 +69,7 @@ public class Object2TemplatedMessageConverter<T> extends AbstractHttpMessageConv
                 if(MediaType.parseMediaType(template.whenRequestedAs()).isCompatibleWith(requestedMediaType)) {
                     freemarker.template.Template freemarkerTemplate = configuration.getTemplate(template.called());
                     String processedTemplate = FreeMarkerTemplateUtils.processTemplateIntoString(freemarkerTemplate, t);
-                    try (Writer writer = new BufferedWriter(new OutputStreamWriter(outputMessage.getBody(), "UTF-8"))) {
+                    try (Writer writer = new BufferedWriter(new OutputStreamWriter(outputMessage.getBody(), StandardCharsets.UTF_8))) {
                         writer.write(processedTemplate);
                     }
                 }

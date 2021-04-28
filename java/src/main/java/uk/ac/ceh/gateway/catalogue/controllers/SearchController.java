@@ -41,7 +41,7 @@ public class SearchController {
     
     public static final int PAGE_DEFAULT = Integer.parseInt(PAGE_DEFAULT_STRING);
     public static final int ROWS_DEFAULT = Integer.parseInt(ROWS_DEFAULT_STRING);
-    
+
     private final SolrClient solrClient;
     private final GroupStore<CatalogueUser> groupStore;
     private final CatalogueService catalogueService;
@@ -57,7 +57,7 @@ public class SearchController {
         this.groupStore = groupStore;
         this.catalogueService = catalogueService;
         this.facetFactory = facetFactory;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @GetMapping("documents")
@@ -95,9 +95,20 @@ public class SearchController {
         HttpServletRequest request,
         Model model
     ) {
-        log.info("GET search page");
+        log.debug("GET search page");
         val searchResults = search(user, catalogueKey, term, bbox, op, page, rows, facetFilters, request);
-        return "/html/search.ftl";
+        model.addAttribute("catalogue", catalogueService.retrieve(catalogueKey));
+        model.addAttribute("facets", searchResults.getFacets());
+        model.addAttribute("results", searchResults);
+        model.addAttribute("withoutBbox", searchResults.getWithoutBbox());
+        model.addAttribute("withinBbox", searchResults.getWithinBbox());
+        model.addAttribute("intersectingBbox", searchResults.getIntersectingBbox());
+        model.addAttribute("numFound", searchResults.getNumFound());
+        model.addAttribute("results", searchResults.getResults());
+        model.addAttribute("prevPage", searchResults.getPrevPage());
+        model.addAttribute("nextPage", searchResults.getNextPage());
+        model.addAttribute("page", searchResults.getPage());
+        return "html/search";
     }
 
     @SneakyThrows

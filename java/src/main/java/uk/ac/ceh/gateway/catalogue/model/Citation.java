@@ -1,6 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Value;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
@@ -15,10 +15,9 @@ import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.RESEARCH_IN
 @Value
 @Builder
 @ConvertUsing({
-    @Template(called="citation/bib.tpl", whenRequestedAs=BIBTEX_VALUE),
-    @Template(called="citation/ris.tpl", whenRequestedAs=RESEARCH_INFO_SYSTEMS_VALUE)
+    @Template(called="citation/bib.ftlh", whenRequestedAs=BIBTEX_VALUE),
+    @Template(called="citation/ris.ftlh", whenRequestedAs=RESEARCH_INFO_SYSTEMS_VALUE)
 })
-@JsonIgnoreProperties({"doiDisplay"})
 public class Citation {
     List<String> authors;
     String doi, coupled, title, publisher, resourceTypeGeneral;
@@ -28,7 +27,8 @@ public class Citation {
     public String getUrl() {
         return "https://doi.org/" + doi;
     }
-    
+
+    @JsonIgnore
     public String getDoiDisplay() {
         return "doi:" + doi;
     }

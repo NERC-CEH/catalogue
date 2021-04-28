@@ -27,7 +27,7 @@ public class CatalogueControllerTest {
     @InjectMocks private CatalogueController controller;
 
     @Test
-    public void getAllCatalogues() throws Exception {
+    public void getAllCatalogues() {
         //given
         Catalogue a = Catalogue.builder().id("a").title("a").url("a").build();
         Catalogue b = Catalogue.builder().id("b").title("b").url("b").build();
@@ -46,7 +46,7 @@ public class CatalogueControllerTest {
     }
 
     @Test
-    public void getCataloguesMinusB() throws Exception {
+    public void getCataloguesMinusB() {
         //given
         Catalogue a = Catalogue.builder().id("a").title("a").url("a").build();
         Catalogue b = Catalogue.builder().id("b").title("b").url("b").build();
@@ -66,7 +66,7 @@ public class CatalogueControllerTest {
     }
 
     @Test
-    public void getCataloguesWithUnknownCatalogue() throws Exception {
+    public void getCataloguesWithUnknownCatalogue() {
         //given
         Catalogue a = Catalogue.builder().id("a").title("a").url("a").build();
         Catalogue b = Catalogue.builder().id("b").title("b").url("b").build();
@@ -153,7 +153,7 @@ public class CatalogueControllerTest {
     }
 
     @Test
-    public void getUnknownFile() throws Exception {
+    public void getUnknownFile() {
         Assertions.assertThrows(DocumentRepositoryException.class, () -> {
             //Given
             String file = "123-456-789";
