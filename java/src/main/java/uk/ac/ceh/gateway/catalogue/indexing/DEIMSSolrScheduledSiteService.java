@@ -30,7 +30,7 @@ public class DEIMSSolrScheduledSiteService {
 
     public DEIMSSolrScheduledSiteService(@Qualifier("normal") RestTemplate restTemplate,
                                          SolrClient solrClient,
-                                         @Value("${solr.server.url}") String address) {
+                                         @Value("${diems.sites}") String address) {
         this.restTemplate = restTemplate;
         this.solrClient = solrClient;
         this.address = UriComponentsBuilder.fromHttpUrl(address).build().toUri();
