@@ -37,7 +37,7 @@ public class DEIMSSolrScheduledSiteService {
     }
 
     @Scheduled(initialDelay = ONE_MINUTE, fixedDelay = SEVEN_DAYS)
-    protected void fetchDEIMSSitesAndAddToSolr() throws DocumentIndexingException {
+    public DIEMSSite[] fetchDEIMSSitesAndAddToSolr() throws DocumentIndexingException {
         val response = restTemplate.getForEntity(
                 this.address,
                 DIEMSSite[].class
@@ -53,6 +53,7 @@ public class DEIMSSolrScheduledSiteService {
         } catch (IOException | SolrServerException ex) {
             throw new DocumentIndexingException(ex);
         }
+        return sites;
     }
 }
 
