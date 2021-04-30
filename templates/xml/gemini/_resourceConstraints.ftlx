@@ -1,0 +1,61 @@
+<#--Access limitations -->
+<#if accessLimitation?? && accessLimitation.code=="Restricted">
+	<gmd:resourceConstraints>
+		<gmd:MD_LegalConstraints>
+			<gmd:accessConstraints>
+				<gmd:MD_RestrictionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions">otherRestrictions</gmd:MD_RestrictionCode>
+			</gmd:accessConstraints>
+			<gmd:otherConstraints>
+				<gmx:Anchor xlink:href="${accessLimitation.uri}">${accessLimitation.value}</gmx:Anchor>
+			</gmd:otherConstraints>
+		</gmd:MD_LegalConstraints>
+	</gmd:resourceConstraints>
+<#else>
+	<gmd:resourceConstraints>
+		<gmd:MD_LegalConstraints>
+			<gmd:accessConstraints>
+				<gmd:MD_RestrictionCode
+			codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions">otherRestrictions</gmd:MD_RestrictionCode>
+			</gmd:accessConstraints>
+			<gmd:otherConstraints>
+				<gmx:Anchor xlink:href="http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/noLimitations">no limitations</gmx:Anchor>
+			</gmd:otherConstraints>
+		</gmd:MD_LegalConstraints>
+	</gmd:resourceConstraints>
+</#if>
+<#--END Access limitations -->
+
+<#--Use limitations -->
+<#if useConstraints?? || citation??>
+	<#if useConstraints??>
+		<#list useConstraints as useConstraint>
+			<gmd:resourceConstraints>
+				<gmd:MD_LegalConstraints> 
+					<gmd:useConstraints>
+						<gmd:MD_RestrictionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions">otherRestrictions</gmd:MD_RestrictionCode>
+					</gmd:useConstraints>
+					<gmd:otherConstraints>
+					<#if useConstraint.uri?has_content>
+						<gmx:Anchor xlink:title="${useConstraint.value}" xlink:href="${useConstraint.uri}">${useConstraint.value}</gmx:Anchor>
+					<#else>
+						<gco:CharacterString>${useConstraint.value}</gco:CharacterString>
+					</#if>
+					</gmd:otherConstraints>
+				</gmd:MD_LegalConstraints>
+			</gmd:resourceConstraints>
+		</#list>
+	</#if>
+	<#if citation??>
+		<gmd:resourceConstraints>		
+			<gmd:MD_LegalConstraints>
+				<gmd:useConstraints>
+					<gmd:MD_RestrictionCode codeList='http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_RestrictionCode' codeListValue='otherRestrictions'>otherRestrictions</gmd:MD_RestrictionCode>
+				</gmd:useConstraints>
+				<gmd:otherConstraints>
+					<gco:CharacterString>If you reuse this data, you should cite: ${citation.authors?join(', ')} (${citation.year}). ${citation.title}. ${citation.publisher} ${citation.url}</gco:CharacterString>
+				</gmd:otherConstraints>
+			</gmd:MD_LegalConstraints>
+		</gmd:resourceConstraints>
+	</#if>		
+</#if>
+<#--END Use limitations -->

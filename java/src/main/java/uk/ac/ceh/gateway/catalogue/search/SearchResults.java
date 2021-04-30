@@ -17,7 +17,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * A search results object for documents
  */
 @ConvertUsing({
-    @Template(called = "/html/search.ftlhh", whenRequestedAs = MediaType.TEXT_HTML_VALUE)
+    @Template(called = "/html/search.ftlh", whenRequestedAs = MediaType.TEXT_HTML_VALUE)
 })
 @Value
 public class SearchResults {

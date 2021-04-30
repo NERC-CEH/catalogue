@@ -195,7 +195,7 @@ which should have
 <!-- You need catalogue=catalogues.retrieve(metadata.catalogue) to load your css file -->
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
 
-<!-- You need id="metadata" to wrap the whole document so that everything works e.g. _admin.ftl buttons will work -->
+<!-- You need id="metadata" to wrap the whole document so that everything works e.g. _admin.ftlh buttons will work -->
 <div id="metadata">
   <div class="container">
     <!-- put data here e.g. -->

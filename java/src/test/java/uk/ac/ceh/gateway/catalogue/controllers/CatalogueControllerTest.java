@@ -1,11 +1,18 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
+import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
+import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
@@ -19,30 +26,45 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(MockitoExtension.class)
+@ActiveProfiles("test")
+@DisplayName("CatalogueController")
+@Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
+@WebMvcTest(CatalogueController.class)
 public class CatalogueControllerTest {
-    private @Mock DocumentRepository documentRepository;
-    private @Mock CatalogueService catalogueService;
-    @InjectMocks private CatalogueController controller;
+    private @MockBean DocumentRepository documentRepository;
+    private @MockBean CatalogueService catalogueService;
 
-    @Test
-    public void getAllCatalogues() {
-        //given
+    @Autowired private MockMvc mockMvc;
+    private CatalogueController controller;
+
+    private void givenCataloguesRetrieveAll() {
         Catalogue a = Catalogue.builder().id("a").title("a").url("a").build();
         Catalogue b = Catalogue.builder().id("b").title("b").url("b").build();
         Catalogue c = Catalogue.builder().id("c").title("c").url("c").build();
 
         given(catalogueService.retrieveAll()).willReturn(Arrays.asList(a, b, c));
+    }
+
+    @BeforeEach
+    void setup() {
+        controller = new CatalogueController(documentRepository, catalogueService);
+    }
+
+    @Test
+    void getAllCatalogues() throws Exception {
+        //given
+        givenCataloguesRetrieveAll();
 
         //when
-        List<Catalogue> actual = controller.catalogues(null, null).getBody();
-
-        //then
-        verify(catalogueService).retrieveAll();
-        assertThat("should be list of catalogues", actual.contains(a));
-        assertThat("should be list of catalogues", actual.contains(b));
-        assertThat("should be list of catalogues", actual.contains(c));
+        mockMvc.perform(
+            get("/catalogues")
+        )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
     @Test

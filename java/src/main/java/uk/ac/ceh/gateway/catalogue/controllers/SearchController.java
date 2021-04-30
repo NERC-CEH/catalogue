@@ -6,9 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrRequest;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -74,46 +72,9 @@ public class SearchController {
         return new RedirectView(redirectUrl);
     }
 
-    @GetMapping(value = "{catalogue}/documents", produces = MediaType.TEXT_HTML_VALUE)
-    public String getSearchPage(
-        @ActiveUser
-        CatalogueUser user,
-        @PathVariable("catalogue")
-        String catalogueKey,
-        @RequestParam(value=TERM_QUERY_PARAM, defaultValue=SearchQuery.DEFAULT_SEARCH_TERM)
-        String term,
-        @RequestParam(value=BBOX_QUERY_PARAM, required = false)
-        String bbox,
-        @RequestParam(value=OP_QUERY_PARAM, defaultValue=OP_DEFAULT_STRING)
-        String op,
-        @RequestParam(value=PAGE_QUERY_PARAM, defaultValue=PAGE_DEFAULT_STRING)
-        int page,
-        @RequestParam(value=ROWS_QUERY_PARAM, defaultValue=ROWS_DEFAULT_STRING)
-        int rows,
-        @RequestParam(value=FACET_QUERY_PARAM, defaultValue = "")
-        List<FacetFilter> facetFilters,
-        HttpServletRequest request,
-        Model model
-    ) {
-        log.debug("GET search page");
-        val searchResults = search(user, catalogueKey, term, bbox, op, page, rows, facetFilters, request);
-        model.addAttribute("catalogue", catalogueService.retrieve(catalogueKey));
-        model.addAttribute("facets", searchResults.getFacets());
-        model.addAttribute("results", searchResults);
-        model.addAttribute("withoutBbox", searchResults.getWithoutBbox());
-        model.addAttribute("withinBbox", searchResults.getWithinBbox());
-        model.addAttribute("intersectingBbox", searchResults.getIntersectingBbox());
-        model.addAttribute("numFound", searchResults.getNumFound());
-        model.addAttribute("results", searchResults.getResults());
-        model.addAttribute("prevPage", searchResults.getPrevPage());
-        model.addAttribute("nextPage", searchResults.getNextPage());
-        model.addAttribute("page", searchResults.getPage());
-        return "html/search";
-    }
-
     @SneakyThrows
     @ResponseBody
-    @GetMapping(value = "{catalogue}/documents", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping("{catalogue}/documents")
     public SearchResults search(
         @ActiveUser
         CatalogueUser user,

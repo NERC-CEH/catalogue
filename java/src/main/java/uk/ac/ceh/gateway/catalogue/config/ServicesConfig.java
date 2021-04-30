@@ -2,7 +2,6 @@ package uk.ac.ceh.gateway.catalogue.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
-import freemarker.template.TemplateExceptionHandler;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -116,7 +115,6 @@ public class ServicesConfig {
     @SneakyThrows
     @PostConstruct
     public void configureFreemarkerSharedVariables() {
-        freemarkerConfiguration.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
         freemarkerConfiguration.setSharedVariable("catalogues", catalogueService);
         freemarkerConfiguration.setSharedVariable("codes", codeLookupService);
         freemarkerConfiguration.setSharedVariable("downloadOrderDetails", downloadOrderDetailsService());

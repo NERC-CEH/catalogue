@@ -3,8 +3,10 @@ package uk.ac.ceh.gateway.catalogue.converters;
 import freemarker.core.ParseException;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
+import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
@@ -12,14 +14,15 @@ import org.springframework.http.converter.AbstractHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @ToString(exclude = "configuration")
@@ -48,35 +51,46 @@ public class Object2TemplatedMessageConverter<T> extends AbstractHttpMessageConv
         throw new HttpMessageNotReadableException("This implementation can not read anything", inputMessage);
     }
 
+    @SneakyThrows
     @Override
     public List<MediaType> getSupportedMediaTypes() {
-        ConvertUsing convertUsing = clazz.getAnnotation(ConvertUsing.class);
-        List<MediaType> toReturn = new ArrayList<>();
-        if(convertUsing != null) {
-            for(Template template : convertUsing.value()) {
-                toReturn.add(MediaType.parseMediaType(template.whenRequestedAs()));
-            }
-        }
-        return toReturn;
+        val templates = Optional.ofNullable(clazz.getAnnotation(ConvertUsing.class))
+            .orElseThrow(() -> new HttpMediaTypeNotSupportedException("No media types"))
+            .value();
+
+        return Arrays.stream(templates)
+            .map(template -> MediaType.parseMediaType(template.whenRequestedAs()))
+            .collect(Collectors.toList());
     }
 
     @Override
     protected void writeInternal(Object t, HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException {
         try {
             //Locate the correct template for the given media type
-            MediaType requestedMediaType = outputMessage.getHeaders().getContentType();
-            for(Template template: t.getClass().getAnnotation(ConvertUsing.class).value()) {
-                if(MediaType.parseMediaType(template.whenRequestedAs()).isCompatibleWith(requestedMediaType)) {
-                    freemarker.template.Template freemarkerTemplate = configuration.getTemplate(template.called());
-                    String processedTemplate = FreeMarkerTemplateUtils.processTemplateIntoString(freemarkerTemplate, t);
-                    try (Writer writer = new BufferedWriter(new OutputStreamWriter(outputMessage.getBody(), StandardCharsets.UTF_8))) {
-                        writer.write(processedTemplate);
-                    }
-                }
+            val templateName = Arrays.stream(getTemplates(t))
+                .filter(template -> isCompatibleMediaType(template, outputMessage))
+                .findFirst()
+                .orElseThrow(() -> new HttpMessageNotWritableException("No suitable template"))
+                .called();
+            val freemarkerTemplate = configuration.getTemplate(templateName);
+            val processedTemplate = FreeMarkerTemplateUtils.processTemplateIntoString(freemarkerTemplate, t);
+            log.debug("Using: {} for: {}", templateName, outputMessage.getHeaders().getContentType());
+            try (Writer writer = new BufferedWriter(new OutputStreamWriter(outputMessage.getBody(), StandardCharsets.UTF_8))) {
+                writer.write(processedTemplate);
             }
         } catch(TemplateException | ParseException e) {
             log.error(t.toString());
             throw new HttpMessageNotWritableException("There was an error in the template", e);
         }
+    }
+
+    private Template[] getTemplates(Object t) {
+        return t.getClass().getAnnotation(ConvertUsing.class).value();
+    }
+
+    private boolean isCompatibleMediaType(Template template, HttpOutputMessage outputMessage) {
+        val requestedMediaType = outputMessage.getHeaders().getContentType();
+        val templateMediaType = MediaType.parseMediaType(template.whenRequestedAs());
+        return templateMediaType.isCompatibleWith(requestedMediaType);
     }
 }

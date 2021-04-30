@@ -10,8 +10,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.StreamUtils;
+import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
+import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.Citation;
@@ -30,11 +33,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.*;
-import static uk.ac.ceh.gateway.catalogue.controllers.AuthenticationConfig.USER;
+import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.EIDC_PUBLISHER_USERNAME;
 
 @Slf4j
+@ActiveProfiles("test")
 @DisplayName("CitationController")
-@Import(AuthenticationConfig.class)
+@Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
 @WebMvcTest(
     controllers=CitationController.class,
     properties="spring.freemarker.template-loader-path=file:../templates"
@@ -108,7 +112,7 @@ class CitationControllerTest {
         //when
         mockMvc.perform(
             get("/documents/{file}/citation", file)
-                .header("remote-user", USER)
+                .header("remote-user", EIDC_PUBLISHER_USERNAME)
                 .accept(BIBTEX_VALUE)
         )
             .andExpect(status().isOk())
@@ -126,7 +130,7 @@ class CitationControllerTest {
         //when
         mockMvc.perform(
             get("/documents/{file}/citation", file)
-                .header("remote-user", USER)
+                .header("remote-user", EIDC_PUBLISHER_USERNAME)
                 .param("format", BIBTEX_SHORT)
         )
             .andExpect(status().isOk())
@@ -144,7 +148,7 @@ class CitationControllerTest {
         //when
         mockMvc.perform(
             get("/documents/{file}/citation", file)
-                .header("remote-user", USER)
+                .header("remote-user", EIDC_PUBLISHER_USERNAME)
                 .accept(RESEARCH_INFO_SYSTEMS_VALUE)
         )
             .andExpect(status().isOk())
@@ -162,7 +166,7 @@ class CitationControllerTest {
         //when
         mockMvc.perform(
             get("/documents/{file}/citation", file)
-                .header("remote-user", USER)
+                .header("remote-user", EIDC_PUBLISHER_USERNAME)
                 .param("format", RESEARCH_INFO_SYSTEMS_SHORT)
         )
             .andExpect(status().isOk())
@@ -180,7 +184,7 @@ class CitationControllerTest {
         //when
         mockMvc.perform(
             get("/documents/{file}/citation", file)
-                .header("remote-user", USER)
+                .header("remote-user", EIDC_PUBLISHER_USERNAME)
                 .accept(MediaType.APPLICATION_JSON)
         )
             .andExpect(status().isOk())
@@ -198,7 +202,7 @@ class CitationControllerTest {
         //when
         mockMvc.perform(
             get("/documents/{file}/citation", file)
-                .header("remote-user", USER)
+                .header("remote-user", EIDC_PUBLISHER_USERNAME)
                 .param("format", "json")
         )
             .andExpect(status().isOk())
@@ -216,7 +220,7 @@ class CitationControllerTest {
         //when
         mockMvc.perform(
             get("/documents/{file}/citation", file)
-                .header("remote-user", USER)
+                .header("remote-user", EIDC_PUBLISHER_USERNAME)
         )
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -233,7 +237,7 @@ class CitationControllerTest {
         //When
         mockMvc.perform(
             get("/history/{revision}/{file}/citation", revision, file)
-                .header("remote-user", USER)
+                .header("remote-user", EIDC_PUBLISHER_USERNAME)
                 .accept(MediaType.APPLICATION_JSON)
         )
             .andExpect(status().isOk())
@@ -251,7 +255,7 @@ class CitationControllerTest {
         //When
         mockMvc.perform(
             get("/history/{revision}/{file}/citation", revision, file)
-                .header("remote-user", USER)
+                .header("remote-user", EIDC_PUBLISHER_USERNAME)
                 .accept(RESEARCH_INFO_SYSTEMS_VALUE)
         )
             .andExpect(status().isOk())
@@ -271,7 +275,7 @@ class CitationControllerTest {
         //when
         mockMvc.perform(
             get("/documents/{file}/citation", file)
-                .header("remote-user", USER)
+                .header("remote-user", EIDC_PUBLISHER_USERNAME)
         )
             .andExpect(status().isNotFound())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -294,7 +298,7 @@ class CitationControllerTest {
         //when
         mockMvc.perform(
             get("/documents/{file}/citation", file)
-                .header("remote-user", USER)
+                .header("remote-user", EIDC_PUBLISHER_USERNAME)
         )
             .andExpect(status().isNotFound())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))

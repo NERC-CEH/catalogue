@@ -1,7 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
+import freemarker.template.Configuration;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrRequest;
 import org.apache.solr.client.solrj.response.QueryResponse;
@@ -12,16 +14,19 @@ import org.mockito.Answers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
+import uk.ac.ceh.gateway.catalogue.indexing.SolrIndex;
 import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 import uk.ac.ceh.gateway.catalogue.search.FacetFactory;
 import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
+import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
+
+import java.util.Arrays;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -30,23 +35,24 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.UNPRIVILEGED_USERNAME;
 
 @Slf4j
-@ActiveProfiles({"development"})
-@ContextConfiguration(classes = {
-    SearchController.class,
-    DevelopmentUserStoreConfig.class,
-    SecurityConfigCrowd.class
-})
+@ActiveProfiles("test")
 @DisplayName("SearchController")
-@WithMockUser
-@WebMvcTest(SearchController.class)
+@Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
+@WebMvcTest(
+    controllers=SearchController.class,
+    properties="spring.freemarker.template-loader-path=file:../templates"
+)
 class SearchControllerTest {
     @MockBean private SolrClient solrClient;
     @MockBean private CatalogueService catalogueService;
     @MockBean private FacetFactory facetFactory;
+    @MockBean private CodeLookupService codeLookupService;
 
     @Autowired private MockMvc mockMvc;
+    @Autowired Configuration configuration;
 
     private final String catalogueKey = "eidc";
 
@@ -73,9 +79,36 @@ class SearchControllerTest {
     }
 
     @SneakyThrows
+    private void givenFreemarkerConfiguration() {
+        configuration.setSharedVariable("catalogues", catalogueService);
+        configuration.setSharedVariable("codes", codeLookupService);
+    }
+
+    @SneakyThrows
     private void givenSearchResults() {
         given(solrClient.query(any(SolrParams.class), eq(SolrRequest.METHOD.POST)))
             .willReturn(mock(QueryResponse.class, Answers.RETURNS_DEEP_STUBS));
+    }
+
+    @SneakyThrows
+    private void givenSearchResultsWithResults() {
+        val results = Arrays.asList(
+            create("0"),
+            create("1")
+        );
+        val queryResponse = mock(QueryResponse.class, Answers.RETURNS_DEEP_STUBS);
+        given(queryResponse.getBeans(SolrIndex.class)).willReturn(results);
+        given(solrClient.query(any(SolrParams.class), eq(SolrRequest.METHOD.POST)))
+            .willReturn(queryResponse);
+        given(codeLookupService.lookup("publication.state", "public")).willReturn("Public");
+    }
+
+    private SolrIndex create(String id) {
+        val solrIndex = new SolrIndex();
+        solrIndex.setIdentifier(id);
+        solrIndex.setTitle("title-" + id);
+        solrIndex.setState("public");
+        return solrIndex;
     }
 
     @Test
@@ -100,7 +133,10 @@ class SearchControllerTest {
     void getSearchPageHtml() {
         //given
         givenCatalogue();
-        givenSearchResults();
+        givenDefaultCatalogue();
+        givenSearchResultsWithResults();
+        givenFreemarkerConfiguration();
+
 
         //when
         mockMvc.perform(
@@ -108,9 +144,7 @@ class SearchControllerTest {
                 .accept(MediaType.TEXT_HTML)
         )
             .andExpect(status().isOk())
-            .andExpect(view().name("html/search"))
-            .andExpect(model().attributeExists("catalogue"))
-            .andExpect(model().attributeExists("results"));
+            .andExpect(content().contentType(MediaType.TEXT_HTML));
     }
 
     @Test
@@ -124,6 +158,7 @@ class SearchControllerTest {
         //when
         mockMvc.perform(
             get("/{catalogue}/documents", catalogueKey)
+                .header("remote-user", UNPRIVILEGED_USERNAME)
                 .accept(MediaType.APPLICATION_JSON)
         )
             .andExpect(status().isOk())
@@ -141,6 +176,7 @@ class SearchControllerTest {
         //when
         mockMvc.perform(
             get("/{catalogue}/documents", catalogueKey)
+                .header("remote-user", UNPRIVILEGED_USERNAME)
                 .param("format", "json")
         )
             .andExpect(status().isOk())
@@ -148,7 +184,7 @@ class SearchControllerTest {
     }
 
     @Test
-    @DisplayName("GET search reults for query")
+    @DisplayName("GET search results for query")
     @SneakyThrows
     void getSearchResultsJsonWithQuery() {
         //given
@@ -158,6 +194,7 @@ class SearchControllerTest {
         //when
         mockMvc.perform(
             get("/{catalogue}/documents", catalogueKey)
+                .header("remote-user", UNPRIVILEGED_USERNAME)
                 .accept(MediaType.APPLICATION_JSON)
                 .param("term", "herring")
                 .param("bbox", "coordinates")

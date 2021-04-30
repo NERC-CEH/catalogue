@@ -2,10 +2,11 @@ package uk.ac.ceh.gateway.catalogue.converters;
 
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
+import lombok.SneakyThrows;
+import lombok.val;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpInputMessage;
@@ -22,17 +23,17 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class Object2TemplatedMessageResolverTest {
+class Object2TemplatedMessageResolverTest {
     @Mock Configuration configuration;
     
     @Test
-    public void checkThatCantRead() {
+    void checkThatCantRead() {
         //Given
-        Object2TemplatedMessageConverter<Object> converter = 
-                new Object2TemplatedMessageConverter(Object.class, configuration);
+        val converter = new Object2TemplatedMessageConverter<>(Object.class, configuration);
         
         //When
         boolean canRead = converter.canRead(Object.class, MediaType.ALL);
@@ -42,32 +43,26 @@ public class Object2TemplatedMessageResolverTest {
     }
     
     @Test
-    public void checkThatExceptionIsThrownIfReadIsAttempted() throws IOException {
-        Assertions.assertThrows(HttpMessageNotReadableException.class, () -> {
-            //Given
-            Object2TemplatedMessageConverter<Object> converter =
-                    new Object2TemplatedMessageConverter(Object.class, configuration);
+    void checkThatExceptionIsThrownIfReadIsAttempted() {
+        //Given
+        val converter = new Object2TemplatedMessageConverter<>(Object.class, configuration);
+        val in = mock(HttpInputMessage.class);
 
-            HttpInputMessage in = mock(HttpInputMessage.class);
-
-            //When
-            converter.readInternal(Object.class, in);
-
-            //Then
-            fail("Expected http message not readable exception");
-        });
+        //When
+        Assertions.assertThrows(HttpMessageNotReadableException.class, () ->
+            converter.readInternal(Object.class, in)
+        );
     }
     
     @Test
-    public void checkSupportedMediaTypesAreRead() {
+    void checkSupportedMediaTypesAreRead() {
         //Given
         @ConvertUsing(
             @Template(called="template",whenRequestedAs="application/json")
         )
         class MyType {}
         
-        Object2TemplatedMessageConverter<MyType> converter = 
-                new Object2TemplatedMessageConverter(MyType.class, configuration);
+        val converter = new Object2TemplatedMessageConverter<MyType>(MyType.class, configuration);
         
         //When
         List<MediaType> supportedTypes = converter.getSupportedMediaTypes();
@@ -78,23 +73,22 @@ public class Object2TemplatedMessageResolverTest {
     }
     
     @Test
-    public void checkTemplateIsCalledForProcessingOnWrite() throws IOException, TemplateException {
+    void checkTemplateIsCalledForProcessingOnWrite() throws IOException, TemplateException {
         //Given
         @ConvertUsing(
             @Template(called="bob",whenRequestedAs="application/xml")
         )
         class MyType {}
         
-        HttpOutputMessage message = mock(HttpOutputMessage.class, RETURNS_DEEP_STUBS);
-        OutputStream out = mock(OutputStream.class);
-        when(message.getBody()).thenReturn(out);
-        when(message.getHeaders().getContentType()).thenReturn(MediaType.APPLICATION_XML);
+        val message = mock(HttpOutputMessage.class, RETURNS_DEEP_STUBS);
+        val out = mock(OutputStream.class);
+        given(message.getBody()).willReturn(out);
+        given(message.getHeaders().getContentType()).willReturn(MediaType.APPLICATION_XML);
         
-        Object2TemplatedMessageConverter<MyType> converter = 
-                new Object2TemplatedMessageConverter(MyType.class, configuration);
+        val converter = new Object2TemplatedMessageConverter<MyType>(MyType.class, configuration);
         
         freemarker.template.Template freemarkerTemplate = mock(freemarker.template.Template.class);
-        when(configuration.getTemplate("bob")).thenReturn(freemarkerTemplate);
+        given(configuration.getTemplate("bob")).willReturn(freemarkerTemplate);
         
         MyType dataToProcess = new MyType();
         
@@ -102,58 +96,50 @@ public class Object2TemplatedMessageResolverTest {
         converter.writeInternal(dataToProcess, message);
         
         //Then
-        ArgumentCaptor<String> template = ArgumentCaptor.forClass(String.class);
-        verify(configuration).getTemplate(template.capture());
-        assertEquals("bob", template.getValue());
-        
         verify(freemarkerTemplate).process(eq(dataToProcess), any(Writer.class));
     }
     
     @Test
-    public void checkTemplateExceptionThrowsHttpNotWritableException() throws IOException, TemplateException {
-        Assertions.assertThrows(HttpMessageNotWritableException.class, () -> {
-            //Given
-            @ConvertUsing(
-                    @Template(called = "bob", whenRequestedAs = "application/xml")
-            )
-            class MyType {
-            }
+    @SneakyThrows
+    void checkTemplateExceptionThrowsHttpNotWritableException() {
+        //Given
+        @ConvertUsing(
+                @Template(called = "bob", whenRequestedAs = "application/xml")
+        )
+        class MyType {
+        }
 
-            HttpOutputMessage message = mock(HttpOutputMessage.class, RETURNS_DEEP_STUBS);
-            OutputStream out = mock(OutputStream.class);
-            when(message.getBody()).thenReturn(out);
-            when(message.getHeaders().getContentType()).thenReturn(MediaType.APPLICATION_XML);
+        val message = mock(HttpOutputMessage.class, RETURNS_DEEP_STUBS);
+        val out = mock(OutputStream.class);
+        given(message.getBody()).willReturn(out);
+        given(message.getHeaders().getContentType()).willReturn(MediaType.APPLICATION_XML);
 
-            Object2TemplatedMessageConverter<MyType> converter =
-                    new Object2TemplatedMessageConverter(MyType.class, configuration);
+        val converter = new Object2TemplatedMessageConverter<MyType>(MyType.class, configuration);
 
-            freemarker.template.Template freemarkerTemplate = mock(freemarker.template.Template.class);
-            when(configuration.getTemplate("bob")).thenReturn(freemarkerTemplate);
+        freemarker.template.Template freemarkerTemplate = mock(freemarker.template.Template.class);
+        given(configuration.getTemplate("bob")).willReturn(freemarkerTemplate);
 
-            MyType dataToProcess = new MyType();
+        MyType dataToProcess = new MyType();
 
-            doThrow(new TemplateException("Epic failure", null))
-                    .when(freemarkerTemplate)
-                    .process(eq(dataToProcess), any(Writer.class));
+        doThrow(new TemplateException("Epic failure", null))
+                .when(freemarkerTemplate)
+                .process(eq(dataToProcess), any(Writer.class));
 
-            //When
-            converter.writeInternal(dataToProcess, message);
-
-            //Then
-            fail("Expected to fail with an http not writable exception");
-        });
+        //When
+        Assertions.assertThrows(HttpMessageNotWritableException.class, () ->
+            converter.writeInternal(dataToProcess, message)
+        );
     }
     
     @Test
-    public void checkCanWriteAnnotatedType() {
+    void checkCanWriteAnnotatedType() {
         //Given
         @ConvertUsing(
             @Template(called="bob",whenRequestedAs="application/xml")
         )
         class MyType {}
         
-        Object2TemplatedMessageConverter<MyType> converter = 
-                new Object2TemplatedMessageConverter(MyType.class, configuration);
+       val converter = new Object2TemplatedMessageConverter<MyType>(MyType.class, configuration);
         
         //When
         boolean canWrite = converter.canWrite(MyType.class, MediaType.APPLICATION_XML);
@@ -164,15 +150,14 @@ public class Object2TemplatedMessageResolverTest {
     
     
     @Test
-    public void checkCantWriteUndefinedTypeAnnotatedType() {
+    void checkCantWriteUndefinedTypeAnnotatedType() {
         //Given
         @ConvertUsing(
             @Template(called="bob",whenRequestedAs="application/xml")
         )
         class MyType {}
         
-        Object2TemplatedMessageConverter<MyType> converter = 
-                new Object2TemplatedMessageConverter(MyType.class, configuration);
+        val converter = new Object2TemplatedMessageConverter<MyType>(MyType.class, configuration);
         
         //When
         boolean canWrite = converter.canWrite(MyType.class, MediaType.TEXT_HTML);
@@ -182,14 +167,13 @@ public class Object2TemplatedMessageResolverTest {
     }
     
     @Test
-    public void checkSubTypeCanAlsoBeRead() {
+    void checkSubTypeCanAlsoBeRead() {
         //Given
         @ConvertUsing(@Template(called="bob",whenRequestedAs="application/xml"))
         class MyType {}        
         class MySubType extends MyType {}
         
-        Object2TemplatedMessageConverter<MyType> converter = 
-                new Object2TemplatedMessageConverter(MyType.class, configuration);
+        val converter = new Object2TemplatedMessageConverter<MyType>(MyType.class, configuration);
         
         //When
         boolean supports = converter.supports(MySubType.class);
@@ -203,8 +187,7 @@ public class Object2TemplatedMessageResolverTest {
         @ConvertUsing(@Template(called="bob",whenRequestedAs="application/xml"))
         class MyType {}
         
-        Object2TemplatedMessageConverter<MyType> converter = 
-                new Object2TemplatedMessageConverter(MyType.class, configuration);
+        val converter = new Object2TemplatedMessageConverter<MyType>(MyType.class, configuration);
         
         //When
         boolean supports = converter.supports(String.class);

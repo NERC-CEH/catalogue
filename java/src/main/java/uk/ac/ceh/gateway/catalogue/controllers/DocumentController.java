@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -59,9 +60,9 @@ public class DocumentController extends AbstractDocumentController {
             .fromRequest(request)
             .scheme("https")
             .replacePath("documents/{path}");
-        RedirectView toReturn = new RedirectView(url.buildAndExpand(path).toUriString());
-        toReturn.setStatusCode(HttpStatus.SEE_OTHER);
-        return toReturn;
+        val redirectView = new RedirectView(url.buildAndExpand(path).toUriString());
+        redirectView.setStatusCode(HttpStatus.SEE_OTHER);
+        return redirectView;
     }
     
     @RequestMapping (value = "documents/upload",
@@ -81,8 +82,7 @@ public class DocumentController extends AbstractDocumentController {
             @RequestParam("type") String documentType,
             @RequestParam("catalogue") String catalogue
     ) throws DocumentRepositoryException, IOException  {
-        
-        MetadataDocument data = documentRepository.save(
+        val data = documentRepository.save(
             user,
             multipartFile.getInputStream(),
             MediaType.parseMediaType(multipartFile.getContentType()),
@@ -90,6 +90,7 @@ public class DocumentController extends AbstractDocumentController {
             catalogue,
             "new file upload"
         );
+        log.debug("Document URI: {}", data.getUri());
         return new RedirectView(data.getUri());
     }
     
@@ -290,17 +291,16 @@ public class DocumentController extends AbstractDocumentController {
             document
         );
     }
-    
-    @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
-    @RequestMapping(value = "documents/{file}",
-                    method = RequestMethod.GET)   
+
     @ResponseBody
     @SneakyThrows
+    @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
+    @GetMapping("documents/{file}")
     public MetadataDocument readMetadata(
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file
     ) {        
-        return postprocessLinkDocument(documentRepository.read(file));
+        return postProcessLinkDocument(documentRepository.read(file));
     }
     
     @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
@@ -337,10 +337,10 @@ public class DocumentController extends AbstractDocumentController {
             @PathVariable("file") String file,
             @PathVariable("revision") String revision
     ) {
-        return postprocessLinkDocument(documentRepository.read(file, revision));
+        return postProcessLinkDocument(documentRepository.read(file, revision));
     }
     
-    private MetadataDocument postprocessLinkDocument(MetadataDocument document) {
+    private MetadataDocument postProcessLinkDocument(MetadataDocument document) {
         if (document instanceof LinkDocument) {
             LinkDocument linkDocument = (LinkDocument) document;
             String id = linkDocument.getId();

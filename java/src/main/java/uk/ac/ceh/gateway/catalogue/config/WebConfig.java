@@ -24,7 +24,9 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUserHandlerMethodArgumentResolver;
 import uk.ac.ceh.gateway.catalogue.converters.Object2TemplatedMessageConverter;
+import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.Citation;
+import uk.ac.ceh.gateway.catalogue.search.SearchResults;
 import uk.ac.ceh.gateway.catalogue.util.ForgivingParameterContentNegotiationStrategy;
 import uk.ac.ceh.gateway.catalogue.util.WmsFormatContentNegotiationStrategy;
 
@@ -54,7 +56,13 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
         log.info("Adding message converters");
-        converters.add(new Object2TemplatedMessageConverter<>(Citation.class, freemarkerConfiguration));
+        converters.add(0, new Object2TemplatedMessageConverter<>(Citation.class, freemarkerConfiguration));
+        converters.add(1, new Object2TemplatedMessageConverter<>(GeminiDocument.class, freemarkerConfiguration));
+        converters.add(2, new Object2TemplatedMessageConverter<>(SearchResults.class, freemarkerConfiguration));
+        if (log.isDebugEnabled()) {
+            log.debug("After our message converters added");
+            converters.forEach(convert -> log.debug(convert.toString()));
+        }
     }
 
     @Bean
@@ -95,7 +103,6 @@ public class WebConfig implements WebMvcConfigurer {
         val mediaTypes = ImmutableMap.<String, MediaType>builder()
             .put("html", MediaType.TEXT_HTML)
             .put("json", MediaType.APPLICATION_JSON)
-//            .put(BIBTEX_SHORT, MediaType.parseMediaType(BIBTEX_VALUE))
             .put(CEH_MODEL_APPLICATION_SHORT, MediaType.parseMediaType(CEH_MODEL_APPLICATION_JSON_VALUE))
             .put(CEH_MODEL_SHORT, MediaType.parseMediaType(CEH_MODEL_JSON_VALUE))
             .put(DATA_TYPE_SHORT, MediaType.parseMediaType(DATA_TYPE_JSON_VALUE))
@@ -111,12 +118,8 @@ public class WebConfig implements WebMvcConfigurer {
             .put(OSDP_MONITORING_PROGRAMME_SHORT, MediaType.parseMediaType(OSDP_MONITORING_PROGRAMME_JSON_VALUE))
             .put(OSDP_PUBLICATION_SHORT, MediaType.parseMediaType(OSDP_PUBLICATION_JSON_VALUE))
             .put(OSDP_SAMPLE_SHORT, MediaType.parseMediaType(OSDP_SAMPLE_JSON_VALUE))
-            .put(RDF_TTL_SHORT, MediaType.parseMediaType(RDF_TTL_VALUE))
-            .put(RDF_SCHEMAORG_SHORT, MediaType.parseMediaType(RDF_SCHEMAORG_VALUE))
-//            .put(RESEARCH_INFO_SYSTEMS_SHORT, MediaType.parseMediaType(RESEARCH_INFO_SYSTEMS_VALUE))
             .put(SAMPLE_ARCHIVE_SHORT, MediaType.parseMediaType(SAMPLE_ARCHIVE_JSON_VALUE))
             .put(UPLOAD_DOCUMENT_SHORT, MediaType.parseMediaType(UPLOAD_DOCUMENT_JSON_VALUE))
-            .put(UKEOF_XML_SHORT, MediaType.parseMediaType(UKEOF_XML_VALUE))
             .build();
 
         val forgivingContent = new ForgivingParameterContentNegotiationStrategy(mediaTypes);
@@ -127,7 +130,10 @@ public class WebConfig implements WebMvcConfigurer {
         configurer
             .favorParameter(true)
             .mediaType(BIBTEX_SHORT, MediaType.parseMediaType(BIBTEX_VALUE))
-            .mediaType(RESEARCH_INFO_SYSTEMS_SHORT, MediaType.parseMediaType(RESEARCH_INFO_SYSTEMS_VALUE));
+            .mediaType(GEMINI_XML_SHORT, MediaType.parseMediaType(GEMINI_XML_VALUE))
+            .mediaType(RESEARCH_INFO_SYSTEMS_SHORT, MediaType.parseMediaType(RESEARCH_INFO_SYSTEMS_VALUE))
+            .mediaType(RDF_SCHEMAORG_SHORT, MediaType.parseMediaType(RDF_SCHEMAORG_VALUE))
+            .mediaType(RDF_TTL_SHORT, MediaType.parseMediaType(RDF_TTL_VALUE));
 //            .strategies(Arrays.asList(
 //                forgivingContent,
 //                wms,
