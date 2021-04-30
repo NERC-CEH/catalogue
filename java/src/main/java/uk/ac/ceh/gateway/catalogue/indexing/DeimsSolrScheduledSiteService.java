@@ -56,9 +56,10 @@ public class DeimsSolrScheduledSiteService {
                 solrClient.addBean(DEIMS, new DeimsSolrIndex(site));
                 log.debug("Added {}, {}", site.getIdentifier(), site.getTitle());
             }
-            solrClient.commit();
+            solrClient.commit(DEIMS);
 
         } catch (IOException | SolrServerException ex) {
+            log.error("Failed to re-index DEIMS sites");
             throw new DocumentIndexingException(ex);
         }
     }
@@ -79,7 +80,7 @@ public class DeimsSolrScheduledSiteService {
         }
 
         @Data
-        private class Id {
+        private static class Id {
             String prefix;
             String suffix;
         }
