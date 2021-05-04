@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
+import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.NameValuePair;
@@ -15,7 +16,6 @@ import uk.ac.ceh.gateway.catalogue.services.MapServerDetailsService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,17 +42,22 @@ public class MapViewerController {
         log.info("Creating {}", this);
     }
    
-    @RequestMapping(method = RequestMethod.GET)
+    @GetMapping
     public String loadMapViewer() {
-        return "/html/mapviewer.ftl";
+        return "/html/mapviewer";
     }
     
-    @RequestMapping (value = "{file}")
+    @RequestMapping(value = "{file}")
     @ResponseBody
+    @SneakyThrows
     public Object wmsService(
             @PathVariable("file") String file,
-            HttpServletRequest request) throws URISyntaxException {
+            HttpServletRequest request
+    ) {
         List<NameValuePair> params = URLEncodedUtils.parse(request.getQueryString(), StandardCharsets.UTF_8, '&');
+        if (log.isDebugEnabled()) {
+            params.forEach(param -> log.debug("{} - {}", param.getName(), param.getValue()));
+        }
         
         if(isLocalGetFeatureInfoRequest(params)) {
             String query = createQueryStringWithLocalInfoFormat(params, MAPSERVER_GML_VALUE);
