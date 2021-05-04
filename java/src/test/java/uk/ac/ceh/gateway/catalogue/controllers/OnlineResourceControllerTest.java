@@ -3,42 +3,47 @@ package uk.ac.ceh.gateway.catalogue.controllers;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.message.BasicHeader;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.ogc.Layer;
+import uk.ac.ceh.gateway.catalogue.ogc.WmsCapabilities;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.GetCapabilitiesObtainerService;
 import uk.ac.ceh.gateway.catalogue.services.MapServerDetailsService;
 import uk.ac.ceh.gateway.catalogue.services.TMSToWMSGetMapService;
 
+import java.io.IOException;
 import java.util.Collections;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @Slf4j
-@ActiveProfiles({"development"})
-@ContextConfiguration(classes = {
-    OnlineResourceController.class,
-    DevelopmentUserStoreConfig.class,
-    SecurityConfigCrowd.class
-})
+@ActiveProfiles("test")
 @DisplayName("OnlineResourceController")
+@Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
 @WebMvcTest(OnlineResourceController.class)
 public class OnlineResourceControllerTest {
     @Autowired private MockMvc mockMvc;
@@ -47,234 +52,193 @@ public class OnlineResourceControllerTest {
     @MockBean private GetCapabilitiesObtainerService getCapabilitiesObtainerService;
     @MockBean private TMSToWMSGetMapService tmsToWMSGetMapService;
     @MockBean private MapServerDetailsService mapServerDetailsService;
+    @MockBean private CloseableHttpClient httpClient;
 
     private final String file = "file";
     private final String revision = "revision";
 
-    @Nested
-    @DisplayName("Online Resources")
-    class OnlineResourceTests {
-
-        @Test
-        @DisplayName("get existing resource")
-        @WithMockUser(username = "unprivileged")
-        @SneakyThrows
-        void checkThatCanGetOnlineResourceWhichExists() {
-            //Given
-            val expectedResponse = "[{\"url\":\"a\",\"name\":\"\",\"description\":\"\",\"function\":\"\",\"type\":\"OTHER\"}]";
-            val document = new GeminiDocument();
-            document.setOnlineResources(Collections.singletonList(
-                OnlineResource.builder().url("a").build()
-            ));
-            given(documentBundleReader.readBundle(file)).willReturn(document);
-
-            //When
-            mockMvc.perform(
-                get("/documents/file/onlineResources")
-                    .accept(MediaType.APPLICATION_JSON)
-            )
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(content().json(expectedResponse));
-        }
-
-//        @Test
-//        @DisplayName("fails if document has no Online Resources")
-//        @SneakyThrows
-//        void checkThatFailsWithExceptionIfResourceIsRequestedWhichIsNotPresent() {
-//
-//            Assertions.assertThrows(ResourceNotFoundException.class, () -> {
-//                //Given
-//                val document = new GeminiDocument();
-//                document.setOnlineResources(
-//                    Collections.emptyList()
-//                );
-//                doReturn(document).when(documentBundleReader).readBundle(file, revision);
-//
-//                //When
-//                controller.getOnlineResource(revision, file, 0);
-//            });
-//
-//            //Then
-//            verify(documentBundleReader).readBundle(file, revision);
-//        }
-//
-//        @Test
-//        @DisplayName("fails if index is negative")
-//        @SneakyThrows
-//        void checkThatFailsWithExceptionIfResourceIsRequestedWhichIsNegative() {
-//            Assertions.assertThrows(ResourceNotFoundException.class, () -> {
-//                //Given
-//                val document = new GeminiDocument();
-//                document.setOnlineResources(
-//                    Collections.emptyList()
-//                );
-//                doReturn(document).when(documentBundleReader).readBundle(file, revision);
-//
-//                //When
-//                controller.getOnlineResource(revision, file, -10);
-//
-//                //Then
-//                verify(documentBundleReader).readBundle(file, revision);
-//            });
-//
-//            //Then
-//            verify(documentBundleReader).readBundle(file, revision);
-//        }
-//
-//        @Test
-//        @DisplayName("fails if unknown metadata document type")
-//        @SneakyThrows
-//        void checkThatFailsToGetOnlineResourcesFromUnknownMetadataDocumentType() {
-//            Assertions.assertThrows(ResourceNotFoundException.class, () -> {
-//                //Given
-//                doThrow(ResourceNotFoundException.class).when(documentBundleReader).readBundle(file, revision);
-//
-//                //When
-//                controller.getOnlineResource(revision, file, 0);
-//            });
-//
-//            //Then
-//            verify(documentBundleReader).readBundle(file, revision);
-//        }
-//
-//        @Test
-//        @DisplayName("just returns a document")
-//        @SneakyThrows
-//        void checkThatGettingOnlineResourcesDelegatesToDocumentReader() {
-//            //Given
-//            val document = new GeminiDocument();
-//            when(documentBundleReader.readBundle(file, revision)).thenReturn(document);
-//
-//            //When
-//            controller.getOnlineResources(revision, file);
-//
-//            //Then
-//            verify(documentBundleReader).readBundle(file, revision);
-//        }
+    private void givenTransparentProxyResponse() throws IOException {
+        val response = mock(CloseableHttpResponse.class);
+        val entity = mock(HttpEntity.class);
+        given(response.getEntity())
+            .willReturn(entity);
+        given(entity.getContentType())
+            .willReturn(new BasicHeader("content-type", MediaType.IMAGE_PNG_VALUE));
+        given(httpClient.execute(any(HttpGet.class)))
+            .willReturn(response);
     }
 
-//    @Test
-//    @DisplayName("Capabilities Resource is processed")
-//    @SneakyThrows
-//    public void checkThatGetCapabilitiesResourceIsProcessed() {
-//        //Given
-//        int index = 10;
-//
-//        val geminiDocument = new GeminiDocument();
-//        geminiDocument.setOnlineResources(Collections.singletonList(
-//            OnlineResource.builder().url("http://wms?REQUEST=GetCapabilities&SERVICE=WMS").build()
-//        ));
-//        when(documentBundleReader.readBundle(file, revision)).thenReturn(geminiDocument);
-//
-//        WmsCapabilities wmsCapabilities = mock(WmsCapabilities.class);
-//        doReturn(wmsCapabilities).when(getCapabilitiesObtainerService).getWmsCapabilities(onlineResource);
-//
-//        //When
-//        controller.processOrRedirectToOnlineResource(revision, file, index);
-//    }
-//
-//    @Test
-//    public void checkThatOtherResourceIsRedirectedTo() throws IOException, UnknownContentTypeException, DataRepositoryException, PostProcessingException, URISyntaxException {
-//        //Given
-//        String file = "file";
-//        String revision = "revision";
-//        int index = 10;
-//
-//        GeminiDocument geminiDocument = mock(GeminiDocument.class);
-//        when(documentBundleReader.readBundle(revision, file)).thenReturn(geminiDocument);
-//
-//        OnlineResource onlineResource = OnlineResource.builder().url("random url").build();
-//        doReturn(onlineResource).when(controller).getOnlineResource(revision, file, index);
-//
-//        //When
-//        RedirectView result = (RedirectView)controller.processOrRedirectToOnlineResource(revision, file, index);
-//
-//        //Then
-//        assertEquals("random url", result.getUrl());
-//    }
-//
-//    @Test
-//    public void checkThatGetLegendUrlIsProxied() throws IOException, UnknownContentTypeException, URISyntaxException, DataRepositoryException, PostProcessingException {
-//        //Given
-//        String revision = "revision";
-//        String file = "file";
-//        int index = 2;
-//        String layerName = "layer";
-//        String legendOrig = "http://wwww.whereever.com/legend.png";
-//        String legendRewrite = "http://wwww.somewhereelse.com/legend.png";
-//
-//        OnlineResource onlineResource = OnlineResource.builder().url("http://wms?REQUEST=GetCapabilities").build();
-//        doReturn(onlineResource).when(controller).getOnlineResource(eq(revision), eq(file), anyInt());
-//
-//        Layer layer = mock(Layer.class);
-//        when(layer.getName()).thenReturn(layerName);
-//        when(layer.getLegendUrl()).thenReturn(legendOrig);
-//        when(mapServerDetailsService.rewriteToLocalWmsRequest(legendOrig)).thenReturn(legendRewrite);
-//        WmsCapabilities wmsCapabilities = mock(WmsCapabilities.class);
-//        when(wmsCapabilities.getLayers()).thenReturn(Arrays.asList(layer));
-//
-//        doReturn(wmsCapabilities).when(getCapabilitiesObtainerService).getWmsCapabilities(onlineResource);
-//
-//        //When
-//        TransparentProxy proxy = controller.getMapLayerLegend(revision, file, index, layerName);
-//
-//        //Then
-//        assertThat("Expected to proxy the legend url", proxy.getUri().toString(), equalTo(legendRewrite) );
-//    }
-//
-//    @Test
-//    public void checkThatExceptionIsThrownWhenNoLegendGraphicIsPresentForGivenLayer() throws IOException, UnknownContentTypeException, URISyntaxException, DataRepositoryException, PostProcessingException {
-//        Assertions.assertThrows(LegendGraphicMissingException.class, () -> {
-//            //Given
-//            String revision = "revision";
-//            String file = "file";
-//            int index = 2;
-//            String layerName = "layer";
-//
-//            OnlineResource onlineResource = OnlineResource.builder().url("http://wms?REQUEST=GetCapabilities").build();
-//            doReturn(onlineResource).when(controller).getOnlineResource(eq(revision), eq(file), anyInt());
-//
-//            Layer layer = mock(Layer.class);
-//            when(layer.getName()).thenReturn(layerName);
-//            when(layer.getLegendUrl()).thenReturn(null);
-//
-//            WmsCapabilities wmsCapabilities = mock(WmsCapabilities.class);
-//            when(wmsCapabilities.getLayers()).thenReturn(Arrays.asList(layer));
-//
-//            doReturn(wmsCapabilities).when(getCapabilitiesObtainerService).getWmsCapabilities(onlineResource);
-//
-//            //When
-//            controller.getMapLayerLegend(revision, file, index, layerName);
-//
-//            //Then
-//            fail("Expected to fail with legend graphic missing exception");
-//        });
-//    }
-//
-//    @Test
-//    public void checkThatIllegalArgumentExceptionIsThrownIfLayerDoesNotExistWhenGettingLegend() throws IOException, UnknownContentTypeException, URISyntaxException, DataRepositoryException, PostProcessingException {
-//        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-//            //Given
-//            String revision = "revision";
-//            String file = "file";
-//            int index = 2;
-//            String layerName = "layer";
-//
-//            OnlineResource onlineResource = OnlineResource.builder().url("http://wms?REQUEST=GetCapabilities").build();
-//            doReturn(onlineResource).when(controller).getOnlineResource(eq(revision), eq(file), anyInt());
-//
-//
-//            WmsCapabilities wmsCapabilities = mock(WmsCapabilities.class);
-//            when(wmsCapabilities.getLayers()).thenReturn(Collections.EMPTY_LIST);
-//
-//            doReturn(wmsCapabilities).when(getCapabilitiesObtainerService).getWmsCapabilities(onlineResource);
-//
-//            //When
-//            controller.getMapLayerLegend(revision, file, index, layerName);
-//
-//            //Then
-//            fail("Expected to fail with illegal argument exception");
-//        });
-//    }
+    private void givenLocalWmsRequest() {
+        given(mapServerDetailsService.rewriteToLocalWmsRequest("foo"))
+            .willReturn("bar");
+    }
+
+    private void givenWmsCapabilities() {
+        WmsCapabilities wmsCapabilities = new WmsCapabilities();
+        wmsCapabilities.setDirectFeatureInfo("directFeatureInfo");
+        wmsCapabilities.setDirectMap("directMap");
+        val layer = new Layer();
+        layer.setLegendUrl("foo");
+        layer.setName("layer1");
+        wmsCapabilities.setLayers(Collections.singletonList(
+            layer
+        ));
+        given(getCapabilitiesObtainerService.getWmsCapabilities(any(OnlineResource.class)))
+            .willReturn(wmsCapabilities);
+    }
+
+    @SneakyThrows
+    private void givenDocumentWithOnlineResource() {
+        val document = new GeminiDocument();
+        document.setOnlineResources(Collections.singletonList(
+            OnlineResource.builder().url("http://example.com/a").build()
+        ));
+        given(documentBundleReader.readBundle(file)).willReturn(document);
+    }
+
+    @SneakyThrows
+    private void givenDocumentWithWmsOnlineResource() {
+        val document = new GeminiDocument();
+        document.setOnlineResources(Collections.singletonList(
+            OnlineResource.builder().url("http://example.com/a?request=getcapabilities&service=wms").build()
+        ));
+        given(documentBundleReader.readBundle(file)).willReturn(document);
+    }
+
+    @SneakyThrows
+    private void givenHistoricDocumentWithOnlineResource() {
+        val document = new GeminiDocument();
+        document.setOnlineResources(Collections.singletonList(
+            OnlineResource.builder().url("a").build()
+        ));
+        given(documentBundleReader.readBundle(file, revision)).willReturn(document);
+    }
+
+    @SneakyThrows
+    private void givenDocumentWithNoOnlineResources() {
+        val document = new GeminiDocument();
+        document.setOnlineResources(
+            Collections.emptyList()
+        );
+        given(documentBundleReader.readBundle(file, revision))
+            .willReturn(document);
+    }
+
+    @Test
+    @DisplayName("get existing resource")
+    @SneakyThrows
+    void checkThatCanGetOnlineResourceWhichExists() {
+        //Given
+        givenDocumentWithOnlineResource();
+        val expectedResponse = "[{\"url\":\"http://example.com/a\",\"name\":\"\",\"description\":\"\",\"function\":\"\",\"type\":\"OTHER\"}]";
+
+        //When
+        mockMvc.perform(
+            get("/documents/{file}/onlineResources", file)
+                .accept(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isOk())
+            .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+            .andExpect(content().json(expectedResponse));
+    }
+
+    @Test
+    @DisplayName("get existing resource at revision")
+    @SneakyThrows
+    void getOnlineResourceAtRevision() {
+        //Given
+        givenHistoricDocumentWithOnlineResource();
+        val expectedResponse = "[{\"url\":\"a\",\"name\":\"\",\"description\":\"\",\"function\":\"\",\"type\":\"OTHER\"}]";
+
+        //When
+        mockMvc.perform(
+            get("/history/{revision}/{file}/onlineResources", revision, file)
+                .accept(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isOk())
+            .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+            .andExpect(content().json(expectedResponse));
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {0, -10})
+    @DisplayName("fails if document has no Online Resources")
+    @SneakyThrows
+    void onlineResourceNotPresent(int index) {
+        //Given
+        givenDocumentWithNoOnlineResources();
+
+        //When
+       mockMvc.perform(
+           get("/history/{revision}/{file}/onlineResources/{index}", revision, file, index)
+       )
+           .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @SneakyThrows
+    void getOnlineResource() {
+        //given
+        givenDocumentWithOnlineResource();
+
+        //when
+        mockMvc.perform(
+            get("/documents/{file}/onlineResources/{index}", file, 0)
+        )
+            .andExpect(status().is3xxRedirection())
+            .andExpect(header().string("location", "http://example.com/a"));
+    }
+
+    @Test
+    @SneakyThrows
+    void getWmsOnlineResource() {
+        //given
+        givenDocumentWithWmsOnlineResource();
+        givenWmsCapabilities();
+
+        //when
+        mockMvc.perform(
+            get("/documents/{file}/onlineResources/{index}", file, 0)
+        )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(content().json("{\"layers\":[{\"name\":\"layer1\",\"legendUrl\":\"foo\"}],\"directMap\":\"directMap\",\"directFeatureInfo\":\"directFeatureInfo\"}"));
+    }
+
+    @Test
+    @SneakyThrows
+    void getTileRequest() {
+        //given
+        givenDocumentWithWmsOnlineResource();
+        givenWmsCapabilities();
+        given(tmsToWMSGetMapService.getWMSMapRequest("directMap", "layer1", 1, 2, 3))
+            .willReturn("foo");
+        givenLocalWmsRequest();
+        givenTransparentProxyResponse();
+
+        //when
+        mockMvc.perform(
+            get("/documents/{file}/onlineResources/{index}/tms/1.0.0/{layer}/{z}/{x}/{y}.png", file, 0, "layer1", 1, 2, 3)
+        )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.IMAGE_PNG));
+    }
+
+    @Test
+    @SneakyThrows
+    void checkThatGetLegendUrlIsProxied() {
+        //Given
+        givenDocumentWithWmsOnlineResource();
+        givenWmsCapabilities();
+        givenLocalWmsRequest();
+        givenTransparentProxyResponse();
+
+        //When
+        mockMvc.perform(
+            get("/documents/{file}/onlineResources/{index}/{layer}/legend", file, 0, "layer1")
+        )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.IMAGE_PNG));
+    }
+
 }

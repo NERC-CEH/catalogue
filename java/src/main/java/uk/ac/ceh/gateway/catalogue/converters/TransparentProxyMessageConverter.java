@@ -53,7 +53,7 @@ public class TransparentProxyMessageConverter implements HttpMessageConverter<Tr
     }
 
     /**
-     * Take a TransparentProxy which respresents an upstream uri and transparently
+     * Take a TransparentProxy which represents an upstream uri and transparently
      * proxy it on the the http output message
      *
      * If supplied, a desired media type will be validated. If that is not present,

@@ -24,6 +24,7 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUserHandlerMethodArgumentResolver;
 import uk.ac.ceh.gateway.catalogue.converters.Object2TemplatedMessageConverter;
+import uk.ac.ceh.gateway.catalogue.converters.TransparentProxyMessageConverter;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.Citation;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
@@ -59,6 +60,7 @@ public class WebConfig implements WebMvcConfigurer {
         converters.add(0, new Object2TemplatedMessageConverter<>(Citation.class, freemarkerConfiguration));
         converters.add(1, new Object2TemplatedMessageConverter<>(GeminiDocument.class, freemarkerConfiguration));
         converters.add(2, new Object2TemplatedMessageConverter<>(SearchResults.class, freemarkerConfiguration));
+        converters.add(3, new TransparentProxyMessageConverter(httpClient()));
         if (log.isDebugEnabled()) {
             log.debug("After our message converters added");
             converters.forEach(convert -> log.debug(convert.toString()));
