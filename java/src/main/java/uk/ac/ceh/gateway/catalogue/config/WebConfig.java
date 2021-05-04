@@ -172,7 +172,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Value("${maps.location}") private File mapsLocation;
     @Value("${jena.location}") private String location;
     @Value("${schemas.location}") private String schemas;
-    @Value("${solr.server.documents.url}") String solrDocumentServerUrl;
+    @Value("${solr.server.url}") String solrServerUrl;
     @Value("${sparql.endpoint}") private String sparqlEndpoint;
     @Value("${sparql.graph}") private String sparqlGraph;
     @Value("${template.location}") private File templates;
@@ -229,7 +229,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Bean
     public SolrClient solrClient(){
-        return new HttpSolrClient.Builder(solrDocumentServerUrl).build();
+        return new HttpSolrClient.Builder(solrServerUrl).build();
     }
 
     @Bean

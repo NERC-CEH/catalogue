@@ -5,7 +5,6 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrRequest;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -97,7 +96,7 @@ public class SearchController {
                 defaultValue = ""
             ) List<FacetFilter> facetFilters,
             HttpServletRequest request
-    ) throws SolrServerException {
+    ) {
         
         Catalogue catalogue = catalogueService.retrieve(catalogueKey);
         
@@ -116,6 +115,7 @@ public class SearchController {
         );
         return new SearchResults(
             solrClient.query(
+                "documents",
                 searchQuery.build(),
                 SolrRequest.METHOD.POST
             ),

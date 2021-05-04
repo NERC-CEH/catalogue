@@ -19,6 +19,8 @@ services:
       - secrets.env
   solr:
     build: "solr"
+    ports:
+      - "8983:8983"
   mapserver:
     image: registry.gitlab.ceh.ac.uk/eip/mapserver:2
     volumes:
