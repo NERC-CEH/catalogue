@@ -62,7 +62,7 @@ public class DeimsSolrScheduledSiteServiceTest {
         mockServer.verify();
         verify(solrClient).deleteByQuery(COLLECTION, "*:*");
         verify(solrClient, times(3)).addBean(eq("deims"), any(DeimsSolrIndex.class));
-        verify(solrClient).commit();
+        verify(solrClient).commit(COLLECTION);
     }
 
     @Test
