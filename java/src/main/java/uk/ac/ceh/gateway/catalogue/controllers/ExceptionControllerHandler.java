@@ -7,6 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -26,11 +27,16 @@ import java.net.URISyntaxException;
 @Slf4j
 @ControllerAdvice
 public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
-    
-    @Override
-    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body,
-            HttpHeaders headers, HttpStatus status, WebRequest request) {
 
+    @Override
+    @SuppressWarnings("NullableProblems")
+    protected ResponseEntity<Object> handleExceptionInternal(
+        Exception ex,
+        Object body,
+        HttpHeaders headers,
+        HttpStatus status,
+        WebRequest request
+    ) {
         String message = (body != null) ? body.toString() : status.getReasonPhrase();
         logger.error(message, ex);
         return new ResponseEntity<>(new ErrorResponse(message), headers, status);

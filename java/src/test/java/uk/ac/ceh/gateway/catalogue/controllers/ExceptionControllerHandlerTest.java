@@ -1,27 +1,78 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
+import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
+import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
+import uk.ac.ceh.gateway.catalogue.datacite.DataciteService;
 import uk.ac.ceh.gateway.catalogue.model.*;
+import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
+import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 
 import java.net.URISyntaxException;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@ActiveProfiles("test")
+@DisplayName("ExceptionController")
+@Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
+@WebMvcTest(
+    controllers=DataciteController.class,
+    properties="spring.freemarker.template-loader-path=file:../templates"
+)
 public class ExceptionControllerHandlerTest {
     private ExceptionControllerHandler controller;
+
+    @MockBean private DocumentRepository repo;
+    @MockBean private DocumentIdentifierService identifierService;
+    @MockBean private DataciteService dataciteService;
+    @MockBean(name="permission") private PermissionService permissionService;
+
+    @Autowired private MockMvc mockMvc;
+
+    private final String file = "1234";
     
     @BeforeEach
     public void setup() {
         this.controller = new ExceptionControllerHandler();
+    }
+
+    @Test
+    @SneakyThrows
+    void handleException() {
+        //given
+        given(repo.read(file)).willReturn(new CehModel());
+
+        //when
+        mockMvc.perform(
+            get("/documents/{file}/datacite.xml", file)
+        )
+            .andExpect(status().isNotFound())
+            .andExpect(content().contentType(MediaType.APPLICATION_XML))
+            .andExpect(content().xml("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<error>There was no gemini document present with this address</error>"));
     }
     
     @Test

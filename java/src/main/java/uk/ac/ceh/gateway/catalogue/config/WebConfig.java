@@ -27,6 +27,7 @@ import uk.ac.ceh.gateway.catalogue.converters.Object2TemplatedMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.TransparentProxyMessageConverter;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.Citation;
+import uk.ac.ceh.gateway.catalogue.model.ErrorResponse;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
 import uk.ac.ceh.gateway.catalogue.util.ForgivingParameterContentNegotiationStrategy;
 import uk.ac.ceh.gateway.catalogue.util.WmsFormatContentNegotiationStrategy;
@@ -58,9 +59,10 @@ public class WebConfig implements WebMvcConfigurer {
     public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
         log.info("Adding message converters");
         converters.add(0, new Object2TemplatedMessageConverter<>(Citation.class, freemarkerConfiguration));
-        converters.add(1, new Object2TemplatedMessageConverter<>(GeminiDocument.class, freemarkerConfiguration));
-        converters.add(2, new Object2TemplatedMessageConverter<>(SearchResults.class, freemarkerConfiguration));
-        converters.add(3, new TransparentProxyMessageConverter(httpClient()));
+        converters.add(0, new Object2TemplatedMessageConverter<>(ErrorResponse.class, freemarkerConfiguration));
+        converters.add(0, new Object2TemplatedMessageConverter<>(GeminiDocument.class, freemarkerConfiguration));
+        converters.add(0, new Object2TemplatedMessageConverter<>(SearchResults.class, freemarkerConfiguration));
+        converters.add(0, new TransparentProxyMessageConverter(httpClient()));
         if (log.isDebugEnabled()) {
             log.debug("After our message converters added");
             converters.forEach(convert -> log.debug(convert.toString()));

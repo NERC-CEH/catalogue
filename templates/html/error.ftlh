@@ -1,4 +1,4 @@
-<#import "skeleton.ftl" as skeleton>
+<#import "skeleton.ftlh" as skeleton>
 <@skeleton.master title="Error">
   <#escape x as x?html>
     <div id="metadata" class="container">

@@ -7,9 +7,9 @@ import uk.ac.ceh.gateway.catalogue.converters.Template;
 
 @Data
 @ConvertUsing({
-    @Template(called="html/error.ftl", whenRequestedAs="text/*"),
-    @Template(called="xml/error.xml.tpl",   whenRequestedAs="application/*+xml"),
-    @Template(called="xml/error.xml.tpl",   whenRequestedAs=MediaType.APPLICATION_XML_VALUE)
+    @Template(called="html/error.ftlh", whenRequestedAs="text/*"),
+    @Template(called="xml/error.ftlx",   whenRequestedAs="application/*+xml"),
+    @Template(called="xml/error.ftlx",   whenRequestedAs=MediaType.APPLICATION_XML_VALUE)
 })
 public class ErrorResponse {
     private final String message;
