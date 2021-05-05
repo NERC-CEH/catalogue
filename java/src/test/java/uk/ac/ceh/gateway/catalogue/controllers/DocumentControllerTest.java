@@ -252,7 +252,7 @@ class DocumentControllerTest {
         //when
         mockMvc.perform(
             get("/documents/{id}", id)
-                .queryParam("format", GEMINI_XML_SHORT)
+                .queryParam("format", GEMINI_SHORT)
         )
             .andExpect(status().isOk())
             .andExpect(content().contentType(GEMINI_XML_VALUE));
@@ -268,7 +268,7 @@ class DocumentControllerTest {
             .andExpect(status().is3xxRedirection())
             .andExpect(header().string("location", "https://localhost/documents/M3tADATA_ID.xml"));
     }
-    
+
     @Test
     @DisplayName("Redirect URL has query string parameters")
     @SneakyThrows
@@ -281,7 +281,7 @@ class DocumentControllerTest {
             .andExpect(status().is3xxRedirection())
             .andExpect(header().string("location", "https://localhost/documents/M3tADATA_ID?query=string"));
     }
-     
+
     @Test
     public void checkCanUploadFile() throws Exception {
         //Given
@@ -302,7 +302,7 @@ class DocumentControllerTest {
             eq(catalogue),
             eq(message))
         ).willReturn(document);
-              
+
         //When
         mockMvc.perform(
             multipart("/documents")
@@ -314,7 +314,7 @@ class DocumentControllerTest {
             .andExpect(status().is3xxRedirection())
             .andExpect(header().string("location", "https://catalogue.ceh.ac.uk/id/123-test"));
     }
-    
+
     @Test
     public void checkCanCreateModelDocument() throws Exception {
         //Given
@@ -323,17 +323,17 @@ class DocumentControllerTest {
         document.setUri("https://catalogue.ceh.ac.uk/id/123-test");
         String message = "new Model Document";
         String catalogue = "catalogue";
-        
+
         given(documentRepository.saveNew(user, document, catalogue, message)).willReturn(document);
-              
+
         //When
         ResponseEntity<MetadataDocument> actual = controller.newModelDocument(user, document, catalogue);
-        
+
         //Then
         verify(documentRepository).saveNew(user, document, catalogue, message);
         assertThat("Should have 201 CREATED status", actual.getStatusCode(), equalTo(HttpStatus.CREATED));
     }
-    
+
     @Test
     public void checkCanEditModelDocument() throws Exception {
         //Given
@@ -342,19 +342,19 @@ class DocumentControllerTest {
         document.setUri("https://catalogue.ceh.ac.uk/id/123-test");
         String fileId = "test";
         String message = "Edited document: test";
-        
+
         given(documentRepository.read(fileId)).willReturn(new Model().setMetadata(MetadataInfo.builder().build()));
         given(documentRepository.save(user, document, fileId, message)).willReturn(document);
-              
+
         //When
         ResponseEntity<MetadataDocument> actual = controller.updateModelDocument(user, fileId, document);
-        
+
         //Then
         verify(documentRepository).save(user, document, fileId, "Edited document: test");
         verify(documentRepository).read(fileId);
         assertThat("Should have 200 OK status", actual.getStatusCode(), equalTo(HttpStatus.OK));
     }
-    
+
     @Test
     public void checkCanCreateGeminiDocument() throws Exception {
         //Given
@@ -363,17 +363,17 @@ class DocumentControllerTest {
         document.setUri("https://catalogue.ceh.ac.uk/id/123-test");
         String message = "new Gemini Document";
         String catalogue = "catalogue";
-        
+
         given(documentRepository.saveNew(user, document, catalogue, message)).willReturn(document);
-              
+
         //When
         ResponseEntity<MetadataDocument> actual = controller.newGeminiDocument(user, document, catalogue);
-        
+
         //Then
         verify(documentRepository).saveNew(user, document, catalogue, message);
         assertThat("Should have 201 CREATED status", actual.getStatusCode(), equalTo(HttpStatus.CREATED));
     }
-    
+
     @Test
     public void checkCanEditGeminiDocument() throws Exception {
         //Given
@@ -384,19 +384,19 @@ class DocumentControllerTest {
             .setId(fileId)
             .setUri("https://catalogue.ceh.ac.uk/id/123-test")
             .setMetadata(MetadataInfo.builder().build());
-        
+
         given(documentRepository.read(fileId)).willReturn(new Model().setMetadata(MetadataInfo.builder().build()));
         given(documentRepository.save(user, document, fileId, message)).willReturn(document);
-              
+
         //When
         ResponseEntity<MetadataDocument> actual = controller.updateGeminiDocument(user, fileId, (GeminiDocument) document);
-        
+
         //Then
         verify(documentRepository).read(fileId);
         verify(documentRepository).save(user, document, fileId, "Edited document: test");
         assertThat("Should have 200 OK status", actual.getStatusCode(), equalTo(HttpStatus.OK));
     }
-    
+
     @Test
     public void checkCanCreateLinkedDocument() throws Exception {
         //Given
@@ -407,17 +407,17 @@ class DocumentControllerTest {
         String catalogue = "catalogue";
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setServerName("catalogue.ceh.ac.uk");
-        
+
         given(documentRepository.saveNew(user, document, catalogue, message)).willReturn(document);
-              
+
         //When
         ResponseEntity<MetadataDocument> actual = controller.newLinkDocument(user, document, catalogue);
-        
+
         //Then
         verify(documentRepository).saveNew(user, document, catalogue, message);
         assertThat("Should have 201 CREATED status", actual.getStatusCode(), equalTo(HttpStatus.CREATED));
     }
-    
+
     @Test
     public void checkCanEditLinkedDocument() throws Exception {
         //Given
@@ -426,13 +426,13 @@ class DocumentControllerTest {
         document.setUri("https://catalogue.ceh.ac.uk/id/123-test");
         String fileId = "test";
         String message = "Edited document: test";
-        
+
         given(documentRepository.read(fileId)).willReturn(new Model().setMetadata(MetadataInfo.builder().build()));
         given(documentRepository.save(user, document, fileId, message)).willReturn(document);
-              
+
         //When
         ResponseEntity<MetadataDocument> actual = controller.updateLinkDocument(user, fileId, document);
-        
+
         //Then
         verify(documentRepository).read(fileId);
         verify(documentRepository).save(user, document, fileId, message);
@@ -447,10 +447,10 @@ class DocumentControllerTest {
         );
         LinkDocument linkDocument = LinkDocument.builder().linkedDocumentId("master").original(master).build();
         given(documentRepository.read("test")).willReturn(linkDocument);
-        
+
         //when
         MetadataDocument actual = controller.readMetadata(CatalogueUser.PUBLIC_USER, "test");
-        
+
         //then
         assertThat(
             "should not be able to view master record through linked document",
@@ -458,38 +458,38 @@ class DocumentControllerTest {
             equalTo(LinkDocument.class)
         );
     }
-    
+
     @Test
     public void checkCanDeleteAFile() throws Exception {
         //Given
         CatalogueUser user = mock(CatalogueUser.class);
-        
+
         //When
         controller.deleteDocument(user, "id");
-        
+
         //Then
         verify(documentRepository).delete(user, "id");
     }
-    
+
     @Test
     public void checkCanReadDocumentAtRevision() throws Exception {
         //Given
         CatalogueUser user = CatalogueUser.PUBLIC_USER;
-        String file = "myFile";       
+        String file = "myFile";
         String latestRevisionId = "latestRev";
         MetadataInfo info = MetadataInfo.builder().build();
         MetadataDocument document = new GeminiDocument();
         document.setMetadata(info);
         given(documentRepository.read(file, latestRevisionId))
             .willReturn(document);
-        
+
         //When
         controller.readMetadata(user, file, latestRevisionId);
-        
+
         //Then
         verify(documentRepository).read(file, latestRevisionId);
     }
-    
+
     @Test
     public void checkCanReadDocumentLatestRevision() throws Exception {
         //Given
@@ -500,10 +500,10 @@ class DocumentControllerTest {
         document.setMetadata(info);
         given(documentRepository.read(file))
             .willReturn(document);
-        
+
         //When
         controller.readMetadata(user, file);
-        
+
         //Then
         verify(documentRepository).read(file);
     }
