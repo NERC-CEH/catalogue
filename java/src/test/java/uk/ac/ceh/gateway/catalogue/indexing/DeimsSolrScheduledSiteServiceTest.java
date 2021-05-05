@@ -8,21 +8,26 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
+import java.nio.charset.StandardCharsets;
+
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
+import static uk.ac.ceh.gateway.catalogue.indexing.DeimsSolrScheduledSiteService.*;
 
-public class DEIMSSolrScheduledSiteServiceTest {
+@ExtendWith(MockitoExtension.class)
+public class DeimsSolrScheduledSiteServiceTest {
 
-    private DEIMSSolrScheduledSiteService target;
+    private DeimsSolrScheduledSiteService target;
 
     private MockRestServiceServer mockServer;
 
@@ -35,9 +40,8 @@ public class DEIMSSolrScheduledSiteServiceTest {
 
     @BeforeEach
     public void init() {
-        MockitoAnnotations.initMocks(this);
         val restTemplate = new RestTemplate();
-        target = new DEIMSSolrScheduledSiteService(restTemplate, solrClient, ADDRESS);
+        target = new DeimsSolrScheduledSiteService(restTemplate, solrClient, ADDRESS);
         mockServer = MockRestServiceServer.createServer(restTemplate);
     }
 
@@ -46,7 +50,7 @@ public class DEIMSSolrScheduledSiteServiceTest {
     @SneakyThrows
     public void successfullyGetDIEMSSites() {
         //Given
-        val response = IOUtils.toString(getClass().getResource("deimssites.json"), "UTF-8");
+        val response = IOUtils.toString(getClass().getResource("deimssites.json"), StandardCharsets.UTF_8);
         mockServer.expect(requestTo(ADDRESS))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withSuccess(response, MediaType.APPLICATION_JSON));
@@ -57,23 +61,24 @@ public class DEIMSSolrScheduledSiteServiceTest {
         //Then
         mockServer.verify();
         verify(solrClient).deleteByQuery(COLLECTION, "*:*");
-        verify(solrClient).addBean(any(String.class), any(DIEMSSite[].class));
-        verify(solrClient).commit();
+        verify(solrClient, times(3)).addBean(eq("deims"), any(DeimsSolrIndex.class));
+        verify(solrClient).commit(COLLECTION);
     }
 
     @Test
     @SneakyThrows
     public void ThrowDocumentIndexingException() {
+
+        //Given
+        val response = IOUtils.toString(getClass().getResource("deimssites.json"), StandardCharsets.UTF_8);
+        mockServer.expect(requestTo(ADDRESS))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withSuccess(response, MediaType.APPLICATION_JSON));
+
+        when(solrClient.addBean(eq("deims"), any(DeimsSolrIndex.class))).thenThrow(new SolrServerException("Test"));
+
+        //When
         Assertions.assertThrows(DocumentIndexingException.class, () -> {
-            //Given
-            val response = IOUtils.toString(getClass().getResource("deimssites.json"), "UTF-8");
-            mockServer.expect(requestTo(ADDRESS))
-                    .andExpect(method(HttpMethod.GET))
-                    .andRespond(withSuccess(response, MediaType.APPLICATION_JSON));
-
-            when(solrClient.addBean(any(String.class), any(Object.class))).thenThrow(new SolrServerException("Test"));
-
-            //When
             target.fetchDEIMSSitesAndAddToSolr();
         });
     }

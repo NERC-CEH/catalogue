@@ -70,7 +70,7 @@ public class SolrIndexingServiceTest {
         
         //Then
         verify(solrClient).deleteByQuery(COLLECTION, "*:*");
-        verify(solrClient).commit();
+        verify(solrClient).commit(COLLECTION);
     }
     
     @Test
@@ -118,7 +118,7 @@ public class SolrIndexingServiceTest {
         //Then
         verify(solrClient).addBean(COLLECTION, document1Index);
         verify(solrClient).addBean(COLLECTION, document2Index);
-        verify(solrClient).commit();
+        verify(solrClient).commit(COLLECTION);
     }
     
     @Test
@@ -136,7 +136,7 @@ public class SolrIndexingServiceTest {
         catch(DocumentIndexingException ex) {}
         
         //Then
-        verify(solrClient).commit();
+        verify(solrClient).commit(COLLECTION);
     }
     
     @Test
@@ -168,7 +168,7 @@ public class SolrIndexingServiceTest {
         
         //Then
         verify(solrClient).deleteById(COLLECTION, documents);
-        verify(solrClient).commit();
+        verify(solrClient).commit(COLLECTION);
     }
     
     @Test
@@ -177,7 +177,7 @@ public class SolrIndexingServiceTest {
         //Given
         QueryResponse queryResponse = mock(QueryResponse.class, RETURNS_DEEP_STUBS);
         when(queryResponse.getResults().isEmpty()).thenReturn(true);
-        when(solrClient.query(any(SolrQuery.class))).thenReturn(queryResponse);
+        when(solrClient.query(eq(COLLECTION), any(SolrQuery.class))).thenReturn(queryResponse);
         
         //When
         boolean isEmpty = service.isIndexEmpty();
@@ -192,7 +192,7 @@ public class SolrIndexingServiceTest {
         //Given
         QueryResponse queryResponse = mock(QueryResponse.class, RETURNS_DEEP_STUBS);
         when(queryResponse.getResults().isEmpty()).thenReturn(false);
-        when(solrClient.query(any(SolrQuery.class))).thenReturn(queryResponse);
+        when(solrClient.query(eq(COLLECTION), any(SolrQuery.class))).thenReturn(queryResponse);
         
         //When
         boolean isEmpty = service.isIndexEmpty();
@@ -206,14 +206,14 @@ public class SolrIndexingServiceTest {
     public void checkThatWeQueryForAllDocumentsWhenCheckingIfSolrIndexIsEmpty() {
         //Given
         QueryResponse queryResponse = mock(QueryResponse.class, RETURNS_DEEP_STUBS);
-        when(solrClient.query(any(SolrQuery.class))).thenReturn(queryResponse);
+        when(solrClient.query(eq(COLLECTION),any(SolrQuery.class))).thenReturn(queryResponse);
         
         //When
         service.isIndexEmpty();
         
         //Then
         ArgumentCaptor<SolrQuery> solrQuery = ArgumentCaptor.forClass(SolrQuery.class);
-        verify(solrClient).query(solrQuery.capture());
+        verify(solrClient).query(eq(COLLECTION), solrQuery.capture());
         assertEquals("*:*", solrQuery.getValue().getQuery());
     }
     

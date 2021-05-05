@@ -50,7 +50,7 @@ public class SolrIndexingService<D> extends AbstractIndexingService<D, SolrIndex
     @Override
     public boolean isIndexEmpty() throws DocumentIndexingException {
         try {
-            return solrClient.query(new SolrQuery("*:*")).getResults().isEmpty();
+            return solrClient.query(DOCUMENTS, new SolrQuery("*:*")).getResults().isEmpty();
         }
         catch(SolrServerException ex) {
             throw new DocumentIndexingException(ex);
@@ -98,7 +98,7 @@ public class SolrIndexingService<D> extends AbstractIndexingService<D, SolrIndex
     
     private void commit() throws DocumentIndexingException {
         try {
-            solrClient.commit();
+            solrClient.commit(DOCUMENTS);
         } catch (IOException | SolrServerException ex) {
             throw new DocumentIndexingException(ex);
         }
