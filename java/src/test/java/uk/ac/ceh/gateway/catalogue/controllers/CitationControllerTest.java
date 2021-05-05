@@ -276,6 +276,7 @@ class CitationControllerTest {
         mockMvc.perform(
             get("/documents/{file}/citation", file)
                 .header("remote-user", EIDC_PUBLISHER_USERNAME)
+                .accept(MediaType.APPLICATION_JSON)
         )
             .andExpect(status().isNotFound())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -299,6 +300,7 @@ class CitationControllerTest {
         mockMvc.perform(
             get("/documents/{file}/citation", file)
                 .header("remote-user", EIDC_PUBLISHER_USERNAME)
+                .accept(MediaType.APPLICATION_JSON)
         )
             .andExpect(status().isNotFound())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))

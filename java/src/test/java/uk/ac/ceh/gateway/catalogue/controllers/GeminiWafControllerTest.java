@@ -1,72 +1,74 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
 import lombok.SneakyThrows;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.components.datastore.DataRepository;
+import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
+import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.permission.CrowdPermissionServiceTest;
 import uk.ac.ceh.gateway.catalogue.services.MetadataListingService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Answers.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.util.AssertionErrors.assertTrue;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.GEMINI_SHORT;
 
-@SuppressWarnings({"rawtypes", "unchecked"})
-@ExtendWith(MockitoExtension.class)
-public class GeminiWafControllerTest {
-    @Mock(answer=RETURNS_DEEP_STUBS) DataRepository repo;
-    @Mock(answer=RETURNS_DEEP_STUBS) MetadataListingService listingService;
-    
-    private GeminiWafController controller;
-    
-    @BeforeEach
-    public void initMocks() {
-        controller = new GeminiWafController(repo, listingService);
-    }
-    
-    
+@ActiveProfiles("test")
+@DisplayName("GeminiWafController")
+@Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
+@WebMvcTest(
+    controllers=GeminiWafController.class,
+    properties="spring.freemarker.template-loader-path=file:../templates"
+)
+class GeminiWafControllerTest {
+    @MockBean private DataRepository<CatalogueUser> repo;
+    @MockBean private MetadataListingService listingService;
+
+    @Autowired private MockMvc mockMvc;
+
     @Test
     @SneakyThrows
-    public void checkThatXmlExtensionIsAppendedToGeminiMetadataRecords() {
+    void checkThatXmlExtensionIsAppendedToGeminiMetadataRecords() {
         //Given
         List<String> files = Arrays.asList("test1", "test2");
         List<String> resourceTypes = new ArrayList<>(Arrays.asList("dataset", "service"));
-        when(repo.getLatestRevision().getRevisionID()).thenReturn("latest");
-        when(listingService.getPublicDocuments("latest", GeminiDocument.class, resourceTypes)).thenReturn(files);
-                
+        given(repo.getLatestRevision()).willReturn(new CrowdPermissionServiceTest.DummyRevision("latest"));
+        given(listingService.getPublicDocuments("latest", GeminiDocument.class, resourceTypes))
+            .willReturn(files);
+
         //When
-        ModelAndView modelAndView = controller.getWaf();
-        
-        //Then
-        Map<String, Object> model = modelAndView.getModel();
-        assertThat("Expected waf template", modelAndView.getViewName(), equalTo("/html/waf.ftl"));
-        assertTrue("Expected to find files", model.containsKey("files"));
-        
-        List<String> filenames = (List<String>)model.get("files");
-        assertThat("files contains files with extensions", filenames.contains("test1.xml"));
-        assertThat("files contains files with extensions", filenames.contains("test2.xml"));
+        mockMvc.perform(
+            get("/documents/gemini/waf/")
+        )
+            .andExpect(status().isOk())
+            .andExpect(view().name("/html/waf"))
+            .andExpect(model().attribute("files", Arrays.asList("test1.xml", "test2.xml")));
     }
-    
+
     @Test
+    @SneakyThrows
     public void checkThatGettingDocumentForwardsToDocumentsEndpoint() {
         //Given
         String id = "somerandomID";
-        
+
         //When
-        String springForward = controller.forwardToMetadata(id);
-        
-        //Then
-        assertThat("Expected that forwards to correct location", springForward, equalTo("forward:/documents/somerandomID?format=gemini"));
+        mockMvc.perform(
+            get("/documents/gemini/waf/{id}.xml", id)
+        )
+            .andExpect(status().isOk())
+            .andExpect(forwardedUrl("/documents/" + id + "?format=" + GEMINI_SHORT));
     }
 }

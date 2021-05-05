@@ -25,6 +25,7 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.DATACITE_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.DATACITE_XML_VALUE;
 import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.EIDC_PUBLISHER_USERNAME;
 
@@ -67,10 +68,25 @@ class DataciteControllerTest {
 
         //when
         mockMvc.perform(
-            get("/documents/{file}/datacite.xml", file)
-            .accept(DATACITE_XML_VALUE)
+            get("/documents/{file}/datacite?format=datacite", file)
         )
             .andExpect(status().isOk())
+            .andExpect(content().contentTypeCompatibleWith(DATACITE_XML_VALUE))
+            .andExpect(content().string("data citation request"));
+    }
+
+    @Test
+    void getDataciteXmlNoAccept() throws Exception {
+        //given
+        givenDocumentRepository();
+        givenDataciteService();
+
+        //when
+        mockMvc.perform(
+            get("/documents/{file}/datacite.xml", file)
+        )
+            .andExpect(status().isOk())
+            .andExpect(forwardedUrl("forward:/documents/" + file + "/datacite?format=" + DATACITE_SHORT))
             .andExpect(content().contentTypeCompatibleWith(DATACITE_XML_VALUE))
             .andExpect(content().string("data citation request"));
     }

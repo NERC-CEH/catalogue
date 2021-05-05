@@ -4,7 +4,10 @@ import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.datacite.DataciteService;
@@ -17,6 +20,7 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 
+import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.DATACITE_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.DATACITE_XML_VALUE;
 
 /**
@@ -27,7 +31,7 @@ import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.DATACITE_XM
 @RestController
 public class DataciteController {
     public final static String DATACITE_ROLE = "ROLE_DATACITE";
-    
+
     private final DocumentRepository repo;
     private final DocumentIdentifierService identifierService;
     private final DataciteService dataciteService;
@@ -40,14 +44,21 @@ public class DataciteController {
         this.dataciteService = dataciteService;
         log.info("Creating {}", this);
     }
-        
-    @GetMapping(value="documents/{file}/datacite.xml", produces = DATACITE_XML_VALUE)
+
+    @GetMapping(value="documents/{file}/datacite.xml")
+    public String getDataciteRequestXml(
+        @PathVariable("file") String file
+    ) {
+        return "forward:/documents/" + file + "/datacite?format=" + DATACITE_SHORT;
+    }
+
+    @GetMapping(value="documents/{file}/datacite", produces=DATACITE_XML_VALUE)
     public String getDataciteRequest(
         @PathVariable("file") String file
     ) {
         return dataciteService.getDatacitationRequest(getDocument(file));
     }
-    
+
     @Secured(DATACITE_ROLE)
     @PostMapping(value="documents/{file}/datacite")
     public RedirectView mintDoi(

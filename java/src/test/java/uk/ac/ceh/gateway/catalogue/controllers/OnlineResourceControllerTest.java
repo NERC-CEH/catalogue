@@ -44,7 +44,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @DisplayName("OnlineResourceController")
 @Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
-@WebMvcTest(OnlineResourceController.class)
+@WebMvcTest(
+    controllers=OnlineResourceController.class,
+    properties="spring.freemarker.template-loader-path=file:../templates"
+)
 public class OnlineResourceControllerTest {
     @Autowired private MockMvc mockMvc;
 

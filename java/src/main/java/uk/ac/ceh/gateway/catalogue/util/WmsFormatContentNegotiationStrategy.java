@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.http.InvalidMediaTypeException;
 import org.springframework.http.MediaType;
-import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.accept.ContentNegotiationStrategy;
 import org.springframework.web.context.request.NativeWebRequest;
 
@@ -14,9 +13,9 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Define a content negotiation strategy which will read literal media type values 
+ * Define a content negotiation strategy which will read literal media type values
  * from a specified query parameter and use this as the preferred mediatype.
- * 
+ *
  * This logic defined here is designed to support WMS style requests which state
  * that 'Parameter names shall not be case sensitive'
  * @see http://cite.opengeospatial.org/OGCTestData/wms/1.1.1/spec/wms1.1.1.html
@@ -25,9 +24,9 @@ import java.util.Optional;
 @AllArgsConstructor
 public class WmsFormatContentNegotiationStrategy implements ContentNegotiationStrategy {
     private String parameter;
-    
+
     @Override
-    public List<MediaType> resolveMediaTypes(NativeWebRequest webRequest) throws HttpMediaTypeNotAcceptableException {
+    public List<MediaType> resolveMediaTypes(NativeWebRequest webRequest) {
         Optional<Map.Entry<String, String[]>> mediaType = webRequest
                 .getParameterMap()
                 .entrySet()
