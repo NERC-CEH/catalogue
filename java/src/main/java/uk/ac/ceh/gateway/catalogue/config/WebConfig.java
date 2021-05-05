@@ -25,6 +25,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUserHandlerMethodArgumentResolver;
 import uk.ac.ceh.gateway.catalogue.converters.Object2TemplatedMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.TransparentProxyMessageConverter;
+import uk.ac.ceh.gateway.catalogue.datacite.DataciteResponse;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.Citation;
 import uk.ac.ceh.gateway.catalogue.model.ErrorResponse;
@@ -59,10 +60,11 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
         log.info("Adding message converters");
-        converters.add(0, new Object2TemplatedMessageConverter<>(Citation.class, freemarkerConfiguration));
-        converters.add(0, new Object2TemplatedMessageConverter<>(ErrorResponse.class, freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter<>(Citation.class, freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter<>(ErrorResponse.class, freemarkerConfiguration));
+        converters.add(0, new Object2TemplatedMessageConverter<>(DataciteResponse.class, freemarkerConfiguration));
         converters.add(0, new Object2TemplatedMessageConverter<>(GeminiDocument.class, freemarkerConfiguration));
-        converters.add(0, new Object2TemplatedMessageConverter<>(SearchResults.class, freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter<>(SearchResults.class, freemarkerConfiguration));
         converters.add(0, new TransparentProxyMessageConverter(httpClient()));
         if (log.isDebugEnabled()) {
             log.debug("After our message converters added");

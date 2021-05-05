@@ -26,6 +26,8 @@ import uk.ac.ceh.gateway.catalogue.model.DataciteException;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
+import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
+import uk.ac.ceh.gateway.catalogue.converters.Template;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -272,6 +274,14 @@ public class DataciteService {
         }
     }
 
+    public DataciteResponse getDataciteResponse(GeminiDocument geminiDocument) {
+        return DataciteResponse.builder()
+            .doc(geminiDocument)
+            .resourceType(getDataciteResourceType(geminiDocument))
+            .doi(generateDoiString(geminiDocument))
+            .build();
+    }
+
     private String getDataciteResourceType(MetadataDocument document) {
         switch(document.getType()) {
             case "nonGeographicDataset":
@@ -287,4 +297,5 @@ public class DataciteService {
     private String generateDoiString(GeminiDocument document) {
         return prefix + "/" + document.getId();
     }
+
 }

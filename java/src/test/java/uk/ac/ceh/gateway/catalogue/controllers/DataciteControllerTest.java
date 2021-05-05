@@ -1,7 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
 import lombok.SneakyThrows;
-import lombok.val;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,14 +9,19 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.util.StreamUtils;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
+import uk.ac.ceh.gateway.catalogue.datacite.DataciteResponse;
 import uk.ac.ceh.gateway.catalogue.datacite.DataciteService;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
+import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
 
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -25,14 +29,16 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.DATACITE_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.DATACITE_XML_VALUE;
 import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.EIDC_PUBLISHER_USERNAME;
 
 @ActiveProfiles("test")
 @DisplayName("DataciteController")
 @Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
-@WebMvcTest(DataciteController.class)
+@WebMvcTest(
+    controllers=DataciteController.class,
+    properties="spring.freemarker.template-loader-path=file:../templates"
+)
 class DataciteControllerTest {
     @MockBean private DocumentRepository documentRepository;
     @MockBean private DocumentIdentifierService identifierService;
@@ -41,23 +47,46 @@ class DataciteControllerTest {
     @Autowired private MockMvc mockMvc;
 
     private final String file = "1234";
+    private final GeminiDocument gemini = new GeminiDocument();
 
     @SneakyThrows
     private void givenDocumentRepository() {
-        val gemini = new GeminiDocument();
+        gemini.setTitle("Datacite Example");
+        gemini.setDescription("Dataset description");
+        gemini.setDatasetReferenceDate(DatasetReferenceDate.builder()
+            .publicationDate(LocalDate.of(2021, 05, 05))
+            .build()
+        );
         gemini.setResourceIdentifiers(new ArrayList<>());
         given(documentRepository.read(file))
             .willReturn(gemini);
     }
 
     private void givenDataciteService() {
-        given(dataciteService.getDatacitationRequest(any(GeminiDocument.class)))
-            .willReturn("data citation request");
+        given(dataciteService.getDataciteResponse(gemini))
+            .willReturn(DataciteResponse.builder()
+                .doc(gemini)
+                .resourceType("Dataset")
+                .doi("10.285/" + file)
+                .build()
+            );
     }
 
     private void givenGenerateDoi() {
         given(dataciteService.generateDoi(any(GeminiDocument.class)))
             .willReturn(ResourceIdentifier.builder().code(file).codeSpace("doi").build());
+    }
+
+    @SneakyThrows
+    private String expectedResponse(String filename) {
+        return StreamUtils.copyToString(
+            getClass().getResourceAsStream(filename),
+            StandardCharsets.UTF_8
+        );
+    }
+
+    private String expectedDatacite() {
+        return expectedResponse("datacite.xml");
     }
 
     @Test
@@ -72,7 +101,7 @@ class DataciteControllerTest {
         )
             .andExpect(status().isOk())
             .andExpect(content().contentTypeCompatibleWith(DATACITE_XML_VALUE))
-            .andExpect(content().string("data citation request"));
+            .andExpect(content().xml(expectedDatacite()));
     }
 
     @Test
@@ -86,9 +115,8 @@ class DataciteControllerTest {
             get("/documents/{file}/datacite.xml", file)
         )
             .andExpect(status().isOk())
-            .andExpect(forwardedUrl("forward:/documents/" + file + "/datacite?format=" + DATACITE_SHORT))
             .andExpect(content().contentTypeCompatibleWith(DATACITE_XML_VALUE))
-            .andExpect(content().string("data citation request"));
+            .andExpect(content().xml(expectedDatacite()));
     }
 
     @Test
@@ -96,7 +124,7 @@ class DataciteControllerTest {
         //given
         givenDocumentRepository();
         givenGenerateDoi();
-        given(identifierService.generateUri(file)).willReturn("http://example.com/1234");
+        given(identifierService.generateUri(file)).willReturn("https://example.com/1234");
 
         //when
         mockMvc.perform(
@@ -104,6 +132,6 @@ class DataciteControllerTest {
             .header("remote-user", EIDC_PUBLISHER_USERNAME)
         )
             .andExpect(status().is3xxRedirection())
-            .andExpect(header().string("location", "http://example.com/1234"));
+            .andExpect(header().string("location", "https://example.com/1234"));
     }
 }

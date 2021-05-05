@@ -34,6 +34,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.DATACITE_XML_VALUE;
 
 @ActiveProfiles("test")
 @DisplayName("ExceptionController")
@@ -67,11 +68,11 @@ public class ExceptionControllerHandlerTest {
 
         //when
         mockMvc.perform(
-            get("/documents/{file}/datacite.xml", file)
-                .accept(MediaType.APPLICATION_XML)
+            get("/documents/{file}/datacite", file)
+                .accept(DATACITE_XML_VALUE)
         )
             .andExpect(status().isNotFound())
-            .andExpect(content().contentType(MediaType.APPLICATION_XML))
+            .andExpect(content().contentType(DATACITE_XML_VALUE))
             .andExpect(content().xml("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<error>There was no gemini document present with this address</error>"));
     }

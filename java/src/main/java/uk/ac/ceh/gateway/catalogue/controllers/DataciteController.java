@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.datacite.DataciteService;
+import uk.ac.ceh.gateway.catalogue.datacite.DataciteResponse;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -20,7 +21,6 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
 
-import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.DATACITE_SHORT;
 import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.DATACITE_XML_VALUE;
 
 /**
@@ -46,17 +46,17 @@ public class DataciteController {
     }
 
     @GetMapping(value="documents/{file}/datacite.xml")
-    public String getDataciteRequestXml(
+    public DataciteResponse getDataciteRequestXml(
         @PathVariable("file") String file
     ) {
-        return "forward:/documents/" + file + "/datacite?format=" + DATACITE_SHORT;
+        return getDataciteRequest(file);
     }
 
     @GetMapping(value="documents/{file}/datacite", produces=DATACITE_XML_VALUE)
-    public String getDataciteRequest(
+    public DataciteResponse getDataciteRequest(
         @PathVariable("file") String file
     ) {
-        return dataciteService.getDatacitationRequest(getDocument(file));
+        return dataciteService.getDataciteResponse(getDocument(file));
     }
 
     @Secured(DATACITE_ROLE)

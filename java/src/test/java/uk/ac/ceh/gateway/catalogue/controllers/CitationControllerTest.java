@@ -233,7 +233,7 @@ class CitationControllerTest {
         //Given
         givenUserIsPermittedToViewHistoric();
         givenCitation(true);
-        
+
         //When
         mockMvc.perform(
             get("/history/{revision}/{file}/citation", revision, file)
