@@ -29,6 +29,8 @@ import uk.ac.ceh.gateway.catalogue.datacite.DataciteResponse;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.Citation;
 import uk.ac.ceh.gateway.catalogue.model.ErrorResponse;
+import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
+import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
 import uk.ac.ceh.gateway.catalogue.util.ForgivingParameterContentNegotiationStrategy;
 import uk.ac.ceh.gateway.catalogue.util.WmsFormatContentNegotiationStrategy;
@@ -60,12 +62,18 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
         log.info("Adding message converters");
-        converters.add(new Object2TemplatedMessageConverter<>(Citation.class, freemarkerConfiguration));
-        converters.add(new Object2TemplatedMessageConverter<>(ErrorResponse.class, freemarkerConfiguration));
+        // Before standard Spring message converters
         converters.add(0, new Object2TemplatedMessageConverter<>(DataciteResponse.class, freemarkerConfiguration));
         converters.add(0, new Object2TemplatedMessageConverter<>(GeminiDocument.class, freemarkerConfiguration));
-        converters.add(new Object2TemplatedMessageConverter<>(SearchResults.class, freemarkerConfiguration));
         converters.add(0, new TransparentProxyMessageConverter(httpClient()));
+
+        // After standard Spring message converters
+        converters.add(new Object2TemplatedMessageConverter<>(CehModel.class, freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter<>(CehModelApplication.class, freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter<>(Citation.class, freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter<>(ErrorResponse.class, freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter<>(SearchResults.class, freemarkerConfiguration));
+
         if (log.isDebugEnabled()) {
             log.debug("After our message converters added");
             converters.forEach(convert -> log.debug(convert.toString()));

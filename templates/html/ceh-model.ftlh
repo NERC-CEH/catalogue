@@ -1,7 +1,7 @@
-<#import "skeleton.ftl" as skeleton>
-<#import "blocks.ftl" as b>
-<#import "ceh-model-macros.ftl" as m>
-<#import "../functions.tpl" as func>
+<#import "skeleton.ftlh" as skeleton>
+<#import "blocks.ftlh" as b>
+<#import "ceh-model-macros.ftlh" as m>
+<#import "../functions.ftlh" as func>
 
 <#if responsibleParties?? && responsibleParties?has_content>
   <#assign
@@ -15,7 +15,7 @@
     otherLinks = func.filter(onlineResources, "function", "browseGraphic", true)
   >
 </#if>
-<@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)><#escape x as x?html>
+<@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
 
   <@b.metadataContainer "ceh-model">
 
@@ -26,7 +26,7 @@
     </#if>
 
     <#if description?? && description?has_content>
-      <#noescape>
+      <#noautoesc>
         <div class="description clearfix">
           <#if image?? && image?has_content>
             <#if image?first.url?matches("^http(|s)://.+(jpg|jpeg|gif|png)$")>
@@ -35,16 +35,16 @@
           </#if>
           <@b.linebreaks description />
         </div>
-      </#noescape>
+      </#noautoesc>
     </#if>
 
       <#if primaryPurpose?? || SRO??|| otherContacts?? || licenseType?? || onlineResources??>
       <section>
         <#if primaryPurpose?? && primaryPurpose?has_content>
           <@m.key "Primary purpose">
-            <#noescape>
+            <#noautoesc>
               <@b.linebreaks primaryPurpose />
-            </#noescape>
+            </#noautoesc>
           </@m.key>
         </#if>
 
@@ -53,7 +53,7 @@
             <#list otherLinks as otherLink>
               <p>
                 <#if otherLink.function?? && otherLink.function?has_content>
-                  ${otherLink.function?cap_first}: 
+                  ${otherLink.function?cap_first}:
                 </#if>
                 <#if otherLink.url?? && otherLink.url?has_content>
                   <@m.Url otherLink.url true/>
@@ -63,7 +63,7 @@
           </@m.key>
         </#if>
 
-        <#noescape>
+        <#noautoesc>
         <#if SRO?? && SRO?has_content>
           <@m.key "Senior responsible officer">
             <#list SRO as SRO>
@@ -74,16 +74,16 @@
         <#if otherContacts?? && otherContacts?has_content>
           <@m.key "Other contacts">
           <#list otherContacts as otherContact>
-            <dt>${otherContact.roleDisplayName?html}</dt>
+            <dt>${otherContact.roleDisplayName}</dt>
             <dd>
-              <div class="responsibleParty">      
+              <div class="responsibleParty">
                 ${func.displayContact(otherContact, true, true, false)}
               </div>
             </dd>
             </#list>
           </@m.key>
         </#if>
-        </#noescape>
+        </#noautoesc>
 
         <#if licenseType?? && licenseType?has_content>
           <@m.key "License" "License type (open or non-open) under which the model is distributed">${licenseType?cap_first}</@m.key>
@@ -125,7 +125,7 @@
         <@m.key "Spatial extent">
           <div id="studyarea-map">
             <#list boundingBoxes as extent>
-              <span content="${extent.wkt?html}" datatype="geo:wktLiteral"/>
+              <span content="${extent.wkt}" datatype="geo:wktLiteral"/>
             </#list>
           </div>
         </@m.key>
@@ -219,7 +219,7 @@
             <#items as md>
               <@b.blockUrl md/>
             </#items>
-          </@m.key>   
+          </@m.key>
         </#list>
       </#if>
     </section>
@@ -248,9 +248,9 @@
       </#list>
     </section>
     </#if>
-    
+
     <@m.additionalMetadata />
 
-      
+
   </@b.metadataContainer>
-</#escape></@skeleton.master>
+</@skeleton.master>

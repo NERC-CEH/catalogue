@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ConvertUsing({
-    @Template(called="html/ceh-model-application.ftl", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
+    @Template(called="html/ceh-model-application.ftlh", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
 })
 public class CehModelApplication extends AbstractMetadataDocument {
     private String
@@ -33,15 +33,15 @@ public class CehModelApplication extends AbstractMetadataDocument {
         sensitivityAnalysis,
         uncertaintyAnalysis,
         validation;
-    
+
     private List<CehModel.Reference> references;
-    
+
     private List<ModelInfo> modelInfos;
-    
+
     private List<DataInfo>
         inputData,
         outputData;
-    
+
     @JsonIgnore
     @Override
     public Set<Relationship> getRelationships() {
@@ -52,13 +52,13 @@ public class CehModelApplication extends AbstractMetadataDocument {
             .map((mi) -> new Relationship("http://purl.org/dc/terms/references", mi.id))
             .collect(Collectors.toSet());
     }
-    
+
     @JsonIgnore
     @Override
     public AbstractMetadataDocument setRelationships(Set<Relationship> relationships) {
         return this; // None added, relationships come from modelInfos
     }
-    
+
     @Data
     public static class ModelInfo {
         private String
@@ -74,7 +74,7 @@ public class CehModelApplication extends AbstractMetadataDocument {
             temporalResolutionOfApplication,
             calibrationConditions;
     }
-    
+
     @Data
     public static class DataInfo {
         private String

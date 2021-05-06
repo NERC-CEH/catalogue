@@ -24,6 +24,8 @@ import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.imp.Model;
 import uk.ac.ceh.gateway.catalogue.model.*;
+import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
+import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
@@ -81,6 +83,26 @@ class DocumentControllerTest {
     }
 
     @SneakyThrows
+    private void givenCehModelApplication() {
+        val model = new CehModelApplication();
+        model.setId(id);
+        model.setTitle("Test title");
+        model.setMetadata(MetadataInfo.builder().catalogue(catalogueKey).build());
+        given(documentRepository.read(id))
+            .willReturn(model);
+    }
+
+    @SneakyThrows
+    private void givenCehModel() {
+        val model = new CehModel();
+        model.setId(id);
+        model.setTitle("Test title");
+        model.setMetadata(MetadataInfo.builder().catalogue(catalogueKey).build());
+        given(documentRepository.read(id))
+            .willReturn(model);
+    }
+
+    @SneakyThrows
     private void givenGeminiDocument() {
         val gemini = new GeminiDocument();
         gemini.setId(id);
@@ -134,6 +156,42 @@ class DocumentControllerTest {
             getClass().getResourceAsStream(filename),
             StandardCharsets.UTF_8
         );
+    }
+
+    @Test
+    @SneakyThrows
+    void getCehModelApplicationAsHtml() {
+        //given
+        givenUserIsPermittedToView();
+        givenCehModelApplication();
+        givenCatalogue();
+        givenFreemarkerConfiguration();
+
+        //when
+        mockMvc.perform(
+            get("/documents/{id}", id)
+                .accept(MediaType.TEXT_HTML)
+        )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.TEXT_HTML));
+    }
+
+    @Test
+    @SneakyThrows
+    void getCehModelAsHtml() {
+        //given
+        givenUserIsPermittedToView();
+        givenCehModel();
+        givenCatalogue();
+        givenFreemarkerConfiguration();
+
+        //when
+        mockMvc.perform(
+            get("/documents/{id}", id)
+                .accept(MediaType.TEXT_HTML)
+        )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.TEXT_HTML));
     }
 
     @Test

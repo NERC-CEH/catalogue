@@ -1,11 +1,11 @@
-<#import "skeleton.ftl" as skeleton>
-<#import "blocks.ftl" as b>
-<#import "ceh-model-macros.ftl" as m>
-<#import "../functions.tpl" as func>
+<#import "skeleton.ftlh" as skeleton>
+<#import "blocks.ftlh" as b>
+<#import "ceh-model-macros.ftlh" as m>
+<#import "../functions.ftlh" as func>
 
-<@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)><#escape x as x?html>
+<@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
   <@b.metadataContainer "ceh-model">
-    
+
     <@b.admin />
 
     <#if title?? || projectCode?? || projectObjectives?? || description?? || keywords?? || projectCompletionDate?? || projectWebsite?? || funderDetails?? || contactName?? || multipleModelsUsed?? || multipleModelLinkages??>
@@ -22,16 +22,16 @@
 
       <#if projectObjectives?? && projectObjectives?has_content>
         <@m.key "Project objectives" "Brief description of main objectives">
-          <#noescape>
+          <#noautoesc>
             <@b.linebreaks projectObjectives />
-          </#noescape>
+          </#noautoesc>
         </@m.key>
       </#if>
       <#if description?? && description?has_content>
         <@m.key "Project description" "Longer description of project including why models were used to answer the science question, assumptions made, key outputs">
-          <#noescape>
+          <#noautoesc>
             <@b.linebreaks description />
-          </#noescape>
+          </#noautoesc>
         </@m.key>
       </#if>
       <#if projectCompletionDate?? && projectCompletionDate?has_content>
@@ -42,9 +42,9 @@
       </#if>
       <#if funderDetails?? && funderDetails?has_content>
         <@m.key "Funder details" "Funder details including grant number if appropriate">
-          <#noescape>
+          <#noautoesc>
             <@b.linebreaks funderDetails />
-          </#noescape>
+          </#noautoesc>
         </@m.key>
       </#if>
       <#if contactName??>
@@ -59,16 +59,16 @@
       </#if>
       <#if multipleModelsUsed?? && multipleModelsUsed?has_content>
         <@m.key "Multiple models used?" "Were multiple models used in the project? If so, which ones?">
-          <#noescape>
+          <#noautoesc>
             <@b.linebreaks multipleModelsUsed />
-          </#noescape>
+          </#noautoesc>
         </@m.key>
       </#if>
       <#if multipleModelLinkages?? && multipleModelLinkages?has_content>
         <@m.key "Multiple model linkages" "If multiple models were used how was this done e.g. chained, independent runs, comparisons, ensemble">
-          <#noescape>
+          <#noautoesc>
             <@b.linebreaks multipleModelLinkages />
-          </#noescape>
+          </#noautoesc>
         </@m.key>
       </#if>
     </section>
@@ -92,10 +92,10 @@
       </@b.repeatRow>
       </#list>
     </section>
-    </#if>    
+    </#if>
 
     <#if modelInfos?? && modelInfos?has_content>
-    
+
       <section>
       <h2>Model Information</h2>
         <#list modelInfos as modelInfo>
@@ -174,7 +174,7 @@
             <@m.dataInfoTable inputData />
           </@m.key>
          </#if>
-          
+
         <#if outputData??>
           <@m.key "Output data">
             <@m.dataInfoTable outputData />
@@ -182,35 +182,35 @@
          </#if>
     </section>
     </#if>
-   
+
     <#if sensitivityAnalysis?? || uncertaintyAnalysis?? || validation??>
     <section>
       <h2>Evaluation Information</h2>
       <#if sensitivityAnalysis?? && sensitivityAnalysis?has_content>
         <@m.key "Sensitivity analysis" "Details of any sensitivity analysis performed, or link to appropriate documentation">
-          <#noescape>
+          <#noautoesc>
             <@b.linebreaks sensitivityAnalysis />
-          </#noescape>
+          </#noautoesc>
         </@m.key>
       </#if>
       <#if uncertaintyAnalysis?? && uncertaintyAnalysis?has_content>
         <@m.key "Uncertainty analysis" "How was uncertainty in the model captured and represented? Give links to any appropriate documentation">
-          <#noescape>
+          <#noautoesc>
             <@b.linebreaks uncertaintyAnalysis />
-          </#noescape>
+          </#noautoesc>
         </@m.key>
       </#if>
       <#if validation?? && validation?has_content>
         <@m.key "Uncertainty analysis" "Was the model validated against data not used for model building or parameterisation? If so, provide links to any documentation of results">
-          <#noescape>
+          <#noautoesc>
             <@b.linebreaks validation />
-          </#noescape>
+          </#noautoesc>
         </@m.key>
       </#if>
     </section>
     </#if>
 
     <@m.additionalMetadata />
-    
+
   </@b.metadataContainer>
-</#escape></@skeleton.master>
+</@skeleton.master>
