@@ -143,6 +143,17 @@ class DocumentControllerTest {
             );
     }
 
+    private void givenDefaultCatalogue() {
+        given(catalogueService.defaultCatalogue())
+            .willReturn(
+                Catalogue.builder()
+                    .id(catalogueKey)
+                    .title("Env Data Centre")
+                    .url("https://example.com")
+                    .build()
+            );
+    }
+
     private void givenCodeLookup() {
         given(codeLookupService.lookup("metadata.recordType", "dataset"))
             .willReturn("Dataset");
@@ -156,6 +167,21 @@ class DocumentControllerTest {
             getClass().getResourceAsStream(filename),
             StandardCharsets.UTF_8
         );
+    }
+
+    @Test
+    @SneakyThrows
+    void getUploadPage() {
+        //given
+        givenDefaultCatalogue();
+        givenFreemarkerConfiguration();
+
+        //when
+        mockMvc.perform(
+            get("/documents/upload")
+        )
+            .andExpect(status().isOk())
+            .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML));
     }
 
     @Test

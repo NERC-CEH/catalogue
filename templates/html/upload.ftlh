@@ -1,5 +1,5 @@
-<#import "skeleton.ftl" as skeleton>
-<@skeleton.master title="Metadata File Upload"><#escape x as x?html>
+<#import "skeleton.ftlh" as skeleton>
+<@skeleton.master title="Metadata File Upload">
 <div class="container">
   <div class="row">
     <div class="col-sm-offset-2 col-sm-8">
@@ -53,4 +53,4 @@
     </div>
   </div>
 </div>
-</#escape></@skeleton.master>
+</@skeleton.master>
