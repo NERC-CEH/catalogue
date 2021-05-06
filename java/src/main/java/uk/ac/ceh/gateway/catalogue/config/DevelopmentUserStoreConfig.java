@@ -26,6 +26,7 @@ import java.util.Arrays;
 @Profile({"development", "test"})
 public class DevelopmentUserStoreConfig {
     // Usernames used in tests
+    public static final String ADMIN = "admin";
     public static final String EIDC_PUBLISHER_USERNAME = "eidc-publisher";
     public static final String UNPRIVILEGED_USERNAME = "unprivileged";
     public static final String UPLOADER_USERNAME = "uploader";
@@ -70,7 +71,7 @@ public class DevelopmentUserStoreConfig {
     @PostConstruct
     public void admin() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser()
-            .setUsername("admin")
+            .setUsername(ADMIN)
             .setEmail("admin@ceh.ac.uk");
         addUserToGroup(user, MAINTENANCE_ROLE);
         userStore().addUser(user, "password");

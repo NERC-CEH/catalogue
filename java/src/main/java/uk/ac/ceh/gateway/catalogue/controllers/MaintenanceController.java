@@ -44,9 +44,9 @@ public class MaintenanceController {
         this.linkingService = linkingService;
         this.validationService = validationService;
         this.mapserverService = mapserverService;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
-    
+
     @RequestMapping (method = RequestMethod.GET)
     @ResponseBody
     public MaintenanceResponse loadMaintenancePage() {
@@ -80,7 +80,7 @@ public class MaintenanceController {
         toReturn.setLastOptimized(repoService.getLastOptimized());
         return toReturn;
     }
-    
+
     @RequestMapping(value="/documents/optimize",
                     method = RequestMethod.POST)
     @ResponseBody
@@ -94,9 +94,9 @@ public class MaintenanceController {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(response);
-        }   
+        }
     }
-    
+
     @RequestMapping(value="/documents/validate",
                     method = RequestMethod.POST)
     @ResponseBody
@@ -110,9 +110,9 @@ public class MaintenanceController {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(response);
-        }   
+        }
     }
-    
+
     @RequestMapping(value="/documents/reindex",
                     method = RequestMethod.POST)
     @ResponseBody
@@ -129,7 +129,7 @@ public class MaintenanceController {
                     .body(response);
         }
     }
-    
+
     @RequestMapping(value="/links/reindex",
                     method = RequestMethod.POST)
     @ResponseBody
@@ -145,7 +145,7 @@ public class MaintenanceController {
                     .body(response);
         }
     }
-    
+
     @RequestMapping(value="/mapfiles/reindex",
                     method = RequestMethod.POST)
     @ResponseBody

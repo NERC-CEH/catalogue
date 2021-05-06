@@ -10,7 +10,7 @@ import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 
 @ConvertUsing({
-    @Template(called="html/maintenance.ftl", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
+    @Template(called="html/maintenance.ftlh", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
 })
 @Data
 public class MaintenanceResponse {
@@ -22,7 +22,7 @@ public class MaintenanceResponse {
     private int indexedMapFilesCount;
     private DataRevision<CatalogueUser> latestRevision;
     private Date lastOptimized;
-    
+
     public MaintenanceResponse addMessage(String message) {
         messages.add(message);
         return this;

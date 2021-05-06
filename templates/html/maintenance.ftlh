@@ -1,4 +1,4 @@
-<#import "skeleton.ftl" as skeleton>
+<#import "skeleton.ftlh" as skeleton>
 <@skeleton.master title="Maintenance Page">
   <div class="container">
     <h1>Catalogue Maintenance</h1>
