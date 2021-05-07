@@ -1,6 +1,5 @@
-package uk.ac.ceh.gateway.catalogue.indexing;
+package uk.ac.ceh.gateway.catalogue.deims;
 
-import lombok.Data;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -12,6 +11,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 
 import java.io.IOException;
 
@@ -40,7 +40,7 @@ public class DeimsSolrScheduledSiteService {
     }
 
     @Scheduled(initialDelay = ONE_MINUTE, fixedDelay = SEVEN_DAYS)
-    protected void fetchDEIMSSitesAndAddToSolr() throws DocumentIndexingException {
+    public void fetchDEIMSSitesAndAddToSolr() throws DocumentIndexingException {
         log.info("Re-indexing DEIMS sites");
         val response = restTemplate.getForEntity(
                 this.address,
@@ -61,41 +61,6 @@ public class DeimsSolrScheduledSiteService {
         } catch (IOException | SolrServerException ex) {
             log.error("Failed to re-index DEIMS sites");
             throw new DocumentIndexingException(ex);
-        }
-    }
-
-    @Data
-    static class DeimsSite {
-        String title;
-        Id id;
-        String coordinates;
-        String changed;
-
-        public String getIdentifier() {
-            return id.getSuffix();
-        }
-
-        public String getURL() {
-            return this.getId().prefix + this.getId().suffix;
-        }
-
-        @Data
-        private static class Id {
-            String prefix;
-            String suffix;
-        }
-    }
-
-    @lombok.Value
-    static class DeimsSolrIndex {
-        String title;
-        String id;
-        String url;
-
-        public DeimsSolrIndex(DeimsSite site) {
-            this.title = site.getTitle();
-            this.id = site.getIdentifier();
-            this.url = site.getURL();
         }
     }
 }
