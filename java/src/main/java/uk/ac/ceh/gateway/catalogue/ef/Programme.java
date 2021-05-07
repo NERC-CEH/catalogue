@@ -33,24 +33,24 @@ import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.EF_INSPIRE_
     "triggers"
 })
 @ConvertUsing({
-    @Template(called="html/ef.ftl", whenRequestedAs=MediaType.TEXT_HTML_VALUE),
-    @Template(called="xml/emp.xml.tpl",   whenRequestedAs=EF_INSPIRE_XML_VALUE)
+    @Template(called="html/ef.ftlh", whenRequestedAs=MediaType.TEXT_HTML_VALUE),
+    @Template(called="xml/emp.ftlx",   whenRequestedAs=EF_INSPIRE_XML_VALUE)
 })
 public class Programme extends BaseMonitoringType {
-    
+
     private Lifespan lifespan;
-    
-    private List<Link> 
+
+    private List<Link>
         legalBackground = new ArrayList<>(),
         reportToLegalAct = new ArrayList<>(),
         supersedes = new ArrayList<>(),
         supersededBy = new ArrayList<>(),
         triggers = new ArrayList<>();
-    
-    private List<Link.TimedLink> 
+
+    private List<Link.TimedLink>
         broaderThan  = new ArrayList<>(),
         narrowerThan = new ArrayList<>();
-    
+
     @XmlElement(name = "observingCapability")
     private List<ObservingCapability> observingCapabilities  = new ArrayList<>();
 }

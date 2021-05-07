@@ -24,7 +24,7 @@ import java.util.List;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.GEMINI_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.GEMINI_XML_SHORT;
 
 @ActiveProfiles("test")
 @DisplayName("GeminiWafController")
@@ -69,6 +69,6 @@ class GeminiWafControllerTest {
             get("/documents/gemini/waf/{id}.xml", id)
         )
             .andExpect(status().isOk())
-            .andExpect(forwardedUrl("/documents/" + id + "?format=" + GEMINI_SHORT));
+            .andExpect(forwardedUrl("/documents/" + id + "?format=" + GEMINI_XML_SHORT));
     }
 }

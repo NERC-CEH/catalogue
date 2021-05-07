@@ -26,14 +26,14 @@ import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.EF_INSPIRE_
     "uses"
 })
 @ConvertUsing({
-    @Template(called="html/ef.ftl", whenRequestedAs=MediaType.TEXT_HTML_VALUE),
-    @Template(called="xml/ema.xml.tpl", whenRequestedAs=EF_INSPIRE_XML_VALUE)
+    @Template(called="html/ef.ftlh", whenRequestedAs=MediaType.TEXT_HTML_VALUE),
+    @Template(called="xml/ema.ftlx", whenRequestedAs=EF_INSPIRE_XML_VALUE)
 })
 public class Activity extends BaseMonitoringType {
-    
+
     private Lifespan lifespan;
-    
-    private List<Link> 
+
+    private List<Link>
         setUpFor = new ArrayList<>(),
         uses = new ArrayList<>();
 }

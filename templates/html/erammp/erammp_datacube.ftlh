@@ -1,13 +1,12 @@
-<#import "../skeleton.ftl" as skeleton>
-<#import "/../../functions.tpl" as func>
+<#import "../skeleton.ftlh" as skeleton>
+<#import "../../functions.ftlh" as func>
 
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
-  <#escape x as x?html>
     <div id="metadata" class="metadata erammp-metadata">
       <div class="container">
-        <#include "_admin.ftl">
-        
-        
+        <#include "_admin.ftlh">
+
+
         <#if title?? && title?has_content>
           <div id="pageTitle">
             <h1>
@@ -57,11 +56,11 @@
                   <#if provider?? && provider?has_content>
                     <@simplerow "Data provider${(provider?size > 1)?then('s', '')}">
                       <#list provider as contact>
-                        <#noescape>
-                          <div class="responsibleParty">      
+                        <#noautoesc>
+                          <div class="responsibleParty">
                             ${func.displayContact(contact, false, true)}
                           </div>
-                        </#noescape>
+                        </#noautoesc>
                       </#list>
                     </@simplerow>
                   </#if>
@@ -70,7 +69,7 @@
               <#if boundingBoxes?? && boundingBoxes?has_content>
                 <div id="studyarea-map" title="Spatial coverage of the data">
                 <#list boundingBoxes as extent>
-                  <span  content="${extent.wkt?html}" datatype="geo:wktLiteral"/>
+                  <span  content="${extent.wkt}" datatype="geo:wktLiteral"/>
                 </#list>
                 </div>
               </#if>
@@ -118,7 +117,7 @@
                     ${schemaItem.type}
                     <#if schemaItem.format?? && schemaItem.format?has_content>
                       <span class="schema-format">(${schemaItem.format})</span>
-                    </#if>          
+                    </#if>
                 </#if>
               </td>
               <td>
@@ -144,7 +143,7 @@
                   <span class="nodata" />
                 </#if>
               </td>
-            </tr>    
+            </tr>
             </#list>
             </tbody></table>
             </div>
@@ -162,7 +161,7 @@
                   <span>${step?index + 1}.</span>
                   ${step.step}
                 </p>
-              </#list>            
+              </#list>
           </div>
         </#if>
 
@@ -191,7 +190,6 @@
 
       </div>
     </div>
-  </#escape>
 </@skeleton.master>
 
 <#----------MACROS ---------->

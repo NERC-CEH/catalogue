@@ -32,21 +32,21 @@ import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.EF_INSPIRE_
     "contains"
 })
 @ConvertUsing({
-    @Template(called="html/ef.ftl", whenRequestedAs=MediaType.TEXT_HTML_VALUE),
-    @Template(called="xml/emn.xml.tpl",   whenRequestedAs=EF_INSPIRE_XML_VALUE)
+    @Template(called="html/ef.ftlh", whenRequestedAs=MediaType.TEXT_HTML_VALUE),
+    @Template(called="xml/emn.ftlx",   whenRequestedAs=EF_INSPIRE_XML_VALUE)
 })
 public class Network extends BaseMonitoringType {
-    private List<Link> 
+    private List<Link>
         legalBackground = new ArrayList<>(),
         involvedIn = new ArrayList<>(),
         supersedes = new ArrayList<>(),
         supersededBy = new ArrayList<>();
-    
+
     private List<Link.TimedLink>
         broaderThan = new ArrayList<>(),
         narrowerThan = new ArrayList<>(),
         contains = new ArrayList<>();
-    
+
     @XmlElement(name = "observingCapability")
     private List<ObservingCapability> observingCapabilities = new ArrayList<>();
 }

@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.GEMINI_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.GEMINI_XML_SHORT;
 
 /**
  * The following emulates a Web accessible Folder of metadata records
@@ -59,6 +59,6 @@ public class NERCWafController {
 
     @RequestMapping("{id}.xml")
     public String forwardToMetadata(@PathVariable("id") String id) {
-        return "forward:/documents/" + id + "?format=" + GEMINI_SHORT;
+        return "forward:/documents/" + id + "?format=" + GEMINI_XML_SHORT;
     }
 }

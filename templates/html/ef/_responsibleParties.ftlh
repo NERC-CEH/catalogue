@@ -5,24 +5,24 @@
 
     <#if responsibleParties?has_content>
       <#list responsibleParties as rp>
-        <dt>${rp.role.title!rp.role.value?html}</dt>
-        <dd>  
+        <dt>${rp.role.title!rp.role.value}</dt>
+        <dd>
           <#if rp.individualName?has_content>
-            <span>${rp.individualName?html}</span><br>
+            <span>${rp.individualName}</span><br>
           </#if>
           <#if rp.organisationName?has_content>
-            <span>${rp.organisationName?html}</span><br>
+            <span>${rp.organisationName}</span><br>
           </#if>
-                  
+
           <#if rp.postalAddress?has_content>
             <address class="hidden-xs">
-              <#if rp.postalAddress.street?has_content>${rp.postalAddress.street?html}<br></#if>
+              <#if rp.postalAddress.street?has_content>${rp.postalAddress.street}<br></#if>
               <#list rp.postalAddress.postalArea as area >
                 ${area}<br>
               </#list>
-              <#if rp.postalAddress.administrativeArea?has_content>${rp.postalAddress.administrativeArea?html}<br></#if>
-              <#if rp.postalAddress.postcode?has_content>${rp.postalAddress.postcode?html}<br></#if>
-              <#if rp.postalAddress.country?has_content>${rp.postalAddress.country?html}</#if>
+              <#if rp.postalAddress.administrativeArea?has_content>${rp.postalAddress.administrativeArea}<br></#if>
+              <#if rp.postalAddress.postcode?has_content>${rp.postalAddress.postcode}<br></#if>
+              <#if rp.postalAddress.country?has_content>${rp.postalAddress.country}</#if>
             </address>
           </#if>
 
@@ -38,4 +38,4 @@
     </#if>
     </dl>
   </div>
-</#if>  
+</#if>

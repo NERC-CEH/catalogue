@@ -1,14 +1,13 @@
 package uk.ac.ceh.gateway.catalogue.util;
 
 import org.apache.commons.io.IOUtils;
-import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.ResponseErrorHandler;
 import uk.ac.ceh.gateway.catalogue.model.MapServerException;
 
 import java.io.IOException;
 
-import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.MAPSERVER_GML_VALUE;
+import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.MAPSERVER_GML;
 
 /**
  * If the response from the MapServer does not use the GML media type, then we
@@ -17,8 +16,7 @@ import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.MAPSERVER_G
 public class MapServerGetFeatureInfoErrorHandler implements ResponseErrorHandler {
     @Override
     public boolean hasError(ClientHttpResponse response) {
-        return !MediaType.parseMediaType(MAPSERVER_GML_VALUE)
-                         .isCompatibleWith(response.getHeaders().getContentType());
+        return !MAPSERVER_GML.isCompatibleWith(response.getHeaders().getContentType());
     }
 
     @Override

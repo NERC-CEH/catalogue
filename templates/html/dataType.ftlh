@@ -1,15 +1,15 @@
-<#import "skeleton.ftl" as skeleton>
+<#import "skeleton.ftlh" as skeleton>
 
-<@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)><#escape x as x?html?replace("\n", "<br>")>
+<@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
 
   <div id="metadata" class="datatype">
     <div class="container">
-      
+
      <#if permission.userCanEdit(id)>
       <div class="admin hidden-print">
         <div class="text-right">
           <div class="btn-group">
-            <a type="button" class="btn btn-default edit-control" href="#" data-document-type="${metadata.documentType}">Edit</a></button>
+            <a type="button" class="btn btn-default edit-control" href="#" data-document-type="${metadata.documentType}">Edit</a>
             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               <span class="caret"></span>
               <span class="sr-only">Toggle Dropdown</span>
@@ -56,7 +56,7 @@
                 ${schemaItem.type}
                 <#if schemaItem.format?? && schemaItem.format?has_content>
                   <span class="schema-format">(${schemaItem.format})</span>
-                </#if>          
+                </#if>
             </#if>
           </td>
           <td>
@@ -79,7 +79,7 @@
               <span class="nodata" />
             </#if>
           </td>
-        </tr>    
+        </tr>
         </#list>
         </tbody></table>
         </div>
@@ -115,5 +115,4 @@
       </#if>
     </div>
   </div>
-</#escape>
 </@skeleton.master>

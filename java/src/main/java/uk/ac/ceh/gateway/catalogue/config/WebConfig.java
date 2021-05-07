@@ -26,8 +26,15 @@ import uk.ac.ceh.components.userstore.springsecurity.ActiveUserHandlerMethodArgu
 import uk.ac.ceh.gateway.catalogue.converters.Object2TemplatedMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.TransparentProxyMessageConverter;
 import uk.ac.ceh.gateway.catalogue.datacite.DataciteResponse;
+import uk.ac.ceh.gateway.catalogue.ef.Activity;
+import uk.ac.ceh.gateway.catalogue.ef.Facility;
+import uk.ac.ceh.gateway.catalogue.ef.Network;
+import uk.ac.ceh.gateway.catalogue.ef.Programme;
+import uk.ac.ceh.gateway.catalogue.erammp.ErammpDatacube;
+import uk.ac.ceh.gateway.catalogue.erammp.ErammpModel;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.Citation;
+import uk.ac.ceh.gateway.catalogue.model.DataType;
 import uk.ac.ceh.gateway.catalogue.model.ErrorResponse;
 import uk.ac.ceh.gateway.catalogue.model.MaintenanceResponse;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
@@ -69,11 +76,18 @@ public class WebConfig implements WebMvcConfigurer {
         converters.add(0, new TransparentProxyMessageConverter(httpClient()));
 
         // After standard Spring message converters
+        converters.add(new Object2TemplatedMessageConverter<>(Activity.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(CehModel.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(CehModelApplication.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(Citation.class, freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter<>(DataType.class, freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter<>(ErammpModel.class, freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter<>(ErammpDatacube.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(ErrorResponse.class, freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter<>(Facility.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(MaintenanceResponse.class, freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter<>(Network.class, freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter<>(Programme.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(SearchResults.class, freemarkerConfiguration));
 
         if (log.isDebugEnabled()) {
@@ -118,16 +132,13 @@ public class WebConfig implements WebMvcConfigurer {
         log.info("configuring Content Negotiation");
 
         val mediaTypes = ImmutableMap.<String, MediaType>builder()
-            .put("html", MediaType.TEXT_HTML)
-            .put("json", MediaType.APPLICATION_JSON)
-            .put(BIBTEX_SHORT, MediaType.parseMediaType(BIBTEX_VALUE))
-            .put(CEH_MODEL_APPLICATION_SHORT, MediaType.parseMediaType(CEH_MODEL_APPLICATION_JSON_VALUE))
-            .put(CEH_MODEL_SHORT, MediaType.parseMediaType(CEH_MODEL_JSON_VALUE))
+
+
+
             .put(DATA_TYPE_SHORT, MediaType.parseMediaType(DATA_TYPE_JSON_VALUE))
             .put(EF_INSPIRE_XML_SHORT, MediaType.parseMediaType(EF_INSPIRE_XML_VALUE))
-            .put(ERAMMP_DATACUBE_SHORT, MediaType.parseMediaType(ERAMMP_DATACUBE_JSON_VALUE))
-            .put(ERAMMP_MODEL_SHORT, MediaType.parseMediaType(ERAMMP_MODEL_JSON_VALUE))
-            .put(GEMINI_SHORT, MediaType.parseMediaType(GEMINI_XML_VALUE))
+
+            .put(GEMINI_XML_SHORT, MediaType.parseMediaType(GEMINI_XML_VALUE))
             .put(OSDP_AGENT_SHORT, MediaType.parseMediaType(OSDP_AGENT_JSON_VALUE))
             .put(OSDP_DATASET_SHORT, MediaType.parseMediaType(OSDP_DATASET_JSON_VALUE))
             .put(OSDP_MODEL_SHORT, MediaType.parseMediaType(OSDP_MODEL_JSON_VALUE))
@@ -157,11 +168,20 @@ public class WebConfig implements WebMvcConfigurer {
 
         configurer
             .favorParameter(true)
-            .mediaType(BIBTEX_SHORT, MediaType.parseMediaType(BIBTEX_VALUE))
-            .mediaType(DATACITE_SHORT, MediaType.parseMediaType(DATACITE_XML_VALUE))
-            .mediaType(GEMINI_SHORT, MediaType.parseMediaType(GEMINI_XML_VALUE))
-            .mediaType(RESEARCH_INFO_SYSTEMS_SHORT, MediaType.parseMediaType(RESEARCH_INFO_SYSTEMS_VALUE))
-            .mediaType(RDF_SCHEMAORG_SHORT, MediaType.parseMediaType(RDF_SCHEMAORG_VALUE))
-            .mediaType(RDF_TTL_SHORT, MediaType.parseMediaType(RDF_TTL_VALUE));
+            .mediaType(BIBTEX_SHORT, BIBTEX)
+            .mediaType(CEH_MODEL_SHORT, CEH_MODEL_JSON)
+            .mediaType(CEH_MODEL_APPLICATION_SHORT, CEH_MODEL_APPLICATION_JSON)
+            .mediaType(DATACITE_SHORT, DATACITE_XML)
+            .mediaType(DATA_TYPE_SHORT, DATA_TYPE_JSON)
+            .mediaType(EF_INSPIRE_XML_SHORT, EF_INSPIRE_XML)
+            .mediaType(ERAMMP_DATACUBE_SHORT, ERAMMP_DATACUBE_JSON)
+            .mediaType(ERAMMP_MODEL_SHORT, ERAMMP_MODEL_JSON)
+            .mediaType(GEMINI_JSON_SHORT, GEMINI_JSON)
+            .mediaType(GEMINI_XML_SHORT, GEMINI_XML)
+            .mediaType("html", MediaType.TEXT_HTML)
+            .mediaType("json", MediaType.APPLICATION_JSON)
+            .mediaType(RDF_SCHEMAORG_SHORT, RDF_SCHEMAORG_JSON)
+            .mediaType(RDF_TTL_SHORT, RDF_TTL)
+            .mediaType(RESEARCH_INFO_SYSTEMS_SHORT, RESEARCH_INFO_SYSTEMS);
     }
 }

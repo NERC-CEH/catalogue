@@ -1,11 +1,10 @@
-<#import "../skeleton.ftl" as skeleton>
-<#import "/../../functions.tpl" as func>
+<#import "../skeleton.ftlh" as skeleton>
+<#import "../../functions.ftlh" as func>
 
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
-  <#escape x as x?html>
     <div id="metadata" class="metadata erammp-metadata">
       <div class="container">
-        <#include "_admin.ftl">
+        <#include "_admin.ftlh">
 
         <#if title?? && title?has_content>
           <div id="pageTitle">
@@ -21,7 +20,7 @@
             <@renderLinebreaks description/>
           </div>
         </#if>
-        
+
         <#if modelApproach?? && modelApproach?has_content>
             <@simplerow "Modelling approach">
               <@renderLinebreaks modelApproach/>
@@ -32,7 +31,7 @@
           <@simplerow "Coverage">
             <div id="studyarea-map">
               <#list boundingBoxes as extent>
-              <span content="${extent.wkt?html}" datatype="geo:wktLiteral"/>
+              <span content="${extent.wkt}" datatype="geo:wktLiteral"/>
               </#list>
             </div>
           </@simplerow>
@@ -41,11 +40,11 @@
         <#if contacts?? && contacts?has_content>
           <@simplerow "Contact${(contacts?size > 1)?then('s', '')}">
             <#list contacts as contact>
-              <#noescape>
-                <div class="responsibleParty">      
+              <#noautoesc>
+                <div class="responsibleParty">
                   ${func.displayContact(contact, true, true)}
                 </div>
-              </#noescape>
+              </#noautoesc>
             </#list>
           </@simplerow>
         </#if>
@@ -58,7 +57,7 @@
             <#else>
                ${keyword.value}
             </#if>
-            <#if keyword_has_next>, </#if>  
+            <#if keyword_has_next>, </#if>
            </#list>
           </@simplerow>
         </#if>
@@ -143,7 +142,6 @@
   <div id="footer">
       <small class="pull-right">Last updated ${metadataDateTime?datetime.iso?time?string['d MMMM yyyy, HH:mm']}&nbsp;&nbsp;</small>
   </div>
-  </#escape>
 </@skeleton.master>
 
 <#macro simplerow label>

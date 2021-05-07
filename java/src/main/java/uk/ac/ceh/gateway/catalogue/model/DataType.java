@@ -8,7 +8,6 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.springframework.http.MediaType;
-import uk.ac.ceh.gateway.catalogue.model.DataTypeSchema;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.gemini.adapters.LocalDateTimeDeserializer;
@@ -22,7 +21,7 @@ import java.util.List;
 @ToString(callSuper = true)
 @Accessors(chain = true)
 @ConvertUsing(
-    @Template(called="html/dataType.ftl", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
+    @Template(called="html/dataType.ftlh", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
 )
 public class DataType extends AbstractMetadataDocument {
     private final String type = "dataType";

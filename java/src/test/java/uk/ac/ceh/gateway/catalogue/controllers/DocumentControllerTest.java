@@ -6,6 +6,9 @@ import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -20,6 +23,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.StreamUtils;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
+import uk.ac.ceh.gateway.catalogue.ef.Activity;
+import uk.ac.ceh.gateway.catalogue.ef.Facility;
+import uk.ac.ceh.gateway.catalogue.ef.Metadata;
+import uk.ac.ceh.gateway.catalogue.ef.Network;
+import uk.ac.ceh.gateway.catalogue.erammp.ErammpDatacube;
+import uk.ac.ceh.gateway.catalogue.erammp.ErammpModel;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.imp.Model;
@@ -35,7 +44,9 @@ import uk.ac.ceh.gateway.catalogue.services.JenaLookupService;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -44,8 +55,11 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.http.MediaType.TEXT_HTML;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.*;
 import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.EIDC_PUBLISHER_USERNAME;
@@ -69,7 +83,7 @@ class DocumentControllerTest {
 
     private DocumentController controller;
     private final String linkedDocumentId = "0a6c7c4c-0515-40a8-b84e-7ffe622b2579";
-    private final String id = "M3tADATA_ID";
+    private final String id = "fe26bd48-0f81-4a37-8a28-58427b7e20bd";
     private final String catalogueKey = "eidc";
 
     @BeforeEach
@@ -80,48 +94,6 @@ class DocumentControllerTest {
     private void givenUserIsPermittedToView() {
         given(permissionService.toAccess(any(CatalogueUser.class), eq(id), eq("VIEW")))
             .willReturn(true);
-    }
-
-    @SneakyThrows
-    private void givenCehModelApplication() {
-        val model = new CehModelApplication();
-        model.setId(id);
-        model.setTitle("Test title");
-        model.setMetadata(MetadataInfo.builder().catalogue(catalogueKey).build());
-        given(documentRepository.read(id))
-            .willReturn(model);
-    }
-
-    @SneakyThrows
-    private void givenCehModel() {
-        val model = new CehModel();
-        model.setId(id);
-        model.setTitle("Test title");
-        model.setMetadata(MetadataInfo.builder().catalogue(catalogueKey).build());
-        given(documentRepository.read(id))
-            .willReturn(model);
-    }
-
-    @SneakyThrows
-    private void givenGeminiDocument() {
-        val gemini = new GeminiDocument();
-        gemini.setId(id);
-        val metadata = MetadataInfo.builder()
-            .catalogue(catalogueKey)
-            .state("public")
-            .build();
-        gemini.setMetadata(metadata);
-        gemini.setUri("https://example.com/" + id);
-        gemini.setTitle("Example Gemini Document");
-        gemini.setType("dataset");
-        val bbox = BoundingBox.builder()
-            .northBoundLatitude("59.456")
-            .eastBoundLongitude("2.574")
-            .southBoundLatitude("31.109")
-            .westBoundLongitude("-1.091")
-            .build();
-        gemini.setBoundingBoxes(Collections.singletonList(bbox));
-        given(documentRepository.read(id)).willReturn(gemini);
     }
 
     @SneakyThrows
@@ -162,11 +134,146 @@ class DocumentControllerTest {
     }
 
     @SneakyThrows
-    public String expectedResponse(String filename) {
+    private String expectedResponse(String filename) {
         return StreamUtils.copyToString(
             getClass().getResourceAsStream(filename),
             StandardCharsets.UTF_8
         );
+    }
+
+    @SneakyThrows
+    private void givenMetadataDocument(MetadataDocument doc) {
+        doc.setId(id);
+        doc.setTitle("Test title");
+        doc.setDescription("Some description");
+        doc.setUri("https://example.com/" + id);
+        doc.setMetadataDate(LocalDateTime.of(2021, 5, 12, 9, 30, 23));
+        doc.setMetadata(MetadataInfo.builder()
+            .catalogue(catalogueKey)
+            .state("public")
+            .build());
+        given(documentRepository.read(id))
+            .willReturn(doc);
+    }
+
+    @SuppressWarnings("unused")
+    private static Stream<Arguments> provideMetadataDocuments() {
+        val activity = new Activity();
+        activity.setEfMetadata(new Metadata());
+
+        val facility = new Facility();
+        facility.setEfMetadata(new Metadata());
+
+        val network = new Network();
+        network.setEfMetadata(new Metadata());
+
+        val programme = new Network();
+        programme.setEfMetadata(new Metadata());
+
+        val gemini = new GeminiDocument();
+        gemini.setType("dataset");
+        val bbox = BoundingBox.builder()
+            .northBoundLatitude("59.456")
+            .eastBoundLongitude("2.574")
+            .southBoundLatitude("31.109")
+            .westBoundLongitude("-1.091")
+            .build();
+        gemini.setBoundingBoxes(Collections.singletonList(bbox));
+
+        return Stream.of(
+            Arguments.of(activity, TEXT_HTML, "html", null),
+            Arguments.of(activity, APPLICATION_JSON, "json", null),
+            Arguments.of(activity, EF_INSPIRE_XML, EF_INSPIRE_XML_SHORT, null),
+            Arguments.of(new CehModel(), TEXT_HTML, "html", null),
+            Arguments.of(new CehModel(), CEH_MODEL_JSON, CEH_MODEL_SHORT, null),
+            Arguments.of(new CehModelApplication(), TEXT_HTML, "html", null),
+            Arguments.of(new CehModelApplication(), CEH_MODEL_APPLICATION_JSON, CEH_MODEL_APPLICATION_SHORT, null),
+            Arguments.of(new DataType(), TEXT_HTML, "html", null),
+            Arguments.of(new DataType(), DATA_TYPE_JSON, DATA_TYPE_SHORT, null),
+            Arguments.of(new ErammpModel(), TEXT_HTML, "html", null),
+            Arguments.of(new ErammpModel(), ERAMMP_MODEL_JSON, ERAMMP_MODEL_SHORT, null),
+            Arguments.of(new ErammpDatacube(), TEXT_HTML, "html", null),
+            Arguments.of(new ErammpDatacube(), ERAMMP_DATACUBE_JSON, ERAMMP_DATACUBE_SHORT, null),
+            Arguments.of(facility, TEXT_HTML, "html", null),
+            Arguments.of(facility, APPLICATION_JSON, "json", null),
+            Arguments.of(facility, EF_INSPIRE_XML, EF_INSPIRE_XML_SHORT, null),
+            Arguments.of(gemini, TEXT_HTML, "html", null),
+            Arguments.of(gemini, GEMINI_JSON, GEMINI_JSON_SHORT, "gemini.json"),
+            Arguments.of(gemini, GEMINI_XML, GEMINI_XML_SHORT,  "gemini.xml"),
+            Arguments.of(gemini, RDF_SCHEMAORG_JSON, RDF_SCHEMAORG_SHORT, "gemini-schema-org.json"),
+            Arguments.of(gemini, RDF_TTL, RDF_TTL_SHORT, "gemini.ttl"),
+            Arguments.of(network, TEXT_HTML, "html", null),
+            Arguments.of(network, EF_INSPIRE_XML, EF_INSPIRE_XML_SHORT, null),
+            Arguments.of(network, APPLICATION_JSON, "json", null),
+            Arguments.of(programme, TEXT_HTML, "html", null),
+            Arguments.of(programme, EF_INSPIRE_XML, EF_INSPIRE_XML_SHORT, null),
+            Arguments.of(programme, APPLICATION_JSON, "json", null)
+        );
+    }
+
+    @ParameterizedTest(name = "[{index}] GET as {1}, {3}, {0}")
+    @MethodSource("provideMetadataDocuments")
+    @SneakyThrows
+    void getMetadataDocumentAsMediaType(MetadataDocument doc, MediaType mediaType, String shortName, String filename) {
+        //given
+        givenUserIsPermittedToView();
+        givenMetadataDocument(doc);
+        givenCatalogue();
+        givenFreemarkerConfiguration();
+        givenCodeLookup();
+
+        //when
+        val result = mockMvc.perform(
+            get("/documents/{id}", id)
+                .accept(mediaType)
+        )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(mediaType));
+
+        if (filename == null) {
+            result.andDo(print());
+        } else {
+            if (mediaType.isCompatibleWith(APPLICATION_JSON)) {
+                result.andExpect(content().json(expectedResponse(filename)));
+            } else if (mediaType.isCompatibleWith(TEXT_HTML)) {
+                result.andExpect(content().string(expectedResponse(filename)));
+            } else if (mediaType.isCompatibleWith(MediaType.APPLICATION_XML)) {
+                result.andExpect(content().xml(expectedResponse(filename)));
+            }
+        }
+    }
+
+    @ParameterizedTest(name = "[{index}] GET using format {2}, {3}, {0}")
+    @MethodSource("provideMetadataDocuments")
+    @SneakyThrows
+    void getMetadataDocumentUsingFormatQueryParam(MetadataDocument doc, MediaType mediaType, String shortName, String filename) {
+        //given
+        givenUserIsPermittedToView();
+        givenMetadataDocument(doc);
+        givenCatalogue();
+        givenFreemarkerConfiguration();
+        givenCodeLookup();
+
+
+        //when
+        val result = mockMvc.perform(
+            get("/documents/{id}", id)
+                .queryParam("format", shortName)
+        )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(mediaType));
+
+        if (filename == null) {
+            result.andDo(print());
+        } else {
+            if (mediaType.isCompatibleWith(APPLICATION_JSON)) {
+                result.andExpect(content().json(expectedResponse(filename)));
+            } else if (mediaType.isCompatibleWith(TEXT_HTML)) {
+                result.andExpect(content().string(expectedResponse(filename)));
+            } else if (mediaType.isCompatibleWith(MediaType.APPLICATION_XML)) {
+                result.andExpect(content().xml(expectedResponse(filename)));
+            }
+        }
     }
 
     @Test
@@ -181,166 +288,9 @@ class DocumentControllerTest {
             get("/documents/upload")
         )
             .andExpect(status().isOk())
-            .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML));
+            .andExpect(content().contentTypeCompatibleWith(TEXT_HTML));
     }
 
-    @Test
-    @SneakyThrows
-    void getCehModelApplicationAsHtml() {
-        //given
-        givenUserIsPermittedToView();
-        givenCehModelApplication();
-        givenCatalogue();
-        givenFreemarkerConfiguration();
-
-        //when
-        mockMvc.perform(
-            get("/documents/{id}", id)
-                .accept(MediaType.TEXT_HTML)
-        )
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.TEXT_HTML));
-    }
-
-    @Test
-    @SneakyThrows
-    void getCehModelAsHtml() {
-        //given
-        givenUserIsPermittedToView();
-        givenCehModel();
-        givenCatalogue();
-        givenFreemarkerConfiguration();
-
-        //when
-        mockMvc.perform(
-            get("/documents/{id}", id)
-                .accept(MediaType.TEXT_HTML)
-        )
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.TEXT_HTML));
-    }
-
-    @Test
-    @SneakyThrows
-    void getGeminiDocumentAsHtml() {
-        //given
-        givenUserIsPermittedToView();
-        givenGeminiDocument();
-        givenFreemarkerConfiguration();
-        givenCatalogue();
-        givenCodeLookup();
-
-        //when
-        mockMvc.perform(
-            get("/documents/{id}", id)
-            .accept(MediaType.TEXT_HTML)
-        )
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.TEXT_HTML));
-    }
-
-    @Test
-    @SneakyThrows
-    void getGeminiDocumentAsJson() {
-        //given
-        givenUserIsPermittedToView();
-        givenGeminiDocument();
-
-        //when
-        mockMvc.perform(
-            get("/documents/{id}", id)
-                .accept(MediaType.APPLICATION_JSON)
-        )
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(content().json(expectedResponse("gemini.json")));
-    }
-
-    @Test
-    @SneakyThrows
-    void getGeminiDocumentAsJsonUsingQueryParam() {
-        //given
-        givenUserIsPermittedToView();
-        givenGeminiDocument();
-
-        //when
-        mockMvc.perform(
-            get("/documents/{id}", id)
-                .queryParam("format", "json")
-        )
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(content().json(expectedResponse("gemini.json")));
-    }
-
-    @Test
-    @SneakyThrows
-    void getGeminiDocumentAsSchemaOrgUsingAccept() {
-        //given
-        givenUserIsPermittedToView();
-        givenGeminiDocument();
-
-        //when
-        mockMvc.perform(
-            get("/documents/{id}", id)
-                .accept(RDF_SCHEMAORG_VALUE)
-        )
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(RDF_SCHEMAORG_VALUE))
-            .andExpect(content().json(expectedResponse("gemini-schema-org.json")));
-    }
-
-    @Test
-    @SneakyThrows
-    void getGeminiDocumentAsSchemaOrgUsingQueryParam() {
-        //given
-        givenUserIsPermittedToView();
-        givenGeminiDocument();
-
-        //when
-        mockMvc.perform(
-            get("/documents/{id}", id)
-                .queryParam("format", RDF_SCHEMAORG_SHORT)
-        )
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(RDF_SCHEMAORG_VALUE))
-            .andExpect(content().json(expectedResponse("gemini-schema-org.json")));
-    }
-
-    @Test
-    @SneakyThrows
-    void getGeminiDocumentAsRdfTurtleUsingQueryParam() {
-        //given
-        givenUserIsPermittedToView();
-        givenGeminiDocument();
-        givenFreemarkerConfiguration();
-
-        //when
-        mockMvc.perform(
-            get("/documents/{id}", id)
-                .queryParam("format", RDF_TTL_SHORT)
-        )
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(RDF_TTL_VALUE))
-            .andExpect(content().string(expectedResponse("gemini.ttl")));
-    }
-
-    @Test
-    @SneakyThrows
-    void getGeminiDocumentAsInspireXmlUsingQueryParam() {
-        //given
-        givenUserIsPermittedToView();
-        givenGeminiDocument();
-        givenFreemarkerConfiguration();
-
-        //when
-        mockMvc.perform(
-            get("/documents/{id}", id)
-                .queryParam("format", GEMINI_SHORT)
-        )
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(GEMINI_XML_VALUE));
-    }
 
     @Test
     @SneakyThrows
@@ -350,7 +300,7 @@ class DocumentControllerTest {
             get("/id/{id}.xml", id)
         )
             .andExpect(status().is3xxRedirection())
-            .andExpect(header().string("location", "https://localhost/documents/M3tADATA_ID.xml"));
+            .andExpect(header().string("location", "https://localhost/documents/" + id +".xml"));
     }
 
     @Test
@@ -363,7 +313,7 @@ class DocumentControllerTest {
             .queryParam("query", "string")
         )
             .andExpect(status().is3xxRedirection())
-            .andExpect(header().string("location", "https://localhost/documents/M3tADATA_ID?query=string"));
+            .andExpect(header().string("location", "https://localhost/documents/" + id + "?query=string"));
     }
 
     @Test
