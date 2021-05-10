@@ -1,6 +1,6 @@
-<#import "skeleton.ftl" as skeleton>
+<#import "skeleton.ftlh" as skeleton>
 <#assign canEdit = permission.userCanEdit(id)>
-<@skeleton.master title="Permissions" catalogue=catalogues.retrieve(catalogue)><#escape x as x?html>
+<@skeleton.master title="Permissions" catalogue=catalogues.retrieve(catalogue)>
   <div id="metadata" class="container permission">
     <h2>Permissions</h2>
     <div>
@@ -42,4 +42,4 @@
     </div>
   </div>
   </div>
-</#escape></@skeleton.master>
+</@skeleton.master>

@@ -93,6 +93,7 @@ public class WebConfig implements WebMvcConfigurer {
         converters.add(new Object2TemplatedMessageConverter<>(MonitoringFacility.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(MonitoringProgramme.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(Network.class, freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter<>(PermissionResource.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(Programme.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(Publication.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(Sample.class, freemarkerConfiguration));
