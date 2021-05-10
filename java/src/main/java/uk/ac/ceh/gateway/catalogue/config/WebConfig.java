@@ -56,7 +56,6 @@ import uk.ac.ceh.components.userstore.inmemory.InMemoryUserStore;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUserHandlerMethodArgumentResolver;
 import uk.ac.ceh.gateway.catalogue.converters.*;
 import uk.ac.ceh.gateway.catalogue.datacite.DataciteService;
-import uk.ac.ceh.gateway.catalogue.deims.DEIMSSolrQueryService;
 import uk.ac.ceh.gateway.catalogue.ef.*;
 import uk.ac.ceh.gateway.catalogue.erammp.ErammpDatacube;
 import uk.ac.ceh.gateway.catalogue.erammp.ErammpModel;
@@ -231,11 +230,6 @@ public class WebConfig implements WebMvcConfigurer {
     @Bean
     public SolrClient solrClient(){
         return new HttpSolrClient.Builder(solrServerUrl).build();
-    }
-
-    @Bean
-    public DEIMSSolrQueryService DeimsSOlrQueryService(){
-        return new DEIMSSolrQueryService(this.solrClient());
     }
 
     @Bean

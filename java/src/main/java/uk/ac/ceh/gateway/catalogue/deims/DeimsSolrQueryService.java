@@ -8,7 +8,6 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
-import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 
 import java.io.IOException;
 import java.util.List;
@@ -17,21 +16,21 @@ import java.util.List;
 @Slf4j
 @ToString
 @Service
-public class DEIMSSolrQueryService {
+public class DeimsSolrQueryService {
 
     private static final String DEIMS = "deims";
     private final SolrClient solrClient;
 
-    public DEIMSSolrQueryService(SolrClient solrClient) {
+    public DeimsSolrQueryService(SolrClient solrClient) {
         this.solrClient = solrClient;
     }
 
-    public List<DeimsSite> query(String value) throws SolrServerException {
+    public List<DeimsSolrIndex> query(String value) throws SolrServerException {
         try {
             SolrQuery query = new SolrQuery();
             query.set(DEIMS, value);
             QueryResponse response = solrClient.query(query);
-            return response.getBeans(DeimsSite.class);
+            return response.getBeans(DeimsSolrIndex.class);
 
         } catch (IOException | SolrServerException ex) {
             throw new SolrServerException(ex);

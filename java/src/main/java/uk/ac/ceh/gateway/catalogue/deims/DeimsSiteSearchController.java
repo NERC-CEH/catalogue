@@ -3,32 +3,32 @@ package uk.ac.ceh.gateway.catalogue.deims;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 
+@Profile("elter")
 @Controller
 @Slf4j
 @ToString
-@RequestMapping("deims")
-public class DEIMSSiteSearchController {
+public class DeimsSiteSearchController {
 
-    private DEIMSSolrQueryService DEIMSService;
+    private DeimsSolrQueryService DEIMSService;
 
-   // @Autowired
-    public DEIMSSiteSearchController(DEIMSSolrQueryService deimsService) {
+    public DeimsSiteSearchController(DeimsSolrQueryService deimsService) {
         this.DEIMSService = deimsService;
         log.info("Creating {}", this);
     }
 
-    @RequestMapping(value = "/query", method = RequestMethod.GET)
+    @GetMapping(value = "/deims")
     @ResponseBody
-    public List<DeimsSite> getSites(
-            @RequestParam(value = "query") String query) throws SolrServerException {
+    public List<DeimsSolrIndex> getSites(
+            @RequestParam(value = "query") String query
+    ) throws SolrServerException {
         return DEIMSService.query(query);
     }
 }

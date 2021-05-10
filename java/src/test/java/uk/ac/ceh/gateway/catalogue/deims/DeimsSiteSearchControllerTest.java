@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,7 +17,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.Mockito.when;
 
-class DEIMSSiteSearchControllerTest {
+class DeimsSiteSearchControllerTest {
 
     public static final String SITE_1 = "site1";
     public static final String SITE_2 = "site2";
@@ -26,32 +25,36 @@ class DEIMSSiteSearchControllerTest {
     private static final String DEIMS = "deims";
 
     @Mock
-    private DEIMSSolrQueryService DEIMSService;
+    private DeimsSolrQueryService DEIMSService;
 
     @InjectMocks
-    private DEIMSSiteSearchController controller;
+    private DeimsSiteSearchController controller;
 
     @BeforeEach
     public void init() throws IOException {
         MockitoAnnotations.initMocks(this);
-        controller = new DEIMSSiteSearchController(DEIMSService);
+        controller = new DeimsSiteSearchController(DEIMSService);
     }
 
     @Test
-    public void getSitesTest() throws DocumentIndexingException, SolrServerException {
+    public void getSitesTest() throws SolrServerException {
         //Given
-        List<DeimsSite> expected = new ArrayList<>();
+        List<DeimsSolrIndex> expected = new ArrayList<>();
         DeimsSite deimsSite1 = new DeimsSite();
-        deimsSite1.setTitle("site1");
+        deimsSite1.setTitle(SITE_1);
+        deimsSite1.setId(new DeimsSite.Id());
         DeimsSite deimsSite2 = new DeimsSite();
-        deimsSite2.setTitle("site2");
-        expected.add(deimsSite1);
-        expected.add(deimsSite2);
+        deimsSite2.setTitle(SITE_2);
+        deimsSite2.setId(new DeimsSite.Id());
+        DeimsSolrIndex deimsSolrIndex1 = new DeimsSolrIndex(deimsSite1);
+        DeimsSolrIndex deimsSolrIndex2 = new DeimsSolrIndex(deimsSite2);
+        expected.add(deimsSolrIndex1);
+        expected.add(deimsSolrIndex2);
 
         when(DEIMSService.query(QUERY)).thenReturn(expected);
 
         //When
-        List<DeimsSite> result = controller.getSites(QUERY);
+        List<DeimsSolrIndex> result = controller.getSites(QUERY);
 
         //Then
         assertThat(result.get(0).getTitle(), equalTo(SITE_1));

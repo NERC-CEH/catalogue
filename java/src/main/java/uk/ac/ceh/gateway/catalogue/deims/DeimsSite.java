@@ -18,7 +18,7 @@ class DeimsSite {
     }
 
     @Data
-    private static class Id {
+    static class Id {
 
         String prefix;
         String suffix;

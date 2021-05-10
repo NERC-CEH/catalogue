@@ -22,7 +22,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class DEIMSSolrQueryServiceTest {
+class DeimsSolrQueryServiceTest {
 
     public static final String SITE_1 = "site1";
     public static final String SITE_2 = "site2";
@@ -36,12 +36,12 @@ class DEIMSSolrQueryServiceTest {
     private QueryResponse queryResponse;
 
     @InjectMocks
-    private DEIMSSolrQueryService service;
+    private DeimsSolrQueryService service;
 
     @BeforeEach
     public void init() throws IOException {
         MockitoAnnotations.initMocks(this);
-        service = new DEIMSSolrQueryService(solrClient);
+        service = new DeimsSolrQueryService(solrClient);
     }
 
     @Test
@@ -51,20 +51,24 @@ class DEIMSSolrQueryServiceTest {
         SolrQuery solrQuery = new SolrQuery();
         solrQuery.set(DEIMS, QUERY);
 
-        List<DeimsSite> expected = new ArrayList<>();
+        List<DeimsSolrIndex> expected = new ArrayList<>();
         DeimsSite deimsSite1 = new DeimsSite();
-        deimsSite1.setTitle("site1");
+        deimsSite1.setTitle(SITE_1);
+        deimsSite1.setId(new DeimsSite.Id());
         DeimsSite deimsSite2 = new DeimsSite();
-        deimsSite2.setTitle("site2");
-        expected.add(deimsSite1);
-        expected.add(deimsSite2);
+        deimsSite2.setTitle(SITE_2);
+        deimsSite2.setId(new DeimsSite.Id());
+        DeimsSolrIndex deimsSolrIndex1 = new DeimsSolrIndex(deimsSite1);
+        DeimsSolrIndex deimsSolrIndex2 = new DeimsSolrIndex(deimsSite2);
+        expected.add(deimsSolrIndex1);
+        expected.add(deimsSolrIndex2);
 
         QueryResponse response = mock(QueryResponse.class);
         when(solrClient.query(any(SolrQuery.class))).thenReturn(response);
-        when(solrClient.query(solrQuery).getBeans(DeimsSite.class)).thenReturn(expected);
+        when(solrClient.query(solrQuery).getBeans(DeimsSolrIndex.class)).thenReturn(expected);
 
         //When
-        List<DeimsSite> result = service.query(QUERY);
+        List<DeimsSolrIndex> result = service.query(QUERY);
 
         //Then
         SolrQuery query = new SolrQuery();
