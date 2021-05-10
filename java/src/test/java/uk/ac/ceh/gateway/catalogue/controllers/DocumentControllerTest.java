@@ -31,7 +31,9 @@ import uk.ac.ceh.gateway.catalogue.erammp.ErammpDatacube;
 import uk.ac.ceh.gateway.catalogue.erammp.ErammpModel;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.imp.CaseStudy;
 import uk.ac.ceh.gateway.catalogue.imp.Model;
+import uk.ac.ceh.gateway.catalogue.imp.ModelApplication;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
@@ -45,6 +47,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.stream.Stream;
 
@@ -85,6 +88,8 @@ class DocumentControllerTest {
     private final String linkedDocumentId = "0a6c7c4c-0515-40a8-b84e-7ffe622b2579";
     private final String id = "fe26bd48-0f81-4a37-8a28-58427b7e20bd";
     private final String catalogueKey = "eidc";
+    public static final String HTML = "html";
+    public static final String JSON = "json";
 
     @BeforeEach
     void setup() {
@@ -164,12 +169,6 @@ class DocumentControllerTest {
         val facility = new Facility();
         facility.setEfMetadata(new Metadata());
 
-        val network = new Network();
-        network.setEfMetadata(new Metadata());
-
-        val programme = new Network();
-        programme.setEfMetadata(new Metadata());
-
         val gemini = new GeminiDocument();
         gemini.setType("dataset");
         val bbox = BoundingBox.builder()
@@ -180,34 +179,63 @@ class DocumentControllerTest {
             .build();
         gemini.setBoundingBoxes(Collections.singletonList(bbox));
 
+        val impCasestudy = new CaseStudy();
+        impCasestudy.setType("dataset");
+
+        val impModel = new Model();
+        impModel.setType("dataset");
+
+        val impModelApplication = new ModelApplication();
+        impModelApplication.setType("dataset");
+
+        val link = LinkDocument.builder()
+            .linkedDocumentId("cbde2ff1-cae3-4189-9489-ef1f4435fadc")
+            .original(gemini)
+            .additionalKeywords(new ArrayList<>())
+            .build();
+
+        val network = new Network();
+        network.setEfMetadata(new Metadata());
+
+        val programme = new Network();
+        programme.setEfMetadata(new Metadata());
+
         return Stream.of(
-            Arguments.of(activity, TEXT_HTML, "html", null),
-            Arguments.of(activity, APPLICATION_JSON, "json", null),
+            Arguments.of(activity, TEXT_HTML, HTML, null),
+            Arguments.of(activity, APPLICATION_JSON, JSON, null),
             Arguments.of(activity, EF_INSPIRE_XML, EF_INSPIRE_XML_SHORT, null),
-            Arguments.of(new CehModel(), TEXT_HTML, "html", null),
+            Arguments.of(new CehModel(), TEXT_HTML, HTML, null),
             Arguments.of(new CehModel(), CEH_MODEL_JSON, CEH_MODEL_SHORT, null),
-            Arguments.of(new CehModelApplication(), TEXT_HTML, "html", null),
+            Arguments.of(new CehModelApplication(), TEXT_HTML, HTML, null),
             Arguments.of(new CehModelApplication(), CEH_MODEL_APPLICATION_JSON, CEH_MODEL_APPLICATION_SHORT, null),
-            Arguments.of(new DataType(), TEXT_HTML, "html", null),
+            Arguments.of(new DataType(), TEXT_HTML, HTML, null),
             Arguments.of(new DataType(), DATA_TYPE_JSON, DATA_TYPE_SHORT, null),
-            Arguments.of(new ErammpModel(), TEXT_HTML, "html", null),
+            Arguments.of(new ErammpModel(), TEXT_HTML, HTML, null),
             Arguments.of(new ErammpModel(), ERAMMP_MODEL_JSON, ERAMMP_MODEL_SHORT, null),
-            Arguments.of(new ErammpDatacube(), TEXT_HTML, "html", null),
+            Arguments.of(new ErammpDatacube(), TEXT_HTML, HTML, null),
             Arguments.of(new ErammpDatacube(), ERAMMP_DATACUBE_JSON, ERAMMP_DATACUBE_SHORT, null),
-            Arguments.of(facility, TEXT_HTML, "html", null),
-            Arguments.of(facility, APPLICATION_JSON, "json", null),
+            Arguments.of(facility, TEXT_HTML, HTML, null),
+            Arguments.of(facility, APPLICATION_JSON, JSON, null),
             Arguments.of(facility, EF_INSPIRE_XML, EF_INSPIRE_XML_SHORT, null),
-            Arguments.of(gemini, TEXT_HTML, "html", null),
+            Arguments.of(gemini, TEXT_HTML, HTML, null),
             Arguments.of(gemini, GEMINI_JSON, GEMINI_JSON_SHORT, "gemini.json"),
             Arguments.of(gemini, GEMINI_XML, GEMINI_XML_SHORT,  "gemini.xml"),
             Arguments.of(gemini, RDF_SCHEMAORG_JSON, RDF_SCHEMAORG_SHORT, "gemini-schema-org.json"),
             Arguments.of(gemini, RDF_TTL, RDF_TTL_SHORT, "gemini.ttl"),
-            Arguments.of(network, TEXT_HTML, "html", null),
+            Arguments.of(impCasestudy, TEXT_HTML, HTML, null),
+            Arguments.of(impCasestudy, APPLICATION_JSON, JSON, null),
+            Arguments.of(impModel, TEXT_HTML, HTML, null),
+            Arguments.of(impModel, APPLICATION_JSON, JSON, null),
+            Arguments.of(impModelApplication, TEXT_HTML, HTML, null),
+            Arguments.of(impModelApplication, APPLICATION_JSON, JSON, null),
+            Arguments.of(link, TEXT_HTML, HTML, null),
+            Arguments.of(link, APPLICATION_JSON, JSON, null),
+            Arguments.of(network, TEXT_HTML, HTML, null),
             Arguments.of(network, EF_INSPIRE_XML, EF_INSPIRE_XML_SHORT, null),
-            Arguments.of(network, APPLICATION_JSON, "json", null),
-            Arguments.of(programme, TEXT_HTML, "html", null),
+            Arguments.of(network, APPLICATION_JSON, JSON, null),
+            Arguments.of(programme, TEXT_HTML, HTML, null),
             Arguments.of(programme, EF_INSPIRE_XML, EF_INSPIRE_XML_SHORT, null),
-            Arguments.of(programme, APPLICATION_JSON, "json", null)
+            Arguments.of(programme, APPLICATION_JSON, JSON, null)
         );
     }
 

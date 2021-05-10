@@ -33,10 +33,10 @@ import uk.ac.ceh.gateway.catalogue.ef.Programme;
 import uk.ac.ceh.gateway.catalogue.erammp.ErammpDatacube;
 import uk.ac.ceh.gateway.catalogue.erammp.ErammpModel;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.model.Citation;
-import uk.ac.ceh.gateway.catalogue.model.DataType;
-import uk.ac.ceh.gateway.catalogue.model.ErrorResponse;
-import uk.ac.ceh.gateway.catalogue.model.MaintenanceResponse;
+import uk.ac.ceh.gateway.catalogue.imp.CaseStudy;
+import uk.ac.ceh.gateway.catalogue.imp.Model;
+import uk.ac.ceh.gateway.catalogue.imp.ModelApplication;
+import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
@@ -77,6 +77,7 @@ public class WebConfig implements WebMvcConfigurer {
 
         // After standard Spring message converters
         converters.add(new Object2TemplatedMessageConverter<>(Activity.class, freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter<>(CaseStudy.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(CehModel.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(CehModelApplication.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(Citation.class, freemarkerConfiguration));
@@ -85,7 +86,10 @@ public class WebConfig implements WebMvcConfigurer {
         converters.add(new Object2TemplatedMessageConverter<>(ErammpDatacube.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(ErrorResponse.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(Facility.class, freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter<>(LinkDocument.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(MaintenanceResponse.class, freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter<>(Model.class, freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter<>(ModelApplication.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(Network.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(Programme.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(SearchResults.class, freemarkerConfiguration));

@@ -1,15 +1,14 @@
-<#import "blocks.ftl" as blocks>
-<#import "skeleton.ftl" as skeleton>
-<#import "../underscore.tpl" as _>
+<#import "blocks.ftlh" as blocks>
+<#import "skeleton.ftlh" as skeleton>
+<#import "../underscore.ftlh" as _>
 
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
-<#escape x as x?html>
   <div id="metadata" class="container">
     <@blocks.title title type />
     <@blocks.description description!"" />
     <div class="row">
       <div class="col-sm-4 col-sm-push-8">
-        <#include "imp/_admin.ftl">
+        <#include "imp/_admin.ftlh">
       </div>
       <div class="col-sm-8 col-sm-pull-4">
         <dl class="dl-horizontal">
@@ -26,5 +25,4 @@
       </div>
     </div>
   </div>
-</#escape>
 </@skeleton.master>
