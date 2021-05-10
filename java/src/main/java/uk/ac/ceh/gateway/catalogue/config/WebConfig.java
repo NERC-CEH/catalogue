@@ -37,6 +37,7 @@ import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
 import uk.ac.ceh.gateway.catalogue.osdp.*;
+import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
 
@@ -99,8 +100,7 @@ public class WebConfig implements WebMvcConfigurer {
         converters.add(new Object2TemplatedMessageConverter<>(Sample.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(SampleArchive.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(SearchResults.class, freemarkerConfiguration));
-
-
+        converters.add(new Object2TemplatedMessageConverter<>(StateResource.class, freemarkerConfiguration));
 
         if (log.isDebugEnabled()) {
             log.debug("After our message converters added");

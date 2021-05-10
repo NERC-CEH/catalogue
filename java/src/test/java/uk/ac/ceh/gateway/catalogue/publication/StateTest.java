@@ -12,13 +12,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class StateTest {
     private final State draft;
     private final PublishingRole editor;
-    
+
     public StateTest() {
         //Given
         draft = new State("draft", "Draft");
         editor = new PublishingRole("ROLE_EDITOR");
     }
-    
+
     @Test
     public void cannotAddSelfToTransition() {
         Assertions.assertThrows(PublicationException.class, () -> {
@@ -29,14 +29,14 @@ public class StateTest {
             draft.addTransitions(editor, ImmutableSet.of(toSelf));
         });
     }
-    
+
     @Test
     public void unknownRoleHasNoTransitions() {
         //When
-        final Set<Transition> avaliableTransitions = draft.avaliableTransitions(ImmutableSet.of(new PublishingRole("ROLE_UNKNOWN")));
-        
+        final Set<Transition> avaliableTransitions = draft.availableTransitions(ImmutableSet.of(new PublishingRole("ROLE_UNKNOWN")));
+
         //Then
         assertThat("Should be no available Transitions", avaliableTransitions.size(), equalTo(0));
     }
-    
+
 }
