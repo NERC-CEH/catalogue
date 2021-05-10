@@ -23,10 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.StreamUtils;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
-import uk.ac.ceh.gateway.catalogue.ef.Activity;
-import uk.ac.ceh.gateway.catalogue.ef.Facility;
-import uk.ac.ceh.gateway.catalogue.ef.Metadata;
-import uk.ac.ceh.gateway.catalogue.ef.Network;
+import uk.ac.ceh.gateway.catalogue.ef.*;
 import uk.ac.ceh.gateway.catalogue.erammp.ErammpDatacube;
 import uk.ac.ceh.gateway.catalogue.erammp.ErammpModel;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
@@ -37,8 +34,10 @@ import uk.ac.ceh.gateway.catalogue.imp.ModelApplication;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
+import uk.ac.ceh.gateway.catalogue.osdp.*;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
 import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.JenaLookupService;
@@ -197,17 +196,21 @@ class DocumentControllerTest {
         val network = new Network();
         network.setEfMetadata(new Metadata());
 
-        val programme = new Network();
+        val programme = new Programme();
         programme.setEfMetadata(new Metadata());
 
         return Stream.of(
             Arguments.of(activity, TEXT_HTML, HTML, null),
             Arguments.of(activity, APPLICATION_JSON, JSON, null),
             Arguments.of(activity, EF_INSPIRE_XML, EF_INSPIRE_XML_SHORT, null),
+            Arguments.of(new Agent(), TEXT_HTML, HTML, null),
+            Arguments.of(new Agent(), APPLICATION_JSON, JSON, null),
             Arguments.of(new CehModel(), TEXT_HTML, HTML, null),
             Arguments.of(new CehModel(), CEH_MODEL_JSON, CEH_MODEL_SHORT, null),
             Arguments.of(new CehModelApplication(), TEXT_HTML, HTML, null),
             Arguments.of(new CehModelApplication(), CEH_MODEL_APPLICATION_JSON, CEH_MODEL_APPLICATION_SHORT, null),
+            Arguments.of(new Dataset(), TEXT_HTML, HTML, null),
+            Arguments.of(new Dataset(), APPLICATION_JSON, JSON, null),
             Arguments.of(new DataType(), TEXT_HTML, HTML, null),
             Arguments.of(new DataType(), DATA_TYPE_JSON, DATA_TYPE_SHORT, null),
             Arguments.of(new ErammpModel(), TEXT_HTML, HTML, null),
@@ -230,12 +233,26 @@ class DocumentControllerTest {
             Arguments.of(impModelApplication, APPLICATION_JSON, JSON, null),
             Arguments.of(link, TEXT_HTML, HTML, null),
             Arguments.of(link, APPLICATION_JSON, JSON, null),
+            Arguments.of(new uk.ac.ceh.gateway.catalogue.osdp.Model(), TEXT_HTML, HTML, null),
+            Arguments.of(new uk.ac.ceh.gateway.catalogue.osdp.Model(), APPLICATION_JSON, JSON, null),
+            Arguments.of(new MonitoringActivity(), TEXT_HTML, HTML, null),
+            Arguments.of(new MonitoringActivity(), APPLICATION_JSON, JSON, null),
+            Arguments.of(new MonitoringFacility(), TEXT_HTML, HTML, null),
+            Arguments.of(new MonitoringFacility(), APPLICATION_JSON, JSON, null),
+            Arguments.of(new MonitoringProgramme(), TEXT_HTML, HTML, null),
+            Arguments.of(new MonitoringProgramme(), APPLICATION_JSON, JSON, null),
             Arguments.of(network, TEXT_HTML, HTML, null),
             Arguments.of(network, EF_INSPIRE_XML, EF_INSPIRE_XML_SHORT, null),
             Arguments.of(network, APPLICATION_JSON, JSON, null),
             Arguments.of(programme, TEXT_HTML, HTML, null),
             Arguments.of(programme, EF_INSPIRE_XML, EF_INSPIRE_XML_SHORT, null),
-            Arguments.of(programme, APPLICATION_JSON, JSON, null)
+            Arguments.of(programme, APPLICATION_JSON, JSON, null),
+            Arguments.of(new Publication(), TEXT_HTML, HTML, null),
+            Arguments.of(new Publication(), APPLICATION_JSON, JSON, null),
+            Arguments.of(new Sample(), TEXT_HTML, HTML, null),
+            Arguments.of(new Sample(), APPLICATION_JSON, JSON, null),
+            Arguments.of(new SampleArchive(), TEXT_HTML, HTML, null),
+            Arguments.of(new SampleArchive(), APPLICATION_JSON, JSON, null)
         );
     }
 

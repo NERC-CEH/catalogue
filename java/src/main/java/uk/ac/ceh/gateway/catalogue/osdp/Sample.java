@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ConvertUsing({
-    @Template(called="html/osdp/sample.ftl", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
+    @Template(called="html/osdp/sample.ftlh", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
 })
 public class Sample extends ResearchArtifact implements WellKnownText {
     private String medium, geometry;

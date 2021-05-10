@@ -1,5 +1,5 @@
-<#import "osdp.ftl" as o>
-<#import "../blocks.ftl" as b>
+<#import "osdp.ftlh" as o>
+<#import "../blocks.ftlh" as b>
 
 <@o.researchArtifact>
   <#if format?? && format?has_content>
@@ -11,7 +11,7 @@
   <#if parametersMeasured?? && parametersMeasured?has_content>
     <@b.key "Parameters Measured" "Parameters measured in dataset">
       <#list parametersMeasured as parameter>
-        <@o.parametersMeasured parameter /> 
+        <@o.parametersMeasured parameter />
       </#list>
     </@b.key>
   </#if>

@@ -1,11 +1,11 @@
-<#import "osdp.ftl" as o>
-<#import "../blocks.ftl" as b>
+<#import "osdp.ftlh" as o>
+<#import "../blocks.ftlh" as b>
 
 <@o.base>
   <#if parametersMeasured?? && parametersMeasured?has_content>
     <@b.key "Parameters Measured" "Parameters measured in Monitoring Activity">
       <#list parametersMeasured as parameter>
-        <@o.parametersMeasured parameter /> 
+        <@o.parametersMeasured parameter />
       </#list>
     </@b.key>
   </#if>

@@ -1,6 +1,6 @@
-<#import "../skeleton.ftl" as skeleton>
-<#import "../blocks.ftl" as b>
-<#import "/../../functions.tpl" as func>
+<#import "../skeleton.ftlh" as skeleton>
+<#import "../blocks.ftlh" as b>
+<#import "../../functions.ftlh" as func>
 
 <#if onlineResources?? && onlineResources?has_content>
   <#assign
@@ -12,10 +12,10 @@
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
   <@b.metadataContainer "sample-archive">
     <@b.admin />
-    
+
     <section>
       <#if title?? && title?has_content><h1>${title}</h1></#if>
-      
+
       <#if image?? && image?has_content>
         <#if image?first.url?matches("^.+(jpg|jpeg|gif|png)$")>
           <img src="${image?first.url}" alt="${image?first.name}" class="browseGraphic" />
@@ -29,7 +29,7 @@
       <#if archiveLocations?? && archiveLocations?has_content>
         <@key "Location${(archiveLocations?size > 1)?then('s', '')}">
           <#list archiveLocations as contact>
-            <div class="responsibleParty">      
+            <div class="responsibleParty">
               ${func.displayContact(contact, true, true)}
             </div>
           </#list>
@@ -75,7 +75,7 @@
         <div id="section-extent">
           <div id="studyarea-map">
           <#list boundingBoxes as extent>
-              <span content="${extent.wkt?html}" datatype="geo:wktLiteral"/>
+              <span content="${extent.wkt}" datatype="geo:wktLiteral"/>
           </#list>
           </div>
         </div>
@@ -107,7 +107,7 @@
     <#if archiveContacts?? && archiveContacts?has_content>
       <@key "For further information about the ${title}, please contact">
         <#list archiveContacts as contact>
-          <div class="responsibleParty">      
+          <div class="responsibleParty">
             ${func.displayContact(contact, true, true)}
           </div>
         </#list>
@@ -120,13 +120,13 @@
           <div><a href="${onlineResource.url}" target="_blank" rel="noopener noreferrer">${onlineResource.name}</a></div>
         </#list>
       </@key>
-    </#if> 
+    </#if>
 
     <section class="record-metadata">
       <#if metadataContacts?? && metadataContacts?has_content>
         <@key "Author of this record">
           <#list metadataContacts as contact>
-            <div class="responsibleParty">      
+            <div class="responsibleParty">
               ${func.displayContact(contact, true, true)}
             </div>
           </#list>
@@ -141,7 +141,7 @@
           <a href="https://catalogue.ceh.ac.uk/documents/${id}">https://catalogue.ceh.ac.uk/id/${id}</a>
       </@key>
     </section>
-  
+
   </@b.metadataContainer>
 </@skeleton.master>
 
@@ -162,7 +162,7 @@ Macros
   </@basicRow>
 </#macro>
 
-<#macro tags tags>  
+<#macro tags tags>
   <#list tags as tag>
     <#if tag.uri?? && tag.uri?has_content>
       <a href="${tag.uri}">

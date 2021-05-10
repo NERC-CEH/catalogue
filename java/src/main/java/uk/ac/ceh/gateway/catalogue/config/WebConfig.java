@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
-import com.google.common.collect.ImmutableMap;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -16,8 +15,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.web.accept.FixedContentNegotiationStrategy;
-import org.springframework.web.accept.HeaderContentNegotiationStrategy;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -39,11 +36,10 @@ import uk.ac.ceh.gateway.catalogue.imp.ModelApplication;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
+import uk.ac.ceh.gateway.catalogue.osdp.*;
+import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
-import uk.ac.ceh.gateway.catalogue.util.ForgivingParameterContentNegotiationStrategy;
-import uk.ac.ceh.gateway.catalogue.util.WmsFormatContentNegotiationStrategy;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.*;
@@ -77,10 +73,12 @@ public class WebConfig implements WebMvcConfigurer {
 
         // After standard Spring message converters
         converters.add(new Object2TemplatedMessageConverter<>(Activity.class, freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter<>(Agent.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(CaseStudy.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(CehModel.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(CehModelApplication.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(Citation.class, freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter<>(Dataset.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(DataType.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(ErammpModel.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(ErammpDatacube.class, freemarkerConfiguration));
@@ -89,10 +87,19 @@ public class WebConfig implements WebMvcConfigurer {
         converters.add(new Object2TemplatedMessageConverter<>(LinkDocument.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(MaintenanceResponse.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(Model.class, freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter<>(uk.ac.ceh.gateway.catalogue.osdp.Model.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(ModelApplication.class, freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter<>(MonitoringActivity.class, freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter<>(MonitoringFacility.class, freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter<>(MonitoringProgramme.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(Network.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(Programme.class, freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter<>(Publication.class, freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter<>(Sample.class, freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter<>(SampleArchive.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(SearchResults.class, freemarkerConfiguration));
+
+
 
         if (log.isDebugEnabled()) {
             log.debug("After our message converters added");
@@ -135,40 +142,17 @@ public class WebConfig implements WebMvcConfigurer {
     public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
         log.info("configuring Content Negotiation");
 
-        val mediaTypes = ImmutableMap.<String, MediaType>builder()
-
-
-
-            .put(DATA_TYPE_SHORT, MediaType.parseMediaType(DATA_TYPE_JSON_VALUE))
-            .put(EF_INSPIRE_XML_SHORT, MediaType.parseMediaType(EF_INSPIRE_XML_VALUE))
-
-            .put(GEMINI_XML_SHORT, MediaType.parseMediaType(GEMINI_XML_VALUE))
-            .put(OSDP_AGENT_SHORT, MediaType.parseMediaType(OSDP_AGENT_JSON_VALUE))
-            .put(OSDP_DATASET_SHORT, MediaType.parseMediaType(OSDP_DATASET_JSON_VALUE))
-            .put(OSDP_MODEL_SHORT, MediaType.parseMediaType(OSDP_MODEL_JSON_VALUE))
-            .put(OSDP_MONITORING_ACTIVITY_SHORT, MediaType.parseMediaType(OSDP_MONITORING_ACTIVITY_JSON_VALUE))
-            .put(OSDP_MONITORING_FACILITY_SHORT, MediaType.parseMediaType(OSDP_MONITORING_FACILITY_JSON_VALUE))
-            .put(OSDP_MONITORING_PROGRAMME_SHORT, MediaType.parseMediaType(OSDP_MONITORING_PROGRAMME_JSON_VALUE))
-            .put(OSDP_PUBLICATION_SHORT, MediaType.parseMediaType(OSDP_PUBLICATION_JSON_VALUE))
-            .put(OSDP_SAMPLE_SHORT, MediaType.parseMediaType(OSDP_SAMPLE_JSON_VALUE))
-            .put(RESEARCH_INFO_SYSTEMS_SHORT, MediaType.parseMediaType(RESEARCH_INFO_SYSTEMS_VALUE))
-            .put(RDF_SCHEMAORG_SHORT, MediaType.parseMediaType(RDF_SCHEMAORG_VALUE))
-            .put(RDF_TTL_SHORT, MediaType.parseMediaType(RDF_TTL_VALUE))
-            .put(SAMPLE_ARCHIVE_SHORT, MediaType.parseMediaType(SAMPLE_ARCHIVE_JSON_VALUE))
-            .put(UPLOAD_DOCUMENT_SHORT, MediaType.parseMediaType(UPLOAD_DOCUMENT_JSON_VALUE))
-            .build();
-
-        val forgivingParameterStrategy = new ForgivingParameterContentNegotiationStrategy(mediaTypes);
-        val wmsStrategy = new WmsFormatContentNegotiationStrategy("INFO_FORMAT");
-        val headerStrategy = new HeaderContentNegotiationStrategy();
-        val fixedStrategy = new FixedContentNegotiationStrategy(MediaType.TEXT_HTML);
-
-        val strategies = Arrays.asList(
-                forgivingParameterStrategy,
-                wmsStrategy,
-                headerStrategy,
-                fixedStrategy
-        );
+//        val forgivingParameterStrategy = new ForgivingParameterContentNegotiationStrategy(mediaTypes);
+//        val wmsStrategy = new WmsFormatContentNegotiationStrategy("INFO_FORMAT");
+//        val headerStrategy = new HeaderContentNegotiationStrategy();
+//        val fixedStrategy = new FixedContentNegotiationStrategy(MediaType.TEXT_HTML);
+//
+//        val strategies = Arrays.asList(
+//                forgivingParameterStrategy,
+//                wmsStrategy,
+//                headerStrategy,
+//                fixedStrategy
+//        );
 
         configurer
             .favorParameter(true)
@@ -184,8 +168,19 @@ public class WebConfig implements WebMvcConfigurer {
             .mediaType(GEMINI_XML_SHORT, GEMINI_XML)
             .mediaType("html", MediaType.TEXT_HTML)
             .mediaType("json", MediaType.APPLICATION_JSON)
+            .mediaType(LINKED_SHORT, LINKED_JSON)
+            .mediaType(MODEL_SHORT, MODEL_JSON)
+            .mediaType(OSDP_AGENT_SHORT, OSDP_AGENT_JSON)
+            .mediaType(OSDP_DATASET_SHORT, OSDP_DATASET_JSON)
+            .mediaType(OSDP_MODEL_SHORT, OSDP_MODEL_JSON)
+            .mediaType(OSDP_MONITORING_ACTIVITY_SHORT, OSDP_MONITORING_ACTIVITY_JSON)
+            .mediaType(OSDP_MONITORING_FACILITY_SHORT, OSDP_MONITORING_FACILITY_JSON)
+            .mediaType(OSDP_MONITORING_PROGRAMME_SHORT, OSDP_MONITORING_PROGRAMME_JSON)
+            .mediaType(OSDP_PUBLICATION_SHORT, OSDP_PUBLICATION_JSON)
+            .mediaType(OSDP_SAMPLE_SHORT, OSDP_SAMPLE_JSON)
             .mediaType(RDF_SCHEMAORG_SHORT, RDF_SCHEMAORG_JSON)
             .mediaType(RDF_TTL_SHORT, RDF_TTL)
-            .mediaType(RESEARCH_INFO_SYSTEMS_SHORT, RESEARCH_INFO_SYSTEMS);
+            .mediaType(RESEARCH_INFO_SYSTEMS_SHORT, RESEARCH_INFO_SYSTEMS)
+            .mediaType(SAMPLE_ARCHIVE_SHORT, SAMPLE_ARCHIVE_JSON);
     }
 }

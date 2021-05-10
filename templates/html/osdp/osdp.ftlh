@@ -1,10 +1,10 @@
-<#import "../skeleton.ftl" as skeleton>
-<#import "../blocks.ftl" as b>
+<#import "../skeleton.ftlh" as skeleton>
+<#import "../blocks.ftlh" as b>
 <#--
 OSDP base template
 -->
 <#macro base>
-  <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)><#escape x as x?html>
+  <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
       <@b.metadataContainer "ceh-model">
         <div class="row"><@b.admin /></div>
         <#if title?? && title?has_content>
@@ -26,12 +26,12 @@ OSDP base template
         <#if resourceIdentifiers?? && resourceIdentifiers?has_content>
           <@b.key "Identifiers" "">
             <#list resourceIdentifiers as resourceIdentifier>
-              <@identifier resourceIdentifier /> 
+              <@identifier resourceIdentifier />
             </#list>
           </@b.key>
         </#if>
       </@b.metadataContainer>
-  </#escape></@skeleton.master>
+  </@skeleton.master>
 </#macro>
 
 <#--
@@ -47,7 +47,7 @@ OSDP Research Artifact base template
     </#if>
     <#if temporalExtent?? && temporalExtent?has_content>
       <@b.key "Temporal Extent" "Temporal extent of artifact">
-          <@o.temporalExt temporalExtent /> 
+          <@o.temporalExt temporalExtent />
       </@b.key>
     </#if>
     <#nested>
@@ -155,7 +155,7 @@ Temporal Extent
   <#if links?has_content>
     <@b.key description "">
       <#list links as link>
-        <@b.blockUrl link /> 
+        <@b.blockUrl link />
       </#list>
     </@b.key>
   </#if>
@@ -166,7 +166,7 @@ Temporal Extent
   <#if links?has_content>
     <@b.key description  "">
       <#list links as link>
-        <@b.blockUrl link /> 
+        <@b.blockUrl link />
       </#list>
     </@b.key>
   </#if>
@@ -174,13 +174,13 @@ Temporal Extent
 
 <#macro boundingBox boundingBox>
   <div id="studyarea-map">
-      <span content="${boundingBox.wkt?html}" datatype="geo:wktLiteral"/>
+      <span content="${boundingBox.wkt}" datatype="geo:wktLiteral"/>
   </div>
 </#macro>
 
 <#macro geometry geometry>
   <div id="geometry-map">
-      <span content="${geometry?html}" datatype="geo:wktLiteral"/>
+      <span content="${geometry}" datatype="geo:wktLiteral"/>
   </div>
 </#macro>
 

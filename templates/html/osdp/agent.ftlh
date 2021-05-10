@@ -1,5 +1,5 @@
-<#import "../blocks.ftl" as b>
-<#import "osdp.ftl" as o>
+<#import "../blocks.ftlh" as b>
+<#import "osdp.ftlh" as o>
 
 <@o.base>
   <#if address?? && address?has_content>

@@ -1,10 +1,10 @@
-<#import "osdp.ftl" as o>
-<#import "../blocks.ftl" as b>
+<#import "osdp.ftlh" as o>
+<#import "../blocks.ftlh" as b>
 
 <@o.base>
     <#if temporalExtent?? && temporalExtent?has_content>
       <@b.key "Temporal Extent" "Temporal extent of Monitoring Programme">
-          <@o.temporalExt temporalExtent /> 
+          <@o.temporalExt temporalExtent />
       </@b.key>
     </#if>
     <#if boundingBox?? && boundingBox?has_content>

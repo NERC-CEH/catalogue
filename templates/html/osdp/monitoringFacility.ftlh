@@ -1,5 +1,5 @@
-<#import "osdp.ftl" as o>
-<#import "../blocks.ftl" as b>
+<#import "osdp.ftlh" as o>
+<#import "../blocks.ftlh" as b>
 
 <@o.base>
   <#if facilityType?? && facilityType?has_content>
