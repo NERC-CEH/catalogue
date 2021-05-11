@@ -32,13 +32,13 @@ public class CatalogueController {
         log.info("Creating {}", this);
     }
 
-    @RequestMapping(value = "catalogues", method = RequestMethod.GET)
+    @GetMapping("catalogues")
     public  HttpEntity<List<Catalogue>> catalogues(
         @RequestParam(value = "catalogue", required = false) String catalogue,
         @RequestParam(value = "identifier", required = false) String identifier
     ) {
         List<Catalogue> catalogues = new ArrayList<>(catalogueService.retrieveAll());
-        
+
         try {
             if(catalogue != null) {
                 catalogues.remove(catalogueService.retrieve(catalogue));
@@ -58,7 +58,7 @@ public class CatalogueController {
     }
 
     @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
-    @RequestMapping(value = "documents/{file}/catalogue", method = RequestMethod.GET)
+    @GetMapping("documents/{file}/catalogue")
     public HttpEntity<CatalogueResource> currentCatalogue (
         @ActiveUser CatalogueUser user,
         @PathVariable("file") String file
@@ -69,7 +69,7 @@ public class CatalogueController {
     }
 
     @PreAuthorize("@permission.userCanEdit(#file)")
-    @RequestMapping(value = "documents/{file}/catalogue", method =  RequestMethod.PUT)
+    @PutMapping("documents/{file}/catalogue")
     public HttpEntity<CatalogueResource> updateCatalogue (
         @ActiveUser CatalogueUser user,
         @PathVariable("file") String file,

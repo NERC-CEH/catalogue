@@ -1,5 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
+import lombok.SneakyThrows;
+import lombok.val;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,6 +17,7 @@ import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.*;
+import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
@@ -24,6 +27,8 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -37,9 +42,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class CatalogueControllerTest {
     private @MockBean DocumentRepository documentRepository;
     private @MockBean CatalogueService catalogueService;
+    private @MockBean(name="permission") PermissionService permissionService;
 
     @Autowired private MockMvc mockMvc;
     private CatalogueController controller;
+
+    private final String file = "955b5a6e-dd3f-4b20-a3b5-a9d1d04ba052";
 
     private void givenCataloguesRetrieveAll() {
         Catalogue a = Catalogue.builder().id("a").title("a").url("a").build();
@@ -49,9 +57,40 @@ public class CatalogueControllerTest {
         given(catalogueService.retrieveAll()).willReturn(Arrays.asList(a, b, c));
     }
 
+    private void givenUserCanView() {
+        given(permissionService.toAccess(any(CatalogueUser.class), eq(file), eq("VIEW")))
+            .willReturn(true);
+    }
+
+    @SneakyThrows
+    private void givenMetadataDocument() {
+        val document = new GeminiDocument();
+        document.setId(file);
+        document.setMetadata(MetadataInfo.builder().catalogue("eidc").build());
+        given(documentRepository.read(file))
+            .willReturn(document);
+    }
+
     @BeforeEach
     void setup() {
         controller = new CatalogueController(documentRepository, catalogueService);
+    }
+
+    @Test
+    @SneakyThrows
+    void getCatalogue() {
+        //given
+        givenUserCanView();
+        givenMetadataDocument();
+
+        //when
+        mockMvc.perform(
+            get("/documents/{file}/catalogue", file)
+                .accept(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(content().string("{\"id\":\"955b5a6e-dd3f-4b20-a3b5-a9d1d04ba052\",\"value\":\"eidc\"}"));
     }
 
     @Test
