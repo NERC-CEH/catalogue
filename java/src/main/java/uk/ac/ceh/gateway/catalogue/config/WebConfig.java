@@ -102,6 +102,7 @@ public class WebConfig implements WebMvcConfigurer {
         converters.add(new Object2TemplatedMessageConverter<>(SearchResults.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(SparqlResponse.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(StateResource.class, freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter<>(ValidationResponse.class, freemarkerConfiguration));
 
         if (log.isDebugEnabled()) {
             log.debug("After our message converters added");
