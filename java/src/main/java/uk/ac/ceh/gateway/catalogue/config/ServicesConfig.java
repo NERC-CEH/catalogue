@@ -9,7 +9,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.jena.tdb.TDBFactory;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -37,12 +36,10 @@ import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
 import uk.ac.ceh.gateway.catalogue.osdp.*;
-import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.postprocess.BaseMonitoringTypePostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.ClassMapPostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.GeminiDocumentPostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
-import uk.ac.ceh.gateway.catalogue.quality.MetadataQualityService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.GitDocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.GitRepoWrapper;
@@ -51,12 +48,10 @@ import uk.ac.ceh.gateway.catalogue.services.*;
 import uk.ac.ceh.gateway.catalogue.sparql.SparqlVocabularyRetriever;
 import uk.ac.ceh.gateway.catalogue.sparql.SparqlVocabularyService;
 import uk.ac.ceh.gateway.catalogue.sparql.VocabularyService;
-import uk.ac.ceh.gateway.catalogue.templateHelpers.GeminiExtractor;
 import uk.ac.ceh.gateway.catalogue.util.ClassMap;
 import uk.ac.ceh.gateway.catalogue.util.MapServerGetFeatureInfoErrorHandler;
 import uk.ac.ceh.gateway.catalogue.util.PrioritisedClassMap;
 
-import javax.annotation.PostConstruct;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
 import java.util.Arrays;
@@ -69,76 +64,35 @@ import static uk.ac.ceh.gateway.catalogue.config.CatalogueServiceConfig.*;
 @Slf4j
 @Configuration
 public class ServicesConfig {
-    @Value("${solr.server.documents.url}") private String solrDocumentServerUrl;
-    @Value("${sparql.endpoint}") private String sparqlEndpoint;
-    @Value("${sparql.graph}") private String sparqlGraph;
 
-    @Autowired private CatalogueService catalogueService;
-    @Autowired private CitationService citationService;
-    @Autowired private CodeLookupService codeLookupService;
-    @Autowired private DataciteService dataciteService;
-    @Autowired private DocumentIdentifierService documentIdentifierService;
-    @Autowired private freemarker.template.Configuration freemarkerConfiguration;
-    @Autowired private GeminiExtractor geminiExtractor;
-    @Autowired private JenaLookupService jenaLookupService;
-    @Autowired private MapServerDetailsService mapServerDetailsService;
-    @Autowired private MetadataQualityService metadataQualityService;
-    @Autowired private List<HttpMessageConverter<?>> messageConverters;
-    @Autowired private ObjectMapper objectMapper;
-    @Autowired private PermissionService permissionService;
-    @Autowired private org.apache.jena.query.Dataset tdbModel;
-
-    @Configuration
-    static class RestTemplateConfig {
-        @Autowired private CloseableHttpClient httpClient;
-
-        @Bean
-        @Qualifier("normal")
-        public RestTemplate normalRestTemplate() {
-            log.info("Creating Normal RestTemplate");
-            val requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
-            return new RestTemplate(requestFactory);
-        }
-
-        @Bean
-        @Qualifier("wms")
-        public RestTemplate getFeatureInfoRestTemplate() throws XPathExpressionException {
-            RestTemplate toReturn = new RestTemplate();
-            toReturn.setMessageConverters(Collections.singletonList(
-                new Gml2WmsFeatureInfoMessageConverter()
-            ));
-            toReturn.setErrorHandler(new MapServerGetFeatureInfoErrorHandler());
-            return toReturn;
-        }
-    }
-
-    @SneakyThrows
-    @PostConstruct
-    public void configureFreemarkerSharedVariables() {
-        freemarkerConfiguration.setSharedVariable("catalogues", catalogueService);
-        freemarkerConfiguration.setSharedVariable("codes", codeLookupService);
-        freemarkerConfiguration.setSharedVariable("downloadOrderDetails", downloadOrderDetailsService());
-        freemarkerConfiguration.setSharedVariable("geminiHelper", geminiExtractor);
-        freemarkerConfiguration.setSharedVariable("jena", jenaLookupService);
-        freemarkerConfiguration.setSharedVariable("mapServerDetails", mapServerDetailsService);
-        freemarkerConfiguration.setSharedVariable("metadataQuality", metadataQualityService);
-        freemarkerConfiguration.setSharedVariable("permission", permissionService);
+    @Bean
+    @Qualifier("normal")
+    public RestTemplate normalRestTemplate(CloseableHttpClient httpClient) {
+        log.info("Creating Normal RestTemplate");
+        val requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
+        return new RestTemplate(requestFactory);
     }
 
     @Bean
-    public DownloadOrderDetailsService downloadOrderDetailsService() {
-        return new DownloadOrderDetailsService(
-            "https:\\/\\/data-package\\.ceh\\.ac\\.uk\\/sd\\/.*",
-            Arrays.asList(
-                "http(s?):\\/\\/catalogue\\.ceh\\.ac\\.uk\\/download\\?fileIdentifier=.*",
-                "https:\\/\\/order-eidc\\.ceh\\.ac\\.uk\\/resources\\/.{8}\\/order\\?*.*"
-            )
-        );
+    @Qualifier("wms")
+    public RestTemplate getFeatureInfoRestTemplate() throws XPathExpressionException {
+        log.info("Creating WMS RestTemplate");
+        RestTemplate toReturn = new RestTemplate();
+        toReturn.setMessageConverters(Collections.singletonList(
+            new Gml2WmsFeatureInfoMessageConverter()
+        ));
+        toReturn.setErrorHandler(new MapServerGetFeatureInfoErrorHandler());
+        return toReturn;
     }
 
     @Bean
     @SuppressWarnings("rawtypes")
-    public PostProcessingService postProcessingService() {
+    public PostProcessingService postProcessingService(
+        CitationService citationService,
+        DataciteService dataciteService,
+        org.apache.jena.query.Dataset tdbModel,
+        DocumentIdentifierService documentIdentifierService
+    ) {
         ClassMap<PostProcessingService> mappings = new PrioritisedClassMap<PostProcessingService>()
             .register(GeminiDocument.class, new GeminiDocumentPostProcessingService(citationService, dataciteService, tdbModel, documentIdentifierService))
             .register(BaseMonitoringType.class, new BaseMonitoringTypePostProcessingService(tdbModel));
@@ -146,7 +100,10 @@ public class ServicesConfig {
     }
 
     @Bean
-    public DocumentReadingService documentReadingService() {
+    public DocumentReadingService documentReadingService(
+        CodeLookupService codeLookupService,
+        ObjectMapper objectMapper
+    ) {
         return new MessageConverterReadingService()
             .addMessageConverter(new Xml2GeminiDocumentMessageConverter(codeLookupService))
             .addMessageConverter(new UkeofXml2EFDocumentMessageConverter())
@@ -177,7 +134,9 @@ public class ServicesConfig {
     }
 
     @Bean
-    public GetCapabilitiesObtainerService getCapabilitiesObtainerService() {
+    public GetCapabilitiesObtainerService getCapabilitiesObtainerService(
+        MapServerDetailsService mapServerDetailsService
+    ) {
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.setMessageConverters(Collections.singletonList(
             new Xml2WmsCapabilitiesMessageConverter()
@@ -205,7 +164,11 @@ public class ServicesConfig {
     }
 
     @Bean
-    public VocabularyService vocabularyService() {
+    public VocabularyService vocabularyService(
+        ObjectMapper objectMapper,
+        @Value("${sparql.endpoint}") String sparqlEndpoint,
+        @Value("${sparql.graph}") String sparqlGraph
+    ) {
         val messageConverter = new MappingJackson2HttpMessageConverter();
         messageConverter.setObjectMapper(objectMapper);
         messageConverter.setSupportedMediaTypes(
@@ -220,37 +183,37 @@ public class ServicesConfig {
         return new SparqlVocabularyService(new SparqlVocabularyRetriever(restTemplate, sparqlEndpoint, sparqlGraph).retrieve());
     }
 
-    @Configuration
-    public static class DataRepositoryConfig {
-
-        @Bean
-        @SuppressWarnings("UnstableApiUsage") // Because EventBus is still @Beta!
-        public EventBus communicationBus() {
-            return new EventBus();
-        }
-
-        @Bean
-        public AnnotatedUserHelper<CatalogueUser> phantomUserBuilderFactory() {
-            return new AnnotatedUserHelper<>(CatalogueUser.class);
-        }
-
-        @Bean
-        @SuppressWarnings("UnstableApiUsage")
-        @SneakyThrows
-        public DataRepository<CatalogueUser> dataRepository(
-            @Value("${data.repository.location}") String dataRepositoryLocation
-        ) {
-            return new GitDataRepository<>(
-                new File(dataRepositoryLocation),
-                new InMemoryUserStore<>(),
-                phantomUserBuilderFactory(),
-                communicationBus()
-            );
-        }
+    @Bean
+    @SuppressWarnings("UnstableApiUsage") // Because EventBus is still @Beta!
+    public EventBus communicationBus() {
+        return new EventBus();
     }
 
     @Bean
-    public DocumentInfoMapper<MetadataInfo> documentInfoMapper() {
+    public AnnotatedUserHelper<CatalogueUser> phantomUserBuilderFactory() {
+        return new AnnotatedUserHelper<>(CatalogueUser.class);
+    }
+
+    @Bean
+    @SuppressWarnings("UnstableApiUsage")
+    @SneakyThrows
+    public DataRepository<CatalogueUser> dataRepository(
+        @Value("${data.repository.location}") String dataRepositoryLocation,
+        AnnotatedUserHelper<CatalogueUser> annotatedUserHelper,
+        EventBus eventBus
+    ) {
+        return new GitDataRepository<>(
+            new File(dataRepositoryLocation),
+            new InMemoryUserStore<>(),
+            annotatedUserHelper,
+            eventBus
+        );
+    }
+
+    @Bean
+    public DocumentInfoMapper<MetadataInfo> documentInfoMapper(
+        ObjectMapper objectMapper
+    ) {
         return new JacksonDocumentInfoMapper<>(objectMapper, MetadataInfo.class);
     }
 
@@ -263,12 +226,19 @@ public class ServicesConfig {
     }
 
     @Bean
-    public SolrClient solrClient(){
+    public SolrClient solrClient(
+        @Value("${solr.server.documents.url}") String solrDocumentServerUrl
+    ){
         return new HttpSolrClient.Builder(solrDocumentServerUrl).build();
     }
 
     @Bean
-    DocumentWritingService documentWritingService() {
+    DocumentWritingService documentWritingService(
+        List<HttpMessageConverter<?>> messageConverters
+    ) {
+        if (log.isDebugEnabled()) {
+            messageConverters.forEach(converter -> log.debug(converter.toString()));
+        }
         return new MessageConverterWritingService(messageConverters);
     }
 }

@@ -1,7 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
 import com.google.common.eventbus.EventBus;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
@@ -13,15 +12,32 @@ import javax.annotation.PostConstruct;
 @Configuration
 public class EventWiring {
     @SuppressWarnings("UnstableApiUsage")
-    @Autowired EventBus bus;
-    
-    @Autowired @Qualifier("solr-index") DocumentIndexingService solrIndex;
-    @Autowired @Qualifier("jena-index") DocumentIndexingService linkIndex;
-    @Autowired @Qualifier("datacite-index") DocumentIndexingService dataciteIndex;
-    @Autowired @Qualifier("validation-index") DocumentIndexingService validationIndex;
-    @Autowired @Qualifier("mapserver-index") DocumentIndexingService mapserverIndex;
-    @Autowired DocumentListingService listing;
-    
+    private final EventBus bus;
+    private final DocumentIndexingService solrIndex;
+    private final DocumentIndexingService linkIndex;
+    private final DocumentIndexingService dataciteIndex;
+    private final DocumentIndexingService validationIndex;
+    private final DocumentIndexingService mapserverIndex;
+    private final DocumentListingService listing;
+
+    public EventWiring(
+        EventBus bus,
+        @Qualifier("solr-index") DocumentIndexingService solrIndex,
+        @Qualifier("jena-index") DocumentIndexingService linkIndex,
+        @Qualifier("datacite-index") DocumentIndexingService dataciteIndex,
+        @Qualifier("validation-index") DocumentIndexingService validationIndex,
+        @Qualifier("mapserver-index") DocumentIndexingService mapserverIndex,
+        DocumentListingService listing
+    ) {
+        this.bus = bus;
+        this.solrIndex = solrIndex;
+        this.linkIndex = linkIndex;
+        this.dataciteIndex = dataciteIndex;
+        this.validationIndex = validationIndex;
+        this.mapserverIndex = mapserverIndex;
+        this.listing = listing;
+    }
+
     @SuppressWarnings("UnstableApiUsage")
     @PostConstruct
     public void addEventListeners() {
