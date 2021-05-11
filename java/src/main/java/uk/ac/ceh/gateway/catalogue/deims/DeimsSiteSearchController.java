@@ -24,7 +24,7 @@ public class DeimsSiteSearchController {
         log.info("Creating {}", this);
     }
 
-    @GetMapping(value = "/deims")
+    @GetMapping(value = "vocabularies/deims")
     @ResponseBody
     public List<DeimsSolrIndex> getSites(
             @RequestParam(value = "query") String query
