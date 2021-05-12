@@ -13,8 +13,8 @@ services:
       - mapfiles:/var/ceh-catalogue/mapfiles
       - ./upload:/var/upload/datastore
       - ./schemas:/opt/ceh-catalogue/schemas
-      - ./templates:/opt/ceh-catalogue/templates
-      - ./web/src:/opt/ceh-catalogue/static
+      - ./templates:/app/application/BOOT-INF/classes/templates
+      - ./web/src:/app/application/BOOT-INF/classes/static
     environment:
       - doi.api=https://api.test.datacite.org/dois
       - jira.address=https://jira-test.nerc-lancaster.ac.uk/rest/api/2
