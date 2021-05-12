@@ -11,8 +11,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.multipart.MultipartFile;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -22,12 +24,18 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.services.JiraService;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.UPLOAD_DOCUMENT_JSON;
+import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.UPLOADER_USERNAME;
 
 @Slf4j
 @ActiveProfiles({"test", "upload:hubbub"})
@@ -123,6 +131,29 @@ class UploadControllerTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(UPLOAD_DOCUMENT_JSON));
 
+    }
+
+    @Test
+    @SneakyThrows
+    void uploadFile() {
+        //given
+        givenUserCanUpload();
+
+        //when
+        mockMvc.perform(
+            multipart("/documents/{id}/add-upload-document", id)
+                .file(new MockMultipartFile(
+                    "file",
+                    "foo.txt",
+                    "text/csv",
+                    "some data".getBytes(StandardCharsets.UTF_8)
+                ))
+                .header("remote-user", UPLOADER_USERNAME)
+        )
+            .andExpect(status().isOk());
+
+        //then
+        verify(uploadDocumentService).add(eq(id), eq("foo.txt"), any(MultipartFile.class));
     }
 
     //TODO: test the rest of the Hubbub upload endpoints

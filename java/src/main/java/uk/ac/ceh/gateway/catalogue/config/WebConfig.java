@@ -1,8 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import lombok.AllArgsConstructor;
@@ -17,7 +15,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUserHandlerMethodArgumentResolver;
 import uk.ac.ceh.gateway.catalogue.converters.Object2TemplatedMessageConverter;
@@ -55,14 +52,6 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
         argumentResolvers.add(new ActiveUserHandlerMethodArgumentResolver());
-    }
-
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        log.info("adding static resource handler");
-        registry
-            .addResourceHandler("/static/**")
-            .addResourceLocations("file:/opt/ceh-catalogue/static/");
     }
 
     @Override
@@ -113,14 +102,12 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
     @Bean
-    public ObjectMapper objectMapper() {
-        val mapper = new ObjectMapper()
-            .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-            .registerModule(new GuavaModule())
-            .registerModule(new JaxbAnnotationModule());
-        log.info("Creating ObjectMapper");
-        return mapper;
+    public Module guavaModule() {
+        return new GuavaModule();
+    }
+
+    @Bean Module jaxbAnnotationModule() {
+        return new JaxbAnnotationModule();
     }
 
     @Bean
@@ -135,30 +122,9 @@ public class WebConfig implements WebMvcConfigurer {
             .build();
     }
 
-
-//    @Bean
-//    public CommonsMultipartResolver multipartResolver() {
-//        CommonsMultipartResolver resolver = new CommonsMultipartResolver();
-//        resolver.setDefaultEncoding("utf-8");
-//        return resolver;
-//    }
-
     @Override
     public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
         log.info("configuring Content Negotiation");
-
-//        val forgivingParameterStrategy = new ForgivingParameterContentNegotiationStrategy(mediaTypes);
-//        val wmsStrategy = new WmsFormatContentNegotiationStrategy("INFO_FORMAT");
-//        val headerStrategy = new HeaderContentNegotiationStrategy();
-//        val fixedStrategy = new FixedContentNegotiationStrategy(MediaType.TEXT_HTML);
-//
-//        val strategies = Arrays.asList(
-//                forgivingParameterStrategy,
-//                wmsStrategy,
-//                headerStrategy,
-//                fixedStrategy
-//        );
-
         configurer
             .favorParameter(true)
             .mediaType(BIBTEX_SHORT, BIBTEX)

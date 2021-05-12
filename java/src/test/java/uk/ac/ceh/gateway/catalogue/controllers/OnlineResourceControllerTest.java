@@ -133,7 +133,7 @@ public class OnlineResourceControllerTest {
     void checkThatCanGetOnlineResourceWhichExists() {
         //Given
         givenDocumentWithOnlineResource();
-        val expectedResponse = "[{\"url\":\"http://example.com/a\",\"name\":\"\",\"description\":\"\",\"function\":\"\",\"type\":\"OTHER\"}]";
+        val expectedResponse = "[{\"url\":\"http://example.com/a\",\"type\":\"OTHER\"}]";
 
         //When
         mockMvc.perform(
@@ -151,7 +151,7 @@ public class OnlineResourceControllerTest {
     void getOnlineResourceAtRevision() {
         //Given
         givenHistoricDocumentWithOnlineResource();
-        val expectedResponse = "[{\"url\":\"a\",\"name\":\"\",\"description\":\"\",\"function\":\"\",\"type\":\"OTHER\"}]";
+        val expectedResponse = "[{\"url\":\"a\",\"type\":\"OTHER\"}]";
 
         //When
         mockMvc.perform(

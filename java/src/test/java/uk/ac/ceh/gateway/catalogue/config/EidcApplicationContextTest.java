@@ -1,6 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import freemarker.template.Configuration;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -16,6 +18,7 @@ import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadDocumentService;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+@Slf4j
 @ActiveProfiles({"auth:crowd", "upload:hubbub"})
 @CatalogueWebTest
 @DisplayName("EIDC production context")
@@ -32,6 +35,9 @@ class EidcApplicationContextTest {
         assertNotNull(applicationContext.getBean("dataciteService"));
         assertNotNull(applicationContext.getBean("jenaLookupService"));
         assertNotNull(applicationContext.getBean("permission"));
+        val objectMapper = applicationContext.getBean(ObjectMapper.class);
+        assertNotNull(objectMapper);
+        objectMapper.getRegisteredModuleIds().forEach(module -> log.debug(module.toString()));
     }
 
     @Test

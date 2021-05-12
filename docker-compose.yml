@@ -7,6 +7,7 @@ services:
       - mapserver
     ports:
       - "8080:8080"
+      - "8081:8081"
     volumes:
       - ./dropbox:/var/ceh-catalogue/dropbox
       - mapfiles:/var/ceh-catalogue/mapfiles
@@ -17,6 +18,7 @@ services:
     environment:
       - doi.api=https://api.test.datacite.org/dois
       - jira.address=https://jira-test.nerc-lancaster.ac.uk/rest/api/2
+      - spring.freemarker.cache=false
       - spring.profiles.active=development,upload:simple
     env_file:
       - secrets.env

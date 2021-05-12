@@ -34,7 +34,7 @@ COPY --from=build-java /app/build/libs/app.jar .
 VOLUME ["/var/upload/datastore"]
 EXPOSE 8080
 ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app/app.jar"]
-HEALTHCHECK CMD curl --fail http://localhost:8080/eidc/documents || exit 1
+HEALTHCHECK CMD curl --fail http://localhost:8081/actuator/health || exit 1
 
 # Create resources for development only
 FROM alpine/git:v2.30.1 AS datastore

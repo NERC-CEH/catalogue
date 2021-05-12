@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.*;
 import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAPABILITIES;
 
-@Data 
+@Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Accessors(chain = true)
@@ -38,7 +38,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
         metadataStandardName, metadataStandardVersion;
     private Number version;
     private List<String> alternateTitles, spatialRepresentationTypes, datasetLanguages,
-      securityConstraints;      
+      securityConstraints;
     private List<Keyword> topicCategories;
     private List<DistributionInfo> distributionFormats;
     private List<DescriptiveKeywords> descriptiveKeywords;
@@ -68,7 +68,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private AccessLimitation accessLimitation;
     private boolean notGEMINI;
 
-    
+
     @Override
     public String getType() {
         return Optional.ofNullable(resourceType)
@@ -81,14 +81,14 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             .map(AccessLimitation::getCode)
             .orElse(null);
     }
-    
+
     @Override
     public GeminiDocument setType(String type) {
         super.setType(type);
         this.resourceType = Keyword.builder().value(type).build();
         return this;
     }
-    
+
     @Override
     @JsonIgnore
     public List<Keyword> getAllKeywords() {
@@ -98,12 +98,12 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             .flatMap(dk -> dk.getKeywords().stream())
             .collect(Collectors.toList());
     }
-    
+
     @Override
     public GeminiDocument addAdditionalKeywords(List<Keyword> additionalKeywords) {
         descriptiveKeywords = Optional.ofNullable(descriptiveKeywords)
             .orElse(new ArrayList<>());
-        
+
         descriptiveKeywords.add(
             DescriptiveKeywords
                 .builder()
@@ -112,18 +112,18 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
         );
         return this;
     }
-        
+
     @JsonProperty("citation")
     public Citation getCitation() {
         return citation;
     }
-    
+
     @JsonIgnore
     public GeminiDocument setCitation(Citation citation) {
         this.citation = citation;
         return this;
     }
-    
+
     public Set<Link> getAssociatedResources() {
         Set<Link> toReturn = new HashSet<>();
         if (incomingRelationships != null) {
@@ -131,7 +131,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
         }
         return toReturn;
     }
-    
+
     /**
      * Return a link to the map viewer for this Gemini record if it can be
      * rendered in the map viewer
@@ -143,9 +143,9 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
         }
         return null;
     }
-    
+
     /**
-     * Decide if this gemini document has a map viewing capability. That is at 
+     * Decide if this gemini document has a map viewing capability. That is at
      * least one wms is registered to this gemini document
      * @return true if a wms exists in the online resources
      */
@@ -155,17 +155,17 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             .stream()
             .anyMatch((o)-> WMS_GET_CAPABILITIES == o.getType());
     }
-    
+
     public List<String> getTopics() {
         return Optional.ofNullable(descriptiveKeywords)
             .orElse(Collections.emptyList())
             .stream()
             .flatMap(dk -> dk.getKeywords().stream())
-            .filter(k -> k.getUri().startsWith(TOPIC_PROJECT_URL))
             .map(Keyword::getUri)
+            .filter(uri -> uri.startsWith(TOPIC_PROJECT_URL))
             .collect(Collectors.toList());
     }
-    
+
     public List<String> getCoupledResources() {
         return Optional.ofNullable(service)
             .map(Service::getCoupledResources)
@@ -175,7 +175,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             .filter(cr -> !cr.isEmpty())
             .collect(Collectors.toList());
     }
-    
+
     public List<ResponsibleParty> getResponsibleParties() {
         return Optional.ofNullable(responsibleParties)
             .orElse(Collections.emptyList());
@@ -188,7 +188,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             .filter((authors) -> authors.getRole().equalsIgnoreCase("author"))
             .collect(Collectors.toList());
     }
-   
+
     public List<ResponsibleParty> getRightsHolders() {
         return Optional.ofNullable(responsibleParties)
             .orElse(Collections.emptyList())
@@ -201,7 +201,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
         return Optional.ofNullable(funding)
             .orElse(Collections.emptyList());
     }
-    
+
     public List<Supplemental> getSupplemental() {
         return Optional.ofNullable(supplemental)
             .orElse(Collections.emptyList());
@@ -223,5 +223,5 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
                 .filter(s -> ALLOWED_CITATION_FUNCTIONS.contains(s.getFunction()))
                 .count();
     }
-    
+
 }
