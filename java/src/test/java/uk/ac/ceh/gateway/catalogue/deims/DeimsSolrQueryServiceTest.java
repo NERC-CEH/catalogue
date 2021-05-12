@@ -8,9 +8,10 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class DeimsSolrQueryServiceTest {
 
     public static final String SITE_1 = "site1";
@@ -32,15 +34,11 @@ class DeimsSolrQueryServiceTest {
     @Mock
     private SolrClient solrClient;
 
-    @Mock
-    private QueryResponse queryResponse;
-
     @InjectMocks
     private DeimsSolrQueryService service;
 
     @BeforeEach
     public void init() throws IOException {
-        MockitoAnnotations.initMocks(this);
         service = new DeimsSolrQueryService(solrClient);
     }
 

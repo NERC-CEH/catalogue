@@ -5,9 +5,11 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,24 +19,18 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class DeimsSiteSearchControllerTest {
 
     public static final String SITE_1 = "site1";
     public static final String SITE_2 = "site2";
     public static final String QUERY = "queryTest";
-    private static final String DEIMS = "deims";
 
     @Mock
     private DeimsSolrQueryService DEIMSService;
 
     @InjectMocks
     private DeimsSiteSearchController controller;
-
-    @BeforeEach
-    public void init() throws IOException {
-        MockitoAnnotations.initMocks(this);
-        controller = new DeimsSiteSearchController(DEIMSService);
-    }
 
     @Test
     public void getSitesTest() throws SolrServerException {
