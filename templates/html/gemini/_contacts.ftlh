@@ -4,7 +4,7 @@
       <#list pocs>
         <#items as poc>
           <div class="responsibleParty">
-            ${func.displayContact(poc, true, true, false)}
+             <@func.displayContact poc true true false/>
           </div>
         </#items>
       </#list>
@@ -25,15 +25,19 @@
           </#if>
 
           <div class="${rpClass}">
-            ${func.displayContact(author, false, false, true)}
+            <@func.displayContact author false false true/>
           </div>
-            
+
         </#items>
-      
+
       <#if authors?size gt authorMaxSize >
-        <p><small>
-          <a href=".responsiblePartyCollapse" class="moreAuthors collapsed" data-toggle="collapse" aria-controls="responsiblePartyCollapse" area-expanded="false"><span>${moreAuthors} more authors. </span>Show </a>
-        </small></p>
+        <p>
+            <small>
+                <a href=".responsiblePartyCollapse" class="moreAuthors collapsed" data-toggle="collapse" aria-controls="responsiblePartyCollapse" area-expanded="false">
+                  <span>${moreAuthors} more authors. </span>Show
+                </a>
+            </small>
+        </p>
       </#if>
       </#list>
 
@@ -49,12 +53,12 @@
     <#list otherContacts as otherContact>
       <dt>${otherContact.roleDisplayName}</dt>
       <dd>
-        <div class="responsibleParty">      
-          ${func.displayContact(otherContact, false, true, false)}
+        <div class="responsibleParty">
+          <@func.displayContact otherContact false true false/>
         </div>
   	 </dd>
     </#list>
   </#if>
   </dl>
   </div>
-</#if>  
+</#if>

@@ -15,7 +15,7 @@
     resourceProviders = func.filter(responsibleParties, "role", "resourceProvider")
     otherContacts = custodians + publishers + depositors + originators + owners + resourceProviders + rightsHolders
     catalogue = catalogues.retrieve(metadata.catalogue)
-    
+
     rel_all=jena.allRelatedRecords(uri)
     rel_related=jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#relatedTo") + jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#relatedTo")
     rel_generates = jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#generates")
@@ -67,7 +67,7 @@
 
       <#if permission.userCanEditRestrictedFields(metadata.catalogue) && metadata.catalogue == "eidc">
         <#include "gemini/_metadataqualityAlert.ftlh">
-      </#if>  
+      </#if>
 
         <div id="document-description" class="clearfix">
           <#include "gemini/_browseGraphic.ftlh">
@@ -76,7 +76,7 @@
 
         <#if resourceType.value != 'aggregate' && resourceType.value != 'collection'>
           <#include "gemini/_dates.ftlh">
-                    
+
           <div class="row">
             <div class="col-sm-4 col-sm-push-8 panel-right">
               <#include "gemini/_uploadData.ftlh">
@@ -130,7 +130,7 @@
 
             </div>
           </div>
-          
+
           <#if permission.userCanEditRestrictedFields(metadata.catalogue) && metadata.catalogue == "eidc">
             <#include "gemini/_metadataqualityReport.ftlh">
           </#if>
@@ -138,7 +138,7 @@
         <#else>
           <#include "gemini/_aggregate.ftlh">
         </#if>
-      
+
       <#else>
         <div class="alert alert-danger" id="missingResourceType">
           <p class="clearfix"><i class="fas fa-exclamation-triangle"></i> <b>WARNING: </b> resource type is missing from this record

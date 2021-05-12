@@ -27,7 +27,7 @@
   "@type":"${docType}",
   "name":"${title}",
   <#if description?has_content>"description":"${description}", </#if>
- 
+
   <#if alternateTitles?has_content>
     "alternateName":[
     <#list alternateTitles as altTitle>
@@ -189,7 +189,7 @@
 
 
 <#-- NEEDS UPDATING  -->
-<#-- Parent/child resources  NEED ADDING?  
-http://schema.org/isPartOf 
+<#-- Parent/child resources  NEED ADDING?
+http://schema.org/isPartOf
 http://schema.org/hasPart
 -->

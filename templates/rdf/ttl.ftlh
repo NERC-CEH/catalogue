@@ -71,7 +71,7 @@
   </#list>
    ;
   </#if>
-  
+
   dct:language "eng" ;
   <#assign rel_memberOf = jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#memberOf")>
   <#if rel_memberOf?has_content && rel_memberOf?size gt 0>
@@ -84,7 +84,7 @@
 
   <#-- Subjects -->
   <#if descriptiveKeywords?has_content>
-  dct:subject 
+  dct:subject
     <#list descriptiveKeywords as descriptiveKeyword>
     <#list descriptiveKeyword.keywords as keyword>
       <#if keyword.uri?has_content>
