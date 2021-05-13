@@ -343,7 +343,7 @@ class UploadControllerTest {
 
         //when
         mockMvc.perform(
-            multipart("http://example.com/upload/{id}", ID)
+            multipart("/upload/{id}", ID)
                 .file(multipartFile)
                 .header("remote-user", UPLOADER_USERNAME)
         )
