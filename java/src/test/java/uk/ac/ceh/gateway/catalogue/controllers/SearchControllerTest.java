@@ -86,7 +86,7 @@ class SearchControllerTest {
 
     @SneakyThrows
     private void givenSearchResults() {
-        given(solrClient.query(any(SolrParams.class), eq(SolrRequest.METHOD.POST)))
+        given(solrClient.query(eq("documents"), any(SolrParams.class), eq(SolrRequest.METHOD.POST)))
             .willReturn(mock(QueryResponse.class, Answers.RETURNS_DEEP_STUBS));
     }
 
@@ -98,7 +98,7 @@ class SearchControllerTest {
         );
         val queryResponse = mock(QueryResponse.class, Answers.RETURNS_DEEP_STUBS);
         given(queryResponse.getBeans(SolrIndex.class)).willReturn(results);
-        given(solrClient.query(any(SolrParams.class), eq(SolrRequest.METHOD.POST)))
+        given(solrClient.query(eq("documents"), any(SolrParams.class), eq(SolrRequest.METHOD.POST)))
             .willReturn(queryResponse);
         given(codeLookupService.lookup("publication.state", "public")).willReturn("Public");
     }
@@ -206,5 +206,5 @@ class SearchControllerTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
-    
+
 }

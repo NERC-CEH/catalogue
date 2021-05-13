@@ -21,7 +21,7 @@ public class DeimsSiteSearchController {
 
     public DeimsSiteSearchController(DeimsSolrQueryService deimsService) {
         this.deimsService = deimsService;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @GetMapping(value = "vocabularies/deims")

@@ -69,8 +69,8 @@ class SolrIndexingServiceTest {
         service.rebuildIndex();
 
         //Then
-        verify(solrClient, times(2)).addBean(solr);
         verify(solrClient).deleteByQuery(COLLECTION, "*:*");
+        verify(solrClient, times(2)).addBean(COLLECTION, solr);
         verify(solrClient).commit(COLLECTION);
     }
 
@@ -88,15 +88,14 @@ class SolrIndexingServiceTest {
 
         SolrIndex document1Index = new SolrIndex();
         SolrIndex document2Index = new SolrIndex();
-        when(indexGenerator.generateIndex(document1)).thenReturn(document1Index);
-        when(indexGenerator.generateIndex(document2)).thenReturn(document2Index);
+        when(indexGenerator.generateIndex(any(GeminiDocument.class)))
+            .thenReturn(document1Index, document2Index);
 
         //When
         service.indexDocuments(documents, revId);
 
         //Then
-        verify(solrClient).addBean(COLLECTION, document1Index);
-        verify(solrClient).addBean(COLLECTION, document2Index);
+        verify(solrClient, times(2)).addBean(eq(COLLECTION), any(SolrIndex.class));
         verify(solrClient).commit(COLLECTION);
     }
 
