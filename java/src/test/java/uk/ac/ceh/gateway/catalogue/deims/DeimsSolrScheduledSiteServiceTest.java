@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.indexing;
+package uk.ac.ceh.gateway.catalogue.deims;
 
 import lombok.SneakyThrows;
 import lombok.val;
@@ -15,6 +15,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
+import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 
 import java.nio.charset.StandardCharsets;
 
@@ -22,7 +23,6 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
-import static uk.ac.ceh.gateway.catalogue.indexing.DeimsSolrScheduledSiteService.*;
 
 @ExtendWith(MockitoExtension.class)
 public class DeimsSolrScheduledSiteServiceTest {
