@@ -341,6 +341,7 @@ class UploadControllerTest {
         );
     }
 
+    @Tag(NOT_ON_CI)
     @Test
     @DisplayName("uploader can upload file")
     @SneakyThrows
