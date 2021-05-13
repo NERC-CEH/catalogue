@@ -4,7 +4,7 @@
       <#list pocs>
         <#items as poc>
           <div class="responsibleParty">
-             <@func.displayContact poc true true false/>
+             <@func.displayContact poc true true false />
           </div>
         </#items>
       </#list>
@@ -25,7 +25,7 @@
           </#if>
 
           <div class="${rpClass}">
-            <@func.displayContact author false false true/>
+            <@func.displayContact author false false true />
           </div>
 
         </#items>
@@ -54,7 +54,7 @@
       <dt>${otherContact.roleDisplayName}</dt>
       <dd>
         <div class="responsibleParty">
-          <@func.displayContact otherContact false true false/>
+          <@func.displayContact otherContact false true false />
         </div>
   	 </dd>
     </#list>

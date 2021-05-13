@@ -58,7 +58,7 @@
                       <#list provider as contact>
                         <#noautoesc>
                           <div class="responsibleParty">
-                            ${func.displayContact(contact, false, true)}
+                            <@func.displayContact contact, false, true />
                           </div>
                         </#noautoesc>
                       </#list>

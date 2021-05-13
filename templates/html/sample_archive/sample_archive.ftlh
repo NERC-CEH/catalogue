@@ -30,7 +30,7 @@
         <@key "Location${(archiveLocations?size > 1)?then('s', '')}">
           <#list archiveLocations as contact>
             <div class="responsibleParty">
-              ${func.displayContact(contact, true, true)}
+              <@func.displayContact contact, true, true />
             </div>
           </#list>
         </@key>
@@ -108,7 +108,7 @@
       <@key "For further information about the ${title}, please contact">
         <#list archiveContacts as contact>
           <div class="responsibleParty">
-            ${func.displayContact(contact, true, true)}
+            <@func.displayContact contact, true, true />
           </div>
         </#list>
       </@key>
@@ -127,7 +127,7 @@
         <@key "Author of this record">
           <#list metadataContacts as contact>
             <div class="responsibleParty">
-              ${func.displayContact(contact, true, true)}
+              <@func.displayContact contact, true, true />
             </div>
           </#list>
         </@key>

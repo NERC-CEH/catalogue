@@ -42,7 +42,7 @@
             <#list contacts as contact>
               <#noautoesc>
                 <div class="responsibleParty">
-                  ${func.displayContact(contact, true, true)}
+                  <@func.displayContact contact, true, true />
                 </div>
               </#noautoesc>
             </#list>

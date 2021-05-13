@@ -67,7 +67,7 @@
         <#if SRO?? && SRO?has_content>
           <@m.key "Senior responsible officer">
             <#list SRO as SRO>
-            ${func.displayContact(SRO, true, true, false)}
+                <@func.displayContact SRO, true, true, false />
             </#list>
           </@m.key>
         </#if>
@@ -77,7 +77,7 @@
             <dt>${otherContact.roleDisplayName}</dt>
             <dd>
               <div class="responsibleParty">
-                ${func.displayContact(otherContact, true, true, false)}
+                <@func.displayContact otherContact, true, true, false />
               </div>
             </dd>
             </#list>
