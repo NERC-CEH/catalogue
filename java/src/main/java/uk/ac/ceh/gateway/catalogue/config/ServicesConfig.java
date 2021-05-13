@@ -227,7 +227,7 @@ public class ServicesConfig {
 
     @Bean
     public SolrClient solrClient(
-        @Value("${solr.server.documents.url}") String solrDocumentServerUrl
+        @Value("${solr.server.url}") String solrDocumentServerUrl
     ){
         return new HttpSolrClient.Builder(solrDocumentServerUrl).build();
     }
