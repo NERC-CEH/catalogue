@@ -27,7 +27,7 @@ public class DeimsSiteSearchController {
     @GetMapping(value = "vocabularies/deims")
     @ResponseBody
     public List<DeimsSolrIndex> getSites(
-            @RequestParam(value = "query") String query
+            @RequestParam(value = "query", defaultValue = "*") String query
     ) throws SolrServerException {
         return deimsService.query(query);
     }

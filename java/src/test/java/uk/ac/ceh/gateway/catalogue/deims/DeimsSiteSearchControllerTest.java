@@ -50,6 +50,18 @@ class DeimsSiteSearchControllerTest {
             ));
     }
 
+    @SneakyThrows
+    private void givenQueryResponseNoQuery() {
+        val site1 = new DeimsSite(SITE_1, PREFIX, "1");
+        val site2 = new DeimsSite(SITE_2, PREFIX, "2");
+
+        given(deimsService.query("*"))
+            .willReturn(Arrays.asList(
+                new DeimsSolrIndex(site1),
+                new DeimsSolrIndex(site2)
+            ));
+    }
+
     @Test
     @SneakyThrows
     void getSites() {
@@ -61,6 +73,22 @@ class DeimsSiteSearchControllerTest {
         mockMvc.perform(
             get("/vocabularies/deims")
                 .queryParam("query", QUERY)
+        )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(content().json(expectedResponse));
+    }
+
+    @Test
+    @SneakyThrows
+    void getSitesNoQuery() {
+        //Given
+        givenQueryResponseNoQuery();
+        val expectedResponse = "[{\"title\":\"site1\",\"id\":\"1\",\"url\":\"https://example.com/1\"},{\"title\":\"site2\",\"id\":\"2\",\"url\":\"https://example.com/2\"}]";
+
+        //When
+        mockMvc.perform(
+            get("/vocabularies/deims")
         )
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))

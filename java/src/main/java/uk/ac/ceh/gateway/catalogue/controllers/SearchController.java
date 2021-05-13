@@ -5,7 +5,6 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.solr.client.solrj.SolrClient;
-import org.apache.solr.client.solrj.SolrRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +20,8 @@ import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+
+import static org.apache.solr.client.solrj.SolrRequest.METHOD.POST;
 
 @Slf4j
 @ToString
@@ -113,7 +114,7 @@ public class SearchController {
         val response = solrClient.query(
             "documents",
             searchQuery.build(),
-            SolrRequest.METHOD.POST
+            POST
         );
         return new SearchResults(response, searchQuery);
     }

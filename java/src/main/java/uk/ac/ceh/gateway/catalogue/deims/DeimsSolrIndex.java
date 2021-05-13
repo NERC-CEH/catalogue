@@ -1,13 +1,17 @@
 package uk.ac.ceh.gateway.catalogue.deims;
 
 
-import lombok.Value;
+import lombok.Data;
+import org.apache.solr.client.solrj.beans.Field;
 
-@Value
+@Data
 public class DeimsSolrIndex {
-    String title;
-    String id;
-    String url;
+    @Field private String title;
+    @Field private String id;
+    @Field private String url;
+
+    @SuppressWarnings("unused")
+    private DeimsSolrIndex() {}
 
     public DeimsSolrIndex(DeimsSite site) {
         this.title = site.getTitle();
