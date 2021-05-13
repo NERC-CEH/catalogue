@@ -3,15 +3,12 @@ package uk.ac.ceh.gateway.catalogue.deims;
 import lombok.SneakyThrows;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +24,7 @@ class DeimsSiteSearchControllerTest {
     public static final String QUERY = "queryTest";
 
     @Mock
-    private DeimsSolrQueryService DEIMSService;
+    private DeimsSolrQueryService deimsService;
 
     @InjectMocks
     private DeimsSiteSearchController controller;
@@ -47,7 +44,7 @@ class DeimsSiteSearchControllerTest {
         expected.add(deimsSolrIndex1);
         expected.add(deimsSolrIndex2);
 
-        when(DEIMSService.query(QUERY)).thenReturn(expected);
+        when(deimsService.query(QUERY)).thenReturn(expected);
 
         //When
         List<DeimsSolrIndex> result = controller.getSites(QUERY);
@@ -62,7 +59,7 @@ class DeimsSiteSearchControllerTest {
     @SneakyThrows
     public void ThrowSolrServerException() {
         //Given
-        when(DEIMSService.query(QUERY)).thenThrow(new SolrServerException("Test"));
+        when(deimsService.query(QUERY)).thenThrow(new SolrServerException("Test"));
 
         //When
         Assertions.assertThrows(SolrServerException.class, () -> {

@@ -6,14 +6,12 @@ import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,14 +35,9 @@ class DeimsSolrQueryServiceTest {
     @InjectMocks
     private DeimsSolrQueryService service;
 
-    @BeforeEach
-    public void init() throws IOException {
-        service = new DeimsSolrQueryService(solrClient);
-    }
-
     @Test
     @SneakyThrows
-    public void successfullyGetDIEMSSites() {
+    public void successfullyGetDeimsSites() {
         //Given
         SolrQuery solrQuery = new SolrQuery();
         solrQuery.set(DEIMS, QUERY);

@@ -17,10 +17,10 @@ import java.util.List;
 @ToString
 public class DeimsSiteSearchController {
 
-    private DeimsSolrQueryService DEIMSService;
+    private final DeimsSolrQueryService deimsService;
 
     public DeimsSiteSearchController(DeimsSolrQueryService deimsService) {
-        this.DEIMSService = deimsService;
+        this.deimsService = deimsService;
         log.info("Creating {}", this);
     }
 
@@ -29,6 +29,6 @@ public class DeimsSiteSearchController {
     public List<DeimsSolrIndex> getSites(
             @RequestParam(value = "query") String query
     ) throws SolrServerException {
-        return DEIMSService.query(query);
+        return deimsService.query(query);
     }
 }

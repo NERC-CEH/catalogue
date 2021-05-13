@@ -1,7 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.deims;
 
 
-@lombok.Value
+import lombok.Value;
+
+@Value
 public class DeimsSolrIndex {
     String title;
     String id;
