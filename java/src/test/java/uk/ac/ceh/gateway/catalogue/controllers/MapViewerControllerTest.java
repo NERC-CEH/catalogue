@@ -51,7 +51,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static uk.ac.ceh.gateway.catalogue.controllers.MapViewerController.INFO_FORMAT;
 
@@ -88,13 +90,25 @@ public class MapViewerControllerTest {
         configuration.setSharedVariable("catalogues", catalogueService);
     }
 
-    private void givenTransparentProxyResponse() throws IOException {
+    private void givenGetMapResponse() throws IOException {
         val response = mock(CloseableHttpResponse.class);
         val entity = mock(HttpEntity.class);
         given(response.getEntity())
             .willReturn(entity);
         given(entity.getContentType())
             .willReturn(new BasicHeader("content-type", MediaType.IMAGE_PNG_VALUE));
+        given(httpClient.execute(any(HttpGet.class)))
+            .willReturn(response);
+    }
+
+    @SneakyThrows
+    private void givenRemoteWmsFeatureInfo() {
+        val response = mock(CloseableHttpResponse.class);
+        val entity = mock(HttpEntity.class);
+        given(response.getEntity())
+            .willReturn(entity);
+        given(entity.getContentType())
+            .willReturn(new BasicHeader("content-type", "application/vnd.ogc.xml"));
         given(httpClient.execute(any(HttpGet.class)))
             .willReturn(response);
     }
@@ -133,7 +147,7 @@ public class MapViewerControllerTest {
     @SneakyThrows
     void getMapRequest() {
         //Given
-        givenTransparentProxyResponse();
+        givenGetMapResponse();
 
         //When
         mockMvc.perform(
@@ -183,47 +197,34 @@ public class MapViewerControllerTest {
         //then
     }
 
-//    @Test
-//    public void checkThatCanIdentifyLocalGetFeatureInfoRequest() {
-//        //Given
-//        List<NameValuePair> params = new ArrayList<>();
-//        params.add(new BasicNameValuePair("REQUEST", "GetFeatureInfo"));
-//        params.add(new BasicNameValuePair("SERVICE", "WMS"));
-//        params.add(new BasicNameValuePair("INFO_FORMAT", "text/xml"));
-//
-//        //When
-//        boolean isLocal = controller.isLocalGetFeatureInfoRequest(params);
-//
-//        //Then
-//        assertTrue(isLocal);
-//    }
-//
-//    @Test
-//    public void checkThatCanIdentifyRemoteGetFeatureInfoRequest() {
-//        //Given
-//        List<NameValuePair> params = new ArrayList<>();
-//        params.add(new BasicNameValuePair("REQUEST", "GetFeatureInfo"));
-//        params.add(new BasicNameValuePair("SERVICE", "WMS"));
-//        params.add(new BasicNameValuePair("INFO_FORMAT", "application/vnd.ogc.xml"));
-//
-//        //When
-//        boolean isLocal = controller.isLocalGetFeatureInfoRequest(params);
-//
-//        //Then
-//        assertFalse(isLocal);
-//    }
-//
-//    @Test
-//    public void checkThatCanReplaceTheInfoFormatValue() {
-//        //Given
-//        List<NameValuePair> params = new ArrayList<>();
-//        params.add(new BasicNameValuePair("REQUEST", "GetFeatureInfo"));
-//        params.add(new BasicNameValuePair("INFO_FORMAT", "text/xml"));
-//
-//        //When
-//        String queryString = controller.createQueryStringWithLocalInfoFormat(params, "text/anything");
-//
-//        //Then
-//        assertEquals(queryString, "REQUEST=GetFeatureInfo&INFO_FORMAT=text%2Fanything");
-//    }
+    @Test
+    @SneakyThrows
+    public void getRemoteGetFeatureInfoRequest() {
+        //given
+        givenRemoteWmsFeatureInfo();
+
+        //when
+        mockMvc.perform(
+            get("/maps/{file}", file)
+                .queryParam("SERVICE", "WMS")
+                .queryParam("VERSION", "1.3.0")
+                .queryParam("REQUEST", "GetFeatureInfo")
+                .queryParam("LAYERS", "layer0", "layer1")
+                .queryParam("STYLES", "default")
+                .queryParam("CRS", "EPSG:27700")
+                .queryParam("BBOX", "-145.15,21.73,-57.15,58.96")
+                .queryParam("WIDTH", "250")
+                .queryParam("HEIGHT", "250")
+                .queryParam("QUERY_LAYERS", "layer0")
+                .queryParam("I", "10")
+                .queryParam("J", "20")
+                .queryParam(INFO_FORMAT, "application/vnd.ogc.xml")
+        )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentType("application/vnd.ogc.xml"));
+
+        //then
+        verifyNoInteractions(rest);
+    }
 }
