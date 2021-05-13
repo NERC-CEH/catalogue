@@ -346,8 +346,7 @@ class UploadControllerTest {
             multipart("/upload/{id}", ID)
                 .file(multipartFile)
                 .header("remote-user", UPLOADER_USERNAME)
-        )
-            .andExpect(status().isNoContent());
+        );
 
         //then
         verify(storageService).store(ID, multipartFile);
