@@ -29,14 +29,14 @@ public class SearchController {
     public static final String PAGE_DEFAULT_STRING = "1";
     public static final String ROWS_DEFAULT_STRING = "20";
     public static final String OP_DEFAULT_STRING = "IsWithin";
-    
+
     public static final String TERM_QUERY_PARAM = "term";
     public static final String BBOX_QUERY_PARAM = "bbox";
     public static final String OP_QUERY_PARAM = "op";
     public static final String PAGE_QUERY_PARAM = "page";
     public static final String ROWS_QUERY_PARAM = "rows";
     public static final String FACET_QUERY_PARAM = "facet";
-    
+
     public static final int PAGE_DEFAULT = Integer.parseInt(PAGE_DEFAULT_STRING);
     public static final int ROWS_DEFAULT = Integer.parseInt(ROWS_DEFAULT_STRING);
 
@@ -94,9 +94,9 @@ public class SearchController {
         List<FacetFilter> facetFilters,
         HttpServletRequest request
     ) {
-        
+
         val catalogue = catalogueService.retrieve(catalogueKey);
-        
+
         val searchQuery = new SearchQuery(
             request.getRequestURL().toString(),
             user,
@@ -111,6 +111,7 @@ public class SearchController {
             facetFactory.newInstances(catalogue.getFacetKeys())
         );
         val response = solrClient.query(
+            "documents",
             searchQuery.build(),
             SolrRequest.METHOD.POST
         );

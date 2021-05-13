@@ -14,7 +14,7 @@ services:
       - ./upload:/var/upload/datastore
       - ./schemas:/opt/ceh-catalogue/schemas
       - ./templates:/opt/ceh-catalogue/templates
-#      - ./web/src:/opt/ceh-catalogue/static
+      - ./web/src:/opt/ceh-catalogue/static
     environment:
       - doi.api=https://api.test.datacite.org/dois
       - jira.address=https://jira-test.nerc-lancaster.ac.uk/rest/api/2
@@ -22,12 +22,10 @@ services:
       - spring.profiles.active=development,upload:simple
     env_file:
       - secrets.env
-
   solr:
     build: "solr"
     ports:
       - "8983:8983"
-
   mapserver:
     image: registry.gitlab.ceh.ac.uk/eip/mapserver:2
     ports:
