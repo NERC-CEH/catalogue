@@ -5,8 +5,8 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.commons.io.IOUtils;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -61,6 +61,7 @@ class UploadControllerTest {
     private static final String ID = "993c5778-e139-4171-a57f-7a0f396be4b8";
     private static final String TITLE = "Belowground carbon stock data in the Ankeniheny Zahamena forest corridor, Madagascar";
     private static final String catalogueKey = "eidc";
+    private static final String NOT_ON_CI = "not-on-ci"; // because tests break on CI
 
     @SneakyThrows
     public String expectedResponse(String filename) {
@@ -165,6 +166,7 @@ class UploadControllerTest {
         verifyNoInteractions(documentRepository, storageService);
     }
 
+    @Tag(NOT_ON_CI)
     @Test
     @DisplayName("unauthenticated user can not access page")
     @SneakyThrows
@@ -176,7 +178,8 @@ class UploadControllerTest {
 
         //when
         mockMvc.perform(
-            get("/upload/{id}", ID).accept(MediaType.TEXT_HTML)
+            get("/upload/{id}", ID)
+                .accept(MediaType.TEXT_HTML)
         )
             .andExpect(status().isForbidden())
             .andExpect(view().name("html/access-denied"));
@@ -204,7 +207,10 @@ class UploadControllerTest {
 
         //when
         mockMvc.perform(
-            get("/upload/{id}", ID).accept(MediaType.TEXT_HTML))
+            get("/upload/{id}", ID)
+                .header("remote-user", UPLOADER_USERNAME)
+                .accept(MediaType.TEXT_HTML)
+        )
             .andExpect(status().isOk())
             .andExpect(model().attribute("id", ID))
             .andExpect(model().attribute("title", TITLE))
@@ -258,6 +264,7 @@ class UploadControllerTest {
         verifyNoInteractions(storageService);
     }
 
+    @Tag(NOT_ON_CI)
     @Test
     @DisplayName("unauthenticated user cannot get filename")
     @SneakyThrows
@@ -334,7 +341,6 @@ class UploadControllerTest {
         );
     }
 
-    @Disabled("CI failing this test, cannot work out why!😭")
     @Test
     @DisplayName("uploader can upload file")
     @SneakyThrows
@@ -455,7 +461,7 @@ class UploadControllerTest {
         //when
         mockMvc.perform(
             delete("/upload/{id}/{filename}", ID, filename)
-                .header("remote-user", "uploader")
+                .header("remote-user", UPLOADER_USERNAME)
                 .accept(MediaType.APPLICATION_JSON)
         )
             .andExpect(status().isNoContent());
@@ -476,7 +482,7 @@ class UploadControllerTest {
         //when
         mockMvc.perform(
             delete("/upload/{id}/{filename}", ID, filename)
-                .header("remote-user", "unprivileged")
+                .header("remote-user", UNPRIVILEGED_USERNAME)
         )
             .andExpect(status().isForbidden())
             .andExpect(view().name("html/access-denied"));

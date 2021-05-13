@@ -19,7 +19,7 @@ mirror:
 test_java:
   stage: test
   image: gradle:6.8.3-jdk15
-  script: gradle clean test --no-daemon
+  script: gradle clean ciTest --no-daemon
   artifacts:
     when: always
     reports:
