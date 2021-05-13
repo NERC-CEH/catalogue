@@ -40,7 +40,7 @@ import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.UPLO
 @Slf4j
 @ActiveProfiles({"test", "upload:hubbub"})
 @Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
-@DisplayName("Simple Upload Controller")
+@DisplayName("HubbubUploadController")
 @WebMvcTest(
     controllers = UploadController.class,
     properties="spring.freemarker.template-loader-path=file:../templates"

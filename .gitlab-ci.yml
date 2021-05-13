@@ -23,7 +23,7 @@ test_java:
   artifacts:
     when: always
     reports:
-      junit: java/build/test-results/test/**/TEST-*.xml
+      junit: java/build/test-results/ciTest/**/TEST-*.xml
 
 test_web:
   stage: test

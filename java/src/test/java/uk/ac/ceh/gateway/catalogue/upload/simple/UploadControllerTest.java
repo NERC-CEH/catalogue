@@ -40,6 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.UNPRIVILEGED_USERNAME;
 import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.UPLOADER_USERNAME;
 
+@Tag("not-on-ci") // because tests break on CI
 @Slf4j
 @ActiveProfiles({"test", "upload:simple"})
 @Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
@@ -61,7 +62,6 @@ class UploadControllerTest {
     private static final String ID = "993c5778-e139-4171-a57f-7a0f396be4b8";
     private static final String TITLE = "Belowground carbon stock data in the Ankeniheny Zahamena forest corridor, Madagascar";
     private static final String catalogueKey = "eidc";
-    private static final String NOT_ON_CI = "not-on-ci"; // because tests break on CI
 
     @SneakyThrows
     public String expectedResponse(String filename) {
@@ -166,7 +166,6 @@ class UploadControllerTest {
         verifyNoInteractions(documentRepository, storageService);
     }
 
-    @Tag(NOT_ON_CI)
     @Test
     @DisplayName("unauthenticated user can not access page")
     @SneakyThrows
@@ -264,7 +263,6 @@ class UploadControllerTest {
         verifyNoInteractions(storageService);
     }
 
-    @Tag(NOT_ON_CI)
     @Test
     @DisplayName("unauthenticated user cannot get filename")
     @SneakyThrows
@@ -322,7 +320,7 @@ class UploadControllerTest {
     }
 
     @SneakyThrows
-    public MockMultipartFile fileWithSpacesCsv() {
+    private MockMultipartFile fileWithSpacesCsv() {
         return new MockMultipartFile(
             "file",
             "file with spaces.csv",
@@ -332,7 +330,7 @@ class UploadControllerTest {
     }
 
     @SneakyThrows
-    public MockMultipartFile dataCsv() {
+    private MockMultipartFile dataCsv() {
         return new MockMultipartFile(
             "file",
             "data.csv",
@@ -341,7 +339,6 @@ class UploadControllerTest {
         );
     }
 
-    @Tag(NOT_ON_CI)
     @Test
     @DisplayName("uploader can upload file")
     @SneakyThrows
