@@ -71,7 +71,7 @@ class DeimsSiteSearchControllerTest {
 
         //When
         mockMvc.perform(
-            get("/vocabularies/deims")
+            get("/vocabulary/deims")
                 .queryParam("query", QUERY)
         )
             .andExpect(status().isOk())
@@ -88,7 +88,7 @@ class DeimsSiteSearchControllerTest {
 
         //When
         mockMvc.perform(
-            get("/vocabularies/deims")
+            get("/vocabulary/deims")
         )
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -104,7 +104,7 @@ class DeimsSiteSearchControllerTest {
 
         //When
         mockMvc.perform(
-            get("/vocabularies/deims")
+            get("/vocabulary/deims")
                 .queryParam("query", QUERY)
         )
             .andExpect(status().isInternalServerError())

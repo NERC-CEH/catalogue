@@ -11,7 +11,7 @@ public class DeimsSolrIndex {
     @Field private String url;
 
     @SuppressWarnings("unused")
-    private DeimsSolrIndex() {}
+    public DeimsSolrIndex() {}
 
     public DeimsSolrIndex(DeimsSite site) {
         this.title = site.getTitle();
