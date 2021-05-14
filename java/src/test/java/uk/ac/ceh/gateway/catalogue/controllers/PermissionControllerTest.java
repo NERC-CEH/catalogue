@@ -18,6 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -39,6 +40,7 @@ import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.EIDC
 
 // TODO: convert remaining tests to use mockMvc
 
+@WithMockCatalogueUser
 @ActiveProfiles("test")
 @DisplayName("PermissionController")
 @Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})

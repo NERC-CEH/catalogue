@@ -57,9 +57,3 @@ test {
         events "skipped", "failed"
     }
 }
-
-task ciTest(type: Test) {
-    useJUnitPlatform {
-        excludeTags "not-on-ci"
-    }
-}

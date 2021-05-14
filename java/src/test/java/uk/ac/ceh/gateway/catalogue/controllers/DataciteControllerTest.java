@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.StreamUtils;
+import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.datacite.DataciteResponse;
@@ -30,8 +31,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.DATACITE_XML_VALUE;
+import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.DATACITE_ROLE;
 import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.EIDC_PUBLISHER_USERNAME;
 
+@WithMockCatalogueUser
 @ActiveProfiles("test")
 @DisplayName("DataciteController")
 @Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
@@ -120,6 +123,10 @@ class DataciteControllerTest {
     }
 
     @Test
+    @WithMockCatalogueUser(
+        username=EIDC_PUBLISHER_USERNAME,
+        grantedAuthorities=DATACITE_ROLE
+    )
     void mintDoi() throws Exception {
         //given
         givenDocumentRepository();

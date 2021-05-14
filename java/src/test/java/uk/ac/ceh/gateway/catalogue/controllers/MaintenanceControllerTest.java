@@ -15,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
+import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.indexing.*;
@@ -32,7 +33,12 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.ADMIN;
+import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.MAINTENANCE_ROLE;
 
+@WithMockCatalogueUser(
+    username=ADMIN,
+    grantedAuthorities=MAINTENANCE_ROLE
+)
 @ActiveProfiles("test")
 @DisplayName("MaintenanceController")
 @Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
