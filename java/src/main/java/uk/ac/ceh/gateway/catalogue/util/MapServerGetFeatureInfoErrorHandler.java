@@ -6,6 +6,7 @@ import org.springframework.web.client.ResponseErrorHandler;
 import uk.ac.ceh.gateway.catalogue.model.MapServerException;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.MAPSERVER_GML;
 
@@ -21,7 +22,7 @@ public class MapServerGetFeatureInfoErrorHandler implements ResponseErrorHandler
 
     @Override
     public void handleError(ClientHttpResponse response) throws IOException {
-        String body = IOUtils.toString(response.getBody(), "UTF-8");
+        String body = IOUtils.toString(response.getBody(), StandardCharsets.UTF_8);
         throw new MapServerException(body, response.getStatusCode(), response.getHeaders().getContentType());
     }
 }
