@@ -26,6 +26,8 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -36,7 +38,7 @@ import static uk.ac.ceh.gateway.catalogue.model.MetadataInfo.PUBLIC_GROUP;
 
 @ExtendWith(MockitoExtension.class)
 public class DataciteServiceTest {
-    private static String ID = "d4bdc836-5b89-44c5-aca2-2880a5d5a5be";
+    private static final String ID = "d4bdc836-5b89-44c5-aca2-2880a5d5a5be";
 
     private DataciteService service;
     private MockRestServiceServer mockServer;
@@ -57,7 +59,7 @@ public class DataciteServiceTest {
                 "Test publisher",
                 "username",
                 "password",
-                "datacite/datacite.xml.tpl",
+                "datacite/datacite.ftlx",
                 identifierService,
                 configuration,
                 restTemplate
@@ -148,7 +150,7 @@ public class DataciteServiceTest {
         //Given
         val document = getGeminiDocument();
         when(identifierService.generateUri(ID)).thenReturn("https://catalogue.ceh.ac.uk/id/" + ID);
-        val encoded = IOUtils.toString(getClass().getResourceAsStream("encoded.txt"), StandardCharsets.UTF_8);
+        val encoded = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("encoded.txt")), StandardCharsets.UTF_8);
 
         // TODO: in future could look at the xml content sent to Datacite
         mockServer
@@ -176,7 +178,7 @@ public class DataciteServiceTest {
         //Given
         val document = getGeminiDocument();
         when(identifierService.generateUri(ID)).thenReturn("https://catalogue.ceh.ac.uk/id/" + ID);
-        val encoded = IOUtils.toString(getClass().getResourceAsStream("encoded.txt"), StandardCharsets.UTF_8);
+        val encoded = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("encoded.txt")), StandardCharsets.UTF_8);
 
         mockServer
                 .expect(requestTo("https://example.com/doi"))
@@ -216,7 +218,7 @@ public class DataciteServiceTest {
     public void canGetDoiMetadata() {
         //given
         val document = getGeminiDocument();
-        document.setResourceIdentifiers(Arrays.asList(
+        document.setResourceIdentifiers(Collections.singletonList(
             ResourceIdentifier.builder().codeSpace("doi:").code(doiPrefix + "/" + ID).build()
         ));
         mockServer.expect(requestTo("https://example.com/doi/10.8268/d4bdc836-5b89-44c5-aca2-2880a5d5a5be"))

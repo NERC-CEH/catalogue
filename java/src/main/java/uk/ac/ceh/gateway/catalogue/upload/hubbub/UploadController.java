@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static java.lang.String.format;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.UPLOAD_DOCUMENT_JSON_VALUE;
+import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.UPLOAD_DOCUMENT_JSON_VALUE;
 
 @Controller
 @Profile("upload:hubbub")
@@ -68,7 +68,7 @@ public class UploadController {
         model.put("id", id);
         model.put("title", geminiDocument.getTitle());
         log.debug("Model is {}", model);
-        return new ModelAndView("/html/upload/hubbub/upload-document.ftl", model);
+        return new ModelAndView("html/upload/hubbub/upload-document", model);
     }
 
     @GetMapping(value = "documents/{id}", produces = UPLOAD_DOCUMENT_JSON_VALUE)

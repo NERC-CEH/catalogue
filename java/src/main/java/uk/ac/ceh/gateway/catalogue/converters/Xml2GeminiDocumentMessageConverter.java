@@ -61,7 +61,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
     private final TopicCategoriesConverter topicCategoriesConverter;
     private final LegalConstraintsWithAnchorConverter useConstraintsConverter;
     private final LegalConstraintsWithAnchorConverter accessConstraintsConverter;
-    
+
     @SneakyThrows
     public Xml2GeminiDocumentMessageConverter(CodeLookupService codeLookupService) {
         super(MediaType.APPLICATION_XML, MediaType.TEXT_XML);
@@ -100,7 +100,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.accessConstraintsConverter = new LegalConstraintsWithAnchorConverter(xpath, XPaths.ACCESS_CONSTRAINT);
         log.info("Creating {}", this);
     }
-    
+
     @Override
     protected boolean supports(Class<?> clazz) {
         return clazz.isAssignableFrom(GeminiDocument.class);
@@ -147,24 +147,24 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
             return toReturn;
         }
         catch(ParserConfigurationException pce) {
-            throw new HttpMessageNotReadableException("The document reader was not set up correctly", pce);
+            throw new HttpMessageNotReadableException("The document reader was not set up correctly", pce, inputMessage);
         } catch (SAXException se) {
-            throw new HttpMessageNotReadableException("The xml content could not be parsed", se);
+            throw new HttpMessageNotReadableException("The xml content could not be parsed", se, inputMessage);
         } catch (XPathExpressionException ex) {
-            throw new HttpMessageNotReadableException("An xpath failed to evaluate", ex);
+            throw new HttpMessageNotReadableException("An xpath failed to evaluate", ex, inputMessage);
         }
     }
-    
+
     @Override
     protected void writeInternal(GeminiDocument t, HttpOutputMessage outputMessage) throws HttpMessageNotWritableException {
         throw new HttpMessageNotWritableException("I will not be able to write that document for you");
     }
-    
+
     @Override
     public boolean canWrite(Class<?> clazz, MediaType mediaType) {
         return false; // I can never write
     }
-    
+
     public static List<String> getListOfStrings(Document document, XPathExpression expression) throws XPathExpressionException{
         return NodeListConverter.getListOfStrings((NodeList) expression.evaluate(document, XPathConstants.NODESET));
     }

@@ -1,27 +1,28 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
-import static org.mockito.ArgumentMatchers.any;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.git.GitDataDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
 public class MetadataInfoBundledReaderServiceTest {    
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) DataRepository<CatalogueUser> repo;
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentReadingService documentReader;
@@ -29,19 +30,7 @@ public class MetadataInfoBundledReaderServiceTest {
     @Mock(answer=Answers.RETURNS_DEEP_STUBS) DocumentTypeLookupService representationService;
     @Mock PostProcessingService postProcessingService;
     @Mock DocumentIdentifierService documentIdentifierService;
-    private MetadataInfoBundledReaderService service;
-    
-    
-    @BeforeEach
-    public void initMocks() throws IOException {
-        MockitoAnnotations.initMocks(this);
-        service = new MetadataInfoBundledReaderService(repo,
-                                            documentReader,
-                                            documentInfoMapper,
-                                            representationService,
-                                            postProcessingService,
-                                            documentIdentifierService);
-    }
+    @InjectMocks private MetadataInfoBundledReaderService service;
     
     @Test
     public void checkDocumentIsBundledWhenReadFromParticularRevision() throws DataRepositoryException, IOException, UnknownContentTypeException, PostProcessingException {

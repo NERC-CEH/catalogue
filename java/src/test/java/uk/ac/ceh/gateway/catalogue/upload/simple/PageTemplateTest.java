@@ -45,7 +45,7 @@ public class PageTemplateTest {
 
     @SneakyThrows
     private Configuration configureFreemarker() {
-        val config = new Configuration(Configuration.VERSION_2_3_23);
+        val config = new Configuration(Configuration.VERSION_2_3_31);
         config.setDirectoryForTemplateLoading(new File("../templates"));
         config.setSharedVariable("catalogues", catalogueService);
         return config;
@@ -69,7 +69,7 @@ public class PageTemplateTest {
 
         given(catalogueService.retrieve("test")).willReturn(catalogue);
 
-        val template = config.getTemplate("html/upload/simple/upload.ftl");
+        val template = config.getTemplate("html/upload/simple/upload.ftlh");
         val out = new StringWriter();
 
         //when

@@ -1,10 +1,12 @@
 package uk.ac.ceh.gateway.catalogue.deims;
 
 import lombok.SneakyThrows;
+import lombok.val;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.params.SolrParams;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,12 +14,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import static org.apache.solr.client.solrj.SolrRequest.METHOD.POST;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -39,31 +44,26 @@ class DeimsSolrQueryServiceTest {
     @SneakyThrows
     public void successfullyGetDeimsSites() {
         //Given
-        SolrQuery solrQuery = new SolrQuery();
-        solrQuery.set(DEIMS, QUERY);
+        val solrQuery = new SolrQuery();
+        solrQuery.setQuery(QUERY);
 
-        List<DeimsSolrIndex> expected = new ArrayList<>();
-        DeimsSite deimsSite1 = new DeimsSite();
-        deimsSite1.setTitle(SITE_1);
-        deimsSite1.setId(new DeimsSite.Id());
-        DeimsSite deimsSite2 = new DeimsSite();
-        deimsSite2.setTitle(SITE_2);
-        deimsSite2.setId(new DeimsSite.Id());
-        DeimsSolrIndex deimsSolrIndex1 = new DeimsSolrIndex(deimsSite1);
-        DeimsSolrIndex deimsSolrIndex2 = new DeimsSolrIndex(deimsSite2);
-        expected.add(deimsSolrIndex1);
-        expected.add(deimsSolrIndex2);
+        val deimsSolrIndex1 = new DeimsSolrIndex(new DeimsSite(SITE_1, "https://example.com/", "1"));
+        val deimsSolrIndex2 = new DeimsSolrIndex(new DeimsSite(SITE_2, "https://example.com/", "2"));
 
-        QueryResponse response = mock(QueryResponse.class);
-        when(solrClient.query(any(SolrQuery.class))).thenReturn(response);
-        when(solrClient.query(solrQuery).getBeans(DeimsSolrIndex.class)).thenReturn(expected);
+        val response = mock(QueryResponse.class);
+
+        given(solrClient.query(eq(DEIMS), any(SolrParams.class), eq(POST)))
+            .willReturn(response);
+        given(response.getBeans(DeimsSolrIndex.class))
+            .willReturn(Arrays.asList(
+                deimsSolrIndex1,
+                deimsSolrIndex2
+            ));
 
         //When
         List<DeimsSolrIndex> result = service.query(QUERY);
 
         //Then
-        SolrQuery query = new SolrQuery();
-        query.set(DEIMS, QUERY);
         assertThat(result.get(0).getTitle(), equalTo(SITE_1));
         assertThat(result.get(1).getTitle(), equalTo(SITE_2));
     }
@@ -73,11 +73,11 @@ class DeimsSolrQueryServiceTest {
     @SneakyThrows
     public void ThrowSolrServerException() {
         //Given
-        when(solrClient.query(any(SolrQuery.class))).thenThrow(new SolrServerException("Test"));
+        when(solrClient.query(eq(DEIMS), any(SolrParams.class), eq(POST))).thenThrow(new SolrServerException("Test"));
 
         //When
-        Assertions.assertThrows(SolrServerException.class, () -> {
-            service.query(QUERY);
-        });
+        Assertions.assertThrows(SolrServerException.class, () ->
+            service.query(QUERY)
+        );
     }
 }

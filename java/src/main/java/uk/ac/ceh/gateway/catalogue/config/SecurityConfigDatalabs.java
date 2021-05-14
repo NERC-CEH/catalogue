@@ -1,7 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,14 +17,13 @@ import java.util.Collections;
 @Configuration
 @Profile("auth:datalabs")
 public class SecurityConfigDatalabs {
-    @Autowired
-    private AuthenticationProvider authenticationProvider;
-    @Autowired
-    private RememberMeServices rememberMeServices;
 
     @Bean
     @Qualifier("auth")
-    public Filter rememberMeAuthenticationFilter() {
+    public Filter rememberMeAuthenticationFilter(
+        AuthenticationProvider authenticationProvider,
+        RememberMeServices rememberMeServices
+    ) {
         log.info("creating RememberMeAuthenticationFilter");
         return new RememberMeAuthenticationFilter(
                 new ProviderManager(Collections.singletonList(authenticationProvider)),

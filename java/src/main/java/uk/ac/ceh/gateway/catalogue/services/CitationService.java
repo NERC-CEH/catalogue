@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
-import uk.ac.ceh.gateway.catalogue.config.WebConfig;
 import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
@@ -18,6 +17,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.BIBTEX_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.RESEARCH_INFO_SYSTEMS_SHORT;
 
 @Service
 @Slf4j
@@ -70,8 +72,8 @@ public class CitationService {
                         .year(      pubDate.get().getYear())
                         .publisher( publisher.get().getOrganisationName())
                         .resourceTypeGeneral( geminiDocument.getType())
-                        .bibtex(    getInAlternateFormat(geminiDocument, WebConfig.BIBTEX_SHORT))
-                        .ris(       getInAlternateFormat(geminiDocument, WebConfig.RESEARCH_INFO_SYSTEMS_SHORT))
+                        .bibtex(    getInAlternateFormat(geminiDocument, BIBTEX_SHORT))
+                        .ris(       getInAlternateFormat(geminiDocument, RESEARCH_INFO_SYSTEMS_SHORT))
                         .build()
                 );
             }

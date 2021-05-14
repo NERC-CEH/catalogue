@@ -13,7 +13,7 @@ import uk.ac.ceh.gateway.catalogue.osdp.*;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.*;
+import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.*;
 
 @Slf4j
 @ToString(callSuper = true)

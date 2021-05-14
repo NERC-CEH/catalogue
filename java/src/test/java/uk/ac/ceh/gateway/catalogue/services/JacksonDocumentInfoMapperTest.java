@@ -1,25 +1,21 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import org.mockito.MockitoAnnotations;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
 public class JacksonDocumentInfoMapperTest {
     @Mock ObjectMapper jacksonMapper;
-    
-    @BeforeEach
-    public void initMocks() {
-        MockitoAnnotations.initMocks(this);
-    }
     
     @Test
     public void checkCanWriteInfo() throws IOException {

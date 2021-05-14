@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.services;
 
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 import java.text.DecimalFormat;
 import java.util.Arrays;
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @ToString
+@Service
 public class TMSToWMSGetMapService {
     private final DecimalFormat bboxPartFormat;
     private final int height, width;

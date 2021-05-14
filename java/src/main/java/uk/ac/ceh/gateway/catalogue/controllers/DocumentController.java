@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +12,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -31,14 +31,14 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
 
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.*;
+import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.*;
 
 @Slf4j
 @ToString(callSuper = true)
 @Controller
 public class DocumentController extends AbstractDocumentController {
     public static final String MAINTENANCE_ROLE = "ROLE_CIG_SYSTEM_ADMIN";
-    
+
     public DocumentController(DocumentRepository documentRepository) {
         super(documentRepository);
         log.info("Creating {}", this);
@@ -59,17 +59,17 @@ public class DocumentController extends AbstractDocumentController {
             .fromRequest(request)
             .scheme("https")
             .replacePath("documents/{path}");
-        RedirectView toReturn = new RedirectView(url.buildAndExpand(path).toUriString());
-        toReturn.setStatusCode(HttpStatus.SEE_OTHER);
-        return toReturn;
+        val redirectView = new RedirectView(url.buildAndExpand(path).toUriString());
+        redirectView.setStatusCode(HttpStatus.SEE_OTHER);
+        return redirectView;
     }
-    
+
     @RequestMapping (value = "documents/upload",
                      method = RequestMethod.GET)
-    public ModelAndView uploadForm() {
-        return new ModelAndView("/html/upload.ftl");
+    public String uploadForm() {
+        return "html/upload";
     }
-    
+
     @PreAuthorize("@permission.userCanCreate(#catalogue)")
     @RequestMapping (value = "documents",
                      method = RequestMethod.POST,
@@ -81,8 +81,7 @@ public class DocumentController extends AbstractDocumentController {
             @RequestParam("type") String documentType,
             @RequestParam("catalogue") String catalogue
     ) throws DocumentRepositoryException, IOException  {
-        
-        MetadataDocument data = documentRepository.save(
+        val data = documentRepository.save(
             user,
             multipartFile.getInputStream(),
             MediaType.parseMediaType(multipartFile.getContentType()),
@@ -90,9 +89,10 @@ public class DocumentController extends AbstractDocumentController {
             catalogue,
             "new file upload"
         );
+        log.debug("Document URI: {}", data.getUri());
         return new RedirectView(data.getUri());
     }
-    
+
     @PreAuthorize("@permission.userCanCreate(#catalogue)")
     @RequestMapping (value = "documents",
                      method = RequestMethod.POST,
@@ -109,7 +109,7 @@ public class DocumentController extends AbstractDocumentController {
             "new Model Document"
         );
     }
-    
+
     @PreAuthorize("@permission.userCanEdit(#file)")
     @RequestMapping (value = "documents/{file}",
                      method = RequestMethod.PUT,
@@ -125,7 +125,7 @@ public class DocumentController extends AbstractDocumentController {
             document
         );
     }
-    
+
     @PreAuthorize("@permission.userCanCreate(#catalogue)")
     @RequestMapping (value = "documents",
                      method = RequestMethod.POST,
@@ -142,7 +142,7 @@ public class DocumentController extends AbstractDocumentController {
             "new Gemini Document"
         );
     }
-    
+
     @PreAuthorize("@permission.userCanEdit(#file)")
     @RequestMapping(value = "documents/{file}",
                     method = RequestMethod.PUT,
@@ -151,14 +151,14 @@ public class DocumentController extends AbstractDocumentController {
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file,
             @RequestBody GeminiDocument document
-    ) {      
+    ) {
         return saveMetadataDocument(
             user,
             file,
             document
         );
     }
-    
+
     @PreAuthorize("@permission.userCanCreate(#catalogue)")
     @RequestMapping (value = "documents",
                      method = RequestMethod.POST,
@@ -175,7 +175,7 @@ public class DocumentController extends AbstractDocumentController {
             "new CEH Model document"
         );
     }
-    
+
     @PreAuthorize("@permission.userCanEdit(#file)")
     @RequestMapping(value = "documents/{file}",
                     method = RequestMethod.PUT,
@@ -184,7 +184,7 @@ public class DocumentController extends AbstractDocumentController {
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file,
             @RequestBody CehModel document
-    ) {      
+    ) {
         return saveMetadataDocument(
             user,
             file,
@@ -224,7 +224,7 @@ public class DocumentController extends AbstractDocumentController {
             document
         );
     }
-    
+
     @PreAuthorize("@permission.userCanCreate(#catalogue)")
     @RequestMapping (value = "documents",
                      method = RequestMethod.POST,
@@ -241,7 +241,7 @@ public class DocumentController extends AbstractDocumentController {
             "new CEH Model document"
         );
     }
-    
+
     @PreAuthorize("@permission.userCanEdit(#file)")
     @RequestMapping(value = "documents/{file}",
                     method = RequestMethod.PUT,
@@ -250,14 +250,14 @@ public class DocumentController extends AbstractDocumentController {
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file,
             @RequestBody CehModelApplication document
-    ) {      
+    ) {
         return saveMetadataDocument(
             user,
             file,
             document
         );
     }
-    
+
     @PreAuthorize("@permission.userCanCreate(#catalogue)")
     @RequestMapping (value = "documents",
                      method = RequestMethod.POST,
@@ -274,7 +274,7 @@ public class DocumentController extends AbstractDocumentController {
             "new Linked Document"
         );
     }
-        
+
     @PreAuthorize("@permission.userCanEdit(#file)")
     @RequestMapping(value = "documents/{file}",
                     method = RequestMethod.PUT,
@@ -283,30 +283,29 @@ public class DocumentController extends AbstractDocumentController {
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file,
             @RequestBody LinkDocument document
-    ) {    
+    ) {
         return saveMetadataDocument(
             user,
             file,
             document
         );
     }
-    
-    @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
-    @RequestMapping(value = "documents/{file}",
-                    method = RequestMethod.GET)   
+
     @ResponseBody
     @SneakyThrows
+    @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
+    @GetMapping("documents/{file}")
     public MetadataDocument readMetadata(
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file
-    ) {        
-        return postprocessLinkDocument(documentRepository.read(file));
+    ) {
+        return postProcessLinkDocument(documentRepository.read(file));
     }
-    
+
     @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
     @RequestMapping(value = "documents/{file}",
                     method = RequestMethod.GET,
-                    produces = LINKED_JSON_VALUE)   
+                    produces = LINKED_JSON_VALUE)
     @ResponseBody
     @SneakyThrows
     public MetadataDocument readLinkDocument(
@@ -315,7 +314,7 @@ public class DocumentController extends AbstractDocumentController {
     ) {
         return documentRepository.read(file);
     }
-    
+
     @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
     @RequestMapping(value = "/raw/documents/{file}", method = RequestMethod.GET)
     @ResponseBody
@@ -325,7 +324,7 @@ public class DocumentController extends AbstractDocumentController {
     ) {
         return DocumentReader.raw(file);
     }
-    
+
 
     @PreAuthorize("@permission.toAccess(#user, #file, #revision, 'VIEW')")
     @RequestMapping(value = "history/{revision}/{file}",
@@ -337,10 +336,10 @@ public class DocumentController extends AbstractDocumentController {
             @PathVariable("file") String file,
             @PathVariable("revision") String revision
     ) {
-        return postprocessLinkDocument(documentRepository.read(file, revision));
+        return postProcessLinkDocument(documentRepository.read(file, revision));
     }
-    
-    private MetadataDocument postprocessLinkDocument(MetadataDocument document) {
+
+    private MetadataDocument postProcessLinkDocument(MetadataDocument document) {
         if (document instanceof LinkDocument) {
             LinkDocument linkDocument = (LinkDocument) document;
             String id = linkDocument.getId();
@@ -358,7 +357,7 @@ public class DocumentController extends AbstractDocumentController {
         }
         return document;
     }
-    
+
     @PreAuthorize("@permission.toAccess(#user, #file, 'DELETE')")
     @RequestMapping(value = "documents/{file}",
                     method = RequestMethod.DELETE)
@@ -367,7 +366,7 @@ public class DocumentController extends AbstractDocumentController {
     public DataRevision<CatalogueUser> deleteDocument(
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file
-    ) {    
+    ) {
         return documentRepository.delete(user, file);
     }
 }

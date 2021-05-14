@@ -22,10 +22,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_XML_SHORT;
+import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.GEMINI_XML_SHORT;
 
 /**
- * The following emulates a Web accessible Folder of metadata records 
+ * The following emulates a Web accessible Folder of metadata records
  * for NERC from the current catalogue
  */
 @Slf4j
@@ -35,7 +35,7 @@ import static uk.ac.ceh.gateway.catalogue.config.WebConfig.GEMINI_XML_SHORT;
 public class NERCWafController {
     private final DataRepository<CatalogueUser> repo;
     private final MetadataListingService listing;
-    
+
     @Autowired
     public NERCWafController( DataRepository<CatalogueUser> repo,
                                 MetadataListingService listing) {
@@ -43,7 +43,7 @@ public class NERCWafController {
         this.listing = listing;
         log.info("Creating {}", this);
     }
-    
+
     @RequestMapping(value="/",
                     method=RequestMethod.GET)
     public ModelAndView getWaf() throws DataRepositoryException, IOException, PostProcessingException {
@@ -56,7 +56,7 @@ public class NERCWafController {
                 .collect(Collectors.toList());
         return new ModelAndView("/html/waf.ftl", "files", files);
     }
-    
+
     @RequestMapping("{id}.xml")
     public String forwardToMetadata(@PathVariable("id") String id) {
         return "forward:/documents/" + id + "?format=" + GEMINI_XML_SHORT;

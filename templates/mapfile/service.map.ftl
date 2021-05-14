@@ -1,0 +1,8 @@
+[#ftl]
+[#compress]
+MAP
+[#include "_header.map.ftl"]
+[#include "_web.map.ftl"]
+[#include "_layers.map.ftl"]
+END
+[/#compress]

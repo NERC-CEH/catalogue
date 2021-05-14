@@ -60,7 +60,7 @@
 
     <field name="_text_" type="text_general" stored="false"/>
     <field name="_version_" type="plong" indexed="false" stored="false"/>
-    <field name="title" type="text_general"/>
+    <field name="title" type="text_general" multiValued="false"/>
     <field name="id" type="keywords" multiValued="false" required="true"/>
-    <field name="url" type="keywords"/>
+    <field name="url" type="keywords" multiValued="false"/>
 </schema>

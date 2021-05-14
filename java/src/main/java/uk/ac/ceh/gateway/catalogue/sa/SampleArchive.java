@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 @ToString(callSuper = true)
 @Accessors(chain = true)
 @ConvertUsing({
-    @Template(called="html/sample_archive/sample_archive.ftl", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
+    @Template(called="html/sample_archive/sample_archive.ftlh", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
 })
 public class SampleArchive extends AbstractMetadataDocument implements WellKnownText {
   private String lineage, availability, accessRestrictions, storage, healthSafety, website;

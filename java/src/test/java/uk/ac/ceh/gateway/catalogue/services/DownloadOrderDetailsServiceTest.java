@@ -6,6 +6,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.services.DownloadOrderDetailsService.DownloadOrder;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -14,30 +15,25 @@ import static org.hamcrest.CoreMatchers.is;
 
 
 public class DownloadOrderDetailsServiceTest {
-    String supportingDocUrlPattern = "https:\\/\\/data-package\\.ceh\\.ac\\.uk\\/sd\\/.*";
-    private final List<String> orderManagerUrlPatterns = Arrays.asList(
-        "http(s?):\\/\\/catalogue\\.ceh\\.ac\\.uk\\/download\\?fileIdentifier=.*",
-        "https:\\/\\/order-eidc\\.ceh\\.ac\\.uk\\/resources\\/.{8}\\/order\\?*.*"
-    );
     private DownloadOrderDetailsService service;
-    
+
     @BeforeEach
     public void init() {
-        service = new DownloadOrderDetailsService(supportingDocUrlPattern, orderManagerUrlPatterns);
+        service = new DownloadOrderDetailsService();
     }
-    
+
     @Test
     public void canDownloadOrderWithOrderableResourceOldOrderManager() {
         //Given
-        String orderUrl = "http://catalogue.ceh.ac.uk/download?fileIdentifier=downloadMe";
+        String orderUrl = "https://catalogue.ceh.ac.uk/download?fileIdentifier=downloadMe";
         String orderMessage = "Message";
         OnlineResource onlineResource = OnlineResource.builder()
                 .function("order").url(orderUrl).description(orderMessage).build();
-        List<OnlineResource> onlineResources = Arrays.asList(onlineResource);
-        
+        List<OnlineResource> onlineResources = Collections.singletonList(onlineResource);
+
         //When
         DownloadOrder order = service.from(onlineResources);
-        
+
         //Then
         assertThat(order.isOrderable(), is(true));
         assertThat(order.getOrderResources().contains(onlineResource), is(true));
@@ -50,7 +46,7 @@ public class DownloadOrderDetailsServiceTest {
         String orderMessage = "Message";
         OnlineResource onlineResource = OnlineResource.builder()
                 .function("order").url(orderUrl).description(orderMessage).build();
-        List<OnlineResource> onlineResources = Arrays.asList(onlineResource);
+        List<OnlineResource> onlineResources = Collections.singletonList(onlineResource);
 
         //When
         DownloadOrder order = service.from(onlineResources);
@@ -67,7 +63,7 @@ public class DownloadOrderDetailsServiceTest {
         String orderMessage = "Message";
         OnlineResource onlineResource = OnlineResource.builder()
                 .function("order").url(orderUrl).description(orderMessage).build();
-        List<OnlineResource> onlineResources = Arrays.asList(onlineResource);
+        List<OnlineResource> onlineResources = Collections.singletonList(onlineResource);
 
         //When
         DownloadOrder order = service.from(onlineResources);
@@ -76,43 +72,43 @@ public class DownloadOrderDetailsServiceTest {
         assertThat(order.isOrderable(), is(true));
         assertThat(order.getOrderResources().contains(onlineResource), is(true));
     }
-    
+
     @Test
     public void canDownloadOrderWithDownloadResource() {
         //Given
-        String orderUrl = "http://distrubtion.server.com";
+        String orderUrl = "https://distrubtion.server.com";
         String orderMessage = "Message";
         OnlineResource onlineResource = OnlineResource.builder()
                 .function("download").url(orderUrl).description(orderMessage).build();
-        List<OnlineResource> onlineResources = Arrays.asList(onlineResource);
-        
+        List<OnlineResource> onlineResources = Collections.singletonList(onlineResource);
+
         //When
         DownloadOrder order = service.from(onlineResources);
-        
+
         //Then
         assertThat(order.isOrderable(), is(true));
         assertThat(order.getOrderResources().contains(onlineResource), is(true));
     }
-    
+
     @Test
     public void checkThatOrderableResourceTakesPrecedentOverNonOrderable() {
         //Given
-        String orderUrl = "http://catalogue.ceh.ac.uk/download?fileIdentifier=downloadMe";
+        String orderUrl = "https://catalogue.ceh.ac.uk/download?fileIdentifier=downloadMe";
         String orderMessage = "Message";
         OnlineResource orderable = OnlineResource.builder()
                 .function("order").url(orderUrl).description(orderMessage).build();
         OnlineResource notOrderable = OnlineResource.builder()
                 .function("order").url("SomeOtherUrl").description("notOrderable").build();
         List<OnlineResource> onlineResources = Arrays.asList(orderable, notOrderable);
-        
+
         //When
         DownloadOrder order = service.from(onlineResources);
-        
+
         //Then
         assertThat(order.isOrderable(), is(true));
         assertThat(order.getOrderResources().contains(orderable), is(true));
     }
-    
+
     @Test
     public void readNonOrderableMessage() {
         //Given
@@ -120,27 +116,27 @@ public class DownloadOrderDetailsServiceTest {
         String orderMessage = "Message";
         OnlineResource onlineResource = OnlineResource.builder()
                 .function("offlineAccess").url(orderUrl).description(orderMessage).build();
-        List<OnlineResource> onlineResources = Arrays.asList(onlineResource);
-        
+        List<OnlineResource> onlineResources = Collections.singletonList(onlineResource);
+
         //When
         DownloadOrder order = service.from(onlineResources);
-        
+
         //Then
         assertThat(order.isOrderable(), is(false));
         assertThat(order.getOrderResources().contains(onlineResource), is(true));
     }
-    
+
     @Test
     public void canReadSupportingDocumentation() {
         //Given
         String orderUrl = "https://data-package.ceh.ac.uk/sd/docs";
         OnlineResource onlineResource = OnlineResource.builder()
                 .function("information").url(orderUrl).build();
-        List<OnlineResource> onlineResources = Arrays.asList(onlineResource);
-        
+        List<OnlineResource> onlineResources = Collections.singletonList(onlineResource);
+
         //When
         DownloadOrder order = service.from(onlineResources);
-        
+
         //Then
         assertThat(order.getSupportingDocumentsUrl(), is(equalTo(orderUrl)));
     }

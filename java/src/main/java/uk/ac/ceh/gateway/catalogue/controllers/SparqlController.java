@@ -5,16 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Model;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import uk.ac.ceh.gateway.catalogue.model.SparqlResponse;
 
 @Slf4j
 @ToString
-@Controller
+@RestController
 @RequestMapping("maintenance/sparql")
 @Secured(DocumentController.MAINTENANCE_ROLE)
 public class SparqlController {
@@ -24,15 +20,13 @@ public class SparqlController {
         this.jenaTdb = jenaTdb;
         log.info("Creating {}", this);
     }
-    
-    @RequestMapping(method = RequestMethod.GET)
-    @ResponseBody
+
+    @GetMapping
     public SparqlResponse getSparqlPage() {
         return new SparqlResponse();
     }
-    
-    @RequestMapping(method = RequestMethod.POST)
-    @ResponseBody
+
+    @PostMapping
     public SparqlResponse executeSparqlQuery(@RequestParam(value = "query") String queryStr) {
         SparqlResponse response = new SparqlResponse();
         response.setQuery(queryStr);
@@ -45,7 +39,7 @@ public class SparqlController {
         }
         return response;
     }
-    
+
     private void executeQuery(Query query, SparqlResponse response) {
         jenaTdb.begin(ReadWrite.READ);
         try ( QueryExecution qExec = QueryExecutionFactory.create(query, jenaTdb)) {

@@ -22,13 +22,13 @@ import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ConvertUsing({
-    @Template(called="html/ceh-model.ftl", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
+    @Template(called="html/ceh-model.ftlh", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
 })
 public class CehModel extends AbstractMetadataDocument implements WellKnownText {
-    private String 
+    private String
         primaryPurpose,
-        seniorResponsibleOfficer, 
-        seniorResponsibleOfficerEmail, 
+        seniorResponsibleOfficer,
+        seniorResponsibleOfficerEmail,
         licenseType,
         website,
         codeRepositoryUrl,
@@ -45,7 +45,7 @@ public class CehModel extends AbstractMetadataDocument implements WellKnownText 
         systemMemory,
         documentation,
         releaseDate;
-    
+
     private List<BoundingBox> boundingBoxes;
 
     private List<DataTypeSchema>
@@ -56,11 +56,11 @@ public class CehModel extends AbstractMetadataDocument implements WellKnownText 
         organisations,
         keyInputVariables,
         keyOutputVariables;
-    
+
     private List<OnlineLink> onlineResources;
 
     private List<Reference> references;
-    
+
     private QualityAssurance
         developerTesting,
         internalPeerReview,
@@ -71,11 +71,11 @@ public class CehModel extends AbstractMetadataDocument implements WellKnownText 
         governance,
         transparency,
         periodicReview;
-    
+
     private List<VersionHistory> versionHistories;
     private List<ResponsibleParty> responsibleParties;
     private List<ProjectUsage> projectUsages;
-    
+
     @Data
     public static class Reference {
         private String
@@ -83,7 +83,7 @@ public class CehModel extends AbstractMetadataDocument implements WellKnownText 
             doi,
             nora;
     }
-    
+
     @Data
     public static class QualityAssurance {
         private String
@@ -93,7 +93,7 @@ public class CehModel extends AbstractMetadataDocument implements WellKnownText 
             note,
             date;
     }
-    
+
     @Data
     public static class VersionHistory {
         private String
@@ -101,7 +101,7 @@ public class CehModel extends AbstractMetadataDocument implements WellKnownText 
             note,
             date;
     }
-    
+
     @Data
     public static class ProjectUsage {
         private String

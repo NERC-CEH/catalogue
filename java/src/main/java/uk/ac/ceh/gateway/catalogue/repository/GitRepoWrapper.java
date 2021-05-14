@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.repository;
 import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
@@ -13,6 +14,7 @@ import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 
 @Slf4j
 @ToString
+@Service
 public class GitRepoWrapper {
     private final DataRepository<CatalogueUser> repo;
     private final DocumentInfoMapper<MetadataInfo> documentInfoMapper;

@@ -17,93 +17,216 @@
  */
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import org.junit.jupiter.api.BeforeEach;
+import freemarker.template.Configuration;
+import lombok.SneakyThrows;
+import lombok.val;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.message.BasicHeader;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
-import org.mockito.MockitoAnnotations;
-import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.client.RestTemplate;
-import uk.ac.ceh.gateway.catalogue.model.TransparentProxy;
-import uk.ac.ceh.gateway.catalogue.services.MapServerDetailsService;
+import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
+import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
+import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
+import uk.ac.ceh.gateway.catalogue.model.Catalogue;
+import uk.ac.ceh.gateway.catalogue.ogc.WmsFeatureInfo;
+import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
 
+import java.io.IOException;
+import java.net.URI;
+import java.util.Collections;
+import java.util.HashMap;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static uk.ac.ceh.gateway.catalogue.controllers.MapViewerController.INFO_FORMAT;
+
+@WithMockCatalogueUser
+@ActiveProfiles("test")
+@DisplayName("MapViewerController")
+@Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
+@WebMvcTest(
+    controllers=MapViewerController.class,
+    properties="spring.freemarker.template-loader-path=file:../templates"
+)
 public class MapViewerControllerTest {
-    @Mock RestTemplate rest;
-    @Mock MapServerDetailsService mapServerDetailsService;
-    
-    private MapViewerController controller;
-    
-    @BeforeEach
-    public void init() {
-        MockitoAnnotations.initMocks(this);
-        
-        controller = spy(new MapViewerController(rest, mapServerDetailsService));
+    @MockBean @Qualifier("wms") private RestTemplate rest;
+    @MockBean private CatalogueService catalogueService;
+    @MockBean private CloseableHttpClient httpClient;
+
+    @Autowired private Configuration configuration;
+    @Autowired private MockMvc mockMvc;
+
+    private final String file = "1234-5678";
+
+    private void givenDefaultCatalogue() {
+        given(catalogueService.defaultCatalogue())
+            .willReturn(
+                Catalogue.builder()
+                    .id("default")
+                    .title("test")
+                    .url("https://example.com")
+                    .build()
+            );
     }
-    
-    @Test
-    public void checkThatCanProxyToMapServer() throws URISyntaxException {
-        //Given
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setQueryString("REQUEST=GetMap&FORMAT=image/png");
-        when(mapServerDetailsService.getLocalWMSRequest("file", "REQUEST=GetMap&FORMAT=image/png")).thenReturn("http://rewritten");
-        
-        //When
-        TransparentProxy proxy = (TransparentProxy)controller.wmsService("file", request);
-        
-        //Then
-        assertEquals(proxy.getUri().toString(), "http://rewritten");
+
+    @SneakyThrows
+    private void givenFreemarkerConfiguration() {
+        configuration.setSharedVariable("catalogues", catalogueService);
     }
-    
-    @Test
-    public void checkThatCanIdentifyLocalGetFeatureInfoRequest() {
-        //Given
-        List<NameValuePair> params = new ArrayList<>();
-        params.add(new BasicNameValuePair("REQUEST", "GetFeatureInfo"));
-        params.add(new BasicNameValuePair("SERVICE", "WMS"));
-        params.add(new BasicNameValuePair("INFO_FORMAT", "text/xml"));
-        
-        //When
-        boolean isLocal = controller.isLocalGetFeatureInfoRequest(params);
-        
-        //Then
-        assertTrue(isLocal);
+
+    private void givenGetMapResponse() throws IOException {
+        val response = mock(CloseableHttpResponse.class);
+        val entity = mock(HttpEntity.class);
+        given(response.getEntity())
+            .willReturn(entity);
+        given(entity.getContentType())
+            .willReturn(new BasicHeader("content-type", MediaType.IMAGE_PNG_VALUE));
+        given(httpClient.execute(any(HttpGet.class)))
+            .willReturn(response);
     }
-    
-    @Test
-    public void checkThatCanIdentifyRemoteGetFeatureInfoRequest() {
-        //Given
-        List<NameValuePair> params = new ArrayList<>();
-        params.add(new BasicNameValuePair("REQUEST", "GetFeatureInfo"));
-        params.add(new BasicNameValuePair("SERVICE", "WMS"));
-        params.add(new BasicNameValuePair("INFO_FORMAT", "application/vnd.ogc.xml"));
-        
-        //When
-        boolean isLocal = controller.isLocalGetFeatureInfoRequest(params);
-        
-        //Then
-        assertFalse(isLocal);
+
+    @SneakyThrows
+    private void givenRemoteWmsFeatureInfo() {
+        val response = mock(CloseableHttpResponse.class);
+        val entity = mock(HttpEntity.class);
+        given(response.getEntity())
+            .willReturn(entity);
+        given(entity.getContentType())
+            .willReturn(new BasicHeader("content-type", "application/vnd.ogc.xml"));
+        given(httpClient.execute(any(HttpGet.class)))
+            .willReturn(response);
     }
-    
+
+    private void givenWmsFeatureInfo() {
+        val attributes = new HashMap<String, String>();
+        attributes.put("bar", "green");
+        attributes.put("foo", "red");
+        val feature = new WmsFeatureInfo.Layer.Feature();
+        feature.setAttributes(attributes);
+        val layer = new WmsFeatureInfo.Layer();
+        layer.setName("foo");
+        layer.setFeatures(Collections.singletonList(feature));
+        val wmsFeatureInfo = new WmsFeatureInfo();
+        wmsFeatureInfo.setLayers(Collections.singletonList(layer));
+        given(rest.getForObject(any(URI.class), eq(WmsFeatureInfo.class)))
+            .willReturn(wmsFeatureInfo);
+    }
+
     @Test
-    public void checkThatCanReplaceTheInfoFormatValue() {
+    @SneakyThrows
+    void getMapViewer() {
+        //given
+        givenDefaultCatalogue();
+        givenFreemarkerConfiguration();
+
+        //when
+        mockMvc.perform(
+            get("/maps")
+        )
+            .andExpect(status().isOk())
+            .andExpect(view().name("/html/mapviewer"));
+    }
+
+    @Test
+    @SneakyThrows
+    void getMapRequest() {
         //Given
-        List<NameValuePair> params = new ArrayList<>();
-        params.add(new BasicNameValuePair("REQUEST", "GetFeatureInfo"));
-        params.add(new BasicNameValuePair("INFO_FORMAT", "text/xml"));
-        
+        givenGetMapResponse();
+
         //When
-        String queryString = controller.createQueryStringWithLocalInfoFormat(params, "text/anything");
-        
-        //Then
-        assertEquals(queryString, "REQUEST=GetFeatureInfo&INFO_FORMAT=text%2Fanything");
+        mockMvc.perform(
+            get("/maps/{file}", file)
+                .queryParam("SERVICE", "WMS")
+                .queryParam("VERSION", "1.3.0")
+                .queryParam("REQUEST", "GetMap")
+                .queryParam("LAYERS", "layer0", "layer1")
+                .queryParam("STYLES", "default")
+                .queryParam("CRS", "EPSG:27700")
+                .queryParam("BBOX", "-145.15,21.73,-57.15,58.96")
+                .queryParam("WIDTH", "250")
+                .queryParam("HEIGHT", "250")
+                .queryParam("FORMAT", "image/png")
+        )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.IMAGE_PNG));
+    }
+
+    @Test
+    @SneakyThrows
+    void getFeatureInfoRequest() {
+        //given
+        givenWmsFeatureInfo();
+
+        //when
+        mockMvc.perform(
+            get("/maps/{file}", file)
+                .queryParam("SERVICE", "WMS")
+                .queryParam("VERSION", "1.3.0")
+                .queryParam("REQUEST", "GetFeatureInfo")
+                .queryParam("LAYERS", "layer0", "layer1")
+                .queryParam("STYLES", "default")
+                .queryParam("CRS", "EPSG:27700")
+                .queryParam("BBOX", "-145.15,21.73,-57.15,58.96")
+                .queryParam("WIDTH", "250")
+                .queryParam("HEIGHT", "250")
+                .queryParam("QUERY_LAYERS", "layer0")
+                .queryParam("I", "10")
+                .queryParam("J", "20")
+                .queryParam(INFO_FORMAT, "text/xml")
+        )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType("text/xml"))
+            .andExpect(content().xml("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><FeatureInfoResponse><FIELDS bar=\"green\" foo=\"red\"/></FeatureInfoResponse>"));
+
+        //then
+    }
+
+    @Test
+    @SneakyThrows
+    public void getRemoteGetFeatureInfoRequest() {
+        //given
+        givenRemoteWmsFeatureInfo();
+
+        //when
+        mockMvc.perform(
+            get("/maps/{file}", file)
+                .queryParam("SERVICE", "WMS")
+                .queryParam("VERSION", "1.3.0")
+                .queryParam("REQUEST", "GetFeatureInfo")
+                .queryParam("LAYERS", "layer0", "layer1")
+                .queryParam("STYLES", "default")
+                .queryParam("CRS", "EPSG:27700")
+                .queryParam("BBOX", "-145.15,21.73,-57.15,58.96")
+                .queryParam("WIDTH", "250")
+                .queryParam("HEIGHT", "250")
+                .queryParam("QUERY_LAYERS", "layer0")
+                .queryParam("I", "10")
+                .queryParam("J", "20")
+                .queryParam(INFO_FORMAT, "application/vnd.ogc.xml")
+        )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentType("application/vnd.ogc.xml"));
+
+        //then
+        verifyNoInteractions(rest);
     }
 }

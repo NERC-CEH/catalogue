@@ -66,7 +66,7 @@ public class UploadController {
             model.addAttribute("message", new ErrorMessage(ex.getMessage()));
         }
         log.debug("Model is {}", model);
-        return "html/upload/simple/upload.ftl";
+        return "html/upload/simple/upload";
     }
 
     @GetMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)

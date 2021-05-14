@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Property;
+import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.model.Link;
 
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
  */
 @Slf4j
 @ToString
+@Service
 public class JenaLookupService {
     private final Dataset jenaTdb;
 

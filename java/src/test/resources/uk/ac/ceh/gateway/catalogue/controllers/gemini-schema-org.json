@@ -1,0 +1,17 @@
+{
+  "@type": "Dataset",
+  "name": "Example Gemini Document",
+  "@id": "https://example.com/M3tADATA_ID",
+  "url": "https://example.com/M3tADATA_ID",
+  "provider": {
+    "@type": "Organization",
+    "name": "Environmental Information Data Centre"
+  },
+  "includedInDataCatalog": {
+    "@type": "DataCatalog",
+    "name": "Environmental Information Data Centre",
+    "alternatename": "EIDC",
+    "url": "https://catalogue.ceh.ac.uk/eidc/documents"
+  },
+  "@context": "http://schema.org/"
+}

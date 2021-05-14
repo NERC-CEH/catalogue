@@ -1,69 +1,116 @@
 package uk.ac.ceh.gateway.catalogue.deims;
 
 import lombok.SneakyThrows;
+import lombok.val;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
+import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
+import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
+import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.mockito.Mockito.when;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(MockitoExtension.class)
+@WithMockCatalogueUser
+@ActiveProfiles({"elter", "test"})
+@DisplayName("DeimsSiteSearchController")
+@Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
+@WebMvcTest(DeimsSiteSearchController.class)
 class DeimsSiteSearchControllerTest {
 
     public static final String SITE_1 = "site1";
     public static final String SITE_2 = "site2";
     public static final String QUERY = "queryTest";
+    public static final String PREFIX = "https://example.com/";
 
-    @Mock
+    @MockBean
     private DeimsSolrQueryService deimsService;
 
-    @InjectMocks
-    private DeimsSiteSearchController controller;
+    @Autowired private MockMvc mockMvc;
+
+    @SneakyThrows
+    private void givenQueryResponse() {
+        val site1 = new DeimsSite(SITE_1, PREFIX, "1");
+        val site2 = new DeimsSite(SITE_2, PREFIX, "2");
+
+        given(deimsService.query(QUERY))
+            .willReturn(Arrays.asList(
+                new DeimsSolrIndex(site1),
+                new DeimsSolrIndex(site2)
+            ));
+    }
+
+    @SneakyThrows
+    private void givenQueryResponseNoQuery() {
+        val site1 = new DeimsSite(SITE_1, PREFIX, "1");
+        val site2 = new DeimsSite(SITE_2, PREFIX, "2");
+
+        given(deimsService.query("*"))
+            .willReturn(Arrays.asList(
+                new DeimsSolrIndex(site1),
+                new DeimsSolrIndex(site2)
+            ));
+    }
 
     @Test
-    public void getSitesTest() throws SolrServerException {
+    @SneakyThrows
+    void getSites() {
         //Given
-        List<DeimsSolrIndex> expected = new ArrayList<>();
-        DeimsSite deimsSite1 = new DeimsSite();
-        deimsSite1.setTitle(SITE_1);
-        deimsSite1.setId(new DeimsSite.Id());
-        DeimsSite deimsSite2 = new DeimsSite();
-        deimsSite2.setTitle(SITE_2);
-        deimsSite2.setId(new DeimsSite.Id());
-        DeimsSolrIndex deimsSolrIndex1 = new DeimsSolrIndex(deimsSite1);
-        DeimsSolrIndex deimsSolrIndex2 = new DeimsSolrIndex(deimsSite2);
-        expected.add(deimsSolrIndex1);
-        expected.add(deimsSolrIndex2);
-
-        when(deimsService.query(QUERY)).thenReturn(expected);
+        givenQueryResponse();
+        val expectedResponse = "[{\"title\":\"site1\",\"id\":\"1\",\"url\":\"https://example.com/1\"},{\"title\":\"site2\",\"id\":\"2\",\"url\":\"https://example.com/2\"}]";
 
         //When
-        List<DeimsSolrIndex> result = controller.getSites(QUERY);
+        mockMvc.perform(
+            get("/vocabulary/deims")
+                .queryParam("query", QUERY)
+        )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(content().json(expectedResponse));
+    }
 
-        //Then
-        assertThat(result.get(0).getTitle(), equalTo(SITE_1));
-        assertThat(result.get(1).getTitle(), equalTo(SITE_2));
+    @Test
+    @SneakyThrows
+    void getSitesNoQuery() {
+        //Given
+        givenQueryResponseNoQuery();
+        val expectedResponse = "[{\"title\":\"site1\",\"id\":\"1\",\"url\":\"https://example.com/1\"},{\"title\":\"site2\",\"id\":\"2\",\"url\":\"https://example.com/2\"}]";
+
+        //When
+        mockMvc.perform(
+            get("/vocabulary/deims")
+        )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(content().json(expectedResponse));
     }
 
 
     @Test
     @SneakyThrows
-    public void ThrowSolrServerException() {
+    void ThrowSolrServerException() {
         //Given
-        when(deimsService.query(QUERY)).thenThrow(new SolrServerException("Test"));
+        given(deimsService.query(QUERY)).willThrow(new SolrServerException("Test"));
 
         //When
-        Assertions.assertThrows(SolrServerException.class, () -> {
-            controller.getSites(QUERY);
-        });
+        mockMvc.perform(
+            get("/vocabulary/deims")
+                .queryParam("query", QUERY)
+        )
+            .andExpect(status().isInternalServerError())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(content().json("{\"message\":\"Solr did not respond as expected\"}"));
     }
 }

@@ -3,10 +3,11 @@ package uk.ac.ceh.gateway.catalogue.indexing;
 import freemarker.template.Configuration;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.services.MapServerDetailsService;
 
-import java.util.List;
+import java.util.Optional;
 
 /**
  * The following IndexGenerator is responsible for creating MapFile definitions
@@ -25,7 +26,7 @@ public class MapServerIndexGenerator implements IndexGenerator<MetadataDocument,
     }
 
     /**
-     * If the given MetadataDocument meets the prerequisite requirements to 
+     * If the given MetadataDocument meets the prerequisite requirements to
      * generate a MapFile, then return an instance of it. Otherwise return null
      * indicating that the supplied document can not be used to create a map file
      * @param toIndex document to turn in to a map file
@@ -33,27 +34,28 @@ public class MapServerIndexGenerator implements IndexGenerator<MetadataDocument,
      */
     @Override
     public MapFile generateIndex(MetadataDocument toIndex) {
-        String mapfileTemplate = getMapFileTemplate(toIndex);
-        if(mapfileTemplate != null) {
-            List<String> projSystems = mapServerDetailsService.getProjectionSystems(mapServerDetailsService.getMapDataDefinition(toIndex));
-            return new MapFile(templateConfiguration, mapfileTemplate, projSystems, toIndex);
+        val mapfileTemplate = getMapFileTemplate(toIndex);
+        if(mapfileTemplate.isPresent()) {
+            val definition = mapServerDetailsService.getMapDataDefinition(toIndex);
+            val projSystems = mapServerDetailsService.getProjectionSystems(definition);
+            return new MapFile(templateConfiguration, mapfileTemplate.get(), projSystems, toIndex);
         }
         else {
             return null;
         }
     }
-    
+
     /**
      * Locates the map file template to use for the given document. This method
-     * can safely return null, which means that this metadata document can not 
+     * can safely return null, which means that this metadata document can not
      * have map services created for it.
      * @param document to locate a map file template for
      * @return A map file template or null
      */
-    public String getMapFileTemplate(MetadataDocument document) {
+    private Optional<String> getMapFileTemplate(MetadataDocument document) {
         if(mapServerDetailsService.isMapServiceHostable(document)) {
-            return "mapfile/service.map.tpl";
+            return Optional.of("mapfile/service.map.ftl");
         }
-        return null;
+        return Optional.empty();
     }
 }

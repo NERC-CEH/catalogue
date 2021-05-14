@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Value;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
@@ -8,7 +7,6 @@ import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndex;
-import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,25 +17,23 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * A search results object for documents
  */
 @ConvertUsing({
-    @Template(called = "/html/search.ftl", whenRequestedAs = MediaType.TEXT_HTML_VALUE)
+    @Template(called = "/html/search.ftlh", whenRequestedAs = MediaType.TEXT_HTML_VALUE)
 })
 @Value
 public class SearchResults {
 
-    private final long numFound;
-    private final String term;
-    private final int page;
-    private final int rows;
-    private final String url;
-    private final String withoutBbox;
-    private final String intersectingBbox;
-    private final String withinBbox;
-    private final String prevPage;
-    private final String nextPage;
-    private final List<SolrIndex> results;
-    private final List<Facet> facets;
-    @JsonIgnore
-    private final Catalogue catalogue;
+    long numFound;
+    String term;
+    int page;
+    int rows;
+    String url;
+    String withoutBbox;
+    String intersectingBbox;
+    String withinBbox;
+    String prevPage;
+    String nextPage;
+    List<SolrIndex> results;
+    List<Facet> facets;
 
     public SearchResults(QueryResponse response, SearchQuery query) {
         checkNotNull(response);
@@ -54,7 +50,6 @@ public class SearchResults {
         this.nextPage = populateNextPage(query);
         this.results = response.getBeans(SolrIndex.class);
         this.facets = populateFacets(response, query);
-        this.catalogue = query.getCatalogue();
     }
     
     private long populateNumFound(QueryResponse response) {
@@ -84,7 +79,7 @@ public class SearchResults {
      * @return A link to the next page if there is one to go to.
      */
     private String populateNextPage(SearchQuery query) {
-        if(numFound > page * rows) {
+        if(numFound > (long) page * rows) {
             return query.withPage(getPage() + 1).toUrl();
         }
         else {

@@ -4,10 +4,17 @@ import lombok.Data;
 
 @Data
 class DeimsSite {
-    String title;
-    Id id;
-    String coordinates;
-    String changed;
+    private String title;
+    private Id id;
+    private String coordinates;
+    private String changed;
+
+    public DeimsSite() {}
+
+    public DeimsSite(String title, String prefix, String suffix) {
+        this.title = title;
+        this.id = new Id(prefix, suffix);
+    }
 
     public String getIdentifier() {
         return id.getSuffix();
@@ -19,8 +26,14 @@ class DeimsSite {
 
     @Data
     static class Id {
+        private String prefix;
+        private String suffix;
 
-        String prefix;
-        String suffix;
+        public Id() {}
+
+        public Id(String prefix, String suffix) {
+            this.prefix = prefix;
+            this.suffix = suffix;
+        }
     }
 }

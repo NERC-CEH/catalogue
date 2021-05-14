@@ -1,9 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.validation;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
 
@@ -16,13 +16,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 public class MediaTypeValidatorTest {
     @Mock DocumentWritingService writer;
-    
-    @BeforeEach
-    public void init() {
-        MockitoAnnotations.initMocks(this);
-    }
     
     @Test
     public void checkThatReturnsABadValidationIfCantRead() throws IOException {

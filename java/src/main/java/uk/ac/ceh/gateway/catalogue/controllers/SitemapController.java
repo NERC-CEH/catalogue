@@ -4,9 +4,8 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
@@ -36,10 +35,10 @@ public class SitemapController {
         this.catalogueService = catalogueService;
         this.identifierService = identifierService;
         this.listingService = listingService;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
-    @RequestMapping(value = "robots.txt", method = RequestMethod.GET)
+    @GetMapping("robots.txt")
     public ModelAndView robots(
         HttpServletResponse response
     ) {
@@ -53,10 +52,10 @@ public class SitemapController {
         Map<String, Object> model = new HashMap<>();
         model.put("catalogues", catalogues);
         model.put("baseUri", identifierService.getBaseUri());
-        return new ModelAndView("/sitemap/robots.txt.tpl", model);
+        return new ModelAndView("sitemap/robots.txt", model);
     }
 
-    @RequestMapping(value = "{catalogue}/sitemap.txt", method = RequestMethod.GET)
+    @GetMapping("{catalogue}/sitemap.txt")
     public ModelAndView sitemap(
         @PathVariable("catalogue") String catalogue,
         HttpServletResponse response
@@ -69,7 +68,7 @@ public class SitemapController {
             .stream()
             .map(id -> identifierService.generateUri(id))
             .collect(Collectors.toList());
-        return new ModelAndView("/sitemap/sitemap.txt.tpl", "urls", urls);
+        return new ModelAndView("sitemap/sitemap.txt", "urls", urls);
     }
 
 }

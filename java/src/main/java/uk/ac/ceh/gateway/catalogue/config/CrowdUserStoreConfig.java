@@ -1,7 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,31 +17,28 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 @Profile("auth:crowd")
 @Slf4j
 public class CrowdUserStoreConfig {
-    @Value("${crowd.address}")
-    String address;
-    @Value("${crowd.username}")
-    String username;
-    @Value("${crowd.password}")
-    String password;
-
-    @Autowired
-    AnnotatedUserHelper<CatalogueUser> phantomUserBuilderFactory;
 
     @Bean
-    public GroupStore<CatalogueUser> groupStore() {
+    public GroupStore<CatalogueUser> groupStore(
+        @Value("${crowd.address}") String address,
+        @Value("${crowd.username}") String username,
+        @Value("${crowd.password}") String password
+    ) {
         log.info("Creating CrowdGroupStore(address={}, username={})", address, username);
-        return new CrowdGroupStore<>(crowdCredentials());
-    }
-    
-    @Bean
-    public UserStore<CatalogueUser> userStore() {
-        return new CrowdUserStore<>(crowdCredentials(), 
-                                    phantomUserBuilderFactory, 
-                                    phantomUserBuilderFactory);
+        return new CrowdGroupStore<>(new CrowdApplicationCredentials(address, username, password));
     }
 
     @Bean
-    public CrowdApplicationCredentials crowdCredentials() {
-        return new CrowdApplicationCredentials(address, username, password);
+    public UserStore<CatalogueUser> userStore(
+        @Value("${crowd.address}") String address,
+        @Value("${crowd.username}") String username,
+        @Value("${crowd.password}") String password,
+        AnnotatedUserHelper<CatalogueUser> phantomUserBuilderFactory
+    ) {
+        return new CrowdUserStore<>(
+            new CrowdApplicationCredentials(address, username, password),
+            phantomUserBuilderFactory,
+            phantomUserBuilderFactory
+        );
     }
 }

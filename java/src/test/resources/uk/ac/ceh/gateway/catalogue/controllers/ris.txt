@@ -1,0 +1,8 @@
+TY  - DATA
+T1  - Land and Water
+AU  - Foo
+AU  - Bar
+PY  - 2020
+PB  - BOB
+UR  - https://doi.org/1234:45553
+ER  -

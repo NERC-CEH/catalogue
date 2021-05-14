@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.erammp;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.springframework.http.MediaType;
@@ -12,7 +13,6 @@ import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.indexing.WellKnownText;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.OnlineLink;
-import uk.ac.ceh.gateway.catalogue.erammp.ErammpModelParameters;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 
 import java.util.Collections;
@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 @ToString(callSuper = true)
 @Accessors(chain = true)
 @ConvertUsing({
-  @Template(called="html/erammp/erammp_model.ftl", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
+  @Template(called="html/erammp/erammp_model.ftlh", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
 })
 public class ErammpModel extends AbstractMetadataDocument implements WellKnownText {
   private String modelApproach, version, ipr, spatialResolution, runtimeTotal, runtimeWales, runtimeOptimisation, calibrationEffort, futureRun, integrationExperience, integrationHistory;
@@ -39,7 +39,7 @@ public class ErammpModel extends AbstractMetadataDocument implements WellKnownTe
   private boolean spatiallyExplicit, calibratedForWales;
 
   @Override
-  public List<String> getWKTs() {
+  public @NonNull List<String> getWKTs() {
     return Optional.ofNullable(boundingBoxes)
         .orElse(Collections.emptyList())
         .stream()

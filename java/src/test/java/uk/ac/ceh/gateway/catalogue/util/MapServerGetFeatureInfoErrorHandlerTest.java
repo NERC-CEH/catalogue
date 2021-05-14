@@ -8,11 +8,10 @@ import org.springframework.http.client.ClientHttpResponse;
 import uk.ac.ceh.gateway.catalogue.model.MapServerException;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.MAPSERVER_GML_VALUE;
+import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.MAPSERVER_GML_VALUE;
 
 public class MapServerGetFeatureInfoErrorHandlerTest {
     private MapServerGetFeatureInfoErrorHandler handler;
@@ -23,7 +22,7 @@ public class MapServerGetFeatureInfoErrorHandlerTest {
     }
     
     @Test
-    public void checkThatGMLMediaTypeIsFine() throws IOException {
+    public void checkThatGMLMediaTypeIsFine() {
         //Given
         ClientHttpResponse response = mock(ClientHttpResponse.class, RETURNS_DEEP_STUBS);
         when(response.getHeaders().getContentType()).thenReturn(MediaType.parseMediaType(MAPSERVER_GML_VALUE));
@@ -37,7 +36,7 @@ public class MapServerGetFeatureInfoErrorHandlerTest {
     
     
     @Test
-    public void checkThatXMLMediaTypeIsFine() throws IOException {
+    public void checkThatXMLMediaTypeIsFine() {
         //Given
         ClientHttpResponse response = mock(ClientHttpResponse.class, RETURNS_DEEP_STUBS);
         when(response.getHeaders().getContentType()).thenReturn(MediaType.TEXT_XML);
@@ -50,7 +49,7 @@ public class MapServerGetFeatureInfoErrorHandlerTest {
     }
     
     @Test
-    public void checkThatErrorThrowsException() throws IOException {
+    public void checkThatErrorThrowsException() {
         Assertions.assertThrows(MapServerException.class, () -> {
             //Given
             ClientHttpResponse response = mock(ClientHttpResponse.class, RETURNS_DEEP_STUBS);

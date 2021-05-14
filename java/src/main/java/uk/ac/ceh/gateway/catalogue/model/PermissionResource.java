@@ -3,37 +3,34 @@ package uk.ac.ceh.gateway.catalogue.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Strings;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import lombok.Value;
 import lombok.Builder;
 import lombok.NonNull;
+import lombok.Value;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.model.PermissionResource.IdentityPermissions.IdentityPermissionsBuilder;
 
+import java.util.*;
+
 @ConvertUsing({
-    @Template(called="html/permission.ftl", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
+    @Template(called="html/permission.ftlh", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
 })
 @Value
 public class PermissionResource {
-    private final String id, catalogue;
-    private final Set<IdentityPermissions> permissions;
-    
+    String id, catalogue;
+    Set<IdentityPermissions> permissions;
+
     public PermissionResource(@NonNull MetadataDocument document) {
         MetadataInfo info = Objects.requireNonNull(document.getMetadata());
         this.id = document.getId();
         this.catalogue = document.getCatalogue();
         this.permissions = createPermissions(info);
     }
-    
+
     @JsonCreator
     private PermissionResource(
-        @JsonProperty("id") String id, 
+        @JsonProperty("id") String id,
         @JsonProperty("catalogue") String catalogue,
         @JsonProperty("permissions") Set<IdentityPermissions> permissions
     ){
@@ -41,7 +38,7 @@ public class PermissionResource {
         this.catalogue = catalogue;
         this.permissions = permissions;
     }
-    
+
     public MetadataInfo updatePermissions(@NonNull MetadataInfo original) {
         return original.replaceAllPermissions(permissions);
     }
@@ -49,21 +46,18 @@ public class PermissionResource {
     private Set<IdentityPermissions> createPermissions(MetadataInfo info) {
         Set<IdentityPermissions> toReturn = new HashSet<>();
         Map<String, IdentityPermissions.IdentityPermissionsBuilder> builders = new HashMap<>();
-        
+
         addPermissions(info, builders, Permission.VIEW);
         addPermissions(info, builders, Permission.EDIT);
         addPermissions(info, builders, Permission.DELETE);
         addPermissions(info, builders, Permission.UPLOAD);
-        
-        builders.forEach((k, v) -> {
-            toReturn.add(v.build());
-        });
+
+        builders.forEach((k, v) -> toReturn.add(v.build()));
         return toReturn;
     }
-    
+
     private void addPermissions(MetadataInfo info, Map<String, IdentityPermissionsBuilder> builders, Permission permission) {
         info.getIdentities(permission)
-            .stream()
             .forEach(v -> {
                 IdentityPermissions.IdentityPermissionsBuilder builder;
                 if (builders.containsKey(v)) {
@@ -91,8 +85,8 @@ public class PermissionResource {
 
     @Value
     public static class IdentityPermissions {
-        private final String identity;
-        private final boolean canView, canEdit, canDelete, canUpload;
+        String identity;
+        boolean canView, canEdit, canDelete, canUpload;
 
         @Builder
         @JsonCreator

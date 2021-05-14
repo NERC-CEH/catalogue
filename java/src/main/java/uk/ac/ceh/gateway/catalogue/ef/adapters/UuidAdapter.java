@@ -1,12 +1,12 @@
 package uk.ac.ceh.gateway.catalogue.ef.adapters;
 
-import java.util.UUID;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
+import java.util.UUID;
 
 public class UuidAdapter extends XmlAdapter<String, UUID>{
 
     @Override
-    public UUID unmarshal(String v) throws Exception {
+    public UUID unmarshal(String v) {
         if (v.isEmpty()) {
             return null;
         } else {
@@ -15,7 +15,7 @@ public class UuidAdapter extends XmlAdapter<String, UUID>{
     }
 
     @Override
-    public String marshal(UUID v) throws Exception {
+    public String marshal(UUID v) {
         return v.toString();
     }
 }

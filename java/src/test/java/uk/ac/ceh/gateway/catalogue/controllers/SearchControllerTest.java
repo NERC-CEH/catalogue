@@ -1,46 +1,64 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
+import freemarker.template.Configuration;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.apache.solr.client.solrj.SolrClient;
-import org.junit.jupiter.api.BeforeEach;
+import org.apache.solr.client.solrj.SolrRequest;
+import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.params.SolrParams;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.web.servlet.view.RedirectView;
-import uk.ac.ceh.components.userstore.GroupStore;
+import org.mockito.Answers;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
+import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
+import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
+import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
+import uk.ac.ceh.gateway.catalogue.indexing.SolrIndex;
 import uk.ac.ceh.gateway.catalogue.model.Catalogue;
-import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.search.FacetFactory;
 import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
+import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.UNPRIVILEGED_USERNAME;
 
-@ExtendWith(MockitoExtension.class)
-public class SearchControllerTest {
-    @Mock private SolrClient solrClient;
-    @Mock private GroupStore<CatalogueUser> groupStore;
-    @Mock private CatalogueService catalogueService;
-    @Mock private FacetFactory facetFactory;
-    private SearchController controller;
-    
-    @BeforeEach
-    public void setup() {
-        controller = new SearchController(solrClient, groupStore, catalogueService, facetFactory);
-    }
+@WithMockCatalogueUser
+@Slf4j
+@ActiveProfiles("test")
+@DisplayName("SearchController")
+@Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
+@WebMvcTest(
+    controllers=SearchController.class,
+    properties="spring.freemarker.template-loader-path=file:../templates"
+)
+class SearchControllerTest {
+    @MockBean private SolrClient solrClient;
+    @MockBean private CatalogueService catalogueService;
+    @MockBean private FacetFactory facetFactory;
+    @MockBean private CodeLookupService codeLookupService;
 
-    @Test
-    public void redirectToDefaultCatalogue() {
-        //given
-        HttpServletRequest request = new MockHttpServletRequest(
-            "GET",
-            "/documents"
-        );
+    @Autowired private MockMvc mockMvc;
+    @Autowired Configuration configuration;
+
+    private final String catalogueKey = "eidc";
+
+    private void givenDefaultCatalogue() {
         given(catalogueService.defaultCatalogue())
             .willReturn(
                 Catalogue.builder()
@@ -49,17 +67,146 @@ public class SearchControllerTest {
                     .url("http://example.com")
                     .build()
             );
-        
-        //when
-        RedirectView actual = controller.redirectToDefaultCatalogue(request);
-        
-        //then
-        verify(catalogueService).defaultCatalogue();
-        assertThat(
-            "Redirect url should be: http://localhost/default/documents",
-            actual.getUrl(),
-            equalTo("http://localhost/default/documents")
-        );
     }
-    
+
+    private void givenCatalogue() {
+        given(catalogueService.retrieve(catalogueKey))
+            .willReturn(
+                Catalogue.builder()
+                    .id(catalogueKey)
+                    .title("Env Data Centre")
+                    .url("https://example.com")
+                    .build()
+            );
+    }
+
+    @SneakyThrows
+    private void givenFreemarkerConfiguration() {
+        configuration.setSharedVariable("catalogues", catalogueService);
+        configuration.setSharedVariable("codes", codeLookupService);
+    }
+
+    @SneakyThrows
+    private void givenSearchResults() {
+        given(solrClient.query(eq("documents"), any(SolrParams.class), eq(SolrRequest.METHOD.POST)))
+            .willReturn(mock(QueryResponse.class, Answers.RETURNS_DEEP_STUBS));
+    }
+
+    @SneakyThrows
+    private void givenSearchResultsWithResults() {
+        val results = Arrays.asList(
+            create("0"),
+            create("1")
+        );
+        val queryResponse = mock(QueryResponse.class, Answers.RETURNS_DEEP_STUBS);
+        given(queryResponse.getBeans(SolrIndex.class)).willReturn(results);
+        given(solrClient.query(eq("documents"), any(SolrParams.class), eq(SolrRequest.METHOD.POST)))
+            .willReturn(queryResponse);
+        given(codeLookupService.lookup("publication.state", "public")).willReturn("Public");
+    }
+
+    private SolrIndex create(String id) {
+        val solrIndex = new SolrIndex();
+        solrIndex.setIdentifier(id);
+        solrIndex.setTitle("title-" + id);
+        solrIndex.setState("public");
+        return solrIndex;
+    }
+
+    @Test
+    @DisplayName("redirect to default catalogue")
+    @SneakyThrows
+    void redirectToDefaultCatalogue() {
+        //given
+        givenDefaultCatalogue();
+
+        //when
+        mockMvc.perform(get("/documents"))
+            .andExpect(status().is3xxRedirection())
+            .andExpect(header().string("location", "http://localhost/default/documents"));
+
+        //then
+        verifyNoInteractions(solrClient, facetFactory);
+    }
+
+    @Test
+    @DisplayName("GET search page as html")
+    @SneakyThrows
+    void getSearchPageHtml() {
+        //given
+        givenCatalogue();
+        givenDefaultCatalogue();
+        givenSearchResultsWithResults();
+        givenFreemarkerConfiguration();
+
+
+        //when
+        mockMvc.perform(
+            get("/{catalogue}/documents", catalogueKey)
+                .accept(MediaType.TEXT_HTML)
+        )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.TEXT_HTML));
+    }
+
+    @Test
+    @DisplayName("GET search results as JSON")
+    @SneakyThrows
+    void getSearchResultsJson() {
+        //given
+        givenCatalogue();
+        givenSearchResults();
+
+        //when
+        mockMvc.perform(
+            get("/{catalogue}/documents", catalogueKey)
+                .header("remote-user", UNPRIVILEGED_USERNAME)
+                .accept(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    @DisplayName("GET search results as JSON using query parameter")
+    @SneakyThrows
+    void getSearchResultsJsonFromParameter() {
+        //given
+        givenCatalogue();
+        givenSearchResults();
+
+        //when
+        mockMvc.perform(
+            get("/{catalogue}/documents", catalogueKey)
+                .header("remote-user", UNPRIVILEGED_USERNAME)
+                .param("format", "json")
+        )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    @DisplayName("GET search results for query")
+    @SneakyThrows
+    void getSearchResultsJsonWithQuery() {
+        //given
+        givenCatalogue();
+        givenSearchResults();
+
+        //when
+        mockMvc.perform(
+            get("/{catalogue}/documents", catalogueKey)
+                .header("remote-user", UNPRIVILEGED_USERNAME)
+                .accept(MediaType.APPLICATION_JSON)
+                .param("term", "herring")
+                .param("bbox", "coordinates")
+                .param("op", "IsWithin")
+                .param("page", "3")
+                .param("rows", "33")
+
+        )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
 }

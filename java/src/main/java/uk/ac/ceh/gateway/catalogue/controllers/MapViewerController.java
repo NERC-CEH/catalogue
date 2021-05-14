@@ -1,29 +1,29 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
+import com.google.common.collect.ImmutableSet;
+import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.message.BasicNameValuePair;
+import lombok.val;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.gateway.catalogue.model.TransparentProxy;
 import uk.ac.ceh.gateway.catalogue.ogc.WmsFeatureInfo;
-import uk.ac.ceh.gateway.catalogue.services.MapServerDetailsService;
 
-import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
+import java.util.Set;
 
-import static uk.ac.ceh.gateway.catalogue.config.WebConfig.MAPSERVER_GML_VALUE;
+import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.MAPSERVER_GML_VALUE;
 
 /**
- * The following simple controller just hands off a request to on of our 
+ * The following simple controller just hands off a request to on of our
  * templates
  */
 @Slf4j
@@ -32,56 +32,61 @@ import static uk.ac.ceh.gateway.catalogue.config.WebConfig.MAPSERVER_GML_VALUE;
 @Controller
 @RequestMapping(value="maps")
 public class MapViewerController {
-    private final static String INFO_FORMAT = "INFO_FORMAT";
-    private final RestTemplate rest;
-    private final MapServerDetailsService mapServerDetailsService;
+    public static final String INFO_FORMAT = "INFO_FORMAT";
+    public static final String MAPSERVER = "http://mapserver/{id}";
+    private final static Set<String> LOCAL_INFO_FORMATS = ImmutableSet.of("text/xml", "application/json");
 
-    public MapViewerController(@Qualifier("wms") RestTemplate rest, MapServerDetailsService mapServerDetailsService) {
+    private final RestTemplate rest;
+
+    public MapViewerController(@Qualifier("wms") RestTemplate rest) {
         this.rest = rest;
-        this.mapServerDetailsService = mapServerDetailsService;
         log.info("Creating {}", this);
     }
-   
-    @RequestMapping(method = RequestMethod.GET)
+
+    @GetMapping
     public String loadMapViewer() {
-        return "/html/mapviewer.ftl";
+        return "/html/mapviewer";
     }
-    
-    @RequestMapping (value = "{file}")
+
+    @RequestMapping(value = "{file}")
     @ResponseBody
+    @SneakyThrows
     public Object wmsService(
             @PathVariable("file") String file,
-            HttpServletRequest request) throws URISyntaxException {
-        List<NameValuePair> params = URLEncodedUtils.parse(request.getQueryString(), StandardCharsets.UTF_8, '&');
-        
-        if(isLocalGetFeatureInfoRequest(params)) {
-            String query = createQueryStringWithLocalInfoFormat(params, MAPSERVER_GML_VALUE);
-            URI url = new URI(mapServerDetailsService.getLocalWMSRequest(file, query));
+            @RequestParam MultiValueMap<String, String> params
+    ) {
+        if (log.isDebugEnabled()) {
+            params.forEach((String name, List<String> values) -> log.debug("{} + {}", name, values));
+        }
+
+        if (isLocalGetFeatureInfoRequest(params)) {
+            params.set(INFO_FORMAT, MAPSERVER_GML_VALUE);
+            URI url = getLocalWMSRequest(file, params);
+            log.debug("local WMS request: {}", url);
             return rest.getForObject(url, WmsFeatureInfo.class);
         }
-        return new TransparentProxy(mapServerDetailsService.getLocalWMSRequest(file, request.getQueryString()));
+        return new TransparentProxy(getLocalWMSRequest(file, params), null);
     }
-    
-    public String createQueryStringWithLocalInfoFormat(List<NameValuePair> orig, String format) {
-        List<NameValuePair> params = orig.stream()
-                .filter((p) -> !p.getName().equalsIgnoreCase(INFO_FORMAT))
-                .collect(Collectors.toList());
-        params.add(new BasicNameValuePair("INFO_FORMAT", format));
-        return URLEncodedUtils.format(params, StandardCharsets.UTF_8);
+
+    private boolean isLocalGetFeatureInfoRequest(MultiValueMap<String, String> params) {
+        val isWms = Optional.ofNullable(params.getFirst("SERVICE"))
+            .orElse("")
+            .equalsIgnoreCase("wms");
+        val isFeatureInfo = Optional.ofNullable(params.getFirst("REQUEST"))
+            .orElse("")
+            .equalsIgnoreCase("getFeatureInfo");
+        val isInfoFormat = Optional.ofNullable(params.get(INFO_FORMAT))
+            .orElse(Collections.emptyList()).stream()
+            .anyMatch(LOCAL_INFO_FORMATS::contains);
+        log.debug("is WMS? {}, featureInfo? {}, infoFormat? {}", isWms, isFeatureInfo, isInfoFormat);
+        return isWms && isFeatureInfo && isInfoFormat;
     }
-    
-    public boolean isLocalGetFeatureInfoRequest(List<NameValuePair> params) {
-        return  isSetting(params, "SERVICE", "WMS") &&
-                isSetting(params, "REQUEST", "GetFeatureInfo") &&
-                (
-                    isSetting(params, INFO_FORMAT, "text/xml") ||
-                    isSetting(params, INFO_FORMAT, "application/json")
-                );
-    }
-    
-    private boolean isSetting(List<NameValuePair> params, String key, String val) {
-        return params.stream()
-                .filter((p) -> p.getName().equalsIgnoreCase(key))
-                .anyMatch((p) -> p.getValue().equalsIgnoreCase(val));
+
+    private URI getLocalWMSRequest(String id, MultiValueMap<String, String> params) {
+        return UriComponentsBuilder
+            .fromHttpUrl(MAPSERVER)
+            .queryParams(params)
+            .buildAndExpand(id)
+            .toUri();
     }
 }

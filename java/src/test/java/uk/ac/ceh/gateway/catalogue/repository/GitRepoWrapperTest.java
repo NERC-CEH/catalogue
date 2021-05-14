@@ -1,15 +1,10 @@
 package uk.ac.ceh.gateway.catalogue.repository;
 
-import java.io.OutputStream;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.components.datastore.DataOngoingCommit;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
@@ -18,17 +13,20 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
 
+import java.io.OutputStream;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
+@ExtendWith(MockitoExtension.class)
 public class GitRepoWrapperTest {
     @Mock private DataRepository<CatalogueUser> repo;
     @Mock private DocumentInfoMapper<MetadataInfo> documentInfoMapper;
     
-    private GitRepoWrapper repoWrapper;
-    
-    @BeforeEach
-    public void setup() {
-        MockitoAnnotations.initMocks(this);
-        repoWrapper = new GitRepoWrapper(repo, documentInfoMapper);
-    }
+    @InjectMocks private GitRepoWrapper repoWrapper;
 
     @Test
     public void canSave() throws DataRepositoryException {

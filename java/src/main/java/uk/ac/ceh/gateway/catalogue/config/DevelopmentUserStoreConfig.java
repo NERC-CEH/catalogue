@@ -23,8 +23,15 @@ import java.util.Arrays;
 
  */
 @Configuration
-@Profile("development")
+@Profile({"development", "test"})
 public class DevelopmentUserStoreConfig {
+    // Usernames used in tests
+    public static final String ADMIN = "admin";
+    public static final String EIDC_PUBLISHER_USERNAME = "eidc-publisher";
+    public static final String UNPRIVILEGED_USERNAME = "unprivileged";
+    public static final String UPLOADER_USERNAME = "uploader";
+
+
     public static final String CEH_GROUP_NAME = "CEH";
     public static final String DATACITE_ROLE = DataciteController.DATACITE_ROLE;
     public static final String MAINTENANCE_ROLE = DocumentController.MAINTENANCE_ROLE;
@@ -64,7 +71,7 @@ public class DevelopmentUserStoreConfig {
     @PostConstruct
     public void admin() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser()
-            .setUsername("admin")
+            .setUsername(ADMIN)
             .setEmail("admin@ceh.ac.uk");
         addUserToGroup(user, MAINTENANCE_ROLE);
         userStore().addUser(user, "password");
@@ -136,7 +143,7 @@ public class DevelopmentUserStoreConfig {
     @PostConstruct
     public void eidcPublisher() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser()
-            .setUsername("eidc-publisher")
+            .setUsername(EIDC_PUBLISHER_USERNAME)
             .setEmail("eidc-publisher@ceh.ac.uk");
         addUserToGroup(user, DATACITE_ROLE, EIDC_EDITOR, EIDC_PUBLISHER);
         userStore().addUser(user, "password");
@@ -263,7 +270,7 @@ public class DevelopmentUserStoreConfig {
     public void unprivilegedUser() throws UsernameAlreadyTakenException {
         // Used in UploadControllerTest to check upload permissions
         val user = new CatalogueUser()
-            .setUsername("unprivileged")
+            .setUsername(UNPRIVILEGED_USERNAME)
             .setEmail("unprivileged@example.com");
         userStore().addUser(user, "password");
     }
@@ -272,7 +279,7 @@ public class DevelopmentUserStoreConfig {
     public void uploader() throws UsernameAlreadyTakenException {
         // Used in UploadControllerTest to check upload permissions
         val user = new CatalogueUser()
-            .setUsername("uploader")
+            .setUsername(UPLOADER_USERNAME)
             .setEmail("uploader@example.com");
         userStore().addUser(user, "password");
     }

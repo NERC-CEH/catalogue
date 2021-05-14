@@ -1,27 +1,55 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
+import freemarker.template.Configuration;
+import lombok.SneakyThrows;
+import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.util.StreamUtils;
+import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
+import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
+import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
+import uk.ac.ceh.gateway.catalogue.ef.*;
+import uk.ac.ceh.gateway.catalogue.erammp.ErammpDatacube;
+import uk.ac.ceh.gateway.catalogue.erammp.ErammpModel;
+import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.imp.CaseStudy;
 import uk.ac.ceh.gateway.catalogue.imp.Model;
-import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.model.LinkDocument;
-import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.imp.ModelApplication;
+import uk.ac.ceh.gateway.catalogue.model.*;
+import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
+import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
+import uk.ac.ceh.gateway.catalogue.osdp.*;
+import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
+import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
+import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
+import uk.ac.ceh.gateway.catalogue.services.JenaLookupService;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -30,73 +58,344 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.http.MediaType.TEXT_HTML;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.*;
+import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.EIDC_PUBLISHER_USERNAME;
 
-public class DocumentControllerTest {
-    
-    @Mock DocumentRepository documentRepository;
+@WithMockCatalogueUser
+@ActiveProfiles("test")
+@DisplayName("DocumentController")
+@Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
+@WebMvcTest(
+    controllers=DocumentController.class,
+    properties="spring.freemarker.template-loader-path=file:../templates"
+)
+class DocumentControllerTest {
+    @MockBean private CatalogueService catalogueService;
+    @MockBean private CodeLookupService codeLookupService;
+    @MockBean private DocumentRepository documentRepository;
+    @MockBean private JenaLookupService jenaLookupService;
+    @MockBean(name="permission") private PermissionService permissionService;
+
+    @Autowired private MockMvc mockMvc;
+    @Autowired private Configuration configuration;
+
     private DocumentController controller;
     private final String linkedDocumentId = "0a6c7c4c-0515-40a8-b84e-7ffe622b2579";
-    
+    private final String id = "fe26bd48-0f81-4a37-8a28-58427b7e20bd";
+    private final String catalogueKey = "eidc";
+    public static final String HTML = "html";
+    public static final String JSON = "json";
+
     @BeforeEach
-    public void initMocks() throws IOException {
-        MockitoAnnotations.initMocks(this);
+    void setup() {
         controller = new DocumentController(documentRepository);
     }
 
-    @Test
-    public void checkItCanRewriteIdToDocumentWithFileExtension() {
-        //Given
-        String id = "M3tADATA_ID";
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setServerName("hostname");
-        request.setPathInfo("id/" + id + ".xml");
-        request.setQueryString("query=string");
-
-        //When
-        RedirectView view = controller.redirectXmlToResource(id, request);
-
-        //Then
-        assertThat(view.getUrl(), equalTo("https://hostname/documents/M3tADATA_ID.xml?query=string"));
+    private void givenUserIsPermittedToView() {
+        given(permissionService.toAccess(any(CatalogueUser.class), eq(id), eq("VIEW")))
+            .willReturn(true);
     }
-    
-    @Test
-    public void checkItCanRewriteIdToDocument() {
-        //Given
-        String id = "M3tADATA_ID";
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setServerName("hostname");
-        request.setPathInfo("id/" + id);
-        request.setQueryString("query=string");
-        
-        //When
-        RedirectView view = controller.redirectToResource(id, request);
-        
-        //Then
-        assertThat(view.getUrl(), equalTo("https://hostname/documents/M3tADATA_ID?query=string"));
+
+    @SneakyThrows
+    private void givenFreemarkerConfiguration() {
+        configuration.setSharedVariable("catalogues", catalogueService);
+        configuration.setSharedVariable("codes", codeLookupService);
+        configuration.setSharedVariable("jena", jenaLookupService);
+        configuration.setSharedVariable("permission", permissionService);
     }
-     
+
+    private void givenCatalogue() {
+        given(catalogueService.retrieve(catalogueKey))
+            .willReturn(
+                Catalogue.builder()
+                    .id(catalogueKey)
+                    .title("Env Data Centre")
+                    .url("https://example.com")
+                    .build()
+            );
+    }
+
+    private void givenDefaultCatalogue() {
+        given(catalogueService.defaultCatalogue())
+            .willReturn(
+                Catalogue.builder()
+                    .id(catalogueKey)
+                    .title("Env Data Centre")
+                    .url("https://example.com")
+                    .build()
+            );
+    }
+
+    private void givenCodeLookup() {
+        given(codeLookupService.lookup("metadata.recordType", "dataset"))
+            .willReturn("Dataset");
+        given(codeLookupService.lookup("publication.state", "public"))
+            .willReturn("Public");
+    }
+
+    @SneakyThrows
+    private String expectedResponse(String filename) {
+        return StreamUtils.copyToString(
+            getClass().getResourceAsStream(filename),
+            StandardCharsets.UTF_8
+        );
+    }
+
+    @SneakyThrows
+    private void givenMetadataDocument(MetadataDocument doc) {
+        doc.setId(id);
+        doc.setTitle("Test title");
+        doc.setDescription("Some description");
+        doc.setUri("https://example.com/" + id);
+        doc.setMetadataDate(LocalDateTime.of(2021, 5, 12, 9, 30, 23));
+        doc.setMetadata(MetadataInfo.builder()
+            .catalogue(catalogueKey)
+            .state("public")
+            .build());
+        given(documentRepository.read(id))
+            .willReturn(doc);
+    }
+
+    @SuppressWarnings("unused")
+    private static Stream<Arguments> provideMetadataDocuments() {
+        val activity = new Activity();
+        activity.setEfMetadata(new Metadata());
+
+        val facility = new Facility();
+        facility.setEfMetadata(new Metadata());
+
+        val gemini = new GeminiDocument();
+        gemini.setType("dataset");
+        val bbox = BoundingBox.builder()
+            .northBoundLatitude("59.456")
+            .eastBoundLongitude("2.574")
+            .southBoundLatitude("31.109")
+            .westBoundLongitude("-1.091")
+            .build();
+        gemini.setBoundingBoxes(Collections.singletonList(bbox));
+
+        val impCasestudy = new CaseStudy();
+        impCasestudy.setType("dataset");
+
+        val impModel = new Model();
+        impModel.setType("dataset");
+
+        val impModelApplication = new ModelApplication();
+        impModelApplication.setType("dataset");
+
+        val link = LinkDocument.builder()
+            .linkedDocumentId("cbde2ff1-cae3-4189-9489-ef1f4435fadc")
+            .original(gemini)
+            .additionalKeywords(new ArrayList<>())
+            .build();
+
+        val network = new Network();
+        network.setEfMetadata(new Metadata());
+
+        val programme = new Programme();
+        programme.setEfMetadata(new Metadata());
+
+        return Stream.of(
+            Arguments.of(activity, TEXT_HTML, HTML, null),
+            Arguments.of(activity, APPLICATION_JSON, JSON, null),
+            Arguments.of(activity, EF_INSPIRE_XML, EF_INSPIRE_XML_SHORT, null),
+            Arguments.of(new Agent(), TEXT_HTML, HTML, null),
+            Arguments.of(new Agent(), APPLICATION_JSON, JSON, null),
+            Arguments.of(new CehModel(), TEXT_HTML, HTML, null),
+            Arguments.of(new CehModel(), CEH_MODEL_JSON, CEH_MODEL_SHORT, null),
+            Arguments.of(new CehModelApplication(), TEXT_HTML, HTML, null),
+            Arguments.of(new CehModelApplication(), CEH_MODEL_APPLICATION_JSON, CEH_MODEL_APPLICATION_SHORT, null),
+            Arguments.of(new Dataset(), TEXT_HTML, HTML, null),
+            Arguments.of(new Dataset(), APPLICATION_JSON, JSON, null),
+            Arguments.of(new DataType(), TEXT_HTML, HTML, null),
+            Arguments.of(new DataType(), DATA_TYPE_JSON, DATA_TYPE_SHORT, null),
+            Arguments.of(new ErammpModel(), TEXT_HTML, HTML, null),
+            Arguments.of(new ErammpModel(), ERAMMP_MODEL_JSON, ERAMMP_MODEL_SHORT, null),
+            Arguments.of(new ErammpDatacube(), TEXT_HTML, HTML, null),
+            Arguments.of(new ErammpDatacube(), ERAMMP_DATACUBE_JSON, ERAMMP_DATACUBE_SHORT, null),
+            Arguments.of(facility, TEXT_HTML, HTML, null),
+            Arguments.of(facility, APPLICATION_JSON, JSON, null),
+            Arguments.of(facility, EF_INSPIRE_XML, EF_INSPIRE_XML_SHORT, null),
+            Arguments.of(gemini, TEXT_HTML, HTML, null),
+            Arguments.of(gemini, GEMINI_JSON, GEMINI_JSON_SHORT, "gemini.json"),
+            Arguments.of(gemini, GEMINI_XML, GEMINI_XML_SHORT,  "gemini.xml"),
+            Arguments.of(gemini, RDF_SCHEMAORG_JSON, RDF_SCHEMAORG_SHORT, "gemini-schema-org.json"),
+            Arguments.of(gemini, RDF_TTL, RDF_TTL_SHORT, "gemini.ttl"),
+            Arguments.of(impCasestudy, TEXT_HTML, HTML, null),
+            Arguments.of(impCasestudy, APPLICATION_JSON, JSON, null),
+            Arguments.of(impModel, TEXT_HTML, HTML, null),
+            Arguments.of(impModel, APPLICATION_JSON, JSON, null),
+            Arguments.of(impModelApplication, TEXT_HTML, HTML, null),
+            Arguments.of(impModelApplication, APPLICATION_JSON, JSON, null),
+            Arguments.of(link, TEXT_HTML, HTML, null),
+            Arguments.of(link, APPLICATION_JSON, JSON, null),
+            Arguments.of(new uk.ac.ceh.gateway.catalogue.osdp.Model(), TEXT_HTML, HTML, null),
+            Arguments.of(new uk.ac.ceh.gateway.catalogue.osdp.Model(), APPLICATION_JSON, JSON, null),
+            Arguments.of(new MonitoringActivity(), TEXT_HTML, HTML, null),
+            Arguments.of(new MonitoringActivity(), APPLICATION_JSON, JSON, null),
+            Arguments.of(new MonitoringFacility(), TEXT_HTML, HTML, null),
+            Arguments.of(new MonitoringFacility(), APPLICATION_JSON, JSON, null),
+            Arguments.of(new MonitoringProgramme(), TEXT_HTML, HTML, null),
+            Arguments.of(new MonitoringProgramme(), APPLICATION_JSON, JSON, null),
+            Arguments.of(network, TEXT_HTML, HTML, null),
+            Arguments.of(network, EF_INSPIRE_XML, EF_INSPIRE_XML_SHORT, null),
+            Arguments.of(network, APPLICATION_JSON, JSON, null),
+            Arguments.of(programme, TEXT_HTML, HTML, null),
+            Arguments.of(programme, EF_INSPIRE_XML, EF_INSPIRE_XML_SHORT, null),
+            Arguments.of(programme, APPLICATION_JSON, JSON, null),
+            Arguments.of(new Publication(), TEXT_HTML, HTML, null),
+            Arguments.of(new Publication(), APPLICATION_JSON, JSON, null),
+            Arguments.of(new Sample(), TEXT_HTML, HTML, null),
+            Arguments.of(new Sample(), APPLICATION_JSON, JSON, null),
+            Arguments.of(new SampleArchive(), TEXT_HTML, HTML, null),
+            Arguments.of(new SampleArchive(), APPLICATION_JSON, JSON, null)
+        );
+    }
+
+    @ParameterizedTest(name = "[{index}] GET as {1}, {3}, {0}")
+    @MethodSource("provideMetadataDocuments")
+    @SneakyThrows
+    void getMetadataDocumentAsMediaType(MetadataDocument doc, MediaType mediaType, String shortName, String filename) {
+        //given
+        givenUserIsPermittedToView();
+        givenMetadataDocument(doc);
+        givenCatalogue();
+        givenFreemarkerConfiguration();
+        givenCodeLookup();
+
+        //when
+        val result = mockMvc.perform(
+            get("/documents/{id}", id)
+                .accept(mediaType)
+        )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(mediaType));
+
+        if (filename == null) {
+            result.andDo(print());
+        } else {
+            if (mediaType.isCompatibleWith(APPLICATION_JSON)) {
+                result.andExpect(content().json(expectedResponse(filename)));
+            } else if (mediaType.isCompatibleWith(TEXT_HTML)) {
+                result.andExpect(content().string(expectedResponse(filename)));
+            } else if (mediaType.isCompatibleWith(MediaType.APPLICATION_XML)) {
+                result.andExpect(content().xml(expectedResponse(filename)));
+            }
+        }
+    }
+
+    @ParameterizedTest(name = "[{index}] GET using format {2}, {3}, {0}")
+    @MethodSource("provideMetadataDocuments")
+    @SneakyThrows
+    void getMetadataDocumentUsingFormatQueryParam(MetadataDocument doc, MediaType mediaType, String shortName, String filename) {
+        //given
+        givenUserIsPermittedToView();
+        givenMetadataDocument(doc);
+        givenCatalogue();
+        givenFreemarkerConfiguration();
+        givenCodeLookup();
+
+
+        //when
+        val result = mockMvc.perform(
+            get("/documents/{id}", id)
+                .queryParam("format", shortName)
+        )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(mediaType));
+
+        if (filename == null) {
+            result.andDo(print());
+        } else {
+            if (mediaType.isCompatibleWith(APPLICATION_JSON)) {
+                result.andExpect(content().json(expectedResponse(filename)));
+            } else if (mediaType.isCompatibleWith(TEXT_HTML)) {
+                result.andExpect(content().string(expectedResponse(filename)));
+            } else if (mediaType.isCompatibleWith(MediaType.APPLICATION_XML)) {
+                result.andExpect(content().xml(expectedResponse(filename)));
+            }
+        }
+    }
+
+    @Test
+    @SneakyThrows
+    void getUploadPage() {
+        //given
+        givenDefaultCatalogue();
+        givenFreemarkerConfiguration();
+
+        //when
+        mockMvc.perform(
+            get("/documents/upload")
+        )
+            .andExpect(status().isOk())
+            .andExpect(content().contentTypeCompatibleWith(TEXT_HTML));
+    }
+
+
+    @Test
+    @SneakyThrows
+    void checkItCanRewriteIdToDocumentWithFileExtension() {
+        //When
+        mockMvc.perform(
+            get("/id/{id}.xml", id)
+        )
+            .andExpect(status().is3xxRedirection())
+            .andExpect(header().string("location", "https://localhost/documents/" + id +".xml"));
+    }
+
+    @Test
+    @DisplayName("Redirect URL has query string parameters")
+    @SneakyThrows
+    public void redirectWithQueryString() {
+        //When
+        mockMvc.perform(
+            get("/id/{id}", id)
+            .queryParam("query", "string")
+        )
+            .andExpect(status().is3xxRedirection())
+            .andExpect(header().string("location", "https://localhost/documents/" + id + "?query=string"));
+    }
+
     @Test
     public void checkCanUploadFile() throws Exception {
         //Given
-        CatalogueUser user = new CatalogueUser();
         InputStream inputStream = new ByteArrayInputStream("<?xml version=\"1.0\" encoding=\"UTF-8\"?><root></root>".getBytes());
-        MediaType mediaType = MediaType.TEXT_XML;
-        MultipartFile multipartFile = new MockMultipartFile("test", "test", MediaType.TEXT_XML_VALUE, inputStream);
+        val multipartFile = new MockMultipartFile("file", "test", MediaType.APPLICATION_XML_VALUE, inputStream);
         String documentType = "GEMINI_DOCUMENT";
         GeminiDocument document = new GeminiDocument();
         document.setUri("https://catalogue.ceh.ac.uk/id/123-test");
         String message = "new file upload";
         String catalogue = "catalogue";
-        
-        given(documentRepository.save(eq(user), any(), any(MediaType.class), eq(documentType), eq(catalogue), eq(message))).willReturn(document);
-              
+
+        given(permissionService.userCanCreate(catalogue)).willReturn(true);
+        given(documentRepository.save(
+            any(CatalogueUser.class),
+            any(InputStream.class),
+            eq(MediaType.APPLICATION_XML),
+            eq(documentType),
+            eq(catalogue),
+            eq(message))
+        ).willReturn(document);
+
         //When
-        controller.uploadFile(user, multipartFile, documentType, catalogue);
-        
-        //Then
-        verify(documentRepository).save(eq(user), any(), eq(mediaType), eq(documentType), eq(catalogue), eq(message));
+        mockMvc.perform(
+            multipart("/documents")
+                .file(multipartFile)
+                .param("type", documentType)
+                .param("catalogue", catalogue)
+                .header("remote-user", EIDC_PUBLISHER_USERNAME)
+        )
+            .andExpect(status().is3xxRedirection())
+            .andExpect(header().string("location", "https://catalogue.ceh.ac.uk/id/123-test"));
     }
-    
+
     @Test
     public void checkCanCreateModelDocument() throws Exception {
         //Given
@@ -105,38 +404,38 @@ public class DocumentControllerTest {
         document.setUri("https://catalogue.ceh.ac.uk/id/123-test");
         String message = "new Model Document";
         String catalogue = "catalogue";
-        
+
         given(documentRepository.saveNew(user, document, catalogue, message)).willReturn(document);
-              
+
         //When
         ResponseEntity<MetadataDocument> actual = controller.newModelDocument(user, document, catalogue);
-        
+
         //Then
         verify(documentRepository).saveNew(user, document, catalogue, message);
         assertThat("Should have 201 CREATED status", actual.getStatusCode(), equalTo(HttpStatus.CREATED));
     }
-    
+
     @Test
     public void checkCanEditModelDocument() throws Exception {
         //Given
-        CatalogueUser user = mock(CatalogueUser.class);
-        Model document = mock(Model.class);
+        CatalogueUser user = new CatalogueUser();
+        Model document = new Model();
+        document.setUri("https://catalogue.ceh.ac.uk/id/123-test");
         String fileId = "test";
         String message = "Edited document: test";
-        
+
         given(documentRepository.read(fileId)).willReturn(new Model().setMetadata(MetadataInfo.builder().build()));
         given(documentRepository.save(user, document, fileId, message)).willReturn(document);
-        given(document.getUri()).willReturn("https://catalogue.ceh.ac.uk/id/123-test");
-              
+
         //When
         ResponseEntity<MetadataDocument> actual = controller.updateModelDocument(user, fileId, document);
-        
+
         //Then
         verify(documentRepository).save(user, document, fileId, "Edited document: test");
         verify(documentRepository).read(fileId);
         assertThat("Should have 200 OK status", actual.getStatusCode(), equalTo(HttpStatus.OK));
     }
-    
+
     @Test
     public void checkCanCreateGeminiDocument() throws Exception {
         //Given
@@ -145,40 +444,40 @@ public class DocumentControllerTest {
         document.setUri("https://catalogue.ceh.ac.uk/id/123-test");
         String message = "new Gemini Document";
         String catalogue = "catalogue";
-        
+
         given(documentRepository.saveNew(user, document, catalogue, message)).willReturn(document);
-              
+
         //When
         ResponseEntity<MetadataDocument> actual = controller.newGeminiDocument(user, document, catalogue);
-        
+
         //Then
         verify(documentRepository).saveNew(user, document, catalogue, message);
         assertThat("Should have 201 CREATED status", actual.getStatusCode(), equalTo(HttpStatus.CREATED));
     }
-    
+
     @Test
     public void checkCanEditGeminiDocument() throws Exception {
         //Given
         String fileId = "test";
-        String message = "message";
+        String message = "Edited document: test";
         CatalogueUser user = new CatalogueUser();
         MetadataDocument document = new GeminiDocument()
             .setId(fileId)
             .setUri("https://catalogue.ceh.ac.uk/id/123-test")
             .setMetadata(MetadataInfo.builder().build());
-        
+
         given(documentRepository.read(fileId)).willReturn(new Model().setMetadata(MetadataInfo.builder().build()));
         given(documentRepository.save(user, document, fileId, message)).willReturn(document);
-              
+
         //When
         ResponseEntity<MetadataDocument> actual = controller.updateGeminiDocument(user, fileId, (GeminiDocument) document);
-        
+
         //Then
         verify(documentRepository).read(fileId);
         verify(documentRepository).save(user, document, fileId, "Edited document: test");
         assertThat("Should have 200 OK status", actual.getStatusCode(), equalTo(HttpStatus.OK));
     }
-    
+
     @Test
     public void checkCanCreateLinkedDocument() throws Exception {
         //Given
@@ -189,17 +488,17 @@ public class DocumentControllerTest {
         String catalogue = "catalogue";
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setServerName("catalogue.ceh.ac.uk");
-        
+
         given(documentRepository.saveNew(user, document, catalogue, message)).willReturn(document);
-              
+
         //When
         ResponseEntity<MetadataDocument> actual = controller.newLinkDocument(user, document, catalogue);
-        
+
         //Then
         verify(documentRepository).saveNew(user, document, catalogue, message);
         assertThat("Should have 201 CREATED status", actual.getStatusCode(), equalTo(HttpStatus.CREATED));
     }
-    
+
     @Test
     public void checkCanEditLinkedDocument() throws Exception {
         //Given
@@ -207,17 +506,17 @@ public class DocumentControllerTest {
         LinkDocument document = LinkDocument.builder().linkedDocumentId(linkedDocumentId).build();
         document.setUri("https://catalogue.ceh.ac.uk/id/123-test");
         String fileId = "test";
-        String message = "message";
-        
+        String message = "Edited document: test";
+
         given(documentRepository.read(fileId)).willReturn(new Model().setMetadata(MetadataInfo.builder().build()));
         given(documentRepository.save(user, document, fileId, message)).willReturn(document);
-              
+
         //When
         ResponseEntity<MetadataDocument> actual = controller.updateLinkDocument(user, fileId, document);
-        
+
         //Then
         verify(documentRepository).read(fileId);
-        verify(documentRepository).save(user, document, fileId, "Edited document: test");
+        verify(documentRepository).save(user, document, fileId, message);
         assertThat("Should have 200 OK status", actual.getStatusCode(), equalTo(HttpStatus.OK));
     }
 
@@ -229,10 +528,10 @@ public class DocumentControllerTest {
         );
         LinkDocument linkDocument = LinkDocument.builder().linkedDocumentId("master").original(master).build();
         given(documentRepository.read("test")).willReturn(linkDocument);
-        
+
         //when
         MetadataDocument actual = controller.readMetadata(CatalogueUser.PUBLIC_USER, "test");
-        
+
         //then
         assertThat(
             "should not be able to view master record through linked document",
@@ -240,52 +539,52 @@ public class DocumentControllerTest {
             equalTo(LinkDocument.class)
         );
     }
-    
+
     @Test
     public void checkCanDeleteAFile() throws Exception {
         //Given
         CatalogueUser user = mock(CatalogueUser.class);
-        
+
         //When
         controller.deleteDocument(user, "id");
-        
+
         //Then
         verify(documentRepository).delete(user, "id");
     }
-    
+
     @Test
     public void checkCanReadDocumentAtRevision() throws Exception {
         //Given
         CatalogueUser user = CatalogueUser.PUBLIC_USER;
-        String file = "myFile";       
+        String file = "myFile";
         String latestRevisionId = "latestRev";
         MetadataInfo info = MetadataInfo.builder().build();
-        MetadataDocument document = mock(MetadataDocument.class);
-        given(document.getMetadata()).willReturn(info);
+        MetadataDocument document = new GeminiDocument();
+        document.setMetadata(info);
         given(documentRepository.read(file, latestRevisionId))
             .willReturn(document);
-        
+
         //When
         controller.readMetadata(user, file, latestRevisionId);
-        
+
         //Then
         verify(documentRepository).read(file, latestRevisionId);
     }
-    
+
     @Test
     public void checkCanReadDocumentLatestRevision() throws Exception {
         //Given
         CatalogueUser user = CatalogueUser.PUBLIC_USER;
         String file = "myFile";
         MetadataInfo info = MetadataInfo.builder().build();
-        MetadataDocument document = mock(MetadataDocument.class);
-        given(document.getMetadata()).willReturn(info);
+        MetadataDocument document = new GeminiDocument();
+        document.setMetadata(info);
         given(documentRepository.read(file))
             .willReturn(document);
-        
+
         //When
         controller.readMetadata(user, file);
-        
+
         //Then
         verify(documentRepository).read(file);
     }

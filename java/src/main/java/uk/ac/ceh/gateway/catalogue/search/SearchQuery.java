@@ -27,17 +27,17 @@ public class SearchQuery {
     public static final String DEFAULT_SEARCH_TERM = "*";
     private static final String RANDOM_DYNAMIC_FIELD_NAME = "random";
     
-    private final String endpoint;
-    private final CatalogueUser user; 
-    private final @NotNull String term;
-    private final String bbox;
-    private final SpatialOperation spatialOperation;
-    private final int page;
-    private final int rows;
-    private final @NotNull List<FacetFilter> facetFilters;
-    private final GroupStore<CatalogueUser> groupStore;
-    private final Catalogue catalogue;
-    private final List<Facet> facets;
+    String endpoint;
+    CatalogueUser user;
+    @NotNull String term;
+    String bbox;
+    SpatialOperation spatialOperation;
+    int page;
+    int rows;
+    @NotNull List<FacetFilter> facetFilters;
+    GroupStore<CatalogueUser> groupStore;
+    Catalogue catalogue;
+    List<Facet> facets;
 
     public SearchQuery(
             String endpoint,

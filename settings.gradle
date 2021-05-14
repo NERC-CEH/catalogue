@@ -1,5 +1,5 @@
 rootProject.name = 'Catalogue'
-include 'java', 'web'
+include 'java'
 
 buildCache {
     local {

@@ -1,12 +1,24 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
+import lombok.SneakyThrows;
+import lombok.val;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
+import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
+import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
+import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.*;
+import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
@@ -14,46 +26,90 @@ import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@WithMockCatalogueUser
+@ActiveProfiles("test")
+@DisplayName("CatalogueController")
+@Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
+@WebMvcTest(CatalogueController.class)
 public class CatalogueControllerTest {
-    private @Mock DocumentRepository documentRepository;
-    private @Mock CatalogueService catalogueService;
+    private @MockBean DocumentRepository documentRepository;
+    private @MockBean CatalogueService catalogueService;
+    private @MockBean(name="permission") PermissionService permissionService;
+
+    @Autowired private MockMvc mockMvc;
     private CatalogueController controller;
 
-    @BeforeEach
-    public void setup() {
-        MockitoAnnotations.initMocks(this);
-        controller = new CatalogueController(
-            documentRepository,
-            catalogueService
-        );
-    }
+    private final String file = "955b5a6e-dd3f-4b20-a3b5-a9d1d04ba052";
 
-    @Test
-    public void getAllCatalogues() throws Exception {
-        //given
+    private void givenCataloguesRetrieveAll() {
         Catalogue a = Catalogue.builder().id("a").title("a").url("a").build();
         Catalogue b = Catalogue.builder().id("b").title("b").url("b").build();
         Catalogue c = Catalogue.builder().id("c").title("c").url("c").build();
 
         given(catalogueService.retrieveAll()).willReturn(Arrays.asList(a, b, c));
+    }
 
-        //when
-        List<Catalogue> actual = controller.catalogues(null, null).getBody();
+    private void givenUserCanView() {
+        given(permissionService.toAccess(any(CatalogueUser.class), eq(file), eq("VIEW")))
+            .willReturn(true);
+    }
 
-        //then
-        verify(catalogueService).retrieveAll();
-        assertThat("should be list of catalogues", actual.contains(a));
-        assertThat("should be list of catalogues", actual.contains(b));
-        assertThat("should be list of catalogues", actual.contains(c));
+    @SneakyThrows
+    private void givenMetadataDocument() {
+        val document = new GeminiDocument();
+        document.setId(file);
+        document.setMetadata(MetadataInfo.builder().catalogue("eidc").build());
+        given(documentRepository.read(file))
+            .willReturn(document);
+    }
+
+    @BeforeEach
+    void setup() {
+        controller = new CatalogueController(documentRepository, catalogueService);
     }
 
     @Test
-    public void getCataloguesMinusB() throws Exception {
+    @SneakyThrows
+    void getCatalogue() {
+        //given
+        givenUserCanView();
+        givenMetadataDocument();
+
+        //when
+        mockMvc.perform(
+            get("/documents/{file}/catalogue", file)
+                .accept(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(content().string("{\"id\":\"955b5a6e-dd3f-4b20-a3b5-a9d1d04ba052\",\"value\":\"eidc\"}"));
+    }
+
+    @Test
+    void getAllCatalogues() throws Exception {
+        //given
+        givenCataloguesRetrieveAll();
+
+        //when
+        mockMvc.perform(
+            get("/catalogues")
+        )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    public void getCataloguesMinusB() {
         //given
         Catalogue a = Catalogue.builder().id("a").title("a").url("a").build();
         Catalogue b = Catalogue.builder().id("b").title("b").url("b").build();
@@ -73,7 +129,7 @@ public class CatalogueControllerTest {
     }
 
     @Test
-    public void getCataloguesWithUnknownCatalogue() throws Exception {
+    public void getCataloguesWithUnknownCatalogue() {
         //given
         Catalogue a = Catalogue.builder().id("a").title("a").url("a").build();
         Catalogue b = Catalogue.builder().id("b").title("b").url("b").build();
@@ -160,7 +216,7 @@ public class CatalogueControllerTest {
     }
 
     @Test
-    public void getUnknownFile() throws Exception {
+    public void getUnknownFile() {
         Assertions.assertThrows(DocumentRepositoryException.class, () -> {
             //Given
             String file = "123-456-789";

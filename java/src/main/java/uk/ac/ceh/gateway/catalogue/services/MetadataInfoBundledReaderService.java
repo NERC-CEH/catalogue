@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.services;
 import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 import uk.ac.ceh.components.datastore.DataDocument;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -12,6 +13,7 @@ import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
 
 @Slf4j
 @ToString
+@Service
 public class MetadataInfoBundledReaderService implements BundledReaderService<MetadataDocument> {
     private final DataRepository<CatalogueUser> repo;
     private final DocumentReadingService documentReader;
@@ -20,11 +22,13 @@ public class MetadataInfoBundledReaderService implements BundledReaderService<Me
     private final PostProcessingService<MetadataDocument> postProcessingService;
     private final DocumentIdentifierService documentIdentifierService;
 
-    public MetadataInfoBundledReaderService(DataRepository<CatalogueUser> repo, DocumentReadingService documentReader,
-                                            DocumentInfoMapper<MetadataInfo> documentInfoMapper,
-                                            DocumentTypeLookupService representationService,
-                                            PostProcessingService<MetadataDocument> postProcessingService,
-                                            DocumentIdentifierService documentIdentifierService
+    public MetadataInfoBundledReaderService(
+        DataRepository<CatalogueUser> repo,
+        DocumentReadingService documentReader,
+        DocumentInfoMapper<MetadataInfo> documentInfoMapper,
+        DocumentTypeLookupService representationService,
+        PostProcessingService<MetadataDocument> postProcessingService,
+        DocumentIdentifierService documentIdentifierService
     ) {
         this.repo = repo;
         this.documentReader = documentReader;

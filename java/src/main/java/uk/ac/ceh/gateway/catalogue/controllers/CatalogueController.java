@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.*;
@@ -17,7 +16,7 @@ import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
 import java.util.ArrayList;
 import java.util.List;
 
-@Controller
+@RestController
 @Slf4j
 @ToString
 public class CatalogueController {
@@ -33,14 +32,13 @@ public class CatalogueController {
         log.info("Creating {}", this);
     }
 
-    @RequestMapping(value = "catalogues", method = RequestMethod.GET)
-    @ResponseBody
+    @GetMapping("catalogues")
     public  HttpEntity<List<Catalogue>> catalogues(
         @RequestParam(value = "catalogue", required = false) String catalogue,
-        @RequestParam(value = "identifier", required = false)String identifier
+        @RequestParam(value = "identifier", required = false) String identifier
     ) {
         List<Catalogue> catalogues = new ArrayList<>(catalogueService.retrieveAll());
-        
+
         try {
             if(catalogue != null) {
                 catalogues.remove(catalogueService.retrieve(catalogue));
@@ -60,8 +58,7 @@ public class CatalogueController {
     }
 
     @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
-    @RequestMapping(value = "documents/{file}/catalogue", method = RequestMethod.GET)
-    @ResponseBody
+    @GetMapping("documents/{file}/catalogue")
     public HttpEntity<CatalogueResource> currentCatalogue (
         @ActiveUser CatalogueUser user,
         @PathVariable("file") String file
@@ -72,8 +69,7 @@ public class CatalogueController {
     }
 
     @PreAuthorize("@permission.userCanEdit(#file)")
-    @RequestMapping(value = "documents/{file}/catalogue", method =  RequestMethod.PUT)
-    @ResponseBody
+    @PutMapping("documents/{file}/catalogue")
     public HttpEntity<CatalogueResource> updateCatalogue (
         @ActiveUser CatalogueUser user,
         @PathVariable("file") String file,

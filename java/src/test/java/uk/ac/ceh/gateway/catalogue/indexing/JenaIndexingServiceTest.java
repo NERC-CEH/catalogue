@@ -8,8 +8,9 @@ import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.tdb.TDBFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
@@ -24,6 +25,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 public class JenaIndexingServiceTest {
     
     @Mock BundledReaderService reader;
@@ -36,7 +38,6 @@ public class JenaIndexingServiceTest {
     
     @BeforeEach
     public void init() {
-        MockitoAnnotations.initMocks(this);
         jenaTdb = TDBFactory.createDataset();
         service = spy(new JenaIndexingService(reader, listingService, repo, indexGenerator, documentIdentifierService, jenaTdb));
     }

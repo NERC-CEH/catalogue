@@ -2,6 +2,7 @@
 !fixtures/datastore/REV-1
 !java/src
 !java/build.gradle
+!java/lombok.config
 !schemas
 !templates
 !web/src/img
