@@ -25,9 +25,12 @@ RUN java -Djarmode=layertools -jar app.jar extract
 # Create production image
 FROM openjdk:15-alpine AS prod
 LABEL maintainer="oss@ceh.ac.uk"
+RUN apk --no-cache add curl
+RUN addgroup -g 1000 -S spring && adduser -u 1000 -S spring -G spring
+RUN mkdir -p /var/ceh-catalogue/datastore /var/ceh-catalogue/dropbox /var/ceh-catalogue/mapfiles /var/ceh-catalogue/tdb /var/upload/datastore
 WORKDIR /app
 COPY schemas /opt/ceh-catalogue/schemas
-COPY --from=build-java /app/build/libs/dependencies/ ./
+COPY  --from=build-java /app/build/libs/dependencies/ ./
 COPY --from=build-java /app/build/libs/spring-boot-loader/ ./
 COPY --from=build-java /app/build/libs/snapshot-dependencies/ ./
 COPY --from=build-java /app/build/libs/application/ ./
@@ -37,11 +40,12 @@ COPY web/src/img /opt/ceh-catalogue/static/img
 COPY --from=build-web /app/src/scripts/main-out.js /opt/ceh-catalogue/static/scripts/main-out.js
 COPY --from=build-web /app/src/vendor/font-awesome-5/webfonts /opt/ceh-catalogue/static/vendor/font-awesome-5/webfonts
 COPY --from=build-web /app/src/vendor/requirejs/require.js /opt/ceh-catalogue/static/vendor/requirejs/require.js
-VOLUME ["/var/ceh-catalogue", "/var/upload/datastore"]
-EXPOSE 8080
-EXPOSE 8081
+RUN chown spring:spring -R /app && chown spring:spring -R /opt/ceh-catalogue && chown spring:spring -R /var/ceh-catalogue && chown spring:spring -R /var/upload
+VOLUME ["/var/ceh-catalogue/datastore", "/var/ceh-catalogue/dropbox", "/var/ceh-catalogue/mapfiles", "/var/upload/datastore"]
+EXPOSE 8080 8081
+USER spring
 ENTRYPOINT ["java", "org.springframework.boot.loader.JarLauncher"]
-HEALTHCHECK CMD curl --fail http://localhost:8081/actuator/health || exit 1
+HEALTHCHECK --start-period=30s CMD curl --no-progress-meter --output - --fail http://localhost:8081/actuator/health || exit 1
 
 # Create resources for development only
 FROM alpine/git:v2.30.1 AS datastore
@@ -56,5 +60,5 @@ RUN git config --global init.defaultBranch main \
 
 # Development image
 FROM prod AS dev
-COPY --from=datastore /datastore /var/ceh-catalogue/datastore
+COPY --chown=spring:spring --from=datastore /datastore /var/ceh-catalogue/datastore
 

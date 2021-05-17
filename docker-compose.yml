@@ -9,9 +9,13 @@ services:
       - "8080:8080"
       - "8081:8081"
     volumes:
-      - ./dropbox:/var/ceh-catalogue/dropbox
+      # Uncomment to see catalogue json files
+      #- ./datastore:/var/ceh-catalogue/datastore
+      # Uncomment to see Hubbub Upload uploaded files
+      #- ./dropbox:/var/ceh-catalogue/dropbox
       - mapfiles:/var/ceh-catalogue/mapfiles
-      - ./upload:/var/upload/datastore
+      # Uncomment to see Simple Upload uploaded files
+      #- ./upload:/var/upload/datastore
       # Uncomment to work on XML schema validation in Docker container
       #- ./schemas:/opt/ceh-catalogue/schemas
       # Uncomment to work on Freemarker templates in Docker container
