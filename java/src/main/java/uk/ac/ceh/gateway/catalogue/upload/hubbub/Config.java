@@ -19,23 +19,38 @@ import java.util.concurrent.Executors;
 @Configuration
 @Profile("upload:hubbub")
 public class Config {
+    private final String hubbubLocation;
+    private final String jiraUsername;
+    private final String jiraPassword;
+    private final String jiraAddress;
+    private final freemarker.template.Configuration config;
+    private final HubbubService hubbubService;
 
-    @Bean
-    public UploadDocumentService uploadDocumentService(
+    public Config(
         @Value("${hubbub.location}") String hubbubLocation,
+        @Value("${jira.username}") String jiraUsername,
+        @Value("${jira.password}") String jiraPassword,
+        @Value("${jira.address}") String jiraAddress,
+        freemarker.template.Configuration config,
         HubbubService hubbubService
     ) {
+        this.hubbubLocation = hubbubLocation;
+        this.jiraUsername = jiraUsername;
+        this.jiraPassword = jiraPassword;
+        this.jiraAddress = jiraAddress;
+        this.config = config;
+        this.hubbubService = hubbubService;
+    }
+
+    @Bean
+    public UploadDocumentService uploadDocumentService() {
         Map<String, File> folders = Maps.newHashMap();
         folders.put("documents", new File(hubbubLocation));
         return new UploadDocumentService(hubbubService, folders,  Executors.newCachedThreadPool());
     }
 
     @Bean
-    public JiraService jiraService(
-        @Value("${jira.username}") String jiraUsername,
-        @Value("${jira.password}") String jiraPassword,
-        @Value("${jira.address}") String jiraAddress
-    ) {
+    public JiraService jiraService() {
         Client client = Client.create();
         client.addFilter(new HTTPBasicAuthFilter(jiraUsername, jiraPassword));
         WebResource jira = client.resource(jiraAddress);
@@ -44,10 +59,7 @@ public class Config {
 
     @PostConstruct
     @SneakyThrows
-    public void configureFreemarker(
-        freemarker.template.Configuration config,
-        JiraService jiraService
-    ) {
-        config.setSharedVariable("jira", jiraService);
+    public void configureFreemarker() {
+        config.setSharedVariable("jira", jiraService());
     }
 }
