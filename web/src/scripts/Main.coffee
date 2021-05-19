@@ -38,6 +38,7 @@ define [
   'cs!views/ErammpDatacubeEditorView'
   'cs!views/ClipboardCopyView'
   'cs!views/DataTypeEditorView'
+  'cs!views/ElterEditorView'
   'cs!views/DocumentUploadView'
   'cs!models/DocumentUploadModel'
   'cs!views/upload/simple/AppView'
@@ -47,7 +48,7 @@ define [
     ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata, CehModelEditorView, CehModelApplicationEditorView, OsdpAgentEditorView,
     OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
     OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, ErammpModelEditorView, ErammpDatacubeEditorView,
-    ClipboardCopyView, DataTypeEditorView, DocumentUploadView, DocumentUploadModel, SimpleUploadView
+    ClipboardCopyView, DataTypeEditorView, DocumentUploadView, DocumentUploadModel, SimpleUploadView, ElterEditorView
 ) ->
 
   ###
@@ -195,6 +196,10 @@ define [
         View: DataTypeEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.data-type+json'
+      'elter':
+        View: ElterEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.elter+json'
 
     # the create document dropdown
     $editorCreate = $ '#editorCreate'
