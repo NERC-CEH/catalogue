@@ -38,7 +38,7 @@ class DeimsSiteSearchControllerTest {
     @MockBean
     private DeimsSolrQueryService deimsService;
 
-    @Autowired private MockMvc mockMvc;
+    @Autowired private MockMvc mvc;
 
     @SneakyThrows
     private void givenQueryResponse() {
@@ -72,7 +72,7 @@ class DeimsSiteSearchControllerTest {
         val expectedResponse = "[{\"title\":\"site1\",\"id\":\"1\",\"url\":\"https://example.com/1\"},{\"title\":\"site2\",\"id\":\"2\",\"url\":\"https://example.com/2\"}]";
 
         //When
-        mockMvc.perform(
+        mvc.perform(
             get("/vocabulary/deims")
                 .queryParam("query", QUERY)
         )
@@ -89,7 +89,7 @@ class DeimsSiteSearchControllerTest {
         val expectedResponse = "[{\"title\":\"site1\",\"id\":\"1\",\"url\":\"https://example.com/1\"},{\"title\":\"site2\",\"id\":\"2\",\"url\":\"https://example.com/2\"}]";
 
         //When
-        mockMvc.perform(
+        mvc.perform(
             get("/vocabulary/deims")
         )
             .andExpect(status().isOk())
@@ -105,7 +105,7 @@ class DeimsSiteSearchControllerTest {
         given(deimsService.query(QUERY)).willThrow(new SolrServerException("Test"));
 
         //When
-        mockMvc.perform(
+        mvc.perform(
             get("/vocabulary/deims")
                 .queryParam("query", QUERY)
         )

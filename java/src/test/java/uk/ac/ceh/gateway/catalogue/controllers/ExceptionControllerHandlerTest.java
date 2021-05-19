@@ -53,7 +53,7 @@ public class ExceptionControllerHandlerTest {
     @MockBean private DataciteService dataciteService;
     @MockBean(name="permission") private PermissionService permissionService;
 
-    @Autowired private MockMvc mockMvc;
+    @Autowired private MockMvc mvc;
 
     private final String file = "1234";
 
@@ -69,7 +69,7 @@ public class ExceptionControllerHandlerTest {
         given(repo.read(file)).willReturn(new CehModel());
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             get("/documents/{file}/datacite", file)
                 .accept(DATACITE_XML_VALUE)
         )

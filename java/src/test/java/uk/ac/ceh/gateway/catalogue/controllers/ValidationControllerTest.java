@@ -49,7 +49,7 @@ class ValidationControllerTest {
     @MockBean private ValidationIndexingService<MetadataDocument> validationIndexingService;
 
     @Autowired
-    private MockMvc mockMvc;
+    private MockMvc mvc;
     @Autowired private Configuration configuration;
 
     private final String catalogueKey = "eidc";
@@ -96,7 +96,7 @@ class ValidationControllerTest {
         givenFailedResults();
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             get("/maintenance/validation")
                 .header("remote-user", ADMIN)
                 .accept(MediaType.TEXT_HTML)

@@ -44,7 +44,7 @@ class SparqlControllerTest {
     @MockBean private CatalogueService catalogueService;
     @MockBean private Dataset jenaTdb;
 
-    @Autowired private MockMvc mockMvc;
+    @Autowired private MockMvc mvc;
     @Autowired private Configuration configuration;
 
     private final String catalogueKey = "eidc";
@@ -71,7 +71,7 @@ class SparqlControllerTest {
         givenDefaultCatalogue();
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             get("/maintenance/sparql")
                 .header("remote-user", ADMIN)
                 .accept(MediaType.TEXT_HTML)
@@ -92,7 +92,7 @@ class SparqlControllerTest {
         val query = "SELECT ?s ?p ?o WHERE { ?s ?p ?o } LIMIT 10";
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             post("/maintenance/sparql")
                 .queryParam("query", query)
                 .header("remote-user", ADMIN)

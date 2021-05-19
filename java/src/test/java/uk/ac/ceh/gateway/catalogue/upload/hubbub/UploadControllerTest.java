@@ -55,7 +55,7 @@ class UploadControllerTest {
     @MockBean(name="permission") private PermissionService permissionService;
     @MockBean private CatalogueService catalogueService;
 
-    @Autowired private MockMvc mockMvc;
+    @Autowired private MockMvc mvc;
     @Autowired private Configuration configuration;
 
     private final String id = "164ef14f-95a5-45c7-8f36-d2000ba45516";
@@ -109,7 +109,7 @@ class UploadControllerTest {
         givenDefaultCatalogue();
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             get("/upload/{id}", id)
         )
             .andExpect(status().isOk())
@@ -126,7 +126,7 @@ class UploadControllerTest {
         givenUploadDocument();
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             get("/documents/{id}", id)
                 .accept(UPLOAD_DOCUMENT_JSON)
         )
@@ -142,7 +142,7 @@ class UploadControllerTest {
         givenUserCanUpload();
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             multipart("/documents/{id}/add-upload-document", id)
                 .file(new MockMultipartFile(
                     "file",

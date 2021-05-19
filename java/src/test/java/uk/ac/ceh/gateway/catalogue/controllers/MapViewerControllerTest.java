@@ -72,7 +72,7 @@ public class MapViewerControllerTest {
     @MockBean private CloseableHttpClient httpClient;
 
     @Autowired private Configuration configuration;
-    @Autowired private MockMvc mockMvc;
+    @Autowired private MockMvc mvc;
 
     private final String file = "1234-5678";
 
@@ -138,7 +138,7 @@ public class MapViewerControllerTest {
         givenFreemarkerConfiguration();
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             get("/maps")
         )
             .andExpect(status().isOk())
@@ -152,7 +152,7 @@ public class MapViewerControllerTest {
         givenGetMapResponse();
 
         //When
-        mockMvc.perform(
+        mvc.perform(
             get("/maps/{file}", file)
                 .queryParam("SERVICE", "WMS")
                 .queryParam("VERSION", "1.3.0")
@@ -176,7 +176,7 @@ public class MapViewerControllerTest {
         givenWmsFeatureInfo();
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             get("/maps/{file}", file)
                 .queryParam("SERVICE", "WMS")
                 .queryParam("VERSION", "1.3.0")
@@ -206,7 +206,7 @@ public class MapViewerControllerTest {
         givenRemoteWmsFeatureInfo();
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             get("/maps/{file}", file)
                 .queryParam("SERVICE", "WMS")
                 .queryParam("VERSION", "1.3.0")

@@ -39,7 +39,7 @@ class GeminiWafControllerTest {
     @MockBean private DataRepository<CatalogueUser> repo;
     @MockBean private MetadataListingService listingService;
 
-    @Autowired private MockMvc mockMvc;
+    @Autowired private MockMvc mvc;
 
     @Test
     @SneakyThrows
@@ -52,7 +52,7 @@ class GeminiWafControllerTest {
             .willReturn(files);
 
         //When
-        mockMvc.perform(
+        mvc.perform(
             get("/documents/gemini/waf/")
         )
             .andExpect(status().isOk())
@@ -67,7 +67,7 @@ class GeminiWafControllerTest {
         String id = "somerandomID";
 
         //When
-        mockMvc.perform(
+        mvc.perform(
             get("/documents/gemini/waf/{id}.xml", id)
         )
             .andExpect(status().isOk())

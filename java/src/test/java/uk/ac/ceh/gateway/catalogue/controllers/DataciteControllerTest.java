@@ -47,7 +47,7 @@ class DataciteControllerTest {
     @MockBean private DocumentIdentifierService identifierService;
     @MockBean private DataciteService dataciteService;
 
-    @Autowired private MockMvc mockMvc;
+    @Autowired private MockMvc mvc;
 
     private final String file = "1234";
     private final GeminiDocument gemini = new GeminiDocument();
@@ -99,7 +99,7 @@ class DataciteControllerTest {
         givenDataciteService();
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             get("/documents/{file}/datacite?format=datacite", file)
         )
             .andExpect(status().isOk())
@@ -114,7 +114,7 @@ class DataciteControllerTest {
         givenDataciteService();
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             get("/documents/{file}/datacite.xml", file)
         )
             .andExpect(status().isOk())
@@ -134,7 +134,7 @@ class DataciteControllerTest {
         given(identifierService.generateUri(file)).willReturn("https://example.com/1234");
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             post("/documents/{file}/datacite", file)
             .header("remote-user", EIDC_PUBLISHER_USERNAME)
         )
