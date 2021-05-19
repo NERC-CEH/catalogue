@@ -23,14 +23,16 @@ import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndex;
 import uk.ac.ceh.gateway.catalogue.model.Catalogue;
+import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.search.FacetFactory;
 import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 
 import java.util.Arrays;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -52,11 +54,13 @@ class SearchControllerTest {
     @MockBean private CatalogueService catalogueService;
     @MockBean private FacetFactory facetFactory;
     @MockBean private CodeLookupService codeLookupService;
+    @MockBean(name="permission") private PermissionService permissionService;
 
-    @Autowired private MockMvc mockMvc;
+    @Autowired private MockMvc mvc;
     @Autowired Configuration configuration;
 
     private final String catalogueKey = "eidc";
+    private final String editorDropdownOpeningDiv = "<div id=\"editorCreate\" class=\"dropdown\">";
 
     private void givenDefaultCatalogue() {
         given(catalogueService.defaultCatalogue())
@@ -84,6 +88,17 @@ class SearchControllerTest {
     private void givenFreemarkerConfiguration() {
         configuration.setSharedVariable("catalogues", catalogueService);
         configuration.setSharedVariable("codes", codeLookupService);
+        configuration.setSharedVariable("permission", permissionService);
+    }
+
+    private void givenUserCanCreate() {
+        given(permissionService.userCanCreate(catalogueKey))
+            .willReturn(true);
+    }
+
+    private void givenUserCanNotCreate() {
+        given(permissionService.userCanCreate(catalogueKey))
+            .willReturn(false);
     }
 
     @SneakyThrows
@@ -121,7 +136,7 @@ class SearchControllerTest {
         givenDefaultCatalogue();
 
         //when
-        mockMvc.perform(get("/documents"))
+        mvc.perform(get("/documents"))
             .andExpect(status().is3xxRedirection())
             .andExpect(header().string("location", "http://localhost/default/documents"));
 
@@ -130,23 +145,45 @@ class SearchControllerTest {
     }
 
     @Test
+    @SneakyThrows
+    @DisplayName("GET search page with editor buttons")
+    void getSearchPageWithEditorButtons() {
+        //given
+        givenCatalogue();
+        givenSearchResultsWithResults();
+        givenFreemarkerConfiguration();
+        givenUserCanCreate();
+
+        //when
+        mvc.perform(
+            get("/{catalogue}/documents", catalogueKey)
+                .accept(MediaType.TEXT_HTML)
+        )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.TEXT_HTML))
+            .andExpect(content().string(containsString(editorDropdownOpeningDiv)));
+
+        //then
+    }
+
+    @Test
     @DisplayName("GET search page as html")
     @SneakyThrows
     void getSearchPageHtml() {
         //given
         givenCatalogue();
-        givenDefaultCatalogue();
         givenSearchResultsWithResults();
         givenFreemarkerConfiguration();
-
+        givenUserCanNotCreate();
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             get("/{catalogue}/documents", catalogueKey)
                 .accept(MediaType.TEXT_HTML)
         )
             .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.TEXT_HTML));
+            .andExpect(content().contentType(MediaType.TEXT_HTML))
+            .andExpect(content().string(not(containsString(editorDropdownOpeningDiv))));
     }
 
     @Test
@@ -158,7 +195,7 @@ class SearchControllerTest {
         givenSearchResults();
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             get("/{catalogue}/documents", catalogueKey)
                 .header("remote-user", UNPRIVILEGED_USERNAME)
                 .accept(MediaType.APPLICATION_JSON)
@@ -176,7 +213,7 @@ class SearchControllerTest {
         givenSearchResults();
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             get("/{catalogue}/documents", catalogueKey)
                 .header("remote-user", UNPRIVILEGED_USERNAME)
                 .param("format", "json")
@@ -194,7 +231,7 @@ class SearchControllerTest {
         givenSearchResults();
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             get("/{catalogue}/documents", catalogueKey)
                 .header("remote-user", UNPRIVILEGED_USERNAME)
                 .accept(MediaType.APPLICATION_JSON)
