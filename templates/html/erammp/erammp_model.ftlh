@@ -153,7 +153,7 @@
   </div>
 </#macro>
 <#macro renderLinebreaks content>
-    ${content?replace("\n", "<br>")}
+    ${content?replace("\n", "<br>")?no_escw}
 </#macro>
 
 <#macro commaList values>

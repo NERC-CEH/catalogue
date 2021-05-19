@@ -9,7 +9,7 @@
                 </#if>
             </p>
             <#if reasonChanged??>
-                <p>${reasonChanged?replace("\n", "<br>")}</p>
+                <p>${reasonChanged?replace("\n", "<br>")?no_esc}</p>
             </#if>
             <p>If you need access to this archived version, please <a href="https://www.eidc.ac.uk/contact" target="_blank" rel="noopener noreferrer">contact the EIDC</a></p>
         <#elseif resourceStatus == "Embargoed">

@@ -161,7 +161,7 @@ define [
               organisationName: 'Unaffiliated'
               role: 'author'
             'Custodian - EIDC':
-              organisationName: 'Environmental Information Data Centre'
+              organisationName: 'NERC EDS Environmental Information Data Centre'
               role: 'custodian'
               email: 'info@eidc.ac.uk'
               organisationIdentifier: 'https://ror.org/04xw4m193'
@@ -210,7 +210,7 @@ define [
                 administrativeArea: 'Oxfordshire'
                 country: 'United Kingdom'
             'Publisher - EIDC':
-              organisationName: 'NERC Environmental Information Data Centre'
+              organisationName: 'NERC EDS Environmental Information Data Centre'
               role: 'publisher'
               email: 'info@eidc.ac.uk'
               organisationIdentifier: 'https://ror.org/04xw4m193'
@@ -371,7 +371,7 @@ define [
           multiline: true
           predefined:
             'EIDC':
-              organisationName: 'Environmental Information Data Centre'
+              organisationName: 'NERC EDS Environmental Information Data Centre'
               role: 'distributor'
               email: 'info@eidc.ac.uk'
               organisationIdentifier: 'https://ror.org/04xw4m193'

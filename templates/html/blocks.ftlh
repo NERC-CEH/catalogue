@@ -256,7 +256,7 @@ Replace \n with line breaks
 -->
 <#macro linebreaks value>
     <#if value?has_content>
-      ${value?replace("\n", "<br>")}
+      ${value?replace("\n", "<br>")?no_esc}
     </#if> 
 </#macro>
 

@@ -139,7 +139,7 @@ define [
   simpleDate: (time) ->
     date = new Date(time)
     d = date.getDate()
-    M = date.getMonth()
+    M = date.getMonth() + 1
     y = ('' + date.getFullYear()).slice(2)
     
     h = date.getHours()
