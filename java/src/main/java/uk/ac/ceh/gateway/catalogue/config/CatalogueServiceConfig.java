@@ -13,6 +13,7 @@ import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.*;
 public class CatalogueServiceConfig {
     public static final String GEMINI_DOCUMENT = "GEMINI_DOCUMENT";
     public static final String EF_DOCUMENT = "EF_DOCUMENT";
+    public static final String ELTER_SHORT = "ELTER_SHORT";
     public static final String IMP_DOCUMENT = "IMP_DOCUMENT";
     public static final String CEH_MODEL = "CEH_MODEL";
     public static final String CEH_MODEL_APPLICATION = "CEH_MODEL_APPLICATION";
