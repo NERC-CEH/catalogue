@@ -39,7 +39,7 @@ class SitemapControllerTest {
     @MockBean private MetadataListingService metadataListingService;
 
     @Autowired
-    private MockMvc mockMvc;
+    private MockMvc mvc;
 
     private final String catalogueKey = "eidc";
 
@@ -83,7 +83,7 @@ class SitemapControllerTest {
         givenBaseUri();
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             get("/robots.txt")
         )
             .andExpect(status().isOk())
@@ -101,7 +101,7 @@ class SitemapControllerTest {
         givenGeneratedUrls();
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             get("/{catalogue}/sitemap.txt", catalogueKey)
         )
             .andExpect(status().isOk())

@@ -46,7 +46,7 @@ public class CatalogueControllerTest {
     private @MockBean CatalogueService catalogueService;
     private @MockBean(name="permission") PermissionService permissionService;
 
-    @Autowired private MockMvc mockMvc;
+    @Autowired private MockMvc mvc;
     private CatalogueController controller;
 
     private final String file = "955b5a6e-dd3f-4b20-a3b5-a9d1d04ba052";
@@ -86,7 +86,7 @@ public class CatalogueControllerTest {
         givenMetadataDocument();
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             get("/documents/{file}/catalogue", file)
                 .accept(MediaType.APPLICATION_JSON)
         )
@@ -101,7 +101,7 @@ public class CatalogueControllerTest {
         givenCataloguesRetrieveAll();
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             get("/catalogues")
         )
             .andExpect(status().isOk())

@@ -50,7 +50,7 @@ class PublicationControllerTest {
     @MockBean(name="permission") private PermissionService permissionService;
     @MockBean private CatalogueService catalogueService;
 
-    @Autowired private MockMvc mockMvc;
+    @Autowired private MockMvc mvc;
     @Autowired private Configuration configuration;
 
     private final String file = "345-678";
@@ -98,7 +98,7 @@ class PublicationControllerTest {
         givenFreemarkerConfiguration();
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             get("/documents/{file}/publication", file)
                 .accept(MediaType.TEXT_HTML)
         )
@@ -119,7 +119,7 @@ class PublicationControllerTest {
         givenFreemarkerConfiguration();
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             post("/documents/{file}/publication/{toState}", file, toState.getId())
                 .header("remote-user", EIDC_PUBLISHER_USERNAME)
                 .accept(MediaType.TEXT_HTML)

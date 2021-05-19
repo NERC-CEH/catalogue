@@ -38,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.EIDC_PUBLISHER_USERNAME;
 
-// TODO: convert remaining tests to use mockMvc
+// TODO: convert remaining tests to use mvc
 
 @WithMockCatalogueUser
 @ActiveProfiles("test")
@@ -55,7 +55,7 @@ public class PermissionControllerTest {
 
     private PermissionController permissionController;
 
-    @Autowired private MockMvc mockMvc;
+    @Autowired private MockMvc mvc;
     @Autowired private Configuration configuration;
 
     private final String file = "12345";
@@ -111,7 +111,7 @@ public class PermissionControllerTest {
         givenCatalogue();
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             get("/documents/{file}/permission", file)
             .header("remote-user", EIDC_PUBLISHER_USERNAME)
             .accept(MediaType.TEXT_HTML)

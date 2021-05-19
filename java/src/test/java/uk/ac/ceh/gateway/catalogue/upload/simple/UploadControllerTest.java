@@ -56,7 +56,7 @@ class UploadControllerTest {
     // Needed for security preauthorise method decisions
     @MockBean(name="permission") private PermissionService permission;
 
-    @Autowired private MockMvc mockMvc;
+    @Autowired private MockMvc mvc;
     @Autowired Configuration configuration;
 
     private static final String ID = "993c5778-e139-4171-a57f-7a0f396be4b8";
@@ -130,7 +130,7 @@ class UploadControllerTest {
         given(documentRepository.read(ID)).willReturn(doc);
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             get("/upload/{id}", ID)
                 .header("remote-user", UPLOADER_USERNAME)
                 .accept(MediaType.TEXT_HTML)
@@ -154,7 +154,7 @@ class UploadControllerTest {
         givenDefaultCatalogue();
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             get("/upload/{id}", ID)
                 .header("remote-user", UNPRIVILEGED_USERNAME)
                 .accept(MediaType.TEXT_HTML)
@@ -176,7 +176,7 @@ class UploadControllerTest {
         givenDefaultCatalogue();
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             get("/upload/{id}", ID)
                 .accept(MediaType.TEXT_HTML)
         )
@@ -205,7 +205,7 @@ class UploadControllerTest {
         givenDefaultCatalogue();
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             get("/upload/{id}", ID)
                 .header("remote-user", UPLOADER_USERNAME)
                 .accept(MediaType.TEXT_HTML)
@@ -231,7 +231,7 @@ class UploadControllerTest {
         givenUserHasPermissionToUpload();
         given(storageService.filenames(ID)).willReturn(filenames);
 
-        mockMvc.perform(
+        mvc.perform(
             get("/upload/{id}", ID)
                 .header("remote-user", UPLOADER_USERNAME)
                 .accept(MediaType.APPLICATION_JSON)
@@ -252,7 +252,7 @@ class UploadControllerTest {
         givenDefaultCatalogue();
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             get("/upload/{id}", ID)
                 .header("remote-user", UNPRIVILEGED_USERNAME)
                 .accept(MediaType.APPLICATION_JSON)
@@ -273,7 +273,7 @@ class UploadControllerTest {
         givenDefaultCatalogue();
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             get("/upload/{id}", ID)
                 .accept(MediaType.APPLICATION_JSON)
         )
@@ -291,7 +291,7 @@ class UploadControllerTest {
         givenUserHasPermissionToUpload();
         doThrow(new UserInputException(ID, "Could not retrieve files")).when(storageService).filenames(ID);
 
-        mockMvc.perform(
+        mvc.perform(
             get("/upload/{id}", ID)
                 .header("remote-user", UPLOADER_USERNAME)
                 .accept(MediaType.APPLICATION_JSON)
@@ -309,7 +309,7 @@ class UploadControllerTest {
         givenUserHasPermissionToUpload();
         doThrow(new StorageServiceException(ID, "Could not retrieve files")).when(storageService).filenames(ID);
 
-        mockMvc.perform(
+        mvc.perform(
             get("/upload/{id}", ID)
                 .header("remote-user", UPLOADER_USERNAME)
                 .accept(MediaType.APPLICATION_JSON)
@@ -348,7 +348,7 @@ class UploadControllerTest {
         MockMultipartFile multipartFile = dataCsv();
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             multipart("/upload/{id}", ID)
                 .file(multipartFile)
                 .header("remote-user", UPLOADER_USERNAME)
@@ -370,7 +370,7 @@ class UploadControllerTest {
         givenDefaultCatalogue();
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             multipart("/upload/{id}", ID)
                 .file(multipartFile)
                 .header("remote-user", UNPRIVILEGED_USERNAME)
@@ -394,7 +394,7 @@ class UploadControllerTest {
             .store(ID, multipartFile);
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             multipart("http://example.com/upload/{id}", ID)
                 .file(multipartFile)
                 .header("remote-user", UPLOADER_USERNAME)
@@ -416,7 +416,7 @@ class UploadControllerTest {
             .store(ID, multipartFile);
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             multipart("http://example.com/upload/{id}", ID)
                 .file(multipartFile)
                 .header("remote-user", UPLOADER_USERNAME)
@@ -436,7 +436,7 @@ class UploadControllerTest {
         val fileWithSpaces = fileWithSpacesCsv();
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             multipart("http://example.com/upload/{id}", ID)
                 .file(fileWithSpaces)
                 .header("remote-user", UPLOADER_USERNAME)
@@ -457,7 +457,7 @@ class UploadControllerTest {
         givenUserHasPermissionToUpload();
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             delete("/upload/{id}/{filename}", ID, filename)
                 .header("remote-user", UPLOADER_USERNAME)
                 .accept(MediaType.APPLICATION_JSON)
@@ -478,7 +478,7 @@ class UploadControllerTest {
         givenDefaultCatalogue();
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             delete("/upload/{id}/{filename}", ID, filename)
                 .header("remote-user", UNPRIVILEGED_USERNAME)
         )
@@ -500,7 +500,7 @@ class UploadControllerTest {
             .delete(ID, filename);
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             delete("/upload/{id}/{filename}", ID, filename)
                 .header("remote-user", UPLOADER_USERNAME)
                 .accept(MediaType.APPLICATION_JSON)
@@ -520,7 +520,7 @@ class UploadControllerTest {
             .delete(ID, filename);
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             delete("/upload/{id}/{filename}", ID, filename)
                 .header("remote-user", UPLOADER_USERNAME)
                 .accept(MediaType.APPLICATION_JSON)
@@ -539,7 +539,7 @@ class UploadControllerTest {
         val filenameWithSpaces = "data with spaces.csv";
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             delete("/upload/{id}/{filename}", ID, filenameWithSpaces)
                 .header("remote-user", UPLOADER_USERNAME)
                 .accept(MediaType.APPLICATION_JSON)

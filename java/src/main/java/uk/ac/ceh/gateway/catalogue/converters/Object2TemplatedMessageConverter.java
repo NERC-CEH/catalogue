@@ -75,6 +75,7 @@ public class Object2TemplatedMessageConverter<T> extends AbstractHttpMessageConv
             val freemarkerTemplate = configuration.getTemplate(templateName);
             val processedTemplate = FreeMarkerTemplateUtils.processTemplateIntoString(freemarkerTemplate, t);
             log.debug("Using: {} for: {}", templateName, outputMessage.getHeaders().getContentType());
+            log.debug(processedTemplate);
             try (Writer writer = new BufferedWriter(new OutputStreamWriter(outputMessage.getBody(), StandardCharsets.UTF_8))) {
                 writer.write(processedTemplate);
             }

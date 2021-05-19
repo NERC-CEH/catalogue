@@ -54,7 +54,7 @@ public class MaintenanceControllerTest {
     @MockBean @Qualifier("mapserver-index") MapServerIndexingService mapserverService;
     @MockBean CatalogueService catalogueService;
 
-    @Autowired private MockMvc mockMvc;
+    @Autowired private MockMvc mvc;
     @Autowired private Configuration configuration;
 
     private MaintenanceController controller;
@@ -89,7 +89,7 @@ public class MaintenanceControllerTest {
         givenFreemarkerConfiguration();
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             get("/maintenance")
             .header("remote-user", ADMIN)
             .accept(MediaType.TEXT_HTML)

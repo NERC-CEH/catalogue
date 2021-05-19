@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Value;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
@@ -7,6 +8,7 @@ import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.indexing.SolrIndex;
+import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,6 +36,8 @@ public class SearchResults {
     String nextPage;
     List<SolrIndex> results;
     List<Facet> facets;
+    @JsonIgnore
+    Catalogue catalogue;
 
     public SearchResults(QueryResponse response, SearchQuery query) {
         checkNotNull(response);
@@ -50,8 +54,9 @@ public class SearchResults {
         this.nextPage = populateNextPage(query);
         this.results = response.getBeans(SolrIndex.class);
         this.facets = populateFacets(response, query);
+        this.catalogue = query.getCatalogue();
     }
-    
+
     private long populateNumFound(QueryResponse response) {
         if (response.getResults() != null) {
             return response.getResults().getNumFound();
@@ -59,7 +64,7 @@ public class SearchResults {
             return 0L;
         }
     }
-    
+
     /**
      * Return a link to the previous page as long as we are not currently on the
      * first page.
@@ -73,7 +78,7 @@ public class SearchResults {
             return null;
         }
     }
-    
+
     /**
      * Return a link to the next page as long as there is a page to go to.
      * @return A link to the next page if there is one to go to.
@@ -86,7 +91,7 @@ public class SearchResults {
             return null;
         }
     }
-    
+
     /**
      * Return a link to a search which is not applying the applied bounding box
      * filter
@@ -97,10 +102,10 @@ public class SearchResults {
             return query.withBbox(null).toUrl();
         }
         else {
-            return null;   
+            return null;
         }
     }
-    
+
     private String populateIntersectingBbox(SearchQuery query) {
         if(query.getBbox() != null && query.getSpatialOperation() != SpatialOperation.INTERSECTS) {
             return query.withSpatialOperation(SpatialOperation.INTERSECTS).toUrl();
@@ -109,7 +114,7 @@ public class SearchResults {
             return null;
         }
     }
-    
+
     private String populateWithinBbox(SearchQuery query) {
         if(query.getBbox() != null && query.getSpatialOperation() != SpatialOperation.ISWITHIN) {
             return query.withSpatialOperation(SpatialOperation.ISWITHIN).toUrl();
@@ -118,7 +123,7 @@ public class SearchResults {
             return null;
         }
     }
-    
+
     private List<Facet> populateFacets(QueryResponse response, SearchQuery query){
         List<Facet> newFacets = query.getFacets();
 
@@ -151,14 +156,14 @@ public class SearchResults {
             })
             .collect(Collectors.toList());
     }
-    
+
     private List<FacetResult> getHierarchicalFacetResults(SearchQuery query, FacetField facetField, String prefix) {
         return facetField.getValues().stream()
             .filter(c -> c.getName().startsWith(prefix))
             .map(c -> getFacetResultFromCount(query, c))
             .collect(Collectors.toList());
     }
-    
+
     private FacetResult getFacetResultFromCount(SearchQuery query, FacetField.Count count) {
         String name = count.getName();
         FacetFilter filter = new FacetFilter(count.getFacetField().getName(), name);
@@ -171,13 +176,13 @@ public class SearchResults {
             .subFacetResults(getHierarchicalFacetResults(query, count.getFacetField(), getChildName(name)))
             .build();
     }
-    
+
     private String getChildName(String name) {
-        int i = name.indexOf("/");  
+        int i = name.indexOf("/");
         Integer child = Integer.parseInt(name.substring(0, i)) + 1;
         return child + name.substring(i);
     }
-    
+
     private String getName(String name) {
         int last = name.length() - 1;
         int i = name.lastIndexOf("/", last - 1) + 1;

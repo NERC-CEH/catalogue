@@ -50,7 +50,7 @@ class CitationControllerTest {
     @MockBean CitationService citationService;
     @MockBean(name="permission") PermissionService permission;
 
-    @Autowired private MockMvc mockMvc;
+    @Autowired private MockMvc mvc;
 
     private static final String file = "file";
     private static final String revision = "revision";
@@ -112,7 +112,7 @@ class CitationControllerTest {
         givenCitation(false);
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             get("/documents/{file}/citation", file)
                 .header("remote-user", EIDC_PUBLISHER_USERNAME)
                 .accept(BIBTEX_VALUE)
@@ -130,7 +130,7 @@ class CitationControllerTest {
         givenCitation(false);
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             get("/documents/{file}/citation", file)
                 .header("remote-user", EIDC_PUBLISHER_USERNAME)
                 .param("format", BIBTEX_SHORT)
@@ -148,7 +148,7 @@ class CitationControllerTest {
         givenCitation(false);
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             get("/documents/{file}/citation", file)
                 .header("remote-user", EIDC_PUBLISHER_USERNAME)
                 .accept(RESEARCH_INFO_SYSTEMS_VALUE)
@@ -166,7 +166,7 @@ class CitationControllerTest {
         givenCitation(false);
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             get("/documents/{file}/citation", file)
                 .header("remote-user", EIDC_PUBLISHER_USERNAME)
                 .param("format", RESEARCH_INFO_SYSTEMS_SHORT)
@@ -184,7 +184,7 @@ class CitationControllerTest {
         givenCitation(false);
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             get("/documents/{file}/citation", file)
                 .header("remote-user", EIDC_PUBLISHER_USERNAME)
                 .accept(MediaType.APPLICATION_JSON)
@@ -202,7 +202,7 @@ class CitationControllerTest {
         givenCitation(false);
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             get("/documents/{file}/citation", file)
                 .header("remote-user", EIDC_PUBLISHER_USERNAME)
                 .param("format", "json")
@@ -220,7 +220,7 @@ class CitationControllerTest {
         givenCitation(false);
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             get("/documents/{file}/citation", file)
                 .header("remote-user", EIDC_PUBLISHER_USERNAME)
         )
@@ -237,7 +237,7 @@ class CitationControllerTest {
         givenCitation(true);
 
         //When
-        mockMvc.perform(
+        mvc.perform(
             get("/history/{revision}/{file}/citation", revision, file)
                 .header("remote-user", EIDC_PUBLISHER_USERNAME)
                 .accept(MediaType.APPLICATION_JSON)
@@ -255,7 +255,7 @@ class CitationControllerTest {
         givenCitation(true);
 
         //When
-        mockMvc.perform(
+        mvc.perform(
             get("/history/{revision}/{file}/citation", revision, file)
                 .header("remote-user", EIDC_PUBLISHER_USERNAME)
                 .accept(RESEARCH_INFO_SYSTEMS_VALUE)
@@ -275,7 +275,7 @@ class CitationControllerTest {
             .willReturn(document);
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             get("/documents/{file}/citation", file)
                 .header("remote-user", EIDC_PUBLISHER_USERNAME)
                 .accept(MediaType.APPLICATION_JSON)
@@ -299,7 +299,7 @@ class CitationControllerTest {
         given(citationService.getCitation(document)).willReturn(Optional.empty());
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             get("/documents/{file}/citation", file)
                 .header("remote-user", EIDC_PUBLISHER_USERNAME)
                 .accept(MediaType.APPLICATION_JSON)

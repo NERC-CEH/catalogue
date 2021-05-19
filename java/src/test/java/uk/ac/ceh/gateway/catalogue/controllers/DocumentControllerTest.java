@@ -82,7 +82,7 @@ class DocumentControllerTest {
     @MockBean private JenaLookupService jenaLookupService;
     @MockBean(name="permission") private PermissionService permissionService;
 
-    @Autowired private MockMvc mockMvc;
+    @Autowired private MockMvc mvc;
     @Autowired private Configuration configuration;
 
     private DocumentController controller;
@@ -270,7 +270,7 @@ class DocumentControllerTest {
         givenCodeLookup();
 
         //when
-        val result = mockMvc.perform(
+        val result = mvc.perform(
             get("/documents/{id}", id)
                 .accept(mediaType)
         )
@@ -303,7 +303,7 @@ class DocumentControllerTest {
 
 
         //when
-        val result = mockMvc.perform(
+        val result = mvc.perform(
             get("/documents/{id}", id)
                 .queryParam("format", shortName)
         )
@@ -331,7 +331,7 @@ class DocumentControllerTest {
         givenFreemarkerConfiguration();
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             get("/documents/upload")
         )
             .andExpect(status().isOk())
@@ -343,7 +343,7 @@ class DocumentControllerTest {
     @SneakyThrows
     void checkItCanRewriteIdToDocumentWithFileExtension() {
         //When
-        mockMvc.perform(
+        mvc.perform(
             get("/id/{id}.xml", id)
         )
             .andExpect(status().is3xxRedirection())
@@ -355,7 +355,7 @@ class DocumentControllerTest {
     @SneakyThrows
     public void redirectWithQueryString() {
         //When
-        mockMvc.perform(
+        mvc.perform(
             get("/id/{id}", id)
             .queryParam("query", "string")
         )
@@ -385,7 +385,7 @@ class DocumentControllerTest {
         ).willReturn(document);
 
         //When
-        mockMvc.perform(
+        mvc.perform(
             multipart("/documents")
                 .file(multipartFile)
                 .param("type", documentType)

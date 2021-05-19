@@ -51,7 +51,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     properties="spring.freemarker.template-loader-path=file:../templates"
 )
 public class OnlineResourceControllerTest {
-    @Autowired private MockMvc mockMvc;
+    @Autowired private MockMvc mvc;
 
     @MockBean private BundledReaderService<MetadataDocument> documentBundleReader;
     @MockBean private GetCapabilitiesObtainerService getCapabilitiesObtainerService;
@@ -138,7 +138,7 @@ public class OnlineResourceControllerTest {
         val expectedResponse = "[{\"url\":\"http://example.com/a\",\"type\":\"OTHER\"}]";
 
         //When
-        mockMvc.perform(
+        mvc.perform(
             get("/documents/{file}/onlineResources", file)
                 .accept(MediaType.APPLICATION_JSON)
         )
@@ -156,7 +156,7 @@ public class OnlineResourceControllerTest {
         val expectedResponse = "[{\"url\":\"a\",\"type\":\"OTHER\"}]";
 
         //When
-        mockMvc.perform(
+        mvc.perform(
             get("/history/{revision}/{file}/onlineResources", revision, file)
                 .accept(MediaType.APPLICATION_JSON)
         )
@@ -174,7 +174,7 @@ public class OnlineResourceControllerTest {
         givenDocumentWithNoOnlineResources();
 
         //When
-       mockMvc.perform(
+       mvc.perform(
            get("/history/{revision}/{file}/onlineResources/{index}", revision, file, index)
        )
            .andExpect(status().isNotFound());
@@ -187,7 +187,7 @@ public class OnlineResourceControllerTest {
         givenDocumentWithOnlineResource();
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             get("/documents/{file}/onlineResources/{index}", file, 0)
         )
             .andExpect(status().is3xxRedirection())
@@ -202,7 +202,7 @@ public class OnlineResourceControllerTest {
         givenWmsCapabilities();
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             get("/documents/{file}/onlineResources/{index}", file, 0)
         )
             .andExpect(status().isOk())
@@ -222,7 +222,7 @@ public class OnlineResourceControllerTest {
         givenTransparentProxyResponse();
 
         //when
-        mockMvc.perform(
+        mvc.perform(
             get("/documents/{file}/onlineResources/{index}/tms/1.0.0/{layer}/{z}/{x}/{y}.png", file, 0, "layer1", 1, 2, 3)
         )
             .andExpect(status().isOk())
@@ -239,7 +239,7 @@ public class OnlineResourceControllerTest {
         givenTransparentProxyResponse();
 
         //When
-        mockMvc.perform(
+        mvc.perform(
             get("/documents/{file}/onlineResources/{index}/{layer}/legend", file, 0, "layer1")
         )
             .andExpect(status().isOk())
