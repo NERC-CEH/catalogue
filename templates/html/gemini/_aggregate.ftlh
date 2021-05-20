@@ -1,5 +1,8 @@
 <#if rel_hasMember??>
 	<div id="section-children">
+		<h3>
+		This ${recordType} contains <#if rel_hasMember?size gt 1>these<#else>this</#if> resource<#if rel_hasMember?size gt 1>s</#if></h3>
+
 		<#list rel_hasMember?sort_by("title")>
 			<div class="cardlist">
 			<#items as child>
@@ -28,6 +31,7 @@
 </#if>
 
 <#if rel_memberOf?has_content && rel_memberOf?size gt 0 >
+	<h3>This ${recordType} is included in the following collection<#if rel_memberOf?size gt 1>s</#if></h3>
 	<div id="parents">
 		<div class="cardlist">
 			<#list rel_memberOf?sort_by("title") as item>
