@@ -12,6 +12,7 @@ target
 java/out
 java/bin
 /upload/
+**/docker-compose.yml
 
 # Ignore Test output
 test-reports/**
