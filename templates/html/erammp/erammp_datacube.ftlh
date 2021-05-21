@@ -1,5 +1,6 @@
 <#import "../skeleton.ftlh" as skeleton>
 <#import "../../functions.ftlh" as func>
+<#import "../blocks.ftlh" as b>
 
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
     <div id="metadata" class="metadata erammp-metadata">
@@ -26,7 +27,7 @@
         <div class="section">
           <div class="section-content">
               <div class="description">
-                <@renderLinebreaks description/>
+                <@b.linebreaks description/>
               </div>
           </div>
         </div>
@@ -56,11 +57,9 @@
                   <#if provider?? && provider?has_content>
                     <@simplerow "Data provider${(provider?size > 1)?then('s', '')}">
                       <#list provider as contact>
-                        <#noautoesc>
-                          <div class="responsibleParty">
+                        <div class="responsibleParty">
                             <@func.displayContact contact, false, true />
-                          </div>
-                        </#noautoesc>
+                        </div>
                       </#list>
                     </@simplerow>
                   </#if>
@@ -200,10 +199,6 @@
       <#nested>
     </div>
   </div>
-</#macro>
-
-<#macro renderLinebreaks content>
-    ${content?replace("\n", "<br>")}
 </#macro>
 
 <#macro commaList values>

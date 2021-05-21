@@ -22,16 +22,12 @@
 
       <#if projectObjectives?? && projectObjectives?has_content>
         <@m.key "Project objectives" "Brief description of main objectives">
-          <#noautoesc>
-            <@b.linebreaks projectObjectives />
-          </#noautoesc>
+          <@b.linebreaks projectObjectives />
         </@m.key>
       </#if>
       <#if description?? && description?has_content>
         <@m.key "Project description" "Longer description of project including why models were used to answer the science question, assumptions made, key outputs">
-          <#noautoesc>
-            <@b.linebreaks description />
-          </#noautoesc>
+          <@b.linebreaks description />
         </@m.key>
       </#if>
       <#if projectCompletionDate?? && projectCompletionDate?has_content>
@@ -42,9 +38,7 @@
       </#if>
       <#if funderDetails?? && funderDetails?has_content>
         <@m.key "Funder details" "Funder details including grant number if appropriate">
-          <#noautoesc>
-            <@b.linebreaks funderDetails />
-          </#noautoesc>
+          <@b.linebreaks funderDetails />
         </@m.key>
       </#if>
       <#if contactName??>
@@ -59,16 +53,12 @@
       </#if>
       <#if multipleModelsUsed?? && multipleModelsUsed?has_content>
         <@m.key "Multiple models used?" "Were multiple models used in the project? If so, which ones?">
-          <#noautoesc>
-            <@b.linebreaks multipleModelsUsed />
-          </#noautoesc>
+          <@b.linebreaks multipleModelsUsed />
         </@m.key>
       </#if>
       <#if multipleModelLinkages?? && multipleModelLinkages?has_content>
         <@m.key "Multiple model linkages" "If multiple models were used how was this done e.g. chained, independent runs, comparisons, ensemble">
-          <#noautoesc>
-            <@b.linebreaks multipleModelLinkages />
-          </#noautoesc>
+          <@b.linebreaks multipleModelLinkages />
         </@m.key>
       </#if>
     </section>
@@ -188,23 +178,17 @@
       <h2>Evaluation Information</h2>
       <#if sensitivityAnalysis?? && sensitivityAnalysis?has_content>
         <@m.key "Sensitivity analysis" "Details of any sensitivity analysis performed, or link to appropriate documentation">
-          <#noautoesc>
-            <@b.linebreaks sensitivityAnalysis />
-          </#noautoesc>
+          <@b.linebreaks sensitivityAnalysis />
         </@m.key>
       </#if>
       <#if uncertaintyAnalysis?? && uncertaintyAnalysis?has_content>
         <@m.key "Uncertainty analysis" "How was uncertainty in the model captured and represented? Give links to any appropriate documentation">
-          <#noautoesc>
-            <@b.linebreaks uncertaintyAnalysis />
-          </#noautoesc>
+          <@b.linebreaks uncertaintyAnalysis />
         </@m.key>
       </#if>
       <#if validation?? && validation?has_content>
         <@m.key "Uncertainty analysis" "Was the model validated against data not used for model building or parameterisation? If so, provide links to any documentation of results">
-          <#noautoesc>
-            <@b.linebreaks validation />
-          </#noautoesc>
+          <@b.linebreaks validation />
         </@m.key>
       </#if>
     </section>

@@ -148,7 +148,7 @@
                   <#items as testLink>
                     <#if testLink.function == "order">
                       <li>
-                        <a href="${testLink.url}&test=true">Test order</a>
+                        <a href="${testLink.url}?test=true">Test order</a>
                       </li>
                     </#if>
                   </#items>

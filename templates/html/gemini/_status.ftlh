@@ -1,3 +1,5 @@
+<#import "../blocks.ftlh" as b>
+
 <#if resourceStatus == "Superseded" || resourceStatus == "Withdrawn" || resourceStatus == "Embargoed" || resourceStatus == "In-progress">
     <div id="resourceStatus" class="alert alert-${resourceStatus}" role="alert">
         <#if resourceStatus == "Superseded" || resourceStatus == "Withdrawn">
@@ -9,7 +11,7 @@
                 </#if>
             </p>
             <#if reasonChanged??>
-                <p>${reasonChanged?replace("\n", "<br>")}</p>
+                <p><@b.linebreaks reasonChanged/></p>
             </#if>
             <p>If you need access to this archived version, please <a href="https://www.eidc.ac.uk/contact" target="_blank" rel="noopener noreferrer">contact the EIDC</a></p>
         <#elseif resourceStatus == "Embargoed">
