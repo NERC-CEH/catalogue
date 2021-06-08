@@ -16,7 +16,7 @@ import java.util.List;
 
 import static org.apache.solr.client.solrj.SolrRequest.METHOD.POST;
 
-@Profile("elter") // Only need this service running for elter catalogue instance
+@Profile("elter")
 @Slf4j
 @ToString
 @Service

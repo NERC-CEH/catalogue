@@ -4,5 +4,6 @@ define [
 ], (_, Backbone) -> Backbone.Model.extend
 
   defaults:
-    title:  ''
-    url: ''
+    title: 'test'
+    url: 'test@test.com'
+

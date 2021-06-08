@@ -48,7 +48,8 @@ define [
   'cs!models/editor/MapDataSource'
   'cs!views/editor/MapDataSourceView'
   'cs!views/editor/RelatedRecordView'
-], (EditorView, SingleObjectView, InputView, CheckboxView, ReadOnlyView, TextareaView, ParentView, ParentLargeView, PredefinedParentView, PredefinedParentLargeView, ParentStringView, ResourceTypeView, ResourceType, AccessLimitationView, AccessLimitation, InspireTheme, InspireThemeView, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, MultipleDate, Contact, BoundingBox, BoundingBoxView, OnlineResourceView, OnlineResource, ResourceConstraintView, OtherConstraintView, TemporalExtentView,  ResourceMaintenanceView, SpatialReferenceSystemView, SpatialRepresentationTypeView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, SpatialResolutionView, SpatialResolution, FundingView, Funding, SupplementalView, Supplemental, ServiceView, Service, MapDataSource, MapDataSourceView, RelatedRecordView) -> EditorView.extend
+  'cs!views/deims/DeimsSiteView'
+], (EditorView, SingleObjectView, InputView, CheckboxView, ReadOnlyView, TextareaView, ParentView, ParentLargeView, PredefinedParentView, PredefinedParentLargeView, ParentStringView, ResourceTypeView, ResourceType, AccessLimitationView, AccessLimitation, InspireTheme, InspireThemeView, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, MultipleDate, Contact, BoundingBox, BoundingBoxView, OnlineResourceView, OnlineResource, ResourceConstraintView, OtherConstraintView, TemporalExtentView,  ResourceMaintenanceView, SpatialReferenceSystemView, SpatialRepresentationTypeView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, SpatialResolutionView, SpatialResolution, FundingView, Funding, SupplementalView, Supplemental, ServiceView, Service, MapDataSource, MapDataSourceView, RelatedRecordView, DeimsSiteView) -> EditorView.extend
 
   initialize: ->
 
@@ -69,6 +70,13 @@ define [
           ModelType: ResourceType
           label: 'Resource Type'
           ObjectInputView: ResourceTypeView
+
+        new ParentView
+          model: @model
+          modelAttribute: 'deimsSites'
+          label: 'DeimsSites'
+          ObjectInputView: DeimsSiteView
+          multiline: true
 
         new InputView
           model: @model
@@ -404,7 +412,6 @@ define [
           label: 'Related records'
           ObjectInputView: RelatedRecordView
           multiline: true
-          disabled: disabled
       ]
     ,
       label: 'Spatial'

@@ -9,6 +9,7 @@ import lombok.experimental.Accessors;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
+import uk.ac.ceh.gateway.catalogue.deims.DeimsSolrIndex;
 import uk.ac.ceh.gateway.catalogue.gemini.*;
 import uk.ac.ceh.gateway.catalogue.indexing.WellKnownText;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
@@ -68,6 +69,7 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
     private Keyword resourceType;
     private AccessLimitation accessLimitation;
     private boolean notGEMINI;
+    private List<DeimsSolrIndex> deimsSites;
 
 
     @Override

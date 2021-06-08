@@ -15,7 +15,7 @@ import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 
 import java.io.IOException;
 
-@Profile("elter") // Only need this service running for elter catalogue instance
+@Profile("elter")
 @Slf4j
 @ToString(of="address")
 @Service
