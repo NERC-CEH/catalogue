@@ -260,12 +260,11 @@ public class CatalogueServiceConfig {
 
             Catalogue.builder()
                 .id("nm")
-                .title("NERC Models Sandpit")
+                .title("NERC EDS model catalogue")
                 .url("")
                 .facetKey("topic")
                 .facetKey("resourceType")
                 .facetKey("licence")
-                .documentType(gemini)
                 .documentType(cehModel)
                 .documentType(cehModelApplication)
                 .fileUpload(false)
