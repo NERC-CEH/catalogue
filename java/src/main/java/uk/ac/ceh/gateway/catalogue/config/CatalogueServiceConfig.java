@@ -53,7 +53,7 @@ public class CatalogueServiceConfig {
                 .build();
 
         DocumentType cehModelApplication = DocumentType.builder()
-                .title("Model Application")
+                .title("Model use")
                 .type(CEH_MODEL_APPLICATION)
                 .build();
 
@@ -260,12 +260,11 @@ public class CatalogueServiceConfig {
 
             Catalogue.builder()
                 .id("nm")
-                .title("NERC Models Sandpit")
+                .title("NERC EDS model catalogue")
                 .url("")
                 .facetKey("topic")
                 .facetKey("resourceType")
                 .facetKey("licence")
-                .documentType(gemini)
                 .documentType(cehModel)
                 .documentType(cehModelApplication)
                 .fileUpload(false)
