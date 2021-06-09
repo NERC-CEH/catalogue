@@ -53,7 +53,7 @@ public class CatalogueServiceConfig {
                 .build();
 
         DocumentType cehModelApplication = DocumentType.builder()
-                .title("Model Application")
+                .title("Model use")
                 .type(CEH_MODEL_APPLICATION)
                 .build();
 

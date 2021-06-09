@@ -210,7 +210,7 @@
         </#if>
         <#--noinspection FtlWellformednessInspection-->
         <#list modelApplications>
-          <@m.key "Model Applications" "Applications of the model">
+          <@m.key "Model use" "Implementations of the model">
             <#items as md>
               <@b.blockUrl md/>
             </#items>
