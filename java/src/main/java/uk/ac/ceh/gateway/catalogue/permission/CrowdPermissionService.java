@@ -46,7 +46,7 @@ public class CrowdPermissionService implements PermissionService {
         log.info("Creating CrowdPermissionService");
         log.debug("CrowdPermissionService has {}", this.groupStore);
     }
-    
+
     @Override
     public boolean toAccess(CatalogueUser user, String file, String permission) {
         try {
@@ -66,7 +66,7 @@ public class CrowdPermissionService implements PermissionService {
             );
         }
     }
-    
+
     @Override
     public boolean toAccess(
         @NonNull CatalogueUser user,
@@ -77,7 +77,7 @@ public class CrowdPermissionService implements PermissionService {
         MetadataInfo document = getMetadataInfo(file, revision);
         return toAccess(user, document, permission);
     }
-    
+
     private boolean toAccess(
         @NonNull CatalogueUser user,
         @NonNull MetadataInfo document,
@@ -90,7 +90,7 @@ public class CrowdPermissionService implements PermissionService {
         log.debug("Can {} access document with {} permission? {}", user.getUsername(), permission, canAccess);
         return canAccess;
     }
-    
+
     @Override
     public boolean userCanEdit(@NonNull String file) {
         try {
@@ -115,11 +115,10 @@ public class CrowdPermissionService implements PermissionService {
             );
         }
     }
-    
+
     @Override
     public boolean userCanUpload(@NonNull String file) {
-        val isAdmin = userInGroup(DocumentController.MAINTENANCE_ROLE);
-        if (isAdmin) return true;
+        if (userIsAdmin()) return true;
         try {
             val user = getCurrentUser();
             val latestRevision = repo.getLatestRevision();
@@ -182,7 +181,7 @@ public class CrowdPermissionService implements PermissionService {
             format("role_%s_editor", catalogue)
         ));
     }
-    
+
     @Override
     public boolean userCanMakePublic(@NonNull String catalogue) {
         log.debug("user can make public in {}", catalogue);
@@ -190,7 +189,7 @@ public class CrowdPermissionService implements PermissionService {
             format("role_%s_publisher", catalogue)
         ));
     }
-    
+
     @Override
     public boolean userCanDatacite() {
         return userCan((String name) -> name.equalsIgnoreCase(DataciteController.DATACITE_ROLE));
@@ -200,14 +199,19 @@ public class CrowdPermissionService implements PermissionService {
     public boolean userInGroup (String group) {
         return userCan((String name) -> name.equalsIgnoreCase(group));
     }
-    
+
+    @Override
+    public boolean userIsAdmin() {
+        return userInGroup(DocumentController.MAINTENANCE_ROLE);
+    }
+
     @Override
     public List<Group> getGroupsForUser(CatalogueUser user) {
         return (user.isPublic())
             ? Collections.emptyList()
             : groupStore.getGroups(user);
     }
-    
+
     private boolean userCan(Predicate<String> filter) {
         final CatalogueUser user = getCurrentUser();
         if (user.isPublic()) {
@@ -220,7 +224,7 @@ public class CrowdPermissionService implements PermissionService {
                 .anyMatch(filter);
         }
     }
-    
+
     // If the current thread of execution is running outside of spring mvc, an
     // authentication may not have been set. If this is the case, we can assume
     // that the current user is PUBLIC.
@@ -230,7 +234,7 @@ public class CrowdPermissionService implements PermissionService {
         log.debug("User in SecurityContext {}", currentUser);
         return currentUser;
     }
-    
+
     private MetadataInfo getMetadataInfo(String file, String revision) {
         try {
             val dataDocument = repo.getData(revision, format("%s.meta", file));

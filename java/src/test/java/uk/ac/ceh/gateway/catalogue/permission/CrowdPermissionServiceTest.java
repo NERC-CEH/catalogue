@@ -96,7 +96,28 @@ public class CrowdPermissionServiceTest {
     }
 
     @Test
-    public void namedUserWithUploadPermissionCanUpload() {
+    void userIsAdmin() {
+        //given
+        populateSecurityContextHolderAndAuthentication(
+            "admin",
+            "ROLE_CIG_SYSTEM_ADMIN"
+        );
+
+        //when
+        assertTrue(permissionService.userIsAdmin());
+    }
+
+    @Test
+    void userIsNotAdmin() {
+        //given
+        populateSecurityContextHolderAndAuthentication("not", "ROLE_USER");
+
+        //when
+        assertFalse(permissionService.userIsAdmin());
+    }
+
+    @Test
+    void namedUserWithUploadPermissionCanUpload() {
         //given
         populateSecurityContextHolderAndAuthentication("uploader");
         val info = MetadataInfo.builder().build();
@@ -181,10 +202,10 @@ public class CrowdPermissionServiceTest {
     public void eidcEditorCanCreate() {
         //given
         populateSecurityContextHolderAndAuthentication("eidcEditor", "ROLE_EIDC_EDITOR");
-        
+
         //when
         val actual = permissionService.userCanCreate("eidc");
-        
+
         //then
         assertTrue(actual);
     }
@@ -211,10 +232,10 @@ public class CrowdPermissionServiceTest {
 //        given(repo.getLatestRevision()).willReturn(new DummyRevision("revision"));
         given(repo.getData("revision", "test.meta")).willAnswer(RETURNS_MOCKS);
         given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(publik());
-        
+
         //When
         val actual = permissionService.toAccess(CatalogueUser.PUBLIC_USER, "test", "revision", "VIEW");
-        
+
         //Then
         assertTrue(actual);
     }
@@ -227,10 +248,10 @@ public class CrowdPermissionServiceTest {
        // given(repo.getLatestRevision()).willReturn(new DummyRevision("revision"));
         given(repo.getData("revision", "test.meta")).willAnswer(RETURNS_MOCKS);
         given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(publik());
-        
+
         //When
         val actual = permissionService.toAccess(namedUser, "test", "revision", "VIEW");
-        
+
         //Then
         assertTrue(actual);
     }
@@ -244,11 +265,11 @@ public class CrowdPermissionServiceTest {
 
         //When
         val actual = permissionService.toAccess(CatalogueUser.PUBLIC_USER, "test", "revision", "VIEW");
-        
+
         //Then
         assertFalse(actual);
     }
-    
+
     @Test
     @SneakyThrows
     public void namedUserCanAccessDraftRecordWithUsernamePermission() {
@@ -259,10 +280,10 @@ public class CrowdPermissionServiceTest {
         metadataInfo.addPermission(Permission.VIEW, "username");
         given(repo.getData("revision", "test.meta")).willAnswer(RETURNS_MOCKS);
         given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(metadataInfo);
-        
+
         //When
         val actual = permissionService.toAccess(namedUser, "test", "revision", "VIEW");
-        
+
         //Then
         assertTrue(actual);
     }
@@ -277,14 +298,14 @@ public class CrowdPermissionServiceTest {
         given(repo.getData("revision", "test.meta")).willAnswer(RETURNS_MOCKS);
         given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(metadataInfo);
         given(groupStore.getGroups(namedUser)).willReturn(Collections.singletonList(new CrowdGroup("group0")));
-        
+
         //When
         val actual = permissionService.toAccess(namedUser, "test", "revision", "VIEW");
-        
+
         //Then
         assertTrue(actual);
     }
-    
+
     @Test
     @SneakyThrows
     public void namedUserCannotWriteDraftRecordWithNoGroupPermission() {
@@ -294,14 +315,14 @@ public class CrowdPermissionServiceTest {
         given(repo.getData("revision", "test.meta")).willAnswer(RETURNS_MOCKS);
         given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(draft());
         given(groupStore.getGroups(namedUser)).willReturn(Collections.emptyList());
-        
+
         //When
         val actual = permissionService.toAccess(namedUser, "test", "revision", "EDIT");
-        
+
         //Then
         assertFalse(actual);
     }
-    
+
     @Test
     public void editorCanEdit() {
         //Given
@@ -309,26 +330,26 @@ public class CrowdPermissionServiceTest {
         MetadataInfo info = MetadataInfo.builder().catalogue("eidc").build();
         info.addPermission(Permission.EDIT, "editor");
         configDocumentInfoMapper(info);
-        
+
         //When
         val actual = permissionService.userCanEdit("test");
-        
+
         //Then
         assertTrue(actual);
     }
-    
+
     @Test
     public void publisherCanMakePublic() {
         //Given
         populateSecurityContextHolderAndAuthentication("publisher", "ROLE_EIDC_PUBLISHER");
-        
+
         //When
         val actual = permissionService.userCanMakePublic("eidc");
-        
+
         //Then
         assertTrue(actual);
     }
-    
+
     @Test
     public void publisherCanView() {
         //Given
@@ -337,36 +358,36 @@ public class CrowdPermissionServiceTest {
 
         //When
         val actual = permissionService.toAccess(publisher, "test", "VIEW");
-        
+
         //Then
         assertTrue(actual);
     }
-    
+
     @Test
     public void nonPublisherCannotMakePublic() {
         //Given
         populateSecurityContextHolderAndAuthentication("editor","ROLE_EIDC_EDITOR");
-        
+
         //When
         val actual = permissionService.userCanMakePublic("eidc");
-        
+
         //Then
         assertFalse(actual);
     }
-    
+
     @Test
     public void userWithoutEditorPermissionCannotEdit() {
         //Given
         populateSecurityContextHolderAndAuthentication("bob","CEH", "Another");
         configDocumentInfoMapper(MetadataInfo.builder().catalogue("ceh").build());
-        
+
         //When
         val actual = permissionService.userCanEdit("test");
-        
+
         //Then
         assertFalse(actual);
     }
-    
+
     @Test
     public void publicCannotEdit() {
         //Given
@@ -377,10 +398,10 @@ public class CrowdPermissionServiceTest {
         SecurityContextHolder.setContext(securityContext);
 
         configDocumentInfoMapper(MetadataInfo.builder().catalogue("ceh").build());
-        
+
         //When
         val actual = permissionService.userCanEdit("test");
-        
+
         //Then
         assertFalse(actual);
     }
