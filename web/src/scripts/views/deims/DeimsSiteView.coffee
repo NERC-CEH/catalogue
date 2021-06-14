@@ -10,7 +10,6 @@ define [
 
   initialize: ->
     ObjectInputView.prototype.initialize.apply @
-    catalogue = $('html').data('catalogue')
 
     @$('.autocomplete').autocomplete
       minLength: 2
@@ -31,9 +30,3 @@ define [
         @$('.title').val ui.item.label
         @model.set 'url', ui.item.url
         @$('.url').val ui.item.url
-
-
-  render: ->
-    ObjectInputView.prototype.render.apply @
-    @$('select.rel').val @model.get 'rel'
-    @

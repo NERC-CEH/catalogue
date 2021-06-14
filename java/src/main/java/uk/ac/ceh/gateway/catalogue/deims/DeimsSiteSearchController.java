@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.controllers;
+package uk.ac.ceh.gateway.catalogue.deims;
 
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -8,8 +8,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import uk.ac.ceh.gateway.catalogue.deims.DeimsSolrIndex;
-import uk.ac.ceh.gateway.catalogue.deims.DeimsSolrQueryService;
 
 import java.util.List;
 
@@ -26,7 +24,7 @@ public class DeimsSiteSearchController {
         log.info("Creating");
     }
 
-    @GetMapping(value = "elter/vocabulary/deims")
+    @GetMapping(value = "vocabulary/deims")
     @ResponseBody
     public List<DeimsSolrIndex> getSites(
             @RequestParam(value = "query", defaultValue = "*") String query

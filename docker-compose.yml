@@ -13,20 +13,20 @@ services:
       #- ./datastore:/var/ceh-catalogue/datastore
       # Uncomment to see Hubbub Upload uploaded files
       #- ./dropbox:/var/ceh-catalogue/dropbox
-      - mapfiles:/var/ceh-catalogue/mapfiles
+      #- mapfiles:/var/ceh-catalogue/mapfiles
       # Uncomment to see Simple Upload uploaded files
       #- ./upload:/var/upload/datastore
       # Uncomment to work on XML schema validation in Docker container
       #- ./schemas:/opt/ceh-catalogue/schemas
       # Uncomment to work on Freemarker templates in Docker container
-      - ./templates:/opt/ceh-catalogue/templates
+      #- ./templates:/opt/ceh-catalogue/templates
       # Uncomment to work on styling (LESS) & javascript in Docker container
-      - ./web/src:/opt/ceh-catalogue/static
+      #- ./web/src:/opt/ceh-catalogue/static
     environment:
       - doi.api=https://api.test.datacite.org/dois
       - jira.address=https://jira-test.nerc-lancaster.ac.uk/rest/api/2
       - spring.freemarker.cache=false
-      - spring.profiles.active=development,elter,upload:simple
+      - spring.profiles.active=development,upload:simple
     env_file:
       - secrets.env
   solr:
