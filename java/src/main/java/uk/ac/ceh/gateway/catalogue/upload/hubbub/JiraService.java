@@ -13,8 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
-import uk.ac.ceh.gateway.catalogue.model.JiraIssue;
-import uk.ac.ceh.gateway.catalogue.model.JiraSearchResults;
 
 import java.util.Collections;
 import java.util.Optional;

@@ -9,6 +9,7 @@ services:
       - "8080:8080"
       - "8081:8081"
     volumes:
+      # TODO: document how to override these in docker-compose.override.yml
       # Uncomment to see catalogue json files
       #- ./datastore:/var/ceh-catalogue/datastore
       # Uncomment to see Hubbub Upload uploaded files
