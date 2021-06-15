@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -21,7 +20,6 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
-import uk.ac.ceh.gateway.catalogue.services.JiraService;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
@@ -232,21 +230,14 @@ public class UploadController {
     }
 
     private String transitionIssueTo(String guid, String status) {
-        val issues = jiraService.search(jql(guid));
-        if (issues.size() != 1)
-            throw new NonUniqueJiraIssue();
-        val issue = issues.get(0);
-        val key = issue.getKey();
-        jiraService.transition(key, status);
-        return key;
-    }
-
-    @ResponseStatus(
-            value = HttpStatus.BAD_REQUEST,
-            reason = "Can not finish, contact admin to resolve issue clash"
-    )
-    static class NonUniqueJiraIssue extends RuntimeException {
-        static final long serialVersionUID = 1L;
+        val possibleIssue = jiraService.retrieveDataTransferIssue(guid);
+        if (possibleIssue.isPresent()) {
+            val key = possibleIssue.get().getKey();
+            jiraService.transition(key, status);
+            return key;
+        } else {
+            throw new RuntimeException(format("Cannot transition %s to %s", guid, status));
+        }
     }
 
     private void removeUploadPermission(CatalogueUser user, String guid)
@@ -261,10 +252,5 @@ public class UploadController {
                 guid,
                 format("Permissions of %s changed.", guid)
         );
-    }
-
-    private String jql(String guid) {
-        String jqlTemplate = "project=eidchelp and component='data transfer' and cf[13250]=%s";
-        return format(jqlTemplate, guid);
     }
 }

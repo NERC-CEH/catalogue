@@ -1,0 +1,12 @@
+{
+  "issues": [
+    {
+      "key": "TEST-123",
+      "fields": {
+        "status": {
+          "name": "Open"
+        }
+      }
+    }
+  ]
+}
