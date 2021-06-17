@@ -80,11 +80,16 @@ public class JiraServiceTest {
     @Test
     public void addingACommentToIssueWithKey() {
         // Given
+        val expectedRequestBody = """
+            { "update": { "comment": [{ "add": { "body": "this is a comment"}}]}}
+        """;
         mockServer
             .expect(requestTo("https://example.com/api/issue/TEST-123"))
             .andExpect(method(HttpMethod.PUT))
+            .andExpect(content().contentType(APPLICATION_JSON))
+            .andExpect(content().json(expectedRequestBody))
             .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic amlyYTpwYXNzd29yZA=="))
-            .andRespond(withSuccess("", APPLICATION_JSON));
+            .andRespond(withSuccess());
 
         // When
         jiraService.comment(key, "this is a comment");
@@ -93,13 +98,19 @@ public class JiraServiceTest {
     @Test
     public void transitioningIssueWithKeyToTransitionId() {
         // Given
+        val expectedRequestBody = """
+            { "transition": { "id": "711" }}
+        """;
+
         mockServer
             .expect(requestTo("https://example.com/api/issue/TEST-123/transitions"))
             .andExpect(method(HttpMethod.POST))
+            .andExpect(content().contentType(APPLICATION_JSON))
+            .andExpect(content().json(expectedRequestBody))
             .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic amlyYTpwYXNzd29yZA=="))
-            .andRespond(withSuccess("", APPLICATION_JSON));
+            .andRespond(withSuccess());
 
         // When
-        jiraService.transition(key, id);
+        jiraService.transition(key, "711");
     }
 }

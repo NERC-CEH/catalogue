@@ -32,6 +32,7 @@ import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.UPLOAD_DOCU
 @Slf4j
 @ToString
 public class UploadController {
+    // These transition ids are specific to the EIDCHELP Jira project
     private static final String START_PROGRESS = "751";
     private static final String HOLD = "831";
     private static final String UNHOLD = "811";

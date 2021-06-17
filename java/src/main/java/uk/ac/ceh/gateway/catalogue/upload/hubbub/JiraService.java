@@ -6,9 +6,7 @@ import lombok.val;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.client.RestTemplate;
@@ -17,6 +15,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.Collections;
 import java.util.Optional;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static uk.ac.ceh.gateway.catalogue.util.Headers.withBasicAuth;
 
 @Service
@@ -53,11 +52,13 @@ public class JiraService {
             .buildAndExpand(key)
             .toUri();
         val requestBody = String.format("{\"update\":{\"comment\":[{\"add\":{\"body\":\"%s\"}}]}}", comment);
+        val headers = withBasicAuth(username, password);
+        headers.setContentType(APPLICATION_JSON);
         restTemplate.exchange(
             url,
             HttpMethod.PUT,
-            new HttpEntity<>(requestBody, withBasicAuth(username, password)),
-            String.class
+            new HttpEntity<>(requestBody, headers),
+            Void.class
         );
     }
 
@@ -68,12 +69,16 @@ public class JiraService {
             .path("issue/{key}/transitions")
             .buildAndExpand(key)
             .toUri();
-        val requestBody = String.format("{\"transition\":{\"id\":\"%s\"}}", id);
+        val transitionRequest = String.format("{\"transition\":{\"id\":\"%s\"}}", id);;
+        log.debug("Transition url: {}", url);
+        log.debug("Transition request body: {}", transitionRequest);
+        val headers = withBasicAuth(username, password);
+        headers.setContentType(APPLICATION_JSON);
         restTemplate.exchange(
             url,
             HttpMethod.POST,
-            new HttpEntity<>(requestBody, withBasicAuth(username, password)),
-            String.class
+            new HttpEntity<>(transitionRequest, headers),
+            Void.class
         );
     }
 
@@ -96,7 +101,6 @@ public class JiraService {
             .orElse(Collections.emptyList());
         log.debug("For {} found {} issues", id, issues.size());
         if (issues.size() != 1) {
-            log.error("Multiple Jira issues found for {}", id);
             issues.forEach(issue -> log.error("Jira issue: {}", issue.getKey()));
             throw new NonUniqueJiraIssue();
         }

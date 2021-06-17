@@ -16,25 +16,25 @@
             <#if isAdmin && isInProgress>
                 <@row>
                     <div class="col-md-3 col-md-offset-6">
-                        <@moveAllDatastore/>
+                        <@moveAllDatastoreButton/>
                     </div>
                     <div class="col-md-3">
-                        <@reschedule/>
+                        <@rescheduleButton/>
                     </div>
                 </@row>
             <#elseif isAdmin && isOpen>
                 <@row>
-                    <div class="col-md-3 col-md-offset-9">
-                        <@moveAllDatastore/>
+                    <div class="col-md-3 col-md-offset-6">
+                        <@moveAllDatastoreButton/>
                     </div>
                     <div class="col-md-3">
-                        <@schedule/>
+                        <@scheduleButton/>
                     </div>
                 </@row>
             <#elseif isAdmin>
                 <@row>
                     <div class="col-md-3 col-md-offset-9">
-                        <@moveAllDatastore/>
+                        <@moveAllDatastoreButton/>
                     </div>
                 </@row>
             </#if>
@@ -56,12 +56,12 @@
             <@row>
                 <#if isAdmin>
                     <div class="col-md-6 col-md-offset-6 file-actions">
-                        <@validateAll/>
-                        <@downloadChecksum/>
+                        <@validateAllButton/>
+                        <@downloadChecksumButton/>
                     </div>
                 <#else>
                     <div class="col-md-3 col-md-offset-9">
-                        <@downloadChecksum/>
+                        <@downloadChecksumButton/>
                     </div>
                 </#if>
             </@row>
@@ -122,10 +122,10 @@
         </div>
         <@row>
             <div class="col-md-2 col-md-offset-7">
-                <@addFiles/>
+                <@addFilesButton/>
             </div>
             <div class="col-md-3">
-                <@finishUploading/>
+                <@finishUploadingButton/>
             </div>
         </@row>
     </div>
@@ -176,31 +176,31 @@
     </button>
 </#macro>
 
-<#macro addFiles>
+<#macro addFilesButton>
     <@button "Add FILES ..." "fileinput-button" "file-upload"/>
 </#macro>
 
-<#macro finishUploading>
+<#macro finishUploadingButton>
     <@button "FINISH UPLOADING" "finish" "check" "primary"/>
 </#macro>
 
-<#macro schedule>
+<#macro scheduleButton>
     <@button text="SCHEDULE" button="data-action schedule" icon="calendar-check" iconClass="far"/>
 </#macro>
 
-<#macro reschedule>
+<#macro rescheduleButton>
     <@button "RESCHEDULE" "data-action reschedule" "redo"/>
 </#macro>
 
-<#macro moveAllDatastore>
+<#macro moveAllDatastoreButton>
     <@button "MOVE ALL DATASTORE" "data-action move-all" "level-down-alt"/>
 </#macro>
 
-<#macro validateAll>
+<#macro validateAllButton>
     <@button "VALIDATE ALL" "file-action validate-all" "check" "primary"/>
 </#macro>
 
-<#macro downloadChecksum>
+<#macro downloadChecksumButton>
     <@button "DOWNLOAD CHECKSUM REPORT" "file-action downloadChecksum" "file-download"/>
 </#macro>
 
