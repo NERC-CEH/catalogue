@@ -47,6 +47,10 @@ USER spring
 ENTRYPOINT ["java", "org.springframework.boot.loader.JarLauncher"]
 HEALTHCHECK --start-period=30s CMD curl --no-progress-meter --output - --fail http://localhost:8081/actuator/health || exit 1
 
+# Create Datalabs image
+FROM prod as datalabs
+USER root
+
 # Create resources for development only
 FROM alpine/git:v2.30.1 AS datastore
 COPY fixtures/datastore/REV-1 /datastore
