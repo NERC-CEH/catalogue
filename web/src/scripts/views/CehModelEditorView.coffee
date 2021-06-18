@@ -118,7 +118,7 @@ define [
           ObjectInputView: ContactView
           multiline: true
           predefined:
-            'SRO - CEH':
+            'SRO - UKCEH':
               organisationName: 'UK Centre for Ecology & Hydrology'
               role: 'owner'
               organisationIdentifier: 'https://ror.org/00pggkr55'

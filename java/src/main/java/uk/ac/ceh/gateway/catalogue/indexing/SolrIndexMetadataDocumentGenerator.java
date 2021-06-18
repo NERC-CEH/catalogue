@@ -19,12 +19,15 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * The following class is responsible for taking a metadata document and creating 
+ * The following class is responsible for taking a metadata document and creating
  * beans which are solr indexable
  */
 @Slf4j
 @ToString
 public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<MetadataDocument, SolrIndex> {
+
+    public static final String ASSIST_RESEARCH_THEMES_URL = "http://onto.nerc.ac.uk/CEHMD/assist-research-themes";
+    public static final String ASSIST_TOPICS_URL = "http://onto.nerc.ac.uk/CEHMD/assist-topics";
     public static final String DEIMS_URL = "https://deims.org/";
 
     public static final String IMP_CAMMP_ISSUES_URL = "http://vocabs.ceh.ac.uk/imp/ci/";
@@ -32,7 +35,7 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
     public static final String IMP_SCALE_URL = "http://vocabs.ceh.ac.uk/imp/scale/";
     public static final String IMP_TOPIC_URL = "http://vocabs.ceh.ac.uk/imp/topic/";
     public static final String IMP_WATER_POLLUTANT_URL = "http://vocabs.ceh.ac.uk/imp/wp/";
-    
+
     public static final String INMS_SCALE_URL = "http://vocabs.ceh.ac.uk/inms/scale/";
     public static final String INMS_TOPIC_URL = "http://vocabs.ceh.ac.uk/inms/topic/";
     public static final String INMS_MODEL_TYPE_URL = "http://vocabs.ceh.ac.uk/inms/model_type";
@@ -45,9 +48,9 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
     public static final String NC_DRIVERS_URL = "http://vocabs.ceh.ac.uk/ncterms/driver";
     public static final String NC_ECOSYSTEM_SERVICES_URL = "http://vocabs.ceh.ac.uk/ncterms/ecosystemService";
     public static final String NC_GEOGRAPHICAL_SCALE_URL = "http://vocabs.ceh.ac.uk/ncterms/geographical_scale";
-    
+
     public static final String SA_TAXON_URL = "http://vocabs.ceh.ac.uk/esb/taxon";
-    
+
     private final CodeLookupService codeLookupService;
     private final DocumentIdentifierService identifierService;
     private final VocabularyService vocabularyService;
@@ -67,6 +70,8 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
     public SolrIndex generateIndex(MetadataDocument document) {
         log.info("{} is a {}, {}", document.getId(), codeLookupService.lookup("metadata.resourceType", document.getType()), codeLookupService.lookup("metadata.recordType", document.getType()));
         return new SolrIndex()
+            .setAssistResearchThemes(grab(getKeywordsFilteredByUrlFragment(document, ASSIST_RESEARCH_THEMES_URL), Keyword::getValue))
+            .setAssistTopics(grab(getKeywordsFilteredByUrlFragment(document, ASSIST_TOPICS_URL), Keyword::getValue))
             .setCatalogue(document.getCatalogue())
             .setCondition(getCondition(document))
             .setDescription(document.getDescription())
@@ -113,28 +118,28 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
             return Collections.emptyList();
         }
     }
-    
+
     private String getState(MetadataDocument document) {
         return Optional.ofNullable(document)
             .map(MetadataDocument::getMetadata)
             .map(MetadataInfo::getState)
             .orElse("");
     }
-    
+
     private String getDocumentType(MetadataDocument document) {
         return Optional.ofNullable(document)
             .map(MetadataDocument::getMetadata)
             .map(MetadataInfo::getDocumentType)
             .orElse("");
     }
-    
+
     private List<String> getViews(MetadataDocument document) {
         return Optional.ofNullable(document)
             .map(MetadataDocument::getMetadata)
             .map(m -> m.getIdentities(Permission.VIEW))
-            .orElse(Collections.emptyList());       
+            .orElse(Collections.emptyList());
     }
-    
+
     // The following will iterate over a given collection (which could be null)
     // And grab a property off of each element in the collection.
     // If the supplied collection is null, this method will return an empty
@@ -153,7 +158,7 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
     public static <T> List<String> grab(T item, Function<? super T, String> mapper ) {
         return grab(Collections.singletonList(item), mapper);
     }
-    
+
     private List<Keyword> getKeywordsFilteredByUrlFragment(MetadataDocument document, String... urlFragments) {
         return Optional.ofNullable(document.getAllKeywords())
                 .orElse(Collections.emptyList())
@@ -169,13 +174,13 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
             .filter(k -> this.vocabularyService.isMember(broaderUrl, k.getUri()))
             .collect(Collectors.toList());
     }
-    
+
     private List<String> impScale(MetadataDocument document) {
         List<String> toReturn = grab(
             getKeywordsFilteredByUrlFragment(document, IMP_SCALE_URL, INMS_SCALE_URL),
             Keyword::getValue
         );
-        
+
         if (document instanceof Model) {
             String applicationScale = ((Model) document).getApplicationScale();
             toReturn.add(applicationScale);

@@ -49,16 +49,18 @@
             </#if>
       
             </div>
+            <div class="divider"></div>
           </#if>
-
-          <div class="divider"></div>
+        </#if>
+       
+        <#if resourceStatus == "Available" || resourceStatus == "Controlled" || resourceStatus == "Embargoed">
           <#include "_licence.ftlh">
         </#if>
-        
+
         <#include "_formats.ftlh">
         <#include "_citation.ftlh">
         <#include "_otherUseConstraints.ftlh">
       </div>
     
-  </div>
+    </div>
   </#if>

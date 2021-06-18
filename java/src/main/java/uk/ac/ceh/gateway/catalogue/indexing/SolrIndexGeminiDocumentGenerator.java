@@ -45,14 +45,13 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
         return metadataDocumentSolrIndex
             .generateIndex(document)
             .setAltTitle(document.getAlternateTitles())
-            .setRightsHolder(grab(document.getRightsHolders(), ResponsibleParty::getOrganisationName))
             .setAuthorAffiliation(grab(document.getAuthors(), ResponsibleParty::getOrganisationName))
             .setAuthorName(grab(document.getAuthors(), ResponsibleParty::getIndividualName))
             .setAuthorOrcid(grab(document.getAuthors(), ResponsibleParty::getNameIdentifier))
             .setAuthorRor(grab(document.getAuthors(), ResponsibleParty::getOrganisationIdentifier))
-            .setIncomingCitationCount(document.getIncomingCitationCount())
             .setFunder(grab(document.getFunding(), Funding::getFunderName))
             .setGrant(grab(document.getFunding(), Funding::getAwardNumber))
+            .setIncomingCitationCount(document.getIncomingCitationCount())
             .setIndividual(grab(document.getResponsibleParties(), ResponsibleParty::getIndividualName))
             .setLicence(getLicence(document))
             .setLineage(document.getLineage())
@@ -61,6 +60,7 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
             .setResourceIdentifier(grab(document.getResourceIdentifiers(), ResourceIdentifier::getCode))
             .setResourceStatus(document.getResourceStatus())
             .setRor(grab(document.getResponsibleParties(), ResponsibleParty::getOrganisationIdentifier))
+            .setRightsHolder(grab(document.getRightsHolders(), ResponsibleParty::getOrganisationName))
             .setSupplementalDescription(grab(document.getSupplemental(), Supplemental::getDescription))
             .setSupplementalName(grab(document.getSupplemental(), Supplemental::getName))
             .setTopic(topicIndexer.index(document))
@@ -71,7 +71,7 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
     private String getLicence(GeminiDocument document){
         return codeLookupService.lookup("licence.isOgl", hasOglLicence(document));
     }
-    
+
     private boolean hasOglLicence(GeminiDocument document) {
         return Optional.ofNullable(document.getUseConstraints())
             .orElse(Collections.emptyList())
@@ -79,8 +79,8 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
             .filter(k -> !k.getUri().isEmpty())
             .anyMatch(k -> {
                 String uri = k.getUri();
-                return uri.matches(OGL_PATTERN1) || uri.matches(OGL_PATTERN2);  
+                return uri.matches(OGL_PATTERN1) || uri.matches(OGL_PATTERN2);
             });
     }
-    
+
 }
