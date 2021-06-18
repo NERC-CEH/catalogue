@@ -70,6 +70,8 @@
     <field name="_text_" type="text_general" stored="false"/>
     <field name="_version_" type="plong" indexed="false" stored="false"/>
     <field name="altTitle" type="text_general"/>
+    <field name="assistResearchThemes" type="keywords"/>
+    <field name="assistTopics" type="keywords"/>
     <field name="authorAffiliation" type="keywords_lowercase"/>
     <field name="authorName" type="keywords"/>
     <field name="authorOrcid" type="orcids"/>
@@ -119,7 +121,7 @@
     <field name="topic" type="keywords"/>
     <field name="version" type="pfloat" default="1"/>
     <field name="view" type="keywords"/>
-    
+
     <copyField source="individual" dest="surname" multiValued="true"/>
     <dynamicField name="random*" type="random"/>
 </schema>
