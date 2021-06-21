@@ -70,14 +70,15 @@
       </#if>
 
         <div id="Deims Sites" class="clearfix">
-          <#include "document/_browseGraphic.ftlh">
+          <p> DEIMS SITES IN ELTER </P>
+          <#include "document/_deims.ftlh">
           <@blocks.linebreaks description!"" />
         </div>
 
         <div id="document-description" class="clearfix">
-                  <#include "document/_browseGraphic.ftlh">
-                  <@blocks.linebreaks description!"" />
-                </div>
+          <#include "document/_browseGraphic.ftlh">
+          <@blocks.linebreaks description!"" />
+        </div>
 
         <#if resourceType.value != 'aggregate' && resourceType.value != 'collection'>
           <#include "document/_dates.ftlh">
