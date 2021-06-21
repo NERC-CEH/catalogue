@@ -1,7 +1,9 @@
 {
-  "userPermissions": [
-    "system:catalogue:admin",
-    "system:catalogue:publish",
-    "system:catalogue:edit"
-  ]
+  "data": {
+    "userPermissions": [
+      "system:catalogue:admin",
+      "system:catalogue:publish",
+      "system:catalogue:edit"
+    ]
+  }
 }

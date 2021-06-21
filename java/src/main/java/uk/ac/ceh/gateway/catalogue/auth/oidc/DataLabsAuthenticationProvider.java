@@ -49,9 +49,11 @@ public class DataLabsAuthenticationProvider implements AuthenticationProvider {
         val dataLabsUserPermissions =
                 this.retrievePermissions(authentication.getCredentials().toString());
 
-        val grantedAuthorities = dataLabsUserPermissions.getUserPermissions().stream()
-                .map(this::mapDataLabsPermissionsToCatalogueRoles)
-                .collect(Collectors.toList());
+        val grantedAuthorities = dataLabsUserPermissions
+            .getUserPermissions()
+            .stream()
+            .map(this::mapDataLabsPermissionsToCatalogueRoles)
+            .collect(Collectors.toList());
 
         val token = new PreAuthenticatedAuthenticationToken(
                 authentication.getPrincipal(),
@@ -78,6 +80,7 @@ public class DataLabsAuthenticationProvider implements AuthenticationProvider {
                 request,
                 DataLabsUserPermissions.class
         );
+        log.debug(response.getBody().toString());
         return response.getBody();
     }
 

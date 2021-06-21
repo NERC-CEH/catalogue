@@ -1,19 +1,20 @@
 package uk.ac.ceh.gateway.catalogue.auth.oidc;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonRootName;
-import lombok.Value;
-
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
-@Value
-@JsonRootName("data")
+@lombok.Data
 public class DataLabsUserPermissions {
-    List<String> userPermissions;
+    Data data;
 
-    @JsonCreator
-    public DataLabsUserPermissions(@JsonProperty("userPermissions") List<String> userPermissions) {
-        this.userPermissions = userPermissions;
+    public List<String> getUserPermissions() {
+        return Optional.ofNullable(data.getUserPermissions())
+            .orElse(Collections.emptyList());
+    }
+
+    @lombok.Data
+    public static class Data {
+        List<String> userPermissions;
     }
 }

@@ -12,9 +12,12 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Collections;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
@@ -33,6 +36,24 @@ class DataLabsAuthenticationProviderTest {
         restTemplate = new RestTemplate();
         target = new DataLabsAuthenticationProvider(restTemplate, ADDRESS);
         mockServer = MockRestServiceServer.bindTo(restTemplate).build();
+    }
+
+    @Test
+    @SneakyThrows
+    void authenticateUserWithNoPermissions() {
+        //given
+        val response = IOUtils.toByteArray(getClass().getResource("noPermissions.json"));
+        mockServer.expect(requestTo(ADDRESS))
+            .andExpect(method(HttpMethod.GET))
+            .andExpect(header("authorization", "bearer " + CREDENTIALS))
+            .andRespond(withSuccess(response, MediaType.APPLICATION_JSON));
+
+        //when
+        val actual = target.authenticate(new PreAuthenticatedAuthenticationToken(PRINCIPAL, CREDENTIALS));
+
+        //then
+        assertTrue(actual.isAuthenticated());
+        assertThat(actual.getAuthorities(), equalTo(Collections.emptyList()));
     }
 
     @Test
