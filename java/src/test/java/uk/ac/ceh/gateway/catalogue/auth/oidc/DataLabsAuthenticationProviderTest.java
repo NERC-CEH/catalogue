@@ -45,7 +45,7 @@ public class DataLabsAuthenticationProviderTest {
         val response = IOUtils.toByteArray(getClass().getResource("userPermissions.json"));
         mockServer.expect(requestTo(ADDRESS))
                 .andExpect(method(HttpMethod.GET))
-                .andExpect(header("Authorization", "Bearer" + CREDENTIALS))
+                .andExpect(header("authorization", "bearer " + CREDENTIALS))
                 .andRespond(withSuccess(response, MediaType.APPLICATION_JSON));
 
         //When
