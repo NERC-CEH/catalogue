@@ -70,6 +70,9 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
     private AccessLimitation accessLimitation;
     private boolean notGEMINI;
     private List<DeimsSolrIndex> deimsSites;
+    private boolean isLinkedDocument;
+    private String linkedDocumentUri;
+    private String linkedDocumentType;
 
 
     @Override
