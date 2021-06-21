@@ -21,6 +21,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.util.stream.Collectors;
 
+import static java.lang.String.format;
+
 @Slf4j
 @ToString(of = "address")
 @Service
@@ -68,8 +70,7 @@ public class DataLabsAuthenticationProvider implements AuthenticationProvider {
 
     private DataLabsUserPermissions retrievePermissions(String accessToken) {
         val headers = new HttpHeaders();
-        headers.add("Authorization", "Bearer" + accessToken);
-
+        headers.add("authorization", format("bearer %s", accessToken));
         val request = new HttpEntity<>(headers);
         val response = restTemplate.exchange(
                 this.address,
