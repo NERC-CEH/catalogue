@@ -4,7 +4,7 @@
     <label>Search</label>
   </div>
   <div class="col-sm-11 catalogueSearch">
-    <input data-name="title" value="<%= data.title %>"  id="deims<%= data.index %>Name" class="form-control autocomplete" placeholder="Search the catalogue...">
+    <input data-name="title" value="<%= data.title %>"  id="deims<%= data.index %>Name" class="form-control autocomplete" placeholder="Search for DEIMS site...">
   </div>
 </div>
 <div class="row">
@@ -26,5 +26,5 @@
   </div>
 
 <div class="hidden">
-  <input data-name="id" id="deims<%= data.index %>id" class="editor-input id" value="<%= data.id %>">
+  <input data-name="index" id="deims<%= data.index %>id" class="editor-input id" value="<%= data.index %>">
 </div>

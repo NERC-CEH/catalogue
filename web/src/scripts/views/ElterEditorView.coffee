@@ -74,9 +74,12 @@ define [
         new ParentView
           model: @model
           modelAttribute: 'deimsSites'
-          label: 'DeimsSites'
+          label: 'DEIMS sites'
           ObjectInputView: DeimsSiteView
           multiline: true
+          helpText: """
+                    <p>DEIMS sites that have contributed to the dataset.</p>
+                    """
 
         new InputView
           model: @model

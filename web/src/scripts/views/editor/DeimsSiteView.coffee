@@ -16,9 +16,9 @@ define [
       source: (request, response) ->
         term = request.term.trim()
         if _.isEmpty term
-          query = "vocabulary/deims"
+          query = "/vocabulary/deims"
         else
-          query = "vocabulary/deims?query=#{request.term}"
+          query = "/vocabulary/deims?query=#{request.term}"
 
         $.getJSON query, (data) ->
           response _.map data, (d) -> {value: d.title, label: d.title, id: d.id, url: d.url}
