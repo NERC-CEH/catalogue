@@ -2,7 +2,7 @@ define [
   'underscore'
   'jquery'
   'cs!views/editor/ObjectInputView'
-  'tpl!templates/deims/DeimsSite.tpl'
+  'tpl!templates/editor/DeimsSite.tpl'
   'jquery-ui/autocomplete'
 ], (_, $, ObjectInputView, template) -> ObjectInputView.extend
 
