@@ -13,7 +13,7 @@ services:
       #- ./datastore:/var/ceh-catalogue/datastore
       # Uncomment to see Hubbub Upload uploaded files
       #- ./dropbox:/var/ceh-catalogue/dropbox
-      #- mapfiles:/var/ceh-catalogue/mapfiles
+       - mapfiles:/var/ceh-catalogue/mapfiles
       # Uncomment to see Simple Upload uploaded files
       #- ./upload:/var/upload/datastore
       # Uncomment to work on XML schema validation in Docker container

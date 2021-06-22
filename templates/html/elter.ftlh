@@ -69,12 +69,6 @@
         <#include "document/_metadataqualityAlert.ftlh">
       </#if>
 
-        <div id="Deims Sites" class="clearfix">
-          <p> DEIMS SITES IN ELTER </P>
-          <#include "document/_deims.ftlh">
-          <@blocks.linebreaks description!"" />
-        </div>
-
         <div id="document-description" class="clearfix">
           <#include "document/_browseGraphic.ftlh">
           <@blocks.linebreaks description!"" />
@@ -112,6 +106,7 @@
             <div class="col-sm-8 col-sm-pull-4">
               <#include "document/_extent.ftlh">
               <#include "document/_dataquality.ftlh">
+              <#include "document/_deims.ftlh">
 
               <#-- to be replaced with related records -->
                 <#include "document/_related.ftlh">
