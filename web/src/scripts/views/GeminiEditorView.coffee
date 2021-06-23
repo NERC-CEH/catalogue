@@ -161,7 +161,7 @@ define [
               organisationName: 'Unaffiliated'
               role: 'author'
             'Custodian - EIDC':
-              organisationName: 'Environmental Information Data Centre'
+              organisationName: 'NERC EDS Environmental Information Data Centre'
               role: 'custodian'
               email: 'info@eidc.ac.uk'
               organisationIdentifier: 'https://ror.org/04xw4m193'
@@ -210,7 +210,7 @@ define [
                 administrativeArea: 'Oxfordshire'
                 country: 'United Kingdom'
             'Publisher - EIDC':
-              organisationName: 'NERC Environmental Information Data Centre'
+              organisationName: 'NERC EDS Environmental Information Data Centre'
               role: 'publisher'
               email: 'info@eidc.ac.uk'
               organisationIdentifier: 'https://ror.org/04xw4m193'
@@ -371,7 +371,7 @@ define [
           multiline: true
           predefined:
             'EIDC':
-              organisationName: 'Environmental Information Data Centre'
+              organisationName: 'NERC EDS Environmental Information Data Centre'
               role: 'distributor'
               email: 'info@eidc.ac.uk'
               organisationIdentifier: 'https://ror.org/04xw4m193'
@@ -506,7 +506,7 @@ define [
           label: 'Spatial resolution'
           ObjectInputView: SpatialResolutionView
           helpText: """
-                    <p>This is an indication of the level of spatial detail/accuracy. Enter a distance OR equivalent scale but not both. For most datasets, <i>distance</i> is more appropriate.</p>For gridded data, distance is the area of the ground (in metres) represented in each pixel. For point data, it is the degree of confidence in the point's location (e.g. for a point expressed as a six-figure grid reference, SN666781, the resolution would be 100m)</p>
+                    <p>This is an indication of the level of spatial detail/accuracy.</p><p>For gridded data, distance is the area of the ground (in metres) represented in each pixel. For point data, it is the degree of confidence in the point's location (e.g. for a point expressed as a six-figure grid reference, SN666781, the resolution would be 100m)</p>
                     """
       ]
     ,  

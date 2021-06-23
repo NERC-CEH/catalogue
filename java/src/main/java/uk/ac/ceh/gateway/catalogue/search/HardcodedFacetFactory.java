@@ -11,34 +11,34 @@ import java.util.stream.Collectors;
 public class HardcodedFacetFactory implements FacetFactory {
 
     @Override
-    public Facet newInstance(@NonNull String key) {        
+    public Facet newInstance(@NonNull String key) {
         switch(key) {
-                
-            case "resourceType":
+
+            case "assistResearchThemes":
                 return Facet.builder()
-                    .fieldName("resourceType")
-                    .displayName("Resource type")
+                    .fieldName("assistResearchThemes")
+                    .displayName("Research Theme")
                     .hierarchical(false)
                     .build();
-                
-            case "state":
-            return Facet.builder()
-                .fieldName("state")
-                .displayName("Status")
-                .hierarchical(false)
-                .build();
-                    
-            case "recordType":
+
+            case "assistTopics":
                 return Facet.builder()
-                    .fieldName("recordType")
-                    .displayName("Record type")
+                    .fieldName("assistTopics")
+                    .displayName("Topic")
                     .hierarchical(false)
                     .build();
-            
-            case "rightsHolder":
+
+            case "condition":
                 return Facet.builder()
-                    .fieldName("rightsHolder")
-                    .displayName("Rights holder")
+                    .fieldName("condition")
+                    .displayName("Status")
+                    .hierarchical(false)
+                    .build();
+
+            case "documentType":
+                return Facet.builder()
+                    .fieldName("documentType")
+                    .displayName("Document Type")
                     .hierarchical(false)
                     .build();
 
@@ -48,77 +48,56 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .displayName("Site")
                     .hierarchical(false)
                     .build();
-            
+
             case "funder":
                 return Facet.builder()
                     .fieldName("funder")
                     .displayName("Funder")
                     .hierarchical(false)
                     .build();
-                 
-            case "licence":
-                return Facet.builder()
-                    .fieldName("licence")
-                    .displayName("Licence")
-                    .hierarchical(false)
-                    .build();
-                
-            case "status":
-                return Facet.builder()
-                    .fieldName("resourceStatus")
-                    .displayName("Availability")
-                    .hierarchical(false)
-                    .build();
-                
-            case "topic":        
-                return Facet.builder()
-                    .fieldName("topic")
-                    .displayName("Topic")
-                    .hierarchical(true)
-                    .build();
-                
+
             case "impCaMMPIssues":
                 return Facet.builder()
                     .fieldName("impCaMMPIssues")
                     .displayName("CaMMP Issues")
                     .hierarchical(false)
                     .build();
-                
+
             case "impDataType":
                 return Facet.builder()
                     .fieldName("impDataType")
                     .displayName("Data Type")
                     .hierarchical(false)
                     .build();
-                
+
             case "impScale":
                 return Facet.builder()
                     .fieldName("impScale")
                     .displayName("Scale")
                     .hierarchical(false)
                     .build();
-                
+
             case "impTopic":
                 return Facet.builder()
                     .fieldName("impTopic")
                     .displayName("Topic")
                     .hierarchical(false)
                     .build();
-                
+
             case "impWaterPollutant":
                 return Facet.builder()
                     .fieldName("impWaterPollutant")
                     .displayName("Water Pollutant")
                     .hierarchical(false)
                     .build();
-                
+
             case "inmsPollutant":
                 return Facet.builder()
                     .fieldName("impWaterPollutant")
                     .displayName("Pollutant")
                     .hierarchical(false)
                     .build();
-                
+
             case "inmsDemonstrationRegion":
                 return Facet.builder()
                     .fieldName("inmsDemonstrationRegion")
@@ -132,25 +111,18 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .displayName("Project")
                     .hierarchical(false)
                     .build();
-                
+
+            case "licence":
+                return Facet.builder()
+                    .fieldName("licence")
+                    .displayName("Licence")
+                    .hierarchical(false)
+                    .build();
+
             case "modelType":
                 return Facet.builder()
                     .fieldName("modelType")
                     .displayName("Model Type")
-                    .hierarchical(false)
-                    .build();
-
-            case "documentType":
-                return Facet.builder()
-                    .fieldName("documentType")
-                    .displayName("Document Type")
-                    .hierarchical(false)
-                    .build();
-
-            case "condition":
-                return Facet.builder()
-                    .fieldName("condition")
-                    .displayName("Status")
                     .hierarchical(false)
                     .build();
 
@@ -165,7 +137,7 @@ public class HardcodedFacetFactory implements FacetFactory {
                 return Facet.builder()
                     .fieldName("ncCaseStudy")
                     .displayName("Case Study")
-                    .hierarchical(false)          
+                    .hierarchical(false)
                     .build();
 
             case "ncDrivers":
@@ -189,12 +161,54 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .hierarchical(false)
                     .build();
 
+            case "recordType":
+                return Facet.builder()
+                    .fieldName("recordType")
+                    .displayName("Record type")
+                    .hierarchical(false)
+                    .build();
+
+            case "resourceType":
+                return Facet.builder()
+                    .fieldName("resourceType")
+                    .displayName("Resource type")
+                    .hierarchical(false)
+                    .build();
+
+            case "rightsHolder":
+                return Facet.builder()
+                    .fieldName("rightsHolder")
+                    .displayName("Rights holder")
+                    .hierarchical(false)
+                    .build();
+
             case "saTaxon":
                 return Facet.builder()
                     .fieldName("saTaxon")
                     .displayName("Taxa")
                     .hierarchical(false)
-                    .build();                    
+                    .build();
+
+            case "state":
+            return Facet.builder()
+                .fieldName("state")
+                .displayName("Status")
+                .hierarchical(false)
+                .build();
+
+            case "status":
+                return Facet.builder()
+                    .fieldName("resourceStatus")
+                    .displayName("Availability")
+                    .hierarchical(false)
+                    .build();
+
+            case "topic":
+                return Facet.builder()
+                    .fieldName("topic")
+                    .displayName("Topic")
+                    .hierarchical(true)
+                    .build();
         }
         return null;
     }
@@ -203,9 +217,9 @@ public class HardcodedFacetFactory implements FacetFactory {
     public List<Facet> newInstances(List<String> facetKeys) {
         return facetKeys
             .stream()
-            .map(f -> newInstance(f))
+            .map(this::newInstance)
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
     }
-    
+
 }

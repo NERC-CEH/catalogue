@@ -44,6 +44,7 @@ build_application:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
   script:
     - docker build --target prod -t $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA .
+    - docker build --target datalabs -t $CI_REGISTRY_IMAGE/app:$CI_COMMIT_REF_NAME-datalabs .
     - docker tag $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/app:$CI_COMMIT_REF_NAME
     - docker push $CI_REGISTRY_IMAGE/app --all-tags
   only:
@@ -54,6 +55,7 @@ build_solr:
   script:
     - docker build -t $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_SHA solr
     - docker tag $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_REF_NAME
+    - docker tag $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_REF_NAME-datalabs
     - docker push $CI_REGISTRY_IMAGE/solr --all-tags
 
 deploy_staging:

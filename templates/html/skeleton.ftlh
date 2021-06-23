@@ -63,12 +63,14 @@
               <a href="${catalogue.url!'/'}">${catalogue.title}</a>
             </#if>
             </li>
-            <#if catalogue.id == "eidc">
-              <#include "menus/gemini.ftlh">
+            <#if catalogue.id == "assist">
+              <#include "menus/assist.ftlh">
+            <#elseif catalogue.id == 'eidc'>
+              <#include "menus/eidc.ftlh">
             <#elseif catalogue.id == "erammp">
               <#include "menus/erammp.ftlh">
             <#else>
-              <li <#if searching>class="active"</#if>><a href="/${catalogue.id}/documents">Search</a></li>
+              <li class="<#if searching>active</#if>"><a href="/${catalogue.id}/documents">Search</a></li>
             </#if>
           </#if>
           </ul>

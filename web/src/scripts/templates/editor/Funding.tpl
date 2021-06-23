@@ -35,6 +35,6 @@
     <label class="control-label" for="funding<%= data.index %>AwardTitle">Award URL</label>
   </div>
   <div class="col-sm-10">
-    <input placeholder='(e.g. http://gtr.ukri.org/projects?ref=NE/J015644/1)' data-name='awardURI' class="editor-input" id="funding<%= data.index %>AwardURI" value="<%= data.awardURI %>">
+    <input placeholder='(e.g. https://gtr.ukri.org/projects?ref=NE/J015644/1)' data-name='awardURI' class="editor-input" id="funding<%= data.index %>AwardURI" value="<%= data.awardURI %>">
   </div>
 </div>

@@ -26,7 +26,6 @@
     </#if>
 
     <#if description?? && description?has_content>
-      <#noautoesc>
         <div class="description clearfix">
           <#if image?? && image?has_content>
             <#if image?first.url?matches("^http(|s)://.+(jpg|jpeg|gif|png)$")>
@@ -35,16 +34,13 @@
           </#if>
           <@b.linebreaks description />
         </div>
-      </#noautoesc>
     </#if>
 
       <#if primaryPurpose?? || SRO??|| otherContacts?? || licenseType?? || onlineResources??>
       <section>
         <#if primaryPurpose?? && primaryPurpose?has_content>
           <@m.key "Primary purpose">
-            <#noautoesc>
-              <@b.linebreaks primaryPurpose />
-            </#noautoesc>
+            <@b.linebreaks primaryPurpose />
           </@m.key>
         </#if>
 
@@ -63,7 +59,6 @@
           </@m.key>
         </#if>
 
-        <#noautoesc>
         <#if SRO?? && SRO?has_content>
           <@m.key "Senior responsible officer">
             <#list SRO as SRO>
@@ -83,7 +78,6 @@
             </#list>
           </@m.key>
         </#if>
-        </#noautoesc>
 
         <#if licenseType?? && licenseType?has_content>
           <@m.key "License" "License type (open or non-open) under which the model is distributed">${licenseType?cap_first}</@m.key>
@@ -214,8 +208,9 @@
             </#list>
           </@m.key>
         </#if>
+        <#--noinspection FtlWellformednessInspection-->
         <#list modelApplications>
-          <@m.key "Model Applications" "Applications of the model">
+          <@m.key "Model use" "Implementations of the model">
             <#items as md>
               <@b.blockUrl md/>
             </#items>
@@ -223,11 +218,6 @@
         </#list>
       </#if>
     </section>
-
-
-
-
-
 
     <#if references?? && references?has_content>
     <section>
