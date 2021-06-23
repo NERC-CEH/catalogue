@@ -73,7 +73,6 @@
           <#include "document/_browseGraphic.ftlh">
           <@blocks.linebreaks description!"" />
         </div>
-
         <#if resourceType.value != 'aggregate' && resourceType.value != 'collection'>
           <#include "document/_dates.ftlh">
 
@@ -107,7 +106,6 @@
               <#include "document/_extent.ftlh">
               <#include "document/_dataquality.ftlh">
               <#include "document/_deims.ftlh">
-
               <#-- to be replaced with related records -->
                 <#include "document/_related.ftlh">
               <#-- END OF to be replaced -->

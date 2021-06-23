@@ -70,9 +70,9 @@
       </#if>
 
         <div id="document-description" class="clearfix">
-                  <#include "document/_browseGraphic.ftlh">
-                  <@blocks.linebreaks description!"" />
-                </div>
+            <#include "document/_browseGraphic.ftlh">
+            <@blocks.linebreaks description!"" />
+        </div>
 
         <#if resourceType.value != 'aggregate' && resourceType.value != 'collection'>
           <#include "document/_dates.ftlh">
