@@ -13,6 +13,7 @@ import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.*;
 public class CatalogueServiceConfig {
     public static final String GEMINI_DOCUMENT = "GEMINI_DOCUMENT";
     public static final String EF_DOCUMENT = "EF_DOCUMENT";
+    public static final String ELTER_DOCUMENT = "ELTER_DOCUMENT";
     public static final String IMP_DOCUMENT = "IMP_DOCUMENT";
     public static final String CEH_MODEL = "CEH_MODEL";
     public static final String CEH_MODEL_APPLICATION = "CEH_MODEL_APPLICATION";
@@ -60,6 +61,11 @@ public class CatalogueServiceConfig {
         DocumentType gemini = DocumentType.builder()
             .title("Data resource")
             .type(GEMINI_DOCUMENT)
+            .build();
+
+        DocumentType elter = DocumentType.builder()
+            .title("eLTER dataset")
+            .type(ELTER_DOCUMENT)
             .build();
 
         DocumentType imp = DocumentType.builder()
@@ -189,7 +195,7 @@ public class CatalogueServiceConfig {
                 .title("eLTER")
                 .url("")
                 .facetKey("elterDeimsSite")
-                .documentType(gemini)
+                .documentType(elter)
                 .fileUpload(false)
                 .build(),
 

@@ -38,6 +38,7 @@ define [
   'cs!views/ErammpDatacubeEditorView'
   'cs!views/ClipboardCopyView'
   'cs!views/DataTypeEditorView'
+  'cs!views/ElterEditorView'
   'cs!views/DocumentUploadView'
   'cs!models/DocumentUploadModel'
   'cs!views/upload/simple/AppView'
@@ -47,7 +48,7 @@ define [
     ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata, CehModelEditorView, CehModelApplicationEditorView, OsdpAgentEditorView,
     OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
     OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, ErammpModelEditorView, ErammpDatacubeEditorView,
-    ClipboardCopyView, DataTypeEditorView, DocumentUploadView, DocumentUploadModel, SimpleUploadView
+    ClipboardCopyView, DataTypeEditorView, ElterEditorView, DocumentUploadView, DocumentUploadModel, SimpleUploadView
 ) ->
 
   ###
@@ -65,7 +66,7 @@ define [
     # Some templates use underscore
     # Remove once templates fixed
     window._ = _
-    
+
     do @initCatalogue if $('.catalogue-control').length
     do @initClipboard if $('.clipboard-copy').length
     do @initDocumentUpload if $('#document-upload').length
@@ -195,6 +196,10 @@ define [
         View: DataTypeEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.data-type+json'
+      ELTER_DOCUMENT:
+        View: ElterEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.elter+json'
 
     # the create document dropdown
     $editorCreate = $ '#editorCreate'
