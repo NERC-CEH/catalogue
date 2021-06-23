@@ -70,10 +70,9 @@
       </#if>
 
         <div id="document-description" class="clearfix">
-            <#include "document/_browseGraphic.ftlh">
-            <@blocks.linebreaks description!"" />
+          <#include "document/_browseGraphic.ftlh">
+          <@blocks.linebreaks description!"" />
         </div>
-
         <#if resourceType.value != 'aggregate' && resourceType.value != 'collection'>
           <#include "document/_dates.ftlh">
 
@@ -106,7 +105,7 @@
             <div class="col-sm-8 col-sm-pull-4">
               <#include "document/_extent.ftlh">
               <#include "document/_dataquality.ftlh">
-
+              <#include "document/_deims.ftlh">
               <#-- to be replaced with related records -->
                 <#include "document/_related.ftlh">
               <#-- END OF to be replaced -->
