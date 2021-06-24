@@ -8,7 +8,6 @@ import uk.ac.ceh.gateway.catalogue.gemini.Funding;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.gemini.Supplemental;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
-import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 
 import static uk.ac.ceh.gateway.catalogue.indexing.SolrIndexMetadataDocumentGenerator.grab;
 
@@ -19,22 +18,11 @@ import static uk.ac.ceh.gateway.catalogue.indexing.SolrIndexMetadataDocumentGene
 @Slf4j
 @ToString
 public class SolrIndexElterDocumentGenerator implements IndexGenerator<ElterDocument, SolrIndex> {
-    private static final String OGL_PATTERN1 = ".*open-government-licence.*\\/plain$";
-    private static final String OGL_PATTERN2 = ".*OGL.*\\/plain$";
 
-
-    private final TopicIndexer topicIndexer;
     private final SolrIndexMetadataDocumentGenerator metadataDocumentSolrIndex;
-    private final CodeLookupService codeLookupService;
 
-    public SolrIndexElterDocumentGenerator(
-            TopicIndexer topicIndexer,
-            SolrIndexMetadataDocumentGenerator metadataDocumentSolrIndex,
-            CodeLookupService codeLookupService
-    ) {
-        this.topicIndexer = topicIndexer;
+    public SolrIndexElterDocumentGenerator(SolrIndexMetadataDocumentGenerator metadataDocumentSolrIndex) {
         this.metadataDocumentSolrIndex = metadataDocumentSolrIndex;
-        this.codeLookupService = codeLookupService;
         log.info("Creating {}", this);
     }
 

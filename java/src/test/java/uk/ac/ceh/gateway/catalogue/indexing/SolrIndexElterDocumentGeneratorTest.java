@@ -22,13 +22,12 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class SolrIndexElterDocumentGeneratorTest {
     @Mock SolrIndexMetadataDocumentGenerator documentIndexer;
-    @Mock CodeLookupService codeLookupService;
     private SolrIndexElterDocumentGenerator generator;
 
     @BeforeEach
     void init() {
         when(documentIndexer.generateIndex(any(MetadataDocument.class))).thenReturn(new SolrIndex());
-        generator = new SolrIndexElterDocumentGenerator(new ExtractTopicFromDocument(), documentIndexer, codeLookupService);
+        generator = new SolrIndexElterDocumentGenerator(documentIndexer);
     }
 
     @Test
