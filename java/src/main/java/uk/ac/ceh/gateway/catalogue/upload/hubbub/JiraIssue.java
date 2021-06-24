@@ -12,6 +12,7 @@ public class JiraIssue {
     private String key;
     private Map<String, Object> fields;
 
+    @SuppressWarnings("unchecked")
     public String getStatus() {
         if (fields.containsKey("status")) {
             val status = (Map<String, Object>) fields.get("status");
