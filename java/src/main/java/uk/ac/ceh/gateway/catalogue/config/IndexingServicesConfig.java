@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.datacite.DataciteService;
 import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
+import uk.ac.ceh.gateway.catalogue.elter.ElterDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.*;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -123,6 +124,7 @@ public class IndexingServicesConfig {
 
         val mappings = new PrioritisedClassMap<IndexGenerator<?, SolrIndex>>()
             .register(GeminiDocument.class, new SolrIndexGeminiDocumentGenerator(new ExtractTopicFromDocument(), metadataDocumentGenerator, codeLookupService))
+            .register(ElterDocument.class, new SolrIndexElterDocumentGenerator(metadataDocumentGenerator))
             .register(LinkDocument.class, linkDocumentGenerator)
             .register(MetadataDocument.class, metadataDocumentGenerator);
 
