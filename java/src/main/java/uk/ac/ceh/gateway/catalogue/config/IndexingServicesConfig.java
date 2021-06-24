@@ -124,7 +124,7 @@ public class IndexingServicesConfig {
 
         val mappings = new PrioritisedClassMap<IndexGenerator<?, SolrIndex>>()
             .register(GeminiDocument.class, new SolrIndexGeminiDocumentGenerator(new ExtractTopicFromDocument(), metadataDocumentGenerator, codeLookupService))
-            .register(ElterDocument.class, new SolrIndexElterDocumentGenerator(new ExtractTopicFromDocument(), metadataDocumentGenerator, codeLookupService))
+            .register(ElterDocument.class, new SolrIndexElterDocumentGenerator(metadataDocumentGenerator))
             .register(LinkDocument.class, linkDocumentGenerator)
             .register(MetadataDocument.class, metadataDocumentGenerator);
 
