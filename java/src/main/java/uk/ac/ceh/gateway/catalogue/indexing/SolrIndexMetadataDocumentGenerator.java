@@ -28,7 +28,6 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
 
     public static final String ASSIST_RESEARCH_THEMES_URL = "http://onto.nerc.ac.uk/CEHMD/assist-research-themes";
     public static final String ASSIST_TOPICS_URL = "http://onto.nerc.ac.uk/CEHMD/assist-topics";
-    public static final String DEIMS_URL = "https://deims.org/";
 
     public static final String IMP_CAMMP_ISSUES_URL = "http://vocabs.ceh.ac.uk/imp/ci/";
     public static final String IMP_DATA_TYPE_URL = "http://vocabs.ceh.ac.uk/imp/dt/";
@@ -76,8 +75,6 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
             .setCondition(getCondition(document))
             .setDescription(document.getDescription())
             .setDocumentType(getDocumentType(document))
-            .setElterDeimsSite(grab(getKeywordsFilteredByUrlFragment(document, DEIMS_URL), Keyword::getValue))
-            .setElterDeimsUri(grab(getKeywordsFilteredByUrlFragment(document, DEIMS_URL), Keyword::getUri))
             .setIdentifier(identifierService.generateFileId(document.getId()))
             .setImpCaMMPIssues(grab(getKeywordsFilteredByUrlFragment(document, IMP_CAMMP_ISSUES_URL), Keyword::getValue))
             .setImpDataType(grab(getKeywordsFilteredByUrlFragment(document, IMP_DATA_TYPE_URL), Keyword::getValue))
