@@ -4,16 +4,11 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.gateway.catalogue.deims.DeimsSolrIndex;
 import uk.ac.ceh.gateway.catalogue.elter.ElterDocument;
-import uk.ac.ceh.gateway.catalogue.gemini.*;
-import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.Funding;
+import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
+import uk.ac.ceh.gateway.catalogue.gemini.Supplemental;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static uk.ac.ceh.gateway.catalogue.indexing.SolrIndexMetadataDocumentGenerator.grab;
 
@@ -26,7 +21,6 @@ import static uk.ac.ceh.gateway.catalogue.indexing.SolrIndexMetadataDocumentGene
 public class SolrIndexElterDocumentGenerator implements IndexGenerator<ElterDocument, SolrIndex> {
     private static final String OGL_PATTERN1 = ".*open-government-licence.*\\/plain$";
     private static final String OGL_PATTERN2 = ".*OGL.*\\/plain$";
-    public static final String DEIMS_URL = "https://deims.org/";
 
 
     private final TopicIndexer topicIndexer;
@@ -54,7 +48,7 @@ public class SolrIndexElterDocumentGenerator implements IndexGenerator<ElterDocu
                 .setAuthorOrcid(grab(document.getAuthors(), ResponsibleParty::getNameIdentifier))
                 .setAuthorRor(grab(document.getAuthors(), ResponsibleParty::getOrganisationIdentifier))
                 .setElterDeimsSite(grab(document.getDeimsSites(), DeimsSolrIndex::getTitle))
-                .setElterDeimsSite(grab(document.getDeimsSites(), DeimsSolrIndex::getTitle))
+                .setElterDeimsUri(grab(document.getDeimsSites(), DeimsSolrIndex::getUrl))
                 .setFunder(grab(document.getFunding(), Funding::getFunderName))
                 .setGrant(grab(document.getFunding(), Funding::getAwardNumber))
                 .setIncomingCitationCount(document.getIncomingCitationCount())
@@ -70,28 +64,5 @@ public class SolrIndexElterDocumentGenerator implements IndexGenerator<ElterDocu
                 .setSupplementalName(grab(document.getSupplemental(), Supplemental::getName))
                 .setVersion(document.getVersion())
                 ;
-    }
-
-    private String getLicence(GeminiDocument document){
-        return codeLookupService.lookup("licence.isOgl", hasOglLicence(document));
-    }
-
-    private boolean hasOglLicence(GeminiDocument document) {
-        return Optional.ofNullable(document.getUseConstraints())
-                .orElse(Collections.emptyList())
-                .stream()
-                .filter(k -> !k.getUri().isEmpty())
-                .anyMatch(k -> {
-                    String uri = k.getUri();
-                    return uri.matches(OGL_PATTERN1) || uri.matches(OGL_PATTERN2);
-                });
-    }
-
-    private List<Keyword> getKeywordsFilteredByUrlFragment(MetadataDocument document, String... urlFragments) {
-        return Optional.ofNullable(document.getAllKeywords())
-                .orElse(Collections.emptyList())
-                .stream()
-                .filter(k -> Arrays.stream(urlFragments).anyMatch(urlFragment -> k.getUri().startsWith(urlFragment)))
-                .collect(Collectors.toList());
     }
 }
