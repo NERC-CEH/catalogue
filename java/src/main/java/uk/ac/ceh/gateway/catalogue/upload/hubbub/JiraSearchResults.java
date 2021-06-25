@@ -1,13 +1,14 @@
-package uk.ac.ceh.gateway.catalogue.model;
+package uk.ac.ceh.gateway.catalogue.upload.hubbub;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import java.util.List;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class JiraSearchResults {
     private int total;
     private List<JiraIssue> issues;
-    
+
 }

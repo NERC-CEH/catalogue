@@ -6,26 +6,23 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
+import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
-import uk.ac.ceh.gateway.catalogue.services.JiraService;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.HashMap;
-import java.util.Map;
 
 import static java.lang.String.format;
 import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.UPLOAD_DOCUMENT_JSON_VALUE;
@@ -35,6 +32,7 @@ import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.UPLOAD_DOCU
 @Slf4j
 @ToString
 public class UploadController {
+    // These transition ids are specific to the EIDCHELP Jira project
     private static final String START_PROGRESS = "751";
     private static final String HOLD = "831";
     private static final String UNHOLD = "811";
@@ -44,31 +42,45 @@ public class UploadController {
     private final UploadDocumentService uploadDocumentService;
     private final DocumentRepository documentRepository;
     private final JiraService jiraService;
+    private final PermissionService permissionService;
 
     public UploadController(
             UploadDocumentService uploadDocumentService,
             DocumentRepository documentRepository,
-            JiraService jiraService
+            JiraService jiraService,
+            PermissionService permissionService
     ) {
         this.uploadDocumentService = uploadDocumentService;
         this.documentRepository = documentRepository;
         this.jiraService = jiraService;
-        log.info("Creating {}", this);
+        this.permissionService = permissionService;
+        log.info("Creating");
     }
 
     @SneakyThrows
     @PreAuthorize("@permission.userCanUpload(#id)")
     @GetMapping("upload/{id}")
-    public ModelAndView getUploadDocumentPage(
-            @PathVariable("id") String id
+    public String getUploadDocumentPage(
+            @PathVariable("id") String id,
+            Model model
     ) {
         log.info("Requesting UploadDocument page for {}", id);
+        model.addAttribute("id", id);
+
         val geminiDocument = (GeminiDocument) documentRepository.read(id);
-        Map<String, Object> model = new HashMap<>();
-        model.put("id", id);
-        model.put("title", geminiDocument.getTitle());
+        model.addAttribute("title", geminiDocument.getTitle());
+
+        model.addAttribute("isAdmin", permissionService.userIsAdmin());
+
+        val possibleDataTransfer = jiraService.retrieveDataTransferIssue(id);
+        model.addAttribute("hasDataTransfer", possibleDataTransfer.isPresent());
+        val dataTransfer = possibleDataTransfer.orElseGet(JiraIssue::new);
+        model.addAttribute("isOpen", dataTransfer.isOpen());
+        model.addAttribute("isScheduled", dataTransfer.isScheduled());
+        model.addAttribute("isInProgress", dataTransfer.isInProgress());
+
         log.debug("Model is {}", model);
-        return new ModelAndView("html/upload/hubbub/upload-document", model);
+        return "html/upload/hubbub/upload-document";
     }
 
     @GetMapping(value = "documents/{id}", produces = UPLOAD_DOCUMENT_JSON_VALUE)
@@ -232,21 +244,14 @@ public class UploadController {
     }
 
     private String transitionIssueTo(String guid, String status) {
-        val issues = jiraService.search(jql(guid));
-        if (issues.size() != 1)
-            throw new NonUniqueJiraIssue();
-        val issue = issues.get(0);
-        val key = issue.getKey();
-        jiraService.transition(key, status);
-        return key;
-    }
-
-    @ResponseStatus(
-            value = HttpStatus.BAD_REQUEST,
-            reason = "Can not finish, contact admin to resolve issue clash"
-    )
-    static class NonUniqueJiraIssue extends RuntimeException {
-        static final long serialVersionUID = 1L;
+        val possibleIssue = jiraService.retrieveDataTransferIssue(guid);
+        if (possibleIssue.isPresent()) {
+            val key = possibleIssue.get().getKey();
+            jiraService.transition(key, status);
+            return key;
+        } else {
+            throw new RuntimeException(format("Cannot transition %s to %s", guid, status));
+        }
     }
 
     private void removeUploadPermission(CatalogueUser user, String guid)
@@ -261,10 +266,5 @@ public class UploadController {
                 guid,
                 format("Permissions of %s changed.", guid)
         );
-    }
-
-    private String jql(String guid) {
-        String jqlTemplate = "project=eidchelp and component='data transfer' and cf[13250]=%s";
-        return format(jqlTemplate, guid);
     }
 }

@@ -32,3 +32,4 @@ javac-services*
 .project
 org.eclipse.*
 DevStartupController.java
+docker-compose.override.yml

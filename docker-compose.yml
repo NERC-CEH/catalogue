@@ -9,6 +9,8 @@ services:
       - "8080:8080"
       - "8081:8081"
     volumes:
+      # Create a docker-compose.override.yml file, copy these volumes and uncomment
+      # directories needed for development.
       # Uncomment to see catalogue json files
       #- ./datastore:/var/ceh-catalogue/datastore
       # Uncomment to see Hubbub Upload uploaded files
@@ -24,7 +26,7 @@ services:
       #- ./web/src:/opt/ceh-catalogue/static
     environment:
       - doi.api=https://api.test.datacite.org/dois
-      - jira.address=https://jira-test.nerc-lancaster.ac.uk/rest/api/2
+      - jira.jqlTemplate=project=ct and labels={id}
       - spring.freemarker.cache=false
       - spring.profiles.active=development,upload:simple
     env_file:
