@@ -58,7 +58,6 @@
       <#include "document/_admin.ftlh">
       <div id="section-Top">
         <#include "document/_title.ftlh">
-
       </div>
 
       <#if rel_supersedes?has_content && rel_supersedes?size gt 0>
