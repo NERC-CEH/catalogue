@@ -1,7 +1,7 @@
 <#assign authorlist = "">
 <#if citation?has_content>
   <#if citation.authors?size gte 8>
-    <#assign authorlist = citation.authors?first + "<i>et al</i>">
+    <#assign authorlist = citation.authors?first + "<em>et al</em>">
   <#else>
     <#assign authorlist =  citation.authors?join('; ') > 
   </#if>
@@ -30,7 +30,7 @@
 </#if>
 
 <div id="section-title" class="clearfix">
-  <div class="authorList">${authorlist}</div>
+  <div class="authorList">${authorlist?no_esc}</div>
   <h1 id="document-title">
     <#if (metadata.state == 'draft' || metadata.state == 'pending') >
       <small class="text-danger"><b>${codes.lookup('publication.state', metadata.state)?upper_case!''}</b></small>
