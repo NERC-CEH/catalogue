@@ -119,7 +119,7 @@ public class CatalogueServiceConfig {
             Catalogue.builder()
                 .id("assist")
                 .title("About ASSIST")
-                .url("https://assist.ceh.ac.uk")
+                .url("https://assist.ceh.ac.uk/content/about-assist")
                 .facetKey("assistResearchThemes")
                 .facetKey("assistTopics")
                 .documentType(gemini)
