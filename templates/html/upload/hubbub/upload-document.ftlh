@@ -201,7 +201,14 @@
 </#macro>
 
 <#macro downloadChecksumButton>
-    <@button "DOWNLOAD CHECKSUM REPORT" "file-action downloadChecksum" "file-download"/>
+    <a
+        class="btn btn-success downloadChecksum"
+        href="documents/csv/${id}"
+        download="checksums_${id}.csv"
+    >
+        <i class="btn-icon fas fa-file-download"></i>
+        <span>DOWNLOAD CHECKSUM REPORT</span>
+    </a>
 </#macro>
 
 <#macro documentUploadModal>
