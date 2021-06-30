@@ -1,7 +1,7 @@
 <#assign authorlist = "">
 <#if citation?has_content>
   <#if citation.authors?size gte 8>
-    <#assign authorlist = citation.authors?first + "<i>et al</i>">
+    <#assign authorlist = citation.authors?first + "<em>et al</em>">
   <#else>
     <#assign authorlist =  citation.authors?join('; ') > 
   </#if>
