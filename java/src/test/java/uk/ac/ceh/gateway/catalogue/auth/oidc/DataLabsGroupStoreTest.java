@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.auth.oidc;
 
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,9 +14,9 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
+@Slf4j
 @ExtendWith(SpringExtension.class)
 @SecurityTestExecutionListeners
 public class DataLabsGroupStoreTest {
@@ -26,12 +27,30 @@ public class DataLabsGroupStoreTest {
 
     private final static String ROLE_2 = "ROLE2";
 
+    private final static String DATALABS_PERMISSION = "system:data:admin";
+
     private GroupStore<CatalogueUser> target;
 
 
     @BeforeEach
     public void init() {
         target = new DataLabsGroupStore<>();
+    }
+
+    @Test
+    @WithMockCatalogueUser(grantedAuthorities = {ROLE_1, ROLE_2, DATALABS_PERMISSION})
+    public void datalabsPermissionsFilteredOut() {
+
+        //Given
+        val catalogueUser = new CatalogueUser();
+        catalogueUser.setUsername("test");
+
+        //When
+        val groups = target.getGroups(catalogueUser);
+        log.info(groups.toString());
+
+        //Then
+        groups.forEach(group -> assertFalse(group.getName().equals(DATALABS_PERMISSION)));
     }
 
     @Test

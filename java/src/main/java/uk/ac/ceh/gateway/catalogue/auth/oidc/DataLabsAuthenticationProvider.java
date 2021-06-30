@@ -61,6 +61,7 @@ public class DataLabsAuthenticationProvider implements AuthenticationProvider {
                 grantedAuthorities
         );
 
+        log.debug("Granted Authorities: {}", token.getAuthorities());
         token.setAuthenticated(true);
         return token;
     }
@@ -80,7 +81,7 @@ public class DataLabsAuthenticationProvider implements AuthenticationProvider {
                 request,
                 DataLabsUserPermissions.class
         );
-        log.debug(response.getBody().toString());
+        log.debug("Datalabs user permissions: {}", response.getBody());
         return response.getBody();
     }
 
