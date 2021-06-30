@@ -110,7 +110,7 @@
                     </div>
                   </li>
                   <li>
-                    <a href="https://www.eidc.ac.uk/admin/guidance/mintADOI"
+                    <a href="https://eidc.ceh.ac.uk/admin/guidance/mintADOId"
                         target="_blank" 
                         rel="noopener noreferrer"
                     >
