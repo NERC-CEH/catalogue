@@ -31,8 +31,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.DATACITE_XML_VALUE;
-import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.DATACITE_ROLE;
 import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.EIDC_PUBLISHER_USERNAME;
+import static uk.ac.ceh.gateway.catalogue.controllers.DataciteController.DATACITE_ROLE;
 
 @WithMockCatalogueUser
 @ActiveProfiles("test")

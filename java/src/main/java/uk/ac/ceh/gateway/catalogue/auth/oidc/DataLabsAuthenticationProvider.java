@@ -22,6 +22,7 @@ import java.net.URI;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
+import static uk.ac.ceh.gateway.catalogue.controllers.DocumentController.MAINTENANCE_ROLE;
 
 @Slf4j
 @ToString(of = "address")
@@ -32,8 +33,13 @@ public class DataLabsAuthenticationProvider implements AuthenticationProvider {
     private final RestTemplate restTemplate;
     private final URI address;
 
-    public DataLabsAuthenticationProvider(@Qualifier("normal") RestTemplate restTemplate,
-                                          @Value("${datalabs.userPermissions}") String address) {
+    private static final String DATALABS_PUBLISHER = "ROLE_DATALABS_PUBLISHER";
+    private static final String DATALABS_EDITOR = "ROLE_DATALABS_EDITOR";
+
+    public DataLabsAuthenticationProvider(
+        @Qualifier("normal") RestTemplate restTemplate,
+        @Value("${datalabs.userPermissions}") String address
+    ) {
         this.restTemplate = restTemplate;
         this.address = UriComponentsBuilder.fromHttpUrl(address).build().toUri();
         log.info("Creating {}", this);
@@ -72,27 +78,30 @@ public class DataLabsAuthenticationProvider implements AuthenticationProvider {
     }
 
     private DataLabsUserPermissions retrievePermissions(String accessToken) {
-        val headers = new HttpHeaders();
-        headers.add("authorization", format("bearer %s", accessToken));
-        val request = new HttpEntity<>(headers);
         val response = restTemplate.exchange(
                 this.address,
                 HttpMethod.GET,
-                request,
+                withAccessTokenAuthorization(accessToken),
                 DataLabsUserPermissions.class
         );
         log.debug("Datalabs user permissions: {}", response.getBody());
         return response.getBody();
     }
 
+    public static HttpEntity<Object> withAccessTokenAuthorization(String accessToken) {
+        val headers = new HttpHeaders();
+        headers.add("authorization", format("bearer %s", accessToken));
+        return new HttpEntity<>(headers);
+    }
+
     private SimpleGrantedAuthority mapDataLabsPermissionsToCatalogueRoles(String dataLabsPermission) {
         switch (dataLabsPermission) {
             case "system:catalogue:admin":
-                return new SimpleGrantedAuthority("CIG_SYSTEM_ADMIN");
+                return new SimpleGrantedAuthority(MAINTENANCE_ROLE);
             case "system:catalogue:publish":
-                return new SimpleGrantedAuthority("ROLE_DATALABS_PUBLISHER");
+                return new SimpleGrantedAuthority(DATALABS_PUBLISHER);
             case "system:catalogue:edit":
-                return new SimpleGrantedAuthority("ROLE_DATALABS_EDITOR");
+                return new SimpleGrantedAuthority(DATALABS_EDITOR);
             default:
                 return new SimpleGrantedAuthority(dataLabsPermission);
         }

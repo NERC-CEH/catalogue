@@ -33,7 +33,7 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.ADMIN;
-import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.MAINTENANCE_ROLE;
+import static uk.ac.ceh.gateway.catalogue.controllers.DocumentController.MAINTENANCE_ROLE;
 
 @WithMockCatalogueUser(
     username=ADMIN,

@@ -72,7 +72,7 @@ class DataLabsAuthenticationProviderTest {
 
         //Then
         assertThat(actual.isAuthenticated(), is(equalTo(true)));
-        assertThat(actual.getAuthorities().toString().contains("CIG_SYSTEM_ADMIN"), is(equalTo(true)));
+        assertThat(actual.getAuthorities().toString().contains("ROLE_CIG_SYSTEM_ADMIN"), is(equalTo(true)));
         assertThat(actual.getAuthorities().toString().contains("ROLE_DATALABS_PUBLISHER"), is(equalTo(true)));
         assertThat(actual.getAuthorities().toString().contains("ROLE_DATALABS_EDITOR"), is(equalTo(true)));
         mockServer.verify();
