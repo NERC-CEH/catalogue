@@ -18,6 +18,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.elter.ElterDocument;
+import uk.ac.ceh.gateway.catalogue.elter.DummyLinkedElterDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.imp.ImpDocument;
@@ -152,6 +153,39 @@ public class DocumentController extends AbstractDocumentController {
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file,
             @RequestBody ElterDocument document
+    ) {
+        return saveMetadataDocument(
+                user,
+                file,
+                document
+        );
+    }
+
+    @PreAuthorize("@permission.userCanCreate(#catalogue)")
+    @RequestMapping (value = "documents",
+            method = RequestMethod.POST,
+            consumes = LINKED_ELTER_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> newDummyLinkedElterDocument(
+            @ActiveUser CatalogueUser user,
+            @RequestBody DummyLinkedElterDocument document,
+            @RequestParam("catalogue") String catalogue
+    ) {
+        return saveNewMetadataDocument(
+                user,
+                document,
+                catalogue,
+                "new linked Elter Document"
+        );
+    }
+
+    @PreAuthorize("@permission.userCanEdit(#file)")
+    @RequestMapping(value = "documents/{file}",
+            method = RequestMethod.PUT,
+            consumes = LINKED_ELTER_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> updateLinkedElterDocument(
+            @ActiveUser CatalogueUser user,
+            @PathVariable("file") String file,
+            @RequestBody DummyLinkedElterDocument document
     ) {
         return saveMetadataDocument(
                 user,
