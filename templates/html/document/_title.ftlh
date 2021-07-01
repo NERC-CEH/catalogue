@@ -1,11 +1,4 @@
-<#assign authorlist = "">
 <#if citation?has_content>
-  <#if citation.authors?size gte 8>
-    <#assign authorlist = citation.authors?first + "<i>et al</i>">
-  <#else>
-    <#assign authorlist =  citation.authors?join('; ') > 
-  </#if>
-
   <div class="modal fade" tabindex="-1" role="dialog" id="citationModal">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
@@ -26,11 +19,19 @@
       </div>
     </div>
   </div>
-
 </#if>
 
 <div id="section-title" class="clearfix">
-  <div class="authorList">${authorlist}</div>
+<#if citation?has_content>
+  <div class="authorList">
+    <#if citation.authors?size gte 8>
+      ${citation.authors?first} <em>et al</em>
+    <#else>
+      ${citation.authors?join('; ')}
+    </#if>
+  </div>
+</#if>
+
   <h1 id="document-title">
     <#if (metadata.state == 'draft' || metadata.state == 'pending') >
       <small class="text-danger"><b>${codes.lookup('publication.state', metadata.state)?upper_case!''}</b></small>
@@ -44,18 +45,18 @@
       </small>
     </#if>
   </h1>
-  
+
   <#if citation?has_content>
     <div class="doi">
       <a href="${citation.url}">${citation.url}</a>
       <a class="pull-right" href="#" data-toggle="modal" data-target="#citationModal"><small><i class="fas fa-quote-left fa-xs"></i> <i class="fas fa-quote-right fa-xs"></i></small> Cite this ${recordType?lower_case!''}</a>
     </div>
   </#if>
-  
+
   <#if resourceStatus??>
     <#include "_status.ftlh">
   </#if>
-  
+
   <#if resourceType.value == 'signpost' >
     <div id="signpost" class="alert alert-warning" role="alert">
       <i class="fas fa-info-circle"></i>
