@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.auth.oidc;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -11,7 +12,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.stereotype.Service;
@@ -19,8 +19,11 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import static java.lang.String.format;
 import static uk.ac.ceh.gateway.catalogue.controllers.DocumentController.MAINTENANCE_ROLE;
@@ -55,17 +58,9 @@ public class DataLabsAuthenticationProvider implements AuthenticationProvider {
             return null;
         }
 
-        val dataLabsUserPermissions = retrievePermissions(
+        val grantedAuthorities = retrievePermissions(
             authentication.getCredentials().toString()
         );
-
-        val grantedAuthorities = dataLabsUserPermissions
-            .getUserPermissions()
-            .stream()
-            .map(this::mapDataLabsPermissionsToCatalogueRoles)
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .collect(Collectors.toList());
 
         val token = new PreAuthenticatedAuthenticationToken(
                 authentication.getPrincipal(),
@@ -83,15 +78,27 @@ public class DataLabsAuthenticationProvider implements AuthenticationProvider {
         return authentication.equals(PreAuthenticatedAuthenticationToken.class);
     }
 
-    private DataLabsUserPermissions retrievePermissions(String accessToken) {
+    private List<SimpleGrantedAuthority> retrievePermissions(String accessToken) {
         val response = restTemplate.exchange(
                 this.address,
                 HttpMethod.GET,
                 withAccessTokenAuthorization(accessToken),
-                DataLabsUserPermissions.class
+                JsonNode.class
         );
         log.debug("Datalabs user permissions: {}", response.getBody());
-        return response.getBody();
+        val userPermissionsNode = Optional.ofNullable(response.getBody())
+            .orElseThrow(() -> new AuthenticationException("Cannot get response body"))
+            .at("/data/userPermissions");
+        if (userPermissionsNode.isArray()) {
+            return StreamSupport.stream(userPermissionsNode.spliterator(), false)
+                .map(JsonNode::asText)
+                .map(this::mapDataLabsPermissionsToCatalogueRoles)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     public static HttpEntity<Object> withAccessTokenAuthorization(String accessToken) {
