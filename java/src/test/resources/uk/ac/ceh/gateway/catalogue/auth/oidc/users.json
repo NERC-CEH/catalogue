@@ -1,0 +1,9 @@
+{
+  "data": {
+    "users": [
+      {"userId":  "auth0|af53b2", "name": "foo@example.com"},
+      {"userId":  "auth0|bc69d0", "name": "bar@example.com"},
+      {"userId":  "auth0|cd4e61", "name": "cat@example.com"}
+    ]
+  }
+}
