@@ -31,7 +31,6 @@ public class DataLabsGroupStore<CatalogueUser extends User> implements GroupStor
         log.debug("Granted Authorities in group store: {}", authorities);
         return authorities
             .stream()
-            .filter(authority -> !authority.getAuthority().startsWith("system:"))
             .map(authority -> new CrowdGroup(authority.getAuthority().toUpperCase(), ""))
             .collect(Collectors.toList());
     }

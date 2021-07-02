@@ -19,6 +19,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -29,12 +30,14 @@ import static uk.ac.ceh.gateway.catalogue.controllers.DocumentController.MAINTEN
 @Service
 @Profile("auth:datalabs")
 public class DataLabsAuthenticationProvider implements AuthenticationProvider {
-
     private final RestTemplate restTemplate;
     private final URI address;
 
-    private static final String DATALABS_PUBLISHER = "ROLE_DATALABS_PUBLISHER";
-    private static final String DATALABS_EDITOR = "ROLE_DATALABS_EDITOR";
+    public static final String ADMIN = "system:catalogue:admin";
+    public static final String PUBLISHER = "system:catalogue:publish";
+    public static final String EDITOR = "system:catalogue:edit";
+    public static final String DATALABS_PUBLISHER = "ROLE_DATALABS_PUBLISHER";
+    public static final String DATALABS_EDITOR = "ROLE_DATALABS_EDITOR";
 
     public DataLabsAuthenticationProvider(
         @Qualifier("normal") RestTemplate restTemplate,
@@ -52,13 +55,16 @@ public class DataLabsAuthenticationProvider implements AuthenticationProvider {
             return null;
         }
 
-        val dataLabsUserPermissions =
-                this.retrievePermissions(authentication.getCredentials().toString());
+        val dataLabsUserPermissions = retrievePermissions(
+            authentication.getCredentials().toString()
+        );
 
         val grantedAuthorities = dataLabsUserPermissions
             .getUserPermissions()
             .stream()
             .map(this::mapDataLabsPermissionsToCatalogueRoles)
+            .filter(Optional::isPresent)
+            .map(Optional::get)
             .collect(Collectors.toList());
 
         val token = new PreAuthenticatedAuthenticationToken(
@@ -94,16 +100,12 @@ public class DataLabsAuthenticationProvider implements AuthenticationProvider {
         return new HttpEntity<>(headers);
     }
 
-    private SimpleGrantedAuthority mapDataLabsPermissionsToCatalogueRoles(String dataLabsPermission) {
-        switch (dataLabsPermission) {
-            case "system:catalogue:admin":
-                return new SimpleGrantedAuthority(MAINTENANCE_ROLE);
-            case "system:catalogue:publish":
-                return new SimpleGrantedAuthority(DATALABS_PUBLISHER);
-            case "system:catalogue:edit":
-                return new SimpleGrantedAuthority(DATALABS_EDITOR);
-            default:
-                return new SimpleGrantedAuthority(dataLabsPermission);
-        }
+    private Optional<SimpleGrantedAuthority> mapDataLabsPermissionsToCatalogueRoles(String dataLabsPermission) {
+        return switch (dataLabsPermission) {
+            case ADMIN -> Optional.of(new SimpleGrantedAuthority(MAINTENANCE_ROLE));
+            case PUBLISHER -> Optional.of(new SimpleGrantedAuthority(DATALABS_PUBLISHER));
+            case EDITOR -> Optional.of(new SimpleGrantedAuthority(DATALABS_EDITOR));
+            default -> Optional.empty();
+        };
     }
 }

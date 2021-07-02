@@ -90,9 +90,6 @@ public class RememberMeServicesDataLabsTest {
         val authentication = target.autoLogin(request, null);
 
         //Then
-        assertThat(((CatalogueUser) authentication.getPrincipal()).getUsername(), is(equalTo(USER_NAME)));
-        assertThat(((CatalogueUser) authentication.getPrincipal()).getEmail(), is(equalTo(EMAIL)));
-        assertThat(((String) authentication.getCredentials()), is(equalTo(tokenValid)));
         assertThat(((CatalogueUser) authentication.getPrincipal()).getUsername(), is(equalTo(EMAIL)));
         assertThat(((CatalogueUser) authentication.getPrincipal()).getEmail(), is(equalTo(EMAIL)));
         assertThat(((String) authentication.getCredentials()), is(equalTo(tokenValid)));
