@@ -26,7 +26,7 @@ class DatalabsCatalogueUserProviderTest {
     private CatalogueUserProvider provider;
     private MockRestServiceServer mockServer;
 
-    private final String usersEndpointEncoded = "https://example.com/api?query=%7Busers%7D";
+    private final String usersEndpointEncoded = "https://example.com/api?query=%7Busers%7BuserId,name%7D%7D";
     private final String subject = "auth0|af53b2";
     private final String jwtToken = "token";
 
@@ -34,7 +34,7 @@ class DatalabsCatalogueUserProviderTest {
     @SneakyThrows
     void init() {
         val restTemplate = new RestTemplate();
-        val usersEndpoint = "https://example.com/api?query={users}";
+        val usersEndpoint = "https://example.com/api?query={users{userId,name}}";
         mockServer = MockRestServiceServer.bindTo(restTemplate).build();
         provider = new DatalabsCatalogueUserProvider(restTemplate, usersEndpoint);
     }
