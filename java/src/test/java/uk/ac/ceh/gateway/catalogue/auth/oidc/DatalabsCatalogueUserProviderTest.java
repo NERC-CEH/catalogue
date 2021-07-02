@@ -12,50 +12,71 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
+import java.util.Objects;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withUnauthorizedRequest;
 
-class Auth0CatalogueUserProviderTest {
+class DatalabsCatalogueUserProviderTest {
 
     private CatalogueUserProvider provider;
-
-    private RestTemplate restTemplate;
     private MockRestServiceServer mockServer;
 
-    private final String userInfoEndpoint = "https://example.com/userinfo";
+    private final String usersEndpointEncoded = "https://example.com/api?query=%7Busers%7D";
+    private final String subject = "auth0|af53b2";
     private final String jwtToken = "token";
 
     @BeforeEach
+    @SneakyThrows
     void init() {
-        restTemplate = new RestTemplate();
+        val restTemplate = new RestTemplate();
+        val usersEndpoint = "https://example.com/api?query={users}";
         mockServer = MockRestServiceServer.bindTo(restTemplate).build();
-        provider = new Auth0CatalogueUserProvider(restTemplate, userInfoEndpoint);
+        provider = new DatalabsCatalogueUserProvider(restTemplate, usersEndpoint);
     }
 
     @Test
     @SneakyThrows
-    void successfullyGetCatalogueUserFromAuth0() {
+    void successfullyGetCatalogueUserFromDatalabs() {
         //given
-        val response = IOUtils.toByteArray(getClass().getResource("userInfo.json"));
+        val response = IOUtils.toByteArray(
+            Objects.requireNonNull(getClass().getResource("users.json"))
+        );
         val expected = new CatalogueUser();
         expected
             .setUsername("foo@example.com")
             .setEmail("foo@example.com");
 
-        mockServer.expect(requestTo(userInfoEndpoint))
+        mockServer.expect(requestTo(usersEndpointEncoded))
             .andExpect(method(HttpMethod.GET))
             .andExpect(header("Authorization", "bearer " + jwtToken))
             .andRespond(withSuccess(response, MediaType.APPLICATION_JSON));
 
         //when
-        val actual = provider.provide(jwtToken);
+        val actual = provider.provide(subject, jwtToken);
 
         //then
         assertThat(actual, equalTo(expected));
+    }
+
+    @Test
+    @SneakyThrows
+    void unknownSubject() {
+        //given
+        val response = IOUtils.toByteArray(
+            Objects.requireNonNull(getClass().getResource("users.json"))
+        );
+        mockServer.expect(requestTo(usersEndpointEncoded))
+            .andRespond(withSuccess(response, MediaType.APPLICATION_JSON));
+
+        //when
+        assertThrows(AuthenticationException.class, () ->
+            provider.provide("unknown", jwtToken)
+        );
     }
 
     @Test
@@ -63,15 +84,12 @@ class Auth0CatalogueUserProviderTest {
         //given
         val invalidToken = "sflcsdjvmxfsdlkadad";
 
-        mockServer.expect(requestTo(userInfoEndpoint))
+        mockServer.expect(requestTo(usersEndpointEncoded))
             .andRespond(withUnauthorizedRequest());
 
         //when
         assertThrows(HttpClientErrorException.Unauthorized.class, () ->
-            provider.provide(invalidToken)
+            provider.provide(subject, invalidToken)
         );
-
-        //then
-
     }
 }

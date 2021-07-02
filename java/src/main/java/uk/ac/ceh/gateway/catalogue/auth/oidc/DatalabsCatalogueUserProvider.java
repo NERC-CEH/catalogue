@@ -1,7 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.auth.oidc;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -15,9 +14,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 import java.net.URI;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
+import java.util.stream.StreamSupport;
 
 import static uk.ac.ceh.gateway.catalogue.auth.oidc.DataLabsAuthenticationProvider.withAccessTokenAuthorization;
 
@@ -40,61 +38,27 @@ public class DatalabsCatalogueUserProvider implements CatalogueUserProvider {
 
     @Override
     public CatalogueUser provide(String subject, String token) {
-        val users = restTemplate.exchange(
+        val response = restTemplate.exchange(
             usersEndpoint,
             HttpMethod.GET,
             withAccessTokenAuthorization(token),
-            Users.class
-        ).getBody();
-        log.debug(users.toString());
-        val possibleUsers = Optional.ofNullable(users.getData().getUsers());
-        return possibleUsers.orElse(Collections.emptyList())
-            .stream()
-            .filter(user -> user.getUserId().equals(subject))
-            .map(user ->
-                new CatalogueUser().setUsername(user.getName()).setEmail(user.getName())
-            ).findFirst()
-            .orElseThrow(
-                () -> new AuthenticationException("No user found for subject: " + subject)
-            );
-    }
+            JsonNode.class
+        );
+        log.debug(response.toString());
+        val usersNode = Optional.ofNullable(response.getBody())
+            .orElseThrow(() -> new AuthenticationException("Cannot get response body for: " + subject))
+            .at("/data/users");
 
-    @lombok.Value
-    public static class Users {
-        Data data;
-
-        @JsonCreator
-        public Users(
-            @JsonProperty("data") Data data
-        ) {
-            this.data = data;
-        }
-
-        @lombok.Value
-        public static class Data {
-            List<User> users;
-
-            @JsonCreator
-            public Data(
-                @JsonProperty("users") List<User> users
-            ) {
-                this.users = users;
-            }
-
-            @lombok.Value
-            public static class User {
-                String userId;
-                String name;
-
-                @JsonCreator
-                public User(
-                    @JsonProperty("userId") String userId,
-                    @JsonProperty("name") String name
-                ) {
-                    this.userId = userId;
-                    this.name = name;
-                }
-            }
+        if (usersNode.isArray()) {
+            val name = StreamSupport.stream(usersNode.spliterator(), false)
+                .filter(node -> node.get("userId").asText().equals(subject))
+                .findFirst()
+                .orElseThrow(() -> new AuthenticationException("No user found for " + subject))
+                .get("name")
+                .asText();
+            return new CatalogueUser().setUsername(name).setEmail(name);
+        } else {
+            throw new AuthenticationException("No Users array present for " + subject);
         }
     }
 }
