@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
-import uk.ac.ceh.gateway.catalogue.indexing.MapServerIndexingService;
+import uk.ac.ceh.gateway.catalogue.indexing.mapserver.MapServerIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.MaintenanceResponse;
 import uk.ac.ceh.gateway.catalogue.services.DataRepositoryOptimizingService;
 

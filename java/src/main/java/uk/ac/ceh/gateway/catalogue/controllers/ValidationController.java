@@ -4,7 +4,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
-import uk.ac.ceh.gateway.catalogue.indexing.ValidationIndexingService;
+import uk.ac.ceh.gateway.catalogue.indexing.validation.ValidationIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.ValidationResponse;
 import uk.ac.ceh.gateway.catalogue.validation.ValidationLevel;
 import uk.ac.ceh.gateway.catalogue.validation.ValidationReport;

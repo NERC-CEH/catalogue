@@ -19,14 +19,14 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
-import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
+import static uk.ac.ceh.gateway.catalogue.indexing.jena.Ontology.*;
 
 public class JenaLookupServiceTest {
     private Dataset jenaTdb;
     private JenaLookupService service;
 
     private static final Property OSDP_PRODUCES = ResourceFactory.createProperty("http://onto.nerc.ac.uk/CEHMD/rels/produces");
-    
+
     @BeforeEach
     public void init() {
         jenaTdb = TDBFactory.createDataset();
@@ -68,16 +68,16 @@ public class JenaLookupServiceTest {
 
     @Test
     public void lookupMetadata() {
-        //Given 
+        //Given
         String id = "7e1c18b2-ff78-4979-9a90-f7ae20b9d75b";
         Model triples = jenaTdb.getDefaultModel();
         triples.add(createResource("http://model"), TITLE, "Model");
         triples.add(createResource("http://model"), IDENTIFIER, id);
         triples.add(createResource("http://model"), TYPE, "dataset");
-        
+
         //When
         Link actual = service.metadata(id);
-        
+
         //Then
         assertThat("Should be link present", actual, is(notNullValue()));
         assertThat("title should be equal", actual.getTitle(), is("Model"));
@@ -86,22 +86,22 @@ public class JenaLookupServiceTest {
 
     @Test
     public void lookupNonExistentMetadata() {
-        //Given 
+        //Given
         String id = "7e1c18b2-ff78-4979-9a90-f7ae20b9d75b";
         Model triples = jenaTdb.getDefaultModel();
         triples.add(createResource("http://model"), TITLE, "Model");
         triples.add(createResource("http://model"), IDENTIFIER, id);
-        
+
         //When
         Link actual = service.metadata("a different id");
-        
+
         //Then
         assertThat("Should not be link present", actual, is(nullValue()));
     }
-    
+
     @Test
     public void lookupModelApplications() {
-        //Given       
+        //Given
         Model triples = jenaTdb.getDefaultModel();
         triples.add(createResource("http://modelApplication1"), TITLE, "Model Application 1");
         triples.add(createResource("http://modelApplication1"), TYPE, "modelApplication");
@@ -109,17 +109,17 @@ public class JenaLookupServiceTest {
         triples.add(createResource("http://modelApplication2"), TITLE, "Model Application 2");
         triples.add(createResource("http://modelApplication2"), TYPE, "modelApplication");
         triples.add(createResource("http://modelApplication2"), REFERENCES, createResource("http://model"));
-        
+
         //When
         List<Link> actual = service.modelApplications("http://model");
-        
+
         //Then
         assertThat("Should be 2 Links", actual.size(), equalTo(2));
     }
-    
+
     @Test
     public void lookupModels() {
-        //Given       
+        //Given
         Model triples = jenaTdb.getDefaultModel();
         triples.add(createResource("http://model1"), TITLE, "Model 1");
         triples.add(createResource("http://model1"), TYPE, "model");
@@ -127,17 +127,17 @@ public class JenaLookupServiceTest {
         triples.add(createResource("http://model2"), TITLE, "Model 2");
         triples.add(createResource("http://model2"), TYPE, "model");
         triples.add(createResource("http://modelApplication"), REFERENCES, createResource("http://model2"));
-        
+
         //When
         List<Link> actual = service.models("http://modelApplication");
-        
+
         //Then
         assertThat("Should be 2 Links", actual.size(), equalTo(2));
     }
-    
+
     @Test
     public void lookupDatasets() {
-        //Given        
+        //Given
         Model triples = jenaTdb.getDefaultModel();
         triples.add(createResource("http://dataset1"), TITLE, "Dataset 1");
         triples.add(createResource("http://dataset1"), TYPE, "dataset");
@@ -145,27 +145,27 @@ public class JenaLookupServiceTest {
         triples.add(createResource("http://dataset2"), TITLE, "Dataset 2");
         triples.add(createResource("http://dataset2"), TYPE, "dataset");
         triples.add(createResource("http://dataset2"), REFERENCES, createResource("http://model"));
-        
+
         //When
         List<Link> actual = service.datasets("http://model");
-        
+
         //Then
         assertThat("Should be 2 Links", actual.size(), equalTo(2));
     }
-    
+
     @Test
     public void lookupLinkDatasets() {
-        //Given        
+        //Given
         Model triples = jenaTdb.getDefaultModel();
         triples.add(createResource("http://link1"), TITLE, "Link 1");
         triples.add(createResource("http://link1"), SOURCE, createResource("http://dataset1"));
         triples.add(createResource("http://model"), REFERENCES, createResource("http://link1"));
         triples.add(createResource("http://dataset1"), TITLE, "Dataset 1");
         triples.add(createResource("http://dataset1"), TYPE, "dataset");
-        
+
         //When
         List<Link> actual = service.datasets("http://model");
-        
+
         //Then
         assertThat("Should be 1 Link", actual.size(), equalTo(1));
     }
@@ -175,10 +175,10 @@ public class JenaLookupServiceTest {
         //Given
         Model triples = jenaTdb.getDefaultModel();
         triples.add(createResource("http://doc1"), HAS_GEOMETRY, createTypedLiteral("Polygon(12,23)", WKT_LITERAL));
-        
+
         //When
         List<String> wkt = service.wkt("http://doc1");
-        
+
         //Then
         assertThat(wkt.size(), is(1));
         assertThat(wkt.get(0), equalTo("Polygon(12,23)"));
@@ -203,10 +203,10 @@ public class JenaLookupServiceTest {
             createStatement(link2, IDENTIFIER, createTypedLiteral("https://catalogue.ceh.ac.uk/id/d8234690-1b61-4084-a349-eb53467383fe9")),
             createStatement(link2, IDENTIFIER, createTypedLiteral("d8234690-1b61-4084-a349-eb53467383fe"))
         ));
-        
+
         //When
         List<String> actual = service.linked("http://master");
-        
+
         //Then
         assertThat("should contain two plain identifiers", actual.contains("049283da-ee18-4b46-b714-d76f9a1ee479"));
         assertThat("should contain two plain identifiers", actual.contains("d8234690-1b61-4084-a349-eb53467383fe"));

@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 import static com.google.common.base.Strings.nullToEmpty;
 import static org.apache.jena.rdf.model.ResourceFactory.createResource;
-import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
+import static uk.ac.ceh.gateway.catalogue.indexing.jena.Ontology.*;
 
 /**
  * A simple lookup service powered by the jena linking database. This just looks
@@ -44,7 +44,7 @@ public class JenaLookupService {
                 .map(l -> l.getString())
                 .collect(Collectors.toList());
     }
-    
+
     /**
      * Metadata records (in other catalogues) linked to this record.
      * @param uri of this metadata record
@@ -59,7 +59,7 @@ public class JenaLookupService {
             .filter(l -> !l.startsWith("http"))
             .collect(Collectors.toList());
     }
-    
+
     /**
      * ModelApplications linked to this Model
      * @param uri of model
@@ -68,7 +68,7 @@ public class JenaLookupService {
     public List<Link> modelApplications(String uri) {
         return links(uri, "PREFIX dc: <http://purl.org/dc/terms/> SELECT ?node ?title ?type ?rel WHERE {?node ?rel ?me; dc:references ?me; dc:title ?title; dc:type ?type; dc:type 'modelApplication'}");
     }
-    
+
     /**
      * Models linked to this ModelApplication
      * @param uri of modelApplication
@@ -77,7 +77,7 @@ public class JenaLookupService {
     public List<Link> models(String uri) {
         return links(uri, "PREFIX dc: <http://purl.org/dc/terms/> SELECT ?node ?title ?type ?rel WHERE { ?me ?rel ?node; dc:references ?node. ?node dc:title ?title; dc:type ?type; dc:type 'model'}");
     }
-    
+
     public List<Link> datasets(String uri) {
         return links(uri, "PREFIX dc: <http://purl.org/dc/terms/> SELECT ?node ?title ?type ?rel WHERE {{{?me ?rel ?node; dc:references ?node.}UNION{?node ?rel ?me; dc:references ?me.} ?node dc:title ?title; dc:type ?type; dc:type 'dataset'.}UNION{?me ?rel ?node; dc:references ?node. ?node dc:source _:n . _:n dc:title ?title; dc:type ?type; dc:type 'dataset'.}}");
     }
@@ -107,7 +107,7 @@ public class JenaLookupService {
 
     /**
      * This finds the most recent version of a superseded resource
-     * i.e. if a superseded recource is itself superseded, it will return 
+     * i.e. if a superseded recource is itself superseded, it will return
      * only the last in the chain
      */
     public List<Link> superseded(String uri) {
@@ -132,13 +132,13 @@ public class JenaLookupService {
     public Link metadata(String id) {
         id = nullToEmpty(id);
         String sparql = "PREFIX dc: <http://purl.org/dc/terms/> SELECT ?node ?title ?type ?rel WHERE {?node dc:identifier ?id; dc:title ?title; dc:type ?type. BIND(<https://vocabs.ceh.ac.uk/eidc#> as ?rel)}";
-        ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);  
+        ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
         pss.setLiteral("id", id);
         return links(pss).stream().findFirst().orElse(null);
     }
-    
+
     private List<Link> links(@NonNull String uri, String sparql) {
-        ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);  
+        ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
         pss.setIri("me", uri);
         return links(pss);
     }
@@ -164,7 +164,7 @@ public class JenaLookupService {
     }
 
     /**
-     * Performs a literal lookup from the jena database for literals associated 
+     * Performs a literal lookup from the jena database for literals associated
      * to the given uri with a specified relationship
      * @param uri to look up an attribute of
      * @param relationship of the literal to the uri
@@ -185,13 +185,13 @@ public class JenaLookupService {
         }
         return toReturn;
     }
-    
+
     /**
-     * Lookup a resource (the subject) and return a property of that subject. 
+     * Lookup a resource (the subject) and return a property of that subject.
      * @param objectUri uri of resource (the object)
      * @param relationshipToSubject uri of relationship to subject
      * @param relationshipOnSubject uri of literal on subject
-     * @return 
+     * @return
      */
     public List<Literal> lookupPropertyOfSubject(
         String objectUri,

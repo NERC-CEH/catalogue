@@ -23,7 +23,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
+import static uk.ac.ceh.gateway.catalogue.indexing.jena.Ontology.*;
 
 @ExtendWith(MockitoExtension.class)
 public class GeminiDocumentPostProcessingServiceTest {
