@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.services;
+package uk.ac.ceh.gateway.catalogue.catalogue;
 
 import lombok.NonNull;
 import lombok.ToString;
@@ -27,7 +27,7 @@ public class InMemoryCatalogueService implements CatalogueService {
     }
 
     @Override
-    public Catalogue retrieve(String key) {
+    public Catalogue retrieve(@NonNull String key) {
         try {
             return catalogues.get(key.toLowerCase());
         } catch (NullPointerException ex) {
