@@ -9,7 +9,7 @@ import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.config.CatalogueServiceConfig;
-import uk.ac.ceh.gateway.catalogue.services.DocumentReader;
+import uk.ac.ceh.gateway.catalogue.document.reading.DocumentReader;
 
 import java.math.BigDecimal;
 import java.util.*;

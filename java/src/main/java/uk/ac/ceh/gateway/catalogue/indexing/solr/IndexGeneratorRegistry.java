@@ -4,7 +4,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
-import uk.ac.ceh.gateway.catalogue.util.ClassMap;
+import uk.ac.ceh.gateway.catalogue.indexing.ClassMap;
 
 @Slf4j
 @ToString

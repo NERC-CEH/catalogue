@@ -55,7 +55,6 @@ import java.util.stream.Collectors;
 @JsonIgnoreProperties(value = "id")
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.PROPERTY,
     property = "type")
 @JsonSubTypes({
     @JsonSubTypes.Type(value = Activity.class, name = "activity"),
@@ -151,7 +150,7 @@ public class BaseMonitoringType implements MetadataDocument, WellKnownText {
     public List<Keyword> getAllKeywords() {
         return keywords
             .stream()
-            .map(l -> l.asKeyword())
+            .map(Link::asKeyword)
             .collect(Collectors.toList());
     }
 
@@ -160,7 +159,7 @@ public class BaseMonitoringType implements MetadataDocument, WellKnownText {
         keywords.addAll(
             additionalKeywords
                 .stream()
-                .map(k -> k.asLink())
+                .map(Keyword::asLink)
                 .collect(Collectors.toList())
         );
         return this;
@@ -239,15 +238,13 @@ public class BaseMonitoringType implements MetadataDocument, WellKnownText {
         private BigDecimal southBoundLatitude, northBoundLatitude;
 
         public String getWkt() {
-            return new StringBuilder()
-                .append("POLYGON((")
-                .append(westBoundLongitude).append(" ").append(southBoundLatitude).append(", ")
-                .append(westBoundLongitude).append(" ").append(northBoundLatitude).append(", ")
-                .append(eastBoundLongitude).append(" ").append(northBoundLatitude).append(", ")
-                .append(eastBoundLongitude).append(" ").append(southBoundLatitude).append(", ")
-                .append(westBoundLongitude).append(" ").append(southBoundLatitude)
-                .append("))")
-                .toString();
+            return "POLYGON((" +
+                westBoundLongitude + " " + southBoundLatitude + ", " +
+                westBoundLongitude + " " + northBoundLatitude + ", " +
+                eastBoundLongitude + " " + northBoundLatitude + ", " +
+                eastBoundLongitude + " " + southBoundLatitude + ", " +
+                westBoundLongitude + " " + southBoundLatitude +
+                "))";
         }
     }
 

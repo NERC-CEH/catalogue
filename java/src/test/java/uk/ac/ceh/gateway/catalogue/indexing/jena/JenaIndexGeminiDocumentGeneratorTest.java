@@ -13,9 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
-import uk.ac.ceh.gateway.catalogue.indexing.jena.JenaIndexGeminiDocumentGenerator;
-import uk.ac.ceh.gateway.catalogue.indexing.jena.JenaIndexMetadataDocumentGenerator;
-import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
+import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
 
 import java.util.Arrays;
 import java.util.List;

@@ -10,9 +10,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.MapDataDefinition;
-import uk.ac.ceh.gateway.catalogue.indexing.mapserver.MapServerIndexGenerator;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.services.MapServerDetailsService;
+import uk.ac.ceh.gateway.catalogue.wms.MapServerDetailsService;
 
 import java.util.Arrays;
 

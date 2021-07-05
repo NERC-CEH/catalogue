@@ -5,10 +5,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
+import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
+import uk.ac.ceh.gateway.catalogue.document.UnknownContentTypeException;
+import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
+import uk.ac.ceh.gateway.catalogue.document.reading.DocumentReadingService;
+import uk.ac.ceh.gateway.catalogue.document.reading.DocumentTypeLookupService;
+import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
-import uk.ac.ceh.gateway.catalogue.services.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -70,7 +75,7 @@ public class GitDocumentRepository implements DocumentRepository {
             );
         }
     }
-    
+
     @Override
     public MetadataDocument read(
         String file,
@@ -97,7 +102,7 @@ public class GitDocumentRepository implements DocumentRepository {
             );
         }
     }
-    
+
     @Override
     public MetadataDocument save(
         CatalogueUser user,
@@ -112,12 +117,12 @@ public class GitDocumentRepository implements DocumentRepository {
             String id;
             MetadataDocument data;
             Class<? extends MetadataDocument> metadataType = documentTypeLookupService.getType(documentType);
-            
+
             try {
                 Files.copy(inputStream, tmpFile, StandardCopyOption.REPLACE_EXISTING); //copy the file so that we can pass over multiple times
 
                 //the documentReader will close the underlying inputstream
-                data = documentReader.read(Files.newInputStream(tmpFile), mediaType, metadataType); 
+                data = documentReader.read(Files.newInputStream(tmpFile), mediaType, metadataType);
                 MetadataInfo metadataInfo = createMetadataInfoWithDefaultPermissions(data, user, mediaType, catalogue); //get the metadata info
                 data.setMetadata(metadataInfo);
 
@@ -139,14 +144,14 @@ public class GitDocumentRepository implements DocumentRepository {
             );
         }
     }
-    
+
     @Override
     public MetadataDocument saveNew(
         CatalogueUser user,
         MetadataDocument document,
         String catalogue,
         String message
-    ) throws DocumentRepositoryException {       
+    ) throws DocumentRepositoryException {
         try {
             return save(user,
                 document,
@@ -165,7 +170,7 @@ public class GitDocumentRepository implements DocumentRepository {
             );
         }
     }
-    
+
     @Override
     public MetadataDocument save(
         CatalogueUser user,
@@ -175,9 +180,9 @@ public class GitDocumentRepository implements DocumentRepository {
     ) throws DocumentRepositoryException {
         try {
             return save(user,
-                document, 
+                document,
                 retrieveMetadataInfoUpdatingRawType(document),
-                id, 
+                id,
                 message
             );
         } catch (DocumentRepositoryException | IOException | PostProcessingException | UnknownContentTypeException ex) {
@@ -200,9 +205,9 @@ public class GitDocumentRepository implements DocumentRepository {
     ) throws DocumentRepositoryException {
         try {
             return save(user,
-                document, 
+                document,
                 retrieveMetadataInfoUpdatingRawType(document),
-                document.getId(), 
+                document.getId(),
                 message
             );
         } catch (DocumentRepositoryException | IOException | PostProcessingException | UnknownContentTypeException ex) {
@@ -216,7 +221,7 @@ public class GitDocumentRepository implements DocumentRepository {
             );
         }
     }
-    
+
     private MetadataDocument save(
         CatalogueUser user,
         MetadataDocument document,
@@ -239,7 +244,7 @@ public class GitDocumentRepository implements DocumentRepository {
 
         return document;
     }
-    
+
     @Override
     public DataRevision<CatalogueUser> delete(CatalogueUser user, String id) throws DocumentRepositoryException {
         try {
@@ -255,7 +260,7 @@ public class GitDocumentRepository implements DocumentRepository {
             );
         }
     }
-    
+
     private MetadataInfo createMetadataInfoWithDefaultPermissions(MetadataDocument document, CatalogueUser user, MediaType mediaType, String catalogue) {
         MetadataInfo toReturn = MetadataInfo.builder()
             .rawType(mediaType.toString())
@@ -268,14 +273,14 @@ public class GitDocumentRepository implements DocumentRepository {
         toReturn.addPermission(Permission.DELETE, username);
         return toReturn;
     }
-    
+
     private void updateIdAndMetadataDate(MetadataDocument document, String id) {
         document.setId(id).setMetadataDate(LocalDateTime.now());
     }
-    
+
     private void addRecordUriAsResourceIdentifier(MetadataDocument document, String recordUri) {
         List<ResourceIdentifier> resourceIdentifiers;
-        
+
         if (document.getResourceIdentifiers() != null) {
             resourceIdentifiers = new ArrayList<>(document.getResourceIdentifiers());
         } else {
@@ -291,8 +296,8 @@ public class GitDocumentRepository implements DocumentRepository {
         }
         document.setResourceIdentifiers(resourceIdentifiers);
     }
-    
-     private MetadataInfo retrieveMetadataInfoUpdatingRawType(MetadataDocument document) 
+
+     private MetadataInfo retrieveMetadataInfoUpdatingRawType(MetadataDocument document)
          throws IOException, UnknownContentTypeException, PostProcessingException {
         return document.getMetadata().withRawType(MediaType.APPLICATION_JSON_VALUE);
     }

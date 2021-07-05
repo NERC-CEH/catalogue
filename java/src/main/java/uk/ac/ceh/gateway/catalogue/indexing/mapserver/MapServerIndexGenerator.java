@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.services.MapServerDetailsService;
+import uk.ac.ceh.gateway.catalogue.wms.MapServerDetailsService;
 
 import java.util.Optional;
 

@@ -16,18 +16,21 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.components.datastore.DataRepository;
+import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
+import uk.ac.ceh.gateway.catalogue.document.DocumentListingService;
+import uk.ac.ceh.gateway.catalogue.document.UnknownContentTypeException;
+import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
-import uk.ac.ceh.gateway.catalogue.indexing.solr.SolrIndex;
-import uk.ac.ceh.gateway.catalogue.indexing.solr.SolrIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.permission.CrowdPermissionServiceTest;
-import uk.ac.ceh.gateway.catalogue.services.*;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -50,6 +53,25 @@ class SolrIndexingServiceTest {
 
     @InjectMocks
     private SolrIndexingService<MetadataDocument> service;
+
+    @Test
+    @SneakyThrows
+    void doNotIndexDocumentOfSpecifiedClass() {
+        //given
+        val doc = "upload";
+        val revision = "latest";
+        given(reader.readBundle(doc, revision)).willThrow(IllegalArgumentException.class);
+
+        //when
+        assertThrows(DocumentIndexingException.class, () ->
+            service.indexDocuments(Collections.singletonList(doc), revision)
+        );
+
+        //then
+        verify(solrClient).commit("documents");
+        verify(solrClient, never()).addBean(any(SolrIndex.class));
+        verifyNoInteractions(indexGenerator);
+    }
 
     @Test
     @DisplayName("re-indexing indexes all files")

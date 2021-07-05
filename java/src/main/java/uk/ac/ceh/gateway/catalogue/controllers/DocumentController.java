@@ -26,7 +26,7 @@ import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
-import uk.ac.ceh.gateway.catalogue.services.DocumentReader;
+import uk.ac.ceh.gateway.catalogue.document.reading.DocumentReader;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -356,6 +356,7 @@ public class DocumentController extends AbstractDocumentController {
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file
     ) {
+        //TODO: what client uses this endpoint? Want to remove this.
         return DocumentReader.raw(file);
     }
 

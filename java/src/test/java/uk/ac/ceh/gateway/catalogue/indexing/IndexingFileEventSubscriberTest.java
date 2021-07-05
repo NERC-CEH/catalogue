@@ -12,7 +12,7 @@ import uk.ac.ceh.components.datastore.DataSubmittedEvent;
 import uk.ac.ceh.gateway.catalogue.indexing.solr.SolrIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
+import uk.ac.ceh.gateway.catalogue.document.DocumentListingService;
 
 import java.util.Arrays;
 import java.util.List;

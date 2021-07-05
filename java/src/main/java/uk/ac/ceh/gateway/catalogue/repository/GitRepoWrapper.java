@@ -10,7 +10,7 @@ import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.datastore.DataWriter;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
-import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
+import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
 
 @Slf4j
 @ToString
@@ -34,7 +34,7 @@ public class GitRepoWrapper {
             .submitData(String.format("%s.raw", id), dataWriter)
             .commit(user, message);
     }
-    
+
     public DataRevision<CatalogueUser> delete(CatalogueUser user, String id) throws DataRepositoryException {
         return repo.deleteData(id + ".meta")
             .deleteData(id + ".raw")

@@ -27,10 +27,10 @@ import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.ogc.Layer;
 import uk.ac.ceh.gateway.catalogue.ogc.WmsCapabilities;
-import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
-import uk.ac.ceh.gateway.catalogue.services.GetCapabilitiesObtainerService;
-import uk.ac.ceh.gateway.catalogue.services.MapServerDetailsService;
-import uk.ac.ceh.gateway.catalogue.services.TMSToWMSGetMapService;
+import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
+import uk.ac.ceh.gateway.catalogue.wms.GetCapabilitiesObtainerService;
+import uk.ac.ceh.gateway.catalogue.wms.MapServerDetailsService;
+import uk.ac.ceh.gateway.catalogue.wms.TMSToWMSGetMapService;
 
 import java.io.IOException;
 import java.util.Collections;

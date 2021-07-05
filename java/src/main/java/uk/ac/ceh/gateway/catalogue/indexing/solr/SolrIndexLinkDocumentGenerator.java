@@ -9,7 +9,7 @@ import uk.ac.ceh.gateway.catalogue.model.LinkDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
-import uk.ac.ceh.gateway.catalogue.services.UnknownContentTypeException;
+import uk.ac.ceh.gateway.catalogue.document.UnknownContentTypeException;
 
 @Slf4j
 @ToString

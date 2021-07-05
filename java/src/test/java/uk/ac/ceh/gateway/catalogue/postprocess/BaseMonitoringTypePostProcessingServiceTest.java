@@ -52,8 +52,8 @@ public class BaseMonitoringTypePostProcessingServiceTest {
         service.postProcess(activity);
 
         //Then
-        List<Link> setupfor = activity.getSetUpFor();
-        assertThat(setupfor.size(), is(1));
+        List<Link> setupFor = activity.getSetUpFor();
+        assertThat(setupFor.size(), is(1));
     }
 
     @Test

@@ -4,13 +4,13 @@ import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
-import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
+import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
 
 import java.io.InputStream;
 
 /**
- * The following is a validator which will read a document from the 
- * documentWritingService as a specified mediatype. It will then delegate the 
+ * The following is a validator which will read a document from the
+ * documentWritingService as a specified mediatype. It will then delegate the
  * read InputStream to the subclasses #validate(InputStream) method.
  */
 @Slf4j
@@ -37,6 +37,6 @@ public abstract class AbstractDocumentValidator implements Validator {
                     .reject(ex.getMessage(), ValidationLevel.FAILED_TO_READ);
         }
     }
-    
+
     public abstract ValidationResult validate(InputStream stream);
 }

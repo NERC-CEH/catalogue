@@ -8,7 +8,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.Service.CoupledResource;
 import uk.ac.ceh.gateway.catalogue.gemini.Service.OperationMetadata;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty.Address;
-import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
 
 import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
@@ -27,7 +27,7 @@ import static org.springframework.test.util.AssertionErrors.assertTrue;
 
 public class Xml2GeminiDocumentMessageConverterTest {
     private Xml2GeminiDocumentMessageConverter geminiReader;
-    
+
     @BeforeEach
     public void createGeminiDocumentConverter() throws XPathExpressionException {
 //        Properties props = new Properties();
@@ -36,7 +36,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
         CodeLookupService codeLookupService = new CodeLookupService("codelist.properties");
         geminiReader = new Xml2GeminiDocumentMessageConverter(codeLookupService);
     }
-    
+
     @Test
     public void canGetResponsibleParty() throws IOException {
         //Given
@@ -90,15 +90,15 @@ public class Xml2GeminiDocumentMessageConverterTest {
                     .build()
                 ).build()
         );
-        
+
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
         List<ResponsibleParty> actual = document.getResponsibleParties();
-        
+
         //Then
         assertThat("ResponsibleParties 'actual' should be equal to 'expected'", actual, equalTo(expected));
     }
-    
+
     @Test
     public void canGetDistributors() throws IOException {
         //Given
@@ -124,15 +124,15 @@ public class Xml2GeminiDocumentMessageConverterTest {
                 .address(Address.builder().build()
                 ).build()
         );
-        
+
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
         List<ResponsibleParty> actual = document.getDistributorContacts();
-        
+
         //Then
         assertThat("Distributor 'actual' should be equal to 'expected'", actual, equalTo(expected));
     }
-       
+
     @Test
     public void canGetTimeExtent() throws IOException {
         //Given
@@ -143,15 +143,15 @@ public class Xml2GeminiDocumentMessageConverterTest {
             TimePeriod.builder().begin("1999-03-30").end("2013-10-10").build(),
             TimePeriod.builder().begin("2014-03-12").end("").build()
         );
-        
+
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
         List<TimePeriod> actual = document.getTemporalExtents();
-        
+
         //Then
         assertThat("TemporalExtent 'actual' should be equal to 'expected'", actual, equalTo(expected));
     }
-    
+
     @Test
     public void canGetResourceMaintenance() throws IOException {
         //Given
@@ -161,15 +161,15 @@ public class Xml2GeminiDocumentMessageConverterTest {
             ResourceMaintenance.builder().frequencyOfUpdate("notPlanned").build(),
             ResourceMaintenance.builder().frequencyOfUpdate("fortnightly").note("a note").build()
         );
-        
+
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
         List<ResourceMaintenance> actual = document.getResourceMaintenance();
-        
+
         //Then
         assertThat("Expected resourceMaintenance should equal actual", actual, equalTo(expected));
-    }    
-    
+    }
+
     @Test
     public void canGetDistributionInfo() throws IOException {
         //Given
@@ -179,15 +179,15 @@ public class Xml2GeminiDocumentMessageConverterTest {
             DistributionInfo.builder().name("first").version("some").build(),
             DistributionInfo.builder().name("another").version("asd").build()
         );
-        
+
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
         List<DistributionInfo> actual = document.getDistributionFormats();
-        
+
         //Then
         assertThat("DistributionInfo 'actual' should be equal to 'expected'", actual, equalTo(expected));
     }
-        
+
     @Test
     public void canGetBoundingBox() throws IOException {
         //Given
@@ -207,15 +207,15 @@ public class Xml2GeminiDocumentMessageConverterTest {
                 .northBoundLatitude("74.2389")
                 .build()
         );
-        
+
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
         List<BoundingBox> actual = document.getBoundingBoxes();
-        
+
         //Then
         assertThat("BoundingBoxes 'actual' should be equal to 'expected'", actual, equalTo(expected));
     }
-    
+
     @Test
     public void canGetServiceBoundingBox() throws IOException {
         //Given
@@ -229,25 +229,25 @@ public class Xml2GeminiDocumentMessageConverterTest {
                 .northBoundLatitude("55.77")
                 .build()
         );
-        
+
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
         List<BoundingBox> actual = document.getBoundingBoxes();
-        
+
         //Then
         assertThat("BoundingBoxes 'actual' should be equal to 'expected'", actual, equalTo(expected));
     }
 
     @Test
     public void canGetId() throws IOException {
-        
+
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("id.xml"));
-        
+
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        
+
         //Then
         assertEquals("9e7790ab-a37d-4918-8107-5c427798ca68", document.getId());
         assertFalse(document.getId().isEmpty());
@@ -255,75 +255,75 @@ public class Xml2GeminiDocumentMessageConverterTest {
 
     @Test
     public void canGetTitle() throws IOException {
-        
+
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream(
                 "title.xml"));
-        
+
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        
+
         //Then
         assertNotNull(document.getTitle());
         assertFalse(document.getTitle().isEmpty());
     }
-    
+
     @Test
     public void canGetMetadataStandardNameAndVersion() throws IOException {
-        
+
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("metadataStandard.xml"));
         String expectedName = "NERC profile of ISO19115:2003";
         String expectedVersion = "1.0";
-        
+
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        
+
         //Then
         assertThat(document.getMetadataStandardName(), equalTo(expectedName));
         assertThat( document.getMetadataStandardVersion(), equalTo(expectedVersion));
     }
-    
+
     @Test
     public void canGetLineage() throws IOException {
-        
+
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("lineage.xml"));
-        
+
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        
+
         //Then
         assertNotNull( document.getLineage());
         assertFalse(document.getLineage().isEmpty());
     }
-    
+
     @Test
     public void canGetAlternateTitles() throws IOException {
-       
+
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream(
                 "alternateTitles.xml"));
-        
+
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
         List<String> actual = document.getAlternateTitles();
         List<String> expected = Arrays.asList("First alternate title", "Second alternate title");
         Collections.sort(actual);
         Collections.sort(expected);
-        
+
         //Then
         assertNotNull(actual);
         assertThat("Content of alternateTitles not as expected", actual, is(expected));
     }
-    
+
     @Test
     public void canGetUseConstraintsAlsoWithLinks() throws IOException {
-       
+
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("resourceConstraints.xml"));
@@ -336,84 +336,84 @@ public class Xml2GeminiDocumentMessageConverterTest {
                 .value("If you reuse this data, you must cite: Smith, A. B., Crake, E. F (2016)")
                 .build()
         );
-        
+
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
         List<ResourceConstraint> actual = document.getUseConstraints();
-        
+
         //Then
         assertThat("Actual useConstraints should equal expected", actual, equalTo(expected));
     }
-    
-    
+
+
     @Test
     public void canGetSecurityConstraints() throws IOException {
-       
+
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("resourceConstraints.xml"));
         List<String> expected = Arrays.asList("confidential", "topSecret");
-        
+
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
         List<String> actual = document.getSecurityConstraints();
-        
+
         //Then
         assertThat("Actual securityConstraints should equal expected", actual, equalTo(expected));
     }
-    
+
     @Test
     public void canGetDatasetLanguages() throws IOException {
-        
+
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("datasetLanguages.xml"));
         List<String> expected = Arrays.asList("eng", "fin");
-        
+
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
         List<String> actual = document.getDatasetLanguages();
-        
+
         //Then
         assertThat("actual DatasetLanguages should be equal to expected", actual, equalTo(expected));
     }
-    
+
     @Test
     public void canGetCoupledResources() throws IOException {
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("coupledResources.xml"));
         List<String> expected = Arrays.asList("CEH:EIDC:#1275577974562", "CEH:EIDC:#9984234423443", "https://catalogue.ceh.ac.uk/id/1e7d5e08-9e24-471b-ae37-49b477f695e3");
-        
+
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
         List<String> actual = document.getCoupledResources();
-        
+
         //Then
-        assertThat("CoupledResources 'actual' should be equal to 'expected'", actual, equalTo(expected));   
+        assertThat("CoupledResources 'actual' should be equal to 'expected'", actual, equalTo(expected));
     }
-    
+
     @Test
     public void canGetTopicCategories() throws IOException {
-        
+
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("topicCategories.xml"));
-        
+
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
         List<Keyword> actual = document.getTopicCategories();
         List<Keyword> expected = Arrays.asList(
             Keyword.builder().value("environment").URI("http://inspire.ec.europa.eu/metadata-codelist/TopicCategory/environment").build(),
             Keyword.builder().value("imageryBaseMapsEarthCover").URI("http://inspire.ec.europa.eu/metadata-codelist/TopicCategory/imageryBaseMapsEarthCover").build());
-        
+
         //Then
         assertThat("Content of TopicCategories is not as expected", actual, equalTo(expected));
     }
-    
+
     @Test
     public void canGetTopic() throws IOException{
-        
+
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("topics.xml"));
@@ -422,30 +422,30 @@ public class Xml2GeminiDocumentMessageConverterTest {
             "http://onto.nerc.ac.uk/CEHMD/111",
             "http://onto.nerc.ac.uk/CEHMD/8"
         );
-        
+
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        List<String> actual = document.getTopics();        
-        
+        List<String> actual = document.getTopics();
+
         //Then
         assertThat("Actual Topic keywords equals expected", actual, equalTo(expected));
     }
-    
+
     @Test
     public void canGetUncitedKeywords() throws IOException {
-        
+
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("keywordsUncited.xml"));
-        
+
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
         List<DescriptiveKeywords> descriptiveKeywords = document.getDescriptiveKeywords();
-        
+
         //Then
         assertNotNull(descriptiveKeywords);
         assertThat("DescriptiveKeywords list should have 1 DescriptiveKeywords entry", descriptiveKeywords.size(), is(1));
-        
+
         //When
         List<Keyword> actual = descriptiveKeywords.get(0).getKeywords();
         List<Keyword> expected = Arrays.asList(
@@ -460,42 +460,42 @@ public class Xml2GeminiDocumentMessageConverterTest {
                 .URI(null)
                 .build()
         );
-        
+
         //Then
         assertNotNull(actual);
         assertThat("Content of Keywords is not as expected", actual, is(expected));
     }
-    
+
     @Test
     public void canGetCitedKeywords() throws IOException {
-        
+
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("keywordsCited.xml"));
-        
+
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
         List<DescriptiveKeywords> descriptiveKeywords = document.getDescriptiveKeywords();
-        
+
         //Then
         assertNotNull(descriptiveKeywords);
         assertThat("DescriptiveKeywords list should have 2 DescriptiveKeywords entries", descriptiveKeywords.size(), is(2));
     }
-    
+
     @Test
     public void canGetCitedKeywordsSimple() throws IOException {
-        
+
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("keywordsCitedSimple.xml"));
-        
+
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
         List<DescriptiveKeywords> descriptiveKeywords = document.getDescriptiveKeywords();
-        
+
         //Then
         assertNotNull(descriptiveKeywords);
-        
+
         //When
         List<Keyword> actualKeywords = descriptiveKeywords.get(0).getKeywords();
         List<Keyword> expectedKeywords = Arrays.asList(
@@ -508,26 +508,26 @@ public class Xml2GeminiDocumentMessageConverterTest {
                 .value("Cited Simple 2")
                 .build()
         );
-        
+
         //Then
         assertNotNull(actualKeywords);
         assertThat("Content of Keywords is not as expected", actualKeywords, is(expectedKeywords));
     }
-    
+
     @Test
     public void canGetCitedKeywordsLinks() throws IOException{
-        
+
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("keywordsCitedLinks.xml"));
-        
+
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
         List<DescriptiveKeywords> descriptiveKeywords = document.getDescriptiveKeywords();
-        
+
         //Then
         assertNotNull(descriptiveKeywords);
-        
+
         //When
         List<Keyword> actualKeywords = descriptiveKeywords.get(0).getKeywords();
         List<Keyword> expectedKeywords = Arrays.asList(
@@ -542,26 +542,26 @@ public class Xml2GeminiDocumentMessageConverterTest {
                 .URI("http://www.bing.com")
                 .build()
         );
-        
+
         //Then
         assertNotNull(actualKeywords);
         assertThat("Content of Keywrods is not as expected", actualKeywords, is(expectedKeywords));
     }
-    
+
     @Test
     public void canGetCitedKeywordsMixed() throws IOException{
-        
+
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("keywordsCitedMixed.xml"));
-        
+
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
         List<DescriptiveKeywords> descriptiveKeywords = document.getDescriptiveKeywords();
-        
+
         //Then
         assertNotNull(descriptiveKeywords);
-        
+
         //When
         List<Keyword> actualKeywords = descriptiveKeywords.get(0).getKeywords();
         List<Keyword> expectedKeywords = Arrays.asList(
@@ -581,48 +581,48 @@ public class Xml2GeminiDocumentMessageConverterTest {
                 .URI("http://www.bing.com")
                 .build()
         );
-        
+
         //Then
         assertNotNull(actualKeywords);
         assertThat("Content of Keywrods is not as expected", actualKeywords, is(expectedKeywords));
     }
-    
+
     @Test
     public void canGetCitedKeywordsType() throws IOException {
-        
+
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("keywordsCited.xml"));
         String expected = "theme";
-        
+
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
         List<DescriptiveKeywords> descriptiveKeywords = document.getDescriptiveKeywords();
-        
+
         //Then
         assertNotNull(descriptiveKeywords);
 
         //When
         String actual = descriptiveKeywords.get(0).getType();
-        
-        
+
+
         //Then
         assertNotNull("Expected Type to not be null", actual);
         assertThat("Content of Type not as expected", actual, is(expected));
     }
-    
+
 
     @Test
     public void canGetDescription() throws IOException {
-        
+
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream(
                 "description.xml"));
-        
+
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        
+
         //Then
         String expectedTitle = "Test description text";
         assertNotNull(document.getDescription());
@@ -632,20 +632,20 @@ public class Xml2GeminiDocumentMessageConverterTest {
 
     @Test
     public void canGetResourceType() throws IOException {
-        
+
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("resourceType.xml"));
         String expected = "dataset";
-        
+
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
         String actual = document.getResourceType().getValue();
-        
+
         //Then
         assertThat("Actual resourceType shoould be equal to expected", actual, equalTo(expected));
     }
-    
+
     @Test
     public void canGetResourceIdentifiers() throws IOException {
         //Given
@@ -657,14 +657,14 @@ public class Xml2GeminiDocumentMessageConverterTest {
             ResourceIdentifier.builder().code("10/nt9").codeSpace("doi:").build()
         );
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        
+
         //When
         List<ResourceIdentifier> actual = document.getResourceIdentifiers();
-        
+
         //Then
         assertThat("actual resourceIdentifiers are equal to expected", actual, equalTo(expected));
     }
-    
+
     @Test
     public void canGetSpatialRepresentations() throws IOException {
         //Given
@@ -672,14 +672,14 @@ public class Xml2GeminiDocumentMessageConverterTest {
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("spatialRepresentationType.xml"));
         List<String> expected = Arrays.asList("grid", "textTable");
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        
+
         //When
         List<String> actual = document.getSpatialRepresentationTypes();
-        
+
         //Then
         assertThat("actual spatialRepresentationType are equal to expected", actual, equalTo(expected));
     }
-    
+
     @Test
     public void canGetSpatialResoloutions() throws IOException {
         //Given
@@ -695,14 +695,14 @@ public class Xml2GeminiDocumentMessageConverterTest {
                 .build()
         );
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        
+
         //When
         List<SpatialResolution> actual = document.getSpatialResolutions();
-        
+
         //Then
         assertThat("actual spatialResolutions are equal to expected", actual, equalTo(expected));
     }
-            
+
     @Test
     public void datasetReferenceDatesPublication() throws IOException {
         //Given
@@ -711,14 +711,14 @@ public class Xml2GeminiDocumentMessageConverterTest {
         DatasetReferenceDate expected = DatasetReferenceDate.builder()
                 .publicationDate(LocalDate.parse("2011-04-08"))
                 .build();
-        
+
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        
+
         //Then
         assertThat("MetadataDate is correct", document.getDatasetReferenceDate(), equalTo(expected));
     }
-    
+
     @Test
     public void multipleSpatialResprentations() throws IOException {
         //Given
@@ -738,14 +738,14 @@ public class Xml2GeminiDocumentMessageConverterTest {
                 .codeSpace("urn:ogc:def:crs:EPSG")
                 .build()
         );
-        
+
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        
+
         //Then
         assertThat("MetadataDate is correct", document.getSpatialReferenceSystems(), equalTo(expected));
     }
-    
+
     @Test
     public void datasetReferenceDatesAll() throws IOException {
         //Given
@@ -756,61 +756,61 @@ public class Xml2GeminiDocumentMessageConverterTest {
                 .publicationDate(LocalDate.parse("2011-05-08"))
                 .revisionDate(LocalDate.parse("2011-06-08"))
                 .build();
-        
+
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        
+
         //Then
         assertThat("MetadataDate is correct", document.getDatasetReferenceDate(), equalTo(expected));
     }
-    
+
     @Test
     public void metadataDateFromDate() throws IOException {
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("metadataDate.xml"));
         LocalDateTime expected = LocalDateTime.parse("2012-10-15T00:00:00");
-        
+
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        
+
         //Then
         assertThat("MetadataDate is incorrect", document.getMetadataDate(), equalTo(expected));
     }
-    
+
     @Test
     public void metadataDateFromDateTime() throws IOException {
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("metadataDateTime.xml"));
         LocalDateTime expected = LocalDateTime.parse("2015-04-16T11:14:38");
-        
+
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
-        
+
         //Then
         assertThat("MetadataDate is incorrect", document.getMetadataDate(), equalTo(expected));
     }
-    
+
     @Test
     public void spatialReferenceNull() throws IOException {
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("spatialReferenceMissing.xml"));
-        
+
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
 
         //Then
         assertThat("Spatial reference is completely missing", document.getSpatialReferenceSystems(), equalTo(Collections.EMPTY_LIST));
     }
-    
+
     @Test
     public void canReadOnlineResources() throws IOException {
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("onlineResource.xml"));
-        
+
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
 
@@ -834,26 +834,26 @@ public class Xml2GeminiDocumentMessageConverterTest {
                 .build()
         ));
     }
-    
+
     @Test
     public void noOnlineResources() throws IOException {
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("noOnlineResource.xml"));
-        
+
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
 
         //Then
         assertThat("Expected to find no online resources", document.getOnlineResources().size(), is(0));
     }
-    
+
     @Test
     public void partialOnlineResource() throws IOException {
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("partialOnlineResource.xml"));
-        
+
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
 
@@ -864,7 +864,7 @@ public class Xml2GeminiDocumentMessageConverterTest {
             OnlineResource.builder().url("http://www.ceh.ac.uk/LandCoverMap2007.html").build()
         ));
     }
-    
+
     @Test
     public void canGetService() throws IOException {
         //Given
@@ -889,25 +889,25 @@ public class Xml2GeminiDocumentMessageConverterTest {
                     .build()
             ))
             .build();
-        
+
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
         Service actual = document.getService();
-        
+
         //Then
         assertThat("Expected Service should be equal to Actual", actual, equalTo(expected));
     }
-    
+
     @Test
     public void cannotGetServiceFromDataset() throws IOException {
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("keywordsCited.xml"));
-        
+
         //When
         GeminiDocument document = geminiReader.readInternal(GeminiDocument.class, message);
         Service actual = document.getService();
-        
+
         //Then
         assertThat("Service should be null", actual, nullValue());
     }
