@@ -13,7 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.util.StreamUtils;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.MapDataDefinition;
-import uk.ac.ceh.gateway.catalogue.services.MapServerDetailsService;
+import uk.ac.ceh.gateway.catalogue.wms.MapServerDetailsService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.GeminiExtractor;
 
 import java.io.File;

@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.util;
+package uk.ac.ceh.gateway.catalogue.wms;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,39 +15,39 @@ import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.MAPSERVER_G
 
 public class MapServerGetFeatureInfoErrorHandlerTest {
     private MapServerGetFeatureInfoErrorHandler handler;
-    
+
     @BeforeEach
     public void init() {
         handler = new MapServerGetFeatureInfoErrorHandler();
     }
-    
+
     @Test
     public void checkThatGMLMediaTypeIsFine() {
         //Given
         ClientHttpResponse response = mock(ClientHttpResponse.class, RETURNS_DEEP_STUBS);
         when(response.getHeaders().getContentType()).thenReturn(MediaType.parseMediaType(MAPSERVER_GML_VALUE));
-        
+
         //When
         boolean isError = handler.hasError(response);
-        
+
         //Then
         assertFalse(isError);
     }
-    
-    
+
+
     @Test
     public void checkThatXMLMediaTypeIsFine() {
         //Given
         ClientHttpResponse response = mock(ClientHttpResponse.class, RETURNS_DEEP_STUBS);
         when(response.getHeaders().getContentType()).thenReturn(MediaType.TEXT_XML);
-        
+
         //When
         boolean isError = handler.hasError(response);
-        
+
         //Then
         assertTrue(isError);
     }
-    
+
     @Test
     public void checkThatErrorThrowsException() {
         Assertions.assertThrows(MapServerException.class, () -> {
