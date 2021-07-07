@@ -13,8 +13,8 @@ import uk.ac.ceh.gateway.catalogue.datacite.DataciteService;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.Citation;
 import uk.ac.ceh.gateway.catalogue.model.Link;
-import uk.ac.ceh.gateway.catalogue.services.CitationService;
-import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
+import uk.ac.ceh.gateway.catalogue.citation.CitationService;
+import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
 
 import java.util.Optional;
 
@@ -23,7 +23,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
+import static uk.ac.ceh.gateway.catalogue.indexing.jena.Ontology.*;
 
 @ExtendWith(MockitoExtension.class)
 public class GeminiDocumentPostProcessingServiceTest {

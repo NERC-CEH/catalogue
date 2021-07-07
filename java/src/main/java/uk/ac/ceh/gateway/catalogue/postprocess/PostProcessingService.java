@@ -7,10 +7,10 @@ package uk.ac.ceh.gateway.catalogue.postprocess;
  */
 public interface PostProcessingService<T> {
     /**
-     * Processes the given instance add adds application specific knowledge to 
+     * Processes the given instance add adds application specific knowledge to
      * it. Useful for doing things like populating links with the correct
      * information. (e.g. link titles)
-     * @param value
+     * @param document document to process
      */
-    void postProcess(T value) throws PostProcessingException;
+    void postProcess(T document) throws PostProcessingException;
 }

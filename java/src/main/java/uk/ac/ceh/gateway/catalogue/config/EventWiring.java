@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.IndexingFileEventListener;
-import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
+import uk.ac.ceh.gateway.catalogue.document.DocumentListingService;
 
 import javax.annotation.PostConstruct;
 

@@ -14,7 +14,7 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
-import uk.ac.ceh.gateway.catalogue.services.CitationService;
+import uk.ac.ceh.gateway.catalogue.citation.CitationService;
 
 @Slf4j
 @ToString
@@ -34,7 +34,7 @@ public class CitationController {
     public Citation getCitation(
         @ActiveUser CatalogueUser user,
         @PathVariable("file") String file
-    ) throws DocumentRepositoryException {          
+    ) throws DocumentRepositoryException {
         return getCitation(documentRepository.read(file));
     }
 
@@ -47,7 +47,7 @@ public class CitationController {
     ) throws DocumentRepositoryException  {
         return getCitation(documentRepository.read(file, revision));
     }
-    
+
     private Citation getCitation(MetadataDocument document) {
         log.debug("Citation for: {}", document.getId());
         if(document instanceof GeminiDocument) {

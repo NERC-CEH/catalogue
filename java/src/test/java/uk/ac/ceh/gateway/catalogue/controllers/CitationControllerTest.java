@@ -22,7 +22,7 @@ import uk.ac.ceh.gateway.catalogue.model.Citation;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
-import uk.ac.ceh.gateway.catalogue.services.CitationService;
+import uk.ac.ceh.gateway.catalogue.citation.CitationService;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;

@@ -2,7 +2,7 @@ package uk.ac.ceh.gateway.catalogue.validation;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.http.MediaType;
-import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
+import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
 
 import java.io.IOException;
 import java.io.InputStream;

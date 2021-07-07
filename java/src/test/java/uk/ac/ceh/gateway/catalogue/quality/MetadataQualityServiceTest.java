@@ -21,7 +21,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.util.ResourceUtils;
 import uk.ac.ceh.gateway.catalogue.quality.MetadataQualityService.MetadataCheck;
-import uk.ac.ceh.gateway.catalogue.services.DocumentReader;
+import uk.ac.ceh.gateway.catalogue.document.reading.DocumentReader;
 
 import java.util.ArrayList;
 import java.util.Arrays;

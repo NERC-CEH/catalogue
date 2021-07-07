@@ -9,7 +9,7 @@ import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.config.CatalogueServiceConfig;
-import uk.ac.ceh.gateway.catalogue.services.DocumentReader;
+import uk.ac.ceh.gateway.catalogue.document.reading.DocumentReader;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -50,7 +50,7 @@ public class MetadataQualityService {
                 Option.DEFAULT_PATH_LEAF_TO_NULL,
                 Option.SUPPRESS_EXCEPTIONS
             );
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @SneakyThrows
@@ -59,12 +59,12 @@ public class MetadataQualityService {
 
         try {
             val parsedDoc = JsonPath.parse(
-                this.documentReader.read(id, "raw"),
-                this.config
+                documentReader.read(id, "raw"),
+                config
             );
             val parsedMeta = JsonPath.parse(
-                this.documentReader.read(id, "meta"),
-                this.config
+                documentReader.read(id, "meta"),
+                config
             );
 
             if (isQualifyingDocument(parsedDoc, parsedMeta)) {
@@ -787,14 +787,14 @@ public class MetadataQualityService {
 
     @Value
     public static class MetadataCheck {
-        private final String test;
-        private final Severity severity;
+        String test;
+        Severity severity;
     }
 
     @Value
     public static class Results {
-        private final List<MetadataCheck> problems;
-        private final String id, message;
+        List<MetadataCheck> problems;
+        String id, message;
 
         public Results(@NonNull List<MetadataCheck> problems, @NonNull String id) {
             this(problems, id, "");

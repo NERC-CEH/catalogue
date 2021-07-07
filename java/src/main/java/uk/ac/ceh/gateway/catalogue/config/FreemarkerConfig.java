@@ -3,10 +3,14 @@ package uk.ac.ceh.gateway.catalogue.config;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.context.annotation.Configuration;
+import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.quality.MetadataQualityService;
-import uk.ac.ceh.gateway.catalogue.services.*;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.DownloadOrderDetailsService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.GeminiExtractor;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
+import uk.ac.ceh.gateway.catalogue.wms.MapServerDetailsService;
 
 import javax.annotation.PostConstruct;
 
