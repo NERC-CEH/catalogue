@@ -1,11 +1,4 @@
-<#assign authorlist = "">
 <#if citation?has_content>
-  <#if citation.authors?size gte 8>
-    <#assign authorlist = citation.authors?first + "<i>et al</i>">
-  <#else>
-    <#assign authorlist =  citation.authors?join('; ') > 
-  </#if>
-
   <div class="modal fade" tabindex="-1" role="dialog" id="citationModal">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
@@ -26,11 +19,19 @@
       </div>
     </div>
   </div>
-
 </#if>
 
 <div id="section-title" class="clearfix">
-  <div class="authorList">${authorlist}</div>
+<#if citation?has_content>
+  <div class="authorList">
+    <#if citation.authors?size gte 8>
+      ${citation.authors?first} <em>et al</em>
+    <#else>
+      ${citation.authors?join('; ')}
+    </#if>
+  </div>
+</#if>
+
   <h1 id="document-title">
     <#if (metadata.state == 'draft' || metadata.state == 'pending') >
       <small class="text-danger"><b>${codes.lookup('publication.state', metadata.state)?upper_case!''}</b></small>

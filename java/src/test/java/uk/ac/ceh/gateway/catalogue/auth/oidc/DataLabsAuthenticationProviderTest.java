@@ -8,18 +8,22 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Collections;
+import java.util.Objects;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
+import static uk.ac.ceh.gateway.catalogue.auth.oidc.DataLabsAuthenticationProvider.DATALABS_EDITOR;
+import static uk.ac.ceh.gateway.catalogue.auth.oidc.DataLabsAuthenticationProvider.DATALABS_PUBLISHER;
+import static uk.ac.ceh.gateway.catalogue.controllers.DocumentController.MAINTENANCE_ROLE;
 
 class DataLabsAuthenticationProviderTest {
 
@@ -42,7 +46,9 @@ class DataLabsAuthenticationProviderTest {
     @SneakyThrows
     void authenticateUserWithNoPermissions() {
         //given
-        val response = IOUtils.toByteArray(getClass().getResource("noPermissions.json"));
+        val response = IOUtils.toByteArray(
+            Objects.requireNonNull(getClass().getResource("noPermissions.json"))
+        );
         mockServer.expect(requestTo(ADDRESS))
             .andExpect(method(HttpMethod.GET))
             .andExpect(header("authorization", "bearer " + CREDENTIALS))
@@ -61,7 +67,9 @@ class DataLabsAuthenticationProviderTest {
     void successfullyAddGrantedAuthorities() {
         //Given
         val input = new PreAuthenticatedAuthenticationToken(PRINCIPAL, CREDENTIALS);
-        val response = IOUtils.toByteArray(getClass().getResource("userPermissions.json"));
+        val response = IOUtils.toByteArray(
+            Objects.requireNonNull(getClass().getResource("userPermissions.json"))
+        );
         mockServer.expect(requestTo(ADDRESS))
                 .andExpect(method(HttpMethod.GET))
                 .andExpect(header("authorization", "bearer " + CREDENTIALS))
@@ -71,11 +79,40 @@ class DataLabsAuthenticationProviderTest {
         Authentication actual = target.authenticate(input);
 
         //Then
-        assertThat(actual.isAuthenticated(), is(equalTo(true)));
-        assertThat(actual.getAuthorities().toString().contains("CIG_SYSTEM_ADMIN"), is(equalTo(true)));
-        assertThat(actual.getAuthorities().toString().contains("ROLE_DATALABS_PUBLISHER"), is(equalTo(true)));
-        assertThat(actual.getAuthorities().toString().contains("ROLE_DATALABS_EDITOR"), is(equalTo(true)));
-        mockServer.verify();
+        assertTrue(actual.isAuthenticated());
+        assertThat(
+            actual.getAuthorities(),
+            containsInAnyOrder(
+                new SimpleGrantedAuthority(MAINTENANCE_ROLE),
+                new SimpleGrantedAuthority(DATALABS_PUBLISHER),
+                new SimpleGrantedAuthority(DATALABS_EDITOR)
+            )
+        );
+    }
+
+    @Test
+    @SneakyThrows
+    void filtersOutUnknownDatalabsPermissions() {
+        //Given
+        val input = new PreAuthenticatedAuthenticationToken(PRINCIPAL, CREDENTIALS);
+        val response = IOUtils.toByteArray(
+            Objects.requireNonNull(getClass().getResource("extraUserPermissions.json"))
+        );
+        mockServer.expect(requestTo(ADDRESS))
+            .andRespond(withSuccess(response, MediaType.APPLICATION_JSON));
+
+        //When
+        Authentication actual = target.authenticate(input);
+
+        //Then
+        assertThat(
+            actual.getAuthorities(),
+            containsInAnyOrder(
+                new SimpleGrantedAuthority(MAINTENANCE_ROLE),
+                new SimpleGrantedAuthority(DATALABS_PUBLISHER),
+                new SimpleGrantedAuthority(DATALABS_EDITOR)
+            )
+        );
     }
 
     @Test
@@ -84,7 +121,9 @@ class DataLabsAuthenticationProviderTest {
         //given
         val address = "https://example.com/api?query={userPermissions}";
         val service = new DataLabsAuthenticationProvider(restTemplate, address);
-        val response = IOUtils.toByteArray(getClass().getResource("userPermissions.json"));
+        val response = IOUtils.toByteArray(
+            Objects.requireNonNull(getClass().getResource("userPermissions.json"))
+        );
         mockServer.expect(requestTo("https://example.com/api?query=%7BuserPermissions%7D"))
             .andRespond(withSuccess(response, MediaType.APPLICATION_JSON));
         val authentication = new PreAuthenticatedAuthenticationToken(PRINCIPAL, CREDENTIALS);

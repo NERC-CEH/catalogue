@@ -22,35 +22,14 @@ import static org.junit.jupiter.api.Assertions.*;
 public class DataLabsGroupStoreTest {
 
     private final static String ANY_STRING = "any";
-
     private final static String ROLE_1 = "ROLE1";
-
     private final static String ROLE_2 = "ROLE2";
 
-    private final static String DATALABS_PERMISSION = "system:data:admin";
-
     private GroupStore<CatalogueUser> target;
-
 
     @BeforeEach
     public void init() {
         target = new DataLabsGroupStore<>();
-    }
-
-    @Test
-    @WithMockCatalogueUser(grantedAuthorities = {ROLE_1, ROLE_2, DATALABS_PERMISSION})
-    public void datalabsPermissionsFilteredOut() {
-
-        //Given
-        val catalogueUser = new CatalogueUser();
-        catalogueUser.setUsername("test");
-
-        //When
-        val groups = target.getGroups(catalogueUser);
-        log.info(groups.toString());
-
-        //Then
-        groups.forEach(group -> assertFalse(group.getName().equals(DATALABS_PERMISSION)));
     }
 
     @Test

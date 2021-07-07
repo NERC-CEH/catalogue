@@ -7,13 +7,14 @@ import org.springframework.context.annotation.Profile;
 import uk.ac.ceh.components.userstore.UsernameAlreadyTakenException;
 import uk.ac.ceh.components.userstore.inmemory.InMemoryGroupStore;
 import uk.ac.ceh.components.userstore.inmemory.InMemoryUserStore;
-import uk.ac.ceh.gateway.catalogue.controllers.DataciteController;
-import uk.ac.ceh.gateway.catalogue.controllers.DocumentController;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 
 import javax.annotation.PostConstruct;
 import java.util.Arrays;
+
+import static uk.ac.ceh.gateway.catalogue.controllers.DataciteController.DATACITE_ROLE;
+import static uk.ac.ceh.gateway.catalogue.controllers.DocumentController.MAINTENANCE_ROLE;
+import static uk.ac.ceh.gateway.catalogue.model.MetadataInfo.READONLY_GROUP;
 
 /**
  * The following spring JavaConfig defines the beans required for the interacting
@@ -33,9 +34,6 @@ public class DevelopmentUserStoreConfig {
 
 
     public static final String CEH_GROUP_NAME = "CEH";
-    public static final String DATACITE_ROLE = DataciteController.DATACITE_ROLE;
-    public static final String MAINTENANCE_ROLE = DocumentController.MAINTENANCE_ROLE;
-    public static final String READONLY_ROLE = MetadataInfo.READONLY_GROUP;
 
     // Catalogue specific roles
     public static final String ASSIST_EDITOR = "role_assist_editor";
@@ -246,7 +244,7 @@ public class DevelopmentUserStoreConfig {
         val user = new CatalogueUser()
             .setUsername("readonly")
             .setEmail("readonly@ceh.ac.uk");
-        addUserToGroup(user, READONLY_ROLE);
+        addUserToGroup(user, READONLY_GROUP);
         userStore().addUser(user, "password");
     }
 
@@ -324,7 +322,7 @@ public class DevelopmentUserStoreConfig {
         groupStore.createGroup(NC_PUBLISHER, "");
         groupStore.createGroup(OSDP_EDITOR, "");
         groupStore.createGroup(OSDP_PUBLISHER, "");
-        groupStore.createGroup(READONLY_ROLE, "");
+        groupStore.createGroup(READONLY_GROUP, "");
         groupStore.createGroup(SA_EDITOR, "");
         groupStore.createGroup(SA_PUBLISHER, "");
         groupStore.createGroup(UKSCAPE_PUBLISHER, "");
