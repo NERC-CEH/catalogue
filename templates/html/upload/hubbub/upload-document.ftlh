@@ -2,6 +2,7 @@
 
 <@skeleton.master title="Data Transfer for: " + title>
     <@documentContainer>
+        <@titleHeading/>
         <@returnToDocument/>
         <#if !hasDataTransfer>
             <@noDataTransfer/>
@@ -75,6 +76,12 @@
         <div class="container-fluid document-upload <#if isScheduled>is-scheduled</#if>">
             <#nested>
         </div>
+    </div>
+</#macro>
+
+<#macro titleHeading>
+    <div class="page-header">
+        <h1>${title}</h1>
     </div>
 </#macro>
 
