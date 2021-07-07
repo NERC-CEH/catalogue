@@ -14,6 +14,7 @@ import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.Citation;
 import uk.ac.ceh.gateway.catalogue.model.Link;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
+import uk.ac.ceh.gateway.catalogue.vocabularies.VocabularySolrIndex;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -67,6 +68,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private Keyword resourceType;
     private AccessLimitation accessLimitation;
     private boolean notGEMINI;
+    private List<VocabularySolrIndex> vocabularies;
 
 
     @Override

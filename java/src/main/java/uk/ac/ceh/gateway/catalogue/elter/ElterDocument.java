@@ -16,6 +16,7 @@ import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.Citation;
 import uk.ac.ceh.gateway.catalogue.model.Link;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
+import uk.ac.ceh.gateway.catalogue.vocabularies.VocabularySolrIndex;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -70,6 +71,7 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
     private AccessLimitation accessLimitation;
     private boolean notGEMINI;
     private List<DeimsSolrIndex> deimsSites;
+    private List<VocabularySolrIndex> vocabularies;
 
 
     @Override

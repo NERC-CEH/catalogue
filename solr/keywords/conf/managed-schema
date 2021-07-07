@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<schema name="vocabularies" version="1.6">
+<schema name="keywords" version="1.6">
     <uniqueKey>id</uniqueKey>
 
 

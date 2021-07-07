@@ -1,0 +1,29 @@
+{
+  "head": {
+    "vars": [ "uri" , "label" ]
+  } ,
+  "results": {
+    "bindings": [
+      {
+        "uri": { "type": "uri" , "value": "http://onto.nerc.ac.uk/CEHMD/assist-research-themes/5" } ,
+        "label": { "type": "literal" , "value": "Designing future farmed landscapes" }
+      } ,
+      {
+        "uri": { "type": "uri" , "value": "http://onto.nerc.ac.uk/CEHMD/assist-research-themes/4" } ,
+        "label": { "type": "literal" , "value": "Multi-functional grassland systems" }
+      } ,
+      {
+        "uri": { "type": "uri" , "value": "http://onto.nerc.ac.uk/CEHMD/assist-research-themes/3" } ,
+        "label": { "type": "literal" , "value": "Sustainable and resilient arable farming systems" }
+      } ,
+      {
+        "uri": { "type": "uri" , "value": "http://onto.nerc.ac.uk/CEHMD/assist-research-themes/2" } ,
+        "label": { "type": "literal" , "value": "Managing the impacts of farming on the environment" }
+      } ,
+      {
+        "uri": { "type": "uri" , "value": "http://onto.nerc.ac.uk/CEHMD/assist-research-themes/1" } ,
+        "label": { "type": "literal" , "value": "Limitations on crop productivity" }
+      }
+    ]
+  }
+}
