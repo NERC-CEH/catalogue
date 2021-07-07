@@ -21,6 +21,7 @@ public class ServiceAgreementController {
         log.info("Creating");
     }
 
+    //TODO: re-enable security
 //    @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
     @GetMapping("{id}")
     public MetadataDocument get(
@@ -31,6 +32,7 @@ public class ServiceAgreementController {
         return new ServiceAgreement().setTitle("Service Agreement " + id);
     }
 
+    //TODO: Add security. who should be able to access search?
     @GetMapping
     public List<ServiceAgreementSolrIndex> search(
         @RequestParam(value = "query", defaultValue = "*") String query
