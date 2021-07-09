@@ -28,6 +28,7 @@ import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReader;
+import uk.ac.ceh.gateway.catalogue.elter.LinkedDocumentRetrievalService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -40,9 +41,11 @@ import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.*;
 @Controller
 public class DocumentController extends AbstractDocumentController {
     public static final String MAINTENANCE_ROLE = "ROLE_CIG_SYSTEM_ADMIN";
+    private final LinkedDocumentRetrievalService linkedDocumentRetrievalService;
 
-    public DocumentController(DocumentRepository documentRepository) {
+    public DocumentController(DocumentRepository documentRepository, LinkedDocumentRetrievalService linkedDocumentRetrievalService) {
         super(documentRepository);
+        this.linkedDocumentRetrievalService = linkedDocumentRetrievalService;
         log.info("Creating {}", this);
     }
 
@@ -170,9 +173,10 @@ public class DocumentController extends AbstractDocumentController {
             @RequestBody DummyLinkedElterDocument document,
             @RequestParam("catalogue") String catalogue
     ) {
+        ElterDocument realDocument = linkedDocumentRetrievalService.get(document.getLinkedDocumentUri());
         return saveNewMetadataDocument(
                 user,
-                document,
+                realDocument,
                 catalogue,
                 "new linked Elter Document"
         );
