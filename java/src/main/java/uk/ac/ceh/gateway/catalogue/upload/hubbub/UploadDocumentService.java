@@ -5,14 +5,16 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
+import java.util.regex.Pattern;
 
 import static java.lang.String.format;
 
@@ -24,8 +26,30 @@ public class UploadDocumentService {
     private final HubbubService hubbubService;
     private final String uploadLocation;
     private final ExecutorService threadPool;
+    private final Pattern acceptablePathStarts = Pattern.compile("^/(dropbox|eidchub|supporting-documents)/.*");
 
-    private static final String[] VISIBLE_STATUS = new String[]{"VALID", "MOVING_FROM", "MOVING_TO", "VALIDATING_HASH", "NO_HASH", "WRITING", "REMOVED_UNKNOWN", "ZIPPED_UNKNOWN", "ZIPPED_UNKNOWN_MISSING", "MOVED_UNKNOWN", "MOVED_UNKNOWN_MISSING", "UNKNOWN", "UNKNOWN_MISSING", "MISSING", "MISSING_UNKNOWN", "CHANGED_MTIME", "CHANGED_HASH", "INVALID", "MOVING_FROM_ERROR", "MOVING_TO_ERROR"};
+    private static final String[] VISIBLE_STATUS = new String[]{
+        "CHANGED_HASH",
+        "CHANGED_MTIME",
+        "INVALID",
+        "MISSING",
+        "MISSING_UNKNOWN",
+        "MOVING_FROM",
+        "MOVING_FROM_ERROR",
+        "MOVING_TO",
+        "MOVING_TO_ERROR",
+        "MOVED_UNKNOWN",
+        "MOVED_UNKNOWN_MISSING",
+        "NO_HASH",
+        "REMOVED_UNKNOWN",
+        "UNKNOWN",
+        "UNKNOWN_MISSING",
+        "VALID",
+        "VALIDATING_HASH",
+        "WRITING",
+        "ZIPPED_UNKNOWN",
+        "ZIPPED_UNKNOWN_MISSING",
+    };
 
     public UploadDocumentService(
         HubbubService hubbubService,
@@ -38,67 +62,39 @@ public class UploadDocumentService {
         log.info("Creating {}", this);
     }
 
-    public UploadDocument get(String id) {
-        return get(id, 1, 1, 1, new String[0]);
+    public void accept(String path) {
+        if (acceptablePathStarts.matcher(path).matches()) {
+            hubbubService.post("/accept", path);
+        } else {
+            throw new UploadException("Bad path: " + path);
+        }
     }
 
-    public UploadDocument get(String id, int documentsPage, int datastorePage, int supportingDocumentsPage) {
-        return get(id, documentsPage, datastorePage, supportingDocumentsPage, VISIBLE_STATUS);
-    }
-
-    private UploadDocument get(String id, int documentsPage, int datastorePage, int supportingDocumentsPage, String... status) {
-        val dropboxRes = hubbubService.get(format("/dropbox/%s", id), documentsPage, status);
-        log.debug("dropbox is {}", dropboxRes);
-        val eidchubRes = hubbubService.get(format("/eidchub/%s", id), datastorePage, status);
-        log.debug("eidchub is {}", eidchubRes);
-        val supportingDocumentRes = hubbubService.get(format("/supporting-documents/%s", id), supportingDocumentsPage, status);
-        log.debug("supporting documents is {}", supportingDocumentRes);
-        val document = new UploadDocument(id, dropboxRes, eidchubRes, supportingDocumentRes);
-        log.debug("Getting {} for status {}", document, status);
-        return document;
+    public void cancel(String path) {
+        threadPool.execute(() -> hubbubService.post("/cancel", path));
     }
 
     @SneakyThrows
-    public void getCsv(PrintWriter writer, String id) {
+    public void csv(PrintWriter writer, String id) {
         log.debug("Getting CSV for {}", id);
         val first = hubbubService.get(id);
         val total = first.getPagination().getTotal();
         val eidchub = hubbubService.get(format("/eidchub/%s", id), 1, total).getData();
         eidchub.stream()
-                .filter(fileInfo -> fileInfo.getStatus().equals("VALID"))
-                .forEach(fileInfo -> {
-                    val path = fileInfo.getTruncatedPath();
-                    val hash = fileInfo.getHash();
-                    writer.println(format("%s,%s", path, hash));
-                });
+            .filter(fileInfo -> fileInfo.getStatus().equals("VALID"))
+            .forEach(fileInfo -> {
+                val path = fileInfo.getTruncatedPath();
+                val hash = fileInfo.getHash();
+                writer.println(format("%s,%s", path, hash));
+            });
     }
 
-    public UploadDocument add(String id, String filename, MultipartFile f) {
-        log.debug("Adding {} to {}", filename, id);
-        threadPool.execute(() -> {
-            try (InputStream in = f.getInputStream()) {
-                val directory = folders.get("documents");
-                val path = directory.getPath() + "/" + id + "/" + filename;
-                val file = new File(path);
-                file.setReadable(true);
-                file.setWritable(false, true);
-                file.setExecutable(false);
-                writing(id, format("/dropbox/%s/%s", id, filename), in.available());
-                FileUtils.copyInputStreamToFile(in, file);
-                accept(id, format("/dropbox/%s/%s", id, filename));
-                validateFile(id, format("/dropbox/%s/%s", id, filename));
-            } catch (IOException err) {
-                // TODO: check why this exception is being swallowed
-                log.error(format("Error adding file (id=%s filename=%s)", id, filename), err);
-            }
-        });
-        return get(id);
+    public void delete(String path) {
+        hubbubService.delete(path);
     }
 
-    public UploadDocument delete(String id, String filename) {
-        log.debug("Deleting {} from {}", filename, id);
-        hubbubService.delete(filename);
-        return get(id);
+    public UploadDocument get(String id, int documentsPage, int datastorePage, int supportingDocumentsPage) {
+        return get(id, documentsPage, datastorePage, supportingDocumentsPage, VISIBLE_STATUS);
     }
 
     private UploadDocument get(String id, int documentsPage, int datastorePage, int supportingDocumentsPage, String... status) {
@@ -121,10 +117,21 @@ public class UploadDocumentService {
         threadPool.execute(() -> hubbubService.post("/move_all", id));
     }
 
-    public UploadDocument validateFile(String id, String filename) {
-        log.debug("Validating {} for {}", filename, id);
-        hubbubService.postQuery("/validate", filename, "force", "true");
-        return get(id);
+    public void upload(String id, MultipartFile multipartFile) {
+        val filename = multipartFile.getOriginalFilename();
+        log.debug("Adding {} to {}", filename, id);
+        threadPool.execute(() -> {
+            try (InputStream in = multipartFile.getInputStream()) {
+                val file = newFileWithPermissionsSet(id, filename);
+                val dropboxKey = format("/dropbox/%s/%s", id, filename);
+                writing(dropboxKey, in.available());
+                FileUtils.copyInputStreamToFile(in, file);
+                accept(dropboxKey);
+                validate(dropboxKey);
+            } catch (Exception err) {
+                log.error(format("Error adding file (id=%s filename=%s)", id, filename), err);
+            }
+        });
     }
 
     public void validate(String path) {

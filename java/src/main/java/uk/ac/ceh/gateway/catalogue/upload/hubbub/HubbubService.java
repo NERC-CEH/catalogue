@@ -27,7 +27,7 @@ public class HubbubService {
     private final String address;
     private final String username;
     private final String password;
-    private final Set<String> guidQueryParameterPaths = ImmutableSet.of("/move_all", "/unzip", "/zip");
+    private final Set<String> guidQueryParameterEndpoints = ImmutableSet.of("/move_all", "/unzip", "/zip");
 
     public HubbubService(
             @Qualifier("normal") RestTemplate restTemplate,
@@ -43,14 +43,12 @@ public class HubbubService {
     }
 
     public HubbubResponse get(String path, Integer page, Integer size, String... status) {
-
         val uriBuilder = UriComponentsBuilder.fromHttpUrl(address)
                 .queryParam("data", true)
                 .queryParam("path", path)
                 .queryParam("page", page.toString())
                 .queryParam("size", size.toString())
                 .queryParam("status", (Object[]) status);
-
         return request(uriBuilder.toUriString(), HttpMethod.GET);
     }
 
@@ -66,29 +64,29 @@ public class HubbubService {
         return get(path, 1, 20, new String[0]);
     }
 
-    public HubbubResponse delete(String id) {
-        log.info("Deleting: {}", id);
+    public HubbubResponse delete(String path) {
+        log.info("Deleting: {}", path);
         val uriBuilder = UriComponentsBuilder.fromHttpUrl(address)
                 .path("delete")
-                .queryParam("path", id);
+                .queryParam("path", path);
 
         return request(uriBuilder.toUriString(), HttpMethod.DELETE);
     }
 
-    public HubbubResponse post(String path, String id) {
-        log.info("Posting to {}: {}", path, id);
+    public HubbubResponse post(String endpoint, String path) {
+        log.info("Posting to {}: {}", endpoint, path);
         val uriBuilder = UriComponentsBuilder.fromHttpUrl(address)
-                .path(path)
-                .queryParam(queryParamName(path), id);
+                .path(endpoint)
+                .queryParam(queryParamName(endpoint), path);
 
         return request(uriBuilder.toUriString(), HttpMethod.POST);
     }
 
-    public HubbubResponse postQuery(String path, String id, String queryKey, String queryValue) {
-        log.info("Post query to {}: {} with key: {} value: {}", path, id, queryKey, queryValue);
+    public HubbubResponse postQuery(String endpoint, String path, String queryKey, String queryValue) {
+        log.info("Post query to {}: {} with query param: {}={}", endpoint, path, queryKey, queryValue);
         val uriBuilder = UriComponentsBuilder.fromHttpUrl(address)
-                .path(path)
-                .queryParam(queryParamName(path), id)
+                .path(endpoint)
+                .queryParam(queryParamName(endpoint), path)
                 .queryParam(queryKey, queryValue);
 
         return request(uriBuilder.toUriString(), HttpMethod.POST);
@@ -120,8 +118,8 @@ public class HubbubService {
         }
     }
 
-    private String queryParamName(String path) {
-        if (guidQueryParameterPaths.contains(path)) {
+    private String queryParamName(String endpoint) {
+        if (guidQueryParameterEndpoints.contains(endpoint)) {
             return "guid";
         } else {
             return "path";

@@ -210,7 +210,7 @@
 <#macro downloadChecksumButton>
     <a
         class="btn btn-success downloadChecksum"
-        href="documents/csv/${id}"
+        href="upload/${id}?format=csv"
         download="checksums_${id}.csv"
     >
         <i class="btn-icon fas fa-file-download"></i>

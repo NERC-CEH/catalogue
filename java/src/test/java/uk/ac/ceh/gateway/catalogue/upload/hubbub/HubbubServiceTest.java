@@ -11,6 +11,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Objects;
+
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
@@ -32,7 +34,11 @@ public class HubbubServiceTest {
                 "hubbub",
                 "password01234"
         );
-        success = IOUtils.toByteArray(getClass().getResource("hubbub-eidchub-data-true-response.json"));
+        success = IOUtils.toByteArray(
+            Objects.requireNonNull(
+                getClass().getResource("hubbub-eidchub-data-true-response.json")
+            )
+        );
     }
 
     @Test

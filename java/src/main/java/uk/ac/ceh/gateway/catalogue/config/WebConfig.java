@@ -134,6 +134,7 @@ public class WebConfig implements WebMvcConfigurer {
             .mediaType(BIBTEX_SHORT, BIBTEX)
             .mediaType(CEH_MODEL_SHORT, CEH_MODEL_JSON)
             .mediaType(CEH_MODEL_APPLICATION_SHORT, CEH_MODEL_APPLICATION_JSON)
+            .mediaType(CSV_SHORT, TEXT_CSV)
             .mediaType(DATACITE_SHORT, DATACITE_XML)
             .mediaType(DATA_TYPE_SHORT, DATA_TYPE_JSON)
             .mediaType(EF_INSPIRE_XML_SHORT, EF_INSPIRE_XML)

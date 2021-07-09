@@ -3,6 +3,7 @@ define [
   'jquery'
   'cs!models/EditorMetadata'
 ], (Backbone, $, EditorMetadata) -> EditorMetadata.extend
+#TODO: no need to extend EditorMetadata just for URL, set urlRoot here
   page:
     documentsPage: 1
     datastorePage: 1
@@ -50,29 +51,25 @@ define [
     documents: 'data'
     'supporting-documents': 'metadata'
     datastore: 'datastore'
-  
+
   keyToAction:
     documents: 'move-both'
     'supporting-documents': 'move-datastore'
     datastore: 'move-metadata'
 
   messages:
+    CHANGED_HASH:
+      content: 'The file has changed'
     CHANGED_MTIME:
       title: 'Detected a possible file change'
       content: """
-The meta information about this file has changed
-This could be as small as someone opening the file and saving it
-Or it could mean the file contents have changed
-Please "VALIDATE" this file then resolve any new errors
-"""
-    CHANGED_HASH:
-      content: 'The file has changed'
-    NO_HASH:
-      content: 'This file has not been validated or failed to validate'
-    UNKNOWN:
-      content: 'This is an unknown file'
-    UNKNOWN_MISSING:
-      content: 'This was an unknown file, but has been removed manually'
+               The meta information about this file has changed
+               This could be as small as someone opening the file and saving it
+               Or it could mean the file contents have changed
+               Please "VALIDATE" this file then resolve any new errors
+               """
+    INVALID:
+      content: 'Something went wrong with this file'
     MISSING:
       content: 'This file is missing'
     MISSING_UNKNOWN:
@@ -81,26 +78,30 @@ Please "VALIDATE" this file then resolve any new errors
       content: 'This file was moved, but has been added manually'
     MOVED_UNKNOWN_MISSING:
       content: 'This file was moved, then added manually, now removed manually'
-    VALIDATING_HASH:
-      content: 'This file is currently being validated, large files take a long time to process'
-    REMOVED_UNKNOWN:
-      content: 'This file, previously removed, has now been manually added'
-    ZIPPED_UNKNOWN:
-      content: 'This file was zipped and has been manually added'
-    ZIPPED_UNKNOWN_MISSING:
-      content: 'This file was zipped, was been manually added, now manually removed'
-    INVALID:
-      content: 'Something went wrong with this file'
     MOVING_FROM:
       content: 'The file is currently being moved'
     MOVING_FROM_ERROR:
       content: 'The file failed to move'
-    MOVING_TO_ERROR:
-      content: 'The file failed to move'
     MOVING_TO:
       content: 'The file is currently being moved'
+    MOVING_TO_ERROR:
+      content: 'The file failed to move'
+    NO_HASH:
+      content: 'This file has not been validated or failed to validate'
+    REMOVED_UNKNOWN:
+      content: 'This file, previously removed, has now been manually added'
+    VALIDATING_HASH:
+      content: 'This file is currently being validated, large files take a long time to process'
+    UNKNOWN:
+      content: 'This is an unknown file'
+    UNKNOWN_MISSING:
+      content: 'This was an unknown file, but has been removed manually'
     WRITING:
       content: 'The file is currently being written to disk'
+    ZIPPED_UNKNOWN:
+      content: 'This file was zipped and has been manually added'
+    ZIPPED_UNKNOWN_MISSING:
+      content: 'This file was zipped, was been manually added, now manually removed'
 
   errorType:
     CHANGED_HASH: 'hash'
@@ -133,7 +134,7 @@ Please "VALIDATE" this file then resolve any new errors
     REMOVED_UNKNOWN: 'accept'
     ZIPPED_UNKNOWN: 'accept'
     ZIPPED_UNKNOWN_MISSING: 'ignore'
-  
+
   open: {}
 
   modal: false
@@ -147,7 +148,7 @@ Please "VALIDATE" this file then resolve any new errors
     @modalData.title = 'Have you finished uploading files?'
     @modalData.body = 'You will no longer be able to add, remove or update files.'
     @set 'modal', 'finish'
-  
+
   showDelete: (filename) ->
     @modalAction = => @delete(filename)
     fileSplit = filename.split('/')
@@ -156,7 +157,7 @@ Please "VALIDATE" this file then resolve any new errors
     @modalData.title = "Delete #{file}?"
     @modalData.body = "This will permanently delete the file <br /><b>#{filename}"
     @set 'modal', 'delete'
-  
+
   showCancel: (filename) ->
     @modalAction = => @cancel(filename)
     fileSplit = filename.split('/')
@@ -164,7 +165,7 @@ Please "VALIDATE" this file then resolve any new errors
     @modalData.title = "Cancel moving #{file}?"
     @modalData.body = 'This will not stop the file from being moved.<br />Only do this if you feel the file is no longer moving to the desired destination, e.g. due to a server error.'
     @set 'modal', 'cancel'
-  
+
   showIgnore: (filename) ->
     @modalAction = => @ignore(filename)
     fileSplit = filename.split('/')
@@ -172,7 +173,7 @@ Please "VALIDATE" this file then resolve any new errors
     @modalData.title = "Ignore the error for #{file}?"
     @modalData.body = "You are about to ignore the error for<br /><b>#{filename}</b><br />You will lose all infomation about this file if you continue with this action."
     @set 'modal', 'ignore'
-  
+
   hideDialog: ->
     @modalData.title = 'title'
     @modalData.body = 'body'
@@ -180,13 +181,10 @@ Please "VALIDATE" this file then resolve any new errors
 
   cancel: (file) ->
     @open[file] = false
-    url = @url() + '/cancel?filename=' + encodeURIComponent(file)
+    url = @url() + '/cancel?path=' + encodeURIComponent(file)
     $.ajax {
       url: url
-      headers:
-        'Accept': 'application/vnd.upload-document+json'
-        'Content-Type': 'application/vnd.upload-document+json'
-      type: 'PUT'
+      type: 'POST'
       success: (data) =>
         @set(data)
       error: (err) =>
@@ -196,13 +194,10 @@ Please "VALIDATE" this file then resolve any new errors
 
   move: (file, to) ->
     @open[file] = false
-    url = @url() + '/move-upload-file?to=' + to + '&filename=' + encodeURIComponent(file)
+    url = @url() + '/move-' + to + '?&path=' + encodeURIComponent(file)
     $.ajax {
       url: url
-      headers:
-        'Accept': 'application/vnd.upload-document+json'
-        'Content-Type': 'application/vnd.upload-document+json'
-      type: 'PUT'
+      type: 'POST'
       success: (data) =>
         @set(data)
       error: (err) =>
@@ -211,28 +206,20 @@ Please "VALIDATE" this file then resolve any new errors
     }
 
   accept: (file) ->
-    url = @url() + '/accept-upload-file?path=' + encodeURIComponent(file)
+    url = @url() + '/accept?path=' + encodeURIComponent(file)
     $.ajax {
       url: url
-      headers:
-        'Accept': 'application/vnd.upload-document+json'
-        'Content-Type': 'application/vnd.upload-document+json'
-      type: 'PUT'
-      success: (data) =>
-        @set(data)
+      type: 'POST'
       error: (err) =>
         console.error('error', err)
         do @fetch
     }
 
   delete: (file) ->
-    url = @url() + '/delete-upload-file?filename=' + encodeURIComponent(file)
+    url = @url() + '/delete?path=' + encodeURIComponent(file)
     $.ajax {
       url: url
-      headers:
-        'Accept': 'application/vnd.upload-document+json'
-        'Content-Type': 'application/vnd.upload-document+json'
-      type: 'PUT'
+      type: 'DELETE'
       success: (data) =>
         @set(data)
       error: (err) =>
@@ -240,6 +227,7 @@ Please "VALIDATE" this file then resolve any new errors
         do @fetch
     }
 
+#    TODO: what uses this?
   ignore: (file) ->
     url = @url() + '/delete-upload-file?filename=' + encodeURIComponent(file)
     $.ajax {
@@ -254,30 +242,24 @@ Please "VALIDATE" this file then resolve any new errors
         console.error('error', err)
         do @fetch
     }
-  
+
   validate: (file) ->
-    url = @url() + '/validate-upload-file?path=' + encodeURIComponent(file)
+    url = @url() + '/validate?path=' + encodeURIComponent(file)
     $.ajax {
       url: url
-      headers:
-        'Accept': 'application/vnd.upload-document+json'
-        'Content-Type': 'application/vnd.upload-document+json'
-      type: 'PUT'
+      type: 'POST'
       success: (data) =>
         @set(data)
       error: (err) =>
         console.error('error', err)
         do @fetch
     }
-  
+
   moveToDatastore: (cb) ->
     url = @url() + '/move-to-datastore'
     $.ajax {
       url: url
-      headers:
-        'Accept': 'application/vnd.upload-document+json'
-        'Content-Type': 'application/vnd.upload-document+json'
-      type: 'PUT'
+      type: 'POST'
       success: (data) =>
         @set(data)
         cb()
@@ -285,15 +267,12 @@ Please "VALIDATE" this file then resolve any new errors
         console.error('error', err)
         do @fetch
     }
-  
+
   validateFiles: (cb) ->
     url = @url() + '/validate'
     $.ajax {
       url: url
-      headers:
-        'Accept': 'application/vnd.upload-document+json'
-        'Content-Type': 'application/vnd.upload-document+json'
-      type: 'PUT'
+      type: 'POST'
       success: (data) =>
         @set(data)
         cb()
@@ -306,26 +285,19 @@ Please "VALIDATE" this file then resolve any new errors
     url = @url() + '/finish'
     $.ajax {
       url: url
-      headers:
-        'Accept': 'application/vnd.upload-document+json'
-        'Content-Type': 'application/vnd.upload-document+json'
-      type: 'PUT'
-      success: (data) =>
-        window.location.href = '/documents/' + @id
+      type: 'POST'
+      success: ->
+        do window.location.reload
       error: (err) ->
         console.error('error', err)
     }
-  
 
   reschedule: ->
     url = @url() + '/reschedule'
     $.ajax {
       url: url
-      headers:
-        'Accept': 'application/vnd.upload-document+json'
-        'Content-Type': 'application/vnd.upload-document+json'
-      type: 'PUT'
-      success: (data) ->
+      type: 'POST'
+      success: ->
         do window.location.reload
       error: (err) ->
         console.error('error', err)
@@ -335,11 +307,8 @@ Please "VALIDATE" this file then resolve any new errors
     url = @url() + '/schedule'
     $.ajax {
       url: url
-      headers:
-        'Accept': 'application/vnd.upload-document+json'
-        'Content-Type': 'application/vnd.upload-document+json'
-      type: 'PUT'
-      success: (data) ->
+      type: 'POST'
+      success: ->
         do window.location.reload
       error: (err) ->
         console.error('error', err)

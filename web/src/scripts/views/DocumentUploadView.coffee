@@ -248,8 +248,8 @@ define [
         @fileAction('validate')
         @fileAction('ignore', 'showIgnore')
         @fileAction('cancel', 'showCancel')
-        @fileAction('move-metadata', 'move', 'supporting-documents')
-        @fileAction('move-datastore', 'move', 'eidchub')
+        @fileAction('move-metadata', 'move', 'metadata')
+        @fileAction('move-datastore', 'move', 'datastore')
 
         $('.panel-heading').unbind('click')
         $('.panel-heading').click(

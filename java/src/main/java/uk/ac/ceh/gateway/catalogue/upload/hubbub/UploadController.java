@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,8 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
@@ -24,20 +21,29 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
 import javax.servlet.http.HttpServletResponse;
 
+import java.util.Optional;
+
 import static java.lang.String.format;
-import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.UPLOAD_DOCUMENT_JSON_VALUE;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.TEXT_CSV_VALUE;
 
 @Controller
 @Profile("upload:hubbub")
 @Slf4j
 @ToString
+@RequestMapping("upload/{id}")
 public class UploadController {
-    // These transition ids are specific to the EIDCHELP Jira project
-    private static final String START_PROGRESS = "751";
-    private static final String HOLD = "831";
-    private static final String UNHOLD = "811";
-    private static final String APPROVE = "711";
-    private static final String SCHEDULED = "741";
+    // These transition ids are specific to the CT & EIDCHELP Jira project
+    static final String START_PROGRESS = "751";
+    static final String HOLD = "831";
+    static final String UNHOLD = "811";
+    static final String APPROVE = "711";
+    static final String SCHEDULED = "741";
+    static final String METADATA = "supporting-documents";
+    static final String DATASTORE = "eidchub";
+    static final String DROPBOX = "dropbox";
+    private static final String PATH_TEMPLATE = "/%s/%s";
 
     private final UploadDocumentService uploadDocumentService;
     private final DocumentRepository documentRepository;
@@ -59,8 +65,8 @@ public class UploadController {
 
     @SneakyThrows
     @PreAuthorize("@permission.userCanUpload(#id)")
-    @GetMapping("upload/{id}")
-    public String getUploadDocumentPage(
+    @GetMapping
+    public String getPage(
             @PathVariable("id") String id,
             Model model
     ) {
@@ -84,12 +90,15 @@ public class UploadController {
         return "html/upload/hubbub/upload-document";
     }
 
-    @GetMapping(value = "documents/{id}", produces = UPLOAD_DOCUMENT_JSON_VALUE)
-    public ResponseEntity<UploadDocument> get(
-            @PathVariable("id") String id,
-            @RequestParam(value = "documents_page", defaultValue = "1") int documentsPage,
-            @RequestParam(value = "datastore_page", defaultValue = "1") int datastorePage,
-            @RequestParam(value = "supporting_documents_page", defaultValue = "1") int supportingDocumentsPage
+    @ResponseBody
+    @PreAuthorize("@permission.toAccess(#user, #id, 'VIEW')")
+    @GetMapping(produces = APPLICATION_JSON_VALUE)
+    public UploadDocument get(
+        @ActiveUser CatalogueUser user,
+        @PathVariable("id") String id,
+        @RequestParam(value = "documents_page", defaultValue = "1") int documentsPage,
+        @RequestParam(value = "datastore_page", defaultValue = "1") int datastorePage,
+        @RequestParam(value = "supporting_documents_page", defaultValue = "1") int supportingDocumentsPage
     ) {
         log.debug("GETing {} (documentsPage={}, datastorePage={}, supportingDocumentsPage={})", id, documentsPage, datastorePage, supportingDocumentsPage);
         return uploadDocumentService.get(
@@ -101,15 +110,16 @@ public class UploadController {
     }
 
     @SneakyThrows
-    @GetMapping("upload/documents/csv/{id}")
-    public void exportCSV(
-            @ActiveUser CatalogueUser user,
-            @PathVariable("id") String id,
-            HttpServletResponse response
+    @PreAuthorize("@permission.toAccess(#user, #id, 'VIEW')")
+    @GetMapping(produces = TEXT_CSV_VALUE)
+    public void csv(
+        @ActiveUser CatalogueUser user,
+        @PathVariable("id") String id,
+        HttpServletResponse response
     ) {
-        response.setContentType("text/csv");
+        response.setContentType(TEXT_CSV_VALUE);
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION, format("attachment; filename=\"checksums_%s.csv\"", id));
-        uploadDocumentService.getCsv(response.getWriter(), id);
+        uploadDocumentService.csv(response.getWriter(), id);
     }
 
     @PreAuthorize("@permission.userCanUpload(#id)")
@@ -117,7 +127,7 @@ public class UploadController {
     @PostMapping
     public void upload(
             @PathVariable("id") String id,
-            @RequestParam("file") MultipartFile file
+            @RequestParam("file") MultipartFile multipartFile
     ) {
         uploadDocumentService.upload(id, multipartFile);
     }
@@ -127,7 +137,7 @@ public class UploadController {
     @DeleteMapping
     public void delete(
             @PathVariable("id") String id,
-            @RequestParam("filename") String filename
+            @RequestParam("path") String path
     ) {
         uploadDocumentService.delete(path);
     }
@@ -175,21 +185,36 @@ public class UploadController {
     }
 
     @PreAuthorize("@permission.userCanUpload(#id)")
-    @PutMapping(value = "documents/{id}/validate-upload-file", produces = UPLOAD_DOCUMENT_JSON_VALUE)
-    public ResponseEntity<UploadDocument> validateFile(
-            @PathVariable("id") String id,
-            @RequestParam("path") String path
+    @ResponseStatus(NO_CONTENT)
+    @PostMapping("cancel")
+    public void cancel(
+        @PathVariable("id") String id,
+        @RequestParam("path") String path
     ) {
-        return ResponseEntity.ok(uploadDocumentService.validateFile(id, path));
+        uploadDocumentService.cancel(path);
     }
 
     @PreAuthorize("@permission.userCanUpload(#id)")
-    @PutMapping(value = "documents/{id}/cancel", produces = UPLOAD_DOCUMENT_JSON_VALUE)
-    public ResponseEntity<UploadDocument> cancel(
+    @ResponseStatus(NO_CONTENT)
+    @PostMapping("validate")
+    public void validate(
             @PathVariable("id") String id,
-            @RequestParam("filename") String filename
+            @RequestParam(value = "path", required = false) Optional<String> possiblePath
     ) {
-        return ResponseEntity.ok(uploadDocumentService.cancel(id, filename));
+        possiblePath.ifPresentOrElse(
+            uploadDocumentService::validate,
+            () -> uploadDocumentService.validate(id)
+        );
+    }
+
+    @PreAuthorize("@permission.userCanUpload(#id)")
+    @ResponseStatus(NO_CONTENT)
+    @PostMapping("move-datastore")
+    public void moveDatastore(
+        @PathVariable("id") String id,
+        @RequestParam("path") String path
+    ) {
+        uploadDocumentService.move(path, DATASTORE);
     }
 
     @PreAuthorize("@permission.userCanUpload(#id)")
@@ -197,8 +222,7 @@ public class UploadController {
     @PostMapping("move-metadata")
     public void moveMetadata(
             @PathVariable("id") String id,
-            @RequestParam("to") String to,
-            @RequestParam("filename") String filename
+            @RequestParam("path") String path
     ) {
         uploadDocumentService.move(path, METADATA);
     }
@@ -212,19 +236,19 @@ public class UploadController {
         uploadDocumentService.moveAllToDataStore(id);
     }
 
-    private void transitionIssueToSchedule(CatalogueUser user,String guid) {
+    private void transitionIssueToSchedule(CatalogueUser user, String guid) {
         transitionIssueTo(guid, APPROVE);
         transitionIssueTo(user, guid, SCHEDULED, "%s has scheduled, ready for uploading");
     }
 
-    private void transitionIssueToScheduled(CatalogueUser user,String guid) {
+    private void transitionIssueToScheduled(CatalogueUser user, String guid) {
         transitionIssueTo(guid, HOLD);
         transitionIssueTo(guid, UNHOLD);
         transitionIssueTo(guid, APPROVE);
         transitionIssueTo(user, guid, SCHEDULED, "%s has rescheduled, ready for uploading");
     }
 
-    private void transitionIssueToStartProgress(CatalogueUser user,String guid) {
+    private void transitionIssueToStartProgress(CatalogueUser user, String guid) {
         transitionIssueTo(user, guid, START_PROGRESS, "%s has finished uploading the documents");
     }
 
@@ -246,8 +270,8 @@ public class UploadController {
 
     private void removeUploadPermission(CatalogueUser user, String guid)
             throws DocumentRepositoryException {
-        MetadataDocument document = documentRepository.read(guid);
-        MetadataInfo info = document.getMetadata();
+        val document = documentRepository.read(guid);
+        val info = document.getMetadata();
         info.removePermission(Permission.UPLOAD, user.getUsername());
         document.setMetadata(info);
         documentRepository.save(
