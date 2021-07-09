@@ -8,6 +8,12 @@
             <option value="docker-compose.override.yml" />
           </list>
         </option>
+        <option name="services">
+          <list>
+            <option value="web" />
+            <option value="solr" />
+          </list>
+        </option>
         <option name="sourceFilePath" value="docker-compose.yml" />
         <option name="upExitCodeFromService" value="" />
         <option name="upTimeout" value="" />

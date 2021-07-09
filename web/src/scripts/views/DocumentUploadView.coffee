@@ -19,7 +19,7 @@ define [
   pollingTimeout: null
   fetchXhr: null
 
-  
+
 
   initialize: ->
     @fetch = () =>
@@ -104,16 +104,14 @@ define [
           uploading.addClass('uploading-' + id)
           uploading.find('.cancel').click => @removeFile file
           $(".uploading-#{id} .file-size-value").text("#{filesize(file.size)}")
-        
+
         @on 'success', (file, res) ->
           id = file.name.replace(/[^\w?]/g, '-')
           setTimeout(
             -> $('.uploading-' + id).remove()
             500
           )
-          model.set res
-          do render
-        
+
         @on 'error', (file, errorMessage, xhr) ->
           id = file.name.replace(/[^\w?]/g, '-')
           $('.uploading-' + id + ' .file-status').text('Error')
@@ -141,7 +139,7 @@ define [
     d = date.getDate()
     M = date.getMonth() + 1
     y = ('' + date.getFullYear()).slice(2)
-    
+
     h = date.getHours()
     h = "0#{h}" if h < 10
 
@@ -149,7 +147,7 @@ define [
     m = "0#{m}" if m < 10
 
     "#{d}/#{M}/#{y} - #{h}:#{m}"
-  
+
   pagination: (name, pageName) ->
     uploadFiles = @model.get('uploadFiles')
     pagination = uploadFiles[name].pagination
@@ -176,7 +174,7 @@ define [
         $("#pag-#{name} .pag-per-page .fa-spinner").css('visibility', 'visible')
         do @fetch
     )
-    
+
     $("#pag-#{name} .pag-next").attr('disabled', page == pages)
     $("#pag-#{name} .pag-next").unbind('click')
     $("#pag-#{name} .pag-next").click(() =>

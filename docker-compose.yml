@@ -4,7 +4,6 @@ services:
     build: .
     depends_on:
       - solr
-      - mapserver
     ports:
       - "8080:8080"
       - "8081:8081"
@@ -26,6 +25,7 @@ services:
       #- ./web/src:/opt/ceh-catalogue/static
     environment:
       - doi.api=https://api.test.datacite.org/dois
+      - hubbub.url=https://hubbub.staging.ceh.ac.uk/
       - jira.jqlTemplate=project=ct and labels={id}
       - spring.freemarker.cache=false
       - spring.profiles.active=development,upload:simple

@@ -80,6 +80,7 @@ public class UploadController {
         model.addAttribute("isInProgress", dataTransfer.isInProgress());
 
         log.debug("Model is {}", model);
+        //noinspection SpringMVCViewInspection
         return "html/upload/hubbub/upload-document";
     }
 
@@ -91,13 +92,11 @@ public class UploadController {
             @RequestParam(value = "supporting_documents_page", defaultValue = "1") int supportingDocumentsPage
     ) {
         log.debug("GETing {} (documentsPage={}, datastorePage={}, supportingDocumentsPage={})", id, documentsPage, datastorePage, supportingDocumentsPage);
-        return ResponseEntity.ok(
-                uploadDocumentService.get(
-                        id,
-                        documentsPage,
-                        datastorePage,
-                        supportingDocumentsPage
-                )
+        return uploadDocumentService.get(
+            id,
+            documentsPage,
+            datastorePage,
+            supportingDocumentsPage
         );
     }
 
@@ -114,68 +113,65 @@ public class UploadController {
     }
 
     @PreAuthorize("@permission.userCanUpload(#id)")
-    @PostMapping("documents/{id}/add-upload-document")
-    public ResponseEntity<UploadDocument> addFile(
+    @ResponseStatus(NO_CONTENT)
+    @PostMapping
+    public void upload(
             @PathVariable("id") String id,
             @RequestParam("file") MultipartFile file
     ) {
-        return ResponseEntity.ok(
-                uploadDocumentService.add(
-                        id,
-                        file.getOriginalFilename(),
-                        file
-                )
-        );
+        uploadDocumentService.upload(id, multipartFile);
     }
 
     @PreAuthorize("@permission.userCanUpload(#id)")
-    @PutMapping(value = "documents/{id}/delete-upload-file", produces = UPLOAD_DOCUMENT_JSON_VALUE)
-    public ResponseEntity<UploadDocument> deleteFile(
+    @ResponseStatus(NO_CONTENT)
+    @DeleteMapping
+    public void delete(
             @PathVariable("id") String id,
             @RequestParam("filename") String filename
     ) {
-        return ResponseEntity.ok(uploadDocumentService.delete(id, filename));
+        uploadDocumentService.delete(path);
     }
 
     @SneakyThrows
     @PreAuthorize("@permission.userCanUpload(#id)")
-    @PutMapping(value = "documents/{id}/finish", produces = UPLOAD_DOCUMENT_JSON_VALUE)
-    public ResponseEntity<UploadDocument> finish(
+    @ResponseStatus(NO_CONTENT)
+    @PostMapping("finish")
+    public void finish(
             @ActiveUser CatalogueUser user,
             @PathVariable("id") String id
     ) {
         transitionIssueToStartProgress(user, id);
         removeUploadPermission(user, id);
-        return ResponseEntity.ok(uploadDocumentService.get(id));
     }
 
     @PreAuthorize("@permission.userCanUpload(#id)")
-    @PutMapping(value = "documents/{id}/schedule", produces = UPLOAD_DOCUMENT_JSON_VALUE)
-    public ResponseEntity<UploadDocument> schedule(
+    @ResponseStatus(NO_CONTENT)
+    @PostMapping("schedule")
+    public void schedule(
             @ActiveUser CatalogueUser user,
             @PathVariable("id") String id
     ) {
         transitionIssueToSchedule(user, id);
-        return ResponseEntity.ok(uploadDocumentService.get(id));
     }
 
     @PreAuthorize("@permission.userCanUpload(#id)")
-    @PutMapping(value = "documents/{id}/reschedule", produces = UPLOAD_DOCUMENT_JSON_VALUE)
-    public ResponseEntity<UploadDocument> reschedule(
+    @ResponseStatus(NO_CONTENT)
+    @PostMapping("reschedule")
+    public void reschedule(
             @ActiveUser CatalogueUser user,
             @PathVariable("id") String id
     ) {
         transitionIssueToScheduled(user, id);
-        return ResponseEntity.ok(uploadDocumentService.get(id));
     }
 
     @PreAuthorize("@permission.userCanUpload(#id)")
-    @PutMapping(value = "documents/{id}/accept-upload-file", produces = UPLOAD_DOCUMENT_JSON_VALUE)
-    public ResponseEntity<UploadDocument> acceptFile(
+    @ResponseStatus(NO_CONTENT)
+    @PostMapping("accept")
+    public void accept(
             @PathVariable("id") String id,
             @RequestParam("path") String path
     ) {
-        return ResponseEntity.ok(uploadDocumentService.accept(id, path));
+        uploadDocumentService.accept(path);
     }
 
     @PreAuthorize("@permission.userCanUpload(#id)")
@@ -197,29 +193,23 @@ public class UploadController {
     }
 
     @PreAuthorize("@permission.userCanUpload(#id)")
-    @PutMapping(value = "documents/{id}/move-upload-file", produces = UPLOAD_DOCUMENT_JSON_VALUE)
-    public ResponseEntity<UploadDocument> moveFile(
+    @ResponseStatus(NO_CONTENT)
+    @PostMapping("move-metadata")
+    public void moveMetadata(
             @PathVariable("id") String id,
             @RequestParam("to") String to,
             @RequestParam("filename") String filename
     ) {
-        return ResponseEntity.ok(uploadDocumentService.move(id, filename, to));
+        uploadDocumentService.move(path, METADATA);
     }
 
     @PreAuthorize("@permission.userCanUpload(#id)")
-    @PutMapping(value = "documents/{id}/move-to-datastore", produces = UPLOAD_DOCUMENT_JSON_VALUE)
-    public ResponseEntity<UploadDocument> moveToDatastore(
+    @ResponseStatus(NO_CONTENT)
+    @PostMapping("move-all-datastore")
+    public void moveAllDatastore(
             @PathVariable("id") String id
     ) {
-        return ResponseEntity.ok(uploadDocumentService.moveToDataStore(id));
-    }
-
-    @PreAuthorize("@permission.userCanUpload(#id)")
-    @PutMapping(value = "documents/{id}/validate", produces = UPLOAD_DOCUMENT_JSON_VALUE)
-    public ResponseEntity<UploadDocument> validate(
-            @PathVariable("id") String id
-    ) {
-        return ResponseEntity.ok(uploadDocumentService.validate(id));
+        uploadDocumentService.moveAllToDataStore(id);
     }
 
     private void transitionIssueToSchedule(CatalogueUser user,String guid) {
@@ -264,7 +254,7 @@ public class UploadController {
                 user,
                 document,
                 guid,
-                format("Permissions of %s changed.", guid)
+                format("Permissions of %s changed. Removing upload permissions", guid)
         );
     }
 }
