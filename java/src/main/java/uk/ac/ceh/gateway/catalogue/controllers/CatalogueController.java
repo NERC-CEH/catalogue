@@ -12,7 +12,6 @@ import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
-import uk.ac.ceh.gateway.catalogue.vocabularies.KeywordVocabulary;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +22,6 @@ import java.util.List;
 public class CatalogueController {
     private final DocumentRepository documentRepository;
     private final CatalogueService catalogueService;
-    private List<KeywordVocabulary> vocabularies;
 
     public CatalogueController(
         @NonNull DocumentRepository documentRepository,
