@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <schema name="keywords" version="1.6">
-    <uniqueKey>id</uniqueKey>
+    <uniqueKey>url</uniqueKey>
 
 
     <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true"/>
@@ -61,6 +61,6 @@
     <field name="_text_" type="text_general" stored="false"/>
     <field name="_version_" type="plong" indexed="false" stored="false"/>
     <field name="label" type="text_general" multiValued="false"/>
-    <field name="id" type="keywords" multiValued="false" required="true"/>
-    <field name="url" type="keywords" multiValued="false"/>
+    <field name="url" type="keywords" multiValued="false" required="true"/>
+    <field name="vocabId" type="keywords" multiValued="false"/>
 </schema>

@@ -15,17 +15,18 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
-import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 
 import java.net.URI;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
@@ -33,14 +34,15 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @ExtendWith(MockitoExtension.class)
 class SparqlKeywordVocabularyTest {
     private SparqlKeywordVocabulary target;
-
     private MockRestServiceServer mockServer;
-    private static final String SPARQLENDPOINT = "https://example.com";
-    private static final String GRAPH = "graph";
-    private static final String WHERE = "where";
+
+    private static final String SPARQL_ENDPOINT = "https://example.com";
+    private static final String GRAPH = "urn:x-evn-master:cehmd";
+    @SuppressWarnings("HttpUrlsUsage")
+    private static final String WHERE = "<http://onto.nerc.ac.uk/CEHMD/assist-research-themes> skos:hasTopConcept ?uri . ?uri skos:prefLabel ?label .";
     private static final String COLLECTION = "keywords";
-    private static final String VOCABULARY_ID = "VocabularyId";
-    private static final String JSON = "vocabularies.json";
+    private static final String VOCABULARY_ID = "assist-topics";
+    private static final String JSON = "vocabulary.json";
 
     @Mock
     private SolrClient solrClient;
@@ -48,17 +50,21 @@ class SparqlKeywordVocabularyTest {
     @BeforeEach
     public void init() {
         val restTemplate = new RestTemplate();
-        target = new SparqlKeywordVocabulary(restTemplate, solrClient, SPARQLENDPOINT,GRAPH,WHERE,
+        target = new SparqlKeywordVocabulary(restTemplate, solrClient, SPARQL_ENDPOINT,GRAPH,WHERE,
                 VOCABULARY_ID, "vocabularyName", new ArrayList<>());
         mockServer = MockRestServiceServer.createServer(restTemplate);
     }
 
-
     @Test
     @SneakyThrows
-    public void successfullyGetVocabularies() {
+    public void successfullyGetVocabulary() {
         //Given
-        val response = IOUtils.toString(getClass().getResource(JSON), StandardCharsets.UTF_8);
+        val response = IOUtils.toString(
+            Objects.requireNonNull(
+                getClass().getResource(JSON)
+            ),
+            UTF_8
+        );
         mockServer.expect(requestTo(getURI(GRAPH, WHERE)))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withSuccess(response, MediaType.APPLICATION_JSON));
@@ -67,24 +73,31 @@ class SparqlKeywordVocabularyTest {
         target.retrieve();
 
         //Then
-        mockServer.verify();
         verify(solrClient).deleteByQuery(COLLECTION, "vocabId:" + VOCABULARY_ID);
-        verify(solrClient, times(5)).addBean(eq("keywords"),
-                any(VocabularyKeyword.class));
+        verify(solrClient, times(5)).addBean(
+            eq("keywords"),
+            any(Keyword.class)
+        );
+        verify(solrClient).commit(COLLECTION);
     }
 
     @Test
     @SneakyThrows
-    public void ThrowKeywordVocabularyException() {
+    public void throwKeywordVocabularyException() {
 
         //Given
-        val response = IOUtils.toString(getClass().getResource(JSON), StandardCharsets.UTF_8);
+        val response = IOUtils.toString(
+            Objects.requireNonNull(
+                getClass().getResource(JSON)
+            ),
+            UTF_8
+        );
         mockServer.expect(requestTo(getURI(GRAPH, WHERE)))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withSuccess(response, MediaType.APPLICATION_JSON));
 
-        when(solrClient.addBean(eq("keywords"), any(VocabularyKeyword.class)))
-                .thenThrow(new SolrServerException("Test"));
+        given(solrClient.addBean(eq("keywords"), any(Keyword.class)))
+                .willThrow(new SolrServerException("Test"));
 
         //When
         Assertions.assertThrows(KeywordVocabularyException.class, () -> {
@@ -94,7 +107,7 @@ class SparqlKeywordVocabularyTest {
 
     URI getURI(String graph, String where){
         return URI.create(
-                SPARQLENDPOINT + "?query=" +
+                SPARQL_ENDPOINT + "?query=" +
                         URLEncoder.encode("PREFIX skos:<http://www.w3.org/2004/02/skos/core#> ", UTF_8) +
                         URLEncoder.encode("SELECT ?uri ?label ", UTF_8) +
                         URLEncoder.encode("WHERE {GRAPH <", UTF_8) +

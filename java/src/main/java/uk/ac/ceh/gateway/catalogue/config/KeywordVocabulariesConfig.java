@@ -17,7 +17,7 @@ public class KeywordVocabulariesConfig {
 
     @Bean
     public KeywordVocabulary castVocabulary(
-            @Qualifier("normal") RestTemplate restTemplate,
+            @Qualifier("sparql") RestTemplate restTemplate,
             SolrClient solrClient,
             @Value("${sparql.endpoint}") String sparqlEndpoint
     ) {
@@ -36,7 +36,7 @@ public class KeywordVocabulariesConfig {
 
     @Bean
     public KeywordVocabulary assistTopicsVocabulary(
-            @Qualifier("normal") RestTemplate restTemplate,
+            @Qualifier("sparql") RestTemplate restTemplate,
             SolrClient solrClient,
             @Value("${sparql.endpoint}") String sparqlEndpoint
     ) {
@@ -47,7 +47,7 @@ public class KeywordVocabulariesConfig {
                 sparqlEndpoint,
                 "urn:x-evn-master:cehmd",
                 "<http://onto.nerc.ac.uk/CEHMD/assist-research-themes> skos:hasTopConcept ?uri . ?uri skos:prefLabel ?label .",
-                "assist-topic",
+                "assist-topics",
                 "ASSIST Topics",
                 catalogueIds
         );
