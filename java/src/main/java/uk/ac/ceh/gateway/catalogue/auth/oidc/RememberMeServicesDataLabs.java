@@ -61,8 +61,8 @@ public class RememberMeServicesDataLabs implements RememberMeServices {
 
         val token = cookie.getValue();
         //JWT processor will throw exception if token is invalid
-        jwtProcessor.process(token, null);
-        val user = catalogueUserProvider.provide(token);
+        val claimsSet = jwtProcessor.process(token, null);
+        val user = catalogueUserProvider.provide(claimsSet.getSubject(), token);
         return new PreAuthenticatedAuthenticationToken(user, token);
     }
 

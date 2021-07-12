@@ -41,7 +41,7 @@ import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 import uk.ac.ceh.gateway.catalogue.ogc.WmsFeatureInfo;
-import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
+import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 
 import java.io.IOException;
 import java.net.URI;

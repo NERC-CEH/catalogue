@@ -15,12 +15,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
+import static uk.ac.ceh.gateway.catalogue.indexing.jena.Ontology.*;
 
 /**
- * Defines a post processing service which can be used adding additional 
+ * Defines a post processing service which can be used adding additional
  * information to a BaseMonitoringType.
- * 
+ *
  * The logic in here is based upon: uk.ac.ceh.ukeof.linkstore.guava.LinkWrapper
  */
 @Slf4j
@@ -52,7 +52,7 @@ public class BaseMonitoringTypePostProcessingService implements PostProcessingSe
                 appendLinks(facility.getBelongsTo(), withLinks(CONTAINS, uri));
                 appendLinks(facility.getRelatedTo(), withLinks(RELATED_TO, uri));
             } else if (document instanceof Network) {
-                Network network = (Network)document;            
+                Network network = (Network)document;
                 appendLinks(network.getInvolvedIn(), withLinks(USES, uri));
                 appendLinks(network.getSupersedes(), withLinks(SUPERSEDED_BY, uri));
                 appendLinks(network.getSupersededBy(), withLinks(SUPERSEDES, uri));
@@ -71,7 +71,7 @@ public class BaseMonitoringTypePostProcessingService implements PostProcessingSe
             jenaTdb.end();
         }
     }
-    
+
     /**
      * The following method will add the elements of b into a when there is no
      * matching element in a.
@@ -82,11 +82,11 @@ public class BaseMonitoringTypePostProcessingService implements PostProcessingSe
     private void appendLinks(List a, List b) {
         b.stream().filter(e -> !a.contains(e)).forEach(a::add);
     }
-    
+
     /**
      * Links in EF documents can be quite complicated. For the normal links, the
      * generated triples are as expected. E.g.
-     * 
+     *
      *          <Activity_URI> -> <Related_To> -> <Facility _URI>
      *
      * However timed links are a different story, these look more like this:
@@ -96,12 +96,12 @@ public class BaseMonitoringTypePostProcessingService implements PostProcessingSe
      *  <Activity_URI> -> <Triggers> --> <End>   -> "24-10-30"
      *                               \
      *                                 <Identifier> -> <Facility_URI>
-     * 
+     *
      * The code here will create a collection of links for both types of graph,
      * where the type is either Link or TimedLink based upon the structure.
      * @param relationship The back relationship between the supplied doc
      * @param doc uri to search for
-     * @return a list of links which link to the given doc by the specified 
+     * @return a list of links which link to the given doc by the specified
      *  relationship
      */
     private List<Link> withLinks(Property relationship, Resource doc) {

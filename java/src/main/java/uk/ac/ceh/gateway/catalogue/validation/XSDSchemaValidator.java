@@ -14,10 +14,10 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
-import uk.ac.ceh.gateway.catalogue.services.DocumentWritingService;
+import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
 
 /**
- * The following is an XML schema validator which can validate XML document 
+ * The following is an XML schema validator which can validate XML document
  * representations against some schema.
  */
 public class XSDSchemaValidator extends AbstractDocumentValidator {
@@ -27,7 +27,7 @@ public class XSDSchemaValidator extends AbstractDocumentValidator {
         super(name, mediaType, documentWritingService);
         this.schema = schema;
     }
-    
+
     @Override
     public ValidationResult validate(InputStream stream) {
         ValidationResult toReturn = new ValidationResult();
@@ -36,7 +36,7 @@ public class XSDSchemaValidator extends AbstractDocumentValidator {
             factory.setNamespaceAware(true);
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document doc = builder.parse(new InputSource(stream));
-            
+
             Validator validator = schema.newValidator();
             validator.setErrorHandler(new ErrorHandler(){
                 @Override

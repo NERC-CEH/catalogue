@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.servlet.ModelAndView;
 import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
-import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
-import uk.ac.ceh.gateway.catalogue.services.DocumentIdentifierService;
+import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
+import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.services.MetadataListingService;
 
 import javax.servlet.http.HttpServletResponse;

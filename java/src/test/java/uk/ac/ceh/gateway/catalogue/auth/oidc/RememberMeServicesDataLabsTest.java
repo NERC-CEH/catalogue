@@ -54,8 +54,8 @@ public class RememberMeServicesDataLabsTest {
 
     private void givenValidCatalogueUser(String token) {
         val user = new CatalogueUser();
-        user.setUsername(USER_NAME).setEmail(EMAIL);
-        given(catalogueUserProvider.provide(token))
+        user.setUsername(EMAIL).setEmail(EMAIL);
+        given(catalogueUserProvider.provide(USER_NAME, token))
             .willReturn(user);
     }
 
@@ -90,7 +90,7 @@ public class RememberMeServicesDataLabsTest {
         val authentication = target.autoLogin(request, null);
 
         //Then
-        assertThat(((CatalogueUser) authentication.getPrincipal()).getUsername(), is(equalTo(USER_NAME)));
+        assertThat(((CatalogueUser) authentication.getPrincipal()).getUsername(), is(equalTo(EMAIL)));
         assertThat(((CatalogueUser) authentication.getPrincipal()).getEmail(), is(equalTo(EMAIL)));
         assertThat(((String) authentication.getCredentials()), is(equalTo(tokenValid)));
     }
@@ -156,7 +156,7 @@ public class RememberMeServicesDataLabsTest {
     private String getAccessToken(String issuer, Date issueTime, Date expirationTime) throws JOSEException {
 
         val claimsSet = new JWTClaimsSet.Builder()
-                .subject("tester")
+                .subject(USER_NAME)
                 .issuer(issuer)
                 .issueTime(issueTime)
                 .expirationTime(expirationTime)

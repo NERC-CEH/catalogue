@@ -39,9 +39,9 @@ import uk.ac.ceh.gateway.catalogue.osdp.*;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
-import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
-import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
-import uk.ac.ceh.gateway.catalogue.services.JenaLookupService;
+import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;

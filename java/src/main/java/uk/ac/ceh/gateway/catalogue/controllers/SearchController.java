@@ -16,7 +16,7 @@ import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.search.*;
-import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
+import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;

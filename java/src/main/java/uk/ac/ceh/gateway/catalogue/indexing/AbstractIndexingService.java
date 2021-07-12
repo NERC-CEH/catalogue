@@ -5,24 +5,23 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRevision;
-import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
-import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
-import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadDocument;
+import uk.ac.ceh.gateway.catalogue.document.DocumentListingService;
+import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
 
 import java.io.IOException;
 import java.util.List;
 
 /**
- * The following abstract class defines the common structure for a 
+ * The following abstract class defines the common structure for a
  * DocumentIndexingService which hydrates documents using a BundledReaderService.
- * 
- * Ultimately the class backs on to an implementation of IndexGenerator. This is 
- * used to create a required index object from a document which has been read 
+ *
+ * Ultimately the class backs on to an implementation of IndexGenerator. This is
+ * used to create a required index object from a document which has been read
  * using the BundledReaderService.
- * 
+ *
  * Implementations of this class need to define the way in which the generated
  * index (I) gets indexed.
- * 
+ *
  * @param <D> type of documents which get indexed
  * @param <I> indexable representation of a given document
  */
@@ -48,7 +47,7 @@ public abstract class AbstractIndexingService<D, I> implements DocumentIndexingS
 
     protected abstract void clearIndex() throws DocumentIndexingException;
     protected abstract void index(I toIndex) throws Exception;
-    
+
     @Override
     public void rebuildIndex() throws DocumentIndexingException {
         try {
@@ -63,7 +62,7 @@ public abstract class AbstractIndexingService<D, I> implements DocumentIndexingS
             throw new DocumentIndexingException(ex);
         }
     }
-    
+
     @Override
     public void indexDocuments(List<String> documents, String revision) throws DocumentIndexingException {
         DocumentIndexingException joinedException = new DocumentIndexingException("Failed to index one or more documents");
@@ -71,15 +70,20 @@ public abstract class AbstractIndexingService<D, I> implements DocumentIndexingS
             try {
                 log.debug("Indexing: {}, revision: {}", document, revision);
                 val doc = readDocument(document, revision);
-                if (!(doc instanceof UploadDocument)) index(indexGenerator.generateIndex(doc));
+                val toIndex = indexGenerator.generateIndex(doc);
+                index(toIndex);
             }
             catch(Exception ex) {
-                joinedException.addSuppressed(document, new DocumentIndexingException(
-                    String.format("Failed to index %s : %s", document, ex.getMessage()), ex));
+                joinedException.addSuppressed(
+                    document,
+                    new DocumentIndexingException(
+                        String.format("Failed to index %s : %s", document, ex.getMessage()), ex
+                    )
+                );
             }
         });
 
-        if(hasSuppressedExceptions(joinedException)) {
+        if (hasSuppressedExceptions(joinedException)) {
             throw joinedException;
         }
     }
@@ -98,12 +102,12 @@ public abstract class AbstractIndexingService<D, I> implements DocumentIndexingS
             log.error("Suppressed indexing errors", (Object[]) ex.getSuppressed());
         }
     }
-    
+
     /**
-     * An overridable method which uses the message bundle reader to load a 
+     * An overridable method which uses the message bundle reader to load a
      * particular document.
-     * 
-     * Sub classes are free to adjust this method to add postprocessing 
+     *
+     * Sub classes are free to adjust this method to add postprocessing
      * capabilities to the reading logic
      * @param document id of the document to read
      * @param revision the revision which to read at
@@ -113,7 +117,7 @@ public abstract class AbstractIndexingService<D, I> implements DocumentIndexingS
     protected D readDocument(String document, String revision) throws Exception {
         return reader.readBundle(document, revision);
     }
-    
+
     protected D readDocument(String document) throws Exception {
         return reader.readBundle(document);
     }

@@ -22,7 +22,7 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.model.PermissionDeniedException;
-import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
+import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
 
 import java.io.IOException;
 import java.io.InputStream;

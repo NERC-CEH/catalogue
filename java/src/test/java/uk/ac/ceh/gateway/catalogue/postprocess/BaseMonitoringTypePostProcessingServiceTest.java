@@ -23,19 +23,19 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static uk.ac.ceh.gateway.catalogue.indexing.Ontology.*;
+import static uk.ac.ceh.gateway.catalogue.indexing.jena.Ontology.*;
 
 public class BaseMonitoringTypePostProcessingServiceTest {
     private Model tripleStore;
     private BaseMonitoringTypePostProcessingService service;
-    
+
     @BeforeEach
     public void init() {
         Dataset dataset = TDBFactory.createDataset();
         this.tripleStore = dataset.getDefaultModel();
         service = new BaseMonitoringTypePostProcessingService(dataset);
     }
-    
+
     @Test
     public void checkThatAddsOutgoingLinksForActivity() {
         //Given
@@ -43,17 +43,17 @@ public class BaseMonitoringTypePostProcessingServiceTest {
         when(metadata.getSelfUrl()).thenReturn("https://my.activity");
         Activity activity = new Activity();
         activity.setEfMetadata(metadata);
-        
+
         Resource knownLink = ResourceFactory.createResource("https://linkedTo");
         tripleStore.add(knownLink, TITLE, ResourceFactory.createPlainLiteral("Link from some other document"));
         tripleStore.add(knownLink, TRIGGERS, ResourceFactory.createResource("https://my.activity"));
-        
+
         //When
         service.postProcess(activity);
-        
+
         //Then
-        List<Link> setupfor = activity.getSetUpFor();
-        assertThat(setupfor.size(), is(1));
+        List<Link> setupFor = activity.getSetUpFor();
+        assertThat(setupFor.size(), is(1));
     }
 
     @Test
@@ -65,20 +65,20 @@ public class BaseMonitoringTypePostProcessingServiceTest {
         activity.setEfMetadata(metadata);
         Link existingLink = new Link().setHref("https://linkedTo");
         activity.getSetUpFor().add(existingLink);
-        
+
         Resource knownLink = ResourceFactory.createResource("https://linkedTo");
         tripleStore.add(knownLink, TITLE, ResourceFactory.createPlainLiteral("Link from some other document"));
         tripleStore.add(knownLink, TRIGGERS, ResourceFactory.createResource("https://my.activity"));
-        
+
         //When
         service.postProcess(activity);
-        
+
         //Then
         List<Link> setupfor = activity.getSetUpFor();
         assertThat(setupfor.size(), is(1));
         assertThat(setupfor.get(0), is(existingLink));
     }
-    
+
     @Test
     public void checkThatCanFindLinkWithoutTitle() {
         //Given
@@ -86,18 +86,18 @@ public class BaseMonitoringTypePostProcessingServiceTest {
         when(metadata.getSelfUrl()).thenReturn("https://my.activity");
         Activity activity = new Activity();
         activity.setEfMetadata(metadata);
-        
+
         Resource knownLink = ResourceFactory.createResource("https://linkedTo");
         tripleStore.add(knownLink, TRIGGERS, ResourceFactory.createResource("https://my.activity"));
-        
+
         //When
         service.postProcess(activity);
-        
+
         //Then
         List<Link> setupfor = activity.getSetUpFor();
         assertThat(setupfor.size(), is(1));
     }
-    
+
     @Test
     @Disabled("Cannot create the statements for Start and End, Jena cannot bind LocalDate")
     void checkThatCanReadTimedLink() {
@@ -108,7 +108,7 @@ public class BaseMonitoringTypePostProcessingServiceTest {
         when(metadata.getSelfUrl()).thenReturn("https://my.activity");
         Facility facility = new Facility();
         facility.setEfMetadata(metadata);
-        
+
         Resource timedLinkUri = createResource();
         tripleStore.add(createStatement(timedLinkUri, IDENTIFIER, ResourceFactory.createResource("https://linkedTo"))); // Link timed node to actual node
         tripleStore.add(createStatement(ResourceFactory.createResource("https://linkedTo"), TITLE, ResourceFactory.createPlainLiteral("resource title"))); // Link timed node to actual node
@@ -117,11 +117,11 @@ public class BaseMonitoringTypePostProcessingServiceTest {
         tripleStore.add(createStatement(linkingTime, TEMPORAL_END, createTypedLiteral(end)));
         tripleStore.add(createStatement(timedLinkUri, LINKING_TIME, linkingTime));
         //Set up the relationship between my activity and the timed link
-        tripleStore.add(createStatement(timedLinkUri, BROADER, ResourceFactory.createResource("https://my.activity"))); 
-        
+        tripleStore.add(createStatement(timedLinkUri, BROADER, ResourceFactory.createResource("https://my.activity")));
+
         //When
         service.postProcess(facility);
-        
+
         //Then
         List<TimedLink> narrower = facility.getNarrowerThan();
         assertThat(narrower.size(), is(1));

@@ -17,7 +17,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.LocalDateFactory;
 import uk.ac.ceh.gateway.catalogue.gemini.XPaths;
-import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;

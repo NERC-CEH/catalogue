@@ -15,10 +15,10 @@ import uk.ac.ceh.gateway.catalogue.model.LegendGraphicMissingException;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
 import uk.ac.ceh.gateway.catalogue.model.TransparentProxy;
-import uk.ac.ceh.gateway.catalogue.services.BundledReaderService;
-import uk.ac.ceh.gateway.catalogue.services.GetCapabilitiesObtainerService;
-import uk.ac.ceh.gateway.catalogue.services.MapServerDetailsService;
-import uk.ac.ceh.gateway.catalogue.services.TMSToWMSGetMapService;
+import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
+import uk.ac.ceh.gateway.catalogue.wms.GetCapabilitiesObtainerService;
+import uk.ac.ceh.gateway.catalogue.wms.MapServerDetailsService;
+import uk.ac.ceh.gateway.catalogue.wms.TMSToWMSGetMapService;
 
 import java.util.List;
 
@@ -85,14 +85,14 @@ public class OnlineResourceController {
     ) {
         return processOrRedirectToOnlineResource(getOnlineResource(revision, file, index));
     }
-    
+
     private Object processOrRedirectToOnlineResource(OnlineResource onlineResource) {
         if (onlineResource.getType() == OnlineResource.Type.WMS_GET_CAPABILITIES) {
             return getCapabilitiesObtainerService.getWmsCapabilities(onlineResource);
         }
         return new RedirectView(onlineResource.getUrl());
     }
-    
+
     @GetMapping("documents/{file}/onlineResources/{index}/tms/1.0.0/{layer}/{z}/{x}/{y}.png")
     public TransparentProxy proxyMapProxyTileRequest(
             @PathVariable("file") String file,
@@ -104,7 +104,7 @@ public class OnlineResourceController {
     ) {
         return proxyMapProxyTileRequest(getOnlineResource(file, index), layer, z, x, y);
     }
-    
+
     @GetMapping("history/{revision}/{file}/onlineResources/{index}/tms/1.0.0/{layer}/{z}/{x}/{y}.png")
     public TransparentProxy proxyMapProxyTileRequest(
             @PathVariable("revision") String revision,
@@ -115,7 +115,7 @@ public class OnlineResourceController {
             @PathVariable("x") int x,
             @PathVariable("y") int y
     ) {
-        return proxyMapProxyTileRequest(getOnlineResource(revision, file, index), layer, z, x, y); 
+        return proxyMapProxyTileRequest(getOnlineResource(revision, file, index), layer, z, x, y);
     }
 
     @SneakyThrows
@@ -123,9 +123,9 @@ public class OnlineResourceController {
         val wmsCapabilities = getCapabilitiesObtainerService.getWmsCapabilities(onlineResource);
         val url = tmsToWmsGetMapService.getWMSMapRequest(wmsCapabilities.getDirectMap(), layer, z, x, y);
         val rewritten = mapServerDetailsService.rewriteToLocalWmsRequest(url);
-        return new TransparentProxy(rewritten, MediaType.IMAGE_PNG);  
+        return new TransparentProxy(rewritten, MediaType.IMAGE_PNG);
     }
-    
+
     @GetMapping("documents/{file}/onlineResources/{index}/{layer}/legend")
     public TransparentProxy getMapLayerLegend(
             @PathVariable("file") String file,
@@ -134,7 +134,7 @@ public class OnlineResourceController {
     ) {
         return getMapLayerLegend(getOnlineResource(file, index), layer);
     }
-    
+
     @GetMapping("history/{revision}/{file}/onlineResources/{index}/{layer}/legend")
     public TransparentProxy getMapLayerLegend(
             @PathVariable("revision") String revision,
@@ -142,7 +142,7 @@ public class OnlineResourceController {
             @PathVariable("index") int index,
             @PathVariable("layer") String layer
     ) {
-        return getMapLayerLegend(getOnlineResource(revision, file, index), layer);  
+        return getMapLayerLegend(getOnlineResource(revision, file, index), layer);
     }
 
     @SneakyThrows

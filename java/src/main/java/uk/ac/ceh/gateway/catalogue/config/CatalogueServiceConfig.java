@@ -4,8 +4,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.Catalogue.DocumentType;
-import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
-import uk.ac.ceh.gateway.catalogue.services.InMemoryCatalogueService;
+import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
+import uk.ac.ceh.gateway.catalogue.catalogue.InMemoryCatalogueService;
 
 import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.*;
 

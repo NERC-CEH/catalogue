@@ -2,7 +2,7 @@ package uk.ac.ceh.gateway.catalogue.postprocess;
 
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import uk.ac.ceh.gateway.catalogue.util.ClassMap;
+import uk.ac.ceh.gateway.catalogue.indexing.ClassMap;
 
 /**
  * A post processing service which delegates to an other post processing service
@@ -26,5 +26,5 @@ public class ClassMapPostProcessingService implements PostProcessingService<Obje
         if(bestService != null) {
             bestService.postProcess(value);
         }
-    }    
+    }
 }

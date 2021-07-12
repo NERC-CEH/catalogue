@@ -11,7 +11,7 @@ import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataWriter;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
-import uk.ac.ceh.gateway.catalogue.services.DocumentInfoMapper;
+import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
 
 import java.io.OutputStream;
 
@@ -25,7 +25,7 @@ import static org.mockito.Mockito.verify;
 public class GitRepoWrapperTest {
     @Mock private DataRepository<CatalogueUser> repo;
     @Mock private DocumentInfoMapper<MetadataInfo> documentInfoMapper;
-    
+
     @InjectMocks private GitRepoWrapper repoWrapper;
 
     @Test
@@ -39,32 +39,32 @@ public class GitRepoWrapperTest {
             throw new UnsupportedOperationException("Not supported yet.");
         };
         DataOngoingCommit dataOngoingCommit = mock(DataOngoingCommit.class);
-        
+
         given(repo.submitData(eq("test.meta"), any())).willReturn(dataOngoingCommit);
         given(dataOngoingCommit.submitData("test.raw", dataWriter)).willReturn(dataOngoingCommit);
-                     
+
         //When
         repoWrapper.save(user, id, message, metadataInfo, dataWriter);
-        
+
         //Then
         verify(dataOngoingCommit).commit(user, "template: test");
     }
-    
+
     @Test
     public void canDelete() throws DataRepositoryException {
         //Given
         DataOngoingCommit dataOngoingCommit = mock(DataOngoingCommit.class);
         CatalogueUser user = new CatalogueUser();
         String id = "test";
-        
+
         given(repo.deleteData("test.meta")).willReturn(dataOngoingCommit);
         given(dataOngoingCommit.deleteData("test.raw")).willReturn(dataOngoingCommit);
-        
+
         //When
         repoWrapper.delete(user, id);
-        
+
         //Then
         verify(dataOngoingCommit).commit(user, "delete document: test");
     }
-    
+
 }

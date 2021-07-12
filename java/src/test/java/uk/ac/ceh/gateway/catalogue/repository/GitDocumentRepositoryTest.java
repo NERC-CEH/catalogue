@@ -7,13 +7,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
+import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
+import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
+import uk.ac.ceh.gateway.catalogue.document.reading.DocumentReadingService;
+import uk.ac.ceh.gateway.catalogue.document.reading.DocumentTypeLookupService;
+import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.imp.Model;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
-import uk.ac.ceh.gateway.catalogue.services.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -25,42 +29,47 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class GitDocumentRepositoryTest {
-    @Mock DocumentIdentifierService documentIdentifierService;
-    @Mock DocumentReadingService documentReader;
-    @Mock BundledReaderService<MetadataDocument> documentBundleReader;
-    @Mock DocumentWritingService documentWritingService;
-    @Mock DocumentTypeLookupService documentTypeLookupService;
+    @Mock
+    DocumentIdentifierService documentIdentifierService;
+    @Mock
+    DocumentReadingService documentReader;
+    @Mock
+    BundledReaderService<MetadataDocument> documentBundleReader;
+    @Mock
+    DocumentWritingService documentWritingService;
+    @Mock
+    DocumentTypeLookupService documentTypeLookupService;
     @Mock GitRepoWrapper repo;
-    
+
     private GitDocumentRepository documentRepository;
-    
+
     @BeforeEach
     public void setup() {
         documentRepository = new GitDocumentRepository(
-                            documentTypeLookupService, 
+                            documentTypeLookupService,
                             documentReader,
                             documentIdentifierService,
                             documentWritingService,
                             documentBundleReader,
                             repo);
     }
-    
+
     @Test
     @SneakyThrows
     public void readLatestDocument() {
         //When
         documentRepository.read("file");
-        
+
         //Then
         verify(documentBundleReader).readBundle("file");
     }
-    
+
     @Test
     @SneakyThrows
     public void readDocumentAtRevision() {
         //When
         documentRepository.read("file", "special");
-        
+
         //Then
         verify(documentBundleReader).readBundle("file", "special");
     }
@@ -75,19 +84,19 @@ public class GitDocumentRepositoryTest {
         String message = "message";
         GeminiDocument document = new GeminiDocument();
         String catalogue = "ceh";
-        
+
         given(documentReader.read(any(), any(), any())).willReturn(document);
         given(documentIdentifierService.generateFileId(null)).willReturn("test");
         given(documentIdentifierService.generateUri("test")).willReturn("http://localhost:8080/id/test");
 
         //When
         documentRepository.save(user, inputStream, MediaType.TEXT_XML, documentType, catalogue, message);
-        
+
         //Then
         verify(repo).save(eq(user), eq("test"), eq(message), any(MetadataInfo.class), any());
         verify(repo).save(eq(user), eq("test"), eq("File upload for id: test"), any(MetadataInfo.class), any());
     }
-    
+
     @Test
     @SneakyThrows
     public void saveNewGeminiDocument() {
@@ -96,17 +105,17 @@ public class GitDocumentRepositoryTest {
         GeminiDocument document = new GeminiDocument();
         String message = "new Gemini document";
         String catalogue = "test";
-        
+
         given(documentIdentifierService.generateFileId()).willReturn("test");
         given(documentIdentifierService.generateUri("test")).willReturn("http://localhost:8080/id/test");
-       
+
         //When
         documentRepository.saveNew(user, document, catalogue, message);
-        
+
         //Then
         verify(repo).save(eq(user), eq("test"), eq("new Gemini document"), any(MetadataInfo.class), any());
     }
-    
+
     @Test
     @SneakyThrows
     public void saveEditedGeminiDocument() {
@@ -117,29 +126,29 @@ public class GitDocumentRepositoryTest {
         MetadataDocument incomingDocument = new GeminiDocument()
             .setMetadata(metadataInfo);
         String message = "message";
-        
+
         given(documentIdentifierService.generateUri(id)).willReturn("http://localhost:8080/id/test");
-        
+
         //When
         documentRepository.save(user, incomingDocument, "tulips", message);
-        
+
         //Then
         verify(repo).save(eq(user), eq(id), eq(message), any(MetadataInfo.class), any());
     }
-    
+
     @Test
     @SneakyThrows
     public void checkCanDeleteAFile() {
         //Given
-        CatalogueUser user = new CatalogueUser().setUsername("test").setEmail("test@example.com");        
-        
+        CatalogueUser user = new CatalogueUser().setUsername("test").setEmail("test@example.com");
+
         //When
         documentRepository.delete(user, "id");
-        
+
         //Then
         verify(repo).delete(user, "id");
     }
-    
+
     @Test
     @SneakyThrows
     public void checkMetadataInfoUpdated() {
@@ -158,16 +167,16 @@ public class GitDocumentRepositoryTest {
         metadataInfo.addPermission(Permission.EDIT, "editor");
         MetadataDocument document = new Model()
             .setId(file)
-            .setMetadata(metadataInfo);        
-        
+            .setMetadata(metadataInfo);
+
         given(documentIdentifierService.generateUri(file)).willReturn("https://catalogue.ceh.ac.uk/id/3c25e9b7-d3dd-41be-ae29-e8979bb462a2");
-        
+
         //When
         documentRepository.save(editor, document, file, message);
-        
-        //Then 
+
+        //Then
         verify(repo).save(eq(editor), eq(file), eq(message), eq(metadataInfo), any());
-        
+
     }
-    
+
 }

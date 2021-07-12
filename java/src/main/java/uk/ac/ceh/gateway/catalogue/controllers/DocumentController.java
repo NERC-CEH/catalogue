@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +25,6 @@ import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
-import uk.ac.ceh.gateway.catalogue.services.DocumentReader;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -347,16 +345,6 @@ public class DocumentController extends AbstractDocumentController {
             @PathVariable("file") String file
     ) {
         return documentRepository.read(file);
-    }
-
-    @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
-    @RequestMapping(value = "/raw/documents/{file}", method = RequestMethod.GET)
-    @ResponseBody
-    public JsonNode rawDocument(
-            @ActiveUser CatalogueUser user,
-            @PathVariable("file") String file
-    ) {
-        return DocumentReader.raw(file);
     }
 
 
