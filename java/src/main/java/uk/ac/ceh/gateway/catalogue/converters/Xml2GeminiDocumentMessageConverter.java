@@ -98,7 +98,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.serviceConverter = new ServiceConverter(xpath);
         this.useConstraintsConverter = new LegalConstraintsWithAnchorConverter(xpath, XPaths.USE_CONSTRAINT);
         this.accessConstraintsConverter = new LegalConstraintsWithAnchorConverter(xpath, XPaths.ACCESS_CONSTRAINT);
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @Override
