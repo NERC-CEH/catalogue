@@ -84,6 +84,22 @@ public class ServicesConfig {
     }
 
     @Bean
+    @Qualifier("sparql")
+    public RestTemplate sparqlRestTemplate(ObjectMapper objectMapper) {
+        log.info("Creating SPARQL RestTemplate");
+        val messageConverter = new MappingJackson2HttpMessageConverter(objectMapper);
+        val supportedMediaTypes = Arrays.asList(
+            MediaType.APPLICATION_JSON,
+            new MediaType("application", "*+json"),
+            new MediaType("application", "*+json-simple")
+        );
+        messageConverter.setSupportedMediaTypes(supportedMediaTypes);
+        val restTemplate = new RestTemplate();
+        restTemplate.setMessageConverters(Collections.singletonList(messageConverter));
+        return restTemplate;
+    }
+
+    @Bean
     @Qualifier("wms")
     public RestTemplate getFeatureInfoRestTemplate() throws XPathExpressionException {
         log.info("Creating WMS RestTemplate");
@@ -176,21 +192,10 @@ public class ServicesConfig {
 
     @Bean
     public VocabularyService vocabularyService(
-        ObjectMapper objectMapper,
+        @Qualifier("sparql") RestTemplate restTemplate,
         @Value("${sparql.endpoint}") String sparqlEndpoint,
         @Value("${sparql.graph}") String sparqlGraph
     ) {
-        val messageConverter = new MappingJackson2HttpMessageConverter();
-        messageConverter.setObjectMapper(objectMapper);
-        messageConverter.setSupportedMediaTypes(
-            Arrays.asList(
-                MediaType.APPLICATION_JSON,
-                new MediaType("application", "*+json"),
-                new MediaType("application", "*+json-simple")
-            )
-        );
-        val restTemplate = new RestTemplate();
-        restTemplate.setMessageConverters(Collections.singletonList(messageConverter));
         return new SparqlVocabularyService(new SparqlVocabularyRetriever(restTemplate, sparqlEndpoint, sparqlGraph).retrieve());
     }
 

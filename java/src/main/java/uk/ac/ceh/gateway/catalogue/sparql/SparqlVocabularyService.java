@@ -11,7 +11,7 @@ public class SparqlVocabularyService implements VocabularyService {
 
     public SparqlVocabularyService(Multimap<String, String> vocabulary) {
         this.vocabulary = vocabulary;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @Override

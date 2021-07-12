@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import uk.ac.ceh.gateway.catalogue.TimeConstants;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 
 import java.io.IOException;
@@ -24,8 +25,6 @@ public class DeimsSolrScheduledSiteService {
     private final RestTemplate restTemplate;
     private final SolrClient solrClient;
     private final String address;
-    private final int ONE_MINUTE = 60000;
-    private final int SEVEN_DAYS = 604800000;
     private static final String DEIMS = "deims";
 
     public DeimsSolrScheduledSiteService(
@@ -39,7 +38,7 @@ public class DeimsSolrScheduledSiteService {
         log.info("Creating {}", this);
     }
 
-    @Scheduled(initialDelay = ONE_MINUTE, fixedDelay = SEVEN_DAYS)
+    @Scheduled(initialDelay = TimeConstants.ONE_MINUTE, fixedDelay = TimeConstants.SEVEN_DAYS)
     public void fetchDEIMSSitesAndAddToSolr() throws DocumentIndexingException {
         log.info("Re-indexing DEIMS sites");
         val response = restTemplate.getForEntity(
