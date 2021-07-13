@@ -30,7 +30,6 @@ define [
   'cs!views/editor/ResourceConstraintView'
   'cs!views/editor/OtherConstraintView'
   'cs!views/editor/TemporalExtentView'
-  'cs!views/editor/ResourceMaintenanceView'
   'cs!views/editor/SpatialReferenceSystemView'
   'cs!views/editor/SpatialRepresentationTypeView'
   'cs!views/editor/DescriptiveKeywordView'
@@ -49,7 +48,7 @@ define [
   'cs!views/editor/MapDataSourceView'
   'cs!views/editor/RelatedRecordView'
   'cs!views/editor/DeimsSiteView'
-], (EditorView, SingleObjectView, InputView, CheckboxView, ReadOnlyView, TextareaView, ParentView, ParentLargeView, PredefinedParentView, PredefinedParentLargeView, ParentStringView, ResourceTypeView, ResourceType, AccessLimitationView, AccessLimitation, InspireTheme, InspireThemeView, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, MultipleDate, Contact, BoundingBox, BoundingBoxView, OnlineResourceView, OnlineResource, ResourceConstraintView, OtherConstraintView, TemporalExtentView,  ResourceMaintenanceView, SpatialReferenceSystemView, SpatialRepresentationTypeView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, SpatialResolutionView, SpatialResolution, FundingView, Funding, SupplementalView, Supplemental, ServiceView, Service, MapDataSource, MapDataSourceView, RelatedRecordView, DeimsSiteView) -> EditorView.extend
+], (EditorView, SingleObjectView, InputView, CheckboxView, ReadOnlyView, TextareaView, ParentView, ParentLargeView, PredefinedParentView, PredefinedParentLargeView, ParentStringView, ResourceTypeView, ResourceType, AccessLimitationView, AccessLimitation, InspireTheme, InspireThemeView, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, MultipleDate, Contact, BoundingBox, BoundingBoxView, OnlineResourceView, OnlineResource, ResourceConstraintView, OtherConstraintView, TemporalExtentView,  SpatialReferenceSystemView, SpatialRepresentationTypeView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, SpatialResolutionView, SpatialResolution, FundingView, Funding, SupplementalView, Supplemental, ServiceView, Service, MapDataSource, MapDataSourceView, RelatedRecordView, DeimsSiteView) -> EditorView.extend
 
   initialize: ->
 
@@ -135,12 +134,6 @@ define [
                     <p><b>Superseded</b> is the date on which the resource was superseded by another resource (where relevant).</p>
                     """
         
-        new InputView
-          model: @model
-          modelAttribute: 'version'
-          typeAttribute: 'number'
-          label: 'Version'
-
         new ParentView
           model: @model
           modelAttribute: 'temporalExtents'
@@ -530,15 +523,6 @@ define [
           rows: 7
           helpText: """
                     <p>If this record is being retracted, the reasons for withdrawal or replacement should be explained here.</p>
-                    """
-
-        new ParentView
-          model: @model
-          modelAttribute: 'resourceMaintenance'
-          label: 'Resource maintenance'
-          ObjectInputView: ResourceMaintenanceView
-          helpText: """
-                    <p>This states how often the updated data resource is made available to the user.  For the vast majority of EIDC data, this value will be "not planned".</p>
                     """
       ]
     ,

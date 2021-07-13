@@ -38,7 +38,6 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
     private static final String TOPIC_PROJECT_URL = "http://onto.nerc.ac.uk/CEHMD/";
     private String otherCitationDetails, lineage, reasonChanged,
             metadataStandardName, metadataStandardVersion;
-    private Number version;
     private List<String> alternateTitles, spatialRepresentationTypes, datasetLanguages,
             securityConstraints;
     private List<Keyword> topicCategories;
@@ -62,7 +61,6 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
     @JsonIgnore
     private boolean isDatacitable;
     private DatasetReferenceDate datasetReferenceDate;
-    private List<ResourceMaintenance> resourceMaintenance;
     private Service service;
     private List<ResourceConstraint> useConstraints;
     private MapDataDefinition mapDataDefinition;
