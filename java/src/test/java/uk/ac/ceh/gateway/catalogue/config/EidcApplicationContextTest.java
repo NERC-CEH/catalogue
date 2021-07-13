@@ -14,7 +14,7 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.ac.ceh.gateway.catalogue.CatalogueWebTest;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.HubbubService;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadController;
-import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadDocumentService;
+import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadService;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -44,7 +44,7 @@ class EidcApplicationContextTest {
     @DisplayName("Hubbub configured correctly, Simple Upload controller not created")
     void hubbubUploadBeansPresent() {
         assertNotNull(applicationContext.getBean(UploadController.class));
-        assertNotNull(applicationContext.getBean(UploadDocumentService.class));
+        assertNotNull(applicationContext.getBean(UploadService.class));
         assertNotNull(applicationContext.getBean(HubbubService.class));
         Assertions.assertThrows(NoSuchBeanDefinitionException.class, () ->
             applicationContext.getBean(uk.ac.ceh.gateway.catalogue.upload.simple.UploadController.class)

@@ -42,21 +42,19 @@ public class UploadController {
     static final String SCHEDULED = "741";
     static final String METADATA = "supporting-documents";
     static final String DATASTORE = "eidchub";
-    static final String DROPBOX = "dropbox";
-    private static final String PATH_TEMPLATE = "/%s/%s";
 
-    private final UploadDocumentService uploadDocumentService;
+    private final UploadService uploadService;
     private final DocumentRepository documentRepository;
     private final JiraService jiraService;
     private final PermissionService permissionService;
 
     public UploadController(
-            UploadDocumentService uploadDocumentService,
-            DocumentRepository documentRepository,
-            JiraService jiraService,
-            PermissionService permissionService
+        UploadService uploadService,
+        DocumentRepository documentRepository,
+        JiraService jiraService,
+        PermissionService permissionService
     ) {
-        this.uploadDocumentService = uploadDocumentService;
+        this.uploadService = uploadService;
         this.documentRepository = documentRepository;
         this.jiraService = jiraService;
         this.permissionService = permissionService;
@@ -101,7 +99,7 @@ public class UploadController {
         @RequestParam(value = "supporting_documents_page", defaultValue = "1") int supportingDocumentsPage
     ) {
         log.debug("GETing {} (documentsPage={}, datastorePage={}, supportingDocumentsPage={})", id, documentsPage, datastorePage, supportingDocumentsPage);
-        return uploadDocumentService.get(
+        return uploadService.get(
             id,
             documentsPage,
             datastorePage,
@@ -119,7 +117,7 @@ public class UploadController {
     ) {
         response.setContentType(TEXT_CSV_VALUE);
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION, format("attachment; filename=\"checksums_%s.csv\"", id));
-        uploadDocumentService.csv(response.getWriter(), id);
+        uploadService.csv(response.getWriter(), id);
     }
 
     @PreAuthorize("@permission.userCanUpload(#id)")
@@ -129,7 +127,7 @@ public class UploadController {
             @PathVariable("id") String id,
             @RequestParam("file") MultipartFile multipartFile
     ) {
-        uploadDocumentService.upload(id, multipartFile);
+        uploadService.upload(id, multipartFile);
     }
 
     @PreAuthorize("@permission.userCanUpload(#id)")
@@ -139,7 +137,7 @@ public class UploadController {
             @PathVariable("id") String id,
             @RequestParam("path") String path
     ) {
-        uploadDocumentService.delete(path);
+        uploadService.delete(path);
     }
 
     @SneakyThrows
@@ -181,7 +179,7 @@ public class UploadController {
             @PathVariable("id") String id,
             @RequestParam("path") String path
     ) {
-        uploadDocumentService.accept(path);
+        uploadService.accept(path);
     }
 
     @PreAuthorize("@permission.userCanUpload(#id)")
@@ -191,7 +189,7 @@ public class UploadController {
         @PathVariable("id") String id,
         @RequestParam("path") String path
     ) {
-        uploadDocumentService.cancel(path);
+        uploadService.cancel(path);
     }
 
     @PreAuthorize("@permission.userCanUpload(#id)")
@@ -202,8 +200,8 @@ public class UploadController {
             @RequestParam(value = "path", required = false) Optional<String> possiblePath
     ) {
         possiblePath.ifPresentOrElse(
-            uploadDocumentService::validate,
-            () -> uploadDocumentService.validate(id)
+            uploadService::validate,
+            () -> uploadService.validate(id)
         );
     }
 
@@ -214,7 +212,7 @@ public class UploadController {
         @PathVariable("id") String id,
         @RequestParam("path") String path
     ) {
-        uploadDocumentService.move(path, DATASTORE);
+        uploadService.move(path, DATASTORE);
     }
 
     @PreAuthorize("@permission.userCanUpload(#id)")
@@ -224,7 +222,7 @@ public class UploadController {
             @PathVariable("id") String id,
             @RequestParam("path") String path
     ) {
-        uploadDocumentService.move(path, METADATA);
+        uploadService.move(path, METADATA);
     }
 
     @PreAuthorize("@permission.userCanUpload(#id)")
@@ -233,7 +231,7 @@ public class UploadController {
     public void moveAllDatastore(
             @PathVariable("id") String id
     ) {
-        uploadDocumentService.moveAllToDataStore(id);
+        uploadService.moveAllToDataStore(id);
     }
 
     private void transitionIssueToSchedule(CatalogueUser user, String guid) {

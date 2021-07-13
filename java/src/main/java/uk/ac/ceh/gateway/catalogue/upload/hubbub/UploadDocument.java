@@ -6,11 +6,10 @@ import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import uk.ac.ceh.gateway.catalogue.upload.hubbub.HubbubResponse.FileInfo;
 
 import java.util.Map;
 import java.util.Set;
-
-import static java.lang.String.format;
 
 @Slf4j
 @Value
@@ -34,9 +33,9 @@ public class UploadDocument {
             @NonNull HubbubResponse supportingDocumentsResponse
     ) {
         this.id = id;
-        uploadFiles.put("documents", new UploadFiles("dropbox", id, dropboxResponse));
-        uploadFiles.put("datastore", new UploadFiles("eidchub", id, datastoreResponse));
-        uploadFiles.put("supporting-documents", new UploadFiles("supporting-documents", id, supportingDocumentsResponse));
+        uploadFiles.put("documents", new UploadFiles(dropboxResponse));
+        uploadFiles.put("datastore", new UploadFiles(datastoreResponse));
+        uploadFiles.put("supporting-documents", new UploadFiles(supportingDocumentsResponse));
         log.debug("Creating {}", this);
     }
 
@@ -46,17 +45,16 @@ public class UploadDocument {
         Map<String, UploadFile> invalid = Maps.newHashMap();
         HubbubResponse.Pagination pagination;
 
-        public UploadFiles(String directory, String id, HubbubResponse hubbubResponse) {
+        public UploadFiles(HubbubResponse hubbubResponse) {
             this.pagination = hubbubResponse.getPagination();
-            val folder = format("%s/%s", directory, id);
             hubbubResponse.getData()
-                    .forEach(fileInfo -> {
-                        val uploadFile = new UploadFile(fileInfo, folder);
-                        if (VALID_TYPES.contains(uploadFile.getType()))
-                            documents.put(uploadFile.getPath(), uploadFile);
-                        else
-                            invalid.put(uploadFile.getPath(), uploadFile);
-                    });
+                .forEach(fileInfo -> {
+                    val uploadFile = new UploadFile(fileInfo);
+                    if (VALID_TYPES.contains(uploadFile.getType()))
+                        documents.put(uploadFile.getPath(), uploadFile);
+                    else
+                        invalid.put(uploadFile.getPath(), uploadFile);
+                });
         }
     }
 
@@ -74,7 +72,7 @@ public class UploadDocument {
         String hash;
         String type;
 
-        public UploadFile(HubbubResponse.FileInfo fileInfo, String folder) {
+        public UploadFile(FileInfo fileInfo) {
             this.path = fileInfo.getPath();
             this.name = fileInfo.getTruncatedPath();
             this.id = name.replaceAll("[^\\w?]", "-");

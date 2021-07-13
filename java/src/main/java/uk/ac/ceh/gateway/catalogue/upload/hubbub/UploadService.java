@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.upload.hubbub;
 
+import com.google.common.collect.ImmutableSet;
 import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -13,22 +14,26 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.regex.Pattern;
 
 import static java.lang.String.format;
+import static uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadController.DATASTORE;
+import static uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadController.METADATA;
 
 @Profile("upload:hubbub")
 @Slf4j
 @ToString(of = "uploadLocation")
 @Service
-public class UploadDocumentService {
+public class UploadService {
     private final HubbubService hubbubService;
     private final String uploadLocation;
     private final ExecutorService threadPool;
     private final Pattern acceptablePathStarts = Pattern.compile("^/(dropbox|eidchub|supporting-documents)/.*");
+    private final Set<String> acceptableDestinations = ImmutableSet.of(DATASTORE, METADATA);
 
-    private static final String[] VISIBLE_STATUS = new String[]{
+    static final String[] VISIBLE_STATUS = new String[]{
         "CHANGED_HASH",
         "CHANGED_MTIME",
         "INVALID",
@@ -51,7 +56,7 @@ public class UploadDocumentService {
         "ZIPPED_UNKNOWN_MISSING",
     };
 
-    public UploadDocumentService(
+    public UploadService(
         HubbubService hubbubService,
         @Value("${hubbub.location}") String uploadLocation,
         ExecutorService threadPool
@@ -63,7 +68,7 @@ public class UploadDocumentService {
     }
 
     public void accept(String path) {
-        if (acceptablePathStarts.matcher(path).matches()) {
+        if (hasAcceptablePathStart(path)) {
             hubbubService.post("/accept", path);
         } else {
             throw new UploadException("Bad path: " + path);
@@ -71,26 +76,39 @@ public class UploadDocumentService {
     }
 
     public void cancel(String path) {
-        threadPool.execute(() -> hubbubService.post("/cancel", path));
+        if (hasAcceptablePathStart(path)) {
+            threadPool.execute(() -> hubbubService.post("/cancel", path));
+        } else {
+            throw new UploadException("Bad path: " + path);
+        }
+    }
+
+    private boolean hasAcceptablePathStart(String path) {
+        return acceptablePathStarts.matcher(path).matches();
     }
 
     @SneakyThrows
     public void csv(PrintWriter writer, String id) {
-        log.debug("Getting CSV for {}", id);
-        val first = hubbubService.get(id);
+        val path = format("/eidchub/%s", id);
+        log.debug("Getting CSV for {}", path);
+        val first = hubbubService.get(path);
         val total = first.getPagination().getTotal();
-        val eidchub = hubbubService.get(format("/eidchub/%s", id), 1, total).getData();
+        val eidchub = hubbubService.get(path, 1, total).getData();
         eidchub.stream()
             .filter(fileInfo -> fileInfo.getStatus().equals("VALID"))
             .forEach(fileInfo -> {
-                val path = fileInfo.getTruncatedPath();
+                val truncatedPath = fileInfo.getTruncatedPath();
                 val hash = fileInfo.getHash();
-                writer.println(format("%s,%s", path, hash));
+                writer.println(format("%s,%s", truncatedPath, hash));
             });
     }
 
     public void delete(String path) {
-        hubbubService.delete(path);
+        if (hasAcceptablePathStart(path)) {
+            hubbubService.delete(path);
+        }  else {
+            throw new UploadException("Bad path: " + path);
+        }
     }
 
     public UploadDocument get(String id, int documentsPage, int datastorePage, int supportingDocumentsPage) {
@@ -109,8 +127,16 @@ public class UploadDocumentService {
         return document;
     }
 
-    public void move(String path, String to) {
-        threadPool.execute(() -> hubbubService.postQuery("/move", path, "to", to));
+    public void move(String path, String destination) {
+        if (hasAcceptablePathStart(path) && hasAcceptableDestination(destination)) {
+            threadPool.execute(() -> hubbubService.postQuery("/move", path, "to", destination));
+        } else {
+            throw new UploadException(format("Bad path: %s or destination: %s", path, destination));
+        }
+    }
+
+    private boolean hasAcceptableDestination(String destination) {
+        return acceptableDestinations.contains(destination);
     }
 
     public void moveAllToDataStore(String id) {

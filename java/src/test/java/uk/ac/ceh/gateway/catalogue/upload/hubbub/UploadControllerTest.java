@@ -54,7 +54,7 @@ import static uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadController.*;
 )
 class UploadControllerTest {
 
-    @MockBean private UploadDocumentService uploadDocumentService;
+    @MockBean private UploadService uploadService;
     @MockBean private DocumentRepository documentRepository;
     @MockBean private JiraService jiraService;
     @MockBean(name="permission") private PermissionService permissionService;
@@ -109,7 +109,7 @@ class UploadControllerTest {
         val datastoreResponse = new HubbubResponse(new ArrayList<>(), new HubbubResponse.Pagination(1, 10, 100));
         val supportingDocumentsResponse = new HubbubResponse(new ArrayList<>(), new HubbubResponse.Pagination(1, 10, 1));
         val uploadDoc = new UploadDocument(id, dropboxResponse, datastoreResponse, supportingDocumentsResponse);
-        given(uploadDocumentService.get(id, 1, 1, 1))
+        given(uploadService.get(id, 1, 1, 1))
             .willReturn(uploadDoc);
     }
 
@@ -198,7 +198,7 @@ class UploadControllerTest {
             .andExpect(status().is2xxSuccessful());
 
         //then
-        verify(uploadDocumentService).upload(id, multipartFile);
+        verify(uploadService).upload(id, multipartFile);
     }
 
     @Test
@@ -214,7 +214,7 @@ class UploadControllerTest {
         ).andExpect(status().is2xxSuccessful());
 
         //then
-        verify(uploadDocumentService).accept(path);
+        verify(uploadService).accept(path);
     }
 
     @Test
@@ -230,7 +230,7 @@ class UploadControllerTest {
         ).andExpect(status().is2xxSuccessful());
 
         //then
-        verify(uploadDocumentService).cancel(path);
+        verify(uploadService).cancel(path);
     }
 
     @Test
@@ -246,7 +246,7 @@ class UploadControllerTest {
         ).andExpect(status().is2xxSuccessful());
 
         //then
-        verify(uploadDocumentService).csv(any(PrintWriter.class), eq(id));
+        verify(uploadService).csv(any(PrintWriter.class), eq(id));
     }
 
     @Test
@@ -262,7 +262,7 @@ class UploadControllerTest {
         ).andExpect(status().is2xxSuccessful());
 
         //then
-        verify(uploadDocumentService).csv(any(PrintWriter.class), eq(id));
+        verify(uploadService).csv(any(PrintWriter.class), eq(id));
     }
 
     @Test
@@ -278,7 +278,7 @@ class UploadControllerTest {
         ).andExpect(status().is2xxSuccessful());
 
         //then
-        verify(uploadDocumentService).delete(path);
+        verify(uploadService).delete(path);
     }
 
     @Test
@@ -314,7 +314,7 @@ class UploadControllerTest {
         ).andExpect(status().is2xxSuccessful());
 
         //then
-        verify(uploadDocumentService).move(path, DATASTORE);
+        verify(uploadService).move(path, DATASTORE);
     }
 
     @Test
@@ -330,7 +330,7 @@ class UploadControllerTest {
         ).andExpect(status().is2xxSuccessful());
 
         //then
-        verify(uploadDocumentService).move(path, METADATA);
+        verify(uploadService).move(path, METADATA);
     }
 
     @Test
@@ -345,7 +345,7 @@ class UploadControllerTest {
         ).andExpect(status().is2xxSuccessful());
 
         //then
-        verify(uploadDocumentService).moveAllToDataStore(id);
+        verify(uploadService).moveAllToDataStore(id);
     }
 
     @Test
@@ -399,7 +399,7 @@ class UploadControllerTest {
         ).andExpect(status().is2xxSuccessful());
 
         //then
-        verify(uploadDocumentService).validate(path);
+        verify(uploadService).validate(path);
     }
 
     @Test
@@ -414,6 +414,6 @@ class UploadControllerTest {
         ).andExpect(status().is2xxSuccessful());
 
         //then
-        verify(uploadDocumentService).validate(id);
+        verify(uploadService).validate(id);
     }
 }
