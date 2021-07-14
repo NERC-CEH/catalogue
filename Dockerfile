@@ -40,7 +40,10 @@ COPY web/src/img /opt/ceh-catalogue/static/img
 COPY --from=build-web /app/src/scripts/main-out.js /opt/ceh-catalogue/static/scripts/main-out.js
 COPY --from=build-web /app/src/vendor/font-awesome-5/webfonts /opt/ceh-catalogue/static/vendor/font-awesome-5/webfonts
 COPY --from=build-web /app/src/vendor/requirejs/require.js /opt/ceh-catalogue/static/vendor/requirejs/require.js
-RUN chown spring:spring -R /app && chown spring:spring -R /opt/ceh-catalogue && chown spring:spring -R /var/ceh-catalogue && chown spring:spring -R /var/upload
+RUN chown spring:spring -R /app \
+ && chown spring:spring -R /opt/ceh-catalogue \
+ && chown spring:spring -R /var/ceh-catalogue \
+ && chown spring:spring -R /var/upload
 VOLUME ["/var/ceh-catalogue/datastore", "/var/ceh-catalogue/dropbox", "/var/ceh-catalogue/mapfiles", "/var/upload/datastore"]
 EXPOSE 8080 8081
 USER spring

@@ -13,7 +13,7 @@ services:
       # Uncomment to see catalogue json files
       #- ./datastore:/var/ceh-catalogue/datastore
       # Uncomment to see Hubbub Upload uploaded files
-      #- ./hubbub/dropbox:/var/ceh-catalogue/dropbox
+      - dropbox:/var/ceh-catalogue/dropbox
       - mapfiles:/var/ceh-catalogue/mapfiles
       # Uncomment to see Simple Upload uploaded files
       #- ./upload:/var/upload/datastore
@@ -44,4 +44,5 @@ services:
       - ./fixtures/mapserver-data:/mapserver/data
 
 volumes:
+  dropbox:
   mapfiles:

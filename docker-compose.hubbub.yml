@@ -14,9 +14,7 @@ services:
     ports:
       - '8082:80'
     volumes:
-      - ./hubbub/datastore:/mnt/datastore
-      - ./hubbub/dropbox:/mnt/dropbox
-      - ./hubbub/supporting-documents:/mnt/supporting-documents
+      - dropbox:/mnt/dropbox
   redis:
     image: docker.io/bitnami/redis:6.2
     environment:
