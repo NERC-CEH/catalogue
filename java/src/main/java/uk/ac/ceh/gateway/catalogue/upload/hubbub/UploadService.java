@@ -143,36 +143,24 @@ public class UploadService {
         threadPool.execute(() -> hubbubService.post("/move_all", id));
     }
 
+    @SneakyThrows
     public void upload(String id, MultipartFile multipartFile) {
         val filename = multipartFile.getOriginalFilename();
         log.debug("Adding {} to {}", filename, id);
-        threadPool.execute(() -> {
-            try (InputStream in = multipartFile.getInputStream()) {
-                val file = newFileWithPermissionsSet(id, filename);
-                val dropboxKey = format("/dropbox/%s/%s", id, filename);
-                writing(dropboxKey, in.available());
-                FileUtils.copyInputStreamToFile(in, file);
-                accept(dropboxKey);
-                validate(dropboxKey);
-            } catch (Exception err) {
-                log.error(format("Error adding file (id=%s filename=%s)", id, filename), err);
-            }
-        });
+        val path = format("%s/%s/%s", uploadLocation, id, filename);
+        log.debug("new file {}", path);
+        val file = new File(path);
+        val dropboxKey = format("/dropbox/%s/%s", id, filename);
+        try (InputStream in = multipartFile.getInputStream()) {
+            writing(dropboxKey, in.available());
+            FileUtils.copyInputStreamToFile(in, file);
+        }
+        accept(dropboxKey);
+        validate(dropboxKey);
     }
 
     public void validate(String path) {
         hubbubService.postQuery("/validate", path, "force", "true");
-    }
-
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    private File newFileWithPermissionsSet(String id, String filename) {
-        val path = uploadLocation + "/" + id + "/" + filename;
-        log.debug("new file {}", path);
-        val file = new File(path);
-        file.setReadable(true);
-        file.setWritable(false, true);
-        file.setExecutable(false);
-        return file;
     }
 
     private void writing(String path, int size) {
