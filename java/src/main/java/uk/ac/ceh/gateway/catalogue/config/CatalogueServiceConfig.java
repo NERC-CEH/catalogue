@@ -2,10 +2,14 @@ package uk.ac.ceh.gateway.catalogue.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import uk.ac.ceh.gateway.catalogue.model.Catalogue;
-import uk.ac.ceh.gateway.catalogue.model.Catalogue.DocumentType;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.catalogue.InMemoryCatalogueService;
+import uk.ac.ceh.gateway.catalogue.model.Catalogue;
+import uk.ac.ceh.gateway.catalogue.model.Catalogue.DocumentType;
+import uk.ac.ceh.gateway.catalogue.vocabularies.KeywordVocabulary;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.*;
 
@@ -20,7 +24,7 @@ public class CatalogueServiceConfig {
     public static final String LINK_DOCUMENT = "LINK_DOCUMENT";
 
     @Bean
-    public CatalogueService catalogueService() {
+    public CatalogueService catalogueService(List<KeywordVocabulary> vocabularies) {
         String defaultCatalogueKey = "eidc";
 
         DocumentType agent = DocumentType.builder()
@@ -126,6 +130,7 @@ public class CatalogueServiceConfig {
                 .documentType(cehModel)
                 .documentType(cehModelApplication)
                 .documentType(link)
+                .vocabularies(getCatalogueVocabularies(vocabularies, "assist"))
                 .fileUpload(false)
                 .build(),
 
@@ -314,5 +319,11 @@ public class CatalogueServiceConfig {
                 .fileUpload(false)
                 .build()
         );
+    }
+    private List<KeywordVocabulary> getCatalogueVocabularies(List<KeywordVocabulary> vocabularies, String catalogueId) {
+        return vocabularies
+                .stream()
+                .filter(vocabulary -> vocabulary.usedInCatalogue(catalogueId))
+                .collect(Collectors.toList());
     }
 }
