@@ -411,33 +411,144 @@ define [
           ObjectInputView: BoundingBoxView
           multiline: true
           predefined:
-            'England':
-              northBoundLatitude: 55.812
-              eastBoundLongitude: 1.768
-              southBoundLatitude: 49.864
-              westBoundLongitude: -6.452
-              extentName: 'England'
-              extentUri: 'http://sws.geonames.org/6269131'
-            'Great Britain':
-              northBoundLatitude: 60.861
-              eastBoundLongitude: 1.768
-              southBoundLatitude: 49.864
-              westBoundLongitude: -8.648
-              extentName: 'Great Britain'
-            'Northern Ireland':
-              northBoundLatitude: 55.313
-              eastBoundLongitude: -5.432
-              southBoundLatitude: 54.022
-              westBoundLongitude: -8.178
-              extentName: 'Northern Ireland'
-              extentUri: 'http://sws.geonames.org/2641364'
-            Scotland:
-              northBoundLatitude: 60.861
-              eastBoundLongitude: -0.728
-              southBoundLatitude: 54.634
-              westBoundLongitude: -8.648
-              extentName: 'Scotland'
-              extentUri: 'http://sws.geonames.org/2638360'
+            Austria:
+              northBoundLatitude: 49.020525
+              eastBoundLongitude: 17.160798
+              southBoundLatitude: 46.372453
+              westBoundLongitude: 9.530749
+              extentName: 'Austria'
+            Belgium:
+              northBoundLatitude: 51.504838
+              eastBoundLongitude: 6.407419
+              southBoundLatitude: 49.497238
+              westBoundLongitude: 2.546011
+              extentName: 'Belgium'
+            Bulgaria:
+              northBoundLatitude: 44.215663
+              eastBoundLongitude: 28.607464
+              southBoundLatitude: 41.235808
+              westBoundLongitude: 22.357497
+              extentName: 'Bulgaria'
+            'Czech Republic':
+              northBoundLatitude: 51.054699
+              eastBoundLongitude: 18.858903
+              southBoundLatitude: 48.551826
+              westBoundLongitude: 12.092099
+              extentName: 'Czech Republic'
+            Denmark:
+              northBoundLatitude: 57.751658
+              eastBoundLongitude: 15.193085
+              southBoundLatitude: 54.559969
+              westBoundLongitude: 8.076003
+              extentName: 'Denmark'
+            Finland:
+              northBoundLatitude: 70.092137
+              eastBoundLongitude: 31.586009
+              southBoundLatitude: 59.765886
+              westBoundLongitude: 19.311944
+              extentName: 'Finland'
+            France:
+              northBoundLatitude: 51.089382
+              eastBoundLongitude: 8.232633
+              southBoundLatitude: 42.333393
+              westBoundLongitude: -4.794797
+              extentName: 'France'
+            Germany:
+              northBoundLatitude: 55.058165
+              eastBoundLongitude: 15.04116
+              southBoundLatitude: 47.270114
+              westBoundLongitude: 5.867697
+              extentName: 'Germany'
+            Greece:
+              northBoundLatitude: 41.748812
+              eastBoundLongitude: 29.645353
+              southBoundLatitude: 34.802386
+              westBoundLongitude: 19.373661
+              extentName: 'Greece'
+            Hungary:
+              northBoundLatitude: 48.584724
+              eastBoundLongitude: 22.896271
+              southBoundLatitude: 45.737838
+              westBoundLongitude: 16.113849
+              extentName: 'Hungary'
+            Israel:
+              northBoundLatitude: 33.28979
+              eastBoundLongitude: 35.68404
+              southBoundLatitude: 29.493154
+              westBoundLongitude: 34.268839
+              extentName: 'Israel'
+            Italy:
+              northBoundLatitude: 47.091748
+              eastBoundLongitude: 18.519314
+              southBoundLatitude: 35.493039
+              westBoundLongitude: 6.627429
+              extentName: 'Italy'
+            Latvia:
+              northBoundLatitude: 58.084425
+              eastBoundLongitude: 28.240576
+              southBoundLatitude: 55.67513
+              westBoundLongitude: 20.970778
+              extentName: 'Latvia'
+            Norway:
+              northBoundLatitude: 71.184162
+              eastBoundLongitude: 31.168041
+              southBoundLatitude: 57.960365
+              westBoundLongitude: 4.50341
+              extentName: 'Norway'
+            Poland:
+              northBoundLatitude: 54.835685
+              eastBoundLongitude: 24.145443
+              southBoundLatitude: 49.002845
+              westBoundLongitude: 14.122904
+              extentName: 'Poland'
+            Portugal:
+              northBoundLatitude: 42.154419
+              eastBoundLongitude: -6.189352
+              southBoundLatitude: 36.969819
+              westBoundLongitude: -9.499923
+              extentName: 'Portugal'
+            Romania:
+              northBoundLatitude: 48.264484
+              eastBoundLongitude: 29.71263
+              southBoundLatitude: 43.619622
+              westBoundLongitude: 20.264296
+              extentName: 'Romania'
+            Serbia:
+              northBoundLatitude: 46.189202
+              eastBoundLongitude: 23.00621
+              southBoundLatitude: 41.858095
+              westBoundLongitude: 18.848844
+              extentName: 'Serbia'
+            Slovakia:
+              northBoundLatitude: 49.613767
+              eastBoundLongitude: 22.56684
+              southBoundLatitude: 47.731396
+              westBoundLongitude: 16.833793
+              extentName: 'Slovakia'
+            Slovenia:
+              northBoundLatitude: 46.876295
+              eastBoundLongitude: 16.596805
+              southBoundLatitude: 45.421929
+              westBoundLongitude: 13.375493
+              extentName: 'Slovenia'
+            Spain:
+              northBoundLatitude: 43.787928
+              eastBoundLongitude: 3.320628
+              southBoundLatitude: 36.008465
+              westBoundLongitude: -9.29841
+              extentName: 'Spain'
+            Sweden:
+              northBoundLatitude: 69.059968
+              eastBoundLongitude: 24.166738
+              southBoundLatitude: 55.337707
+              westBoundLongitude: 10.966084
+              extentName: 'Sweden'
+            Switzerland:
+              northBoundLatitude: 47.807379
+              eastBoundLongitude: 10.492064
+              southBoundLatitude: 45.818362
+              westBoundLongitude: 5.956067
+              extentName: 'Switzerland'
             'United Kingdom':
               northBoundLatitude: 60.861
               eastBoundLongitude: 1.768
@@ -445,13 +556,6 @@ define [
               westBoundLongitude: -8.648
               extentName: 'United Kingdom'
               extentUri: 'http://sws.geonames.org/2635167'
-            Wales:
-              northBoundLatitude: 53.434
-              eastBoundLongitude: -2.654
-              southBoundLatitude: 51.375
-              westBoundLongitude: -5.473
-              extentName: 'Wales'
-              extentUri: 'http://sws.geonames.org/2634895'
             World:
               northBoundLatitude: 90.00
               eastBoundLongitude: 180.00
