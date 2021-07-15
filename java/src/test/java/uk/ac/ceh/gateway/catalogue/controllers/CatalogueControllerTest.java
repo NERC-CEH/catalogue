@@ -10,10 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
+import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -21,7 +21,7 @@ import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
-import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
+import uk.ac.ceh.gateway.catalogue.vocabularies.KeywordVocabulary;
 
 import java.util.Arrays;
 import java.util.List;
@@ -32,6 +32,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -59,6 +60,37 @@ public class CatalogueControllerTest {
         given(catalogueService.retrieveAll()).willReturn(Arrays.asList(a, b, c));
     }
 
+    private void givenCatalogue() {
+        val catalogue = Catalogue.builder()
+            .id("eidc")
+            .title("EIDC")
+            .url("url")
+            .vocabularies(Arrays.asList(
+                new KeywordVocabulary() {
+                    @Override
+                    public void retrieve() {}
+
+                    @Override
+                    public String getName() {
+                        return "ASSIST Topics";
+                    }
+
+                    @Override
+                    public String getId() {
+                        return "assist-topics";
+                    }
+
+                    @Override
+                    public boolean usedInCatalogue(String catalogueId) {
+                        return true;
+                    }
+                }
+            ))
+            .build();
+        given(catalogueService.retrieve("eidc"))
+            .willReturn(catalogue);
+    }
+
     private void givenUserCanView() {
         given(permissionService.toAccess(any(CatalogueUser.class), eq(file), eq("VIEW")))
             .willReturn(true);
@@ -82,16 +114,31 @@ public class CatalogueControllerTest {
     @SneakyThrows
     void getCatalogue() {
         //given
+        givenCatalogue();
+
+        //when
+        mvc.perform(get("/catalogues/eidc"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(APPLICATION_JSON))
+            .andExpect(content().json("{\"id\":\"eidc\",\"vocabularies\":[{\"name\": \"ASSIST Topics\",\"id\":\"assist-topics\"}]}"));
+
+        //then
+    }
+
+    @Test
+    @SneakyThrows
+    void getCatalogueForFile() {
+        //given
         givenUserCanView();
         givenMetadataDocument();
 
         //when
         mvc.perform(
             get("/documents/{file}/catalogue", file)
-                .accept(MediaType.APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
         )
             .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(content().string("{\"id\":\"955b5a6e-dd3f-4b20-a3b5-a9d1d04ba052\",\"value\":\"eidc\"}"));
     }
 
@@ -105,7 +152,7 @@ public class CatalogueControllerTest {
             get("/catalogues")
         )
             .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+            .andExpect(content().contentType(APPLICATION_JSON));
     }
 
     @Test

@@ -109,8 +109,13 @@ public class SparqlKeywordVocabulary implements KeywordVocabulary {
     }
 
     @Override
-    public List<String> getCatalogues() {
-        return catalogueIds;
+    public String getId() {
+        return vocabularyId;
+    }
+
+    @Override
+    public boolean usedInCatalogue(String catalogueId) {
+        return catalogueIds.contains(catalogueId);
     }
 }
 

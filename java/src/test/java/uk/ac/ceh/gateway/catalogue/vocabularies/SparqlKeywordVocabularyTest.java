@@ -18,10 +18,12 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.net.URLEncoder;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -50,8 +52,9 @@ class SparqlKeywordVocabularyTest {
     @BeforeEach
     public void init() {
         val restTemplate = new RestTemplate();
+        val catalogues = Arrays.asList("test-0", "test-1");
         target = new SparqlKeywordVocabulary(restTemplate, solrClient, SPARQL_ENDPOINT,GRAPH,WHERE,
-                VOCABULARY_ID, "vocabularyName", new ArrayList<>());
+                VOCABULARY_ID, "vocabularyName", catalogues);
         mockServer = MockRestServiceServer.createServer(restTemplate);
     }
 
@@ -100,11 +103,24 @@ class SparqlKeywordVocabularyTest {
                 .willThrow(new SolrServerException("Test"));
 
         //When
-        Assertions.assertThrows(KeywordVocabularyException.class, () -> {
-            target.retrieve();
-        });
+        Assertions.assertThrows(KeywordVocabularyException.class, () ->
+            target.retrieve()
+        );
     }
 
+    @Test
+    void getCatalogueIds() {
+        //given
+
+
+        ///when
+        assertTrue(target.usedInCatalogue("test-0"));
+        assertFalse(target.usedInCatalogue("not"));
+
+        //then
+    }
+
+    @SuppressWarnings({"HttpUrlsUsage", "SameParameterValue"})
     URI getURI(String graph, String where){
         return URI.create(
                 SPARQL_ENDPOINT + "?query=" +

@@ -2,10 +2,14 @@ package uk.ac.ceh.gateway.catalogue.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import uk.ac.ceh.gateway.catalogue.model.Catalogue;
-import uk.ac.ceh.gateway.catalogue.model.Catalogue.DocumentType;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.catalogue.InMemoryCatalogueService;
+import uk.ac.ceh.gateway.catalogue.model.Catalogue;
+import uk.ac.ceh.gateway.catalogue.model.Catalogue.DocumentType;
+import uk.ac.ceh.gateway.catalogue.vocabularies.KeywordVocabulary;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.*;
 
@@ -20,7 +24,7 @@ public class CatalogueServiceConfig {
     public static final String LINK_DOCUMENT = "LINK_DOCUMENT";
 
     @Bean
-    public CatalogueService catalogueService() {
+    public CatalogueService catalogueService(List<KeywordVocabulary> vocabularies) {
         String defaultCatalogueKey = "eidc";
 
         DocumentType agent = DocumentType.builder()
@@ -126,6 +130,7 @@ public class CatalogueServiceConfig {
                 .documentType(cehModel)
                 .documentType(cehModelApplication)
                 .documentType(link)
+                .vocabularies(getCatalogueVocabularies(vocabularies, "assist"))
                 .fileUpload(false)
                 .build(),
 
@@ -142,6 +147,7 @@ public class CatalogueServiceConfig {
                 .documentType(gemini)
                 .documentType(imp)
                 .documentType(link)
+                .vocabularies(getCatalogueVocabularies(vocabularies, "cmp"))
                 .fileUpload(true)
                 .build(),
 
@@ -152,6 +158,7 @@ public class CatalogueServiceConfig {
                 .facetKey("topic")
                 .facetKey("resourceType")
                 .facetKey("licence")
+                .vocabularies(getCatalogueVocabularies(vocabularies, "ceh"))
                 .fileUpload(false)
                 .build(),
 
@@ -163,6 +170,7 @@ public class CatalogueServiceConfig {
                 .documentType(gemini)
                 .documentType(cehModel)
                 .documentType(cehModelApplication)
+                .vocabularies(getCatalogueVocabularies(vocabularies, "datalabs"))
                 .fileUpload(false)
                 .build(),
 
@@ -173,6 +181,7 @@ public class CatalogueServiceConfig {
                 .facetKey("recordType")
                 .documentType(gemini)
                 .documentType(link)
+                .vocabularies(getCatalogueVocabularies(vocabularies, "edge"))
                 .fileUpload(true)
                 .build(),
 
@@ -187,6 +196,7 @@ public class CatalogueServiceConfig {
                 .facetKey("funder")
                 .documentType(gemini)
                 .documentType(dataType)
+                .vocabularies(getCatalogueVocabularies(vocabularies, defaultCatalogueKey))
                 .fileUpload(false)
                 .build(),
 
@@ -196,6 +206,7 @@ public class CatalogueServiceConfig {
                 .url("")
                 .facetKey("elterDeimsSite")
                 .documentType(elter)
+                .vocabularies(getCatalogueVocabularies(vocabularies, "elter"))
                 .fileUpload(false)
                 .build(),
 
@@ -208,6 +219,7 @@ public class CatalogueServiceConfig {
                 .documentType(erammpModel)
                 .documentType(erammpDatacube)
                 .documentType(link)
+                .vocabularies(getCatalogueVocabularies(vocabularies, "erammp"))
                 .fileUpload(false)
                 .build(),
 
@@ -217,6 +229,7 @@ public class CatalogueServiceConfig {
                 .url("http://intranet.ceh.ac.uk/procedures/commercialisation/data-licensing-ipr/in-licensed-data-list")
                 .facetKey("resourceType")
                 .documentType(gemini)
+                .vocabularies(getCatalogueVocabularies(vocabularies, "inlicensed"))
                 .fileUpload(false)
                 .build(),
 
@@ -234,6 +247,7 @@ public class CatalogueServiceConfig {
                 .documentType(gemini)
                 .documentType(cehModel)
                 .documentType(cehModelApplication)
+                .vocabularies(getCatalogueVocabularies(vocabularies, "inms"))
                 .documentType(link)
                 .fileUpload(true)
                 .build(),
@@ -245,6 +259,7 @@ public class CatalogueServiceConfig {
                 .facetKey("resourceType")
                 .documentType(cehModel)
                 .documentType(cehModelApplication)
+                .vocabularies(getCatalogueVocabularies(vocabularies, "m"))
                 .fileUpload(false)
                 .build(),
 
@@ -261,6 +276,7 @@ public class CatalogueServiceConfig {
                 .documentType(cehModel)
                 .documentType(cehModelApplication)
                 .documentType(link)
+                .vocabularies(getCatalogueVocabularies(vocabularies, "nc"))
                 .fileUpload(false)
                 .build(),
 
@@ -273,6 +289,7 @@ public class CatalogueServiceConfig {
                 .facetKey("licence")
                 .documentType(cehModel)
                 .documentType(cehModelApplication)
+                .vocabularies(getCatalogueVocabularies(vocabularies, "nm"))
                 .fileUpload(false)
                 .build(),
 
@@ -289,6 +306,7 @@ public class CatalogueServiceConfig {
                 .documentType(publication)
                 .documentType(sample)
                 .facetKey("resourceType")
+                .vocabularies(getCatalogueVocabularies(vocabularies, "osdp"))
                 .fileUpload(false)
                 .build(),
 
@@ -299,6 +317,7 @@ public class CatalogueServiceConfig {
                 .facetKey("saTaxon")
                 .documentType(sampleArchive)
                 .fileUpload(false)
+                .vocabularies(getCatalogueVocabularies(vocabularies, "sa"))
                 .build(),
 
             Catalogue.builder()
@@ -312,7 +331,15 @@ public class CatalogueServiceConfig {
                 .documentType(cehModelApplication)
                 .documentType(link)
                 .fileUpload(false)
+                .vocabularies(getCatalogueVocabularies(vocabularies, "ukscape"))
                 .build()
         );
+    }
+
+    private List<KeywordVocabulary> getCatalogueVocabularies(List<KeywordVocabulary> vocabularies, String catalogueId) {
+        return vocabularies
+            .stream()
+            .filter(vocabulary -> vocabulary.usedInCatalogue(catalogueId))
+            .collect(Collectors.toList());
     }
 }
