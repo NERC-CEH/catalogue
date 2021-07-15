@@ -1,5 +1,5 @@
 # Build web (javascript & css)
-FROM node:15.11.0-stretch AS build-web
+FROM node:16-alpine3.11 AS build-web
 WORKDIR /app
 COPY --chown=1000:1000 web/src/less src/less
 COPY --chown=1000:1000 web/src/scripts src/scripts
