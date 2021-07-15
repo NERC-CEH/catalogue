@@ -155,10 +155,6 @@ define [
           label: 'Contacts'
           ObjectInputView: ContactView
           multiline: true
-          predefined:
-            'Author - unaffiliated':
-              organisationName: 'Unaffiliated'
-              role: 'author'
           helpText: """
                     <p>The names of authors should be in the format <code>Surname, First Initial. Second Initial.</code> For example <i>Brown, A.B.</i></p>
                     <p>Role and organisation name are mandatory.</p>
