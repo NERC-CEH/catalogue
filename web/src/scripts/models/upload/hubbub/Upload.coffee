@@ -1,9 +1,11 @@
 define [
   'backbone'
   'jquery'
-  'cs!models/EditorMetadata'
-], (Backbone, $, EditorMetadata) -> EditorMetadata.extend
-#TODO: no need to extend EditorMetadata just for URL, set urlRoot here
+], (Backbone, $) -> Backbone.Model.extend
+
+  urlRoot:
+    "/upload"
+
   page:
     documentsPage: 1
     datastorePage: 1
@@ -12,7 +14,6 @@ define [
   defaults:
     cancel: no
     message: off
-    modal: off
 
   # calculated using Hubbub on the SAN, 22/05/19, recalculate for better estimates
   timeEstimate:
@@ -137,17 +138,6 @@ define [
 
   open: {}
 
-  modal: false
-
-  modalData:
-    title: 'title'
-    body: 'body'
-
-  showFinish: ->
-    @modalAction = @finish
-    @modalData.title = 'Have you finished uploading files?'
-    @modalData.body = 'You will no longer be able to add, remove or update files.'
-    @set 'modal', 'finish'
 
   showDelete: (filename) ->
     @modalAction = => @delete(filename)
@@ -155,7 +145,7 @@ define [
     file = fileSplit[fileSplit.length - 1]
 
     @modalData.title = "Delete #{file}?"
-    @modalData.body = "This will permanently delete the file <br /><b>#{filename}"
+    @modalData.body = "This will permanently delete the file <br /><b>#{filename}</b>"
     @set 'modal', 'delete'
 
   showCancel: (filename) ->
@@ -173,11 +163,6 @@ define [
     @modalData.title = "Ignore the error for #{file}?"
     @modalData.body = "You are about to ignore the error for<br /><b>#{filename}</b><br />You will lose all infomation about this file if you continue with this action."
     @set 'modal', 'ignore'
-
-  hideDialog: ->
-    @modalData.title = 'title'
-    @modalData.body = 'body'
-    @set 'modal', off
 
   cancel: (file) ->
     @open[file] = false
@@ -216,7 +201,7 @@ define [
     }
 
   delete: (file) ->
-    url = @url() + '/delete?path=' + encodeURIComponent(file)
+    url = @url() + '?path=' + encodeURIComponent(file)
     $.ajax {
       url: url
       type: 'DELETE'
@@ -253,63 +238,4 @@ define [
       error: (err) =>
         console.error('error', err)
         do @fetch
-    }
-
-  moveToDatastore: (cb) ->
-    url = @url() + '/move-to-datastore'
-    $.ajax {
-      url: url
-      type: 'POST'
-      success: (data) =>
-        @set(data)
-        cb()
-      error: (err) =>
-        console.error('error', err)
-        do @fetch
-    }
-
-  validateFiles: (cb) ->
-    url = @url() + '/validate'
-    $.ajax {
-      url: url
-      type: 'POST'
-      success: (data) =>
-        @set(data)
-        cb()
-      error: (err) =>
-        console.error('error', err)
-        do @fetch
-    }
-
-  finish: ->
-    url = @url() + '/finish'
-    $.ajax {
-      url: url
-      type: 'POST'
-      success: ->
-        do window.location.reload
-      error: (err) ->
-        console.error('error', err)
-    }
-
-  reschedule: ->
-    url = @url() + '/reschedule'
-    $.ajax {
-      url: url
-      type: 'POST'
-      success: ->
-        do window.location.reload
-      error: (err) ->
-        console.error('error', err)
-    }
-
-  schedule: ->
-    url = @url() + '/schedule'
-    $.ajax {
-      url: url
-      type: 'POST'
-      success: ->
-        do window.location.reload
-      error: (err) ->
-        console.error('error', err)
     }

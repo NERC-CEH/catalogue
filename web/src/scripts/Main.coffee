@@ -39,8 +39,8 @@ define [
   'cs!views/ClipboardCopyView'
   'cs!views/DataTypeEditorView'
   'cs!views/ElterEditorView'
-  'cs!views/DocumentUploadView'
-  'cs!models/DocumentUploadModel'
+  'cs!views/upload/hubbub/UploadView'
+  'cs!models/upload/hubbub/Upload'
   'cs!views/upload/simple/AppView'
 ], (
     _, $, Backbone, Bootstrap, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter, SearchRouter,
@@ -48,11 +48,11 @@ define [
     ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata, CehModelEditorView, CehModelApplicationEditorView, OsdpAgentEditorView,
     OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
     OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, ErammpModelEditorView, ErammpDatacubeEditorView,
-    ClipboardCopyView, DataTypeEditorView, ElterEditorView, DocumentUploadView, DocumentUploadModel, SimpleUploadView
+    ClipboardCopyView, DataTypeEditorView, ElterEditorView, HubbubUploadView, HubbubUploadModel, SimpleUploadView
 ) ->
 
   ###
-  This is the initalizer method for the entire requirejs project. Here we can
+  This is the initializer method for the entire requirejs project. Here we can
   set up the different applications and initialize any javascript code which
   we like globally.
   ###
@@ -112,11 +112,12 @@ define [
   ###
   initDocumentUpload: ->
     id = $('#document-upload').data('guid')
-    app = new DocumentUploadModel null,
-        mediaType: 'application/vnd.upload-document+json'
-    app.id = id
-    app.set('id', id)
-    view = new DocumentUploadView model: app
+    uploadModel = new HubbubUploadModel()
+    uploadModel.id = id
+    uploadModel.set('id', id)
+    new HubbubUploadView
+      el: '#document-upload'
+      model: uploadModel
 
   ###
   Initialize the editor
