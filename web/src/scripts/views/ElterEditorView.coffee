@@ -156,66 +156,12 @@ define [
           ObjectInputView: ContactView
           multiline: true
           predefined:
-            'Author - UKCEH':
-              organisationName: 'UK Centre for Ecology & Hydrology'
-              role: 'author'
-              email: 'enquiries@ceh.ac.uk'
-              organisationIdentifier: 'https://ror.org/00pggkr55'
             'Author - unaffiliated':
               organisationName: 'Unaffiliated'
               role: 'author'
-            'Point of contact - UKCEH Bangor':
-              organisationName: 'UK Centre for Ecology & Hydrology'
-              role: 'pointOfContact'
-              email: 'enquiries@ceh.ac.uk'
-              organisationIdentifier: 'https://ror.org/00pggkr55'
-              address:
-                deliveryPoint: 'Environment Centre Wales, Deiniol Road'
-                postalCode: 'LL57 2UW'
-                city: 'Bangor'
-                administrativeArea: 'Gwynedd'
-                country: 'United Kingdom'
-            'Point of contact - UKCEH Edinburgh':
-              organisationName: 'UK Centre for Ecology & Hydrology'
-              role: 'pointOfContact'
-              email: 'enquiries@ceh.ac.uk'
-              organisationIdentifier: 'https://ror.org/00pggkr55'
-              address:
-                deliveryPoint: 'Bush Estate'
-                postalCode: 'EH26 0QB'
-                city: 'Penicuik'
-                administrativeArea: 'Midlothian'
-                country: 'United Kingdom'
-            'Point of contact - UKCEH Lancaster':
-              organisationName: 'UK Centre for Ecology & Hydrology'
-              role: 'pointOfContact'
-              email: 'enquiries@ceh.ac.uk'
-              organisationIdentifier: 'https://ror.org/00pggkr55'
-              address:
-                deliveryPoint: 'Lancaster Environment Centre, Library Avenue, Bailrigg'
-                postalCode: 'LA1 4AP'
-                city: 'Lancaster'
-                administrativeArea: 'Lancashire'
-                country: 'United Kingdom'
-            'Point of contact - UKCEH Wallingford':
-              organisationName: 'UK Centre for Ecology & Hydrology'
-              role: 'pointOfContact'
-              email: 'enquiries@ceh.ac.uk'
-              organisationIdentifier: 'https://ror.org/00pggkr55'
-              address:
-                deliveryPoint: 'Maclean Building, Benson Lane, Crowmarsh Gifford'
-                postalCode: 'OX10 8BB'
-                city: 'Wallingford'
-                administrativeArea: 'Oxfordshire'
-                country: 'United Kingdom'
-            'Rights holder - UKCEH':
-              organisationName: 'UK Centre for Ecology & Hydrology'
-              role: 'rightsHolder'
-              email: 'enquiries@ceh.ac.uk'
-              organisationIdentifier: 'https://ror.org/00pggkr55'
           helpText: """
                     <p>The names of authors should be in the format <code>Surname, First Initial. Second Initial.</code> For example <i>Brown, A.B.</i></p>
-                    <p>Role and organisation name are mandatory. If email address is blank it is assumed to be 'enquiries@ceh.ac.uk'.</p>
+                    <p>Role and organisation name are mandatory.</p>
                     <p>The preferred identifier for individuals is an ORCiD.  You must enter the identifier as a <i>fully qualified</i> ID (e.g.  <b>https://orcid.org/1234-5678-0123-987X</b> rather than <b>1234-5678-0123-987X</b>).</p>
                     """
       ]
@@ -354,28 +300,6 @@ define [
                     </ul>
                     <p>Where possible include a link to a document describing the terms and conditions.</p>
                     <p>You MUST enter something even if there are no constraints. In the rare case that there are none, enter "no conditions apply".</p>
-                    """
-
-        new PredefinedParentView
-          model: @model
-          ModelType: Contact
-          modelAttribute: 'distributorContacts'
-          label: 'Distributor contact'
-          ObjectInputView: ContactView
-          multiline: true
-          predefined:
-            'EIDC':
-              organisationName: 'Environmental Information Data Centre'
-              role: 'distributor'
-              email: 'info@eidc.ac.uk'
-              organisationIdentifier: 'https://ror.org/04xw4m193'
-            'EMBL-EBI':
-              organisationName: 'The European Bioinformatics Institute (EMBL-EBI)'
-              role: 'distributor'
-            'Other distributor':
-              role: 'distributor'
-          helpText: """
-                    <p>The organisation responsible for distributing the data resource</p>
                     """
       ]
     ,
