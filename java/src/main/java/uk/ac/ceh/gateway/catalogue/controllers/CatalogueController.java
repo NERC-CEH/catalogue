@@ -57,6 +57,13 @@ public class CatalogueController {
         return ResponseEntity.ok(catalogues);
     }
 
+    @GetMapping("catalogues/{id}")
+    public Catalogue get(
+        @PathVariable("id") String id
+    ) {
+        return catalogueService.retrieve(id);
+    }
+
     @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
     @GetMapping("documents/{file}/catalogue")
     public HttpEntity<CatalogueResource> currentCatalogue (
