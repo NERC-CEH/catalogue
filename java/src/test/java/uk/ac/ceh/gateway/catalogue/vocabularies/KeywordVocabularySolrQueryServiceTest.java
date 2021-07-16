@@ -20,6 +20,7 @@ import java.util.List;
 
 import static org.apache.solr.client.solrj.SolrRequest.METHOD.POST;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -37,7 +38,7 @@ class KeywordVocabularySolrQueryServiceTest {
     public static final String URL_1 = "www.example.com";
     public static final String URL_2 = "www.example2.com";
     public static final String QUERY = "queryTest";
-    private static final String KEYWORD = "keyword";
+    private static final String COLLECTION = "keyword";
 
     @Mock
     private SolrClient solrClient;
@@ -58,7 +59,7 @@ class KeywordVocabularySolrQueryServiceTest {
         val keywordSolrIndex1 = new Keyword(LABEL_1, VOCAB_ID_1, URL_1);
         val keywordSolrIndex2 = new Keyword(LABEL_2, VOCAB_ID_2, URL_2);
 
-        given(solrClient.query(eq(KEYWORD), any(SolrQuery.class), eq(POST)))
+        given(solrClient.query(eq(COLLECTION), any(SolrQuery.class), eq(POST)))
                 .willReturn(response);
         given(response.getBeans(Keyword.class))
                 .willReturn(Arrays.asList(
@@ -73,8 +74,7 @@ class KeywordVocabularySolrQueryServiceTest {
         List<Keyword> result = service.query(QUERY, vocabularyIds);
 
         //Then
-        assertThat(result.get(0).getLabel(), equalTo(LABEL_1));
-        assertThat(result.get(1).getLabel(), equalTo(LABEL_2));
+        assertThat(result, containsInAnyOrder(keywordSolrIndex1, keywordSolrIndex2));
     }
 
 
@@ -82,7 +82,7 @@ class KeywordVocabularySolrQueryServiceTest {
     @SneakyThrows
     public void ThrowSolrServerException() {
         //Given
-        when(solrClient.query(eq(KEYWORD), any(SolrParams.class), eq(POST))).thenThrow(new SolrServerException("Test"));
+        when(solrClient.query(eq(COLLECTION), any(SolrParams.class), eq(POST))).thenThrow(new SolrServerException("Test"));
 
         //When
         List<String> vocabularyIds = new ArrayList<>();
