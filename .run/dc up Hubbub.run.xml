@@ -3,6 +3,7 @@
     <deployment type="docker-compose.yml">
       <settings>
         <option name="envFilePath" value="" />
+        <option name="removeVolumesOnComposeDown" value="true" />
         <option name="secondarySourceFiles">
           <list>
             <option value="docker-compose.hubbub.yml" />
