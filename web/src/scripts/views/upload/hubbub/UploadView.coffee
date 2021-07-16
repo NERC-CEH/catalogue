@@ -170,38 +170,34 @@ define [
       previewsContainer: '.dropzone-files'
       clickable: '.fileinput-button'
       parallelUploads: 1
-    init: ->
-      @on 'uploadprogress', (file) ->
-        id = file.name.replace(/[^\w?]/g, '-')
-        $(".uploading-#{id} .file-status").text("Uploaded #{filesize(file.upload.bytesSent)}")
-        if file.upload.progress == 100
-          $(".uploading-#{id} .file-status").text('Writing to Disk')
-          $(".uploading-#{id} .cancel").attr('disabled', true)
+      init: ->
+        @on 'addedfile', (file) ->
+          $file = $(file.previewElement)
+          $file.find('.cancel').click => @removeFile(file)
+          $file.find('.file-size-value').text("#{filesize(file.size)}")
 
-      @on 'addedfile', (file) ->
-        last = $('.uploading').length - 1
-        uploading = $($('.uploading')[last])
-        id = file.name.replace(/[^\w?]/g, '-')
-        uploading.addClass('uploading-' + id)
-        uploading.find('.cancel').click => @removeFile file
-        $(".uploading-#{id} .file-size-value").text("#{filesize(file.size)}")
+        @on 'uploadprogress', (file, progress, bytesSent) ->
+          $file = $(file.previewElement)
+          if progress < 100
+            $file.find('.file-status').text("Uploaded #{filesize(bytesSent)}")
+          else
+            $file.find('.file-status').text('Writing to Disk')
+            $file.find('.cancel').attr('disabled', true)
 
-      @on 'success', (file) ->
-        id = file.name.replace(/[^\w?]/g, '-')
-        setTimeout(
-          -> $('.uploading-' + id).remove()
-          500
-        )
+        @on 'success', (file) ->
+          $(file.previewElement).remove()
 
-      @on 'error', (file, errorMessage, xhr) ->
-        id = file.name.replace(/[^\w?]/g, '-')
-        $('.uploading-' + id + ' .file-status').text('Error')
-        errorMessages =
-          0: 'No connection'
-          403: 'Unauthorized'
-          500: 'Internal Server Error'
-        errorMessage = errorMessages[xhr.status] || errorMessage if xhr
-        $('.uploading-' + id + ' .file-message').text(errorMessage)
+        @on 'error', (file, error, xhr) ->
+          $file = $(file.previewElement)
+          $file.find('.file-status').text('Error')
+          $file.find('.file-name i').attr('class', 'fa fa-exclamation-triangle')
+          $file.find('.cancel').attr('disabled', false)
+          errorMessages =
+            0: 'No connection'
+            403: 'Unauthorized'
+            500: 'Internal Server Error'
+          message = errorMessages[xhr.status] || error.error if xhr
+          $file.find('.file-message').text(message)
 
     @dropzone = new Dropzone('.dropzone-container', options)
 
