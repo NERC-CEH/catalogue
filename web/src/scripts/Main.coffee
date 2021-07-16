@@ -39,8 +39,6 @@ define [
   'cs!views/ClipboardCopyView'
   'cs!views/DataTypeEditorView'
   'cs!views/ElterEditorView'
-  'cs!views/upload/hubbub/UploadView'
-  'cs!models/upload/hubbub/Upload'
   'cs!views/upload/simple/AppView'
 ], (
     _, $, Backbone, Bootstrap, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter, SearchRouter,
@@ -48,7 +46,7 @@ define [
     ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata, CehModelEditorView, CehModelApplicationEditorView, OsdpAgentEditorView,
     OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
     OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, ErammpModelEditorView, ErammpDatacubeEditorView,
-    ClipboardCopyView, DataTypeEditorView, ElterEditorView, HubbubUploadView, HubbubUploadModel, SimpleUploadView
+    ClipboardCopyView, DataTypeEditorView, ElterEditorView, SimpleUploadView
 ) ->
 
   ###
@@ -69,7 +67,6 @@ define [
 
     do @initCatalogue if $('.catalogue-control').length
     do @initClipboard if $('.clipboard-copy').length
-    do @initDocumentUpload if $('#document-upload').length
     do @initEditor if $('.edit-control').length
     do @initGeometryMap if $('#geometry-map').length
     do @initMapviewer if $('#mapviewer').length
@@ -106,18 +103,6 @@ define [
   initClipboard: ->
     view = new ClipboardCopyView
       el: '.clipboard-copy'
-
-  ###
-  Initialize Document Upload using Hubbub service
-  ###
-  initDocumentUpload: ->
-    id = $('#document-upload').data('guid')
-    uploadModel = new HubbubUploadModel()
-    uploadModel.id = id
-    uploadModel.set('id', id)
-    new HubbubUploadView
-      el: '#document-upload'
-      model: uploadModel
 
   ###
   Initialize the editor

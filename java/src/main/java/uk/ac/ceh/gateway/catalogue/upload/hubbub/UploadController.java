@@ -85,7 +85,7 @@ public class UploadController {
 
         log.debug("Model is {}", model);
         //noinspection SpringMVCViewInspection
-        return "html/upload/hubbub/upload-document";
+        return "html/upload/hubbub/upload";
     }
 
     @ResponseBody

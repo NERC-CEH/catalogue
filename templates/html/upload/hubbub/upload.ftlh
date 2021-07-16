@@ -1,6 +1,10 @@
 <#import "../../skeleton.ftlh" as skeleton>
 
-<@skeleton.master title="Data Transfer for: " + title>
+<#assign uploadScripts>
+    <script data-main="/static/scripts/upload-out" src="/static/vendor/requirejs/require.js"></script>
+</#assign>
+
+<@skeleton.master title="Data Transfer for: " + title scripts=uploadScripts>
     <@documentContainer>
         <@titleHeading/>
         <@returnToDocument/>

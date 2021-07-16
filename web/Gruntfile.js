@@ -204,13 +204,22 @@ module.exports = function(grunt) {
       }
     },
     requirejs: {
-      compile: {
+      main: {
         options: {
           exclude: ['coffee-script'],
           baseUrl: 'src/scripts',
           out: 'src/scripts/main-out.js',
           name: 'main',
           mainConfigFile: 'src/scripts/main.js'
+        }
+      },
+      upload: {
+        options: {
+          exclude: ['coffee-script'],
+          baseUrl: 'src/scripts',
+          out: 'src/scripts/upload-out.js',
+          name: 'upload',
+          mainConfigFile: 'src/scripts/upload.js'
         }
       }
     },
@@ -229,23 +238,27 @@ module.exports = function(grunt) {
         files: 'src/less/*',
         tasks: ['less']
       },
-      requirejs: {
+      main: {
         files: 'src/scripts/main.js',
-        tasks: ['copy:requirejs']
+        tasks: ['copy:main']
       }
     },
     concurrent: {
       watch: {
-        tasks: ['watch:less', 'watch:requirejs'],
+        tasks: ['watch:less', 'watch:main'],
         options: {
           logConcurrentOutput: true
         }
       }
     },
     copy: {
-      requirejs: {
+      main: {
         src: 'src/scripts/main.js',
         dest: 'src/scripts/main-out.js'
+      },
+      upload: {
+        src: 'src/scripts/upload.js',
+        dest: 'src/scripts/upload-out.js'
       }
     },
     clean: {
@@ -255,7 +268,7 @@ module.exports = function(grunt) {
   });
   grunt.registerTask('prep', ['clean', 'combine_harvester:openlayers']);
   grunt.registerTask('test', ['clean:test', 'coffee', 'jasmine']);
-  grunt.registerTask('develop', ['less', 'copy:requirejs', 'concurrent:watch']);
+  grunt.registerTask('develop', ['less', 'copy', 'concurrent:watch']);
   grunt.registerTask('build', ['clean', 'less', 'cssmin', 'requirejs']);
   grunt.registerTask('default', ['prep', 'build']);
 };
