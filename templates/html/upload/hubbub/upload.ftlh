@@ -188,27 +188,27 @@
 </#macro>
 
 <#macro addFilesButton>
-    <@button "Add FILES ..." "fileinput-button" "file-upload"/>
+    <@button "Add Files…" "fileinput-button" "file-upload"/>
 </#macro>
 
 <#macro finishUploadingButton>
-    <@button "FINISH UPLOADING" "finish" "check" "primary"/>
+    <@button "Finish Uploading" "finish" "check" "primary"/>
 </#macro>
 
 <#macro scheduleButton>
-    <@button text="SCHEDULE" button="data-action schedule" icon="calendar-check" iconClass="far"/>
+    <@button text="Schedule" button="data-action schedule" icon="calendar-check" iconClass="far"/>
 </#macro>
 
 <#macro rescheduleButton>
-    <@button "RESCHEDULE" "data-action reschedule" "redo"/>
+    <@button "Reschedule" "data-action reschedule" "redo"/>
 </#macro>
 
 <#macro moveAllDatastoreButton>
-    <@button "MOVE ALL DATASTORE" "data-action move-all" "level-down-alt"/>
+    <@button "Move All Datastore" "data-action move-all" "level-down-alt"/>
 </#macro>
 
 <#macro validateAllButton>
-    <@button "VALIDATE ALL" "file-action validate-all" "check" "primary"/>
+    <@button "Validate All" "file-action validate-all" "check" "primary"/>
 </#macro>
 
 <#macro downloadChecksumButton>
@@ -218,7 +218,7 @@
         download="checksums_${id}.csv"
     >
         <i class="btn-icon fas fa-file-download"></i>
-        <span>DOWNLOAD CHECKSUM REPORT</span>
+        <span>Download Checksum Report</span>
     </a>
 </#macro>
 

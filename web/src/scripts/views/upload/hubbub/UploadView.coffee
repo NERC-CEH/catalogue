@@ -58,32 +58,41 @@ define [
     )
 
   finish: ->
+    currentClasses = @showInProgress(event)
     $.ajax({
       url: "#{@model.url()}/finish"
       type: 'POST'
       success: =>
+        @showNormal(event, currentClasses)
         window.location.assign("/documents/#{@model.id}")
       error: (err) ->
+        @showInError(event)
         console.error('error', err)
     })
 
   moveAllDatastore: ->
+    currentClasses = @showInProgress(event)
     $.ajax({
       url: "#{@model.url()}/move-all-datastore"
       type: 'POST'
-      success: ->
+      success: =>
+        @showNormal(event, currentClasses)
         console.log("Moved to datastore")
-      error: (err) ->
+      error: (err) =>
+        @showInError(event)
         console.error('error', err)
     })
 
   reschedule: ->
+    currentClasses = @showInProgress(event)
     $.ajax({
       url: "#{@model.url()}/reschedule"
       type: 'POST'
-      success: ->
+      success: =>
+        @showNormal(event, currentClasses)
         window.location.reload()
-      error: (err) ->
+      error: (err) =>
+        @showInError(event)
         console.error('error', err)
     })
 
@@ -95,17 +104,18 @@ define [
       success: =>
         @showNormal(event, currentClasses)
         window.location.reload()
-      error: (err) ->
+      error: (err) =>
+        @showInError(event)
         console.error('error', err)
     })
 
   validateAll: (event) ->
-    console.log(event)
     #TODO: why does this get 405 "Method Not Allowed" error?
-    @showInProgress(event)
+    currentClasses = @showInProgress(event)
     $.ajax({
       url: "#{@model.url()}/validate"
-      success: ->
+      success: =>
+        @showNormal(event, currentClasses)
         console.log("Validate all")
       error: (err) =>
         @showInError(event)
