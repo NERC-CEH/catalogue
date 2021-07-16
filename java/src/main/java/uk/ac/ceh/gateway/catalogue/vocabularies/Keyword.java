@@ -8,4 +8,10 @@ public class Keyword {
     @Field String label;
     @Field String vocabId;
     @Field String url;
+
+    public Keyword(String label, String vocabId, String url) {
+        this.label = label;
+        this.vocabId = vocabId;
+        this.url = url;
+    }
 }
