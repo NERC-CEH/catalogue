@@ -151,7 +151,7 @@ class UploadControllerTest {
         )
             .andExpect(status().isOk())
             .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
-            .andExpect(view().name("html/upload/hubbub/upload-document"))
+            .andExpect(view().name("html/upload/hubbub/upload"))
             .andExpect(model().attribute("id", id))
             .andExpect(model().attribute("title", "Foo"))
             .andExpect(model().attribute("isAdmin", true))
