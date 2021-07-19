@@ -51,7 +51,6 @@ public class SolrIndexElterDocumentGenerator implements IndexGenerator<ElterDocu
                 .setRightsHolder(grab(document.getRightsHolders(), ResponsibleParty::getOrganisationName))
                 .setSupplementalDescription(grab(document.getSupplemental(), Supplemental::getDescription))
                 .setSupplementalName(grab(document.getSupplemental(), Supplemental::getName))
-                .setVersion(document.getVersion())
                 ;
     }
 }
