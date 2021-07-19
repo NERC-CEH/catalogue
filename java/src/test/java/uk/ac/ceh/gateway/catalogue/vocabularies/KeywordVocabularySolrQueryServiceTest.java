@@ -21,7 +21,6 @@ import java.util.List;
 import static org.apache.solr.client.solrj.SolrRequest.METHOD.POST;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -38,7 +37,7 @@ class KeywordVocabularySolrQueryServiceTest {
     public static final String URL_1 = "www.example.com";
     public static final String URL_2 = "www.example2.com";
     public static final String QUERY = "queryTest";
-    private static final String COLLECTION = "keyword";
+    private static final String COLLECTION = "keywords";
 
     @Mock
     private SolrClient solrClient;

@@ -1,12 +1,15 @@
 package uk.ac.ceh.gateway.catalogue.vocabularies;
 
-import lombok.Value;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.apache.solr.client.solrj.beans.Field;
 
-@Value
+@Data
+@AllArgsConstructor
 public class Keyword {
-    @Field String label;
-    @Field String vocabId;
-    @Field String url;
-    
+    @Field private String label;
+    @Field private String vocabId;
+    @Field private String url;
+
+    public Keyword() {}
 }

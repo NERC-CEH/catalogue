@@ -20,6 +20,7 @@ import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.BDDMockito.given;
@@ -119,6 +120,24 @@ class KeywordVocabularyControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(expectedResponse));
+    }
+
+    @Test
+    @SneakyThrows
+    void noVocabularies() {
+        //given
+        given(keywordService.query("test", Collections.emptyList()))
+            .willReturn(Arrays.asList(
+                new Keyword("Keyword 1", "test-0", "https://example.com/1"),
+                new Keyword("Keyword 2", "test-0", "https://example.com/2"),
+                new Keyword("Keyword 3", "test-1", "https://example.com/3")
+            ));
+
+        //when
+        mvc.perform(
+            get("/vocabulary/keywords")
+                .queryParam("query", "test")
+        ).andExpect(status().isOk());
     }
 
 
