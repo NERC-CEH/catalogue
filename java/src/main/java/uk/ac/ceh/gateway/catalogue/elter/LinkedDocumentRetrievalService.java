@@ -9,9 +9,11 @@ import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.context.annotation.Profile;
 
 import static uk.ac.ceh.gateway.catalogue.util.Headers.withBasicAuth;
 
+@Profile("elter")
 @Slf4j
 @Service
 @ToString
@@ -42,9 +44,6 @@ public class LinkedDocumentRetrievalService {
                     ex.getResponseHeaders(),
                     ex.getResponseBodyAsString()
             );
-            throw ex;
-        } catch (Exception ex) {
-            log.error("Some other error", ex);
             throw ex;
         }
     }

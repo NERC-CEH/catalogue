@@ -42,7 +42,6 @@ import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
 import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.services.JenaLookupService;
-import uk.ac.ceh.gateway.catalogue.elter.LinkedDocumentRetrievalService;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -81,7 +80,6 @@ class DocumentControllerTest {
     @MockBean private CodeLookupService codeLookupService;
     @MockBean private DocumentRepository documentRepository;
     @MockBean private JenaLookupService jenaLookupService;
-    @MockBean private LinkedDocumentRetrievalService linkedDocumentRetrievalService;
     @MockBean(name="permission") private PermissionService permissionService;
 
     @Autowired private MockMvc mvc;
@@ -96,7 +94,7 @@ class DocumentControllerTest {
 
     @BeforeEach
     void setup() {
-        controller = new DocumentController(documentRepository,linkedDocumentRetrievalService);
+        controller = new DocumentController(documentRepository);
     }
 
     private void givenUserIsPermittedToView() {

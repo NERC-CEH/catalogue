@@ -26,7 +26,7 @@ import uk.ac.ceh.gateway.catalogue.ef.Facility;
 import uk.ac.ceh.gateway.catalogue.ef.Network;
 import uk.ac.ceh.gateway.catalogue.ef.Programme;
 import uk.ac.ceh.gateway.catalogue.elter.ElterDocument;
-import uk.ac.ceh.gateway.catalogue.elter.DummyLinkedElterDocument;
+import uk.ac.ceh.gateway.catalogue.elter.LinkedElterDocument;
 import uk.ac.ceh.gateway.catalogue.erammp.ErammpDatacube;
 import uk.ac.ceh.gateway.catalogue.erammp.ErammpModel;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -75,7 +75,6 @@ public class WebConfig implements WebMvcConfigurer {
         converters.add(new Object2TemplatedMessageConverter<>(Dataset.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(DataType.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(ElterDocument.class, freemarkerConfiguration));
-        converters.add(new Object2TemplatedMessageConverter<>(DummyLinkedElterDocument.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(ErammpModel.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(ErammpDatacube.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(ErrorResponse.class, freemarkerConfiguration));
@@ -140,7 +139,6 @@ public class WebConfig implements WebMvcConfigurer {
             .mediaType(ERAMMP_DATACUBE_SHORT, ERAMMP_DATACUBE_JSON)
             .mediaType(ERAMMP_MODEL_SHORT, ERAMMP_MODEL_JSON)
             .mediaType(ELTER_JSON_SHORT, ELTER_JSON)
-            .mediaType(LINKED_ELTER_JSON_SHORT, LINKED_ELTER_JSON)
             .mediaType(GEMINI_JSON_SHORT, GEMINI_JSON)
             .mediaType(GEMINI_XML_SHORT, GEMINI_XML)
             .mediaType("html", MediaType.TEXT_HTML)

@@ -29,7 +29,7 @@ import uk.ac.ceh.gateway.catalogue.converters.Xml2WmsCapabilitiesMessageConverte
 import uk.ac.ceh.gateway.catalogue.datacite.DataciteService;
 import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
 import uk.ac.ceh.gateway.catalogue.elter.ElterDocument;
-import uk.ac.ceh.gateway.catalogue.elter.DummyLinkedElterDocument;
+import uk.ac.ceh.gateway.catalogue.elter.LinkedElterDocument;
 import uk.ac.ceh.gateway.catalogue.erammp.ErammpDatacube;
 import uk.ac.ceh.gateway.catalogue.erammp.ErammpModel;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -117,7 +117,6 @@ public class ServicesConfig {
         return new HashMapDocumentTypeLookupService()
             .register(GEMINI_DOCUMENT, GeminiDocument.class)
             .register(ELTER_DOCUMENT, ElterDocument.class)
-            .register(LINKED_ELTER_DOCUMENT, DummyLinkedElterDocument.class)
             .register(EF_DOCUMENT, BaseMonitoringType.class)
             .register(IMP_DOCUMENT, ImpDocument.class)
             .register(LINK_DOCUMENT, LinkDocument.class)

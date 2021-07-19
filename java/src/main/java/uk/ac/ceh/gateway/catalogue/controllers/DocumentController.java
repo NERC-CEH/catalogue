@@ -17,8 +17,6 @@ import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
-import uk.ac.ceh.gateway.catalogue.elter.ElterDocument;
-import uk.ac.ceh.gateway.catalogue.elter.DummyLinkedElterDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.imp.ImpDocument;
@@ -28,7 +26,6 @@ import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.services.DocumentReader;
-import uk.ac.ceh.gateway.catalogue.elter.LinkedDocumentRetrievalService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -41,11 +38,9 @@ import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.*;
 @Controller
 public class DocumentController extends AbstractDocumentController {
     public static final String MAINTENANCE_ROLE = "ROLE_CIG_SYSTEM_ADMIN";
-    private final LinkedDocumentRetrievalService linkedDocumentRetrievalService;
 
-    public DocumentController(DocumentRepository documentRepository, LinkedDocumentRetrievalService linkedDocumentRetrievalService) {
+    public DocumentController(DocumentRepository documentRepository) {
         super(documentRepository);
-        this.linkedDocumentRetrievalService = linkedDocumentRetrievalService;
         log.info("Creating {}", this);
     }
 
@@ -128,73 +123,6 @@ public class DocumentController extends AbstractDocumentController {
             user,
             file,
             document
-        );
-    }
-
-    @PreAuthorize("@permission.userCanCreate(#catalogue)")
-    @RequestMapping (value = "documents",
-            method = RequestMethod.POST,
-            consumes = ELTER_JSON_VALUE)
-    public ResponseEntity<MetadataDocument> newElterDocument(
-            @ActiveUser CatalogueUser user,
-            @RequestBody ElterDocument document,
-            @RequestParam("catalogue") String catalogue
-    ) {
-        return saveNewMetadataDocument(
-                user,
-                document,
-                catalogue,
-                "new Elter Document"
-        );
-    }
-
-    @PreAuthorize("@permission.userCanEdit(#file)")
-    @RequestMapping(value = "documents/{file}",
-            method = RequestMethod.PUT,
-            consumes = ELTER_JSON_VALUE)
-    public ResponseEntity<MetadataDocument> updateElterDocument(
-            @ActiveUser CatalogueUser user,
-            @PathVariable("file") String file,
-            @RequestBody ElterDocument document
-    ) {
-        return saveMetadataDocument(
-                user,
-                file,
-                document
-        );
-    }
-
-    @PreAuthorize("@permission.userCanCreate(#catalogue)")
-    @RequestMapping (value = "documents",
-            method = RequestMethod.POST,
-            consumes = LINKED_ELTER_JSON_VALUE)
-    public ResponseEntity<MetadataDocument> newDummyLinkedElterDocument(
-            @ActiveUser CatalogueUser user,
-            @RequestBody DummyLinkedElterDocument document,
-            @RequestParam("catalogue") String catalogue
-    ) {
-        ElterDocument realDocument = linkedDocumentRetrievalService.get(document.getLinkedDocumentUri());
-        return saveNewMetadataDocument(
-                user,
-                realDocument,
-                catalogue,
-                "new linked Elter Document"
-        );
-    }
-
-    @PreAuthorize("@permission.userCanEdit(#file)")
-    @RequestMapping(value = "documents/{file}",
-            method = RequestMethod.PUT,
-            consumes = LINKED_ELTER_JSON_VALUE)
-    public ResponseEntity<MetadataDocument> updateLinkedElterDocument(
-            @ActiveUser CatalogueUser user,
-            @PathVariable("file") String file,
-            @RequestBody DummyLinkedElterDocument document
-    ) {
-        return saveMetadataDocument(
-                user,
-                file,
-                document
         );
     }
 
