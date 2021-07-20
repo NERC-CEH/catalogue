@@ -15,7 +15,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
 import java.util.regex.Pattern;
 
 import static java.lang.String.format;
@@ -29,7 +28,6 @@ import static uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadController.METADAT
 public class UploadService {
     private final HubbubService hubbubService;
     private final String uploadLocation;
-    private final ExecutorService threadPool;
     private final Pattern acceptablePathStarts = Pattern.compile("^/(dropbox|eidchub|supporting-documents)/.*");
     private final Set<String> acceptableDestinations = ImmutableSet.of(DATASTORE, METADATA);
 
@@ -58,13 +56,11 @@ public class UploadService {
 
     public UploadService(
         HubbubService hubbubService,
-        @Value("${hubbub.location}") String uploadLocation,
-        ExecutorService threadPool
+        @Value("${hubbub.location}") String uploadLocation
     ) {
         this.hubbubService = hubbubService;
         this.uploadLocation = uploadLocation;
-        this.threadPool = threadPool;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     public void accept(String path) {
@@ -77,7 +73,7 @@ public class UploadService {
 
     public void cancel(String path) {
         if (hasAcceptablePathStart(path)) {
-            threadPool.execute(() -> hubbubService.post("/cancel", path));
+            hubbubService.post("/cancel", path);
         } else {
             throw new UploadException("Bad path: " + path);
         }
@@ -129,7 +125,7 @@ public class UploadService {
 
     public void move(String path, String destination) {
         if (hasAcceptablePathStart(path) && hasAcceptableDestination(destination)) {
-            threadPool.execute(() -> hubbubService.postQuery("/move", path, "to", destination));
+            hubbubService.postQuery("/move", path, "to", destination);
         } else {
             throw new UploadException(format("Bad path: %s or destination: %s", path, destination));
         }
@@ -140,7 +136,7 @@ public class UploadService {
     }
 
     public void moveAllToDataStore(String id) {
-        threadPool.execute(() -> hubbubService.post("/move_all", id));
+        hubbubService.post("/move_all", id);
     }
 
     @SneakyThrows

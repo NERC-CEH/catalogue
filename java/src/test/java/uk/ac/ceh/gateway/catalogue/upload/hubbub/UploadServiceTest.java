@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.upload.hubbub;
 
-import com.google.common.util.concurrent.MoreExecutors;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -94,8 +93,7 @@ class UploadServiceTest {
     void setup() {
         service = new UploadService(
             hubbubService,
-            directory.getPath(),
-            MoreExecutors.newDirectExecutorService()
+            directory.getPath()
         );
     }
 
