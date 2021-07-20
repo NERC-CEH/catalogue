@@ -1,5 +1,6 @@
 <#import "../skeleton.ftlh" as skeleton>
 <#import "../../functions.ftlh" as func>
+<#import "../blocks.ftlh" as b>
 
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
     <div id="metadata" class="metadata erammp-metadata">
@@ -17,13 +18,13 @@
 
         <#if description?? && description?has_content>
           <div class="description">
-            <@renderLinebreaks description/>
+            <@b.linebreaks description/>
           </div>
         </#if>
 
         <#if modelApproach?? && modelApproach?has_content>
             <@simplerow "Modelling approach">
-              <@renderLinebreaks modelApproach/>
+              <@b.linebreaks modelApproach/>
             </@simplerow>
         </#if>
 
@@ -40,11 +41,9 @@
         <#if contacts?? && contacts?has_content>
           <@simplerow "Contact${(contacts?size > 1)?then('s', '')}">
             <#list contacts as contact>
-              <#noautoesc>
                 <div class="responsibleParty">
                   <@func.displayContact contact, true, true />
                 </div>
-              </#noautoesc>
             </#list>
           </@simplerow>
         </#if>
@@ -127,8 +126,6 @@
         </div>
         </#if>
 
-
-
         <div id="section-metadata">
           <h2>Metadata</h2>
             <@simplerow "Record ID">${id}</@simplerow>
@@ -152,14 +149,11 @@
     </div>
   </div>
 </#macro>
-<#macro renderLinebreaks content>
-    ${content?replace("\n", "<br>")}
-</#macro>
 
 <#macro commaList values>
   <#list values>
     <#items as value>
-      ${value}<#if value_has_next>,</#if>
+      ${value}<#sep>,
     </#items>
   </#list>
 </#macro>

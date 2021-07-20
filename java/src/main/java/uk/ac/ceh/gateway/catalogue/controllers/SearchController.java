@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.solr.client.solrj.SolrClient;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,7 +17,7 @@ import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.search.*;
-import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
+import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -59,6 +60,7 @@ public class SearchController {
         log.info("Creating");
     }
 
+    @CrossOrigin
     @GetMapping("documents")
     public RedirectView redirectToDefaultCatalogue(
             HttpServletRequest request
@@ -73,6 +75,7 @@ public class SearchController {
         return new RedirectView(redirectUrl);
     }
 
+    @CrossOrigin
     @SneakyThrows
     @ResponseBody
     @GetMapping("{catalogue}/documents")

@@ -22,17 +22,26 @@ import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.git.GitDataRepository;
 import uk.ac.ceh.components.userstore.AnnotatedUserHelper;
 import uk.ac.ceh.components.userstore.inmemory.InMemoryUserStore;
+import uk.ac.ceh.gateway.catalogue.citation.CitationService;
 import uk.ac.ceh.gateway.catalogue.converters.Gml2WmsFeatureInfoMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.UkeofXml2EFDocumentMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.Xml2GeminiDocumentMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.Xml2WmsCapabilitiesMessageConverter;
 import uk.ac.ceh.gateway.catalogue.datacite.DataciteService;
+import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
+import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
+import uk.ac.ceh.gateway.catalogue.document.JacksonDocumentInfoMapper;
+import uk.ac.ceh.gateway.catalogue.document.reading.*;
+import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
+import uk.ac.ceh.gateway.catalogue.document.writing.MessageConverterWritingService;
 import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
 import uk.ac.ceh.gateway.catalogue.elter.ElterDocument;
 import uk.ac.ceh.gateway.catalogue.erammp.ErammpDatacube;
 import uk.ac.ceh.gateway.catalogue.erammp.ErammpModel;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.imp.ImpDocument;
+import uk.ac.ceh.gateway.catalogue.indexing.ClassMap;
+import uk.ac.ceh.gateway.catalogue.indexing.PrioritisedClassMap;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
@@ -45,13 +54,13 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.GitDocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.GitRepoWrapper;
 import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
-import uk.ac.ceh.gateway.catalogue.services.*;
 import uk.ac.ceh.gateway.catalogue.sparql.SparqlVocabularyRetriever;
 import uk.ac.ceh.gateway.catalogue.sparql.SparqlVocabularyService;
 import uk.ac.ceh.gateway.catalogue.sparql.VocabularyService;
-import uk.ac.ceh.gateway.catalogue.util.ClassMap;
-import uk.ac.ceh.gateway.catalogue.util.MapServerGetFeatureInfoErrorHandler;
-import uk.ac.ceh.gateway.catalogue.util.PrioritisedClassMap;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
+import uk.ac.ceh.gateway.catalogue.wms.GetCapabilitiesObtainerService;
+import uk.ac.ceh.gateway.catalogue.wms.MapServerDetailsService;
+import uk.ac.ceh.gateway.catalogue.wms.MapServerGetFeatureInfoErrorHandler;
 
 import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
@@ -72,6 +81,22 @@ public class ServicesConfig {
         log.info("Creating Normal RestTemplate");
         val requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
         return new RestTemplate(requestFactory);
+    }
+
+    @Bean
+    @Qualifier("sparql")
+    public RestTemplate sparqlRestTemplate(ObjectMapper objectMapper) {
+        log.info("Creating SPARQL RestTemplate");
+        val messageConverter = new MappingJackson2HttpMessageConverter(objectMapper);
+        val supportedMediaTypes = Arrays.asList(
+            MediaType.APPLICATION_JSON,
+            new MediaType("application", "*+json"),
+            new MediaType("application", "*+json-simple")
+        );
+        messageConverter.setSupportedMediaTypes(supportedMediaTypes);
+        val restTemplate = new RestTemplate();
+        restTemplate.setMessageConverters(Collections.singletonList(messageConverter));
+        return restTemplate;
     }
 
     @Bean
@@ -167,21 +192,10 @@ public class ServicesConfig {
 
     @Bean
     public VocabularyService vocabularyService(
-        ObjectMapper objectMapper,
+        @Qualifier("sparql") RestTemplate restTemplate,
         @Value("${sparql.endpoint}") String sparqlEndpoint,
         @Value("${sparql.graph}") String sparqlGraph
     ) {
-        val messageConverter = new MappingJackson2HttpMessageConverter();
-        messageConverter.setObjectMapper(objectMapper);
-        messageConverter.setSupportedMediaTypes(
-            Arrays.asList(
-                MediaType.APPLICATION_JSON,
-                new MediaType("application", "*+json"),
-                new MediaType("application", "*+json-simple")
-            )
-        );
-        val restTemplate = new RestTemplate();
-        restTemplate.setMessageConverters(Collections.singletonList(messageConverter));
         return new SparqlVocabularyService(new SparqlVocabularyRetriever(restTemplate, sparqlEndpoint, sparqlGraph).retrieve());
     }
 

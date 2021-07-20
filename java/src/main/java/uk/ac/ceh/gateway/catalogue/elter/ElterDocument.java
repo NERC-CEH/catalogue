@@ -11,7 +11,7 @@ import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.deims.DeimsSolrIndex;
 import uk.ac.ceh.gateway.catalogue.gemini.*;
-import uk.ac.ceh.gateway.catalogue.indexing.WellKnownText;
+import uk.ac.ceh.gateway.catalogue.indexing.solr.WellKnownText;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.Citation;
 import uk.ac.ceh.gateway.catalogue.model.Link;
@@ -28,8 +28,8 @@ import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAP
 @ToString(callSuper = true)
 @Accessors(chain = true)
 @ConvertUsing({
-        @Template(called = "html/gemini.ftlh", whenRequestedAs = MediaType.TEXT_HTML_VALUE),
-        @Template(called = "xml/gemini.ftlx", whenRequestedAs = GEMINI_XML_VALUE),
+        @Template(called = "html/elter.ftlh", whenRequestedAs = MediaType.TEXT_HTML_VALUE),
+        @Template(called = "xml/elter.ftlx", whenRequestedAs = GEMINI_XML_VALUE),
         @Template(called = "rdf/ttl.ftlh", whenRequestedAs = RDF_TTL_VALUE),
         @Template(called = "schema.org/schema.org.ftlh", whenRequestedAs = RDF_SCHEMAORG_VALUE)
 })
@@ -38,7 +38,6 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
     private static final String TOPIC_PROJECT_URL = "http://onto.nerc.ac.uk/CEHMD/";
     private String otherCitationDetails, lineage, reasonChanged,
             metadataStandardName, metadataStandardVersion;
-    private Number version;
     private List<String> alternateTitles, spatialRepresentationTypes, datasetLanguages,
             securityConstraints;
     private List<Keyword> topicCategories;
@@ -48,7 +47,7 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
     private List<SpatialResolution> spatialResolutions;
     private List<Funding> funding;
     private List<BoundingBox> boundingBoxes;
-    private List<ResponsibleParty> distributorContacts, responsibleParties;
+    private List<ResponsibleParty> responsibleParties;
     private List<TimePeriod> temporalExtents;
     private List<OnlineResource> onlineResources;
     private Set<Link> incomingRelationships;
@@ -62,7 +61,6 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
     @JsonIgnore
     private boolean isDatacitable;
     private DatasetReferenceDate datasetReferenceDate;
-    private List<ResourceMaintenance> resourceMaintenance;
     private Service service;
     private List<ResourceConstraint> useConstraints;
     private MapDataDefinition mapDataDefinition;

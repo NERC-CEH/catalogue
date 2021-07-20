@@ -9,9 +9,10 @@ import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.datastore.DataSubmittedEvent;
+import uk.ac.ceh.gateway.catalogue.indexing.solr.SolrIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
+import uk.ac.ceh.gateway.catalogue.document.DocumentListingService;
 
 import java.util.Arrays;
 import java.util.List;
@@ -50,12 +51,12 @@ public class IndexingFileEventSubscriberTest {
         given(latestRevision.getRevisionID()).willReturn(revisionId);
         given(repo.getLatestRevision()).willReturn(latestRevision);
         given(event.getDataRepository()).willReturn(repo);
-        
+
         //When
         eventSubscriber.indexDocument(event);
-        
+
         //Then
         verify(service).indexDocuments(processedFilenames, revisionId);
     }
-    
+
 }

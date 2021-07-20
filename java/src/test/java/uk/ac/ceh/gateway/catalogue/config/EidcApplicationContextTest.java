@@ -61,7 +61,6 @@ class EidcApplicationContextTest {
         assertNotNull(freemarkerConfiguration.getSharedVariable("downloadOrderDetails"));
         assertNotNull(freemarkerConfiguration.getSharedVariable("geminiHelper"));
         assertNotNull(freemarkerConfiguration.getSharedVariable("jena"));
-        assertNotNull(freemarkerConfiguration.getSharedVariable("jira"));
         assertNotNull(freemarkerConfiguration.getSharedVariable("mapServerDetails"));
         assertNotNull(freemarkerConfiguration.getSharedVariable("metadataQuality"));
         assertNotNull(freemarkerConfiguration.getSharedVariable("permission"));

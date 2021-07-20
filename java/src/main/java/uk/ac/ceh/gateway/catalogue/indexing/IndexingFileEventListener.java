@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.components.datastore.DataDeletedEvent;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataSubmittedEvent;
-import uk.ac.ceh.gateway.catalogue.services.DocumentListingService;
+import uk.ac.ceh.gateway.catalogue.document.DocumentListingService;
 
 import java.util.List;
 
@@ -29,7 +29,7 @@ public class IndexingFileEventListener {
         log.debug("About to index files: {} for revision: {}", filenames, revisionID);
         service.indexDocuments(filenames, revisionID);
     }
-    
+
     @Subscribe
     public void unindexDocument(DataDeletedEvent<?> event) throws DocumentIndexingException {
         List<String> filenames = listingService.filterFilenamesEitherExtension(event.getFilenames());

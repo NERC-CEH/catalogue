@@ -35,8 +35,8 @@
             <div class="col-md-2"><b>Type</b></div>
             <div class="col-md-2"><b>Size</b></div>
             <div class="col-md-3"><b>Checksum</b></div>
-            <div class="col-md-2"><b>Last Changed</b></div>
-            <div class="col-md-3"><b>Validation Estimate</b></div>
+            <div class="col-md-2"><b>Last validated</b></div>
+            <div class="col-md-3"><b>Validation estimate</b></div>
         </div>
         <div class="row">
             <div class="col-md-2"><%= type %></div>

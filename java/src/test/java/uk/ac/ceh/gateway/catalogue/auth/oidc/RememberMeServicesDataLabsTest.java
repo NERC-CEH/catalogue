@@ -16,131 +16,147 @@ import lombok.val;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Date;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verifyNoInteractions;
 
+@ExtendWith(MockitoExtension.class)
 public class RememberMeServicesDataLabsTest {
-
     @Mock
-    private HttpServletResponse response;
+    private CatalogueUserProvider catalogueUserProvider;
 
     private RSASSASigner signer;
 
     private static final String COOKIE_NAME = "token";
-
     private static final String USER_NAME = "tester";
-
+    private static final String EMAIL = "tester@example.com";
     private static final String ISSUER = "https://mjbr.eu.auth0.com/";
-
     private static final String WRONG_ISSUER = "https://mjbr.eu.fake.com/";
-
     private static final long ONE_HOUR = 3600000L;
-
-    private RSAKey privateKey;
 
     private RSAKey publicKey;
 
-    private JWKSet jwkSet;
-
     private RememberMeServicesDataLabs target;
+
+    private void givenValidCatalogueUser(String token) {
+        val user = new CatalogueUser();
+        user.setUsername(EMAIL).setEmail(EMAIL);
+        given(catalogueUserProvider.provide(USER_NAME, token))
+            .willReturn(user);
+    }
 
     @BeforeEach
     @SneakyThrows
     public void init() {
-
-        privateKey = new RSAKeyGenerator(2048).keyID("123").generate();
+        val privateKey = new RSAKeyGenerator(2048).keyID("123").generate();
         publicKey = new RSAKey.Builder(privateKey.toPublicJWK()).build();
-        jwkSet = new JWKSet(publicKey);
+        val jwkSet = new JWKSet(publicKey);
         val keySource = new ImmutableJWKSet<>(jwkSet);
         signer = new RSASSASigner(privateKey);
 
-        target = new RememberMeServicesDataLabs(COOKIE_NAME, ISSUER, keySource);
+        target = new RememberMeServicesDataLabs(COOKIE_NAME, ISSUER, keySource, catalogueUserProvider);
     }
-
 
     @Test
     public void successfullyAutoLoginTest() throws JOSEException {
-
         //Given
-        String token = this.getAccessToken(ISSUER, new Date(new Date().getTime() - ONE_HOUR),
-                new Date(new Date().getTime() + ONE_HOUR));
+        val tokenValid = getAccessToken(
+            ISSUER,
+            new Date(new Date().getTime() - ONE_HOUR),
+            new Date(new Date().getTime() + ONE_HOUR)
+        );
+        givenValidCatalogueUser(tokenValid);
 
         val request = MockMvcRequestBuilders
                 .get(URI.create("https://example.com"))
-                .cookie(new Cookie("token", token))
+                .cookie(new Cookie("token", tokenValid))
                 .buildRequest(new MockServletContext());
 
         //When
-        val authentication = target.autoLogin(request, response);
+        val authentication = target.autoLogin(request, null);
 
         //Then
-        assertThat(((CatalogueUser) authentication.getPrincipal()).getUsername(), is(equalTo(USER_NAME)));
-        assertThat(((String) authentication.getCredentials()), is(equalTo(token)));
+        assertThat(((CatalogueUser) authentication.getPrincipal()).getUsername(), is(equalTo(EMAIL)));
+        assertThat(((CatalogueUser) authentication.getPrincipal()).getEmail(), is(equalTo(EMAIL)));
+        assertThat(((String) authentication.getCredentials()), is(equalTo(tokenValid)));
     }
 
     @Test
-    public void autoLoginTestShouldReturnNull() {
-
+    void autoLoginTestShouldReturnNull() {
         //Given
-        MockHttpServletRequest emptyMockHttpServletRequest = new MockHttpServletRequest();
+        val emptyMockHttpServletRequest = new MockHttpServletRequest();
 
         //When
-        val authentication = target.autoLogin(emptyMockHttpServletRequest, response);
+        val authentication = target.autoLogin(emptyMockHttpServletRequest, null);
 
         //Then
         assertThat(authentication, is(nullValue()));
     }
 
     @Test
-    public void autoLoginTestExpiredToken() {
-        Assertions.assertThrows(BadJWTException.class, () -> {
-            //Given
-            String token = this.getAccessToken(ISSUER, new Date(new Date().getTime() - 2 * ONE_HOUR),
-                    new Date(new Date().getTime() - ONE_HOUR));
+    void autoLoginTestExpiredToken() throws JOSEException {
+        //Given
+        val tokenExpired = getAccessToken(
+            ISSUER,
+            new Date(new Date().getTime() - 2 * ONE_HOUR),
+            new Date(new Date().getTime() - ONE_HOUR)
+        );
 
-            val request = MockMvcRequestBuilders
-                    .get(URI.create("https://example.com"))
-                    .cookie(new Cookie("token", token))
-                    .buildRequest(new MockServletContext());
-            //When
-            target.autoLogin(request, response);
-        });
+        val request = MockMvcRequestBuilders
+                .get(URI.create("https://example.com"))
+                .cookie(new Cookie("token", tokenExpired))
+                .buildRequest(new MockServletContext());
+        //When
+        Assertions.assertThrows(BadJWTException.class, () ->
+            target.autoLogin(request, null)
+        );
+
+        //then
+        verifyNoInteractions(catalogueUserProvider);
     }
 
     @Test
-    public void autoLoginTestIssuerDoesNotMatch() throws JOSEException {
-        Assertions.assertThrows(BadJWTException.class, () -> {
-            //Given
-            String token = this.getAccessToken(WRONG_ISSUER, new Date(new Date().getTime() - ONE_HOUR),
-                    new Date(new Date().getTime() + ONE_HOUR));
+    void autoLoginTestIssuerDoesNotMatch() throws JOSEException {
 
-            val request = MockMvcRequestBuilders
-                    .get(URI.create("https://example.com"))
-                    .cookie(new Cookie("token", token))
-                    .buildRequest(new MockServletContext());
+        //Given
+        val tokenWithWrongIssuer = getAccessToken(
+            WRONG_ISSUER,
+            new Date(new Date().getTime() - ONE_HOUR),
+            new Date(new Date().getTime() + ONE_HOUR)
+        );
 
-            //When
-            target.autoLogin(request, response);
-        });
+        val request = MockMvcRequestBuilders
+                .get(URI.create("https://example.com"))
+                .cookie(new Cookie("token", tokenWithWrongIssuer))
+                .buildRequest(new MockServletContext());
 
+        //When
+        Assertions.assertThrows(BadJWTException.class, () ->
+            target.autoLogin(request, null)
+        );
+
+        //then
+        verifyNoInteractions(catalogueUserProvider);
     }
 
     private String getAccessToken(String issuer, Date issueTime, Date expirationTime) throws JOSEException {
 
         val claimsSet = new JWTClaimsSet.Builder()
-                .subject("tester")
+                .subject(USER_NAME)
                 .issuer(issuer)
                 .issueTime(issueTime)
                 .expirationTime(expirationTime)

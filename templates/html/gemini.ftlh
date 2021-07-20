@@ -55,72 +55,71 @@
     <div class="container">
       <#if resourceType?has_content && resourceType.value !=''>
       <#assign recordType = codes.lookup('metadata.recordType',resourceType.value)?lower_case>
-      <#include "gemini/_admin.ftlh">
+      <#include "document/_admin.ftlh">
       <div id="section-Top">
-        <#include "gemini/_title.ftlh">
-
+        <#include "document/_title.ftlh">
       </div>
 
       <#if rel_supersedes?has_content && rel_supersedes?size gt 0>
-        <#include "gemini/_latestVersion.ftlh">
+        <#include "document/_latestVersion.ftlh">
       </#if>
 
       <#if permission.userCanEditRestrictedFields(metadata.catalogue) && metadata.catalogue == "eidc">
-        <#include "gemini/_metadataqualityAlert.ftlh">
+        <#include "document/_metadataqualityAlert.ftlh">
       </#if>
 
         <div id="document-description" class="clearfix">
-          <#include "gemini/_browseGraphic.ftlh">
-          <@blocks.linebreaks description!"" />
+            <#include "document/_browseGraphic.ftlh">
+            <@blocks.linebreaks description!"" />
         </div>
 
         <#if resourceType.value != 'aggregate' && resourceType.value != 'collection'>
-          <#include "gemini/_dates.ftlh">
+          <#include "document/_dates.ftlh">
 
           <div class="row">
             <div class="col-sm-4 col-sm-push-8 panel-right">
-              <#include "gemini/_uploadData.ftlh">
-              <#include "gemini/_metrics.ftlh">
+              <#include "document/_uploadData.ftlh">
+              <#include "document/_metrics.ftlh">
 
               <#if resourceStatus??>
                 <#if resourceStatus == 'Restricted'>
-                  <#include "gemini/_distribution_restricted.ftlh">
+                  <#include "document/_distribution_restricted.ftlh">
                 <#else>
                   <#if resourceType.value == 'signpost'>
-                    <#include "gemini/_distribution_signpost.ftlh">
+                    <#include "document/_distribution_signpost.ftlh">
                   <#elseif resourceType.value == 'service' && mapViewable>
-                    <#include "gemini/_distribution_service.ftlh">
+                    <#include "document/_distribution_service.ftlh">
                   <#elseif resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'application'>
-                    <#include "gemini/_distribution_dataset.ftlh">
+                    <#include "document/_distribution_dataset.ftlh">
                   </#if>
                 </#if>
               <#elseif metadata.catalogue != "eidc" &&  resourceType.value == 'signpost'>
-                 <#include "gemini/_distribution_signpost.ftlh">
+                 <#include "document/_distribution_signpost.ftlh">
               </#if>
 
               <#if resourceType.value == 'thirdPartyDataset'>
-                <#include "gemini/_third_party.ftlh">
+                <#include "document/_third_party.ftlh">
               </#if>
 
             </div>
             <div class="col-sm-8 col-sm-pull-4">
-              <#include "gemini/_extent.ftlh">
-              <#include "gemini/_dataquality.ftlh">
+              <#include "document/_extent.ftlh">
+              <#include "document/_dataquality.ftlh">
 
               <#-- to be replaced with related records -->
-                <#include "gemini/_related.ftlh">
+                <#include "document/_related.ftlh">
               <#-- END OF to be replaced -->
 
-              <#include "gemini/_supplemental.ftlh">
-              <#include "gemini/_contacts.ftlh">
+              <#include "document/_supplemental.ftlh">
+              <#include "document/_contacts.ftlh">
 
               <#if topicCategories?? || descriptiveKeywords?? ||  inspireTheme?? || funding?? || spatialRepresentationTypes?? || spatialReferenceSystems??>
                 <h3>Additional metadata</h3>
                 <dl id="otherInfo" class="dl-horizontal">
-                  <#include "gemini/_tags.ftlh">
-                  <#include "gemini/_funding.ftlh">
+                  <#include "document/_tags.ftlh">
+                  <#include "document/_funding.ftlh">
                   <#if resourceType?has_content && resourceType.value !='nonGeographicDataset'>
-                    <#include "gemini/_spatial.ftlh">
+                    <#include "document/_spatial.ftlh">
                   </#if>
                    <#if metadataDateTime?has_content>
                     <dt>Last updated</dt><dd>${metadataDateTime?datetime.iso?datetime?string['dd MMMM yyyy  HH:mm']}</dd>
@@ -132,11 +131,11 @@
           </div>
 
           <#if permission.userCanEditRestrictedFields(metadata.catalogue) && metadata.catalogue == "eidc">
-            <#include "gemini/_metadataqualityReport.ftlh">
+            <#include "document/_metadataqualityReport.ftlh">
           </#if>
 
         <#else>
-          <#include "gemini/_aggregate.ftlh">
+          <#include "document/_aggregate.ftlh">
         </#if>
 
       <#else>
@@ -150,7 +149,7 @@
   </div>
 
   <div id="footer">
-	 <#include "gemini/_footer.ftlh">
+	 <#include "document/_footer.ftlh">
 	</div>
 
   <script type="application/ld+json">

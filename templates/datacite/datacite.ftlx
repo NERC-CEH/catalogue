@@ -18,7 +18,7 @@
   <titles>
     <title>${doc.title}</title>
   </titles>
-  <publisher>NERC Environmental Information Data Centre</publisher>
+  <publisher>NERC EDS Environmental Information Data Centre</publisher>
   <publicationYear><#if doc.datasetReferenceDate.publicationDate??>${doc.datasetReferenceDate.publicationDate.year?c}</#if></publicationYear>
   <#if doc.descriptiveKeywords?has_content>
   <subjects>

@@ -1,0 +1,5 @@
+precreate-core deims /opt/solr/server/solr/configsets/deims
+precreate-core documents /opt/solr/server/solr/configsets/documents
+precreate-core keywords /opt/solr/server/solr/configsets/keywords
+precreate-core service-agreements /opt/solr/server/solr/configsets/service-agreements
+solr-foreground

@@ -36,5 +36,7 @@ public interface PermissionService {
 
     boolean userInGroup(String group);
 
+    boolean userIsAdmin();
+
     List<Group> getGroupsForUser(CatalogueUser user);
 }

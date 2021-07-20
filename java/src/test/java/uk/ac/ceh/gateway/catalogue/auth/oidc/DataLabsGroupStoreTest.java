@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.auth.oidc;
 
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,21 +14,18 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
+@Slf4j
 @ExtendWith(SpringExtension.class)
 @SecurityTestExecutionListeners
 public class DataLabsGroupStoreTest {
 
     private final static String ANY_STRING = "any";
-
     private final static String ROLE_1 = "ROLE1";
-
     private final static String ROLE_2 = "ROLE2";
 
     private GroupStore<CatalogueUser> target;
-
 
     @BeforeEach
     public void init() {

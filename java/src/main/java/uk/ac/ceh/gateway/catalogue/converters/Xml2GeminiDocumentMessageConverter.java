@@ -17,7 +17,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.LocalDateFactory;
 import uk.ac.ceh.gateway.catalogue.gemini.XPaths;
-import uk.ac.ceh.gateway.catalogue.services.CodeLookupService;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -98,7 +98,7 @@ public class Xml2GeminiDocumentMessageConverter extends AbstractHttpMessageConve
         this.serviceConverter = new ServiceConverter(xpath);
         this.useConstraintsConverter = new LegalConstraintsWithAnchorConverter(xpath, XPaths.USE_CONSTRAINT);
         this.accessConstraintsConverter = new LegalConstraintsWithAnchorConverter(xpath, XPaths.ACCESS_CONSTRAINT);
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @Override

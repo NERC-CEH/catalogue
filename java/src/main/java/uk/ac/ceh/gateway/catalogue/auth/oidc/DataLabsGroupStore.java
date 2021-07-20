@@ -28,10 +28,11 @@ public class DataLabsGroupStore<CatalogueUser extends User> implements GroupStor
             throw new Exception("User does not match the principal");
         }
         val authorities = authentication.getAuthorities();
+        log.debug("Granted Authorities in group store: {}", authorities);
         return authorities
-                .stream()
-                .map(authority -> new CrowdGroup(authority.getAuthority().toUpperCase(), ""))
-                .collect(Collectors.toList());
+            .stream()
+            .map(authority -> new CrowdGroup(authority.getAuthority().toUpperCase(), ""))
+            .collect(Collectors.toList());
     }
 
     @Override

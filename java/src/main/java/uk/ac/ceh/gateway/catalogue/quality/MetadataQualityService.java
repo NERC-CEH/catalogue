@@ -9,7 +9,7 @@ import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.config.CatalogueServiceConfig;
-import uk.ac.ceh.gateway.catalogue.services.DocumentReader;
+import uk.ac.ceh.gateway.catalogue.document.reading.DocumentReader;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -50,7 +50,7 @@ public class MetadataQualityService {
                 Option.DEFAULT_PATH_LEAF_TO_NULL,
                 Option.SUPPRESS_EXCEPTIONS
             );
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @SneakyThrows
@@ -59,12 +59,12 @@ public class MetadataQualityService {
 
         try {
             val parsedDoc = JsonPath.parse(
-                this.documentReader.read(id, "raw"),
-                this.config
+                documentReader.read(id, "raw"),
+                config
             );
             val parsedMeta = JsonPath.parse(
-                this.documentReader.read(id, "meta"),
-                this.config
+                documentReader.read(id, "meta"),
+                config
             );
 
             if (isQualifyingDocument(parsedDoc, parsedMeta)) {
@@ -414,7 +414,7 @@ public class MetadataQualityService {
             typeRefStringString
         );
         distributors.stream()
-            .filter(distributor -> fieldNotEqual(distributor, "organisationName", "Environmental Information Data Centre"))
+            .filter(distributor -> fieldNotEqual(distributor, "organisationName", "NERC EDS Environmental Information Data Centre"))
             .map(distributor -> distributor.getOrDefault("organisationName", "unknown"))
             .forEach(organisationName -> toReturn.add(new MetadataCheck("Distributor name is " + organisationName, INFO)));
 
@@ -445,9 +445,9 @@ public class MetadataQualityService {
             toReturn.add(new MetadataCheck("Publisher email address is missing", ERROR));
         }
         publishers.stream()
-            .filter(publisher -> fieldNotEqual(publisher, "organisationName", "NERC Environmental Information Data Centre"))
+            .filter(publisher -> fieldNotEqual(publisher, "organisationName", "NERC EDS Environmental Information Data Centre") && fieldNotEqual(publisher, "organisationName", "NERC Environmental Information Data Centre"))
             .map(publisher -> publisher.getOrDefault("organisationName", "unknown"))
-            .forEach(organisationName -> toReturn.add(new MetadataCheck("Publisher name is " + organisationName, INFO)));
+            .forEach(organisationName -> toReturn.add(new MetadataCheck("Publisher name is " + organisationName, WARNING)));
 
         publishers.stream()
             .filter(publisher -> fieldNotEqual(publisher, "email", "info@eidc.ac.uk"))
@@ -475,7 +475,7 @@ public class MetadataQualityService {
             toReturn.add(new MetadataCheck("Custodian email address is missing", ERROR));
         }
         custodians.stream()
-            .filter(custodian -> fieldNotEqual(custodian, "organisationName", "Environmental Information Data Centre"))
+            .filter(custodian -> fieldNotEqual(custodian, "organisationName", "NERC EDS Environmental Information Data Centre"))
             .map(custodian -> custodian.getOrDefault("organisationName", "unknown"))
             .forEach(organisationName -> toReturn.add(new MetadataCheck("Custodian name is " + organisationName, INFO)));
 
@@ -787,14 +787,14 @@ public class MetadataQualityService {
 
     @Value
     public static class MetadataCheck {
-        private final String test;
-        private final Severity severity;
+        String test;
+        Severity severity;
     }
 
     @Value
     public static class Results {
-        private final List<MetadataCheck> problems;
-        private final String id, message;
+        List<MetadataCheck> problems;
+        String id, message;
 
         public Results(@NonNull List<MetadataCheck> problems, @NonNull String id) {
             this(problems, id, "");

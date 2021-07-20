@@ -35,6 +35,8 @@ public class DeimsSolrScheduledSiteServiceTest {
 
     private static final String COLLECTION = "deims";
 
+    private static final String JSON = "deimssites.json";
+
     @Mock
     private SolrClient solrClient;
 
@@ -50,7 +52,7 @@ public class DeimsSolrScheduledSiteServiceTest {
     @SneakyThrows
     public void successfullyGetDIEMSSites() {
         //Given
-        val response = IOUtils.toString(getClass().getResource("deimssites.json"), StandardCharsets.UTF_8);
+        val response = IOUtils.toString(getClass().getResource(JSON), StandardCharsets.UTF_8);
         mockServer.expect(requestTo(ADDRESS))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withSuccess(response, MediaType.APPLICATION_JSON));
@@ -70,7 +72,7 @@ public class DeimsSolrScheduledSiteServiceTest {
     public void ThrowDocumentIndexingException() {
 
         //Given
-        val response = IOUtils.toString(getClass().getResource("deimssites.json"), StandardCharsets.UTF_8);
+        val response = IOUtils.toString(getClass().getResource(JSON), StandardCharsets.UTF_8);
         mockServer.expect(requestTo(ADDRESS))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withSuccess(response, MediaType.APPLICATION_JSON));

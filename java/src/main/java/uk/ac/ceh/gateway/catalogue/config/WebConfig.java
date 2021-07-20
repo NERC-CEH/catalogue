@@ -39,6 +39,7 @@ import uk.ac.ceh.gateway.catalogue.osdp.*;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
+import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreement;
 
 import java.util.List;
 
@@ -93,6 +94,7 @@ public class WebConfig implements WebMvcConfigurer {
         converters.add(new Object2TemplatedMessageConverter<>(Sample.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(SampleArchive.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(SearchResults.class, freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter<>(ServiceAgreement.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(SparqlResponse.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(StateResource.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(ValidationResponse.class, freemarkerConfiguration));

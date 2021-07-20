@@ -127,9 +127,9 @@
             <#assign emailAddress= "enquiries@ceh.ac.uk">
         </#if>
         <#if contact.individualName?has_content>
-            <#assign emailSubject = emailSubject + " (FAO: " + contact.individualName + ")">
+            <#assign emailSubject += " (FAO: " + contact.individualName + ")">
         </#if>
-        <a href="mailto:${emailAddress}${emailSubject}"><i class="far fa-envelope contactEmail"></i>&nbsp${emailAddress}</a>
+        <a href="mailto:${emailAddress}${emailSubject}"><i class="far fa-envelope contactEmail"></i>&nbsp;${emailAddress}</a>
     </#if>
 
 </#macro>

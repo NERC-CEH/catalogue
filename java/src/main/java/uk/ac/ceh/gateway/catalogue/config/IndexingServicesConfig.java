@@ -13,21 +13,36 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.datacite.DataciteService;
+import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
+import uk.ac.ceh.gateway.catalogue.document.DocumentListingService;
+import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
+import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
+import uk.ac.ceh.gateway.catalogue.elter.ElterDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.*;
+import uk.ac.ceh.gateway.catalogue.indexing.async.AsyncDocumentIndexingService;
+import uk.ac.ceh.gateway.catalogue.indexing.datacite.DataciteIndexingService;
+import uk.ac.ceh.gateway.catalogue.indexing.jena.*;
+import uk.ac.ceh.gateway.catalogue.indexing.mapserver.MapServerIndexGenerator;
+import uk.ac.ceh.gateway.catalogue.indexing.mapserver.MapServerIndexingService;
+import uk.ac.ceh.gateway.catalogue.indexing.solr.*;
+import uk.ac.ceh.gateway.catalogue.indexing.validation.ValidationIndexGenerator;
+import uk.ac.ceh.gateway.catalogue.indexing.validation.ValidationIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.LinkDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
-import uk.ac.ceh.gateway.catalogue.services.*;
 import uk.ac.ceh.gateway.catalogue.sparql.VocabularyService;
-import uk.ac.ceh.gateway.catalogue.util.ClassMap;
-import uk.ac.ceh.gateway.catalogue.util.PrioritisedClassMap;
+import uk.ac.ceh.gateway.catalogue.indexing.ClassMap;
+import uk.ac.ceh.gateway.catalogue.indexing.PrioritisedClassMap;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 import uk.ac.ceh.gateway.catalogue.validation.MediaTypeValidator;
 import uk.ac.ceh.gateway.catalogue.validation.ValidationReport;
 import uk.ac.ceh.gateway.catalogue.validation.XSDSchemaValidator;
+import uk.ac.ceh.gateway.catalogue.wms.MapServerDetailsService;
 
 import javax.xml.XMLConstants;
 import javax.xml.transform.Source;
@@ -123,6 +138,7 @@ public class IndexingServicesConfig {
 
         val mappings = new PrioritisedClassMap<IndexGenerator<?, SolrIndex>>()
             .register(GeminiDocument.class, new SolrIndexGeminiDocumentGenerator(new ExtractTopicFromDocument(), metadataDocumentGenerator, codeLookupService))
+            .register(ElterDocument.class, new SolrIndexElterDocumentGenerator(metadataDocumentGenerator))
             .register(LinkDocument.class, linkDocumentGenerator)
             .register(MetadataDocument.class, metadataDocumentGenerator);
 

@@ -10,7 +10,7 @@
       <div class="col-sm-4 col-sm-push-8">
         <#include "imp/_admin.ftlh">
         <@blocks.links jena.datasets(uri) "Datasets" />
-        <@blocks.links jena.modelApplications(uri) "Model Applications" />
+        <@blocks.links jena.modelApplications(uri) "Model uses" />
       </div>
       <div class="col-sm-8 col-sm-pull-4">
         <dl class="dl-horizontal">

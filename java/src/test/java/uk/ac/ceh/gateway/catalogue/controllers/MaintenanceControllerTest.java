@@ -19,10 +19,13 @@ import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.indexing.*;
+import uk.ac.ceh.gateway.catalogue.indexing.jena.JenaIndexingService;
+import uk.ac.ceh.gateway.catalogue.indexing.mapserver.MapServerIndexingService;
+import uk.ac.ceh.gateway.catalogue.indexing.solr.SolrIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.MaintenanceResponse;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
+import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.services.DataRepositoryOptimizingService;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -33,7 +36,7 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.ADMIN;
-import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.MAINTENANCE_ROLE;
+import static uk.ac.ceh.gateway.catalogue.controllers.DocumentController.MAINTENANCE_ROLE;
 
 @WithMockCatalogueUser(
     username=ADMIN,
@@ -48,10 +51,13 @@ import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.MAIN
 )
 public class MaintenanceControllerTest {
     @MockBean DataRepositoryOptimizingService repoService;
-    @MockBean @Qualifier("solr-index") SolrIndexingService<MetadataDocument> indexService;
-    @MockBean @Qualifier("jena-index") JenaIndexingService<MetadataDocument> linkingService;
+    @MockBean @Qualifier("solr-index")
+    SolrIndexingService<MetadataDocument> indexService;
+    @MockBean @Qualifier("jena-index")
+    JenaIndexingService<MetadataDocument> linkingService;
     @MockBean @Qualifier("validation-index") DocumentIndexingService validationService;
-    @MockBean @Qualifier("mapserver-index") MapServerIndexingService mapserverService;
+    @MockBean @Qualifier("mapserver-index")
+    MapServerIndexingService mapserverService;
     @MockBean CatalogueService catalogueService;
 
     @Autowired private MockMvc mvc;

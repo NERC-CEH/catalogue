@@ -57,14 +57,14 @@ The basic wrapper container of a metadata document
   </div>
 </#macro>
 
-<#-- 
+<#--
 Metadata section heading
 -->
 <#macro sectionHeading>
    <h1 class="section-heading"><#nested></h1>
 </#macro>
 
-<#-- 
+<#--
 Row of a metadata document
 -->
 <#macro basicRow classes="">
@@ -73,7 +73,7 @@ Row of a metadata document
   </div>
 </#macro>
 
-<#-- 
+<#--
 The basic structure of a metadata item that has a key (title) and content.
 A row of information in the document.
 -->
@@ -177,14 +177,14 @@ A repeated row
   </@repeatRow>
 </#macro>
 
-<#-- 
+<#--
 A url that repeats the url as the link text
 -->
 <#macro bareUrl value>
   <a href="${value}">${value}</a>
 </#macro>
 
-<#-- 
+<#--
 A url that shows title as the link text
 -->
 <#macro titleUrl link>
@@ -211,7 +211,7 @@ Link url or string
   </#if>
 </#macro>
 
-<#-- 
+<#--
 A list of strings
 -->
 <#macro bareList values>
@@ -224,10 +224,10 @@ A list of strings
   </#list>
 </#macro>
 
-<#-- 
+<#--
 A list of Keywords
 -->
-<#macro keywords keywords>  
+<#macro keywords keywords>
   <#list keywords>
     <ul class="list-unstyled">
       <#items as keyword>
@@ -256,8 +256,10 @@ Replace \n with line breaks
 -->
 <#macro linebreaks value>
     <#if value?has_content>
-      ${value?replace("\n", "<br>")}
-    </#if> 
+      <#list value?split("\n") as line>
+          ${line}<#sep><br>
+      </#list>
+    </#if>
 </#macro>
 
 <#--

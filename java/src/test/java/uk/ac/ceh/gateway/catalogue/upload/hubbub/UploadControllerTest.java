@@ -22,11 +22,12 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
-import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
-import uk.ac.ceh.gateway.catalogue.services.JiraService;
+import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -34,6 +35,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.UPLOAD_DOCUMENT_JSON;
 import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.UPLOADER_USERNAME;
@@ -64,6 +66,10 @@ class UploadControllerTest {
         given(permissionService.userCanUpload(id)).willReturn(true);
     }
 
+    private void givenUserIsAdmin() {
+        given(permissionService.userIsAdmin()).willReturn(true);
+    }
+
     @SneakyThrows
     private void givenGeminiDocument() {
         val gemini = new GeminiDocument();
@@ -75,9 +81,7 @@ class UploadControllerTest {
 
     @SneakyThrows
     private void givenFreemarkerConfiguration() {
-        configuration.setSharedVariable("jira", jiraService);
         configuration.setSharedVariable("catalogues", catalogueService);
-        configuration.setSharedVariable("permission", permissionService);
     }
 
     private void givenDefaultCatalogue() {
@@ -99,12 +103,25 @@ class UploadControllerTest {
             .willReturn(uploadDoc);
     }
 
+    private void givenDataTransferIssue() {
+        val status = new HashMap<String, Object>();
+        status.put("name", "Scheduled");
+        val fields = new HashMap<String, Object>();
+        fields.put("status", status);
+        val dataTransfer = new JiraIssue();
+        dataTransfer.setFields(fields);
+        given(jiraService.retrieveDataTransferIssue(id))
+            .willReturn(Optional.of(dataTransfer));
+    }
+
     @Test
     @SneakyThrows
     void getUploadPage() {
         //given
         givenUserCanUpload();
+        givenUserIsAdmin();
         givenGeminiDocument();
+        givenDataTransferIssue();
         givenFreemarkerConfiguration();
         givenDefaultCatalogue();
 
@@ -113,10 +130,15 @@ class UploadControllerTest {
             get("/upload/{id}", id)
         )
             .andExpect(status().isOk())
+            .andDo(print())
             .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
             .andExpect(view().name("html/upload/hubbub/upload-document"))
             .andExpect(model().attribute("id", id))
-            .andExpect(model().attribute("title", "Foo"));
+            .andExpect(model().attribute("title", "Foo"))
+            .andExpect(model().attribute("isAdmin", true))
+            .andExpect(model().attribute("isOpen", false))
+            .andExpect(model().attribute("isScheduled", true))
+            .andExpect(model().attribute("isInProgress", false));
     }
 
     @Test

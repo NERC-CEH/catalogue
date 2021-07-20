@@ -7,7 +7,7 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
-import uk.ac.ceh.gateway.catalogue.indexing.SolrIndex;
+import uk.ac.ceh.gateway.catalogue.indexing.solr.SolrIndex;
 import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 
 import java.util.List;

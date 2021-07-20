@@ -63,12 +63,14 @@
               <a href="${catalogue.url!'/'}">${catalogue.title}</a>
             </#if>
             </li>
-            <#if catalogue.id == "eidc">
-              <#include "menus/gemini.ftlh">
+            <#if catalogue.id == "assist">
+              <#include "menus/assist.ftlh">
+            <#elseif catalogue.id == 'eidc'>
+              <#include "menus/eidc.ftlh">
             <#elseif catalogue.id == "erammp">
               <#include "menus/erammp.ftlh">
             <#else>
-              <li <#if searching>class="active"</#if>><a href="/${catalogue.id}/documents">Search</a></li>
+              <li class="<#if searching>active</#if>"><a href="/${catalogue.id}/documents">Search</a></li>
             </#if>
           </#if>
           </ul>
@@ -98,7 +100,15 @@
       </div>
     </div>
     <#nested>
+    <@eidcJiraIssueCollector catalogue/>
     <div id="message-panel"></div>
     <script data-main="/static/scripts/main-out" src="/static/vendor/requirejs/require.js"></script>
   </body>
 </html></#compress></#macro>
+
+<#macro eidcJiraIssueCollector catalogue>
+  <#if catalogue?has_content && catalogue.id == "eidc">
+    <script type="text/javascript" src="https://jira.ceh.ac.uk/s/d41d8cd98f00b204e9800998ecf8427e-CDN/-8wgtt1/813004/fe1f443e9c2ab11853ac2c907ebc1d28/2.2.4.7/_/download/batch/com.atlassian.plugins.jquery:jquery/com.atlassian.plugins.jquery:jquery.js?collectorId=1977b77c"></script>
+    <script type="text/javascript" src="https://jira.ceh.ac.uk/s/743f218046d73ea8e8033c2a0fad57f5-T/-8wgtt1/813004/fe1f443e9c2ab11853ac2c907ebc1d28/4.0.4/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?locale=en-UK&collectorId=1977b77c"></script>
+  </#if>
+</#macro>

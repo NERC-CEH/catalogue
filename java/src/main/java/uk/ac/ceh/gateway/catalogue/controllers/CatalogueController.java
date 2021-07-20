@@ -11,7 +11,7 @@ import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
-import uk.ac.ceh.gateway.catalogue.services.CatalogueService;
+import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +55,13 @@ public class CatalogueController {
             // If the catalogue or identifier does not exist just return all the catalogues
         }
         return ResponseEntity.ok(catalogues);
+    }
+
+    @GetMapping("catalogues/{id}")
+    public Catalogue get(
+        @PathVariable("id") String id
+    ) {
+        return catalogueService.retrieve(id);
     }
 
     @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")

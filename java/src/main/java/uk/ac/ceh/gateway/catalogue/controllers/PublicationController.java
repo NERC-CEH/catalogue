@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
-import uk.ac.ceh.gateway.catalogue.services.PublicationService;
+import uk.ac.ceh.gateway.catalogue.publication.PublicationService;
 
 @Slf4j
 @ToString

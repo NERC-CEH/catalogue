@@ -133,7 +133,7 @@
     display: block;
   }
   #section-children {
-    margin-top: 5em;
+    margin-top: 3em;
   }
 
   #section-supplemental {
@@ -231,12 +231,15 @@
     padding-bottom: 6px;
   }
 
-  .aggregate-children {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(25rem, 1fr));
+  .cardlist {
+    margin: 1em auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
     gap: 1em;
 
-    .aggregate-child {
+    &--item {
+      max-width: 19.5em;
       border: 2px solid @brand-success;
       display: grid;
       grid-template-columns: 7rem auto;
@@ -272,7 +275,7 @@
         color: white;
         text-decoration: none;
       }
-      &:hover .aggregate-child--type {
+      &:hover .cardlist--item--type {
         color: white;
       }
     }
