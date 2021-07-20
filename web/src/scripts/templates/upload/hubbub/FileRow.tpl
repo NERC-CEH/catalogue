@@ -1,23 +1,15 @@
-<% if (open && errorType !== 'valid') { %>
-<div data-filename="<%= path %>" class="panel panel-danger panel-file">
-<% } else if (open) { %>
-<div data-filename="<%= path %>" class="panel panel-default panel-file">
-<% } else if (errorType !== 'valid') { %>
-<div data-filename="<%= path %>" class="panel panel-danger panel-file is-collapsed">
-<% } else { %>
-<div data-filename="<%= path %>" class="panel panel-default panel-file is-collapsed">
-<% } %>    
+<div class="panel panel-file <%= classes %>">
     <div class="panel-heading">
         <% if (errorType === 'file') { %>
             <span class="panel-heading-filename">
                 <i class="file-icon fas fa-exclamation-circle"></i>
                 <%= name %>
             </span>
-            <span class="panel-heading-type"><%= type %></span>
-        <% } else if (type !== 'VALID') { %>
+            <span class="panel-heading-type"><%= status %></span>
+        <% } else if (status !== 'VALID') { %>
             <span class="panel-heading-filename"><%= name %></span>
-            <span class="panel-heading-type"><%= type %></span>
-            <% if (type === 'MOVING_FROM' || type === 'MOVING_TO' || type === 'WRITING') { %>
+            <span class="panel-heading-type"><%= status %></span>
+            <% if (status === 'MOVING_FROM' || status === 'MOVING_TO' || status === 'WRITING') { %>
             <span class="panel-heading-type"><%= size %></span>
             <% } %>
         <% } else { %>
@@ -39,7 +31,7 @@
             <div class="col-md-3"><b>Validation estimate</b></div>
         </div>
         <div class="row">
-            <div class="col-md-2"><%= type %></div>
+            <div class="col-md-2"><%= status %></div>
             <div class="col-md-2"><%= size %></div>
             <div class="col-md-3"><%= hash %></div>
             <div class="col-md-2"><%= date %></div>

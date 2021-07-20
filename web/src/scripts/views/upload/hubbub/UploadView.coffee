@@ -1,16 +1,14 @@
 define [
-  'underscore'
   'jquery'
   'backbone'
   'dropzone'
   'filesize'
+  'cs!collections/upload/hubbub/FileCollection'
+  'cs!models/upload/hubbub/File'
+  'cs!views/upload/hubbub/FileView'
   'tpl!templates/upload/hubbub/FileRow.tpl'
   'tpl!templates/upload/hubbub/DropzoneFileRow.tpl'
-], (_, $, Backbone, Dropzone, filesize, fileRowTemplate, dropzoneFileTpl
-) -> Backbone.View.extend
-
-  pollingTimeout: null
-  fetchXhr: null
+], ($, Backbone, Dropzone, filesize, FileCollection, File, FileView, fileRowTemplate, dropzoneFileTpl) -> Backbone.View.extend
 
   events:
     'click .finish': 'showFinish'
@@ -18,6 +16,52 @@ define [
     'click .reschedule': 'reschedule'
     'click .schedule': 'schedule'
     'click .validate-all': 'validateAll'
+
+  initialize: ->
+    new Dropzone('.dropzone-container', @dropzoneOptions()) if @$('.dropzone-container').length
+
+    $datastore = @$('.datastore-files')
+    datastore = new FileCollection()
+    @listenTo(datastore, 'reset', (collection) => @addAll(collection, $datastore))
+
+    $dropbox = @$('.documents-files')
+    dropbox = new FileCollection()
+    @listenTo(dropbox, 'reset', (collection) => @addAll(collection, $dropbox))
+
+    $metadata = @$('.metadata-files')
+    metadata = new FileCollection()
+    @listenTo(metadata, 'reset', (collection) => @addAll(collection, $metadata))
+
+    $datastoreData = $('#datastore-data')
+#    TODO: remove NO FILES message
+    datastore.reset(JSON.parse($datastore.text())) if $datastoreData.length
+
+    $dropboxData = $('#dropbox-data')
+    dropbox.reset(JSON.parse($dropboxData.text())) if $dropboxData.length
+
+    $metadataData = $('#metadata-data')
+    metadata.reset(JSON.parse($metadataData.text())) if $metadataData.length
+
+
+
+
+    @model.on 'sync', =>
+      do @render
+      do $('.loading').remove
+      $('.messages').hide 'fast'
+      $('.pag-per-page .fa-spinner').css('visibility', 'hidden')
+      @pollingTimeout = setTimeout(@fetch, 7000)
+
+    @model.on 'change', => do @render
+
+  addOne: ($container, model) ->
+    view = new FileView({model: model})
+    $container.append(view.render().el)
+
+  addAll: (collection, $container) ->
+    console.log(collection)
+    console.log($container)
+    collection.each((model) => @addOne($container, model))
 
   showModal: (title, body, action) ->
     $modal = $('#documentUploadModal')
@@ -122,30 +166,6 @@ define [
         console.error('error', err)
     })
 
-  initialize: ->
-    @fetch = () =>
-      clearTimeout(@pollingTimeout)
-
-      if @fetchXhr != null && @fetchXhr.readyState > 0 && @fetchXhr.readyState < 4
-        @fetchXhr.abort()
-
-      @fetchXhr = @model.fetch
-        data:
-          documents_page: @model.page.documentsPage
-          datastore_page: @model.page.datastorePage
-          supporting_documents_page: @model.page.supportingDocumentsPage
-
-    do @initDropzone if @$('.dropzone-container').length
-
-    @model.on 'sync', =>
-      do @render
-      do $('.loading').remove
-      $('.messages').hide 'fast'
-      $('.pag-per-page .fa-spinner').css('visibility', 'hidden')
-      @pollingTimeout = setTimeout(@fetch, 7000)
-
-    @model.on 'change', => do @render
-
   fileAction: (name, action, to) ->
     action = action || name
     $(".#{name}").unbind('click')
@@ -160,69 +180,43 @@ define [
         @model[action](filename, to)
     )
 
-  initDropzone: ->
-    options =
-      timeout: -1
-      url: @model.url()
-      maxFilesize: 20 * 1000 * 1000
-      autoQueue: yes
-      previewTemplate: dropzoneFileTpl()
-      previewsContainer: '.dropzone-files'
-      clickable: '.fileinput-button'
-      parallelUploads: 1
-      init: ->
-        @on 'addedfile', (file) ->
-          $file = $(file.previewElement)
-          $file.find('.cancel').click => @removeFile(file)
-          $file.find('.file-size-value').text("#{filesize(file.size)}")
+  dropzoneOptions: ->
+    timeout: -1
+    url: @model.url()
+    maxFilesize: 20 * 1000 * 1000
+    autoQueue: yes
+    previewTemplate: dropzoneFileTpl()
+    previewsContainer: '.dropzone-files'
+    clickable: '.fileinput-button'
+    parallelUploads: 1
+    init: ->
+      @on 'addedfile', (file) ->
+        $file = $(file.previewElement)
+        $file.find('.cancel').click => @removeFile(file)
+        $file.find('.file-size-value').text("#{filesize(file.size)}")
 
-        @on 'uploadprogress', (file, progress, bytesSent) ->
-          $file = $(file.previewElement)
-          if progress < 100
-            $file.find('.file-status').text("Uploaded #{filesize(bytesSent)}")
-          else
-            $file.find('.file-status').text('Writing to Disk')
-            $file.find('.cancel').attr('disabled', true)
+      @on 'uploadprogress', (file, progress, bytesSent) ->
+        $file = $(file.previewElement)
+        if progress < 100
+          $file.find('.file-status').text("Uploaded #{filesize(bytesSent)}")
+        else
+          $file.find('.file-status').text('Writing to Disk')
+          $file.find('.cancel').attr('disabled', true)
 
-        @on 'success', (file) ->
-          $(file.previewElement).remove()
+      @on 'success', (file) ->
+        $(file.previewElement).remove()
 
-        @on 'error', (file, error, xhr) ->
-          $file = $(file.previewElement)
-          $file.find('.file-status').text('Error')
-          $file.find('.file-name i').attr('class', 'fa fa-exclamation-triangle')
-          $file.find('.cancel').attr('disabled', false)
-          errorMessages =
-            0: 'No connection'
-            403: 'Unauthorized'
-            500: 'Internal Server Error'
-          message = errorMessages[xhr.status] || error.error if xhr
-          $file.find('.file-message').text(message)
-
-    @dropzone = new Dropzone('.dropzone-container', options)
-
-
-  sizeToTime: (size) ->
-    time = ''
-    for key, value of @model.timeEstimate
-      if size < key
-        time = value
-      break
-    time
-
-  simpleDate: (time) ->
-    date = new Date(time)
-    d = date.getDate()
-    M = date.getMonth() + 1
-    y = ('' + date.getFullYear()).slice(2)
-
-    h = date.getHours()
-    h = "0#{h}" if h < 10
-
-    m = date.getMinutes()
-    m = "0#{m}" if m < 10
-
-    "#{d}/#{M}/#{y} - #{h}:#{m}"
+      @on 'error', (file, error, xhr) ->
+        $file = $(file.previewElement)
+        $file.find('.file-status').text('Error')
+        $file.find('.file-name i').attr('class', 'fa fa-exclamation-triangle')
+        $file.find('.cancel').attr('disabled', false)
+        errorMessages =
+          0: 'No connection'
+          403: 'Unauthorized'
+          500: 'Internal Server Error'
+        message = errorMessages[xhr.status] || error.error if xhr
+        $file.find('.file-message').text(message)
 
   pagination: (name, pageName) ->
     uploadFiles = @model.get('uploadFiles')
@@ -283,41 +277,14 @@ define [
   renderFiles: ->
     uploadFiles = @model.get('uploadFiles')
     for name of uploadFiles
-      filesEl = $(".#{name}-files")
-      filesEl.html('')
-      if typeof uploadFiles[name].documents == 'undefined' && typeof uploadFiles[name].invalid == 'undefined'
-        filesEl.append($("<h3 class='no-documents'>NO FILES IN #{@model.keyToName[name].toUpperCase()}</h3>"))
       for filename in Object.keys(uploadFiles[name].invalid || {}).sort()
         data = uploadFiles[name].invalid[filename]
-        @model.open[filename] = true if typeof @model.open[filename] == 'undefined'
-        data.moving = false
-        data.errorType = @model.errorType[data.type] || ''
-        data.hash = data.hash || 'NO HASH'
         data.action = @model.errorActions[data.type]
-        data.el = "#{name}-#{data.id}"
-        data.size = filesize(data.bytes)
-        data.estimate = @sizeToTime(data.bytes)
-        data.message = @model.messages[data.type]
-        data.date = @simpleDate(data.time)
-        data.open = @model.open[filename]
-        row = $(fileRowTemplate,  data)
-        filesEl.append(row)
+
       for filename in Object.keys(uploadFiles[name].documents || {}).sort()
         data = uploadFiles[name].documents[filename]
         @model.open[filename] = false if typeof @model.open[filename] == 'undefined'
-        data.errorType = 'valid'
-        data.moving = data.type.includes('MOVING') || data.type == 'WRITING'
-        data.validating = data.type == 'VALIDATING_HASH'
-        data.hash = data.hash || 'NO HASH'
         data.action = @model.keyToAction[name]
-        data.el = "#{name}-#{data.id}"
-        data.size = filesize(data.bytes)
-        data.estimate = @sizeToTime(data.bytes)
-        data.message = @model.messages[data.type]
-        data.date = @simpleDate(data.time)
-        data.open = @model.open[filename]
-        row = $(fileRowTemplate,  data)
-        filesEl.append(row)
 
       @fileAction('accept')
       @fileAction('delete', 'showDelete')
@@ -340,5 +307,4 @@ define [
 
 
   render: ->
-    do @renderFiles
     do @renderPagination
