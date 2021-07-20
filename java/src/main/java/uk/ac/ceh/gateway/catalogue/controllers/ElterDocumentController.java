@@ -29,7 +29,7 @@ public class ElterDocumentController extends AbstractDocumentController {
     public ElterDocumentController (DocumentRepository documentRepository, LinkedDocumentRetrievalService linkedDocumentRetrievalService ) {
         super(documentRepository);
         this.linkedDocumentRetrievalService = linkedDocumentRetrievalService;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @PreAuthorize("@permission.userCanCreate(#catalogue)")

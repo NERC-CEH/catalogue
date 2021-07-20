@@ -4,14 +4,10 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.context.annotation.Profile;
-
-import static uk.ac.ceh.gateway.catalogue.util.Headers.withBasicAuth;
 
 @Profile("elter")
 @Slf4j
@@ -24,7 +20,7 @@ public class LinkedDocumentRetrievalService {
             @Qualifier("normal") RestTemplate restTemplate
     ) {
         this.restTemplate = restTemplate;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     public ElterDocument get(String url) {
