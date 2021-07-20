@@ -14,12 +14,12 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
 import static java.lang.String.format;
-import static uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadController.DATASTORE;
-import static uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadController.METADATA;
+import static uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadController.*;
 
 @Profile("upload:hubbub")
 @Slf4j
@@ -30,6 +30,9 @@ public class UploadService {
     private final String uploadLocation;
     private final Pattern acceptablePathStarts = Pattern.compile("^/(dropbox|eidchub|supporting-documents)/.*");
     private final Set<String> acceptableDestinations = ImmutableSet.of(DATASTORE, METADATA);
+    private final Set<String> acceptableStorage = ImmutableSet.of(DATASTORE, DROPBOX, METADATA);
+
+    static final int BIG_PAGE_SIZE = 1000000;
 
     static final String[] VISIBLE_STATUS = new String[]{
         "CHANGED_HASH",
@@ -87,16 +90,12 @@ public class UploadService {
     public void csv(PrintWriter writer, String id) {
         val path = format("/eidchub/%s", id);
         log.debug("Getting CSV for {}", path);
-        val first = hubbubService.get(path);
-        val total = first.getPagination().getTotal();
-        val eidchub = hubbubService.get(path, 1, total).getData();
-        eidchub.stream()
-            .filter(fileInfo -> fileInfo.getStatus().equals("VALID"))
-            .forEach(fileInfo -> {
-                val truncatedPath = fileInfo.getTruncatedPath();
-                val hash = fileInfo.getHash();
-                writer.println(format("%s,%s", truncatedPath, hash));
-            });
+        val fileInfos = hubbubService.get(path, 1, BIG_PAGE_SIZE, "VALID");
+        fileInfos.forEach(fileInfo -> {
+            val truncatedPath = fileInfo.getTruncatedPath();
+            val hash = fileInfo.getHash();
+            writer.println(format("%s,%s", truncatedPath, hash));
+        });
     }
 
     public void delete(String path) {
@@ -107,20 +106,20 @@ public class UploadService {
         }
     }
 
-    public UploadDocument get(String id, int documentsPage, int datastorePage, int supportingDocumentsPage) {
-        return get(id, documentsPage, datastorePage, supportingDocumentsPage, VISIBLE_STATUS);
+    public List<FileInfo> get(String id, String storage, int page, int size) {
+        if (hasAcceptableStorage(storage) && hasValidPageAndSize(page, size)) {
+            return hubbubService.get(format("/%s/%s", storage, id), page, size, VISIBLE_STATUS);
+        } else {
+            throw new UploadException(format("Bad path: /%s/%s or page number: %s", storage, id, page));
+        }
     }
 
-    private UploadDocument get(String id, int documentsPage, int datastorePage, int supportingDocumentsPage, String... status) {
-        val dropboxRes = hubbubService.get(format("/dropbox/%s", id), documentsPage, status);
-        log.debug("dropbox is {}", dropboxRes);
-        val eidchubRes = hubbubService.get(format("/eidchub/%s", id), datastorePage, status);
-        log.debug("eidchub is {}", eidchubRes);
-        val supportingDocumentRes = hubbubService.get(format("/supporting-documents/%s", id), supportingDocumentsPage, status);
-        log.debug("supporting documents is {}", supportingDocumentRes);
-        val document = new UploadDocument(id, dropboxRes, eidchubRes, supportingDocumentRes);
-        log.debug("Getting {} for status {}", document, status);
-        return document;
+    private boolean hasAcceptableStorage(String storage) {
+        return acceptableStorage.contains(storage);
+    }
+
+    private boolean hasValidPageAndSize(int page, int size) {
+        return page > 0 && size > 0;
     }
 
     public void move(String path, String destination) {

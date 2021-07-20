@@ -48,8 +48,8 @@
         <#if isAdmin>
             <#assign metadataTitle>Metadata <small>Supporting Documents</small></#assign>
             <@documentUploadSection title=metadataTitle icon="copy" iconClass="far">
-                <@pagination "supporting-documents"/>
-                <@loadingContainer "supporting-documents"/>
+                <@pagination "metadata"/>
+                <@loadingContainer "metadata"/>
             </@documentUploadSection>
             <@documentUploadSection "Datastore" "lock">
                 <@pagination "datastore"/>
@@ -72,6 +72,15 @@
             </@row>
         </@documentUploadSection>
     </@documentContainer>
+    <#if datastore??>
+        <@data "datastore" datastore/>
+    </#if>
+    <#if dropbox??>
+        <@data "dropbox" dropbox/>
+    </#if>
+    <#if metadata??>
+        <@data "metadata" metadata/>
+    </#if>
     <@documentUploadModal/>
 </@skeleton.master>
 
@@ -168,10 +177,9 @@
 </#macro>
 
 <#macro loadingContainer name>
-    <div class="row loading text-center">
-        <h3><i class="fas fa-spinner fa-spin-2x"></i> LOADING</h3>
+    <div class="${name}-files">
+        <h3 class='no-documents text-center'>NO FILES IN ${name?upper_case}</h3>
     </div>
-    <div class="${name}-files"></div>
 </#macro>
 
 <#macro row classes="">
@@ -220,6 +228,16 @@
         <i class="btn-icon fas fa-file-download"></i>
         <span>Download Checksum Report</span>
     </a>
+</#macro>
+
+<#macro data title files>
+    <#list files>
+        <script id="${title}-data" type="application/json">
+        [<#items as file>
+            {"bytes":${file.bytes?c},"hash":"${file.hash}","name":"${file.name}","path":"${file.path}","status":"${file.status}","time":${file.time?c}}<#sep>,</#sep>
+        </#items>]
+        </script>
+    </#list>
 </#macro>
 
 <#macro documentUploadModal>

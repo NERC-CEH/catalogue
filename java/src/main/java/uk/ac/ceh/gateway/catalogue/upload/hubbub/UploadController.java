@@ -20,12 +20,11 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
 import javax.servlet.http.HttpServletResponse;
-
+import java.util.List;
 import java.util.Optional;
 
 import static java.lang.String.format;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.TEXT_CSV_VALUE;
 
 @Controller
@@ -40,8 +39,10 @@ public class UploadController {
     static final String UNHOLD = "811";
     static final String APPROVE = "711";
     static final String SCHEDULED = "741";
-    static final String METADATA = "supporting-documents";
+
     static final String DATASTORE = "eidchub";
+    static final String DROPBOX = "dropbox";
+    static final String METADATA = "supporting-documents";
 
     private final UploadService uploadService;
     private final DocumentRepository documentRepository;
@@ -68,7 +69,7 @@ public class UploadController {
             @PathVariable("id") String id,
             Model model
     ) {
-        log.info("Requesting UploadDocument page for {}", id);
+        log.info("Requesting upload page for {}", id);
         model.addAttribute("id", id);
 
         val geminiDocument = (GeminiDocument) documentRepository.read(id);
@@ -83,6 +84,26 @@ public class UploadController {
         model.addAttribute("isScheduled", dataTransfer.isScheduled());
         model.addAttribute("isInProgress", dataTransfer.isInProgress());
 
+        if (dataTransfer.isScheduled()) {
+            model.addAttribute(
+                "dropbox",
+                uploadService.get(id, DROPBOX, 1, 20)
+            );
+        } else if (dataTransfer.isInProgress()) {
+            model.addAttribute(
+                "datastore",
+                uploadService.get(id, DATASTORE, 1, 20)
+            );
+            model.addAttribute(
+                DROPBOX,
+                uploadService.get(id, DROPBOX, 1, 20)
+            );
+            model.addAttribute(
+                "metadata",
+                uploadService.get(id, METADATA, 1, 20)
+            );
+        }
+
         log.debug("Model is {}", model);
         //noinspection SpringMVCViewInspection
         return "html/upload/hubbub/upload";
@@ -90,21 +111,15 @@ public class UploadController {
 
     @ResponseBody
     @PreAuthorize("@permission.toAccess(#user, #id, 'VIEW')")
-    @GetMapping(produces = APPLICATION_JSON_VALUE)
-    public UploadDocument get(
+    @GetMapping("{storage}")
+    public List<FileInfo> get(
         @ActiveUser CatalogueUser user,
         @PathVariable("id") String id,
-        @RequestParam(value = "documents_page", defaultValue = "1") int documentsPage,
-        @RequestParam(value = "datastore_page", defaultValue = "1") int datastorePage,
-        @RequestParam(value = "supporting_documents_page", defaultValue = "1") int supportingDocumentsPage
+        @PathVariable("storage") String storage,
+        @RequestParam(value = "page", defaultValue = "1") int page,
+        @RequestParam(value = "size", defaultValue = "20") int size
     ) {
-        log.debug("GETing {} (documentsPage={}, datastorePage={}, supportingDocumentsPage={})", id, documentsPage, datastorePage, supportingDocumentsPage);
-        return uploadService.get(
-            id,
-            documentsPage,
-            datastorePage,
-            supportingDocumentsPage
-        );
+        return uploadService.get(id, storage, page, size);
     }
 
     @SneakyThrows

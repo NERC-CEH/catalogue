@@ -5,30 +5,23 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static uk.ac.ceh.gateway.catalogue.upload.hubbub.HubbubResponse.*;
 
-public class HubbubResponseTest {
-
+public class FileInfoTest {
     @Test
     public void truncatedName() {
         //given
         val fileInfo = new FileInfo(
-                0L,
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "/eidchub/444bd227-b934-412e-8863-326afb77063b/pet/data.csv",
-                "",
-                "",
-                0L
+            0L,
+            "",
+            "",
+            "/eidchub/444bd227-b934-412e-8863-326afb77063b/pet/data.csv",
+            "",
+            0L
         );
-        
+
         //when
         val actual = fileInfo.getTruncatedPath();
-        
+
         //then
         assertThat(actual, equalTo("pet/data.csv"));
     }

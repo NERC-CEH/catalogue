@@ -27,9 +27,7 @@ import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Optional;
+import java.util.*;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.mockito.ArgumentMatchers.any;
@@ -104,15 +102,6 @@ class UploadControllerTest {
             );
     }
 
-    private void givenUploadDocument() {
-        val dropboxResponse = new HubbubResponse(new ArrayList<>(), new HubbubResponse.Pagination(1, 10, 20));
-        val datastoreResponse = new HubbubResponse(new ArrayList<>(), new HubbubResponse.Pagination(1, 10, 100));
-        val supportingDocumentsResponse = new HubbubResponse(new ArrayList<>(), new HubbubResponse.Pagination(1, 10, 1));
-        val uploadDoc = new UploadDocument(id, dropboxResponse, datastoreResponse, supportingDocumentsResponse);
-        given(uploadService.get(id, 1, 1, 1))
-            .willReturn(uploadDoc);
-    }
-
     private void givenDataTransferIssue() {
         val status = new HashMap<String, Object>();
         status.put("name", "Scheduled");
@@ -134,6 +123,14 @@ class UploadControllerTest {
             .willReturn(metadata);
     }
 
+    private void givenDropbox() {
+        val data = Collections.singletonList(
+            new FileInfo(23L, "hash", "name", "path", "status", 234234234L)
+        );
+        given(uploadService.get(id, "dropbox", 1, 20))
+            .willReturn(data);
+    }
+
     @Test
     @SneakyThrows
     void getPage() {
@@ -144,6 +141,7 @@ class UploadControllerTest {
         givenDataTransferIssue();
         givenFreemarkerConfiguration();
         givenDefaultCatalogue();
+        givenDropbox();
 
         //when
         mvc.perform(
@@ -157,20 +155,21 @@ class UploadControllerTest {
             .andExpect(model().attribute("isAdmin", true))
             .andExpect(model().attribute("isOpen", false))
             .andExpect(model().attribute("isScheduled", true))
-            .andExpect(model().attribute("isInProgress", false));
+            .andExpect(model().attribute("isInProgress", false))
+            .andExpect(model().attributeExists("dropbox"));
+
     }
 
     @Test
     @SneakyThrows
-    void getUploadDocument() {
+    void getDropboxFileInfos() {
         //given
-        givenUploadDocument();
         givenUserCanAccess();
+        givenDropbox();
 
         //when
         mvc.perform(
-            get("/upload/{id}", id)
-                .accept(APPLICATION_JSON)
+            get("/upload/{id}/dropbox", id)
         )
             .andExpect(status().isOk())
             .andExpect(content().contentType(APPLICATION_JSON));

@@ -13,8 +13,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Objects;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
@@ -110,29 +109,6 @@ public class HubbubServiceTest {
     }
 
     @Test
-    public void getJustPath() {
-        //given
-        mockServer
-                .expect(requestTo(startsWith("https://example.com/")))
-                .andExpect(method(HttpMethod.GET))
-                .andExpect(queryParam("data", "true"))
-                .andExpect(queryParam("path", "12345-903"))
-                .andExpect(queryParam("page", "1"))
-                .andExpect(queryParam("size", "20"))
-                .andExpect(queryParam("status", nullValue()))
-                .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
-                .andRespond(withSuccess(success, MediaType.APPLICATION_JSON));
-
-        //when
-        val actual = hubbubService.get("12345-903");
-
-        //then
-        assertThat(actual.getPagination().getTotal(), equalTo(2));
-        assertThat(actual.getData().size(), equalTo(2));
-        mockServer.verify();
-    }
-
-    @Test
     public void getForStatus() {
         //given
         mockServer
@@ -147,7 +123,7 @@ public class HubbubServiceTest {
                 .andRespond(withSuccess(success, MediaType.APPLICATION_JSON));
 
         //when
-        hubbubService.get("12345-903", 1, "one", "two");
+        hubbubService.get("12345-903", 1, 20,"one", "two");
 
         //then
         mockServer.verify();
