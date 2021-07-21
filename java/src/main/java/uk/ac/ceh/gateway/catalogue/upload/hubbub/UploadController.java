@@ -4,6 +4,7 @@ import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,7 +31,7 @@ import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.TEXT_CSV_VA
 @Controller
 @Profile("upload:hubbub")
 @Slf4j
-@ToString
+@ToString(of = "maxFileSize")
 @RequestMapping("upload/{id}")
 public class UploadController {
     // These transition ids are specific to the CT & EIDCHELP Jira project
@@ -48,18 +49,21 @@ public class UploadController {
     private final DocumentRepository documentRepository;
     private final JiraService jiraService;
     private final PermissionService permissionService;
+    private final String maxFileSize;
 
     public UploadController(
         UploadService uploadService,
         DocumentRepository documentRepository,
         JiraService jiraService,
-        PermissionService permissionService
+        PermissionService permissionService,
+        @Value("${spring.servlet.multipart.max-file-size}") String maxFileSize
     ) {
         this.uploadService = uploadService;
         this.documentRepository = documentRepository;
         this.jiraService = jiraService;
         this.permissionService = permissionService;
-        log.info("Creating");
+        this.maxFileSize = maxFileSize;
+        log.info("Creating {}", this);
     }
 
     @SneakyThrows
@@ -83,6 +87,7 @@ public class UploadController {
         model.addAttribute("isOpen", dataTransfer.isOpen());
         model.addAttribute("isScheduled", dataTransfer.isScheduled());
         model.addAttribute("isInProgress", dataTransfer.isInProgress());
+        model.addAttribute("maxFileSize", maxFileSize);
 
         if (dataTransfer.isScheduled()) {
             model.addAttribute(

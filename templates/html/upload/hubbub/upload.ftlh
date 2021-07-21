@@ -148,6 +148,11 @@
                 <@finishUploadingButton/>
             </div>
         </@row>
+        <@row>
+            <div class="col-md-2 col-md-offset-7">
+                <p>Maximum individual file size is ${maxFileSize}</p>
+            </div>
+        </@row>
     </div>
 </#macro>
 

@@ -156,7 +156,7 @@ class UploadControllerTest {
             .andExpect(model().attribute("isOpen", false))
             .andExpect(model().attribute("isScheduled", true))
             .andExpect(model().attribute("isInProgress", false))
-            .andExpect(model().attributeExists("dropbox"));
+            .andExpect(model().attributeExists("dropbox", "maxFileSize"));
 
     }
 
