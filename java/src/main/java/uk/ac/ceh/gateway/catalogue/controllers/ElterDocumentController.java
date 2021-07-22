@@ -26,7 +26,7 @@ import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.LINKED_ELTE
 public class ElterDocumentController extends AbstractDocumentController {
     private final LinkedDocumentRetrievalService linkedDocumentRetrievalService;
 
-    public ElterDocumentController (DocumentRepository documentRepository, LinkedDocumentRetrievalService linkedDocumentRetrievalService ) {
+    public ElterDocumentController (DocumentRepository documentRepository, LinkedDocumentRetrievalService linkedDocumentRetrievalService) {
         super(documentRepository);
         this.linkedDocumentRetrievalService = linkedDocumentRetrievalService;
         log.info("Creating");
