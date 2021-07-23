@@ -1,6 +1,6 @@
 define [
   'backbone'
-  'tpl!templates/upload/simple/File.tpl'
+  'tpl!templates/editor/KeywordCheckbox.tpl'
 ], (Backbone, template) -> Backbone.View.extend
 
   tagName: 'li'
@@ -11,13 +11,16 @@ define [
     'change input': 'select'
 
   initialize: ->
+    console.log("keyword checkbox initialize")
     @listenTo(@model, 'sync', @remove)
     @listenTo(@model, 'change', @render)
 
   select: ->
+    console.log("select checkbox")
     previous = @model.get('toSearch')
     @model.set('toSearch', !previous)
 
   render: ->
+    console.log("render checkbox")
     @$el.html(@template(@model.attributes))
     @

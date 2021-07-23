@@ -1,6 +1,6 @@
 <div class="vocabularies"/>
-  <button class='select-all'>Search All Catalogues</button>
-  <button class='search-selected'>Search Selected</button>
+<button class='select-all'>Search All Catalogues</button>
+<button class='search-selected'>Search Selected</button>
 <div class="row">
   <div class="col-sm-1">
     <label>Keywords</label>
