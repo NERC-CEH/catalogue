@@ -1,14 +1,12 @@
 define [
   'jquery'
   'backbone'
-  'dropzone'
-  'filesize'
   'cs!collections/upload/hubbub/FileCollection'
   'cs!models/upload/hubbub/File'
   'cs!views/upload/hubbub/FileView'
   'tpl!templates/upload/hubbub/FileRow.tpl'
-  'tpl!templates/upload/hubbub/DropzoneFileRow.tpl'
-], ($, Backbone, Dropzone, filesize, FileCollection, File, FileView, fileRowTemplate, dropzoneFileTpl) -> Backbone.View.extend
+  'cs!views/upload/hubbub/DropzoneView'
+], ($, Backbone, FileCollection, File, FileView, fileRowTemplate, DropzoneView) -> Backbone.View.extend
 
   events:
     'click .finish': 'showFinish'
@@ -18,50 +16,60 @@ define [
     'click .validate-all': 'validateAll'
 
   initialize: ->
-    new Dropzone('.dropzone-container', @dropzoneOptions()) if @$('.dropzone-container').length
+    if @$('.dropzone-container').length
+      dropzoneSuccess = (file) =>
+        model = new File
+          bytes: file.size
+          name: file.name
+          path: "/dropbox/#{@model.get('id')}/#{file.name}"
+          status: 'WRITING'
+        @addOne(@dropbox, @$dropbox, model)
+        $(file.previewElement).remove()
+#        TODO: query Hubbub for state of model after a delay to allow validating
+        setTimeout(
+          () -> console.log("updating #{model.get('path')}"),
+          7000
+        )
 
-    $datastore = @$('.datastore-files')
-    datastore = new FileCollection()
-    @listenTo(datastore, 'reset', (collection) => @addAll(collection, $datastore))
+      new DropzoneView
+        el: '.dropzone-container'
+        success: dropzoneSuccess
+        url: @model.url()
 
-    $dropbox = @$('.documents-files')
-    dropbox = new FileCollection()
-    @listenTo(dropbox, 'reset', (collection) => @addAll(collection, $dropbox))
+    @$datastore = @$('.datastore-files')
+    @datastore = new FileCollection()
+    @listenTo(@datastore, 'reset', (collection) => @addAll(collection, @$datastore))
+    @listenTo(@datastore, 'add', (model) => @addOne(@datastore, @$datastore, model))
 
-    $metadata = @$('.metadata-files')
-    metadata = new FileCollection()
-    @listenTo(metadata, 'reset', (collection) => @addAll(collection, $metadata))
+    @$dropbox = @$('.documents-files')
+    @dropbox = new FileCollection()
+    @listenTo(@dropbox, 'reset', (collection) => @addAll(collection, @$dropbox))
+    @listenTo(@dropbox, 'add', (model) => @addOne(@dropbox, @$dropbox, model))
+
+    @$metadata = @$('.metadata-files')
+    @metadata = new FileCollection()
+    @listenTo(@metadata, 'reset', (collection) => @addAll(collection, @$metadata))
+    @listenTo(@metadata, 'add', (model) => @addOne(@metadata, @$metadata, model))
 
     $datastoreData = $('#datastore-data')
-#    TODO: remove NO FILES message
-    datastore.reset(JSON.parse($datastore.text())) if $datastoreData.length
+    @datastore.reset(JSON.parse(@$datastore.text())) if $datastoreData.length
 
     $dropboxData = $('#dropbox-data')
-    dropbox.reset(JSON.parse($dropboxData.text())) if $dropboxData.length
+    @dropbox.reset(JSON.parse($dropboxData.text())) if $dropboxData.length
 
     $metadataData = $('#metadata-data')
-    metadata.reset(JSON.parse($metadataData.text())) if $metadataData.length
+    @metadata.reset(JSON.parse($metadataData.text())) if $metadataData.length
 
-
-
-
-    @model.on 'sync', =>
-      do @render
-      do $('.loading').remove
-      $('.messages').hide 'fast'
-      $('.pag-per-page .fa-spinner').css('visibility', 'hidden')
-      @pollingTimeout = setTimeout(@fetch, 7000)
-
-    @model.on 'change', => do @render
-
-  addOne: ($container, model) ->
-    view = new FileView({model: model})
+  addOne: (collection, $container, model) ->
+    view = new FileView
+      collection: collection
+      model: model
+      url: @model.url()
     $container.append(view.render().el)
 
   addAll: (collection, $container) ->
-    console.log(collection)
-    console.log($container)
-    collection.each((model) => @addOne($container, model))
+    $container.empty()
+    collection.each((model) => @addOne(collection, $container, model))
 
   showModal: (title, body, action) ->
     $modal = $('#documentUploadModal')
@@ -108,7 +116,7 @@ define [
       type: 'POST'
       success: =>
         @showNormal(event, currentClasses)
-        window.location.assign("/documents/#{@model.id}")
+        window.location.assign("/documents/#{@model.get('id')}")
       error: (err) ->
         @showInError(event)
         console.error('error', err)
@@ -121,7 +129,6 @@ define [
       type: 'POST'
       success: =>
         @showNormal(event, currentClasses)
-        console.log("Moved to datastore")
       error: (err) =>
         @showInError(event)
         console.error('error', err)
@@ -134,6 +141,7 @@ define [
       type: 'POST'
       success: =>
         @showNormal(event, currentClasses)
+#        TODO: re-render based on changed state of model rather than reloading
         window.location.reload()
       error: (err) =>
         @showInError(event)
@@ -147,6 +155,7 @@ define [
       type: 'POST'
       success: =>
         @showNormal(event, currentClasses)
+#        TODO: re-render based on changed state of model rather than reloading
         window.location.reload()
       error: (err) =>
         @showInError(event)
@@ -154,71 +163,19 @@ define [
     })
 
   validateAll: (event) ->
-    #TODO: why does this get 405 "Method Not Allowed" error?
     currentClasses = @showInProgress(event)
     $.ajax({
       url: "#{@model.url()}/validate"
+      type: 'POST'
       success: =>
         @showNormal(event, currentClasses)
-        console.log("Validate all")
       error: (err) =>
         @showInError(event)
         console.error('error', err)
     })
 
-  fileAction: (name, action, to) ->
-    action = action || name
-    $(".#{name}").unbind('click')
-    $(".#{name}").click((evt) =>
-        el = $(evt.target)
-        filename = el.data('filename')
-        if typeof filename == 'undefined'
-            el = $(evt.target).parent()
-        filename = el.data('filename')
-        el.children('i').attr('class', 'fas fa-sync fa-spin')
-        el.attr('disabled', true)
-        @model[action](filename, to)
-    )
-
-  dropzoneOptions: ->
-    timeout: -1
-    url: @model.url()
-    maxFilesize: 20 * 1000 * 1000
-    autoQueue: yes
-    previewTemplate: dropzoneFileTpl()
-    previewsContainer: '.dropzone-files'
-    clickable: '.fileinput-button'
-    parallelUploads: 1
-    init: ->
-      @on 'addedfile', (file) ->
-        $file = $(file.previewElement)
-        $file.find('.cancel').click => @removeFile(file)
-        $file.find('.file-size-value').text("#{filesize(file.size)}")
-
-      @on 'uploadprogress', (file, progress, bytesSent) ->
-        $file = $(file.previewElement)
-        if progress < 100
-          $file.find('.file-status').text("Uploaded #{filesize(bytesSent)}")
-        else
-          $file.find('.file-status').text('Writing to Disk')
-          $file.find('.cancel').attr('disabled', true)
-
-      @on 'success', (file) ->
-        $(file.previewElement).remove()
-
-      @on 'error', (file, error, xhr) ->
-        $file = $(file.previewElement)
-        $file.find('.file-status').text('Error')
-        $file.find('.file-name i').attr('class', 'fa fa-exclamation-triangle')
-        $file.find('.cancel').attr('disabled', false)
-        errorMessages =
-          0: 'No connection'
-          403: 'Unauthorized'
-          500: 'Internal Server Error'
-        message = errorMessages[xhr.status] || error.error if xhr
-        $file.find('.file-message').text(message)
-
   pagination: (name, pageName) ->
+#    TODO: fix pagination
     uploadFiles = @model.get('uploadFiles')
     pagination = uploadFiles[name].pagination
     page = pagination.page
@@ -273,38 +230,6 @@ define [
     @pagination('documents', 'documentsPage')
     @pagination('supporting-documents', 'supportingDocumentsPage')
     @pagination('datastore', 'datastorePage')
-
-  renderFiles: ->
-    uploadFiles = @model.get('uploadFiles')
-    for name of uploadFiles
-      for filename in Object.keys(uploadFiles[name].invalid || {}).sort()
-        data = uploadFiles[name].invalid[filename]
-        data.action = @model.errorActions[data.type]
-
-      for filename in Object.keys(uploadFiles[name].documents || {}).sort()
-        data = uploadFiles[name].documents[filename]
-        @model.open[filename] = false if typeof @model.open[filename] == 'undefined'
-        data.action = @model.keyToAction[name]
-
-      @fileAction('accept')
-      @fileAction('delete', 'showDelete')
-      @fileAction('validate')
-      @fileAction('ignore', 'showIgnore')
-      @fileAction('cancel', 'showCancel')
-      @fileAction('move-metadata', 'move', 'metadata')
-      @fileAction('move-datastore', 'move', 'datastore')
-
-      $('.panel-heading').unbind('click')
-      $('.panel-heading').click((evt) =>
-        el = $(evt.target)
-        if evt.target.className != 'panel-heading'
-          el = $(evt.target).parent()
-        panel = el.parent()
-        panel.toggleClass('is-collapsed')
-        filename = panel.data('filename')
-        @model.open[filename] = !panel.hasClass('is-collapsed')
-      )
-
 
   render: ->
     do @renderPagination

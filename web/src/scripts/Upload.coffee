@@ -12,12 +12,10 @@ define [
   Initialize the Hubbub Uploader
   ###
   initialize: ->
+#    TODO: load state of the app from html, state set from Jira state
     id = $('#document-upload').data('guid')
     model = new HubbubUploadModel()
-    model.id = id
     model.set('id', id)
     new HubbubUploadView
       el: '#document-upload'
       model: model
-
-    Backbone.history.start()

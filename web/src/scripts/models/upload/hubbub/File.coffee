@@ -19,9 +19,26 @@ define [
     INVALID: 'file'
 
   keyToAction =
-    documents: 'move-both'
-    'supporting-documents': 'move-datastore'
     datastore: 'move-metadata'
+    dropbox: 'move-both'
+    metadata: 'move-datastore'
+
+  errorToAction =
+    CHANGED_HASH: 'accept'
+    MOVING_FROM_ERROR: 'accept'
+    MOVING_TO_ERROR: 'ignore'
+    NO_HASH: 'validate'
+    CHANGED_MTIME: 'validate'
+    UNKNOWN: 'accept'
+    UNKNOWN_MISSING: 'ignore'
+    MISSING: 'ignore'
+    MISSING_UNKNOWN: 'accept'
+    MOVED_UNKNOWN: 'accept'
+    MOVED_UNKNOWN_MISSING: 'ignore'
+    VALIDATING_HASH: 'validate'
+    REMOVED_UNKNOWN: 'accept'
+    ZIPPED_UNKNOWN: 'accept'
+    ZIPPED_UNKNOWN_MISSING: 'ignore'
 
   messages =
     CHANGED_HASH:
@@ -134,6 +151,14 @@ define [
   Backbone.Model.extend
 
     initialize: ->
+      path = @get('path')
+      if path.startsWith('/dropbox/')
+        storage = 'dropbox'
+      else if path.startsWith('/supporting-documents/')
+        storage = 'metadata'
+      else if path.startsWith('/eidchub/')
+        storage = 'datastore'
+
       status = @get('status')
       errorType = if status of errorTypes then errorTypes[status] else 'valid'
       open = if validTypes.has(status) then false else true
@@ -147,8 +172,13 @@ define [
       else
         classes = 'panel-default is-collapsed'
 
-      size = filesize(@get('bytes'))
-      date = simpleDate(@get('time'))
+      if errorType == 'valid'
+        action = keyToAction[storage]
+      else
+        action = errorToAction[status]
+
+      size = if @has('bytes') then filesize(@get('bytes')) else 0
+      date = simpleDate(@get('time')) if @has('time')
       hash = if @has('hash') then @get('hash') else 'NO_HASH'
       estimate = sizeToTime(@get('bytes'))
       message = messages[status]
@@ -156,7 +186,7 @@ define [
       validating = status == 'VALIDATING_HASH'
 
       @set(
-        action: 'move-both' # TODO: set properly
+        action: action
         classes: classes
         date: date
         errorType: errorType
@@ -168,5 +198,3 @@ define [
         size: size
         validating: validating
       )
-      console.log(@attributes)
-
