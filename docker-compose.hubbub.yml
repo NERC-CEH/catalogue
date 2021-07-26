@@ -8,7 +8,7 @@ services:
       - REDIS_PORT=6379
       - REDIS_PASSWORD=aaaaaaaaal
       - DROPBOX_DIR=/mnt/dropbox
-      - EIDCHUB_DIR=/mnt/datastore
+      - EIDCHUB_DIR=/mnt/eidchub
       - SUPPORTING_DOCUMENTS_DIR=/mnt/supporting-documents
       - MNT=/mnt
     ports:
