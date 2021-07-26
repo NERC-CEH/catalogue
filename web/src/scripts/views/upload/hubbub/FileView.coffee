@@ -1,8 +1,12 @@
 define [
   'jquery'
   'backbone'
+  'cs!models/upload/hubbub/File'
   'tpl!templates/upload/hubbub/FileRow.tpl'
-], ($, Backbone, template) -> Backbone.View.extend
+], ($, Backbone, File, template) -> Backbone.View.extend
+
+  defaults:
+    check: false
 
   events:
     'click .panel-heading': 'expand'
@@ -18,7 +22,24 @@ define [
 
   initialize: (options) ->
     @url = options.url
+    @datastore = options.datastore
+    @metadata = options.metadata
     @listenTo(@model, 'change', @render)
+    if @model.get('check')
+      setTimeout(
+        () => @getServerState(),
+        7000
+      )
+
+  getServerState: () ->
+    $.ajax
+      url: "#{@url}?path=#{encodeURIComponent(@model.get('path'))}"
+      dataType: 'json'
+      success: (data) =>
+        console.log(data)
+        @model.update(data)
+      error: (err) ->
+        console.error('error', err)
 
 # TODO: turn modal into a view as used in multiple places
   showModal: (title, body, action) ->
@@ -97,8 +118,12 @@ define [
       success: =>
         @remove()
         @collection.remove(@model)
-#        TODO: need to add a new model to the datastore
-        @addToDatastore(@model) if 'addToDatastore' of @
+        datastoreModel = new File
+          bytes: @model.get('bytes')
+          name: @model.get('name')
+          path: @model.get('path').replace(/^\/(dropbox|metadata)\//, '/datastore/')
+          status: 'MOVING'
+        @datastore.add(datastoreModel)
       error: (err) =>
         @showInError(event)
         console.error('error', err)
@@ -111,9 +136,12 @@ define [
       success: =>
         @remove()
         @collection.remove(@model)
-#        TODO: need to add a new model to the metadata store
-#        TODO: why does Hubbub move work but then cannot find data when query hubbub?
-        @addToMetadata(@model) if 'addToMetadata' of @
+        metadataModel = new File
+          bytes: @model.get('bytes')
+          name: @model.get('name')
+          path: @model.get('path').replace(/^\/(datastore|dropbox)\//, '/metadata/')
+          status: 'MOVING'
+        @metadata.add(metadataModel)
       error: (err) =>
         @showInError(event)
         console.error('error', err)

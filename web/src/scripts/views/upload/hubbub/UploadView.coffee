@@ -10,6 +10,7 @@ define [
 
   events:
     'click .finish': 'showFinish'
+    'click .load.documents': 'loadDropbox'
     'click .move-all': 'moveAllDatastore'
     'click .reschedule': 'reschedule'
     'click .schedule': 'schedule'
@@ -23,13 +24,9 @@ define [
           name: file.name
           path: "/dropbox/#{@model.get('id')}/#{file.name}"
           status: 'WRITING'
+          check: true
         @addOne(@dropbox, @$dropbox, model)
         $(file.previewElement).remove()
-#        TODO: query Hubbub for state of model after a delay to allow validating
-        setTimeout(
-          () -> console.log("updating #{model.get('path')}"),
-          7000
-        )
 
       new DropzoneView
         el: '.dropzone-container'
@@ -38,18 +35,24 @@ define [
 
     @$datastore = @$('.datastore-files')
     @datastore = new FileCollection()
-    @listenTo(@datastore, 'reset', (collection) => @addAll(collection, @$datastore))
-    @listenTo(@datastore, 'add', (model) => @addOne(@datastore, @$datastore, model))
+    @listenTo(@datastore, 'reset', (collection) -> @addAll(collection, @$datastore))
+    @listenTo(@datastore, 'add', (model) -> @addOne(@datastore, @$datastore, model))
+    @listenTo(@datastore, 'update', () -> @showEmptyStorage(@datastore, @$datastore, 'datastore'))
+    @listenTo(@datastore, 'all', (name) -> console.log("all: #{name}"))
 
     @$dropbox = @$('.documents-files')
     @dropbox = new FileCollection()
-    @listenTo(@dropbox, 'reset', (collection) => @addAll(collection, @$dropbox))
-    @listenTo(@dropbox, 'add', (model) => @addOne(@dropbox, @$dropbox, model))
+    @listenTo(@dropbox, 'reset', (collection) -> @addAll(collection, @$dropbox))
+    @listenTo(@dropbox, 'add', (model) -> @addOne(@dropbox, @$dropbox, model))
+    @listenTo(@dropbox, 'update', () -> @showEmptyStorage(@dropbox, @$dropbox, 'documents'))
+    @listenTo(@dropbox, 'all', (name) -> console.log("all: #{name}"))
 
     @$metadata = @$('.metadata-files')
     @metadata = new FileCollection()
-    @listenTo(@metadata, 'reset', (collection) => @addAll(collection, @$metadata))
-    @listenTo(@metadata, 'add', (model) => @addOne(@metadata, @$metadata, model))
+    @listenTo(@metadata, 'reset', (collection) -> @addAll(collection, @$metadata))
+    @listenTo(@metadata, 'add', (model) -> @addOne(@metadata, @$metadata, model))
+    @listenTo(@metadata, 'update', () -> @showEmptyStorage(@metadata, @$metadata, 'metadata'))
+    @listenTo(@metadata, 'all', (name) -> console.log("all: #{name}"))
 
     $datastoreData = $('#datastore-data')
     @datastore.reset(JSON.parse(@$datastore.text())) if $datastoreData.length
@@ -63,6 +66,8 @@ define [
   addOne: (collection, $container, model) ->
     view = new FileView
       collection: collection
+      datastore: @datastore
+      metadata: @metadata
       model: model
       url: @model.url()
     $container.append(view.render().el)
@@ -70,6 +75,36 @@ define [
   addAll: (collection, $container) ->
     $container.empty()
     collection.each((model) => @addOne(collection, $container, model))
+
+  loadDropbox: (event) ->
+    currentClasses = @showInProgress(event)
+    nextPage = @model.get('dropboxPage') + 1
+    size = @model.get('dropboxSize')
+    $.ajax({
+      url: "#{@model.url()}/dropbox?page=#{nextPage}&size=#{size}"
+      success: (data) =>
+        @showNormal(event, currentClasses)
+        numModels = data.length
+        if numModels > 0
+          @dropbox.add(data)
+
+        if numModels == size
+          @model.set('dropboxPage', nextPage)
+        else
+          $(event.currentTarget)
+            .attr('disabled', true)
+      error: (err) ->
+        @showInError(event)
+        console.error('error', err)
+    })
+
+  showEmptyStorage: (collection, $container, title) ->
+    if (collection.length == 0)
+      console.log("Adding empty to #{title}")
+      $container.append("<h3 class=\"no-documents text-center\">NO FILES IN #{title.toUpperCase()}</h3>")
+    else
+      console.log("removing empty from #{title}")
+      $container.find('.no-documents').remove()
 
   showModal: (title, body, action) ->
     $modal = $('#documentUploadModal')
@@ -85,7 +120,6 @@ define [
     $icon = $('i', $el)
     current = $icon.attr('class')
     $icon.attr('class', 'btn-icon fas fa-sync fa-spin')
-    console.log("show in progress")
     current
 
   showNormal: (event, classes) ->
@@ -93,23 +127,21 @@ define [
     $el.attr('disabled', false)
     $icon = $('i', $el)
     $icon.attr('class', classes)
-    console.log("show normal")
 
   showInError: (event) ->
     $el = $(event.currentTarget)
     $el.attr('disabled', true)
     $icon = $('i', $el)
     $icon.attr('class', 'btn-icon fa fa-exclamation-triangle')
-    console.log("show in error")
 
-  showFinish: ->
+  showFinish: (event) ->
     @showModal(
       'Have you finished uploading files?',
       'You will no longer be able to add, remove or update files.',
-      @finish
+      @finish(event)
     )
 
-  finish: ->
+  finish: (event) ->
     currentClasses = @showInProgress(event)
     $.ajax({
       url: "#{@model.url()}/finish"
@@ -122,19 +154,20 @@ define [
         console.error('error', err)
     })
 
-  moveAllDatastore: ->
+  moveAllDatastore: (event) ->
     currentClasses = @showInProgress(event)
     $.ajax({
       url: "#{@model.url()}/move-all-datastore"
       type: 'POST'
       success: =>
         @showNormal(event, currentClasses)
+#        TODO: remove all the models from dropbox collection and add then to datastore collection
       error: (err) =>
         @showInError(event)
         console.error('error', err)
     })
 
-  reschedule: ->
+  reschedule: (event) ->
     currentClasses = @showInProgress(event)
     $.ajax({
       url: "#{@model.url()}/reschedule"
@@ -173,63 +206,3 @@ define [
         @showInError(event)
         console.error('error', err)
     })
-
-  pagination: (name, pageName) ->
-#    TODO: fix pagination
-    uploadFiles = @model.get('uploadFiles')
-    pagination = uploadFiles[name].pagination
-    page = pagination.page
-    pages = Math.ceil(pagination.total / pagination.size)
-
-    width = 38
-    if page >= 10000
-      width += 40
-    else if page >= 1000
-      width += 30
-    else if page >= 100
-      width += 20
-    else if page >= 10
-      width += 10
-
-    $("#pag-#{name} .pag-current").css("width", width)
-    $("#pag-#{name} .pag-current").val(page)
-    $("#pag-#{name} .pag-current").unbind('input')
-    $("#pag-#{name} .pag-current").on('input', (evt) =>
-      value = Number(evt.target.value)
-      if value > 0 and value <= pages
-        @model.page[pageName] = value
-        $("#pag-#{name} .pag-per-page .fa-spinner").css('visibility', 'visible')
-        do @fetch
-    )
-
-    $("#pag-#{name} .pag-next").attr('disabled', page == pages)
-    $("#pag-#{name} .pag-next").unbind('click')
-    $("#pag-#{name} .pag-next").click(() =>
-      @model.page[pageName] = @model.page[pageName] + 1
-      @model.page[pageName] = pages if @model.page[pageName] >= pages
-
-      $("#pag-#{name} .pag-current").val(@model.page[pageName])
-      $("#pag-#{name} .pag-per-page .fa-spinner").css('visibility', 'visible')
-      do @fetch
-    )
-
-    $("#pag-#{name} .pag-previous").attr('disabled', page == 1)
-    $("#pag-#{name} .pag-previous").unbind('click')
-    $("#pag-#{name} .pag-previous").click(() =>
-      @model.page[pageName] = @model.page[pageName] - 1
-      @model.page[pageName] = 1 if @model.page[pageName] <= 1
-
-      $("#pag-#{name} .pag-current").val(@model.page[pageName])
-      $("#pag-#{name} .pag-per-page .fa-spinner").css('visibility', 'visible')
-      do @fetch
-    )
-
-    $("#pag-#{name} .pag-count").text("/ #{pages}")
-
-  renderPagination: () ->
-    @pagination('documents', 'documentsPage')
-    @pagination('supporting-documents', 'supportingDocumentsPage')
-    @pagination('datastore', 'datastorePage')
-
-  render: ->
-    do @renderPagination

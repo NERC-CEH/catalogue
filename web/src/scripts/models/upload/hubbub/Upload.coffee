@@ -6,8 +6,10 @@ define [
   urlRoot:
     "/upload"
 
-#  TODO: where are pages used?
-  page:
-    documentsPage: 1
+  defaults:
     datastorePage: 1
-    supportingDocumentsPage: 1
+    dropboxPage: 1
+    metadataPage: 1
+    datastoreSize: 20
+    dropboxSize: 20
+    metadataSize: 20

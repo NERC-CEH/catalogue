@@ -198,3 +198,13 @@ define [
         size: size
         validating: validating
       )
+
+    update: (data) ->
+      @set
+        check: false
+        date: simpleDate(data.time)
+        estimate: sizeToTime(data.bytes)
+        hash: data.hash
+        message: messages[status]
+        size: filesize(data.bytes)
+        status: data.status
