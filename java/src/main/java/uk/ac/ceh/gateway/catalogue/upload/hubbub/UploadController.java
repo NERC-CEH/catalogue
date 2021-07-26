@@ -7,6 +7,7 @@ import lombok.val;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -125,6 +126,17 @@ public class UploadController {
         @RequestParam(value = "size", defaultValue = "20") int size
     ) {
         return uploadService.get(id, storage, page, size);
+    }
+
+    @ResponseBody
+    @PreAuthorize("@permission.toAccess(#user, #id, 'VIEW')")
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public FileInfo get(
+        @ActiveUser CatalogueUser user,
+        @PathVariable("id") String id,
+        @RequestParam("path") String path
+    ) {
+        return uploadService.get(id, path);
     }
 
     @SneakyThrows

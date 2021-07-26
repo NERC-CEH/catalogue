@@ -27,7 +27,9 @@ import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
 import java.io.PrintWriter;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Optional;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.mockito.ArgumentMatchers.any;
@@ -131,6 +133,12 @@ class UploadControllerTest {
             .willReturn(data);
     }
 
+    private void givenFileInfo() {
+        val fileInfo = new FileInfo(23L, "hash", "name", "path", "status", 234234234L);
+        given(uploadService.get(id, path))
+            .willReturn(fileInfo);
+    }
+
     @Test
     @SneakyThrows
     void getPage() {
@@ -169,11 +177,28 @@ class UploadControllerTest {
 
         //when
         mvc.perform(
-            get("/upload/{id}/dropbox", id)
+            get("/upload/{id}", id)
         )
             .andExpect(status().isOk())
             .andExpect(content().contentType(APPLICATION_JSON));
 
+    }
+
+    @Test
+    @SneakyThrows
+    void getIndividualFileInfo() {
+        //given
+        givenUserCanAccess();
+        givenFileInfo();
+
+        //when
+        mvc.perform(
+            get("/upload/{id}", id)
+            .queryParam("path", path)
+            .accept(APPLICATION_JSON)
+        )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(APPLICATION_JSON));
     }
 
     @Test

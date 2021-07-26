@@ -106,6 +106,19 @@ public class UploadService {
         }
     }
 
+    public FileInfo get(String id, String path) {
+        if (hasAcceptablePathStart(path)) {
+            return hubbubService.get(path, 1, 1, VISIBLE_STATUS)
+                .stream()
+                .findFirst()
+                .orElseThrow(() ->
+                    new UploadException(format("No info in Hubbub for: %s, id: %s", path, id))
+                );
+        } else {
+            throw new UploadException(format("Bad path: %s for id: %s", path, id));
+        }
+    }
+
     public List<FileInfo> get(String id, String storage, int page, int size) {
         if (hasAcceptableStorage(storage) && hasValidPageAndSize(page, size)) {
             return hubbubService.get(format("/%s/%s", storage, id), page, size, VISIBLE_STATUS);

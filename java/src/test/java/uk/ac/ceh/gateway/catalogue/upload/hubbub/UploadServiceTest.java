@@ -14,6 +14,7 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Collections;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -79,6 +80,21 @@ class UploadServiceTest {
             )
         );
         given(hubbubService.get("/dropbox/" + id, 1, 20, VISIBLE_STATUS))
+            .willReturn(fileInfos);
+    }
+
+    private void givenHubbubResponseForFileInfo() {
+        val fileInfos = Collections.singletonList(
+            new FileInfo(
+                83948L,
+                "7df5e2c6",
+                "data2.csv",
+                path,
+                "VALID",
+                543L
+            )
+        );
+        given(hubbubService.get(path, 1, 1, VISIBLE_STATUS))
             .willReturn(fileInfos);
     }
 
@@ -172,6 +188,15 @@ class UploadServiceTest {
 
         //then
         verifyNoInteractions(hubbubService);
+    }
+
+    @Test
+    void getForFileInfo() {
+        //given
+        givenHubbubResponseForFileInfo();
+
+        //when
+        service.get(id, path);
     }
 
     @Test
