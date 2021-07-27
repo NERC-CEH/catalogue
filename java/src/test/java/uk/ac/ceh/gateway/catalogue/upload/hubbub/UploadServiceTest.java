@@ -102,7 +102,8 @@ class UploadServiceTest {
     void setup() {
         service = new UploadService(
             hubbubService,
-            directory.getPath()
+            directory.getPath(),
+            1L
         );
     }
 

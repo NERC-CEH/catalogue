@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import static java.lang.String.format;
@@ -31,6 +32,7 @@ public class UploadService {
     private final Pattern acceptablePathStarts = Pattern.compile("^/(dropbox|eidchub|supporting-documents)/.*");
     private final Set<String> acceptableDestinations = ImmutableSet.of(DATASTORE, METADATA);
     private final Set<String> acceptableStorage = ImmutableSet.of(DATASTORE, DROPBOX, METADATA);
+    private final long secondsPauseBeforeAccept;
 
     static final int BIG_PAGE_SIZE = 1000000;
 
@@ -59,10 +61,12 @@ public class UploadService {
 
     public UploadService(
         HubbubService hubbubService,
-        @Value("${hubbub.location}") String uploadLocation
+        @Value("${hubbub.location}") String uploadLocation,
+        @Value("${hubbub.secondsPauseBeforeAccept}") long secondsPauseBeforeAccept
     ) {
         this.hubbubService = hubbubService;
         this.uploadLocation = uploadLocation;
+        this.secondsPauseBeforeAccept = secondsPauseBeforeAccept;
         log.info("Creating");
     }
 
@@ -163,6 +167,8 @@ public class UploadService {
             writing(dropboxKey, in.available());
             FileUtils.copyInputStreamToFile(in, file);
         }
+        // Hubbub throws error "no value of key /dropbox/…" if accept() called immediately after uploading file
+        TimeUnit.SECONDS.sleep(secondsPauseBeforeAccept);
         accept(dropboxKey);
         validate(dropboxKey);
     }
