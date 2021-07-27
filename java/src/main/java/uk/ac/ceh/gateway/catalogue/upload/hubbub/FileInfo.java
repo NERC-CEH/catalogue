@@ -6,7 +6,6 @@ import lombok.Value;
 @Value
 public class FileInfo {
     private static String TRUNCATE_PATH = 	"^/.*/.{36}/(.*)";
-//    TODO: check what fields need extracting from Hubbub response
     Long bytes;
     String hash;
     String name;
@@ -16,14 +15,17 @@ public class FileInfo {
     String truncatedPath;
 
     public FileInfo(JsonNode node) {
-        this(
-            node.get("bytes").asLong(),
-            node.get("hash").asText(),
-            node.get("name").asText(),
-            node.get("path").asText(),
-            node.get("status").asText(),
-            node.get("time").asLong()
-        );
+        this.bytes = node.get("bytes").asLong();
+        if (node.has("hash")) {
+            this.hash = node.get("hash").asText();
+        } else {
+            this.hash = "";
+        }
+        this.name = node.get("name").asText();
+        this.path = node.get("path").asText();
+        this.status = node.get("status").asText();
+        this.time = node.get("time").asLong();
+        this.truncatedPath = this.path.replaceAll(TRUNCATE_PATH, "$1");
     }
 
     public FileInfo(Long bytes, String hash, String name, String path, String status, Long time) {
