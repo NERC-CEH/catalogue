@@ -15,6 +15,7 @@ define [
 
   initialize: ->
     ObjectInputView.prototype.initialize.apply @
+    @toSearch = new Backbone.Collection()
     @vocabularies = new Backbone.Collection()
     catalogue = $('html').data('catalogue')
     @$vocabularies = @$('.vocabularies')
@@ -24,20 +25,18 @@ define [
       @vocabularies.reset(data.vocabularies)
 
 
-  vocabIds = []
-
   addAll: ->
-    console.log("add all")
     @vocabularies.each(@addOne, @)
 
   addOne: (vocabulary) ->
-    console.log("add one")
+    vocabulary.set('toSearch': true)
     view = new KeywordCheckboxView({model: vocabulary})
     @$vocabularies.append(view.render().el)
 
-  toSearch: ->
-    console.log("to search")
-    vocabIds.addAll(@vocabularies.where({'toSearch': true}))
+  searchSelected: ->
+    @toSearch =  @vocabularies.where({'toSearch': true})
+    console.log("searchSelected")
+    console.log(@toSearch)
 
   selectAll: ->
    console.log("select all")
@@ -47,11 +46,17 @@ define [
     console.log("autocomplete")
     minLength: 2
     source: (request, response) ->
+      vocab = []
+      vocab =  _.pluck(@toSearch.models, 'id')
+      console.log(vocab)
       term = request.term.trim()
       if _.isEmpty term
-        query = "/vocabulary/keywords?vocab=#{vocabIds}"
+        console.log(@toSearch)
+        query = "/vocabulary/keywords?vocab=#{vocab}"
       else
-        query = "/vocabulary/keywords?query=#{request.term}?vocab=#{vocabIds}"
+        console.log(@toSearch)
+        query = "/vocabulary/keywords?query=#{request.term}?vocab=#{vocab}"
+      console.log("reached")
       $.getJSON query, (data) ->
         response _.map data, (d) -> {value: d.label, label: d.label, id: d.vocabId, url: d.url}
 
