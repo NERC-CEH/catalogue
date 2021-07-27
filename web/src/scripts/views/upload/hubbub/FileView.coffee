@@ -31,13 +31,13 @@ define [
         7000
       )
 
-  getServerState: () ->
+  getServerState: (callback) ->
     $.ajax
       url: "#{@url}?path=#{encodeURIComponent(@model.get('path'))}"
       dataType: 'json'
       success: (data) =>
-        console.log(data)
         @model.update(data)
+        callback() if callback
       error: (err) ->
         console.error('error', err)
 
@@ -56,12 +56,18 @@ define [
       url: "#{@url}/accept?path=#{encodeURIComponent(@model.get('path'))}"
       type: 'POST'
       success: =>
-        @showNormal(event, currentClasses)
+        setTimeout(
+          () =>
+            @getServerState(() ->  @showNormal(event, currentClasses))
+          ,
+          3000
+        )
       error: (err) =>
         @showInError(event)
         console.error('error', err)
 
   showCancel: (event) ->
+    @showInProgress(event)
     @showModal(
       "Cancel moving #{@model.get('name')}?",
       'This will not stop the file from being moved.<br/>Only do this if you feel the file is no longer moving to the desired destination,<br/>e.g. due to a server error.',
@@ -74,12 +80,18 @@ define [
       url: "#{@url}/cancel?path=#{encodeURIComponent(@model.get('path'))}"
       type: 'POST'
       success: =>
-        @showNormal(event, currentClasses)
+        setTimeout(
+          () =>
+            @getServerState(() -> @showNormal(event, currentClasses))
+          ,
+            3000
+        )
       error: (err) =>
         @showInError(event)
         console.error('error', err)
 
   showDelete: (event) ->
+    @showInProgress(event)
     @showModal(
       "Delete #{@model.get('name')}?",
       "This will permanently delete the file<br/><b>#{@model.get('path')}</b>",
@@ -87,6 +99,7 @@ define [
     )
 
   showIgnore: (event) ->
+    @showInProgress(event)
     @showModal(
       "Ignore the error for #{@model.get('name')}?",
       "You are about to ignore the error for<br/><b>#{@model.get('path')}</b><br/>You will lose all infomation about this file if you continue with this action.<br/>This will permanently delete the file.",
@@ -118,12 +131,7 @@ define [
       success: =>
         @remove()
         @collection.remove(@model)
-        datastoreModel = new File
-          bytes: @model.get('bytes')
-          name: @model.get('name')
-          path: @model.get('path').replace(/^\/(dropbox|metadata)\//, '/datastore/')
-          status: 'MOVING'
-        @datastore.add(datastoreModel)
+        @datastore.add(@model.copy('/eidchub/'))
       error: (err) =>
         @showInError(event)
         console.error('error', err)
@@ -136,12 +144,7 @@ define [
       success: =>
         @remove()
         @collection.remove(@model)
-        metadataModel = new File
-          bytes: @model.get('bytes')
-          name: @model.get('name')
-          path: @model.get('path').replace(/^\/(datastore|dropbox)\//, '/metadata/')
-          status: 'MOVING'
-        @metadata.add(metadataModel)
+        @metadata.add(@model.copy('/supporting-documents/'))
       error: (err) =>
         @showInError(event)
         console.error('error', err)
@@ -178,7 +181,12 @@ define [
       url: "#{@url}/validate?path=#{encodeURIComponent(@model.get('path'))}"
       type: 'POST'
       success: =>
-        @showNormal(event, currentClasses)
+        setTimeout(
+          () =>
+            @getServerState(() -> @showNormal(event, currentClasses))
+          ,
+          5000
+        )
       error: (err) =>
         @showInError(event)
         console.error('error', err)

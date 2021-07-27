@@ -10,7 +10,7 @@
             <span class="panel-heading-filename"><%= name %></span>
             <span class="panel-heading-type"><%= status %></span>
             <% if (status === 'MOVING_FROM' || status === 'MOVING_TO' || status === 'WRITING') { %>
-            <span class="panel-heading-type"><%= size %></span>
+            <span class="panel-heading-type"><%= size %></span> <div><i class="fas fa-sync fa-spin"></i></div>
             <% } %>
         <% } else { %>
             <span class="panel-heading-filename"><%= name %></span>
@@ -95,22 +95,6 @@
                 <i class="btn-icon fas fa-check"></i>
                 <span>Validate</span>
             </button>
-
-<!-- TODO: remove these buttons, only here to test wiring -->
-            <button class="accept btn btn-primary">
-                <i class="btn-icon fas fa-check"></i>
-                <span>Accept</span>
-            </button>
-            <button class="cancel btn btn-success">
-                <i class="btn-icon fas fa-ban"></i>
-                <span>Cancel</span>
-            </button>
-            <button class="ignore btn btn-danger">
-                <i class="btn-icon fas fa-times"></i>
-                <span>Ignore</span>
-            </button>
-<!-- End of test buttons -->
-
         </div>
     </div>
 </div>

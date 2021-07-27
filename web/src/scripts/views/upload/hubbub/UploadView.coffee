@@ -10,7 +10,9 @@ define [
 
   events:
     'click .finish': 'showFinish'
+    'click .load.datastore': 'loadDatastore'
     'click .load.documents': 'loadDropbox'
+    'click .load.metadata': 'loadMetadata'
     'click .move-all': 'moveAllDatastore'
     'click .reschedule': 'reschedule'
     'click .schedule': 'schedule'
@@ -38,24 +40,21 @@ define [
     @listenTo(@datastore, 'reset', (collection) -> @addAll(collection, @$datastore))
     @listenTo(@datastore, 'add', (model) -> @addOne(@datastore, @$datastore, model))
     @listenTo(@datastore, 'update', () -> @showEmptyStorage(@datastore, @$datastore, 'datastore'))
-    @listenTo(@datastore, 'all', (name) -> console.log("all: #{name}"))
 
     @$dropbox = @$('.documents-files')
     @dropbox = new FileCollection()
     @listenTo(@dropbox, 'reset', (collection) -> @addAll(collection, @$dropbox))
     @listenTo(@dropbox, 'add', (model) -> @addOne(@dropbox, @$dropbox, model))
     @listenTo(@dropbox, 'update', () -> @showEmptyStorage(@dropbox, @$dropbox, 'documents'))
-    @listenTo(@dropbox, 'all', (name) -> console.log("all: #{name}"))
 
     @$metadata = @$('.metadata-files')
     @metadata = new FileCollection()
     @listenTo(@metadata, 'reset', (collection) -> @addAll(collection, @$metadata))
     @listenTo(@metadata, 'add', (model) -> @addOne(@metadata, @$metadata, model))
     @listenTo(@metadata, 'update', () -> @showEmptyStorage(@metadata, @$metadata, 'metadata'))
-    @listenTo(@metadata, 'all', (name) -> console.log("all: #{name}"))
 
     $datastoreData = $('#datastore-data')
-    @datastore.reset(JSON.parse(@$datastore.text())) if $datastoreData.length
+    @datastore.reset(JSON.parse($datastoreData.text())) if $datastoreData.length
 
     $dropboxData = $('#dropbox-data')
     @dropbox.reset(JSON.parse($dropboxData.text())) if $dropboxData.length
@@ -76,37 +75,39 @@ define [
     $container.empty()
     collection.each((model) => @addOne(collection, $container, model))
 
-  loadDropbox: (event) ->
+  loadMore: (event, name, path, collection) ->
     currentClasses = @showInProgress(event)
-    nextPage = @model.get('dropboxPage') + 1
-    size = @model.get('dropboxSize')
+    nextPage = @model.get("#{name}Page") + 1
+    size = @model.get("#{name}Size")
     $.ajax({
-      url: "#{@model.url()}/dropbox?page=#{nextPage}&size=#{size}"
+      url: "#{@model.url()}/#{path}?page=#{nextPage}&size=#{size}"
       success: (data) =>
         @showNormal(event, currentClasses)
-        numModels = data.length
-        if numModels > 0
-          @dropbox.add(data)
-
-        if numModels == size
-          @model.set('dropboxPage', nextPage)
-        else
-          $(event.currentTarget)
-            .attr('disabled', true)
+        collection.add(data)
+        if data.length == size
+          @model.set("#{name}Page", nextPage)
       error: (err) ->
         @showInError(event)
         console.error('error', err)
     })
 
+  loadDatastore: (event) ->
+    @loadMore(event, 'datastore', 'eidchub', @datastore)
+
+  loadDropbox: (event) ->
+    @loadMore(event, 'dropbox', 'dropbox', @dropbox)
+
+  loadMetadata: (event) ->
+    @loadMore(event, 'metadata', 'supporting-documents', @metadata)
+
   showEmptyStorage: (collection, $container, title) ->
     if (collection.length == 0)
-      console.log("Adding empty to #{title}")
       $container.append("<h3 class=\"no-documents text-center\">NO FILES IN #{title.toUpperCase()}</h3>")
     else
-      console.log("removing empty from #{title}")
       $container.find('.no-documents').remove()
 
-  showModal: (title, body, action) ->
+  showModal: (title, body, action, event) ->
+    @showInProgress(event)
     $modal = $('#documentUploadModal')
     $('.modal-title', $modal).html(title)
     $('.modal-body', $modal).html(body)
@@ -138,12 +139,13 @@ define [
     @showModal(
       'Have you finished uploading files?',
       'You will no longer be able to add, remove or update files.',
-      @finish(event)
+      () -> @finish(event),
+      event
     )
 
   finish: (event) ->
     currentClasses = @showInProgress(event)
-    $.ajax({
+    $.ajax
       url: "#{@model.url()}/finish"
       type: 'POST'
       success: =>
@@ -152,24 +154,23 @@ define [
       error: (err) ->
         @showInError(event)
         console.error('error', err)
-    })
 
   moveAllDatastore: (event) ->
     currentClasses = @showInProgress(event)
-    $.ajax({
+    $.ajax
       url: "#{@model.url()}/move-all-datastore"
       type: 'POST'
       success: =>
+        @dropbox.each (model) => @addOne(@datastore, @$datastore, model.copy('/eidchub/'))
+        @dropbox.reset()
         @showNormal(event, currentClasses)
-#        TODO: remove all the models from dropbox collection and add then to datastore collection
       error: (err) =>
         @showInError(event)
         console.error('error', err)
-    })
 
   reschedule: (event) ->
     currentClasses = @showInProgress(event)
-    $.ajax({
+    $.ajax
       url: "#{@model.url()}/reschedule"
       type: 'POST'
       success: =>
@@ -179,11 +180,10 @@ define [
       error: (err) =>
         @showInError(event)
         console.error('error', err)
-    })
 
   schedule: (event) ->
     currentClasses = @showInProgress(event)
-    $.ajax({
+    $.ajax
       url: "#{@model.url()}/schedule"
       type: 'POST'
       success: =>
@@ -193,16 +193,33 @@ define [
       error: (err) =>
         @showInError(event)
         console.error('error', err)
-    })
 
   validateAll: (event) ->
     currentClasses = @showInProgress(event)
-    $.ajax({
+    $.ajax
       url: "#{@model.url()}/validate"
       type: 'POST'
       success: =>
-        @showNormal(event, currentClasses)
+        showNormal = () => @showNormal(event, currentClasses)
+        datastore = () => @getServerState('datastore', 'eidchub', @datastore, showNormal)
+        dropbox = () => @getServerState('dropbox', 'dropbox', @dropbox, datastore)
+        metadata = () => @getServerState('metadata', 'supporting-documents', @metadata, dropbox)
+        setTimeout(metadata, 7000)
       error: (err) =>
         @showInError(event)
         console.error('error', err)
-    })
+
+  getServerState: (name, path, collection, callback) ->
+    page = 1
+    collectionSize = collection.length
+    size = @model.get("#{name}Size")
+    size = collectionSize if collectionSize > size
+    @model.set("#{name}Page": page)
+    @model.set("#{name}Size": size)
+
+    $.ajax
+      url: "#{@model.url()}/#{path}?page=#{page}&size=#{size}"
+      dataType: 'json'
+      success: (data) ->
+        collection.reset(data)
+        callback() if callback

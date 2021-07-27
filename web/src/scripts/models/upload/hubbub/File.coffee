@@ -148,7 +148,7 @@ define [
       break
     time
 
-  Backbone.Model.extend
+  File = Backbone.Model.extend
 
     initialize: ->
       path = @get('path')
@@ -208,3 +208,11 @@ define [
         message: messages[status]
         size: filesize(data.bytes)
         status: data.status
+
+    copy: (path) ->
+      new File
+        bytes: @get('bytes')
+        check: true
+        name: @get('name')
+        path: @get('path').replace(/^\/(dropbox|eidchub|supporting-documents)\//, path)
+        status: 'MOVING_TO'
