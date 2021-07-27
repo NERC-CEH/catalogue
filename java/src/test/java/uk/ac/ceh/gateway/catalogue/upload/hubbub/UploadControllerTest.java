@@ -177,7 +177,7 @@ class UploadControllerTest {
 
         //when
         mvc.perform(
-            get("/upload/{id}", id)
+            get("/upload/{id}/dropbox", id)
         )
             .andExpect(status().isOk())
             .andExpect(content().contentType(APPLICATION_JSON));
