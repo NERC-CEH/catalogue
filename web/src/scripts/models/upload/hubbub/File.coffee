@@ -145,7 +145,7 @@ define [
     for key, value of timeEstimate
       if size < key
         time = value
-      break
+        break
     time
 
   File = Backbone.Model.extend
@@ -206,8 +206,10 @@ define [
         estimate: sizeToTime(data.bytes)
         hash: data.hash
         message: messages[status]
+        moving: false
         size: filesize(data.bytes)
         status: data.status
+      @initialize()
 
     copy: (path) ->
       new File

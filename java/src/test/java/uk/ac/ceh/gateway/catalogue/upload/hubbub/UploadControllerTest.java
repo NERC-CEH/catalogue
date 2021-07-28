@@ -80,6 +80,10 @@ class UploadControllerTest {
         given(permissionService.userIsAdmin()).willReturn(true);
     }
 
+    private void givenUserIsNonAdmin() {
+        given(permissionService.userIsAdmin()).willReturn(false);
+    }
+
     @SneakyThrows
     private void givenGeminiDocument() {
         val gemini = new GeminiDocument();
@@ -125,9 +129,25 @@ class UploadControllerTest {
             .willReturn(metadata);
     }
 
+    private void givenDatastore() {
+        val data = Collections.singletonList(
+            new FileInfo(23L, "hash", "name", "/eidchub/path", "status", 234234234L)
+        );
+        given(uploadService.get(id, "dropbox", 1, 20))
+            .willReturn(data);
+    }
+
     private void givenDropbox() {
         val data = Collections.singletonList(
-            new FileInfo(23L, "hash", "name", "path", "status", 234234234L)
+            new FileInfo(23L, "hash", "name", "/dropbox/path", "status", 234234234L)
+        );
+        given(uploadService.get(id, "dropbox", 1, 20))
+            .willReturn(data);
+    }
+
+    private void givenMetadata() {
+        val data = Collections.singletonList(
+            new FileInfo(23L, "hash", "name", "/supporting-documents/path", "status", 234234234L)
         );
         given(uploadService.get(id, "dropbox", 1, 20))
             .willReturn(data);
@@ -141,7 +161,7 @@ class UploadControllerTest {
 
     @Test
     @SneakyThrows
-    void getPage() {
+    void getScheduledPageForAdmin() {
         //given
         givenUserCanUpload();
         givenUserIsAdmin();
@@ -149,7 +169,9 @@ class UploadControllerTest {
         givenDataTransferIssue();
         givenFreemarkerConfiguration();
         givenDefaultCatalogue();
+        givenDatastore();
         givenDropbox();
+        givenMetadata();
 
         //when
         mvc.perform(
@@ -164,7 +186,37 @@ class UploadControllerTest {
             .andExpect(model().attribute("isOpen", false))
             .andExpect(model().attribute("isScheduled", true))
             .andExpect(model().attribute("isInProgress", false))
-            .andExpect(model().attributeExists("dropbox", "maxFileSize"));
+            .andExpect(model().attributeExists("datastore", "dropbox", "metadata", "maxFileSize"));
+
+    }
+
+    @Test
+    @SneakyThrows
+    void getScheduledPageForNonAdmin() {
+        //given
+        givenUserCanUpload();
+        givenUserIsNonAdmin();
+        givenGeminiDocument();
+        givenDataTransferIssue();
+        givenFreemarkerConfiguration();
+        givenDefaultCatalogue();
+        givenDropbox();
+
+        //when
+        mvc.perform(
+                get("/upload/{id}", id)
+            )
+            .andExpect(status().isOk())
+            .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
+            .andExpect(view().name("html/upload/hubbub/upload"))
+            .andExpect(model().attribute("id", id))
+            .andExpect(model().attribute("title", "Foo"))
+            .andExpect(model().attribute("isAdmin", false))
+            .andExpect(model().attribute("isOpen", false))
+            .andExpect(model().attribute("isScheduled", true))
+            .andExpect(model().attribute("isInProgress", false))
+            .andExpect(model().attributeExists("dropbox", "maxFileSize"))
+            .andExpect(model().attributeDoesNotExist("datastore", "metadata"));
 
     }
 

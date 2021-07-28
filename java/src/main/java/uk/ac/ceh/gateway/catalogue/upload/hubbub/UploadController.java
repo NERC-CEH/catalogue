@@ -80,7 +80,8 @@ public class UploadController {
         val geminiDocument = (GeminiDocument) documentRepository.read(id);
         model.addAttribute("title", geminiDocument.getTitle());
 
-        model.addAttribute("isAdmin", permissionService.userIsAdmin());
+        val isAdmin = permissionService.userIsAdmin();
+        model.addAttribute("isAdmin", isAdmin);
 
         val possibleDataTransfer = jiraService.retrieveDataTransferIssue(id);
         model.addAttribute("hasDataTransfer", possibleDataTransfer.isPresent());
@@ -95,6 +96,16 @@ public class UploadController {
                 "dropbox",
                 uploadService.get(id, DROPBOX, 1, 20)
             );
+            if (isAdmin) {
+                model.addAttribute(
+                    "datastore",
+                    uploadService.get(id, DATASTORE, 1, 20)
+                );
+                model.addAttribute(
+                    "metadata",
+                    uploadService.get(id, METADATA, 1, 20)
+                );
+            }
         } else if (dataTransfer.isInProgress()) {
             model.addAttribute(
                 "datastore",
@@ -110,8 +121,7 @@ public class UploadController {
             );
         }
 
-        log.debug("Model is {}", model);
-        //noinspection SpringMVCViewInspection
+        log.debug("Model keys: {}", model.asMap().keySet());
         return "html/upload/hubbub/upload";
     }
 

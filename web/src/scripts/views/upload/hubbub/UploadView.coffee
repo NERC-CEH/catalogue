@@ -11,7 +11,7 @@ define [
   events:
     'click .finish': 'showFinish'
     'click .load.datastore': 'loadDatastore'
-    'click .load.documents': 'loadDropbox'
+    'click .load.data': 'loadDropbox'
     'click .load.metadata': 'loadMetadata'
     'click .move-all': 'moveAllDatastore'
     'click .reschedule': 'reschedule'
@@ -27,7 +27,7 @@ define [
           path: "/dropbox/#{@model.get('id')}/#{file.name}"
           status: 'WRITING'
           check: true
-        @addOne(@dropbox, @$dropbox, model)
+        @dropbox.add(model)
         $(file.previewElement).remove()
 
       new DropzoneView
@@ -41,11 +41,11 @@ define [
     @listenTo(@datastore, 'add', (model) -> @addOne(@datastore, @$datastore, model))
     @listenTo(@datastore, 'update', () -> @showEmptyStorage(@datastore, @$datastore, 'datastore'))
 
-    @$dropbox = @$('.documents-files')
+    @$dropbox = @$('.data-files')
     @dropbox = new FileCollection()
     @listenTo(@dropbox, 'reset', (collection) -> @addAll(collection, @$dropbox))
     @listenTo(@dropbox, 'add', (model) -> @addOne(@dropbox, @$dropbox, model))
-    @listenTo(@dropbox, 'update', () -> @showEmptyStorage(@dropbox, @$dropbox, 'documents'))
+    @listenTo(@dropbox, 'update', () -> @showEmptyStorage(@dropbox, @$dropbox, 'data'))
 
     @$metadata = @$('.metadata-files')
     @metadata = new FileCollection()

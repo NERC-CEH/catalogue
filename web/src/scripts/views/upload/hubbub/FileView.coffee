@@ -30,6 +30,7 @@ define [
         () => @getServerState(),
         7000
       )
+    @listenTo(@model, 'change', @render)
 
   getServerState: (callback) ->
     $.ajax

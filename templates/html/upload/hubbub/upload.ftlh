@@ -16,8 +16,8 @@
             </@documentUploadSection>
         </#if>
         <@documentUploadSection "Data" "archive">
-            <@loadingContainer "documents"/>
-            <@loadMoreRow "documents"/>
+            <@loadingContainer "data"/>
+            <@loadMoreRow "data"/>
             <#if isAdmin && isInProgress>
                 <@row>
                     <div class="col-md-3 col-md-offset-6">
@@ -192,7 +192,7 @@
 </#macro>
 
 <#macro loadMoreButton storage>
-    <@button "Load More" "load ${storage}" "angle-double-down"/>
+    <@button "View More" "load ${storage}" "angle-double-down"/>
 </#macro>
 
 <#macro scheduleButton>

@@ -72,7 +72,7 @@
                     <i class="btn-icon fas fa-level-down-alt"></i>
                     <span>Move to Metadata</span>
                 </button>
-                <button class="move-datastore btn btn-success">
+                <button class="move-both move-datastore btn btn-success">
                     <i class="btn-icon fas fa-level-down-alt"></i>
                     <span>Move to Datastore</span>
                 </button>

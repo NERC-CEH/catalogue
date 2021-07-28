@@ -170,6 +170,7 @@ public class UploadService {
         // Hubbub throws error "no value of key /dropbox/…" if accept() called immediately after uploading file
         TimeUnit.SECONDS.sleep(secondsPauseBeforeAccept);
         accept(dropboxKey);
+//        TODO: potentially remove hashing from upload and wait until user clicks Finished
         validate(dropboxKey);
     }
 
