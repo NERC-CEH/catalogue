@@ -97,7 +97,7 @@ public class HubbubService {
                     new HttpEntity<>(withBasicAuth(username, password)),
                     JsonNode.class
             );
-            log.debug("Response {}", response);
+            log.debug("Response {}", response.getStatusCode());
 
             val fileInfoNodes = Optional.ofNullable(response.getBody())
                 .orElseThrow(() -> new UploadException(format("No body for %s %s", method, url)))

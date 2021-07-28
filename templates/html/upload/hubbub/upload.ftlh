@@ -86,7 +86,7 @@
 
 <#macro documentContainer>
     <div class="container is-<#if isAdmin>admin<#else>non-admin</#if>" id="document-upload" data-guid='${id}'>
-        <div class="container-fluid document-upload <#if isScheduled>is-scheduled</#if>">
+        <div class="container-fluid document-upload">
             <#nested>
         </div>
     </div>
