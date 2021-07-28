@@ -1,6 +1,4 @@
-<h5>Select Catalogue Vocabularies to search</h5>
 <div class="vocabularies"/>
-<button class='search-selected'>Search Selected</button>
 <h5>Search for keywords in selected vocabularies</h5>
 <div class="row">
   <div class="col-sm-1">
