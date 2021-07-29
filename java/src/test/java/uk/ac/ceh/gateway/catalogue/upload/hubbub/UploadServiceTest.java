@@ -16,6 +16,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 
+import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -30,7 +31,7 @@ class UploadServiceTest {
     @TempDir File directory;
     private final String id = "02068a9e-8e29-42e7-938f-146aee390c98";
     private final String filename = "dataset.csv";
-    private final String path = "/dropbox/" + id + "/" + filename;
+    private final String path = format("/dropbox/%s/%s", id, filename);
     private final String badPath = "something-bad";
 
     @Mock
@@ -265,6 +266,88 @@ class UploadServiceTest {
         verify(hubbubService).postQuery("/validate", path, "force", "true");
         val uploadedFile = Paths.get(directory.getPath(), id, filename);
         assertTrue(Files.exists(uploadedFile));
+    }
+
+    @Test
+    void uploadWithoutFilename() {
+        //given
+        val multipartFile = new MockMultipartFile(
+            "file",
+            null,
+            "text/csv",
+            "some file content".getBytes(UTF_8)
+        );
+
+        //when
+        assertThrows(UploadException.class, () ->
+            service.upload(id, multipartFile)
+        );
+
+        //then
+    }
+
+    @Test
+    void uploadWithUppercaseAndSpacesInFilename() {
+        //given
+        val filename = "Dataset With Spaces And Uppercase.csv";
+        val expectedFilename = "dataset-with-spaces-and-uppercase.csv";
+        val path = format("/dropbox/%s/%s", id, expectedFilename);
+        val multipartFile = new MockMultipartFile(
+            "file",
+            filename,
+            "text/csv",
+            "some file content".getBytes(UTF_8)
+        );
+
+        //when
+        service.upload(id, multipartFile);
+
+        //then
+        verify(hubbubService).postQuery("/writing", path, "size", "17");
+        verify(hubbubService).post("/accept", path);
+        verify(hubbubService).postQuery("/validate", path, "force", "true");
+        val uploadedFile = Paths.get(directory.getPath(), id, expectedFilename);
+        assertTrue(Files.exists(uploadedFile));
+    }
+
+    @Test
+    void uploadMultipleFiles() {
+        //given
+        val filename1 = "Dataset With Spaces And Uppercase.csv";
+        val expectedFilename1 = "dataset-with-spaces-and-uppercase.csv";
+        val path1 = format("/dropbox/%s/%s", id, expectedFilename1);
+        val multipartFile1 = new MockMultipartFile(
+            "file",
+            filename1,
+            "text/csv",
+            "some file content".getBytes(UTF_8)
+        );
+        val filename2 = "Another.csv";
+        val expectedFilename2 = "another.csv";
+        val path2 = format("/dropbox/%s/%s", id, expectedFilename2);
+        val multipartFile2 = new MockMultipartFile(
+            "file",
+            filename2,
+            "text/csv",
+            "different content".getBytes(UTF_8)
+        );
+
+        //when
+        service.upload(id, multipartFile1);
+        service.upload(id, multipartFile2);
+
+        //then
+        verify(hubbubService).postQuery("/writing", path1, "size", "17");
+        verify(hubbubService).post("/accept", path1);
+        verify(hubbubService).postQuery("/validate", path1, "force", "true");
+        val uploadedFile1 = Paths.get(directory.getPath(), id, expectedFilename1);
+        assertTrue(Files.exists(uploadedFile1));
+
+        verify(hubbubService).postQuery("/writing", path2, "size", "17");
+        verify(hubbubService).post("/accept", path2);
+        verify(hubbubService).postQuery("/validate", path2, "force", "true");
+        val uploadedFile2 = Paths.get(directory.getPath(), id, expectedFilename2);
+        assertTrue(Files.exists(uploadedFile2));
     }
 
     @Test

@@ -5,16 +5,17 @@ import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.InputStream;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
@@ -24,7 +25,7 @@ import static uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadController.*;
 
 @Profile("upload:hubbub")
 @Slf4j
-@ToString(of = "uploadLocation")
+@ToString(of = {"uploadLocation", "secondsPauseBeforeAccept"})
 @Service
 public class UploadService {
     private final HubbubService hubbubService;
@@ -67,7 +68,7 @@ public class UploadService {
         this.hubbubService = hubbubService;
         this.uploadLocation = uploadLocation;
         this.secondsPauseBeforeAccept = secondsPauseBeforeAccept;
-        log.info("Creating");
+        log.info("Creating {}", this);
     }
 
     public void accept(String path) {
@@ -157,16 +158,24 @@ public class UploadService {
 
     @SneakyThrows
     public void upload(String id, MultipartFile multipartFile) {
-        val filename = multipartFile.getOriginalFilename();
-        log.debug("Adding {} to {}", filename, id);
-        val path = format("%s/%s/%s", uploadLocation, id, filename);
-        log.debug("new file {}", path);
-        val file = new File(path);
-        val dropboxKey = format("/dropbox/%s/%s", id, filename);
-        try (InputStream in = multipartFile.getInputStream()) {
-            writing(dropboxKey, in.available());
-            FileUtils.copyInputStreamToFile(in, file);
+        val filename = Optional.ofNullable(multipartFile.getOriginalFilename())
+            .orElseThrow(() -> new UploadException(format("Missing filename in upload to %s", id)))
+            .toLowerCase(Locale.ROOT)
+            .replace(' ', '-');
+        if (filename.isBlank()) {
+            throw new UploadException(format("Filename is blank in upload to %s", id));
         }
+        log.debug("Adding {} to {}", filename, id);
+        val directory = Paths.get(uploadLocation, id);
+        if ( !Files.isDirectory(directory)) {
+            val created = directory.toFile().mkdirs();
+            log.debug("created directory: {} {}", directory, created);
+        }
+        val file = Paths.get(directory.toString(), filename).toFile();
+        log.debug("new file {}", file);
+        val dropboxKey = format("/dropbox/%s/%s", id, filename);
+        writing(dropboxKey, multipartFile.getSize());
+        multipartFile.transferTo(file);
         // Hubbub throws error "no value of key /dropbox/…" if accept() called immediately after uploading file
         TimeUnit.SECONDS.sleep(secondsPauseBeforeAccept);
         accept(dropboxKey);
@@ -178,7 +187,7 @@ public class UploadService {
         hubbubService.postQuery("/validate", path, "force", "true");
     }
 
-    private void writing(String path, int size) {
+    private void writing(String path, long size) {
         hubbubService.postQuery("/writing", path, "size", format("%d", size));
     }
 }
