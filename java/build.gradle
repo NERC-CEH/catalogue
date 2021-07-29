@@ -1,5 +1,5 @@
 plugins {
-    id 'org.springframework.boot' version '2.4.5'
+    id 'org.springframework.boot' version '2.5.3'
     id 'io.freefair.lombok' version '5.3.3.3'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
@@ -28,15 +28,15 @@ targetCompatibility = JavaVersion.VERSION_15
 
 dependencies {
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-guava'
-    implementation 'com.google.guava:guava:30.1-jre'
+    implementation 'com.google.guava:guava:30.1.1-jre'
     implementation 'com.jayway.jsonpath:json-path'
     implementation 'com.nimbusds:nimbus-jose-jwt'
     implementation 'com.vividsolutions:jts:1.13'
     implementation 'commons-fileupload:commons-fileupload:1.4'
     implementation 'javax.xml.bind:jaxb-api:2.3.1'
-    implementation 'org.apache.jena:jena-tdb:3.17.0'
+    implementation 'org.apache.jena:jena-tdb:4.1.0'
     implementation 'org.apache.solr:solr-solrj'
-    implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.3'
+    implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.4'
     implementation 'org.hibernate.validator:hibernate-validator'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
