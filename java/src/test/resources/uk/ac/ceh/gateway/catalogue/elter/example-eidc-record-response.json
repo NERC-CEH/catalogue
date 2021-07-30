@@ -1,0 +1,1335 @@
+{
+    "id": "fc9bcd1c-e3fc-4c5a-b569-2fe62d40f2f5",
+    "uri": "https://catalogue.ceh.ac.uk/id/fc9bcd1c-e3fc-4c5a-b569-2fe62d40f2f5",
+    "type": "dataset",
+    "title": "UK Environmental Change Network (ECN) meteorology data: 1991-2015",
+    "description": "Meteorology data from the UK Environmental Change Network (ECN) terrestrial sites. Variables measured include albedo (ground and sky), temperature (dry bulb, wet bulb and soil (at 10cm and 30cm)), relative humidity, radiation (net. and solar), rainfall, surface wetness, soil moisture, wind direction and wind speed. These data are collected by Automatic Weather Stations at all of ECN's terrestrial sites using a standard protocol. They represent continuous hourly records from 1991 to 2015. ECN is the UK's long-term environmental monitoring programme. It is a multi-agency programme sponsored by a consortium of fourteen government departments and agencies. These organisations contribute to the programme through funding either site monitoring and/or network co-ordination activities. These organisations are: Agri-Food and Biosciences Institute, Biotechnology and Biological Sciences Research Council, Cyfoeth Naturiol Cymru - Natural Resources Wales, Defence Science & Technology Laboratory, Department for Environment, Food and Rural Affairs, Environment Agency, Forestry Commission, Llywodraeth Cymru - Welsh Government, Natural England, Natural Environment Research Council, Northern Ireland Environment Agency, Scottish Environment Protection Agency, Scottish Government and Scottish Natural Heritage.",
+    "metadataDate": "2021-06-25T18:33:57",
+    "resourceIdentifiers": [
+        {
+            "code": "https://catalogue.ceh.ac.uk/id/fc9bcd1c-e3fc-4c5a-b569-2fe62d40f2f5"
+        },
+        {
+            "code": "10.5285/fc9bcd1c-e3fc-4c5a-b569-2fe62d40f2f5",
+            "codeSpace": "doi:"
+        }
+    ],
+    "lineage": "Data are collected by Automatic Weather Stations at all of ECN's terrestrial sites using a standard protocol. Prior to deposit of the data in the EIDC, data are managed by the ECN Data Centre at CEH Lancaster according to defined protocols. \n\nVerification steps include numeric range checks (i.e. checking if a value falls within a specified range), categorical checks (e.g. checking that a species code appears on the standard code list), formatting (i.e. that the dataset conforms to the specified data format) and logical integrity checks (i.e. checking the data make sense, e.g. that the dates in one dataset match those in a related dataset).\n\nAppropriate range settings for ECN variables have been selected following discussion with specialists in each field. Where data fall outside these ranges, a cautious approach has been adopted towards discarding data on the principle that apparent errors may be valid outliers. Such values are discarded only if there is a clear explanation (e.g. an instrumentation error) and corrections are made where possible. If the reason is unclear, the values are stored, but are qualified using pre-defined quality codes or free-text descriptions. Data providers also use these codes or free text to describe factors affecting sampling outside their control, instrument damage or site management effects.",
+    "metadataStandardVersion": "1.0",
+    "spatialRepresentationTypes": [
+        "textTable"
+    ],
+    "datasetLanguages": [
+        "eng"
+    ],
+    "topicCategories": [
+        {
+            "value": "climatologyMeteorologyAtmosphere",
+            "uri": "http://inspire.ec.europa.eu/metadata-codelist/TopicCategory/climatologyMeteorologyAtmosphere"
+        }
+    ],
+    "distributionFormats": [
+        {
+            "name": "Comma-separated values (CSV)",
+            "type": "text/csv",
+            "version": "unknown"
+        }
+    ],
+    "descriptiveKeywords": [
+        {
+            "keywords": [
+                {
+                    "value": "United Kingdom",
+                    "uri": "http://sws.geonames.org/2635167"
+                },
+                {
+                    "value": "Drayton"
+                },
+                {
+                    "value": "Glensaugh"
+                },
+                {
+                    "value": "Hillsborough"
+                },
+                {
+                    "value": "Moor House - Upper Teesdale"
+                },
+                {
+                    "value": "North Wyke"
+                },
+                {
+                    "value": "Rothamsted"
+                },
+                {
+                    "value": "Sourhope"
+                },
+                {
+                    "value": "Wytham"
+                },
+                {
+                    "value": "Alice Holt"
+                },
+                {
+                    "value": "Porton Down",
+                    "uri": "http://sws.geonames.org/2640010"
+                },
+                {
+                    "value": "Yr Wyddfa - Snowdon"
+                },
+                {
+                    "value": "Cairngorms",
+                    "uri": "http://sws.geonames.org/10104113"
+                }
+            ],
+            "type": "place"
+        },
+        {
+            "keywords": [
+                {
+                    "value": "NEC04638"
+                },
+                {
+                    "value": "Environmental Change Network"
+                },
+                {
+                    "value": "ILTER"
+                },
+                {
+                    "value": "LTER"
+                }
+            ],
+            "type": "project"
+        },
+        {
+            "keywords": [
+                {
+                    "value": "Rainfall"
+                },
+                {
+                    "value": "Rain"
+                },
+                {
+                    "value": "Temperature"
+                },
+                {
+                    "value": "Solar Radiation"
+                },
+                {
+                    "value": "Wind speed"
+                },
+                {
+                    "value": "Wind Direction"
+                },
+                {
+                    "value": "Albedo"
+                },
+                {
+                    "value": "Soil Temperature"
+                },
+                {
+                    "value": "Soil Water"
+                },
+                {
+                    "value": "Climate"
+                },
+                {
+                    "value": "Climatic"
+                },
+                {
+                    "value": "Precipitation"
+                },
+                {
+                    "value": "Weather"
+                },
+                {
+                    "value": "Atmosphere"
+                },
+                {
+                    "value": "Sunshine"
+                },
+                {
+                    "value": "meteorology"
+                }
+            ]
+        }
+    ],
+    "inspireThemes": [
+        {
+            "theme": "Atmospheric Conditions",
+            "uri": "http://inspire.ec.europa.eu/theme/ac"
+        }
+    ],
+    "spatialResolutions": [
+        {
+            "distance": "100",
+            "uom": "urn:ogc:def:uom:EPSG::9001"
+        }
+    ],
+    "boundingBoxes": [
+        {
+            "westBoundLongitude": -8.648,
+            "eastBoundLongitude": 1.768,
+            "southBoundLatitude": 49.864,
+            "northBoundLatitude": 60.861
+        }
+    ],
+    "distributorContacts": [
+        {
+            "organisationName": "NERC EDS Environmental Information Data Centre",
+            "organisationIdentifier": "https://ror.org/04xw4m193",
+            "role": "distributor",
+            "email": "info@eidc.ac.uk"
+        }
+    ],
+    "responsibleParties": [
+        {
+            "organisationName": "UK Environmental Change Network",
+            "role": "pointOfContact",
+            "email": "ecn@ceh.ac.uk",
+            "address": {
+                "deliveryPoint": "Lancaster Environment Centre, Library Avenue, Bailrigg",
+                "city": "Lancaster",
+                "administrativeArea": "Lancashire",
+                "postalCode": "LA1 4AP",
+                "country": "United Kingdom"
+            }
+        },
+        {
+            "individualName": "Rennie, S.",
+            "organisationName": "Centre for Ecology & Hydrology",
+            "organisationIdentifier": "https://ror.org/00pggkr55",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk",
+            "nameIdentifier": "https://orcid.org/0000-0002-0027-0436"
+        },
+        {
+            "individualName": "Adamson, J.",
+            "organisationName": "Centre for Ecology & Hydrology",
+            "organisationIdentifier": "https://ror.org/00pggkr55",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Anderson, R.",
+            "organisationName": "Agri-Food and Biosciences Institute",
+            "organisationIdentifier": "https://ror.org/05c5y5q11",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Andrews, C.",
+            "organisationName": "Centre for Ecology & Hydrology",
+            "organisationIdentifier": "https://ror.org/00pggkr55",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk",
+            "nameIdentifier": "https://orcid.org/0000-0003-2428-272X"
+        },
+        {
+            "individualName": "Bater, J.",
+            "organisationName": "Rothamsted Research",
+            "organisationIdentifier": "https://ror.org/0347fy350",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Bayfield, N.",
+            "organisationName": "Centre for Ecology & Hydrology",
+            "organisationIdentifier": "https://ror.org/00pggkr55",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Beaton, K.",
+            "organisationName": "The James Hutton Institute",
+            "organisationIdentifier": "https://ror.org/03rzp5127",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Beaumont, D.",
+            "organisationName": "Rothamsted Research, North Wyke",
+            "organisationIdentifier": "https://ror.org/0347fy350",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Benham, S.",
+            "organisationName": "Forest Research",
+            "organisationIdentifier": "https://ror.org/03wcc3744",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Bowmaker, V.",
+            "organisationName": "Cyfoeth Naturiol Cymru - Natural Resources Wales",
+            "organisationIdentifier": "https://ror.org/04x65hs26",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Britt, C.",
+            "organisationName": "ADAS",
+            "organisationIdentifier": "https://ror.org/006d11e04",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Brooker, R.",
+            "organisationName": "Centre for Ecology & Hydrology",
+            "organisationIdentifier": "https://ror.org/00pggkr55",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Brooks, D.",
+            "organisationName": "Rothamsted Research",
+            "organisationIdentifier": "https://ror.org/0347fy350",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Brunt, J.",
+            "organisationName": "Forest Research",
+            "organisationIdentifier": "https://ror.org/03wcc3744",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Common, G.",
+            "organisationName": "The James Hutton Institute",
+            "organisationIdentifier": "https://ror.org/03rzp5127",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Cooper, R.",
+            "organisationName": "The James Hutton Institute",
+            "organisationIdentifier": "https://ror.org/03rzp5127",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Corbett, S.",
+            "organisationName": "ADAS",
+            "organisationIdentifier": "https://ror.org/006d11e04",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Critchley, N.",
+            "organisationName": "ADAS",
+            "organisationIdentifier": "https://ror.org/006d11e04",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Dennis, P.",
+            "organisationName": "The James Hutton Institute",
+            "organisationIdentifier": "https://ror.org/03rzp5127",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Dick, J.",
+            "organisationName": "Centre for Ecology & Hydrology",
+            "organisationIdentifier": "https://ror.org/00pggkr55",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk",
+            "nameIdentifier": "https://orcid.org/0000-0002-4180-9338"
+        },
+        {
+            "individualName": "Dodd, B.",
+            "organisationName": "Centre for Ecology & Hydrology",
+            "organisationIdentifier": "https://ror.org/00pggkr55",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Dodd, N.",
+            "organisationName": "The James Hutton Institute",
+            "organisationIdentifier": "https://ror.org/03rzp5127",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Donovan, N.",
+            "organisationName": "Rothamsted Research, North Wyke",
+            "organisationIdentifier": "https://ror.org/0347fy350",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Easter, J.",
+            "organisationName": "Cyfoeth Naturiol Cymru - Natural Resources Wales",
+            "organisationIdentifier": "https://ror.org/04x65hs26",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Eaton, E.",
+            "organisationName": "Forest Research",
+            "organisationIdentifier": "https://ror.org/03wcc3744",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Flexen, M.",
+            "organisationName": "Agri-Food and Biosciences Institute",
+            "organisationIdentifier": "https://ror.org/05c5y5q11",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Gardiner, A.",
+            "organisationName": "Centre for Ecology & Hydrology",
+            "organisationIdentifier": "https://ror.org/00pggkr55",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Hamilton, D.",
+            "organisationName": "The James Hutton Institute",
+            "organisationIdentifier": "https://ror.org/03rzp5127",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Hargreaves, P.",
+            "organisationName": "Rothamsted Research",
+            "organisationIdentifier": "https://ror.org/0347fy350",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Hatton-Ellis, M.",
+            "organisationName": "Cyfoeth Naturiol Cymru - Natural Resources Wales",
+            "organisationIdentifier": "https://ror.org/04x65hs26",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Howe, M.",
+            "organisationName": "Rothamsted Research",
+            "organisationIdentifier": "https://ror.org/0347fy350",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Kahl, J.",
+            "organisationName": "Centre for Ecology & Hydrology",
+            "organisationIdentifier": "https://ror.org/00pggkr55",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Lane, M.",
+            "organisationName": "Centre for Ecology & Hydrology",
+            "organisationIdentifier": "https://ror.org/00pggkr55",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Langan, S.",
+            "organisationName": "The James Hutton Institute",
+            "organisationIdentifier": "https://ror.org/03rzp5127",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Lloyd, D.",
+            "organisationName": "Cyfoeth Naturiol Cymru - Natural Resources Wales",
+            "organisationIdentifier": "https://ror.org/04x65hs26",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "McCarney, B.",
+            "organisationName": "Agri-Food and Biosciences Institute",
+            "organisationIdentifier": "https://ror.org/05c5y5q11",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "McElarney, Y.",
+            "organisationName": "Agri-Food and Biosciences Institute",
+            "organisationIdentifier": "https://ror.org/05c5y5q11",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "McKenna, C.",
+            "organisationName": "Agri-Food and Biosciences Institute",
+            "organisationIdentifier": "https://ror.org/05c5y5q11",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "McMillan, S.",
+            "organisationName": "ADAS",
+            "organisationIdentifier": "https://ror.org/006d11e04",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Milne, F.",
+            "organisationName": "The James Hutton Institute",
+            "organisationIdentifier": "https://ror.org/03rzp5127",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Milne, L.",
+            "organisationName": "Centre for Ecology & Hydrology",
+            "organisationIdentifier": "https://ror.org/00pggkr55",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Morecroft, M.",
+            "organisationName": "Centre for Ecology & Hydrology",
+            "organisationIdentifier": "https://ror.org/00pggkr55",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Murphy, M.",
+            "organisationName": "Cyfoeth Naturiol Cymru - Natural Resources Wales",
+            "organisationIdentifier": "https://ror.org/04x65hs26",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Nelson, A.",
+            "organisationName": "Agri-Food and Biosciences Institute",
+            "organisationIdentifier": "https://ror.org/05c5y5q11",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Nicholson, H.",
+            "organisationName": "Agri-Food and Biosciences Institute",
+            "organisationIdentifier": "https://ror.org/05c5y5q11",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Pallett, D.",
+            "organisationName": "Centre for Ecology & Hydrology",
+            "organisationIdentifier": "https://ror.org/00pggkr55",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Parry, D.",
+            "organisationName": "Cyfoeth Naturiol Cymru - Natural Resources Wales",
+            "organisationIdentifier": "https://ror.org/04x65hs26",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Pearce, I.",
+            "organisationName": "Centre for Ecology & Hydrology",
+            "organisationIdentifier": "https://ror.org/00pggkr55",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Pozsgai, G.",
+            "organisationName": "The James Hutton Institute",
+            "organisationIdentifier": "https://ror.org/03rzp5127",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Rose, R.",
+            "organisationName": "Centre for Ecology & Hydrology",
+            "organisationIdentifier": "https://ror.org/00pggkr55",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Schafer, S.",
+            "organisationName": "Centre for Ecology & Hydrology",
+            "organisationIdentifier": "https://ror.org/00pggkr55",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Scott, T.",
+            "organisationName": "Rothamsted Research",
+            "organisationIdentifier": "https://ror.org/0347fy350",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk",
+            "nameIdentifier": "https://orcid.org/0000-0002-6631-0672 "
+        },
+        {
+            "individualName": "Sherrin, L.",
+            "organisationName": "Centre for Ecology & Hydrology",
+            "organisationIdentifier": "https://ror.org/00pggkr55",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Shortall, C.",
+            "organisationName": "Rothamsted Research",
+            "organisationIdentifier": "https://ror.org/0347fy350",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Smith, R.",
+            "organisationName": "Rothamsted Research, North Wyke",
+            "organisationIdentifier": "https://ror.org/0347fy350",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Smith, P.",
+            "organisationName": "Centre for Ecology & Hydrology",
+            "organisationIdentifier": "https://ror.org/00pggkr55",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Tait, R.",
+            "organisationName": "The James Hutton Institute",
+            "organisationIdentifier": "https://ror.org/03rzp5127",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Taylor, C.",
+            "organisationName": "The James Hutton Institute",
+            "organisationIdentifier": "https://ror.org/03rzp5127",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Taylor, M.",
+            "organisationName": "Centre for Ecology & Hydrology",
+            "organisationIdentifier": "https://ror.org/00pggkr55",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Thurlow, M.",
+            "organisationName": "Centre for Ecology & Hydrology",
+            "organisationIdentifier": "https://ror.org/00pggkr55",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Turner, A.",
+            "organisationName": "Cyfoeth Naturiol Cymru - Natural Resources Wales",
+            "organisationIdentifier": "https://ror.org/04x65hs26",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Tyson, K.",
+            "organisationName": "Rothamsted Research, North Wyke",
+            "organisationIdentifier": "https://ror.org/0347fy350",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Watson, H.",
+            "organisationName": "The James Hutton Institute",
+            "organisationIdentifier": "https://ror.org/03rzp5127",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Whittaker, M.",
+            "organisationName": "Cyfoeth Naturiol Cymru - Natural Resources Wales",
+            "organisationIdentifier": "https://ror.org/04x65hs26",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Wilkinson, M.",
+            "organisationName": "Forest Research",
+            "organisationIdentifier": "https://ror.org/03wcc3744",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Wood, C.",
+            "organisationName": "Cyfoeth Naturiol Cymru - Natural Resources Wales",
+            "organisationIdentifier": "https://ror.org/04x65hs26",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "organisationName": "NERC Environmental Information Data Centre",
+            "organisationIdentifier": "https://ror.org/04xw4m193",
+            "role": "publisher",
+            "email": "info@eidc.ac.uk"
+        },
+        {
+            "organisationName": "NERC EDS Environmental Information Data Centre",
+            "organisationIdentifier": "https://ror.org/04xw4m193",
+            "role": "custodian",
+            "email": "info@eidc.ac.uk"
+        },
+        {
+            "organisationName": "UK Centre for Ecology & Hydrology",
+            "organisationIdentifier": "https://ror.org/00pggkr55",
+            "role": "rightsHolder",
+            "email": "enquiries@ceh.ac.uk"
+        }
+    ],
+    "temporalExtents": [
+        {
+            "begin": "1991-05-28"
+        }
+    ],
+    "onlineResources": [
+        {
+            "url": "https://data-package.ceh.ac.uk/sd/fc9bcd1c-e3fc-4c5a-b569-2fe62d40f2f5.zip",
+            "name": "Supporting information",
+            "description": "Supporting information available to assist in re-use of this dataset",
+            "function": "information",
+            "type": "OTHER"
+        },
+        {
+            "url": "https://catalogue.ceh.ac.uk/datastore/eidchub/fc9bcd1c-e3fc-4c5a-b569-2fe62d40f2f5",
+            "name": "Download the data",
+            "description": "Download a copy of this data",
+            "function": "download",
+            "type": "OTHER"
+        }
+    ],
+    "spatialReferenceSystems": [
+        {
+            "code": "http://www.opengis.net/def/crs/EPSG/0/4326",
+            "title": "WGS 84"
+        }
+    ],
+    "supplemental": [
+        {
+            "description": "Rennie, S., Andrews, C., Atkinson, S., Beaumont, D., Benham, S., Bowmaker, V., \u2026 Watson, H. (2020). The UK Environmental Change Network datasets - integrated and co-located data for long-term environmental research (1993-2015). Earth System Science Data, 12(1), 87\u2013107.",
+            "url": "https://doi.org/10.5194/essd-12-87-2020",
+            "function": "isSupplementTo"
+        },
+        {
+            "description": "Hutty, T.D., Patel, N., Dong, S., & Brown, S. (2020). Can thermal storage assist with the electrification of heat through peak shaving? Energy Reports, 6, 124\u2013131.",
+            "url": "https://doi.org/10.1016/j.egyr.2020.03.006",
+            "function": "isReferencedBy"
+        },
+        {
+            "description": "Carswell, A., Shaw, R., Hunt, J., S\u00e1nchez-Rodr\u00edguez, A.R., Saunders, K., Cotton, J., \u2026 Misselbrook, T.H. (2018). Assessing the benefits and wider costs of different N fertilisers for grassland agriculture. Archives of Agronomy and Soil Science, 65(5), 625\u2013639.",
+            "url": "https://doi.org/10.1080/03650340.2018.1519251",
+            "function": "isReferencedBy"
+        },
+        {
+            "description": "Tso, C.-H.M., Henrys, P., Rennie, S., & Watkins, J. (2020). State Tagging for Improved Earth and Environmental Data Quality Assurance. Frontiers in Environmental Science, 8.",
+            "url": "https://doi.org/10.3389/fenvs.2020.00046",
+            "function": "isReferencedBy"
+        },
+        {
+            "description": "Walker, J. (2018). Visual guidance of target-oriented flight behaviours in birds [PhD thesis]. University of Oxford.",
+            "url": "https://ora.ox.ac.uk/objects/uuid:8c9ee694-9734-45d8-a77f-1ac0b321849f",
+            "function": "isReferencedBy"
+        }
+    ],
+    "relatedRecords": [
+        {
+            "rel": "https://vocabs.ceh.ac.uk/eidc#memberOf",
+            "identifier": "4971bce4-8a81-4e23-9637-7fcff37c5f21",
+            "href": "https://catalogue.ceh.ac.uk/id/4971bce4-8a81-4e23-9637-7fcff37c5f21",
+            "title": "Environmental Change Network (ECN) data holdings"
+        },
+        {
+            "rel": "https://vocabs.ceh.ac.uk/eidc#supersedes",
+            "identifier": "e1d33b37-f1d4-4234-a0d5-8bf4e657f653",
+            "href": "https://catalogue.ceh.ac.uk/id/e1d33b37-f1d4-4234-a0d5-8bf4e657f653",
+            "title": "UK Environmental Change Network (ECN) meteorology data: 1992-2012"
+        }
+    ],
+    "datasetReferenceDate": {
+        "publicationDate": "2017-11-09"
+    },
+    "resourceMaintenance": [
+        {
+            "frequencyOfUpdate": "notPlanned"
+        }
+    ],
+    "useConstraints": [
+        {
+            "value": "This resource is made available under the terms of the Open Government Licence",
+            "code": "license",
+            "uri": "https://eidc.ceh.ac.uk/licences/OGL/plain"
+        },
+        {
+            "value": "\u00a9 UK Centre for Ecology & Hydrology",
+            "code": "copyright"
+        }
+    ],
+    "resourceType": {
+        "value": "dataset"
+    },
+    "accessLimitation": {
+        "value": "Registration is required to access this data",
+        "code": "Available",
+        "uri": "http://eidc.ceh.ac.uk/help/faq/registration"
+    },
+    "notGEMINI": false,
+    "authors": [
+        {
+            "individualName": "Rennie, S.",
+            "organisationName": "Centre for Ecology & Hydrology",
+            "organisationIdentifier": "https://ror.org/00pggkr55",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk",
+            "nameIdentifier": "https://orcid.org/0000-0002-0027-0436"
+        },
+        {
+            "individualName": "Adamson, J.",
+            "organisationName": "Centre for Ecology & Hydrology",
+            "organisationIdentifier": "https://ror.org/00pggkr55",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Anderson, R.",
+            "organisationName": "Agri-Food and Biosciences Institute",
+            "organisationIdentifier": "https://ror.org/05c5y5q11",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Andrews, C.",
+            "organisationName": "Centre for Ecology & Hydrology",
+            "organisationIdentifier": "https://ror.org/00pggkr55",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk",
+            "nameIdentifier": "https://orcid.org/0000-0003-2428-272X"
+        },
+        {
+            "individualName": "Bater, J.",
+            "organisationName": "Rothamsted Research",
+            "organisationIdentifier": "https://ror.org/0347fy350",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Bayfield, N.",
+            "organisationName": "Centre for Ecology & Hydrology",
+            "organisationIdentifier": "https://ror.org/00pggkr55",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Beaton, K.",
+            "organisationName": "The James Hutton Institute",
+            "organisationIdentifier": "https://ror.org/03rzp5127",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Beaumont, D.",
+            "organisationName": "Rothamsted Research, North Wyke",
+            "organisationIdentifier": "https://ror.org/0347fy350",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Benham, S.",
+            "organisationName": "Forest Research",
+            "organisationIdentifier": "https://ror.org/03wcc3744",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Bowmaker, V.",
+            "organisationName": "Cyfoeth Naturiol Cymru - Natural Resources Wales",
+            "organisationIdentifier": "https://ror.org/04x65hs26",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Britt, C.",
+            "organisationName": "ADAS",
+            "organisationIdentifier": "https://ror.org/006d11e04",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Brooker, R.",
+            "organisationName": "Centre for Ecology & Hydrology",
+            "organisationIdentifier": "https://ror.org/00pggkr55",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Brooks, D.",
+            "organisationName": "Rothamsted Research",
+            "organisationIdentifier": "https://ror.org/0347fy350",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Brunt, J.",
+            "organisationName": "Forest Research",
+            "organisationIdentifier": "https://ror.org/03wcc3744",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Common, G.",
+            "organisationName": "The James Hutton Institute",
+            "organisationIdentifier": "https://ror.org/03rzp5127",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Cooper, R.",
+            "organisationName": "The James Hutton Institute",
+            "organisationIdentifier": "https://ror.org/03rzp5127",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Corbett, S.",
+            "organisationName": "ADAS",
+            "organisationIdentifier": "https://ror.org/006d11e04",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Critchley, N.",
+            "organisationName": "ADAS",
+            "organisationIdentifier": "https://ror.org/006d11e04",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Dennis, P.",
+            "organisationName": "The James Hutton Institute",
+            "organisationIdentifier": "https://ror.org/03rzp5127",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Dick, J.",
+            "organisationName": "Centre for Ecology & Hydrology",
+            "organisationIdentifier": "https://ror.org/00pggkr55",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk",
+            "nameIdentifier": "https://orcid.org/0000-0002-4180-9338"
+        },
+        {
+            "individualName": "Dodd, B.",
+            "organisationName": "Centre for Ecology & Hydrology",
+            "organisationIdentifier": "https://ror.org/00pggkr55",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Dodd, N.",
+            "organisationName": "The James Hutton Institute",
+            "organisationIdentifier": "https://ror.org/03rzp5127",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Donovan, N.",
+            "organisationName": "Rothamsted Research, North Wyke",
+            "organisationIdentifier": "https://ror.org/0347fy350",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Easter, J.",
+            "organisationName": "Cyfoeth Naturiol Cymru - Natural Resources Wales",
+            "organisationIdentifier": "https://ror.org/04x65hs26",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Eaton, E.",
+            "organisationName": "Forest Research",
+            "organisationIdentifier": "https://ror.org/03wcc3744",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Flexen, M.",
+            "organisationName": "Agri-Food and Biosciences Institute",
+            "organisationIdentifier": "https://ror.org/05c5y5q11",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Gardiner, A.",
+            "organisationName": "Centre for Ecology & Hydrology",
+            "organisationIdentifier": "https://ror.org/00pggkr55",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Hamilton, D.",
+            "organisationName": "The James Hutton Institute",
+            "organisationIdentifier": "https://ror.org/03rzp5127",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Hargreaves, P.",
+            "organisationName": "Rothamsted Research",
+            "organisationIdentifier": "https://ror.org/0347fy350",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Hatton-Ellis, M.",
+            "organisationName": "Cyfoeth Naturiol Cymru - Natural Resources Wales",
+            "organisationIdentifier": "https://ror.org/04x65hs26",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Howe, M.",
+            "organisationName": "Rothamsted Research",
+            "organisationIdentifier": "https://ror.org/0347fy350",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Kahl, J.",
+            "organisationName": "Centre for Ecology & Hydrology",
+            "organisationIdentifier": "https://ror.org/00pggkr55",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Lane, M.",
+            "organisationName": "Centre for Ecology & Hydrology",
+            "organisationIdentifier": "https://ror.org/00pggkr55",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Langan, S.",
+            "organisationName": "The James Hutton Institute",
+            "organisationIdentifier": "https://ror.org/03rzp5127",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Lloyd, D.",
+            "organisationName": "Cyfoeth Naturiol Cymru - Natural Resources Wales",
+            "organisationIdentifier": "https://ror.org/04x65hs26",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "McCarney, B.",
+            "organisationName": "Agri-Food and Biosciences Institute",
+            "organisationIdentifier": "https://ror.org/05c5y5q11",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "McElarney, Y.",
+            "organisationName": "Agri-Food and Biosciences Institute",
+            "organisationIdentifier": "https://ror.org/05c5y5q11",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "McKenna, C.",
+            "organisationName": "Agri-Food and Biosciences Institute",
+            "organisationIdentifier": "https://ror.org/05c5y5q11",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "McMillan, S.",
+            "organisationName": "ADAS",
+            "organisationIdentifier": "https://ror.org/006d11e04",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Milne, F.",
+            "organisationName": "The James Hutton Institute",
+            "organisationIdentifier": "https://ror.org/03rzp5127",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Milne, L.",
+            "organisationName": "Centre for Ecology & Hydrology",
+            "organisationIdentifier": "https://ror.org/00pggkr55",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Morecroft, M.",
+            "organisationName": "Centre for Ecology & Hydrology",
+            "organisationIdentifier": "https://ror.org/00pggkr55",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Murphy, M.",
+            "organisationName": "Cyfoeth Naturiol Cymru - Natural Resources Wales",
+            "organisationIdentifier": "https://ror.org/04x65hs26",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Nelson, A.",
+            "organisationName": "Agri-Food and Biosciences Institute",
+            "organisationIdentifier": "https://ror.org/05c5y5q11",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Nicholson, H.",
+            "organisationName": "Agri-Food and Biosciences Institute",
+            "organisationIdentifier": "https://ror.org/05c5y5q11",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Pallett, D.",
+            "organisationName": "Centre for Ecology & Hydrology",
+            "organisationIdentifier": "https://ror.org/00pggkr55",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Parry, D.",
+            "organisationName": "Cyfoeth Naturiol Cymru - Natural Resources Wales",
+            "organisationIdentifier": "https://ror.org/04x65hs26",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Pearce, I.",
+            "organisationName": "Centre for Ecology & Hydrology",
+            "organisationIdentifier": "https://ror.org/00pggkr55",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Pozsgai, G.",
+            "organisationName": "The James Hutton Institute",
+            "organisationIdentifier": "https://ror.org/03rzp5127",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Rose, R.",
+            "organisationName": "Centre for Ecology & Hydrology",
+            "organisationIdentifier": "https://ror.org/00pggkr55",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Schafer, S.",
+            "organisationName": "Centre for Ecology & Hydrology",
+            "organisationIdentifier": "https://ror.org/00pggkr55",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Scott, T.",
+            "organisationName": "Rothamsted Research",
+            "organisationIdentifier": "https://ror.org/0347fy350",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk",
+            "nameIdentifier": "https://orcid.org/0000-0002-6631-0672 "
+        },
+        {
+            "individualName": "Sherrin, L.",
+            "organisationName": "Centre for Ecology & Hydrology",
+            "organisationIdentifier": "https://ror.org/00pggkr55",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Shortall, C.",
+            "organisationName": "Rothamsted Research",
+            "organisationIdentifier": "https://ror.org/0347fy350",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Smith, R.",
+            "organisationName": "Rothamsted Research, North Wyke",
+            "organisationIdentifier": "https://ror.org/0347fy350",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Smith, P.",
+            "organisationName": "Centre for Ecology & Hydrology",
+            "organisationIdentifier": "https://ror.org/00pggkr55",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Tait, R.",
+            "organisationName": "The James Hutton Institute",
+            "organisationIdentifier": "https://ror.org/03rzp5127",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Taylor, C.",
+            "organisationName": "The James Hutton Institute",
+            "organisationIdentifier": "https://ror.org/03rzp5127",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Taylor, M.",
+            "organisationName": "Centre for Ecology & Hydrology",
+            "organisationIdentifier": "https://ror.org/00pggkr55",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Thurlow, M.",
+            "organisationName": "Centre for Ecology & Hydrology",
+            "organisationIdentifier": "https://ror.org/00pggkr55",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Turner, A.",
+            "organisationName": "Cyfoeth Naturiol Cymru - Natural Resources Wales",
+            "organisationIdentifier": "https://ror.org/04x65hs26",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Tyson, K.",
+            "organisationName": "Rothamsted Research, North Wyke",
+            "organisationIdentifier": "https://ror.org/0347fy350",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Watson, H.",
+            "organisationName": "The James Hutton Institute",
+            "organisationIdentifier": "https://ror.org/03rzp5127",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Whittaker, M.",
+            "organisationName": "Cyfoeth Naturiol Cymru - Natural Resources Wales",
+            "organisationIdentifier": "https://ror.org/04x65hs26",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Wilkinson, M.",
+            "organisationName": "Forest Research",
+            "organisationIdentifier": "https://ror.org/03wcc3744",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        },
+        {
+            "individualName": "Wood, C.",
+            "organisationName": "Cyfoeth Naturiol Cymru - Natural Resources Wales",
+            "organisationIdentifier": "https://ror.org/04x65hs26",
+            "role": "author",
+            "email": "enquiries@ceh.ac.uk"
+        }
+    ],
+    "mapViewable": false,
+    "resourceStatus": "Available",
+    "rightsHolders": [
+        {
+            "organisationName": "UK Centre for Ecology & Hydrology",
+            "organisationIdentifier": "https://ror.org/00pggkr55",
+            "role": "rightsHolder",
+            "email": "enquiries@ceh.ac.uk"
+        }
+    ],
+    "incomingCitationCount": 5,
+    "citation": {
+        "authors": [
+            "Rennie, S.",
+            "Adamson, J.",
+            "Anderson, R.",
+            "Andrews, C.",
+            "Bater, J.",
+            "Bayfield, N.",
+            "Beaton, K.",
+            "Beaumont, D.",
+            "Benham, S.",
+            "Bowmaker, V.",
+            "Britt, C.",
+            "Brooker, R.",
+            "Brooks, D.",
+            "Brunt, J.",
+            "Common, G.",
+            "Cooper, R.",
+            "Corbett, S.",
+            "Critchley, N.",
+            "Dennis, P.",
+            "Dick, J.",
+            "Dodd, B.",
+            "Dodd, N.",
+            "Donovan, N.",
+            "Easter, J.",
+            "Eaton, E.",
+            "Flexen, M.",
+            "Gardiner, A.",
+            "Hamilton, D.",
+            "Hargreaves, P.",
+            "Hatton-Ellis, M.",
+            "Howe, M.",
+            "Kahl, J.",
+            "Lane, M.",
+            "Langan, S.",
+            "Lloyd, D.",
+            "McCarney, B.",
+            "McElarney, Y.",
+            "McKenna, C.",
+            "McMillan, S.",
+            "Milne, F.",
+            "Milne, L.",
+            "Morecroft, M.",
+            "Murphy, M.",
+            "Nelson, A.",
+            "Nicholson, H.",
+            "Pallett, D.",
+            "Parry, D.",
+            "Pearce, I.",
+            "Pozsgai, G.",
+            "Rose, R.",
+            "Schafer, S.",
+            "Scott, T.",
+            "Sherrin, L.",
+            "Shortall, C.",
+            "Smith, R.",
+            "Smith, P.",
+            "Tait, R.",
+            "Taylor, C.",
+            "Taylor, M.",
+            "Thurlow, M.",
+            "Turner, A.",
+            "Tyson, K.",
+            "Watson, H.",
+            "Whittaker, M.",
+            "Wilkinson, M.",
+            "Wood, C."
+        ],
+        "doi": "10.5285/fc9bcd1c-e3fc-4c5a-b569-2fe62d40f2f5",
+        "title": "UK Environmental Change Network (ECN) meteorology data: 1991-2015",
+        "publisher": "NERC Environmental Information Data Centre",
+        "resourceTypeGeneral": "dataset",
+        "year": 2017,
+        "bibtex": "https://catalogue.ceh.ac.uk/documents/fc9bcd1c-e3fc-4c5a-b569-2fe62d40f2f5/citation?format=bib",
+        "ris": "https://catalogue.ceh.ac.uk/documents/fc9bcd1c-e3fc-4c5a-b569-2fe62d40f2f5/citation?format=ris",
+        "url": "https://doi.org/10.5285/fc9bcd1c-e3fc-4c5a-b569-2fe62d40f2f5"
+    }
+}
