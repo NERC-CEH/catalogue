@@ -5,6 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
@@ -26,9 +30,13 @@ public class LinkedDocumentRetrievalService {
     public ElterDocument get(String url) {
         log.debug("GET {}", url);
         try {
-            val response = restTemplate.getForEntity(
-                    url,
-                    ElterDocument.class
+            val headers = new HttpHeaders();
+            headers.add(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
+            val response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                new HttpEntity<>(headers),
+                ElterDocument.class
             );
             log.debug("Response {}", response);
             return response.getBody();

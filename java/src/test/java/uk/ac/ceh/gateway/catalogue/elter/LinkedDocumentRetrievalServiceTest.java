@@ -6,17 +6,16 @@ import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
-
-import uk.ac.ceh.gateway.catalogue.elter.ElterDocument;
 
 @DisplayName("LinkedDocumentRetrievalService")
 public class LinkedDocumentRetrievalServiceTest {
@@ -39,12 +38,13 @@ public class LinkedDocumentRetrievalServiceTest {
     public void getLinkedRecord() {
         //given
         mockServer
-                .expect(requestTo(equalTo("https://catalogue.ceh.ac.uk/documents/fc9bcd1c-e3fc-4c5a-b569-2fe62d40f2f5?format=json")))
+                .expect(requestTo(equalTo("https://catalogue.ceh.ac.uk/documents/fc9bcd1c-e3fc-4c5a-b569-2fe62d40f2f5")))
                 .andExpect(method(HttpMethod.GET))
+                .andExpect(header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE))
                 .andRespond(withSuccess(success, MediaType.APPLICATION_JSON));
 
         //when
-        val actual = linkedDocumentRetrievalService.get("https://catalogue.ceh.ac.uk/documents/fc9bcd1c-e3fc-4c5a-b569-2fe62d40f2f5?format=json");
+        val actual = linkedDocumentRetrievalService.get("https://catalogue.ceh.ac.uk/documents/fc9bcd1c-e3fc-4c5a-b569-2fe62d40f2f5");
 
         //then
         mockServer.verify();
