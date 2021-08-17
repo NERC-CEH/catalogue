@@ -33,9 +33,13 @@ public class CatalogueMediaTypes {
     public static final String EF_INSPIRE_XML_VALUE = "application/vnd.ukeof.inspire+xml";
     public static final MediaType EF_INSPIRE_XML = parseMediaType(EF_INSPIRE_XML_VALUE);
 
-    public static final String ELTER_JSON_SHORT = "elter-json";
+    public static final String ELTER_SHORT = "elter";
     public static final String ELTER_JSON_VALUE = "application/vnd.elter+json";
     public static final MediaType ELTER_JSON = parseMediaType(ELTER_JSON_VALUE);
+
+    public static final String LINKED_ELTER_SHORT = "linked-elter";
+    public static final String LINKED_ELTER_JSON_VALUE = "application/vnd.linked-elter+json";
+    public static final MediaType LINKED_ELTER_JSON = MediaType.parseMediaType(LINKED_ELTER_JSON_VALUE);
 
     public static final String ERAMMP_DATACUBE_SHORT = "erammp-datacube";
     public static final String ERAMMP_DATACUBE_JSON_VALUE = "application/vnd.erammp-datacube+json";

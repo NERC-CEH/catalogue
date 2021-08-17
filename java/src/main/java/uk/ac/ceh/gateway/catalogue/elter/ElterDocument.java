@@ -38,7 +38,6 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
     private static final String TOPIC_PROJECT_URL = "http://onto.nerc.ac.uk/CEHMD/";
     private String otherCitationDetails, lineage, reasonChanged,
             metadataStandardName, metadataStandardVersion;
-    private Number version;
     private List<String> alternateTitles, spatialRepresentationTypes, datasetLanguages,
             securityConstraints;
     private List<Keyword> topicCategories;
@@ -48,7 +47,7 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
     private List<SpatialResolution> spatialResolutions;
     private List<Funding> funding;
     private List<BoundingBox> boundingBoxes;
-    private List<ResponsibleParty> distributorContacts, responsibleParties;
+    private List<ResponsibleParty> responsibleParties;
     private List<TimePeriod> temporalExtents;
     private List<OnlineResource> onlineResources;
     private Set<Link> incomingRelationships;
@@ -62,7 +61,6 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
     @JsonIgnore
     private boolean isDatacitable;
     private DatasetReferenceDate datasetReferenceDate;
-    private List<ResourceMaintenance> resourceMaintenance;
     private Service service;
     private List<ResourceConstraint> useConstraints;
     private MapDataDefinition mapDataDefinition;
@@ -70,6 +68,9 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
     private AccessLimitation accessLimitation;
     private boolean notGEMINI;
     private List<DeimsSolrIndex> deimsSites;
+    private boolean linkedDocument;
+    private String linkedDocumentUri;
+    private String linkedDocumentType;
 
 
     @Override

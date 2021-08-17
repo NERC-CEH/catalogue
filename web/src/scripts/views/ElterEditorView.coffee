@@ -30,7 +30,6 @@ define [
   'cs!views/editor/ResourceConstraintView'
   'cs!views/editor/OtherConstraintView'
   'cs!views/editor/TemporalExtentView'
-  'cs!views/editor/ResourceMaintenanceView'
   'cs!views/editor/SpatialReferenceSystemView'
   'cs!views/editor/SpatialRepresentationTypeView'
   'cs!views/editor/DescriptiveKeywordView'
@@ -49,7 +48,7 @@ define [
   'cs!views/editor/MapDataSourceView'
   'cs!views/editor/RelatedRecordView'
   'cs!views/editor/DeimsSiteView'
-], (EditorView, SingleObjectView, InputView, CheckboxView, ReadOnlyView, TextareaView, ParentView, ParentLargeView, PredefinedParentView, PredefinedParentLargeView, ParentStringView, ResourceTypeView, ResourceType, AccessLimitationView, AccessLimitation, InspireTheme, InspireThemeView, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, MultipleDate, Contact, BoundingBox, BoundingBoxView, OnlineResourceView, OnlineResource, ResourceConstraintView, OtherConstraintView, TemporalExtentView,  ResourceMaintenanceView, SpatialReferenceSystemView, SpatialRepresentationTypeView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, SpatialResolutionView, SpatialResolution, FundingView, Funding, SupplementalView, Supplemental, ServiceView, Service, MapDataSource, MapDataSourceView, RelatedRecordView, DeimsSiteView) -> EditorView.extend
+], (EditorView, SingleObjectView, InputView, CheckboxView, ReadOnlyView, TextareaView, ParentView, ParentLargeView, PredefinedParentView, PredefinedParentLargeView, ParentStringView, ResourceTypeView, ResourceType, AccessLimitationView, AccessLimitation, InspireTheme, InspireThemeView, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, MultipleDate, Contact, BoundingBox, BoundingBoxView, OnlineResourceView, OnlineResource, ResourceConstraintView, OtherConstraintView, TemporalExtentView, SpatialReferenceSystemView, SpatialRepresentationTypeView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, SpatialResolutionView, SpatialResolution, FundingView, Funding, SupplementalView, Supplemental, ServiceView, Service, MapDataSource, MapDataSourceView, RelatedRecordView, DeimsSiteView) -> EditorView.extend
 
   initialize: ->
 
@@ -135,12 +134,6 @@ define [
                     <p><b>Superseded</b> is the date on which the resource was superseded by another resource (where relevant).</p>
                     """
         
-        new InputView
-          model: @model
-          modelAttribute: 'version'
-          typeAttribute: 'number'
-          label: 'Version'
-
         new ParentView
           model: @model
           modelAttribute: 'temporalExtents'
@@ -162,67 +155,9 @@ define [
           label: 'Contacts'
           ObjectInputView: ContactView
           multiline: true
-          predefined:
-            'Author - UKCEH':
-              organisationName: 'UK Centre for Ecology & Hydrology'
-              role: 'author'
-              email: 'enquiries@ceh.ac.uk'
-              organisationIdentifier: 'https://ror.org/00pggkr55'
-            'Author - unaffiliated':
-              organisationName: 'Unaffiliated'
-              role: 'author'
-            'Point of contact - UKCEH Bangor':
-              organisationName: 'UK Centre for Ecology & Hydrology'
-              role: 'pointOfContact'
-              email: 'enquiries@ceh.ac.uk'
-              organisationIdentifier: 'https://ror.org/00pggkr55'
-              address:
-                deliveryPoint: 'Environment Centre Wales, Deiniol Road'
-                postalCode: 'LL57 2UW'
-                city: 'Bangor'
-                administrativeArea: 'Gwynedd'
-                country: 'United Kingdom'
-            'Point of contact - UKCEH Edinburgh':
-              organisationName: 'UK Centre for Ecology & Hydrology'
-              role: 'pointOfContact'
-              email: 'enquiries@ceh.ac.uk'
-              organisationIdentifier: 'https://ror.org/00pggkr55'
-              address:
-                deliveryPoint: 'Bush Estate'
-                postalCode: 'EH26 0QB'
-                city: 'Penicuik'
-                administrativeArea: 'Midlothian'
-                country: 'United Kingdom'
-            'Point of contact - UKCEH Lancaster':
-              organisationName: 'UK Centre for Ecology & Hydrology'
-              role: 'pointOfContact'
-              email: 'enquiries@ceh.ac.uk'
-              organisationIdentifier: 'https://ror.org/00pggkr55'
-              address:
-                deliveryPoint: 'Lancaster Environment Centre, Library Avenue, Bailrigg'
-                postalCode: 'LA1 4AP'
-                city: 'Lancaster'
-                administrativeArea: 'Lancashire'
-                country: 'United Kingdom'
-            'Point of contact - UKCEH Wallingford':
-              organisationName: 'UK Centre for Ecology & Hydrology'
-              role: 'pointOfContact'
-              email: 'enquiries@ceh.ac.uk'
-              organisationIdentifier: 'https://ror.org/00pggkr55'
-              address:
-                deliveryPoint: 'Maclean Building, Benson Lane, Crowmarsh Gifford'
-                postalCode: 'OX10 8BB'
-                city: 'Wallingford'
-                administrativeArea: 'Oxfordshire'
-                country: 'United Kingdom'
-            'Rights holder - UKCEH':
-              organisationName: 'UK Centre for Ecology & Hydrology'
-              role: 'rightsHolder'
-              email: 'enquiries@ceh.ac.uk'
-              organisationIdentifier: 'https://ror.org/00pggkr55'
           helpText: """
                     <p>The names of authors should be in the format <code>Surname, First Initial. Second Initial.</code> For example <i>Brown, A.B.</i></p>
-                    <p>Role and organisation name are mandatory. If email address is blank it is assumed to be 'enquiries@ceh.ac.uk'.</p>
+                    <p>Role and organisation name are mandatory.</p>
                     <p>The preferred identifier for individuals is an ORCiD.  You must enter the identifier as a <i>fully qualified</i> ID (e.g.  <b>https://orcid.org/1234-5678-0123-987X</b> rather than <b>1234-5678-0123-987X</b>).</p>
                     """
       ]
@@ -362,28 +297,6 @@ define [
                     <p>Where possible include a link to a document describing the terms and conditions.</p>
                     <p>You MUST enter something even if there are no constraints. In the rare case that there are none, enter "no conditions apply".</p>
                     """
-
-        new PredefinedParentView
-          model: @model
-          ModelType: Contact
-          modelAttribute: 'distributorContacts'
-          label: 'Distributor contact'
-          ObjectInputView: ContactView
-          multiline: true
-          predefined:
-            'EIDC':
-              organisationName: 'Environmental Information Data Centre'
-              role: 'distributor'
-              email: 'info@eidc.ac.uk'
-              organisationIdentifier: 'https://ror.org/04xw4m193'
-            'EMBL-EBI':
-              organisationName: 'The European Bioinformatics Institute (EMBL-EBI)'
-              role: 'distributor'
-            'Other distributor':
-              role: 'distributor'
-          helpText: """
-                    <p>The organisation responsible for distributing the data resource</p>
-                    """
       ]
     ,
       label: 'ID & relationships'
@@ -418,52 +331,156 @@ define [
           ObjectInputView: BoundingBoxView
           multiline: true
           predefined:
-            'England':
-              northBoundLatitude: 55.812
-              eastBoundLongitude: 1.768
-              southBoundLatitude: 49.864
-              westBoundLongitude: -6.452
-              extentName: 'England'
-              extentUri: 'http://sws.geonames.org/6269131'
-            'Great Britain':
-              northBoundLatitude: 60.861
-              eastBoundLongitude: 1.768
-              southBoundLatitude: 49.864
-              westBoundLongitude: -8.648
-              extentName: 'Great Britain'
-            'Northern Ireland':
-              northBoundLatitude: 55.313
-              eastBoundLongitude: -5.432
-              southBoundLatitude: 54.022
-              westBoundLongitude: -8.178
-              extentName: 'Northern Ireland'
-              extentUri: 'http://sws.geonames.org/2641364'
-            Scotland:
-              northBoundLatitude: 60.861
-              eastBoundLongitude: -0.728
-              southBoundLatitude: 54.634
-              westBoundLongitude: -8.648
-              extentName: 'Scotland'
-              extentUri: 'http://sws.geonames.org/2638360'
+            Austria:
+              northBoundLatitude: 49.021
+              eastBoundLongitude: 17.161
+              southBoundLatitude: 46.372
+              westBoundLongitude: 9.531
+              extentName: 'Austria'
+            Belgium:
+              northBoundLatitude: 51.505
+              eastBoundLongitude: 6.407
+              southBoundLatitude: 49.497
+              westBoundLongitude: 2.546
+              extentName: 'Belgium'
+            Bulgaria:
+              northBoundLatitude: 44.216
+              eastBoundLongitude: 28.607
+              southBoundLatitude: 41.236
+              westBoundLongitude: 22.357
+              extentName: 'Bulgaria'
+            'Czech Republic':
+              northBoundLatitude: 51.055
+              eastBoundLongitude: 18.859
+              southBoundLatitude: 48.552
+              westBoundLongitude: 12.092
+              extentName: 'Czech Republic'
+            Denmark:
+              northBoundLatitude: 57.752
+              eastBoundLongitude: 15.193
+              southBoundLatitude: 54.560
+              westBoundLongitude: 8.076
+              extentName: 'Denmark'
+            Finland:
+              northBoundLatitude: 70.092
+              eastBoundLongitude: 31.586
+              southBoundLatitude: 59.766
+              westBoundLongitude: 19.312
+              extentName: 'Finland'
+            France:
+              northBoundLatitude: 51.089
+              eastBoundLongitude: 8.233
+              southBoundLatitude: 42.333
+              westBoundLongitude: -4.795
+              extentName: 'France'
+            Germany:
+              northBoundLatitude: 55.058
+              eastBoundLongitude: 15.041
+              southBoundLatitude: 47.270
+              westBoundLongitude: 5.868
+              extentName: 'Germany'
+            Greece:
+              northBoundLatitude: 41.749
+              eastBoundLongitude: 29.645
+              southBoundLatitude: 34.802
+              westBoundLongitude: 19.374
+              extentName: 'Greece'
+            Hungary:
+              northBoundLatitude: 48.585
+              eastBoundLongitude: 22.896
+              southBoundLatitude: 45.738
+              westBoundLongitude: 16.114
+              extentName: 'Hungary'
+            Israel:
+              northBoundLatitude: 33.290
+              eastBoundLongitude: 35.684
+              southBoundLatitude: 29.493
+              westBoundLongitude: 34.269
+              extentName: 'Israel'
+            Italy:
+              northBoundLatitude: 47.92
+              eastBoundLongitude: 18.519
+              southBoundLatitude: 35.493
+              westBoundLongitude: 6.627
+              extentName: 'Italy'
+            Latvia:
+              northBoundLatitude: 58.084
+              eastBoundLongitude: 28.241
+              southBoundLatitude: 55.675
+              westBoundLongitude: 20.971
+              extentName: 'Latvia'
+            Norway:
+              northBoundLatitude: 71.184
+              eastBoundLongitude: 31.168
+              southBoundLatitude: 57.960
+              westBoundLongitude: 4.503
+              extentName: 'Norway'
+            Poland:
+              northBoundLatitude: 54.836
+              eastBoundLongitude: 24.145
+              southBoundLatitude: 49.003
+              westBoundLongitude: 14.123
+              extentName: 'Poland'
+            Portugal:
+              northBoundLatitude: 42.154
+              eastBoundLongitude: -6.189
+              southBoundLatitude: 36.970
+              westBoundLongitude: -9.500
+              extentName: 'Portugal'
+            Romania:
+              northBoundLatitude: 48.264
+              eastBoundLongitude: 29.713
+              southBoundLatitude: 43.620
+              westBoundLongitude: 20.264
+              extentName: 'Romania'
+            Serbia:
+              northBoundLatitude: 46.189
+              eastBoundLongitude: 23.006
+              southBoundLatitude: 41.858
+              westBoundLongitude: 18.849
+              extentName: 'Serbia'
+            Slovakia:
+              northBoundLatitude: 49.614
+              eastBoundLongitude: 22.567
+              southBoundLatitude: 47.731
+              westBoundLongitude: 16.834
+              extentName: 'Slovakia'
+            Slovenia:
+              northBoundLatitude: 46.876
+              eastBoundLongitude: 16.597
+              southBoundLatitude: 45.422
+              westBoundLongitude: 13.375
+              extentName: 'Slovenia'
+            Spain:
+              northBoundLatitude: 43.788
+              eastBoundLongitude: 3.321
+              southBoundLatitude: 36.008
+              westBoundLongitude: -9.298
+              extentName: 'Spain'
+            Sweden:
+              northBoundLatitude: 69.060
+              eastBoundLongitude: 24.167
+              southBoundLatitude: 55.338
+              westBoundLongitude: 10.966
+              extentName: 'Sweden'
+            Switzerland:
+              northBoundLatitude: 47.807
+              eastBoundLongitude: 10.492
+              southBoundLatitude: 45.818
+              westBoundLongitude: 5.956
+              extentName: 'Switzerland'
             'United Kingdom':
-              northBoundLatitude: 60.861
-              eastBoundLongitude: 1.768
-              southBoundLatitude: 49.864
-              westBoundLongitude: -8.648
+              northBoundLatitude: 60.86
+              eastBoundLongitude: 1.77
+              southBoundLatitude: 49.86
+              westBoundLongitude: -8.65
               extentName: 'United Kingdom'
               extentUri: 'http://sws.geonames.org/2635167'
-            Wales:
-              northBoundLatitude: 53.434
-              eastBoundLongitude: -2.654
-              southBoundLatitude: 51.375
-              westBoundLongitude: -5.473
-              extentName: 'Wales'
-              extentUri: 'http://sws.geonames.org/2634895'
             World:
-              northBoundLatitude: 90.00
-              eastBoundLongitude: 180.00
-              southBoundLatitude: -90.00
-              westBoundLongitude: -180.00
+              northBoundLatitude: 90.0
+              eastBoundLongitude: 180.0
+              southBoundLatitude: -90.0
+              westBoundLongitude: -180.0
           helpText: """
                     <p>A bounding box representing the limits of the data resource's study area.</p>
                     <p>If you do not wish to reveal the exact location publicly (for example, if locations are sensitive) it is recommended that you generalise the location.</p>
@@ -530,15 +547,6 @@ define [
           rows: 7
           helpText: """
                     <p>If this record is being retracted, the reasons for withdrawal or replacement should be explained here.</p>
-                    """
-
-        new ParentView
-          model: @model
-          modelAttribute: 'resourceMaintenance'
-          label: 'Resource maintenance'
-          ObjectInputView: ResourceMaintenanceView
-          helpText: """
-                    <p>This states how often the updated data resource is made available to the user.  For the vast majority of EIDC data, this value will be "not planned".</p>
                     """
       ]
     ,
