@@ -49,7 +49,7 @@ define [
   'cs!views/editor/RelatedRecordView'
   'cs!views/editor/DeimsSiteView'
   'cs!views/editor/KeywordVocabularyView'
-], (EditorView, SingleObjectView, InputView, CheckboxView, ReadOnlyView, TextareaView, ParentView, ParentLargeView, PredefinedParentView, PredefinedParentLargeView, ParentStringView, ResourceTypeView, ResourceType, AccessLimitationView, AccessLimitation, InspireTheme, InspireThemeView, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, MultipleDate, Contact, BoundingBox, BoundingBoxView, OnlineResourceView, OnlineResource, ResourceConstraintView, OtherConstraintView, TemporalExtentView,  SpatialReferenceSystemView, SpatialRepresentationTypeView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, SpatialResolutionView, SpatialResolution, FundingView, Funding, SupplementalView, Supplemental, ServiceView, Service, MapDataSource, MapDataSourceView, RelatedRecordView, DeimsSiteView, KeywordVocabularyView ) -> EditorView.extend
+], (EditorView, SingleObjectView, InputView, CheckboxView, ReadOnlyView, TextareaView, ParentView, ParentLargeView, PredefinedParentView, PredefinedParentLargeView, ParentStringView, ResourceTypeView, ResourceType, AccessLimitationView, AccessLimitation, InspireTheme, InspireThemeView, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, MultipleDate, Contact, BoundingBox, BoundingBoxView, OnlineResourceView, OnlineResource, ResourceConstraintView, OtherConstraintView, TemporalExtentView, SpatialReferenceSystemView, SpatialRepresentationTypeView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, SpatialResolutionView, SpatialResolution, FundingView, Funding, SupplementalView, Supplemental, ServiceView, Service, MapDataSource, MapDataSourceView, RelatedRecordView, DeimsSiteView, KeywordVocabularyView) -> EditorView.extend
 
   initialize: ->
 
@@ -341,155 +341,155 @@ define [
           multiline: true
           predefined:
             Austria:
-              northBoundLatitude: 49.020525
-              eastBoundLongitude: 17.160798
-              southBoundLatitude: 46.372453
-              westBoundLongitude: 9.530749
+              northBoundLatitude: 49.021
+              eastBoundLongitude: 17.161
+              southBoundLatitude: 46.372
+              westBoundLongitude: 9.531
               extentName: 'Austria'
             Belgium:
-              northBoundLatitude: 51.504838
-              eastBoundLongitude: 6.407419
-              southBoundLatitude: 49.497238
-              westBoundLongitude: 2.546011
+              northBoundLatitude: 51.505
+              eastBoundLongitude: 6.407
+              southBoundLatitude: 49.497
+              westBoundLongitude: 2.546
               extentName: 'Belgium'
             Bulgaria:
-              northBoundLatitude: 44.215663
-              eastBoundLongitude: 28.607464
-              southBoundLatitude: 41.235808
-              westBoundLongitude: 22.357497
+              northBoundLatitude: 44.216
+              eastBoundLongitude: 28.607
+              southBoundLatitude: 41.236
+              westBoundLongitude: 22.357
               extentName: 'Bulgaria'
             'Czech Republic':
-              northBoundLatitude: 51.054699
-              eastBoundLongitude: 18.858903
-              southBoundLatitude: 48.551826
-              westBoundLongitude: 12.092099
+              northBoundLatitude: 51.055
+              eastBoundLongitude: 18.859
+              southBoundLatitude: 48.552
+              westBoundLongitude: 12.092
               extentName: 'Czech Republic'
             Denmark:
-              northBoundLatitude: 57.751658
-              eastBoundLongitude: 15.193085
-              southBoundLatitude: 54.559969
-              westBoundLongitude: 8.076003
+              northBoundLatitude: 57.752
+              eastBoundLongitude: 15.193
+              southBoundLatitude: 54.560
+              westBoundLongitude: 8.076
               extentName: 'Denmark'
             Finland:
-              northBoundLatitude: 70.092137
-              eastBoundLongitude: 31.586009
-              southBoundLatitude: 59.765886
-              westBoundLongitude: 19.311944
+              northBoundLatitude: 70.092
+              eastBoundLongitude: 31.586
+              southBoundLatitude: 59.766
+              westBoundLongitude: 19.312
               extentName: 'Finland'
             France:
-              northBoundLatitude: 51.089382
-              eastBoundLongitude: 8.232633
-              southBoundLatitude: 42.333393
-              westBoundLongitude: -4.794797
+              northBoundLatitude: 51.089
+              eastBoundLongitude: 8.233
+              southBoundLatitude: 42.333
+              westBoundLongitude: -4.795
               extentName: 'France'
             Germany:
-              northBoundLatitude: 55.058165
-              eastBoundLongitude: 15.04116
-              southBoundLatitude: 47.270114
-              westBoundLongitude: 5.867697
+              northBoundLatitude: 55.058
+              eastBoundLongitude: 15.041
+              southBoundLatitude: 47.270
+              westBoundLongitude: 5.868
               extentName: 'Germany'
             Greece:
-              northBoundLatitude: 41.748812
-              eastBoundLongitude: 29.645353
-              southBoundLatitude: 34.802386
-              westBoundLongitude: 19.373661
+              northBoundLatitude: 41.749
+              eastBoundLongitude: 29.645
+              southBoundLatitude: 34.802
+              westBoundLongitude: 19.374
               extentName: 'Greece'
             Hungary:
-              northBoundLatitude: 48.584724
-              eastBoundLongitude: 22.896271
-              southBoundLatitude: 45.737838
-              westBoundLongitude: 16.113849
+              northBoundLatitude: 48.585
+              eastBoundLongitude: 22.896
+              southBoundLatitude: 45.738
+              westBoundLongitude: 16.114
               extentName: 'Hungary'
             Israel:
-              northBoundLatitude: 33.28979
-              eastBoundLongitude: 35.68404
-              southBoundLatitude: 29.493154
-              westBoundLongitude: 34.268839
+              northBoundLatitude: 33.290
+              eastBoundLongitude: 35.684
+              southBoundLatitude: 29.493
+              westBoundLongitude: 34.269
               extentName: 'Israel'
             Italy:
-              northBoundLatitude: 47.091748
-              eastBoundLongitude: 18.519314
-              southBoundLatitude: 35.493039
-              westBoundLongitude: 6.627429
+              northBoundLatitude: 47.92
+              eastBoundLongitude: 18.519
+              southBoundLatitude: 35.493
+              westBoundLongitude: 6.627
               extentName: 'Italy'
             Latvia:
-              northBoundLatitude: 58.084425
-              eastBoundLongitude: 28.240576
-              southBoundLatitude: 55.67513
-              westBoundLongitude: 20.970778
+              northBoundLatitude: 58.084
+              eastBoundLongitude: 28.241
+              southBoundLatitude: 55.675
+              westBoundLongitude: 20.971
               extentName: 'Latvia'
             Norway:
-              northBoundLatitude: 71.184162
-              eastBoundLongitude: 31.168041
-              southBoundLatitude: 57.960365
-              westBoundLongitude: 4.50341
+              northBoundLatitude: 71.184
+              eastBoundLongitude: 31.168
+              southBoundLatitude: 57.960
+              westBoundLongitude: 4.503
               extentName: 'Norway'
             Poland:
-              northBoundLatitude: 54.835685
-              eastBoundLongitude: 24.145443
-              southBoundLatitude: 49.002845
-              westBoundLongitude: 14.122904
+              northBoundLatitude: 54.836
+              eastBoundLongitude: 24.145
+              southBoundLatitude: 49.003
+              westBoundLongitude: 14.123
               extentName: 'Poland'
             Portugal:
-              northBoundLatitude: 42.154419
-              eastBoundLongitude: -6.189352
-              southBoundLatitude: 36.969819
-              westBoundLongitude: -9.499923
+              northBoundLatitude: 42.154
+              eastBoundLongitude: -6.189
+              southBoundLatitude: 36.970
+              westBoundLongitude: -9.500
               extentName: 'Portugal'
             Romania:
-              northBoundLatitude: 48.264484
-              eastBoundLongitude: 29.71263
-              southBoundLatitude: 43.619622
-              westBoundLongitude: 20.264296
+              northBoundLatitude: 48.264
+              eastBoundLongitude: 29.713
+              southBoundLatitude: 43.620
+              westBoundLongitude: 20.264
               extentName: 'Romania'
             Serbia:
-              northBoundLatitude: 46.189202
-              eastBoundLongitude: 23.00621
-              southBoundLatitude: 41.858095
-              westBoundLongitude: 18.848844
+              northBoundLatitude: 46.189
+              eastBoundLongitude: 23.006
+              southBoundLatitude: 41.858
+              westBoundLongitude: 18.849
               extentName: 'Serbia'
             Slovakia:
-              northBoundLatitude: 49.613767
-              eastBoundLongitude: 22.56684
-              southBoundLatitude: 47.731396
-              westBoundLongitude: 16.833793
+              northBoundLatitude: 49.614
+              eastBoundLongitude: 22.567
+              southBoundLatitude: 47.731
+              westBoundLongitude: 16.834
               extentName: 'Slovakia'
             Slovenia:
-              northBoundLatitude: 46.876295
-              eastBoundLongitude: 16.596805
-              southBoundLatitude: 45.421929
-              westBoundLongitude: 13.375493
+              northBoundLatitude: 46.876
+              eastBoundLongitude: 16.597
+              southBoundLatitude: 45.422
+              westBoundLongitude: 13.375
               extentName: 'Slovenia'
             Spain:
-              northBoundLatitude: 43.787928
-              eastBoundLongitude: 3.320628
-              southBoundLatitude: 36.008465
-              westBoundLongitude: -9.29841
+              northBoundLatitude: 43.788
+              eastBoundLongitude: 3.321
+              southBoundLatitude: 36.008
+              westBoundLongitude: -9.298
               extentName: 'Spain'
             Sweden:
-              northBoundLatitude: 69.059968
-              eastBoundLongitude: 24.166738
-              southBoundLatitude: 55.337707
-              westBoundLongitude: 10.966084
+              northBoundLatitude: 69.060
+              eastBoundLongitude: 24.167
+              southBoundLatitude: 55.338
+              westBoundLongitude: 10.966
               extentName: 'Sweden'
             Switzerland:
-              northBoundLatitude: 47.807379
-              eastBoundLongitude: 10.492064
-              southBoundLatitude: 45.818362
-              westBoundLongitude: 5.956067
+              northBoundLatitude: 47.807
+              eastBoundLongitude: 10.492
+              southBoundLatitude: 45.818
+              westBoundLongitude: 5.956
               extentName: 'Switzerland'
             'United Kingdom':
-              northBoundLatitude: 60.861
-              eastBoundLongitude: 1.768
-              southBoundLatitude: 49.864
-              westBoundLongitude: -8.648
+              northBoundLatitude: 60.86
+              eastBoundLongitude: 1.77
+              southBoundLatitude: 49.86
+              westBoundLongitude: -8.65
               extentName: 'United Kingdom'
               extentUri: 'http://sws.geonames.org/2635167'
             World:
-              northBoundLatitude: 90.00
-              eastBoundLongitude: 180.00
-              southBoundLatitude: -90.00
-              westBoundLongitude: -180.00
+              northBoundLatitude: 90.0
+              eastBoundLongitude: 180.0
+              southBoundLatitude: -90.0
+              westBoundLongitude: -180.0
           helpText: """
                     <p>A bounding box representing the limits of the data resource's study area.</p>
                     <p>If you do not wish to reveal the exact location publicly (for example, if locations are sensitive) it is recommended that you generalise the location.</p>
