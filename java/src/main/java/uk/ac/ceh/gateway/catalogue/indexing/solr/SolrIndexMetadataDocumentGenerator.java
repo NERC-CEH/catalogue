@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
  * The following class is responsible for taking a metadata document and creating
  * beans which are solr indexable
  */
+@SuppressWarnings("HttpUrlsUsage")
 @Slf4j
 @ToString
 public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<MetadataDocument, SolrIndex> {
@@ -50,6 +51,10 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
     public static final String NC_GEOGRAPHICAL_SCALE_URL = "http://vocabs.ceh.ac.uk/ncterms/geographical_scale";
 
     public static final String SA_TAXON_URL = "http://vocabs.ceh.ac.uk/esb/taxon";
+
+    private static final String UKSCAPE_RESEARCH_PROJECTS_URL = "http://onto.nerc.ac.uk/CEHMD/ukscape-research-projects";
+    private static final String UKSCAPE_RESEARCH_THEMES_URL = "http://onto.nerc.ac.uk/CEHMD/ukscape-research-themes";
+    private static final String UKSCAPE_SCIENCE_CHALLENGES_URL = "http://onto.nerc.ac.uk/CEHMD/ukscape-science-challenges";
 
     private final CodeLookupService codeLookupService;
     private final DocumentIdentifierService identifierService;
@@ -96,6 +101,9 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
             .setResourceType(codeLookupService.lookup("metadata.resourceType", document.getType()))
             .setState(getState(document))
             .setTitle(document.getTitle())
+            .setUkscapeResearchThemes(grab(getKeywordsFilteredByUrlFragment(document, UKSCAPE_RESEARCH_THEMES_URL), Keyword::getValue))
+            .setUkscapeResearchProjects(grab(getKeywordsFilteredByUrlFragment(document, UKSCAPE_RESEARCH_PROJECTS_URL), Keyword::getValue))
+            .setUkscapeScienceChallenges(grab(getKeywordsFilteredByUrlFragment(document, UKSCAPE_SCIENCE_CHALLENGES_URL), Keyword::getValue))
             .setView(getViews(document))
             ;
     }

@@ -60,6 +60,9 @@ public class SolrIndex {
     private @Field List<String> supplementalName;
     private @Field String title;
     private @Field List<String> topic;
+    private @Field List<String> ukscapeResearchProjects;
+    private @Field List<String> ukscapeResearchThemes;
+    private @Field List<String> ukscapeScienceChallenges;
     private @Field Number version;
     private @Field List<String> view;
 
