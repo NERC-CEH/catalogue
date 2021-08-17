@@ -21,22 +21,17 @@ define [
 
     @$('.autocomplete').autocomplete
       minLength: 2
-      source: (request, response) ->
-        @addAll
-        @vocabularies.where({'toSearch': true})
+      source: (request, response) => # bind @ (this) to the view instead of document.window that it is called from
         vocab = _.pluck(@vocabularies.where({'toSearch': true}), 'id')
-        console.log(vocab)
         term = request.term.trim()
         if _.isEmpty term
           query = "/vocabulary/keywords?vocab=#{vocab}"
         else
           query = "/vocabulary/keywords?query=#{request.term}?vocab=#{vocab}"
-        console.log("reached")
         $.getJSON query, (data) ->
             response _.map data, (d) -> {value: d.label, label: d.label, id: d.vocabId, url: d.url}
 
     @$('.autocomplete').on 'autocompleteselect', (event, ui) =>
-        console.log("autocompleteselect")
         @model.set 'vocabId', ui.item.id
         @$('.vocabId').val ui.item.id
         @model.set 'label', ui.item.label
