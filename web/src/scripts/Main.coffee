@@ -197,11 +197,11 @@ define [
         View: DataTypeEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.data-type+json'
-      ELTER_DOCUMENT:
+      'elter':
         View: ElterEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.elter+json'
-      LINKED_ELTER_DOCUMENT:
+      'linked-elter':
         View: ElterLinkedEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.linked-elter+json'

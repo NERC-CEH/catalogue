@@ -139,7 +139,7 @@ public class WebConfig implements WebMvcConfigurer {
             .mediaType(EF_INSPIRE_XML_SHORT, EF_INSPIRE_XML)
             .mediaType(ERAMMP_DATACUBE_SHORT, ERAMMP_DATACUBE_JSON)
             .mediaType(ERAMMP_MODEL_SHORT, ERAMMP_MODEL_JSON)
-            .mediaType(ELTER_JSON_SHORT, ELTER_JSON)
+            .mediaType(ELTER_SHORT, ELTER_JSON)
             .mediaType(GEMINI_JSON_SHORT, GEMINI_JSON)
             .mediaType(GEMINI_XML_SHORT, GEMINI_XML)
             .mediaType("html", MediaType.TEXT_HTML)
