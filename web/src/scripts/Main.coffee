@@ -40,8 +40,6 @@ define [
   'cs!views/DataTypeEditorView'
   'cs!views/ElterEditorView'
   'cs!views/ElterLinkedEditorView'
-  'cs!views/DocumentUploadView'
-  'cs!models/DocumentUploadModel'
   'cs!views/upload/simple/AppView'
 ], (
     _, $, Backbone, Bootstrap, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter, SearchRouter,
@@ -49,11 +47,11 @@ define [
     ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata, CehModelEditorView, CehModelApplicationEditorView, OsdpAgentEditorView,
     OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
     OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, ErammpModelEditorView, ErammpDatacubeEditorView,
-    ClipboardCopyView, DataTypeEditorView, ElterEditorView, ElterLinkedEditorView, DocumentUploadView, DocumentUploadModel, SimpleUploadView
+    ClipboardCopyView, DataTypeEditorView, ElterEditorView, ElterLinkedEditorView, SimpleUploadView
 ) ->
 
   ###
-  This is the initalizer method for the entire requirejs project. Here we can
+  This is the initializer method for the entire requirejs project. Here we can
   set up the different applications and initialize any javascript code which
   we like globally.
   ###
@@ -70,7 +68,6 @@ define [
 
     do @initCatalogue if $('.catalogue-control').length
     do @initClipboard if $('.clipboard-copy').length
-    do @initDocumentUpload if $('#document-upload').length
     do @initEditor if $('.edit-control').length
     do @initGeometryMap if $('#geometry-map').length
     do @initMapviewer if $('#mapviewer').length
@@ -107,17 +104,6 @@ define [
   initClipboard: ->
     view = new ClipboardCopyView
       el: '.clipboard-copy'
-
-  ###
-  Initialize Document Upload using Hubbub service
-  ###
-  initDocumentUpload: ->
-    id = $('#document-upload').data('guid')
-    app = new DocumentUploadModel null,
-        mediaType: 'application/vnd.upload-document+json'
-    app.id = id
-    app.set('id', id)
-    view = new DocumentUploadView model: app
 
   ###
   Initialize the editor

@@ -4,9 +4,10 @@ import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,62 +16,72 @@ import org.springframework.web.multipart.MultipartFile;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
+import java.util.Optional;
 
 import static java.lang.String.format;
-import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.UPLOAD_DOCUMENT_JSON_VALUE;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.TEXT_CSV_VALUE;
 
 @Controller
 @Profile("upload:hubbub")
 @Slf4j
-@ToString
+@ToString(of = "maxFileSize")
+@RequestMapping("upload/{id}")
 public class UploadController {
-    // These transition ids are specific to the EIDCHELP Jira project
-    private static final String START_PROGRESS = "751";
-    private static final String HOLD = "831";
-    private static final String UNHOLD = "811";
-    private static final String APPROVE = "711";
-    private static final String SCHEDULED = "741";
+    // These transition ids are specific to the CT & EIDCHELP Jira project
+    static final String START_PROGRESS = "751";
+    static final String HOLD = "831";
+    static final String UNHOLD = "811";
+    static final String APPROVE = "711";
+    static final String SCHEDULED = "741";
 
-    private final UploadDocumentService uploadDocumentService;
+    static final String DATASTORE = "eidchub";
+    static final String DROPBOX = "dropbox";
+    static final String METADATA = "supporting-documents";
+
+    private final UploadService uploadService;
     private final DocumentRepository documentRepository;
     private final JiraService jiraService;
     private final PermissionService permissionService;
+    private final String maxFileSize;
 
     public UploadController(
-            UploadDocumentService uploadDocumentService,
-            DocumentRepository documentRepository,
-            JiraService jiraService,
-            PermissionService permissionService
+        UploadService uploadService,
+        DocumentRepository documentRepository,
+        JiraService jiraService,
+        PermissionService permissionService,
+        @Value("${spring.servlet.multipart.max-file-size}") String maxFileSize
     ) {
-        this.uploadDocumentService = uploadDocumentService;
+        this.uploadService = uploadService;
         this.documentRepository = documentRepository;
         this.jiraService = jiraService;
         this.permissionService = permissionService;
-        log.info("Creating");
+        this.maxFileSize = maxFileSize;
+        log.info("Creating {}", this);
     }
 
     @SneakyThrows
     @PreAuthorize("@permission.userCanUpload(#id)")
-    @GetMapping("upload/{id}")
-    public String getUploadDocumentPage(
+    @GetMapping
+    public String getPage(
             @PathVariable("id") String id,
             Model model
     ) {
-        log.info("Requesting UploadDocument page for {}", id);
+        log.info("Requesting upload page for {}", id);
         model.addAttribute("id", id);
 
         val geminiDocument = (GeminiDocument) documentRepository.read(id);
         model.addAttribute("title", geminiDocument.getTitle());
 
-        model.addAttribute("isAdmin", permissionService.userIsAdmin());
+        val isAdmin = permissionService.userIsAdmin();
+        model.addAttribute("isAdmin", isAdmin);
 
         val possibleDataTransfer = jiraService.retrieveDataTransferIssue(id);
         model.addAttribute("hasDataTransfer", possibleDataTransfer.isPresent());
@@ -78,163 +89,206 @@ public class UploadController {
         model.addAttribute("isOpen", dataTransfer.isOpen());
         model.addAttribute("isScheduled", dataTransfer.isScheduled());
         model.addAttribute("isInProgress", dataTransfer.isInProgress());
+        model.addAttribute("maxFileSize", maxFileSize);
 
-        log.debug("Model is {}", model);
-        return "html/upload/hubbub/upload-document";
+        if (dataTransfer.isScheduled()) {
+            model.addAttribute(
+                "dropbox",
+                uploadService.get(id, DROPBOX, 1, 20)
+            );
+            if (isAdmin) {
+                model.addAttribute(
+                    "datastore",
+                    uploadService.get(id, DATASTORE, 1, 20)
+                );
+                model.addAttribute(
+                    "metadata",
+                    uploadService.get(id, METADATA, 1, 20)
+                );
+            }
+        } else if (dataTransfer.isInProgress()) {
+            model.addAttribute(
+                "datastore",
+                uploadService.get(id, DATASTORE, 1, 20)
+            );
+            model.addAttribute(
+                DROPBOX,
+                uploadService.get(id, DROPBOX, 1, 20)
+            );
+            model.addAttribute(
+                "metadata",
+                uploadService.get(id, METADATA, 1, 20)
+            );
+        }
+
+        log.debug("Model keys: {}", model.asMap().keySet());
+        return "html/upload/hubbub/upload";
     }
 
-    @GetMapping(value = "documents/{id}", produces = UPLOAD_DOCUMENT_JSON_VALUE)
-    public ResponseEntity<UploadDocument> get(
-            @PathVariable("id") String id,
-            @RequestParam(value = "documents_page", defaultValue = "1") int documentsPage,
-            @RequestParam(value = "datastore_page", defaultValue = "1") int datastorePage,
-            @RequestParam(value = "supporting_documents_page", defaultValue = "1") int supportingDocumentsPage
+    @ResponseBody
+    @PreAuthorize("@permission.toAccess(#user, #id, 'VIEW')")
+    @GetMapping("{storage}")
+    public List<FileInfo> get(
+        @ActiveUser CatalogueUser user,
+        @PathVariable("id") String id,
+        @PathVariable("storage") String storage,
+        @RequestParam(value = "page", defaultValue = "1") int page,
+        @RequestParam(value = "size", defaultValue = "20") int size
     ) {
-        log.debug("GETing {} (documentsPage={}, datastorePage={}, supportingDocumentsPage={})", id, documentsPage, datastorePage, supportingDocumentsPage);
-        return ResponseEntity.ok(
-                uploadDocumentService.get(
-                        id,
-                        documentsPage,
-                        datastorePage,
-                        supportingDocumentsPage
-                )
-        );
+        return uploadService.get(id, storage, page, size);
+    }
+
+    @ResponseBody
+    @PreAuthorize("@permission.toAccess(#user, #id, 'VIEW')")
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public FileInfo get(
+        @ActiveUser CatalogueUser user,
+        @PathVariable("id") String id,
+        @RequestParam("path") String path
+    ) {
+        return uploadService.get(id, path);
     }
 
     @SneakyThrows
-    @GetMapping("upload/documents/csv/{id}")
-    public void exportCSV(
-            @ActiveUser CatalogueUser user,
-            @PathVariable("id") String id,
-            HttpServletResponse response
+    @PreAuthorize("@permission.toAccess(#user, #id, 'VIEW')")
+    @GetMapping(produces = TEXT_CSV_VALUE)
+    public void csv(
+        @ActiveUser CatalogueUser user,
+        @PathVariable("id") String id,
+        HttpServletResponse response
     ) {
-        response.setContentType("text/csv");
+        response.setContentType(TEXT_CSV_VALUE);
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION, format("attachment; filename=\"checksums_%s.csv\"", id));
-        uploadDocumentService.getCsv(response.getWriter(), id);
+        uploadService.csv(response.getWriter(), id);
     }
 
     @PreAuthorize("@permission.userCanUpload(#id)")
-    @PostMapping("documents/{id}/add-upload-document")
-    public ResponseEntity<UploadDocument> addFile(
+    @ResponseStatus(NO_CONTENT)
+    @PostMapping
+    public void upload(
             @PathVariable("id") String id,
-            @RequestParam("file") MultipartFile file
+            @RequestParam("file") MultipartFile multipartFile
     ) {
-        return ResponseEntity.ok(
-                uploadDocumentService.add(
-                        id,
-                        file.getOriginalFilename(),
-                        file
-                )
-        );
+        uploadService.upload(id, multipartFile);
     }
 
     @PreAuthorize("@permission.userCanUpload(#id)")
-    @PutMapping(value = "documents/{id}/delete-upload-file", produces = UPLOAD_DOCUMENT_JSON_VALUE)
-    public ResponseEntity<UploadDocument> deleteFile(
+    @ResponseStatus(NO_CONTENT)
+    @DeleteMapping
+    public void delete(
             @PathVariable("id") String id,
-            @RequestParam("filename") String filename
+            @RequestParam("path") String path
     ) {
-        return ResponseEntity.ok(uploadDocumentService.delete(id, filename));
+        uploadService.delete(path);
     }
 
     @SneakyThrows
     @PreAuthorize("@permission.userCanUpload(#id)")
-    @PutMapping(value = "documents/{id}/finish", produces = UPLOAD_DOCUMENT_JSON_VALUE)
-    public ResponseEntity<UploadDocument> finish(
+    @ResponseStatus(NO_CONTENT)
+    @PostMapping("finish")
+    public void finish(
             @ActiveUser CatalogueUser user,
             @PathVariable("id") String id
     ) {
         transitionIssueToStartProgress(user, id);
         removeUploadPermission(user, id);
-        return ResponseEntity.ok(uploadDocumentService.get(id));
     }
 
     @PreAuthorize("@permission.userCanUpload(#id)")
-    @PutMapping(value = "documents/{id}/schedule", produces = UPLOAD_DOCUMENT_JSON_VALUE)
-    public ResponseEntity<UploadDocument> schedule(
+    @ResponseStatus(NO_CONTENT)
+    @PostMapping("schedule")
+    public void schedule(
             @ActiveUser CatalogueUser user,
             @PathVariable("id") String id
     ) {
         transitionIssueToSchedule(user, id);
-        return ResponseEntity.ok(uploadDocumentService.get(id));
     }
 
     @PreAuthorize("@permission.userCanUpload(#id)")
-    @PutMapping(value = "documents/{id}/reschedule", produces = UPLOAD_DOCUMENT_JSON_VALUE)
-    public ResponseEntity<UploadDocument> reschedule(
+    @ResponseStatus(NO_CONTENT)
+    @PostMapping("reschedule")
+    public void reschedule(
             @ActiveUser CatalogueUser user,
             @PathVariable("id") String id
     ) {
         transitionIssueToScheduled(user, id);
-        return ResponseEntity.ok(uploadDocumentService.get(id));
     }
 
     @PreAuthorize("@permission.userCanUpload(#id)")
-    @PutMapping(value = "documents/{id}/accept-upload-file", produces = UPLOAD_DOCUMENT_JSON_VALUE)
-    public ResponseEntity<UploadDocument> acceptFile(
+    @ResponseStatus(NO_CONTENT)
+    @PostMapping("accept")
+    public void accept(
             @PathVariable("id") String id,
             @RequestParam("path") String path
     ) {
-        return ResponseEntity.ok(uploadDocumentService.accept(id, path));
+        uploadService.accept(path);
     }
 
     @PreAuthorize("@permission.userCanUpload(#id)")
-    @PutMapping(value = "documents/{id}/validate-upload-file", produces = UPLOAD_DOCUMENT_JSON_VALUE)
-    public ResponseEntity<UploadDocument> validateFile(
+    @ResponseStatus(NO_CONTENT)
+    @PostMapping("cancel")
+    public void cancel(
+        @PathVariable("id") String id,
+        @RequestParam("path") String path
+    ) {
+        uploadService.cancel(path);
+    }
+
+    @PreAuthorize("@permission.userCanUpload(#id)")
+    @ResponseStatus(NO_CONTENT)
+    @PostMapping("validate")
+    public void validate(
+            @PathVariable("id") String id,
+            @RequestParam(value = "path", required = false) Optional<String> possiblePath
+    ) {
+        possiblePath.ifPresentOrElse(
+            uploadService::validate,
+            () -> uploadService.validate(id)
+        );
+    }
+
+    @PreAuthorize("@permission.userCanUpload(#id)")
+    @ResponseStatus(NO_CONTENT)
+    @PostMapping("move-datastore")
+    public void moveDatastore(
+        @PathVariable("id") String id,
+        @RequestParam("path") String path
+    ) {
+        uploadService.move(path, DATASTORE);
+    }
+
+    @PreAuthorize("@permission.userCanUpload(#id)")
+    @ResponseStatus(NO_CONTENT)
+    @PostMapping("move-metadata")
+    public void moveMetadata(
             @PathVariable("id") String id,
             @RequestParam("path") String path
     ) {
-        return ResponseEntity.ok(uploadDocumentService.validateFile(id, path));
+        uploadService.move(path, METADATA);
     }
 
     @PreAuthorize("@permission.userCanUpload(#id)")
-    @PutMapping(value = "documents/{id}/cancel", produces = UPLOAD_DOCUMENT_JSON_VALUE)
-    public ResponseEntity<UploadDocument> cancel(
-            @PathVariable("id") String id,
-            @RequestParam("filename") String filename
-    ) {
-        return ResponseEntity.ok(uploadDocumentService.cancel(id, filename));
-    }
-
-    @PreAuthorize("@permission.userCanUpload(#id)")
-    @PutMapping(value = "documents/{id}/move-upload-file", produces = UPLOAD_DOCUMENT_JSON_VALUE)
-    public ResponseEntity<UploadDocument> moveFile(
-            @PathVariable("id") String id,
-            @RequestParam("to") String to,
-            @RequestParam("filename") String filename
-    ) {
-        return ResponseEntity.ok(uploadDocumentService.move(id, filename, to));
-    }
-
-    @PreAuthorize("@permission.userCanUpload(#id)")
-    @PutMapping(value = "documents/{id}/move-to-datastore", produces = UPLOAD_DOCUMENT_JSON_VALUE)
-    public ResponseEntity<UploadDocument> moveToDatastore(
+    @ResponseStatus(NO_CONTENT)
+    @PostMapping("move-all-datastore")
+    public void moveAllDatastore(
             @PathVariable("id") String id
     ) {
-        return ResponseEntity.ok(uploadDocumentService.moveToDataStore(id));
+        uploadService.moveAllToDataStore(id);
     }
 
-    @PreAuthorize("@permission.userCanUpload(#id)")
-    @PutMapping(value = "documents/{id}/validate", produces = UPLOAD_DOCUMENT_JSON_VALUE)
-    public ResponseEntity<UploadDocument> validate(
-            @PathVariable("id") String id
-    ) {
-        return ResponseEntity.ok(uploadDocumentService.validate(id));
-    }
-
-    private void transitionIssueToSchedule(CatalogueUser user,String guid) {
+    private void transitionIssueToSchedule(CatalogueUser user, String guid) {
         transitionIssueTo(guid, APPROVE);
         transitionIssueTo(user, guid, SCHEDULED, "%s has scheduled, ready for uploading");
     }
 
-    private void transitionIssueToScheduled(CatalogueUser user,String guid) {
+    private void transitionIssueToScheduled(CatalogueUser user, String guid) {
         transitionIssueTo(guid, HOLD);
         transitionIssueTo(guid, UNHOLD);
         transitionIssueTo(guid, APPROVE);
         transitionIssueTo(user, guid, SCHEDULED, "%s has rescheduled, ready for uploading");
     }
 
-    private void transitionIssueToStartProgress(CatalogueUser user,String guid) {
+    private void transitionIssueToStartProgress(CatalogueUser user, String guid) {
         transitionIssueTo(user, guid, START_PROGRESS, "%s has finished uploading the documents");
     }
 
@@ -256,15 +310,15 @@ public class UploadController {
 
     private void removeUploadPermission(CatalogueUser user, String guid)
             throws DocumentRepositoryException {
-        MetadataDocument document = documentRepository.read(guid);
-        MetadataInfo info = document.getMetadata();
+        val document = documentRepository.read(guid);
+        val info = document.getMetadata();
         info.removePermission(Permission.UPLOAD, user.getUsername());
         document.setMetadata(info);
         documentRepository.save(
                 user,
                 document,
                 guid,
-                format("Permissions of %s changed.", guid)
+                format("Permissions of %s changed. Removing upload permissions", guid)
         );
     }
 }

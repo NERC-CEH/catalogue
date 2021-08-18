@@ -1,21 +1,25 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="dc up" type="docker-deploy" factoryName="docker-compose.yml" server-name="Docker">
+  <configuration default="false" name="dc up with build Hubbub" type="docker-deploy" factoryName="docker-compose.yml" server-name="Docker">
     <deployment type="docker-compose.yml">
       <settings>
         <option name="envFilePath" value="" />
         <option name="removeVolumesOnComposeDown" value="true" />
+        <option name="commandLineOptions" value="--build" />
         <option name="secondarySourceFiles">
           <list>
+            <option value="docker-compose.yml" />
             <option value="docker-compose.override.yml" />
           </list>
         </option>
         <option name="services">
           <list>
+            <option value="hubbub" />
+            <option value="redis" />
             <option value="web" />
             <option value="solr" />
           </list>
         </option>
-        <option name="sourceFilePath" value="docker-compose.yml" />
+        <option name="sourceFilePath" value="docker-compose.hubbub.yml" />
         <option name="upExitCodeFromService" value="" />
         <option name="upTimeout" value="" />
       </settings>
