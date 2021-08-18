@@ -21,10 +21,11 @@ define [
   initialize: ->
     if @$('.dropzone-container').length
       dropzoneSuccess = (file) =>
+        filename = file.name.toLowerCase().replaceAll(' ', '-')
         model = new File
           bytes: file.size
-          name: file.name
-          path: "/dropbox/#{@model.get('id')}/#{file.name}"
+          name: filename
+          path: "/dropbox/#{@model.get('id')}/#{filename}"
           status: 'WRITING'
           check: true
         @dropbox.add(model)
