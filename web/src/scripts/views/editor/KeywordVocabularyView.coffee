@@ -21,7 +21,7 @@ define [
 
     @$('.autocomplete').autocomplete
       minLength: 2
-      source: (request, response) => # bind @ (this) to the view instead of document.window that it is called from
+      source: (request, response) =>
         vocab = _.pluck(@vocabularies.where({'toSearch': true}), 'id')
         term = request.term.trim()
         if _.isEmpty term
