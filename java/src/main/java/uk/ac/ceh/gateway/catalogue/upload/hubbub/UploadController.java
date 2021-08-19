@@ -29,6 +29,7 @@ import static java.lang.String.format;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.TEXT_CSV_VALUE;
 
+@SuppressWarnings("SpringMVCViewInspection")
 @Controller
 @Profile("upload:hubbub")
 @Slf4j
@@ -93,7 +94,7 @@ public class UploadController {
 
         if (dataTransfer.isScheduled()) {
             model.addAttribute(
-                "dropbox",
+                DROPBOX,
                 uploadService.get(id, DROPBOX, 1, 20)
             );
             if (isAdmin) {
@@ -106,7 +107,7 @@ public class UploadController {
                     uploadService.get(id, METADATA, 1, 20)
                 );
             }
-        } else if (dataTransfer.isInProgress()) {
+        } else if (dataTransfer.isInProgress() || isAdmin) {
             model.addAttribute(
                 "datastore",
                 uploadService.get(id, DATASTORE, 1, 20)
