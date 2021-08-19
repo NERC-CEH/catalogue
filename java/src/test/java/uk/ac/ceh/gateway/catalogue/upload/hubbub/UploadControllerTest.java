@@ -120,6 +120,18 @@ class UploadControllerTest {
             .willReturn(Optional.of(dataTransfer));
     }
 
+    private void givenClosedDataTransferIssue() {
+        val status = new HashMap<String, Object>();
+        status.put("name", "Closed");
+        val fields = new HashMap<String, Object>();
+        fields.put("status", status);
+        val dataTransfer = new JiraIssue();
+        dataTransfer.setFields(fields);
+        dataTransfer.setKey(jiraKey);
+        given(jiraService.retrieveDataTransferIssue(id))
+            .willReturn(Optional.of(dataTransfer));
+    }
+
     @SneakyThrows
     private void givenMetadataDocument() {
         val info = MetadataInfo.builder().build();
@@ -185,6 +197,37 @@ class UploadControllerTest {
             .andExpect(model().attribute("isAdmin", true))
             .andExpect(model().attribute("isOpen", false))
             .andExpect(model().attribute("isScheduled", true))
+            .andExpect(model().attribute("isInProgress", false))
+            .andExpect(model().attributeExists("datastore", "dropbox", "metadata", "maxFileSize"));
+
+    }
+
+    @Test
+    @SneakyThrows
+    void getClosedPageForAdmin() {
+        //given
+        givenUserCanUpload();
+        givenUserIsAdmin();
+        givenGeminiDocument();
+        givenClosedDataTransferIssue();
+        givenFreemarkerConfiguration();
+        givenDefaultCatalogue();
+        givenDatastore();
+        givenDropbox();
+        givenMetadata();
+
+        //when
+        mvc.perform(
+                get("/upload/{id}", id)
+            )
+            .andExpect(status().isOk())
+            .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
+            .andExpect(view().name("html/upload/hubbub/upload"))
+            .andExpect(model().attribute("id", id))
+            .andExpect(model().attribute("title", "Foo"))
+            .andExpect(model().attribute("isAdmin", true))
+            .andExpect(model().attribute("isOpen", false))
+            .andExpect(model().attribute("isScheduled", false))
             .andExpect(model().attribute("isInProgress", false))
             .andExpect(model().attributeExists("datastore", "dropbox", "metadata", "maxFileSize"));
 
