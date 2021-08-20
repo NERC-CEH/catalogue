@@ -3,9 +3,9 @@ define [
   'backbone'
   'cs!views/editor/ObjectInputView'
   'cs!views/editor/ChildView'
-  'cs!views/editor/KeywordView'
+  'cs!views/editor/KeywordVocabularyView'
   'tpl!templates/editor/DescriptiveKeyword.tpl'
-], (_, Backbone, ObjectInputView, ChildView, KeywordView, template) -> ObjectInputView.extend
+], (_, Backbone, ObjectInputView, ChildView, KeywordVocabularyView, template) -> ObjectInputView.extend
 
   template: template
 
@@ -41,7 +41,7 @@ define [
     new ChildView _.extend {}, @data,
       model: model
       keywordIndex: keywordIndex
-      ObjectInputView: KeywordView
+      ObjectInputView: KeywordVocabularyView
 
   add: -> @keywords.add {}
 

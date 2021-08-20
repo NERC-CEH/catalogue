@@ -27,7 +27,7 @@ define [
         if _.isEmpty term
           query = "/vocabulary/keywords?vocab=#{vocab}"
         else
-          query = "/vocabulary/keywords?query=#{request.term}?vocab=#{vocab}"
+          query = "/vocabulary/keywords?query=#{request.term}&vocab=#{vocab}"
         $.getJSON query, (data) ->
             response _.map data, (d) -> {value: d.label, label: d.label, id: d.vocabId, url: d.url}
 
