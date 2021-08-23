@@ -36,6 +36,7 @@ define [
   'cs!views/SampleArchiveEditorView'
   'cs!views/ErammpModelEditorView'
   'cs!views/ErammpDatacubeEditorView'
+  'cs!views/UkemsDocumentEditorView'
   'cs!views/ClipboardCopyView'
   'cs!views/DataTypeEditorView'
   'cs!views/ElterEditorView'
@@ -46,7 +47,7 @@ define [
     EditorMetadata, GeminiEditorView, MonitoringEditorView, PermissionApp, PermissionRouter, PermissionAppView, Catalogue, CatalogueView,
     ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata, CehModelEditorView, CehModelApplicationEditorView, OsdpAgentEditorView,
     OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
-    OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, ErammpModelEditorView, ErammpDatacubeEditorView,
+    OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, ErammpModelEditorView, ErammpDatacubeEditorView, UkemsDocumentEditorView,
     ClipboardCopyView, DataTypeEditorView, ElterEditorView, ElterLinkedEditorView, SimpleUploadView
 ) ->
 
@@ -191,6 +192,10 @@ define [
         View: ElterLinkedEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.linked-elter+json'
+      'ukems-document':
+        View: UkemsDocumentEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.ukems-document+json'
 
     # the create document dropdown
     $editorCreate = $ '#editorCreate'

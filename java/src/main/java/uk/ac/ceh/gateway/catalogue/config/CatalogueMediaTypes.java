@@ -47,7 +47,7 @@ public class CatalogueMediaTypes {
 
     public static final String ERAMMP_MODEL_SHORT = "erammp-model";
     public static final String ERAMMP_MODEL_JSON_VALUE = "application/vnd.erammp-model+json";
-    public static final MediaType ERAMMP_MODEL_JSON = parseMediaType(ERAMMP_MODEL_JSON_VALUE);
+    public static final MediaType ERAMMP_MODEL_JSON = MediaType.parseMediaType(ERAMMP_MODEL_JSON_VALUE);
 
     public static final String GEMINI_JSON_SHORT = "gemini-json";
     public static final String GEMINI_JSON_VALUE = "application/gemini+json";
@@ -122,5 +122,9 @@ public class CatalogueMediaTypes {
 
     public static final String UPLOAD_DOCUMENT_SHORT = "upload";
     public static final String UPLOAD_DOCUMENT_JSON_VALUE = "application/vnd.upload-document+json";
-    public static final MediaType UPLOAD_DOCUMENT_JSON = parseMediaType(UPLOAD_DOCUMENT_JSON_VALUE);
+    public static final MediaType UPLOAD_DOCUMENT_JSON = MediaType.parseMediaType(UPLOAD_DOCUMENT_JSON_VALUE);
+
+    public static final String UKEMS_DOCUMENT_SHORT = "ukems-document";
+    public static final String UKEMS_DOCUMENT_JSON_VALUE = "application/vnd.ukems-document+json";
+    public static final MediaType UKEMS_DOCUMENT_JSON = MediaType.parseMediaType(UKEMS_DOCUMENT_JSON_VALUE);
 }

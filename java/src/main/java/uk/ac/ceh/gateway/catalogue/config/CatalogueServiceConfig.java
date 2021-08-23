@@ -121,6 +121,11 @@ public class CatalogueServiceConfig {
             .type(SAMPLE_ARCHIVE_SHORT)
             .build();
 
+        DocumentType ukems = DocumentType.builder()
+            .title("UK-EMS Document")
+            .type(UKEMS_DOCUMENT_SHORT)
+            .build();
+
         return new InMemoryCatalogueService(
             defaultCatalogueKey,
 
@@ -174,6 +179,7 @@ public class CatalogueServiceConfig {
                 .documentType(gemini)
                 .documentType(cehModel)
                 .documentType(cehModelApplication)
+                .documentType(ukems)
                 .vocabularies(getCatalogueVocabularies(vocabularies, "datalabs"))
                 .fileUpload(false)
                 .build(),
