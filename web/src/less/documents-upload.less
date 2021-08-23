@@ -11,8 +11,7 @@
         border-radius: 0;
 
         &.is-collapsed {
-            margin: 0;
-            margin-bottom: -2px;
+            margin: 0 0 -2px;
             border-bottom: 0;
 
             .panel-heading-chevron {
@@ -104,8 +103,7 @@
 
     .finish,
     .fileinput-button,
-    .zip,
-    .unzip {
+    .load {
         width: 100%;
     }
 
@@ -177,9 +175,6 @@
 
     .file-action {
         width: 50%;
-    }
-
-    .file-action {
         margin-left: 8px;
     }
 
@@ -194,62 +189,13 @@
         width: 100%;
     }
 
-    .loading h3 {
-        color: #888;
-    }
-
     .no-documents {
         color: #bbb;
         font-weight: 400;
         letter-spacing: 1px;
     }
-
-    .schedule,
-    .reschedule,
-    .move-all {
-        display: initial;
-    }
-
-    .delete {
-        display: none;
-    }
-
-    &.is-scheduled {
-        .delete {
-            display: initial;
-        }
-
-        .schedule,
-        .reschedule,
-        .move-all,
-        .move-both {
-            display: none;
-        }
-    }
 }
 
-.pag {
-    display: flex;
-    flex-wrap: wrap;
-}
-
-.pag-pages {
-    display: flex;
-    width: 100%;
-}
-
-.pag-number {
-    width: auto;
-    margin-left: auto;
-    margin-right: 1rem;
-}
-
-.pag-per-page {
-    font-size: 18px;
-    margin-top: 0.5rem;
-    text-align: right;
-    width: 100%;
-}
 
 .is-non-admin .document-upload .panel-footer {
     display: none;

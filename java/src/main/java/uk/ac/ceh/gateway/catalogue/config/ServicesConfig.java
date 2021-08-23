@@ -141,7 +141,7 @@ public class ServicesConfig {
     public DocumentTypeLookupService metadataRepresentationService() {
         return new HashMapDocumentTypeLookupService()
             .register(GEMINI_DOCUMENT, GeminiDocument.class)
-            .register(ELTER_DOCUMENT, ElterDocument.class)
+            .register(ELTER_SHORT, ElterDocument.class)
             .register(EF_DOCUMENT, BaseMonitoringType.class)
             .register(IMP_DOCUMENT, ImpDocument.class)
             .register(LINK_DOCUMENT, LinkDocument.class)

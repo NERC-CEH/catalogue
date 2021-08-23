@@ -1,6 +1,6 @@
 # Ignore the built content
 src/vendor
-src/scripts/main-out.js
+src/scripts/*-out.js
 src/css/*
 
 # Ignore the node_modules

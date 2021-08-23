@@ -1,7 +1,12 @@
 <#import "../../skeleton.ftlh" as skeleton>
 
-<@skeleton.master title="Data Transfer for: " + title>
+<#assign uploadScripts>
+    <script data-main="/static/scripts/upload-out" src="/static/vendor/requirejs/require.js"></script>
+</#assign>
+
+<@skeleton.master title="Data Transfer for: " + title scripts=uploadScripts>
     <@documentContainer>
+        <@titleHeading/>
         <@returnToDocument/>
         <#if !hasDataTransfer>
             <@noDataTransfer/>
@@ -11,8 +16,8 @@
             </@documentUploadSection>
         </#if>
         <@documentUploadSection "Data" "archive">
-            <@pagination "documents"/>
-            <@loadingContainer "documents"/>
+            <@loadingContainer "data"/>
+            <@loadMoreRow "data"/>
             <#if isAdmin && isInProgress>
                 <@row>
                     <div class="col-md-3 col-md-offset-6">
@@ -43,12 +48,12 @@
         <#if isAdmin>
             <#assign metadataTitle>Metadata <small>Supporting Documents</small></#assign>
             <@documentUploadSection title=metadataTitle icon="copy" iconClass="far">
-                <@pagination "supporting-documents"/>
-                <@loadingContainer "supporting-documents"/>
+                <@loadingContainer "metadata"/>
+                <@loadMoreRow "metadata"/>
             </@documentUploadSection>
             <@documentUploadSection "Datastore" "lock">
-                <@pagination "datastore"/>
                 <@loadingContainer "datastore"/>
+                <@loadMoreRow "datastore"/>
             </@documentUploadSection>
         </#if>
 
@@ -67,14 +72,29 @@
             </@row>
         </@documentUploadSection>
     </@documentContainer>
+    <#if datastore??>
+        <@data "datastore" datastore/>
+    </#if>
+    <#if dropbox??>
+        <@data "dropbox" dropbox/>
+    </#if>
+    <#if metadata??>
+        <@data "metadata" metadata/>
+    </#if>
     <@documentUploadModal/>
 </@skeleton.master>
 
 <#macro documentContainer>
     <div class="container is-<#if isAdmin>admin<#else>non-admin</#if>" id="document-upload" data-guid='${id}'>
-        <div class="container-fluid document-upload <#if isScheduled>is-scheduled</#if>">
+        <div class="container-fluid document-upload">
             <#nested>
         </div>
+    </div>
+</#macro>
+
+<#macro titleHeading>
+    <div class="page-header">
+        <h1>${title}</h1>
     </div>
 </#macro>
 
@@ -128,45 +148,32 @@
                 <@finishUploadingButton/>
             </div>
         </@row>
-    </div>
-</#macro>
-
-<#macro pagination pagId>
-    <div id="pag-${pagId}">
-        <div class="pag">
-            <div class="pag-pages">
-                <div class="pag-number input-group">
-                    <input type="text" class="form-control pag-current">
-                    <span class="input-group-addon pag-count">/ 1</span>
-                </div>
-                <div role="group" class="btn-group">
-                    <button class="btn btn-success pag-previous">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    <button class="btn btn-success pag-next">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-                </div>
+        <@row>
+            <div class="col-md-2 col-md-offset-7">
+                <p>Maximum individual file size is ${maxFileSize}</p>
             </div>
-            <p class="pag-per-page">
-                <i class="fas fa-spinner fa-spin-2x" style='visibility: hidden'></i>
-                <span>20 Files Per Page</span>
-            </p>
-        </div>
+        </@row>
     </div>
 </#macro>
 
 <#macro loadingContainer name>
-    <div class="row loading text-center">
-        <h3><i class="fas fa-spinner fa-spin-2x"></i> LOADING</h3>
+    <div class="${name}-files">
+        <h3 class='no-documents text-center'>NO FILES IN ${name?upper_case}</h3>
     </div>
-    <div class="${name}-files"></div>
 </#macro>
 
 <#macro row classes="">
     <div class="row ${classes}">
         <#nested>
     </div>
+</#macro>
+
+<#macro loadMoreRow storage>
+    <@row>
+        <div class="col-md-2 col-md-offset-10">
+            <@loadMoreButton storage/>
+        </div>
+    </@row>
 </#macro>
 
 <#macro button text button icon btnClass="success" iconClass="fas">
@@ -177,38 +184,52 @@
 </#macro>
 
 <#macro addFilesButton>
-    <@button "Add FILES ..." "fileinput-button" "file-upload"/>
+    <@button "Add Files…" "fileinput-button" "file-upload"/>
 </#macro>
 
 <#macro finishUploadingButton>
-    <@button "FINISH UPLOADING" "finish" "check" "primary"/>
+    <@button "Finish Uploading" "finish" "check" "primary"/>
+</#macro>
+
+<#macro loadMoreButton storage>
+    <@button "View More" "load ${storage}" "angle-double-down"/>
 </#macro>
 
 <#macro scheduleButton>
-    <@button text="SCHEDULE" button="data-action schedule" icon="calendar-check" iconClass="far"/>
+    <@button text="Schedule" button="data-action schedule" icon="calendar-check" iconClass="far"/>
 </#macro>
 
 <#macro rescheduleButton>
-    <@button "RESCHEDULE" "data-action reschedule" "redo"/>
+    <@button "Reschedule" "data-action reschedule" "redo"/>
 </#macro>
 
 <#macro moveAllDatastoreButton>
-    <@button "MOVE ALL DATASTORE" "data-action move-all" "level-down-alt"/>
+    <@button "Move All Datastore" "data-action move-all" "level-down-alt"/>
 </#macro>
 
 <#macro validateAllButton>
-    <@button "VALIDATE ALL" "file-action validate-all" "check" "primary"/>
+    <@button "Validate All" "file-action validate-all" "check" "primary"/>
 </#macro>
 
 <#macro downloadChecksumButton>
     <a
         class="btn btn-success downloadChecksum"
-        href="documents/csv/${id}"
+        href="/upload/${id}?format=csv"
         download="checksums_${id}.csv"
     >
         <i class="btn-icon fas fa-file-download"></i>
-        <span>DOWNLOAD CHECKSUM REPORT</span>
+        <span>Download Checksum Report</span>
     </a>
+</#macro>
+
+<#macro data title files>
+    <#list files>
+        <script id="${title}-data" type="application/json">
+        [<#items as file>
+            {"bytes":${file.bytes?c},"hash":"${file.hash}","name":"${file.name}","path":"${file.path}","status":"${file.status}","time":${file.time?c}}<#sep>,</#sep>
+        </#items>]
+        </script>
+    </#list>
 </#macro>
 
 <#macro documentUploadModal>
