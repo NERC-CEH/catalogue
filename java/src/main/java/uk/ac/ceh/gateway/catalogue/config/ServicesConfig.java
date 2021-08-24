@@ -61,6 +61,7 @@ import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.wms.GetCapabilitiesObtainerService;
 import uk.ac.ceh.gateway.catalogue.wms.MapServerDetailsService;
 import uk.ac.ceh.gateway.catalogue.wms.MapServerGetFeatureInfoErrorHandler;
+import uk.ac.ceh.gateway.catalogue.ukems.UkemsDocument;
 
 import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
@@ -157,7 +158,8 @@ public class ServicesConfig {
             .register(ERAMMP_MODEL_SHORT, ErammpModel.class)
             .register(ERAMMP_DATACUBE_SHORT, ErammpDatacube.class)
             .register(SAMPLE_ARCHIVE_SHORT, SampleArchive.class)
-            .register(DATA_TYPE_SHORT, DataType.class);
+            .register(DATA_TYPE_SHORT, DataType.class)
+            .register(UKEMS_DOCUMENT_SHORT, UkemsDocument.class);
     }
 
     @Bean

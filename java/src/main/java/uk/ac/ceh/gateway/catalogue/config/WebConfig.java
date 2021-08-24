@@ -40,6 +40,7 @@ import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreement;
+import uk.ac.ceh.gateway.catalogue.ukems.UkemsDocument;
 
 import java.util.List;
 
@@ -97,6 +98,7 @@ public class WebConfig implements WebMvcConfigurer {
         converters.add(new Object2TemplatedMessageConverter<>(ServiceAgreement.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(SparqlResponse.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(StateResource.class, freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter<>(UkemsDocument.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(ValidationResponse.class, freemarkerConfiguration));
 
         if (log.isDebugEnabled()) {
@@ -134,6 +136,7 @@ public class WebConfig implements WebMvcConfigurer {
             .mediaType(BIBTEX_SHORT, BIBTEX)
             .mediaType(CEH_MODEL_SHORT, CEH_MODEL_JSON)
             .mediaType(CEH_MODEL_APPLICATION_SHORT, CEH_MODEL_APPLICATION_JSON)
+            .mediaType(CSV_SHORT, TEXT_CSV)
             .mediaType(DATACITE_SHORT, DATACITE_XML)
             .mediaType(DATA_TYPE_SHORT, DATA_TYPE_JSON)
             .mediaType(EF_INSPIRE_XML_SHORT, EF_INSPIRE_XML)
@@ -157,6 +160,7 @@ public class WebConfig implements WebMvcConfigurer {
             .mediaType(RDF_SCHEMAORG_SHORT, RDF_SCHEMAORG_JSON)
             .mediaType(RDF_TTL_SHORT, RDF_TTL)
             .mediaType(RESEARCH_INFO_SYSTEMS_SHORT, RESEARCH_INFO_SYSTEMS)
-            .mediaType(SAMPLE_ARCHIVE_SHORT, SAMPLE_ARCHIVE_JSON);
+            .mediaType(SAMPLE_ARCHIVE_SHORT, SAMPLE_ARCHIVE_JSON)
+            .mediaType(UKEMS_DOCUMENT_SHORT, UKEMS_DOCUMENT_JSON);
     }
 }

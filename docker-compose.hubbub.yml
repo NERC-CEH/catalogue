@@ -1,0 +1,24 @@
+version: "3.7"
+services:
+  hubbub:
+    image: registry.gitlab.ceh.ac.uk/eip/hubbub:6.0.3
+    command: ["gunicorn", "--access-logfile", "-", "--timeout", "6000", "-w", "2", "-b", "0.0.0.0:80", "server:create_app()"]
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=aaaaaaaaal
+      - DROPBOX_DIR=/mnt/dropbox
+      - EIDCHUB_DIR=/mnt/eidchub
+      - SUPPORTING_DOCUMENTS_DIR=/mnt/supporting-documents
+      - MNT=/mnt
+    ports:
+      - '8082:80'
+    volumes:
+      - dropbox:/mnt/dropbox
+  redis:
+    image: docker.io/bitnami/redis:6.2
+    environment:
+      - REDIS_PASSWORD=aaaaaaaaal
+      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
+    ports:
+      - '6379:6379'

@@ -2,7 +2,11 @@
 <#setting url_escaping_charset='ISO-8859-1'>
 <#setting date_format = 'yyyy-MM-dd'>
 
-<#macro master title catalogue="" rdf="" schemaorg="" canonical="" searching=false can_edit_restricted=false containerClass="container">
+<#assign defaultScripts>
+  <script data-main="/static/scripts/main-out" src="/static/vendor/requirejs/require.js"></script>
+</#assign>
+
+<#macro master title catalogue="" rdf="" schemaorg="" canonical="" searching=false can_edit_restricted=false containerClass="container" scripts=defaultScripts>
 <#compress>
 <!DOCTYPE html>
 <html lang="en-GB" <#if catalogue?has_content>data-catalogue=${catalogue.id}</#if>>
@@ -102,7 +106,7 @@
     <#nested>
     <@eidcJiraIssueCollector catalogue/>
     <div id="message-panel"></div>
-    <script data-main="/static/scripts/main-out" src="/static/vendor/requirejs/require.js"></script>
+    ${scripts}
   </body>
 </html></#compress></#macro>
 
