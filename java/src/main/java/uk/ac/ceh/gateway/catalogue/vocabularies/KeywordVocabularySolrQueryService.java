@@ -34,7 +34,7 @@ public class KeywordVocabularySolrQueryService {
             query.setRows(100);
 
             for (String vocabId : vocabIds) {
-                query.addFilterQuery(format("{!term f=vocabId}%s", vocabId));
+                query.addFilterQuery(format("{!term f=vocabId:({vocabId} OR {vocabId})}%s", vocabId));
             }
 
             return solrClient.query(COLLECTION, query, POST).getBeans(Keyword.class);

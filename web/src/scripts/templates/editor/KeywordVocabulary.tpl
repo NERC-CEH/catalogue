@@ -21,10 +21,6 @@
         <label>Url</label>
     </div>
     <div class="col-sm-9">
-        <input data-name="url" id="keywords<%= data.index %>Url" class="editor-input url" value="<%= data.url %>" autocomplete="off" disabled="true">
+        <input data-name="url" id="keywords<%= data.index %>Url" class="editor-input url" value="<%= data.url %>" autocomplete="off">
     </div>
-</div>
-
-<div class="hidden">
-  <input data-name="id" id="keywords<%= data.index %>Id" class="editor-input id" value="<%= data.id %>">
 </div>
