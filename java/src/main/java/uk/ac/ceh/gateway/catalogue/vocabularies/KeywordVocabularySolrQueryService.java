@@ -42,8 +42,11 @@ public class KeywordVocabularySolrQueryService {
     }
 
     private String generateVocabQuery(List<String> vocabIds) {
-        StringBuilder toReturn = new StringBuilder("vocabId:(" + vocabIds.get(0));
 
+        if(vocabIds.isEmpty())
+            return "";
+
+        StringBuilder toReturn = new StringBuilder("vocabId:(" + vocabIds.get(0));
         if(vocabIds.size() > 1) {
             vocabIds
                     .stream()
