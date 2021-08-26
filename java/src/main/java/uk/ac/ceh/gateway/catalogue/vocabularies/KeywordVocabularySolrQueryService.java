@@ -32,18 +32,6 @@ public class KeywordVocabularySolrQueryService {
             query.setParam(CommonParams.DF, "label");
             query.setSort("label", ORDER.asc);
             query.setRows(100);
-
-            StringBuilder vocabs = new StringBuilder();
-
-//            for (int i = 0; i < vocabIds.size(); i++) {
-//
-//                if (i == vocabIds.size() - 1) {
-//                    vocabs.append(vocabIds.get(i));
-//                } else {
-//                    vocabs.append(vocabIds.get(i)).append("OR ");
-//                }
-//            }
-
             query.addFilterQuery(generateVocabQuery(vocabIds));
 
             return solrClient.query(COLLECTION, query, POST).getBeans(Keyword.class);
@@ -57,7 +45,6 @@ public class KeywordVocabularySolrQueryService {
         StringBuilder toReturn = new StringBuilder("vocabId:(vocab1");
 
         if(vocabIds.size() > 0) {
-            toReturn.append(" OR ");
             vocabIds
                     .stream()
                     .forEach(v -> {
