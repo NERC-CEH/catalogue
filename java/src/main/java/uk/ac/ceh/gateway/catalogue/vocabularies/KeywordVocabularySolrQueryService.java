@@ -29,13 +29,22 @@ public class KeywordVocabularySolrQueryService {
         try {
             SolrQuery query = new SolrQuery();
             query.setQuery(term);
-            query.setParam(CommonParams.DF, "label" );
+            query.setParam(CommonParams.DF, "label");
             query.setSort("label", ORDER.asc);
             query.setRows(100);
 
-            for (String vocabId : vocabIds) {
-                query.addFilterQuery(format("{!term f=vocabId:({vocabId} OR {vocabId})}%s", vocabId));
-            }
+            StringBuilder vocabs = new StringBuilder();
+
+//            for (int i = 0; i < vocabIds.size(); i++) {
+//
+//                if (i == vocabIds.size() - 1) {
+//                    vocabs.append(vocabIds.get(i));
+//                } else {
+//                    vocabs.append(vocabIds.get(i)).append("OR ");
+//                }
+//            }
+
+            query.addFilterQuery(generateVocabQuery(vocabIds));
 
             return solrClient.query(COLLECTION, query, POST).getBeans(Keyword.class);
 
@@ -43,5 +52,22 @@ public class KeywordVocabularySolrQueryService {
             throw new SolrServerException(ex);
         }
     }
+
+    private String generateVocabQuery(List<String> vocabIds) {
+        StringBuilder toReturn = new StringBuilder("vocabId:(vocab1");
+
+        if(vocabIds.size() > 0) {
+            toReturn.append(" OR ");
+            vocabIds
+                    .stream()
+                    .forEach(v -> {
+                        toReturn
+                                .append(" OR ")
+                                .append(v);
+                    });
+        }
+        return toReturn.append(")").toString();
+    }
+
 }
 
