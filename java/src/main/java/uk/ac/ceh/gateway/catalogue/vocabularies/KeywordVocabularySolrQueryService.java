@@ -42,11 +42,12 @@ public class KeywordVocabularySolrQueryService {
     }
 
     private String generateVocabQuery(List<String> vocabIds) {
-        StringBuilder toReturn = new StringBuilder("vocabId:(vocab1");
+        StringBuilder toReturn = new StringBuilder("vocabId:(" + vocabIds.get(0));
 
-        if(vocabIds.size() > 0) {
+        if(vocabIds.size() > 1) {
             vocabIds
                     .stream()
+                    .skip(1)
                     .forEach(v -> {
                         toReturn
                                 .append(" OR ")
