@@ -5,22 +5,22 @@
     <label>Search</label>
   </div>
   <div class="col-sm-11 catalogueSearch">
-    <input data-name="label" value="<%= data.label %>"  id="keywords<%= data.index %>Name" class="form-control autocomplete" placeholder="Search for Keywords...">
+    <input class="form-control autocomplete" placeholder="Search for Keywords...">
   </div>
 </div>
 <div class="row">
    <div class="col-sm-2 col-sm-offset-1">
-    <label>Name</label>
+       <label class="control-label">Value</label>
    </div>
    <div class="col-sm-9">
-    <input data-name="label" id="keywords<%= data.index %>Label" class="editor-input label" value="<%= data.label %>" autocomplete="off" disabled="true">
+       <input data-name='value' class="editor-input value" value="<%= data.value %>">
   </div>
 </div>
 <div class="row">
     <div class="col-sm-2 col-sm-offset-1">
-        <label>Url</label>
+        <label>Uri</label>
     </div>
     <div class="col-sm-9">
-        <input data-name="url" id="keywords<%= data.index %>Url" class="editor-input url" value="<%= data.url %>" autocomplete="off">
+        <input data-name='uri' class="editor-input uri" value="<%= data.uri %>">
     </div>
 </div>

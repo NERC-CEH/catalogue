@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.List;
 
-import static java.lang.String.format;
 import static org.apache.solr.client.solrj.SolrRequest.METHOD.POST;
 
 @Slf4j
@@ -33,6 +32,8 @@ public class KeywordVocabularySolrQueryService {
             query.setSort("label", ORDER.asc);
             query.setRows(100);
             query.addFilterQuery(generateVocabQuery(vocabIds));
+            log.debug(query.getQuery());
+            log.debug("Filter queries: {}", (Object) query.getFilterQueries());
 
             return solrClient.query(COLLECTION, query, POST).getBeans(Keyword.class);
 

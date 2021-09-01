@@ -29,15 +29,13 @@ define [
         else
           query = "/vocabulary/keywords?query=#{request.term}&vocab=#{vocab}"
         $.getJSON query, (data) ->
-            response _.map data, (d) -> {value: d.label, label: d.label, id: d.vocabId, url: d.url}
+            response _.map data, (d) -> {value: d.label, label: "#{d.label} (#{d.vocabId})", url: d.url}
 
     @$('.autocomplete').on 'autocompleteselect', (event, ui) =>
-        @model.set 'vocabId', ui.item.id
-        @$('.vocabId').val ui.item.id
-        @model.set 'label', ui.item.label
-        @$('.label').val ui.item.label
-        @model.set 'url', ui.item.url
-        @$('.url').val ui.item.url
+      @model.set 'value', ui.item.label
+      @$('.value').val ui.item.label
+      @model.set 'uri', ui.item.url
+      @$('.uri').val ui.item.url
 
 
   addAll: ->
@@ -47,6 +45,3 @@ define [
     vocabulary.set('toSearch': true)
     view = new KeywordCheckboxView({model: vocabulary})
     @$vocabularies.append(view.render().el)
-
-  searchChecked: ->
-    @vocabularies.where({'toSearch': true})
