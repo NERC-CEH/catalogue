@@ -11,9 +11,48 @@ import uk.ac.ceh.gateway.catalogue.vocabularies.KeywordVocabulary;
 import uk.ac.ceh.gateway.catalogue.vocabularies.SparqlKeywordVocabulary;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 public class KeywordVocabulariesConfig {
+
+    @Bean
+    public KeywordVocabulary assistTopicsVocabulary(
+        @Qualifier("sparql") RestTemplate restTemplate,
+        SolrClient solrClient,
+        @Value("${sparql.endpoint}") String sparqlEndpoint
+    ) {
+        val catalogueIds = List.of("assist");
+        return new SparqlKeywordVocabulary(
+            restTemplate,
+            solrClient,
+            sparqlEndpoint,
+            "urn:x-evn-master:cehmd",
+            "<http://onto.nerc.ac.uk/CEHMD/assist-topics> skos:hasTopConcept ?uri . ?uri skos:prefLabel ?label .",
+            "assist-topics",
+            "ASSIST Topics",
+            catalogueIds
+        );
+    }
+
+    @Bean
+    public KeywordVocabulary assistResearchThemesVocabulary(
+        @Qualifier("sparql") RestTemplate restTemplate,
+        SolrClient solrClient,
+        @Value("${sparql.endpoint}") String sparqlEndpoint
+    ) {
+        val catalogueIds = List.of("assist");
+        return new SparqlKeywordVocabulary(
+            restTemplate,
+            solrClient,
+            sparqlEndpoint,
+            "urn:x-evn-master:cehmd",
+            "<http://onto.nerc.ac.uk/CEHMD/assist-research-themes> skos:hasTopConcept ?uri . ?uri skos:prefLabel ?label .",
+            "assist-research-themes",
+            "ASSIST Research Themes",
+            catalogueIds
+        );
+    }
 
     @Bean
     public KeywordVocabulary castVocabulary(
@@ -21,7 +60,7 @@ public class KeywordVocabulariesConfig {
             SolrClient solrClient,
             @Value("${sparql.endpoint}") String sparqlEndpoint
     ) {
-        val catalogueIds = Arrays.asList("eidc", "assist");
+        val catalogueIds = Arrays.asList("assist", "eidc", "elter");
         return new SparqlKeywordVocabulary(
                 restTemplate,
                 solrClient,
@@ -35,21 +74,42 @@ public class KeywordVocabulariesConfig {
     }
 
     @Bean
-    public KeywordVocabulary assistTopicsVocabulary(
-            @Qualifier("sparql") RestTemplate restTemplate,
-            SolrClient solrClient,
-            @Value("${sparql.endpoint}") String sparqlEndpoint
+    public KeywordVocabulary envThesVocabulary(
+        @Qualifier("sparql") RestTemplate restTemplate,
+        SolrClient solrClient,
+        @Value("${sparql.endpoint}") String sparqlEndpoint
     ) {
-        val catalogueIds = Arrays.asList("assist");
+        val catalogueIds = List.of("elter");
+        // Filters out deprecated concepts
+        val where = "?uri skos:prefLabel ?label . FILTER NOT EXISTS { ?uri skos:broader <http://vocabs.lter-europe.net/EnvThes/1> }";
         return new SparqlKeywordVocabulary(
-                restTemplate,
-                solrClient,
-                sparqlEndpoint,
-                "urn:x-evn-master:cehmd",
-                "<http://onto.nerc.ac.uk/CEHMD/assist-research-themes> skos:hasTopConcept ?uri . ?uri skos:prefLabel ?label .",
-                "assist-topics",
-                "ASSIST Topics",
-                catalogueIds
+            restTemplate,
+            solrClient,
+            sparqlEndpoint,
+            "urn:x-evn-master:EnvThes",
+            where,
+            "envThes",
+            "EnvThes",
+            catalogueIds
+        );
+    }
+
+    @Bean
+    public KeywordVocabulary inmsVocabulary(
+        @Qualifier("sparql") RestTemplate restTemplate,
+        SolrClient solrClient,
+        @Value("${sparql.endpoint}") String sparqlEndpoint
+    ) {
+        val catalogueIds = List.of("inms");
+        return new SparqlKeywordVocabulary(
+            restTemplate,
+            solrClient,
+            sparqlEndpoint,
+            "urn:x-evn-master:inms",
+            "?uri skos:prefLabel ?label .",
+            "inms",
+            "INMS",
+            catalogueIds
         );
     }
 
