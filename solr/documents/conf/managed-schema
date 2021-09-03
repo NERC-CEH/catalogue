@@ -119,9 +119,10 @@
     <field name="surname" type="names"/>
     <field name="title" type="text_general" required="true" multiValued="false"/>
     <field name="topic" type="keywords"/>
-    <field name="ukscapeResearchProjects" type="keywords"/>
-    <field name="ukscapeResearchThemes" type="keywords"/>
-    <field name="ukscapeScienceChallenges" type="keywords"/>
+    <field name="ukscapeResearchProject" type="keywords"/>
+    <field name="ukscapeResearchTheme" type="keywords"/>
+    <field name="ukscapeScienceChallenge" type="keywords"/>
+    <field name="ukscapeService" type="keywords"/>
     <field name="version" type="pfloat" default="1"/>
     <field name="view" type="keywords"/>
 

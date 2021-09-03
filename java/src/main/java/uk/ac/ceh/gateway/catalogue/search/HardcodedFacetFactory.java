@@ -230,6 +230,13 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .displayName("Science Challenge")
                     .hierarchical(false)
                     .build();
+
+            case "ukscapeService":
+                return Facet.builder()
+                    .fieldName("ukscapeService")
+                    .displayName("Service")
+                    .hierarchical(false)
+                    .build();
         }
         return null;
     }
