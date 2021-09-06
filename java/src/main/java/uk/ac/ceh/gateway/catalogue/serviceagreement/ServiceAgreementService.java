@@ -45,7 +45,7 @@ public class ServiceAgreementService {
     @SneakyThrows
     public boolean metadataRecordExists(String id) {
         try {
-            repo.getData(id);
+            repo.getData(FOLDER + id);
         } catch (DataRepositoryException e) {
             throw e;
         }
