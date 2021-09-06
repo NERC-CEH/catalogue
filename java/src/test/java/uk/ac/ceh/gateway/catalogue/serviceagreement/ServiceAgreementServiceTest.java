@@ -10,7 +10,6 @@ import uk.ac.ceh.components.datastore.DataDocument;
 import uk.ac.ceh.components.datastore.DataOngoingCommit;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
-import uk.ac.ceh.gateway.catalogue.auth.oidc.AuthenticationException;
 import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.document.reading.DocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -29,7 +28,6 @@ import static org.mockito.Mockito.verify;
 public class ServiceAgreementServiceTest {
 
     private static final String FOLDER = "service-agreements/";
-
     private static final String ID = "test";
 
     @Mock
