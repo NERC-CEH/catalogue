@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.modelceh;
+package uk.ac.ceh.gateway.catalogue.modelnerc;
 
 import java.util.List;
 import java.util.Collections;
@@ -21,9 +21,9 @@ import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ConvertUsing({
-    @Template(called="html/ceh-model.ftlh", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
+    @Template(called="html/nerc-model.ftlh", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
 })
-public class CehModel extends AbstractMetadataDocument implements WellKnownText {
+public class NercModel extends AbstractMetadataDocument implements WellKnownText {
     private String
         primaryPurpose,
         seniorResponsibleOfficer,

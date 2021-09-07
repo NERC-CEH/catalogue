@@ -27,39 +27,49 @@ public class CatalogueServiceConfig {
         String defaultCatalogueKey = "eidc";
 
         DocumentType agent = DocumentType.builder()
-                .title("Agent")
-                .type(OSDP_AGENT_SHORT)
-                .build();
+            .title("Agent")
+            .type(OSDP_AGENT_SHORT)
+            .build();
 
         DocumentType dataset = DocumentType.builder()
-                .title("Dataset")
-                .type(OSDP_DATASET_SHORT)
-                .build();
+            .title("Dataset")
+            .type(OSDP_DATASET_SHORT)
+            .build();
 
         DocumentType dataType = DocumentType.builder()
-                .title("Data type")
-                .type(DATA_TYPE_SHORT)
-                .build();
+            .title("Data type")
+            .type(DATA_TYPE_SHORT)
+            .build();
+         
+        DocumentType nercModel = DocumentType.builder()
+            .title("Model")
+            .type(NERC_MODEL)
+            .build();
+
+        DocumentType nercModelUse = DocumentType.builder()
+            .title("Model use")
+            .type(NERC_MODEL_USE)
+            .build();
 
         DocumentType erammpDatacube = DocumentType.builder()
-                .title("ERAMMP data cube")
-                .type(ERAMMP_DATACUBE_SHORT)
-                .build();
+            .title("ERAMMP data cube")
+            .type(ERAMMP_DATACUBE_SHORT)
+            .build();
 
         DocumentType erammpModel = DocumentType.builder()
-                .title("ERAMMP model")
-                .type(ERAMMP_MODEL_SHORT)
-                .build();
+            .title("ERAMMP model")
+            .type(ERAMMP_MODEL_SHORT)
+            .build();
 
         DocumentType cehModel = DocumentType.builder()
-                .title("Model")
-                .type(CEH_MODEL)
-                .build();
+            .title("Model")
+            .type(CEH_MODEL)
+            .build();
 
         DocumentType cehModelApplication = DocumentType.builder()
-                .title("Model use")
-                .type(CEH_MODEL_APPLICATION)
-                .build();
+            .title("Model use")
+            .type(CEH_MODEL_APPLICATION)
+            .build();
 
         DocumentType gemini = DocumentType.builder()
             .title("Data resource")
@@ -298,8 +308,8 @@ public class CatalogueServiceConfig {
                 .facetKey("topic")
                 .facetKey("resourceType")
                 .facetKey("licence")
-                .documentType(cehModel)
-                .documentType(cehModelApplication)
+                .documentType(nercModel)
+                .documentType(nercModelUse)
                 .vocabularies(getCatalogueVocabularies(vocabularies, "nm"))
                 .fileUpload(false)
                 .build(),

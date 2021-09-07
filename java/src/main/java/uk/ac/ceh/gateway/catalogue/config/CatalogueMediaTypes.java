@@ -41,6 +41,14 @@ public class CatalogueMediaTypes {
     public static final String LINKED_ELTER_JSON_VALUE = "application/vnd.linked-elter+json";
     public static final MediaType LINKED_ELTER_JSON = MediaType.parseMediaType(LINKED_ELTER_JSON_VALUE);
 
+    public static final String NERC_MODEL = "nerc-model";
+    public static final String NERC_MODEL_JSON_VALUE = "application/vnd.nerc-model+json";
+    public static final MediaType NERC_MODEL_JSON = parseMediaType(NERC_MODEL_JSON_VALUE);
+
+    public static final String NERC_MODEL_USE = "nerc-model-use";
+    public static final String NERC_MODEL_USE_JSON_VALUE = "application/vnd.nerc-model-use+json";
+    public static final MediaType NERC_MODEL_USE_JSON = parseMediaType(NERC_MODEL_USE_JSON_VALUE);
+
     public static final String ERAMMP_DATACUBE_SHORT = "erammp-datacube";
     public static final String ERAMMP_DATACUBE_JSON_VALUE = "application/vnd.erammp-datacube+json";
     public static final MediaType ERAMMP_DATACUBE_JSON = parseMediaType(ERAMMP_DATACUBE_JSON_VALUE);
