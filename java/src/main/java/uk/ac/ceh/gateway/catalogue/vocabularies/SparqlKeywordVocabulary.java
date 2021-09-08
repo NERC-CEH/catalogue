@@ -81,6 +81,7 @@ public class SparqlKeywordVocabulary implements KeywordVocabulary {
             .orElseThrow(() -> new KeywordVocabularyException("Cannot get response body"));
 
         if (vocabularyNode.isArray()) {
+            log.info("Retrieved {} terms", vocabularyNode.size());
             solrClient.deleteByQuery(COLLECTION, "vocabId:" + vocabularyId);
             StreamSupport.stream(vocabularyNode.spliterator(), false)
                 .map(node -> {
