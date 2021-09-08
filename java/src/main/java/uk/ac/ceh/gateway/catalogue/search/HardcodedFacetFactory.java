@@ -190,11 +190,11 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .build();
 
             case "state":
-            return Facet.builder()
-                .fieldName("state")
-                .displayName("Status")
-                .hierarchical(false)
-                .build();
+                return Facet.builder()
+                    .fieldName("state")
+                    .displayName("Status")
+                    .hierarchical(false)
+                    .build();
 
             case "status":
                 return Facet.builder()
@@ -208,6 +208,34 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .fieldName("topic")
                     .displayName("Topic")
                     .hierarchical(true)
+                    .build();
+
+            case "ukscapeResearchProject":
+                return Facet.builder()
+                    .fieldName("ukscapeResearchProject")
+                    .displayName("Research Project")
+                    .hierarchical(false)
+                    .build();
+
+            case "ukscapeResearchTheme":
+                return Facet.builder()
+                    .fieldName("ukscapeResearchTheme")
+                    .displayName("Research Theme")
+                    .hierarchical(false)
+                    .build();
+
+            case "ukscapeScienceChallenge":
+                return Facet.builder()
+                    .fieldName("ukscapeScienceChallenge")
+                    .displayName("Science Challenge")
+                    .hierarchical(false)
+                    .build();
+
+            case "ukscapeService":
+                return Facet.builder()
+                    .fieldName("ukscapeService")
+                    .displayName("Service")
+                    .hierarchical(false)
                     .build();
         }
         return null;
