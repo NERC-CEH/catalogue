@@ -6,14 +6,24 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.MediaType;
 import uk.ac.ceh.components.datastore.DataDocument;
 import uk.ac.ceh.components.datastore.DataOngoingCommit;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
+import uk.ac.ceh.components.datastore.git.GitDataDocument;
 import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
+import uk.ac.ceh.gateway.catalogue.document.reading.DocumentReadingService;
 import uk.ac.ceh.gateway.catalogue.document.reading.DocumentTypeLookupService;
+import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -21,8 +31,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ServiceAgreementServiceTest {
@@ -33,9 +42,15 @@ public class ServiceAgreementServiceTest {
     @Mock
     private DataRepository<CatalogueUser> repo;
     @Mock
-    private DocumentInfoMapper<MetadataInfo> documentInfoMapper;
+    private DocumentInfoMapper<MetadataInfo> documentMetadataInfoMapper;
+    @Mock
+    private DocumentInfoMapper<ServiceAgreement> documentServiceAgreementMapper;
     @Mock
     private DocumentTypeLookupService documentTypeLookupService;
+    @Mock
+    private DocumentReadingService documentReader;
+    @Mock
+    private PostProcessingService<ServiceAgreement> postProcessingService;
 
     @InjectMocks
     private ServiceAgreementService serviceAgreementService;
@@ -47,17 +62,30 @@ public class ServiceAgreementServiceTest {
         //Given
         CatalogueUser user = new CatalogueUser();
         user.setUsername("test");
-        ServiceAgreement serviceAgreement = new ServiceAgreement();
+        ServiceAgreement serviceAgreement = mock(ServiceAgreement.class);
         serviceAgreement.setId(ID);
 
-        DataDocument dataDocument = mock(DataDocument.class);
-        given(repo.getData(FOLDER + ID)).willReturn(dataDocument);
+        GitDataDocument metadataInfoDocument = mock(GitDataDocument.class);
+        GitDataDocument rawDocument = mock(GitDataDocument.class);
+
+        ByteArrayInputStream metadataInfoInputStream = new ByteArrayInputStream("meta".getBytes());
+        ByteArrayInputStream rawInputStream = new ByteArrayInputStream("file".getBytes());
+
+        MetadataInfo metadata = MetadataInfo.builder().rawType(MediaType.TEXT_XML_VALUE).build();
+
+        given(rawDocument.getInputStream()).willReturn(rawInputStream);
+
+        given(repo.getData(FOLDER + ID + ".meta")).willReturn(metadataInfoDocument);
+        given(repo.getData(FOLDER + ID + ".raw")).willReturn(rawDocument);
+
+        given(metadataInfoDocument.getInputStream()).willReturn(metadataInfoInputStream);
+        given(documentMetadataInfoMapper.readInfo(any(InputStream.class))).willReturn(metadata);
+        given(documentReader.read(rawInputStream, MediaType.TEXT_XML, ServiceAgreement.class)).willReturn(serviceAgreement);
 
         //When
-        DataDocument response = serviceAgreementService.get(ID);
+        ServiceAgreement response = serviceAgreementService.get(ID);
 
         //Then
-        assertThat(response, is(dataDocument));
     }
 
     @Test

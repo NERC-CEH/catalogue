@@ -19,6 +19,6 @@ import java.io.Serializable;
 @ConvertUsing({
     @Template(called = "html/service-agreement.ftlh", whenRequestedAs = MediaType.TEXT_HTML_VALUE),
 })
-public class ServiceAgreement extends AbstractMetadataDocument implements Serializable {
+public class ServiceAgreement extends AbstractMetadataDocument {
     private String depositorName;
 }

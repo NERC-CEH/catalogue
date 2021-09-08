@@ -3,41 +3,45 @@ package uk.ac.ceh.gateway.catalogue.serviceagreement;
 import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import uk.ac.ceh.components.datastore.DataDocument;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
+import uk.ac.ceh.gateway.catalogue.document.reading.DocumentReadingService;
 import uk.ac.ceh.gateway.catalogue.document.reading.DocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.model.*;
+import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.ObjectOutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
+import java.util.Map;
 
 @Slf4j
 @ToString
 @Service
-public class ServiceAgreementService {
+public class ServiceAgreementService implements ServiceAgreementServiceInterface {
     private final DataRepository<CatalogueUser> repo;
-    private final DocumentInfoMapper<MetadataInfo> documentInfoMapper;
+    private final DocumentInfoMapper<MetadataInfo> documentMetadataInfoMapper;
+    private final DocumentInfoMapper<ServiceAgreement> documentServiceAgreementMapper;
     private final DocumentTypeLookupService documentTypeLookupService;
+    private final DocumentReadingService documentReader;
+    private final PostProcessingService<ServiceAgreement> postProcessingService;
     private static final String FOLDER = "service-agreements/";
 
     public ServiceAgreementService(
             DocumentTypeLookupService documentTypeLookupService,
             DataRepository<CatalogueUser> repo,
-            DocumentInfoMapper<MetadataInfo> documentInfoMapper
-    ) {
+            DocumentInfoMapper<MetadataInfo> documentMetadataInfoMapper,
+            DocumentInfoMapper<ServiceAgreement> documentServiceAgreementMapper,
+            PostProcessingService<ServiceAgreement> postProcessingService,
+            DocumentReadingService documentReader) {
         this.documentTypeLookupService = documentTypeLookupService;
         this.repo = repo;
-        this.documentInfoMapper = documentInfoMapper;
+        this.documentMetadataInfoMapper = documentMetadataInfoMapper;
+        this.documentServiceAgreementMapper = documentServiceAgreementMapper;
+        this.documentReader = documentReader;
+        this.postProcessingService = postProcessingService;
         log.info("Creating {}", this);
     }
 
@@ -47,48 +51,31 @@ public class ServiceAgreementService {
         try {
             repo.getData(FOLDER + id);
         } catch (DataRepositoryException e) {
-            throw e;
+            return false;
         }
         return true;
     }
 
     @SneakyThrows
-    public DataDocument get(String id) {
-        try {
-            return repo.getData(FOLDER + id);
-        } catch (DataRepositoryException e) {
-            throw e;
-        }
+    public ServiceAgreement get(String id) {
+        return this.readBundle(FOLDER + id);
     }
 
 
     @SneakyThrows
-    public void save(CatalogueUser user, String id, String catalogue, AbstractMetadataDocument serviceAgreementDocument) {
+    public void save(CatalogueUser user, String id, String catalogue, ServiceAgreement serviceAgreementDocument) {
 
         MetadataInfo metadataInfo = createMetadataInfoWithDefaultPermissions(serviceAgreementDocument, user, MediaType.APPLICATION_JSON, catalogue);
 
-        Path tmpFile = Files.createTempFile("upload", null);
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream(baos);
-        oos.writeObject(serviceAgreementDocument);
-
-        oos.flush();
-        oos.close();
-
-        InputStream is = new ByteArrayInputStream(baos.toByteArray());
-
-        Files.copy(is, tmpFile, StandardCopyOption.REPLACE_EXISTING);
-
-        repo.submitData(String.format("%s.meta", FOLDER + id), (o) -> documentInfoMapper.writeInfo(metadataInfo, o))
-                .submitData(String.format("%s.raw", FOLDER + id), (o) -> Files.copy(tmpFile, o))
+        repo.submitData(String.format("%s/%s.meta", FOLDER, id), (o) -> documentMetadataInfoMapper.writeInfo(metadataInfo, o))
+                .submitData(String.format("%s/%s.raw", FOLDER, id), (o) -> documentServiceAgreementMapper.writeInfo(serviceAgreementDocument, o))
                 .commit(user, catalogue);
     }
 
     @SneakyThrows
     public DataRevision<CatalogueUser> delete(CatalogueUser user, String id) {
-        return repo.deleteData(FOLDER + id + ".meta")
-                .deleteData(FOLDER + id + ".raw")
+        return repo.deleteData(String.format("%s/%s.mete", FOLDER, id))
+                .deleteData(String.format("%s/%s.raw", FOLDER, id))
                 .commit(user, String.format("delete document: %s", id));
     }
 
@@ -103,6 +90,24 @@ public class ServiceAgreementService {
         toReturn.addPermission(Permission.EDIT, username);
         toReturn.addPermission(Permission.DELETE, username);
         return toReturn;
+    }
+
+    @SneakyThrows
+    private ServiceAgreement readBundle(String file) {
+        val metadataDoc = repo.getData(file + ".meta");
+        val metadataInfo = documentMetadataInfoMapper.readInfo(metadataDoc.getInputStream());
+
+        val dataDoc = repo.getData(file + ".raw");
+
+        ServiceAgreement document = documentReader.read(
+                dataDoc.getInputStream(),
+                MediaType.TEXT_XML,
+                ServiceAgreement.class
+        );
+        document.setMetadata(metadataInfo.withRawType(null));
+        postProcessingService.postProcess(document);
+
+        return document;
     }
 
 }
