@@ -28,9 +28,9 @@ public class KeywordVocabulariesConfig {
             solrClient,
             sparqlEndpoint,
             "urn:x-evn-master:cehmd",
-            "<http://onto.nerc.ac.uk/CEHMD/assist-topics> skos:hasTopConcept ?uri . ?uri skos:prefLabel ?label .",
+            "?uri skos:broader <http://onto.nerc.ac.uk/CEHMD/assist-topics> . ?uri skos:prefLabel ?label .",
             "assist-topics",
-            "ASSIST Topics",
+            "Topics",
             catalogueIds
         );
     }
@@ -47,9 +47,9 @@ public class KeywordVocabulariesConfig {
             solrClient,
             sparqlEndpoint,
             "urn:x-evn-master:cehmd",
-            "<http://onto.nerc.ac.uk/CEHMD/assist-research-themes> skos:hasTopConcept ?uri . ?uri skos:prefLabel ?label .",
+            "?uri skos:broader <http://onto.nerc.ac.uk/CEHMD/assist-research-themes> . ?uri skos:prefLabel ?label .",
             "assist-research-themes",
-            "ASSIST Research Themes",
+            "Research Themes",
             catalogueIds
         );
     }
@@ -109,6 +109,82 @@ public class KeywordVocabulariesConfig {
             "?uri skos:prefLabel ?label .",
             "inms",
             "INMS",
+            catalogueIds
+        );
+    }
+
+    @Bean
+    public KeywordVocabulary ukscapeResearchProjectVocabulary(
+        @Qualifier("sparql") RestTemplate restTemplate,
+        SolrClient solrClient,
+        @Value("${sparql.endpoint}") String sparqlEndpoint
+    ) {
+        val catalogueIds = List.of("ukscape");
+        return new SparqlKeywordVocabulary(
+            restTemplate,
+            solrClient,
+            sparqlEndpoint,
+            "urn:x-evn-master:cehmd",
+            "?uri skos:broader <http://onto.nerc.ac.uk/CEHMD/ukscape/research-project> . ?uri skos:prefLabel ?label .",
+            "ukscape-research-project",
+            "Research Projects",
+            catalogueIds
+        );
+    }
+
+    @Bean
+    public KeywordVocabulary ukscapeResearchThemeVocabulary(
+        @Qualifier("sparql") RestTemplate restTemplate,
+        SolrClient solrClient,
+        @Value("${sparql.endpoint}") String sparqlEndpoint
+    ) {
+        val catalogueIds = List.of("ukscape");
+        return new SparqlKeywordVocabulary(
+            restTemplate,
+            solrClient,
+            sparqlEndpoint,
+            "urn:x-evn-master:cehmd",
+            "?uri skos:broader <http://onto.nerc.ac.uk/CEHMD/ukscape/research-theme> . ?uri skos:prefLabel ?label .",
+            "ukscape-research-theme",
+            "Research Themes",
+            catalogueIds
+        );
+    }
+
+    @Bean
+    public KeywordVocabulary ukscapeScienceChallengeVocabulary(
+        @Qualifier("sparql") RestTemplate restTemplate,
+        SolrClient solrClient,
+        @Value("${sparql.endpoint}") String sparqlEndpoint
+    ) {
+        val catalogueIds = List.of("ukscape");
+        return new SparqlKeywordVocabulary(
+            restTemplate,
+            solrClient,
+            sparqlEndpoint,
+            "urn:x-evn-master:cehmd",
+            "?uri skos:broader <http://onto.nerc.ac.uk/CEHMD/ukscape/science-challenge> . ?uri skos:prefLabel ?label .",
+            "ukscape-science-challenge",
+            "Science Challenges",
+            catalogueIds
+        );
+    }
+
+    @Bean
+    public KeywordVocabulary ukscapeServiceVocabulary(
+        @Qualifier("sparql") RestTemplate restTemplate,
+        SolrClient solrClient,
+        @Value("${sparql.endpoint}") String sparqlEndpoint
+    ) {
+        val catalogueIds = List.of("ukscape");
+        return new SparqlKeywordVocabulary(
+            restTemplate,
+            solrClient,
+            sparqlEndpoint,
+            "urn:x-evn-master:cehmd",
+            "?uri skos:broader <http://onto.nerc.ac.uk/CEHMD/ukscape/service> . ?uri skos:prefLabel ?label .",
+            "ukscape-service",
+            "Services",
             catalogueIds
         );
     }
