@@ -1,6 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
-import uk.ac.ceh.components.datastore.DataRevision;
+import org.springframework.http.ResponseEntity;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 public interface ServiceAgreementServiceInterface {
@@ -11,5 +11,5 @@ public interface ServiceAgreementServiceInterface {
 
     void save(CatalogueUser user, String id, String catalogue, ServiceAgreement serviceAgreementDocument);
 
-    DataRevision<CatalogueUser> delete(CatalogueUser user, String id);
+    void delete(CatalogueUser user, String id);
 }

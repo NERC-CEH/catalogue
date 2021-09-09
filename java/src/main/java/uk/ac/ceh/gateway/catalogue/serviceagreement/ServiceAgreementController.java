@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import uk.ac.ceh.components.datastore.DataDocument;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
@@ -28,13 +27,13 @@ public class ServiceAgreementController {
         log.info("Creating");
     }
 
-    @PostMapping("{id}")
     @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
-    @ResponseStatus(value = HttpStatus.NOT_FOUND)
+    @ResponseBody
+    @PostMapping("{id}")
     public ServiceAgreement create(
             @ActiveUser CatalogueUser user,
-            @RequestParam("catalogue") String catalogue,
-            @PathVariable("id") String id
+            @PathVariable("id") String id,
+            @RequestParam("catalogue") String catalogue
     ) {
         if (serviceAgreementService.metadataRecordExists(id)) {
             log.info("CREATE {}", id);

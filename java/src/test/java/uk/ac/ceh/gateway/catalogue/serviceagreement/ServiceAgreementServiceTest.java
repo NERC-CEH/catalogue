@@ -1,6 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.jena.sparql.function.library.leviathan.log;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -33,6 +35,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
+@Slf4j
 @ExtendWith(MockitoExtension.class)
 public class ServiceAgreementServiceTest {
 
@@ -60,6 +63,7 @@ public class ServiceAgreementServiceTest {
     @SneakyThrows
     public void canGet() {
         //Given
+        log.debug("testing");
         CatalogueUser user = new CatalogueUser();
         user.setUsername("test");
         ServiceAgreement serviceAgreement = mock(ServiceAgreement.class);
@@ -91,11 +95,29 @@ public class ServiceAgreementServiceTest {
     @Test
     @SneakyThrows
     public void getThrowsException() {
-        //Given
         CatalogueUser user = new CatalogueUser();
         user.setUsername("test");
-        ServiceAgreement serviceAgreement = new ServiceAgreement();
+        ServiceAgreement serviceAgreement = mock(ServiceAgreement.class);
         serviceAgreement.setId(ID);
+
+        GitDataDocument metadataInfoDocument = mock(GitDataDocument.class);
+        GitDataDocument rawDocument = mock(GitDataDocument.class);
+
+        ByteArrayInputStream metadataInfoInputStream = new ByteArrayInputStream("meta".getBytes());
+        ByteArrayInputStream rawInputStream = new ByteArrayInputStream("file".getBytes());
+
+        MetadataInfo metadata = MetadataInfo.builder().rawType(MediaType.TEXT_XML_VALUE).build();
+
+        given(rawDocument.getInputStream()).willReturn(rawInputStream);
+
+        given(repo.getData(FOLDER + ID + ".meta")).willReturn(metadataInfoDocument);
+        given(repo.getData(FOLDER + ID + ".raw")).willReturn(rawDocument);
+
+        given(metadataInfoDocument.getInputStream()).willReturn(metadataInfoInputStream);
+        given(documentMetadataInfoMapper.readInfo(any(InputStream.class))).willReturn(metadata);
+        given(documentReader.read(rawInputStream, MediaType.TEXT_XML, ServiceAgreement.class)).willReturn(serviceAgreement);
+        //Given
+        user.setUsername("test");
 
         DataDocument dataDocument = mock(DataDocument.class);
         given(repo.getData(FOLDER + ID)).willThrow(new DataRepositoryException("failed"));
@@ -154,12 +176,12 @@ public class ServiceAgreementServiceTest {
         ServiceAgreement serviceAgreement = new ServiceAgreement();
         serviceAgreement.setId(ID);
 
-        DataDocument dataDocument = mock(DataDocument.class);
         given(repo.getData(FOLDER + ID)).willThrow(new DataRepositoryException("failed"));
 
         //When
-        assertThrows(DataRepositoryException.class, () ->
-                serviceAgreementService.metadataRecordExists(ID));
+        boolean result = serviceAgreementService.metadataRecordExists(ID);
+
+        assertThat(result, is(false));
     }
 
     @Test

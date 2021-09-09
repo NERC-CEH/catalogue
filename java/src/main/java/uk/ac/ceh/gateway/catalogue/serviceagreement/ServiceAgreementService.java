@@ -5,17 +5,15 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
-import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.document.reading.DocumentReadingService;
 import uk.ac.ceh.gateway.catalogue.document.reading.DocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
-
-import java.util.Map;
 
 @Slf4j
 @ToString
@@ -58,6 +56,7 @@ public class ServiceAgreementService implements ServiceAgreementServiceInterface
 
     @SneakyThrows
     public ServiceAgreement get(String id) {
+        log.debug("testing");
         return this.readBundle(FOLDER + id);
     }
 
@@ -67,15 +66,15 @@ public class ServiceAgreementService implements ServiceAgreementServiceInterface
 
         MetadataInfo metadataInfo = createMetadataInfoWithDefaultPermissions(serviceAgreementDocument, user, MediaType.APPLICATION_JSON, catalogue);
 
-        repo.submitData(String.format("%s/%s.meta", FOLDER, id), (o) -> documentMetadataInfoMapper.writeInfo(metadataInfo, o))
-                .submitData(String.format("%s/%s.raw", FOLDER, id), (o) -> documentServiceAgreementMapper.writeInfo(serviceAgreementDocument, o))
+        repo.submitData(String.format("%s%s.meta", FOLDER, id), (o) -> documentMetadataInfoMapper.writeInfo(metadataInfo, o))
+                .submitData(String.format("%s%s.raw", FOLDER, id), (o) -> documentServiceAgreementMapper.writeInfo(serviceAgreementDocument, o))
                 .commit(user, catalogue);
     }
 
     @SneakyThrows
-    public DataRevision<CatalogueUser> delete(CatalogueUser user, String id) {
-        return repo.deleteData(String.format("%s/%s.mete", FOLDER, id))
-                .deleteData(String.format("%s/%s.raw", FOLDER, id))
+    public void delete(CatalogueUser user, String id) {
+        repo.deleteData(String.format("%s%s.meta", FOLDER, id))
+                .deleteData(String.format("%s%s.raw", FOLDER, id))
                 .commit(user, String.format("delete document: %s", id));
     }
 
@@ -97,7 +96,12 @@ public class ServiceAgreementService implements ServiceAgreementServiceInterface
         val metadataDoc = repo.getData(file + ".meta");
         val metadataInfo = documentMetadataInfoMapper.readInfo(metadataDoc.getInputStream());
 
+        log.debug("metadataDoc = {}", metadataDoc);
+        log.debug("metadataInfo = {}", metadataInfo);
+
         val dataDoc = repo.getData(file + ".raw");
+
+        log.debug("dataDoc = {}", dataDoc);
 
         ServiceAgreement document = documentReader.read(
                 dataDoc.getInputStream(),
