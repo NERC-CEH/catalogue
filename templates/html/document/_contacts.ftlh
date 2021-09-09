@@ -1,6 +1,6 @@
 <#if pocs?size gt 0 >
   <div id="document-pointOfContact">
-  <h3 id="pointOfContact">Correspondence/contact details</h3>
+  <h2 id="pointOfContact">Correspondence/contact details</h2>
       <#list pocs>
         <#items as poc>
           <div class="responsibleParty">
@@ -13,7 +13,7 @@
 
 <#if authors?size gt 0 >
   <div id="document-authors">
-  <h3 id="authors">Author<#if authors?size gt 1>s</#if></h3>
+  <h2 id="authors">Author<#if authors?size gt 1>s</#if></h2>
 
       <#list authors>
       <#assign authorMaxSize = 30 >
@@ -46,7 +46,7 @@
 
 <#if otherContacts?has_content>
   <div id="document-otherContacts">
-  <h3><a id="otherContacts"></a>Other contacts</h3>
+  <h2><a id="otherContacts"></a>Other contacts</h2>
   <dl class="dl-horizontal">
 
   <#if otherContacts?has_content>

@@ -1,5 +1,5 @@
 <div id="section-extent">
-<h3 id="extent">Where/When</h3>
+<h2 id="extent">Where/When</h3>
   <#if boundingBoxes?has_content || geometry?has_content>
     <div id="studyarea-map">
       <#list boundingBoxes as extent>

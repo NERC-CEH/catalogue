@@ -3,6 +3,9 @@ define [
   'cs!views/editor/InputView'
   'cs!views/editor/TextareaView'
   'cs!views/editor/ParentView'
+  'cs!views/editor/PredefinedParentView'
+  'cs!views/editor/ContactView'
+  'cs!models/editor/Contact'
   'cs!views/editor/ParentStringView'
   'cs!views/editor/KeywordView'
   'cs!views/editor/ReferenceView'
@@ -10,18 +13,11 @@ define [
   'cs!views/editor/SingleObjectView'
   'cs!views/editor/DataInfoView'
   'cs!views/editor/NercModelInfoView'
+  'cs!views/editor/FundingView'
+  'cs!models/editor/Funding'
+
 ], (
-  EditorView,
-  InputView,
-  TextareaView,
-  ParentView,
-  ParentStringView,
-  KeywordView,
-  ReferenceView,
-  Reference,
-  SingleObjectView,
-  DataInfoView,
-  NercModelInfoView
+  EditorView, InputView, TextareaView, ParentView, PredefinedParentView, ContactView, Contact, ParentStringView, KeywordView, ReferenceView, Reference, SingleObjectView, DataInfoView, NercModelInfoView, FundingView, Funding
 ) -> EditorView.extend
 
   initialize: ->
@@ -29,30 +25,19 @@ define [
     @model.set('type', 'nercModelUse') unless @model.has('type')
 
     @sections = [
-      label: 'Project Info'
-      title: 'Project Info'
+      label: 'General'
+      title: 'General'
       views: [
 
         new InputView
           model: @model
           modelAttribute: 'title'
-          label: 'Project title'
-          helpText: """
-                    <p>Title of project</p>
-                    """
-
-        new InputView
-          model: @model
-          modelAttribute: 'projectCode'
-          label: 'Project code'
-          helpText: """
-                    <p>RMS project code</p>
-                    """
+          label: 'Title'
 
         new TextareaView
           model: @model
-          modelAttribute: 'projectObjectives'
-          label: 'Project objectives'
+          modelAttribute: 'objectives'
+          label: 'Objectives'
           rows: 17
           helpText: """
                     <p>Brief description of the main objectives</p>
@@ -61,7 +46,7 @@ define [
         new TextareaView
           model: @model
           modelAttribute: 'description'
-          label: 'Project description'
+          label: 'Description'
           rows: 17
           helpText: """
                     <p>Longer description of project incl. why models were used to answer the science question, assumptions made, key outputs</p>
@@ -72,69 +57,52 @@ define [
           modelAttribute: 'keywords'
           label: 'Keywords'
           ObjectInputView: KeywordView
-          helpText: """
-                    <p>5-10 keywords to enable searching for the project</p>
-                    """
 
         new InputView
           model: @model
-          modelAttribute: 'projectCompletionDate'
-          label: 'Project completion date'
-          helpText: """
-                    <p>Project end date</p>
-                    """
+          modelAttribute: 'completionDate'
+          label: 'Completion date'
 
-        new InputView
+        new PredefinedParentView
           model: @model
-          modelAttribute: 'projectWebsite'
-          label: 'Project website'
-          helpText: """
-                    <p>Public-facing website if available e.g. http://www.ceh.ac.uk/our-science/projects/upscape</p>
-                    """
+          ModelType: Contact
+          modelAttribute: 'responsibleParties'
+          label: 'Contacts'
+          ObjectInputView: ContactView
+          multiline: true
 
-        new TextareaView
+        new PredefinedParentView
           model: @model
-          modelAttribute: 'funderDetails'
-          label: 'Funder details'
-          rows: 3
-          helpText: """
-                    <p>Funder details, including grant number if appropriate</p>
-                    """
-
-        new InputView
-          model: @model
-          modelAttribute: 'contactName'
-          label: 'Contact name'
-          helpText: """
-                    <p>Name of UKCEH PI/project representative</p>
-                    """
-
-        new InputView
-          model: @model
-          modelAttribute: 'contactEmail'
-          label: 'Contact email'
-          helpText: """
-                    <p>Email of UKCEH PI/project representative e.g. someone@ceh.ac.uk</p>
-                    """
-
-        new TextareaView
-          model: @model
-          modelAttribute: 'multipleModelsUsed'
-          label: 'Multiple models used?'
-          rows: 7
-          helpText: """
-                    <p>Were multiple models used in the project? If so, which ones?</p>
-                    """
-
-        new TextareaView
-          model: @model
-          modelAttribute: 'multipleModelLinkages'
-          label: 'Multiple model linkages'
-          rows: 7
-          helpText: """
-                    <p>If multiple models were used how was this done e.g. chained, independent runs, comparisons, ensemble</p>
-                    """
-
+          modelAttribute: 'funding'
+          ModelType: Funding
+          multiline: true
+          label: 'Funding'
+          ObjectInputView: FundingView
+          predefined:
+            'BBSRC':
+              funderName: 'Biotechnology and Biological Sciences Research Council'
+              funderIdentifier: 'https://ror.org/00cwqg982'
+            'Defra':
+              funderName: 'Department for Environment Food and Rural Affairs'
+              funderIdentifier: 'https://ror.org/00tnppw48'
+            'EPSRC':
+              funderName: 'Engineering and Physical Sciences Research Council'
+              funderIdentifier: 'https://ror.org/0439y7842'
+            'ESRC':
+              funderName: 'Economic and Social Research Council'
+              funderIdentifier: 'https://ror.org/03n0ht308'
+            'Innovate UK':
+              funderName: 'Innovate UK'
+              funderIdentifier: 'https://ror.org/05ar5fy68'
+            'MRC':
+              funderName: 'Medical Research Council'
+              funderIdentifier: 'https://ror.org/03x94j517'
+            'NERC':
+              funderName: 'Natural Environment Research Council'
+              funderIdentifier: 'https://ror.org/02b5d8509'
+            'STFC':
+              funderName: 'Science and Technology Facilities Council'
+              funderIdentifier: 'https://ror.org/057g20z61'
       ]
     ,
       label: 'References'

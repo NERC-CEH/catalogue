@@ -8,6 +8,8 @@ import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.Relationship;
+import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
+import uk.ac.ceh.gateway.catalogue.gemini.Funding;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -21,18 +23,12 @@ import java.util.stream.Collectors;
 })
 public class NercModelUse extends AbstractMetadataDocument {
     private String
-        projectCode,
-        projectObjectives,
-        projectCompletionDate,
-        projectWebsite,
-        funderDetails,
-        contactName,
-        contactEmail,
-        multipleModelsUsed,
-        multipleModelLinkages,
-        sensitivityAnalysis,
-        uncertaintyAnalysis,
-        validation;
+        objectives,
+        completionDate;
+
+    private List<ResponsibleParty> responsibleParties;
+
+    private List<Funding> funding;
 
     private List<NercModel.Reference> references;
 

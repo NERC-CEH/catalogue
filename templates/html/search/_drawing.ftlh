@@ -27,7 +27,7 @@
     <span class="fas fa-times"></span>
   </a>
 <#else>
-  <button id="drawing-toggle" type="button" class="btn btn-default btn-xs">
-    <span class="fas fa-pencil-alt"></span>
+  <button id="drawing-toggle" type="button" class="btn btn-default btn-xs" aria-label="Draw a boundary in which to search">
+    <span class="fas fa-pencil-alt"></span> 
   </button>
 </#if>

@@ -25,7 +25,7 @@
     <span class="fas fa-times"></span>
   </a>
 <% } else { %>
-  <button id="drawing-toggle" type="button" class="editor-button-xs">
+  <button id="drawing-toggle" type="button" class="editor-button-xs" aria-label="Draw a boundary in which to search">
     <span class="fas fa-pencil-alt"></span>
   </button>
 <% } %>

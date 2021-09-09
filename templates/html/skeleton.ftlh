@@ -55,7 +55,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <h3 class="navbar-text" href="#">Not Proxied</h3>
+          <h2 class="navbar-text" href="#">Not Proxied</h3>
         </div>
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
