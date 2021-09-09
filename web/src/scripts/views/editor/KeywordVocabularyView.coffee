@@ -32,8 +32,8 @@ define [
             response _.map data, (d) -> {value: d.label, label: "#{d.label} (#{d.vocabId})", url: d.url}
 
     @$('.autocomplete').on 'autocompleteselect', (event, ui) =>
-      @model.set 'value', ui.item.label
-      @$('.value').val ui.item.label
+      @model.set 'value', ui.item.value
+      @$('.value').val ui.item.value
       @model.set 'uri', ui.item.url
       @$('.uri').val ui.item.url
 
