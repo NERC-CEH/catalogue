@@ -4,43 +4,34 @@ import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
-import uk.ac.ceh.gateway.catalogue.document.reading.DocumentReadingService;
-import uk.ac.ceh.gateway.catalogue.document.reading.DocumentTypeLookupService;
-import uk.ac.ceh.gateway.catalogue.model.*;
-import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
+import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.model.Permission;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Slf4j
 @ToString
 @Service
 public class ServiceAgreementService implements ServiceAgreementServiceInterface {
     private final DataRepository<CatalogueUser> repo;
-    private final DocumentInfoMapper<MetadataInfo> documentMetadataInfoMapper;
-    private final DocumentInfoMapper<ServiceAgreement> documentServiceAgreementMapper;
-    private final DocumentTypeLookupService documentTypeLookupService;
-    private final DocumentReadingService documentReader;
-    private final PostProcessingService<ServiceAgreement> postProcessingService;
+    private final DocumentInfoMapper<MetadataInfo> metadataInfoMapper;
+    private final DocumentInfoMapper<ServiceAgreement> serviceAgreementMapper;
     private static final String FOLDER = "service-agreements/";
 
     public ServiceAgreementService(
-            DocumentTypeLookupService documentTypeLookupService,
             DataRepository<CatalogueUser> repo,
-            DocumentInfoMapper<MetadataInfo> documentMetadataInfoMapper,
-            DocumentInfoMapper<ServiceAgreement> documentServiceAgreementMapper,
-            PostProcessingService<ServiceAgreement> postProcessingService,
-            DocumentReadingService documentReader) {
-        this.documentTypeLookupService = documentTypeLookupService;
+            DocumentInfoMapper<MetadataInfo> metadataInfoMapper,
+            DocumentInfoMapper<ServiceAgreement> serviceAgreementMapper
+    ) {
         this.repo = repo;
-        this.documentMetadataInfoMapper = documentMetadataInfoMapper;
-        this.documentServiceAgreementMapper = documentServiceAgreementMapper;
-        this.documentReader = documentReader;
-        this.postProcessingService = postProcessingService;
-        log.info("Creating {}", this);
+        this.metadataInfoMapper = metadataInfoMapper;
+        this.serviceAgreementMapper = serviceAgreementMapper;
+        log.info("Creating");
     }
 
 
@@ -56,18 +47,17 @@ public class ServiceAgreementService implements ServiceAgreementServiceInterface
 
     @SneakyThrows
     public ServiceAgreement get(String id) {
-        log.debug("testing");
         return this.readBundle(FOLDER + id);
     }
 
 
     @SneakyThrows
-    public void save(CatalogueUser user, String id, String catalogue, ServiceAgreement serviceAgreementDocument) {
+    public void save(CatalogueUser user, String id, String catalogue, ServiceAgreement serviceAgreement) {
 
-        MetadataInfo metadataInfo = createMetadataInfoWithDefaultPermissions(serviceAgreementDocument, user, MediaType.APPLICATION_JSON, catalogue);
+        MetadataInfo metadataInfo = createMetadataInfoWithDefaultPermissions(user, catalogue);
 
-        repo.submitData(String.format("%s%s.meta", FOLDER, id), (o) -> documentMetadataInfoMapper.writeInfo(metadataInfo, o))
-                .submitData(String.format("%s%s.raw", FOLDER, id), (o) -> documentServiceAgreementMapper.writeInfo(serviceAgreementDocument, o))
+        repo.submitData(String.format("%s%s.meta", FOLDER, id), (o) -> metadataInfoMapper.writeInfo(metadataInfo, o))
+                .submitData(String.format("%s%s.raw", FOLDER, id), (o) -> serviceAgreementMapper.writeInfo(serviceAgreement, o))
                 .commit(user, catalogue);
     }
 
@@ -78,10 +68,10 @@ public class ServiceAgreementService implements ServiceAgreementServiceInterface
                 .commit(user, String.format("delete document: %s", id));
     }
 
-    private MetadataInfo createMetadataInfoWithDefaultPermissions(MetadataDocument document, CatalogueUser user, MediaType mediaType, String catalogue) {
+    private MetadataInfo createMetadataInfoWithDefaultPermissions(CatalogueUser user, String catalogue) {
         MetadataInfo toReturn = MetadataInfo.builder()
-                .rawType(mediaType.toString())
-                .documentType(documentTypeLookupService.getName(document.getClass()))
+                .rawType(APPLICATION_JSON_VALUE)
+                .documentType("service-agreement")
                 .catalogue(catalogue)
                 .build();
         String username = user.getUsername();
@@ -94,24 +84,14 @@ public class ServiceAgreementService implements ServiceAgreementServiceInterface
     @SneakyThrows
     private ServiceAgreement readBundle(String file) {
         val metadataDoc = repo.getData(file + ".meta");
-        val metadataInfo = documentMetadataInfoMapper.readInfo(metadataDoc.getInputStream());
-
-        log.debug("metadataDoc = {}", metadataDoc);
+        val metadataInfo = metadataInfoMapper.readInfo(metadataDoc.getInputStream());
         log.debug("metadataInfo = {}", metadataInfo);
 
         val dataDoc = repo.getData(file + ".raw");
-
-        log.debug("dataDoc = {}", dataDoc);
-
-        ServiceAgreement document = documentReader.read(
-                dataDoc.getInputStream(),
-                MediaType.TEXT_XML,
-                ServiceAgreement.class
-        );
-        document.setMetadata(metadataInfo.withRawType(null));
-        postProcessingService.postProcess(document);
-
-        return document;
+        val serviceAgreement = serviceAgreementMapper.readInfo(dataDoc.getInputStream());
+        serviceAgreement.setMetadata(metadataInfo);
+        log.debug("Service Agreement: {}", serviceAgreement);
+        return serviceAgreement;
     }
 
 }
