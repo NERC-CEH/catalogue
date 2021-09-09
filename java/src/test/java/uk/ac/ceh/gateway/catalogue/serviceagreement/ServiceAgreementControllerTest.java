@@ -8,7 +8,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
@@ -59,13 +58,23 @@ public class ServiceAgreementControllerTest {
 
     @Test
     @SneakyThrows
+    public void getNoAccess() {
+
+        //When
+        mvc.perform(get("/service-agreement")
+                        .queryParam("id", QUERY))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @SneakyThrows
     public void canCreate() {
         //Given
         givenUserCanAccess();
         given(serviceAgreementService.metadataRecordExists(QUERY)).willReturn(true);
 
         //When
-        mvc.perform(post("/service-agreement/" + QUERY).contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(post("/service-agreement/" + QUERY)
                         .queryParam("catalogue", "elter"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
@@ -74,7 +83,16 @@ public class ServiceAgreementControllerTest {
 
     @Test
     @SneakyThrows
-    public void createDocumentDoeNotExist() {
+    public void createNoAccess() {
+
+        //When
+        mvc.perform(post("/service-agreement/" + QUERY)
+                .queryParam("catalogue", "elter")).andExpect(status().isForbidden());
+    }
+
+    @Test
+    @SneakyThrows
+    public void createDocumentDoesNotExist() {
         //Given
         givenUserCanAccess();
         given(serviceAgreementService.metadataRecordExists(QUERY)).willReturn(false);
@@ -96,6 +114,15 @@ public class ServiceAgreementControllerTest {
         //When
         mvc.perform(delete("/service-agreement/" + QUERY))
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @SneakyThrows
+    public void DeleteNoAccess() {
+
+        //When
+        mvc.perform(delete("/service-agreement/" + QUERY))
+                .andExpect(status().isForbidden());
     }
 
     private void givenUserCanAccess() {

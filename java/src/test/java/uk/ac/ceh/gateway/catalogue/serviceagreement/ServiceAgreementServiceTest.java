@@ -8,18 +8,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.MediaType;
 import uk.ac.ceh.components.datastore.DataDocument;
 import uk.ac.ceh.components.datastore.DataOngoingCommit;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
-import uk.ac.ceh.components.datastore.git.GitDataDocument;
 import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -90,33 +87,32 @@ public class ServiceAgreementServiceTest {
 
     @Test
     @SneakyThrows
-    public void getThrowsException() {
-        CatalogueUser user = new CatalogueUser();
-        user.setUsername("test");
-        ServiceAgreement serviceAgreement = mock(ServiceAgreement.class);
+    public void canNotGetRaw() {
+        //Given
+        val serviceAgreement = new ServiceAgreement();
         serviceAgreement.setId(ID);
 
-        GitDataDocument metadataInfoDocument = mock(GitDataDocument.class);
-        GitDataDocument rawDocument = mock(GitDataDocument.class);
+        val metadataInfoDocument = mock(DataDocument.class);
+        given(repo.getData(FOLDER + ID + ".meta"))
+                .willReturn(metadataInfoDocument);
 
-        ByteArrayInputStream metadataInfoInputStream = new ByteArrayInputStream("meta".getBytes());
-        ByteArrayInputStream rawInputStream = new ByteArrayInputStream("file".getBytes());
+        given(repo.getData(FOLDER + ID + ".raw"))
+                .willThrow(new DataRepositoryException("Fail"));
 
-        MetadataInfo metadata = MetadataInfo.builder().rawType(MediaType.TEXT_XML_VALUE).build();
+        //When
+        assertThrows(DataRepositoryException.class, () ->
+                service.get(ID));
+    }
 
-        given(rawDocument.getInputStream()).willReturn(rawInputStream);
-
-        given(repo.getData(FOLDER + ID + ".meta")).willReturn(metadataInfoDocument);
-        given(repo.getData(FOLDER + ID + ".raw")).willReturn(rawDocument);
-
-        given(metadataInfoDocument.getInputStream()).willReturn(metadataInfoInputStream);
-        given(metadataInfoMapper.readInfo(any(InputStream.class))).willReturn(metadata);
-        given(serviceAgreementMapper.readInfo(any(InputStream.class))).willReturn(serviceAgreement);
+    @Test
+    @SneakyThrows
+    public void canNotGetMeta() {
         //Given
-        user.setUsername("test");
+        val serviceAgreement = new ServiceAgreement();
+        serviceAgreement.setId(ID);
 
-        DataDocument dataDocument = mock(DataDocument.class);
-        given(repo.getData(FOLDER + ID)).willThrow(new DataRepositoryException("failed"));
+        given(repo.getData(FOLDER + ID + ".meta"))
+                .willThrow(new DataRepositoryException("Fail"));
 
         //When
         assertThrows(DataRepositoryException.class, () ->
