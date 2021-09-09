@@ -13,7 +13,7 @@ define [
     ObjectInputView.prototype.initialize.apply @
     @vocabularies = new Backbone.Collection()
     catalogue = $('html').data('catalogue')
-    @$vocabularies = @$('.vocabularies')
+    @$vocabularies = @$('.vocabularyPicker')
     @listenTo(@vocabularies, 'add', @addOne)
     @listenTo(@vocabularies, 'reset', @addAll)
     $.getJSON "/catalogues/#{catalogue}", (data) =>
