@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.List;
 
-import static java.lang.String.format;
 import static org.apache.solr.client.solrj.SolrRequest.METHOD.POST;
 
 @Slf4j
@@ -29,13 +28,12 @@ public class KeywordVocabularySolrQueryService {
         try {
             SolrQuery query = new SolrQuery();
             query.setQuery(term);
-            query.setParam(CommonParams.DF, "label" );
+            query.setParam(CommonParams.DF, "label");
             query.setSort("label", ORDER.asc);
             query.setRows(100);
-
-            for (String vocabId : vocabIds) {
-                query.addFilterQuery(format("{!term f=vocabId}%s", vocabId));
-            }
+            query.addFilterQuery(generateVocabQuery(vocabIds));
+            log.debug(query.getQuery());
+            log.debug("Filter queries: {}", (Object) query.getFilterQueries());
 
             return solrClient.query(COLLECTION, query, POST).getBeans(Keyword.class);
 
@@ -43,5 +41,25 @@ public class KeywordVocabularySolrQueryService {
             throw new SolrServerException(ex);
         }
     }
+
+    private String generateVocabQuery(List<String> vocabIds) {
+
+        if(vocabIds.isEmpty())
+            return "";
+
+        StringBuilder toReturn = new StringBuilder("vocabId:(" + vocabIds.get(0));
+        if(vocabIds.size() > 1) {
+            vocabIds
+                    .stream()
+                    .skip(1)
+                    .forEach(v -> {
+                        toReturn
+                                .append(" OR ")
+                                .append(v);
+                    });
+        }
+        return toReturn.append(")").toString();
+    }
+
 }
 

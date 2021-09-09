@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
  * The following class is responsible for taking a metadata document and creating
  * beans which are solr indexable
  */
+@SuppressWarnings("HttpUrlsUsage")
 @Slf4j
 @ToString
 public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<MetadataDocument, SolrIndex> {
@@ -52,6 +53,11 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
     public static final String NC_GEOGRAPHICAL_SCALE_URL = "http://vocabs.ceh.ac.uk/ncterms/geographical_scale";
 
     public static final String SA_TAXON_URL = "http://vocabs.ceh.ac.uk/esb/taxon";
+
+    private static final String UKSCAPE_RESEARCH_PROJECT_URL = "http://onto.nerc.ac.uk/CEHMD/ukscape/research-project";
+    private static final String UKSCAPE_RESEARCH_THEME_URL = "http://onto.nerc.ac.uk/CEHMD/ukscape/research-theme";
+    private static final String UKSCAPE_SCIENCE_CHALLENGE_URL = "http://onto.nerc.ac.uk/CEHMD/ukscape/science-challenge";
+    private static final String UKSCAPE_SERVICE_URL = "http://onto.nerc.ac.uk/CEHMD/ukscape/service";
 
     private final CodeLookupService codeLookupService;
     private final DocumentIdentifierService identifierService;
@@ -98,6 +104,10 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
             .setResourceType(codeLookupService.lookup("metadata.resourceType", document.getType()))
             .setState(getState(document))
             .setTitle(document.getTitle())
+            .setUkscapeResearchTheme(grab(getKeywordsFilteredByUrlFragment(document, UKSCAPE_RESEARCH_THEME_URL), Keyword::getValue))
+            .setUkscapeResearchProject(grab(getKeywordsFilteredByUrlFragment(document, UKSCAPE_RESEARCH_PROJECT_URL), Keyword::getValue))
+            .setUkscapeScienceChallenge(grab(getKeywordsFilteredByUrlFragment(document, UKSCAPE_SCIENCE_CHALLENGE_URL), Keyword::getValue))
+            .setUkscapeService(grab(getKeywordsFilteredByUrlFragment(document, UKSCAPE_SERVICE_URL), Keyword::getValue))
             .setView(getViews(document))
             ;
     }
