@@ -47,25 +47,30 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
 
     @SneakyThrows
     public ServiceAgreement get(String id) {
-        return this.readBundle(FOLDER + id);
-    }
+        val metadataDoc = repo.getData(FOLDER + id + ".meta");
+        val metadataInfo = metadataInfoMapper.readInfo(metadataDoc.getInputStream());
+        log.debug("metadataInfo = {}", metadataInfo);
 
+        val dataDoc = repo.getData(FOLDER + id + ".raw");
+        val serviceAgreement = serviceAgreementMapper.readInfo(dataDoc.getInputStream());
+        serviceAgreement.setMetadata(metadataInfo);
+        log.debug("Service Agreement: {}", serviceAgreement);
+        return serviceAgreement;
+    }
 
     @SneakyThrows
     public void save(CatalogueUser user, String id, String catalogue, ServiceAgreement serviceAgreement) {
-
-        MetadataInfo metadataInfo = createMetadataInfoWithDefaultPermissions(user, catalogue);
-
-        repo.submitData(String.format("%s%s.meta", FOLDER, id), (o) -> metadataInfoMapper.writeInfo(metadataInfo, o))
-                .submitData(String.format("%s%s.raw", FOLDER, id), (o) -> serviceAgreementMapper.writeInfo(serviceAgreement, o))
+        val metadataInfo = createMetadataInfoWithDefaultPermissions(user, catalogue);
+        repo.submitData(FOLDER + id + ".meta", (o) -> metadataInfoMapper.writeInfo(metadataInfo, o))
+                .submitData(FOLDER + id + ".raw", (o) -> serviceAgreementMapper.writeInfo(serviceAgreement, o))
                 .commit(user, catalogue);
     }
 
     @SneakyThrows
     public void delete(CatalogueUser user, String id) {
-        repo.deleteData(String.format("%s%s.meta", FOLDER, id))
-                .deleteData(String.format("%s%s.raw", FOLDER, id))
-                .commit(user, String.format("delete document: %s", id));
+        repo.deleteData(FOLDER + id + ".meta")
+                .deleteData(FOLDER + id + ".raw")
+                .commit(user, "delete document: " + id);
     }
 
     private MetadataInfo createMetadataInfoWithDefaultPermissions(CatalogueUser user, String catalogue) {
@@ -80,18 +85,4 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         toReturn.addPermission(Permission.DELETE, username);
         return toReturn;
     }
-
-    @SneakyThrows
-    private ServiceAgreement readBundle(String file) {
-        val metadataDoc = repo.getData(file + ".meta");
-        val metadataInfo = metadataInfoMapper.readInfo(metadataDoc.getInputStream());
-        log.debug("metadataInfo = {}", metadataInfo);
-
-        val dataDoc = repo.getData(file + ".raw");
-        val serviceAgreement = serviceAgreementMapper.readInfo(dataDoc.getInputStream());
-        serviceAgreement.setMetadata(metadataInfo);
-        log.debug("Service Agreement: {}", serviceAgreement);
-        return serviceAgreement;
-    }
-
 }

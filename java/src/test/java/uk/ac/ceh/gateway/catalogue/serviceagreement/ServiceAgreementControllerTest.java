@@ -1,22 +1,25 @@
 package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
 import lombok.SneakyThrows;
+import lombok.val;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
+import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -26,11 +29,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("ServiceAgreementController")
 @Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
 @WebMvcTest(ServiceAgreementController.class)
-public class ServiceAgreementControllerTest {
+class ServiceAgreementControllerTest {
 
     private static final String ID = "test";
-
-    public static final String QUERY = "queryTest";
+    private static final String QUERY = "queryTest";
+    private static CatalogueUser USER;
 
     @MockBean
     private ServiceAgreementSearch search;
@@ -43,91 +46,180 @@ public class ServiceAgreementControllerTest {
     @Autowired
     private MockMvc mvc;
 
+    @BeforeAll
+    private static void setup() {
+        USER = new CatalogueUser();
+        USER.setUsername("test");
+        USER.setEmail("test@example.com");
+    }
+
     @Test
     @SneakyThrows
-    public void canGet() {
+    void getServiceAgreement() {
         //Given
-        givenUserCanAccess();
+        givenUserCanView();
+        givenServiceAgreement();
 
         //When
-        mvc.perform(get("/service-agreement")
-                        .queryParam("id", QUERY))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+        mvc.perform(get("/service-agreement/{id}", ID))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(APPLICATION_JSON))
+            .andExpect(content().json("{\"id\":\"test\"}"));
     }
 
     @Test
     @SneakyThrows
-    public void getNoAccess() {
+    void noAccessToServiceAgreements() {
+        //given
+        givenUserCanNotView();
 
         //When
-        mvc.perform(get("/service-agreement")
-                        .queryParam("id", QUERY))
-                .andExpect(status().isForbidden());
+        mvc.perform(get("/service-agreement/{id}", ID))
+            .andExpect(status().isForbidden());
+
+        verifyNoInteractions(serviceAgreementService);
     }
 
     @Test
     @SneakyThrows
-    public void canCreate() {
+    @WithMockCatalogueUser
+    void createServiceAgreement() {
         //Given
-        givenUserCanAccess();
-        given(serviceAgreementService.metadataRecordExists(QUERY)).willReturn(true);
+        givenUserCanEdit();
+        givenMetadataRecordExists();
+        val expected = new ServiceAgreement();
+        expected.setId(ID);
+        expected.setTitle("Test Service Agreement");
 
         //When
-        mvc.perform(post("/service-agreement/" + QUERY)
-                        .queryParam("catalogue", "elter"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+        mvc.perform(post("/service-agreement/{id}", ID)
+                .content("{\"title\":\"Test Service Agreement\"}")
+                .queryParam("catalogue", "eidc")
+                .contentType(APPLICATION_JSON)
+            )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(APPLICATION_JSON))
+            .andExpect(content().json("{\"id\":\"test\",\"title\":\"Test Service Agreement\"}"));
 
+        //then
+        verify(serviceAgreementService).save(
+            USER,
+            ID,
+            "eidc",
+            expected
+        );
     }
 
     @Test
     @SneakyThrows
-    public void createNoAccess() {
+    @WithMockCatalogueUser
+    void userCannotCreateServiceAgreement() {
+        //given
+        givenUserCanNotEdit();
 
         //When
-        mvc.perform(post("/service-agreement/" + QUERY)
-                .queryParam("catalogue", "elter")).andExpect(status().isForbidden());
+        mvc.perform(post("/service-agreement/{id}", ID)
+                .content("{\"title\":\"Test Service Agreement\"}")
+                .queryParam("catalogue", "eidc")
+                .contentType(APPLICATION_JSON)
+            )
+            .andExpect(status().isForbidden());
+
+        //then
+        verifyNoInteractions(serviceAgreementService);
     }
 
     @Test
     @SneakyThrows
-    public void createDocumentDoesNotExist() {
+    void cannotCreateServiceAgreementAsMetadataDoesNotExist() {
         //Given
-        givenUserCanAccess();
-        given(serviceAgreementService.metadataRecordExists(QUERY)).willReturn(false);
+        givenUserCanEdit();
+        givenMedataRecordDoesNotExist();
 
         //When
-        mvc.perform(post("/service-agreement/" + QUERY).contentType(MediaType.APPLICATION_JSON)
-                        .queryParam("catalogue", "elter"))
-                .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+        mvc.perform(post("/service-agreement/{id}", ID)
+                .content("{\"title\":\"Test Service Agreement\"}")
+                .queryParam("catalogue", "eidc")
+                .contentType(APPLICATION_JSON)
+            )
+            .andExpect(status().isNotFound())
+            .andExpect(content().contentType(APPLICATION_JSON));
 
+        //Then
+        verify(serviceAgreementService).metadataRecordExists(ID);
+        verifyNoMoreInteractions(serviceAgreementService);
     }
 
     @Test
     @SneakyThrows
-    public void canDelete() {
+    @WithMockCatalogueUser
+    void deleteServiceAgreement() {
         //Given
-        givenUserCanAccess();
+        givenUserCanDelete();
 
         //When
-        mvc.perform(delete("/service-agreement/" + QUERY))
+        mvc.perform(delete("/service-agreement/{id}", ID))
                 .andExpect(status().isNoContent());
+
+        //then
+        verify(serviceAgreementService).delete(USER, ID);
     }
 
     @Test
     @SneakyThrows
-    public void DeleteNoAccess() {
+    void userCannotDeleteServiceAgreement() {
+        //given
+        givenUserCanNotDelete();
 
         //When
-        mvc.perform(delete("/service-agreement/" + QUERY))
+        mvc.perform(delete("/service-agreement/{id}",ID))
                 .andExpect(status().isForbidden());
     }
 
-    private void givenUserCanAccess() {
-        given(this.permissionService.toAccess(any(), any(), any()))
+    private void givenUserCanView() {
+        given(permissionService.userCanView(ID))
                 .willReturn(true);
     }
 
+    private void givenUserCanNotView() {
+        given(permissionService.userCanView(ID))
+            .willReturn(false);
+    }
+
+    private void givenUserCanEdit() {
+        given(permissionService.userCanEdit(ID))
+            .willReturn(true);
+    }
+
+    private void givenUserCanNotEdit() {
+        given(permissionService.userCanEdit(ID))
+            .willReturn(false);
+    }
+
+    private void givenUserCanDelete() {
+        given(permissionService.userCanDelete(ID))
+            .willReturn(true);
+    }
+
+    private void givenUserCanNotDelete() {
+        given(permissionService.userCanDelete(ID))
+            .willReturn(false);
+    }
+
+    private void givenServiceAgreement() {
+        val serviceAgreement = new ServiceAgreement();
+        serviceAgreement.setId(ID);
+        given(serviceAgreementService.get(ID))
+            .willReturn(serviceAgreement);
+    }
+
+    private void givenMetadataRecordExists() {
+        given(serviceAgreementService.metadataRecordExists(ID))
+            .willReturn(true);
+    }
+
+    private void givenMedataRecordDoesNotExist() {
+        given(serviceAgreementService.metadataRecordExists(QUERY))
+            .willReturn(false);
+    }
 }
