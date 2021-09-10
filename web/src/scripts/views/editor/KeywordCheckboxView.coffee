@@ -15,7 +15,6 @@ define [
     @listenTo(@model, 'change', @render)
 
   select: ->
-    console.log("select")
     previous = @model.get('toSearch')
     @model.set('toSearch', !previous)
 
