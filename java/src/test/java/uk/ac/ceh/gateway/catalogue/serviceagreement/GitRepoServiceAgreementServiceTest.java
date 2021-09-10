@@ -28,9 +28,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+@SuppressWarnings({"unchecked", "rawtypes"})
 @Slf4j
 @ExtendWith(MockitoExtension.class)
-public class ServiceAgreementServiceTest {
+public class GitRepoServiceAgreementServiceTest {
 
     private static final String FOLDER = "service-agreements/";
     private static final String ID = "test";
@@ -46,7 +47,7 @@ public class ServiceAgreementServiceTest {
 
     @BeforeEach
     void setup() {
-        service = new ServiceAgreementService(
+        service = new GitRepoServiceAgreementService(
             repo,
             metadataInfoMapper,
             serviceAgreementMapper
