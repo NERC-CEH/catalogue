@@ -1,10 +1,10 @@
-<div class="vocabularyPicker"/>
-  <div class="row">
-    <div>
+<div class="row">
+    <div class="col-sm-12">
       <input class="form-control input-sm autocomplete" placeholder="Search for keywords in selected vocabularies">
     </div>
-  </div>
-  <div class="row">
+</div>
+<div class="row vocabularyPicker"></div>
+<div class="row">
     <div class="col-sm-offset-1 col-sm-1">
         <label class="control-label">Value</label>
     </div>
@@ -17,5 +17,5 @@
     <div class="col-sm-4">
         <input data-name='uri' class="editor-input uri" value="<%= data.uri %>">
     </div>
-  </div>
 </div>
+<hr>

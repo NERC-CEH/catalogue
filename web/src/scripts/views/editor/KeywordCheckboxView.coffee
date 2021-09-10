@@ -5,6 +5,8 @@ define [
 
   template: template
 
+  className: 'col-sm-3'
+
   events:
     'change input': 'select'
 
