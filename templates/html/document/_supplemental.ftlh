@@ -1,7 +1,7 @@
 <#import "../../functions.ftlh" as func>
 <#if supplemental?has_content>
   <div id="section-supplemental">
-    <h3>Supplemental information</h3>
+    <h2>Supplemental information</h3>
 
     <#if supplementTo?has_content>
       <div class="supplemental-block" id="supplementTo">

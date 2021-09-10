@@ -16,7 +16,7 @@ Create a block of EF links with a given title as a heading
 -->
 <#macro links title arr target="_blank">
   <#if arr?has_content>
-    <h3>${title}</h3>
+    <h2>${title}</h3>
 
     <ul class="list-unstyled">
       <#list arr as e>

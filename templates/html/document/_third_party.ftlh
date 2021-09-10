@@ -63,7 +63,7 @@
 
     <#if websites?? &&  websites?has_content >
     <div class="websites">
-        <h3>Website<#if websites?size gt 1>s</#if></h3>
+        <h2>Website<#if websites?size gt 1>s</#if></h3>
             <#list websites as website>
                 <div class="website">
                     <a href="${website.url}" target="_blank" rel="noopener noreferrer" title="${website.description}">

@@ -36,6 +36,8 @@ import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.document.writing.MessageConverterWritingService;
 import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
 import uk.ac.ceh.gateway.catalogue.elter.ElterDocument;
+import uk.ac.ceh.gateway.catalogue.modelnerc.NercModel;
+import uk.ac.ceh.gateway.catalogue.modelnerc.NercModelUse;
 import uk.ac.ceh.gateway.catalogue.erammp.ErammpDatacube;
 import uk.ac.ceh.gateway.catalogue.erammp.ErammpModel;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -156,6 +158,8 @@ public class ServicesConfig {
             .register(OSDP_PUBLICATION_SHORT, Publication.class)
             .register(OSDP_SAMPLE_SHORT, Sample.class)
             .register(ERAMMP_MODEL_SHORT, ErammpModel.class)
+            .register(NERC_MODEL, NercModel.class)
+            .register(NERC_MODEL_USE, NercModelUse.class)
             .register(ERAMMP_DATACUBE_SHORT, ErammpDatacube.class)
             .register(SAMPLE_ARCHIVE_SHORT, SampleArchive.class)
             .register(DATA_TYPE_SHORT, DataType.class)

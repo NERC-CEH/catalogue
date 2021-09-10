@@ -1,6 +1,6 @@
 <#if responsibleParties?has_content>
   <div id="document-responsibleParties">
-    <h3><a id="responsibleParties"></a>Responsible Parties</h3>
+    <h2><a id="responsibleParties"></a>Responsible Parties</h3>
     <dl class="dl-horizontal">
 
     <#if responsibleParties?has_content>

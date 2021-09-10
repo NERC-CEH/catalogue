@@ -52,7 +52,7 @@
 <@skeleton.master title=title catalogue=catalogue rdf="${uri}?format=ttl" schemaorg="${uri}?format=schema.org" canonical="${uri}" can_edit_restricted=permission.userCanEditRestrictedFields(metadata.catalogue)>
 
   <div id="metadata" class="${metadata.state?lower_case}">
-    <div class="container">
+    <div class="container" role="main">
       <#if resourceType?has_content && resourceType.value !=''>
       <#assign recordType = codes.lookup('metadata.recordType',resourceType.value)?lower_case>
       <#include "document/_admin.ftlh">
@@ -114,7 +114,7 @@
               <#include "document/_contacts.ftlh">
 
               <#if topicCategories?? || descriptiveKeywords?? ||  inspireTheme?? || funding?? || spatialRepresentationTypes?? || spatialReferenceSystems??>
-                <h3>Additional metadata</h3>
+                <h2>Additional metadata</h2>
                 <dl id="otherInfo" class="dl-horizontal">
                   <#include "document/_tags.ftlh">
                   <#include "document/_funding.ftlh">
@@ -148,8 +148,8 @@
     </div>
   </div>
 
-  <div id="footer">
-	 <#include "document/_footer.ftlh">
+  <div>
+	  <#include "document/_footer.ftlh">
 	</div>
 
   <script type="application/ld+json">

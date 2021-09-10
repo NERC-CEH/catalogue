@@ -35,6 +35,8 @@ define [
   'cs!views/OsdpMonitoringFacilityEditorView'
   'cs!views/SampleArchiveEditorView'
   'cs!views/ErammpModelEditorView'
+  'cs!views/NercModelEditorView'
+  'cs!views/NercModelUseEditorView'
   'cs!views/ErammpDatacubeEditorView'
   'cs!views/UkemsDocumentEditorView'
   'cs!views/ClipboardCopyView'
@@ -47,7 +49,7 @@ define [
     EditorMetadata, GeminiEditorView, MonitoringEditorView, PermissionApp, PermissionRouter, PermissionAppView, Catalogue, CatalogueView,
     ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata, CehModelEditorView, CehModelApplicationEditorView, OsdpAgentEditorView,
     OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
-    OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, ErammpModelEditorView, ErammpDatacubeEditorView, UkemsDocumentEditorView,
+    OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, ErammpModelEditorView, NercModelEditorView, NercModelUseEditorView, ErammpDatacubeEditorView, UkemsDocumentEditorView,
     ClipboardCopyView, DataTypeEditorView, ElterEditorView, ElterLinkedEditorView, SimpleUploadView
 ) ->
 
@@ -176,6 +178,14 @@ define [
         View: ErammpModelEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.erammp-model+json'
+      'nerc-model':
+        View: NercModelEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.nerc-model+json'
+      'nerc-model-use':
+        View: NercModelUseEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.nerc-model-use+json'
       'erammp-datacube':
         View: ErammpDatacubeEditorView
         Model: EditorMetadata

@@ -1,3 +1,3 @@
-<label><%= name %>
-  <input type="checkbox" <% if (toSearch) { %> checked <% } %>/>
+<label>
+  <input type="checkbox" <% if (toSearch) { %> checked <% } %>/> <%= name %>
 </label>

@@ -5,6 +5,8 @@ define [
 
   template: template
 
+  className: 'col-sm-3'
+
   events:
     'change input': 'select'
 
@@ -13,7 +15,6 @@ define [
     @listenTo(@model, 'change', @render)
 
   select: ->
-    console.log("select")
     previous = @model.get('toSearch')
     @model.set('toSearch', !previous)
 

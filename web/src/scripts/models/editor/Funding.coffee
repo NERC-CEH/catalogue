@@ -23,7 +23,7 @@ define [
     if attrs.awardURI && !isValidUrl attrs.awardURI
       errors.push
         message:
-          "That URL isn't right now is it?"
+          "That URL doesn't look right!"
 
     if _.isEmpty errors
       # return nothing from Backbone.Model.validate

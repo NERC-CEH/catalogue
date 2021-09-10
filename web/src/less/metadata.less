@@ -18,7 +18,7 @@
     }
 
     .authorList {
-      color: #999;
+      color: #717171;
     }
 
     .doi {
@@ -225,7 +225,7 @@
     }
   }
 
-  h3 {
+  h2 {
     margin-top: 2.5em;
     border-bottom: 1px solid @light-gray-border;
     padding-bottom: 6px;
@@ -285,7 +285,7 @@
     .panel-title {
       font-size: 1.4em;
       font-weight: normal;
-      color: @link-hover-color;
+      color: #bb4c1a ;
       margin-bottom: 0.5em;
     }
   }
@@ -563,13 +563,14 @@
   }
 }
 
-#footer {
+.footer {
   background-color: #ccc;
   padding-top: 1em;
   position: absolute;
-  height: @footer-height;
   width: 100%;
   bottom: 0;
+  font-size:em;
+  span:not(:last-of-type)::after{content:"|"; margin:0 1em}
 }
 
 dl.dl-horizontal {
