@@ -65,7 +65,7 @@ public class CatalogueControllerTest {
             .id("eidc")
             .title("EIDC")
             .url("url")
-            .vocabularyPicker(Arrays.asList(
+            .vocabularies(Arrays.asList(
                 new KeywordVocabulary() {
                     @Override
                     public void retrieve() {}
