@@ -39,6 +39,7 @@ define [
   'cs!views/NercModelUseEditorView'
   'cs!views/ErammpDatacubeEditorView'
   'cs!views/UkemsDocumentEditorView'
+  'cs!views/DatalabsDocumentEditorView'
   'cs!views/ClipboardCopyView'
   'cs!views/DataTypeEditorView'
   'cs!views/ElterEditorView'
@@ -50,7 +51,7 @@ define [
     ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata, CehModelEditorView, CehModelApplicationEditorView, OsdpAgentEditorView,
     OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
     OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, ErammpModelEditorView, NercModelEditorView, NercModelUseEditorView, ErammpDatacubeEditorView, UkemsDocumentEditorView,
-    ClipboardCopyView, DataTypeEditorView, ElterEditorView, ElterLinkedEditorView, SimpleUploadView
+    DatalabsDocumentEditorView, ClipboardCopyView, DataTypeEditorView, ElterEditorView, ElterLinkedEditorView, SimpleUploadView
 ) ->
 
   ###
@@ -206,6 +207,10 @@ define [
         View: UkemsDocumentEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.ukems-document+json'
+      'datalabs-document':
+        View: DatalabsDocumentEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.datalabs-document+json'  
 
     # the create document dropdown
     $editorCreate = $ '#editorCreate'

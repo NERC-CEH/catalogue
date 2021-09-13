@@ -135,4 +135,8 @@ public class CatalogueMediaTypes {
     public static final String UKEMS_DOCUMENT_SHORT = "ukems-document";
     public static final String UKEMS_DOCUMENT_JSON_VALUE = "application/vnd.ukems-document+json";
     public static final MediaType UKEMS_DOCUMENT_JSON = MediaType.parseMediaType(UKEMS_DOCUMENT_JSON_VALUE);
+
+    public static final String DATALABS_DOCUMENT_SHORT = "datalabs-document";
+    public static final String DATALABS_DOCUMENT_JSON_VALUE = "application/vnd.datalabs-document+json";
+    public static final MediaType DATALABS_DOCUMENT_JSON = MediaType.parseMediaType(DATALABS_DOCUMENT_JSON_VALUE);
 }

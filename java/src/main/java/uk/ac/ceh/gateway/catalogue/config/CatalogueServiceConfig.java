@@ -136,6 +136,11 @@ public class CatalogueServiceConfig {
             .type(UKEMS_DOCUMENT_SHORT)
             .build();
 
+        DocumentType datalabs = DocumentType.builder()
+            .title("DataLabs Document")
+            .type(DATALABS_DOCUMENT_SHORT)
+            .build();
+
         return new InMemoryCatalogueService(
             defaultCatalogueKey,
 
@@ -190,6 +195,7 @@ public class CatalogueServiceConfig {
                 .documentType(cehModel)
                 .documentType(cehModelApplication)
                 .documentType(ukems)
+                .documentType(datalabs)
                 .vocabularies(getCatalogueVocabularies(vocabularies, "datalabs"))
                 .fileUpload(false)
                 .build(),

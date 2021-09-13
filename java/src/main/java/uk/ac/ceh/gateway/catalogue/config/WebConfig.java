@@ -43,6 +43,7 @@ import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreement;
 import uk.ac.ceh.gateway.catalogue.ukems.UkemsDocument;
+import uk.ac.ceh.gateway.catalogue.datalabs.DatalabsDocument;
 
 import java.util.List;
 
@@ -103,6 +104,7 @@ public class WebConfig implements WebMvcConfigurer {
         converters.add(new Object2TemplatedMessageConverter<>(SparqlResponse.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(StateResource.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(UkemsDocument.class, freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter<>(DatalabsDocument.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(ValidationResponse.class, freemarkerConfiguration));
 
         if (log.isDebugEnabled()) {
@@ -166,6 +168,7 @@ public class WebConfig implements WebMvcConfigurer {
             .mediaType(RDF_TTL_SHORT, RDF_TTL)
             .mediaType(RESEARCH_INFO_SYSTEMS_SHORT, RESEARCH_INFO_SYSTEMS)
             .mediaType(SAMPLE_ARCHIVE_SHORT, SAMPLE_ARCHIVE_JSON)
-            .mediaType(UKEMS_DOCUMENT_SHORT, UKEMS_DOCUMENT_JSON);
+            .mediaType(UKEMS_DOCUMENT_SHORT, UKEMS_DOCUMENT_JSON)
+            .mediaType(DATALABS_DOCUMENT_SHORT, DATALABS_DOCUMENT_JSON);
     }
 }
