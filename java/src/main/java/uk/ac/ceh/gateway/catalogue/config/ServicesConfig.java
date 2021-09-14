@@ -56,6 +56,7 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.GitDocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.GitRepoWrapper;
 import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
+import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreement;
 import uk.ac.ceh.gateway.catalogue.sparql.SparqlVocabularyRetriever;
 import uk.ac.ceh.gateway.catalogue.sparql.SparqlVocabularyService;
 import uk.ac.ceh.gateway.catalogue.sparql.VocabularyService;
@@ -233,10 +234,17 @@ public class ServicesConfig {
     }
 
     @Bean
-    public DocumentInfoMapper<MetadataInfo> documentInfoMapper(
+    public DocumentInfoMapper<MetadataInfo> metadataInfoMapper(
         ObjectMapper objectMapper
     ) {
         return new JacksonDocumentInfoMapper<>(objectMapper, MetadataInfo.class);
+    }
+
+    @Bean
+    public DocumentInfoMapper<ServiceAgreement> serviceAgreementMapper(
+        ObjectMapper objectMapper
+    ) {
+        return new JacksonDocumentInfoMapper<>(objectMapper, ServiceAgreement.class);
     }
 
     @Bean(destroyMethod = "close")

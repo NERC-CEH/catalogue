@@ -9,6 +9,8 @@ import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 
+import java.io.Serializable;
+
 
 @Data
 @EqualsAndHashCode(callSuper = true)
