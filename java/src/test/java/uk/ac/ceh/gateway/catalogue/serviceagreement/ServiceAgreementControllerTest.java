@@ -77,8 +77,8 @@ class ServiceAgreementControllerTest {
                 .accept(HAL_JSON)
                 .header("Forwarded", "proto=https;host=catalogue"))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(APPLICATION_JSON))
-            .andExpect(content().json("{\"id\":\"test\"}"));
+            .andExpect(content().contentType(HAL_JSON))
+            .andExpect(content().json(expectedResponse));
     }
 
     @Test
