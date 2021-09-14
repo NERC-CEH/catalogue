@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,16 +20,22 @@ public class ServiceAgreementController {
 
     private final ServiceAgreementSearch search;
     private final ServiceAgreementService serviceAgreementService;
+    private final ServiceAgreementModelAssembler serviceAgreementModelAssembler;
 
-    public ServiceAgreementController(ServiceAgreementSearch search, ServiceAgreementService serviceAgreementService) {
+    public ServiceAgreementController(
+        ServiceAgreementSearch search,
+        ServiceAgreementService serviceAgreementService,
+        ServiceAgreementModelAssembler serviceAgreementModelAssembler
+    ) {
         this.search = search;
         this.serviceAgreementService = serviceAgreementService;
+        this.serviceAgreementModelAssembler = serviceAgreementModelAssembler;
         log.info("Creating");
     }
 
     @PreAuthorize("@permission.userCanEdit(#id)")
     @PostMapping("{id}")
-    public ServiceAgreement create(
+    public ServiceAgreementModel create(
         @ActiveUser CatalogueUser user,
         @PathVariable("id") String id,
         @RequestParam("catalogue") String catalogue,
@@ -38,7 +45,7 @@ public class ServiceAgreementController {
             log.info("CREATE {}", id);
             serviceAgreement.setId(id);
             serviceAgreementService.save(user, id, catalogue, serviceAgreement);
-            return serviceAgreement;
+            return serviceAgreementModelAssembler.toModel(serviceAgreement);
         }else{
             throw new ResourceNotFoundException("Metadata record does not exist");
         }
@@ -46,11 +53,12 @@ public class ServiceAgreementController {
 
     @PreAuthorize("@permission.userCanView(#id)")
     @GetMapping("{id}")
-    public ServiceAgreement get(
+    public ServiceAgreementModel get(
         @PathVariable("id") String id
     ) {
         log.info("GET {}", id);
-        return serviceAgreementService.get(id);
+        val serviceAgreement = serviceAgreementService.get(id);
+        return serviceAgreementModelAssembler.toModel(serviceAgreement);
     }
 
     @PreAuthorize("@permission.userCanDelete(#id)")

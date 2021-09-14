@@ -19,6 +19,7 @@ import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
+import static org.springframework.hateoas.MediaTypes.HAL_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -27,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WithMockCatalogueUser
 @ActiveProfiles({"service-agreement", "test"})
 @DisplayName("ServiceAgreementController")
-@Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
+@Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class, ServiceAgreementModelAssembler.class})
 @WebMvcTest(ServiceAgreementController.class)
 class ServiceAgreementControllerTest {
 
@@ -59,9 +60,22 @@ class ServiceAgreementControllerTest {
         //Given
         givenUserCanView();
         givenServiceAgreement();
+        val expectedResponse = """
+            {
+                "id": "test",
+                "title": "Test service agreement",
+                "_links": {
+                    "self": {
+                        "href": "https://catalogue/service-agreement/test"
+                    }
+                }
+            }
+            """;
 
         //When
-        mvc.perform(get("/service-agreement/{id}", ID))
+        mvc.perform(get("/service-agreement/{id}", ID)
+                .accept(HAL_JSON)
+                .header("Forwarded", "proto=https;host=catalogue"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(APPLICATION_JSON))
             .andExpect(content().json("{\"id\":\"test\"}"));
@@ -90,15 +104,26 @@ class ServiceAgreementControllerTest {
         val expected = new ServiceAgreement();
         expected.setId(ID);
         expected.setTitle("Test Service Agreement");
+        val requestBody = """
+            {
+                "id": "123",
+                "title": "Test Service Agreement",
+                "_links": {
+                    "self": {
+                        "href": "https://catalogue/service-agreement/123"
+                    }
+                }
+            }
+            """;
 
         //When
         mvc.perform(post("/service-agreement/{id}", ID)
-                .content("{\"title\":\"Test Service Agreement\"}")
+                .content(requestBody)
                 .queryParam("catalogue", "eidc")
-                .contentType(APPLICATION_JSON)
+                .contentType(HAL_JSON)
             )
             .andExpect(status().isOk())
-            .andExpect(content().contentType(APPLICATION_JSON))
+            .andExpect(content().contentType(HAL_JSON))
             .andExpect(content().json("{\"id\":\"test\",\"title\":\"Test Service Agreement\"}"));
 
         //then
@@ -209,6 +234,7 @@ class ServiceAgreementControllerTest {
     private void givenServiceAgreement() {
         val serviceAgreement = new ServiceAgreement();
         serviceAgreement.setId(ID);
+        serviceAgreement.setTitle("Test service agreement");
         given(serviceAgreementService.get(ID))
             .willReturn(serviceAgreement);
     }
