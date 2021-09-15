@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ActiveProfiles;
 import uk.ac.ceh.gateway.catalogue.CatalogueWebTest;
+import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.HubbubService;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadController;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadService;
@@ -19,7 +20,7 @@ import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadService;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @Slf4j
-@ActiveProfiles({"auth:crowd", "upload:hubbub"})
+@ActiveProfiles({"auth:crowd", "upload:hubbub", "server:eidc"})
 @CatalogueWebTest
 @DisplayName("EIDC production context")
 class EidcApplicationContextTest {
@@ -30,7 +31,7 @@ class EidcApplicationContextTest {
     @Test
     @DisplayName("Some critical beans configured")
     void testContext() {
-        assertNotNull(applicationContext.getBean("catalogueService"));
+        assertNotNull(applicationContext.getBean(CatalogueService.class));
         assertNotNull(applicationContext.getBean("codeLookupService"));
         assertNotNull(applicationContext.getBean("dataciteService"));
         assertNotNull(applicationContext.getBean("jenaLookupService"));

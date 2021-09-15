@@ -12,7 +12,7 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
-import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.ERAMMP_MODEL_JSON_VALUE;
+import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.ERAMMP_MODEL_JSON_VALUE;
 
 @Slf4j
 @ToString(callSuper = true)

@@ -72,8 +72,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.*;
-import static uk.ac.ceh.gateway.catalogue.config.CatalogueServiceConfig.*;
+import static uk.ac.ceh.gateway.catalogue.DocumentTypes.*;
 
 @Slf4j
 @Configuration
@@ -143,28 +142,28 @@ public class ServicesConfig {
     @Bean
     public DocumentTypeLookupService metadataRepresentationService() {
         return new HashMapDocumentTypeLookupService()
-            .register(GEMINI_DOCUMENT, GeminiDocument.class)
-            .register(ELTER_SHORT, ElterDocument.class)
-            .register(EF_DOCUMENT, BaseMonitoringType.class)
-            .register(IMP_DOCUMENT, ImpDocument.class)
-            .register(LINK_DOCUMENT, LinkDocument.class)
             .register(CEH_MODEL, CehModel.class)
             .register(CEH_MODEL_APPLICATION, CehModelApplication.class)
-            .register(OSDP_AGENT_SHORT, Agent.class)
-            .register(OSDP_DATASET_SHORT, uk.ac.ceh.gateway.catalogue.osdp.Dataset.class)
-            .register(OSDP_MODEL_SHORT, uk.ac.ceh.gateway.catalogue.osdp.Model.class)
-            .register(OSDP_MONITORING_ACTIVITY_SHORT, MonitoringActivity.class)
-            .register(OSDP_MONITORING_FACILITY_SHORT, MonitoringFacility.class)
-            .register(OSDP_MONITORING_PROGRAMME_SHORT, MonitoringProgramme.class)
-            .register(OSDP_PUBLICATION_SHORT, Publication.class)
-            .register(OSDP_SAMPLE_SHORT, Sample.class)
-            .register(ERAMMP_MODEL_SHORT, ErammpModel.class)
+            .register(DATA_TYPE, DataType.class)
+            .register(EF_DOCUMENT, BaseMonitoringType.class)
+            .register(ERAMMP_DATACUBE, ErammpDatacube.class)
+            .register(ELTER, ElterDocument.class)
+            .register(ERAMMP_MODEL, ErammpModel.class)
+            .register(GEMINI, GeminiDocument.class)
+            .register(IMP, ImpDocument.class)
+            .register(LINK, LinkDocument.class)
             .register(NERC_MODEL, NercModel.class)
             .register(NERC_MODEL_USE, NercModelUse.class)
-            .register(ERAMMP_DATACUBE_SHORT, ErammpDatacube.class)
-            .register(SAMPLE_ARCHIVE_SHORT, SampleArchive.class)
-            .register(DATA_TYPE_SHORT, DataType.class)
-            .register(UKEMS_DOCUMENT_SHORT, UkemsDocument.class);
+            .register(OSDP_AGENT, Agent.class)
+            .register(OSDP_DATASET, uk.ac.ceh.gateway.catalogue.osdp.Dataset.class)
+            .register(OSDP_MODEL, uk.ac.ceh.gateway.catalogue.osdp.Model.class)
+            .register(OSDP_MONITORING_ACTIVITY, MonitoringActivity.class)
+            .register(OSDP_MONITORING_FACILITY, MonitoringFacility.class)
+            .register(OSDP_MONITORING_PROGRAMME, MonitoringProgramme.class)
+            .register(OSDP_PUBLICATION, Publication.class)
+            .register(OSDP_SAMPLE, Sample.class)
+            .register(SAMPLE_ARCHIVE, SampleArchive.class)
+            .register(UKEMS_DOCUMENT, UkemsDocument.class);
     }
 
     @Bean

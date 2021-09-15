@@ -9,6 +9,7 @@ import uk.ac.ceh.gateway.catalogue.document.DocumentListingService;
 
 import javax.annotation.PostConstruct;
 
+@SuppressWarnings("UnstableApiUsage")
 @Configuration
 public class EventWiring {
     @SuppressWarnings("UnstableApiUsage")

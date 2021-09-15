@@ -27,7 +27,7 @@ import java.util.Optional;
 
 import static java.lang.String.format;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
-import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.TEXT_CSV_VALUE;
+import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.TEXT_CSV_VALUE;
 
 @SuppressWarnings("SpringMVCViewInspection")
 @Controller
