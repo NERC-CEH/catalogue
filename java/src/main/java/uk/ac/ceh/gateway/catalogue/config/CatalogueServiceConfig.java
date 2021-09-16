@@ -215,6 +215,8 @@ public class CatalogueServiceConfig {
                 .facetKey("ukscapeScienceChallenge")
                 .facetKey("ukscapeResearchProject")
                 .facetKey("ukscapeService")
+                .facetKey("resourceType")
+                .facetKey("status")
                 .documentType(GEMINI_TYPE)
                 .documentType(CEH_MODEL_TYPE)
                 .documentType(CEH_MODEL_APPLICATION_TYPE)

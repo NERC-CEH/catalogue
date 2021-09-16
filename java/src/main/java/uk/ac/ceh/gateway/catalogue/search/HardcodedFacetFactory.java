@@ -12,233 +12,169 @@ public class HardcodedFacetFactory implements FacetFactory {
 
     @Override
     public Facet newInstance(@NonNull String key) {
-        switch(key) {
-
-            case "assistResearchThemes":
-                return Facet.builder()
-                    .fieldName("assistResearchThemes")
-                    .displayName("Research Theme")
-                    .hierarchical(false)
-                    .build();
-
-            case "assistTopics":
-                return Facet.builder()
-                    .fieldName("assistTopics")
-                    .displayName("Topic")
-                    .hierarchical(false)
-                    .build();
-
-            case "condition":
-                return Facet.builder()
-                    .fieldName("condition")
-                    .displayName("Status")
-                    .hierarchical(false)
-                    .build();
-
-            case "documentType":
-                return Facet.builder()
-                    .fieldName("documentType")
-                    .displayName("Document Type")
-                    .hierarchical(false)
-                    .build();
-
-            case "elterDeimsSite":
-                return Facet.builder()
-                    .fieldName("elterDeimsSite")
-                    .displayName("Site")
-                    .hierarchical(false)
-                    .build();
-
-            case "funder":
-                return Facet.builder()
-                    .fieldName("funder")
-                    .displayName("Funder")
-                    .hierarchical(false)
-                    .build();
-
-            case "impCaMMPIssues":
-                return Facet.builder()
-                    .fieldName("impCaMMPIssues")
-                    .displayName("CaMMP Issues")
-                    .hierarchical(false)
-                    .build();
-
-            case "impDataType":
-                return Facet.builder()
-                    .fieldName("impDataType")
-                    .displayName("Data Type")
-                    .hierarchical(false)
-                    .build();
-
-            case "impScale":
-                return Facet.builder()
-                    .fieldName("impScale")
-                    .displayName("Scale")
-                    .hierarchical(false)
-                    .build();
-
-            case "impTopic":
-                return Facet.builder()
-                    .fieldName("impTopic")
-                    .displayName("Topic")
-                    .hierarchical(false)
-                    .build();
-
-            case "impWaterPollutant":
-                return Facet.builder()
-                    .fieldName("impWaterPollutant")
-                    .displayName("Water Pollutant")
-                    .hierarchical(false)
-                    .build();
-
-            case "inmsPollutant":
-                return Facet.builder()
-                    .fieldName("impWaterPollutant")
-                    .displayName("Pollutant")
-                    .hierarchical(false)
-                    .build();
-
-            case "inmsDemonstrationRegion":
-                return Facet.builder()
-                    .fieldName("inmsDemonstrationRegion")
-                    .displayName("Demonstration Region")
-                    .hierarchical(false)
-                    .build();
-
-            case "inmsProject":
-                return Facet.builder()
-                    .fieldName("inmsProject")
-                    .displayName("Project")
-                    .hierarchical(false)
-                    .build();
-
-            case "licence":
-                return Facet.builder()
-                    .fieldName("licence")
-                    .displayName("Licence")
-                    .hierarchical(false)
-                    .build();
-
-            case "modelType":
-                return Facet.builder()
-                    .fieldName("modelType")
-                    .displayName("Model Type")
-                    .hierarchical(false)
-                    .build();
-
-            case "ncAssets":
-                return Facet.builder()
-                    .fieldName("ncAssets")
-                    .displayName("Assets")
-                    .hierarchical(false)
-                    .build();
-
-            case "ncCaseStudy":
-                return Facet.builder()
-                    .fieldName("ncCaseStudy")
-                    .displayName("Case Study")
-                    .hierarchical(false)
-                    .build();
-
-            case "ncDrivers":
-                return Facet.builder()
-                    .fieldName("ncDrivers")
-                    .displayName("Drivers")
-                    .hierarchical(false)
-                    .build();
-
-            case "ncEcosystemServices":
-                return Facet.builder()
-                    .fieldName("ncEcosystemServices")
-                    .displayName("Ecosystem Services")
-                    .hierarchical(false)
-                    .build();
-
-            case "ncGeographicalScale":
-                return Facet.builder()
-                    .fieldName("ncGeographicalScale")
-                    .displayName("Geographical Scale")
-                    .hierarchical(false)
-                    .build();
-
-            case "recordType":
-                return Facet.builder()
-                    .fieldName("recordType")
-                    .displayName("Record type")
-                    .hierarchical(false)
-                    .build();
-
-            case "resourceType":
-                return Facet.builder()
-                    .fieldName("resourceType")
-                    .displayName("Resource type")
-                    .hierarchical(false)
-                    .build();
-
-            case "rightsHolder":
-                return Facet.builder()
-                    .fieldName("rightsHolder")
-                    .displayName("Rights holder")
-                    .hierarchical(false)
-                    .build();
-
-            case "saTaxon":
-                return Facet.builder()
-                    .fieldName("saTaxon")
-                    .displayName("Taxa")
-                    .hierarchical(false)
-                    .build();
-
-            case "state":
-                return Facet.builder()
-                    .fieldName("state")
-                    .displayName("Status")
-                    .hierarchical(false)
-                    .build();
-
-            case "status":
-                return Facet.builder()
-                    .fieldName("resourceStatus")
-                    .displayName("Availability")
-                    .hierarchical(false)
-                    .build();
-
-            case "topic":
-                return Facet.builder()
-                    .fieldName("topic")
-                    .displayName("Topic")
-                    .hierarchical(true)
-                    .build();
-
-            case "ukscapeResearchProject":
-                return Facet.builder()
-                    .fieldName("ukscapeResearchProject")
-                    .displayName("Research Project")
-                    .hierarchical(false)
-                    .build();
-
-            case "ukscapeResearchTheme":
-                return Facet.builder()
-                    .fieldName("ukscapeResearchTheme")
-                    .displayName("Research Theme")
-                    .hierarchical(false)
-                    .build();
-
-            case "ukscapeScienceChallenge":
-                return Facet.builder()
-                    .fieldName("ukscapeScienceChallenge")
-                    .displayName("Science Challenge")
-                    .hierarchical(false)
-                    .build();
-
-            case "ukscapeService":
-                return Facet.builder()
-                    .fieldName("ukscapeService")
-                    .displayName("Service")
-                    .hierarchical(false)
-                    .build();
-        }
-        return null;
+        return switch (key) {
+            case "assistResearchThemes" -> Facet.builder()
+                .fieldName("assistResearchThemes")
+                .displayName("Research Theme")
+                .hierarchical(false)
+                .build();
+            case "assistTopics" -> Facet.builder()
+                .fieldName("assistTopics")
+                .displayName("Topic")
+                .hierarchical(false)
+                .build();
+            case "condition" -> Facet.builder()
+                .fieldName("condition")
+                .displayName("Status")
+                .hierarchical(false)
+                .build();
+            case "documentType" -> Facet.builder()
+                .fieldName("documentType")
+                .displayName("Document Type")
+                .hierarchical(false)
+                .build();
+            case "elterDeimsSite" -> Facet.builder()
+                .fieldName("elterDeimsSite")
+                .displayName("Site")
+                .hierarchical(false)
+                .build();
+            case "funder" -> Facet.builder()
+                .fieldName("funder")
+                .displayName("Funder")
+                .hierarchical(false)
+                .build();
+            case "impCaMMPIssues" -> Facet.builder()
+                .fieldName("impCaMMPIssues")
+                .displayName("CaMMP Issues")
+                .hierarchical(false)
+                .build();
+            case "impDataType" -> Facet.builder()
+                .fieldName("impDataType")
+                .displayName("Data Type")
+                .hierarchical(false)
+                .build();
+            case "impScale" -> Facet.builder()
+                .fieldName("impScale")
+                .displayName("Scale")
+                .hierarchical(false)
+                .build();
+            case "impTopic" -> Facet.builder()
+                .fieldName("impTopic")
+                .displayName("Topic")
+                .hierarchical(false)
+                .build();
+            case "impWaterPollutant" -> Facet.builder()
+                .fieldName("impWaterPollutant")
+                .displayName("Water Pollutant")
+                .hierarchical(false)
+                .build();
+            case "inmsPollutant" -> Facet.builder()
+                .fieldName("impWaterPollutant")
+                .displayName("Pollutant")
+                .hierarchical(false)
+                .build();
+            case "inmsDemonstrationRegion" -> Facet.builder()
+                .fieldName("inmsDemonstrationRegion")
+                .displayName("Demonstration Region")
+                .hierarchical(false)
+                .build();
+            case "inmsProject" -> Facet.builder()
+                .fieldName("inmsProject")
+                .displayName("Project")
+                .hierarchical(false)
+                .build();
+            case "licence" -> Facet.builder()
+                .fieldName("licence")
+                .displayName("Licence")
+                .hierarchical(false)
+                .build();
+            case "modelType" -> Facet.builder()
+                .fieldName("modelType")
+                .displayName("Model Type")
+                .hierarchical(false)
+                .build();
+            case "ncAssets" -> Facet.builder()
+                .fieldName("ncAssets")
+                .displayName("Assets")
+                .hierarchical(false)
+                .build();
+            case "ncCaseStudy" -> Facet.builder()
+                .fieldName("ncCaseStudy")
+                .displayName("Case Study")
+                .hierarchical(false)
+                .build();
+            case "ncDrivers" -> Facet.builder()
+                .fieldName("ncDrivers")
+                .displayName("Drivers")
+                .hierarchical(false)
+                .build();
+            case "ncEcosystemServices" -> Facet.builder()
+                .fieldName("ncEcosystemServices")
+                .displayName("Ecosystem Services")
+                .hierarchical(false)
+                .build();
+            case "ncGeographicalScale" -> Facet.builder()
+                .fieldName("ncGeographicalScale")
+                .displayName("Geographical Scale")
+                .hierarchical(false)
+                .build();
+            case "recordType" -> Facet.builder()
+                .fieldName("recordType")
+                .displayName("Record type")
+                .hierarchical(false)
+                .build();
+            case "resourceType" -> Facet.builder()
+                .fieldName("resourceType")
+                .displayName("Resource type")
+                .hierarchical(false)
+                .build();
+            case "rightsHolder" -> Facet.builder()
+                .fieldName("rightsHolder")
+                .displayName("Rights holder")
+                .hierarchical(false)
+                .build();
+            case "saTaxon" -> Facet.builder()
+                .fieldName("saTaxon")
+                .displayName("Taxa")
+                .hierarchical(false)
+                .build();
+            case "state" -> Facet.builder()
+                .fieldName("state")
+                .displayName("Status")
+                .hierarchical(false)
+                .build();
+            case "status" -> Facet.builder()
+                .fieldName("resourceStatus")
+                .displayName("Availability")
+                .hierarchical(false)
+                .build();
+            case "topic" -> Facet.builder()
+                .fieldName("topic")
+                .displayName("Topic")
+                .hierarchical(true)
+                .build();
+            case "ukscapeResearchProject" -> Facet.builder()
+                .fieldName("ukscapeResearchProject")
+                .displayName("Research Project")
+                .hierarchical(false)
+                .build();
+            case "ukscapeResearchTheme" -> Facet.builder()
+                .fieldName("ukscapeResearchTheme")
+                .displayName("Research Theme")
+                .hierarchical(false)
+                .build();
+            case "ukscapeScienceChallenge" -> Facet.builder()
+                .fieldName("ukscapeScienceChallenge")
+                .displayName("Science Challenge")
+                .hierarchical(false)
+                .build();
+            case "ukscapeService" -> Facet.builder()
+                .fieldName("ukscapeService")
+                .displayName("Service")
+                .hierarchical(false)
+                .build();
+            default -> null;
+        };
     }
 
     @Override
