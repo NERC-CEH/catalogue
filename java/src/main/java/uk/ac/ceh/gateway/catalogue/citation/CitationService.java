@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.BIBTEX_SHORT;
-import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.RESEARCH_INFO_SYSTEMS_SHORT;
+import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.BIBTEX_SHORT;
+import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.RESEARCH_INFO_SYSTEMS_SHORT;
 
 @Service
 @Slf4j

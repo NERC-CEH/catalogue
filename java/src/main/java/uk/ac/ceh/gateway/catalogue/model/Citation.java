@@ -9,8 +9,8 @@ import uk.ac.ceh.gateway.catalogue.converters.Template;
 import java.net.URI;
 import java.util.List;
 
-import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.BIBTEX_VALUE;
-import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.RESEARCH_INFO_SYSTEMS_VALUE;
+import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.BIBTEX_VALUE;
+import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.RESEARCH_INFO_SYSTEMS_VALUE;
 
 @Value
 @Builder
@@ -23,7 +23,7 @@ public class Citation {
     String doi, coupled, title, publisher, resourceTypeGeneral;
     Integer year;
     URI bibtex, ris;
-    
+
     public String getUrl() {
         return "https://doi.org/" + doi;
     }

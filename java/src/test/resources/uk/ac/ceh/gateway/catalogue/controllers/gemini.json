@@ -1,6 +1,6 @@
 {
-  "id": "M3tADATA_ID",
-  "uri": "https://example.com/M3tADATA_ID",
+  "id": "fe26bd48-0f81-4a37-8a28-58427b7e20bd",
+  "uri": "https://example.com/fe26bd48-0f81-4a37-8a28-58427b7e20bd",
   "type": "dataset",
   "title": "Test title",
   "metadataDate": "2021-05-12T09:30:23",
@@ -9,14 +9,11 @@
       "westBoundLongitude": -1.091,
       "eastBoundLongitude": 2.574,
       "southBoundLatitude": 31.109,
-      "northBoundLatitude": 59.456,
-      "extentName": "",
-      "extentUri": ""
+      "northBoundLatitude": 59.456
     }
   ],
   "resourceType": {
-    "value": "dataset",
-    "uri": ""
+    "value": "dataset"
   },
   "notGEMINI": false,
   "mapViewable": false,

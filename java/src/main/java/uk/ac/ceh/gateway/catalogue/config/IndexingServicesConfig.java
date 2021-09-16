@@ -54,7 +54,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static java.util.stream.Stream.of;
-import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.GEMINI_XML_VALUE;
+import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.GEMINI_XML_VALUE;
 
 @Slf4j
 @Configuration

@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.controllers;
 
 import freemarker.template.Configuration;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -64,9 +65,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.*;
+import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.*;
 import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.EIDC_PUBLISHER_USERNAME;
 
+@Slf4j
 @WithMockCatalogueUser
 @ActiveProfiles("test")
 @DisplayName("DocumentController")
@@ -149,6 +151,7 @@ class DocumentControllerTest {
 
     @SneakyThrows
     private void givenMetadataDocument(MetadataDocument doc) {
+        log.debug(doc.toString());
         doc.setId(id);
         doc.setTitle("Test title");
         doc.setDescription("Some description");
@@ -208,22 +211,22 @@ class DocumentControllerTest {
             Arguments.of(new Agent(), TEXT_HTML, HTML, null),
             Arguments.of(new Agent(), APPLICATION_JSON, JSON, null),
             Arguments.of(new CehModel(), TEXT_HTML, HTML, null),
-            Arguments.of(new CehModel(), CEH_MODEL_JSON, CEH_MODEL_SHORT, null),
+            Arguments.of(new CehModel(), APPLICATION_JSON, JSON, null),
             Arguments.of(new CehModelApplication(), TEXT_HTML, HTML, null),
-            Arguments.of(new CehModelApplication(), CEH_MODEL_APPLICATION_JSON, CEH_MODEL_APPLICATION_SHORT, null),
+            Arguments.of(new CehModelApplication(), APPLICATION_JSON, JSON, null),
             Arguments.of(new Dataset(), TEXT_HTML, HTML, null),
             Arguments.of(new Dataset(), APPLICATION_JSON, JSON, null),
             Arguments.of(new DataType(), TEXT_HTML, HTML, null),
-            Arguments.of(new DataType(), DATA_TYPE_JSON, DATA_TYPE_SHORT, null),
+            Arguments.of(new DataType(), APPLICATION_JSON, JSON, null),
             Arguments.of(new ErammpModel(), TEXT_HTML, HTML, null),
-            Arguments.of(new ErammpModel(), ERAMMP_MODEL_JSON, ERAMMP_MODEL_SHORT, null),
+            Arguments.of(new ErammpModel(), APPLICATION_JSON, JSON, null),
             Arguments.of(new ErammpDatacube(), TEXT_HTML, HTML, null),
-            Arguments.of(new ErammpDatacube(), ERAMMP_DATACUBE_JSON, ERAMMP_DATACUBE_SHORT, null),
+            Arguments.of(new ErammpDatacube(), APPLICATION_JSON, JSON, null),
             Arguments.of(facility, TEXT_HTML, HTML, null),
             Arguments.of(facility, APPLICATION_JSON, JSON, null),
             Arguments.of(facility, EF_INSPIRE_XML, EF_INSPIRE_XML_SHORT, null),
             Arguments.of(gemini, TEXT_HTML, HTML, null),
-            Arguments.of(gemini, GEMINI_JSON, GEMINI_JSON_SHORT, "gemini.json"),
+            Arguments.of(gemini, APPLICATION_JSON, JSON, "gemini.json"),
             Arguments.of(gemini, GEMINI_XML, GEMINI_XML_SHORT,  "gemini.xml"),
             Arguments.of(gemini, RDF_SCHEMAORG_JSON, RDF_SCHEMAORG_SHORT, "gemini-schema-org.json"),
             Arguments.of(gemini, RDF_TTL, RDF_TTL_SHORT, "gemini.ttl"),

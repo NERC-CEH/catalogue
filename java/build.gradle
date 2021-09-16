@@ -1,3 +1,5 @@
+//file:noinspection GradlePackageUpdate
+//file:noinspection GroovyAssignabilityCheck
 plugins {
     id 'org.springframework.boot' version '2.5.4'
     id 'io.freefair.lombok' version '5.3.3.3'
@@ -14,17 +16,15 @@ ext {
     cehComponentsVersion = '1.0.46'
 }
 
-tasks.withType(JavaCompile) {
-    options.incremental = true
-    options.compilerArgs.add '-Xlint:deprecation'
-}
-
 bootJar {
     archiveFileName = 'app.jar'
 }
 
-sourceCompatibility = JavaVersion.VERSION_15
-targetCompatibility = JavaVersion.VERSION_15
+compileJava {
+    options.compilerArgs.add '-Xlint:deprecation'
+    options.incremental = true
+    options.release = 15
+}
 
 dependencies {
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-guava'

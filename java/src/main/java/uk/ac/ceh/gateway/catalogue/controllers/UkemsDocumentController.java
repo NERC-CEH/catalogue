@@ -12,7 +12,7 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
-import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.*;
+import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.*;
 
 @Controller
 public class UkemsDocumentController extends AbstractDocumentController {

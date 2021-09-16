@@ -8,7 +8,7 @@ import uk.ac.ceh.gateway.catalogue.model.MapServerException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.MAPSERVER_GML;
+import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.MAPSERVER_GML;
 
 /**
  * If the response from the MapServer does not use the GML media type, then we

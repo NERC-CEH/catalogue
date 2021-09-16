@@ -28,7 +28,7 @@ services:
       - hubbub.url=http://hubbub/
       - jira.jqlTemplate=project=ct and labels={id}
       - spring.freemarker.cache=false
-      - spring.profiles.active=development,upload:simple
+      - spring.profiles.active=development,upload:simple,server:eidc
     env_file:
       - secrets.env
   solr:

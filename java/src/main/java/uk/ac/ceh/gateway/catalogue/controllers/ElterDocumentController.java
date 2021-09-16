@@ -16,8 +16,8 @@ import uk.ac.ceh.gateway.catalogue.elter.ElterDocument;
 import uk.ac.ceh.gateway.catalogue.elter.LinkedElterDocument;
 import uk.ac.ceh.gateway.catalogue.elter.LinkedDocumentRetrievalService;
 
-import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.ELTER_JSON_VALUE;
-import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.LINKED_ELTER_JSON_VALUE;
+import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.ELTER_JSON_VALUE;
+import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.LINKED_ELTER_JSON_VALUE;
 
 @Profile("elter")
 @Slf4j

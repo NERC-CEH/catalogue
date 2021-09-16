@@ -8,7 +8,6 @@ import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import uk.ac.ceh.gateway.catalogue.config.CatalogueServiceConfig;
 import uk.ac.ceh.gateway.catalogue.document.reading.DocumentReader;
 
 import java.math.BigDecimal;
@@ -16,8 +15,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
+import static uk.ac.ceh.gateway.catalogue.DocumentTypes.GEMINI;
 import static uk.ac.ceh.gateway.catalogue.quality.MetadataQualityService.Severity.*;
 
+@SuppressWarnings("rawtypes")
 @Slf4j
 @ToString
 @Service
@@ -92,7 +93,7 @@ public class MetadataQualityService {
     private boolean isQualifyingDocument(DocumentContext parsedDoc, DocumentContext parsedMeta) {
         val docType = parsedMeta.read("$.documentType", String.class);
         return docType != null
-            && docType.equals(CatalogueServiceConfig.GEMINI_DOCUMENT)
+            && docType.equals(GEMINI)
             && isCorrectResourceType(parsedDoc);
     }
 
@@ -223,7 +224,7 @@ public class MetadataQualityService {
             }
         });
 
-        if (notGEMINI ==  null || notGEMINI == false) {
+        if (notGEMINI ==  null || !notGEMINI) {
             checkInspireThemes(parsed).ifPresent(toReturn::add);
             checkSpatialResolutions(parsed).ifPresent(toReturn::add);
             checkSpatialReferenceSystems(parsed).ifPresent(toReturn::add);

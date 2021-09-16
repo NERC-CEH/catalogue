@@ -12,7 +12,7 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
 
-import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.SAMPLE_ARCHIVE_JSON_VALUE;
+import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.SAMPLE_ARCHIVE_JSON_VALUE;
 
 @Slf4j
 @ToString(callSuper = true)

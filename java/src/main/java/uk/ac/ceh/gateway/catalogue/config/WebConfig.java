@@ -47,7 +47,7 @@ import uk.ac.ceh.gateway.catalogue.ukems.UkemsDocument;
 
 import java.util.List;
 
-import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.*;
+import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.*;
 
 @Slf4j
 @Configuration
@@ -141,37 +141,21 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
         log.info("configuring Content Negotiation");
+        /*
+         Document types just producing json format do not need to register
+         a media type can just append ?format=json to url
+        */
         configurer
             .favorParameter(true)
             .mediaType(BIBTEX_SHORT, BIBTEX)
-            .mediaType(CEH_MODEL_SHORT, CEH_MODEL_JSON)
-            .mediaType(CEH_MODEL_APPLICATION_SHORT, CEH_MODEL_APPLICATION_JSON)
             .mediaType(CSV_SHORT, TEXT_CSV)
             .mediaType(DATACITE_SHORT, DATACITE_XML)
-            .mediaType(DATA_TYPE_SHORT, DATA_TYPE_JSON)
             .mediaType(EF_INSPIRE_XML_SHORT, EF_INSPIRE_XML)
-            .mediaType(NERC_MODEL, NERC_MODEL_JSON)
-            .mediaType(ERAMMP_DATACUBE_SHORT, ERAMMP_DATACUBE_JSON)
-            .mediaType(ERAMMP_MODEL_SHORT, ERAMMP_MODEL_JSON)
-            .mediaType(ELTER_SHORT, ELTER_JSON)
-            .mediaType(GEMINI_JSON_SHORT, GEMINI_JSON)
             .mediaType(GEMINI_XML_SHORT, GEMINI_XML)
             .mediaType("html", MediaType.TEXT_HTML)
             .mediaType("json", MediaType.APPLICATION_JSON)
-            .mediaType(LINKED_SHORT, LINKED_JSON)
-            .mediaType(MODEL_SHORT, MODEL_JSON)
-            .mediaType(OSDP_AGENT_SHORT, OSDP_AGENT_JSON)
-            .mediaType(OSDP_DATASET_SHORT, OSDP_DATASET_JSON)
-            .mediaType(OSDP_MODEL_SHORT, OSDP_MODEL_JSON)
-            .mediaType(OSDP_MONITORING_ACTIVITY_SHORT, OSDP_MONITORING_ACTIVITY_JSON)
-            .mediaType(OSDP_MONITORING_FACILITY_SHORT, OSDP_MONITORING_FACILITY_JSON)
-            .mediaType(OSDP_MONITORING_PROGRAMME_SHORT, OSDP_MONITORING_PROGRAMME_JSON)
-            .mediaType(OSDP_PUBLICATION_SHORT, OSDP_PUBLICATION_JSON)
-            .mediaType(OSDP_SAMPLE_SHORT, OSDP_SAMPLE_JSON)
             .mediaType(RDF_SCHEMAORG_SHORT, RDF_SCHEMAORG_JSON)
             .mediaType(RDF_TTL_SHORT, RDF_TTL)
-            .mediaType(RESEARCH_INFO_SYSTEMS_SHORT, RESEARCH_INFO_SYSTEMS)
-            .mediaType(SAMPLE_ARCHIVE_SHORT, SAMPLE_ARCHIVE_JSON)
-            .mediaType(UKEMS_DOCUMENT_SHORT, UKEMS_DOCUMENT_JSON);
+            .mediaType(RESEARCH_INFO_SYSTEMS_SHORT, RESEARCH_INFO_SYSTEMS);
     }
 }

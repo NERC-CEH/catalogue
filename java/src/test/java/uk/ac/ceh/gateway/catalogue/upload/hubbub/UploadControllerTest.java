@@ -39,7 +39,7 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static uk.ac.ceh.gateway.catalogue.config.CatalogueMediaTypes.TEXT_CSV;
+import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.TEXT_CSV;
 import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.UPLOADER_USERNAME;
 import static uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadController.*;
 

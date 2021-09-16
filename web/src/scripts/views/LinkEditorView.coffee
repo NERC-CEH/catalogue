@@ -2,8 +2,8 @@ define [
   'cs!views/EditorView'
   'cs!views/editor/LinkDocumentSelectorView'
   'cs!views/editor/ParentView'
-  'cs!views/editor/KeywordView'
-  ], (EditorView, LinkDocumentSelectorView, ParentView, KeywordView) -> EditorView.extend
+  'cs!views/editor/KeywordVocabularyView'
+  ], (EditorView, LinkDocumentSelectorView, ParentView, KeywordVocabularyView) -> EditorView.extend
 
   initialize: ->
     @sections = [
@@ -14,7 +14,7 @@ define [
           model: @model
           modelAttribute: 'additionalKeywords'
           label: 'Additional Keywords'
-          ObjectInputView: KeywordView
+          ObjectInputView: KeywordVocabularyView
           helpText: """
                     <p>Keywords (preferably taken from a controlled vocabulary) categorising and describing the data resource.</p>
                     """
