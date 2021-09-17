@@ -1,10 +1,10 @@
-package uk.ac.ceh.gateway.catalogue.model;
-
-import java.util.List;
+package uk.ac.ceh.gateway.catalogue.permission;
 
 import lombok.Builder;
 import lombok.Data;
 import uk.ac.ceh.components.userstore.Group;
+
+import java.util.List;
 
 @Data
 @Builder

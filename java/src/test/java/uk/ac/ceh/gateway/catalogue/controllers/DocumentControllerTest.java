@@ -23,6 +23,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.StreamUtils;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
+import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.ef.*;
@@ -119,6 +120,7 @@ class DocumentControllerTest {
                     .id(catalogueKey)
                     .title("Env Data Centre")
                     .url("https://example.com")
+                    .contactUrl("")
                     .build()
             );
     }
@@ -130,6 +132,7 @@ class DocumentControllerTest {
                     .id(catalogueKey)
                     .title("Env Data Centre")
                     .url("https://example.com")
+                    .contactUrl("")
                     .build()
             );
     }

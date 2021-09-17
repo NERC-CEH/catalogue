@@ -22,7 +22,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
-import uk.ac.ceh.gateway.catalogue.model.DataciteException;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;

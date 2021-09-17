@@ -13,7 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
-import uk.ac.ceh.gateway.catalogue.model.Catalogue;
+import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.services.MetadataListingService;
@@ -59,14 +59,14 @@ class SitemapControllerTest {
 
     private void givenCatalogue() {
         given(catalogueService.retrieve(catalogueKey))
-            .willReturn(Catalogue.builder().id("A").title("A").url("").build());
+            .willReturn(Catalogue.builder().id("A").title("A").url("").contactUrl("").build());
     }
 
     private void givenAllCatalogues() {
         given(catalogueService.retrieveAll())
             .willReturn(Arrays.asList(
-                Catalogue.builder().id("A").title("A").url("").build(),
-                Catalogue.builder().id("B").title("B").url("").build()
+                Catalogue.builder().id("A").title("A").url("").contactUrl("").build(),
+                Catalogue.builder().id("B").title("B").url("").contactUrl("").build()
             ));
     }
 

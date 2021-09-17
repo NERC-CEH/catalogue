@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
 import lombok.SneakyThrows;
+import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,13 +19,13 @@ import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.datacite.DataciteService;
-import uk.ac.ceh.gateway.catalogue.model.*;
+import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
+import uk.ac.ceh.gateway.catalogue.model.ErrorResponse;
+import uk.ac.ceh.gateway.catalogue.model.ExternalResourceFailureException;
+import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
-import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
-
-import java.net.URISyntaxException;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -110,10 +111,9 @@ public class ExceptionControllerHandlerTest {
     @Test
     public void checkThatURISyntaxExceptionReturnsImage() {
         //Given
-        URISyntaxException ex = mock(URISyntaxException.class);
 
         //When
-        ResponseEntity response = controller.handleURISyntaxException(ex);
+        val response = controller.handleURISyntaxException();
 
         //Then
         assertResponseImageExists(response);
@@ -122,10 +122,9 @@ public class ExceptionControllerHandlerTest {
     @Test
     public void checkThatTransparentExceptionReturnsImage() {
         //Given
-        TransparentProxyException ex = mock(TransparentProxyException.class);
 
         //When
-        ResponseEntity response = controller.handleTransparentProxyException(ex);
+        val response = controller.handleTransparentProxyException();
 
         //Then
         assertResponseImageExists(response);
@@ -134,10 +133,9 @@ public class ExceptionControllerHandlerTest {
     @Test
     public void checkThatMissingLegendExceptionReturnsImage() {
         //Given
-        LegendGraphicMissingException ex = mock(LegendGraphicMissingException.class);
 
         //When
-        ResponseEntity response = controller.handleLegendGraphicMissingException(ex);
+        val response = controller.handleLegendGraphicMissingException();
 
         //Then
         assertResponseImageExists(response);
@@ -146,16 +144,15 @@ public class ExceptionControllerHandlerTest {
     @Test
     public void checkThatUpstreamInvalidMediaTypeExceptionReturnsImage() {
         //Given
-        UpstreamInvalidMediaTypeException ex = mock(UpstreamInvalidMediaTypeException.class);
 
         //When
-        ResponseEntity response = controller.handleUpstreamInvalidMediaTypeException(ex);
+        val response = controller.handleUpstreamInvalidMediaTypeException();
 
         //Then
         assertResponseImageExists(response);
     }
 
-    private void assertResponseImageExists(ResponseEntity response) {
+    private void assertResponseImageExists(ResponseEntity<Object> response) {
         HttpHeaders headers = response.getHeaders();
         ClassPathResource body = (ClassPathResource)response.getBody();
 

@@ -20,7 +20,7 @@ import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.model.Catalogue;
+import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
@@ -91,6 +91,7 @@ class UploadControllerTest {
                     .id("default")
                     .title("test")
                     .url("http://example.com")
+                    .contactUrl("")
                     .build()
             );
     }
@@ -102,6 +103,7 @@ class UploadControllerTest {
                     .id(catalogueKey)
                     .title("Env Data Centre")
                     .url("https://example.com")
+                    .contactUrl("")
                     .build()
             );
     }

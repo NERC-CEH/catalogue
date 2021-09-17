@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.gateway.catalogue.vocabularies.KeywordVocabulary;
 import uk.ac.ceh.gateway.catalogue.vocabularies.SparqlKeywordVocabulary;
@@ -16,6 +17,7 @@ import java.util.List;
 @Configuration
 public class KeywordVocabulariesConfig {
 
+    @Profile("server:eidc")
     @Bean
     public KeywordVocabulary assistTopicsVocabulary(
         @Qualifier("sparql") RestTemplate restTemplate,
@@ -35,6 +37,7 @@ public class KeywordVocabulariesConfig {
         );
     }
 
+    @Profile("server:eidc")
     @Bean
     public KeywordVocabulary assistResearchThemesVocabulary(
         @Qualifier("sparql") RestTemplate restTemplate,
@@ -54,6 +57,7 @@ public class KeywordVocabulariesConfig {
         );
     }
 
+    @Profile("server:eidc")
     @Bean
     public KeywordVocabulary castVocabulary(
             @Qualifier("sparql") RestTemplate restTemplate,
@@ -73,6 +77,7 @@ public class KeywordVocabulariesConfig {
         );
     }
 
+    @Profile("server:elter")
     @Bean
     public KeywordVocabulary envThesVocabulary(
         @Qualifier("sparql") RestTemplate restTemplate,
@@ -94,6 +99,7 @@ public class KeywordVocabulariesConfig {
         );
     }
 
+    @Profile("server:inms")
     @Bean
     public KeywordVocabulary inmsVocabulary(
         @Qualifier("sparql") RestTemplate restTemplate,
@@ -113,6 +119,7 @@ public class KeywordVocabulariesConfig {
         );
     }
 
+    @Profile("server:eidc")
     @Bean
     public KeywordVocabulary ukscapeResearchProjectVocabulary(
         @Qualifier("sparql") RestTemplate restTemplate,
@@ -132,6 +139,7 @@ public class KeywordVocabulariesConfig {
         );
     }
 
+    @Profile("server:eidc")
     @Bean
     public KeywordVocabulary ukscapeResearchThemeVocabulary(
         @Qualifier("sparql") RestTemplate restTemplate,
@@ -170,6 +178,7 @@ public class KeywordVocabulariesConfig {
         );
     }
 
+    @Profile("server:eidc")
     @Bean
     public KeywordVocabulary ukscapeServiceVocabulary(
         @Qualifier("sparql") RestTemplate restTemplate,
