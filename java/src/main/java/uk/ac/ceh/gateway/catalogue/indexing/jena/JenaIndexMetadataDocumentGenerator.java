@@ -26,7 +26,7 @@ public class JenaIndexMetadataDocumentGenerator implements IndexGenerator<Metada
 
     public JenaIndexMetadataDocumentGenerator(DocumentIdentifierService documentIdentifierService) {
         this.documentIdentifierService = documentIdentifierService;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @Override
