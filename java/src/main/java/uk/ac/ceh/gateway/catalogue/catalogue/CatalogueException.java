@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.model;
+package uk.ac.ceh.gateway.catalogue.catalogue;
 
 public class CatalogueException extends RuntimeException {
     static final long serialVersionUID = 1L;

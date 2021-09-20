@@ -39,7 +39,7 @@ import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
-import uk.ac.ceh.gateway.catalogue.model.Catalogue;
+import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.ogc.WmsFeatureInfo;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 
@@ -83,6 +83,7 @@ public class MapViewerControllerTest {
                     .id("default")
                     .title("test")
                     .url("https://example.com")
+                    .contactUrl("")
                     .build()
             );
     }

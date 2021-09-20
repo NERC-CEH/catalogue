@@ -17,7 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
-import uk.ac.ceh.gateway.catalogue.model.Catalogue;
+import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 
 import static org.mockito.BDDMockito.given;
@@ -60,6 +60,7 @@ class SparqlControllerTest {
             .id(catalogueKey)
             .title("Foo")
             .url("https://example.com")
+            .contactUrl("")
             .build());
     }
 

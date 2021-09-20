@@ -7,7 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
-import uk.ac.ceh.gateway.catalogue.model.Catalogue;
+import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 import java.util.Arrays;
@@ -29,12 +29,12 @@ public class SearchQueryTest {
     static final int DEFAULT_PAGE = 1;
     static final int DEFAULT_ROWS = 20;
     static final List<FacetFilter> DEFAULT_FILTERS = Collections.emptyList();
-    @Mock private GroupStore<CatalogueUser> groupStore; 
+    @Mock private GroupStore<CatalogueUser> groupStore;
     private static final FacetFactory FACET_FACTORY = new HardcodedFacetFactory();
     static final List<Facet> DEFAULT_FACETS = FACET_FACTORY.newInstances(
         Arrays.asList("resourceType","licence")
     );
-    
+
     @Test
     public void queryHasCatalogueAsViewFilter() {
         //Given
@@ -53,6 +53,7 @@ public class SearchQueryTest {
                 .id("eidc")
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
+                .contactUrl("")
                 .build(),
             DEFAULT_FACETS
         );
@@ -84,23 +85,24 @@ public class SearchQueryTest {
                 .id("eidc")
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
+                .contactUrl("")
                 .build(),
             DEFAULT_FACETS
         );
-        
+
         //When
         SolrQuery solrQuery = query.build();
-        
+
         //Then
         assertThat(Arrays.asList(solrQuery.getFilterQueries()).contains("view:(public OR helen)"), is(true));
     }
-    
+
     @Test
     public void loggedInUserWithGroupsHasUsernameAndGroupsAsViewFilter() {
         //Given
         CatalogueUser user = new CatalogueUser().setUsername("helen");
         given(groupStore.getGroups(user)).willReturn(Arrays.asList(createGroup("CEH"), createGroup("EIDC")));
-        
+
         SearchQuery query = new SearchQuery(
             ENDPOINT,
             user,
@@ -116,23 +118,24 @@ public class SearchQueryTest {
                 .id("eidc")
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
+                .contactUrl("")
                 .build(),
             DEFAULT_FACETS
         );
-        
+
         //When
         SolrQuery solrQuery = query.build();
-        
+
         //Then
         assertThat(Arrays.asList(solrQuery.getFilterQueries()).contains("view:(public OR helen OR ceh OR eidc)"), is(true));
     }
-    
+
     @Test
     public void publisherDoesNotHaveViewFilter() {
         //Given
         CatalogueUser user = new CatalogueUser().setUsername("publisher");
         given(groupStore.getGroups(user)).willReturn(Arrays.asList(createGroup("ROLE_EIDC_PUBLISHER")));
-        
+
         SearchQuery query = new SearchQuery(
             ENDPOINT,
             user,
@@ -148,17 +151,18 @@ public class SearchQueryTest {
                 .id("eidc")
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
+                .contactUrl("")
                 .build(),
             DEFAULT_FACETS
         );
-        
+
         //When
         SolrQuery solrQuery = query.build();
-        
+
         //Then
         assertThat("Solr query should have view filter", not(solrQuery.getFilterQueries().toString().contains("view:(public OR publisher OR role_cig_publisher)")));
     }
-    
+
     private Group createGroup(String name) {
         return new Group() {
 
@@ -173,7 +177,7 @@ public class SearchQueryTest {
             }
         };
     }
-    
+
     @Test
     public void buildQueryWithNoExtraParameters() {
         //Given
@@ -192,12 +196,13 @@ public class SearchQueryTest {
                 .id("eidc")
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
+                .contactUrl("")
                 .build(),
             DEFAULT_FACETS
         );
         //When
         SolrQuery solrQuery = query.build();
-        
+
         //Then
         assertThat("Solr query should be the 'default text'", solrQuery.getQuery(), equalTo(SearchQuery.DEFAULT_SEARCH_TERM));
         assertThat(Arrays.asList(solrQuery.getFilterQueries()).contains("{!term f=view}public"), is(true));
@@ -209,7 +214,7 @@ public class SearchQueryTest {
         assertThat(solrQuery.getFacetMinCount(), is(equalTo(1)));
         assertThat(solrQuery.getSorts().get(0).getItem().substring(0, 6), is(equalTo("random")));
     }
-    
+
     @Test
     public void buildQueryOnSecondPage() {
         //Given
@@ -228,18 +233,19 @@ public class SearchQueryTest {
                 .id("eidc")
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
+                .contactUrl("")
                 .build(),
             DEFAULT_FACETS
         );
-        
+
         //When
         SolrQuery solrQuery = query.build();
-        
+
         //Then
         assertThat("Expected to be in the search results by the row count", solrQuery.getStart(), equalTo(40));
         assertThat("Solr query rows should be 40", solrQuery.getRows(), equalTo(40));
     }
-    
+
     @Test
     public void buildQueryWithSimpleTerm() {
         //Given
@@ -259,17 +265,18 @@ public class SearchQueryTest {
                 .id("eidc")
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
+                .contactUrl("")
                 .build(),
             DEFAULT_FACETS
         );
         //When
         SolrQuery solrQuery = query.build();
-        
+
         //Then
         assertThat("Solr query should be the default text", solrQuery.getQuery(), equalTo(term));
         assertThat("Solr query sort order should not be 'random'", solrQuery.getSorts().isEmpty(), equalTo(true));
     }
-    
+
     @Test
     public void buildQueryWithDefaultTermAndFilter() {
         //Given
@@ -289,22 +296,23 @@ public class SearchQueryTest {
                 .id("eidc")
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
+                .contactUrl("")
                 .build(),
             DEFAULT_FACETS
         );
         //When
         SolrQuery solrQuery = query.build();
-        
+
         //Then
         assertThat(Arrays.asList(solrQuery.getQuery()).contains(SearchQuery.DEFAULT_SEARCH_TERM), is(true));
         assertThat(Arrays.asList(solrQuery.getFilterQueries()).contains("{!term f=resourceType}dataset"), is(true));
     }
-    
+
     @Test
     public void noExceptionThrownWhenBBoxIsValid() {
         //Given
         String bbox = "1.11,2.22,3.33,4.44";
-        
+
         SearchQuery query = new SearchQuery(
             ENDPOINT,
             CatalogueUser.PUBLIC_USER,
@@ -320,22 +328,23 @@ public class SearchQueryTest {
                 .id("eidc")
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
+                .contactUrl("")
                 .build(),
             DEFAULT_FACETS
         );
-        
+
         //When
         SolrQuery solrQuery = query.build();
-        
+
         //Then
         assertThat(Arrays.asList(solrQuery.getFilterQueries()).contains("locations:\"IsWithin(1.11,2.22,3.33,4.44)\""), is(true));
     }
-    
+
      @Test
     public void canSetIntersectBBox() {
         //Given
         String bbox = "1.11,2.22,3.33,4.44";
-        
+
         SearchQuery query = new SearchQuery(
             ENDPOINT,
             CatalogueUser.PUBLIC_USER,
@@ -351,17 +360,18 @@ public class SearchQueryTest {
                 .id("eidc")
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
+                .contactUrl("")
                 .build(),
             DEFAULT_FACETS
         );
-        
+
         //When
         SolrQuery solrQuery = query.build();
-        
+
         //Then
         assertThat(Arrays.asList(solrQuery.getFilterQueries()).contains("locations:\"Intersects(1.11,2.22,3.33,4.44)\""), is(true));
     }
-    
+
     @Test
     public void checkThatWithFacetReturnsToFirstPage() {
         //Given
@@ -380,18 +390,19 @@ public class SearchQueryTest {
                 .id("eidc")
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
+                .contactUrl("")
                 .build(),
             DEFAULT_FACETS
         );
-        
+
         //When
         SearchQuery queryWithFacet = query.withFacetFilter(new FacetFilter("what", "ever"));
-        
+
         //Then
         assertThat("Expected to be back on first page", queryWithFacet.getPage(), equalTo(1));
     }
-    
-        
+
+
     @Test
     public void checkThatWithoutFacetReturnsToFirstPage() {
         //Given
@@ -411,17 +422,18 @@ public class SearchQueryTest {
                 .id("eidc")
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
+                .contactUrl("")
                 .build(),
             DEFAULT_FACETS
         );
-        
+
         //When
         SearchQuery queryWithFacet = query.withoutFacetFilter(filter);
-        
+
         //Then
         assertThat("Expected to be back on first page", queryWithFacet.getPage(), equalTo(1));
     }
-    
+
     @Test
     public void checkThatWithFacetFilterAddsNewFilter() {
         //Given
@@ -441,17 +453,18 @@ public class SearchQueryTest {
                 .id("eidc")
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
+                .contactUrl("")
                 .build(),
             DEFAULT_FACETS
         );
-        
+
         //When
         SearchQuery newQuery = query.withFacetFilter(filter);
-        
+
         //Then
         assertTrue(newQuery.containsFacetFilter(filter));
     }
-    
+
     @Test
     public void checkThatWithoutFacetFilterRemovesFilter() {
         //Given
@@ -471,17 +484,18 @@ public class SearchQueryTest {
                 .id("eidc")
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
+                .contactUrl("")
                 .build(),
             DEFAULT_FACETS
         );
-        
+
         //When
         SearchQuery newQuery = query.withoutFacetFilter(filter);
-        
+
         //Then
         assertFalse(newQuery.containsFacetFilter(filter));
     }
-    
+
     @Test
     public void checkThatContainsFilterDelegatesToList() {
         //Given
@@ -501,19 +515,20 @@ public class SearchQueryTest {
                 .id("eidc")
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
+                .contactUrl("")
                 .build(),
             DEFAULT_FACETS
         );
-        
+
         FacetFilter filter = new FacetFilter("hey", "lo");
-        
+
         //When
         query.containsFacetFilter(filter);
-        
+
         //Then
         assertThat(filters.contains(filter), is(true));
     }
-    
+
     @Test
     public void checkThatCompleteUrlIsGenerated() {
         //Given
@@ -532,13 +547,14 @@ public class SearchQueryTest {
                 .id("eidc")
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
+                .contactUrl("")
                 .build(),
             DEFAULT_FACETS
         );
-        
+
         //When
         String url = interestingQuery.toUrl();
-        
+
         //Then
         assertThat("Term should be searched for", url, containsString("term=My+Search+Term"));
         assertThat("BBOX should be searched for", url, containsString("bbox=1,2,3,4"));
@@ -548,7 +564,7 @@ public class SearchQueryTest {
         assertThat("facet should be filtered", url, containsString("facet=licence%7Cb"));
         assertThat("endpoint should be defined ", url, startsWith("http://my.endpo.int?"));
     }
-    
+
     @Test
     public void checkUrlIsGenerated() {
         //Given
@@ -567,17 +583,18 @@ public class SearchQueryTest {
                 .id("eidc")
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
+                .contactUrl("")
                 .build(),
             DEFAULT_FACETS
         );
-        
+
         //When
         String url = interestingQuery.toUrl();
-        
-        //Then        
+
+        //Then
         assertThat(url, equalTo("http://my.endpo.int?page=24&rows=30&term=My+Search+Term&bbox=1,2,3,4&op=IsWithin&facet=licence%7Cb"));
     }
-    
+
     @Test
     public void checkThatDefaultQueryDoesNotContainQueryString() {
         //Given
@@ -596,22 +613,23 @@ public class SearchQueryTest {
                 .id("eidc")
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
+                .contactUrl("")
                 .build(),
             DEFAULT_FACETS
         );
-        
+
         //When
         String url = boringQuery.toUrl();
-        
+
         //Then
         assertThat("Excepted url to be just endpoint", url, equalTo(ENDPOINT));
     }
-    
+
     @Test
     public void changeInBBoxFilterReturnsANewSearchQuery() {
-        //Given 
+        //Given
         String newBbox = "10,20,30,40";
-        
+
         SearchQuery query = new SearchQuery(
             ENDPOINT,
             CatalogueUser.PUBLIC_USER,
@@ -627,20 +645,21 @@ public class SearchQueryTest {
                 .id("eidc")
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
+                .contactUrl("")
                 .build(),
             DEFAULT_FACETS
         );
-        
+
         //When
         SearchQuery newQuery = query.withBbox(newBbox);
-        
+
         //Then
         assertNotSame(newQuery, query);
     }
-    
+
     @Test
     public void sameBBoxReturnsSameSearchQuery() {
-        //Given        
+        //Given
         SearchQuery query = new SearchQuery(
             ENDPOINT,
             CatalogueUser.PUBLIC_USER,
@@ -656,24 +675,26 @@ public class SearchQueryTest {
                 .id("eidc")
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
+                .contactUrl("")
                 .build(),
             DEFAULT_FACETS
         );
-        
+
         //When
         SearchQuery newQuery = query.withBbox(DEFAULT_BBOX);
-        
+
         //Then
         assertSame(newQuery, query);
     }
-    
+
     @Test
     public void impFacetsConfigured() {
-        //Given          
+        //Given
         Catalogue catalogue = Catalogue.builder()
                 .id("cmp")
                 .title("Catchment Management Modelling Platform")
                 .url("http://www.ceh.ac.uk")
+                .contactUrl("")
                 .facetKey("impCaMMPIssues")
                 .facetKey("impDataType")
                 .facetKey("impScale")
@@ -694,15 +715,15 @@ public class SearchQueryTest {
             catalogue,
             FACET_FACTORY.newInstances(catalogue.getFacetKeys())
         );
-        
+
         //When
         List<String> actual = query
             .getFacets()
             .stream()
             .map(Facet::getFieldName)
             .collect(Collectors.toList());
-        
-        
+
+
         //Then
         assertThat(actual.contains("impCaMMPIssues"), is(true));
         assertThat(actual.contains("impDataType"), is(true));

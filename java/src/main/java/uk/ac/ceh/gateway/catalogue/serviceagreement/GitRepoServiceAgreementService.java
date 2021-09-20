@@ -4,6 +4,7 @@ import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
@@ -14,6 +15,7 @@ import uk.ac.ceh.gateway.catalogue.model.Permission;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+@Profile("service-agreement")
 @Slf4j
 @ToString
 @Service

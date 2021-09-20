@@ -15,7 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
-import uk.ac.ceh.gateway.catalogue.model.Catalogue;
+import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.publication.State;
@@ -80,7 +80,7 @@ class PublicationControllerTest {
 
     private void givenCatalogue() {
         given(catalogueService.retrieve(catalogueKey))
-            .willReturn(Catalogue.builder().id(catalogueKey).title("Foo").url("https://example.com").build());
+            .willReturn(Catalogue.builder().id(catalogueKey).title("Foo").url("https://example.com").contactUrl("").build());
     }
 
     @SneakyThrows

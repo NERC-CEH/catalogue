@@ -18,6 +18,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUserHandlerMethodArgumentResolver;
+import uk.ac.ceh.gateway.catalogue.citation.Citation;
 import uk.ac.ceh.gateway.catalogue.converters.Object2TemplatedMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.TransparentProxyMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.WmsFeatureInfo2XmlMessageConverter;
@@ -43,6 +44,7 @@ import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreement;
+import uk.ac.ceh.gateway.catalogue.sparql.SparqlResponse;
 import uk.ac.ceh.gateway.catalogue.ukems.UkemsDocument;
 
 import java.util.List;

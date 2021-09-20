@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.model.Citation;
+import uk.ac.ceh.gateway.catalogue.citation.Citation;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;

@@ -6,7 +6,7 @@ import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Model;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
-import uk.ac.ceh.gateway.catalogue.model.SparqlResponse;
+import uk.ac.ceh.gateway.catalogue.sparql.SparqlResponse;
 
 @Slf4j
 @ToString

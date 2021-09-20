@@ -1,6 +1,6 @@
 package uk.ac.ceh.gateway.catalogue;
 
-import static uk.ac.ceh.gateway.catalogue.model.Catalogue.*;
+import static uk.ac.ceh.gateway.catalogue.catalogue.Catalogue.*;
 
 public class DocumentTypes {
 

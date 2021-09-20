@@ -8,7 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.util.StreamUtils;
-import uk.ac.ceh.gateway.catalogue.model.Catalogue;
+import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 
 import java.io.File;
@@ -65,6 +65,7 @@ public class PageTemplateTest {
                 .id("test")
                 .title("Test Catalogue")
                 .url("https://example.com")
+                .contactUrl("")
                 .build();
 
         given(catalogueService.retrieve("test")).willReturn(catalogue);

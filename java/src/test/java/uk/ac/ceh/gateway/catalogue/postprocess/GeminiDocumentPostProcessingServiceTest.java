@@ -11,7 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.gateway.catalogue.datacite.DataciteService;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.model.Citation;
+import uk.ac.ceh.gateway.catalogue.citation.Citation;
 import uk.ac.ceh.gateway.catalogue.model.Link;
 import uk.ac.ceh.gateway.catalogue.citation.CitationService;
 import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;

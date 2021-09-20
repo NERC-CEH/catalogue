@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.model;
+package uk.ac.ceh.gateway.catalogue.catalogue;
 
 import lombok.Builder;
 import lombok.NonNull;
@@ -11,7 +11,7 @@ import java.util.List;
 @Value
 @Builder
 public class Catalogue implements Comparable<Catalogue> {
-    @NonNull String id, title, url;
+    @NonNull String id, title, url, contactUrl;
     @Singular List<String> facetKeys;
     @Singular List<DocumentType> documentTypes;
     List<KeywordVocabulary> vocabularies;

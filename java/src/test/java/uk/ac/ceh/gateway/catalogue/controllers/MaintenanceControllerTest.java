@@ -22,7 +22,7 @@ import uk.ac.ceh.gateway.catalogue.indexing.*;
 import uk.ac.ceh.gateway.catalogue.indexing.jena.JenaIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.mapserver.MapServerIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.solr.SolrIndexingService;
-import uk.ac.ceh.gateway.catalogue.model.Catalogue;
+import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.MaintenanceResponse;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
@@ -83,6 +83,7 @@ public class MaintenanceControllerTest {
                     .id(catalogueKey)
                     .title("Env Data Centre")
                     .url("https://example.com")
+                    .contactUrl("")
                     .build()
             );
     }

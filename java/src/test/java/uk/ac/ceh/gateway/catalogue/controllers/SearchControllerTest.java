@@ -22,7 +22,7 @@ import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.indexing.solr.SolrIndex;
-import uk.ac.ceh.gateway.catalogue.model.Catalogue;
+import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.search.FacetFactory;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
@@ -69,6 +69,7 @@ class SearchControllerTest {
                     .id("default")
                     .title("test")
                     .url("http://example.com")
+                    .contactUrl("")
                     .build()
             );
     }
@@ -80,6 +81,7 @@ class SearchControllerTest {
                     .id(catalogueKey)
                     .title("Env Data Centre")
                     .url("https://example.com")
+                    .contactUrl("")
                     .build()
             );
     }

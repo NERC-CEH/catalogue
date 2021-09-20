@@ -19,10 +19,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
+import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.*;
+import uk.ac.ceh.gateway.catalogue.permission.CataloguePermission;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
@@ -92,6 +94,7 @@ public class PermissionControllerTest {
             .id(catalogueKey)
             .title("Foo")
             .url("https://example.com")
+            .contactUrl("")
             .build());
     }
 

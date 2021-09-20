@@ -18,6 +18,8 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import uk.ac.ceh.components.datastore.git.GitFileNotFoundException;
+import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueException;
+import uk.ac.ceh.gateway.catalogue.datacite.DataciteException;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
@@ -46,7 +48,7 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
     }
 
     private ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpStatus status) {
-        return handleExceptionInternal(ex, body, null, status, null);
+        return handleExceptionInternal(ex, body, new HttpHeaders(), status, null);
     }
 
     @ExceptionHandler(MapServerException.class)
@@ -61,7 +63,8 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({
         GitFileNotFoundException.class,
-        ResourceNotFoundException.class
+        ResourceNotFoundException.class,
+        CatalogueException.class
     })
     public ResponseEntity<Object> handleNotFoundExceptions(Exception ex) {
         return handleExceptionInternal(ex, ex.getMessage(), NOT_FOUND);
@@ -82,6 +85,7 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(ex, "Solr did not respond as expected", INTERNAL_SERVER_ERROR);
     }
 
+    @SuppressWarnings("SpringMVCViewInspection")
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ModelAndView handleAccessDeniedException() {
@@ -102,7 +106,7 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(TransparentProxyException.class)
     @ResponseBody
-    public ResponseEntity handleTransparentProxyException(TransparentProxyException ex) {
+    public ResponseEntity<Object> handleTransparentProxyException() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.IMAGE_PNG);
 
@@ -114,7 +118,7 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(URISyntaxException.class)
     @ResponseBody
-    public ResponseEntity handleURISyntaxException(URISyntaxException ex) {
+    public ResponseEntity<Object> handleURISyntaxException() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.IMAGE_PNG);
 
@@ -126,7 +130,7 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(UpstreamInvalidMediaTypeException.class)
     @ResponseBody
-    public ResponseEntity handleUpstreamInvalidMediaTypeException(UpstreamInvalidMediaTypeException ex) {
+    public ResponseEntity<Object> handleUpstreamInvalidMediaTypeException() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.IMAGE_PNG);
 
@@ -138,7 +142,7 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(LegendGraphicMissingException.class)
     @ResponseBody
-    public ResponseEntity handleLegendGraphicMissingException(LegendGraphicMissingException ex) {
+    public ResponseEntity<Object> handleLegendGraphicMissingException() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.IMAGE_PNG);
 

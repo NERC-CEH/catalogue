@@ -1,7 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.catalogue;
 
 import org.junit.jupiter.api.Test;
-import uk.ac.ceh.gateway.catalogue.model.Catalogue;
 
 import java.util.List;
 
@@ -14,9 +13,9 @@ public class InMemoryCatalogueServiceTest {
     @Test
     public void retrieveAllCatalogues() {
         //given
-        Catalogue t1 = Catalogue.builder().id("t1").title("t").url("u").build();
-        Catalogue t2 = Catalogue.builder().id("t2").title("t").url("u").build();
-        Catalogue t3 = Catalogue.builder().id("t3").title("t").url("u").build();
+        Catalogue t1 = Catalogue.builder().id("t1").title("t").url("u").contactUrl("").build();
+        Catalogue t2 = Catalogue.builder().id("t2").title("t").url("u").contactUrl("").build();
+        Catalogue t3 = Catalogue.builder().id("t3").title("t").url("u").contactUrl("").build();
 
         catalogueService = new InMemoryCatalogueService("t1", t1, t2, t3);
 

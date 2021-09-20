@@ -2,10 +2,8 @@ package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.RepresentationModel;
 
-@Slf4j
 @Data
 @EqualsAndHashCode(callSuper = false)
 public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementModel> {

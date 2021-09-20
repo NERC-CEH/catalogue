@@ -6,7 +6,7 @@ import org.apache.solr.client.solrj.SolrQuery;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
-import uk.ac.ceh.gateway.catalogue.model.Catalogue;
+import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 
@@ -26,7 +26,7 @@ import static uk.ac.ceh.gateway.catalogue.controllers.SearchController.*;
 public class SearchQuery {
     public static final String DEFAULT_SEARCH_TERM = "*";
     private static final String RANDOM_DYNAMIC_FIELD_NAME = "random";
-    
+
     String endpoint;
     CatalogueUser user;
     @NotNull String term;
@@ -63,8 +63,8 @@ public class SearchQuery {
         this.groupStore = groupStore;
         this.facets = facets;
         this.catalogue = catalogue;
-    }   
-       
+    }
+
     public SolrQuery build(){
         SolrQuery query = new SolrQuery()
                 .setQuery(term)
@@ -85,11 +85,11 @@ public class SearchQuery {
         log.debug("search query: {}", query);
         return query;
     }
-    
+
     public String getTermNotDefault() {
         return (DEFAULT_SEARCH_TERM.equals(term))? "" : term;
     }
-    
+
     public SearchQuery withPage(int newPage) {
         if ( page != newPage) {
             return new SearchQuery(
@@ -110,7 +110,7 @@ public class SearchQuery {
             return this;
         }
     }
-    
+
     /**
      * Generate a search query with a new bbox value. This will fundamentally
      * change the search query so we will jump back to page one.
@@ -137,7 +137,7 @@ public class SearchQuery {
             return this;
         }
     }
-    
+
     /**
      * Generate a search query with a new spatial operation. Changing a spatial
      * operation fundamentally changes the search query which means that we should
@@ -165,13 +165,13 @@ public class SearchQuery {
             return this;
         }
     }
-    
+
     /**
      * Create a clone of this search query but apply the additional facet filter
-     * 
-     * The logic of this method has been designed to match that of lomboks 
+     *
+     * The logic of this method has been designed to match that of lomboks
      * @Wither methods.
-     * 
+     *
      * If the filter has already been applied, just return this search query
      * @param filter to ensure is present
      * @return a new search query or this one if no change is needed
@@ -198,11 +198,11 @@ public class SearchQuery {
             return this;
         }
     }
-    
+
     /**
      * Create a clone of this search query be ensure that the given facet filter
      * is not applied.
-     * 
+     *
      * If the filter is not applied, just return this search query
      * @param filter to ensure is missing
      * @return a new search query or this one if no change is needed
@@ -229,9 +229,9 @@ public class SearchQuery {
             return this;
         }
     }
-    
+
     /**
-     * Check to see if the given facet filter is being applied by this search 
+     * Check to see if the given facet filter is being applied by this search
      * query.
      * @param filter to see if it is being applied
      * @return true if it is false if it isn't
@@ -239,20 +239,20 @@ public class SearchQuery {
     public boolean containsFacetFilter(FacetFilter filter) {
         return facetFilters.contains(filter);
     }
-    
+
     /**
-     * @return the url to call to perform this solr query. 
+     * @return the url to call to perform this solr query.
      */
     public String toUrl() {
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(endpoint);
         if(PAGE_DEFAULT != page) {
             builder.queryParam(PAGE_QUERY_PARAM, page);
         }
-        
+
         if(ROWS_DEFAULT != rows) {
             builder.queryParam(ROWS_QUERY_PARAM, rows);
         }
-        
+
         if(!DEFAULT_SEARCH_TERM.equals(term)) {
             try {
                 builder.queryParam(TERM_QUERY_PARAM, URLEncoder.encode(term, "UTF-8"));
@@ -260,20 +260,20 @@ public class SearchQuery {
                 log.error("Could not encode: " + term, ex);
             }
         }
-        
+
         if(bbox != null) {
             builder.queryParam(BBOX_QUERY_PARAM, bbox);
             builder.queryParam(OP_QUERY_PARAM, spatialOperation.getOperation());
         }
-        
+
         if(!facetFilters.isEmpty()) {
             facetFilters.forEach((f)-> builder.queryParam(FACET_QUERY_PARAM, f.asURIContent()));
         }
-        
+
         // cannot just encode UriComponents as other parameters (facets, bbox) already Uri encoded
         return builder.build().toUriString();
     }
-    
+
     private void setSpatialFilter(SolrQuery query) {
         if(bbox != null) {
             query.addFilterQuery(String.format("locations:\"%s(%s)\"", spatialOperation.getOperation(), bbox));
@@ -289,13 +289,13 @@ public class SearchQuery {
                 .map(Group::getName)
                 .map(String::toLowerCase)
                 .collect(Collectors.toList());
-            
+
             if ( !userIsPublisher(groups)) {
                 query.addFilterQuery(userVisibility(groups));
             }
         }
     }
-    
+
     private boolean userIsPublisher(List<String> groups) {
         return groups.contains(
             String.format(
@@ -304,12 +304,12 @@ public class SearchQuery {
             ).toLowerCase()
         );
     }
-    
+
     private String userVisibility(List<String> groups) {
         String username = user.getUsername().toLowerCase();
         StringBuilder toReturn = new StringBuilder("view:(public OR ")
             .append(username);
-        
+
         groups
             .stream()
             .forEach(g -> {
@@ -317,16 +317,16 @@ public class SearchQuery {
                     .append(" OR ")
                     .append(g);
             });
-        
+
         return toReturn.append(")").toString();
     }
-    
+
     private void setFacetFilters(SolrQuery query){
         facetFilters.stream().forEach((filter) -> {
             query.addFilterQuery(filter.asSolrFilterQuery());
         });
     }
-    
+
     private void setFacetFields(SolrQuery query){
         query.setFacet(true);
         query.setFacetMinCount(1);
@@ -335,7 +335,7 @@ public class SearchQuery {
             query.addFacetField(facet.getFieldName());
         });
     }
-    
+
     private void setCatalogueFilter(SolrQuery query) {
         query.addFilterQuery(
             String.format("{!term f=catalogue}%s", catalogue.getId())
@@ -347,12 +347,12 @@ public class SearchQuery {
             query.setSort(getRandomFieldName(), SolrQuery.ORDER.asc);
         }
     }
-    
+
     private String getRandomFieldName(){
         Random randomGenerator = new Random(getRandomSeed());
         return RANDOM_DYNAMIC_FIELD_NAME + randomGenerator.nextInt();
     }
-    
+
     private int getRandomSeed(){
         Calendar calendar = Calendar.getInstance();
         return calendar.get(Calendar.DAY_OF_YEAR);

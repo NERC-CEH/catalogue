@@ -3,8 +3,6 @@ package uk.ac.ceh.gateway.catalogue.catalogue;
 import lombok.NonNull;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import uk.ac.ceh.gateway.catalogue.model.Catalogue;
-import uk.ac.ceh.gateway.catalogue.model.CatalogueException;
 
 import java.util.*;
 

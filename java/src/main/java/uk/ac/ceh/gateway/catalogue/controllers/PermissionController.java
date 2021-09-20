@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.model.PermissionResource.IdentityPermissions;
+import uk.ac.ceh.gateway.catalogue.permission.CataloguePermission;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
@@ -33,7 +34,7 @@ public class PermissionController {
         this.documentRepository = documentRepository;
         log.info("Creating {}", this);
     }
-    
+
     @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
     @RequestMapping(method = RequestMethod.GET, value = "documents/{file}/permission")
     @ResponseBody
@@ -45,7 +46,7 @@ public class PermissionController {
             new PermissionResource(
                 documentRepository.read(file)
             )
-        ); 
+        );
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "permissions")
@@ -86,27 +87,27 @@ public class PermissionController {
             builder.create(false);
         }
 
-        return ResponseEntity.ok(builder.build()); 
+        return ResponseEntity.ok(builder.build());
     }
-    
+
     @PreAuthorize("@permission.userCanEdit(#file)")
     @RequestMapping(method =  RequestMethod.PUT, value = "documents/{file}/permission")
     @ResponseBody
     public HttpEntity<PermissionResource> updatePermission (
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file,
-            @RequestBody PermissionResource permissionResource) 
+            @RequestBody PermissionResource permissionResource)
         throws DocumentRepositoryException {
         MetadataDocument document = documentRepository.read(file);
         document.setMetadata(removeAddedPublicGroupIfNotPublisher(document.getMetadata(), permissionResource));
         documentRepository.save(user, document, file, String.format("Permissions of %s changed.", file));
-        return ResponseEntity.ok(new PermissionResource(document)); 
+        return ResponseEntity.ok(new PermissionResource(document));
     }
 
 
     private MetadataInfo removeAddedPublicGroupIfNotPublisher(MetadataInfo original, PermissionResource permissionResource) {
-        MetadataInfo toReturn; 
-        
+        MetadataInfo toReturn;
+
         if (
             permissionService.userCanMakePublic(original.getCatalogue())
             || original.isPubliclyViewable(Permission.VIEW)
@@ -116,14 +117,14 @@ public class PermissionController {
             Optional<IdentityPermissions> publicGroup = publicGroup(permissionResource);
             if (publicGroup.isPresent()) {
                 permissionResource.getPermissions().remove(publicGroup.get());
-                toReturn = permissionResource.updatePermissions(original); 
+                toReturn = permissionResource.updatePermissions(original);
             } else {
                 toReturn = permissionResource.updatePermissions(original);
             }
         }
         return toReturn;
     }
-    
+
     private Optional<IdentityPermissions> publicGroup(PermissionResource permissionResource) {
         return permissionResource.getPermissions()
             .stream()

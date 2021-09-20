@@ -2,9 +2,11 @@ package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.context.annotation.Profile;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Service;
 
+@Profile("service-agreement")
 @Slf4j
 @Service
 public class ServiceAgreementModelAssembler extends RepresentationModelAssemblerSupport<ServiceAgreement, ServiceAgreementModel> {
