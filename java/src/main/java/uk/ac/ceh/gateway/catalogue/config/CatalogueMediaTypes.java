@@ -124,6 +124,14 @@ public class CatalogueMediaTypes {
     public static final String SAMPLE_ARCHIVE_JSON_VALUE = "application/vnd.sample-archive+json";
     public static final MediaType SAMPLE_ARCHIVE_JSON = parseMediaType(SAMPLE_ARCHIVE_JSON_VALUE);
 
+    public static final String SERVICE_AGREEMENT_JSON_SHORT = "service-agreement-json";
+    public static final String SERVICE_AGREEMENT_JSON_VALUE = "application/service-agreement+json";
+    public static final MediaType SERVICE_AGREEMENT_JSON = parseMediaType(SERVICE_AGREEMENT_JSON_VALUE);
+
+    public static final String SERVICE_AGREEMENT_XML_SHORT = "service-agreement";
+    public static final String SERVICE_AGREEMENT_XML_VALUE = "application/x-service+xml";
+    public static final MediaType SERVICE_AGREEMENT_XML = parseMediaType(SERVICE_AGREEMENT_XML_VALUE);
+
     public static final String UKEOF_XML_SHORT = "ukeof";
     public static final String UKEOF_XML_VALUE = "application/ukeof+xml";
     public static final MediaType UKEOF_XML = parseMediaType(UKEOF_XML_VALUE);

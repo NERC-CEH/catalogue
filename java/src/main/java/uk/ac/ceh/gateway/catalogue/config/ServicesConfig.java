@@ -163,6 +163,7 @@ public class ServicesConfig {
             .register(NERC_MODEL_USE, NercModelUse.class)
             .register(ERAMMP_DATACUBE_SHORT, ErammpDatacube.class)
             .register(SAMPLE_ARCHIVE_SHORT, SampleArchive.class)
+            .register(SERVICE_AGREEMENT_JSON_SHORT, ServiceAgreement.class)
             .register(DATA_TYPE_SHORT, DataType.class)
             .register(UKEMS_DOCUMENT_SHORT, UkemsDocument.class);
     }

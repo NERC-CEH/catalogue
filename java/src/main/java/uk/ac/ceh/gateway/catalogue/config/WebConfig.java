@@ -66,6 +66,7 @@ public class WebConfig implements WebMvcConfigurer {
         // Before standard Spring message converters
         converters.add(0, new Object2TemplatedMessageConverter<>(DataciteResponse.class, freemarkerConfiguration));
         converters.add(0, new Object2TemplatedMessageConverter<>(GeminiDocument.class, freemarkerConfiguration));
+        converters.add(0, new Object2TemplatedMessageConverter<>(ServiceAgreement.class, freemarkerConfiguration));
         converters.add(0, new TransparentProxyMessageConverter(httpClient()));
         converters.add(0, new WmsFeatureInfo2XmlMessageConverter());
 
@@ -172,6 +173,8 @@ public class WebConfig implements WebMvcConfigurer {
             .mediaType(RDF_TTL_SHORT, RDF_TTL)
             .mediaType(RESEARCH_INFO_SYSTEMS_SHORT, RESEARCH_INFO_SYSTEMS)
             .mediaType(SAMPLE_ARCHIVE_SHORT, SAMPLE_ARCHIVE_JSON)
+            .mediaType(SERVICE_AGREEMENT_JSON_SHORT, SERVICE_AGREEMENT_JSON)
+            .mediaType(SERVICE_AGREEMENT_XML_SHORT, SERVICE_AGREEMENT_XML)
             .mediaType(UKEMS_DOCUMENT_SHORT, UKEMS_DOCUMENT_JSON);
     }
 }
