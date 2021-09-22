@@ -27,4 +27,12 @@ public class ServiceAgreementSolrIndex {
         this.eidcName = eidcName;
         this.title = title;
     }
+
+    public ServiceAgreementSolrIndex(ServiceAgreement serviceAgreement) {
+        this.dataIdentifier = serviceAgreement.getId();
+        this.depositorName = serviceAgreement.getDepositorName();
+        this.title = serviceAgreement.getTitle();
+        this.depositReference = null;
+        this.eidcName = null;
+    }
 }
