@@ -24,9 +24,7 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Accessors(chain = true)
-@ConvertUsing({
-    @Template(called = "html/service-agreement.ftlh", whenRequestedAs = MediaType.TEXT_HTML_VALUE),
-})
+
 public class ServiceAgreement extends AbstractMetadataDocument {
     private List<ResponsibleParty> distributorContacts, responsibleParties;
     private String depositorName;

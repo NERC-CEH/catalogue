@@ -56,6 +56,13 @@
                 Publication status
               </a>
             </li>
+            <#if catalogue.id == "eidc">
+            <li class="service-agreement" data-id="${id}">
+              <a href="/service-agreement/${id}">
+                Service-agreement
+              </a>
+            </li>
+            </#if>
             <li role="separator" class="divider"></li>
             <li>
               <a href="/documents/${id}/catalogue"

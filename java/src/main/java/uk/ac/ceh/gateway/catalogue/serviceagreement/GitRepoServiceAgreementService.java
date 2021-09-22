@@ -38,7 +38,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     @SneakyThrows
     public boolean metadataRecordExists(String id) {
         try {
-            repo.getData(FOLDER + id);
+            repo.getData(id + ".meta");
         } catch (DataRepositoryException e) {
             return false;
         }

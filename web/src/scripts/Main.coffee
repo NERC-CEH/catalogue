@@ -44,13 +44,15 @@ define [
   'cs!views/ElterEditorView'
   'cs!views/ElterLinkedEditorView'
   'cs!views/upload/simple/AppView'
+  'cs!views/ServiceAgreementEditorView'
+  'cs!models/ServiceAgreementEditorMetadata'
 ], (
     _, $, Backbone, Bootstrap, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter, SearchRouter,
     EditorMetadata, GeminiEditorView, MonitoringEditorView, PermissionApp, PermissionRouter, PermissionAppView, Catalogue, CatalogueView,
     ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata, CehModelEditorView, CehModelApplicationEditorView, OsdpAgentEditorView,
     OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
     OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, ErammpModelEditorView, NercModelEditorView, NercModelUseEditorView, ErammpDatacubeEditorView, UkemsDocumentEditorView,
-    ClipboardCopyView, DataTypeEditorView, ElterEditorView, ElterLinkedEditorView, SimpleUploadView
+    ClipboardCopyView, DataTypeEditorView, ElterEditorView, ElterLinkedEditorView, SimpleUploadView, ServiceAgreementEditorView, ServiceAgreementEditorMetadata
 ) ->
 
   ###
@@ -78,6 +80,7 @@ define [
     do @initSearch if $('#search').length
     do @initSimpleUpload if $('#simple-upload').length
     do @initStudyAreaMap if $('#studyarea-map').length
+    do @initServiceAgreement if $('.service-agreement').length
 
     $('.chart').each (i, e) -> new ChartView el: e
     do Backbone.history.start
@@ -269,6 +272,24 @@ define [
     @createMessageViewFor app
 
   ###
+  Initialize the catalogue application
+  ###
+  initServiceAgreement: ->
+
+    $('.service-agreement').on 'click', (event) ->
+      do event.preventDefault
+
+      id =  $(event.currentTarget).data("id")
+      console.log(event)
+      console.log(id)
+      data = {id:id}
+      console.log(data)
+
+      new ServiceAgreementEditorView
+        el: '#metadata'
+        model: new ServiceAgreementEditorMetadata data
+
+  ###
   Initialize the simple dataset upload
   ###
   initSimpleUpload: ->
@@ -288,3 +309,5 @@ define [
   Create a message view. Which listens to the supplied app model for messages (errors, info)
   ###
   createMessageViewFor: (app) -> new MessageView model: app
+
+

@@ -27,8 +27,6 @@ import uk.ac.ceh.gateway.catalogue.ef.Facility;
 import uk.ac.ceh.gateway.catalogue.ef.Network;
 import uk.ac.ceh.gateway.catalogue.ef.Programme;
 import uk.ac.ceh.gateway.catalogue.elter.ElterDocument;
-import uk.ac.ceh.gateway.catalogue.modelnerc.NercModel;
-import uk.ac.ceh.gateway.catalogue.modelnerc.NercModelUse;
 import uk.ac.ceh.gateway.catalogue.erammp.ErammpDatacube;
 import uk.ac.ceh.gateway.catalogue.erammp.ErammpModel;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -38,11 +36,13 @@ import uk.ac.ceh.gateway.catalogue.imp.ModelApplication;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
+import uk.ac.ceh.gateway.catalogue.modelnerc.NercModel;
+import uk.ac.ceh.gateway.catalogue.modelnerc.NercModelUse;
 import uk.ac.ceh.gateway.catalogue.osdp.*;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
-import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreement;
+import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreementModel;
 import uk.ac.ceh.gateway.catalogue.ukems.UkemsDocument;
 
 import java.util.List;
@@ -66,7 +66,7 @@ public class WebConfig implements WebMvcConfigurer {
         // Before standard Spring message converters
         converters.add(0, new Object2TemplatedMessageConverter<>(DataciteResponse.class, freemarkerConfiguration));
         converters.add(0, new Object2TemplatedMessageConverter<>(GeminiDocument.class, freemarkerConfiguration));
-        converters.add(0, new Object2TemplatedMessageConverter<>(ServiceAgreement.class, freemarkerConfiguration));
+        converters.add(0, new Object2TemplatedMessageConverter<>(ServiceAgreementModel.class, freemarkerConfiguration));
         converters.add(0, new TransparentProxyMessageConverter(httpClient()));
         converters.add(0, new WmsFeatureInfo2XmlMessageConverter());
 
@@ -101,7 +101,6 @@ public class WebConfig implements WebMvcConfigurer {
         converters.add(new Object2TemplatedMessageConverter<>(Sample.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(SampleArchive.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(SearchResults.class, freemarkerConfiguration));
-        converters.add(new Object2TemplatedMessageConverter<>(ServiceAgreement.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(SparqlResponse.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(StateResource.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(UkemsDocument.class, freemarkerConfiguration));
