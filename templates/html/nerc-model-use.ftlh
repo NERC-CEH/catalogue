@@ -8,60 +8,20 @@
 
     <@b.admin />
 
-    <#if title?? || projectCode?? || projectObjectives?? || description?? || keywords?? || projectCompletionDate?? || projectWebsite?? || funderDetails?? || contactName?? || multipleModelsUsed?? || multipleModelLinkages??>
-    <section>
-      <h2>Project Information</h2>
+    <#if title?? && title?has_content>
+      <h1>${title}</h1>
+    </#if>
 
-      <#if title?? && title?has_content>
-        <@m.key "Project title" "Title of project">${title}</@m.key>
-      </#if>
+    <#if objectives?? && objectives?has_content>
+      <@m.key "Objectives">
+        <@b.linebreaks objectives />
+      </@m.key>
+    </#if>
 
-      <#if projectCode?? && projectCode?has_content>
-        <@m.key "Project code" "RMS project code">${projectCode}</@m.key>
-      </#if>
-
-      <#if projectObjectives?? && projectObjectives?has_content>
-        <@m.key "Project objectives" "Brief description of main objectives">
-          <@b.linebreaks projectObjectives />
-        </@m.key>
-      </#if>
-      <#if description?? && description?has_content>
-        <@m.key "Project description" "Longer description of project including why models were used to answer the science question, assumptions made, key outputs">
-          <@b.linebreaks description />
-        </@m.key>
-      </#if>
-      <#if projectCompletionDate?? && projectCompletionDate?has_content>
-        <@m.key "Project completion date" "Project end date">${projectCompletionDate}</@m.key>
-      </#if>
-      <#if projectWebsite?? && projectWebsite?has_content>
-        <@m.key "Project website" "Link to public-facing website if available"><@b.bareUrl projectWebsite /></@m.key>
-      </#if>
-      <#if funderDetails?? && funderDetails?has_content>
-        <@m.key "Funder details" "Funder details including grant number if appropriate">
-          <@b.linebreaks funderDetails />
-        </@m.key>
-      </#if>
-      <#if contactName??>
-        <@m.key "Contact name" "Name of CEH PI/project representative">
-          <#if contactName?has_content>
-            ${contactName}
-          </#if>
-          <#if contactEmail?? && contactEmail?has_content>
-            (${contactEmail})
-          </#if>
-        </@m.key>
-      </#if>
-      <#if multipleModelsUsed?? && multipleModelsUsed?has_content>
-        <@m.key "Multiple models used?" "Were multiple models used in the project? If so, which ones?">
-          <@b.linebreaks multipleModelsUsed />
-        </@m.key>
-      </#if>
-      <#if multipleModelLinkages?? && multipleModelLinkages?has_content>
-        <@m.key "Multiple model linkages" "If multiple models were used how was this done e.g. chained, independent runs, comparisons, ensemble">
-          <@b.linebreaks multipleModelLinkages />
-        </@m.key>
-      </#if>
-    </section>
+    <#if description?? && description?has_content>
+      <@m.key "Description">
+        <@b.linebreaks description />
+      </@m.key>
     </#if>
 
     <#if references?? && references?has_content>
@@ -83,6 +43,27 @@
       </#list>
     </section>
     </#if>
+
+    <#if rooferences?? && rooferences?has_content>
+    <section>
+      <h2>Rooferences</h2>
+
+      <#list rooferences as ref>
+      <@b.repeatRow>
+        <#if ref.name?? && ref.name?has_content>
+         ${ref.name}
+        </#if>
+        <#if ref.url?? && ref.url?has_content>
+          <@m.Url ref.url true/>
+        </#if>
+        <#if ref.description?? && ref.description?has_content>
+          ${ref.description}
+        </#if>
+      </@b.repeatRow>
+      </#list>
+    </section>
+    </#if>
+
 
     <#if modelInfos?? && modelInfos?has_content>
 

@@ -15,9 +15,12 @@ define [
   'cs!views/editor/NercModelInfoView'
   'cs!views/editor/FundingView'
   'cs!models/editor/Funding'
+  'cs!views/editor/SupplementalView'
+  'cs!models/editor/Supplemental'
+  
 
 ], (
-  EditorView, InputView, TextareaView, ParentView, PredefinedParentView, ContactView, Contact, ParentStringView, KeywordView, ReferenceView, Reference, SingleObjectView, DataInfoView, NercModelInfoView, FundingView, Funding
+  EditorView, InputView, TextareaView, ParentView, PredefinedParentView, ContactView, Contact, ParentStringView, KeywordView, ReferenceView, Reference, SingleObjectView, DataInfoView, NercModelInfoView, FundingView, Funding, SupplementalView, Supplemental
 ) -> EditorView.extend
 
   initialize: ->
@@ -120,6 +123,21 @@ define [
                     <p>DOI - DOI link for the citation e.g. https://doi.org/10.1111/journal-id.1882</p>
                     <p>NORA - NORA links of the citation e.g. http://nora.nerc.ac.uk/513147/</p>
                     """
+
+        new ParentView
+          model: @model
+          modelAttribute: 'rooferences'
+          ModelType: Supplemental
+          multiline: true
+          label: 'rooferences'
+          ObjectInputView: SupplementalView
+          helpText: """
+                    <p>You can add information not documented elsewhere here. This includes links to related papers, grey literature or websites.  For example:</p>
+                    <ul><li>papers that cite this resource</li><li>papers/reports that provide relevant supporting information but which do not cite this resource</li><li>project websites</li></ul>
+                    <p>When linking to published articles, please use DOIs whenever possible.</p>
+                    <p><small class='text-danger'><i class='fas fa-exclamation-triangle'> </i> NOTE: Some websites may be maintained for a limited period and may therefore soon become unavailable.</small></p>
+                    """
+                    
       ]
     ,
       label: 'Model Info'

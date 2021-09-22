@@ -10,6 +10,7 @@ import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.Relationship;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.gemini.Funding;
+import uk.ac.ceh.gateway.catalogue.gemini.Supplemental;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -31,7 +32,9 @@ public class NercModelUse extends AbstractMetadataDocument {
     private List<Funding> funding;
 
     private List<NercModel.Reference> references;
-
+    
+    private List<Supplemental> rooferences;
+    
     private List<ModelInfo> modelInfos;
 
     private List<DataInfo>
