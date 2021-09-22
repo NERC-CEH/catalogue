@@ -3,9 +3,15 @@ package uk.ac.ceh.gateway.catalogue.serviceagreement;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.hateoas.RepresentationModel;
+import org.springframework.http.MediaType;
+import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
+import uk.ac.ceh.gateway.catalogue.converters.Template;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
+@ConvertUsing({
+        @Template(called = "html/service-agreement.ftlh", whenRequestedAs = MediaType.TEXT_HTML_VALUE),
+})
 public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementModel> {
     private String id;
     private String title;

@@ -34,7 +34,7 @@ public class ServiceAgreementController {
     }
 
     @PreAuthorize("@permission.userCanEdit(#id)")
-    @PostMapping("{id}")
+    @PutMapping("{id}")
     public ServiceAgreementModel create(
         @ActiveUser CatalogueUser user,
         @PathVariable("id") String id,
