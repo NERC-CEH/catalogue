@@ -151,7 +151,7 @@ public class GitRepoServiceAgreementServiceTest {
         serviceAgreement.setId(ID);
 
         DataDocument dataDocument = mock(DataDocument.class);
-        given(repo.getData(FOLDER + ID)).willReturn(dataDocument);
+        given(repo.getData(ID + ".meta")).willReturn(dataDocument);
 
         //When
         boolean result = service.metadataRecordExists(ID);
@@ -169,7 +169,7 @@ public class GitRepoServiceAgreementServiceTest {
         ServiceAgreement serviceAgreement = new ServiceAgreement();
         serviceAgreement.setId(ID);
 
-        given(repo.getData(FOLDER + ID)).willThrow(new DataRepositoryException("failed"));
+        given(repo.getData(ID + ".meta")).willThrow(new DataRepositoryException("failed"));
 
         //When
         boolean result = service.metadataRecordExists(ID);
