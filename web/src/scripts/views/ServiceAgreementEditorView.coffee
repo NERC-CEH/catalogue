@@ -110,7 +110,7 @@ define [
       label: 'The Data'
       title: 'The Data'
       views: [
-
+###
         new PredefinedParentView
           model: @model
           modelAttribute: 'dataFiles'
@@ -158,7 +158,7 @@ define [
                     <p><b>Type</b> is the machine-readable media type.  If you do not know it, leave it blank.</p>
                     <p><b>Version</b> is mandatory; if it's not applicable, enter '<i>unknown</i>'</p>
                     """
-
+###
         new PredefinedParentView
           model: @model
           modelAttribute: 'fileSize'
@@ -199,12 +199,13 @@ define [
       label: 'Supporting documentation'
       title: 'Supporting documentation'
       views: [
-
+###
         new InputView # Ask how to do this for lists of strings
           model: @model
           modelAttribute: 'supportingDocumentNames'
           label: 'Supporting Document names'
           helpText: """  """
+          ###
 
         new TextareaView
           model: @model
