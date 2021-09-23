@@ -137,4 +137,10 @@ public class DocumentTypes {
         .title("UK-EMS Document")
         .type(UKEMS_DOCUMENT)
         .build();
+
+    public static final String SERVICE_AGREEMENT = "SERVICE_DOCUMENT";
+    public static DocumentType SERVICE_TYPE = DocumentType.builder()
+            .title("Data resource")
+            .type(GEMINI)
+            .build();
 }

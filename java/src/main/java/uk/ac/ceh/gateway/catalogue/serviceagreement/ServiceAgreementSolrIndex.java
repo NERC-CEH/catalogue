@@ -28,7 +28,7 @@ public class ServiceAgreementSolrIndex {
         this.title = title;
     }
 
-    public ServiceAgreementSolrIndex(ServiceAgreement serviceAgreement) {
+    public ServiceAgreementSolrIndex(ServiceAgreementModel serviceAgreement) {
         this.dataIdentifier = serviceAgreement.getId();
         this.depositorName = serviceAgreement.getDepositorName();
         this.title = serviceAgreement.getTitle();

@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -47,11 +48,14 @@ class SolrServiceAgreementSearchTest {
         val solrQuery = new SolrQuery();
         solrQuery.setQuery(QUERY);
 
-//        val deimsSolrIndex1 = new DeimsSolrIndex(new DeimsSite(SITE_1, "https://example.com/", "1"));
-//        val deimsSolrIndex2 = new DeimsSolrIndex(new DeimsSite(SITE_2, "https://example.com/", "2"));
+        ServiceAgreement serviceAgreement1 = new ServiceAgreement();
+        ServiceAgreement serviceAgreement2 = new ServiceAgreement();
 
-        val serviceAgreementSolrIndex1 = new ServiceAgreementSolrIndex(new ServiceAgreement()); //need to make constructor for service agreement and add a title
-        val serviceAgreementSolrIndex2 = new ServiceAgreementSolrIndex(new ServiceAgreement()); //possibly use serviceagreement model instead
+        ReflectionTestUtils.setField(serviceAgreement1, "title", TITLE_1);
+        ReflectionTestUtils.setField(serviceAgreement2, "title", TITLE_2);
+
+        val serviceAgreementSolrIndex1 = new ServiceAgreementSolrIndex(new ServiceAgreementModel(serviceAgreement1));
+        val serviceAgreementSolrIndex2 = new ServiceAgreementSolrIndex(new ServiceAgreementModel(serviceAgreement2));
 
         val response = mock(QueryResponse.class);
 

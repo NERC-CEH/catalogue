@@ -163,6 +163,7 @@ public class ServicesConfig {
             .register(OSDP_PUBLICATION, Publication.class)
             .register(OSDP_SAMPLE, Sample.class)
             .register(SAMPLE_ARCHIVE, SampleArchive.class)
+            .register(SERVICE_AGREEMENT, ServiceAgreement.class)
             .register(UKEMS_DOCUMENT, UkemsDocument.class);
     }
 
