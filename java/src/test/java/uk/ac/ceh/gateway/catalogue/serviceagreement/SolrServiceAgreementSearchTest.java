@@ -43,7 +43,7 @@ class SolrServiceAgreementSearchTest {
 
     @Test
     @SneakyThrows
-    public void successfullyGetDeimsSites() {
+    public void successfullyGetServiceAgreements() {
         //Given
         val solrQuery = new SolrQuery();
         solrQuery.setQuery(QUERY);
@@ -78,12 +78,12 @@ class SolrServiceAgreementSearchTest {
 
     @Test
     @SneakyThrows
-    public void ThrowSolrServerException() {
+    public void failToGetServiceAgreements() {
         //Given
-        when(solrClient.query(eq(SERVICE_AGREEMENT), any(SolrParams.class), eq(POST))).thenThrow(new SolrServerException("Test"));
+        when(solrClient.query(eq(SERVICE_AGREEMENT), any(SolrParams.class), eq(POST))).thenThrow(new ServiceAgreementException("Test"));
 
         //When
-        Assertions.assertThrows(SolrServerException.class, () ->
+        Assertions.assertThrows(RuntimeException.class, () ->
                 solrServiceAgreementSearch.query(QUERY)
         );
     }

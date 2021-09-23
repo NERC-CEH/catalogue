@@ -272,7 +272,7 @@ define [
     @createMessageViewFor app
 
   ###
-  Initialize the catalogue application
+  Initialize the Service Agreement editor
   ###
   initServiceAgreement: ->
 
@@ -280,10 +280,7 @@ define [
       do event.preventDefault
 
       id =  $(event.currentTarget).data("id")
-      console.log(event)
-      console.log(id)
       data = {id:id}
-      console.log(data)
 
       new ServiceAgreementEditorView
         el: '#metadata'

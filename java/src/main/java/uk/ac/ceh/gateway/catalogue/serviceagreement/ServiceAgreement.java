@@ -4,10 +4,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.Accessors;
-import uk.ac.ceh.gateway.catalogue.gemini.DescriptiveKeywords;
-import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.RelatedRecord;
-import uk.ac.ceh.gateway.catalogue.gemini.Service;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 
@@ -23,59 +20,80 @@ import java.util.stream.Collectors;
 @Accessors(chain = true)
 
 public class ServiceAgreement extends AbstractMetadataDocument {
-    private List<ResponsibleParty> distributorContacts, responsibleParties;
-    private String depositorName;
+
+    /*
+    GENERAL
+    */
+    //id
+    //title
     private String depositReference;
-    private String dataIdentifier;
-    private Service service;
-    private String DOI;
+    private String depositorName;
+    private String depositorContactDetails;
+    private String eidcName;
+    private String eidcContactDetails;
+
+    /*
+    ONE: Data Identification and Citation
+    */
+    private List<ResponsibleParty> authors;
+
+    /*
+    TWO: Policies & Legislation
+   */
+    private String otherPoliciesOrLegislation;
+
+    /*
+    THREE: The data
+    */
     private Number dataFiles;
-    private List<DescriptiveKeywords> descriptiveKeywords;
     private List<String> fileNames;
     private List<String> fileFormats;
     private Number fileSize;
     private String transferMethod;
-    private List<RelatedRecord> relatedRecords;
+    private List<RelatedRecord> relatedDataHoldings;
     private String dataCategory;
+
+    /*
+    FOUR: Supporting documentation
+    */
+    private List<String> supportingDocumentNames;
+    private String contentIncluded;
+
+    /*
+    FIVE: Data retention
+    */
+    private String policyExceptions;
+
+    /*
+    SIX: Availability and access
+    */
     private String availability;
     private String specificRequirements;
     private String otherServicesRequired;
+
+    /*
+    SEVEN: Licensing and IPR
+    */
     private String endUserLicence;
     private String ownerOfIpr;
-    private Depositor depositor;
-    private Depositor forTheEIDC;
-    //Superseding
-    private String superSeededMetadataId;
+    private String useConstraints;
+
+    /*
+    EIGHT: Superseding existing data (if applicable)
+    */
+    private String supersededMetadataId;
     private String reason;
-    //Discovery metadata
-    private String description;
+
+    /*
+    NINE: Miscellaneous
+    */
+    private String otherInfo;
+
+    /*
+    TEN: Discovery metadata
+    */
+    //keywords
+    //description
     private String lineage;
-    private List<Keyword> keywords;
     private String areaOfStudy;
-    private List<Document> documents;
-    private List<String> userConstraints;
-
-
-    public List<ResponsibleParty> getResponsibleParties() {
-        return Optional.ofNullable(responsibleParties)
-                .orElse(Collections.emptyList());
-    }
-
-    public List<ResponsibleParty> getAuthors() {
-        return Optional.ofNullable(responsibleParties)
-                .orElse(Collections.emptyList())
-                .stream()
-                .filter((authors) -> authors.getRole().equalsIgnoreCase("author"))
-                .collect(Collectors.toList());
-    }
-
-    public List<String> getCoupledResources() {
-        return Optional.ofNullable(service)
-                .map(Service::getCoupledResources)
-                .orElse(Collections.emptyList())
-                .stream()
-                .map(Service.CoupledResource::getIdentifier)
-                .filter(cr -> !cr.isEmpty())
-                .collect(Collectors.toList());
-    }
 }

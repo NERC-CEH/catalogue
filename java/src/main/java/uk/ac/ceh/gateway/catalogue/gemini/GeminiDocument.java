@@ -68,7 +68,6 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private Keyword resourceType;
     private AccessLimitation accessLimitation;
     private boolean notGEMINI;
-    private List<ServiceAgreementSolrIndex> serviceAgreements;
 
 
     @Override

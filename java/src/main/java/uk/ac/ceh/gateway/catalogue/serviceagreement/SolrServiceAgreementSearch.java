@@ -28,7 +28,7 @@ public class SolrServiceAgreementSearch implements ServiceAgreementSearch {
     }
 
     @Override
-    public List<ServiceAgreementSolrIndex> query(String term) throws SolrServerException {
+    public List<ServiceAgreementSolrIndex> query(String term) throws RuntimeException {
         try {
             val query = new SolrQuery();
             query.setQuery(term);
@@ -39,7 +39,7 @@ public class SolrServiceAgreementSearch implements ServiceAgreementSearch {
             return response.getBeans(ServiceAgreementSolrIndex.class);
 
         } catch (IOException | SolrServerException | BaseHttpSolrClient.RemoteSolrException ex) {
-            throw new SolrServerException(ex);
+            throw new ServiceAgreementException(ex);
         }
     }
 }

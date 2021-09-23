@@ -2,73 +2,46 @@ define [
   'cs!views/EditorView'
   'cs!views/editor/SingleObjectView'
   'cs!views/editor/InputView'
-  'cs!views/editor/CheckboxView'
-  'cs!views/editor/ReadOnlyView'
   'cs!views/editor/TextareaView'
   'cs!views/editor/ParentView'
-  'cs!views/editor/ParentLargeView'
   'cs!views/editor/PredefinedParentView'
-  'cs!views/editor/PredefinedParentLargeView'
-  'cs!views/editor/ParentStringView'
-  'cs!views/editor/ResourceTypeView'
-  'cs!models/editor/ResourceType'
   'cs!views/editor/AccessLimitationView'
   'cs!models/editor/AccessLimitation'
   'cs!models/editor/InspireTheme'
-  'cs!views/editor/InspireThemeView'
   'cs!models/editor/TopicCategory'
   'cs!views/editor/TopicCategoryView'
   'cs!views/editor/ContactView'
   'cs!views/editor/ResourceIdentifierView'
   'cs!views/editor/DatasetReferenceDateView'
-  'cs!models/editor/MultipleDate'
   'cs!models/editor/Contact'
-  'cs!models/editor/BoundingBox'
-  'cs!views/editor/BoundingBoxView'
   'cs!views/editor/OnlineResourceView'
   'cs!models/editor/OnlineResource'
   'cs!views/editor/ResourceConstraintView'
-  'cs!views/editor/OtherConstraintView'
-  'cs!views/editor/TemporalExtentView'
-  'cs!views/editor/SpatialReferenceSystemView'
-  'cs!views/editor/SpatialRepresentationTypeView'
   'cs!views/editor/DescriptiveKeywordView'
   'cs!models/editor/DescriptiveKeyword'
   'cs!views/editor/DistributionFormatView'
   'cs!models/editor/DistributionFormat'
-  'cs!views/editor/SpatialResolutionView'
-  'cs!models/editor/SpatialResolution'
-  'cs!views/editor/FundingView'
-  'cs!models/editor/Funding'
-  'cs!views/editor/SupplementalView'
-  'cs!models/editor/Supplemental'
-  'cs!views/editor/ServiceView'
-  'cs!models/editor/Service'
   'cs!models/editor/MapDataSource'
-  'cs!views/editor/MapDataSourceView'
   'cs!views/editor/RelatedRecordView'
-  'cs!views/editor/DeimsSiteView'
-], (EditorView, SingleObjectView, InputView, CheckboxView, ReadOnlyView, TextareaView, ParentView, ParentLargeView, PredefinedParentView, PredefinedParentLargeView, ParentStringView, ResourceTypeView, ResourceType, AccessLimitationView, AccessLimitation, InspireTheme, InspireThemeView, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, MultipleDate, Contact, BoundingBox, BoundingBoxView, OnlineResourceView, OnlineResource, ResourceConstraintView, OtherConstraintView, TemporalExtentView, SpatialReferenceSystemView, SpatialRepresentationTypeView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, SpatialResolutionView, SpatialResolution, FundingView, Funding, SupplementalView, Supplemental, ServiceView, Service, MapDataSource, MapDataSourceView, RelatedRecordView, DeimsSiteView) -> EditorView.extend
+], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, AccessLimitationView, AccessLimitation, InspireTheme, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, OnlineResourceView, OnlineResource, ResourceConstraintView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, MapDataSource, RelatedRecordView) -> EditorView.extend
 
   initialize: ->
-
-    disabled = $($('body')[0]).data('edit-restricted')
 
     @sections = [
       label: 'General'
       title:  ''
       views: [
+
+        new InputView
+          model: @model
+          modelAttribute: 'depositReference'
+          label: 'Deposit Reference'
+          helpText: """"""
+
         new ReadOnlyView
           model: @model
           modelAttribute: 'id'
-          label: 'File identifier'
-
-        new SingleObjectView
-          model: @model
-          modelAttribute: 'resourceType'
-          ModelType: ResourceType
-          label: 'Resource Type'
-          ObjectInputView: ResourceTypeView
+          label: 'Data identifier'
 
         new InputView
           model: @model
@@ -79,12 +52,6 @@ define [
                     <p>Only the leading letter and proper nouns of the title should be capitalised.  If it's necessary to include acronyms in the title, then include both the acronym (in parentheses) and the phrase/word from which it was formed. Acronyms should not include full-stops between each letter.</p>
                     <p>If there are multiple titles or translations of titles (e.g. in Welsh), these should be added as alternative titles.</p>
                     """
-
-        new InputView
-          model: @model
-          modelAttribute: 'depositReference'
-          label: 'Deposit Reference'
-          helpText: """"""
 
         new InputView
           model: @model
@@ -100,57 +67,26 @@ define [
 
         new InputView
           model: @model
-          modelAttribute: 'forTheEIDCName'
-          label: 'For the EIDC Name'
+          modelAttribute: 'eidcName'
+          label: 'For the EIDC: Name'
           helpText: """"""
 
         new InputView
           model: @model
-          modelAttribute: 'forTheEIDCContactDetails'
-          label: 'For the EIDC contact details'
+          modelAttribute: 'eidcContactDetails'
+          label: 'For the EIDC: contact details'
           helpText: """"""
-
-        new InputView
-          model: @model
-          modelAttribute: 'DOI'
-          label: 'DOI'
-          helpText: """"""
-
-        new SingleObjectView
-          model: @model
-          modelAttribute: 'datasetReferenceDate'
-          ModelType: MultipleDate
-          label: 'Reference dates'
-          ObjectInputView: DatasetReferenceDateView,
-          helpText: """
-                    <p><b>Created</b> is the date on which the data resource was originally created.</p>
-                    <p><b>Published</b> is the date when this metadata record is made available publicly.</p>
-                    <p>For embargoed resources, <b>Release(d)</b> is the date on which the embargo was lifted <i class='text-red'><b>or is due to be lifted</b></i>.</p>
-                    <p><b>Superseded</b> is the date on which the resource was superseded by another resource (where relevant).</p>
-                    """
 
       ]
     ,
       label: 'Data identification and citation'
       title: 'Data identification and citation'
       views: [
-
-        new SingleObjectView
-          model: @model
-          modelAttribute: 'accessLimitation'
-          ModelType: AccessLimitation
-          label: 'Resource status'
-          ObjectInputView: AccessLimitationView
-          helpText: """
-                    <p>Access status of resource.  For example, is the resource embargoed or are restrictions imposed for reasons of confidentiality or security.</p>
-                    <p><b>NOTE</b>: if access is Embargoed, you must also complete the <i>Release date</i>.</p>
-                    """
-
         new PredefinedParentView
           model: @model
           ModelType: Contact
-          modelAttribute: 'responsibleParties'
-          label: 'Contacts'
+          modelAttribute: 'authors'
+          label: 'Authors'
           ObjectInputView: ContactView
           multiline: true
           helpText: """
@@ -160,13 +96,34 @@ define [
                     """
       ]
     ,
+      label: 'Policies & Legislation'
+      title: 'Policies & Legislation'
+      views: [
+              new TextareaView
+                model: @model
+                modelAttribute: 'otherPoliciesOrLegislation'
+                label: 'Other Policies or Legislation'
+                rows: 15
+                helpText: """  """
+      ]
+    ,
       label: 'The Data'
       title: 'The Data'
       views: [
 
+        new PredefinedParentView
+          model: @model
+          modelAttribute: 'dataFiles'
+          ModelType: DistributionFormat
+          label: 'Number of data files'
+          ObjectInputView: DistributionFormatView
+          predefined:
+					'Decimal number': #Ask is is the best way for numbers
+					type: 'number'
+
         new InputView
           model: @model
-          modelAttribute: 'fileNames'
+          modelAttribute: 'fileNames' # Ask how to do this for lists of strings
           label: 'File names'
           helpText: """
                     <p>Provide a title that best describes that data resource. Include references to the subject, spatial and temporal aspects of the data resource.</p>
@@ -176,7 +133,7 @@ define [
 
         new PredefinedParentView
           model: @model
-          modelAttribute: 'fileFormats'
+          modelAttribute: 'fileFormats' # Ask how to do this for lists of strings
           ModelType: DistributionFormat
           label: 'File Formats'
           ObjectInputView: DistributionFormatView
@@ -202,11 +159,29 @@ define [
                     <p><b>Version</b> is mandatory; if it's not applicable, enter '<i>unknown</i>'</p>
                     """
 
-        new InputView
+        new PredefinedParentView
           model: @model
           modelAttribute: 'fileSize'
-          label: 'File Size'
-          helpText: """  """
+          ModelType: DistributionFormat
+          label: 'size of data files'
+          ObjectInputView: DistributionFormatView
+          predefined:
+					'Decimal number':
+					type: 'number'
+
+        new InputView
+          model: @model
+          modelAttribute: 'transferMethod'
+          label: 'Transfer Method'
+          helpText: """"""
+
+
+        new ParentView
+          model: @model
+          modelAttribute: 'relatedRecords'
+          label: 'Related records'
+          ObjectInputView: RelatedRecordView
+          multiline: true
 
         new ParentView
           model: @model
@@ -219,6 +194,35 @@ define [
                     <p>Multiple topic categories are allowed - please include all that are pertinent.  For example, "Estimates of topsoil invertebrates" = Biota AND Environment AND Geoscientific Information.</p>
                     """
 
+      ]
+    ,
+      label: 'Supporting documentation'
+      title: 'Supporting documentation'
+      views: [
+
+        new InputView # Ask how to do this for lists of strings
+          model: @model
+          modelAttribute: 'supportingDocumentNames'
+          label: 'Supporting Document names'
+          helpText: """  """
+
+        new TextareaView
+          model: @model
+          modelAttribute: 'contentIncluded'
+          label: 'Content Included'
+          rows: 15
+          helpText: """  """
+      ]
+    ,
+      label: 'Data retention'
+      title: 'Data retention'
+      views: [
+        new TextareaView
+          model: @model
+          modelAttribute: 'policyExceptions'
+          label: 'Policy Exceptions'
+          rows: 15
+          helpText: """  """
       ]
     ,
       label: 'Availability and access'
@@ -256,14 +260,20 @@ define [
                     <p>Include addresses of web services used to access the data and supporting information.</p>
                     <p>Other links such as project websites or papers should <b>NOT</b> be included here. You can add them to "Additional information"</p>
                     """
-          disabled: disabled
 
-        new ParentView
+        new TextareaView
           model: @model
-          modelAttribute: 'relatedRecords'
-          label: 'Related records'
-          ObjectInputView: RelatedRecordView
-          multiline: true
+          modelAttribute: 'specificRequirements'
+          label: 'Specific Requirements'
+          rows: 15
+          helpText: """  """
+
+        new TextareaView
+          model: @model
+          modelAttribute: 'otherServicesRequired'
+          label: 'Other Services Required'
+          rows: 15
+          helpText: """  """
       ]
     ,
       label: 'Licensing and IPR'
@@ -313,39 +323,14 @@ define [
                     """
       ]
     ,
-      label: 'ID & relationships'
-      title: 'Identifiers and links to related resources'
-      views: [
-        new ParentView
-          model: @model
-          modelAttribute: 'resourceIdentifiers'
-          label: 'Resource identifiers'
-          ObjectInputView: ResourceIdentifierView
-          helpText: """
-                    <p>A unique string or number used to identify the data resource. The codespace identifies the context in which the code is unique.</p>
-                    """
-          disabled: disabled
-
-      ]
-    ,
-      label: 'Supporting documentation'
-      title: 'Supporting documentation'
-      views: [
-      ]
-    ,
-      label: 'Data retention'
-      title: 'Data retention'
-      views: [
-      ]
-    ,
       label: 'Superseding existing data'
       title: 'Superseding existing data (if applicable)'
       views: [
 
         new ParentView
           model: @model
-          modelAttribute: 'superSeededMetadataId'
-          label: 'Super seeded metadata Id'
+          modelAttribute: 'supersededMetadataId'
+          label: 'Superseded Metadata Id'
           ObjectInputView: ResourceIdentifierView
           helpText: """
                     <p>A unique string or number used to identify the data resource. The codespace identifies the context in which the code is unique.</p>
@@ -354,7 +339,7 @@ define [
 
         new TextareaView
           model: @model
-          modelAttribute: 'reasonChanged'
+          modelAttribute: 'reason'
           label: 'Reason for change'
           rows: 7
           helpText: """
@@ -365,6 +350,12 @@ define [
       label: 'Miscellaneous'
       title: 'Miscellaneous'
       views: [
+        new TextareaView
+          model: @model
+          modelAttribute: 'otherInfo'
+          label: 'Other Info'
+          rows: 7
+          helpText: """  """
       ]
     ,
       label: 'Discovery metadata'
