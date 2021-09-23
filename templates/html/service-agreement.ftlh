@@ -3,36 +3,17 @@
 <@skeleton.master "Service Agreement">
     <h1>Service Agreement</h1>
     <h2>${title}</h2>
-    <#if depositReference??>
-    <p>Deposit reference: ${depositReference}</p>
-    </#if>
-    <#if (depositor.name)??>
-    <p>Depositor name: ${depositor.name}</p>
-    </#if>
-    <#if (depositor.contactDetails)??>
-    <p>Depositor contact details: ${depositor.contactDetails}</p>
-    </#if>
-    <#if (forTheEIDC.name)??>
-    <p>For the EIDC name: ${forTheEIDC.name}</p>
-    </#if>
-    <#if (forTheEIDC.contactDetails)??>
-    <p>For the EIDC contact details: ${forTheEIDC.contactDetails}</p>
-    </#if>
-    <#if DOI??>
-    <p>DOI: ${DOI}</p>
-    </#if>
+    <#if depositReference??> <p>Deposit reference: ${depositReference}</p> </#if>
+    <#if (depositor.name)??> <p>Depositor name: ${depositor.name}</p> </#if>
+    <#if (depositor.contactDetails)??> <p>Depositor contact details: ${depositor.contactDetails}</p> </#if>
+    <#if (forTheEIDC.name)??> <p>For the EIDC name: ${forTheEIDC.name}</p> </#if>
+    <#if (forTheEIDC.contactDetails)??> <p>For the EIDC contact details: ${forTheEIDC.contactDetails}</p> </#if>
+    <#if DOI??> <p>DOI: ${DOI}</p> </#if>
     <h2>ONE: Data identification and citation</h2>
-    <#if (author.name)??>
-    <p>Author name: ${author.name}</p>
-    </#if>
-    <#if (author.affiliation)??>
-    <p>Author affiliation: ${author.affiliation}</p>
-    </#if>
-    <#if (author.emailAddress)??>
-    <p>Author email address: ${author.emailAddress}</p>
-    </#if>
-    <#if (author.ORCID)??>
-    <p>Author ORCID: ${author.ORCID}</p> </#if>
+    <#if (author.name)??> <p>Author name: ${author.name}</p> </#if>
+    <#if (author.affiliation)??> <p>Author affiliation: ${author.affiliation}</p> </#if>
+    <#if (author.emailAddress)??> <p>Author email address: ${author.emailAddress}</p> </#if>
+    <#if (author.ORCID)??> <p>Author ORCID: ${author.ORCID}</p> </#if>
     <h2>TWO: Policies & legislation</h2>
     <h2>THREE: The data</h2>
     <#if dataFiles??> <p>Data files: ${dataFiles}</p> </#if>
