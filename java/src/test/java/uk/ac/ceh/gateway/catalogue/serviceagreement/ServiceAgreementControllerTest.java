@@ -117,7 +117,7 @@ class ServiceAgreementControllerTest {
             """;
 
         //When
-        mvc.perform(post("/service-agreement/{id}", ID)
+        mvc.perform(put("/service-agreement/{id}", ID)
                 .content(requestBody)
                 .queryParam("catalogue", "eidc")
                 .contentType(HAL_JSON)
@@ -143,7 +143,7 @@ class ServiceAgreementControllerTest {
         givenUserCanNotEdit();
 
         //When
-        mvc.perform(post("/service-agreement/{id}", ID)
+        mvc.perform(put("/service-agreement/{id}", ID)
                 .content("{\"title\":\"Test Service Agreement\"}")
                 .queryParam("catalogue", "eidc")
                 .contentType(APPLICATION_JSON)
@@ -162,7 +162,7 @@ class ServiceAgreementControllerTest {
         givenMedataRecordDoesNotExist();
 
         //When
-        mvc.perform(post("/service-agreement/{id}", ID)
+        mvc.perform(put("/service-agreement/{id}", ID)
                 .content("{\"title\":\"Test Service Agreement\"}")
                 .queryParam("catalogue", "eidc")
                 .contentType(APPLICATION_JSON)

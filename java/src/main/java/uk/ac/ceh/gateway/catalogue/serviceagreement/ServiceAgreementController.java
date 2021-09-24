@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.context.annotation.Profile;
@@ -34,7 +35,7 @@ public class ServiceAgreementController {
     }
 
     @PreAuthorize("@permission.userCanEdit(#id)")
-    @PostMapping("{id}")
+    @PutMapping("{id}")
     public ServiceAgreementModel create(
         @ActiveUser CatalogueUser user,
         @PathVariable("id") String id,
@@ -74,6 +75,7 @@ public class ServiceAgreementController {
 
     @PreAuthorize("@permission.userIsAdmin()")
     @GetMapping
+    @SneakyThrows
     public List<ServiceAgreementSolrIndex> search(
             @RequestParam(value = "query", defaultValue = "*") String query
     ) {
