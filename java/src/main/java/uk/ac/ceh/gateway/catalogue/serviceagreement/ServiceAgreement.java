@@ -8,10 +8,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.RelatedRecord;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 
 @Data
@@ -45,10 +42,10 @@ public class ServiceAgreement extends AbstractMetadataDocument {
     /*
     THREE: The data
     */
-    private Number dataFiles;
+    private String dataFiles;
     private List<String> fileNames;
     private List<String> fileFormats;
-    private Number fileSize;
+    private String fileSize;
     private String transferMethod;
     private List<RelatedRecord> relatedDataHoldings;
     private String dataCategory;
@@ -82,7 +79,7 @@ public class ServiceAgreement extends AbstractMetadataDocument {
     EIGHT: Superseding existing data (if applicable)
     */
     private String supersededMetadataId;
-    private String reason;
+    private String supersededReason;
 
     /*
     NINE: Miscellaneous

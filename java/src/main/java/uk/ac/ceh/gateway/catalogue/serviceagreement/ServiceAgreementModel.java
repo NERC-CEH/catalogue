@@ -15,13 +15,20 @@ import uk.ac.ceh.gateway.catalogue.converters.Template;
 public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementModel> {
     private String id;
     private String title;
+
     private String depositReference;
+    private String depositorName;
+    private String depositorContactDetails;
     private String eidcName;
+    private String eidcContactDetails;
 
     public ServiceAgreementModel(ServiceAgreement serviceAgreement) {
         this.id = serviceAgreement.getId();
         this.title = serviceAgreement.getTitle();
+
         this.depositReference = serviceAgreement.getDepositReference();
+        this.depositorContactDetails = serviceAgreement.getDepositorContactDetails();
         this.eidcName = serviceAgreement.getEidcName();
+        this.eidcContactDetails = serviceAgreement.getEidcContactDetails();
     }
 }

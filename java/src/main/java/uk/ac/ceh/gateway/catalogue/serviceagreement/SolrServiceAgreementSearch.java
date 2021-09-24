@@ -28,7 +28,7 @@ public class SolrServiceAgreementSearch implements ServiceAgreementSearch {
     }
 
     @Override
-    public List<ServiceAgreementSolrIndex> query(String term) throws RuntimeException {
+    public List<ServiceAgreementSolrIndex> query(String term) {
         try {
             val query = new SolrQuery();
             query.setQuery(term);

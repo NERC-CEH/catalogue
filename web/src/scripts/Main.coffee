@@ -78,9 +78,9 @@ define [
     do @initMapviewer if $('#mapviewer').length
     do @initPermission if $('.permission').length
     do @initSearch if $('#search').length
+    do @initServiceAgreement if $('.service-agreement').length
     do @initSimpleUpload if $('#simple-upload').length
     do @initStudyAreaMap if $('#studyarea-map').length
-    do @initServiceAgreement if $('.service-agreement').length
 
     $('.chart').each (i, e) -> new ChartView el: e
     do Backbone.history.start

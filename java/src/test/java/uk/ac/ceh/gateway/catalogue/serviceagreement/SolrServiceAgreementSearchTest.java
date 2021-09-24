@@ -4,7 +4,6 @@ import lombok.SneakyThrows;
 import lombok.val;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.params.SolrParams;
 import org.junit.jupiter.api.Assertions;
@@ -80,10 +79,11 @@ class SolrServiceAgreementSearchTest {
     @SneakyThrows
     public void failToGetServiceAgreements() {
         //Given
-        when(solrClient.query(eq(SERVICE_AGREEMENT), any(SolrParams.class), eq(POST))).thenThrow(new ServiceAgreementException("Test"));
+        when(solrClient.query(eq(SERVICE_AGREEMENT), any(SolrParams.class), eq(POST)))
+            .thenThrow(new ServiceAgreementException("Test"));
 
         //When
-        Assertions.assertThrows(RuntimeException.class, () ->
+        Assertions.assertThrows(ServiceAgreementException.class, () ->
                 solrServiceAgreementSearch.query(QUERY)
         );
     }

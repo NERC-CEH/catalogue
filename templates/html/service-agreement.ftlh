@@ -32,13 +32,13 @@
     <#if availability??> <p>Availability: ${availability}</p> </#if>
     <#if specificRequirements??> <p>Specific Requirements: ${specificRequirements}</p> </#if>
     <#if otherServicesRequired??> <p>Other services required: ${otherServicesRequired}</p> </#if>
-    <h2>SEVEN: Licensing and IPR<h2>
+    <h2>SEVEN: Licensing and IPR</h2>
     <#if endUserLicense??> <p>End user license: ${endUserLicense}</p> </#if>
     <#if ownerOfIpr??> <p>Owner of IPR: ${ownerOfIpr}</p> </#if>
     <#if useConstraints??> <p>Use constraints: ${useConstraints}</p> </#if>
     <h2>EIGHT: Superseding existing data (if applicable)</h2>
     <#if supersededMetadataId??> <p>Metadata Id: ${supersededMetadataId}</p> </#if>
-    <#if reason??> <p>${reason}</p> </#if>
+    <#if supersededReason??> <p>Reason: ${supersededReason}</p> </#if>
     <h2>NINE: Miscellaneous</h2>
     <#if otherInfo??> <p>Other Info: ${otherInfo}</p> </#if>
     <h2>TEN: Discovery metadata</h2>

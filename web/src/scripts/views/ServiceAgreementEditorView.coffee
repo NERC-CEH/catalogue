@@ -23,7 +23,9 @@ define [
   'cs!models/editor/DistributionFormat'
   'cs!models/editor/MapDataSource'
   'cs!views/editor/RelatedRecordView'
-], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, AccessLimitationView, AccessLimitation, InspireTheme, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, OnlineResourceView, OnlineResource, ResourceConstraintView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, MapDataSource, RelatedRecordView) -> EditorView.extend
+  'cs!views/editor/ReadOnlyView'
+  'cs!views/editor/ParentStringView'
+], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, AccessLimitationView, AccessLimitation, InspireTheme, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, OnlineResourceView, OnlineResource, ResourceConstraintView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, MapDataSource, RelatedRecordView, ReadOnlyView, ParentStringView) -> EditorView.extend
 
   initialize: ->
 
@@ -36,7 +38,6 @@ define [
           model: @model
           modelAttribute: 'depositReference'
           label: 'Deposit Reference'
-          helpText: """"""
 
         new ReadOnlyView
           model: @model
@@ -57,32 +58,29 @@ define [
           model: @model
           modelAttribute: 'depositorName'
           label: 'Depositor Name'
-          helpText: """"""
 
         new InputView
           model: @model
           modelAttribute: 'depositorContactDetails'
           label: 'Depositor Contact Details'
-          helpText: """"""
 
         new InputView
           model: @model
           modelAttribute: 'eidcName'
           label: 'For the EIDC: Name'
-          helpText: """"""
 
         new InputView
           model: @model
           modelAttribute: 'eidcContactDetails'
           label: 'For the EIDC: contact details'
-          helpText: """"""
 
       ]
     ,
       label: 'Data identification and citation'
       title: 'Data identification and citation'
       views: [
-        new PredefinedParentView
+
+        new ParentView
           model: @model
           ModelType: Contact
           modelAttribute: 'authors'
@@ -99,82 +97,41 @@ define [
       label: 'Policies & Legislation'
       title: 'Policies & Legislation'
       views: [
-              new TextareaView
-                model: @model
-                modelAttribute: 'otherPoliciesOrLegislation'
-                label: 'Other Policies or Legislation'
-                rows: 15
-                helpText: """  """
+        new TextareaView
+          model: @model
+          modelAttribute: 'otherPoliciesOrLegislation'
+          label: 'Other Policies or Legislation'
+          rows: 15
       ]
     ,
       label: 'The Data'
       title: 'The Data'
       views: [
-###
-        new PredefinedParentView
-          model: @model
-          modelAttribute: 'dataFiles'
-          ModelType: DistributionFormat
-          label: 'Number of data files'
-          ObjectInputView: DistributionFormatView
-          predefined:
-					'Decimal number': #Ask is is the best way for numbers
-					type: 'number'
 
         new InputView
           model: @model
-          modelAttribute: 'fileNames' # Ask how to do this for lists of strings
-          label: 'File names'
-          helpText: """
-                    <p>Provide a title that best describes that data resource. Include references to the subject, spatial and temporal aspects of the data resource.</p>
-                    <p>Only the leading letter and proper nouns of the title should be capitalised.  If it's necessary to include acronyms in the title, then include both the acronym (in parentheses) and the phrase/word from which it was formed. Acronyms should not include full-stops between each letter.</p>
-                    <p>If there are multiple titles or translations of titles (e.g. in Welsh), these should be added as alternative titles.</p>
-                    """
+          modelAttribute: 'dataFiles'
+          label: 'Number of data files'
 
-        new PredefinedParentView
+        new ParentStringView
           model: @model
-          modelAttribute: 'fileFormats' # Ask how to do this for lists of strings
-          ModelType: DistributionFormat
+          modelAttribute: 'fileNames'
+          label: 'File names'
+
+        new ParentStringView
+          model: @model
+          modelAttribute: 'fileFormats'
           label: 'File Formats'
-          ObjectInputView: DistributionFormatView
-          predefined:
-            'CSV':
-              name: 'Comma-separated values (CSV)'
-              type: 'text/csv'
-              version: 'unknown'
-            'NetCDF v4':
-              name: 'NetCDF'
-              type: 'application/netcdf'
-              version: '4'
-            'Shapefile':
-              name: 'Shapefile'
-              type: ''
-              version: 'unknown'
-            'TIFF':
-              name: 'TIFF'
-              type: 'image/tiff'
-              version: 'unknown'
-           helpText: """
-                    <p><b>Type</b> is the machine-readable media type.  If you do not know it, leave it blank.</p>
-                    <p><b>Version</b> is mandatory; if it's not applicable, enter '<i>unknown</i>'</p>
-                    """
-###
-        new PredefinedParentView
+
+        new InputView
           model: @model
           modelAttribute: 'fileSize'
-          ModelType: DistributionFormat
-          label: 'size of data files'
-          ObjectInputView: DistributionFormatView
-          predefined:
-					'Decimal number':
-					type: 'number'
+          label: 'Size of data files'
 
         new InputView
           model: @model
           modelAttribute: 'transferMethod'
           label: 'Transfer Method'
-          helpText: """"""
-
 
         new ParentView
           model: @model
@@ -193,26 +150,22 @@ define [
                     <p>Please note these are very broad themes and should not be confused with EIDC science topics.</p>
                     <p>Multiple topic categories are allowed - please include all that are pertinent.  For example, "Estimates of topsoil invertebrates" = Biota AND Environment AND Geoscientific Information.</p>
                     """
-
       ]
     ,
       label: 'Supporting documentation'
       title: 'Supporting documentation'
       views: [
-###
-        new InputView # Ask how to do this for lists of strings
+
+        new ParentStringView
           model: @model
           modelAttribute: 'supportingDocumentNames'
           label: 'Supporting Document names'
-          helpText: """  """
-          ###
 
         new TextareaView
           model: @model
           modelAttribute: 'contentIncluded'
           label: 'Content Included'
           rows: 15
-          helpText: """  """
       ]
     ,
       label: 'Data retention'
@@ -223,7 +176,6 @@ define [
           modelAttribute: 'policyExceptions'
           label: 'Policy Exceptions'
           rows: 15
-          helpText: """  """
       ]
     ,
       label: 'Availability and access'
@@ -267,14 +219,12 @@ define [
           modelAttribute: 'specificRequirements'
           label: 'Specific Requirements'
           rows: 15
-          helpText: """  """
 
         new TextareaView
           model: @model
           modelAttribute: 'otherServicesRequired'
           label: 'Other Services Required'
           rows: 15
-          helpText: """  """
       ]
     ,
       label: 'Licensing and IPR'
@@ -286,9 +236,8 @@ define [
           modelAttribute: 'End user license'
           label: 'End user license'
           rows: 15
-          helpText: """  """
 
-        new PredefinedParentView
+        new ParentView
           model: @model
           ModelType: Contact
           modelAttribute: 'Owner of IPR'
@@ -328,19 +277,14 @@ define [
       title: 'Superseding existing data (if applicable)'
       views: [
 
-        new ParentView
+        new InputView
           model: @model
           modelAttribute: 'supersededMetadataId'
           label: 'Superseded Metadata Id'
-          ObjectInputView: ResourceIdentifierView
-          helpText: """
-                    <p>A unique string or number used to identify the data resource. The codespace identifies the context in which the code is unique.</p>
-                    """
-          disabled: disabled
 
         new TextareaView
           model: @model
-          modelAttribute: 'reason'
+          modelAttribute: 'supersededReason'
           label: 'Reason for change'
           rows: 7
           helpText: """
@@ -356,7 +300,6 @@ define [
           modelAttribute: 'otherInfo'
           label: 'Other Info'
           rows: 7
-          helpText: """  """
       ]
     ,
       label: 'Discovery metadata'
