@@ -195,13 +195,6 @@ class DocumentControllerTest {
                 .build()
         ));
 
-        val metadataInfo = MetadataInfo.builder()
-            .state("published")
-            .build();
-        metadataInfo.addPermission(Permission.VIEW, PUBLIC_GROUP);
-        gemini.setMetadata(metadataInfo);
-        log.info(metadataInfo.toString());
-
         val caseStudy = new CaseStudy();
         caseStudy.setType("dataset");
 
@@ -211,9 +204,20 @@ class DocumentControllerTest {
         val impModelApplication = new ModelApplication();
         impModelApplication.setType("dataset");
 
+        val original = new GeminiDocument();
+        val metadataInfo = MetadataInfo.builder()
+            .state("published")
+            .catalogue("eidc")
+            .build();
+        metadataInfo.addPermission(Permission.VIEW, PUBLIC_GROUP);
+        original.setMetadata(metadataInfo);
+        original.setTitle("Test title");
+        log.info("Original: {}", original);
+
+
         val link = LinkDocument.builder()
             .linkedDocumentId("cbde2ff1-cae3-4189-9489-ef1f4435fadc")
-            .original(gemini)
+            .original(original)
             .additionalKeywords(new ArrayList<>())
             .build();
 
@@ -282,6 +286,7 @@ class DocumentControllerTest {
         );
     }
 
+    @SuppressWarnings("unused")
     @ParameterizedTest(name = "[{index}] GET as {1}, {3}, {0}")
     @MethodSource("provideMetadataDocuments")
     @SneakyThrows

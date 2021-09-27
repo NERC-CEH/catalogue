@@ -1,1 +1,5 @@
-{"id":"fe26bd48-0f81-4a37-8a28-58427b7e20bd","uri":"https://example.com/fe26bd48-0f81-4a37-8a28-58427b7e20bd","type":"dataset","descriptiveKeywords":[{}],"boundingBoxes":[{"westBoundLongitude":-1.091,"eastBoundLongitude":2.574,"southBoundLatitude":31.109,"northBoundLatitude":59.456}],"onlineResources":[{"url":"https://example.com/maps/da9d9beb-3fe5-4799-a4ed-c558d55159e6?request=getCapabilities&service=WMS","type":"WMS_GET_CAPABILITIES"}],"resourceType":{"value":"dataset"},"notGEMINI":false,"mapViewerUrl":"/maps#layers/da9d9beb-3fe5-4799-a4ed-c558d55159e6","incomingCitationCount":0}
+{
+  "id":"fe26bd48-0f81-4a37-8a28-58427b7e20bd",
+  "title": "Test title",
+  "uri":"https://example.com/fe26bd48-0f81-4a37-8a28-58427b7e20bd"
+}
