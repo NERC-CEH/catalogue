@@ -1,7 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import freemarker.template.Configuration;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -196,14 +194,13 @@ class DocumentControllerTest {
                 .url("https://example.com/maps/da9d9beb-3fe5-4799-a4ed-c558d55159e6?request=getCapabilities&service=WMS")
                 .build()
         ));
-        Multimap<Permission, String> permissions = ArrayListMultimap.create();
-        permissions.put(Permission.VIEW, PUBLIC_GROUP);
 
         val metadataInfo = MetadataInfo.builder()
             .state("published")
-            .permissions(permissions)
             .build();
+        metadataInfo.addPermission(Permission.VIEW, PUBLIC_GROUP);
         gemini.setMetadata(metadataInfo);
+        log.info(metadataInfo.toString());
 
         val caseStudy = new CaseStudy();
         caseStudy.setType("dataset");
@@ -219,6 +216,8 @@ class DocumentControllerTest {
             .original(gemini)
             .additionalKeywords(new ArrayList<>())
             .build();
+
+        log.debug(link.toString());
 
         val network = new Network();
         network.setEfMetadata(new Metadata());
