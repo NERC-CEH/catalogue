@@ -8,7 +8,6 @@ import org.apache.solr.client.solrj.beans.Field;
 @Value
 public class ServiceAgreementSolrIndex {
     @Field String dataIdentifier;
-    @Field String depositorName;
     @Field String depositReference;
     @Field String eidcName;
     @Field String title;
@@ -22,9 +21,15 @@ public class ServiceAgreementSolrIndex {
         @JsonProperty("title") String title
     ) {
         this.dataIdentifier = dataIdentifier;
-        this.depositorName = depositorName;
         this.depositReference = depositReference;
         this.eidcName = eidcName;
         this.title = title;
+    }
+
+    public ServiceAgreementSolrIndex(ServiceAgreementModel serviceAgreement) {
+        this.dataIdentifier = serviceAgreement.getId();
+        this.title = serviceAgreement.getTitle();
+        this.depositReference = serviceAgreement.getDepositReference();
+        this.eidcName = serviceAgreement.getEidcName();
     }
 }

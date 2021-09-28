@@ -56,6 +56,14 @@
                 Publication status
               </a>
             </li>
+            <#if catalogue.id == "eidc">
+            <li class="service-agreement" data-id="${id}">
+              <a href="/service-agreement/${id}">
+                <i class="fas fa-file"></i>
+                Service Agreement
+              </a>
+            </li>
+            </#if>
             <li role="separator" class="divider"></li>
             <li>
               <a href="/documents/${id}/catalogue"
@@ -111,7 +119,7 @@
                   </li>
                   <li>
                     <a href="https://eidc.ceh.ac.uk/admin/guidance/mintADOId"
-                        target="_blank" 
+                        target="_blank"
                         rel="noopener noreferrer"
                     >
                       Help
@@ -164,7 +172,7 @@
                   </li>
                   <li>
                     <a href="https://eidc.ceh.ac.uk/metadata/${id}/"
-                        target="_blank" 
+                        target="_blank"
                         rel="noopener noreferrer"
                     >
                       DRH admin folder
@@ -175,7 +183,7 @@
             </div>
           </#if>
         </#if>
-      </div> 
+      </div>
     </#if>
   </div>
 </#if>
