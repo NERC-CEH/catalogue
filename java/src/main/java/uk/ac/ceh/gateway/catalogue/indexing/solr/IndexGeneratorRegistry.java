@@ -7,7 +7,7 @@ import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.ClassMap;
 
 @Slf4j
-@ToString(of = "")
+@ToString(onlyExplicitlyIncluded = true)
 public class IndexGeneratorRegistry<D, I> implements IndexGenerator<D, I> {
     private final ClassMap<IndexGenerator<?, I>> lookup;
 

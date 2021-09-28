@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 @Slf4j
-@ToString(of = "")
+@ToString(onlyExplicitlyIncluded = true)
 public class HashMapDocumentTypeLookupService implements DocumentTypeLookupService {
     private final Map<String, Class<? extends MetadataDocument>> lookup;
 

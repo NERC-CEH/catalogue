@@ -18,12 +18,13 @@ import java.io.IOException;
 
 @Profile("elter")
 @Slf4j
-@ToString(of="address")
+@ToString(onlyExplicitlyIncluded = true)
 @Service
 public class DeimsSolrScheduledSiteService {
 
     private final RestTemplate restTemplate;
     private final SolrClient solrClient;
+    @ToString.Include
     private final String address;
     private static final String DEIMS = "deims";
 

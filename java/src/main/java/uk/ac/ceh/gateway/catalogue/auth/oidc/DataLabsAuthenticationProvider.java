@@ -29,11 +29,12 @@ import static java.lang.String.format;
 import static uk.ac.ceh.gateway.catalogue.controllers.DocumentController.MAINTENANCE_ROLE;
 
 @Slf4j
-@ToString(of = "address")
+@ToString(onlyExplicitlyIncluded = true)
 @Service
 @Profile("auth:datalabs")
 public class DataLabsAuthenticationProvider implements AuthenticationProvider {
     private final RestTemplate restTemplate;
+    @ToString.Include
     private final URI address;
 
     public static final String ADMIN = "system:catalogue:admin";

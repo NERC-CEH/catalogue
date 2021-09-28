@@ -22,9 +22,10 @@ import static uk.ac.ceh.gateway.catalogue.auth.oidc.DataLabsAuthenticationProvid
 @Slf4j
 @Profile("auth:datalabs")
 @Service
-@ToString(of = "usersEndpoint")
+@ToString(onlyExplicitlyIncluded = true)
 public class DatalabsCatalogueUserProvider implements CatalogueUserProvider {
     private final RestTemplate restTemplate;
+    @ToString.Include
     private final URI usersEndpoint;
 
     public DatalabsCatalogueUserProvider(

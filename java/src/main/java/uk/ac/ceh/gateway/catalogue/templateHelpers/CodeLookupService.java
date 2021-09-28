@@ -18,7 +18,7 @@ import java.util.Properties;
  */
 @Slf4j
 @Service
-@ToString(of = "")
+@ToString(onlyExplicitlyIncluded = true)
 public class CodeLookupService {
     private final Properties properties;
 

@@ -5,7 +5,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@ToString(of = "")
+@ToString(onlyExplicitlyIncluded = true)
 public class SparqlVocabularyService implements VocabularyService {
     private final Multimap<String, String> vocabulary;
 
