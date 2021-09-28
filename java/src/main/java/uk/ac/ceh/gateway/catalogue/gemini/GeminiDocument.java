@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.citation.Citation;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
@@ -17,11 +19,14 @@ import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreementSolrIndex;
 
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static java.util.regex.Pattern.CASE_INSENSITIVE;
 import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.*;
 import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAPABILITIES;
 
+@Slf4j
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
@@ -35,6 +40,11 @@ import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAP
 public class GeminiDocument extends AbstractMetadataDocument implements WellKnownText {
     private static final Set<String> ALLOWED_CITATION_FUNCTIONS = Set.of("isReferencedBy","isSupplementTo");
     private static final String TOPIC_PROJECT_URL = "http://onto.nerc.ac.uk/CEHMD/";
+    private static final Pattern WMS_ONLINE_RESOURCE = Pattern
+        .compile(
+            "^https://.*/maps/([0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}).*",
+            CASE_INSENSITIVE
+        );
     private String otherCitationDetails, lineage, reasonChanged,
         metadataStandardName, metadataStandardVersion;
     private Number version;
@@ -139,22 +149,22 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
      * @return The link to the map viewer if it is viewable else null
      */
     public String getMapViewerUrl() {
-        if(isMapViewable()) {
-            return "/maps#layers/" + getId();
-        }
-        return null;
-    }
-
-    /**
-     * Decide if this gemini document has a map viewing capability. That is at
-     * least one wms is registered to this gemini document
-     * @return true if a wms exists in the online resources
-     */
-    public boolean isMapViewable() {
-        return Optional.ofNullable(onlineResources)
+        val possibleWms = Optional.ofNullable(onlineResources)
             .orElse(Collections.emptyList())
             .stream()
-            .anyMatch((o)-> WMS_GET_CAPABILITIES == o.getType());
+            .filter(onlineResource -> onlineResource.getType().equals(WMS_GET_CAPABILITIES))
+            .filter(onlineResource -> WMS_ONLINE_RESOURCE.matcher(onlineResource.getUrl()).matches())
+            .findFirst();
+
+        if(possibleWms.isPresent()) {
+            val onlineResource = possibleWms.get();
+            log.debug(onlineResource.toString());
+            val matcher = WMS_ONLINE_RESOURCE.matcher(onlineResource.getUrl());
+            log.debug("matches {}, group 1: {}", matcher.matches(), matcher.group(1));
+            val id = matcher.group(1);
+            return "/maps#layers/" + id;
+        }
+        return null;
     }
 
     public List<String> getTopics() {

@@ -28,9 +28,12 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.*;
+import static uk.ac.ceh.gateway.catalogue.model.Permission.*;
 
+@SuppressWarnings("SpringMVCViewInspection")
 @Slf4j
 @ToString(callSuper = true)
 @Controller
@@ -82,7 +85,9 @@ public class DocumentController extends AbstractDocumentController {
         val data = documentRepository.save(
             user,
             multipartFile.getInputStream(),
-            MediaType.parseMediaType(multipartFile.getContentType()),
+            MediaType.parseMediaType(
+                Objects.requireNonNull(multipartFile.getContentType())
+            ),
             documentType,
             catalogue,
             "new file upload"
@@ -336,7 +341,10 @@ public class DocumentController extends AbstractDocumentController {
             List<Keyword> additionalKeywords = linkDocument.getAdditionalKeywords();
             MetadataInfo metadataInfo = linkDocument.getMetadata();
             MetadataInfo masterMetadataInfo = linkDocument.getOriginal().getMetadata();
-            if (masterMetadataInfo.isPubliclyViewable(Permission.VIEW)) {
+            log.debug("publicly viewable: {}", masterMetadataInfo.isPubliclyViewable(VIEW));
+            log.debug(masterMetadataInfo.toString());
+            if (masterMetadataInfo.isPubliclyViewable(VIEW)) {
+                log.debug("Adding linked elements");
                 document = linkDocument.getOriginal();
                 document.setMetadata(metadataInfo);
                 document.setId(id);

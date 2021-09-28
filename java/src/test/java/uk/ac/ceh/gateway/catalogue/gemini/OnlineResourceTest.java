@@ -6,51 +6,51 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class OnlineResourceTest {
     @Test
-    public void checkThatWMSURLReturnsGetCapabilitiesType() {
+    public void wmsUrlReturnsGetCapabilitiesType() {
         //Given
-        OnlineResource resource = OnlineResource.builder().url("http://wms.com?REQUEST=GetCapabilities&SERVICE=WMS&").build();
-        
+        OnlineResource resource = OnlineResource.builder().url("https://wms.com?REQUEST=GetCapabilities&SERVICE=WMS&").build();
+
         //When
         OnlineResource.Type type = resource.getType();
-        
+
         //Then
         assertEquals(OnlineResource.Type.WMS_GET_CAPABILITIES, type);
     }
-    
+
     @Test
-    public void checkThatCaseForGetCapabilitesDoesntMatter() {
+    public void caseForGetCapabilitesDoesntMatter() {
         //Given
-        OnlineResource resource = OnlineResource.builder().url("http://wms.com?request=getcapabilities&SERVICE=WMS").build();
-        
+        OnlineResource resource = OnlineResource.builder().url("https://wms.com?request=getcapabilities&SERVICE=WMS").build();
+
         //When
         OnlineResource.Type type = resource.getType();
-        
+
         //Then
         assertEquals(OnlineResource.Type.WMS_GET_CAPABILITIES, type);
     }
-    
+
     @Test
-    public void checkThatURLWithGetCapabilitesInsideItIsNotFlagged() {
+    public void urlWithGetCapabilitesInsideItIsNotFlagged() {
         //Given
-        OnlineResource resource = OnlineResource.builder().url("http://www.google.com/getcapabilities/somethingelse").build();
-        
+        OnlineResource resource = OnlineResource.builder().url("https://www.google.com/getcapabilities/somethingelse").build();
+
         //When
         OnlineResource.Type type = resource.getType();
-        
+
         //Then
         assertEquals(OnlineResource.Type.OTHER, type);
     }
-    
+
     @Test
-    public void checkThatURLWithParameterAfterAmpersandMatchesGetCapabilites() {
+    public void urlWithParameterAfterAmpersandMatchesGetCapabilites() {
         //Given
-        OnlineResource resource = OnlineResource.builder().url("http://wms.com?SERVICE=WMS&REQUEST=GetCapabilities&").build();
-        
+        OnlineResource resource = OnlineResource.builder().url("https://wms.com?SERVICE=WMS&REQUEST=GetCapabilities&").build();
+
         //When
         OnlineResource.Type type = resource.getType();
-        
+
         //Then
         assertEquals(OnlineResource.Type.WMS_GET_CAPABILITIES, type);
     }
-    
+
 }
