@@ -148,6 +148,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
      * rendered in the map viewer
      * @return The link to the map viewer if it is viewable else null
      */
+    @JsonIgnore
     public String getMapViewerUrl() {
         val possibleWms = Optional.ofNullable(onlineResources)
             .orElse(Collections.emptyList())
@@ -165,6 +166,11 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             return "/maps#layers/" + id;
         }
         return null;
+    }
+
+    @JsonIgnore
+    public boolean isMapViewable() {
+        return getMapViewerUrl() != null;
     }
 
     public List<String> getTopics() {
