@@ -5,12 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.gateway.catalogue.indexing.ClassMap;
 
 /**
- * A post processing service which delegates to an other post processing service
+ * A post-processing service which delegates to another post-processing service
  * which is located from the given ClassMap Lookup
  * @see ClassMap
  */
 @Slf4j
-@ToString
+@ToString(exclude = "lookup")
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class ClassMapPostProcessingService implements PostProcessingService<Object> {
     private final ClassMap<PostProcessingService> lookup;

@@ -50,6 +50,7 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
     public static final String NC_ECOSYSTEM_SERVICES_URL = "http://vocabs.ceh.ac.uk/ncterms/ecosystemService";
     public static final String NC_GEOGRAPHICAL_SCALE_URL = "http://vocabs.ceh.ac.uk/ncterms/geographical_scale";
 
+    @SuppressWarnings("unused")
     public static final String SA_TAXON_URL = "http://vocabs.ceh.ac.uk/esb/taxon";
 
     private static final String UKSCAPE_RESEARCH_PROJECT_URL = "http://onto.nerc.ac.uk/CEHMD/ukscape/research-project";

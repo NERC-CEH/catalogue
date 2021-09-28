@@ -9,13 +9,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 @Slf4j
-@ToString
+@ToString(of = "")
 public class HashMapDocumentTypeLookupService implements DocumentTypeLookupService {
     private final Map<String, Class<? extends MetadataDocument>> lookup;
 
     public HashMapDocumentTypeLookupService() {
         lookup = new HashMap<>();
-        log.info("Creating");
+        log.info("Creating {}", this);
     }
 
     @Override

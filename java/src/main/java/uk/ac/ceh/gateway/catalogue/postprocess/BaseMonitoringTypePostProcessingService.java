@@ -18,13 +18,13 @@ import java.util.Optional;
 import static uk.ac.ceh.gateway.catalogue.indexing.jena.Ontology.*;
 
 /**
- * Defines a post processing service which can be used adding additional
+ * Defines a post-processing service which can be used adding additional
  * information to a BaseMonitoringType.
  *
  * The logic in here is based upon: uk.ac.ceh.ukeof.linkstore.guava.LinkWrapper
  */
 @Slf4j
-@ToString
+@ToString(exclude = "jenaTdb")
 public class BaseMonitoringTypePostProcessingService implements PostProcessingService<BaseMonitoringType> {
     private final Dataset jenaTdb;
 
@@ -33,6 +33,7 @@ public class BaseMonitoringTypePostProcessingService implements PostProcessingSe
         log.info("Creating {}", this);
     }
 
+    @SuppressWarnings("DuplicatedCode")
     @Override
     public void postProcess(BaseMonitoringType document) {
         Resource uri = ResourceFactory.createResource(document.getUri());

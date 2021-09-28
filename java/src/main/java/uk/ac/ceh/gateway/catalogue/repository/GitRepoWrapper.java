@@ -13,7 +13,7 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
 
 @Slf4j
-@ToString
+@ToString(exclude = {"repo", "documentInfoMapper"})
 @Service
 public class GitRepoWrapper {
     private final DataRepository<CatalogueUser> repo;

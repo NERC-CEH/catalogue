@@ -2,12 +2,9 @@ package uk.ac.ceh.gateway.catalogue.gemini;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.citation.Citation;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
@@ -16,7 +13,6 @@ import uk.ac.ceh.gateway.catalogue.indexing.solr.WellKnownText;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.Link;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
-import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreementSolrIndex;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -135,6 +131,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
         return this;
     }
 
+    @SuppressWarnings("unused")
     public Set<Link> getAssociatedResources() {
         Set<Link> toReturn = new HashSet<>();
         if (incomingRelationships != null) {
@@ -225,7 +222,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     }
 
     @Override
-    public List<String> getWKTs() {
+    public @NonNull List<String> getWKTs() {
         return Optional.ofNullable(boundingBoxes)
             .orElse(Collections.emptyList())
             .stream()
