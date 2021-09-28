@@ -25,7 +25,8 @@ define [
   'cs!views/editor/RelatedRecordView'
   'cs!views/editor/ReadOnlyView'
   'cs!views/editor/ParentStringView'
-], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, AccessLimitationView, AccessLimitation, InspireTheme, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, OnlineResourceView, OnlineResource, ResourceConstraintView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, MapDataSource, RelatedRecordView, ReadOnlyView, ParentStringView) -> EditorView.extend
+  'cs!views/editor/BoundingBoxView'
+], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, AccessLimitationView, AccessLimitation, InspireTheme, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, OnlineResourceView, OnlineResource, ResourceConstraintView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, MapDataSource, RelatedRecordView, ReadOnlyView, ParentStringView, BoundingBoxView) -> EditorView.extend
 
   initialize: ->
 
@@ -181,38 +182,13 @@ define [
       label: 'Availability and access'
       title: 'Availability and access'
       views: [
-        new PredefinedParentView
+        new TextareaView
           model: @model
           modelAttribute: 'Availability'
           ModelType: OnlineResource
           label: 'Availability'
-          ObjectInputView: OnlineResourceView
           multiline: true
-          predefined:
-            'Data package':
-              url: 'https://data-package.ceh.ac.uk/data/{fileIdentifier}'
-              name: 'Download the data'
-              description: 'Download a copy of this data'
-              function: 'download'
-            'Order manager data':
-              url: 'https://order-eidc.ceh.ac.uk/resources/{ORDER_REF}}/order'
-              name: 'Download the data'
-              description: 'Download a copy of this data'
-              function: 'order'
-            'Direct access data':
-              url: 'https://catalogue.ceh.ac.uk/datastore/eidchub/{fileIdentifier}'
-              name: 'Download the data'
-              description: 'Download a copy of this data'
-              function: 'download'
-            'Supporting documents':
-              url: 'https://data-package.ceh.ac.uk/sd/{fileIdentifier}.zip'
-              name: 'Supporting information'
-              description: 'Supporting information available to assist in re-use of this dataset'
-              function: 'information'
-          helpText: """
-                    <p>Include addresses of web services used to access the data and supporting information.</p>
-                    <p>Other links such as project websites or papers should <b>NOT</b> be included here. You can add them to "Additional information"</p>
-                    """
+          helpText: """ """
 
         new TextareaView
           model: @model
@@ -231,29 +207,10 @@ define [
       title: 'Licensing and IPR'
       views: [
 
-        new TextareaView
+        new PredefinedParentView
           model: @model
           modelAttribute: 'End user license'
           label: 'End user license'
-          rows: 15
-
-        new ParentView
-          model: @model
-          ModelType: Contact
-          modelAttribute: 'Owner of IPR'
-          label: 'Owner of IPR'
-          ObjectInputView: ContactView
-          multiline: true
-          helpText: """
-                    <p>The names of Owner should be in the format <code>Surname, First Initial. Second Initial.</code> For example <i>Brown, A.B.</i></p>
-                    <p>Role and organisation name are mandatory.</p>
-                    <p>The preferred identifier for individuals is an ORCiD.  You must enter the identifier as a <i>fully qualified</i> ID (e.g.  <b>https://orcid.org/1234-5678-0123-987X</b> rather than <b>1234-5678-0123-987X</b>).</p>
-                    """
-
-        new PredefinedParentView
-          model: @model
-          modelAttribute: 'useConstraints'
-          label: 'Use constraints'
           ObjectInputView: ResourceConstraintView
           multiline: true
           predefined:
@@ -271,6 +228,27 @@ define [
                     <p>Where possible include a link to a document describing the terms and conditions.</p>
                     <p>You MUST enter something even if there are no constraints. In the rare case that there are none, enter "no conditions apply".</p>
                     """
+
+        new TextareaView
+          model: @model
+          modelAttribute: 'useConstraints'
+          label: 'Additional Use Constraints'
+          rows: 15
+
+        new ParentView
+          model: @model
+          ModelType: Contact
+          modelAttribute: 'Owner of IPR'
+          label: 'Owner of IPR'
+          ObjectInputView: ContactView
+          multiline: true
+          helpText: """
+                    <p>The names of Owner should be in the format <code>Surname, First Initial. Second Initial.</code> For example <i>Brown, A.B.</i></p>
+                    <p>Role and organisation name are mandatory.</p>
+                    <p>The preferred identifier for individuals is an ORCiD.  You must enter the identifier as a <i>fully qualified</i> ID (e.g.  <b>https://orcid.org/1234-5678-0123-987X</b> rather than <b>1234-5678-0123-987X</b>).</p>
+                    """
+
+
       ]
     ,
       label: 'Superseding existing data'
@@ -342,15 +320,63 @@ define [
                     <p>Good quality keywords help to improve the efficiency of search, making it easier to find relevant records.</p>
                     """
 
-        new ParentView
+        new PredefinedParentView
           model: @model
-          ModelType: TopicCategory
           modelAttribute: 'areaOfStudy'
-          label: 'Area of study'
-          ObjectInputView: TopicCategoryView
+          ModelType: BoundingBox
+          label: 'Area of Study'
+          ObjectInputView: BoundingBoxView
+          multiline: true
+          predefined:
+            'England':
+              northBoundLatitude: 55.812
+              eastBoundLongitude: 1.768
+              southBoundLatitude: 49.864
+              westBoundLongitude: -6.452
+              extentName: 'England'
+              extentUri: 'http://sws.geonames.org/6269131'
+            'Great Britain':
+              northBoundLatitude: 60.861
+              eastBoundLongitude: 1.768
+              southBoundLatitude: 49.864
+              westBoundLongitude: -8.648
+              extentName: 'Great Britain'
+            'Northern Ireland':
+              northBoundLatitude: 55.313
+              eastBoundLongitude: -5.432
+              southBoundLatitude: 54.022
+              westBoundLongitude: -8.178
+              extentName: 'Northern Ireland'
+              extentUri: 'http://sws.geonames.org/2641364'
+            Scotland:
+              northBoundLatitude: 60.861
+              eastBoundLongitude: -0.728
+              southBoundLatitude: 54.634
+              westBoundLongitude: -8.648
+              extentName: 'Scotland'
+              extentUri: 'http://sws.geonames.org/2638360'
+            'United Kingdom':
+              northBoundLatitude: 60.861
+              eastBoundLongitude: 1.768
+              southBoundLatitude: 49.864
+              westBoundLongitude: -8.648
+              extentName: 'United Kingdom'
+              extentUri: 'http://sws.geonames.org/2635167'
+            Wales:
+              northBoundLatitude: 53.434
+              eastBoundLongitude: -2.654
+              southBoundLatitude: 51.375
+              westBoundLongitude: -5.473
+              extentName: 'Wales'
+              extentUri: 'http://sws.geonames.org/2634895'
+            World:
+              northBoundLatitude: 90.00
+              eastBoundLongitude: 180.00
+              southBoundLatitude: -90.00
+              westBoundLongitude: -180.00
           helpText: """
-                    <p>Please note these are very broad themes and should not be confused with EIDC science topics.</p>
-                    <p>Multiple topic categories are allowed - please include all that are pertinent.  For example, "Estimates of topsoil invertebrates" = Biota AND Environment AND Geoscientific Information.</p>
+                    <p>A bounding box representing the limits of the data resource's study area.</p>
+                    <p>If you do not wish to reveal the exact location publicly (for example, if locations are sensitive) it is recommended that you generalise the location.</p>
                     """
       ]
     ]
