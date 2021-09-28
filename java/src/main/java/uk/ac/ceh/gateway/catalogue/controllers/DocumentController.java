@@ -294,6 +294,7 @@ public class DocumentController extends AbstractDocumentController {
         );
     }
 
+    @CrossOrigin
     @ResponseBody
     @SneakyThrows
     @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
