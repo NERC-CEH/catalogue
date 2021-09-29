@@ -2,14 +2,12 @@ package uk.ac.ceh.gateway.catalogue.controllers;
 
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import uk.ac.ceh.components.datastore.DataRepository;
-import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -26,7 +24,7 @@ import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.GEMINI_XML_SHORT;
 
 /**
  * The following emulates a Web accessible Folder of metadata records
- * for NERC from the current catalogue
+ * for the NERC data service from the current catalogue
  */
 @Slf4j
 @ToString
@@ -36,7 +34,6 @@ public class NERCWafController {
     private final DataRepository<CatalogueUser> repo;
     private final MetadataListingService listing;
 
-    @Autowired
     public NERCWafController( DataRepository<CatalogueUser> repo,
                                 MetadataListingService listing) {
         this.repo = repo;
@@ -44,9 +41,8 @@ public class NERCWafController {
         log.info("Creating {}", this);
     }
 
-    @RequestMapping(value="/",
-                    method=RequestMethod.GET)
-    public ModelAndView getWaf() throws DataRepositoryException, IOException, PostProcessingException {
+    @GetMapping("/")
+    public ModelAndView getWaf() throws IOException, PostProcessingException {
         List<String> resourceTypes = Arrays.asList("dataset", "service", "application", "nonGeographicDataset","signpost");
         DataRevision<CatalogueUser> latestRevision = repo.getLatestRevision();
         List<String> files = (latestRevision == null) ? Collections.emptyList() : listing
@@ -54,11 +50,12 @@ public class NERCWafController {
                 .stream()
                 .map((d)-> d + ".xml")
                 .collect(Collectors.toList());
-        return new ModelAndView("/html/waf.ftl", "files", files);
+        return new ModelAndView("/html/waf", "files", files);
     }
 
-    @RequestMapping("{id}.xml")
+    @GetMapping("{id}.xml")
     public String forwardToMetadata(@PathVariable("id") String id) {
         return "forward:/documents/" + id + "?format=" + GEMINI_XML_SHORT;
     }
 }
+
