@@ -28,6 +28,7 @@ import uk.ac.ceh.gateway.catalogue.converters.UkeofXml2EFDocumentMessageConverte
 import uk.ac.ceh.gateway.catalogue.converters.Xml2GeminiDocumentMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.Xml2WmsCapabilitiesMessageConverter;
 import uk.ac.ceh.gateway.catalogue.datacite.DataciteService;
+import uk.ac.ceh.gateway.catalogue.datalabs.DatalabsDocument;
 import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.document.JacksonDocumentInfoMapper;
@@ -145,6 +146,7 @@ public class ServicesConfig {
             .register(CEH_MODEL, CehModel.class)
             .register(CEH_MODEL_APPLICATION, CehModelApplication.class)
             .register(DATA_TYPE, DataType.class)
+            .register(DATALABS, DatalabsDocument.class)
             .register(EF_DOCUMENT, BaseMonitoringType.class)
             .register(ERAMMP_DATACUBE, ErammpDatacube.class)
             .register(ELTER, ElterDocument.class)

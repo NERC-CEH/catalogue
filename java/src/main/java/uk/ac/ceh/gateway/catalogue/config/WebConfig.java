@@ -23,6 +23,7 @@ import uk.ac.ceh.gateway.catalogue.converters.Object2TemplatedMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.TransparentProxyMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.WmsFeatureInfo2XmlMessageConverter;
 import uk.ac.ceh.gateway.catalogue.datacite.DataciteResponse;
+import uk.ac.ceh.gateway.catalogue.datalabs.DatalabsDocument;
 import uk.ac.ceh.gateway.catalogue.ef.Activity;
 import uk.ac.ceh.gateway.catalogue.ef.Facility;
 import uk.ac.ceh.gateway.catalogue.ef.Network;
@@ -79,6 +80,7 @@ public class WebConfig implements WebMvcConfigurer {
         converters.add(new Object2TemplatedMessageConverter<>(CehModelApplication.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(Citation.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(Dataset.class, freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter<>(DatalabsDocument.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(DataType.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(ElterDocument.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(ErammpModel.class, freemarkerConfiguration));

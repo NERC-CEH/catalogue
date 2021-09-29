@@ -1,6 +1,6 @@
 package uk.ac.ceh.gateway.catalogue;
 
-import static uk.ac.ceh.gateway.catalogue.catalogue.Catalogue.*;
+import static uk.ac.ceh.gateway.catalogue.catalogue.Catalogue.DocumentType;
 
 public class DocumentTypes {
 
@@ -20,6 +20,12 @@ public class DocumentTypes {
     public static DocumentType DATA_TYPE_TYPE = DocumentType.builder()
         .title("Data type")
         .type(DATA_TYPE)
+        .build();
+
+    public static final String DATALABS = "datalabs-document";
+    public static DocumentType DATALABS_TYPE = DocumentType.builder()
+        .title("DataLabs Document")
+        .type(DATALABS)
         .build();
 
     public static final String EF_DOCUMENT = "EF_DOCUMENT";
