@@ -39,21 +39,9 @@ define [
 
         new TextareaView
           model: @model
-          modelAttribute: 'objectives'
-          label: 'Objectives'
-          rows: 17
-          helpText: """
-                    <p>Brief description of the main objectives</p>
-                    """
-
-        new TextareaView
-          model: @model
           modelAttribute: 'description'
           label: 'Description'
-          rows: 17
-          helpText: """
-                    <p>Longer description of project incl. why models were used to answer the science question, assumptions made, key outputs</p>
-                    """
+          rows: 6
 
         new ParentView
           model: @model
@@ -68,11 +56,30 @@ define [
 
         new PredefinedParentView
           model: @model
-          ModelType: Contact
           modelAttribute: 'responsibleParties'
+          ModelType: Contact
+          multiline: true
           label: 'Contacts'
           ObjectInputView: ContactView
-          multiline: true
+          predefined:
+            'BAS':
+              organisationName: 'British Antarctic Survey'
+              email: 'information@bas.ac.uk'
+              organisationIdentifier: 'https://ror.org/01rhff309'
+            'BGS':
+              organisationName: 'British Geological Survey'
+              email: 'enquiries@bgs.ac.uk'
+              organisationIdentifier: 'https://ror.org/04a7gbp98'
+            'CEDA':
+              organisationName: 'Centre for Environmental Data Analysis'
+            'NOC':
+              organisationName: 'National Oceanography Centre'
+              organisationIdentifier: 'https://ror.org/00874hx02'
+            'UKCEH':
+              organisationName: 'UK Centre for Ecology & Hydrology'
+              email: 'enquiries@ceh.ac.uk'
+              organisationIdentifier: 'https://ror.org/00pggkr55'
+
 
         new PredefinedParentView
           model: @model
@@ -108,27 +115,8 @@ define [
               funderIdentifier: 'https://ror.org/057g20z61'
       ]
     ,
-      label: 'References'
-      title: 'References'
-      views: [
-        new ParentView
-          model: @model
-          modelAttribute: 'references'
-          ModelType: Supplemental
-          multiline: true
-          label: 'References'
-          ObjectInputView: SupplementalView
-          helpText: """
-                    <p>You can add information not documented elsewhere here. This includes links to related papers, grey literature or websites.  For example:</p>
-                    <ul><li>papers that cite this resource</li><li>papers/reports that provide relevant supporting information but which do not cite this resource</li><li>project websites</li></ul>
-                    <p>When linking to published articles, please use DOIs whenever possible.</p>
-                    <p><small class='text-danger'><i class='fas fa-exclamation-triangle'> </i> NOTE: Some websites may be maintained for a limited period and may therefore soon become unavailable.</small></p>
-                    """
-                    
-      ]
-    ,
-      label: 'Model Info'
-      title: 'Model Info'
+      label: 'Models'
+      title: 'Models'
       views: [
         new ParentView
           model: @model
@@ -151,8 +139,8 @@ define [
                     """
       ]
     ,
-      label: 'Data Info'
-      title: 'Data Info'
+      label: 'Data'
+      title: 'Data'
       views: [
         new ParentView
           model: @model
@@ -173,6 +161,25 @@ define [
           helpText: """
                     <p>Detailed description of model outputs including: variable name, units, file format, URL to data catalogue record for each output (or alternative location of model outputs from this application)</p>
                     """
+      ]
+    ,
+      label: 'References'
+      title: 'References'
+      views: [
+        new ParentView
+          model: @model
+          modelAttribute: 'references'
+          ModelType: Supplemental
+          multiline: true
+          label: 'References'
+          ObjectInputView: SupplementalView
+          helpText: """
+                    <p>You can add information not documented elsewhere here. This includes links to related papers, grey literature or websites.  For example:</p>
+                    <ul><li>papers that cite this resource</li><li>papers/reports that provide relevant supporting information but which do not cite this resource</li><li>project websites</li></ul>
+                    <p>When linking to published articles, please use DOIs whenever possible.</p>
+                    <p><small class='text-danger'><i class='fas fa-exclamation-triangle'> </i> NOTE: Some websites may be maintained for a limited period and may therefore soon become unavailable.</small></p>
+                    """
+                    
       ]
     ]
 

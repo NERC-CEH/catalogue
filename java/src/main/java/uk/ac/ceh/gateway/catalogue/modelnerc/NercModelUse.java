@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 })
 public class NercModelUse extends AbstractMetadataDocument {
     private String
-        objectives,
         completionDate;
 
     private List<ResponsibleParty> responsibleParties;

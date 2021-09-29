@@ -46,7 +46,7 @@ define [
           model: @model
           modelAttribute: 'description'
           label: 'Description'
-          rows: 7
+          rows: 6
           helpText: """
                     <p>Longer description of model e.g. development history, use to answer science questions, overview of structure</p>
                     """
@@ -55,9 +55,9 @@ define [
           model: @model
           modelAttribute: 'purpose'
           label: 'Purpose'
-          rows: 3
+          rows: 6
           helpText: """
-                    <p>Short phrase to describe primary aim of model</p>
+                    <p>Short phrase to describe principal aim of model</p>
                     """
 
         new InputView
@@ -65,12 +65,8 @@ define [
           modelAttribute: 'modelType'
           label: 'Model type'
           listAttribute: """
-                    <option value='Unknown' />
                     <option value='Deterministic' />
                     <option value='Stochastic' />
-                    """
-          helpText: """
-                    <p>Type which best fits the model</p>
                     """
 
         new InputView
@@ -85,7 +81,7 @@ define [
         new InputView
           model: @model
           modelAttribute: 'releaseDate'
-          typeAttribute: 'date'
+          typeAttribute: 'text'
           label: 'Release date'
           placeholderAttribute: 'yyyy-mm-dd'
           helpText: """
@@ -149,80 +145,55 @@ define [
                     """
       ]
     ,
-      label: 'Input variables'
-      title: 'Input variables'
+      label: 'Technical info'
+      title: 'Technical info'
       views: [
-        new PredefinedParentView
+        new TextareaView
           model: @model
-          ModelType: DataTypeSchema
-          modelAttribute: 'inputVariables'
-          multiline: true
-          label: 'Input variables'
-          ObjectInputView: DataTypeSchemaSimpleView
-          predefined:
-            'Boolean (true/false)':
-              type: 'boolean'
-            'Date':
-              type: 'date'
-            'Date & time':
-              type: 'datetime'
-            'Decimal number':
-              type: 'number'
-            'Geographic point':
-              type: 'geopoint'
-            'Integer':
-              type: 'integer'
-            'Text':
-              type: 'string'
-            'Time':
-              type: 'time'
-              format: 'hh:mm:ss'
-            'URI':
-              type: 'string'
-              format: 'uri'
-            'UUID':
-              type: 'string'
-              format: 'uuid'
+          modelAttribute: 'modelCalibration'
+          label: 'Model calibration'
+          rows: 7
+          helpText: """
+                    <p>Does the model need calibration before running? If so, what needs to be supplied to do this? (if applicable)</p>
+                    """
+
+        new InputView
+          model: @model
+          modelAttribute: 'language'
+          label: 'Language'
+          placeholderAttribute: 'e.g. Python 2.7, C++, R 3.6'
+          helpText: """
+                    <p>Language in which the model is written.  You should include the release number if relevant</p>
+                    """
+
+        new InputView
+          model: @model
+          modelAttribute: 'compiler'
+          label: 'Compiler'
+          placeholderAttribute: 'e.g. C++ compiler'
+          helpText: """
+                    <p>Compiler required (if applicable)</p>
+                    """
+
+        new InputView
+          model: @model
+          modelAttribute: 'operatingSystem'
+          label: 'Operating system'
+          helpText: """
+                    <p>Operating system typically used to run the model</p>
+                    """
+
+         new InputView
+          model: @model
+          modelAttribute: 'systemMemory'
+          label: 'System memory'
+          helpText: """
+                    <p>Memory required to run code (if known)</p>
+                    """
       ]
     ,
-      label: 'Output variables'
-      title: 'Output variables'
-      views: [
-        new PredefinedParentView
-          model: @model
-          ModelType: DataTypeSchema
-          modelAttribute: 'outputVariables'
-          multiline: true
-          label: 'Output variables'
-          ObjectInputView: DataTypeSchemaSimpleView
-          predefined:
-            'Boolean (true/false)':
-              type: 'boolean'
-            'Date':
-              type: 'date'
-            'Date & time':
-              type: 'datetime'
-            'Decimal number':
-              type: 'number'
-            'Geographic point':
-              type: 'geopoint'
-            'Integer':
-              type: 'integer'
-            'Text':
-              type: 'string'
-            'Time':
-              type: 'time'
-              format: 'hh:mm:ss'
-            'URI':
-              type: 'string'
-              format: 'uri'
-            'UUID':
-              type: 'string'
-              format: 'uuid'
-      ]
-    ,
-      label: 'Spatio-temporal'
-      title: 'Spatio-temporal details'
+      label: 'Scale'
+      title: 'Spatial and temporal scale'
       views: [
         new PredefinedParentView
           model: @model
@@ -325,53 +296,6 @@ define [
 
       ]
     ,
-      label: 'Technical info'
-      title: 'Technical info'
-      views: [
-        new TextareaView
-          model: @model
-          modelAttribute: 'modelCalibration'
-          label: 'Model calibration'
-          rows: 7
-          helpText: """
-                    <p>Does the model need calibration before running? If so, what needs to be supplied to do this? (if applicable)</p>
-                    """
-
-        new InputView
-          model: @model
-          modelAttribute: 'language'
-          label: 'Language'
-          placeholderAttribute: 'e.g. Python 2.7, C++, R 3.6'
-          helpText: """
-                    <p>Language in which the model is written.  You should include the release number if relevant</p>
-                    """
-
-        new InputView
-          model: @model
-          modelAttribute: 'compiler'
-          label: 'Compiler'
-          placeholderAttribute: 'e.g. C++ compiler'
-          helpText: """
-                    <p>Compiler required (if applicable)</p>
-                    """
-
-        new InputView
-          model: @model
-          modelAttribute: 'operatingSystem'
-          label: 'Operating system'
-          helpText: """
-                    <p>Operating system typically used to run the model</p>
-                    """
-
-         new InputView
-          model: @model
-          modelAttribute: 'systemMemory'
-          label: 'System memory'
-          helpText: """
-                    <p>Memory required to run code (if known)</p>
-                    """
-      ]
-    ,
       label: 'Quality'
       title: 'Quality'
       views: [
@@ -398,9 +322,80 @@ define [
                     <ul><li>papers that cite this resource</li><li>papers/reports that provide relevant supporting information but which do not cite this resource</li><li>project websites</li></ul>
                     <p>When linking to published articles, please use DOIs whenever possible.</p>
                     <p><small class='text-danger'><i class='fas fa-exclamation-triangle'> </i> NOTE: Some websites may be maintained for a limited period and may therefore soon become unavailable.</small></p>
-                    """
-                    
+                    """    
       ]
+    ,
+      label: 'Input variables'
+      title: 'Input variables'
+      views: [
+        new PredefinedParentView
+          model: @model
+          ModelType: DataTypeSchema
+          modelAttribute: 'inputVariables'
+          multiline: true
+          label: 'Input variables'
+          ObjectInputView: DataTypeSchemaSimpleView
+          predefined:
+            'Boolean (true/false)':
+              type: 'boolean'
+            'Date':
+              type: 'date'
+            'Date & time':
+              type: 'datetime'
+            'Decimal number':
+              type: 'number'
+            'Geographic point':
+              type: 'geopoint'
+            'Integer':
+              type: 'integer'
+            'Text':
+              type: 'string'
+            'Time':
+              type: 'time'
+              format: 'hh:mm:ss'
+            'URI':
+              type: 'string'
+              format: 'uri'
+            'UUID':
+              type: 'string'
+              format: 'uuid'
+      ]
+    ,
+      label: 'Output variables'
+      title: 'Output variables'
+      views: [
+        new PredefinedParentView
+          model: @model
+          ModelType: DataTypeSchema
+          modelAttribute: 'outputVariables'
+          multiline: true
+          label: 'Output variables'
+          ObjectInputView: DataTypeSchemaSimpleView
+          predefined:
+            'Boolean (true/false)':
+              type: 'boolean'
+            'Date':
+              type: 'date'
+            'Date & time':
+              type: 'datetime'
+            'Decimal number':
+              type: 'number'
+            'Geographic point':
+              type: 'geopoint'
+            'Integer':
+              type: 'integer'
+            'Text':
+              type: 'string'
+            'Time':
+              type: 'time'
+              format: 'hh:mm:ss'
+            'URI':
+              type: 'string'
+              format: 'uri'
+            'UUID':
+              type: 'string'
+              format: 'uuid'
+      ]      
     ]
 
     EditorView.prototype.initialize.apply @
