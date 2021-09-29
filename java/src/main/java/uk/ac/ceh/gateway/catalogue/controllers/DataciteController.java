@@ -4,10 +4,7 @@ import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.datacite.DataciteService;
@@ -29,6 +26,7 @@ import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.DATACITE_XML_VALUE
 @Slf4j
 @ToString
 @RestController
+@RequestMapping("documents")
 public class DataciteController {
     public final static String DATACITE_ROLE = "ROLE_DATACITE";
 
@@ -45,14 +43,14 @@ public class DataciteController {
         log.info("Creating {}", this);
     }
 
-    @GetMapping(value="documents/{file}/datacite.xml")
+    @GetMapping(value="{file}/datacite.xml")
     public DataciteResponse getDataciteRequestXml(
         @PathVariable("file") String file
     ) {
         return getDataciteRequest(file);
     }
 
-    @GetMapping(value="documents/{file}/datacite", produces=DATACITE_XML_VALUE)
+    @GetMapping(value="{file}/datacite", produces=DATACITE_XML_VALUE)
     public DataciteResponse getDataciteRequest(
         @PathVariable("file") String file
     ) {
@@ -60,7 +58,7 @@ public class DataciteController {
     }
 
     @Secured(DATACITE_ROLE)
-    @PostMapping(value="documents/{file}/datacite")
+    @PostMapping(value="{file}/datacite")
     public RedirectView mintDoi(
         @ActiveUser CatalogueUser user,
         @PathVariable("file") String file
