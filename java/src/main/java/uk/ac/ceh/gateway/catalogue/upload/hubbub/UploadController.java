@@ -33,7 +33,7 @@ import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.TEXT_CSV_VALUE;
 @Controller
 @Profile("upload:hubbub")
 @Slf4j
-@ToString(of = "maxFileSize")
+@ToString(onlyExplicitlyIncluded = true)
 @RequestMapping("upload/{id}")
 public class UploadController {
     // These transition ids are specific to the CT & EIDCHELP Jira project
@@ -51,6 +51,7 @@ public class UploadController {
     private final DocumentRepository documentRepository;
     private final JiraService jiraService;
     private final PermissionService permissionService;
+    @ToString.Include
     private final String maxFileSize;
 
     public UploadController(

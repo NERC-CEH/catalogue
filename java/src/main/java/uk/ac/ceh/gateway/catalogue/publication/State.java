@@ -10,8 +10,9 @@ import java.util.Set;
 
 @Data
 @EqualsAndHashCode(of = {"id", "title"})
-@ToString(of = {"id", "title"})
+@ToString(onlyExplicitlyIncluded = true)
 public class State {
+    @ToString.Include
     private final String id, title;
     @Getter(AccessLevel.NONE)
     private final Map<PublishingRole, Set<Transition>> transitions = new HashMap<>();

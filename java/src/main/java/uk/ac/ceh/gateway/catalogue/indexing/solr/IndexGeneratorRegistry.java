@@ -7,13 +7,13 @@ import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.ClassMap;
 
 @Slf4j
-@ToString
+@ToString(onlyExplicitlyIncluded = true)
 public class IndexGeneratorRegistry<D, I> implements IndexGenerator<D, I> {
     private final ClassMap<IndexGenerator<?, I>> lookup;
 
     public IndexGeneratorRegistry(ClassMap<IndexGenerator<?, I>> lookup) {
         this.lookup = lookup;
-        log.info("Creating");
+        log.info("Creating {}", this);
     }
 
     @Override

@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Slf4j
-@ToString
+@ToString(onlyExplicitlyIncluded = true)
 public class GitDocumentRepository implements DocumentRepository {
     private final DocumentTypeLookupService documentTypeLookupService;
     private final DocumentReadingService documentReader;

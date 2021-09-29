@@ -24,6 +24,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.StreamUtils;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
+import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.ef.*;
@@ -31,6 +32,7 @@ import uk.ac.ceh.gateway.catalogue.erammp.ErammpDatacube;
 import uk.ac.ceh.gateway.catalogue.erammp.ErammpModel;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.imp.CaseStudy;
 import uk.ac.ceh.gateway.catalogue.imp.Model;
 import uk.ac.ceh.gateway.catalogue.imp.ModelApplication;
@@ -41,7 +43,6 @@ import uk.ac.ceh.gateway.catalogue.osdp.*;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
-import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 
@@ -51,6 +52,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -68,6 +70,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.*;
 import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.EIDC_PUBLISHER_USERNAME;
+import static uk.ac.ceh.gateway.catalogue.model.MetadataInfo.PUBLIC_GROUP;
 
 @Slf4j
 @WithMockCatalogueUser
@@ -177,6 +180,7 @@ class DocumentControllerTest {
         facility.setEfMetadata(new Metadata());
 
         val gemini = new GeminiDocument();
+        gemini.setId("da9d9beb-3fe5-4799-a4ed-c558d55159e6");
         gemini.setType("dataset");
         val bbox = BoundingBox.builder()
             .northBoundLatitude("59.456")
@@ -185,9 +189,14 @@ class DocumentControllerTest {
             .westBoundLongitude("-1.091")
             .build();
         gemini.setBoundingBoxes(Collections.singletonList(bbox));
+        gemini.setOnlineResources(List.of(
+            OnlineResource.builder()
+                .url("https://example.com/maps/da9d9beb-3fe5-4799-a4ed-c558d55159e6?request=getCapabilities&service=WMS")
+                .build()
+        ));
 
-        val impCasestudy = new CaseStudy();
-        impCasestudy.setType("dataset");
+        val caseStudy = new CaseStudy();
+        caseStudy.setType("dataset");
 
         val impModel = new Model();
         impModel.setType("dataset");
@@ -195,11 +204,24 @@ class DocumentControllerTest {
         val impModelApplication = new ModelApplication();
         impModelApplication.setType("dataset");
 
+        val original = new GeminiDocument();
+        val metadataInfo = MetadataInfo.builder()
+            .state("published")
+            .catalogue("eidc")
+            .build();
+        metadataInfo.addPermission(Permission.VIEW, PUBLIC_GROUP);
+        original.setMetadata(metadataInfo);
+        original.setTitle("Test title");
+        log.info("Original: {}", original);
+
+
         val link = LinkDocument.builder()
             .linkedDocumentId("cbde2ff1-cae3-4189-9489-ef1f4435fadc")
-            .original(gemini)
+            .original(original)
             .additionalKeywords(new ArrayList<>())
             .build();
+
+        log.debug(link.toString());
 
         val network = new Network();
         network.setEfMetadata(new Metadata());
@@ -233,14 +255,14 @@ class DocumentControllerTest {
             Arguments.of(gemini, GEMINI_XML, GEMINI_XML_SHORT,  "gemini.xml"),
             Arguments.of(gemini, RDF_SCHEMAORG_JSON, RDF_SCHEMAORG_SHORT, "gemini-schema-org.json"),
             Arguments.of(gemini, RDF_TTL, RDF_TTL_SHORT, "gemini.ttl"),
-            Arguments.of(impCasestudy, TEXT_HTML, HTML, null),
-            Arguments.of(impCasestudy, APPLICATION_JSON, JSON, null),
+            Arguments.of(caseStudy, TEXT_HTML, HTML, null),
+            Arguments.of(caseStudy, APPLICATION_JSON, JSON, null),
             Arguments.of(impModel, TEXT_HTML, HTML, null),
             Arguments.of(impModel, APPLICATION_JSON, JSON, null),
             Arguments.of(impModelApplication, TEXT_HTML, HTML, null),
             Arguments.of(impModelApplication, APPLICATION_JSON, JSON, null),
             Arguments.of(link, TEXT_HTML, HTML, null),
-            Arguments.of(link, APPLICATION_JSON, JSON, null),
+            Arguments.of(link, APPLICATION_JSON, JSON, "link.json"),
             Arguments.of(new uk.ac.ceh.gateway.catalogue.osdp.Model(), TEXT_HTML, HTML, null),
             Arguments.of(new uk.ac.ceh.gateway.catalogue.osdp.Model(), APPLICATION_JSON, JSON, null),
             Arguments.of(new MonitoringActivity(), TEXT_HTML, HTML, null),
@@ -264,6 +286,7 @@ class DocumentControllerTest {
         );
     }
 
+    @SuppressWarnings("unused")
     @ParameterizedTest(name = "[{index}] GET as {1}, {3}, {0}")
     @MethodSource("provideMetadataDocuments")
     @SneakyThrows
@@ -342,31 +365,6 @@ class DocumentControllerTest {
         )
             .andExpect(status().isOk())
             .andExpect(content().contentTypeCompatibleWith(TEXT_HTML));
-    }
-
-
-    @Test
-    @SneakyThrows
-    void checkItCanRewriteIdToDocumentWithFileExtension() {
-        //When
-        mvc.perform(
-            get("/id/{id}.xml", id)
-        )
-            .andExpect(status().is3xxRedirection())
-            .andExpect(header().string("location", "https://localhost/documents/" + id +".xml"));
-    }
-
-    @Test
-    @DisplayName("Redirect URL has query string parameters")
-    @SneakyThrows
-    public void redirectWithQueryString() {
-        //When
-        mvc.perform(
-            get("/id/{id}", id)
-            .queryParam("query", "string")
-        )
-            .andExpect(status().is3xxRedirection())
-            .andExpect(header().string("location", "https://localhost/documents/" + id + "?query=string"));
     }
 
     @Test

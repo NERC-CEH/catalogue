@@ -17,6 +17,7 @@ import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.ERAMMP_MODEL_JSON_
 @Slf4j
 @ToString(callSuper = true)
 @Controller
+@RequestMapping("documents")
 public class ErammpModelController extends AbstractDocumentController {
 
   public ErammpModelController(DocumentRepository documentRepository) {
@@ -25,16 +26,22 @@ public class ErammpModelController extends AbstractDocumentController {
   }
 
   @PreAuthorize("@permission.userCanCreate(#catalogue)")
-  @RequestMapping(value = "documents", method = RequestMethod.POST, consumes = ERAMMP_MODEL_JSON_VALUE)
-  public ResponseEntity<MetadataDocument> newErammpModel(@ActiveUser CatalogueUser user, @RequestBody ErammpModel document,
-      @RequestParam("catalogue") String catalogue) {
+  @PostMapping(consumes = ERAMMP_MODEL_JSON_VALUE)
+  public ResponseEntity<MetadataDocument> newErammpModel(
+      @ActiveUser CatalogueUser user,
+      @RequestBody ErammpModel document,
+      @RequestParam("catalogue") String catalogue
+  ) {
     return saveNewMetadataDocument(user, document, catalogue, "new ERAMMP model");
   }
 
   @PreAuthorize("@permission.userCanEdit(#file)")
-  @RequestMapping(value = "documents/{file}", method = RequestMethod.PUT, consumes = ERAMMP_MODEL_JSON_VALUE)
-  public ResponseEntity<MetadataDocument> updateErammpModel(@ActiveUser CatalogueUser user, @PathVariable("file") String file,
-      @RequestBody ErammpModel document) {
+  @PutMapping(value = "{file}", consumes = ERAMMP_MODEL_JSON_VALUE)
+  public ResponseEntity<MetadataDocument> updateErammpModel(
+      @ActiveUser CatalogueUser user,
+      @PathVariable("file") String file,
+      @RequestBody ErammpModel document
+  ) {
     return saveMetadataDocument(user, file, document);
   }
 }

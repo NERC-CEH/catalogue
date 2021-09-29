@@ -30,9 +30,9 @@ import java.util.HashSet;
 @Slf4j
 @Profile("auth:datalabs")
 @Service
-@ToString(of = {"cookieName"})
+@ToString(onlyExplicitlyIncluded = true)
 public class RememberMeServicesDataLabs implements RememberMeServices {
-
+    @ToString.Include
     private final String cookieName;
     private final JWTProcessor<SecurityContext> jwtProcessor;
     private final CatalogueUserProvider catalogueUserProvider;

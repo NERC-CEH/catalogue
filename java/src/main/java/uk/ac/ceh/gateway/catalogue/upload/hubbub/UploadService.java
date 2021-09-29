@@ -25,14 +25,16 @@ import static uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadController.*;
 
 @Profile("upload:hubbub")
 @Slf4j
-@ToString(of = {"uploadLocation", "secondsPauseBeforeAccept"})
+@ToString(onlyExplicitlyIncluded = true)
 @Service
 public class UploadService {
     private final HubbubService hubbubService;
+    @ToString.Include
     private final String uploadLocation;
     private final Pattern acceptablePathStarts = Pattern.compile("^/(dropbox|eidchub|supporting-documents)/.*");
     private final Set<String> acceptableDestinations = ImmutableSet.of(DATASTORE, METADATA);
     private final Set<String> acceptableStorage = ImmutableSet.of(DATASTORE, DROPBOX, METADATA);
+    @ToString.Include
     private final long secondsPauseBeforeAccept;
 
     static final int BIG_PAGE_SIZE = 1000000;

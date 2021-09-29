@@ -26,7 +26,10 @@ import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.LINKED_ELTER_JSON_
 public class ElterDocumentController extends AbstractDocumentController {
     private final LinkedDocumentRetrievalService linkedDocumentRetrievalService;
 
-    public ElterDocumentController (DocumentRepository documentRepository, LinkedDocumentRetrievalService linkedDocumentRetrievalService) {
+    public ElterDocumentController (
+        DocumentRepository documentRepository,
+        LinkedDocumentRetrievalService linkedDocumentRetrievalService
+    ) {
         super(documentRepository);
         this.linkedDocumentRetrievalService = linkedDocumentRetrievalService;
         log.info("Creating");

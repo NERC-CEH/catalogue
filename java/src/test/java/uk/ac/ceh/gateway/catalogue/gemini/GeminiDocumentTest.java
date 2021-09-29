@@ -1,97 +1,73 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
+import lombok.val;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.Mockito.*;
 
 public class GeminiDocumentTest {
+    private final String id = "c43818fc-61fb-455b-9714-072355597229";
 
     @Test
-    public void checkIfIsMapViewableIfGetCapabilitiesOnlineResourceExists() {
+    public void noMapViewerUrlIfGetCapabilitiesOnlineResourceDoesNotExists() {
         //Given
         OnlineResource wmsResource = OnlineResource.builder()
-            .url("http://www.com?request=GetCapabilities&SERVICE=WMS")
-            .name("wms resource") 
-            .description("wms description")
-            .build();
-        GeminiDocument document = new GeminiDocument();
-        document.setOnlineResources(Arrays.asList(wmsResource));
-        
-        //When
-        boolean isMapViewable = document.isMapViewable();
-        
-        //Then
-        assertTrue(isMapViewable);
-    }
-    
-    
-    @Test
-    public void checkIfIsntMapViewableIfGetCapabilitiesOnlineResourceDoesntExists() {
-        //Given
-        OnlineResource wmsResource = OnlineResource.builder()
-                .url("http://www.google.com") 
-                .name("wms resource")
-                .description("wms description")
+                .url("https://www.google.com")
                 .build();
         GeminiDocument document = new GeminiDocument();
-        document.setOnlineResources(Arrays.asList(wmsResource));
-        
+        document.setOnlineResources(List.of(wmsResource));
+
         //When
-        boolean isMapViewable = document.isMapViewable();
-        
+        val url = document.getMapViewerUrl();
+
         //Then
-        assertFalse(isMapViewable);
+        assertThat(url, is(nullValue()));
     }
-    
+
     @Test
     public void getLinkToMapViewer() {
         //Given
-        GeminiDocument document = mock(GeminiDocument.class, CALLS_REAL_METHODS);
-        doReturn(true).when(document).isMapViewable();
-        doReturn("metadataId").when(document).getId();
-        
+        val document = new GeminiDocument();
+        document.setOnlineResources(List.of(
+            OnlineResource.builder()
+                .url("https://example.com/maps/" + id + "?request=getCapabilities&service=WMS")
+                .build()
+        ));
+
         //When
         String url = document.getMapViewerUrl();
-        
+
         //Then
-        assertEquals("/maps#layers/metadataId", url);
+        assertThat(url, equalTo("/maps#layers/" + id));
     }
-    
+
     @Test
     public void checkThatMapViewerURLIsNullIfNotMapViewable() {
         //Given
-        GeminiDocument document = mock(GeminiDocument.class);
-        when(document.isMapViewable()).thenReturn(false);
-        
+        GeminiDocument document = new GeminiDocument();
+
         //When
         String url = document.getMapViewerUrl();
-        
+
         //Then
-        assertNull(url);
+        assertThat(url, is(nullValue()));
     }
-    
+
     @Test
     public void checkThatMetadataDateTimeIsEmptyStringIfNoMetadataDate() {
         //Given
         GeminiDocument document = new GeminiDocument();
-        
+
         //When
         String actual = document.getMetadataDateTime();
-        
+
         //Then
         assertThat("MetadataDateTime should be empty string", actual, equalTo(""));
-        
+
     }
 
     @Test
@@ -120,9 +96,7 @@ public class GeminiDocumentTest {
         // Given
         GeminiDocument document = new GeminiDocument();
         Supplemental supplemental = Supplemental.builder().name("foo").function("other").build();
-        List<Supplemental> supplementals = new ArrayList<>();
-        supplementals.add(supplemental);
-        document.setSupplemental(supplementals);
+        document.setSupplemental(List.of(supplemental));
         long expected = 0;
 
         // When

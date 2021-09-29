@@ -25,9 +25,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
-@ToString(exclude = "configuration")
+@ToString(onlyExplicitlyIncluded = true)
 public class Object2TemplatedMessageConverter<T> extends AbstractHttpMessageConverter<T> {
     private final Configuration configuration;
+    @ToString.Include
     private final Class<T> clazz;
 
     public Object2TemplatedMessageConverter(Class<T> clazz, Configuration configuration) {

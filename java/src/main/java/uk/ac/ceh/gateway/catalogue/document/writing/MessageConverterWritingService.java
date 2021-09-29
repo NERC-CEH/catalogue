@@ -14,10 +14,10 @@ import java.util.List;
 
 /**
  * A Document Writing service which will write a given document to an inputStream
- * of the requested mediatype
+ * of the requested media type
  */
 @Slf4j
-@ToString
+@ToString(exclude = "messageConverters")
 public class MessageConverterWritingService implements DocumentWritingService {
     private final List<HttpMessageConverter<?>> messageConverters;
 

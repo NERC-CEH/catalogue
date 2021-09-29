@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.Properties;
 
 /**
- * The following service will lookup a property from a properties file where the
+ * The following service will look up a property from a properties file where the
  * key is in the form: [key].[value].
  *
  * This service is useful for looking up the English textual value for some
@@ -18,7 +18,7 @@ import java.util.Properties;
  */
 @Slf4j
 @Service
-@ToString
+@ToString(onlyExplicitlyIncluded = true)
 public class CodeLookupService {
     private final Properties properties;
 
@@ -48,7 +48,7 @@ public class CodeLookupService {
      * @return the property value if present, otherwise null
      */
     public String lookup(String key, Object value) {
-        return properties.getProperty(key + "." + String.valueOf(value));
+        return properties.getProperty(key + "." + value);
     }
 
     /**

@@ -41,7 +41,7 @@ import static uk.ac.ceh.gateway.catalogue.util.Headers.withBasicAuth;
  */
 @Service
 @Slf4j
-@ToString(exclude = "password")
+@ToString(exclude = {"password", "configuration", "restTemplate"})
 public class DataciteService {
     private final String api;
     private final String prefix;

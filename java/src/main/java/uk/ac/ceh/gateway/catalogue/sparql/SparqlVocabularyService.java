@@ -5,13 +5,13 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@ToString
+@ToString(onlyExplicitlyIncluded = true)
 public class SparqlVocabularyService implements VocabularyService {
     private final Multimap<String, String> vocabulary;
 
     public SparqlVocabularyService(Multimap<String, String> vocabulary) {
         this.vocabulary = vocabulary;
-        log.info("Creating");
+        log.info("Creating {}", this);
     }
 
     @Override
