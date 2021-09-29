@@ -1,14 +1,8 @@
 <#import "skeleton.ftlh" as skeleton>
 <#import "blocks.ftlh" as b>
-<#import "ceh-model-macros.ftlh" as m>
+<#import "nerc-model-macros.ftlh" as m>
 <#import "../functions.ftlh" as func>
 
-<#if responsibleParties?? && responsibleParties?has_content>
-  <#assign
-    SRO = func.filter(responsibleParties, "role", "owner")
-    otherContacts = func.filter(responsibleParties, "role", "owner", true)
-  >
-</#if>
 <#if onlineResources?? && onlineResources?has_content>
   <#assign
     image = func.filter(onlineResources, "function", "browseGraphic")
@@ -36,11 +30,11 @@
         </div>
     </#if>
 
-      <#if primaryPurpose?? || SRO??|| otherContacts?? || licenseType?? || onlineResources??>
-      <section>
-        <#if primaryPurpose?? && primaryPurpose?has_content>
-          <@m.key "Primary purpose">
-            <@b.linebreaks primaryPurpose />
+      <#if purpose?? || responsibleParties?? || licenseType?? || onlineResources??>
+      <div>
+        <#if purpose?? && purpose?has_content>
+          <@m.key "Purpose">
+            <@b.linebreaks purpose />
           </@m.key>
         </#if>
 
@@ -59,20 +53,13 @@
           </@m.key>
         </#if>
 
-        <#if SRO?? && SRO?has_content>
-          <@m.key "Senior responsible officer">
-            <#list SRO as SRO>
-                <@func.displayContact SRO, true, true, false />
-            </#list>
-          </@m.key>
-        </#if>
-        <#if otherContacts?? && otherContacts?has_content>
-          <@m.key "Other contacts">
-          <#list otherContacts as otherContact>
-            <dt>${otherContact.roleDisplayName}</dt>
+        <#if responsibleParties?? && responsibleParties?has_content>
+          <@m.key "Contacts">
+          <#list responsibleParties as responsibleParty>
+            <dt>${responsibleParty.roleDisplayName}</dt>
             <dd>
               <div class="responsibleParty">
-                <@func.displayContact otherContact, true, true, false />
+                <@func.displayContact responsibleParty, true, true, false />
               </div>
             </dd>
             </#list>
@@ -82,11 +69,11 @@
         <#if licenseType?? && licenseType?has_content>
           <@m.key "License" "License type (open or non-open) under which the model is distributed">${licenseType?cap_first}</@m.key>
         </#if>
-      </section>
+      </div>
       </#if>
 
-      <#if keyInputVariables?? || keyOutputVariables?? || description?? || modelType?? || currentModelVersion?? || modelCalibration??>
-      <section>
+      <#if keyInputVariables?? || keyOutputVariables?? || modelType?? || currentModelVersion?? || modelCalibration??>
+      <div>
         <h2>Model Description</h2>
         <#if keyInputVariables?? && keyInputVariables?has_content>
           <@m.key "Key input variables"><@m.commaList keyInputVariables /></@m.key>
@@ -108,11 +95,11 @@
         <#if modelCalibration?? && modelCalibration?has_content>
           <@m.key "Model calibration">${modelCalibration}</@m.key>
         </#if>
-      </section>
+      </div>
       </#if>
 
     <#if spatialDomain?? || spatialResolution?? || temporalResolutionMin?? || temporalResolutionMax?? || boundingBoxes??>
-    <section>
+    <div>
       <h2>Spatio-Temporal Information</h2>
 
       <#if boundingBoxes?has_content>
@@ -137,11 +124,11 @@
       <#if temporalResolutionMax?? && temporalResolutionMax?has_content>
         <@m.key "Temporal resolution (max)" "Maximum time step supported by the model ">${temporalResolutionMax}</@m.key>
       </#if>
-    </section>
+    </div>
     </#if>
 
     <#if language?? || compiler?? || operatingSystem?? || systemMemory?? || documentation??>
-    <section>
+    <div>
       <h2>Technical Information</h2>
       <#if language?? && language?has_content>
         <@m.key "Language" "Computing language in which the model is written">${language}</@m.key>
@@ -158,58 +145,34 @@
       <#if documentation?? && documentation?has_content>
         <@m.key "Documentation" "Location of technical documentation for the model"><@bareUrl documentation /></@m.key>
       </#if>
-    </section>
+    </div>
     </#if>
 
-    <section>
-      <h2>QA Information</h2>
-      <@m.key "Developer testing" "Use of a range of developer tools including parallel build and analytical review or sense check"><@m.qa developerTesting /></@m.key>
-      <@m.key "Internal peer review" "Obtaining a critical evaluation from a third party independent of the development of the model but from within the same organisation"><@m.qa internalPeerReview /></@m.key>
-      <@m.key "External peer review" "Formal or informationrmal engagement of a third party to conduct critical evaluation from outside the organisation in which the model is being developed"><@m.qa externalPeerReview /></@m.key>
-      <@m.key "Internal model audit" "Formal audit of a model within the organisation, perhaps involving use of internal audit functions"><@m.qa internalModelAudit /></@m.key>
-      <@m.key "External model audit" "Formal engagement of external professional to conduct a critical evaluation of the model, perhaps involving audit professionals;"><@m.qa externalModelAudit /></@m.key>
-      <@m.key "Quality assurance guidelines and checklists" "Model development refers to department’s guidance or other documented QA processes (e.g. third party publications)"><@m.qa qaGuidelinesAndChecklists /></@m.key>
-      <@m.key "Governance" "At least one of planning, design and/or sign-off of model for use is referred to a more senior person.  There is a clear line of accountability for the model"><@m.qa governance /></@m.key>
-      <@m.key "Transparency" "Model is placed in the wider domain for scrutiny, and/or results are published"><@m.qa transparency /></@m.key>
-      <@m.key "Periodic review" "Model is reviewed at intervals to ensure it remains fit for the intended purpose, if used on an ongoing basis"><@m.qa periodicReview /></@m.key>
-      <#if versionHistories?? && versionHistories?has_content>
-        <h2>Version control change notes</h2>
-        <#list versionHistories as history>
-         <@b.repeatRow>
-          <#if history.version?? && history.version?has_content>
-            <@b.basicRow>
-              <@m.keyContent "Version">${history.version}</@m.keyContent>
-            </@b.basicRow>
-          </#if>
-          <#if history.date?? && history.date?has_content>
-            <@b.basicRow>
-              <@m.keyContent "Date">${history.date}</@m.keyContent>
-            </@b.basicRow>
-          </#if>
-          <#if history.note?? && history.note?has_content>
-            <@b.basicRow>
-              <@m.keyContent "Note">${history.note}</@m.keyContent>
-            </@b.basicRow>
-          </#if>
-        </@b.repeatRow>
+
+    <div>
+      <h2>Quality assurance</h2>
+      <#if qa?? && qa?has_content>
+        <div class="modelgrid modelgrid--3 modelgrid--qa">
+          <div><strong>Date</strong></div>
+          <div><strong>Type</strong></div>
+          <div><strong>Notes</strong></div>
+        <#list qa as q>
+          <div><#if q.date?has_content>${q.date}</#if></div>
+          <div><#if q.type?has_content>${q.type}</#if></div>
+          <div><#if q.notes?has_content>${q.notes}</#if></div>
         </#list>
+        </div>
+      <#else>
+        <p class="text-danger">No quality assurance information provided</p>
       </#if>
-      <#assign modelApplications=jena.modelApplications(uri)/>
-        <#if projectUsages?? && projectUsages?has_content || modelApplications?has_content>
-        <h2>Project use</h2>
-        <#if projectUsages?? && projectUsages?has_content>
-          <@m.key "Projects">
-            <#list projectUsages as usage>
-              <div class="projectList">
-                <#if usage.project??><span class="projectList__project">${usage.project}</span></#if>
-                <#if usage.version??><span class="projectList_version">version ${usage.version}</span></#if>
-                <#if usage.date??><span class="projectList__date">(${usage.date?date?string['MMMM yyyy']})</span></#if>
-              </div>
-            </#list>
-          </@m.key>
-        </#if>
+    </div>
+
+    <div>
+    <#assign nercModelUses=jena.nercModelUses(uri)/>
+      <#if nercModelUses?has_content>
+        <h2>Implementations of the model</h2>
         <#--noinspection FtlWellformednessInspection-->
-        <#list modelApplications>
+        <#list nercModelUses>
           <@m.key "Model use" "Implementations of the model">
             <#items as md>
               <@b.blockUrl md/>
@@ -217,26 +180,22 @@
           </@m.key>
         </#list>
       </#if>
-    </section>
+    </div>
 
     <#if references?? && references?has_content>
-    <section>
+    <div>
       <h2>References</h2>
-
+        <div class="modelgrid modelgrid--3 modelgrid--references">
+          <div><strong>Name</strong></div>
+          <div><strong>Description</strong></div>
+          <div><strong>URL</strong></div>
       <#list references as ref>
-      <@b.repeatRow>
-        <#if ref.citation?? && ref.citation?has_content>
-          <span class="reference-citation">${ref.citation}</span>
-        </#if>
-        <#if ref.doi?? && ref.doi?has_content>
-          <span class="reference-doi"><@m.Url ref.doi true/></span>
-        </#if>
-        <#if ref.nora?? && ref.nora?has_content>
-          <span class="reference-nora">${ref.nora}</span>
-        </#if>
-      </@b.repeatRow>
+        <div><#if ref.name?? && ref.name?has_content>${ref.name}</#if></div>
+        <div><#if ref.description?? && ref.description?has_content>${ref.description}</#if></div>
+        <div><#if ref.url?? && ref.url?has_content><@m.Url ref.url true/></#if></div>
       </#list>
-    </section>
+      </div>
+    </div>
     </#if>
 
     <@m.additionalMetadata />

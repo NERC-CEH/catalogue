@@ -17,6 +17,7 @@ import uk.ac.ceh.gateway.catalogue.model.OnlineLink;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.model.DataTypeSchema;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
+import uk.ac.ceh.gateway.catalogue.gemini.Supplemental;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -25,14 +26,10 @@ import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 })
 public class NercModel extends AbstractMetadataDocument implements WellKnownText {
     private String
-        primaryPurpose,
-        seniorResponsibleOfficer,
-        seniorResponsibleOfficerEmail,
+        purpose,
         licenseType,
-        website,
-        codeRepositoryUrl,
         modelType,
-        currentModelVersion,
+        version,
         modelCalibration,
         spatialDomain,
         spatialResolution,
@@ -57,31 +54,9 @@ public class NercModel extends AbstractMetadataDocument implements WellKnownText
         keyOutputVariables;
 
     private List<OnlineLink> onlineResources;
-
-    private List<Reference> references;
-
-    private QualityAssurance
-        developerTesting,
-        internalPeerReview,
-        externalPeerReview,
-        internalModelAudit,
-        externalModelAudit,
-        qaGuidelinesAndChecklists,
-        governance,
-        transparency,
-        periodicReview;
-
-    private List<VersionHistory> versionHistories;
+    private List<Supplemental> references;
     private List<ResponsibleParty> responsibleParties;
-    private List<ProjectUsage> projectUsages;
-
-    @Data
-    public static class Reference {
-        private String
-            citation,
-            doi,
-            nora;
-    }
+    private List<QA> qa;
 
     @Data
     public static class QualityAssurance {
@@ -102,10 +77,10 @@ public class NercModel extends AbstractMetadataDocument implements WellKnownText
     }
 
     @Data
-    public static class ProjectUsage {
+    public static class QA {
         private String
-            project,
-            version,
+            type,
+            notes,
             date;
     }
 

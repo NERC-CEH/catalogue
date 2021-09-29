@@ -113,23 +113,10 @@ define [
       views: [
         new ParentView
           model: @model
-          ModelType: Reference
           modelAttribute: 'references'
-          label: 'References'
-          ObjectInputView: ReferenceView
-          multiline: true
-          helpText: """
-                    <p>Citation - Add publication citations here</p>
-                    <p>DOI - DOI link for the citation e.g. https://doi.org/10.1111/journal-id.1882</p>
-                    <p>NORA - NORA links of the citation e.g. http://nora.nerc.ac.uk/513147/</p>
-                    """
-
-        new ParentView
-          model: @model
-          modelAttribute: 'rooferences'
           ModelType: Supplemental
           multiline: true
-          label: 'rooferences'
+          label: 'References'
           ObjectInputView: SupplementalView
           helpText: """
                     <p>You can add information not documented elsewhere here. This includes links to related papers, grey literature or websites.  For example:</p>

@@ -1,12 +1,13 @@
 define [
   'cs!views/editor/ObjectInputView'
-  'tpl!templates/editor/Supplemental.tpl'
+  'tpl!templates/editor/ModelQA.tpl'
 ], (ObjectInputView, template) -> ObjectInputView.extend
 
   template: template
 
-  ### render: ->
+
+  render: ->
     ObjectInputView.prototype.render.apply @
-    @$('select.function').val @model.get 'function'
+    @$('select.type').val @model.get 'type'
     @
- ###
+ 

@@ -31,9 +31,7 @@ public class NercModelUse extends AbstractMetadataDocument {
 
     private List<Funding> funding;
 
-    private List<NercModel.Reference> references;
-    
-    private List<Supplemental> rooferences;
+    private List<Supplemental> references;
     
     private List<ModelInfo> modelInfos;
 
