@@ -65,5 +65,6 @@ class EidcApplicationContextTest {
         assertNotNull(freemarkerConfiguration.getSharedVariable("mapServerDetails"));
         assertNotNull(freemarkerConfiguration.getSharedVariable("metadataQuality"));
         assertNotNull(freemarkerConfiguration.getSharedVariable("permission"));
+        assertNotNull(freemarkerConfiguration.getSharedVariable("profile"));
     }
 }

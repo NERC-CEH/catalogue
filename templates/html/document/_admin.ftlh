@@ -5,7 +5,8 @@
   isEidcWithResourceType=isEidcCatalogue && (resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'application')
   isNotLinkDocument = metadata.documentType != 'LINK_DOCUMENT'
   isRestrictedFieldsEditor = permission.userCanEditRestrictedFields(metadata.catalogue)
-  isSimpleUpload=!isEidcCatalogue && permission.userCanUpload(id)
+  isSimpleUpload = !isEidcCatalogue && permission.userCanUpload(id)
+  isServiceAgreement = profile.isActive("service-agreement")
 >
 
 <#if onlineResources?has_content>
@@ -56,13 +57,13 @@
                 Publication status
               </a>
             </li>
-            <#if catalogue.id == "eidc">
-            <li class="service-agreement" data-id="${id}">
-              <a href="/service-agreement/${id}">
-                <i class="fas fa-file"></i>
-                Service Agreement
-              </a>
-            </li>
+            <#if isEidcCatalogue && isServiceAgreement>
+              <li class="service-agreement" data-id="${id}">
+                <a href="/service-agreement/${id}">
+                  <i class="fas fa-file"></i>
+                  Service Agreement
+                </a>
+              </li>
             </#if>
             <li role="separator" class="divider"></li>
             <li>
