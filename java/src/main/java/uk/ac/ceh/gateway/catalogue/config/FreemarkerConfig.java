@@ -5,6 +5,7 @@ import lombok.SneakyThrows;
 import org.springframework.context.annotation.Configuration;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
+import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
 import uk.ac.ceh.gateway.catalogue.quality.MetadataQualityService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.DownloadOrderDetailsService;
@@ -26,6 +27,7 @@ public class FreemarkerConfig {
     private final MapServerDetailsService mapServerDetailsService;
     private final MetadataQualityService metadataQualityService;
     private final PermissionService permissionService;
+    private final ProfileService profileService;
 
     @SneakyThrows
     @PostConstruct
@@ -38,5 +40,6 @@ public class FreemarkerConfig {
         freemarkerConfiguration.setSharedVariable("mapServerDetails", mapServerDetailsService);
         freemarkerConfiguration.setSharedVariable("metadataQuality", metadataQualityService);
         freemarkerConfiguration.setSharedVariable("permission", permissionService);
+        freemarkerConfiguration.setSharedVariable("profile", profileService);
     }
 }
