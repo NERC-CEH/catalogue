@@ -41,6 +41,7 @@ import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
 import uk.ac.ceh.gateway.catalogue.osdp.*;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
+import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
@@ -87,6 +88,7 @@ class DocumentControllerTest {
     @MockBean private DocumentRepository documentRepository;
     @MockBean private JenaLookupService jenaLookupService;
     @MockBean(name="permission") private PermissionService permissionService;
+    @MockBean private ProfileService profileService;
 
     @Autowired private MockMvc mvc;
     @Autowired private Configuration configuration;
@@ -114,6 +116,12 @@ class DocumentControllerTest {
         configuration.setSharedVariable("codes", codeLookupService);
         configuration.setSharedVariable("jena", jenaLookupService);
         configuration.setSharedVariable("permission", permissionService);
+        configuration.setSharedVariable("profile", profileService);
+    }
+
+    private void givenProfileNotActive() {
+        given(profileService.isActive("service-agreement"))
+            .willReturn(false);
     }
 
     private void givenCatalogue() {
@@ -296,6 +304,7 @@ class DocumentControllerTest {
         givenMetadataDocument(doc);
         givenCatalogue();
         givenFreemarkerConfiguration();
+        givenProfileNotActive();
         givenCodeLookup();
 
         //when
@@ -328,6 +337,7 @@ class DocumentControllerTest {
         givenMetadataDocument(doc);
         givenCatalogue();
         givenFreemarkerConfiguration();
+        givenProfileNotActive();
         givenCodeLookup();
 
 
