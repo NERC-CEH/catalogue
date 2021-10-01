@@ -18,9 +18,9 @@
       </div>
     </div>
   </#if>
-    <div>
     <h1>Service Agreement</h1>
-    <h1>* IMPORTANT *	ONCE A DOI HAS BEEN ISSUED, THESE DETAILS CANNOT BE CHANGED</h1>
+    <h1><b>* IMPORTANT *	ONCE A DOI HAS BEEN ISSUED,
+            THESE DETAILS CANNOT BE CHANGED</b></h1>
     <h1>Environmental Information Data Centre - Service Agreement</h1>
     <p>For more information/guidance about this document see <a href="https://eidc.ac.uk/support/agreement">https://eidc.ac.uk/support/agreement</a> </p>
     <h2>The Agreement</h2>
@@ -45,7 +45,6 @@
         <li>You guarantee that nothing in the resource or supporting information contravenes the UK data protection laws or any other UK law (e.g., the Wildlife and Countryside Act 1981).</li>
         <li>You agree to notify the EIDC if it is subsequently found that the data resource is no longer fit for purpose (e.g. errors are found in the dataset).</li>
     </ul>
-    </div>
     <h2>Title: ${title}</h2>
     <#if depositReference??> <p>Deposit reference: ${depositReference}</p> </#if>
     <#if depositorName??> <p>Depositor name: ${depositorName}</p> </#if>
@@ -90,5 +89,6 @@
     <#if lineage??> <p>Lineage: ${lineage}</p> </#if>
     <#if Keywords??> <p>Keywords: ${Keywords}</p> </#if>
     <#if areaOfStudy??> <p>Area of study: ${areaOfStudy}</p> </#if>
+  </div>
 </div>
 </@skeleton.master>
