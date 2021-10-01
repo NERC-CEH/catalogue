@@ -4,16 +4,13 @@ import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.servlet.view.RedirectView;
-import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -25,13 +22,12 @@ import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
 import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.*;
-import static uk.ac.ceh.gateway.catalogue.model.Permission.*;
+import static uk.ac.ceh.gateway.catalogue.model.Permission.VIEW;
 
 @SuppressWarnings("SpringMVCViewInspection")
 @Slf4j
@@ -43,26 +39,6 @@ public class DocumentController extends AbstractDocumentController {
     public DocumentController(DocumentRepository documentRepository) {
         super(documentRepository);
         log.info("Creating {}", this);
-    }
-
-    @GetMapping("id/{id}.xml")
-    public RedirectView redirectXmlToResource(@PathVariable String id, HttpServletRequest request) {
-        return redirect(id + ".xml", request);
-    }
-
-    @GetMapping("id/{id}")
-    public RedirectView redirectToResource(@PathVariable String id, HttpServletRequest request) {
-        return redirect(id, request);
-    }
-
-    private RedirectView redirect(String path, HttpServletRequest request) {
-        UriComponentsBuilder url = ServletUriComponentsBuilder
-            .fromRequest(request)
-            .scheme("https")
-            .replacePath("documents/{path}");
-        val redirectView = new RedirectView(url.buildAndExpand(path).toUriString());
-        redirectView.setStatusCode(HttpStatus.SEE_OTHER);
-        return redirectView;
     }
 
     @RequestMapping (value = "documents/upload",
@@ -294,6 +270,7 @@ public class DocumentController extends AbstractDocumentController {
         );
     }
 
+    @CrossOrigin
     @ResponseBody
     @SneakyThrows
     @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
@@ -305,25 +282,22 @@ public class DocumentController extends AbstractDocumentController {
         return postProcessLinkDocument(documentRepository.read(file));
     }
 
-    @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
-    @RequestMapping(value = "documents/{file}",
-                    method = RequestMethod.GET,
-                    produces = LINKED_JSON_VALUE)
     @ResponseBody
     @SneakyThrows
+    @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
+    @GetMapping(value = "documents/{file}", produces = LINKED_JSON_VALUE)
     public MetadataDocument readLinkDocument(
-            @ActiveUser CatalogueUser user,
-            @PathVariable("file") String file
+        @ActiveUser CatalogueUser user,
+        @PathVariable("file") String file
     ) {
         return documentRepository.read(file);
     }
 
 
-    @PreAuthorize("@permission.toAccess(#user, #file, #revision, 'VIEW')")
-    @RequestMapping(value = "history/{revision}/{file}",
-                    method = RequestMethod.GET)
     @ResponseBody
     @SneakyThrows
+    @PreAuthorize("@permission.toAccess(#user, #file, #revision, 'VIEW')")
+    @GetMapping(value = "history/{revision}/{file}")
     public MetadataDocument readMetadata(
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file,

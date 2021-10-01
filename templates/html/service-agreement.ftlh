@@ -1,6 +1,23 @@
 <#import "skeleton.ftlh" as skeleton>
 
 <@skeleton.master "Service Agreement">
+
+<div id="metadata">
+  <div class="container" role="main">
+
+  <#if permission.userCanEdit(id)>
+    <div class="row hidden-print" id="adminPanel">
+      <div class="text-right" id="adminToolbar" role="toolbar">
+        <div class="btn-group btn-group-sm">
+          <button type="button"
+                  class="btn btn-default btn-wide edit-control"
+                  data-document-type="service-agreement">
+          Edit
+          </button>
+        </div>
+      </div>
+    </div>
+  </#if>
     <div>
     <h1>Service Agreement</h1>
     <h1>* IMPORTANT *	ONCE A DOI HAS BEEN ISSUED, THESE DETAILS CANNOT BE CHANGED</h1>
@@ -73,4 +90,5 @@
     <#if lineage??> <p>Lineage: ${lineage}</p> </#if>
     <#if Keywords??> <p>Keywords: ${Keywords}</p> </#if>
     <#if areaOfStudy??> <p>Area of study: ${areaOfStudy}</p> </#if>
+</div>
 </@skeleton.master>

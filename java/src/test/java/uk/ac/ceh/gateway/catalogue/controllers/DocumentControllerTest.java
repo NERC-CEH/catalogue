@@ -367,31 +367,6 @@ class DocumentControllerTest {
             .andExpect(content().contentTypeCompatibleWith(TEXT_HTML));
     }
 
-
-    @Test
-    @SneakyThrows
-    void checkItCanRewriteIdToDocumentWithFileExtension() {
-        //When
-        mvc.perform(
-            get("/id/{id}.xml", id)
-        )
-            .andExpect(status().is3xxRedirection())
-            .andExpect(header().string("location", "https://localhost/documents/" + id +".xml"));
-    }
-
-    @Test
-    @DisplayName("Redirect URL has query string parameters")
-    @SneakyThrows
-    public void redirectWithQueryString() {
-        //When
-        mvc.perform(
-            get("/id/{id}", id)
-            .queryParam("query", "string")
-        )
-            .andExpect(status().is3xxRedirection())
-            .andExpect(header().string("location", "https://localhost/documents/" + id + "?query=string"));
-    }
-
     @Test
     public void checkCanUploadFile() throws Exception {
         //Given
