@@ -27,7 +27,8 @@ define [
   'cs!views/editor/ParentStringView'
   'cs!models/editor/BoundingBox'
   'cs!views/editor/BoundingBoxView'
-], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, AccessLimitationView, AccessLimitation, InspireTheme, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, OnlineResourceView, OnlineResource, ResourceConstraintView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, MapDataSource, RelatedRecordView, ReadOnlyView, ParentStringView, BoundingBox, BoundingBoxView) -> EditorView.extend
+  'cs!views/editor/TextOnlyView'
+], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, AccessLimitationView, AccessLimitation, InspireTheme, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, OnlineResourceView, OnlineResource, ResourceConstraintView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, MapDataSource, RelatedRecordView, ReadOnlyView, ParentStringView, BoundingBox, BoundingBoxView, TextOnlyView) -> EditorView.extend
 
   initialize: ->
 
@@ -36,10 +37,16 @@ define [
       title:  ''
       views: [
 
+        new TextOnlyView
+          model: @model
+          modelAttribute: 'TextOnlyView'
+          text: """"""
+
         new InputView
           model: @model
           modelAttribute: 'depositReference'
           label: 'Deposit Reference'
+
 
         new ReadOnlyView
           model: @model
@@ -82,6 +89,19 @@ define [
       title: 'Data identification and citation'
       views: [
 
+        new TextOnlyView
+          model: @model
+          modelAttribute: 'TextOnlyView'
+          text: """
+                   <h2>Authors</h2>
+                   <ul>
+                   <li>List authors below in the order in which they will appear in the citation.</li>
+                   <li>Author's names must be in the format Surname <comma> Initial(s). For example, Smith, K.P. not Kim P. Smith</li>
+                   <li>UK law requires us to inform all individuals listed below that they are being proposed as an author.  We therefore require a current, valid email address (or phone number) for all living authors - those without valid contact details are not eligible for authorship.</li>
+                   <li>Authors' details will be published in a public data catalogue and held in EIDC systems. Please see our Privacy Notice for further information.</li>
+                   </ul>
+                """
+
         new ParentView
           model: @model
           ModelType: Contact
@@ -99,11 +119,24 @@ define [
       label: 'Policies & Legislation'
       title: 'Policies & Legislation'
       views: [
+        new TextOnlyView
+          model: @model
+          modelAttribute: 'TextOnlyView'
+          text: """<p>All environmental data deposited into the EIDC are subject to the requirements of the <a href="https://nerc.ukri.org/research/sites/environmental-data-service-eds/policy/">NERC Data Policy.</a></p>
+                   <p>By depositing data, you confirm that the data is compliant with the provisions of UK data protection laws.</p>
+                   <p>Data and supporting documentation should not contain names, addresses or other personal information relating to 'identifiable natural persons'.  Discovery metadata (the catalogue record) may contain names and contact details of the authors of this data (<a href="https://eidc.ac.uk/policies/retentionPersonalData">see our policy on retention and use of personal data</a>).</p>
+                   <p>If other policies/legislation applies (e.g. <a href="https://inspire.ec.europa.eu/">INSPIRE</a>), please specify below.</p>
+                   """
         new TextareaView
           model: @model
           modelAttribute: 'otherPoliciesOrLegislation'
           label: 'Other Policies or Legislation'
           rows: 15
+
+        new TextOnlyView
+          model: @model
+          modelAttribute: 'TextOnlyView'
+          text: """<p>The depositor may also wish to provide an image to accompany the dataset which may subsequently be used to advertise its availability on social media.  If no image is provided, the EIDC may source a suitable picture.</p>"""
       ]
     ,
       label: 'The Data'
@@ -158,6 +191,11 @@ define [
       title: 'Supporting documentation'
       views: [
 
+        new TextOnlyView
+          model: @model
+          modelAttribute: 'TextOnlyView'
+          text: """<p>Please provide the title and file extension of document(s) you will provide to enable re-use of the data (see <a href="https://eidc.ac.uk/deposit/supportingDocumentation">https://eidc.ac.uk/deposit/supportingDocumentation</a>).</a>"""
+
         new ParentStringView
           model: @model
           modelAttribute: 'supportingDocumentNames'
@@ -168,11 +206,26 @@ define [
           modelAttribute: 'contentIncluded'
           label: 'Content Included'
           rows: 15
+
+        new TextOnlyView
+          model: @model
+          modelAttribute: 'TextOnlyView'
+          text: """<p>The depositor may also wish to provide an image to accompany the dataset which may subsequently be used to advertise its availability on social media.  If no image is provided, the EIDC may source a suitable picture."""
+
       ]
     ,
       label: 'Data retention'
       title: 'Data retention'
       views: [
+
+        new TextOnlyView
+          model: @model
+          modelAttribute: 'TextOnlyView'
+          text: """
+          <h2>Data given a DOI will be kept in perpetuity.</h2>
+          <p>For data not given a DOI, the period for which the EIDC guarantees to curate data is ten years, after which it will be periodically reviewed and may be discarded. Please note below any exceptions to this policy.</p>
+          """
+
         new TextareaView
           model: @model
           modelAttribute: 'policyExceptions'
@@ -183,6 +236,16 @@ define [
       label: 'Availability and access'
       title: 'Availability and access'
       views: [
+
+        new TextOnlyView
+          model: @model
+          modelAttribute: 'TextOnlyView'
+          text: """
+          <p>Depositors may request that access to the data be restricted for an agreed period (embargoed).</p>
+          <p>Approving embargoes and the negotiation of the duration of an embargo period are subject to funder requirements. For NERC-funded research, a reasonable embargo period is considered to be a maximum of two years <i><u>from the end of data collection.</u></i></p>
+          <p>If the EIDC receives a request for access to data during the embargo period, it is treated as a request under the Environmental Information Regulations (EIR) and follows the designated NERC procedure for such requests.</p>
+          """
+
         new TextareaView
           model: @model
           modelAttribute: 'Availability'
@@ -207,6 +270,13 @@ define [
       label: 'Licensing and IPR'
       title: 'Licensing and IPR'
       views: [
+
+        new TextOnlyView
+          model: @model
+          modelAttribute: 'TextOnlyView'
+          text: """
+          <p>The EIDC recommends that the depositor seeks guidance from their own institution and/or funding agency as to the appropriate licence.</p>
+          """
 
         new PredefinedParentView
           model: @model
@@ -256,6 +326,13 @@ define [
       title: 'Superseding existing data (if applicable)'
       views: [
 
+        new TextOnlyView
+          model: @model
+          modelAttribute: 'TextOnlyView'
+          text: """
+          <p>If the data is intended to supersede an existing dataset held by the EIDC, the depositor should explain why it is to be replaced, including details of any errors found.</p>
+          """
+
         new InputView
           model: @model
           modelAttribute: 'supersededMetadataId'
@@ -274,6 +351,13 @@ define [
       label: 'Miscellaneous'
       title: 'Miscellaneous'
       views: [
+        new TextOnlyView
+          model: @model
+          modelAttribute: 'TextOnlyView'
+          text: """
+          <p>If there is any other information you wish to provide, please include it below.</p>
+          """
+
         new TextareaView
           model: @model
           modelAttribute: 'otherInfo'
@@ -284,6 +368,14 @@ define [
       label: 'Discovery metadata'
       title: 'Discovery metadata'
       views: [
+
+        new TextOnlyView
+          model: @model
+          modelAttribute: 'TextOnlyView'
+          text: """
+          <p>Data resources deposited with the EIDC have an entry in the EIDC data catalogue, enabling users to find and access them. Please provide the following information to help complete the catalogue record. Further details on discovery metadata are available from our website.</p>
+          <p><em>Please note, this information is not fixed and may be subject to change and improvement over time</em></p>
+          """
 
         new TextareaView
           model: @model
