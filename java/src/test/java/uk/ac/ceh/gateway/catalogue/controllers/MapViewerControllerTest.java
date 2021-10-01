@@ -172,6 +172,31 @@ public class MapViewerControllerTest {
 
     @Test
     @SneakyThrows
+    void getMapRequestLowercaseParameters() {
+        // It is the 'format' parameter that causes trouble with content negotiation
+        //Given
+        givenGetMapResponse();
+
+        //When
+        mvc.perform(
+                get("/maps/{file}", file)
+                    .queryParam("service", "WMS")
+                    .queryParam("version", "1.3.0")
+                    .queryParam("request", "GetMap")
+                    .queryParam("layers", "layer0", "layer1")
+                    .queryParam("styles", "default")
+                    .queryParam("crs", "EPSG:27700")
+                    .queryParam("bbox", "-145.15,21.73,-57.15,58.96")
+                    .queryParam("width", "250")
+                    .queryParam("height", "250")
+                    .queryParam("format", "image/png")
+            )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.IMAGE_PNG));
+    }
+
+    @Test
+    @SneakyThrows
     void getFeatureInfoRequest() {
         //given
         givenWmsFeatureInfo();
