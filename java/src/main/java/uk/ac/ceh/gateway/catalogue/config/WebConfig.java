@@ -9,6 +9,7 @@ import lombok.val;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -23,6 +24,7 @@ import uk.ac.ceh.gateway.catalogue.converters.Object2TemplatedMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.TransparentProxyMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.WmsFeatureInfo2XmlMessageConverter;
 import uk.ac.ceh.gateway.catalogue.datacite.DataciteResponse;
+import uk.ac.ceh.gateway.catalogue.datalabs.DatalabsDocument;
 import uk.ac.ceh.gateway.catalogue.ef.Activity;
 import uk.ac.ceh.gateway.catalogue.ef.Facility;
 import uk.ac.ceh.gateway.catalogue.ef.Network;
@@ -46,6 +48,7 @@ import uk.ac.ceh.gateway.catalogue.search.SearchResults;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreementModel;
 import uk.ac.ceh.gateway.catalogue.sparql.SparqlResponse;
 import uk.ac.ceh.gateway.catalogue.ukems.UkemsDocument;
+import uk.ac.ceh.gateway.catalogue.wms.WmsFormatParameterFilter;
 
 import java.util.List;
 
@@ -79,6 +82,7 @@ public class WebConfig implements WebMvcConfigurer {
         converters.add(new Object2TemplatedMessageConverter<>(CehModelApplication.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(Citation.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(Dataset.class, freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter<>(DatalabsDocument.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(DataType.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(ElterDocument.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(ErammpModel.class, freemarkerConfiguration));
@@ -112,6 +116,16 @@ public class WebConfig implements WebMvcConfigurer {
             log.debug("After our message converters added");
             converters.forEach(convert -> log.debug(convert.toString()));
         }
+    }
+
+    @Bean
+    public FilterRegistrationBean<WmsFormatParameterFilter> wmsFormatParameterFilter() {
+        FilterRegistrationBean<WmsFormatParameterFilter> registrationBean
+            = new FilterRegistrationBean<>();
+        registrationBean.setFilter(new WmsFormatParameterFilter());
+        registrationBean.addUrlPatterns("/maps/*");
+        registrationBean.setOrder(1);
+        return registrationBean;
     }
 
     @Bean

@@ -27,7 +27,7 @@ import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.MAPSERVER_GML_VALU
  * templates
  */
 @Slf4j
-@ToString
+@ToString(onlyExplicitlyIncluded = true)
 @CrossOrigin
 @Controller
 @RequestMapping(value="maps")
@@ -43,6 +43,7 @@ public class MapViewerController {
         log.info("Creating {}", this);
     }
 
+    @SuppressWarnings("SpringMVCViewInspection")
     @GetMapping
     public String loadMapViewer() {
         return "/html/mapviewer";
