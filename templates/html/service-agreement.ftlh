@@ -5,19 +5,19 @@
 <div id="metadata">
   <div class="container" role="main">
 
-  <#if permission.userCanEdit(id)>
-    <div class="row hidden-print" id="adminPanel">
-      <div class="text-right" id="adminToolbar" role="toolbar">
-        <div class="btn-group btn-group-sm">
-          <button type="button"
-                  class="btn btn-default btn-wide edit-control"
-                  data-document-type="service-agreement">
-          Edit
-          </button>
+    <#if permission.userCanEdit(id)>
+      <div class="row hidden-print" id="adminPanel">
+        <div class="text-right" id="adminToolbar" role="toolbar">
+          <div class="btn-group btn-group-sm">
+            <button type="button"
+                    class="btn btn-default btn-wide edit-control"
+                    data-document-type="service-agreement">
+            Edit
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-  </#if>
+    </#if>
 
     <h1>Service Agreement</h1>
     <h2>${title}</h2>
@@ -64,6 +64,6 @@
     <#if lineage??> <p>Lineage: ${lineage}</p> </#if>
     <#if Keywords??> <p>Keywords: ${Keywords}</p> </#if>
     <#if areaOfStudy??> <p>Area of study: ${areaOfStudy}</p> </#if>
-</div>
+  </div>
 </div>
 </@skeleton.master>
