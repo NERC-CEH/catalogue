@@ -1,7 +1,7 @@
-<#import "skeleton.ftlh" as skeleton>
-<#import "blocks.ftlh" as b>
-<#import "ceh-model-macros.ftlh" as m>
-<#import "../functions.ftlh" as func>
+<#import "../skeleton.ftlh" as skeleton>
+<#import "../../functions.ftlh" as func>
+<#import "../blocks.ftlh" as b>
+<#import "macros.ftlh" as m>
 
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
   <@b.metadataContainer "ceh-model">
@@ -178,4 +178,6 @@
     <@m.additionalMetadata />
 
   </@b.metadataContainer>
+  <#include "_footer.ftlh">
+
 </@skeleton.master>

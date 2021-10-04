@@ -1,7 +1,7 @@
-<#import "skeleton.ftlh" as skeleton>
-<#import "blocks.ftlh" as b>
-<#import "nerc-model-macros.ftlh" as m>
-<#import "../functions.ftlh" as func>
+<#import "../skeleton.ftlh" as skeleton>
+<#import "../../functions.ftlh" as func>
+<#import "../blocks.ftlh" as b>
+<#import "macros.ftlh" as m>
 
 <#if onlineResources?? && onlineResources?has_content>
   <#assign
@@ -98,9 +98,9 @@
       </div>
       </#if>
 
-    <#if spatialDomain?? || spatialResolution?? || temporalResolutionMin?? || temporalResolutionMax?? || boundingBoxes??>
+    <#if spatialDomain?? || boundingBoxes?? || resolution?has_content>
     <div>
-      <h2>Spatio-Temporal Information</h2>
+      <h2>Resolution/scale</h2>
 
       <#if boundingBoxes?has_content>
         <@m.key "Spatial extent">
@@ -115,21 +115,23 @@
       <#if spatialDomain?? && spatialDomain?has_content>
         <@m.key "Spatial domain" "Is the model only applicable to certain areas?">${spatialDomain}</@m.key>
       </#if>
-      <#if spatialResolution?? && spatialResolution?has_content>
-        <@m.key "Spatial resolution" "Spatial resolution at which model works or at which model outputs are generated">${spatialResolution}</@m.key>
+
+      <#if resolution?? && resolution?has_content>
+        <div class="modelgrid modelgrid--3 modelgrid--resolution">
+        <#list resolution as item>
+          <div><#if item.category?has_content>${item.category}</#if></div>
+          <div><#if item.min?has_content>Min: ${item.min}</#if></div>
+          <div><#if item.max?has_content>Max: ${item.max}</#if></div>
+        </#list>
+        </div>
       </#if>
-      <#if temporalResolutionMin?? && temporalResolutionMin?has_content>
-        <@m.key "Temporal resolution (min)" "Minimum time step supported by the model">${temporalResolutionMin}</@m.key>
-      </#if>
-      <#if temporalResolutionMax?? && temporalResolutionMax?has_content>
-        <@m.key "Temporal resolution (max)" "Maximum time step supported by the model ">${temporalResolutionMax}</@m.key>
-      </#if>
+
     </div>
     </#if>
 
     <#if language?? || compiler?? || operatingSystem?? || systemMemory?? || documentation??>
     <div>
-      <h2>Technical Information</h2>
+      <h2>Technical information</h2>
       <#if language?? && language?has_content>
         <@m.key "Language" "Computing language in which the model is written">${language}</@m.key>
       </#if>
@@ -154,12 +156,12 @@
       <#if qa?? && qa?has_content>
         <div class="modelgrid modelgrid--3 modelgrid--qa">
           <div><strong>Date</strong></div>
-          <div><strong>Type</strong></div>
+          <div><strong>Category</strong></div>
           <div><strong>Notes</strong></div>
-        <#list qa as q>
-          <div><#if q.date?has_content>${q.date}</#if></div>
-          <div><#if q.type?has_content>${q.type}</#if></div>
-          <div><#if q.notes?has_content>${q.notes}</#if></div>
+        <#list qa as item>
+          <div><#if item.date?has_content>${item.date}</#if></div>
+          <div><#if item.category?has_content>${item.category}</#if></div>
+          <div><#if item.notes?has_content>${item.notes}</#if></div>
         </#list>
         </div>
       <#else>
@@ -199,7 +201,9 @@
     </#if>
 
     <@m.additionalMetadata />
-
+  
 
   </@b.metadataContainer>
+  <#include "_footer.ftlh">
+
 </@skeleton.master>

@@ -22,7 +22,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.Supplemental;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ConvertUsing({
-    @Template(called="html/nerc-model.ftlh", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
+    @Template(called="html/nercmodels/model.ftlh", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
 })
 public class NercModel extends AbstractMetadataDocument implements WellKnownText {
     private String
@@ -32,9 +32,9 @@ public class NercModel extends AbstractMetadataDocument implements WellKnownText
         version,
         modelCalibration,
         spatialDomain,
-        spatialResolution,
-        temporalResolutionMin,
-        temporalResolutionMax,
+        //spatialResolution,
+        //temporalResolutionMin,
+        //temporalResolutionMax,
         language,
         compiler,
         operatingSystem,
@@ -57,31 +57,21 @@ public class NercModel extends AbstractMetadataDocument implements WellKnownText
     private List<Supplemental> references;
     private List<ResponsibleParty> responsibleParties;
     private List<QA> qa;
-
-    @Data
-    public static class QualityAssurance {
-        private String
-            done,
-            modelVersion,
-            owner,
-            note,
-            date;
-    }
-
-    @Data
-    public static class VersionHistory {
-        private String
-            version,
-            note,
-            date;
-    }
+    private List<ModelResolution> resolution;
 
     @Data
     public static class QA {
         private String
-            type,
+            category,
             notes,
             date;
+    }
+    @Data
+    public static class ModelResolution {
+        private String
+            category,
+            min,
+            max;
     }
 
     @Override

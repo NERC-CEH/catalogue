@@ -5,11 +5,7 @@
       <p>View as
         <span><a href="${uri}?format=json">json</a></span>
         <#if resourceType??>
-          <#if ['service', 'series', 'dataset']?seq_contains(resourceType.value) >
-            <span><a href="${uri}.xml?format=gemini" >GEMINI 2.3 (XML)</a></span>
-          <#else>
-            <span><a href="${uri}.xml?format=gemini">ISO 19115 (XML)</a></span>
-          </#if>
+          <span><a href="${uri}.xml?format=gemini">ISO 19115 (XML)</a></span>
           <span><a href="${uri}?format=ttl">RDF (Turtle)</a></span>
         </#if>
       </p>

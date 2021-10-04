@@ -11,6 +11,7 @@ define [
   'cs!views/editor/QaView'
   'cs!views/editor/VersionHistoryView'
   'cs!views/editor/ModelQAView'
+  'cs!views/editor/ModelResolutionView'
   'cs!views/editor/OnlineLinkView'
   'cs!models/editor/Contact'
   'cs!models/editor/DataTypeSchema'
@@ -22,7 +23,7 @@ define [
 
 
 ], (
-  EditorView, InputView, TextareaView, ParentView, PredefinedParentView, ParentStringView, KeywordView, ContactView, SingleObjectView, QaView, VersionHistoryView, ModelQAView, OnlineLinkView, Contact, DataTypeSchema, DataTypeSchemaSimpleView, BoundingBox, BoundingBoxView, SupplementalView, Supplemental
+  EditorView, InputView, TextareaView, ParentView, PredefinedParentView, ParentStringView, KeywordView, ContactView, SingleObjectView, QaView, VersionHistoryView, ModelQAView, ModelResolutionView, OnlineLinkView, Contact, DataTypeSchema, DataTypeSchemaSimpleView, BoundingBox, BoundingBoxView, SupplementalView, Supplemental
 ) -> EditorView.extend
 
   initialize: ->
@@ -74,19 +75,12 @@ define [
           modelAttribute: 'version'
           label: 'Version'
           placeholderAttribute: 'e.g. 2.5.10'
-          helpText: """
-                    <p>Most recent release version (if applicable)</p>
-                    """
 
         new InputView
           model: @model
           modelAttribute: 'releaseDate'
           typeAttribute: 'text'
           label: 'Release date'
-          placeholderAttribute: 'yyyy-mm-dd'
-          helpText: """
-                    <p>Date of release of current model version (if applicable)</p>
-                    """
 
         new PredefinedParentView
           model: @model
@@ -96,13 +90,23 @@ define [
           ObjectInputView: ContactView
           multiline: true
           predefined:
-            'SRO - UKCEH':
+            'BAS':
+              organisationName: 'British Antarctic Survey'
+              email: 'information@bas.ac.uk'
+              organisationIdentifier: 'https://ror.org/01rhff309'
+            'BGS':
+              organisationName: 'British Geological Survey'
+              email: 'enquiries@bgs.ac.uk'
+              organisationIdentifier: 'https://ror.org/04a7gbp98'
+            'CEDA':
+              organisationName: 'Centre for Environmental Data Analysis'
+            'NOC':
+              organisationName: 'National Oceanography Centre'
+              organisationIdentifier: 'https://ror.org/00874hx02'
+            'UKCEH':
               organisationName: 'UK Centre for Ecology & Hydrology'
-              role: 'owner'
+              email: 'enquiries@ceh.ac.uk'
               organisationIdentifier: 'https://ror.org/00pggkr55'
-          helpText: """
-                    <p>You <b>must</b> include one Senior Responsible Officer (SRO) - the person who is the "owner" and primary contact for the model</p>
-                    """
 
         new ParentView
           model: @model
@@ -110,7 +114,7 @@ define [
           label: 'Keywords'
           ObjectInputView: KeywordView
           helpText: """
-                    <p>Keywords for model discovery e.g. rainfall; species distribution; nitrogen deposition; global circulation model</p>
+                    <p>Keywords help with model discovery</p>
                     """
         
         new ParentView
@@ -136,7 +140,6 @@ define [
           modelAttribute: 'licenseType'
           label: 'License'
           listAttribute: """
-                    <option value='unknown' />
                     <option value='open' />
                     <option value='non-open' />
                     """
@@ -266,33 +269,14 @@ define [
           helpText: """
                     <p>Is the model only applicable to certain areas?</p>
                     """
-
-        new InputView
+        
+        new ParentView
           model: @model
-          modelAttribute: 'spatialResolution'
-          label: 'Spatial resolution'
-          placeholderAttribute: 'e.g. 1km2 or 5m2;'
-          helpText: """
-                    <p>Spatial resolution at which model works or at which model outputs are generated (if applicable)</p>
-                    """
+          modelAttribute: 'resolution'
+          multiline: true
+          label: 'Resolution'
+          ObjectInputView: ModelResolutionView
 
-        new InputView
-          model: @model
-          modelAttribute: 'temporalResolutionMin'
-          label: 'Temporal resolution (min)'
-          placeholderAttribute: 'e.g. 1 second or 10 days'
-          helpText: """
-                    <p>Minimum time step supported by the model (if applicable) </p>
-                    """
-
-        new InputView
-          model: @model
-          modelAttribute: 'temporalResolutionMax'
-          label: 'Temporal resolution (max)'
-          placeholderAttribute: 'e.g. annual or decadal '
-          helpText: """
-                    <p>Maximum time step supported by the model (if applicable) </p>
-                    """
 
       ]
     ,
