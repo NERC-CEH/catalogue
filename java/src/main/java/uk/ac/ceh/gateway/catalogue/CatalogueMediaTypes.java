@@ -21,6 +21,7 @@ public class CatalogueMediaTypes {
     public static final MediaType DATACITE_XML = parseMediaType(DATACITE_XML_VALUE);
 
     public static final String DATA_TYPE_JSON_VALUE = "application/vnd.data-type+json";
+    public static final String DATALABS_JSON_VALUE = "application/vnd.datalabs-document+json";
 
     public static final String EF_INSPIRE_XML_SHORT = "efinspire";
     public static final String EF_INSPIRE_XML_VALUE = "application/vnd.ukeof.inspire+xml";
