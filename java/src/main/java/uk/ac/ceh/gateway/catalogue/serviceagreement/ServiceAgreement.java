@@ -4,7 +4,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.RelatedRecord;
+import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 
@@ -71,8 +73,8 @@ public class ServiceAgreement extends AbstractMetadataDocument {
     /*
     SEVEN: Licensing and IPR
     */
-    private String endUserLicence;
-    private String ownerOfIpr;
+    private List<ResourceConstraint> endUserLicence;
+    private List<ResponsibleParty> ownerOfIpr;
     private String useConstraints;
 
     /*
@@ -92,5 +94,5 @@ public class ServiceAgreement extends AbstractMetadataDocument {
     //keywords
     //description
     private String lineage;
-    private String areaOfStudy;
+    private List<BoundingBox> areaOfStudy;
 }
