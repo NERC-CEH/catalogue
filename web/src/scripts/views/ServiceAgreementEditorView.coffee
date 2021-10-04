@@ -106,7 +106,7 @@ define [
         new ParentView
           model: @model
           ModelType: Contact
-          modelAttribute: 'responsibleParties'
+          modelAttribute: 'authors'
           label: 'Authors'
           ObjectInputView: ServiceAgreementAuthorView
           multiline: true
