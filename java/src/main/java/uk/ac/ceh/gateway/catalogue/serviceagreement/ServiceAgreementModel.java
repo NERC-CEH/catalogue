@@ -43,10 +43,7 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
     /*
     THREE: The data
     */
-    private String dataFiles;
-    private List<String> fileNames;
-    private List<String> fileFormats;
-    private String fileSize;
+    private List<File> files;
     private String transferMethod;
     private List<RelatedRecord> relatedDataHoldings;
     private String dataCategory;
@@ -105,10 +102,7 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
         this.eidcContactDetails = serviceAgreement.getEidcContactDetails();
         this.authors = serviceAgreement.getAuthors();
         this.otherPoliciesOrLegislation = serviceAgreement.getOtherPoliciesOrLegislation();
-        this.dataFiles = serviceAgreement.getDataFiles();
-        this.fileNames = serviceAgreement.getFileNames();
-        this.fileFormats = serviceAgreement.getFileFormats();
-        this.fileSize = serviceAgreement.getFileSize();
+        this.files = serviceAgreement.getFiles();
         this.transferMethod = serviceAgreement.getTransferMethod();
         this.relatedDataHoldings = serviceAgreement.getRelatedDataHoldings();
         this.dataCategory = serviceAgreement.getDataCategory();

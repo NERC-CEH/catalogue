@@ -29,7 +29,8 @@ define [
   'cs!views/editor/BoundingBoxView'
   'cs!views/editor/TextOnlyView'
   'cs!views/editor/ServiceAgreementAuthorView'
-], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, AccessLimitationView, AccessLimitation, InspireTheme, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, OnlineResourceView, OnlineResource, ResourceConstraintView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, MapDataSource, RelatedRecordView, ReadOnlyView, ParentStringView, BoundingBox, BoundingBoxView, TextOnlyView, ServiceAgreementAuthorView) -> EditorView.extend
+  'cs!views/editor/FileView'
+], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, AccessLimitationView, AccessLimitation, InspireTheme, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, OnlineResourceView, OnlineResource, ResourceConstraintView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, MapDataSource, RelatedRecordView, ReadOnlyView, ParentStringView, BoundingBox, BoundingBoxView, TextOnlyView, ServiceAgreementAuthorView, FileView) -> EditorView.extend
 
   initialize: ->
 
@@ -106,7 +107,7 @@ define [
         new ParentView
           model: @model
           ModelType: Contact
-          modelAttribute: 'responsibleParties'
+          modelAttribute: 'authors'
           label: 'Authors'
           ObjectInputView: ServiceAgreementAuthorView
           multiline: true
@@ -144,25 +145,12 @@ define [
       title: 'The Data'
       views: [
 
-        new InputView
+        new ParentView
           model: @model
-          modelAttribute: 'dataFiles'
-          label: 'Number of data files'
-
-        new ParentStringView
-          model: @model
-          modelAttribute: 'fileNames'
-          label: 'File names'
-
-        new ParentStringView
-          model: @model
-          modelAttribute: 'fileFormats'
-          label: 'File Formats'
-
-        new InputView
-          model: @model
-          modelAttribute: 'fileSize'
-          label: 'Size of data files'
+          modelAttribute: 'files'
+          label: 'Files'
+          ObjectInputView: FileView
+          multiline: true
 
         new InputView
           model: @model

@@ -42,10 +42,7 @@ public class ServiceAgreement extends AbstractMetadataDocument {
     /*
     THREE: The data
     */
-    private String dataFiles;
-    private List<String> fileNames;
-    private List<String> fileFormats;
-    private String fileSize;
+    private List<File> files;
     private String transferMethod;
     private List<RelatedRecord> relatedDataHoldings;
     private String dataCategory;
