@@ -29,6 +29,13 @@ public class UkemsDocument extends AbstractMetadataDocument {
     private DatasetReferenceDate datasetReferenceDate;
     private List<String> spatialRepresentationTypes;
     private List<DistributionInfo> distributionFormats;
+    private String ident;
+    private EmissionComponent emissionComponent;
+
+    @ToString
+    public enum EmissionComponent {
+        EMISSION, ACTIVITY, EMISSION_FACTOR
+    }
 
     @Override
     public String getType() {
