@@ -28,7 +28,8 @@ define [
   'cs!models/editor/BoundingBox'
   'cs!views/editor/BoundingBoxView'
   'cs!views/editor/TextOnlyView'
-], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, AccessLimitationView, AccessLimitation, InspireTheme, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, OnlineResourceView, OnlineResource, ResourceConstraintView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, MapDataSource, RelatedRecordView, ReadOnlyView, ParentStringView, BoundingBox, BoundingBoxView, TextOnlyView) -> EditorView.extend
+  'cs!views/editor/ServiceAgreementAuthorView'
+], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, AccessLimitationView, AccessLimitation, InspireTheme, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, OnlineResourceView, OnlineResource, ResourceConstraintView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, MapDataSource, RelatedRecordView, ReadOnlyView, ParentStringView, BoundingBox, BoundingBoxView, TextOnlyView, ServiceAgreementAuthorView) -> EditorView.extend
 
   initialize: ->
 
@@ -105,9 +106,9 @@ define [
         new ParentView
           model: @model
           ModelType: Contact
-          modelAttribute: 'authors'
+          modelAttribute: 'responsibleParties'
           label: 'Authors'
-          ObjectInputView: ContactView
+          ObjectInputView: ServiceAgreementAuthorView
           multiline: true
           helpText: """
                     <p>The names of authors should be in the format <code>Surname, First Initial. Second Initial.</code> For example <i>Brown, A.B.</i></p>
