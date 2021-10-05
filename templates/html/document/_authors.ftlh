@@ -1,4 +1,4 @@
-<#if authors?size gt 0 >
+<#if authors?has_content && authors?size gt 0 >
     <div id="document-authors">
         <h2 id="authors">Author<#if authors?size gt 1>s</#if></h2>
 
