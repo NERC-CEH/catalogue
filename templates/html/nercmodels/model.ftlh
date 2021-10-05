@@ -11,7 +11,7 @@
 </#if>
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
 
-  <@b.metadataContainer "ceh-model">
+  <@b.metadataContainer "nerc-model">
 
     <@b.admin/>
 
@@ -39,7 +39,7 @@
         </#if>
 
         <#if otherLinks?? && otherLinks?has_content>
-          <@m.key "Web links">
+          <@m.key "Links">
             <#list otherLinks as otherLink>
               <p>
                 <#if otherLink.function?? && otherLink.function?has_content>
@@ -102,6 +102,16 @@
     <div>
       <h2>Resolution/scale</h2>
 
+      <#if resolution?? && resolution?has_content>
+        <div class="modelgrid modelgrid--3 modelgrid--resolution">
+        <#list resolution as item>
+          <div><#if item.category?has_content>${item.category}</#if></div>
+          <div ><#if item.min?has_content>Min: ${item.min}</#if></div>
+          <div><#if item.max?has_content>Max: ${item.max}</#if></div>
+        </#list>
+        </div>
+      </#if>
+
       <#if boundingBoxes?has_content>
         <@m.key "Spatial extent">
           <div id="studyarea-map">
@@ -113,17 +123,7 @@
       </#if>
 
       <#if spatialDomain?? && spatialDomain?has_content>
-        <@m.key "Spatial domain" "Is the model only applicable to certain areas?">${spatialDomain}</@m.key>
-      </#if>
-
-      <#if resolution?? && resolution?has_content>
-        <div class="modelgrid modelgrid--3 modelgrid--resolution">
-        <#list resolution as item>
-          <div><#if item.category?has_content>${item.category}</#if></div>
-          <div><#if item.min?has_content>Min: ${item.min}</#if></div>
-          <div><#if item.max?has_content>Max: ${item.max}</#if></div>
-        </#list>
-        </div>
+        <@m.key "Spatial domain">${spatialDomain}</@m.key>
       </#if>
 
     </div>
@@ -155,9 +155,9 @@
       <h2>Quality assurance</h2>
       <#if qa?? && qa?has_content>
         <div class="modelgrid modelgrid--3 modelgrid--qa">
-          <div><strong>Date</strong></div>
-          <div><strong>Category</strong></div>
-          <div><strong>Notes</strong></div>
+          <div class="modelgrid--header">Date</div>
+          <div class="modelgrid--header">Category</div>
+          <div class="modelgrid--header">Notes</div>
         <#list qa as item>
           <div><#if item.date?has_content>${item.date}</#if></div>
           <div><#if item.category?has_content>${item.category}</#if></div>
@@ -187,16 +187,11 @@
     <#if references?? && references?has_content>
     <div>
       <h2>References</h2>
-        <div class="modelgrid modelgrid--3 modelgrid--references">
-          <div><strong>Name</strong></div>
-          <div><strong>Description</strong></div>
-          <div><strong>URL</strong></div>
       <#list references as ref>
         <div><#if ref.name?? && ref.name?has_content>${ref.name}</#if></div>
         <div><#if ref.description?? && ref.description?has_content>${ref.description}</#if></div>
         <div><#if ref.url?? && ref.url?has_content><@m.Url ref.url true/></#if></div>
       </#list>
-      </div>
     </div>
     </#if>
 
