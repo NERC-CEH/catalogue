@@ -6,8 +6,10 @@ import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
+import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.RelatedRecord;
+import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 
 import java.util.List;
@@ -72,8 +74,8 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
     /*
     SEVEN: Licensing and IPR
     */
-    private String endUserLicence;
-    private String ownerOfIpr;
+    private List<ResourceConstraint> endUserLicence;
+    private List<ResponsibleParty> ownerOfIpr;
     private String useConstraints;
 
     /*
@@ -93,7 +95,7 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
     private List<Keyword> keywords;
     private String description;
     private String lineage;
-    private String areaOfStudy;
+    private List<BoundingBox> areaOfStudy;
 
     public ServiceAgreementModel(ServiceAgreement serviceAgreement) {
         this.id = serviceAgreement.getId();
