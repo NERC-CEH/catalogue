@@ -237,11 +237,10 @@ define [
 
         new TextareaView
           model: @model
-          modelAttribute: 'Availability'
+          modelAttribute: 'availability'
           ModelType: OnlineResource
           label: 'Availability'
           multiline: true
-          helpText: """ """
 
         new TextareaView
           model: @model
@@ -269,7 +268,7 @@ define [
 
         new PredefinedParentView
           model: @model
-          modelAttribute: 'End user license'
+          modelAttribute: 'endUserLicence'
           label: 'End user license'
           ObjectInputView: ResourceConstraintView
           multiline: true
@@ -298,7 +297,7 @@ define [
         new ParentView
           model: @model
           ModelType: Contact
-          modelAttribute: 'Owner of IPR'
+          modelAttribute: 'ownerOfIpr'
           label: 'Owner of IPR'
           ObjectInputView: ContactView
           multiline: true

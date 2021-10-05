@@ -1,4 +1,6 @@
+<#import "blocks.ftlh" as blocks>
 <#import "skeleton.ftlh" as skeleton>
+<#import "../functions.ftlh" as func>
 
 <@skeleton.master "Service Agreement">
 
@@ -52,10 +54,7 @@
     <#if eidcName??> <p>For the EIDC name: ${eidcName}</p> </#if>
     <#if eidcContactDetails??> <p>For the EIDC contact details: ${eidcContactDetails}</p> </#if>
     <h2>ONE: Data identification and citation</h2>
-    <#if authorsName??> <p>Author name: ${authorsName}</p> </#if>
-    <#if affiliation??> <p>Author affiliation: ${affiliation}</p> </#if>
-    <#if emailAddress??> <p>Author email address: ${emailAddress}</p> </#if>
-    <#if orcidId??> <p>Author ORCID: ${orcidId}</p> </#if>
+    <#include "document/_authors.ftlh">
     <h2>TWO: Policies & legislation</h2>
     <#if otherPoliciesOrLegislation??> <p>Other Policies or Legislation : ${otherPoliciesOrLegislation}</p> </#if>
     <h2>THREE: The data</h2>
