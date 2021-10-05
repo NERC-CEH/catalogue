@@ -3,7 +3,7 @@
         <label class="control-label" for="contacts<%= data.index %>Role">Role</label>
     </div>
     <div class="col-sm-10">
-        <select data-name="role" class="editor-input" id="contacts0Role" readonly="readonly">
+        <select data-name="role" class="editor-input" id="contacts0Role" >
             <option value="author" selected="selected" >Author</option>
         </select>
     </div>

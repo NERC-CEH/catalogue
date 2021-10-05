@@ -58,10 +58,7 @@
     <h2>TWO: Policies & legislation</h2>
     <#if otherPoliciesOrLegislation??> <p>Other Policies or Legislation : ${otherPoliciesOrLegislation}</p> </#if>
     <h2>THREE: The data</h2>
-    <#if dataFiles??> <p>Data files: ${dataFiles}</p> </#if>
-    <#if fileNames??> <p>File names: ${fileNames}</p> </#if>
-    <#if fileFormats??> <p>File formats: ${fileFormats}</p> </#if>
-    <#if fileSize??> <p>File sizes: ${fileSize}</p> </#if>
+    <#include "document/_files.ftlh">
     <#if transferMethod??> <p>Transfer method: ${transferMethod}</p> </#if>
     <#if relatedRecords??> <p>Related Data Holdings: ${relatedRecords}</p> </#if>
     <#if dataCategory??> <p>Data category: ${dataCategory}</p> </#if>
