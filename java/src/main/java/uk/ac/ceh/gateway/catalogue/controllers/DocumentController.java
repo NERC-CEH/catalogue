@@ -308,8 +308,7 @@ public class DocumentController extends AbstractDocumentController {
 
     private MetadataDocument postProcessLinkDocument(MetadataDocument document) {
         log.debug("processing {}", document.getId());
-        if (document instanceof LinkDocument) {
-            LinkDocument linkDocument = (LinkDocument) document;
+        if (document instanceof LinkDocument linkDocument) {
             String id = linkDocument.getId();
             String uri = linkDocument.getUri();
             List<Keyword> additionalKeywords = linkDocument.getAdditionalKeywords();
