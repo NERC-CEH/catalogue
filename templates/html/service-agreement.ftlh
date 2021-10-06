@@ -95,7 +95,7 @@ rel_supersedes = jena.supersedes(uri)
     <#if relatedRecords??> <#include "document/_related.ftlh"> </#if> <#-- to be replaced with related records -->
     <#if topicCategories??> <#include "document/_tags.ftlh"> </#if>
     <h2>FOUR: Supporting documentation</h2>
-    <#if supportingDocumentNames??> <p>Supporting Document Names: ${supportingDocumentNames}</p> </#if>
+    <#if supportingDocumentNames??> <#include "document/_supportingDocuments.ftlh"> </#if>
     <#if contentIncluded??> <p>Content Included: ${contentIncluded}</p> </#if>
     <h2>FIVE: Data retention</h2>
     <#if policyExceptions??> <p>Policy Exceptions: ${policyExceptions}</p> </#if>
