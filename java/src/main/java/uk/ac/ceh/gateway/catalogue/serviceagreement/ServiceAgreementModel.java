@@ -48,7 +48,7 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
     private List<File> files;
     private String transferMethod;
     private List<RelatedRecord> relatedDataHoldings;
-    private String dataCategory;
+    private List<Keyword> topicCategories;
 
     /*
     FOUR: Supporting documentation
@@ -107,7 +107,7 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
         this.files = serviceAgreement.getFiles();
         this.transferMethod = serviceAgreement.getTransferMethod();
         this.relatedDataHoldings = serviceAgreement.getRelatedDataHoldings();
-        this.dataCategory = serviceAgreement.getDataCategory();
+        this.topicCategories = serviceAgreement.getTopicCategories();
         this.supportingDocumentNames = serviceAgreement.getSupportingDocumentNames();
         this.contentIncluded = serviceAgreement.getContentIncluded();
         this.policyExceptions = serviceAgreement.getPolicyExceptions();

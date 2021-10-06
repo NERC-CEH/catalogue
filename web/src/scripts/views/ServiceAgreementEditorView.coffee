@@ -167,7 +167,7 @@ define [
         new ParentView
           model: @model
           ModelType: TopicCategory
-          modelAttribute: 'dataCategory'
+          modelAttribute: 'topicCategories'
           label: 'Data Category'
           ObjectInputView: TopicCategoryView
           helpText: """
@@ -389,7 +389,7 @@ define [
         new PredefinedParentView
           model: @model
           ModelType: DescriptiveKeyword
-          modelAttribute: 'descriptiveKeywords'
+          modelAttribute: 'keywords'
           label: 'Keywords'
           ObjectInputView: DescriptiveKeywordView
           multiline: true

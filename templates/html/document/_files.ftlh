@@ -1,4 +1,4 @@
-<#if files?size gt 0 >
+<#if files?has_content && files?size gt 0 >
     <div id="document-files">
         <h2 id="files">Files<#if files?size gt 1>s</#if></h2>
 
@@ -14,17 +14,17 @@
                 <div class="${fileClass}">
                     <#if file.name?has_content>
                     <div>
-                        ${file.name}
+                        <p><b>File: ${file.name}</b></p>
                     </div>
                     </#if>
                     <#if file.format?has_content>
                     <div>
-                        ${file.format}
+                        <p>Format: ${file.format}</p>
                     </div>
                     </#if>
                     <#if file.size?has_content>
                     <div>
-                        ${file.size}
+                        <p>Size(MB): ${file.size}</p>
                     </div>
                     </#if>
                 </div>
@@ -36,17 +36,17 @@
                     <small>
                         <#if file.name?has_content>
                         <div>
-                            ${file.name}
+                            <p><b>File: ${file.name}</b></p>
                         </div>
                         </#if>
                         <#if file.format?has_content>
                         <div>
-                            ${file.format}
+                            <p>Format: ${file.format}</p>
                         </div>
                         </#if>
                         <#if file.size?has_content>
                         <div>
-                            ${file.size}
+                            <p>Size(MB): ${file.size}</p>
                         </div>
                         </#if>
                         <a href=".fileCollapse" class="moreFiles collapsed" data-toggle="collapse" aria-controls="filePartyCollapse" area-expanded="false">

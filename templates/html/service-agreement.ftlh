@@ -1,25 +1,58 @@
 <#import "blocks.ftlh" as blocks>
 <#import "skeleton.ftlh" as skeleton>
 <#import "../functions.ftlh" as func>
+<#if ownerOfIpr?has_content>
+    <#assign
+      authors = func.filter(ownerOfIpr, "role", "author")
+      pocs = func.filter(ownerOfIpr, "role", "pointOfContact")
+      custodians = func.filter(ownerOfIpr, "role", "custodian")
+      publishers = func.filter(ownerOfIpr, "role", "publisher")
+      depositors = func.filter(ownerOfIpr, "role", "depositor")
+      originators = func.filter(ownerOfIpr, "role", "originator")
+      rightsHolders = func.filter(ownerOfIpr, "role", "rightsHolder")
+      owners = func.filter(ownerOfIpr, "role", "owner")
+      originators = func.filter(ownerOfIpr, "role", "originator")
+      resourceProviders = func.filter(ownerOfIpr, "role", "resourceProvider")
+      otherContacts = custodians + publishers + depositors + originators + owners + resourceProviders + rightsHolders
+/>
+</#if>
+<#if endUserLicence?has_content>
+    <#assign
+    licences = func.filter(endUserLicence, "code", "license")
+    otherConstraints =  func.filter(endUserLicence, "code", "license", true)>
+</#if>
+
+<#assign
+rel_all=jena.allRelatedRecords(uri)
+rel_related=jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#relatedTo") + jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#relatedTo")
+rel_generates = jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#generates")
+rel_uses = jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#uses")
+rel_memberOf = jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#memberOf")
+rel_generatedBy= jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#generates")
+rel_supersededBy = jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#supersedes")
+rel_usedBy = jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#uses")
+rel_hasMember = jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#memberOf")
+rel_supersedes = jena.supersedes(uri)
+/>
 
 <@skeleton.master "Service Agreement">
 
 <div id="metadata">
   <div class="container" role="main">
-
-  <#if permission.userCanEdit(id)>
-    <div class="row hidden-print" id="adminPanel">
-      <div class="text-right" id="adminToolbar" role="toolbar">
-        <div class="btn-group btn-group-sm">
-          <button type="button"
-                  class="btn btn-default btn-wide edit-control"
-                  data-document-type="service-agreement">
-          Edit
-          </button>
+    <#if permission.userCanEdit(id)>
+      <div class="row hidden-print" id="adminPanel">
+        <div class="text-right" id="adminToolbar" role="toolbar">
+          <div class="btn-group btn-group-sm">
+            <button type="button"
+                    class="btn btn-default btn-wide edit-control"
+                    data-document-type="service-agreement">
+            Edit
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-  </#if>
+    </#if>
+
     <h1>Service Agreement</h1>
     <h1><b>* IMPORTANT *	ONCE A DOI HAS BEEN ISSUED,
             THESE DETAILS CANNOT BE CHANGED</b></h1>
@@ -47,7 +80,6 @@
         <li>You guarantee that nothing in the resource or supporting information contravenes the UK data protection laws or any other UK law (e.g., the Wildlife and Countryside Act 1981).</li>
         <li>You agree to notify the EIDC if it is subsequently found that the data resource is no longer fit for purpose (e.g. errors are found in the dataset).</li>
     </ul>
-    <h2>Title: ${title}</h2>
     <#if depositReference??> <p>Deposit reference: ${depositReference}</p> </#if>
     <#if depositorName??> <p>Depositor name: ${depositorName}</p> </#if>
     <#if depositorContactDetails??> <p>Depositor contact details: ${depositorContactDetails}</p> </#if>
@@ -60,8 +92,8 @@
     <h2>THREE: The data</h2>
     <#include "document/_files.ftlh">
     <#if transferMethod??> <p>Transfer method: ${transferMethod}</p> </#if>
-    <#if relatedRecords??> <p>Related Data Holdings: ${relatedRecords}</p> </#if>
-    <#if dataCategory??> <p>Data category: ${dataCategory}</p> </#if>
+    <#if relatedRecords??> <#include "document/_related.ftlh"> </#if> <#-- to be replaced with related records -->
+    <#if topicCategories??> <#include "document/_tags.ftlh"> </#if>
     <h2>FOUR: Supporting documentation</h2>
     <#if supportingDocumentNames??> <p>Supporting Document Names: ${supportingDocumentNames}</p> </#if>
     <#if contentIncluded??> <p>Content Included: ${contentIncluded}</p> </#if>
@@ -72,8 +104,8 @@
     <#if specificRequirements??> <p>Specific Requirements: ${specificRequirements}</p> </#if>
     <#if otherServicesRequired??> <p>Other services required: ${otherServicesRequired}</p> </#if>
     <h2>SEVEN: Licensing and IPR</h2>
-    <#if endUserLicense??> <p>End user license: ${endUserLicense}</p> </#if>
-    <#if ownerOfIpr??> <p>Owner of IPR: ${ownerOfIpr}</p> </#if>
+    <#if licences??> <#include "document/_serviceAgreementLicence.ftlh"> </#if>
+    <#if ownerOfIpr??> <#include "document/_contacts.ftlh"> </#if>
     <#if useConstraints??> <p>Use constraints: ${useConstraints}</p> </#if>
     <h2>EIGHT: Superseding existing data (if applicable)</h2>
     <#if supersededMetadataId??> <p>Metadata Id: ${supersededMetadataId}</p> </#if>
@@ -83,8 +115,10 @@
     <h2>TEN: Discovery metadata</h2>
     <#if description??> <p>Description: ${description}</p> </#if>
     <#if lineage??> <p>Lineage: ${lineage}</p> </#if>
-    <#if Keywords??> <p>Keywords: ${Keywords}</p> </#if>
-    <#if areaOfStudy??> <p>Area of study: ${areaOfStudy}</p> </#if>
+    <#if keywords??><#include "document/_keywords.ftlh">  </#if>
+    <#if areaOfStudy?has_content>
+        <#include "document/_extent.ftlh">
+    </#if>
   </div>
 </div>
 </@skeleton.master>

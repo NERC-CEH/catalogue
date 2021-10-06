@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
+import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.RelatedRecord;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
@@ -47,7 +48,7 @@ public class ServiceAgreement extends AbstractMetadataDocument {
     private List<File> files;
     private String transferMethod;
     private List<RelatedRecord> relatedDataHoldings;
-    private String dataCategory;
+    private List<Keyword> topicCategories;
 
     /*
     FOUR: Supporting documentation
