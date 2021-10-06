@@ -45,18 +45,22 @@
       </small>
     </#if>
   </h1>
-  
+
   <#if citation?has_content>
     <div class="doi">
       <a href="${citation.url}">${citation.url}</a>
       <a class="pull-right" href="#" data-toggle="modal" data-target="#citationModal"><small><i class="fas fa-quote-left fa-xs"></i> <i class="fas fa-quote-right fa-xs"></i></small> Cite this ${recordType?lower_case!''}</a>
     </div>
   </#if>
-  
+
   <#if resourceStatus??>
     <#include "_status.ftlh">
   </#if>
-  
+
+  <#if rel_source?has_content && rel_source?size gt 0>
+    <#include "_source.ftlh">
+  </#if>
+
   <#if resourceType.value == 'signpost' >
     <div id="signpost" class="alert alert-warning" role="alert">
       <i class="fas fa-info-circle"></i>

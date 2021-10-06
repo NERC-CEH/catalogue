@@ -26,6 +26,7 @@
     rel_usedBy = jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#uses")
     rel_hasMember = jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#memberOf")
     rel_supersedes = jena.supersedes(uri)
+    rel_source = jena.relationships(uri, "http://purl.org/dc/terms/source")
 />
 <#if useConstraints?has_content>
   <#assign
