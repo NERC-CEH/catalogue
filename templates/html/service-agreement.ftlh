@@ -22,19 +22,6 @@
     otherConstraints =  func.filter(endUserLicence, "code", "license", true)>
 </#if>
 
-<#assign
-rel_all=jena.allRelatedRecords(uri)
-rel_related=jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#relatedTo") + jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#relatedTo")
-rel_generates = jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#generates")
-rel_uses = jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#uses")
-rel_memberOf = jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#memberOf")
-rel_generatedBy= jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#generates")
-rel_supersededBy = jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#supersedes")
-rel_usedBy = jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#uses")
-rel_hasMember = jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#memberOf")
-rel_supersedes = jena.supersedes(uri)
-/>
-
 <@skeleton.master "Service Agreement">
 
 <div id="metadata">
@@ -85,39 +72,39 @@ rel_supersedes = jena.supersedes(uri)
     <#if depositorContactDetails??> <p>Depositor contact details: ${depositorContactDetails}</p> </#if>
     <#if eidcName??> <p>For the EIDC name: ${eidcName}</p> </#if>
     <#if eidcContactDetails??> <p>For the EIDC contact details: ${eidcContactDetails}</p> </#if>
-    <h2>ONE: Data identification and citation</h2>
+    <h3>Data identification and citation</h3>
     <#include "document/_authors.ftlh">
-    <h2>TWO: Policies & legislation</h2>
+    <h3>Policies & legislation</h3>
     <#if otherPoliciesOrLegislation??> <p>Other Policies or Legislation : ${otherPoliciesOrLegislation}</p> </#if>
-    <h2>THREE: The data</h2>
+    <h3>The data</h3>
     <#include "document/_files.ftlh">
     <#if transferMethod??> <p>Transfer method: ${transferMethod}</p> </#if>
-    <#if relatedRecords??> <#include "document/_related.ftlh"> </#if> <#-- to be replaced with related records -->
-    <#if topicCategories??> <#include "document/_tags.ftlh"> </#if>
-    <h2>FOUR: Supporting documentation</h2>
+    <#if relatedDataHoldings??> <#include "document/_relatedDataHoldings.ftlh"> </#if>
+    <#if topicCategories??> <#include "document/_topicCategories.ftlh"> </#if>
+    <h3>Supporting documentation</h3>
     <#if supportingDocumentNames??> <#include "document/_supportingDocuments.ftlh"> </#if>
     <#if contentIncluded??> <p>Content Included: ${contentIncluded}</p> </#if>
-    <h2>FIVE: Data retention</h2>
+    <h3>Data retention</h3>
     <#if policyExceptions??> <p>Policy Exceptions: ${policyExceptions}</p> </#if>
-    <h2>SIX: Availability and access</h2>
+    <h3>Availability and access</h3>
     <#if availability??> <p>Availability: ${availability}</p> </#if>
     <#if specificRequirements??> <p>Specific Requirements: ${specificRequirements}</p> </#if>
     <#if otherServicesRequired??> <p>Other services required: ${otherServicesRequired}</p> </#if>
-    <h2>SEVEN: Licensing and IPR</h2>
+    <h3>Licensing and IPR</h3>
     <#if licences??> <#include "document/_serviceAgreementLicence.ftlh"> </#if>
     <#if ownerOfIpr??> <#include "document/_contacts.ftlh"> </#if>
     <#if useConstraints??> <p>Use constraints: ${useConstraints}</p> </#if>
-    <h2>EIGHT: Superseding existing data (if applicable)</h2>
+    <h3>Superseding existing data (if applicable)</h3>
     <#if supersededMetadataId??> <p>Metadata Id: ${supersededMetadataId}</p> </#if>
     <#if supersededReason??> <p>Reason: ${supersededReason}</p> </#if>
-    <h2>NINE: Miscellaneous</h2>
+    <h3>Miscellaneous</h3>
     <#if otherInfo??> <p>Other Info: ${otherInfo}</p> </#if>
-    <h2>TEN: Discovery metadata</h2>
+    <h3>Discovery metadata</h3>
     <#if description??> <p>Description: ${description}</p> </#if>
     <#if lineage??> <p>Lineage: ${lineage}</p> </#if>
-    <#if keywords??><#include "document/_keywords.ftlh">  </#if>
+    <#if descriptiveKeywords??><#include "document/_descriptiveKeywords.ftlh">  </#if>
     <#if areaOfStudy?has_content>
-        <#include "document/_extent.ftlh">
+    <#include "document/_areaOfStudy.ftlh">
     </#if>
   </div>
 </div>

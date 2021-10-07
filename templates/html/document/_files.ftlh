@@ -1,6 +1,6 @@
 <#if files?has_content && files?size gt 0 >
     <div id="document-files">
-        <h2 id="files">Files<#if files?size gt 1>s</#if></h2>
+        <p id="files"><b>Files</b><#if files?size gt 1>s</#if></p>
 
         <#list files>
             <#assign filesMaxSize = 30 >
@@ -14,7 +14,7 @@
                 <div class="${fileClass}">
                     <#if file.name?has_content>
                     <div>
-                        <p><b>File: ${file.name}</b></p>
+                        <p>Name: ${file.name}</p>
                     </div>
                     </#if>
                     <#if file.format?has_content>
@@ -36,7 +36,7 @@
                     <small>
                         <#if file.name?has_content>
                         <div>
-                            <p><b>File: ${file.name}</b></p>
+                            <p>Name: ${file.name}</p>
                         </div>
                         </#if>
                         <#if file.format?has_content>

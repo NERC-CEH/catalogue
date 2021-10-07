@@ -13,7 +13,7 @@
     </#macro>
 
     <div id="associations">
-      <h2>Related</h3>
+      <h3>Related</h3>
       <#-- Outputs of this model-->
       <#if resourceType.value=="application">
         <@displayRelatives "modelOutputs" "Model outputs" rel_generates />

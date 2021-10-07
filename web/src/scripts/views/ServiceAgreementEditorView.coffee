@@ -159,8 +159,8 @@ define [
 
         new ParentView
           model: @model
-          modelAttribute: 'relatedRecords'
-          label: 'Related records'
+          modelAttribute: 'relatedDataHoldings'
+          label: 'Related Data Holdings'
           ObjectInputView: RelatedRecordView
           multiline: true
 
@@ -188,7 +188,7 @@ define [
         new ParentStringView
           model: @model
           modelAttribute: 'supportingDocumentNames'
-          label: 'Supporting Document names'
+          label: 'Supporting Documents'
 
         new TextareaView
           model: @model
@@ -389,7 +389,7 @@ define [
         new PredefinedParentView
           model: @model
           ModelType: DescriptiveKeyword
-          modelAttribute: 'keywords'
+          modelAttribute: 'descriptiveKeywords'
           label: 'Keywords'
           ObjectInputView: DescriptiveKeywordView
           multiline: true

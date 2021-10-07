@@ -4,10 +4,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.Accessors;
-import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
-import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
-import uk.ac.ceh.gateway.catalogue.gemini.RelatedRecord;
-import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
+import uk.ac.ceh.gateway.catalogue.gemini.*;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 
@@ -89,8 +86,8 @@ public class ServiceAgreement extends AbstractMetadataDocument {
     /*
     TEN: Discovery metadata
     */
-    //keywords
     //description
+    private List<DescriptiveKeywords> descriptiveKeywords;
     private String lineage;
     private List<BoundingBox> areaOfStudy;
 }
