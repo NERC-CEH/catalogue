@@ -92,7 +92,7 @@
     <#if otherServicesRequired??> <p>Other services required: ${otherServicesRequired}</p> </#if>
     <h3>Licensing and IPR</h3>
     <#if licences??> <#include "document/_serviceAgreementLicence.ftlh"> </#if>
-    <#if ownerOfIpr??> <#include "document/_contacts.ftlh"> </#if>
+    <#if ownerOfIpr??> <#include "document/_ownerOfIpr.ftlh"> </#if>
     <#if useConstraints??> <p>Use constraints: ${useConstraints}</p> </#if>
     <h3>Superseding existing data (if applicable)</h3>
     <#if supersededMetadataId??> <p>Metadata Id: ${supersededMetadataId}</p> </#if>

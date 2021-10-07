@@ -1,6 +1,6 @@
 <#if authors?has_content && authors?size gt 0 >
     <div id="document-authors">
-        <h2 id="authors">Author<#if authors?size gt 1>s</#if></h2>
+        <p id="authors"><b>Author</b><#if authors?size gt 1>s</#if></p>
 
         <#list authors>
             <#assign authorMaxSize = 30 >
