@@ -3,7 +3,7 @@
     <b>Related Data Holdings</b><br>
     <#list relatedDataHoldings as dataHolding>
         <p>Title: ${dataHolding.title}</p>
-        <p>URL: ${dataHolding.url}</p><br>
+        <p>URL: ${dataHolding.href}</p><br>
     </#list>
 </p>
 </#if>
