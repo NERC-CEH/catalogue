@@ -13,6 +13,7 @@ import uk.ac.ceh.components.datastore.DataOngoingCommit;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
+import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 
@@ -42,6 +43,8 @@ public class GitRepoServiceAgreementServiceTest {
     private DocumentInfoMapper<MetadataInfo> metadataInfoMapper;
     @Mock
     private DocumentInfoMapper<ServiceAgreement> serviceAgreementMapper;
+    @Mock
+    private DocumentInfoMapper<GeminiDocument> geminiDocumentMapper;
 
     private ServiceAgreementService service;
 
@@ -50,7 +53,8 @@ public class GitRepoServiceAgreementServiceTest {
         service = new GitRepoServiceAgreementService(
             repo,
             metadataInfoMapper,
-            serviceAgreementMapper
+            serviceAgreementMapper,
+            geminiDocumentMapper
         );
     }
 
@@ -197,5 +201,43 @@ public class GitRepoServiceAgreementServiceTest {
         verify(dataOngoingCommit).commit(user, "catalogue");
     }
 
+    @Test
+    @SneakyThrows
+    public void canPopulateGeminiDocument() {
+        //Given
+        CatalogueUser user = new CatalogueUser();
+        user.setUsername("test");
+        DataOngoingCommit dataOngoingCommit = mock(DataOngoingCommit.class);
+        val serviceAgreement = new ServiceAgreement();
+        serviceAgreement.setId(ID);
+
+        val metadataInfoDocument = mock(DataDocument.class);
+        given(repo.getData(FOLDER + ID + ".meta"))
+                .willReturn(metadataInfoDocument);
+        given(metadataInfoDocument.getInputStream())
+                .willReturn(new ByteArrayInputStream("meta".getBytes()));
+        val metadata = MetadataInfo.builder()
+                .rawType(APPLICATION_JSON_VALUE)
+                .build();
+        given(metadataInfoMapper.readInfo(any()))
+                .willReturn(metadata);
+
+        val rawDocument = mock(DataDocument.class);
+        given(repo.getData(FOLDER + ID + ".raw"))
+                .willReturn(rawDocument);
+        given(rawDocument.getInputStream())
+                .willReturn(new ByteArrayInputStream("file".getBytes()));
+        given(serviceAgreementMapper.readInfo(any()))
+                .willReturn(serviceAgreement);
+
+        given(repo.submitData(any(), any())).willReturn(dataOngoingCommit);
+        given(dataOngoingCommit.submitData(any(), any())).willReturn(dataOngoingCommit);
+
+        //When
+        service.populateGeminiDocument(user, ID, "catalogue");
+
+        //Then
+        verify(dataOngoingCommit).commit(user, "catalogue");
+    }
 
 }

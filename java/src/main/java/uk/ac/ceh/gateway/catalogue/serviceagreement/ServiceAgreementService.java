@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
+import lombok.SneakyThrows;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 public interface ServiceAgreementService {
@@ -11,4 +12,7 @@ public interface ServiceAgreementService {
     void save(CatalogueUser user, String id, String catalogue, ServiceAgreement serviceAgreement);
 
     void delete(CatalogueUser user, String id);
+
+    @SneakyThrows
+    void populateGeminiDocument(CatalogueUser user, String id, String catalogue);
 }

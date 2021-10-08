@@ -248,6 +248,13 @@ public class ServicesConfig {
         return new JacksonDocumentInfoMapper<>(objectMapper, ServiceAgreement.class);
     }
 
+    @Bean
+    public DocumentInfoMapper<GeminiDocument> geminiDocumentMapper(
+            ObjectMapper objectMapper
+    ) {
+        return new JacksonDocumentInfoMapper<>(objectMapper, GeminiDocument.class);
+    }
+
     @Bean(destroyMethod = "close")
     public org.apache.jena.query.Dataset tdbModel(
         @Value("${jena.location}") String location

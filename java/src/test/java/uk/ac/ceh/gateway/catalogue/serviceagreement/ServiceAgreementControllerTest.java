@@ -201,6 +201,68 @@ class ServiceAgreementControllerTest {
                 .andExpect(status().isForbidden());
     }
 
+    @Test
+    @SneakyThrows
+    @WithMockCatalogueUser
+    void populateGeminiDocument() {
+        //Given
+        givenUserCanEdit();
+        givenMedataRecordDoesNotExist();
+        val expected = new ServiceAgreement();
+        expected.setId(ID);
+        expected.setTitle("Test Service Agreement");
+
+        //When
+        mvc.perform(post("/service-agreement/populateGeminiDocument/{id}", ID)
+                        .queryParam("catalogue", "eidc")
+                )
+                .andExpect(status().isOk());
+        //then
+        verify(serviceAgreementService).populateGeminiDocument(
+                USER,
+                ID,
+                "eidc");
+    }
+
+    @Test
+    @SneakyThrows
+    @WithMockCatalogueUser
+    void userCannotPopulateGeminiDocumentAsUserCanNotEdit() {
+        //given
+        givenUserCanNotEdit();
+        givenMedataRecordDoesNotExist();
+
+        //When
+        mvc.perform(post("/service-agreement/populateGeminiDocument/{id}", ID)
+                        .queryParam("catalogue", "eidc")
+                        .contentType(APPLICATION_JSON)
+                )
+                .andExpect(status().isForbidden());
+
+        //then
+        verifyNoInteractions(serviceAgreementService);
+    }
+
+    @Test
+    @SneakyThrows
+    @WithMockCatalogueUser
+    void userCannotPopulateGeminiDocumentAsRecordExists() {
+        //given
+        givenUserCanEdit();
+        givenMetadataRecordExists();
+
+        //When
+        mvc.perform(post("/service-agreement/populateGeminiDocument/{id}", ID)
+                        .queryParam("catalogue", "eidc")
+                        .contentType(APPLICATION_JSON)
+                )
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(APPLICATION_JSON));
+
+        //then
+        verify(serviceAgreementService).metadataRecordExists(ID);
+    }
+
     private void givenUserCanView() {
         given(permissionService.userCanView(ID))
                 .willReturn(true);

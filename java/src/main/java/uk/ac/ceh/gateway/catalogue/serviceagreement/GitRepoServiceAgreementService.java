@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
+import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
@@ -23,17 +24,26 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     private final DataRepository<CatalogueUser> repo;
     private final DocumentInfoMapper<MetadataInfo> metadataInfoMapper;
     private final DocumentInfoMapper<ServiceAgreement> serviceAgreementMapper;
+    private final DocumentInfoMapper<GeminiDocument> geminiDocumentMapper;
     private static final String FOLDER = "service-agreements/";
 
     public GitRepoServiceAgreementService(
             DataRepository<CatalogueUser> repo,
             DocumentInfoMapper<MetadataInfo> metadataInfoMapper,
-            DocumentInfoMapper<ServiceAgreement> serviceAgreementMapper
+            DocumentInfoMapper<ServiceAgreement> serviceAgreementMapper,
+            DocumentInfoMapper<GeminiDocument> geminiDocumentMapper
     ) {
         this.repo = repo;
         this.metadataInfoMapper = metadataInfoMapper;
         this.serviceAgreementMapper = serviceAgreementMapper;
+        this.geminiDocumentMapper = geminiDocumentMapper;
         log.info("Creating");
+    }
+
+    @SneakyThrows
+    public void populateGeminiDocument(CatalogueUser user, String id, String catalogue) {
+        ServiceAgreement serviceAgreement = this.get(id);
+        this.saveGeminiDocument(user, id, catalogue, new GeminiDocument(serviceAgreement));
     }
 
 
@@ -73,6 +83,14 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         repo.deleteData(FOLDER + id + ".meta")
                 .deleteData(FOLDER + id + ".raw")
                 .commit(user, "delete document: " + id);
+    }
+
+    @SneakyThrows
+    public void saveGeminiDocument(CatalogueUser user, String id, String catalogue, GeminiDocument geminiDocument) {
+        val metadataInfo = createMetadataInfoWithDefaultPermissions(user, catalogue);
+        repo.submitData(id + ".meta", (o) -> metadataInfoMapper.writeInfo(metadataInfo, o))
+                .submitData(id + ".raw", (o) -> geminiDocumentMapper.writeInfo(geminiDocument, o))
+                .commit(user, catalogue);
     }
 
     private MetadataInfo createMetadataInfoWithDefaultPermissions(CatalogueUser user, String catalogue) {

@@ -82,4 +82,19 @@ public class ServiceAgreementController {
         return search.query(query);
     }
 
+    @PreAuthorize("@permission.userCanEdit(#id)")
+    @PostMapping("/populateGeminiDocument/{id}")
+    public void populateGeminiDocument(
+            @ActiveUser CatalogueUser user,
+            @PathVariable("id") String id,
+            @RequestParam("catalogue") String catalogue
+    ) {
+        if (!serviceAgreementService.metadataRecordExists(id)) {
+            log.info("POPULATE GEMINI DOCUMENT {}", id);
+            serviceAgreementService.populateGeminiDocument(user, id, catalogue);
+        }else{
+            throw new ResourceNotFoundException("Metadata record already exists");
+        }
+    }
+
 }
