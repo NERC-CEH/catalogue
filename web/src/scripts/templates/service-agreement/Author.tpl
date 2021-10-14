@@ -1,15 +1,4 @@
-<div class="row">
-    <div class="col-sm-2">
-        <label class="control-label" for="contacts<%= data.index %>Role">Role</label>
-    </div>
-    <div class="col-sm-10">
-        <select data-name="role" class="editor-input" id="contacts0Role" >
-            <option value="author" selected="selected" >Author</option>
-        </select>
-    </div>
-</div>
-
-<div class="col-sm-10 col-sm-offset-2 hidden-xs"><hr></div>
+<input type="hidden" data-name="role" value="author"/>
 
 <div class="row">
     <div class="col-sm-2">
@@ -22,7 +11,7 @@
         <label class="control-label" for="contacts<%= data.index %>nameIdentifier">ORCID</label>
     </div>
     <div class="col-sm-5">
-        <input data-name='nameIdentifier' placeholder='https://orcid.org/0000-...' class="editor-input" id="contacts<%= data.index %>nameIdentifier" value="<%= data.nameIdentifier %>">
+        <input data-name='nameIdentifier' placeholder='https://orcid.org/0000-0000-0000-0000' class="editor-input" id="contacts<%= data.index %>nameIdentifier" value="<%= data.nameIdentifier %>">
     </div>
 </div>
 

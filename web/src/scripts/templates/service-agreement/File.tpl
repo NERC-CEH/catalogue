@@ -22,9 +22,9 @@
 
 <div class="row">
     <div class="col-sm-2">
-        <label class="control-label" for="files<%= data.index %>Size">Size(MB)</label>
+        <label class="control-label" for="files<%= data.index %>Size">Size</label>
     </div>
     <div class="col-sm-10">
-        <input data-name='size' type="number" step="1" min="1" class="editor-input" id="files<%= data.index %>Size" value="<%= data.size %>">
+        <input data-name='size' class="editor-input" id="files<%= data.index %>Size" value="<%= data.size %>">
     </div>
 </div>

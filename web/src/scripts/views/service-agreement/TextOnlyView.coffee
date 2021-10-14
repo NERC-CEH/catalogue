@@ -1,5 +1,4 @@
 define [
-  'underscore'
   'cs!views/editor/SingleView'
   'tpl!templates/editor/TextOnly.tpl'
 ], (_, SingleView, template) -> SingleView.extend
