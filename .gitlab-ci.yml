@@ -12,7 +12,7 @@ stages:
 
 test_java:
   stage: test
-  image: gradle:6.8.3-jdk15
+  image: gradle:7.2.0-jdk16
   script: gradle test --no-daemon
   artifacts:
     when: always

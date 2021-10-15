@@ -13,7 +13,7 @@ RUN node_modules/.bin/bower install --allow-root
 RUN node_modules/.bin/grunt
 
 # Build Java
-FROM gradle:6.8.3-jdk15 AS build-java
+FROM gradle:7.2.0-jdk16 AS build-java
 WORKDIR /app
 COPY --chown=gradle:gradle java/src src/
 COPY --chown=gradle:gradle java/build.gradle .
@@ -23,7 +23,7 @@ WORKDIR build/libs
 RUN java -Djarmode=layertools -jar app.jar extract
 
 # Create production image
-FROM openjdk:15-alpine AS prod
+FROM openjdk:16-alpine AS prod
 LABEL maintainer="oss@ceh.ac.uk"
 RUN apk --no-cache add curl
 RUN addgroup -g 1001 -S spring && adduser -u 1001 -S spring -G spring

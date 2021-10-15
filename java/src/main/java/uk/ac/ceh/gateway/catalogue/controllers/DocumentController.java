@@ -282,6 +282,17 @@ public class DocumentController extends AbstractDocumentController {
         return postProcessLinkDocument(documentRepository.read(file));
     }
 
+    @CrossOrigin
+    @SneakyThrows
+    @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
+    @GetMapping("documents/{file}.xml")
+    public String readMetadataXml(
+        @ActiveUser CatalogueUser user,
+        @PathVariable("file") String file
+    ) {
+        return "forward:/documents/" + file + "?format=" + GEMINI_XML_SHORT;
+    }
+
     @ResponseBody
     @SneakyThrows
     @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
@@ -308,8 +319,7 @@ public class DocumentController extends AbstractDocumentController {
 
     private MetadataDocument postProcessLinkDocument(MetadataDocument document) {
         log.debug("processing {}", document.getId());
-        if (document instanceof LinkDocument) {
-            LinkDocument linkDocument = (LinkDocument) document;
+        if (document instanceof LinkDocument linkDocument) {
             String id = linkDocument.getId();
             String uri = linkDocument.getUri();
             List<Keyword> additionalKeywords = linkDocument.getAdditionalKeywords();
