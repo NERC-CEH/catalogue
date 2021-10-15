@@ -91,7 +91,7 @@ define [
           ModelType: Contact
           modelAttribute: 'authors'
           label: 'Authors'
-          ObjectInputView: ServiceAgreementAuthorView
+          ObjectInputView: AuthorView
           multiline: true
       ]
     ,
