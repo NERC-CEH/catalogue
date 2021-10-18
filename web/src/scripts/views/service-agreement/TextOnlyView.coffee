@@ -1,7 +1,8 @@
 define [
+  'underscore'
   'cs!views/editor/SingleView'
   'tpl!templates/service-agreement/TextOnly.tpl'
-], (SingleView, template) -> SingleView.extend
+], (_, SingleView, template) -> SingleView.extend
 
   template: template
 
@@ -11,4 +12,4 @@ define [
 
   render: ->
     SingleView.prototype.render.apply @
-    @$('.dataentry').append(@template(@data))
+    @$('.dataentry').append @template data: _.extend {}, @data, value: @model.get

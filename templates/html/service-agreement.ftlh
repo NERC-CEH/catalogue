@@ -82,10 +82,10 @@
             <h3>The data</h3>
             <@files/>
             <@displayData "Transfer method" transferMethod/>
-            <#if relatedDataHoldings??> <@relatedDataHoldings/> </#if>
-            <#if dataCategory??> <@dataCategory/> </#if>
+            <@relatedDataHoldings/>
+            <@dataCategory/>
             <h3>Supporting documentation</h3>
-            <#if supportingDocumentNames??> <@supportingDocumentNames/> </#if>
+            <@supportingDocuments/>
             <@displayData "Content Included" contentIncluded/>
             <h3>Data retention</h3>
             <#if policyExceptions??> <p>Policy Exceptions: ${policyExceptions}</p> </#if>
@@ -95,8 +95,8 @@
             <@displayData "Specific Requirements" specificRequirements/>
             <@displayData "Other services required" otherServicesRequired/>
             <h3>Licensing and IPR</h3>
-            <#if licences??> <@licences/> </#if>
-            <#if ownerOfIpr??> <@ownerOfIpr/> </#if>
+            <@licences/>
+            <@ownerOfIpr/>
             <@displayData "Use constraints" useConstraints/>
             <h3>Superseding existing data (if applicable)</h3>
             <@displayData "Metadata Id" supersededMetadataId/>
@@ -105,30 +105,21 @@
             <@displayData "Other Info" otherInfo/>
             <h3>Discovery metadata</h3>
             <@displayData "Description" description/>
-            <@lineage "Lineage" lineage/>
-            <#if keywords??><@keywords/></#if>
-            <#if areaOfStudy?has_content>
-                <@areaOfStudy/>
-            </#if>
+            <@displayData "Lineage" lineage/>
+            <@keywords/>
+            <@areaOfStudy/>
         </div>
     </div>
 </@skeleton.master>
 
-<#if ownerOfIpr?has_content>
-    <#assign
-    authors = func.filter(ownerOfIpr, "role", "author")
-    pocs = func.filter(ownerOfIpr, "role", "pointOfContact")
-    rightsHolders = func.filter(ownerOfIpr, "role", "rightsHolder")
-    />
-</#if>
 <#if endUserLicence?has_content>
     <#assign
     licences = func.filter(endUserLicence, "code", "license")
-    otherConstraints =  func.filter(endUserLicence, "code", "license", true)>
+    otherConstraints =  func.filter(endUserLicence, "code", "license", true)/>
 </#if>
 
-<#macro displayData title data>
-    <#if data??> <p>${title}: ${data}</p></#if>
+<#macro displayData title key=''>
+    <#if key!=''> <p>${title}: ${key}</p></#if>
 </#macro>
 
 <#macro authors>
@@ -137,11 +128,11 @@
             <p id="authors"><b>Author<#if authors?size gt 1>s</#if></b></p>
 
             <#list authors>
-                <#assign authorMaxSize = 30 >
-                <#assign moreAuthors = authors?size-authorMaxSize >
+                <#assign ownersMaxSize = 30 >
+                <#assign moreOwners = authors?size-ownersMaxSize >
                 <#items as author>
                     <#assign rpClass="responsibleParty">
-                    <#if author?counter gt authorMaxSize>
+                    <#if author?counter gt ownersMaxSize>
                         <#assign rpClass="responsibleParty responsiblePartyCollapse collapse">
                     </#if>
 
@@ -151,12 +142,12 @@
 
                 </#items>
 
-                <#if authors?size gt authorMaxSize >
+                <#if authors?size gt ownersMaxSize >
                     <p>
                         <small>@func.displayContact
                             <a href=".responsiblePartyCollapse" class="moreAuthors collapsed" data-toggle="collapse"
                                aria-controls="responsiblePartyCollapse" area-expanded="false">
-                                <span>${moreAuthors} more authors. </span>Show
+                                <span>${moreOwners} more authors. </span>Show
                             </a>
                         </small>
                     </p>
@@ -284,67 +275,34 @@
 
 <#macro ownerOfIpr>
     <h2>Owner of IPR</h2>
-    <#if pocs?size gt 0 >
-        <div id="document-pointOfContact">
-            <p id="pointOfContact">Correspondence/contact details</p>
-            <#list pocs>
-                <#items as poc>
-                    <div class="responsibleParty">
-                        <@func.displayContact poc true true false />
-                    </div>
-                </#items>
-            </#list>
-        </div>
-    </#if>
-
-    <#if authors?size gt 0 >
+    <#if ownersOfIpr?has_content && ownersOfIpr?size gt 0 >
         <div id="document-authors">
-            <p id="authors">Author<#if authors?size gt 1>s</#if></p>
-            <#list authors>
-                <#assign authorMaxSize = 30 >
-                <#assign moreAuthors = authors?size-authorMaxSize >
-                <#items as author>
+            <p id="authors">Author<#if ownersOfIpr?size gt 1>s</#if></p>
+            <#list ownersOfIpr>
+                <#assign ownersMaxSize = 30 >
+                <#assign moreOwners = ownersOfIpr?size-ownersMaxSize >
+                <#items as owner>
                     <#assign rpClass="responsibleParty">
-                    <#if author?counter gt authorMaxSize>
+                    <#if owner?counter gt ownersMaxSize>
                         <#assign rpClass="responsibleParty responsiblePartyCollapse collapse">
                     </#if>
 
                     <div class="${rpClass}">
-                        <@func.displayContact author false false true />
+                        <@func.displayContact owner false false true />
                     </div>
 
                 </#items>
 
-                <#if authors?size gt authorMaxSize >
+                <#if ownersOfIpr?size gt ownersMaxSize >
                     <p>
                         <small>
                             <a href=".responsiblePartyCollapse" class="moreAuthors collapsed" data-toggle="collapse" aria-controls="responsiblePartyCollapse" area-expanded="false">
-                                <span>${moreAuthors} more authors. </span>Show
+                                <span>${moreOwners} more owners. </span>Show
                             </a>
                         </small>
                     </p>
                 </#if>
             </#list>
-
-        </div>
-    </#if>
-
-    <#if rightsHolders?has_content>
-        <div id="document-otherContacts">
-            <p><a id="otherContacts"></a>Other contacts</p>
-            <dl class="dl-horizontal">
-
-                <#if rightsHolders?has_content>
-                    <#list rightsHolders as rightsHolder>
-                        <dt>${rightsHolder.roleDisplayName}</dt>
-                        <dd>
-                            <div class="responsibleParty">
-                                <@func.displayContact rightsHolder false true false />
-                            </div>
-                        </dd>
-                    </#list>
-                </#if>
-            </dl>
         </div>
     </#if>
 </#macro>

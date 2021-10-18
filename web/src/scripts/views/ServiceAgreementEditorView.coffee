@@ -8,6 +8,7 @@ define [
   'cs!views/editor/AccessLimitationView'
   'cs!models/editor/AccessLimitation'
   'cs!models/editor/InspireTheme'
+  'cs!views/service-agreement/Category'
   'cs!views/service-agreement/CategoryView'
   'cs!views/editor/ContactView'
   'cs!views/editor/ResourceIdentifierView'
@@ -29,7 +30,7 @@ define [
   'cs!views/service-agreement/TextOnlyView'
   'cs!views/service-agreement/AuthorView'
   'cs!views/service-agreement/FileView'
-], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, AccessLimitationView, AccessLimitation, InspireTheme, CategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, OnlineResourceView, OnlineResource, ResourceConstraintView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, MapDataSource, RelatedRecordView, ReadOnlyView, ParentStringView, BoundingBox, BoundingBoxView, TextOnlyView, AuthorView, FileView) -> EditorView.extend
+], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, AccessLimitationView, AccessLimitation, InspireTheme,Category, CategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, OnlineResourceView, OnlineResource, ResourceConstraintView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, MapDataSource, RelatedRecordView, ReadOnlyView, ParentStringView, BoundingBox, BoundingBoxView, TextOnlyView, AuthorView, FileView) -> EditorView.extend
 
   initialize: ->
 
@@ -39,11 +40,11 @@ define [
       views: [
 
         new TextOnlyView
-        model: @model
-        text: """<p>Provide a title that best describes that data resource. Include references to the subject, spatial and temporal aspects of the data resource.</p>
-                 <p>Only the leading letter and proper nouns of the title should be capitalised.  If it's necessary to include acronyms in the title, then include both the acronym (in parentheses) and the phrase/word from which it was formed. Acronyms should not include full-stops between each letter.</p>
-                 <p>If there are multiple titles or translations of titles (e.g. in Welsh), these should be added as alternative titles.</p>
-                 """
+          model: @model
+          text: """<p>Provide a title that best describes that data resource. Include references to the subject, spatial and temporal aspects of the data resource.</p>
+                <p>Only the leading letter and proper nouns of the title should be capitalised.  If it's necessary to include acronyms in the title, then include both the acronym (in parentheses) and the phrase/word from which it was formed. Acronyms should not include full-stops between each letter.</p>
+                <p>If there are multiple titles or translations of titles (e.g. in Welsh), these should be added as alternative titles.</p>
+                """
 
         new InputView
           model: @model
@@ -82,9 +83,9 @@ define [
       views: [
 
         new ReadOnlyView
-        model: @model
-        modelAttribute: 'id'
-        label: 'Data identifier'
+          model: @model
+          modelAttribute: 'id'
+          label: 'Data identifier'
 
         new ParentView
           model: @model
@@ -98,6 +99,7 @@ define [
       label: 'Policies & Legislation'
       title: 'Policies & Legislation'
       views: [
+
         new TextOnlyView
           model: @model
           text: """<p>All environmental data deposited into the EIDC are subject to the requirements of the <a href="https://nerc.ukri.org/research/sites/environmental-data-service-eds/policy/">NERC Data Policy.</a></p>
@@ -121,9 +123,9 @@ define [
       views: [
 
         new InputView
-        model: @model
-        modelAttribute: 'fileNumber'
-        label: 'Number of data files'
+          model: @model
+          modelAttribute: 'fileNumber'
+          label: 'Number of data files'
 
         new ParentView
           model: @model
@@ -146,6 +148,7 @@ define [
 
         new ParentView
           model: @model
+          ModelType: Category
           modelAttribute: 'dataCategory'
           label: 'Data Category'
           ObjectInputView: CategoryView
@@ -278,7 +281,7 @@ define [
         new ParentView
           model: @model
           ModelType: Contact
-          modelAttribute: 'ownerOfIpr'
+          modelAttribute: 'ownersOfIpr'
           label: 'Owner of IPR'
           ObjectInputView: ContactView
           multiline: true
