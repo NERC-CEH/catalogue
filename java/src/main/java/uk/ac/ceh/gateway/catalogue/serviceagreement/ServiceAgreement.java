@@ -74,7 +74,7 @@ public class ServiceAgreement extends AbstractMetadataDocument {
     SEVEN: Licensing and IPR
     */
     private ResourceConstraint endUserLicence;
-    private List<ResponsibleParty> ownersOfIpr;
+    private List<ResponsibleParty> ownerOfIpr;
     private String useConstraints;
 
     /*

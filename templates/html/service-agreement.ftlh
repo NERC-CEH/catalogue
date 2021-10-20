@@ -3,6 +3,12 @@
 <#import "../functions.ftlh" as func>
 
 <@skeleton.master "Service Agreement">
+    <#if endUserLicence?has_content>
+        <#assign
+        licences = func.filter(endUserLicence, "code", "license")
+        otherConstraints =  func.filter(endUserLicence, "code", "license", true)/>
+    </#if>
+
 
     <div id="metadata">
         <div class="container" role="main">
@@ -76,14 +82,14 @@
             <@displayData "For the EIDC name" eidcName/>
             <@displayData "For the EIDC contact details" eidcContactDetails/>
             <h3>Data identification and citation</h3>
-            <@authors/>
+            <@displayAuthors/>
             <h3>Policies & legislation</h3>
             <@displayData "Other Policies or Legislation" otherPoliciesOrLegislation/>
             <h3>The data</h3>
-            <@files/>
+            <@displayFiles/>
             <@displayData "Transfer method" transferMethod/>
-            <@relatedDataHoldings/>
-            <@dataCategory/>
+            <@displayRelatedDataHoldings/>
+            <@displayDataCategory/>
             <h3>Supporting documentation</h3>
             <@supportingDocuments/>
             <@displayData "Content Included" contentIncluded/>
@@ -95,8 +101,8 @@
             <@displayData "Specific Requirements" specificRequirements/>
             <@displayData "Other services required" otherServicesRequired/>
             <h3>Licensing and IPR</h3>
-            <@licences/>
-            <@ownerOfIpr/>
+            <@displayEndUserLicence/>
+            <@displayOwnerOfIpr/>
             <@displayData "Use constraints" useConstraints/>
             <h3>Superseding existing data (if applicable)</h3>
             <@displayData "Metadata Id" supersededMetadataId/>
@@ -106,23 +112,17 @@
             <h3>Discovery metadata</h3>
             <@displayData "Description" description/>
             <@displayData "Lineage" lineage/>
-            <@keywords/>
-            <@areaOfStudy/>
+            <@displayKeywords/>
+            <@displayArea/>
         </div>
     </div>
 </@skeleton.master>
 
-<#if endUserLicence?has_content>
-    <#assign
-    licences = func.filter(endUserLicence, "code", "license")
-    otherConstraints =  func.filter(endUserLicence, "code", "license", true)/>
-</#if>
-
-<#macro displayData title key=''>
-    <#if key!=''> <p>${title}: ${key}</p></#if>
+<#macro displayData title object=''>
+    <#if object!=''> <p>${title}: ${object}</p> </#if>
 </#macro>
 
-<#macro authors>
+<#macro displayAuthors>
     <#if authors?has_content && authors?size gt 0 >
         <div id="document-authors">
             <p id="authors"><b>Author<#if authors?size gt 1>s</#if></b></p>
@@ -158,7 +158,7 @@
     </#if>
 </#macro>
 
-<#macro files>
+<#macro displayFiles>
     <#if files?has_content && files?size gt 0 >
         <div id="document-files">
             <p id="files"><b>Files<#if files?size gt 1>s</#if></b></p>
@@ -222,7 +222,7 @@
     </#if>
 </#macro>
 
-<#macro relatedDataHoldings>
+<#macro displayRelatedDataHoldings>
     <#if relatedDataHoldings?? && relatedDataHoldings?has_content>
         <h2>Related Data Holdings</h2><br>
         <dl>
@@ -234,10 +234,11 @@
     </#if>
 </#macro>
 
-<#macro dataCategory>
+<#macro displayDataCategory>
     <#if dataCategory?has_content>
         <#if dataCategory.uri?has_content>
-            <a href="${dataCategory.uri}" target="_blank" rel="noopener noreferrer">${codes.lookup('topicCategory', dataCategory.value, 'name')!dataCategory.value}</a> <#if dataCategory_has_next>, </#if>
+            <a href="${dataCategory.uri}" target="_blank" rel="noopener noreferrer">${codes.lookup('topicCategory', dataCategory.value, 'name')!dataCategory.value}</a>
+            <#if dataCategory_has_next>, </#if>
         <#else>
             <span>${codes.lookup('dataCategory', dataCategory.value, 'name')!dataCategory.value}</span><#if dataCategory_has_next>, </#if>
         </#if>
@@ -251,11 +252,11 @@
         <#list supportingDocumentNames as name>
             ${name}<#sep><br></#sep>
         </#list>
-    </p>
+        </p>
     </#if>
 </#macro>
 
-<#macro licences>
+<#macro displayEndUserLicence>
     <#if licences?has_content>
         <#list licences as licence>
             <#if licence.code == 'license'>
@@ -273,7 +274,7 @@
     </#if>
 </#macro>
 
-<#macro ownerOfIpr>
+<#macro displayOwnerOfIpr>
     <h2>Owner of IPR</h2>
     <#if ownersOfIpr?has_content && ownersOfIpr?size gt 0 >
         <div id="document-authors">
@@ -307,37 +308,35 @@
     </#if>
 </#macro>
 
-<#macro keywords>
+<#macro displayKeywords>
     <#if keywords?has_content>
         <dt>Keywords</dt>
         <dd class="descriptive-keywords">
             <#list keywords?sort_by("value") as keyword>
                 <span>
-    <#if keyword.uri?has_content>
-        <a href="${keyword.uri}" target="_blank" rel="noopener noreferrer">${keyword.value?trim}</a><#if keyword_has_next>,&nbsp;</#if>
-    <#else>
-        ${keyword.value?trim}<#if keyword_has_next>,&nbsp;</#if>
-    </#if>
-    </span>
+                 <#if keyword.uri?has_content>
+                    <a href="${keyword.uri}" target="_blank" rel="noopener noreferrer">${keyword.value?trim}</a><#if keyword_has_next>,&nbsp;</#if>
+                 <#else>
+                    ${keyword.value?trim}<#if keyword_has_next>,&nbsp;</#if>
+                 </#if>
+                </span>
             </#list>
         </dd>
     </#if>
 </#macro>
 
-<#macro areaOfStudy>
+<#macro displayArea>
     <#if areaOfStudy??>
         <div id="section-extent">
             <dl>
-                <#if areaOfStudy?has_content>
-                    <dt>Study area</dt>
-                    <dd>
-                        <div id="studyarea-map">
-                            <#list areaOfStudy as extent>
-                                <span content="${extent.wkt}" datatype="geo:wktLiteral"/>
-                            </#list>
-                        </div>
-                    </dd>
-                </#if>
+                <dt>Study area</dt>
+                <dd>
+                    <div id="studyarea-map">
+                        <#list areaOfStudy as extent>
+                            <span content="${extent.wkt}" datatype="geo:wktLiteral"/>
+                        </#list>
+                    </div>
+                </dd>
             </dl>
         </div>
     </#if>

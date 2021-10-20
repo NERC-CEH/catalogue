@@ -70,7 +70,7 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
     SEVEN: Licensing and IPR
     */
     private ResourceConstraint endUserLicence;
-    private List<ResponsibleParty> ownersOfIpr;
+    private List<ResponsibleParty> ownerOfIpr;
     private String useConstraints;
 
     /*
@@ -114,7 +114,7 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
         this.specificRequirements = serviceAgreement.getSpecificRequirements();
         this.otherServicesRequired = serviceAgreement.getOtherServicesRequired();
         this.endUserLicence = serviceAgreement.getEndUserLicence();
-        this.ownersOfIpr = serviceAgreement.getOwnersOfIpr();
+        this.ownerOfIpr = serviceAgreement.getOwnerOfIpr();
         this.useConstraints = serviceAgreement.getUseConstraints();
         this.supersededMetadataId = serviceAgreement.getSupersededMetadataId();
         this.supersededReason = serviceAgreement.getSupersededReason();

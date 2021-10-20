@@ -30,7 +30,8 @@ define [
   'cs!views/service-agreement/TextOnlyView'
   'cs!views/service-agreement/AuthorView'
   'cs!views/service-agreement/FileView'
-], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, AccessLimitationView, AccessLimitation, InspireTheme,Category, CategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, OnlineResourceView, OnlineResource, ResourceConstraintView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, MapDataSource, RelatedRecordView, ReadOnlyView, ParentStringView, BoundingBox, BoundingBoxView, TextOnlyView, AuthorView, FileView) -> EditorView.extend
+  'cs!views/service-agreement/EndUserLicenceView'
+], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, AccessLimitationView, AccessLimitation, InspireTheme,Category, CategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, OnlineResourceView, OnlineResource, ResourceConstraintView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, MapDataSource, RelatedRecordView, ReadOnlyView, ParentStringView, BoundingBox, BoundingBoxView, TextOnlyView, AuthorView, FileView, EndUserLicenceView) -> EditorView.extend
 
   initialize: ->
 
@@ -242,17 +243,11 @@ define [
           <p>The EIDC recommends that the depositor seeks guidance from their own institution and/or funding agency as to the appropriate licence.</p>
           """
 
-        new PredefinedParentView
+        new SingleObjectView
           model: @model
           modelAttribute: 'endUserLicence'
           label: 'End user license'
-          ObjectInputView: ResourceConstraintView
-          multiline: true
-          predefined:
-            'Licence - OGL':
-              value: 'This resource is available under the terms of the Open Government Licence'
-              uri: 'https://eidc.ceh.ac.uk/licences/OGL/plain'
-              code: 'license'
+          ObjectInputView: EndUserLicenceView
           helpText: """
                     <p>Describe any restrictions and legal prerequisites placed on the <strong>use</strong> of a data resource once it has been accessed. For example:</p>
                     <ul class="list-unstyled">
