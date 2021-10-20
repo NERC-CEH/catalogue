@@ -159,6 +159,7 @@ public class KeywordVocabulariesConfig {
         );
     }
 
+    @Profile("server:eidc")
     @Bean
     public KeywordVocabulary ukscapeScienceChallengeVocabulary(
         @Qualifier("sparql") RestTemplate restTemplate,
