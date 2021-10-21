@@ -138,7 +138,7 @@
 
                 <#if authors?size gt ownersMaxSize >
                     <p>
-                        <small>@func.displayContact
+                        <small>
                             <a href=".responsiblePartyCollapse" class="moreAuthors collapsed" data-toggle="collapse"
                                aria-controls="responsiblePartyCollapse" area-expanded="false">
                                 <span>${moreOwners} more authors. </span>Show
