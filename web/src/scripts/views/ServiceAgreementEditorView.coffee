@@ -8,7 +8,6 @@ define [
   'cs!views/editor/AccessLimitationView'
   'cs!models/editor/AccessLimitation'
   'cs!models/editor/InspireTheme'
-  'cs!views/service-agreement/Category'
   'cs!views/service-agreement/CategoryView'
   'cs!views/editor/ContactView'
   'cs!views/editor/ResourceIdentifierView'
@@ -31,7 +30,7 @@ define [
   'cs!views/service-agreement/AuthorView'
   'cs!views/service-agreement/FileView'
   'cs!views/service-agreement/EndUserLicenceView'
-], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, AccessLimitationView, AccessLimitation, InspireTheme, Category , CategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, OnlineResourceView, OnlineResource, ResourceConstraintView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, MapDataSource, RelatedRecordView, ReadOnlyView, ParentStringView, BoundingBox, BoundingBoxView, TextOnlyView, AuthorView, FileView, EndUserLicenceView) -> EditorView.extend
+], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, AccessLimitationView, AccessLimitation, InspireTheme, CategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, OnlineResourceView, OnlineResource, ResourceConstraintView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, MapDataSource, RelatedRecordView, ReadOnlyView, ParentStringView, BoundingBox, BoundingBoxView, TextOnlyView, AuthorView, FileView, EndUserLicenceView) -> EditorView.extend
 
   initialize: ->
 
@@ -149,14 +148,9 @@ define [
 
         new SingleObjectView
           model: @model
-          ModelType: Category
           modelAttribute: 'dataCategory'
           label: 'Data Category'
           ObjectInputView: CategoryView
-          helpText: """
-                    <p>Please note these are very broad themes and should not be confused with EIDC science topics.</p>
-                    <p>Multiple topic categories are allowed - please include all that are pertinent.  For example, "Estimates of topsoil invertebrates" = Biota AND Environment AND Geoscientific Information.</p>
-                    """
       ]
     ,
       label: 'Supporting documentation'

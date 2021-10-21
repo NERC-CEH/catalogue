@@ -15,8 +15,7 @@ define [
     'change .uri': 'setUri'
 
   initialize: (options) ->
-    ObjectInputView.prototype.initialize.apply @
-    @data = options
+    ObjectInputView.prototype.initialize.call @, options
     @licence =
       value:'This resource is available under the terms of the Open Government Licence',
       code:'license',

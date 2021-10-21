@@ -70,6 +70,7 @@
                     purpose (e.g. errors are found in the dataset).
                 </li>
             </ul>
+            <@displayData "" title/>
             <@displayData "Deposit reference" depositReference/>
             <@displayData "Depositor name" depositorName/>
             <@displayData "Depositor contact details" depositorContactDetails/>
@@ -147,7 +148,6 @@
                     </p>
                 </#if>
             </#list>
-
         </div>
     </#if>
 </#macro>
@@ -275,7 +275,7 @@
             <#list ownersOfIpr>
                 <#items as owner>
                     <div class="responsibleParty">
-                        <@func.displayContact owner true true true />
+                        <@func.displayContact owner false false true />
                     </div>
                 </#items>
             </#list>
