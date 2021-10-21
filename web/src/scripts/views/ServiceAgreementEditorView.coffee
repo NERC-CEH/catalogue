@@ -31,7 +31,7 @@ define [
   'cs!views/service-agreement/AuthorView'
   'cs!views/service-agreement/FileView'
   'cs!views/service-agreement/EndUserLicenceView'
-], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, AccessLimitationView, AccessLimitation, InspireTheme,Category, CategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, OnlineResourceView, OnlineResource, ResourceConstraintView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, MapDataSource, RelatedRecordView, ReadOnlyView, ParentStringView, BoundingBox, BoundingBoxView, TextOnlyView, AuthorView, FileView, EndUserLicenceView) -> EditorView.extend
+], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, AccessLimitationView, AccessLimitation, InspireTheme, Category , CategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, OnlineResourceView, OnlineResource, ResourceConstraintView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, MapDataSource, RelatedRecordView, ReadOnlyView, ParentStringView, BoundingBox, BoundingBoxView, TextOnlyView, AuthorView, FileView, EndUserLicenceView) -> EditorView.extend
 
   initialize: ->
 
@@ -147,7 +147,7 @@ define [
           ObjectInputView: RelatedRecordView
           multiline: true
 
-        new ParentView
+        new SingleObjectView
           model: @model
           ModelType: Category
           modelAttribute: 'dataCategory'
@@ -359,7 +359,7 @@ define [
         new PredefinedParentView
           model: @model
           ModelType: DescriptiveKeyword
-          modelAttribute: 'keywords'
+          modelAttribute: 'descriptiveKeywords'
           label: 'Keywords'
           ObjectInputView: DescriptiveKeywordView
           multiline: true

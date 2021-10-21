@@ -46,7 +46,7 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
     private List<File> files;
     private String transferMethod;
     private List<RelatedRecord> relatedDataHoldings;
-    private String dataCategory;
+    private Keyword dataCategory;
 
     /*
     FOUR: Supporting documentation
@@ -70,7 +70,7 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
     SEVEN: Licensing and IPR
     */
     private ResourceConstraint endUserLicence;
-    private List<ResponsibleParty> ownerOfIpr;
+    private List<ResponsibleParty> ownersOfIpr;
     private String useConstraints;
 
     /*
@@ -87,7 +87,8 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
     /*
     TEN: Discovery metadata
     */
-    private List<Keyword> keywords;
+    private List<Keyword> allKeywords;
+    private List<DescriptiveKeywords> descriptiveKeywords;
     private String description;
     private String lineage;
     private List<BoundingBox> areaOfStudy;
@@ -114,12 +115,13 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
         this.specificRequirements = serviceAgreement.getSpecificRequirements();
         this.otherServicesRequired = serviceAgreement.getOtherServicesRequired();
         this.endUserLicence = serviceAgreement.getEndUserLicence();
-        this.ownerOfIpr = serviceAgreement.getOwnerOfIpr();
+        this.ownersOfIpr = serviceAgreement.getOwnersOfIpr();
         this.useConstraints = serviceAgreement.getUseConstraints();
         this.supersededMetadataId = serviceAgreement.getSupersededMetadataId();
         this.supersededReason = serviceAgreement.getSupersededReason();
         this.otherInfo = serviceAgreement.getOtherInfo();
-        this.keywords = serviceAgreement.getAllKeywords();
+        this.allKeywords = serviceAgreement.getAllKeywords();
+        this.descriptiveKeywords = serviceAgreement.getDescriptiveKeywords();
         this.description = serviceAgreement.getDescription();
         this.lineage = serviceAgreement.getLineage();
         this.areaOfStudy = serviceAgreement.getAreaOfStudy();

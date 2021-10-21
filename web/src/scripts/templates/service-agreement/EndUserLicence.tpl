@@ -1,18 +1,19 @@
 <div class="row">
-    <div class="col-sm-1 col-lg-1">
+    <div class="radio">
         <label>
-            <input class="ogl" type="radio" name="choice" checked > ogl
+            <input class="ogl" type="radio" name="choice" checked >
+            Open Government licence
         </label>
     </div>
-    <div class="col-sm-1 col-lg-1">
+    <div class="radio">
     <label>
-        <input class="other" type="radio" name="choice"> other
+        <input class="other" type="radio" name="choice">
+        other licence
     </label>
     </div>
 </div>
 <div class="resourceConstraint hidden" id="resourceConstraint">
     <p>Licence</p>
-    <label><input class="value" type="text"> value</label>
-    <label><input class="code" type="text"> code</label>
-    <label><input class="uri" type="text"> uri</label>
+    <label><input data-name="value" class="value" type="text" > value</label></br>
+    <label><input data-name="uri" class="uri" type="text" > uri</label></br>
 </div>

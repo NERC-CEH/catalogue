@@ -50,7 +50,7 @@ public class ServiceAgreement extends AbstractMetadataDocument {
     private List<File> files;
     private String transferMethod;
     private List<RelatedRecord> relatedDataHoldings;
-    private String dataCategory;
+    private Keyword dataCategory;
 
     /*
     FOUR: Supporting documentation
@@ -74,7 +74,7 @@ public class ServiceAgreement extends AbstractMetadataDocument {
     SEVEN: Licensing and IPR
     */
     private ResourceConstraint endUserLicence;
-    private List<ResponsibleParty> ownerOfIpr;
+    private List<ResponsibleParty> ownersOfIpr;
     private String useConstraints;
 
     /*
@@ -105,5 +105,4 @@ public class ServiceAgreement extends AbstractMetadataDocument {
                 .flatMap(dk -> dk.getKeywords().stream())
                 .collect(Collectors.toList());
     }
-
 }

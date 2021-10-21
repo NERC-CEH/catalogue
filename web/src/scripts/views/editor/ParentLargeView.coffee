@@ -49,7 +49,7 @@ define [
     @collection.add new @data.ModelType
 
   getModelData: ->
-    model = @model.attributes
+    model = @model.attributes.
     path = @data.modelAttribute.split '.'
     while path.length >= 2
       model = model[path.shift()] or {}

@@ -12,33 +12,33 @@ define [
     'change .ogl': 'setOGL'
     'change .other': 'setOther'
     'change .value': 'setValue'
-    'change .code': 'setCode'
-    'change .input': 'setUri'
+    'change .uri': 'setUri'
 
-  initialize: ->
+  initialize: (options) ->
     ObjectInputView.prototype.initialize.apply @
-    @listenTo(@model, 'sync', @remove)
-    @listenTo(@model, 'change', @render)
+    @data = options
+    @licence =
+      value:'This resource is available under the terms of the Open Government Licence',
+      code:'license',
+      uri:'https://eidc.ceh.ac.uk/licences/OGL/plain'
+    @setOGL()
+
+  render: ->
+    ObjectInputView.prototype.render.apply @
+    @
 
   setOGL: ->
     @$('#resourceConstraint').addClass('hidden')
-    model.set( @modelAttribute,
-      value:'This resource is available under the terms of the Open Government Licence',
-      code:'https://eidc.ceh.ac.uk/licences/OGL/plain',
-      uri:'license')
+    @model.set @licence
 
   setOther: ->
     @$('#resourceConstraint').removeClass('hidden')
 
   setValue:(event) ->
-    model.set(@modelAttribute,
-      {value:event.target})
-
-  setCode:(event) ->
-    model.set(@modelAttribute,
-      {code:event.target})
+    @licence.value = event.target.value
+    @model.set(@licence)
 
   setUri:(event) ->
-    model.set(@modelAttribute,
-      {uri:event.target})
+    @licence.uri = event.target.value
+    @model.set(@licence)
 

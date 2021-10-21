@@ -3,12 +3,6 @@
 <#import "../functions.ftlh" as func>
 
 <@skeleton.master "Service Agreement">
-    <#if endUserLicence?has_content>
-        <#assign
-        licences = func.filter(endUserLicence, "code", "license")
-        otherConstraints =  func.filter(endUserLicence, "code", "license", true)/>
-    </#if>
-
 
     <div id="metadata">
         <div class="container" role="main">
@@ -224,7 +218,7 @@
 
 <#macro displayRelatedDataHoldings>
     <#if relatedDataHoldings?? && relatedDataHoldings?has_content>
-        <h2>Related Data Holdings</h2><br>
+        <h3>Related Data Holdings</h3><br>
         <dl>
             <#list relatedDataHoldings as dataHolding>
                 <dt>Title: ${dataHolding.title}</dt>
@@ -235,12 +229,12 @@
 </#macro>
 
 <#macro displayDataCategory>
-    <#if dataCategory?has_content>
+    <#if dataCategory?? && dataCategory?has_content>
+        <h3>Data Category</h3>
         <#if dataCategory.uri?has_content>
-            <a href="${dataCategory.uri}" target="_blank" rel="noopener noreferrer">${codes.lookup('topicCategory', dataCategory.value, 'name')!dataCategory.value}</a>
-            <#if dataCategory_has_next>, </#if>
+            <a href="${dataCategory.uri}" target="_blank" rel="noopener noreferrer">${dataCategory.value}</a>
         <#else>
-            <span>${codes.lookup('dataCategory', dataCategory.value, 'name')!dataCategory.value}</span><#if dataCategory_has_next>, </#if>
+            <span>${dataCategory.value}</span>
         </#if>
     </#if>
 </#macro>
@@ -257,62 +251,43 @@
 </#macro>
 
 <#macro displayEndUserLicence>
-    <#if licences?has_content>
-        <#list licences as licence>
-            <#if licence.code == 'license'>
-                <p class="licenceText">
-                    <#assign licenceText = licence.value >
-                    <#if licence.uri?has_content><a rel="license" href="${licence.uri}"></#if>
-                        <#if licenceText?contains("Open Government Licence")>
-                            <img class="ogl-logo" src='/static/img/ogl_16.png' alt='OGL'>
-                        </#if>
-                        <#if licence.uri?has_content></a></#if>
-                </p>
-                <div class="divider"></div>
-            </#if>
-        </#list>
+    <#if endUserLicence?has_content>
+          <#if endUserLicence.code == 'license'>
+              <p class="licenceText">
+                  <#assign licenceText = endUserLicence.value >
+                  <#if endUserLicence.uri?has_content><a rel="license" href="${endUserLicence.uri}"></#if>
+                      <#if licenceText?contains("Open Government Licence")>
+                          <img class="ogl-logo" src='/static/img/ogl_16.png' alt='OGL'>
+                      <#else>
+                          <#if endUserLicence.value?has_content>${endUserLicence.value}</#if>
+                      </#if>
+                  <#if endUserLicence.uri?has_content></a></#if>
+              </p>
+              <div class="divider"></div>
+          </#if>
     </#if>
 </#macro>
 
 <#macro displayOwnerOfIpr>
-    <h2>Owner of IPR</h2>
-    <#if ownersOfIpr?has_content && ownersOfIpr?size gt 0 >
-        <div id="document-authors">
-            <p id="authors">Author<#if ownersOfIpr?size gt 1>s</#if></p>
+    <#if ownersOfIpr?has_content &&ownersOfIpr?size gt 0 >
+        <dt id="pointOfContact">Owner of IPR</dt>
+        <dd class="descriptive-keywords">
             <#list ownersOfIpr>
-                <#assign ownersMaxSize = 30 >
-                <#assign moreOwners = ownersOfIpr?size-ownersMaxSize >
                 <#items as owner>
-                    <#assign rpClass="responsibleParty">
-                    <#if owner?counter gt ownersMaxSize>
-                        <#assign rpClass="responsibleParty responsiblePartyCollapse collapse">
-                    </#if>
-
-                    <div class="${rpClass}">
-                        <@func.displayContact owner false false true />
+                    <div class="responsibleParty">
+                        <@func.displayContact owner true true true />
                     </div>
-
                 </#items>
-
-                <#if ownersOfIpr?size gt ownersMaxSize >
-                    <p>
-                        <small>
-                            <a href=".responsiblePartyCollapse" class="moreAuthors collapsed" data-toggle="collapse" aria-controls="responsiblePartyCollapse" area-expanded="false">
-                                <span>${moreOwners} more owners. </span>Show
-                            </a>
-                        </small>
-                    </p>
-                </#if>
             </#list>
-        </div>
+        </dd>
     </#if>
 </#macro>
 
 <#macro displayKeywords>
-    <#if keywords?has_content>
+    <#if allKeywords?has_content>
         <dt>Keywords</dt>
         <dd class="descriptive-keywords">
-            <#list keywords?sort_by("value") as keyword>
+            <#list allKeywords?sort_by("value") as keyword>
                 <span>
                  <#if keyword.uri?has_content>
                     <a href="${keyword.uri}" target="_blank" rel="noopener noreferrer">${keyword.value?trim}</a><#if keyword_has_next>,&nbsp;</#if>
