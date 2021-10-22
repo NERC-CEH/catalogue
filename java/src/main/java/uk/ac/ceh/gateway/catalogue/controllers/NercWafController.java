@@ -26,6 +26,7 @@ import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.GEMINI_XML_SHORT;
  * The following emulates a Web accessible Folder of metadata records
  * for the NERC data service from the current catalogue
  */
+@SuppressWarnings("SpringMVCViewInspection")
 @Slf4j
 @ToString
 @Controller

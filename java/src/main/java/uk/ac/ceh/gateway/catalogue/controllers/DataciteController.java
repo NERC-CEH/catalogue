@@ -34,9 +34,11 @@ public class DataciteController {
     private final DocumentIdentifierService identifierService;
     private final DataciteService dataciteService;
 
-    public DataciteController(DocumentRepository repo,
-                              DocumentIdentifierService identifierService,
-                              DataciteService dataciteService) {
+    public DataciteController(
+        DocumentRepository repo,
+        DocumentIdentifierService identifierService,
+        DataciteService dataciteService
+    ) {
         this.repo = repo;
         this.identifierService = identifierService;
         this.dataciteService = dataciteService;
