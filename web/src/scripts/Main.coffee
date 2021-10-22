@@ -289,7 +289,10 @@ define [
       do event.preventDefault
 
       id =  $(event.currentTarget).data("id")
-      data = {id:id}
+      data = {
+        id: id,
+        eidcContactDetails: 'info@eidc.ac.uk'
+      };
 
       new ServiceAgreementEditorView
         el: '#metadata'

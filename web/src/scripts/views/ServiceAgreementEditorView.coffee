@@ -8,8 +8,7 @@ define [
   'cs!views/editor/AccessLimitationView'
   'cs!models/editor/AccessLimitation'
   'cs!models/editor/InspireTheme'
-  'cs!models/editor/TopicCategory'
-  'cs!views/editor/TopicCategoryView'
+  'cs!views/service-agreement/CategoryView'
   'cs!views/editor/ContactView'
   'cs!views/editor/ResourceIdentifierView'
   'cs!views/editor/DatasetReferenceDateView'
@@ -25,7 +24,13 @@ define [
   'cs!views/editor/RelatedRecordView'
   'cs!views/editor/ReadOnlyView'
   'cs!views/editor/ParentStringView'
-], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, AccessLimitationView, AccessLimitation, InspireTheme, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, OnlineResourceView, OnlineResource, ResourceConstraintView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, MapDataSource, RelatedRecordView, ReadOnlyView, ParentStringView) -> EditorView.extend
+  'cs!models/editor/BoundingBox'
+  'cs!views/editor/BoundingBoxView'
+  'cs!views/service-agreement/TextOnlyView'
+  'cs!views/service-agreement/AuthorView'
+  'cs!views/service-agreement/FileView'
+  'cs!views/service-agreement/EndUserLicenceView'
+], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, AccessLimitationView, AccessLimitation, InspireTheme, CategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, OnlineResourceView, OnlineResource, ResourceConstraintView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, MapDataSource, RelatedRecordView, ReadOnlyView, ParentStringView, BoundingBox, BoundingBoxView, TextOnlyView, AuthorView, FileView, EndUserLicenceView) -> EditorView.extend
 
   initialize: ->
 
@@ -34,25 +39,22 @@ define [
       title:  ''
       views: [
 
+        new TextOnlyView
+          model: @model
+          text: """<p>Provide a title that best describes that data resource. Include references to the subject, spatial and temporal aspects of the data resource.</p>
+                <p>Only the leading letter and proper nouns of the title should be capitalised.  If it's necessary to include acronyms in the title, then include both the acronym (in parentheses) and the phrase/word from which it was formed. Acronyms should not include full-stops between each letter.</p>
+                <p>If there are multiple titles or translations of titles (e.g. in Welsh), these should be added as alternative titles.</p>
+                """
+
         new InputView
           model: @model
           modelAttribute: 'depositReference'
           label: 'Deposit Reference'
 
-        new ReadOnlyView
-          model: @model
-          modelAttribute: 'id'
-          label: 'Data identifier'
-
         new InputView
           model: @model
           modelAttribute: 'title'
           label: 'Title'
-          helpText: """
-                    <p>Provide a title that best describes that data resource. Include references to the subject, spatial and temporal aspects of the data resource.</p>
-                    <p>Only the leading letter and proper nouns of the title should be capitalised.  If it's necessary to include acronyms in the title, then include both the acronym (in parentheses) and the phrase/word from which it was formed. Acronyms should not include full-stops between each letter.</p>
-                    <p>If there are multiple titles or translations of titles (e.g. in Welsh), these should be added as alternative titles.</p>
-                    """
 
         new InputView
           model: @model
@@ -69,7 +71,7 @@ define [
           modelAttribute: 'eidcName'
           label: 'For the EIDC: Name'
 
-        new InputView
+        new ReadOnlyView
           model: @model
           modelAttribute: 'eidcContactDetails'
           label: 'For the EIDC: contact details'
@@ -80,28 +82,40 @@ define [
       title: 'Data identification and citation'
       views: [
 
+        new ReadOnlyView
+          model: @model
+          modelAttribute: 'id'
+          label: 'Data identifier'
+
         new ParentView
           model: @model
           ModelType: Contact
           modelAttribute: 'authors'
           label: 'Authors'
-          ObjectInputView: ContactView
+          ObjectInputView: AuthorView
           multiline: true
-          helpText: """
-                    <p>The names of authors should be in the format <code>Surname, First Initial. Second Initial.</code> For example <i>Brown, A.B.</i></p>
-                    <p>Role and organisation name are mandatory.</p>
-                    <p>The preferred identifier for individuals is an ORCiD.  You must enter the identifier as a <i>fully qualified</i> ID (e.g.  <b>https://orcid.org/1234-5678-0123-987X</b> rather than <b>1234-5678-0123-987X</b>).</p>
-                    """
       ]
     ,
       label: 'Policies & Legislation'
       title: 'Policies & Legislation'
       views: [
+
+        new TextOnlyView
+          model: @model
+          text: """<p>All environmental data deposited into the EIDC are subject to the requirements of the <a href="https://nerc.ukri.org/research/sites/environmental-data-service-eds/policy/">NERC Data Policy.</a></p>
+                   <p>By depositing data, you confirm that the data is compliant with the provisions of UK data protection laws.</p>
+                   <p>Data and supporting documentation should not contain names, addresses or other personal information relating to 'identifiable natural persons'.  Discovery metadata (the catalogue record) may contain names and contact details of the authors of this data (<a href="https://eidc.ac.uk/policies/retentionPersonalData">see our policy on retention and use of personal data</a>).</p>
+                   <p>If other policies/legislation applies (e.g. <a href="https://inspire.ec.europa.eu/">INSPIRE</a>), please specify below.</p>
+                   """
         new TextareaView
           model: @model
           modelAttribute: 'otherPoliciesOrLegislation'
           label: 'Other Policies or Legislation'
           rows: 15
+
+        new TextOnlyView
+          model: @model
+          text: """<p>The depositor may also wish to provide an image to accompany the dataset which may subsequently be used to advertise its availability on social media.  If no image is provided, the EIDC may source a suitable picture.</p>"""
       ]
     ,
       label: 'The Data'
@@ -110,23 +124,15 @@ define [
 
         new InputView
           model: @model
-          modelAttribute: 'dataFiles'
+          modelAttribute: 'fileNumber'
           label: 'Number of data files'
 
-        new ParentStringView
+        new ParentView
           model: @model
-          modelAttribute: 'fileNames'
-          label: 'File names'
-
-        new ParentStringView
-          model: @model
-          modelAttribute: 'fileFormats'
-          label: 'File Formats'
-
-        new InputView
-          model: @model
-          modelAttribute: 'fileSize'
-          label: 'Size of data files'
+          modelAttribute: 'files'
+          label: 'Files'
+          ObjectInputView: FileView
+          multiline: true
 
         new InputView
           model: @model
@@ -135,42 +141,54 @@ define [
 
         new ParentView
           model: @model
-          modelAttribute: 'relatedRecords'
-          label: 'Related records'
+          modelAttribute: 'relatedDataHoldings'
+          label: 'Related Data Holdings'
           ObjectInputView: RelatedRecordView
           multiline: true
 
-        new ParentView
+        new SingleObjectView
           model: @model
-          ModelType: TopicCategory
           modelAttribute: 'dataCategory'
           label: 'Data Category'
-          ObjectInputView: TopicCategoryView
-          helpText: """
-                    <p>Please note these are very broad themes and should not be confused with EIDC science topics.</p>
-                    <p>Multiple topic categories are allowed - please include all that are pertinent.  For example, "Estimates of topsoil invertebrates" = Biota AND Environment AND Geoscientific Information.</p>
-                    """
+          ObjectInputView: CategoryView
       ]
     ,
       label: 'Supporting documentation'
       title: 'Supporting documentation'
       views: [
 
+        new TextOnlyView
+          model: @model
+          text: """<p>Please provide the title and file extension of document(s) you will provide to enable re-use of the data (see <a href="https://eidc.ac.uk/deposit/supportingDocumentation">https://eidc.ac.uk/deposit/supportingDocumentation</a>).</a>"""
+
         new ParentStringView
           model: @model
           modelAttribute: 'supportingDocumentNames'
-          label: 'Supporting Document names'
+          label: 'Supporting Documents'
 
         new TextareaView
           model: @model
           modelAttribute: 'contentIncluded'
           label: 'Content Included'
           rows: 15
+
+        new TextOnlyView
+          model: @model
+          text: """<p>The depositor may also wish to provide an image to accompany the dataset which may subsequently be used to advertise its availability on social media.  If no image is provided, the EIDC may source a suitable picture."""
+
       ]
     ,
       label: 'Data retention'
       title: 'Data retention'
       views: [
+
+        new TextOnlyView
+          model: @model
+          text: """
+          <h2>Data given a DOI will be kept in perpetuity.</h2>
+          <p>For data not given a DOI, the period for which the EIDC guarantees to curate data is ten years, after which it will be periodically reviewed and may be discarded. Please note below any exceptions to this policy.</p>
+          """
+
         new TextareaView
           model: @model
           modelAttribute: 'policyExceptions'
@@ -181,38 +199,20 @@ define [
       label: 'Availability and access'
       title: 'Availability and access'
       views: [
-        new PredefinedParentView
+
+        new TextOnlyView
           model: @model
-          modelAttribute: 'Availability'
-          ModelType: OnlineResource
+          text: """
+          <p>Depositors may request that access to the data be restricted for an agreed period (embargoed).</p>
+          <p>Approving embargoes and the negotiation of the duration of an embargo period are subject to funder requirements. For NERC-funded research, a reasonable embargo period is considered to be a maximum of two years <i><u>from the end of data collection.</u></i></p>
+          <p>If the EIDC receives a request for access to data during the embargo period, it is treated as a request under the Environmental Information Regulations (EIR) and follows the designated NERC procedure for such requests.</p>
+          """
+
+        new TextareaView
+          model: @model
+          modelAttribute: 'availability'
           label: 'Availability'
-          ObjectInputView: OnlineResourceView
           multiline: true
-          predefined:
-            'Data package':
-              url: 'https://data-package.ceh.ac.uk/data/{fileIdentifier}'
-              name: 'Download the data'
-              description: 'Download a copy of this data'
-              function: 'download'
-            'Order manager data':
-              url: 'https://order-eidc.ceh.ac.uk/resources/{ORDER_REF}}/order'
-              name: 'Download the data'
-              description: 'Download a copy of this data'
-              function: 'order'
-            'Direct access data':
-              url: 'https://catalogue.ceh.ac.uk/datastore/eidchub/{fileIdentifier}'
-              name: 'Download the data'
-              description: 'Download a copy of this data'
-              function: 'download'
-            'Supporting documents':
-              url: 'https://data-package.ceh.ac.uk/sd/{fileIdentifier}.zip'
-              name: 'Supporting information'
-              description: 'Supporting information available to assist in re-use of this dataset'
-              function: 'information'
-          helpText: """
-                    <p>Include addresses of web services used to access the data and supporting information.</p>
-                    <p>Other links such as project websites or papers should <b>NOT</b> be included here. You can add them to "Additional information"</p>
-                    """
 
         new TextareaView
           model: @model
@@ -231,36 +231,17 @@ define [
       title: 'Licensing and IPR'
       views: [
 
-        new TextareaView
+        new TextOnlyView
           model: @model
-          modelAttribute: 'End user license'
+          text: """
+          <p>The EIDC recommends that the depositor seeks guidance from their own institution and/or funding agency as to the appropriate licence.</p>
+          """
+
+        new SingleObjectView
+          model: @model
+          modelAttribute: 'endUserLicence'
           label: 'End user license'
-          rows: 15
-
-        new ParentView
-          model: @model
-          ModelType: Contact
-          modelAttribute: 'Owner of IPR'
-          label: 'Owner of IPR'
-          ObjectInputView: ContactView
-          multiline: true
-          helpText: """
-                    <p>The names of Owner should be in the format <code>Surname, First Initial. Second Initial.</code> For example <i>Brown, A.B.</i></p>
-                    <p>Role and organisation name are mandatory.</p>
-                    <p>The preferred identifier for individuals is an ORCiD.  You must enter the identifier as a <i>fully qualified</i> ID (e.g.  <b>https://orcid.org/1234-5678-0123-987X</b> rather than <b>1234-5678-0123-987X</b>).</p>
-                    """
-
-        new PredefinedParentView
-          model: @model
-          modelAttribute: 'useConstraints'
-          label: 'Use constraints'
-          ObjectInputView: ResourceConstraintView
-          multiline: true
-          predefined:
-            'Licence - OGL':
-              value: 'This resource is available under the terms of the Open Government Licence'
-              uri: 'https://eidc.ceh.ac.uk/licences/OGL/plain'
-              code: 'license'
+          ObjectInputView: EndUserLicenceView
           helpText: """
                     <p>Describe any restrictions and legal prerequisites placed on the <strong>use</strong> of a data resource once it has been accessed. For example:</p>
                     <ul class="list-unstyled">
@@ -271,11 +252,40 @@ define [
                     <p>Where possible include a link to a document describing the terms and conditions.</p>
                     <p>You MUST enter something even if there are no constraints. In the rare case that there are none, enter "no conditions apply".</p>
                     """
+
+        new TextareaView
+          model: @model
+          modelAttribute: 'useConstraints'
+          label: 'Additional Use Constraints'
+          rows: 15
+
+        new TextOnlyView
+          model: @model
+          text: """
+                <p>The names of Owner should be in the format <code>Surname, First Initial. Second Initial.</code> For example <i>Brown, A.B.</i></p>
+                <p>Role and organisation name are mandatory.</p>
+                <p>The preferred identifier for individuals is an ORCiD.  You must enter the identifier as a <i>fully qualified</i> ID (e.g.  <b>https://orcid.org/1234-5678-0123-987X</b> rather than <b>1234-5678-0123-987X</b>).</p>
+                """
+
+        new ParentView
+          model: @model
+          ModelType: Contact
+          modelAttribute: 'ownersOfIpr'
+          label: 'Owner of IPR'
+          ObjectInputView: ContactView
+          multiline: true
+
       ]
     ,
       label: 'Superseding existing data'
       title: 'Superseding existing data (if applicable)'
       views: [
+
+        new TextOnlyView
+          model: @model
+          text: """
+          <p>If the data is intended to supersede an existing dataset held by the EIDC, the depositor should explain why it is to be replaced, including details of any errors found.</p>
+          """
 
         new InputView
           model: @model
@@ -295,6 +305,12 @@ define [
       label: 'Miscellaneous'
       title: 'Miscellaneous'
       views: [
+        new TextOnlyView
+          model: @model
+          text: """
+          <p>If there is any other information you wish to provide, please include it below.</p>
+          """
+
         new TextareaView
           model: @model
           modelAttribute: 'otherInfo'
@@ -305,6 +321,13 @@ define [
       label: 'Discovery metadata'
       title: 'Discovery metadata'
       views: [
+
+        new TextOnlyView
+          model: @model
+          text: """
+          <p>Data resources deposited with the EIDC have an entry in the EIDC data catalogue, enabling users to find and access them. Please provide the following information to help complete the catalogue record. Further details on discovery metadata are available from our website.</p>
+          <p><em>Please note, this information is not fixed and may be subject to change and improvement over time</em></p>
+          """
 
         new TextareaView
           model: @model
@@ -342,16 +365,67 @@ define [
                     <p>Good quality keywords help to improve the efficiency of search, making it easier to find relevant records.</p>
                     """
 
-        new ParentView
+        new TextOnlyView
           model: @model
-          ModelType: TopicCategory
+          Text: """
+                <p>A bounding box representing the limits of the data resource's study area.</p>
+                <p>If you do not wish to reveal the exact location publicly (for example, if locations are sensitive) it is recommended that you generalise the location.</p>
+                """
+
+        new PredefinedParentView
+          model: @model
           modelAttribute: 'areaOfStudy'
-          label: 'Area of study'
-          ObjectInputView: TopicCategoryView
-          helpText: """
-                    <p>Please note these are very broad themes and should not be confused with EIDC science topics.</p>
-                    <p>Multiple topic categories are allowed - please include all that are pertinent.  For example, "Estimates of topsoil invertebrates" = Biota AND Environment AND Geoscientific Information.</p>
-                    """
+          ModelType: BoundingBox
+          label: 'Area of Study'
+          ObjectInputView: BoundingBoxView
+          multiline: true
+          predefined:
+            'England':
+              northBoundLatitude: 55.812
+              eastBoundLongitude: 1.768
+              southBoundLatitude: 49.864
+              westBoundLongitude: -6.452
+              extentName: 'England'
+              extentUri: 'http://sws.geonames.org/6269131'
+            'Great Britain':
+              northBoundLatitude: 60.861
+              eastBoundLongitude: 1.768
+              southBoundLatitude: 49.864
+              westBoundLongitude: -8.648
+              extentName: 'Great Britain'
+            'Northern Ireland':
+              northBoundLatitude: 55.313
+              eastBoundLongitude: -5.432
+              southBoundLatitude: 54.022
+              westBoundLongitude: -8.178
+              extentName: 'Northern Ireland'
+              extentUri: 'http://sws.geonames.org/2641364'
+            Scotland:
+              northBoundLatitude: 60.861
+              eastBoundLongitude: -0.728
+              southBoundLatitude: 54.634
+              westBoundLongitude: -8.648
+              extentName: 'Scotland'
+              extentUri: 'http://sws.geonames.org/2638360'
+            'United Kingdom':
+              northBoundLatitude: 60.861
+              eastBoundLongitude: 1.768
+              southBoundLatitude: 49.864
+              westBoundLongitude: -8.648
+              extentName: 'United Kingdom'
+              extentUri: 'http://sws.geonames.org/2635167'
+            Wales:
+              northBoundLatitude: 53.434
+              eastBoundLongitude: -2.654
+              southBoundLatitude: 51.375
+              westBoundLongitude: -5.473
+              extentName: 'Wales'
+              extentUri: 'http://sws.geonames.org/2634895'
+            World:
+              northBoundLatitude: 90.00
+              eastBoundLongitude: 180.00
+              southBoundLatitude: -90.00
+              westBoundLongitude: -180.00
       ]
     ]
 
