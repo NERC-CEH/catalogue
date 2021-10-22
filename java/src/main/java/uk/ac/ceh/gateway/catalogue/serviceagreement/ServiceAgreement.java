@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -8,7 +9,10 @@ import uk.ac.ceh.gateway.catalogue.gemini.*;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Data
@@ -42,10 +46,11 @@ public class ServiceAgreement extends AbstractMetadataDocument {
     /*
     THREE: The data
     */
+    private String fileNumber;
     private List<File> files;
     private String transferMethod;
     private List<RelatedRecord> relatedDataHoldings;
-    private List<Keyword> topicCategories;
+    private Keyword dataCategory;
 
     /*
     FOUR: Supporting documentation
@@ -68,8 +73,8 @@ public class ServiceAgreement extends AbstractMetadataDocument {
     /*
     SEVEN: Licensing and IPR
     */
-    private List<ResourceConstraint> endUserLicence;
-    private List<ResponsibleParty> ownerOfIpr;
+    private ResourceConstraint endUserLicence;
+    private List<ResponsibleParty> ownersOfIpr;
     private String useConstraints;
 
     /*
@@ -90,4 +95,14 @@ public class ServiceAgreement extends AbstractMetadataDocument {
     private List<DescriptiveKeywords> descriptiveKeywords;
     private String lineage;
     private List<BoundingBox> areaOfStudy;
+
+    @Override
+    @JsonIgnore
+    public List<Keyword> getAllKeywords() {
+        return Optional.ofNullable(descriptiveKeywords)
+                .orElse(Collections.emptyList())
+                .stream()
+                .flatMap(dk -> dk.getKeywords().stream())
+                .collect(Collectors.toList());
+    }
 }

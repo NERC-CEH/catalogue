@@ -42,10 +42,11 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
     /*
     THREE: The data
     */
+    private String fileNumber;
     private List<File> files;
     private String transferMethod;
     private List<RelatedRecord> relatedDataHoldings;
-    private List<Keyword> topicCategories;
+    private Keyword dataCategory;
 
     /*
     FOUR: Supporting documentation
@@ -68,8 +69,8 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
     /*
     SEVEN: Licensing and IPR
     */
-    private List<ResourceConstraint> endUserLicence;
-    private List<ResponsibleParty> ownerOfIpr;
+    private ResourceConstraint endUserLicence;
+    private List<ResponsibleParty> ownersOfIpr;
     private String useConstraints;
 
     /*
@@ -86,8 +87,8 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
     /*
     TEN: Discovery metadata
     */
+    private List<Keyword> allKeywords;
     private List<DescriptiveKeywords> descriptiveKeywords;
-    private List<Keyword> keywords;
     private String description;
     private String lineage;
     private List<BoundingBox> areaOfStudy;
@@ -102,10 +103,11 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
         this.eidcContactDetails = serviceAgreement.getEidcContactDetails();
         this.authors = serviceAgreement.getAuthors();
         this.otherPoliciesOrLegislation = serviceAgreement.getOtherPoliciesOrLegislation();
+        this.fileNumber = serviceAgreement.getFileNumber();
         this.files = serviceAgreement.getFiles();
         this.transferMethod = serviceAgreement.getTransferMethod();
         this.relatedDataHoldings = serviceAgreement.getRelatedDataHoldings();
-        this.topicCategories = serviceAgreement.getTopicCategories();
+        this.dataCategory = serviceAgreement.getDataCategory();
         this.supportingDocumentNames = serviceAgreement.getSupportingDocumentNames();
         this.contentIncluded = serviceAgreement.getContentIncluded();
         this.policyExceptions = serviceAgreement.getPolicyExceptions();
@@ -113,12 +115,12 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
         this.specificRequirements = serviceAgreement.getSpecificRequirements();
         this.otherServicesRequired = serviceAgreement.getOtherServicesRequired();
         this.endUserLicence = serviceAgreement.getEndUserLicence();
-        this.ownerOfIpr = serviceAgreement.getOwnerOfIpr();
+        this.ownersOfIpr = serviceAgreement.getOwnersOfIpr();
         this.useConstraints = serviceAgreement.getUseConstraints();
         this.supersededMetadataId = serviceAgreement.getSupersededMetadataId();
         this.supersededReason = serviceAgreement.getSupersededReason();
         this.otherInfo = serviceAgreement.getOtherInfo();
-        this.keywords = serviceAgreement.getKeywords();
+        this.allKeywords = serviceAgreement.getAllKeywords();
         this.descriptiveKeywords = serviceAgreement.getDescriptiveKeywords();
         this.description = serviceAgreement.getDescription();
         this.lineage = serviceAgreement.getLineage();

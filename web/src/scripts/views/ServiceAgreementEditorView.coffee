@@ -8,8 +8,7 @@ define [
   'cs!views/editor/AccessLimitationView'
   'cs!models/editor/AccessLimitation'
   'cs!models/editor/InspireTheme'
-  'cs!models/editor/TopicCategory'
-  'cs!views/editor/TopicCategoryView'
+  'cs!views/service-agreement/CategoryView'
   'cs!views/editor/ContactView'
   'cs!views/editor/ResourceIdentifierView'
   'cs!views/editor/DatasetReferenceDateView'
@@ -27,10 +26,11 @@ define [
   'cs!views/editor/ParentStringView'
   'cs!models/editor/BoundingBox'
   'cs!views/editor/BoundingBoxView'
-  'cs!views/editor/TextOnlyView'
-  'cs!views/editor/ServiceAgreementAuthorView'
-  'cs!views/editor/FileView'
-], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, AccessLimitationView, AccessLimitation, InspireTheme, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, OnlineResourceView, OnlineResource, ResourceConstraintView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, MapDataSource, RelatedRecordView, ReadOnlyView, ParentStringView, BoundingBox, BoundingBoxView, TextOnlyView, ServiceAgreementAuthorView, FileView) -> EditorView.extend
+  'cs!views/service-agreement/TextOnlyView'
+  'cs!views/service-agreement/AuthorView'
+  'cs!views/service-agreement/FileView'
+  'cs!views/service-agreement/EndUserLicenceView'
+], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, AccessLimitationView, AccessLimitation, InspireTheme, CategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, OnlineResourceView, OnlineResource, ResourceConstraintView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, MapDataSource, RelatedRecordView, ReadOnlyView, ParentStringView, BoundingBox, BoundingBoxView, TextOnlyView, AuthorView, FileView, EndUserLicenceView) -> EditorView.extend
 
   initialize: ->
 
@@ -41,29 +41,20 @@ define [
 
         new TextOnlyView
           model: @model
-          modelAttribute: 'TextOnlyView'
-          text: """"""
+          text: """<p>Provide a title that best describes that data resource. Include references to the subject, spatial and temporal aspects of the data resource.</p>
+                <p>Only the leading letter and proper nouns of the title should be capitalised.  If it's necessary to include acronyms in the title, then include both the acronym (in parentheses) and the phrase/word from which it was formed. Acronyms should not include full-stops between each letter.</p>
+                <p>If there are multiple titles or translations of titles (e.g. in Welsh), these should be added as alternative titles.</p>
+                """
 
         new InputView
           model: @model
           modelAttribute: 'depositReference'
           label: 'Deposit Reference'
 
-
-        new ReadOnlyView
-          model: @model
-          modelAttribute: 'id'
-          label: 'Data identifier'
-
         new InputView
           model: @model
           modelAttribute: 'title'
           label: 'Title'
-          helpText: """
-                    <p>Provide a title that best describes that data resource. Include references to the subject, spatial and temporal aspects of the data resource.</p>
-                    <p>Only the leading letter and proper nouns of the title should be capitalised.  If it's necessary to include acronyms in the title, then include both the acronym (in parentheses) and the phrase/word from which it was formed. Acronyms should not include full-stops between each letter.</p>
-                    <p>If there are multiple titles or translations of titles (e.g. in Welsh), these should be added as alternative titles.</p>
-                    """
 
         new InputView
           model: @model
@@ -80,7 +71,7 @@ define [
           modelAttribute: 'eidcName'
           label: 'For the EIDC: Name'
 
-        new InputView
+        new ReadOnlyView
           model: @model
           modelAttribute: 'eidcContactDetails'
           label: 'For the EIDC: contact details'
@@ -91,39 +82,26 @@ define [
       title: 'Data identification and citation'
       views: [
 
-        new TextOnlyView
+        new ReadOnlyView
           model: @model
-          modelAttribute: 'TextOnlyView'
-          text: """
-                   <h2>Authors</h2>
-                   <ul>
-                   <li>List authors below in the order in which they will appear in the citation.</li>
-                   <li>Author's names must be in the format Surname <comma> Initial(s). For example, Smith, K.P. not Kim P. Smith</li>
-                   <li>UK law requires us to inform all individuals listed below that they are being proposed as an author.  We therefore require a current, valid email address (or phone number) for all living authors - those without valid contact details are not eligible for authorship.</li>
-                   <li>Authors' details will be published in a public data catalogue and held in EIDC systems. Please see our Privacy Notice for further information.</li>
-                   </ul>
-                """
+          modelAttribute: 'id'
+          label: 'Data identifier'
 
         new ParentView
           model: @model
           ModelType: Contact
           modelAttribute: 'authors'
           label: 'Authors'
-          ObjectInputView: ServiceAgreementAuthorView
+          ObjectInputView: AuthorView
           multiline: true
-          helpText: """
-                    <p>The names of authors should be in the format <code>Surname, First Initial. Second Initial.</code> For example <i>Brown, A.B.</i></p>
-                    <p>Role and organisation name are mandatory.</p>
-                    <p>The preferred identifier for individuals is an ORCiD.  You must enter the identifier as a <i>fully qualified</i> ID (e.g.  <b>https://orcid.org/1234-5678-0123-987X</b> rather than <b>1234-5678-0123-987X</b>).</p>
-                    """
       ]
     ,
       label: 'Policies & Legislation'
       title: 'Policies & Legislation'
       views: [
+
         new TextOnlyView
           model: @model
-          modelAttribute: 'TextOnlyView'
           text: """<p>All environmental data deposited into the EIDC are subject to the requirements of the <a href="https://nerc.ukri.org/research/sites/environmental-data-service-eds/policy/">NERC Data Policy.</a></p>
                    <p>By depositing data, you confirm that the data is compliant with the provisions of UK data protection laws.</p>
                    <p>Data and supporting documentation should not contain names, addresses or other personal information relating to 'identifiable natural persons'.  Discovery metadata (the catalogue record) may contain names and contact details of the authors of this data (<a href="https://eidc.ac.uk/policies/retentionPersonalData">see our policy on retention and use of personal data</a>).</p>
@@ -137,13 +115,17 @@ define [
 
         new TextOnlyView
           model: @model
-          modelAttribute: 'TextOnlyView'
           text: """<p>The depositor may also wish to provide an image to accompany the dataset which may subsequently be used to advertise its availability on social media.  If no image is provided, the EIDC may source a suitable picture.</p>"""
       ]
     ,
       label: 'The Data'
       title: 'The Data'
       views: [
+
+        new InputView
+          model: @model
+          modelAttribute: 'fileNumber'
+          label: 'Number of data files'
 
         new ParentView
           model: @model
@@ -164,16 +146,11 @@ define [
           ObjectInputView: RelatedRecordView
           multiline: true
 
-        new ParentView
+        new SingleObjectView
           model: @model
-          ModelType: TopicCategory
-          modelAttribute: 'topicCategories'
+          modelAttribute: 'dataCategory'
           label: 'Data Category'
-          ObjectInputView: TopicCategoryView
-          helpText: """
-                    <p>Please note these are very broad themes and should not be confused with EIDC science topics.</p>
-                    <p>Multiple topic categories are allowed - please include all that are pertinent.  For example, "Estimates of topsoil invertebrates" = Biota AND Environment AND Geoscientific Information.</p>
-                    """
+          ObjectInputView: CategoryView
       ]
     ,
       label: 'Supporting documentation'
@@ -182,7 +159,6 @@ define [
 
         new TextOnlyView
           model: @model
-          modelAttribute: 'TextOnlyView'
           text: """<p>Please provide the title and file extension of document(s) you will provide to enable re-use of the data (see <a href="https://eidc.ac.uk/deposit/supportingDocumentation">https://eidc.ac.uk/deposit/supportingDocumentation</a>).</a>"""
 
         new ParentStringView
@@ -198,7 +174,6 @@ define [
 
         new TextOnlyView
           model: @model
-          modelAttribute: 'TextOnlyView'
           text: """<p>The depositor may also wish to provide an image to accompany the dataset which may subsequently be used to advertise its availability on social media.  If no image is provided, the EIDC may source a suitable picture."""
 
       ]
@@ -209,7 +184,6 @@ define [
 
         new TextOnlyView
           model: @model
-          modelAttribute: 'TextOnlyView'
           text: """
           <h2>Data given a DOI will be kept in perpetuity.</h2>
           <p>For data not given a DOI, the period for which the EIDC guarantees to curate data is ten years, after which it will be periodically reviewed and may be discarded. Please note below any exceptions to this policy.</p>
@@ -228,7 +202,6 @@ define [
 
         new TextOnlyView
           model: @model
-          modelAttribute: 'TextOnlyView'
           text: """
           <p>Depositors may request that access to the data be restricted for an agreed period (embargoed).</p>
           <p>Approving embargoes and the negotiation of the duration of an embargo period are subject to funder requirements. For NERC-funded research, a reasonable embargo period is considered to be a maximum of two years <i><u>from the end of data collection.</u></i></p>
@@ -238,7 +211,6 @@ define [
         new TextareaView
           model: @model
           modelAttribute: 'availability'
-          ModelType: OnlineResource
           label: 'Availability'
           multiline: true
 
@@ -261,22 +233,15 @@ define [
 
         new TextOnlyView
           model: @model
-          modelAttribute: 'TextOnlyView'
           text: """
           <p>The EIDC recommends that the depositor seeks guidance from their own institution and/or funding agency as to the appropriate licence.</p>
           """
 
-        new PredefinedParentView
+        new SingleObjectView
           model: @model
           modelAttribute: 'endUserLicence'
           label: 'End user license'
-          ObjectInputView: ResourceConstraintView
-          multiline: true
-          predefined:
-            'Licence - OGL':
-              value: 'This resource is available under the terms of the Open Government Licence'
-              uri: 'https://eidc.ceh.ac.uk/licences/OGL/plain'
-              code: 'license'
+          ObjectInputView: EndUserLicenceView
           helpText: """
                     <p>Describe any restrictions and legal prerequisites placed on the <strong>use</strong> of a data resource once it has been accessed. For example:</p>
                     <ul class="list-unstyled">
@@ -294,19 +259,21 @@ define [
           label: 'Additional Use Constraints'
           rows: 15
 
+        new TextOnlyView
+          model: @model
+          text: """
+                <p>The names of Owner should be in the format <code>Surname, First Initial. Second Initial.</code> For example <i>Brown, A.B.</i></p>
+                <p>Role and organisation name are mandatory.</p>
+                <p>The preferred identifier for individuals is an ORCiD.  You must enter the identifier as a <i>fully qualified</i> ID (e.g.  <b>https://orcid.org/1234-5678-0123-987X</b> rather than <b>1234-5678-0123-987X</b>).</p>
+                """
+
         new ParentView
           model: @model
           ModelType: Contact
-          modelAttribute: 'ownerOfIpr'
+          modelAttribute: 'ownersOfIpr'
           label: 'Owner of IPR'
           ObjectInputView: ContactView
           multiline: true
-          helpText: """
-                    <p>The names of Owner should be in the format <code>Surname, First Initial. Second Initial.</code> For example <i>Brown, A.B.</i></p>
-                    <p>Role and organisation name are mandatory.</p>
-                    <p>The preferred identifier for individuals is an ORCiD.  You must enter the identifier as a <i>fully qualified</i> ID (e.g.  <b>https://orcid.org/1234-5678-0123-987X</b> rather than <b>1234-5678-0123-987X</b>).</p>
-                    """
-
 
       ]
     ,
@@ -316,7 +283,6 @@ define [
 
         new TextOnlyView
           model: @model
-          modelAttribute: 'TextOnlyView'
           text: """
           <p>If the data is intended to supersede an existing dataset held by the EIDC, the depositor should explain why it is to be replaced, including details of any errors found.</p>
           """
@@ -341,7 +307,6 @@ define [
       views: [
         new TextOnlyView
           model: @model
-          modelAttribute: 'TextOnlyView'
           text: """
           <p>If there is any other information you wish to provide, please include it below.</p>
           """
@@ -359,7 +324,6 @@ define [
 
         new TextOnlyView
           model: @model
-          modelAttribute: 'TextOnlyView'
           text: """
           <p>Data resources deposited with the EIDC have an entry in the EIDC data catalogue, enabling users to find and access them. Please provide the following information to help complete the catalogue record. Further details on discovery metadata are available from our website.</p>
           <p><em>Please note, this information is not fixed and may be subject to change and improvement over time</em></p>
@@ -400,6 +364,13 @@ define [
                     <p>Keywords (preferably taken from a controlled vocabulary) categorising and describing the data resource.</p>
                     <p>Good quality keywords help to improve the efficiency of search, making it easier to find relevant records.</p>
                     """
+
+        new TextOnlyView
+          model: @model
+          Text: """
+                <p>A bounding box representing the limits of the data resource's study area.</p>
+                <p>If you do not wish to reveal the exact location publicly (for example, if locations are sensitive) it is recommended that you generalise the location.</p>
+                """
 
         new PredefinedParentView
           model: @model
@@ -455,10 +426,6 @@ define [
               eastBoundLongitude: 180.00
               southBoundLatitude: -90.00
               westBoundLongitude: -180.00
-          helpText: """
-                    <p>A bounding box representing the limits of the data resource's study area.</p>
-                    <p>If you do not wish to reveal the exact location publicly (for example, if locations are sensitive) it is recommended that you generalise the location.</p>
-                    """
       ]
     ]
 

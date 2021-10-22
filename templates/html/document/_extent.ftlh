@@ -1,8 +1,8 @@
 <#if boundingBoxes?? || temporalExtents?? >
   <div id="section-extent">
-  <h3 id="extent">Where/When</h3>
+  <h2 id="extent">Where/When</h2>
     <dl>
-    
+
 	  <#if boundingBoxes?has_content>
         <dt>Study area</dt>
         <dd>
@@ -13,7 +13,7 @@
           </div>
         </dd>
       </#if>
-	  
+
       <#if temporalExtents?has_content>
         <dt>Temporal extent</dt>
         <dd id="section-temporalExtents">
@@ -34,7 +34,7 @@
           </#list>
         </dd>
       </#if>
-	  
-    </dl>            
+
+    </dl>
   </div>
 </#if>
