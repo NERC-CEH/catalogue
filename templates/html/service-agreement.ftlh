@@ -275,7 +275,7 @@
             <#list ownersOfIpr>
                 <#items as owner>
                     <div class="responsibleParty">
-                        <@func.displayContact owner false false true />
+                        <@func.displayContact owner false true true />
                     </div>
                 </#items>
             </#list>
