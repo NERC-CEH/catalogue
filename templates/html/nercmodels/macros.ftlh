@@ -1,20 +1,11 @@
-
 <#macro key key alt="" auto_esc=false>
-  <@b.basicRow "key-value">
-    <@m.keyContent key>
-      <#nested>
-    </@m.keyContent>
-  </@b.basicRow>
-</#macro>
-
-<#macro keyContent key>
-  <div class="col-sm-3 key">
-    <div class="key-name">
+  <div class="key-value">
+    <div class="key">
       ${key}
     </div>
-  </div>
-  <div class="col-sm-9 value">
-    <#nested>
+    <div class="value">
+      <#nested>
+    </div>
   </div>
 </#macro>
 
@@ -36,31 +27,6 @@
   </#list>
 </#macro>
 
-<#--
-CEH model QA
--->
-<#macro qa qa={"done": "unknown"}>
-  <div>
-    <#if qa.done?? && qa.done?has_content>
-      <span class="key">done?</span> ${qa.done?cap_first}
-    </#if>
-    <#if qa.modelVersion?? && qa.modelVersion?has_content>
-      <span class="key">model version</span> ${qa.modelVersion}
-    </#if>
-    <#if qa.owner?? && qa.owner?has_content>
-      <span class="key">owner</span> ${qa.owner}
-    </#if>
-    <#if qa.date?? && qa.date?has_content>
-      <span class="key">date</span> ${qa.date}
-    </#if>
-  </div>
-  <div>
-    <#if qa.note?? && qa.note?has_content>
-      <span class="key">note</span> ${qa.note}
-    </#if>
-  </div>
-</#macro>
-  
 <#--
 CEH dataInfo table
 -->
