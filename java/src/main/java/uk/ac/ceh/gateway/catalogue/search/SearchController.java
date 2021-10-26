@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.controllers;
+package uk.ac.ceh.gateway.catalogue.search;
 
 import lombok.SneakyThrows;
 import lombok.ToString;
@@ -6,18 +6,13 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.solr.client.solrj.SolrClient;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.servlet.view.RedirectView;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
-import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.search.*;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
+import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;

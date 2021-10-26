@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.controllers;
+package uk.ac.ceh.gateway.catalogue.search;
 
 import freemarker.template.Configuration;
 import lombok.SneakyThrows;
@@ -19,20 +19,20 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
+import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
+import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.indexing.solr.SolrIndex;
-import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
-import uk.ac.ceh.gateway.catalogue.search.FacetFactory;
-import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
 
 import java.util.Arrays;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
