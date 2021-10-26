@@ -5,10 +5,11 @@ import lombok.Value;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.springframework.http.MediaType;
+import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.indexing.solr.SolrIndex;
-import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
+import uk.ac.ceh.gateway.catalogue.model.Link;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,8 +39,9 @@ public class SearchResults {
     List<Facet> facets;
     @JsonIgnore
     Catalogue catalogue;
+    List<Link> relatedSearches;
 
-    public SearchResults(QueryResponse response, SearchQuery query) {
+    public SearchResults(QueryResponse response, SearchQuery query, List<Link> relatedSearches) {
         checkNotNull(response);
         checkNotNull(query);
         this.numFound = populateNumFound(response);
@@ -55,6 +57,24 @@ public class SearchResults {
         this.results = response.getBeans(SolrIndex.class);
         this.facets = populateFacets(response, query);
         this.catalogue = query.getCatalogue();
+        this.relatedSearches = relatedSearches;
+    }
+
+    public SearchResults(SearchResults searchResults, List<Link> relatedSearches) {
+        this.numFound = searchResults.numFound;
+        this.term = searchResults.term;
+        this. page = searchResults.page;
+        this.rows = searchResults.rows;
+        this.url = searchResults.url;
+        this.withoutBbox = searchResults.withoutBbox;
+        this.intersectingBbox = searchResults.intersectingBbox;
+        this.withinBbox = searchResults.withinBbox;
+        this.prevPage = searchResults.prevPage;
+        this.nextPage = searchResults.nextPage;
+        this.results = searchResults.results;
+        this.facets = searchResults.facets;
+        this.catalogue = searchResults.catalogue;
+        this.relatedSearches = relatedSearches;
     }
 
     private long populateNumFound(QueryResponse response) {

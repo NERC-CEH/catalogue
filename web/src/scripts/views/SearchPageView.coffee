@@ -16,7 +16,7 @@ define [
     do @findSelected # Find selected, after @updateSelected has been registered
     do @padResults   # Change the padding of the results page
 
-    # Ensure @ refers to this in the findSelected method. This means that we 
+    # Ensure @ refers to this in the findSelected method. This means that we
     # can:
     #   - Pass @findSelected directly to the jquery.on method
     #   - Unbind @findSelected when the view is removed
@@ -46,9 +46,9 @@ define [
   trigger a change on the model.
   ###
   readModelFromHTML:->
-    @model.getResults().set 
+    @model.getResults().set
       numFound: @$('#num-records').val()
-      results: _.map @$('.result'), (r) -> 
+      results: _.map @$('.result'), (r) ->
         identifier:  $(r).attr('id')
         title:       $('.result__title', r).text()
         description: $('.result__description', r).text()
@@ -79,11 +79,26 @@ define [
   Clear the dom of any content
   ###
   clear: -> do @$el.empty
-  
+
   ###
   Draw in the new content
   ###
   render: ->
     @$el.html template @model.getResults().attributes
+    $relatedSearches = @$('.results__related_searches')
+    relatedSearches = @model.getResults().get('relatedSearches')
+    console.log(relatedSearches.length)
+    if relatedSearches.length > 0
+      $relatedSearches.append('<h2>Related Searches</h2>')
+
+    relatedSearches.forEach((relatedSearch, index) ->
+      if index > 0
+        prefix = ', '
+      else
+        prefix = ''
+      $relatedSearches.append(
+        "#{prefix}<a href=\"#{relatedSearch.href}\">#{relatedSearch.title}</a>"
+      )
+    )
     do @findSelected # Find the selected
     do @padResults   # Pad the results pane
