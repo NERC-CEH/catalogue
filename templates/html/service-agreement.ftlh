@@ -18,12 +18,11 @@
                                 Edit
                             </button>
                         </div>
-                            <#if possibleLink.isPresent()>
+                            <#if metadata?has_content && (metadata.state == 'published') && possibleLink.isPresent()>
                                 <div class="btn-group btn-group-sm">
                                     <form action="${possibleLink.get().href}" method="post" target="dummyframe">
                                         <input type="submit" value="Populate Gemini" class="btn btn-default btn-wide">
                                     </form>
-                                    <iframe name="dummyframe" id="dummyframe" style="display: none;"></iframe>
                                 </div>
                             </#if>
                         </div>

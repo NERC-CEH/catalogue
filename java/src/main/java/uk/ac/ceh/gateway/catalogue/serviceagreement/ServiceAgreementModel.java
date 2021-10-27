@@ -2,11 +2,13 @@ package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.val;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.gemini.*;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 
 import java.util.List;
@@ -28,6 +30,7 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
     private String depositorContactDetails;
     private String eidcName;
     private String eidcContactDetails;
+    private MetadataInfo metadataInfo;
 
     /*
     ONE: Data Identification and Citation
@@ -125,5 +128,6 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
         this.description = serviceAgreement.getDescription();
         this.lineage = serviceAgreement.getLineage();
         this.areaOfStudy = serviceAgreement.getAreaOfStudy();
+        this.metadataInfo = serviceAgreement.getMetadata();
     }
 }
