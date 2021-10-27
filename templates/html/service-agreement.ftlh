@@ -2,6 +2,8 @@
 <#import "skeleton.ftlh" as skeleton>
 <#import "../functions.ftlh" as func>
 
+<#assign possibleLink = getLink('populate') />
+
 <@skeleton.master "Service Agreement">
 
     <div id="metadata">
@@ -15,6 +17,15 @@
                                     data-document-type="service-agreement">
                                 Edit
                             </button>
+                        </div>
+                            <#if possibleLink.isPresent()>
+                                <div class="btn-group btn-group-sm">
+                                    <form action="${possibleLink.get().href}" method="post" target="dummyframe">
+                                        <input type="submit" value="Populate Gemini" class="btn btn-default btn-wide">
+                                    </form>
+                                    <iframe name="dummyframe" id="dummyframe" style="display: none;"></iframe>
+                                </div>
+                            </#if>
                         </div>
                     </div>
                 </div>

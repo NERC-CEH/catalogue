@@ -13,7 +13,9 @@ import uk.ac.ceh.components.datastore.DataOngoingCommit;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
+import uk.ac.ceh.gateway.catalogue.document.reading.DocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 
@@ -38,6 +40,8 @@ public class GitRepoServiceAgreementServiceTest {
     private static final String ID = "test";
 
     @Mock
+    DocumentTypeLookupService documentTypeLookupService;
+    @Mock
     private DataRepository<CatalogueUser> repo;
     @Mock
     private DocumentInfoMapper<MetadataInfo> metadataInfoMapper;
@@ -51,6 +55,7 @@ public class GitRepoServiceAgreementServiceTest {
     @BeforeEach
     void setup() {
         service = new GitRepoServiceAgreementService(
+            documentTypeLookupService,
             repo,
             metadataInfoMapper,
             serviceAgreementMapper,

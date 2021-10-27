@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
@@ -83,17 +84,17 @@ public class ServiceAgreementController {
     }
 
     @PreAuthorize("@permission.userCanEdit(#id)")
-    @PostMapping("/populateGeminiDocument/{id}")
-    public void populateGeminiDocument(
+    @PostMapping("{id}/populate")
+    public RedirectView populateGeminiDocument(
             @ActiveUser CatalogueUser user,
-            @PathVariable("id") String id,
-            @RequestParam("catalogue") String catalogue
+            @PathVariable("id") String id
     ) {
-        if (!serviceAgreementService.metadataRecordExists(id)) {
+        if (serviceAgreementService.metadataRecordExists(id)) {
             log.info("POPULATE GEMINI DOCUMENT {}", id);
-            serviceAgreementService.populateGeminiDocument(user, id, catalogue);
+            serviceAgreementService.populateGeminiDocument(user, id, "eidc");
+            return new RedirectView("/documents/" + id);
         }else{
-            throw new ResourceNotFoundException("Metadata record already exists");
+            throw new ResourceNotFoundException("Metadata record does not exist");
         }
     }
 

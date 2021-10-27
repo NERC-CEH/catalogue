@@ -13,6 +13,5 @@ public interface ServiceAgreementService {
 
     void delete(CatalogueUser user, String id);
 
-    @SneakyThrows
     void populateGeminiDocument(CatalogueUser user, String id, String catalogue);
 }

@@ -9,8 +9,10 @@ import org.springframework.stereotype.Service;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
+import uk.ac.ceh.gateway.catalogue.document.reading.DocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 
@@ -21,6 +23,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @ToString
 @Service
 public class GitRepoServiceAgreementService implements ServiceAgreementService {
+    private final DocumentTypeLookupService documentTypeLookupService;
     private final DataRepository<CatalogueUser> repo;
     private final DocumentInfoMapper<MetadataInfo> metadataInfoMapper;
     private final DocumentInfoMapper<ServiceAgreement> serviceAgreementMapper;
@@ -28,11 +31,13 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     private static final String FOLDER = "service-agreements/";
 
     public GitRepoServiceAgreementService(
+            DocumentTypeLookupService documentTypeLookupService,
             DataRepository<CatalogueUser> repo,
             DocumentInfoMapper<MetadataInfo> metadataInfoMapper,
             DocumentInfoMapper<ServiceAgreement> serviceAgreementMapper,
             DocumentInfoMapper<GeminiDocument> geminiDocumentMapper
     ) {
+        this.documentTypeLookupService = documentTypeLookupService;
         this.repo = repo;
         this.metadataInfoMapper = metadataInfoMapper;
         this.serviceAgreementMapper = serviceAgreementMapper;
@@ -72,7 +77,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
 
     @SneakyThrows
     public void save(CatalogueUser user, String id, String catalogue, ServiceAgreement serviceAgreement) {
-        val metadataInfo = createMetadataInfoWithDefaultPermissions(user, catalogue);
+        val metadataInfo = createMetadataInfoWithDefaultPermissions("service-agreement", user, catalogue);
         repo.submitData(FOLDER + id + ".meta", (o) -> metadataInfoMapper.writeInfo(metadataInfo, o))
                 .submitData(FOLDER + id + ".raw", (o) -> serviceAgreementMapper.writeInfo(serviceAgreement, o))
                 .commit(user, catalogue);
@@ -87,16 +92,16 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
 
     @SneakyThrows
     public void saveGeminiDocument(CatalogueUser user, String id, String catalogue, GeminiDocument geminiDocument) {
-        val metadataInfo = createMetadataInfoWithDefaultPermissions(user, catalogue);
-        repo.submitData(id + ".meta", (o) -> metadataInfoMapper.writeInfo(metadataInfo, o))
-                .submitData(id + ".raw", (o) -> geminiDocumentMapper.writeInfo(geminiDocument, o))
+        val metadataInfo = createMetadataInfoWithDefaultPermissions(documentTypeLookupService.getName(geminiDocument.getClass()), user, catalogue);
+        repo.submitData(String.format("%s.meta", id), (o)-> metadataInfoMapper.writeInfo(metadataInfo, o))
+                .submitData(String.format("%s.raw", id), (o) -> geminiDocumentMapper.writeInfo(geminiDocument, o))
                 .commit(user, catalogue);
     }
 
-    private MetadataInfo createMetadataInfoWithDefaultPermissions(CatalogueUser user, String catalogue) {
+    private MetadataInfo createMetadataInfoWithDefaultPermissions(String documentType, CatalogueUser user, String catalogue) {
         MetadataInfo toReturn = MetadataInfo.builder()
                 .rawType(APPLICATION_JSON_VALUE)
-                .documentType("service-agreement")
+                .documentType(documentType)
                 .catalogue(catalogue)
                 .build();
         String username = user.getUsername();

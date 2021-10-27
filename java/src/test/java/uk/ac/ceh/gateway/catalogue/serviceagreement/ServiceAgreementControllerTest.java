@@ -57,7 +57,7 @@ class ServiceAgreementControllerTest {
     @Test
     @SneakyThrows
     void getServiceAgreement() {
-        //Given
+        // given
         givenUserCanView();
         givenServiceAgreement();
         val expectedResponse = """
@@ -72,7 +72,7 @@ class ServiceAgreementControllerTest {
             }
             """;
 
-        //When
+        // when
         mvc.perform(get("/service-agreement/{id}", ID)
                 .accept(HAL_JSON)
                 .header("Forwarded", "proto=https;host=catalogue"))
@@ -84,10 +84,10 @@ class ServiceAgreementControllerTest {
     @Test
     @SneakyThrows
     void noAccessToServiceAgreements() {
-        //given
+        // given
         givenUserCanNotView();
 
-        //When
+        // when
         mvc.perform(get("/service-agreement/{id}", ID))
             .andExpect(status().isForbidden());
 
@@ -98,7 +98,7 @@ class ServiceAgreementControllerTest {
     @SneakyThrows
     @WithMockCatalogueUser
     void createServiceAgreement() {
-        //Given
+        // given
         givenUserCanEdit();
         givenMetadataRecordExists();
         val expected = new ServiceAgreement();
@@ -116,7 +116,7 @@ class ServiceAgreementControllerTest {
             }
             """;
 
-        //When
+        // when
         mvc.perform(put("/service-agreement/{id}", ID)
                 .content(requestBody)
                 .queryParam("catalogue", "eidc")
@@ -139,10 +139,10 @@ class ServiceAgreementControllerTest {
     @SneakyThrows
     @WithMockCatalogueUser
     void userCannotCreateServiceAgreement() {
-        //given
+        // given
         givenUserCanNotEdit();
 
-        //When
+        // when
         mvc.perform(put("/service-agreement/{id}", ID)
                 .content("{\"title\":\"Test Service Agreement\"}")
                 .queryParam("catalogue", "eidc")
@@ -150,18 +150,18 @@ class ServiceAgreementControllerTest {
             )
             .andExpect(status().isForbidden());
 
-        //then
+        // then
         verifyNoInteractions(serviceAgreementService);
     }
 
     @Test
     @SneakyThrows
     void cannotCreateServiceAgreementAsMetadataDoesNotExist() {
-        //Given
+        // given
         givenUserCanEdit();
         givenMedataRecordDoesNotExist();
 
-        //When
+        // when
         mvc.perform(put("/service-agreement/{id}", ID)
                 .content("{\"title\":\"Test Service Agreement\"}")
                 .queryParam("catalogue", "eidc")
@@ -170,7 +170,7 @@ class ServiceAgreementControllerTest {
             .andExpect(status().isNotFound())
             .andExpect(content().contentType(APPLICATION_JSON));
 
-        //Then
+        // then
         verify(serviceAgreementService).metadataRecordExists(ID);
         verifyNoMoreInteractions(serviceAgreementService);
     }
@@ -179,14 +179,14 @@ class ServiceAgreementControllerTest {
     @SneakyThrows
     @WithMockCatalogueUser
     void deleteServiceAgreement() {
-        //Given
+        // given
         givenUserCanDelete();
 
-        //When
+        // when
         mvc.perform(delete("/service-agreement/{id}", ID))
                 .andExpect(status().isNoContent());
 
-        //then
+        // then
         verify(serviceAgreementService).delete(USER, ID);
     }
 
@@ -207,16 +207,16 @@ class ServiceAgreementControllerTest {
     void populateGeminiDocument() {
         //Given
         givenUserCanEdit();
-        givenMedataRecordDoesNotExist();
+        givenMetadataRecordExists();
         val expected = new ServiceAgreement();
         expected.setId(ID);
         expected.setTitle("Test Service Agreement");
 
         //When
-        mvc.perform(post("/service-agreement/populateGeminiDocument/{id}", ID)
+        mvc.perform(post("/service-agreement/{id}/populate", ID)
                         .queryParam("catalogue", "eidc")
                 )
-                .andExpect(status().isOk());
+                .andExpect(status().isFound());
         //then
         verify(serviceAgreementService).populateGeminiDocument(
                 USER,
@@ -230,10 +230,10 @@ class ServiceAgreementControllerTest {
     void userCannotPopulateGeminiDocumentAsUserCanNotEdit() {
         //given
         givenUserCanNotEdit();
-        givenMedataRecordDoesNotExist();
+        givenMetadataRecordExists();
 
         //When
-        mvc.perform(post("/service-agreement/populateGeminiDocument/{id}", ID)
+        mvc.perform(post("/service-agreement/{id}/populate", ID)
                         .queryParam("catalogue", "eidc")
                         .contentType(APPLICATION_JSON)
                 )
@@ -246,13 +246,13 @@ class ServiceAgreementControllerTest {
     @Test
     @SneakyThrows
     @WithMockCatalogueUser
-    void userCannotPopulateGeminiDocumentAsRecordExists() {
+    void userCannotPopulateGeminiDocumentAsRecordDoesNotExist() {
         //given
         givenUserCanEdit();
-        givenMetadataRecordExists();
+        givenMedataRecordDoesNotExist();
 
         //When
-        mvc.perform(post("/service-agreement/populateGeminiDocument/{id}", ID)
+        mvc.perform(post("/service-agreement/{id}/populate", ID)
                         .queryParam("catalogue", "eidc")
                         .contentType(APPLICATION_JSON)
                 )
