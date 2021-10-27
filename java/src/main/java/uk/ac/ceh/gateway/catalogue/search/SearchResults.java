@@ -2,8 +2,10 @@ package uk.ac.ceh.gateway.catalogue.search;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocumentList;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
@@ -12,6 +14,7 @@ import uk.ac.ceh.gateway.catalogue.indexing.solr.SolrIndex;
 import uk.ac.ceh.gateway.catalogue.model.Link;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -23,6 +26,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
     @Template(called = "/html/search.ftlh", whenRequestedAs = MediaType.TEXT_HTML_VALUE)
 })
 @Value
+@Slf4j
 public class SearchResults {
 
     long numFound;
@@ -58,6 +62,7 @@ public class SearchResults {
         this.facets = populateFacets(response, query);
         this.catalogue = query.getCatalogue();
         this.relatedSearches = relatedSearches;
+        log.debug("Creating: {}", this);
     }
 
     public SearchResults(SearchResults searchResults, List<Link> relatedSearches) {
@@ -77,12 +82,43 @@ public class SearchResults {
         this.relatedSearches = relatedSearches;
     }
 
+    SearchResults(
+       int numFound,
+       String term,
+       int page,
+       int rows,
+       String url,
+       String withoutBbox,
+       String intersectingBbox,
+       String withinBbox,
+       String prevPage,
+       String nextPage,
+       List<SolrIndex> results,
+       List<Facet> facets,
+       Catalogue catalogue,
+       List<Link> relatedSearches
+    ) {
+        this.numFound = numFound;
+        this.term = term;
+        this.page = page;
+        this.rows = rows;
+        this.url = url;
+        this.withoutBbox = withoutBbox;
+        this.intersectingBbox = intersectingBbox;
+        this.withinBbox = withinBbox;
+        this.prevPage = prevPage;
+        this.nextPage = nextPage;
+        this.results = results;
+        this.facets = facets;
+        this.catalogue = catalogue;
+        this.relatedSearches = relatedSearches;
+        log.debug("Creating: {}", this);
+    }
+
     private long populateNumFound(QueryResponse response) {
-        if (response.getResults() != null) {
-            return response.getResults().getNumFound();
-        } else {
-            return 0L;
-        }
+        return Optional.ofNullable(response.getResults())
+            .map(SolrDocumentList::getNumFound)
+            .orElse(0L);
     }
 
     /**
