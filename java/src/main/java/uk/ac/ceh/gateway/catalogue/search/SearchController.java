@@ -7,7 +7,6 @@ import lombok.val;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import org.springframework.web.servlet.view.RedirectView;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -47,7 +46,7 @@ public class SearchController {
 
     @CrossOrigin
     @GetMapping("documents")
-    public RedirectView redirectToDefaultCatalogue(
+    public String redirectToDefaultCatalogue(
             HttpServletRequest request
     ) {
         val defaultCatalogueId = catalogueService.defaultCatalogue().getId();
@@ -57,7 +56,7 @@ public class SearchController {
             .buildAndExpand(defaultCatalogueId)
             .toUriString();
         log.info("Redirecting to {}", redirectUrl);
-        return new RedirectView(redirectUrl);
+        return "redirect:" + redirectUrl;
     }
 
     @CrossOrigin
