@@ -60,8 +60,7 @@ public class NercModelUse extends AbstractMetadataDocument {
         private String
             name,
             id,
-            version,
-            rationale,
+            notes,
             spatialExtentOfApplication,
             availableSpatialData,
             spatialResolutionOfApplication,
