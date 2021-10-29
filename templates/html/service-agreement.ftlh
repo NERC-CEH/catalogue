@@ -25,7 +25,7 @@ displayPopulateButton = state == 'published' && possiblePopulateLink.isPresent()
                             <#if displayPopulateButton>
                                 <div class="btn-group btn-group-sm">
                                     <form action="${possiblePopulateLink.get().href}" method="post">
-                                        <input type="submit" value="value="${possiblePopulateLink.get().title}" class="btn btn-default btn-wide">
+                                        <input type="submit" value="${possiblePopulateLink.get().title}"${possiblePopulateLink.get().title}" class="btn btn-default btn-wide">
                                     </form>
                                 </div>
                             </#if>
