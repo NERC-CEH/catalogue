@@ -82,14 +82,12 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     public GeminiDocument(ServiceAgreement serviceAgreement) {
         this.setId(serviceAgreement.getId());
         this.setUri(serviceAgreement.getUri());
-        this.setType(serviceAgreement.getType());
+        this.setType("dataset");
         this.setTitle(serviceAgreement.getTitle());
         this.setDescription(serviceAgreement.getDescription());
-        this.setKeywords(serviceAgreement.getKeywords());
         this.responsibleParties = serviceAgreement.getAuthors();
         this.relatedRecords = serviceAgreement.getRelatedDataHoldings();
-        this.useConstraints = new ArrayList<>();
-        this.useConstraints.add(serviceAgreement.getEndUserLicence());
+        this.useConstraints = List.of(serviceAgreement.getEndUserLicence());
         this.descriptiveKeywords = serviceAgreement.getDescriptiveKeywords();
         this.lineage = serviceAgreement.getLineage();
         this.boundingBoxes = serviceAgreement.getAreaOfStudy();

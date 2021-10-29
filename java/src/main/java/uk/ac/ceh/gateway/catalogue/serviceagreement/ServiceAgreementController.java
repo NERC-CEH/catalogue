@@ -46,7 +46,9 @@ public class ServiceAgreementController {
         if (serviceAgreementService.metadataRecordExists(id)) {
             log.info("CREATE {}", id);
             serviceAgreement.setId(id);
-            serviceAgreementService.save(user, id, catalogue, serviceAgreement);
+            val metadataInfo = serviceAgreementService.getMetadataInfo(id);
+            serviceAgreement.setState(metadataInfo.getState());
+            serviceAgreementService.save(user, id, catalogue, serviceAgreement, metadataInfo);
             return serviceAgreementModelAssembler.toModel(serviceAgreement);
         }else{
             throw new ResourceNotFoundException("Metadata record does not exist");
@@ -91,7 +93,7 @@ public class ServiceAgreementController {
     ) {
         if (serviceAgreementService.metadataRecordExists(id)) {
             log.info("POPULATE GEMINI DOCUMENT {}", id);
-            serviceAgreementService.populateGeminiDocument(user, id, "eidc");
+            serviceAgreementService.populateGeminiDocument(user, id);
             return new RedirectView("/documents/" + id);
         }else{
             throw new ResourceNotFoundException("Metadata record does not exist");

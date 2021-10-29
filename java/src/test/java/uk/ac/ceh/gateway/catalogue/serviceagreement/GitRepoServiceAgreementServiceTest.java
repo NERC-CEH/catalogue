@@ -17,7 +17,9 @@ import uk.ac.ceh.gateway.catalogue.document.reading.DocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
 import java.io.ByteArrayInputStream;
 
@@ -48,7 +50,7 @@ public class GitRepoServiceAgreementServiceTest {
     @Mock
     private DocumentInfoMapper<ServiceAgreement> serviceAgreementMapper;
     @Mock
-    private DocumentInfoMapper<GeminiDocument> geminiDocumentMapper;
+    private DocumentRepository documentRepository;
 
     private ServiceAgreementService service;
 
@@ -59,7 +61,7 @@ public class GitRepoServiceAgreementServiceTest {
             repo,
             metadataInfoMapper,
             serviceAgreementMapper,
-            geminiDocumentMapper
+            documentRepository
         );
     }
 
@@ -195,12 +197,13 @@ public class GitRepoServiceAgreementServiceTest {
         ServiceAgreement serviceAgreement = new ServiceAgreement();
         serviceAgreement.setId(ID);
         DataOngoingCommit dataOngoingCommit = mock(DataOngoingCommit.class);
+        MetadataInfo metadataInfo = MetadataInfo.builder().build();
 
         given(repo.submitData(any(), any())).willReturn(dataOngoingCommit);
         given(dataOngoingCommit.submitData(any(), any())).willReturn(dataOngoingCommit);
 
         //When
-        service.save(user, ID, "catalogue", serviceAgreement);
+        service.save(user, ID, "catalogue", serviceAgreement, metadataInfo);
 
         //Then
         verify(dataOngoingCommit).commit(user, "catalogue");
@@ -212,9 +215,10 @@ public class GitRepoServiceAgreementServiceTest {
         //Given
         CatalogueUser user = new CatalogueUser();
         user.setUsername("test");
-        DataOngoingCommit dataOngoingCommit = mock(DataOngoingCommit.class);
         val serviceAgreement = new ServiceAgreement();
         serviceAgreement.setId(ID);
+        serviceAgreement.setEndUserLicence(new ResourceConstraint("test", "test", "test"));
+        GeminiDocument geminiDocument = new GeminiDocument(serviceAgreement);
 
         val metadataInfoDocument = mock(DataDocument.class);
         given(repo.getData(FOLDER + ID + ".meta"))
@@ -235,14 +239,16 @@ public class GitRepoServiceAgreementServiceTest {
         given(serviceAgreementMapper.readInfo(any()))
                 .willReturn(serviceAgreement);
 
-        given(repo.submitData(any(), any())).willReturn(dataOngoingCommit);
-        given(dataOngoingCommit.submitData(any(), any())).willReturn(dataOngoingCommit);
+        val metadataDocument = mock(MetadataDocument.class);
+        given(documentRepository.save(user, geminiDocument, "catalogue"))
+                .willReturn(metadataDocument);
+
 
         //When
-        service.populateGeminiDocument(user, ID, "catalogue");
+        service.populateGeminiDocument(user, ID);
 
         //Then
-        verify(dataOngoingCommit).commit(user, "catalogue");
+        verify(documentRepository).save(user,geminiDocument, "catalogue");
     }
 
 }

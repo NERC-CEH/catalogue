@@ -1,7 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
-import lombok.SneakyThrows;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 
 public interface ServiceAgreementService {
 
@@ -11,9 +11,12 @@ public interface ServiceAgreementService {
 
     ServiceAgreement get(String id);
 
-    void save(CatalogueUser user, String id, String catalogue, ServiceAgreement serviceAgreement);
+    void save(CatalogueUser user, String id, String catalogue, ServiceAgreement serviceAgreement, MetadataInfo metadataInfo);
 
     void delete(CatalogueUser user, String id);
 
-    void populateGeminiDocument(CatalogueUser user, String id, String catalogue);
+    void populateGeminiDocument(CatalogueUser user, String id);
+
+    MetadataInfo getMetadataInfo(String id);
+
 }

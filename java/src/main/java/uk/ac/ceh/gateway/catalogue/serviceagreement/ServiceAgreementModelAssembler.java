@@ -5,9 +5,7 @@ import lombok.val;
 import org.springframework.context.annotation.Profile;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -32,7 +30,8 @@ public class ServiceAgreementModelAssembler extends RepresentationModelAssembler
 
     @Override
     protected ServiceAgreementModel instantiateModel(ServiceAgreement serviceAgreement) {
-        Link link = linkTo(methodOn(ServiceAgreementController.class).populateGeminiDocument(null, serviceAgreement.getId())).withRel("populate");
+        Link link = linkTo(methodOn(ServiceAgreementController.class).populateGeminiDocument
+                (null, serviceAgreement.getId())).withRel("populate").withTitle("Populate Metadata");
         val model =  new ServiceAgreementModel(serviceAgreement);
         model.add(link);
         log.debug("model: {}", model);

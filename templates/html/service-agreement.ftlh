@@ -2,7 +2,11 @@
 <#import "skeleton.ftlh" as skeleton>
 <#import "../functions.ftlh" as func>
 
-<#assign possibleLink = getLink('populate') />
+<#assign
+possiblePopulateLink = getLink('populate')
+displayPopulateButton = state == 'published' && possiblePopulateLink.isPresent()
+/>
+
 
 <@skeleton.master "Service Agreement">
 
@@ -18,10 +22,10 @@
                                 Edit
                             </button>
                         </div>
-                            <#if metadata?has_content && (metadata.state == 'published') && possibleLink.isPresent()>
+                            <#if displayPopulateButton>
                                 <div class="btn-group btn-group-sm">
-                                    <form action="${possibleLink.get().href}" method="post" target="dummyframe">
-                                        <input type="submit" value="Populate Gemini" class="btn btn-default btn-wide">
+                                    <form action="${possiblePopulateLink.get().href}" method="post">
+                                        <input type="submit" value="value="${possiblePopulateLink.get().title}" class="btn btn-default btn-wide">
                                     </form>
                                 </div>
                             </#if>

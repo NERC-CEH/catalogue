@@ -32,6 +32,7 @@ public class ServiceAgreement extends AbstractMetadataDocument {
     private String depositorContactDetails;
     private String eidcName;
     private String eidcContactDetails;
+    private String state;
 
     /*
     ONE: Data Identification and Citation

@@ -15,6 +15,7 @@ import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 
 import static org.mockito.BDDMockito.given;
@@ -22,8 +23,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.hateoas.MediaTypes.HAL_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WithMockCatalogueUser
 @ActiveProfiles({"service-agreement", "test"})
@@ -35,6 +35,7 @@ class ServiceAgreementControllerTest {
     private static final String ID = "test";
     private static final String QUERY = "queryTest";
     private static CatalogueUser USER;
+    private static MetadataInfo metadataInfo = MetadataInfo.builder().build();
 
     @MockBean
     private ServiceAgreementSearch search;
@@ -104,6 +105,7 @@ class ServiceAgreementControllerTest {
         val expected = new ServiceAgreement();
         expected.setId(ID);
         expected.setTitle("Test Service Agreement");
+        expected.setState("draft");
         val requestBody = """
             {
                 "id": "123",
@@ -131,7 +133,8 @@ class ServiceAgreementControllerTest {
             USER,
             ID,
             "eidc",
-            expected
+            expected,
+            metadataInfo
         );
     }
 
@@ -213,15 +216,13 @@ class ServiceAgreementControllerTest {
         expected.setTitle("Test Service Agreement");
 
         //When
-        mvc.perform(post("/service-agreement/{id}/populate", ID)
-                        .queryParam("catalogue", "eidc")
-                )
-                .andExpect(status().isFound());
+        mvc.perform(post("/service-agreement/{id}/populate", ID))
+                .andExpect(status().isFound())
+                .andExpect(redirectedUrl("/documents/" + ID));
         //then
         verify(serviceAgreementService).populateGeminiDocument(
                 USER,
-                ID,
-                "eidc");
+                ID);
     }
 
     @Test
@@ -233,10 +234,7 @@ class ServiceAgreementControllerTest {
         givenMetadataRecordExists();
 
         //When
-        mvc.perform(post("/service-agreement/{id}/populate", ID)
-                        .queryParam("catalogue", "eidc")
-                        .contentType(APPLICATION_JSON)
-                )
+        mvc.perform(post("/service-agreement/{id}/populate", ID))
                 .andExpect(status().isForbidden());
 
         //then
@@ -252,10 +250,7 @@ class ServiceAgreementControllerTest {
         givenMedataRecordDoesNotExist();
 
         //When
-        mvc.perform(post("/service-agreement/{id}/populate", ID)
-                        .queryParam("catalogue", "eidc")
-                        .contentType(APPLICATION_JSON)
-                )
+        mvc.perform(post("/service-agreement/{id}/populate", ID))
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentType(APPLICATION_JSON));
 
@@ -304,6 +299,8 @@ class ServiceAgreementControllerTest {
     private void givenMetadataRecordExists() {
         given(serviceAgreementService.metadataRecordExists(ID))
             .willReturn(true);
+        given(serviceAgreementService.getMetadataInfo(ID))
+                .willReturn(metadataInfo);
     }
 
     private void givenMedataRecordDoesNotExist() {
