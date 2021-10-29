@@ -62,6 +62,16 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         return true;
     }
 
+    @Override
+    public boolean serviceAgreementExists(String id) {
+        try {
+            repo.getData(FOLDER + id + ".meta");
+        } catch (DataRepositoryException e) {
+            return false;
+        }
+        return true;
+    }
+
     @SneakyThrows
     public ServiceAgreement get(String id) {
         val metadataDoc = repo.getData(FOLDER + id + ".meta");

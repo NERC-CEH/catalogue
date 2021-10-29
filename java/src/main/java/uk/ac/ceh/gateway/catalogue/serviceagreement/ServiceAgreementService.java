@@ -7,6 +7,8 @@ public interface ServiceAgreementService {
 
     boolean metadataRecordExists(String id);
 
+    boolean serviceAgreementExists(String id);
+
     ServiceAgreement get(String id);
 
     void save(CatalogueUser user, String id, String catalogue, ServiceAgreement serviceAgreement);

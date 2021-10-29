@@ -288,15 +288,29 @@ define [
     $('.service-agreement').on 'click', (event) ->
       do event.preventDefault
 
+      bool = false;
       id =  $(event.currentTarget).data("id")
-      data = {
-        id: id,
-        eidcContactDetails: 'info@eidc.ac.uk'
-      };
 
-      new ServiceAgreementEditorView
-        el: '#metadata'
-        model: new ServiceAgreementEditorMetadata data
+      $.ajax
+      url: "#{id}/exists"
+      dataType: 'json'
+      accepts:
+        json: documentType.mediaType
+      success: (data) ->
+        if data == true
+          bool = true
+
+      if bool
+        window.location.href = "/documents?id=#{id}"
+      else
+        data = {
+          id: id,
+          eidcContactDetails: 'info@eidc.ac.uk'
+        };
+
+        new ServiceAgreementEditorView
+          el: '#metadata'
+          model: new ServiceAgreementEditorMetadata data
 
   ###
   Initialize the simple dataset upload
