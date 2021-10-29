@@ -101,10 +101,8 @@ public class ServiceAgreementController {
     }
 
     @PreAuthorize("@permission.userCanEdit(#id)")
-    @PostMapping("{id}/exists")
-    public boolean serviceAgreementExists(
-            @ActiveUser CatalogueUser user,
-            @PathVariable("id") String id
+    @GetMapping("{id}/exists")
+    public boolean serviceAgreementExists(@PathVariable("id") String id
     ) {
         log.info("CHECKING SERVICE AGREEMENT EXISTS {}", id);
         return serviceAgreementService.serviceAgreementExists(id);

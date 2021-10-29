@@ -291,26 +291,21 @@ define [
       bool = false;
       id =  $(event.currentTarget).data("id")
 
-      $.ajax
-      url: "#{id}/exists"
-      dataType: 'json'
-      accepts:
-        json: documentType.mediaType
-      success: (data) ->
-        if data == true
-          bool = true
+      $.get "/service-agreement/#{id}/exists", (data) ->
+        if data
+          console.log('if is true')
+          window.location.href = "/service-agreement/#{id}"
+        else
+          console.log('else')
+          data = {
+            id: id,
+            eidcContactDetails: 'info@eidc.ac.uk'
+          };
 
-      if bool
-        window.location.href = "/documents?id=#{id}"
-      else
-        data = {
-          id: id,
-          eidcContactDetails: 'info@eidc.ac.uk'
-        };
-
-        new ServiceAgreementEditorView
-          el: '#metadata'
-          model: new ServiceAgreementEditorMetadata data
+          console.log('New editor view')
+          new ServiceAgreementEditorView
+            el: '#metadata'
+            model: new ServiceAgreementEditorMetadata data
 
   ###
   Initialize the simple dataset upload

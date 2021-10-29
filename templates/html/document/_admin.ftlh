@@ -77,15 +77,13 @@
           </ul>
         </#if>
       </div>
-
-      <div class="btn-group btn-group-sm">
-        <button type="button"
-                class="btn btn-default btn-wide edit-control"
-                data-document-type="service-agreement">
-          Service Agreement
-        </button>
-      </div>
-
+      <#if isEidcCatalogue && isServiceAgreement>
+        <div class="btn-group btn-group-sm service-agreement" data-id="${id}">
+          <div href="/service-agreement/${id}">
+            <button type="button" class="btn btn-default btn-wide">Service Agreement</button>
+          </div>
+        </div>
+      </#if>
       <#if isRestrictedFieldsEditor>
 
         <#-- DOI button -->
