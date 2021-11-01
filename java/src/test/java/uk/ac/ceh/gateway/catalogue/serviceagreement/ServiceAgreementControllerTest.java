@@ -2,7 +2,6 @@ package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
 import lombok.SneakyThrows;
 import lombok.val;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +14,9 @@ import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
+
+import java.util.Collections;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
@@ -31,12 +31,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class, ServiceAgreementModelAssembler.class})
 @WebMvcTest(ServiceAgreementController.class)
 class ServiceAgreementControllerTest {
-
-    private static final String ID = "test";
-    private static final String QUERY = "queryTest";
-    private static CatalogueUser USER;
-    private static MetadataInfo metadataInfo = MetadataInfo.builder().build();
-
     @MockBean
     private ServiceAgreementSearch search;
     @MockBean
@@ -45,14 +39,23 @@ class ServiceAgreementControllerTest {
     private @MockBean(name="permission")
     PermissionService permissionService;
 
+    private static final String ID = "test";
+
     @Autowired
     private MockMvc mvc;
 
-    @BeforeAll
-    private static void setup() {
-        USER = new CatalogueUser();
-        USER.setUsername("test");
-        USER.setEmail("test@example.com");
+    @Test
+    @SneakyThrows
+    void search() {
+        //given
+        givenUserIsAdmin();
+        given(search.query("chess"))
+            .willReturn(Collections.emptyList());
+
+        //when
+        mvc.perform(get("/service-agreement")
+            .queryParam("query", "chess"))
+            .andExpect(status().isOk());
     }
 
     @Test
@@ -102,10 +105,8 @@ class ServiceAgreementControllerTest {
         // given
         givenUserCanEdit();
         givenMetadataRecordExists();
-        val expected = new ServiceAgreement();
-        expected.setId(ID);
-        expected.setTitle("Test Service Agreement");
-        expected.setState("draft");
+        givenCreateServiceAgreement();
+
         val requestBody = """
             {
                 "id": "123",
@@ -119,7 +120,7 @@ class ServiceAgreementControllerTest {
             """;
 
         // when
-        mvc.perform(put("/service-agreement/{id}", ID)
+        mvc.perform(post("/service-agreement/{id}", ID)
                 .content(requestBody)
                 .queryParam("catalogue", "eidc")
                 .contentType(HAL_JSON)
@@ -128,14 +129,6 @@ class ServiceAgreementControllerTest {
             .andExpect(content().contentType(HAL_JSON))
             .andExpect(content().json("{\"id\":\"test\",\"title\":\"Test Service Agreement\"}"));
 
-        //then
-        verify(serviceAgreementService).save(
-            USER,
-            ID,
-            "eidc",
-            expected,
-            metadataInfo
-        );
     }
 
     @Test
@@ -146,7 +139,7 @@ class ServiceAgreementControllerTest {
         givenUserCanNotEdit();
 
         // when
-        mvc.perform(put("/service-agreement/{id}", ID)
+        mvc.perform(post("/service-agreement/{id}", ID)
                 .content("{\"title\":\"Test Service Agreement\"}")
                 .queryParam("catalogue", "eidc")
                 .contentType(APPLICATION_JSON)
@@ -165,7 +158,7 @@ class ServiceAgreementControllerTest {
         givenMedataRecordDoesNotExist();
 
         // when
-        mvc.perform(put("/service-agreement/{id}", ID)
+        mvc.perform(post("/service-agreement/{id}", ID)
                 .content("{\"title\":\"Test Service Agreement\"}")
                 .queryParam("catalogue", "eidc")
                 .contentType(APPLICATION_JSON)
@@ -181,6 +174,56 @@ class ServiceAgreementControllerTest {
     @Test
     @SneakyThrows
     @WithMockCatalogueUser
+    void updateServiceAgreement() {
+        // given
+        givenUserCanEdit();
+        givenMetadataRecordExists();
+        givenUpdateServiceAgreement();
+
+        val requestBody = """
+            {
+                "id": "123",
+                "title": "Test Service Agreement",
+                "_links": {
+                    "self": {
+                        "href": "https://catalogue/service-agreement/123"
+                    }
+                }
+            }
+            """;
+
+        // when
+        mvc.perform(put("/service-agreement/{id}", ID)
+                .content(requestBody)
+                .contentType(HAL_JSON)
+            )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(HAL_JSON))
+            .andExpect(content().json("{\"id\":\"test\",\"title\":\"Test Service Agreement\"}"));
+
+    }
+
+    @Test
+    @SneakyThrows
+    @WithMockCatalogueUser
+    void userCannotUpdateServiceAgreement() {
+        // given
+        givenUserCanNotEdit();
+
+        // when
+        mvc.perform(put("/service-agreement/{id}", ID)
+                .content("{\"title\":\"Test Service Agreement\"}")
+                .contentType(APPLICATION_JSON)
+            )
+            .andExpect(status().isForbidden());
+
+        // then
+        verifyNoInteractions(serviceAgreementService);
+    }
+
+    @Test
+    @SneakyThrows
+    @WithMockCatalogueUser
     void deleteServiceAgreement() {
         // given
         givenUserCanDelete();
@@ -188,9 +231,6 @@ class ServiceAgreementControllerTest {
         // when
         mvc.perform(delete("/service-agreement/{id}", ID))
                 .andExpect(status().isNoContent());
-
-        // then
-        verify(serviceAgreementService).delete(USER, ID);
     }
 
     @Test
@@ -219,10 +259,6 @@ class ServiceAgreementControllerTest {
         mvc.perform(post("/service-agreement/{id}/populate", ID))
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/documents/" + ID));
-        //then
-        verify(serviceAgreementService).populateGeminiDocument(
-                USER,
-                ID);
     }
 
     @Test
@@ -256,6 +292,38 @@ class ServiceAgreementControllerTest {
 
         //then
         verify(serviceAgreementService).metadataRecordExists(ID);
+    }
+
+    @SneakyThrows
+    private void givenCreateServiceAgreement() {
+        val serviceAgreement = new ServiceAgreement();
+        serviceAgreement.setId(ID);
+        serviceAgreement.setTitle("Test Service Agreement");
+        given(serviceAgreementService.create(
+            any(CatalogueUser.class),
+            eq(ID),
+            eq("eidc"),
+            any(ServiceAgreement.class)
+        ))
+            .willReturn(serviceAgreement);
+    }
+
+    @SneakyThrows
+    private void givenUpdateServiceAgreement() {
+        val serviceAgreement = new ServiceAgreement();
+        serviceAgreement.setId(ID);
+        serviceAgreement.setTitle("Test Service Agreement");
+        given(serviceAgreementService.update(
+            any(CatalogueUser.class),
+            eq(ID),
+            any(ServiceAgreement.class)
+        ))
+            .willReturn(serviceAgreement);
+    }
+
+    private void givenUserIsAdmin() {
+        given(permissionService.userIsAdmin())
+            .willReturn(true);
     }
 
     private void givenUserCanView() {
@@ -299,12 +367,10 @@ class ServiceAgreementControllerTest {
     private void givenMetadataRecordExists() {
         given(serviceAgreementService.metadataRecordExists(ID))
             .willReturn(true);
-        given(serviceAgreementService.getMetadataInfo(ID))
-                .willReturn(metadataInfo);
     }
 
     private void givenMedataRecordDoesNotExist() {
-        given(serviceAgreementService.metadataRecordExists(QUERY))
+        given(serviceAgreementService.metadataRecordExists(ID))
             .willReturn(false);
     }
 }

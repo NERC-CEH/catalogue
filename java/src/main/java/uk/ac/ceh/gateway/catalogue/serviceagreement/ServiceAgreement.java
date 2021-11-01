@@ -7,6 +7,7 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 import uk.ac.ceh.gateway.catalogue.gemini.*;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 
 import java.util.Collections;
@@ -32,7 +33,6 @@ public class ServiceAgreement extends AbstractMetadataDocument {
     private String depositorContactDetails;
     private String eidcName;
     private String eidcContactDetails;
-    private String state;
 
     /*
     ONE: Data Identification and Citation
@@ -96,6 +96,13 @@ public class ServiceAgreement extends AbstractMetadataDocument {
     private List<DescriptiveKeywords> descriptiveKeywords;
     private String lineage;
     private List<BoundingBox> areaOfStudy;
+
+    @JsonIgnore
+    public String getState() {
+        return Optional.ofNullable(getMetadata())
+            .map(MetadataInfo::getState)
+            .orElse("draft");
+    }
 
     @Override
     @JsonIgnore

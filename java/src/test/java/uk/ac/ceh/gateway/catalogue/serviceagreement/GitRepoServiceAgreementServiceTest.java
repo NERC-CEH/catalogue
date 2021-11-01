@@ -8,12 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.ac.ceh.components.datastore.DataDocument;
-import uk.ac.ceh.components.datastore.DataOngoingCommit;
-import uk.ac.ceh.components.datastore.DataRepository;
-import uk.ac.ceh.components.datastore.DataRepositoryException;
+import uk.ac.ceh.components.datastore.*;
 import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
-import uk.ac.ceh.gateway.catalogue.document.reading.DocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -28,6 +24,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -42,8 +39,6 @@ public class GitRepoServiceAgreementServiceTest {
     private static final String ID = "test";
 
     @Mock
-    DocumentTypeLookupService documentTypeLookupService;
-    @Mock
     private DataRepository<CatalogueUser> repo;
     @Mock
     private DocumentInfoMapper<MetadataInfo> metadataInfoMapper;
@@ -57,7 +52,6 @@ public class GitRepoServiceAgreementServiceTest {
     @BeforeEach
     void setup() {
         service = new GitRepoServiceAgreementService(
-            documentTypeLookupService,
             repo,
             metadataInfoMapper,
             serviceAgreementMapper,
@@ -67,8 +61,18 @@ public class GitRepoServiceAgreementServiceTest {
 
     @Test
     @SneakyThrows
-    public void canGet() {
+    public void getServiceAgreement() {
         //Given
+        givenServiceAgreement();
+
+        //When
+        service.get(ID);
+
+        //Then
+    }
+
+    @SneakyThrows
+    private void givenServiceAgreement() {
         val serviceAgreement = new ServiceAgreement();
         serviceAgreement.setId(ID);
 
@@ -77,6 +81,7 @@ public class GitRepoServiceAgreementServiceTest {
             .willReturn(metadataInfoDocument);
         given(metadataInfoDocument.getInputStream())
             .willReturn(new ByteArrayInputStream("meta".getBytes()));
+
         val metadata = MetadataInfo.builder()
             .rawType(APPLICATION_JSON_VALUE)
             .build();
@@ -90,11 +95,7 @@ public class GitRepoServiceAgreementServiceTest {
             .willReturn(new ByteArrayInputStream("file".getBytes()));
         given(serviceAgreementMapper.readInfo(any()))
             .willReturn(serviceAgreement);
-
-        //When
-        service.get(ID);
-
-        //Then
+        serviceAgreement.setMetadata(metadata);
     }
 
     @Test
@@ -113,7 +114,8 @@ public class GitRepoServiceAgreementServiceTest {
 
         //When
         assertThrows(DataRepositoryException.class, () ->
-                service.get(ID));
+                service.get(ID)
+        );
     }
 
     @Test
@@ -128,7 +130,8 @@ public class GitRepoServiceAgreementServiceTest {
 
         //When
         assertThrows(DataRepositoryException.class, () ->
-                service.get(ID));
+                service.get(ID)
+        );
     }
 
     @Test
@@ -190,23 +193,54 @@ public class GitRepoServiceAgreementServiceTest {
 
     @Test
     @SneakyThrows
-    public void canSave() {
+    public void updateServiceAgreement() {
         //Given
         CatalogueUser user = new CatalogueUser();
         user.setUsername("test");
         ServiceAgreement serviceAgreement = new ServiceAgreement();
         serviceAgreement.setId(ID);
         DataOngoingCommit dataOngoingCommit = mock(DataOngoingCommit.class);
-        MetadataInfo metadataInfo = MetadataInfo.builder().build();
+
+        given(repo.submitData(
+            eq("service-agreements/" + ID + ".raw"),
+            any(DataWriter.class)
+        ))
+            .willReturn(dataOngoingCommit);
+
+        given(dataOngoingCommit.commit(
+            any(CatalogueUser.class), eq("updating service agreement test")
+        ))
+            .willReturn(mock(DataRevision.class));
+
+        givenServiceAgreement();
+
+        //When
+        service.update(user, ID, serviceAgreement);
+
+        //Then
+        verify(dataOngoingCommit).commit(user, "updating service agreement test");
+    }
+
+    @Test
+    @SneakyThrows
+    public void createServiceAgreement() {
+        //Given
+        CatalogueUser user = new CatalogueUser();
+        user.setUsername("test");
+        ServiceAgreement serviceAgreement = new ServiceAgreement();
+        serviceAgreement.setId(ID);
+        DataOngoingCommit dataOngoingCommit = mock(DataOngoingCommit.class);
 
         given(repo.submitData(any(), any())).willReturn(dataOngoingCommit);
         given(dataOngoingCommit.submitData(any(), any())).willReturn(dataOngoingCommit);
 
+        givenServiceAgreement();
+
         //When
-        service.save(user, ID, "catalogue", serviceAgreement, metadataInfo);
+        service.create(user, ID, "eidc", serviceAgreement);
 
         //Then
-        verify(dataOngoingCommit).commit(user, "catalogue");
+        verify(dataOngoingCommit).commit(user, "creating service agreement test");
     }
 
     @Test
@@ -240,15 +274,14 @@ public class GitRepoServiceAgreementServiceTest {
                 .willReturn(serviceAgreement);
 
         val metadataDocument = mock(MetadataDocument.class);
-        given(documentRepository.save(user, geminiDocument, "catalogue"))
+        given(documentRepository.save(user, geminiDocument, "populated from service agreement"))
                 .willReturn(metadataDocument);
-
 
         //When
         service.populateGeminiDocument(user, ID);
 
         //Then
-        verify(documentRepository).save(user,geminiDocument, "catalogue");
+        verify(documentRepository).save(user,geminiDocument, "populated from service agreement");
     }
 
 }

@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.hateoas.RepresentationModel;
@@ -28,6 +29,7 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
     private String depositorContactDetails;
     private String eidcName;
     private String eidcContactDetails;
+    @JsonIgnore
     private String state;
 
     /*
