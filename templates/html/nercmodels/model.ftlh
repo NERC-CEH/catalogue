@@ -38,6 +38,19 @@
           </@m.key>
         </#if>
 
+        <#if responsibleParties?? && responsibleParties?has_content>
+          <@m.key "Contacts">
+          <#list responsibleParties as responsibleParty>
+            <dt>${responsibleParty.roleDisplayName}</dt>
+            <dd>
+              <div class="responsibleParty">
+                <@func.displayContact responsibleParty, true, true, false />
+              </div>
+            </dd>
+            </#list>
+          </@m.key>
+        </#if>
+
         <#if otherLinks?? && otherLinks?has_content>
           <@m.key "Links">
             <#list otherLinks as otherLink>
@@ -49,19 +62,6 @@
                   <@m.Url otherLink.url true/>
                 </#if>
               </p>
-            </#list>
-          </@m.key>
-        </#if>
-
-        <#if responsibleParties?? && responsibleParties?has_content>
-          <@m.key "Contacts">
-          <#list responsibleParties as responsibleParty>
-            <dt>${responsibleParty.roleDisplayName}</dt>
-            <dd>
-              <div class="responsibleParty">
-                <@func.displayContact responsibleParty, true, true, false />
-              </div>
-            </dd>
             </#list>
           </@m.key>
         </#if>
@@ -103,13 +103,16 @@
       <h2>Resolution/scale</h2>
 
       <#if resolution?? && resolution?has_content>
-        <div class="modelgrid modelgrid--3 modelgrid--resolution">
         <#list resolution as item>
-          <div><#if item.category?has_content>${item.category?cap_first}</#if></div>
-          <div><#if item.min?has_content>Min: ${item.min}</#if></div>
-          <div><#if item.max?has_content>Max: ${item.max}</#if></div>
+          <div class="key-value">
+            <#if item.category?has_content><div class="key">${item.category?cap_first}</div></#if>
+            <div class="value">
+              <#if item.min?has_content>Min: ${item.min}</#if>
+              <#if item.max?has_content>Max: ${item.max}</#if>
+            </div>
+          </div>
         </#list>
-        </div>
+       
       </#if>
 
       <#if boundingBoxes?has_content>
@@ -154,15 +157,25 @@
     <div>
       <h2>Quality assurance</h2>
       <#if qa?? && qa?has_content>
-        <div class="modelgrid modelgrid--3 modelgrid--qa">
-          <div class="modelgrid--header">Category</div>
-          <div class="modelgrid--header">Date</div>
-          <div class="modelgrid--header">Notes</div>
-        <#list qa as item>
-          <div><#if item.category?has_content>${item.category}</#if></div>
-          <div><#if item.date?has_content>${item.date}</#if></div>
-          <div><#if item.notes?has_content>${item.notes}</#if></div>
-        </#list>
+        <div  class="table--qa">
+        <table class="table">
+          <thead>
+            <tr>  
+              <th>Category</th>
+              <th>Date</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <#list qa as item>
+            <tr>
+              <td><#if item.category?has_content>${item.category}</#if></td>
+              <td><#if item.date?has_content>${item.date}</#if></td>
+              <td><#if item.notes?has_content>${item.notes}</#if></td>
+            </tr>
+            </#list>
+          </tbody>
+        </table>
         </div>
       <#else>
         <p class="text-danger">No quality assurance information provided</p>

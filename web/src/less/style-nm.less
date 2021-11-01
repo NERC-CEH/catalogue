@@ -104,5 +104,86 @@ a.navbar-brand {
     padding: 1em 0.5em 0.5em 0.5em;
   }
 
+  .key-value {
+    display: grid;
+    grid-template-columns: 14em auto;
+    padding: 1em;
+    margin: 1em;
+    .key {
+      text-align: right;
+      margin-right: 2em;
+    }
+    
+  }
 
+  .table--qa {
+    margin: 1em 3em;
+    table {
+      thead {
+        th {
+          background-color: #eee;
+          border-width: 0;
+        }
+      }
+      tbody {
+        td,
+        th {
+          border-color: #ddd !important;
+        }
+      }
+    }
+    @media only screen and (max-width: 760px),
+      (min-device-width: 768px) and (max-device-width: 1024px) {
+      // On small screens, force qa table to not display as a table
+      @head-width: 100px;
+
+      table,
+      thead,
+      tbody,
+      th,
+      td,
+      tr {
+        display: block;
+        border-width: 0 !important;
+      }
+
+      // Hide table headers (for accessibility, don't use display:none )
+      thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+      }
+
+      tr {
+        margin: 0 0 3rem 0;
+      }
+
+      td {
+        border: none;
+        position: relative;
+        margin-left: @head-width*1.2;
+        padding: 0.4em !important;
+        &:before {
+          position: absolute;
+          padding: 0.4em 0.6em;
+          top: 0;
+          left: 3em;
+          margin-left: -(@head-width*1.5);
+          text-align: right;
+          width: @head-width;
+          font-weight: bolder;
+          white-space: nowrap;
+        }
+        &:nth-of-type(1):before {
+          content: "Category";
+        }
+        &:nth-of-type(2):before {
+          content: "Date";
+        }
+        &:nth-of-type(3):before {
+          content: "Notes";
+        }
+      }
+    }
+  }
 }
