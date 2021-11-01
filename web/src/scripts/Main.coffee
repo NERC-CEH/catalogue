@@ -208,7 +208,7 @@ define [
         mediaType: 'application/vnd.linked-elter+json'
       'service-agreement':
         View: ServiceAgreementEditorView
-        Model: EditorMetadata
+        Model: ServiceAgreementEditorMetadata
         mediaType: 'application/json'
       'ukems-document':
         View: UkemsDocumentEditorView
