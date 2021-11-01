@@ -287,22 +287,17 @@ define [
 
     $('.service-agreement').on 'click', (event) ->
       do event.preventDefault
-
-      bool = false;
       id =  $(event.currentTarget).data("id")
 
       $.get "/service-agreement/#{id}/exists", (data) ->
         if data
-          console.log('if is true')
           window.location.href = "/service-agreement/#{id}"
         else
-          console.log('else')
           data = {
             id: id,
             eidcContactDetails: 'info@eidc.ac.uk'
           };
 
-          console.log('New editor view')
           new ServiceAgreementEditorView
             el: '#metadata'
             model: new ServiceAgreementEditorMetadata data
