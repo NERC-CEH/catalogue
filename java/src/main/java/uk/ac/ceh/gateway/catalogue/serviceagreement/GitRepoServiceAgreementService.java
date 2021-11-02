@@ -43,12 +43,20 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     @Override
     @SneakyThrows
     public void populateGeminiDocument(CatalogueUser user, String id) {
-        val serviceAgreement = get(id);
-        documentRepository.save(
-            user,
-            new GeminiDocument(serviceAgreement),
-            "populated from service agreement"
-        );
+        val gemini = (GeminiDocument) documentRepository.read(id);
+        val metadataRecordState = gemini.getMetadata().getState();
+        if (metadataRecordState.equals("draft")) {
+            val serviceAgreement = get(id);
+            log.info("Gemini document populated from Service Agreement: {}", id);
+            gemini.populateFromServiceAgreement(serviceAgreement);
+            documentRepository.save(
+                user,
+                gemini,
+                "populated from service agreement"
+            );
+        } else {
+            log.info("Cannot populate Gemini document: {}. It is not in Draft state", id);
+        }
     }
 
     @Override
