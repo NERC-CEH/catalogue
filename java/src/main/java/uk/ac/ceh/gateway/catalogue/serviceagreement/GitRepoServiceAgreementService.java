@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
+import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.document.reading.DocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -15,6 +16,9 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
+import uk.ac.ceh.gateway.catalogue.upload.hubbub.JiraService;
+
+import static java.lang.String.format;
 
 @Profile("service-agreement")
 @Slf4j
@@ -26,6 +30,8 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     private final DocumentInfoMapper<MetadataInfo> metadataInfoMapper;
     private final DocumentInfoMapper<ServiceAgreement> serviceAgreementMapper;
     private final DocumentRepository documentRepository;
+    private final GroupStore<CatalogueUser> groupStore;
+    private final JiraService jiraService;
     private static final String FOLDER = "service-agreements/";
 
     public GitRepoServiceAgreementService(
@@ -33,13 +39,17 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
             DataRepository<CatalogueUser> repo,
             DocumentInfoMapper<MetadataInfo> metadataInfoMapper,
             DocumentInfoMapper<ServiceAgreement> serviceAgreementMapper,
-            DocumentRepository documentRepository
+            DocumentRepository documentRepository,
+            JiraService jiraService,
+            GroupStore<CatalogueUser> groupStore
     ) {
         this.documentTypeLookupService = documentTypeLookupService;
         this.repo = repo;
         this.metadataInfoMapper = metadataInfoMapper;
         this.serviceAgreementMapper = serviceAgreementMapper;
         this.documentRepository = documentRepository;
+        this.jiraService = jiraService;
+        this.groupStore = groupStore;
         log.info("Creating");
     }
 
@@ -104,5 +114,28 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public boolean publishServiceAgreement(CatalogueUser user, String id, String guid, String status, String message) {
+        ServiceAgreement serviceAgreement = get(id);
+
+        val key = transitionIssueTo(guid, status);
+        jiraService.comment(key, format(message, user.getEmail()));
+        // Once pressed use the Jira Rest API to send a notification to comment on the associated Jira ticket when done.
+        // remove edit permissions
+        groupStore.getGroups(user);
+        serviceAgreement.setState("Pending Publication");
+        return true;
+    }
+
+    private String transitionIssueTo(String guid, String status) {
+        val possibleIssue = jiraService.retrieveDataTransferIssue(guid);
+        if (possibleIssue.isPresent()) {
+            val key = possibleIssue.get().getKey();
+            jiraService.transition(key, status);
+            return key;
+        } else {
+            throw new RuntimeException(format("Cannot transition %s to %s", guid, status));
+        }
     }
 }

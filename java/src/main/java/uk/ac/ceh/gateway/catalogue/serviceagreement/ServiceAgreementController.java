@@ -108,4 +108,12 @@ public class ServiceAgreementController {
         return serviceAgreementService.serviceAgreementExists(id);
     }
 
+    @PreAuthorize("@permission.userCanEdit(#id)")
+    @GetMapping("{id}/publish")
+    public boolean publishServiceAgreement(@PathVariable("id") String id
+    ) {
+        log.info("PUBLISHING SERVICE AGREEMENT {}", id);
+        return serviceAgreementService.publishServiceAgreement(id);
+    }
+
 }

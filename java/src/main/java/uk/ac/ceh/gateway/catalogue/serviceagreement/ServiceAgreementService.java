@@ -19,4 +19,6 @@ public interface ServiceAgreementService {
 
     MetadataInfo getMetadataInfo(String id);
 
+    boolean publishServiceAgreement(CatalogueUser user, String id, String guid, String status, String message);
+
 }

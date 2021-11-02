@@ -29,6 +29,13 @@ displayPopulateButton = state == 'published' && possiblePopulateLink.isPresent()
                                     </form>
                                 </div>
                             </#if>
+                        <div class="btn-group btn-group-sm">
+                            <button type="button"
+                                    class="btn btn-default btn-wide edit-control"
+                                    data-document-type="service-agreement">
+                                Publish
+                            </button>
+                        </div>
                         </div>
                     </div>
                 </div>
