@@ -93,8 +93,6 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
     private String lineage;
     private List<BoundingBox> areaOfStudy;
 
-    private String catalogue;
-
     public ServiceAgreementModel(ServiceAgreement serviceAgreement) {
         this.id = serviceAgreement.getId();
         this.title = serviceAgreement.getTitle();
@@ -127,6 +125,5 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
         this.description = serviceAgreement.getDescription();
         this.lineage = serviceAgreement.getLineage();
         this.areaOfStudy = serviceAgreement.getAreaOfStudy();
-        this.catalogue = serviceAgreement.getCatalogue();
     }
 }

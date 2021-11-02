@@ -2,6 +2,12 @@
 <#import "skeleton.ftlh" as skeleton>
 <#import "../functions.ftlh" as func>
 
+<#assign
+    possiblePopulateLink = getLink('populate')
+    displayPopulateButton = possiblePopulateLink.isPresent()
+/>
+
+
 <@skeleton.master "Service Agreement">
 
     <div id="metadata">
@@ -15,6 +21,14 @@
                                     data-document-type="service-agreement">
                                 Edit
                             </button>
+                        </div>
+                            <#if displayPopulateButton>
+                                <div class="btn-group btn-group-sm">
+                                    <form action="${possiblePopulateLink.get().href}" method="post">
+                                        <input type="submit" value="${possiblePopulateLink.get().title}"${possiblePopulateLink.get().title}" class="btn btn-default btn-wide">
+                                    </form>
+                                </div>
+                            </#if>
                         </div>
                     </div>
                 </div>

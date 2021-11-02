@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * This is the interface for a metadata document. Specific implementations such 
+ * This is the interface for a metadata document. Specific implementations such
  * as #GeminiDocument and #UKEOFDocument must implement this in order to be used
  * by the various components of this catalogue.
  */
@@ -39,11 +39,18 @@ public interface MetadataDocument {
 
     @JsonIgnore
     default void validate() {}
-    
+
     @JsonIgnore
     default String getCatalogue() {
         return Optional.ofNullable(getMetadata())
             .map(MetadataInfo::getCatalogue)
             .orElse("");
+    }
+
+    @JsonIgnore
+    default String getState() {
+        return Optional.ofNullable(getMetadata())
+            .map(MetadataInfo::getState)
+            .orElse("draft");
     }
 }
