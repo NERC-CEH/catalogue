@@ -119,7 +119,7 @@
         <div class="contactPhone"><i class="fas fa-phone"></i>&nbsp;${contact.phone}</div>
     </#if>
 
-    <#if showEmail && (contact.email?has_content || metadata.catalogue = "eidc")>
+    <#if showEmail && (contact.email?has_content || catalogue = "eidc")>
         <#assign emailSubject= "?subject=" + title>
         <#if contact.email?has_content>
             <#assign emailAddress=contact.email>

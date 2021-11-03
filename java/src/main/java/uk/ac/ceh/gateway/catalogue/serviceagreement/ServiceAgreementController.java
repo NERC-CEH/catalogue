@@ -19,7 +19,6 @@ import java.util.List;
 @RestController
 @RequestMapping("service-agreement")
 public class ServiceAgreementController {
-
     private final ServiceAgreementSearch search;
     private final ServiceAgreementService serviceAgreementService;
     private final ServiceAgreementModelAssembler serviceAgreementModelAssembler;
@@ -36,20 +35,42 @@ public class ServiceAgreementController {
     }
 
     @PreAuthorize("@permission.userCanEdit(#id)")
-    @PutMapping("{id}")
+    @PostMapping("{id}")
     public ServiceAgreementModel create(
         @ActiveUser CatalogueUser user,
         @PathVariable("id") String id,
         @RequestParam("catalogue") String catalogue,
         @RequestBody ServiceAgreement serviceAgreement
+    ) {
+        if (serviceAgreementService.metadataRecordExists(id)) {
+            log.info("creating service agreement {}", id);
+            val newlyCreated = serviceAgreementService.create(
+                user,
+                id,
+                catalogue,
+                serviceAgreement
+            );
+            return serviceAgreementModelAssembler.toModel(newlyCreated);
+        } else {
+            throw new ResourceNotFoundException("Metadata record does not exist");
+        }
+    }
+
+    @PreAuthorize("@permission.userCanEdit(#id)")
+    @PutMapping("{id}")
+    public ServiceAgreementModel update(
+        @ActiveUser CatalogueUser user,
+        @PathVariable("id") String id,
+        @RequestBody ServiceAgreement serviceAgreement
         ) {
         if (serviceAgreementService.metadataRecordExists(id)) {
-            log.info("CREATE {}", id);
-            serviceAgreement.setId(id);
-            val metadataInfo = serviceAgreementService.getMetadataInfo(id);
-            serviceAgreement.setState(metadataInfo.getState());
-            serviceAgreementService.save(user, id, catalogue, serviceAgreement, metadataInfo);
-            return serviceAgreementModelAssembler.toModel(serviceAgreement);
+            log.info("updating service agreement {}", id);
+            val newlyUpdated = serviceAgreementService.update(
+                user,
+                id,
+                serviceAgreement
+            );
+            return serviceAgreementModelAssembler.toModel(newlyUpdated);
         }else{
             throw new ResourceNotFoundException("Metadata record does not exist");
         }
@@ -99,13 +120,4 @@ public class ServiceAgreementController {
             throw new ResourceNotFoundException("Metadata record does not exist");
         }
     }
-
-    @PreAuthorize("@permission.userCanEdit(#id)")
-    @GetMapping("{id}/exists")
-    public boolean serviceAgreementExists(@PathVariable("id") String id
-    ) {
-        log.info("CHECKING SERVICE AGREEMENT EXISTS {}", id);
-        return serviceAgreementService.serviceAgreementExists(id);
-    }
-
 }

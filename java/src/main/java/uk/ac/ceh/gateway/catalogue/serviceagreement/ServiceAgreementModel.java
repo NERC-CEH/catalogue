@@ -28,7 +28,6 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
     private String depositorContactDetails;
     private String eidcName;
     private String eidcContactDetails;
-    private String state;
 
     /*
     ONE: Data Identification and Citation
@@ -126,6 +125,5 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
         this.description = serviceAgreement.getDescription();
         this.lineage = serviceAgreement.getLineage();
         this.areaOfStudy = serviceAgreement.getAreaOfStudy();
-        this.state = serviceAgreement.getState();
     }
 }

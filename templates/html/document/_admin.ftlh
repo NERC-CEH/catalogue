@@ -7,6 +7,7 @@
   isRestrictedFieldsEditor = permission.userCanEditRestrictedFields(metadata.catalogue)
   isSimpleUpload = !isEidcCatalogue && permission.userCanUpload(id)
   isServiceAgreement = profile.isActive("service-agreement")
+
 >
 
 <#if onlineResources?has_content>
@@ -58,7 +59,7 @@
               </a>
             </li>
             <#if isEidcCatalogue && isServiceAgreement>
-              <li class="service-agreement" data-id="${id}">
+              <li class="service-agreement" data-id="${id}" id="service-agreement-gemini">
                 <a href="/service-agreement/${id}">
                   <i class="fas fa-file"></i>
                   Service Agreement

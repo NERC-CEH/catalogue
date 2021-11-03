@@ -76,13 +76,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private AccessLimitation accessLimitation;
     private boolean notGEMINI;
 
-    public GeminiDocument() {
-    }
-
-    public GeminiDocument(ServiceAgreement serviceAgreement) {
-        this.setId(serviceAgreement.getId());
-        this.setUri(serviceAgreement.getUri());
-        this.setType("dataset");
+    public void populateFromServiceAgreement(ServiceAgreement serviceAgreement) {
         this.setTitle(serviceAgreement.getTitle());
         this.setDescription(serviceAgreement.getDescription());
         this.responsibleParties = serviceAgreement.getAuthors();
