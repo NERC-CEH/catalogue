@@ -1,6 +1,6 @@
 <#assign
-  isDraft = metadata.state == 'draft'
-  isEidcCatalogue = metadata.catalogue == "eidc"
+  isDraft = state == 'draft'
+  isEidcCatalogue = catalogue == "eidc"
   isEidcCustodian = func.filter(custodians, "organisationName", "NERC EDS Environmental Information Data Centre")?size gt 0
   isEidcWithResourceType=isEidcCatalogue && (resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'application')
   isNotLinkDocument = metadata.documentType != 'LINK_DOCUMENT'
@@ -77,13 +77,7 @@
           </ul>
         </#if>
       </div>
-      <#if isEidcCatalogue && isServiceAgreement>
-        <div class="btn-group btn-group-sm service-agreement" data-id="${id}">
-          <div href="/service-agreement/${id}">
-            <button type="button" class="btn btn-default btn-wide">Service Agreement</button>
-          </div>
-        </div>
-      </#if>
+
       <#if isRestrictedFieldsEditor>
 
         <#-- DOI button -->
