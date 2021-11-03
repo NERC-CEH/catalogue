@@ -292,6 +292,7 @@ define [
       do event.preventDefault
       id =  $(event.currentTarget).data("id")
       data = eidcContactDetails: 'info@eidc.ac.uk'
+      options = id: id
 
       if $gemini.length
         $.ajax
@@ -302,7 +303,7 @@ define [
           error: ->
             new ServiceAgreementEditorView
               el: '#metadata'
-              model: new ServiceAgreementEditorMetadata(data, id)
+              model: new ServiceAgreementEditorMetadata(data, options)
 
   ###
   Initialize the simple dataset upload
