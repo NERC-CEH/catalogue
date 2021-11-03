@@ -26,6 +26,7 @@ import static uk.ac.ceh.gateway.catalogue.TimeConstants.SEVEN_DAYS;
 public class SparqlKeywordVocabulary implements KeywordVocabulary {
     private final String vocabularyId;
     private final String vocabularyName;
+    private final String graph;
     private final List<String> catalogueIds;
     private final RestTemplate restTemplate;
     private final SolrClient solrClient;
@@ -48,11 +49,11 @@ public class SparqlKeywordVocabulary implements KeywordVocabulary {
         this.vocabularyId = vocabularyId;
         this.catalogueIds = catalogueIds;
         this.vocabularyName = vocabularyName;
+        this.graph = graph;
         this.queryUrl = createQueryUrl(sparqlEndpoint, graph, where);
         log.info("Creating {}", this);
     }
 
-    @SuppressWarnings("HttpUrlsUsage")
     private URI createQueryUrl(String sparqlEndpoint, String graph, String where) {
         return URI.create(
             sparqlEndpoint + "?query=" +
@@ -112,6 +113,11 @@ public class SparqlKeywordVocabulary implements KeywordVocabulary {
     @Override
     public String getId() {
         return vocabularyId;
+    }
+
+    @Override
+    public String getGraph() {
+        return graph;
     }
 
     @Override

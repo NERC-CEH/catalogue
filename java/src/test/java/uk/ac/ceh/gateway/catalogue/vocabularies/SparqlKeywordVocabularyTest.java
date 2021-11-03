@@ -40,7 +40,6 @@ class SparqlKeywordVocabularyTest {
 
     private static final String SPARQL_ENDPOINT = "https://example.com";
     private static final String GRAPH = "urn:x-evn-master:cehmd";
-    @SuppressWarnings("HttpUrlsUsage")
     private static final String WHERE = "<http://onto.nerc.ac.uk/CEHMD/assist-research-themes> skos:hasTopConcept ?uri . ?uri skos:prefLabel ?label .";
     private static final String COLLECTION = "keywords";
     private static final String VOCABULARY_ID = "assist-topics";
@@ -120,7 +119,7 @@ class SparqlKeywordVocabularyTest {
         //then
     }
 
-    @SuppressWarnings({"HttpUrlsUsage", "SameParameterValue"})
+    @SuppressWarnings({"SameParameterValue"})
     URI getURI(String graph, String where){
         return URI.create(
                 SPARQL_ENDPOINT + "?query=" +
