@@ -20,6 +20,7 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.upload.hubbub.JiraService;
 
 import java.io.ByteArrayInputStream;
 
@@ -51,6 +52,8 @@ public class GitRepoServiceAgreementServiceTest {
     private DocumentInfoMapper<ServiceAgreement> serviceAgreementMapper;
     @Mock
     private DocumentRepository documentRepository;
+    @Mock
+    private JiraService jiraService;
 
     private ServiceAgreementService service;
 
@@ -61,7 +64,9 @@ public class GitRepoServiceAgreementServiceTest {
             repo,
             metadataInfoMapper,
             serviceAgreementMapper,
-            documentRepository
+            documentRepository,
+            jiraService
+
         );
     }
 
@@ -249,6 +254,46 @@ public class GitRepoServiceAgreementServiceTest {
 
         //Then
         verify(documentRepository).save(user,geminiDocument, "catalogue");
+    }
+
+    @Test
+    @SneakyThrows
+    public void canPublishServiceAgreement() {
+        //Given
+        CatalogueUser user = new CatalogueUser();
+        user.setUsername("test");
+        ServiceAgreement serviceAgreement = new ServiceAgreement();
+        serviceAgreement.setId(ID);
+
+
+        DataOngoingCommit<CatalogueUser> dataOngoingCommit = mock(DataOngoingCommit.class);
+        given(repo.deleteData(FOLDER + ID + ".meta")).willReturn(dataOngoingCommit);
+        given(dataOngoingCommit.deleteData(any())).willReturn(dataOngoingCommit);
+
+        val metadataInfoDocument = mock(DataDocument.class);
+        given(repo.getData(FOLDER + ID + ".meta"))
+                .willReturn(metadataInfoDocument);
+        given(metadataInfoDocument.getInputStream())
+                .willReturn(new ByteArrayInputStream("meta".getBytes()));
+        val metadata = MetadataInfo.builder()
+                .rawType(APPLICATION_JSON_VALUE)
+                .build();
+        given(metadataInfoMapper.readInfo(any()))
+                .willReturn(metadata);
+
+        val rawDocument = mock(DataDocument.class);
+        given(repo.getData(FOLDER + ID + ".raw"))
+                .willReturn(rawDocument);
+        given(rawDocument.getInputStream())
+                .willReturn(new ByteArrayInputStream("file".getBytes()));
+        given(serviceAgreementMapper.readInfo(any()))
+                .willReturn(serviceAgreement);
+
+        //When
+        service.publishServiceAgreement(user, ID);
+
+        //Then
+        verify(dataOngoingCommit).commit(user, "delete document: test");
     }
 
 }

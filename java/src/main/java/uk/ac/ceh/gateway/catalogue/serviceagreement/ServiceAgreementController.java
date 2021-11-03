@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
@@ -110,10 +111,11 @@ public class ServiceAgreementController {
 
     @PreAuthorize("@permission.userCanEdit(#id)")
     @GetMapping("{id}/publish")
-    public boolean publishServiceAgreement(@PathVariable("id") String id
+    public ResponseEntity<Object> publishServiceAgreement(@ActiveUser CatalogueUser user,
+                                                          @PathVariable("id") String id
     ) {
         log.info("PUBLISHING SERVICE AGREEMENT {}", id);
-        return serviceAgreementService.publishServiceAgreement(id);
+        return serviceAgreementService.publishServiceAgreement(user, id);
     }
 
 }

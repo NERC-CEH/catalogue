@@ -5,15 +5,16 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
-import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.document.reading.DocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.JiraService;
@@ -30,9 +31,9 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     private final DocumentInfoMapper<MetadataInfo> metadataInfoMapper;
     private final DocumentInfoMapper<ServiceAgreement> serviceAgreementMapper;
     private final DocumentRepository documentRepository;
-    private final GroupStore<CatalogueUser> groupStore;
     private final JiraService jiraService;
     private static final String FOLDER = "service-agreements/";
+    private static final String PENDING_PUBLICATION = "Pending Publication";
 
     public GitRepoServiceAgreementService(
             DocumentTypeLookupService documentTypeLookupService,
@@ -40,16 +41,13 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
             DocumentInfoMapper<MetadataInfo> metadataInfoMapper,
             DocumentInfoMapper<ServiceAgreement> serviceAgreementMapper,
             DocumentRepository documentRepository,
-            JiraService jiraService,
-            GroupStore<CatalogueUser> groupStore
-    ) {
+            JiraService jiraService) {
         this.documentTypeLookupService = documentTypeLookupService;
         this.repo = repo;
         this.metadataInfoMapper = metadataInfoMapper;
         this.serviceAgreementMapper = serviceAgreementMapper;
         this.documentRepository = documentRepository;
         this.jiraService = jiraService;
-        this.groupStore = groupStore;
         log.info("Creating");
     }
 
@@ -116,26 +114,16 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         return null;
     }
 
-    public boolean publishServiceAgreement(CatalogueUser user, String id, String guid, String status, String message) {
+    public ResponseEntity<Object> publishServiceAgreement(CatalogueUser user, String id) {
         ServiceAgreement serviceAgreement = get(id);
-
-        val key = transitionIssueTo(guid, status);
-        jiraService.comment(key, format(message, user.getEmail()));
-        // Once pressed use the Jira Rest API to send a notification to comment on the associated Jira ticket when done.
-        // remove edit permissions
-        groupStore.getGroups(user);
-        serviceAgreement.setState("Pending Publication");
-        return true;
-    }
-
-    private String transitionIssueTo(String guid, String status) {
-        val possibleIssue = jiraService.retrieveDataTransferIssue(guid);
-        if (possibleIssue.isPresent()) {
-            val key = possibleIssue.get().getKey();
-            jiraService.transition(key, status);
-            return key;
-        } else {
-            throw new RuntimeException(format("Cannot transition %s to %s", guid, status));
-        }
+        jiraService.comment(serviceAgreement.getDepositReference(),
+                format("Service agreement: " + serviceAgreement.getTitle() +
+                " is now Pending Publication", user.getEmail()));
+        serviceAgreement.setState(PENDING_PUBLICATION);
+        MetadataInfo metadata = serviceAgreement.getMetadata();
+        metadata.withState(PENDING_PUBLICATION);
+        metadata.removePermission(Permission.EDIT, user.getUsername());
+        this.save(user, id, serviceAgreement.getCatalogue(), serviceAgreement, metadata);
+        return ResponseEntity.ok().build();
     }
 }

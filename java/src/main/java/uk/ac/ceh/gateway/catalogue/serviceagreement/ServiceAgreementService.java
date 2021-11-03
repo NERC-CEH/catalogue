@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
+import org.springframework.http.ResponseEntity;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 
@@ -19,6 +20,5 @@ public interface ServiceAgreementService {
 
     MetadataInfo getMetadataInfo(String id);
 
-    boolean publishServiceAgreement(CatalogueUser user, String id, String guid, String status, String message);
-
+    ResponseEntity<Object> publishServiceAgreement(CatalogueUser user, String id);
 }
