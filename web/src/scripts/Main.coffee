@@ -287,20 +287,13 @@ define [
 
     $('.service-agreement').on 'click', (event) ->
       do event.preventDefault
-      id =  $(event.currentTarget).data("id")
 
-      $.get "/service-agreement/#{id}/exists", (data) ->
-        if data
-          window.location.href = "/service-agreement/#{id}"
-        else
-          data = {
-            id: id,
-            eidcContactDetails: 'info@eidc.ac.uk'
-          };
+      data = eidcContactDetails: 'info@eidc.ac.uk'
+      options = id: $(event.currentTarget).data("id")
 
-          new ServiceAgreementEditorView
-            el: '#metadata'
-            model: new ServiceAgreementEditorMetadata data
+      new ServiceAgreementEditorView
+        el: '#metadata'
+        model: new ServiceAgreementEditorMetadata(data, options)
 
   ###
   Initialize the simple dataset upload
