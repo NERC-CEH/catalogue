@@ -1,11 +1,12 @@
 package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.context.annotation.Profile;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Service;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -14,9 +15,11 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @Slf4j
 @Service
 public class ServiceAgreementModelAssembler extends RepresentationModelAssemblerSupport<ServiceAgreement, ServiceAgreementModel> {
+    private final DocumentRepository documentRepository;
 
-    public ServiceAgreementModelAssembler() {
+    public ServiceAgreementModelAssembler(DocumentRepository documentRepository) {
         super(ServiceAgreementController.class, ServiceAgreementModel.class);
+        this.documentRepository = documentRepository;
         log.info("Creating");
     }
 
@@ -28,14 +31,24 @@ public class ServiceAgreementModelAssembler extends RepresentationModelAssembler
         );
     }
 
+    @SneakyThrows
     @Override
     protected ServiceAgreementModel instantiateModel(ServiceAgreement serviceAgreement) {
-        Link link = linkTo(methodOn(ServiceAgreementController.class).populateGeminiDocument
-                (null, serviceAgreement.getId())).withRel("populate").withTitle("Populate Metadata");
         val model =  new ServiceAgreementModel(serviceAgreement);
-        model.add(link);
+        if ("published".equals(serviceAgreement.getState())) {
+            val gemini = documentRepository.read(serviceAgreement.getId());
+            if (gemini.getState().equals("draft")) {
+                val link = linkTo(methodOn(ServiceAgreementController.class)
+                    .populateGeminiDocument(
+                        null,
+                        serviceAgreement.getId()
+                    ))
+                    .withRel("populate")
+                    .withTitle("Populate Metadata");
+                model.add(link);
+            }
+        }
         log.debug("model: {}", model);
         return model;
     }
-
 }

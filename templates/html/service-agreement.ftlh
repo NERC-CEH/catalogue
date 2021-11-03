@@ -3,8 +3,8 @@
 <#import "../functions.ftlh" as func>
 
 <#assign
-possiblePopulateLink = getLink('populate')
-displayPopulateButton = state == 'published' && possiblePopulateLink.isPresent()
+    possiblePopulateLink = getLink('populate')
+    displayPopulateButton = possiblePopulateLink.isPresent()
 />
 
 
@@ -289,7 +289,7 @@ displayPopulateButton = state == 'published' && possiblePopulateLink.isPresent()
             <#list ownersOfIpr>
                 <#items as owner>
                     <div class="responsibleParty">
-                        <@func.displayContact owner false false true />
+                        <@func.displayContact owner false true true />
                     </div>
                 </#items>
             </#list>

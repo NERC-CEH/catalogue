@@ -69,4 +69,7 @@ RUN git config --global init.defaultBranch main \
 # Development image
 FROM prod AS dev
 COPY --chown=spring:spring --from=datastore /datastore /var/ceh-catalogue/datastore
+USER root
+RUN apk --no-cache add git vim
+USER spring
 

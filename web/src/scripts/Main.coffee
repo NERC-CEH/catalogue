@@ -208,7 +208,7 @@ define [
         mediaType: 'application/vnd.linked-elter+json'
       'service-agreement':
         View: ServiceAgreementEditorView
-        Model: EditorMetadata
+        Model: ServiceAgreementEditorMetadata
         mediaType: 'application/json'
       'ukems-document':
         View: UkemsDocumentEditorView
@@ -289,6 +289,9 @@ define [
       do event.preventDefault
       id =  $(event.currentTarget).data("id")
 
+      data = eidcContactDetails: 'info@eidc.ac.uk'
+      options = id: $(event.currentTarget).data("id")
+
       $.get "/service-agreement/#{id}/exists", (data) ->
         if data
           window.location.href = "/service-agreement/#{id}"
@@ -299,8 +302,8 @@ define [
           };
 
           new ServiceAgreementEditorView
-            el: '#metadata'
-            model: new ServiceAgreementEditorMetadata data
+        el: '#metadata'
+        model: new ServiceAgreementEditorMetadata(data, options)
 
   ###
   Initialize the simple dataset upload
