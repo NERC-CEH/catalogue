@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.ResponseEntity;
 import uk.ac.ceh.components.datastore.DataDocument;
 import uk.ac.ceh.components.datastore.DataOngoingCommit;
 import uk.ac.ceh.components.datastore.DataRepository;
@@ -24,6 +25,7 @@ import uk.ac.ceh.gateway.catalogue.upload.hubbub.JiraService;
 
 import java.io.ByteArrayInputStream;
 
+import static java.lang.String.format;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -262,13 +264,9 @@ public class GitRepoServiceAgreementServiceTest {
         //Given
         CatalogueUser user = new CatalogueUser();
         user.setUsername("test");
+        user.setEmail("test@test.com");
         ServiceAgreement serviceAgreement = new ServiceAgreement();
         serviceAgreement.setId(ID);
-
-
-        DataOngoingCommit<CatalogueUser> dataOngoingCommit = mock(DataOngoingCommit.class);
-        given(repo.deleteData(FOLDER + ID + ".meta")).willReturn(dataOngoingCommit);
-        given(dataOngoingCommit.deleteData(any())).willReturn(dataOngoingCommit);
 
         val metadataInfoDocument = mock(DataDocument.class);
         given(repo.getData(FOLDER + ID + ".meta"))
@@ -289,11 +287,20 @@ public class GitRepoServiceAgreementServiceTest {
         given(serviceAgreementMapper.readInfo(any()))
                 .willReturn(serviceAgreement);
 
+        DataOngoingCommit dataOngoingCommit = mock(DataOngoingCommit.class);
+        given(repo.submitData(any(), any())).willReturn(dataOngoingCommit);
+        given(dataOngoingCommit.submitData(any(), any())).willReturn(dataOngoingCommit);
+
         //When
-        service.publishServiceAgreement(user, ID);
+        ResponseEntity result = service.publishServiceAgreement(user, ID);
 
         //Then
-        verify(dataOngoingCommit).commit(user, "delete document: test");
+        verify(jiraService).comment(serviceAgreement.getDepositReference(),
+         format("Service agreement: " + serviceAgreement.getTitle() +
+                 " is now Pending Publication", user.getEmail()));
+        verify(dataOngoingCommit).commit(user, "");
+        assertThat(result, is(ResponseEntity.ok().build()));
+
     }
 
 }
