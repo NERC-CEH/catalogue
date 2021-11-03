@@ -120,5 +120,4 @@ public class ServiceAgreementController {
             throw new ResourceNotFoundException("Metadata record does not exist");
         }
     }
-
 }

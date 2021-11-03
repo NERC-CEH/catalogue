@@ -285,25 +285,25 @@ define [
   ###
   initServiceAgreement: ->
 
+    $gemini = $ '#service-agreement-gemini'
+
     $('.service-agreement').on 'click', (event) ->
+
       do event.preventDefault
       id =  $(event.currentTarget).data("id")
-
       data = eidcContactDetails: 'info@eidc.ac.uk'
       options = id: $(event.currentTarget).data("id")
 
-      $.get "/service-agreement/#{id}/exists", (data) ->
-        if data
-          window.location.href = "/service-agreement/#{id}"
-        else
-          data = {
-            id: id,
-            eidcContactDetails: 'info@eidc.ac.uk'
-          };
-
-          new ServiceAgreementEditorView
-        el: '#metadata'
-        model: new ServiceAgreementEditorMetadata(data, options)
+      if $gemini.length
+        $.ajax
+          url: "/service-agreement/#{id}"
+          type: 'GET'
+          success: ->
+            window.location.href = "/service-agreement/#{id}"
+          error: ->
+            new ServiceAgreementEditorView
+              el: '#metadata'
+              model: new ServiceAgreementEditorMetadata(data, options)
 
   ###
   Initialize the simple dataset upload
