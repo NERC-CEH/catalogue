@@ -130,11 +130,11 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
         this.areaOfStudy = serviceAgreement.getAreaOfStudy();
     }
 
+    @SuppressWarnings("unused")
     public List<Link> getModelLinks(){
-        List<Link> actualList = StreamSupport
-                .stream(this.getLinks().spliterator(), false)
-                .filter(link -> !link.getRel().value().equals("self"))
-                .collect(Collectors.toList());
-        return actualList;
+        return StreamSupport
+            .stream(this.getLinks().spliterator(), false)
+            .filter(link -> !link.getRel().value().equals("self"))
+            .collect(Collectors.toList());
     }
 }
