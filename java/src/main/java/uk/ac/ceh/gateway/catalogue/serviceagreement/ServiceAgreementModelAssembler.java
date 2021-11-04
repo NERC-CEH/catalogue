@@ -45,7 +45,7 @@ public class ServiceAgreementModelAssembler extends RepresentationModelAssembler
                     .withTitle("Submit");
             model.add(link);
         }
-        if ("pending Publication".equals(serviceAgreement.getState())) {
+        if ("pending publication".equals(serviceAgreement.getState())) {
             val link = linkTo(methodOn(ServiceAgreementController.class)
                     .publishServiceAgreement(
                             null,

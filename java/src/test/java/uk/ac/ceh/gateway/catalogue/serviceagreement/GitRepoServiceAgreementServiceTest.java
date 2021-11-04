@@ -304,8 +304,9 @@ public class GitRepoServiceAgreementServiceTest {
 
         //Then
         verify(jiraService).comment(serviceAgreement.getDepositReference(),
-                format("Service Agreement: %s has been agreed upon and published", serviceAgreement.getTitle()));
-        verify(dataOngoingCommit).commit(user, "updating service agreement " + ID);
+                format("Service Agreement (%s): %s has been agreed upon and published",
+                        serviceAgreement.getId(),
+                        serviceAgreement.getTitle()));
         verify(dataOngoingCommit).commit(user, "updating service agreement metadata " + ID);
     }
 
@@ -365,7 +366,7 @@ public class GitRepoServiceAgreementServiceTest {
                 .willReturn(new ByteArrayInputStream("meta".getBytes()));
 
         val metadata = MetadataInfo.builder()
-                .state("Pending Publication")
+                .state("pending publication")
                 .rawType(APPLICATION_JSON_VALUE)
                 .build();
         given(metadataInfoMapper.readInfo(any()))

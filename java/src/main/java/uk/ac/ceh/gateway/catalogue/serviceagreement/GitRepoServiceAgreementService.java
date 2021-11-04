@@ -32,7 +32,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     private final DocumentRepository documentRepository;
     private final JiraService jiraService;
     private static final String FOLDER = "service-agreements/";
-    private static final String PENDING_PUBLICATION = "pending Publication";
+    private static final String PENDING_PUBLICATION = "pending publication";
     private static final String PUBLISHED = "published";
 
     public GitRepoServiceAgreementService(
@@ -165,7 +165,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
                             )
                     )
                 );
-            removePermissions(user, id, serviceAgreement.getMetadata());
+            updateStateAndRemovePermissions(user, id, serviceAgreement.getMetadata(), PENDING_PUBLICATION);
         } else {
             val message = format(
                     "Cannot submit ServiceAgreement as state is %s",
@@ -180,16 +180,18 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         MetadataInfo metadata = serviceAgreement.getMetadata();
         String metadataRecordState = metadata.getState();
         if (metadataRecordState.equals(PENDING_PUBLICATION)) {
-            Optional.ofNullable(serviceAgreement.getDepositReference()).ifPresent((depositReference) ->
-                    jiraService.comment(
-                            depositReference,
-                            format("Service Agreement: %s has been agreed upon and published", serviceAgreement.getTitle())
-                    ));
-            metadata.withState(PUBLISHED);
-            metadata.removePermission(Permission.EDIT, user.getUsername());
-            serviceAgreement.setMetadata(metadata);
-            this.update(user, id, serviceAgreement);
-            this.updateMetadata(user, id, metadata);
+            Optional.ofNullable(serviceAgreement.getDepositReference())
+                    .ifPresent(depositReference ->
+                            jiraService.comment(
+                                    depositReference,
+                                    format(
+                                            "Service Agreement (%s): %s has been agreed upon and published",
+                                            serviceAgreement.getId(),
+                                            serviceAgreement.getTitle()
+                                    )
+                            )
+                    );
+            updateStateAndRemovePermissions(user, id, serviceAgreement.getMetadata(), PUBLISHED);
         }else {
             val message = format(
                     "Cannot publish ServiceAgreement as state is %s",
@@ -199,8 +201,8 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         }
     }
 
-    private void removePermissions(CatalogueUser user, String id, MetadataInfo metadata) {
-        val pending = metadata.withState(PENDING_PUBLICATION);
+    private void updateStateAndRemovePermissions(CatalogueUser user, String id, MetadataInfo metadata, String state) {
+        val pending = metadata.withState(state);
         pending.removePermission(Permission.EDIT, user.getUsername());
         pending.removePermission(Permission.DELETE, user.getUsername());
         updateMetadata(user, id, pending);
