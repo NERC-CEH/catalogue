@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
@@ -95,11 +96,15 @@ public class ServicesConfig {
         val supportedMediaTypes = Arrays.asList(
             MediaType.APPLICATION_JSON,
             new MediaType("application", "*+json"),
-            new MediaType("application", "*+json-simple")
+            new MediaType("application", "*+json-simple"),
+            MediaType.APPLICATION_FORM_URLENCODED
         );
         messageConverter.setSupportedMediaTypes(supportedMediaTypes);
         val restTemplate = new RestTemplate();
-        restTemplate.setMessageConverters(Collections.singletonList(messageConverter));
+        restTemplate.setMessageConverters(List.of(
+            messageConverter,
+            new FormHttpMessageConverter()
+        ));
         return restTemplate;
     }
 

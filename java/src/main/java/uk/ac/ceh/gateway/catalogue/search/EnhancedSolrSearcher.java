@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.common.params.CommonParams;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.components.userstore.GroupStore;
@@ -15,8 +16,11 @@ import uk.ac.ceh.gateway.catalogue.vocabularies.Keyword;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import static java.lang.String.format;
 import static org.apache.solr.client.solrj.SolrRequest.METHOD.POST;
+import static uk.ac.ceh.gateway.catalogue.vocabularies.SparqlKeywordVocabulary.COLLECTION;
 
 @Slf4j
 @Profile("search:enhanced")
@@ -58,20 +62,32 @@ public class EnhancedSolrSearcher extends SolrSearcher {
             facetFilters,
             catalogueKey
         );
-        val relatedSearches = relatedSearches(term);
+        val relatedSearches = relatedSearches(endpoint, term);
         log.debug(relatedSearches.toString());
         return new SearchResults(basicResults, relatedSearches);
     }
 
     @SneakyThrows
-    private List<Link> relatedSearches(String term) {
+    private List<Link> relatedSearches(String endpoint, String term) {
+        log.debug("related searches - endpoint: {}, term: {}", endpoint, term);
         try {
             val solrQuery = new SolrQuery(term);
-            val response = solrClient.query("vocabularies", solrQuery, POST);
+            solrQuery.setParam(CommonParams.DF, "label");
+            log.debug("keyword solr query: {}", solrQuery);
+            val response = solrClient.query(COLLECTION, solrQuery, POST);
             val possibleKeyword = response.getBeans(Keyword.class).stream().findFirst();
+            log.debug("possible keyword? {}", possibleKeyword.isPresent());
             return possibleKeyword
                 .map(retriever::retrieve)
-                .orElse(Collections.emptyList());
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(keyword ->
+                    Link.builder()
+                        .title(keyword.getLabel())
+                        .href(format("%s?term=%s", endpoint, keyword.getLabel()))
+                        .build()
+                )
+                .collect(Collectors.toList());
         } catch (Exception ex) {
             log.error("Cannot get related searches", ex);
             return Collections.emptyList();

@@ -15,7 +15,6 @@ import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.model.Link;
 import uk.ac.ceh.gateway.catalogue.vocabularies.Keyword;
 
 import java.util.List;
@@ -24,6 +23,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static uk.ac.ceh.gateway.catalogue.vocabularies.SparqlKeywordVocabulary.COLLECTION;
 
 @ExtendWith(MockitoExtension.class)
 class EnhancedSolrSearcherTest {
@@ -84,8 +84,8 @@ class EnhancedSolrSearcherTest {
     private void givenRelatedSearches() {
         given(retriever.retrieve(new Keyword("k1", "", "https://example.com/k1")))
             .willReturn(List.of(
-                Link.builder().href("https://example.com/broader").title("broader").build(),
-                Link.builder().href("https://example.com/narrower").title("narrower").build()
+                new Keyword("broader", "v", "broader"),
+                new Keyword("narrower", "v", "narrower")
             ));
     }
 
@@ -99,7 +99,7 @@ class EnhancedSolrSearcherTest {
             ));
 
         given(solrClient.query(
-            eq("vocabularies"),
+            eq(COLLECTION),
             any(SolrParams.class),
             eq(SolrRequest.METHOD.POST)
         ))

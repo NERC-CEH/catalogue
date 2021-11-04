@@ -32,7 +32,7 @@ public class SparqlKeywordVocabulary implements KeywordVocabulary {
     private final SolrClient solrClient;
     private final URI queryUrl;
 
-    private static final String COLLECTION = "keywords";
+    public static final String COLLECTION = "keywords";
 
     public SparqlKeywordVocabulary(
             RestTemplate restTemplate,
