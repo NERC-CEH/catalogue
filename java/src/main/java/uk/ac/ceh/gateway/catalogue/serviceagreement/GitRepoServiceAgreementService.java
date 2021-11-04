@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
@@ -125,8 +124,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     }
 
     @SneakyThrows
-    @Override
-    public ServiceAgreement updateMetadata(CatalogueUser user, String id, MetadataInfo metadataInfo) {
+    private ServiceAgreement updateMetadata(CatalogueUser user, String id, MetadataInfo metadataInfo) {
         repo.submitData(FOLDER + id + ".meta", (o) -> metadataInfoMapper.writeInfo(metadataInfo, o))
                 .commit(user, "updating service agreement metadata " + id);
         return get(id);
@@ -154,20 +152,21 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
 
     public void submitServiceAgreement(CatalogueUser user, String id) {
         ServiceAgreement serviceAgreement = get(id);
-        MetadataInfo metadata = serviceAgreement.getMetadata();
-        String metadataRecordState = metadata.getState();
+        String metadataRecordState = serviceAgreement.getState();
         if (metadataRecordState.equals("draft")) {
-            Optional.ofNullable(serviceAgreement.getDepositReference()).ifPresent((depositReference) ->
+            Optional.ofNullable(serviceAgreement.getDepositReference())
+                .ifPresent(depositReference ->
                     jiraService.comment(
                             depositReference,
-                            format("Service Agreement: %s submitted for review", serviceAgreement.getTitle())
-                    ));
-            metadata.withState(PENDING_PUBLICATION);
-            metadata.removePermission(Permission.EDIT, user.getUsername());
-            serviceAgreement.setMetadata(metadata);
-            this.update(user, id, serviceAgreement);
-            this.updateMetadata(user, id, metadata);
-        }else {
+                            format(
+                                "Service Agreement (%s): %s submitted for review",
+                                serviceAgreement.getId(),
+                                serviceAgreement.getTitle()
+                            )
+                    )
+                );
+            removePermissions(user, id, serviceAgreement.getMetadata());
+        } else {
             val message = format(
                     "Cannot submit ServiceAgreement as state is %s",
                     metadataRecordState
@@ -198,5 +197,12 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
             );
             throw new ServiceAgreementException(message);
         }
+    }
+
+    private void removePermissions(CatalogueUser user, String id, MetadataInfo metadata) {
+        val pending = metadata.withState(PENDING_PUBLICATION);
+        pending.removePermission(Permission.EDIT, user.getUsername());
+        pending.removePermission(Permission.DELETE, user.getUsername());
+        updateMetadata(user, id, pending);
     }
 }
