@@ -243,7 +243,7 @@ public class GitRepoServiceAgreementServiceTest {
 
     @Test
     @SneakyThrows
-    public void canPublishServiceAgreement() {
+    public void canSubmitServiceAgreement() {
         //Given
         CatalogueUser user = new CatalogueUser();
         user.setUsername("test");
@@ -286,6 +286,53 @@ public class GitRepoServiceAgreementServiceTest {
                 format("Service Agreement: %s submitted for review", serviceAgreement.getTitle()));
     }
 
+    @Test
+    @SneakyThrows
+    public void canPublishServiceAgreement() {
+        //Given
+        CatalogueUser user = new CatalogueUser();
+        user.setUsername("test");
+        user.setEmail("test@test.com");
+        ServiceAgreement serviceAgreement = new ServiceAgreement();
+        serviceAgreement.setTitle("this is a test");
+        serviceAgreement.setId(ID);
+        serviceAgreement.setDepositReference("test");
+
+        givenPendingPublicationServiceAgreement();
+
+        DataOngoingCommit dataOngoingCommit = mock(DataOngoingCommit.class);
+        given(repo.submitData(any(), any())).willReturn(dataOngoingCommit);
+
+        //When
+        service.publishServiceAgreement(user, ID);
+
+        //Then
+        verify(jiraService).comment(serviceAgreement.getDepositReference(),
+                format("Service Agreement: %s has been agreed upon and published", serviceAgreement.getTitle()));
+        verify(dataOngoingCommit).commit(user, "updating service agreement " + ID);
+        verify(dataOngoingCommit).commit(user, "updating service agreement metadata " + ID);
+    }
+
+    @Test
+    @SneakyThrows
+    void cannotPublishServiceAgent() {
+        // given
+        givenPublishedServiceAgreement();
+
+        given(serviceAgreementMapper.readInfo(any()))
+                .willReturn(serviceAgreement);
+
+        // when
+        assertThrows(ServiceAgreementException.class, () ->
+                service.submitServiceAgreement(user, ID)
+        );
+
+        // then
+        verify(jiraService, never()).comment(serviceAgreement.getDepositReference(),
+                format("Service Agreement: %s has been agreed upon and published", serviceAgreement.getTitle()));
+    }
+
+
     @SneakyThrows
     private void givenPublishedServiceAgreement() {
         val metadataInfoDocument = mock(DataDocument.class);
@@ -311,6 +358,34 @@ public class GitRepoServiceAgreementServiceTest {
         serviceAgreement.setMetadata(metadata);
         serviceAgreement.setTitle("this is a test");
         serviceAgreement.setEndUserLicence(new ResourceConstraint("test", "test", "test"));
+    }
+
+    @SneakyThrows
+    private void givenPendingPublicationServiceAgreement() {
+        val metadataInfoDocument = mock(DataDocument.class);
+        given(repo.getData(FOLDER + ID + ".meta"))
+                .willReturn(metadataInfoDocument);
+        given(metadataInfoDocument.getInputStream())
+                .willReturn(new ByteArrayInputStream("meta".getBytes()));
+
+        val metadata = MetadataInfo.builder()
+                .state("Pending Publication")
+                .rawType(APPLICATION_JSON_VALUE)
+                .build();
+        given(metadataInfoMapper.readInfo(any()))
+                .willReturn(metadata);
+
+        val rawDocument = mock(DataDocument.class);
+        given(repo.getData(FOLDER + ID + ".raw"))
+                .willReturn(rawDocument);
+        given(rawDocument.getInputStream())
+                .willReturn(new ByteArrayInputStream("file".getBytes()));
+        given(serviceAgreementMapper.readInfo(any()))
+                .willReturn(serviceAgreement);
+        serviceAgreement.setMetadata(metadata);
+        serviceAgreement.setTitle("this is a test");
+        serviceAgreement.setEndUserLicence(new ResourceConstraint("test", "test", "test"));
+        serviceAgreement.setDepositReference("test");
     }
 
     @SneakyThrows

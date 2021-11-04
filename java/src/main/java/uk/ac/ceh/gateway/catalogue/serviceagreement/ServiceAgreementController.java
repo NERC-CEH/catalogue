@@ -131,4 +131,14 @@ public class ServiceAgreementController {
         return new RedirectView("/service-agreement/" + id);
     }
 
+    @PreAuthorize("@permission.userCanEdit(#id)")
+    @PostMapping("{id}/publish")
+    public RedirectView publishServiceAgreement(@ActiveUser CatalogueUser user,
+                                               @PathVariable("id") String id
+    ) {
+        log.info("PUBLISHING SERVICE AGREEMENT {}", id);
+        serviceAgreementService.publishServiceAgreement(user, id);
+        return new RedirectView("/service-agreement/" + id);
+    }
+
 }

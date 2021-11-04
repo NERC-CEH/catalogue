@@ -33,7 +33,8 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     private final DocumentRepository documentRepository;
     private final JiraService jiraService;
     private static final String FOLDER = "service-agreements/";
-    private static final String PENDING_PUBLICATION = "Pending Publication";
+    private static final String PENDING_PUBLICATION = "pending Publication";
+    private static final String PUBLISHED = "published";
 
     public GitRepoServiceAgreementService(
             DataRepository<CatalogueUser> repo,
@@ -169,6 +170,30 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         }else {
             val message = format(
                     "Cannot submit ServiceAgreement as state is %s",
+                    metadataRecordState
+            );
+            throw new ServiceAgreementException(message);
+        }
+    }
+
+    public void publishServiceAgreement(CatalogueUser user, String id) {
+        ServiceAgreement serviceAgreement = get(id);
+        MetadataInfo metadata = serviceAgreement.getMetadata();
+        String metadataRecordState = metadata.getState();
+        if (metadataRecordState.equals(PENDING_PUBLICATION)) {
+            Optional.ofNullable(serviceAgreement.getDepositReference()).ifPresent((depositReference) ->
+                    jiraService.comment(
+                            depositReference,
+                            format("Service Agreement: %s has been agreed upon and published", serviceAgreement.getTitle())
+                    ));
+            metadata.withState(PUBLISHED);
+            metadata.removePermission(Permission.EDIT, user.getUsername());
+            serviceAgreement.setMetadata(metadata);
+            this.update(user, id, serviceAgreement);
+            this.updateMetadata(user, id, metadata);
+        }else {
+            val message = format(
+                    "Cannot publish ServiceAgreement as state is %s",
                     metadataRecordState
             );
             throw new ServiceAgreementException(message);
