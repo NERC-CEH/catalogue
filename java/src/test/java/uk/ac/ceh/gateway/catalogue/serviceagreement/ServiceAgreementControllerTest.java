@@ -274,7 +274,7 @@ class ServiceAgreementControllerTest {
         //When
         mvc.perform(post("/service-agreement/{id}/populate", ID))
                 .andExpect(status().isFound())
-                .andExpect(redirectedUrl("/documents/" + ID));
+                .andExpect(redirectedUrl("/service-agreement/" + ID));
     }
 
     @Test
@@ -308,6 +308,39 @@ class ServiceAgreementControllerTest {
 
         //then
         verify(serviceAgreementService).metadataRecordExists(ID);
+    }
+
+    @Test
+    @SneakyThrows
+    @WithMockCatalogueUser
+    void submitServiceAgreement() {
+        //Given
+        givenUserCanEdit();
+        givenMetadataRecordExists();
+        val expected = new ServiceAgreement();
+        expected.setId(ID);
+        expected.setTitle("Test Service Agreement");
+
+        //When
+        mvc.perform(post("/service-agreement/{id}/submit", ID))
+                .andExpect(status().isFound())
+                .andExpect(redirectedUrl("/service-agreement/" + ID));
+    }
+
+    @Test
+    @SneakyThrows
+    @WithMockCatalogueUser
+    void userCannotSubmitServiceAgreementAsUserCanNotEdit() {
+        //given
+        givenUserCanNotEdit();
+        givenMetadataRecordExists();
+
+        //When
+        mvc.perform(post("/service-agreement/{id}/submit", ID))
+                .andExpect(status().isForbidden());
+
+        //then
+        verifyNoInteractions(serviceAgreementService);
     }
 
     private void givenServiceAgreementModel() {

@@ -1,7 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
+import lombok.SneakyThrows;
 import org.springframework.http.ResponseEntity;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 
 public interface ServiceAgreementService {
 
@@ -11,11 +13,13 @@ public interface ServiceAgreementService {
 
     ServiceAgreement update(CatalogueUser user, String id, ServiceAgreement serviceAgreement);
 
+    ServiceAgreement updateMetadata(CatalogueUser user, String id, MetadataInfo metadataInfo);
+
     void delete(CatalogueUser user, String id);
 
     boolean metadataRecordExists(String id);
 
     void populateGeminiDocument(CatalogueUser user, String id);
 
-    ResponseEntity<Object> publishServiceAgreement(CatalogueUser user, String id);
+    void submitServiceAgreement(CatalogueUser user, String id);
 }

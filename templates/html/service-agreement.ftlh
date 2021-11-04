@@ -2,11 +2,6 @@
 <#import "skeleton.ftlh" as skeleton>
 <#import "../functions.ftlh" as func>
 
-<#assign
-    possiblePopulateLink = getLink('populate')
-    displayPopulateButton = possiblePopulateLink.isPresent()
-/>
-
 
 <@skeleton.master "Service Agreement">
 
@@ -22,21 +17,15 @@
                                 Edit
                             </button>
                         </div>
-                            <#if displayPopulateButton>
+                        <#list getModelLinks()>
+                            <#items as link>
                                 <div class="btn-group btn-group-sm">
-                                    <form action="${possiblePopulateLink.get().href}" method="post">
-                                        <input type="submit" value="${possiblePopulateLink.get().title}"${possiblePopulateLink.get().title}" class="btn btn-default btn-wide">
+                                    <form action="${link.href}" method="post">
+                                        <input type="submit" value="${link.title}" class="btn btn-default btn-wide">
                                     </form>
                                 </div>
-                            </#if>
-                        <div class="btn-group btn-group-sm">
-                            <button type="button"
-                                    class="btn btn-default btn-wide edit-control"
-                                    data-document-type="service-agreement">
-                                Publish
-                            </button>
-                        </div>
-                        </div>
+                            </#items>
+                        </#list>
                     </div>
                 </div>
             </#if>
@@ -91,7 +80,7 @@
                     purpose (e.g. errors are found in the dataset).
                 </li>
             </ul>
-            <@displayData "" title/>
+            <h2>${title}</h2>
             <@displayData "Deposit reference" depositReference/>
             <@displayData "Depositor name" depositorName/>
             <@displayData "Depositor contact details" depositorContactDetails/>
@@ -267,25 +256,25 @@
         <#list supportingDocumentNames as name>
             ${name}<#sep><br></#sep>
         </#list>
-        </p>
+    </p>
     </#if>
 </#macro>
 
 <#macro displayEndUserLicence>
     <#if endUserLicence?has_content>
-          <#if endUserLicence.code == 'license'>
-              <p class="licenceText">
-                  <#assign licenceText = endUserLicence.value >
-                  <#if endUserLicence.uri?has_content><a rel="license" href="${endUserLicence.uri}"></#if>
-                      <#if licenceText?contains("Open Government Licence")>
-                          <img class="ogl-logo" src='/static/img/ogl_16.png' alt='OGL'>
-                      <#else>
-                          <#if endUserLicence.value?has_content>${endUserLicence.value}</#if>
-                      </#if>
-                  <#if endUserLicence.uri?has_content></a></#if>
-              </p>
-              <div class="divider"></div>
-          </#if>
+        <#if endUserLicence.code == 'license'>
+            <p class="licenceText">
+                <#assign licenceText = endUserLicence.value >
+                <#if endUserLicence.uri?has_content><a rel="license" href="${endUserLicence.uri}"></#if>
+                    <#if licenceText?contains("Open Government Licence")>
+                        <img class="ogl-logo" src='/static/img/ogl_16.png' alt='OGL'>
+                    <#else>
+                        <#if endUserLicence.value?has_content>${endUserLicence.value}</#if>
+                    </#if>
+                    <#if endUserLicence.uri?has_content></a></#if>
+            </p>
+            <div class="divider"></div>
+        </#if>
     </#if>
 </#macro>
 
@@ -311,9 +300,10 @@
             <#list allKeywords?sort_by("value") as keyword>
                 <span>
                  <#if keyword.uri?has_content>
-                    <a href="${keyword.uri}" target="_blank" rel="noopener noreferrer">${keyword.value?trim}</a><#if keyword_has_next>,&nbsp;</#if>
+                     <a href="${keyword.uri}" target="_blank"
+                        rel="noopener noreferrer">${keyword.value?trim}</a><#if keyword_has_next>,&nbsp;</#if>
                  <#else>
-                    ${keyword.value?trim}<#if keyword_has_next>,&nbsp;</#if>
+                     ${keyword.value?trim}<#if keyword_has_next>,&nbsp;</#if>
                  </#if>
                 </span>
             </#list>

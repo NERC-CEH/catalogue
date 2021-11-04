@@ -18,6 +18,8 @@ import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.JiraService;
 
+import java.util.Optional;
+
 import static java.lang.String.format;
 
 @Profile("service-agreement")
@@ -122,6 +124,14 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     }
 
     @SneakyThrows
+    @Override
+    public ServiceAgreement updateMetadata(CatalogueUser user, String id, MetadataInfo metadataInfo) {
+        repo.submitData(FOLDER + id + ".meta", (o) -> metadataInfoMapper.writeInfo(metadataInfo, o))
+                .commit(user, "updating service agreement metadata " + id);
+        return get(id);
+    }
+
+    @SneakyThrows
     public void delete(CatalogueUser user, String id) {
         repo.deleteData(FOLDER + id + ".meta")
             .deleteData(FOLDER + id + ".raw")
@@ -141,15 +151,27 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         return metadataInfo;
     }
 
-    public ResponseEntity<Object> publishServiceAgreement(CatalogueUser user, String id) {
+    public void submitServiceAgreement(CatalogueUser user, String id) {
         ServiceAgreement serviceAgreement = get(id);
-        jiraService.comment(serviceAgreement.getDepositReference(),
-                format("Service agreement: " + serviceAgreement.getTitle() +
-                " is now Pending Publication", user.getEmail()));
         MetadataInfo metadata = serviceAgreement.getMetadata();
-        metadata.withState(PENDING_PUBLICATION);
-        metadata.removePermission(Permission.EDIT, user.getUsername());
-        this.update(user, id, serviceAgreement);
-        return ResponseEntity.ok().build();
+        String metadataRecordState = metadata.getState();
+        if (metadataRecordState.equals("draft")) {
+            Optional.ofNullable(serviceAgreement.getDepositReference()).ifPresent((depositReference) ->
+                    jiraService.comment(
+                            depositReference,
+                            format("Service Agreement: %s submitted for review", serviceAgreement.getTitle())
+                    ));
+            metadata.withState(PENDING_PUBLICATION);
+            metadata.removePermission(Permission.EDIT, user.getUsername());
+            serviceAgreement.setMetadata(metadata);
+            this.update(user, id, serviceAgreement);
+            this.updateMetadata(user, id, metadata);
+        }else {
+            val message = format(
+                    "Cannot submit ServiceAgreement as state is %s",
+                    metadataRecordState
+            );
+            throw new ServiceAgreementException(message);
+        }
     }
 }

@@ -26,25 +26,35 @@ public class ServiceAgreementModelAssembler extends RepresentationModelAssembler
     @Override
     public ServiceAgreementModel toModel(ServiceAgreement serviceAgreement) {
         return createModelWithId(
-            serviceAgreement.getId(),
-            serviceAgreement
+                serviceAgreement.getId(),
+                serviceAgreement
         );
     }
 
     @SneakyThrows
     @Override
     protected ServiceAgreementModel instantiateModel(ServiceAgreement serviceAgreement) {
-        val model =  new ServiceAgreementModel(serviceAgreement);
+        val model = new ServiceAgreementModel(serviceAgreement);
+        if ("draft".equals(serviceAgreement.getState())) {
+            val link = linkTo(methodOn(ServiceAgreementController.class)
+                    .submitServiceAgreement(
+                            null,
+                            serviceAgreement.getId()
+                    ))
+                    .withRel("submit")
+                    .withTitle("Submit");
+            model.add(link);
+        }
         if ("published".equals(serviceAgreement.getState())) {
             val gemini = documentRepository.read(serviceAgreement.getId());
             if (gemini.getState().equals("draft")) {
                 val link = linkTo(methodOn(ServiceAgreementController.class)
-                    .populateGeminiDocument(
-                        null,
-                        serviceAgreement.getId()
-                    ))
-                    .withRel("populate")
-                    .withTitle("Populate Metadata");
+                        .populateGeminiDocument(
+                                null,
+                                serviceAgreement.getId()
+                        ))
+                        .withRel("populate")
+                        .withTitle("Populate Metadata");
                 model.add(link);
             }
         }

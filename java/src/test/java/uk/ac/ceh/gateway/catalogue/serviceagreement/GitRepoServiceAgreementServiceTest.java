@@ -241,6 +241,51 @@ public class GitRepoServiceAgreementServiceTest {
         verify(documentRepository, never()).save(eq(user), any(MetadataDocument.class), eq("populated from service agreement"));
     }
 
+    @Test
+    @SneakyThrows
+    public void canPublishServiceAgreement() {
+        //Given
+        CatalogueUser user = new CatalogueUser();
+        user.setUsername("test");
+        user.setEmail("test@test.com");
+        ServiceAgreement serviceAgreement = new ServiceAgreement();
+        serviceAgreement.setId(ID);
+        serviceAgreement.setDepositReference("test");
+
+        givenDraftServiceAgreement();
+
+        DataOngoingCommit dataOngoingCommit = mock(DataOngoingCommit.class);
+        given(repo.submitData(any(), any())).willReturn(dataOngoingCommit);
+
+        //When
+        service.submitServiceAgreement(user, ID);
+
+        //Then
+        verify(jiraService).comment(serviceAgreement.getDepositReference(),
+                format("Service Agreement: %s submitted for review", serviceAgreement.getTitle()));
+        verify(dataOngoingCommit).commit(user, "updating service agreement " + ID);
+        verify(dataOngoingCommit).commit(user, "updating service agreement metadata " + ID);
+    }
+
+    @Test
+    @SneakyThrows
+    void cannotSubmitServiceAgent() {
+        //given
+        givenPublishedServiceAgreement();
+
+        given(serviceAgreementMapper.readInfo(any()))
+                .willReturn(serviceAgreement);
+
+        //when
+        assertThrows(ServiceAgreementException.class, () ->
+                service.submitServiceAgreement(user, ID)
+        );
+
+        //then
+        verify(jiraService, never()).comment(serviceAgreement.getDepositReference(),
+                format("Service Agreement: %s submitted for review", serviceAgreement.getTitle()));
+    }
+
     @SneakyThrows
     private void givenPublishedServiceAgreement() {
         val metadataInfoDocument = mock(DataDocument.class);
@@ -292,6 +337,7 @@ public class GitRepoServiceAgreementServiceTest {
             .willReturn(serviceAgreement);
         serviceAgreement.setMetadata(metadata);
         serviceAgreement.setId(ID);
+        serviceAgreement.setDepositReference("test");
     }
 
     @SneakyThrows
@@ -312,51 +358,6 @@ public class GitRepoServiceAgreementServiceTest {
         geminiDocument.setMetadata(metadataInfo);
         given(documentRepository.read(ID))
             .willReturn(geminiDocument);
-    }
-
-
-    @Test
-    @SneakyThrows
-    public void canPublishServiceAgreement() {
-        //Given
-        CatalogueUser user = new CatalogueUser();
-        user.setUsername("test");
-        user.setEmail("test@test.com");
-        ServiceAgreement serviceAgreement = new ServiceAgreement();
-        serviceAgreement.setId(ID);
-
-        val metadataInfoDocument = mock(DataDocument.class);
-        given(repo.getData(FOLDER + ID + ".meta"))
-                .willReturn(metadataInfoDocument);
-        given(metadataInfoDocument.getInputStream())
-                .willReturn(new ByteArrayInputStream("meta".getBytes()));
-        val metadata = MetadataInfo.builder()
-                .rawType(APPLICATION_JSON_VALUE)
-                .build();
-        given(metadataInfoMapper.readInfo(any()))
-                .willReturn(metadata);
-
-        val rawDocument = mock(DataDocument.class);
-        given(repo.getData(FOLDER + ID + ".raw"))
-                .willReturn(rawDocument);
-        given(rawDocument.getInputStream())
-                .willReturn(new ByteArrayInputStream("file".getBytes()));
-        given(serviceAgreementMapper.readInfo(any()))
-                .willReturn(serviceAgreement);
-
-        DataOngoingCommit dataOngoingCommit = mock(DataOngoingCommit.class);
-        given(repo.submitData(any(), any())).willReturn(dataOngoingCommit);
-
-        //When
-        ResponseEntity result = service.publishServiceAgreement(user, ID);
-
-        //Then
-        verify(jiraService).comment(serviceAgreement.getDepositReference(),
-         format("Service agreement: " + serviceAgreement.getTitle() +
-                 " is now Pending Publication", user.getEmail()));
-        verify(dataOngoingCommit).commit(user, "updating service agreement " + ID);
-        assertThat(result, is(ResponseEntity.ok().build()));
-
     }
 
 }

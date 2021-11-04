@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
@@ -116,19 +115,20 @@ public class ServiceAgreementController {
         if (serviceAgreementService.metadataRecordExists(id)) {
             log.info("POPULATE GEMINI DOCUMENT {}", id);
             serviceAgreementService.populateGeminiDocument(user, id);
-            return new RedirectView("/documents/" + id);
+            return new RedirectView("/service-agreement/" + id);
         }else{
             throw new ResourceNotFoundException("Metadata record does not exist");
         }
     }
 
     @PreAuthorize("@permission.userCanEdit(#id)")
-    @PostMapping("{id}/publish")
-    public ResponseEntity<Object> publishServiceAgreement(@ActiveUser CatalogueUser user,
-                                                          @PathVariable("id") String id
+    @PostMapping("{id}/submit")
+    public RedirectView submitServiceAgreement(@ActiveUser CatalogueUser user,
+                                               @PathVariable("id") String id
     ) {
-        log.info("PUBLISHING SERVICE AGREEMENT {}", id);
-        return serviceAgreementService.publishServiceAgreement(user, id);
+        log.info("SUBMITTING SERVICE AGREEMENT {}", id);
+        serviceAgreementService.submitServiceAgreement(user, id);
+        return new RedirectView("/service-agreement/" + id);
     }
 
 }
