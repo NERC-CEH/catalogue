@@ -32,7 +32,8 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     private final DocumentRepository documentRepository;
     private final JiraService jiraService;
     private static final String FOLDER = "service-agreements/";
-    private static final String PENDING_PUBLICATION = "Pending Publication";
+    private static final String PENDING_PUBLICATION = "pending publication";
+    private static final String PUBLISHED = "published";
 
     public GitRepoServiceAgreementService(
             DataRepository<CatalogueUser> repo,
@@ -46,32 +47,6 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         this.documentRepository = documentRepository;
         this.jiraService = jiraService;
         log.info("Creating");
-    }
-
-    @Override
-    @SneakyThrows
-    public void populateGeminiDocument(CatalogueUser user, String id) {
-        val gemini = (GeminiDocument) documentRepository.read(id);
-        val metadataRecordState = gemini.getMetadata().getState();
-        val serviceAgreement = get(id);
-        val serviceAgreementState = serviceAgreement.getState();
-        log.debug("gemini: {}, service agreement: {}", metadataRecordState, serviceAgreementState);
-        if (metadataRecordState.equals("draft") && serviceAgreementState.equals("published")) {
-            log.info("Gemini document populated from Service Agreement: {}", id);
-            gemini.populateFromServiceAgreement(serviceAgreement);
-            documentRepository.save(
-                user,
-                gemini,
-                "populated from service agreement"
-            );
-        } else {
-            val message = format(
-                "Cannot populate GeminiDocument as ServiceAgreement state is %s and GeminiDocument state is %s",
-                serviceAgreementState,
-                metadataRecordState
-            );
-            throw new ServiceAgreementException(message);
-        }
     }
 
     @Override
@@ -164,7 +139,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
                             )
                     )
                 );
-            removePermissions(user, id, serviceAgreement.getMetadata());
+            updateStateAndRemovePermissions(user, id, serviceAgreement.getMetadata(), PENDING_PUBLICATION);
         } else {
             val message = format(
                     "Cannot submit ServiceAgreement as state is %s",
@@ -174,8 +149,46 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         }
     }
 
-    private void removePermissions(CatalogueUser user, String id, MetadataInfo metadata) {
-        val pending = metadata.withState(PENDING_PUBLICATION);
+    @SneakyThrows
+    public void publishServiceAgreement(CatalogueUser user, String id) {
+        val gemini = (GeminiDocument) documentRepository.read(id);
+        val metadataRecordState = gemini.getMetadata().getState();
+        val serviceAgreement = get(id);
+        val serviceAgreementState = serviceAgreement.getState();
+        log.debug("gemini: {}, service agreement: {}", metadataRecordState, serviceAgreementState);
+        if (metadataRecordState.equals("draft") && serviceAgreementState.equals(PENDING_PUBLICATION)) {
+            log.info("Gemini document populated from Service Agreement: {}", id);
+            gemini.populateFromServiceAgreement(serviceAgreement);
+            documentRepository.save(
+                    user,
+                    gemini,
+                    "populated from service agreement"
+            );
+            log.info("Publishing Service Agreement: {}", id);
+            Optional.ofNullable(serviceAgreement.getDepositReference())
+                    .ifPresent(depositReference ->
+                            jiraService.comment(
+                                    depositReference,
+                                    format(
+                                            "Service Agreement (%s): %s has been agreed upon and published",
+                                            serviceAgreement.getId(),
+                                            serviceAgreement.getTitle()
+                                    )
+                            )
+                    );
+            updateStateAndRemovePermissions(user, id, serviceAgreement.getMetadata(), PUBLISHED);
+        }else {
+            val message = format(
+                    "Cannot publish ServiceAgreement as state is %s and GeminiDocument state is %s",
+                    serviceAgreementState,
+                    metadataRecordState
+            );
+            throw new ServiceAgreementException(message);
+        }
+    }
+
+    private void updateStateAndRemovePermissions(CatalogueUser user, String id, MetadataInfo metadata, String state) {
+        val pending = metadata.withState(state);
         pending.removePermission(Permission.EDIT, user.getUsername());
         pending.removePermission(Permission.DELETE, user.getUsername());
         updateMetadata(user, id, pending);

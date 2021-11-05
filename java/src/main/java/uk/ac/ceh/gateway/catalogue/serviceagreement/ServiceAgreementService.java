@@ -14,7 +14,7 @@ public interface ServiceAgreementService {
 
     boolean metadataRecordExists(String id);
 
-    void populateGeminiDocument(CatalogueUser user, String id);
-
     void submitServiceAgreement(CatalogueUser user, String id);
+
+    void publishServiceAgreement(CatalogueUser user, String id);
 }

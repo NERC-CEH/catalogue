@@ -29,22 +29,22 @@ class ServiceAgreementModelAssemblerTest {
     }
 
     @Test
-    void populateLinkAppears() {
+    void publishLinkAppears() {
         //given
         val serviceAgreement = new ServiceAgreement();
         serviceAgreement.setId(id);
-        serviceAgreement.setMetadata(MetadataInfo.builder().state("published").build());
+        serviceAgreement.setMetadata(MetadataInfo.builder().state("pending publication").build());
         givenDraftGeminiDocument();
 
         //when
         val model = assembler.toModel(serviceAgreement);
 
         //then
-        assertTrue(model.getLink("populate").isPresent());
+        assertTrue(model.getLink("publish").isPresent());
     }
 
     @Test
-    void populateLinkDoesNotAppear() {
+    void publishLinkDoesNotAppear() {
         //given
         val serviceAgreement = new ServiceAgreement();
         serviceAgreement.setId(id);
@@ -54,7 +54,35 @@ class ServiceAgreementModelAssemblerTest {
         val model = assembler.toModel(serviceAgreement);
 
         //then
-        assertFalse(model.getLink("populate").isPresent());
+        assertFalse(model.getLink("publish").isPresent());
+    }
+
+    @Test
+    void submitLinkAppears() {
+        //given
+        val serviceAgreement = new ServiceAgreement();
+        serviceAgreement.setId(id);
+        serviceAgreement.setMetadata(MetadataInfo.builder().state("draft").build());
+
+        //when
+        val model = assembler.toModel(serviceAgreement);
+
+        //then
+        assertTrue(model.getLink("submit").isPresent());
+    }
+
+    @Test
+    void submitLinkDoesNotAppear() {
+        //given
+        val serviceAgreement = new ServiceAgreement();
+        serviceAgreement.setId(id);
+        serviceAgreement.setMetadata(MetadataInfo.builder().state("published").build());
+
+        //when
+        val model = assembler.toModel(serviceAgreement);
+
+        //then
+        assertFalse(model.getLink("submit").isPresent());
     }
 
     @SneakyThrows

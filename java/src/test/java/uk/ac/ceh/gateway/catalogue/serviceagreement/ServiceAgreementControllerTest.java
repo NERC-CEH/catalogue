@@ -263,46 +263,13 @@ class ServiceAgreementControllerTest {
     @Test
     @SneakyThrows
     @WithMockCatalogueUser
-    void populateGeminiDocument() {
-        //Given
-        givenUserCanEdit();
-        givenMetadataRecordExists();
-        val expected = new ServiceAgreement();
-        expected.setId(ID);
-        expected.setTitle("Test Service Agreement");
-
-        //When
-        mvc.perform(post("/service-agreement/{id}/populate", ID))
-                .andExpect(status().isFound())
-                .andExpect(redirectedUrl("/service-agreement/" + ID));
-    }
-
-    @Test
-    @SneakyThrows
-    @WithMockCatalogueUser
-    void userCannotPopulateGeminiDocumentAsUserCanNotEdit() {
-        //given
-        givenUserCanNotEdit();
-        givenMetadataRecordExists();
-
-        //When
-        mvc.perform(post("/service-agreement/{id}/populate", ID))
-                .andExpect(status().isForbidden());
-
-        //then
-        verifyNoInteractions(serviceAgreementService);
-    }
-
-    @Test
-    @SneakyThrows
-    @WithMockCatalogueUser
-    void userCannotPopulateGeminiDocumentAsRecordDoesNotExist() {
+    void userCannotPublishServiceAgreementAsRecordDoesNotExist() {
         //given
         givenUserCanEdit();
         givenMedataRecordDoesNotExist();
 
         //When
-        mvc.perform(post("/service-agreement/{id}/populate", ID))
+        mvc.perform(post("/service-agreement/{id}/publish", ID))
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentType(APPLICATION_JSON));
 
@@ -337,6 +304,39 @@ class ServiceAgreementControllerTest {
 
         //When
         mvc.perform(post("/service-agreement/{id}/submit", ID))
+                .andExpect(status().isForbidden());
+
+        //then
+        verifyNoInteractions(serviceAgreementService);
+    }
+
+    @Test
+    @SneakyThrows
+    @WithMockCatalogueUser
+    void publishServiceAgreement() {
+        //Given
+        givenUserCanEdit();
+        givenMetadataRecordExists();
+        val expected = new ServiceAgreement();
+        expected.setId(ID);
+        expected.setTitle("Test Service Agreement");
+
+        //When
+        mvc.perform(post("/service-agreement/{id}/publish", ID))
+                .andExpect(status().isFound())
+                .andExpect(redirectedUrl("/service-agreement/" + ID));
+    }
+
+    @Test
+    @SneakyThrows
+    @WithMockCatalogueUser
+    void userCannotPublishServiceAgreementAsUserCanNotEdit() {
+        //given
+        givenUserCanNotEdit();
+        givenMetadataRecordExists();
+
+        //When
+        mvc.perform(post("/service-agreement/{id}/publish", ID))
                 .andExpect(status().isForbidden());
 
         //then

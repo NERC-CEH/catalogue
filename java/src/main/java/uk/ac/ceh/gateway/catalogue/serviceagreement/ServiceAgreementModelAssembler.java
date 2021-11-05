@@ -45,16 +45,16 @@ public class ServiceAgreementModelAssembler extends RepresentationModelAssembler
                     .withTitle("Submit");
             model.add(link);
         }
-        if ("published".equals(serviceAgreement.getState())) {
+        if ("pending publication".equals(serviceAgreement.getState())) {
             val gemini = documentRepository.read(serviceAgreement.getId());
             if (gemini.getState().equals("draft")) {
                 val link = linkTo(methodOn(ServiceAgreementController.class)
-                        .populateGeminiDocument(
+                        .publishServiceAgreement(
                                 null,
                                 serviceAgreement.getId()
                         ))
-                        .withRel("populate")
-                        .withTitle("Populate Metadata");
+                        .withRel("publish")
+                        .withTitle("Publish");
                 model.add(link);
             }
         }

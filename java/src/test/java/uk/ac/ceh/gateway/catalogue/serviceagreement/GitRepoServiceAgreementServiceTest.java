@@ -14,7 +14,6 @@ import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.JiraService;
@@ -209,41 +208,6 @@ public class GitRepoServiceAgreementServiceTest {
 
     @Test
     @SneakyThrows
-    void canPopulateDraftGeminiDocument() {
-        //Given
-        givenDraftGeminiDocument();
-        givenPublishedServiceAgreement();
-        val expected = new GeminiDocument();
-        expected.setId(ID);
-        expected.setTitle("this is a test");
-        expected.setMetadata(MetadataInfo.builder().state("draft").build());
-        expected.setUseConstraints(List.of(serviceAgreement.getEndUserLicence()));
-
-        //When
-        service.populateGeminiDocument(user, ID);
-
-        //then
-        verify(documentRepository).save(user, expected, "populated from service agreement");
-    }
-
-    @Test
-    @SneakyThrows
-    void cannotPopulatePublishedGeminiDocument() {
-        //given
-        givenPublishedGeminiDocument();
-        givenDraftServiceAgreement();
-
-        //when
-        assertThrows(ServiceAgreementException.class, () ->
-            service.populateGeminiDocument(user, ID)
-        );
-
-        //then
-        verify(documentRepository, never()).save(eq(user), any(MetadataDocument.class), eq("populated from service agreement"));
-    }
-
-    @Test
-    @SneakyThrows
     public void canSubmitServiceAgreement() {
         //Given
 
@@ -282,6 +246,63 @@ public class GitRepoServiceAgreementServiceTest {
         verifyNoInteractions(jiraService);
     }
 
+    @Test
+    @SneakyThrows
+    public void canPublishServiceAgreement() {
+        //Given
+        givenPendingPublicationServiceAgreement();
+        givenDraftGeminiDocument();
+        val expected = new GeminiDocument();
+        expected.setId(ID);
+        expected.setTitle("this is a test");
+        expected.setMetadata(MetadataInfo.builder().state("draft").build());
+        expected.setUseConstraints(List.of(serviceAgreement.getEndUserLicence()));
+
+        CatalogueUser user = new CatalogueUser();
+        user.setUsername("test");
+        user.setEmail("test@test.com");
+        ServiceAgreement serviceAgreement = new ServiceAgreement();
+        serviceAgreement.setTitle("this is a test");
+        serviceAgreement.setId(ID);
+        serviceAgreement.setDepositReference("test");
+
+        givenPendingPublicationServiceAgreement();
+
+        DataOngoingCommit dataOngoingCommit = mock(DataOngoingCommit.class);
+        given(repo.submitData(any(), any())).willReturn(dataOngoingCommit);
+
+        //When
+        service.publishServiceAgreement(user, ID);
+
+        //Then
+        verify(jiraService).comment(serviceAgreement.getDepositReference(),
+                format("Service Agreement (%s): %s has been agreed upon and published",
+                        serviceAgreement.getId(),
+                        serviceAgreement.getTitle()));
+        verify(dataOngoingCommit).commit(user, "updating service agreement metadata " + ID);
+        verify(documentRepository).save(user, expected, "populated from service agreement");
+    }
+
+    @Test
+    @SneakyThrows
+    void cannotPublishServiceAgent() {
+        // given
+        givenPublishedServiceAgreement();
+
+        given(serviceAgreementMapper.readInfo(any()))
+                .willReturn(serviceAgreement);
+
+        // when
+        assertThrows(ServiceAgreementException.class, () ->
+                service.submitServiceAgreement(user, ID)
+        );
+
+        // then
+        verify(jiraService, never()).comment(serviceAgreement.getDepositReference(),
+                format("Service Agreement: %s has been agreed upon and published", serviceAgreement.getTitle()));
+    }
+
+
     @SneakyThrows
     private void givenPublishedServiceAgreement() {
         val metadataInfoDocument = mock(DataDocument.class);
@@ -307,6 +328,30 @@ public class GitRepoServiceAgreementServiceTest {
         serviceAgreement.setMetadata(metadata);
         serviceAgreement.setTitle("this is a test");
         serviceAgreement.setEndUserLicence(new ResourceConstraint("test", "test", "test"));
+    }
+
+    @SneakyThrows
+    private void givenPendingPublicationServiceAgreement() {
+        val metadataInfoDocument = mock(DataDocument.class);
+        given(repo.getData(FOLDER + ID + ".meta"))
+                .willReturn(metadataInfoDocument);
+
+        val metadata = MetadataInfo.builder()
+                .state("pending publication")
+                .rawType(APPLICATION_JSON_VALUE)
+                .build();
+        given(metadataInfoMapper.readInfo(any()))
+                .willReturn(metadata);
+
+        val rawDocument = mock(DataDocument.class);
+        given(repo.getData(FOLDER + ID + ".raw"))
+                .willReturn(rawDocument);
+        given(serviceAgreementMapper.readInfo(any()))
+                .willReturn(serviceAgreement);
+        serviceAgreement.setMetadata(metadata);
+        serviceAgreement.setTitle("this is a test");
+        serviceAgreement.setEndUserLicence(new ResourceConstraint("test", "test", "test"));
+        serviceAgreement.setDepositReference("test");
     }
 
     @SneakyThrows
