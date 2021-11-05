@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
@@ -10,6 +11,8 @@ import uk.ac.ceh.gateway.catalogue.gemini.*;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -125,5 +128,13 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
         this.description = serviceAgreement.getDescription();
         this.lineage = serviceAgreement.getLineage();
         this.areaOfStudy = serviceAgreement.getAreaOfStudy();
+    }
+
+    @SuppressWarnings("unused")
+    public List<Link> getModelLinks(){
+        return StreamSupport
+            .stream(this.getLinks().spliterator(), false)
+            .filter(link -> !link.getRel().value().equals("self"))
+            .collect(Collectors.toList());
     }
 }

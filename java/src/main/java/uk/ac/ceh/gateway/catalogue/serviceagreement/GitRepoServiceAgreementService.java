@@ -15,6 +15,9 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.upload.hubbub.JiraService;
+
+import java.util.Optional;
 
 import static java.lang.String.format;
 
@@ -27,18 +30,21 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     private final DocumentInfoMapper<MetadataInfo> metadataInfoMapper;
     private final DocumentInfoMapper<ServiceAgreement> serviceAgreementMapper;
     private final DocumentRepository documentRepository;
+    private final JiraService jiraService;
     private static final String FOLDER = "service-agreements/";
+    private static final String PENDING_PUBLICATION = "Pending Publication";
 
     public GitRepoServiceAgreementService(
             DataRepository<CatalogueUser> repo,
             DocumentInfoMapper<MetadataInfo> metadataInfoMapper,
             DocumentInfoMapper<ServiceAgreement> serviceAgreementMapper,
-            DocumentRepository documentRepository
-    ) {
+            DocumentRepository documentRepository,
+            JiraService jiraService) {
         this.repo = repo;
         this.metadataInfoMapper = metadataInfoMapper;
         this.serviceAgreementMapper = serviceAgreementMapper;
         this.documentRepository = documentRepository;
+        this.jiraService = jiraService;
         log.info("Creating");
     }
 
@@ -117,6 +123,13 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     }
 
     @SneakyThrows
+    private ServiceAgreement updateMetadata(CatalogueUser user, String id, MetadataInfo metadataInfo) {
+        repo.submitData(FOLDER + id + ".meta", (o) -> metadataInfoMapper.writeInfo(metadataInfo, o))
+                .commit(user, "updating service agreement metadata " + id);
+        return get(id);
+    }
+
+    @SneakyThrows
     public void delete(CatalogueUser user, String id) {
         repo.deleteData(FOLDER + id + ".meta")
             .deleteData(FOLDER + id + ".raw")
@@ -134,5 +147,37 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         metadataInfo.addPermission(Permission.EDIT, username);
         metadataInfo.addPermission(Permission.DELETE, username);
         return metadataInfo;
+    }
+
+    public void submitServiceAgreement(CatalogueUser user, String id) {
+        ServiceAgreement serviceAgreement = get(id);
+        String metadataRecordState = serviceAgreement.getState();
+        if (metadataRecordState.equals("draft")) {
+            Optional.ofNullable(serviceAgreement.getDepositReference())
+                .ifPresent(depositReference ->
+                    jiraService.comment(
+                            depositReference,
+                            format(
+                                "Service Agreement (%s): %s submitted for review",
+                                serviceAgreement.getId(),
+                                serviceAgreement.getTitle()
+                            )
+                    )
+                );
+            removePermissions(user, id, serviceAgreement.getMetadata());
+        } else {
+            val message = format(
+                    "Cannot submit ServiceAgreement as state is %s",
+                    metadataRecordState
+            );
+            throw new ServiceAgreementException(message);
+        }
+    }
+
+    private void removePermissions(CatalogueUser user, String id, MetadataInfo metadata) {
+        val pending = metadata.withState(PENDING_PUBLICATION);
+        pending.removePermission(Permission.EDIT, user.getUsername());
+        pending.removePermission(Permission.DELETE, user.getUsername());
+        updateMetadata(user, id, pending);
     }
 }

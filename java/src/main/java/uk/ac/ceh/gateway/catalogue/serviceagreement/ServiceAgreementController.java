@@ -115,9 +115,20 @@ public class ServiceAgreementController {
         if (serviceAgreementService.metadataRecordExists(id)) {
             log.info("POPULATE GEMINI DOCUMENT {}", id);
             serviceAgreementService.populateGeminiDocument(user, id);
-            return new RedirectView("/documents/" + id);
+            return new RedirectView("/service-agreement/" + id);
         }else{
             throw new ResourceNotFoundException("Metadata record does not exist");
         }
     }
+
+    @PreAuthorize("@permission.userCanEdit(#id)")
+    @PostMapping("{id}/submit")
+    public RedirectView submitServiceAgreement(@ActiveUser CatalogueUser user,
+                                               @PathVariable("id") String id
+    ) {
+        log.info("SUBMITTING SERVICE AGREEMENT {}", id);
+        serviceAgreementService.submitServiceAgreement(user, id);
+        return new RedirectView("/service-agreement/" + id);
+    }
+
 }

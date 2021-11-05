@@ -17,10 +17,12 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.upload.hubbub.JiraService;
 
 import java.io.ByteArrayInputStream;
 import java.util.List;
 
+import static java.lang.String.format;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -37,12 +39,13 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class GitRepoServiceAgreementServiceTest {
 
     private static final String FOLDER = "service-agreements/";
-    private static final String ID = "test";
+    private static final String ID = "7c60707c-80ee-4d67-bac2-3c9a93e61557";
 
     @Mock private DataRepository<CatalogueUser> repo;
     @Mock private DocumentInfoMapper<MetadataInfo> metadataInfoMapper;
     @Mock private DocumentInfoMapper<ServiceAgreement> serviceAgreementMapper;
     @Mock private DocumentRepository documentRepository;
+    @Mock private JiraService jiraService;
 
     private ServiceAgreementService service;
     private ServiceAgreement serviceAgreement;
@@ -53,6 +56,7 @@ public class GitRepoServiceAgreementServiceTest {
     static void init() {
         user = new CatalogueUser();
         user.setUsername("test");
+        user.setEmail("test@example.com");
     }
 
     @BeforeEach
@@ -61,10 +65,13 @@ public class GitRepoServiceAgreementServiceTest {
             repo,
             metadataInfoMapper,
             serviceAgreementMapper,
-            documentRepository
+            documentRepository,
+            jiraService
+
         );
         serviceAgreement = new ServiceAgreement();
         serviceAgreement.setId(ID);
+        serviceAgreement.setTitle("Test");
     }
 
     @Test
@@ -123,7 +130,7 @@ public class GitRepoServiceAgreementServiceTest {
         service.delete(user, ID);
 
         //Then
-        verify(dataOngoingCommit).commit(user, "delete document: test");
+        verify(dataOngoingCommit).commit(user, "delete document: " + ID);
     }
 
     @Test
@@ -167,7 +174,7 @@ public class GitRepoServiceAgreementServiceTest {
             .willReturn(dataOngoingCommit);
 
         given(dataOngoingCommit.commit(
-            any(CatalogueUser.class), eq("updating service agreement test")
+            any(CatalogueUser.class), eq("updating service agreement " + ID)
         ))
             .willReturn(mock(DataRevision.class));
 
@@ -177,7 +184,7 @@ public class GitRepoServiceAgreementServiceTest {
         service.update(user, ID, serviceAgreement);
 
         //Then
-        verify(dataOngoingCommit).commit(user, "updating service agreement test");
+        verify(dataOngoingCommit).commit(user, "updating service agreement " + ID);
     }
 
     @Test
@@ -197,7 +204,7 @@ public class GitRepoServiceAgreementServiceTest {
         service.create(user, ID, "eidc", serviceAgreement);
 
         //Then
-        verify(dataOngoingCommit).commit(user, "creating service agreement test");
+        verify(dataOngoingCommit).commit(user, "creating service agreement " + ID);
     }
 
     @Test
@@ -233,6 +240,46 @@ public class GitRepoServiceAgreementServiceTest {
 
         //then
         verify(documentRepository, never()).save(eq(user), any(MetadataDocument.class), eq("populated from service agreement"));
+    }
+
+    @Test
+    @SneakyThrows
+    public void canSubmitServiceAgreement() {
+        //Given
+
+        serviceAgreement = new ServiceAgreement();
+        serviceAgreement.setDepositReference("test");
+
+        givenDraftServiceAgreement();
+
+        DataOngoingCommit dataOngoingCommit = mock(DataOngoingCommit.class);
+        given(repo.submitData(any(), any())).willReturn(dataOngoingCommit);
+
+        //When
+        service.submitServiceAgreement(user, ID);
+
+        //Then
+        verify(jiraService).comment(serviceAgreement.getDepositReference(),
+                format("Service Agreement (%s): %s submitted for review", ID, serviceAgreement.getTitle()));
+        verify(dataOngoingCommit).commit(user, "updating service agreement metadata " + ID);
+    }
+
+    @Test
+    @SneakyThrows
+    void cannotSubmitServiceAgent() {
+        //given
+        givenPublishedServiceAgreement();
+
+        given(serviceAgreementMapper.readInfo(any()))
+                .willReturn(serviceAgreement);
+
+        //when
+        assertThrows(ServiceAgreementException.class, () ->
+                service.submitServiceAgreement(user, ID)
+        );
+
+        //then
+        verifyNoInteractions(jiraService);
     }
 
     @SneakyThrows
@@ -286,6 +333,7 @@ public class GitRepoServiceAgreementServiceTest {
             .willReturn(serviceAgreement);
         serviceAgreement.setMetadata(metadata);
         serviceAgreement.setId(ID);
+        serviceAgreement.setDepositReference("test");
     }
 
     @SneakyThrows
