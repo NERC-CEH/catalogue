@@ -284,9 +284,6 @@ class ServiceAgreementControllerTest {
         //Given
         givenUserCanEdit();
         givenMetadataRecordExists();
-        val expected = new ServiceAgreement();
-        expected.setId(ID);
-        expected.setTitle("Test Service Agreement");
 
         //When
         mvc.perform(post("/service-agreement/{id}/submit", ID))
@@ -317,9 +314,6 @@ class ServiceAgreementControllerTest {
         //Given
         givenUserCanEdit();
         givenMetadataRecordExists();
-        val expected = new ServiceAgreement();
-        expected.setId(ID);
-        expected.setTitle("Test Service Agreement");
 
         //When
         mvc.perform(post("/service-agreement/{id}/publish", ID))

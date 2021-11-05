@@ -210,10 +210,6 @@ public class GitRepoServiceAgreementServiceTest {
     @SneakyThrows
     public void canSubmitServiceAgreement() {
         //Given
-
-        serviceAgreement = new ServiceAgreement();
-        serviceAgreement.setDepositReference("test");
-
         givenDraftServiceAgreement();
 
         DataOngoingCommit dataOngoingCommit = mock(DataOngoingCommit.class);
@@ -223,8 +219,10 @@ public class GitRepoServiceAgreementServiceTest {
         service.submitServiceAgreement(user, ID);
 
         //Then
-        verify(jiraService).comment(serviceAgreement.getDepositReference(),
-                format("Service Agreement (%s): %s submitted for review", ID, serviceAgreement.getTitle()));
+        verify(jiraService).comment(
+            serviceAgreement.getDepositReference(),
+            format("Service Agreement (%s): %s submitted for review", ID, serviceAgreement.getTitle())
+        );
         verify(dataOngoingCommit).commit(user, "updating service agreement metadata " + ID);
     }
 
@@ -258,14 +256,6 @@ public class GitRepoServiceAgreementServiceTest {
         expected.setMetadata(MetadataInfo.builder().state("draft").build());
         expected.setUseConstraints(List.of(serviceAgreement.getEndUserLicence()));
 
-        CatalogueUser user = new CatalogueUser();
-        user.setUsername("test");
-        user.setEmail("test@test.com");
-        ServiceAgreement serviceAgreement = new ServiceAgreement();
-        serviceAgreement.setTitle("this is a test");
-        serviceAgreement.setId(ID);
-        serviceAgreement.setDepositReference("test");
-
         givenPendingPublicationServiceAgreement();
 
         DataOngoingCommit dataOngoingCommit = mock(DataOngoingCommit.class);
@@ -275,10 +265,13 @@ public class GitRepoServiceAgreementServiceTest {
         service.publishServiceAgreement(user, ID);
 
         //Then
-        verify(jiraService).comment(serviceAgreement.getDepositReference(),
-                format("Service Agreement (%s): %s has been agreed upon and published",
-                        serviceAgreement.getId(),
-                        serviceAgreement.getTitle()));
+        verify(jiraService).comment(
+            serviceAgreement.getDepositReference(),
+            format("Service Agreement (%s): %s has been agreed upon and published",
+                    serviceAgreement.getId(),
+                    serviceAgreement.getTitle()
+            )
+        );
         verify(dataOngoingCommit).commit(user, "updating service agreement metadata " + ID);
         verify(documentRepository).save(user, expected, "populated from service agreement");
     }
