@@ -208,6 +208,18 @@ public class GitRepoServiceAgreementServiceTest {
 
     @Test
     @SneakyThrows
+    public void cannotCreateServiceAgreementWithoutDepositorContactDetails() {
+        //Given
+        givenServiceAgreementWithoutDepositorContactDetails();
+
+        //When
+        assertThrows(ServiceAgreementException.class, () ->
+            service.create(user, ID, "eidc", serviceAgreement)
+        );
+    }
+
+    @Test
+    @SneakyThrows
     public void canSubmitServiceAgreement() {
         //Given
         givenDraftServiceAgreement();
@@ -223,7 +235,7 @@ public class GitRepoServiceAgreementServiceTest {
             serviceAgreement.getDepositReference(),
             format("Service Agreement (%s): %s submitted for review", ID, serviceAgreement.getTitle())
         );
-        verify(dataOngoingCommit).commit(user, "updating service agreement metadata " + ID);
+        verify(dataOngoingCommit, times(2)).commit(user, "updating service agreement metadata " + ID);
     }
 
     @Test
@@ -321,6 +333,18 @@ public class GitRepoServiceAgreementServiceTest {
         serviceAgreement.setMetadata(metadata);
         serviceAgreement.setTitle("this is a test");
         serviceAgreement.setEndUserLicence(new ResourceConstraint("test", "test", "test"));
+        serviceAgreement.setDepositorContactDetails("deposit@example.com");
+    }
+
+    @SneakyThrows
+    private void givenServiceAgreementWithoutDepositorContactDetails() {
+        val metadata = MetadataInfo.builder()
+            .state("draft")
+            .rawType(APPLICATION_JSON_VALUE)
+            .build();
+        serviceAgreement.setMetadata(metadata);
+        serviceAgreement.setTitle("No Depositor Contact Details");
+        serviceAgreement.setDepositorContactDetails(null);
     }
 
     @SneakyThrows
