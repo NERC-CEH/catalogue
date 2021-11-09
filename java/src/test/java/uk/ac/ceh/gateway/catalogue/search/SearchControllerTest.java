@@ -16,7 +16,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
@@ -123,7 +122,6 @@ class SearchControllerTest {
 
     @SneakyThrows
     private void givenSearchResultsWithResults() {
-        val user = (CatalogueUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         val endpoint = "http://localhost/eidc/documents";
         val term = "carbon";
         val results = Arrays.asList(
@@ -201,9 +199,9 @@ class SearchControllerTest {
                 .queryParam("term", "carbon")
                 .accept(MediaType.TEXT_HTML)
         )
-            .andExpect(status().isOk());
-//            .andExpect(content().contentType(MediaType.TEXT_HTML))
-//            .andExpect(content().string(containsString(editorDropdownOpeningDiv)));
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.TEXT_HTML))
+            .andExpect(content().string(containsString(editorDropdownOpeningDiv)));
 
         verifyNoInteractions(searcher);
     }

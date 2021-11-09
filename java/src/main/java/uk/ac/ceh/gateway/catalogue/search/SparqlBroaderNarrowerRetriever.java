@@ -6,17 +6,14 @@ import lombok.val;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.gateway.catalogue.vocabularies.Keyword;
 import uk.ac.ceh.gateway.catalogue.vocabularies.KeywordVocabulary;
 
+import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -45,19 +42,17 @@ public class SparqlBroaderNarrowerRetriever  implements BroaderNarrowerRetriever
 
     @Override
     public List<Keyword> retrieve(Keyword keyword) {
-        val formEntity = prepareRequest(keyword);
+        val requestUrl = prepareRequestUrl(keyword);
 
-        val response = restTemplate.exchange(
-            sparqlEndpoint + "?format=json-simple",
-            HttpMethod.POST,
-            formEntity,
+        val response = restTemplate.getForEntity(
+            requestUrl,
             JsonNode.class
         );
         val resultsNode = Optional.ofNullable(response.getBody())
             .orElseThrow(() -> new SearchException("Cannot get response body"));
 
         if (resultsNode.isArray()) {
-            log.debug("Retrieved {} terms", resultsNode.size());
+            log.debug("Retrieved {} keywords", resultsNode.size());
             return StreamSupport.stream(resultsNode.spliterator(), false)
                 .map(node -> {
                     val url = node.get("uri").asText();
@@ -71,7 +66,7 @@ public class SparqlBroaderNarrowerRetriever  implements BroaderNarrowerRetriever
         }
     }
 
-    private HttpEntity<MultiValueMap<String, String>> prepareRequest(Keyword keyword) {
+    private URI prepareRequestUrl(Keyword keyword) {
         val graph = keywordVocabularies.stream()
             .filter(keywordVocabulary -> keywordVocabulary.getId().equals(keyword.getVocabId()))
             .map(KeywordVocabulary::getGraph)
@@ -95,13 +90,9 @@ public class SparqlBroaderNarrowerRetriever  implements BroaderNarrowerRetriever
                 }
             }
             """, graph, keyword.getUrl());
-
-        val headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-        val requestBody = new LinkedMultiValueMap<String, String>();
-        requestBody.add("query", query);
-        log.debug("broader/narrower SPARQL query: {}", requestBody);
-        return new HttpEntity<>(requestBody, headers);
+        val encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8);
+        val url = format("%s?query=%s&format=json-simple", sparqlEndpoint, encodedQuery);
+        log.debug("SPARQL url: {}", url);
+        return URI.create(url);
     }
 }
