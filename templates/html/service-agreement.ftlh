@@ -2,7 +2,6 @@
 <#import "skeleton.ftlh" as skeleton>
 <#import "../functions.ftlh" as func>
 
-
 <@skeleton.master "Service Agreement">
 
     <div id="metadata">
@@ -17,14 +16,12 @@
                                 Edit
                             </button>
                         </div>
-                        <#list getModelLinks()>
-                            <#items as link>
-                                <div class="btn-group btn-group-sm">
-                                    <form action="${link.href}" method="post">
-                                        <input type="submit" value="${link.title}" class="btn btn-default btn-wide">
-                                    </form>
-                                </div>
-                            </#items>
+                        <#list getModelLinks() as link>
+                            <div class="btn-group btn-group-sm">
+                                <form action="${link.href}" method="post">
+                                    <input type="submit" value="${link.title}" class="btn btn-default btn-wide">
+                                </form>
+                            </div>
                         </#list>
                     </div>
                 </div>

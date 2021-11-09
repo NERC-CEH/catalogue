@@ -13,13 +13,13 @@ import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
-import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.JiraService;
 
 import java.util.Optional;
 
 import static java.lang.String.format;
+import static uk.ac.ceh.gateway.catalogue.model.Permission.*;
 
 @Profile("service-agreement")
 @Slf4j
@@ -84,6 +84,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
             user,
             catalogue
         );
+        addPermissionsForDepositor(metadataInfo, serviceAgreement);
         repo.submitData(FOLDER + id + ".meta", (o) -> metadataInfoMapper.writeInfo(metadataInfo, o))
             .submitData(FOLDER + id + ".raw", (o) -> serviceAgreementMapper.writeInfo(serviceAgreement, o))
             .commit(user, "creating service agreement " + id);
@@ -112,6 +113,24 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
             .commit(user, "delete document: " + id);
     }
 
+    private void addPermissionsForDepositor(MetadataInfo metadataInfo, ServiceAgreement serviceAgreement) {
+        val possibleEmail = Optional.ofNullable(serviceAgreement.getDepositorContactDetails());
+        if (possibleEmail.isPresent()) {
+            val rawEmail = possibleEmail.get();
+            val email = (rawEmail.endsWith("@ceh.ac.uk")) ?
+                rawEmail.replace("@ceh.ac.uk", "") :
+                rawEmail;
+            metadataInfo.addPermission(EDIT, email);
+            metadataInfo.addPermission(VIEW, email);
+        } else {
+            val message = format(
+                "No depositor contact details present, cannot add permissions for Service Agreement: %s",
+                serviceAgreement.getId()
+            );
+            throw new ServiceAgreementException(message);
+        }
+    }
+
     private MetadataInfo createMetadataInfoWithDefaultPermissions(CatalogueUser user, String catalogue) {
         val metadataInfo = MetadataInfo.builder()
             .rawType(MediaType.APPLICATION_JSON_VALUE)
@@ -119,9 +138,9 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
             .catalogue(catalogue)
             .build();
         String username = user.getUsername();
-        metadataInfo.addPermission(Permission.VIEW, username);
-        metadataInfo.addPermission(Permission.EDIT, username);
-        metadataInfo.addPermission(Permission.DELETE, username);
+        metadataInfo.addPermission(VIEW, username);
+        metadataInfo.addPermission(EDIT, username);
+        metadataInfo.addPermission(DELETE, username);
         return metadataInfo;
     }
 
@@ -140,7 +159,8 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
                             )
                     )
                 );
-            updateStateAndRemovePermissions(user, id, serviceAgreement.getMetadata(), PENDING_PUBLICATION);
+            updateState(user, id, serviceAgreement, PENDING_PUBLICATION);
+            removeEditPermissions(user, id, serviceAgreement);
         } else {
             val message = format(
                     "Cannot submit ServiceAgreement %s as state is %s",
@@ -178,7 +198,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
                                     )
                             )
                     );
-            updateStateAndRemovePermissions(user, id, serviceAgreement.getMetadata(), PUBLISHED);
+            updateState(user, id, serviceAgreement, PUBLISHED);
         } else {
             val message = format(
                     "Cannot publish Service Agreement %s as state is %s and GeminiDocument state is %s",
@@ -190,10 +210,15 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         }
     }
 
-    private void updateStateAndRemovePermissions(CatalogueUser user, String id, MetadataInfo metadata, String state) {
-        val pending = metadata.withState(state);
-        pending.removePermission(Permission.EDIT, user.getUsername());
-        pending.removePermission(Permission.DELETE, user.getUsername());
-        updateMetadata(user, id, pending);
+    private void updateState(CatalogueUser user, String id, ServiceAgreement serviceAgreement, String state) {
+        val metadataInfo = serviceAgreement.getMetadata();
+        updateMetadata(user, id, metadataInfo.withState(state));
+    }
+
+    private void removeEditPermissions(CatalogueUser user, String id, ServiceAgreement serviceAgreement) {
+        val metadataInfo = serviceAgreement.getMetadata();
+        val email = serviceAgreement.getDepositorContactDetails();
+        metadataInfo.removePermission(EDIT, email);
+        updateMetadata(user, id, metadataInfo);
     }
 }
