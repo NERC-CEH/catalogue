@@ -5,15 +5,21 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
+import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
-import uk.ac.ceh.gateway.catalogue.model.Permission;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.upload.hubbub.JiraService;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import java.util.Optional;
+
+import static java.lang.String.format;
+import static uk.ac.ceh.gateway.catalogue.model.Permission.*;
 
 @Profile("service-agreement")
 @Slf4j
@@ -23,20 +29,29 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     private final DataRepository<CatalogueUser> repo;
     private final DocumentInfoMapper<MetadataInfo> metadataInfoMapper;
     private final DocumentInfoMapper<ServiceAgreement> serviceAgreementMapper;
+    private final DocumentRepository documentRepository;
+    private final JiraService jiraService;
+
     private static final String FOLDER = "service-agreements/";
+    private static final String DRAFT = "draft";
+    private static final String PENDING_PUBLICATION = "pending publication";
+    private static final String PUBLISHED = "published";
 
     public GitRepoServiceAgreementService(
             DataRepository<CatalogueUser> repo,
             DocumentInfoMapper<MetadataInfo> metadataInfoMapper,
-            DocumentInfoMapper<ServiceAgreement> serviceAgreementMapper
-    ) {
+            DocumentInfoMapper<ServiceAgreement> serviceAgreementMapper,
+            DocumentRepository documentRepository,
+            JiraService jiraService) {
         this.repo = repo;
         this.metadataInfoMapper = metadataInfoMapper;
         this.serviceAgreementMapper = serviceAgreementMapper;
+        this.documentRepository = documentRepository;
+        this.jiraService = jiraService;
         log.info("Creating");
     }
 
-
+    @Override
     @SneakyThrows
     public boolean metadataRecordExists(String id) {
         try {
@@ -47,6 +62,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         return true;
     }
 
+    @Override
     @SneakyThrows
     public ServiceAgreement get(String id) {
         val metadataDoc = repo.getData(FOLDER + id + ".meta");
@@ -61,30 +77,148 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     }
 
     @SneakyThrows
-    public void save(CatalogueUser user, String id, String catalogue, ServiceAgreement serviceAgreement) {
-        val metadataInfo = createMetadataInfoWithDefaultPermissions(user, catalogue);
+    @Override
+    public ServiceAgreement create(CatalogueUser user, String id, String catalogue, ServiceAgreement serviceAgreement) {
+        serviceAgreement.setId(id);
+        val metadataInfo = createMetadataInfoWithDefaultPermissions(
+            user,
+            catalogue
+        );
+        addPermissionsForDepositor(metadataInfo, serviceAgreement);
         repo.submitData(FOLDER + id + ".meta", (o) -> metadataInfoMapper.writeInfo(metadataInfo, o))
-                .submitData(FOLDER + id + ".raw", (o) -> serviceAgreementMapper.writeInfo(serviceAgreement, o))
-                .commit(user, catalogue);
+            .submitData(FOLDER + id + ".raw", (o) -> serviceAgreementMapper.writeInfo(serviceAgreement, o))
+            .commit(user, "creating service agreement " + id);
+        return get(id);
+    }
+
+    @SneakyThrows
+    @Override
+    public ServiceAgreement update(CatalogueUser user, String id, ServiceAgreement serviceAgreement) {
+        serviceAgreement.setId(id);
+        repo.submitData(FOLDER + id + ".raw", (o) -> serviceAgreementMapper.writeInfo(serviceAgreement, o))
+            .commit(user, "updating service agreement " + id);
+        return get(id);
+    }
+
+    @SneakyThrows
+    private void updateMetadata(CatalogueUser user, String id, MetadataInfo metadataInfo) {
+        repo.submitData(FOLDER + id + ".meta", (o) -> metadataInfoMapper.writeInfo(metadataInfo, o))
+                .commit(user, "updating service agreement metadata " + id);
     }
 
     @SneakyThrows
     public void delete(CatalogueUser user, String id) {
         repo.deleteData(FOLDER + id + ".meta")
-                .deleteData(FOLDER + id + ".raw")
-                .commit(user, "delete document: " + id);
+            .deleteData(FOLDER + id + ".raw")
+            .commit(user, "delete document: " + id);
+    }
+
+    private void addPermissionsForDepositor(MetadataInfo metadataInfo, ServiceAgreement serviceAgreement) {
+        val possibleEmail = Optional.ofNullable(serviceAgreement.getDepositorContactDetails());
+        if (possibleEmail.isPresent()) {
+            val rawEmail = possibleEmail.get();
+            val email = (rawEmail.endsWith("@ceh.ac.uk")) ?
+                rawEmail.replace("@ceh.ac.uk", "") :
+                rawEmail;
+            metadataInfo.addPermission(EDIT, email);
+            metadataInfo.addPermission(VIEW, email);
+        } else {
+            val message = format(
+                "No depositor contact details present, cannot add permissions for Service Agreement: %s",
+                serviceAgreement.getId()
+            );
+            throw new ServiceAgreementException(message);
+        }
     }
 
     private MetadataInfo createMetadataInfoWithDefaultPermissions(CatalogueUser user, String catalogue) {
-        MetadataInfo toReturn = MetadataInfo.builder()
-                .rawType(APPLICATION_JSON_VALUE)
-                .documentType("service-agreement")
-                .catalogue(catalogue)
-                .build();
+        val metadataInfo = MetadataInfo.builder()
+            .rawType(MediaType.APPLICATION_JSON_VALUE)
+            .documentType("service-agreement")
+            .catalogue(catalogue)
+            .build();
         String username = user.getUsername();
-        toReturn.addPermission(Permission.VIEW, username);
-        toReturn.addPermission(Permission.EDIT, username);
-        toReturn.addPermission(Permission.DELETE, username);
-        return toReturn;
+        metadataInfo.addPermission(VIEW, username);
+        metadataInfo.addPermission(EDIT, username);
+        metadataInfo.addPermission(DELETE, username);
+        return metadataInfo;
+    }
+
+    public void submitServiceAgreement(CatalogueUser user, String id) {
+        ServiceAgreement serviceAgreement = get(id);
+        String metadataRecordState = serviceAgreement.getState();
+        if (metadataRecordState.equals(DRAFT)) {
+            Optional.ofNullable(serviceAgreement.getDepositReference())
+                .ifPresent(depositReference ->
+                    jiraService.comment(
+                            depositReference,
+                            format(
+                                "Service Agreement (%s): %s submitted for review",
+                                serviceAgreement.getId(),
+                                serviceAgreement.getTitle()
+                            )
+                    )
+                );
+            updateState(user, id, serviceAgreement, PENDING_PUBLICATION);
+            removeEditPermissions(user, id, serviceAgreement);
+        } else {
+            val message = format(
+                    "Cannot submit ServiceAgreement %s as state is %s",
+                    id,
+                    metadataRecordState
+            );
+            throw new ServiceAgreementException(message);
+        }
+    }
+
+    @SneakyThrows
+    public void publishServiceAgreement(CatalogueUser user, String id) {
+        val gemini = (GeminiDocument) documentRepository.read(id);
+        val metadataRecordState = gemini.getState();
+        val serviceAgreement = get(id);
+        val serviceAgreementState = serviceAgreement.getState();
+        log.debug("gemini: {}, service agreement: {}", metadataRecordState, serviceAgreementState);
+        if (metadataRecordState.equals(DRAFT) && serviceAgreementState.equals(PENDING_PUBLICATION)) {
+            log.info("Gemini document populated from Service Agreement: {}", id);
+            gemini.populateFromServiceAgreement(serviceAgreement);
+            documentRepository.save(
+                    user,
+                    gemini,
+                    "populated from service agreement"
+            );
+            log.info("Publishing Service Agreement: {}", id);
+            Optional.ofNullable(serviceAgreement.getDepositReference())
+                    .ifPresent(depositReference ->
+                            jiraService.comment(
+                                    depositReference,
+                                    format(
+                                            "Service Agreement (%s): %s has been agreed upon and published",
+                                            serviceAgreement.getId(),
+                                            serviceAgreement.getTitle()
+                                    )
+                            )
+                    );
+            updateState(user, id, serviceAgreement, PUBLISHED);
+        } else {
+            val message = format(
+                    "Cannot publish Service Agreement %s as state is %s and GeminiDocument state is %s",
+                    id,
+                    serviceAgreementState,
+                    metadataRecordState
+            );
+            throw new ServiceAgreementException(message);
+        }
+    }
+
+    private void updateState(CatalogueUser user, String id, ServiceAgreement serviceAgreement, String state) {
+        val metadataInfo = serviceAgreement.getMetadata();
+        updateMetadata(user, id, metadataInfo.withState(state));
+    }
+
+    private void removeEditPermissions(CatalogueUser user, String id, ServiceAgreement serviceAgreement) {
+        val metadataInfo = serviceAgreement.getMetadata();
+        val email = serviceAgreement.getDepositorContactDetails();
+        metadataInfo.removePermission(EDIT, email);
+        updateMetadata(user, id, metadataInfo);
     }
 }

@@ -7,7 +7,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -23,6 +22,7 @@ import uk.ac.ceh.gateway.catalogue.datacite.DataciteException;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
+import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreementException;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadException;
 
 import java.net.URISyntaxException;
@@ -54,6 +54,11 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(MapServerException.class)
     public ResponseEntity<String> handleMapServerException(MapServerException ex) {
         return ex.asResponseEntity();
+    }
+
+    @ExceptionHandler(ServiceAgreementException.class)
+    public ResponseEntity<Object> handleServiceAgreementException(ServiceAgreementException ex) {
+        return handleExceptionInternal(ex, ex.getMessage(), BAD_REQUEST);
     }
 
     @ExceptionHandler(UploadException.class)

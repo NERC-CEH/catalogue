@@ -364,6 +364,21 @@ class DocumentControllerTest {
 
     @Test
     @SneakyThrows
+    void getMetadataDocumentUsingFileExtension() {
+        //given
+        givenUserIsPermittedToView();
+
+        //when
+        mvc.perform(
+            get("/documents/{id}.xml", id)
+        )
+            .andExpect(status().isOk())
+            .andExpect(forwardedUrl("/documents/" + id + "?format=gemini"));
+
+    }
+
+    @Test
+    @SneakyThrows
     void getUploadPage() {
         //given
         givenDefaultCatalogue();

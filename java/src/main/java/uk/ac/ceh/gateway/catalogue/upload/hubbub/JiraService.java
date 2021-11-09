@@ -21,7 +21,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static uk.ac.ceh.gateway.catalogue.util.Headers.withBasicAuth;
 
 @Service
-@Profile("upload:hubbub")
+@Profile({"upload:hubbub", "service-agreement"})
 @Slf4j
 @ToString(exclude = {"restTemplate", "password"})
 public class JiraService {

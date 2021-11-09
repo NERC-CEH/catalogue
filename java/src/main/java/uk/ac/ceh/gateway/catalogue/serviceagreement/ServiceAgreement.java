@@ -1,14 +1,18 @@
 package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.Accessors;
-import uk.ac.ceh.gateway.catalogue.gemini.RelatedRecord;
+import uk.ac.ceh.gateway.catalogue.gemini.*;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Data
@@ -42,13 +46,11 @@ public class ServiceAgreement extends AbstractMetadataDocument {
     /*
     THREE: The data
     */
-    private String dataFiles;
-    private List<String> fileNames;
-    private List<String> fileFormats;
-    private String fileSize;
+    private String fileNumber;
+    private List<File> files;
     private String transferMethod;
     private List<RelatedRecord> relatedDataHoldings;
-    private String dataCategory;
+    private Keyword dataCategory;
 
     /*
     FOUR: Supporting documentation
@@ -71,8 +73,8 @@ public class ServiceAgreement extends AbstractMetadataDocument {
     /*
     SEVEN: Licensing and IPR
     */
-    private String endUserLicence;
-    private String ownerOfIpr;
+    private ResourceConstraint endUserLicence;
+    private List<ResponsibleParty> ownersOfIpr;
     private String useConstraints;
 
     /*
@@ -89,8 +91,18 @@ public class ServiceAgreement extends AbstractMetadataDocument {
     /*
     TEN: Discovery metadata
     */
-    //keywords
     //description
+    private List<DescriptiveKeywords> descriptiveKeywords;
     private String lineage;
-    private String areaOfStudy;
+    private List<BoundingBox> areaOfStudy;
+
+    @Override
+    @JsonIgnore
+    public List<Keyword> getAllKeywords() {
+        return Optional.ofNullable(descriptiveKeywords)
+                .orElse(Collections.emptyList())
+                .stream()
+                .flatMap(dk -> dk.getKeywords().stream())
+                .collect(Collectors.toList());
+    }
 }

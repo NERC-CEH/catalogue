@@ -2,15 +2,17 @@ package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
-import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
-import uk.ac.ceh.gateway.catalogue.gemini.RelatedRecord;
+import uk.ac.ceh.gateway.catalogue.gemini.*;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -43,13 +45,11 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
     /*
     THREE: The data
     */
-    private String dataFiles;
-    private List<String> fileNames;
-    private List<String> fileFormats;
-    private String fileSize;
+    private String fileNumber;
+    private List<File> files;
     private String transferMethod;
     private List<RelatedRecord> relatedDataHoldings;
-    private String dataCategory;
+    private Keyword dataCategory;
 
     /*
     FOUR: Supporting documentation
@@ -72,8 +72,8 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
     /*
     SEVEN: Licensing and IPR
     */
-    private String endUserLicence;
-    private String ownerOfIpr;
+    private ResourceConstraint endUserLicence;
+    private List<ResponsibleParty> ownersOfIpr;
     private String useConstraints;
 
     /*
@@ -90,10 +90,11 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
     /*
     TEN: Discovery metadata
     */
-    private List<Keyword> keywords;
+    private List<Keyword> allKeywords;
+    private List<DescriptiveKeywords> descriptiveKeywords;
     private String description;
     private String lineage;
-    private String areaOfStudy;
+    private List<BoundingBox> areaOfStudy;
 
     public ServiceAgreementModel(ServiceAgreement serviceAgreement) {
         this.id = serviceAgreement.getId();
@@ -105,10 +106,8 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
         this.eidcContactDetails = serviceAgreement.getEidcContactDetails();
         this.authors = serviceAgreement.getAuthors();
         this.otherPoliciesOrLegislation = serviceAgreement.getOtherPoliciesOrLegislation();
-        this.dataFiles = serviceAgreement.getDataFiles();
-        this.fileNames = serviceAgreement.getFileNames();
-        this.fileFormats = serviceAgreement.getFileFormats();
-        this.fileSize = serviceAgreement.getFileSize();
+        this.fileNumber = serviceAgreement.getFileNumber();
+        this.files = serviceAgreement.getFiles();
         this.transferMethod = serviceAgreement.getTransferMethod();
         this.relatedDataHoldings = serviceAgreement.getRelatedDataHoldings();
         this.dataCategory = serviceAgreement.getDataCategory();
@@ -119,14 +118,23 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
         this.specificRequirements = serviceAgreement.getSpecificRequirements();
         this.otherServicesRequired = serviceAgreement.getOtherServicesRequired();
         this.endUserLicence = serviceAgreement.getEndUserLicence();
-        this.ownerOfIpr = serviceAgreement.getOwnerOfIpr();
+        this.ownersOfIpr = serviceAgreement.getOwnersOfIpr();
         this.useConstraints = serviceAgreement.getUseConstraints();
         this.supersededMetadataId = serviceAgreement.getSupersededMetadataId();
         this.supersededReason = serviceAgreement.getSupersededReason();
         this.otherInfo = serviceAgreement.getOtherInfo();
-        this.keywords = serviceAgreement.getKeywords();
+        this.allKeywords = serviceAgreement.getAllKeywords();
+        this.descriptiveKeywords = serviceAgreement.getDescriptiveKeywords();
         this.description = serviceAgreement.getDescription();
         this.lineage = serviceAgreement.getLineage();
         this.areaOfStudy = serviceAgreement.getAreaOfStudy();
+    }
+
+    @SuppressWarnings("unused")
+    public List<Link> getModelLinks(){
+        return StreamSupport
+            .stream(this.getLinks().spliterator(), false)
+            .filter(link -> !link.getRel().value().equals("self"))
+            .collect(Collectors.toList());
     }
 }

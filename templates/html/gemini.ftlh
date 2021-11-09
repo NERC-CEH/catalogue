@@ -26,18 +26,21 @@
     rel_usedBy = jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#uses")
     rel_hasMember = jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#memberOf")
     rel_supersedes = jena.supersedes(uri)
-/>
+    rel_source = jena.relationships(uri, "http://purl.org/dc/terms/source")
+>
 <#if useConstraints?has_content>
   <#assign
     licences = func.filter(useConstraints, "code", "license")
-    otherConstraints =  func.filter(useConstraints, "code", "license", true)>
+    otherConstraints =  func.filter(useConstraints, "code", "license", true)
+  >
 </#if>
 <#if supplemental?has_content>
   <#assign
-  referencedBy = func.filter(supplemental, "function", "isReferencedBy")
-  supplementTo = func.filter(supplemental, "function", "isSupplementTo")
-  websites = func.filter(supplemental, "function", "website")
-  supOther = func.filter(supplemental, "function", "") + func.filter(supplemental, "function", "relatedArticle") + func.filter(supplemental, "function", "relatedDataset")>
+    referencedBy = func.filter(supplemental, "function", "isReferencedBy")
+    supplementTo = func.filter(supplemental, "function", "isSupplementTo")
+    websites = func.filter(supplemental, "function", "website")
+    supOther = func.filter(supplemental, "function", "") + func.filter(supplemental, "function", "relatedArticle") + func.filter(supplemental, "function", "relatedDataset")
+  >
 </#if>
 
 <#macro getLabel val array>

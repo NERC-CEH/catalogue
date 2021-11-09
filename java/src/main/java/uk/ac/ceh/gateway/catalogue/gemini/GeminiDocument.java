@@ -13,6 +13,7 @@ import uk.ac.ceh.gateway.catalogue.indexing.solr.WellKnownText;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.Link;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
+import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreement;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -75,6 +76,16 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private AccessLimitation accessLimitation;
     private boolean notGEMINI;
 
+    public void populateFromServiceAgreement(ServiceAgreement serviceAgreement) {
+        this.setTitle(serviceAgreement.getTitle());
+        this.setDescription(serviceAgreement.getDescription());
+        this.responsibleParties = serviceAgreement.getAuthors();
+        this.relatedRecords = serviceAgreement.getRelatedDataHoldings();
+        this.useConstraints = List.of(serviceAgreement.getEndUserLicence());
+        this.descriptiveKeywords = serviceAgreement.getDescriptiveKeywords();
+        this.lineage = serviceAgreement.getLineage();
+        this.boundingBoxes = serviceAgreement.getAreaOfStudy();
+    }
 
     @Override
     public String getType() {

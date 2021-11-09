@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
@@ -18,7 +19,6 @@ import java.util.List;
 @RestController
 @RequestMapping("service-agreement")
 public class ServiceAgreementController {
-
     private final ServiceAgreementSearch search;
     private final ServiceAgreementService serviceAgreementService;
     private final ServiceAgreementModelAssembler serviceAgreementModelAssembler;
@@ -35,18 +35,42 @@ public class ServiceAgreementController {
     }
 
     @PreAuthorize("@permission.userCanEdit(#id)")
-    @PutMapping("{id}")
+    @PostMapping("{id}")
     public ServiceAgreementModel create(
         @ActiveUser CatalogueUser user,
         @PathVariable("id") String id,
         @RequestParam("catalogue") String catalogue,
         @RequestBody ServiceAgreement serviceAgreement
+    ) {
+        if (serviceAgreementService.metadataRecordExists(id)) {
+            log.info("creating service agreement {}", id);
+            val newlyCreated = serviceAgreementService.create(
+                user,
+                id,
+                catalogue,
+                serviceAgreement
+            );
+            return serviceAgreementModelAssembler.toModel(newlyCreated);
+        } else {
+            throw new ResourceNotFoundException("Metadata record does not exist");
+        }
+    }
+
+    @PreAuthorize("@permission.userCanEdit(#id)")
+    @PutMapping("{id}")
+    public ServiceAgreementModel update(
+        @ActiveUser CatalogueUser user,
+        @PathVariable("id") String id,
+        @RequestBody ServiceAgreement serviceAgreement
         ) {
         if (serviceAgreementService.metadataRecordExists(id)) {
-            log.info("CREATE {}", id);
-            serviceAgreement.setId(id);
-            serviceAgreementService.save(user, id, catalogue, serviceAgreement);
-            return serviceAgreementModelAssembler.toModel(serviceAgreement);
+            log.info("updating service agreement {}", id);
+            val newlyUpdated = serviceAgreementService.update(
+                user,
+                id,
+                serviceAgreement
+            );
+            return serviceAgreementModelAssembler.toModel(newlyUpdated);
         }else{
             throw new ResourceNotFoundException("Metadata record does not exist");
         }
@@ -82,4 +106,27 @@ public class ServiceAgreementController {
         return search.query(query);
     }
 
+    @PreAuthorize("@permission.userCanEdit(#id)")
+    @PostMapping("{id}/submit")
+    public RedirectView submitServiceAgreement(@ActiveUser CatalogueUser user,
+                                               @PathVariable("id") String id
+    ) {
+        log.info("SUBMITTING SERVICE AGREEMENT {}", id);
+        serviceAgreementService.submitServiceAgreement(user, id);
+        return new RedirectView("/service-agreement/" + id);
+    }
+
+    @PreAuthorize("@permission.userCanEdit(#id)")
+    @PostMapping("{id}/publish")
+    public RedirectView publishServiceAgreement(@ActiveUser CatalogueUser user,
+                                               @PathVariable("id") String id
+    ) {
+        if (serviceAgreementService.metadataRecordExists(id)) {
+            log.info("PUBLISHING SERVICE AGREEMENT {}", id);
+            serviceAgreementService.publishServiceAgreement(user, id);
+            return new RedirectView("/service-agreement/" + id);
+        }else{
+            throw new ResourceNotFoundException("Metadata record does not exist");
+        }
+    }
 }
