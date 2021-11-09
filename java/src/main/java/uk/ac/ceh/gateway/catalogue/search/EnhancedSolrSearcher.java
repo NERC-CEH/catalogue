@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static org.apache.solr.client.solrj.SolrRequest.METHOD.POST;
+import static uk.ac.ceh.gateway.catalogue.search.SearchQuery.DEFAULT_SEARCH_TERM;
 import static uk.ac.ceh.gateway.catalogue.vocabularies.SparqlKeywordVocabulary.COLLECTION;
 
 @Slf4j
@@ -70,6 +71,9 @@ public class EnhancedSolrSearcher extends SolrSearcher {
     @SneakyThrows
     private List<Link> relatedSearches(String endpoint, String term) {
         log.debug("related searches - endpoint: {}, term: {}", endpoint, term);
+        if (term.equals(DEFAULT_SEARCH_TERM)) {
+            return Collections.emptyList();
+        }
         try {
             val solrQuery = new SolrQuery(term);
             solrQuery.setParam(CommonParams.DF, "label");
