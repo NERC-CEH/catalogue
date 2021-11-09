@@ -28,10 +28,12 @@ define [
 
   setOGL: ->
     @$('#resourceConstraint').addClass('hidden')
+    @licence.uri = 'https://eidc.ceh.ac.uk/licences/OGL/plain'
     @model.set @licence
 
   setOther: ->
     @$('#resourceConstraint').removeClass('hidden')
+    @licence.uri = ''
 
   setValue:(event) ->
     @licence.value = event.target.value

@@ -13,7 +13,5 @@
     </div>
 </div>
 <div class="resourceConstraint hidden" id="resourceConstraint">
-    <p>Licence</p>
-    <label><input data-name="value" class="value" type="text" > value</label></br>
-    <label><input data-name="uri" class="uri" type="text" > uri</label></br>
+    <textarea data-name="value" class="value editor-textarea" type="text" ></textarea></br>
 </div>
