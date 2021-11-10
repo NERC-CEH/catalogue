@@ -337,6 +337,36 @@ class ServiceAgreementControllerTest {
         verifyNoInteractions(serviceAgreementService);
     }
 
+    @Test
+    @SneakyThrows
+    @WithMockCatalogueUser
+    void giveDepositorEditPermission() {
+        //Given
+        givenUserCanEdit();
+        givenMetadataRecordExists();
+
+        //When
+        mvc.perform(post("/service-agreement/{id}/permission", ID))
+                .andExpect(status().isFound())
+                .andExpect(redirectedUrl("/service-agreement/" + ID));
+    }
+
+    @Test
+    @SneakyThrows
+    @WithMockCatalogueUser
+    void userCannotGiveDepositorEditPermissionAsUserCanNotEdit() {
+        //given
+        givenUserCanNotEdit();
+        givenMetadataRecordExists();
+
+        //When
+        mvc.perform(post("/service-agreement/{id}/permission", ID))
+                .andExpect(status().isForbidden());
+
+        //then
+        verifyNoInteractions(serviceAgreementService);
+    }
+
     private void givenServiceAgreementModel() {
         val self = Link.of("https://catalogue/service-agreement/test", "self");
         val model = new ServiceAgreementModel(serviceAgreement);

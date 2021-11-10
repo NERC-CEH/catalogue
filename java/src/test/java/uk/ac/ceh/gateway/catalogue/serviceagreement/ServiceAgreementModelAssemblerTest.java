@@ -58,6 +58,35 @@ class ServiceAgreementModelAssemblerTest {
     }
 
     @Test
+    void permissionLinkAppears() {
+        //given
+        val serviceAgreement = new ServiceAgreement();
+        serviceAgreement.setId(id);
+        serviceAgreement.setMetadata(MetadataInfo.builder().state("pending publication").build());
+        givenDraftGeminiDocument();
+
+        //when
+        val model = assembler.toModel(serviceAgreement);
+
+        //then
+        assertTrue(model.getLink("permission").isPresent());
+    }
+
+    @Test
+    void permissionLinkDoesNotAppear() {
+        //given
+        val serviceAgreement = new ServiceAgreement();
+        serviceAgreement.setId(id);
+        serviceAgreement.setMetadata(MetadataInfo.builder().state("draft").build());
+
+        //when
+        val model = assembler.toModel(serviceAgreement);
+
+        //then
+        assertFalse(model.getLink("permission").isPresent());
+    }
+
+    @Test
     void submitLinkAppears() {
         //given
         val serviceAgreement = new ServiceAgreement();
