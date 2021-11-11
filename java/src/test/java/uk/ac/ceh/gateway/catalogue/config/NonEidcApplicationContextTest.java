@@ -12,7 +12,7 @@ import uk.ac.ceh.gateway.catalogue.upload.simple.UploadController;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@ActiveProfiles({"auth:crowd", "upload:simple", "server:elter"})
+@ActiveProfiles({"auth:crowd", "upload:simple", "server:elter", "service-agreement"})
 @CatalogueWebTest
 @DisplayName("Non EIDC production context")
 class NonEidcApplicationContextTest {

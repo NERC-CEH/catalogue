@@ -1,6 +1,6 @@
-<#import "blocks.ftlh" as blocks>
-<#import "skeleton.ftlh" as skeleton>
-<#import "../functions.ftlh" as func>
+<#import "../blocks.ftlh" as blocks>
+<#import "../skeleton.ftlh" as skeleton>
+<#import "../../functions.ftlh" as func>
 
 <@skeleton.master "Service Agreement">
 
@@ -77,6 +77,9 @@
                     purpose (e.g. errors are found in the dataset).
                 </li>
             </ul>
+            <#if permission.userCanEdit(id)>
+                <#include "_serviceAgreementQualityAlert.ftlh">
+            </#if>
             <h2>${title}</h2>
             <@displayData "Deposit reference" depositReference/>
             <@displayData "Depositor name" depositorName/>
@@ -116,6 +119,9 @@
             <@displayData "Lineage" lineage/>
             <@displayKeywords/>
             <@displayArea/>
+            <#if permission.userCanEdit(id)>
+                <#include "_serviceAgreementQualityReport.ftlh">
+            </#if>
         </div>
     </div>
 </@skeleton.master>
