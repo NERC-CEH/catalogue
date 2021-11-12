@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ConvertUsing({
-    @Template(called="html//nercmodels/model-use.ftlh", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
+    @Template(called="html/nercmodels/model-use.ftlh", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
 })
 public class NercModelUse extends AbstractMetadataDocument {
     private String

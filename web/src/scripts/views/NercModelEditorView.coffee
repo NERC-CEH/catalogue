@@ -20,10 +20,10 @@ define [
   'cs!views/editor/BoundingBoxView'
   'cs!views/editor/SupplementalView'
   'cs!models/editor/Supplemental'
-
-
+  'cs!views/editor/FundingView'
+  'cs!models/editor/Funding'
 ], (
-  EditorView, InputView, TextareaView, ParentView, PredefinedParentView, ParentStringView, KeywordView, ContactView, SingleObjectView, QaView, VersionHistoryView, ModelQAView, ModelResolutionView, OnlineLinkView, Contact, DataTypeSchema, DataTypeSchemaSimpleView, BoundingBox, BoundingBoxView, SupplementalView, Supplemental
+  EditorView, InputView, TextareaView, ParentView, PredefinedParentView, ParentStringView, KeywordView, ContactView, SingleObjectView, QaView, VersionHistoryView, ModelQAView, ModelResolutionView, OnlineLinkView, Contact, DataTypeSchema, DataTypeSchemaSimpleView, BoundingBox, BoundingBoxView, SupplementalView, Supplemental, FundingView, Funding
 ) -> EditorView.extend
 
   initialize: ->
@@ -121,6 +121,49 @@ define [
           helpText: """
                     <p>Keywords help with model discovery</p>
                     """
+
+        new PredefinedParentView
+          model: @model
+          modelAttribute: 'funding'
+          ModelType: Funding
+          multiline: true
+          label: 'Funding'
+          ObjectInputView: FundingView
+          predefined:
+            'BBSRC':
+              funderName: 'Biotechnology and Biological Sciences Research Council'
+              funderIdentifier: 'https://ror.org/00cwqg982'
+            'Defra':
+              funderName: 'Department for Environment Food and Rural Affairs'
+              funderIdentifier: 'https://ror.org/00tnppw48'
+            'EPSRC':
+              funderName: 'Engineering and Physical Sciences Research Council'
+              funderIdentifier: 'https://ror.org/0439y7842'
+            'ESRC':
+              funderName: 'Economic and Social Research Council'
+              funderIdentifier: 'https://ror.org/03n0ht308'
+            'Innovate UK':
+              funderName: 'Innovate UK'
+              funderIdentifier: 'https://ror.org/05ar5fy68'
+            'MRC':
+              funderName: 'Medical Research Council'
+              funderIdentifier: 'https://ror.org/03x94j517'
+            'NERC':
+              funderName: 'Natural Environment Research Council'
+              funderIdentifier: 'https://ror.org/02b5d8509'
+            'STFC':
+              funderName: 'Science and Technology Facilities Council'
+              funderIdentifier: 'https://ror.org/057g20z61'
+          helpText: """
+                    <p>Include here details of any grants or awards that were used to generate this resource.</p>
+                    <p>If you include funding information, the Funding body is MANDATORY, other fields are useful but optional.</p>
+                    <p>Award URL is either the unique identifier for the award or sa link to the funder's  grant page (if it exists). It is <b>NOT</b> a link to a project website.</p>
+                    """
+      ]
+    ,
+      label: 'Access'
+      title: 'Access'
+      views: [
         
         new ParentView
           model: @model
@@ -129,8 +172,8 @@ define [
           ObjectInputView: OnlineLinkView
           multiline: true
           listAttribute: """
-                    <option value='code'>Location of the model code such as GitHub repository</option>
-                    <option value='documentation'>Online documentation describing how to use the model</option>
+                    <option value='code'>Link to location of the model code (e.g. GitHub repository)</option>
+                    <option value='documentation'>Link to documentation describing how to use the model</option>
                     <option value='website'/>
                     <option value='browseGraphic'>Image to display on metadata record</option>
                     """
@@ -158,12 +201,18 @@ define [
       views: [
         new TextareaView
           model: @model
-          modelAttribute: 'modelCalibration'
+          modelAttribute: 'calibration'
           label: 'Model calibration'
           rows: 7
           helpText: """
                     <p>Does the model need calibration before running? If so, what needs to be supplied to do this? (if applicable)</p>
                     """
+
+        new TextareaView
+          model: @model
+          modelAttribute: 'configuration'
+          label: 'Model configuration'
+          rows: 7
 
         new InputView
           model: @model

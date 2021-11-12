@@ -68,6 +68,10 @@ body {
   margin-top: 1em;
 }
 
+.navbar-fixed-bottom {
+  background-color: #eee;
+}
+
 a.navbar-brand {
   min-height: @navbar-height;
   min-width: 280px;
@@ -96,6 +100,7 @@ a.navbar-brand {
   .container {
     position: relative;
   }
+
   #adminPanel {
     position: sticky;
     z-index: 750;
@@ -106,16 +111,7 @@ a.navbar-brand {
 
   .key-value {
     display: grid;
-    grid-template-columns: 14em auto;
-    padding: 1em;
-    margin: 1em;
-    .key {
-      text-align: right;
-      margin-right: 2em;
-    }
-    
   }
-
   .table--qa {
     margin: 1em 3em;
     table {
@@ -183,6 +179,23 @@ a.navbar-brand {
         &:nth-of-type(3):before {
           content: "Notes";
         }
+      }
+    }
+  }
+}
+
+//media query for screens wider than 600px
+@media only screen and (min-width: 600px) {
+  .nerc-model {
+    .container {
+      .key-value {
+        grid-template-columns: 13em auto;
+      }
+      .key-value > div {
+        padding: 0 1em;
+      }
+      .key {
+        text-align: right;
       }
     }
   }

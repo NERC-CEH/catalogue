@@ -6,7 +6,9 @@
 <#if onlineResources?? && onlineResources?has_content>
   <#assign
     image = func.filter(onlineResources, "function", "browseGraphic")
-    otherLinks = func.filter(onlineResources, "function", "browseGraphic", true)
+    code = func.filter(onlineResources, "function", "code")
+    websites = func.filter(onlineResources, "function", "website")
+    documents = func.filter(onlineResources, "function", "documentation")
   >
 </#if>
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
@@ -30,6 +32,32 @@
         </div>
     </#if>
 
+    <#if (code?? && code?has_content) || (documents?? && documents?has_content)>
+      <div class="onlineLinks">
+
+            <#if code?? && code?has_content>
+              <#list code as link>
+                <p>
+                  <#if link.url?? && link.url?has_content>
+                    <@m.Url link.url true/>
+                  </#if>
+                </p>
+              </#list>
+            </#if>
+
+            <#if documents?? && documents?has_content>
+              <#list documents as link>
+                <p>
+                  <#if link.url?? && link.url?has_content>
+                    <@m.Url link.url true/>
+                  </#if>
+                </p>
+              </#list>
+            </#if>
+
+      </div>
+    </#if>
+
       <#if purpose?? || responsibleParties?? || licenseType?? || onlineResources??>
       <div>
         <#if purpose?? && purpose?has_content>
@@ -44,27 +72,26 @@
             <dt>${responsibleParty.roleDisplayName}</dt>
             <dd>
               <div class="responsibleParty">
-                <@func.displayContact responsibleParty, true, true, false />
+                <@m.displayContact responsibleParty, true />
               </div>
             </dd>
             </#list>
           </@m.key>
         </#if>
 
-        <#if otherLinks?? && otherLinks?has_content>
-          <@m.key "Links">
-            <#list otherLinks as otherLink>
+
+        <#if websites?? && websites?has_content>
+          <@m.key "Websites">
+            <#list websites as link>
               <p>
-                <#if otherLink.function?? && otherLink.function?has_content>
-                  ${otherLink.function?cap_first}:
-                </#if>
-                <#if otherLink.url?? && otherLink.url?has_content>
-                  <@m.Url otherLink.url true/>
+                <#if link.url?? && link.url?has_content>
+                  <@m.Url link.url true/>
                 </#if>
               </p>
             </#list>
           </@m.key>
         </#if>
+
 
         <#if licenseType?? && licenseType?has_content>
           <@m.key "License" "License type (open or non-open) under which the model is distributed">${licenseType?cap_first}</@m.key>
@@ -186,13 +213,10 @@
     <#assign nercModelUses=jena.nercModelUses(uri)/>
       <#if nercModelUses?has_content>
         <h2>Implementations of the model</h2>
-        <#--noinspection FtlWellformednessInspection-->
         <#list nercModelUses>
-          <@m.key "Model use" "Implementations of the model">
             <#items as md>
               <@b.blockUrl md/>
-            </#items>
-          </@m.key>
+            </#items>         
         </#list>
       </#if>
     </div>

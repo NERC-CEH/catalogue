@@ -18,6 +18,7 @@ import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.model.DataTypeSchema;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.Supplemental;
+import uk.ac.ceh.gateway.catalogue.gemini.Funding;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -30,19 +31,19 @@ public class NercModel extends AbstractMetadataDocument implements WellKnownText
         licenseType,
         modelType,
         version,
-        modelCalibration,
+        calibration,
         spatialDomain,
-        //spatialResolution,
-        //temporalResolutionMin,
-        //temporalResolutionMax,
         language,
         compiler,
         operatingSystem,
         systemMemory,
         documentation,
-        releaseDate;
+        releaseDate,
+        configuration;
 
     private List<BoundingBox> boundingBoxes;
+
+    private List<Funding> funding;
 
     private List<DataTypeSchema>
         inputVariables,

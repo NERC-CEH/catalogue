@@ -57,7 +57,7 @@ CEH dataInfo table
 <!-- additional metadata -->
 <#macro additionalMetadata>
   <#if metadataDate?? && metadataDate?has_content>
-  <section>
+  <div>
     <h2>Additional metadata</h2>
     <#if keywords?? && keywords?has_content>
     <@key "Keywords">
@@ -83,6 +83,68 @@ CEH dataInfo table
     </#if>
 
     <@key "Last updated">${metadataDateTime?datetime.iso?datetime?string['dd MMMM yyyy  HH:mm']}</@key>
-  </section>
+  </div>
   </#if>
+</#macro>
+
+<!-- contacts -->
+<#macro displayContact contact showPostal=false>
+    <#if contact.address??>
+        <#local address=concatAddress(contact.address)>
+    </#if>
+
+    <#if contact.individualName?has_content>
+      <div class="individualName">
+          ${contact.individualName}
+          <#if contact.nameIdentifier?has_content && contact.nameIdentifier?matches("^http(|s)://orcid.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$")>
+              <span class="nameIdentifier">
+                <a href="${contact.nameIdentifier}" target="_blank" rel="noopener noreferrer" title="View this authors ORCiD record ${contact.nameIdentifier}">
+                  <img src="/static/img/orcid_16x16.png" alt="ORCID iD icon">
+                </a>
+              </span>
+          </#if>
+      </div>
+    </#if>
+
+    <#if contact.organisationName?has_content>
+      <div class="organisationName">
+          ${contact.organisationName}
+          <#if contact.organisationIdentifier?has_content && contact.organisationIdentifier?matches("^http(|s)://ror.org/[\\d\\w]{8,12}$")>
+              <span class="organisationIdentifier">
+                <a href="${contact.organisationIdentifier}" target="_blank" rel="noopener noreferrer" title="RoR ${contact.organisationIdentifier}">
+                  <img src="/static/img/ror_16x16.png" alt="RoR icon">
+                </a>
+              </span>
+          </#if>
+      </div>
+    </#if>
+
+    <#if showPostal && contact.address?has_content>
+      <div class="postalAddress">
+          <#if contact.address.deliveryPoint?has_content>
+              ${contact.address.deliveryPoint}<br>
+          </#if>
+          <#if contact.address.city?has_content>
+              ${contact.address.city}<br>
+          </#if>
+          <#if contact.address.administrativeArea?has_content>
+              ${contact.address.administrativeArea}<br>
+          </#if>
+          <#if contact.address.postalCode?has_content>
+              ${contact.address.postalCode?upper_case}<br>
+          </#if>
+          <#if contact.address.country?has_content>
+              ${contact.address.country?upper_case}<br>
+          </#if>
+      </div>
+    </#if>
+
+    <#if contact.phone?? && contact.phone?has_content>
+        <div class="contactPhone"><i class="fas fa-phone"></i> ${contact.phone}</div>
+    </#if>
+
+    <#if contact.email?has_content>
+      <a href="mailto:${contact.email}"><i class="far fa-envelope contactEmail"></i> ${contact.email}</a>
+    </#if>
+
 </#macro>
