@@ -26,7 +26,10 @@
                     </div>
                 </div>
             </#if>
-
+            <br>
+            <#if permission.userCanEdit(id)>
+                <#include "_serviceAgreementQualityAlert.ftlh">
+            </#if>
             <h1>Service Agreement</h1>
             <b>* IMPORTANT * ONCE A DOI HAS BEEN ISSUED,
                 THESE DETAILS CANNOT BE CHANGED</b>
@@ -77,9 +80,6 @@
                     purpose (e.g. errors are found in the dataset).
                 </li>
             </ul>
-            <#if permission.userCanEdit(id)>
-                <#include "_serviceAgreementQualityAlert.ftlh">
-            </#if>
             <h2>${title}</h2>
             <@displayData "Deposit reference" depositReference/>
             <@displayData "Depositor name" depositorName/>
@@ -168,7 +168,7 @@
 <#macro displayFiles>
     <#if files?has_content && files?size gt 0 >
         <div id="document-files">
-            <p id="files"><b>Files<#if files?size gt 1>s</#if></b></p>
+            <p id="files"><b>File<#if files?size gt 1>s</#if></b></p>
 
             <#list files>
                 <#assign filesMaxSize = 30 >
