@@ -8,55 +8,41 @@ define [
   className: 'col-sm-3'
 
   events:
-    'change .ogl': 'setOGL'
+    'change .ogl': 'setOgl'
     'change .other': 'setOther'
     'change .value': 'setValue'
     'change .uri': 'setUri'
 
   initialize: (options) ->
     ObjectInputView.prototype.initialize.call @, options
+    @$resourceConstraint = @$('#resourceConstraint')
+    hasUri = @model.has('uri')
+    hasValue = @model.has('value')
 
-    if @model.attributes.value? && @model.attributes.value != 'This resource is available under the terms of the Open Government Licence'
-      @licence =
-        value:@model.attributes.value,
-        code:'license',
-        uri:''
-      @$('#other').prop('checked')
-      @$('#ogl').prop 'checked', false
-      @$('#resourceConstraint').removeClass('hidden')
-      @$( ".value" ).append(@licence.value)
+    if hasUri || hasValue
+      if hasUri && @model.get('uri') == 'https://eidc.ceh.ac.uk/licences/OGL/plain'
+        @$('input.ogl').prop('checked', true)
+      else
+        @$('input.other').prop('checked', true)
+        @$resourceConstraint.removeClass('hidden')
+        if hasValue
+          @$('.value').val(@model.get 'value')
     else
-      @licence =
-        value:'This resource is available under the terms of the Open Government Licence',
-        code:'license',
-        uri:'https://eidc.ceh.ac.uk/licences/OGL/plain'
-      @$('#other').prop 'checked', false
-      @$('#ogl').prop('checked')
-      @setOGL()
+      @$('input.ogl').prop('checked', true).change()
 
-  render: ->
-    ObjectInputView.prototype.render.apply @
-    @
-
-  setOGL: ->
-    @$('#resourceConstraint').addClass('hidden')
-    @licence.value = 'This resource is available under the terms of the Open Government Licence'
-    @licence.uri = 'https://eidc.ceh.ac.uk/licences/OGL/plain'
-    @model.set @licence
+  setOgl: ->
+    @$resourceConstraint.addClass('hidden')
+    @model.set
+      value: 'This resource is available under the terms of the Open Government Licence'
+      code: 'license'
+      uri: 'https://eidc.ceh.ac.uk/licences/OGL/plain'
 
   setOther: ->
-    @$('#resourceConstraint').removeClass('hidden')
-    @licence.value = ''
-    @licence.uri = ''
-
-  other: ->
-    @$('#resourceConstraint').removeClass('hidden')
+    @$resourceConstraint.removeClass('hidden')
+    @model.unset 'uri'
+    @model.unset 'value'
 
   setValue:(event) ->
-    @licence.value = event.target.value
-    @model.set(@licence)
-
-  setUri:(event) ->
-    @licence.uri = event.target.value
-    @model.set(@licence)
-
+    @model.set
+      code: 'license'
+      value: event.target.value
