@@ -5,12 +5,8 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.solr.client.solrj.SolrClient;
-import org.apache.solr.client.solrj.SolrRequest;
-import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.common.params.SolrParams;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Answers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -24,7 +20,6 @@ import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.indexing.solr.SolrIndex;
-import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.Link;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
@@ -36,9 +31,8 @@ import java.util.List;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -109,19 +103,8 @@ class SearchControllerTest {
             .willReturn(true);
     }
 
-    private void givenUserCanNotCreate() {
-        given(permissionService.userCanCreate(catalogueKey))
-            .willReturn(false);
-    }
-
     @SneakyThrows
     private void givenSearchResults() {
-        given(solrClient.query(eq("documents"), any(SolrParams.class), eq(SolrRequest.METHOD.POST)))
-            .willReturn(mock(QueryResponse.class, Answers.RETURNS_DEEP_STUBS));
-    }
-
-    @SneakyThrows
-    private void givenSearchResultsWithResults() {
         val endpoint = "http://localhost/eidc/documents";
         val term = "carbon";
         val results = Arrays.asList(
@@ -146,15 +129,15 @@ class SearchControllerTest {
             relatedSearches
         );
         given(searcher.search(
-            any(String.class),
-            any(CatalogueUser.class),
-            any(String.class),
-            any(String.class),
-            any(SpatialOperation.class),
-            any(Integer.class),
-            any(Integer.class),
-            any(List.class),
-            any(String.class)
+            any(),
+            any(),
+            any(),
+            any(),
+            any(),
+            anyInt(),
+            anyInt(),
+            any(),
+            any()
         )).willReturn(searchResults);
 
         given(codeLookupService.lookup("publication.state", "public")).willReturn("Public");
@@ -189,7 +172,7 @@ class SearchControllerTest {
     @DisplayName("GET search page with editor buttons")
     void getSearchPageWithEditorButtons() {
         //given
-        givenSearchResultsWithResults();
+        givenSearchResults();
         givenFreemarkerConfiguration();
         givenUserCanCreate();
 
@@ -202,23 +185,20 @@ class SearchControllerTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.TEXT_HTML))
             .andExpect(content().string(containsString(editorDropdownOpeningDiv)));
-
-        verifyNoInteractions(searcher);
     }
 
     @Test
     @DisplayName("GET search page as html")
     @SneakyThrows
-    void getSearchPageHtml() {
+    void getSearchPageHtmlAsNonEditor() {
         //given
-        givenCatalogue();
-        givenSearchResultsWithResults();
+        givenSearchResults();
         givenFreemarkerConfiguration();
-        givenUserCanNotCreate();
 
         //when
         mvc.perform(
             get("/{catalogue}/documents", catalogueKey)
+                .queryParam("term", "carbon")
                 .accept(MediaType.TEXT_HTML)
         )
             .andExpect(status().isOk())
