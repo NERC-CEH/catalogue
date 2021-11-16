@@ -58,11 +58,11 @@ public class ServiceAgreementModelAssembler extends RepresentationModelAssembler
                 model.add(publishLink);
 
                 val permissionLink = linkTo(methodOn(ServiceAgreementController.class)
-                        .publishServiceAgreement(
+                        .giveDepositorEditPermission(
                                 null,
                                 serviceAgreement.getId()
                         ))
-                        .withRel("permission")
+                        .withRel("add-editor")
                         .withTitle("Further Edits Required");
                 model.add(permissionLink);
             }

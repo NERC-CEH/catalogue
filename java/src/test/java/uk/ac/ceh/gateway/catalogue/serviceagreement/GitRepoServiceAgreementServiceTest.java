@@ -313,12 +313,6 @@ public class GitRepoServiceAgreementServiceTest {
         //Given
         givenPendingPublicationServiceAgreement();
         givenDraftGeminiDocument();
-        val expected = new GeminiDocument();
-        expected.setId(ID);
-        expected.setTitle("this is a test");
-        expected.setMetadata(MetadataInfo.builder().state("draft").build());
-        expected.setUseConstraints(List.of(serviceAgreement.getEndUserLicence()));
-
         givenPendingPublicationServiceAgreement();
 
         DataOngoingCommit dataOngoingCommit = mock(DataOngoingCommit.class);
