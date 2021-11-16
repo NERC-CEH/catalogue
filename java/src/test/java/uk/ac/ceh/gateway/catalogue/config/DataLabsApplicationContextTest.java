@@ -9,7 +9,7 @@ import uk.ac.ceh.gateway.catalogue.CatalogueWebTest;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@ActiveProfiles({"auth:datalabs", "server:datalabs"})
+@ActiveProfiles({"auth:datalabs", "server:datalabs", "search:basic"})
 @CatalogueWebTest
 @DisplayName("DataLabs production context")
 class DataLabsApplicationContextTest {
