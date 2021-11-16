@@ -13,7 +13,12 @@
             <#if reasonChanged??>
                 <p><@b.linebreaks reasonChanged/></p>
             </#if>
-            <p>If you need access to this archived version, please <a href="${catalogue.contactUrl}" target="_blank" rel="noopener noreferrer">contact the ${catalogue.id?upper_case}</a></p>
+            <#if catalogue.id == "ukscape">
+                <#assign supersededContact="UK-SCAPE Programme Office">
+            <#else>
+                <#assign supersededContact=catalogue.id?upper_case>
+            </#if>
+            <p>If you need access to this archived version, please <a href="${catalogue.contactUrl}" target="_blank" rel="noopener noreferrer">contact the ${supersededContact}</a></p>
         <#elseif resourceStatus == "Embargoed">
         <p>
             <b>This ${recordType} is embargoed</b>
