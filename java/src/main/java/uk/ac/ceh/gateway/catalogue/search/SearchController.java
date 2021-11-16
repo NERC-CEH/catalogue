@@ -1,28 +1,18 @@
-package uk.ac.ceh.gateway.catalogue.controllers;
+package uk.ac.ceh.gateway.catalogue.search;
 
 import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.apache.solr.client.solrj.SolrClient;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import org.springframework.web.servlet.view.RedirectView;
-import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
-import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.search.*;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
+import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-
-import static org.apache.solr.client.solrj.SolrRequest.METHOD.POST;
 
 @Slf4j
 @ToString
@@ -42,27 +32,21 @@ public class SearchController {
     public static final int PAGE_DEFAULT = Integer.parseInt(PAGE_DEFAULT_STRING);
     public static final int ROWS_DEFAULT = Integer.parseInt(ROWS_DEFAULT_STRING);
 
-    private final SolrClient solrClient;
-    private final GroupStore<CatalogueUser> groupStore;
     private final CatalogueService catalogueService;
-    private final FacetFactory facetFactory;
+    private final Searcher searcher;
 
     public SearchController(
-        SolrClient solrClient,
-        GroupStore<CatalogueUser> groupStore,
         CatalogueService catalogueService,
-        FacetFactory facetFactory
+        Searcher searcher
     ) {
-        this.solrClient = solrClient;
-        this.groupStore = groupStore;
         this.catalogueService = catalogueService;
-        this.facetFactory = facetFactory;
+        this.searcher = searcher;
         log.info("Creating");
     }
 
     @CrossOrigin
     @GetMapping("documents")
-    public RedirectView redirectToDefaultCatalogue(
+    public String redirectToDefaultCatalogue(
             HttpServletRequest request
     ) {
         val defaultCatalogueId = catalogueService.defaultCatalogue().getId();
@@ -72,7 +56,7 @@ public class SearchController {
             .buildAndExpand(defaultCatalogueId)
             .toUriString();
         log.info("Redirecting to {}", redirectUrl);
-        return new RedirectView(redirectUrl);
+        return "redirect:" + redirectUrl;
     }
 
     @CrossOrigin
@@ -98,10 +82,7 @@ public class SearchController {
         List<FacetFilter> facetFilters,
         HttpServletRequest request
     ) {
-
-        val catalogue = catalogueService.retrieve(catalogueKey);
-
-        val searchQuery = new SearchQuery(
+        return searcher.search(
             request.getRequestURL().toString(),
             user,
             term,
@@ -110,15 +91,7 @@ public class SearchController {
             page,
             rows,
             facetFilters,
-            groupStore,
-            catalogue,
-            facetFactory.newInstances(catalogue.getFacetKeys())
+            catalogueKey
         );
-        val response = solrClient.query(
-            "documents",
-            searchQuery.build(),
-            POST
-        );
-        return new SearchResults(response, searchQuery);
     }
 }
