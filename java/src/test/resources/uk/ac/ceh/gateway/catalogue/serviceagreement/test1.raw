@@ -1,0 +1,15 @@
+{
+  "resourceType": {
+    "value": "service-agreement"
+  },
+  "title": "test1",
+  "depositorContactDetails": "test@test.com",
+  "description": "description of test1",
+  "lineage": "lineage of test1",
+  "resourceStatus": "Available",
+  "endUserLicence": [
+    {
+      "code": "license"
+    }
+  ]
+}

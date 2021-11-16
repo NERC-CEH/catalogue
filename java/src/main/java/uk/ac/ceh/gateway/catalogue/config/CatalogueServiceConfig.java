@@ -58,6 +58,7 @@ public class CatalogueServiceConfig {
                 .facetKey("assistResearchThemes")
                 .facetKey("assistTopics")
                 .documentType(GEMINI_TYPE)
+                .documentType(SERVICE_AGREEMENT_TYPE)
                 .documentType(CEH_MODEL_TYPE)
                 .documentType(CEH_MODEL_APPLICATION_TYPE)
                 .documentType(LINK_TYPE)

@@ -139,6 +139,10 @@ public class DocumentTypes {
         .build();
 
     public static final String SERVICE_AGREEMENT = "service-agreement";
+    public static DocumentType SERVICE_AGREEMENT_TYPE = DocumentType.builder()
+            .title("Sample Archive")
+            .type(SERVICE_AGREEMENT)
+            .build();
 
     public static final String UKEMS_DOCUMENT = "ukems-document";
     public static DocumentType UKEMS_TYPE = DocumentType.builder()

@@ -23,8 +23,6 @@ import static uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreementQuali
 @ToString
 @Service
 public class ServiceAgreementQualityService {
-    // Valid address, author names,
-    // file names as these need to be correct before being inserted into the metadata record
 
     private final DocumentReader documentReader;
     private final Configuration config;
@@ -119,6 +117,8 @@ public class ServiceAgreementQualityService {
         if (authors.size() == 0) {
             toReturn.add(new ServiceAgreementCheck("There are no authors", INFO));
         }
+        checkAddress(authors, "Author").ifPresent(toReturn::addAll);
+
         if (authors.stream().anyMatch(author -> fieldIsMissing(author, "individualName"))) {
             toReturn.add(new ServiceAgreementCheck("Author's name is missing", INFO));
         }
@@ -141,23 +141,28 @@ public class ServiceAgreementQualityService {
     Optional<List<ServiceAgreementCheck>> checkOwnerOfIpr(DocumentContext parsed) {
         val toReturn = new ArrayList<ServiceAgreementCheck>();
         val owners = parsed.read(
-                "$.ownersOfIpr[*].['organisationName','email']",
+                "$.ownersOfIpr[*].['individualName', 'organisationName','email']",
                 typeRefStringString
         );
+
+        if (owners.size() == 0) {
+            toReturn.add(new ServiceAgreementCheck("There are no owners", INFO));
+        }
+
         checkAddress(owners, "Owner").ifPresent(toReturn::addAll);
 
         if (owners.stream().anyMatch(owner -> fieldIsMissing(owner, "email"))) {
             toReturn.add(new ServiceAgreementCheck("Owner's email address is missing", ERROR));
         }
-        owners.stream()
-                .filter(owner -> fieldNotEqual(owner, "organisationName", "NERC EDS Environmental Information Data Centre") && fieldNotEqual(owner, "organisationName", "NERC Environmental Information Data Centre"))
-                .map(owner -> owner.getOrDefault("organisationName", "unknown"))
-                .forEach(organisationName -> toReturn.add(new ServiceAgreementCheck("Owner name is " + organisationName, WARNING)));
 
+        if (owners.stream().anyMatch(owner -> fieldIsMissing(owner, "organisationName"))) {
+            toReturn.add(new ServiceAgreementCheck("Owner's affiliation (organisation name) is missing", ERROR));
+        }
         owners.stream()
-                .filter(owner -> fieldNotEqual(owner, "email", "info@eidc.ac.uk"))
-                .map(owner -> owner.getOrDefault("email", "unknown"))
-                .forEach(email -> toReturn.add(new ServiceAgreementCheck("Owner email address is " + email, INFO)));
+                .filter(owner -> owner.containsKey("email"))
+                .map(owner -> owner.get("email"))
+                .filter(email -> email.endsWith("@ceh.ac.uk") && !email.equals("enquiries@ceh.ac.uk") && !email.equals("info@eidc.ac.uk"))
+                .forEach(email -> toReturn.add(new ServiceAgreementCheck(format("Author's email address is %s", email), ERROR)));
 
         if (toReturn.isEmpty()) {
             return Optional.empty();
@@ -185,9 +190,19 @@ public class ServiceAgreementQualityService {
 
         val toReturn = new ArrayList<ServiceAgreementCheck>();
         val depositorContactDetails = parsed.read("$.depositorContactDetails", String.class).trim();
-        if(depositorContactDetails.endsWith("@ceh.ac.uk") && !depositorContactDetails.equals("enquiries@ceh.ac.uk") && !depositorContactDetails.equals("info@eidc.ac.uk")){
-            toReturn.add(new ServiceAgreementCheck(format("Author's email address is %s", depositorContactDetails), ERROR));
+
+        if (depositorContactDetails.isEmpty()) {
+            toReturn.add(new ServiceAgreementCheck("Owner's email address is missing", ERROR));
         }
+
+        if(depositorContactDetails == "enquiries@ceh.ac.uk" || depositorContactDetails == "info@eidc.ac.uk"){
+            toReturn.add(new ServiceAgreementCheck(format("Depositor's email address is %s", depositorContactDetails), ERROR));
+        }
+
+        if(!depositorContactDetails.endsWith("@ceh.ac.uk")){
+            toReturn.add(new ServiceAgreementCheck(format("Depositor's email address is %s which is not a CEH email address", depositorContactDetails), ERROR));
+        }
+
         if (toReturn.isEmpty()) {
             return Optional.empty();
         } else {
@@ -208,7 +223,7 @@ public class ServiceAgreementQualityService {
             if (files.stream().anyMatch(file -> file.get("name").contains(" "))) {
                 toReturn.add(new ServiceAgreementCheck("File names should not contain any spaces", ERROR));
             }
-            if (!files.stream().anyMatch(file -> file.get("name").matches("^[\\w\\-\\_]?\\.\\w$"))) {
+            if (!files.stream().anyMatch(file -> file.get("name").matches("^[\\w\\-\\_]*\\.\\w+?$"))) {
                 toReturn.add(new ServiceAgreementCheck("File names should only consist of alphanumeric characters, underscore, hyphen and dots", ERROR));
             }
         }
@@ -218,11 +233,6 @@ public class ServiceAgreementQualityService {
         if (files.stream().anyMatch(file -> fieldIsMissing(file, "size"))) {
             toReturn.add(new ServiceAgreementCheck("File size is missing", ERROR));
         }
-
-        files.stream()
-                .filter(file -> fieldNotEqual(file, "organisationName", "NERC EDS Environmental Information Data Centre") && fieldNotEqual(file, "organisationName", "NERC Environmental Information Data Centre"))
-                .map(owner -> owner.getOrDefault("organisationName", "unknown"))
-                .forEach(organisationName -> toReturn.add(new ServiceAgreementCheck("Owner name is " + organisationName, WARNING)));
 
         if (toReturn.isEmpty()) {
             return Optional.empty();
