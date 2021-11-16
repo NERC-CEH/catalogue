@@ -195,7 +195,7 @@ public class ServiceAgreementQualityService {
             toReturn.add(new ServiceAgreementCheck("Owner's email address is missing", ERROR));
         }
 
-        if(depositorContactDetails == "enquiries@ceh.ac.uk" || depositorContactDetails == "info@eidc.ac.uk"){
+        if(depositorContactDetails.equals("enquiries@ceh.ac.uk") || depositorContactDetails.equals("info@eidc.ac.uk")){
             toReturn.add(new ServiceAgreementCheck(format("Depositor's email address is %s", depositorContactDetails), ERROR));
         }
 
