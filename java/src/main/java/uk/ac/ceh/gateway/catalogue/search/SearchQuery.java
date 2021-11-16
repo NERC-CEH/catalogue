@@ -11,15 +11,15 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 
 import javax.validation.constraints.NotNull;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-import static uk.ac.ceh.gateway.catalogue.controllers.SearchController.*;
+import static uk.ac.ceh.gateway.catalogue.search.SearchController.*;
 
 @Value
 @Slf4j
@@ -169,13 +169,14 @@ public class SearchQuery {
     /**
      * Create a clone of this search query but apply the additional facet filter
      *
-     * The logic of this method has been designed to match that of lomboks
+     * The logic of this method has been designed to match that of lombok's
      * @Wither methods.
      *
      * If the filter has already been applied, just return this search query
      * @param filter to ensure is present
      * @return a new search query or this one if no change is needed
      */
+    @SuppressWarnings("JavaDoc")
     public SearchQuery withFacetFilter(FacetFilter filter) {
         if (!containsFacetFilter(filter)) {
             List<FacetFilter> newFacetFilters = new ArrayList<>(facetFilters);
@@ -254,11 +255,7 @@ public class SearchQuery {
         }
 
         if(!DEFAULT_SEARCH_TERM.equals(term)) {
-            try {
-                builder.queryParam(TERM_QUERY_PARAM, URLEncoder.encode(term, "UTF-8"));
-            } catch (UnsupportedEncodingException ex) {
-                log.error("Could not encode: " + term, ex);
-            }
+            builder.queryParam(TERM_QUERY_PARAM, URLEncoder.encode(term, StandardCharsets.UTF_8));
         }
 
         if(bbox != null) {
@@ -311,29 +308,26 @@ public class SearchQuery {
             .append(username);
 
         groups
-            .stream()
-            .forEach(g -> {
-                toReturn
-                    .append(" OR ")
-                    .append(g);
-            });
+            .forEach(g -> toReturn
+                .append(" OR ")
+                .append(g));
 
         return toReturn.append(")").toString();
     }
 
     private void setFacetFilters(SolrQuery query){
-        facetFilters.stream().forEach((filter) -> {
-            query.addFilterQuery(filter.asSolrFilterQuery());
-        });
+        facetFilters.forEach((filter) ->
+            query.addFilterQuery(filter.asSolrFilterQuery())
+        );
     }
 
     private void setFacetFields(SolrQuery query){
         query.setFacet(true);
         query.setFacetMinCount(1);
         query.setFacetSort("index");
-        facets.stream().forEach((facet) -> {
-            query.addFacetField(facet.getFieldName());
-        });
+        facets.forEach((facet) ->
+            query.addFacetField(facet.getFieldName())
+        );
     }
 
     private void setCatalogueFilter(SolrQuery query) {

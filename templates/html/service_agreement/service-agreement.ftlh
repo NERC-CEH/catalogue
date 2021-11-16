@@ -26,14 +26,14 @@
                     </div>
                 </div>
             </#if>
+
             <br>
             <#if permission.userCanEdit(id)>
                 <#include "_serviceAgreementQualityAlert.ftlh">
             </#if>
-            <h1>Service Agreement</h1>
-            <b>* IMPORTANT * ONCE A DOI HAS BEEN ISSUED,
-                THESE DETAILS CANNOT BE CHANGED</b>
+
             <h1>Environmental Information Data Centre - Service Agreement</h1>
+            <p><b>IMPORTANT</b> Once a DOI has been issued, these details cannot be changed</p>
             <p>For more information/guidance about this document see <a href="https://eidc.ac.uk/support/agreement">https://eidc.ac.uk/support/agreement</a>
             </p>
             <h2>The Agreement</h2>
@@ -81,15 +81,19 @@
                 </li>
             </ul>
             <h2>${title}</h2>
-            <@displayData "Deposit reference" depositReference/>
-            <@displayData "Depositor name" depositorName/>
-            <@displayData "Depositor contact details" depositorContactDetails/>
-            <@displayData "For the EIDC name" eidcName/>
-            <@displayData "For the EIDC contact details" eidcContactDetails/>
+            <dl class="dl-horizontal">
+                <@displayData "Deposit reference" depositReference/>
+                <@displayData "Depositor name" depositorName/>
+                <@displayData "Depositor contact details" depositorContactDetails/>
+                <@displayData "For the EIDC name" eidcName/>
+                <@displayData "For the EIDC contact details" eidcContactDetails/>
+            </dl>
             <h3>Data identification and citation</h3>
             <@displayAuthors/>
             <h3>Policies & legislation</h3>
-            <@displayData "Other Policies or Legislation" otherPoliciesOrLegislation/>
+            <dl class="dl-horizontal">
+                <@displayData "Other Policies or Legislation" otherPoliciesOrLegislation/>
+            </dl>
             <h3>The data</h3>
             <@displayFiles/>
             <@displayData "Transfer method" transferMethod/>
@@ -102,9 +106,11 @@
             <#if policyExceptions??> <p>Policy Exceptions: ${policyExceptions}</p> </#if>
             <@displayData "Policy Exceptions" policyExceptions/>
             <h3>Availability and access</h3>
-            <@displayData "Availability" availability/>
-            <@displayData "Specific Requirements" specificRequirements/>
-            <@displayData "Other services required" otherServicesRequired/>
+            <dl class="dl-horizontal">
+                <@displayData "Availability" availability/>
+                <@displayData "Specific Requirements" specificRequirements/>
+                <@displayData "Other services required" otherServicesRequired/>
+            </dl>
             <h3>Licensing and IPR</h3>
             <@displayEndUserLicence/>
             <@displayOwnerOfIpr/>
@@ -127,7 +133,7 @@
 </@skeleton.master>
 
 <#macro displayData title object=''>
-    <#if object!=''> <p>${title}: ${object}</p> </#if>
+    <#if object!=''> <dt>${title}</dt> <dd>${object}</dd> </#if>
 </#macro>
 
 <#macro displayAuthors>

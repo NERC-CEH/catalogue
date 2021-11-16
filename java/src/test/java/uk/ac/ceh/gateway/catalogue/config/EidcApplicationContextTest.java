@@ -20,7 +20,7 @@ import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadService;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @Slf4j
-@ActiveProfiles({"auth:crowd", "upload:hubbub", "server:eidc", "service-agreement"})
+@ActiveProfiles({"auth:crowd", "upload:hubbub", "server:eidc", "search:basic", "service-agreement"})
 @CatalogueWebTest
 @DisplayName("EIDC production context")
 class EidcApplicationContextTest {
