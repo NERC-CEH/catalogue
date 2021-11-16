@@ -346,7 +346,7 @@ class ServiceAgreementControllerTest {
         givenMetadataRecordExists();
 
         //When
-        mvc.perform(post("/service-agreement/{id}/permission", ID))
+        mvc.perform(post("/service-agreement/{id}/add-editor", ID))
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/service-agreement/" + ID));
     }
@@ -360,7 +360,7 @@ class ServiceAgreementControllerTest {
         givenMetadataRecordExists();
 
         //When
-        mvc.perform(post("/service-agreement/{id}/permission", ID))
+        mvc.perform(post("/service-agreement/{id}/add-editor", ID))
                 .andExpect(status().isForbidden());
 
         //then

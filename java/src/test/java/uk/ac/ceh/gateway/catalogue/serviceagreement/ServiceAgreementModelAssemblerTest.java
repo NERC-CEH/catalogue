@@ -69,7 +69,7 @@ class ServiceAgreementModelAssemblerTest {
         val model = assembler.toModel(serviceAgreement);
 
         //then
-        assertTrue(model.getLink("permission").isPresent());
+        assertTrue(model.getLink("add-editor").isPresent());
     }
 
     @Test
@@ -83,7 +83,7 @@ class ServiceAgreementModelAssemblerTest {
         val model = assembler.toModel(serviceAgreement);
 
         //then
-        assertFalse(model.getLink("permission").isPresent());
+        assertFalse(model.getLink("add-editor").isPresent());
     }
 
     @Test

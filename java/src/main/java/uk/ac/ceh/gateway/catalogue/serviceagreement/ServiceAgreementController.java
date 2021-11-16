@@ -117,7 +117,7 @@ public class ServiceAgreementController {
     }
 
     @PreAuthorize("@permission.userCanEdit(#id)")
-    @PostMapping("{id}/add-editor")
+    @PostMapping("{id}/publish")
     public RedirectView publishServiceAgreement(@ActiveUser CatalogueUser user,
                                                @PathVariable("id") String id
     ) {
@@ -131,7 +131,7 @@ public class ServiceAgreementController {
     }
 
     @PreAuthorize("@permission.userCanEdit(#id)")
-    @PostMapping("{id}/permission")
+    @PostMapping("{id}/add-editor")
     public RedirectView giveDepositorEditPermission(@ActiveUser CatalogueUser user,
                                                 @PathVariable("id") String id
     ) {
