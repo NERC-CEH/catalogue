@@ -21,6 +21,39 @@
       <h1>${title}</h1>
     </#if>
 
+
+  <#if (code?? && code?has_content) || (documents?? && documents?has_content)>
+      <div class="access">
+        <#if code?? && code?has_content>
+          <#list code as link>
+            <p>
+              <#if link.url?? && link.url?has_content>
+                <i class="fas fa-code"></i> <@m.Url link.url true/>
+              </#if>
+            </p>
+          </#list>
+        </#if>
+
+        <#if documents?? && documents?has_content>
+          <#list documents as link>
+            <p>
+              <#if link.url?? && link.url?has_content>
+                <i class="fas fa-book"></i> <@m.Url link.url true/>
+              </#if>
+            </p>
+          </#list>
+        </#if>
+
+      <#if licenseType?? && licenseType?has_content>
+        Licence: ${licenseType?cap_first}
+      </#if>
+
+      </div>
+    </#if>
+
+
+
+
     <#if description?? && description?has_content>
         <div class="description clearfix">
           <#if image?? && image?has_content>
@@ -32,39 +65,18 @@
         </div>
     </#if>
 
-    <#if (code?? && code?has_content) || (documents?? && documents?has_content)>
-      <div class="onlineLinks">
-
-            <#if code?? && code?has_content>
-              <#list code as link>
-                <p>
-                  <#if link.url?? && link.url?has_content>
-                    <@m.Url link.url true/>
-                  </#if>
-                </p>
-              </#list>
-            </#if>
-
-            <#if documents?? && documents?has_content>
-              <#list documents as link>
-                <p>
-                  <#if link.url?? && link.url?has_content>
-                    <@m.Url link.url true/>
-                  </#if>
-                </p>
-              </#list>
-            </#if>
-
-      </div>
-    </#if>
-
-      <#if purpose?? || responsibleParties?? || licenseType?? || onlineResources??>
+      <#if purpose?? || responsibleParties?? || modelType??>
       <div>
         <#if purpose?? && purpose?has_content>
           <@m.key "Purpose">
             <@b.linebreaks purpose />
           </@m.key>
         </#if>
+
+        <#if modelType?? && modelType?has_content>
+          <@m.key "Model type" >${modelType?cap_first}</@m.key>
+        </#if>
+
 
         <#if responsibleParties?? && responsibleParties?has_content>
           <@m.key "Contacts">
@@ -80,26 +92,10 @@
         </#if>
 
 
-        <#if websites?? && websites?has_content>
-          <@m.key "Websites">
-            <#list websites as link>
-              <p>
-                <#if link.url?? && link.url?has_content>
-                  <@m.Url link.url true/>
-                </#if>
-              </p>
-            </#list>
-          </@m.key>
-        </#if>
-
-
-        <#if licenseType?? && licenseType?has_content>
-          <@m.key "License" "License type (open or non-open) under which the model is distributed">${licenseType?cap_first}</@m.key>
-        </#if>
       </div>
       </#if>
 
-      <#if keyInputVariables?? || keyOutputVariables?? || modelType?? || currentModelVersion?? || modelCalibration??>
+      <#if keyInputVariables?? || keyOutputVariables?? || currentModelVersion?? || clibration??>
       <div>
         <h2>Model Description</h2>
         <#if keyInputVariables?? && keyInputVariables?has_content>
@@ -107,9 +103,6 @@
         </#if>
         <#if keyOutputVariables?? && keyOutputVariables?has_content>
           <@m.key "Key output variables" ><@m.commaList keyOutputVariables /></@m.key>
-        </#if>
-        <#if modelType?? && modelType?has_content>
-          <@m.key "Model type" >${modelType?cap_first}</@m.key>
         </#if>
         <#if currentModelVersion?? && currentModelVersion?has_content>
           <@m.key "Current model version">
@@ -119,8 +112,11 @@
             </#if>
           </@m.key>
         </#if>
-        <#if modelCalibration?? && modelCalibration?has_content>
-          <@m.key "Model calibration">${modelCalibration}</@m.key>
+        <#if calibration?? && calibration?has_content>
+          <@m.key "Calibration">${calibration}</@m.key>
+        </#if>
+        <#if configuration?? && configuration?has_content>
+          <@m.key "Configuration">${configuration}</@m.key>
         </#if>
       </div>
       </#if>
@@ -221,20 +217,36 @@
       </#if>
     </div>
 
-    <#if references?? && references?has_content>
+    <#if (references?? && references?has_content) || (websites?? && websites?has_content)>
     <div>
-      <h2>References</h2>
-      <#list references as ref>
-        <div><#if ref.name?? && ref.name?has_content>${ref.name}</#if></div>
-        <div><#if ref.description?? && ref.description?has_content>${ref.description}</#if></div>
-        <div><#if ref.url?? && ref.url?has_content><@m.Url ref.url true/></#if></div>
-      </#list>
+      <h2>Supplemental information</h2>
+
+      <#if websites?? && websites?has_content>
+        <@m.key "Web links">
+          <#list websites as link>
+            <p>
+              <#if link.url?? && link.url?has_content>
+                <@m.Url link.url true/>
+              </#if>
+            </p>
+          </#list>
+        </@m.key>
+      </#if>
+
+      <#if references?? && references?has_content>
+        <@m.key "References">
+          <#list references as ref>
+            <div><#if ref.name?? && ref.name?has_content>${ref.name}</#if></div>
+            <div><#if ref.description?? && ref.description?has_content>${ref.description}</#if></div>
+            <div><#if ref.url?? && ref.url?has_content><@m.Url ref.url true/></#if></div>
+          </#list>
+         </@m.key>
+       </#if>
     </div>
     </#if>
 
     <@m.additionalMetadata />
-  
-
+     
   </@b.metadataContainer>
   <#include "_footer.ftlh">
 

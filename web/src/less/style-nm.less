@@ -101,6 +101,29 @@ a.navbar-brand {
     position: relative;
   }
 
+  .access {
+    @backcolor: gray;
+    @padd: 2em;
+
+    border: 1px solid @backcolor;
+    padding: @padd;
+    margin: @padd 0 (@padd / 2) 0;
+    min-width: 100%;
+    &:before {
+      content: "ACCESS";
+      display: block;
+      background-color: @backcolor;
+      color: white;
+      margin: -@padd -@padd @padd -@padd;
+      padding: (@padd / 2);
+    }
+    @media only screen and (min-width: 700px) {
+      min-width: 300px;
+      max-width: 50%;
+      margin: @padd 0 (@padd+1) (@padd+1);
+    }
+  }
+
   #adminPanel {
     position: sticky;
     z-index: 750;

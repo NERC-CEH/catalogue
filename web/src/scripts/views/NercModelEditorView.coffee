@@ -39,9 +39,6 @@ define [
           model: @model
           modelAttribute: 'title'
           label: 'Title'
-          helpText: """
-                    <p>Name of the model</p>
-                    """
 
         new TextareaView
           model: @model
@@ -57,9 +54,6 @@ define [
           modelAttribute: 'purpose'
           label: 'Purpose'
           rows: 6
-          helpText: """
-                    <p>Short phrase to describe principal aim of model</p>
-                    """
 
         new InputView
           model: @model
@@ -178,9 +172,8 @@ define [
                     <option value='browseGraphic'>Image to display on metadata record</option>
                     """
           helpText: """
-                    <p>Websites and online resources to access and further descibe the model</p>
-                    <p>You should include the location of the model code repository e.g. https://github.com/NERC-CEH/...</p>
-                    <p><b>If your model is not currently under version control and you are unsure about how to achieve this please talk to your Informatics Liaison representative.</b></p>
+                    <p>Websites/online resources to access and further descibe the model</p>
+                    <p>You should include the location of the model code repository e.g. https://github.com/...</p>
                     """
 
         new InputView
@@ -196,8 +189,8 @@ define [
                     """
       ]
     ,
-      label: 'Technical info'
-      title: 'Technical info'
+      label: 'Technical'
+      title: 'Technical information'
       views: [
         new TextareaView
           model: @model
