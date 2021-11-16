@@ -224,7 +224,7 @@ public class CatalogueServiceConfig {
             Catalogue.builder()
                 .id("ukscape")
                 .title("UK-SCAPE")
-                .url("https://ukscape.ceh.ac.uk/")
+                .url("https://uk-scape.ceh.ac.uk/resources/digital-assets-catalogue")
                 .contactUrl("https://ukscape.ceh.ac.uk/about/contact-us")
                 .facetKey("ukscapeResearchTheme")
                 .facetKey("ukscapeScienceChallenge")
