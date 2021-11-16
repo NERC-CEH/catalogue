@@ -253,12 +253,6 @@ public class ServiceAgreementQualityService {
                 || map.get(key).isEmpty();
     }
 
-    private boolean fieldNotEqual(Map<String, String> map, String key, String value) {
-        return !map.containsKey(key)
-                || map.get(key) == null
-                || !map.get(key).equals(value);
-    }
-
     @Value
     public static class ServiceAgreementCheck {
         String test;
