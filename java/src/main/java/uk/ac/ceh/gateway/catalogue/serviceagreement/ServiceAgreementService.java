@@ -17,4 +17,6 @@ public interface ServiceAgreementService {
     void submitServiceAgreement(CatalogueUser user, String id);
 
     void publishServiceAgreement(CatalogueUser user, String id);
+
+    void giveDepositorEditPermission(CatalogueUser user, String id);
 }
