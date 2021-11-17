@@ -9,12 +9,22 @@
   </div>
 </#macro>
 
-<#macro Url value newWindow=false>
+<#macro Url value newWindow=true>
   <#if value?matches("^http(s)?://.*")>
     <#if newWindow==true>
       <a href="${value}" target="_blank" rel="noopener noreferrer">${value}</a>
     <#else>
       <a href="${value}">${value}</a>
+    </#if>
+  </#if>
+</#macro>
+
+<#macro urlButton value btntype="default" newWindow=true>
+  <#if value.url?matches("^http(s)?://.*")>
+    <#if newWindow==true>
+      <a class="btn btn-${btntype} btn-sm" href="${value.url}" title="${value.url}" target="_blank" rel="noopener noreferrer"><#nested></a>
+    <#else>
+      <a class="btn btn-${btntype} btn-sm" href="${value.url}" title="${value.url}"><#nested></a>
     </#if>
   </#if>
 </#macro>

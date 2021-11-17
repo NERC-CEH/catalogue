@@ -64,7 +64,7 @@ public class KeywordVocabulariesConfig {
             SolrClient solrClient,
             @Value("${sparql.endpoint}") String sparqlEndpoint
     ) {
-        val catalogueIds = Arrays.asList("assist", "eidc", "elter");
+        val catalogueIds = Arrays.asList("assist", "eidc", "elter", "nm");
         return new SparqlKeywordVocabulary(
                 restTemplate,
                 solrClient,

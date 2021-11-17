@@ -30,7 +30,7 @@
     <label for="modelInfo<%= data.index %>spatialExtentOfApplication">Spatial extent of application</label>
   </div>
   <div class="col-sm-9 col-lg-9">
-    <input list="modelInfo<%= data.index %>SpatialExtentOfApplicationList" data-name="spatialExtentOfApplication" id="modelInfo<%= data.index %>SpatialExtentOfApplication" class="editor-input"/>
+    <input list="modelInfo<%= data.index %>SpatialExtentOfApplicationList" data-name="spatialExtentOfApplication" id="modelInfo<%= data.index %>SpatialExtentOfApplication" class="editor-input" value="<%= data.spatialExtentOfApplication %>"/>
     <datalist id="modelInfo<%= data.index %>SpatialExtentOfApplicationList">
       <option value="Plot"/>
       <option value="Field"/>
@@ -90,7 +90,7 @@
 </div>
 <div class="row">
   <div class="col-sm-3 col-lg-3">
-    <label for="modelInfo<%= data.index %>CalibrationConditions">Calibration conditions</label>
+    <label for="modelInfo<%= data.index %>CalibrationConditions">Calibration</label>
   </div>
   <div class="col-sm-9 col-lg-9">
     <textarea data-name="calibrationConditions" rows="3" id="modelInfo<%= data.index %>CalibrationConditions" class="editor-textarea"><%= data.calibrationConditions %></textarea>

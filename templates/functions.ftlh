@@ -119,17 +119,8 @@
         <div class="contactPhone"><i class="fas fa-phone"></i>&nbsp;${contact.phone}</div>
     </#if>
 
-    <#if showEmail && (contact.email?has_content || catalogue = "eidc")>
-        <#assign emailSubject= "?subject=" + title>
-        <#if contact.email?has_content>
-            <#assign emailAddress=contact.email>
-        <#else>
-            <#assign emailAddress= "enquiries@ceh.ac.uk">
-        </#if>
-        <#if contact.individualName?has_content>
-            <#assign emailSubject += " (FAO: " + contact.individualName + ")">
-        </#if>
-        <a href="mailto:${emailAddress}${emailSubject}"><i class="far fa-envelope contactEmail"></i>&nbsp;${emailAddress}</a>
+    <#if showEmail && contact.email?has_content >
+        <a href="mailto:${contact.email}"><i class="far fa-envelope contactEmail"></i>&nbsp;${contact.email}</a>
     </#if>
 
 </#macro>

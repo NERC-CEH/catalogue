@@ -5,7 +5,7 @@ define [
   'cs!views/editor/ParentView'
   'cs!views/editor/PredefinedParentView'
   'cs!views/editor/ParentStringView'
-  'cs!views/editor/KeywordView'
+  'cs!views/editor/KeywordVocabularyView'
   'cs!views/editor/ContactView'
   'cs!views/editor/SingleObjectView'
   'cs!views/editor/QaView'
@@ -23,7 +23,7 @@ define [
   'cs!views/editor/FundingView'
   'cs!models/editor/Funding'
 ], (
-  EditorView, InputView, TextareaView, ParentView, PredefinedParentView, ParentStringView, KeywordView, ContactView, SingleObjectView, QaView, VersionHistoryView, ModelQAView, ModelResolutionView, OnlineLinkView, Contact, DataTypeSchema, DataTypeSchemaSimpleView, BoundingBox, BoundingBoxView, SupplementalView, Supplemental, FundingView, Funding
+  EditorView, InputView, TextareaView, ParentView, PredefinedParentView, ParentStringView, KeywordVocabularyView, ContactView, SingleObjectView, QaView, VersionHistoryView, ModelQAView, ModelResolutionView, OnlineLinkView, Contact, DataTypeSchema, DataTypeSchemaSimpleView, BoundingBox, BoundingBoxView, SupplementalView, Supplemental, FundingView, Funding
 ) -> EditorView.extend
 
   initialize: ->
@@ -111,7 +111,7 @@ define [
           model: @model
           modelAttribute: 'keywords'
           label: 'Keywords'
-          ObjectInputView: KeywordView
+          ObjectInputView: KeywordVocabularyView
           helpText: """
                     <p>Keywords help with model discovery</p>
                     """

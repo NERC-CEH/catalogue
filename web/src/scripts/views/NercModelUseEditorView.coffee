@@ -7,7 +7,7 @@ define [
   'cs!views/editor/ContactView'
   'cs!models/editor/Contact'
   'cs!views/editor/ParentStringView'
-  'cs!views/editor/KeywordView'
+  'cs!views/editor/KeywordVocabularyView'
   'cs!views/editor/ReferenceView'
   'cs!models/editor/Reference'
   'cs!views/editor/SingleObjectView'
@@ -17,10 +17,11 @@ define [
   'cs!models/editor/Funding'
   'cs!views/editor/SupplementalView'
   'cs!models/editor/Supplemental'
-  
+  'cs!views/editor/OnlineLinkView'
+
 
 ], (
-  EditorView, InputView, TextareaView, ParentView, PredefinedParentView, ContactView, Contact, ParentStringView, KeywordView, ReferenceView, Reference, SingleObjectView, DataInfoView, NercModelInfoView, FundingView, Funding, SupplementalView, Supplemental
+  EditorView, InputView, TextareaView, ParentView, PredefinedParentView, ContactView, Contact, ParentStringView, KeywordVocabularyView, ReferenceView, Reference, SingleObjectView, DataInfoView, NercModelInfoView, FundingView, Funding, SupplementalView, Supplemental, OnlineLinkView
 ) -> EditorView.extend
 
   initialize: ->
@@ -47,7 +48,7 @@ define [
           model: @model
           modelAttribute: 'keywords'
           label: 'Keywords'
-          ObjectInputView: KeywordView
+          ObjectInputView: KeywordVocabularyView
 
         new InputView
           model: @model
@@ -64,19 +65,24 @@ define [
           predefined:
             'BAS':
               organisationName: 'British Antarctic Survey'
+              role: 'pointOfContact'
               email: 'information@bas.ac.uk'
               organisationIdentifier: 'https://ror.org/01rhff309'
             'BGS':
               organisationName: 'British Geological Survey'
+              role: 'pointOfContact'
               email: 'enquiries@bgs.ac.uk'
               organisationIdentifier: 'https://ror.org/04a7gbp98'
             'CEDA':
               organisationName: 'Centre for Environmental Data Analysis'
+              role: 'pointOfContact'
             'NOC':
               organisationName: 'National Oceanography Centre'
+              role: 'pointOfContact'
               organisationIdentifier: 'https://ror.org/00874hx02'
             'UKCEH':
               organisationName: 'UK Centre for Ecology & Hydrology'
+              role: 'pointOfContact'
               email: 'enquiries@ceh.ac.uk'
               organisationIdentifier: 'https://ror.org/00pggkr55'
 
@@ -133,7 +139,7 @@ define [
                     <p>Temporal extent of application (start date) - Start date of application (if applicable)</p>
                     <p>Temporal extent of application (end date) - End date of application (if applicable)</p>
                     <p>Temporal resolution of application - Time step used in the model application e.g. 1s; annual (if applicable)</p>
-                    <p>Calibration conditions - How was the model calibrated (if applicable)?</p>
+                    <p>Calibration - How was the model calibrated (if applicable)?</p>
                     """
       ]
     ,
@@ -164,6 +170,18 @@ define [
       label: 'References'
       title: 'References'
       views: [
+
+        new ParentView
+          model: @model
+          modelAttribute: 'onlineResources'
+          label: 'Online resources'
+          ObjectInputView: OnlineLinkView
+          multiline: true
+          listAttribute: """
+                    <option value='website'/>
+                    <option value='browseGraphic'>Image to display on metadata record</option>
+                    """
+
         new ParentView
           model: @model
           modelAttribute: 'references'

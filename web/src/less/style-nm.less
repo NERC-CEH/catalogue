@@ -11,11 +11,11 @@
 @fa-font-path: "../vendor/font-awesome-5/webfonts";
 
 //colours
-@ukri-blue: #2e2d62;
+@ukri-blue: hsla(241, 37%, 28%, 1);
 @nerc-blue: @ukri-blue;
-@nerc-lightgreen: #67c04d;
-@nerc-darkgreen: #3e863e;
-@nerc-hightlight: #cb3564;
+@nerc-lightgreen: hsla(106, 48%, 53%, 1);
+@nerc-darkgreen: hsla(120, 37%, 38%, 1);
+@nerc-hightlight: hsla(341, 59%, 50%, 1);
 
 @link-hover-color: @nerc-blue;
 
@@ -58,12 +58,20 @@ body {
 
 .navbar {
   border-bottom-width: @navbar-border-width;
+  box-shadow: 0 0 0 (@navbar-border-width)/2 @nerc-darkgreen;
   &-toggle {
     background-color: black;
     color: white;
   }
 }
 
+.filters-panel {
+  .header {
+    h3 {
+      color: white;
+    }
+  }
+}
 .adminToolbar {
   margin-top: 1em;
 }
@@ -97,44 +105,76 @@ a.navbar-brand {
 }
 
 .nerc-model {
-  .container {
-    position: relative;
-  }
-
-  .access {
-    @backcolor: gray;
-    @padd: 2em;
-
-    border: 1px solid @backcolor;
-    padding: @padd;
-    margin: @padd 0 (@padd / 2) 0;
-    min-width: 100%;
-    &:before {
-      content: "ACCESS";
-      display: block;
-      background-color: @backcolor;
-      color: white;
-      margin: -@padd -@padd @padd -@padd;
-      padding: (@padd / 2);
-    }
-    @media only screen and (min-width: 700px) {
-      min-width: 300px;
-      max-width: 50%;
-      margin: @padd 0 (@padd+1) (@padd+1);
-    }
-  }
-
   #adminPanel {
-    position: sticky;
-    z-index: 750;
-    top: 6em;
-    background-color: white;
-    padding: 1em 0.5em 0.5em 0.5em;
+    padding: 1em 0.5em;
+  }
+  p.text-danger {
+    font-weight: bolder;
+    color: red;
   }
 
+  .btn {
+    &-code {
+      background-color: lighten(@nerc-blue, 60%);
+      color: black;
+      border-color: lightgray;
+      border-radius: 6px;
+    }
+    &-documentation {
+      color: black;
+      border-color: lightgray;
+      border-radius: 6px;
+    }
+  }
+
+  .model--header {
+    margin-bottom: 1.6em;
+    h1 {
+      border-bottom: 1px solid lightgray;
+      margin-bottom: 0.6em;
+      padding-bottom: 0.6em;
+    }
+    .access {
+      margin-top: 1.6em;
+      display: flex;
+      justify-content: center;
+      gap: 0.5em 2em;
+      flex-wrap: wrap;
+    }
+  }
   .key-value {
     display: grid;
   }
+
+  .modelinfo {
+    > div {
+      border-color: lightgray;
+      border-style: solid;
+      &:first-child {
+        border-width: 1px 1px 0 1px;
+        padding: 0.6em 0.6em 0 0.6em;
+      }
+      &:last-child {
+        border-width: 0 1px 1px 1px;
+      }
+      .collapsed {
+        border-width: 0;
+      }
+    }
+    .extra {
+      padding: 1em;
+      display: grid;
+      gap: 0.6em 1em;
+      grid-template-columns: 225px auto;
+      div {
+        &:nth-child(2n-1) {
+          font-weight: bolder;
+          text-align: right;
+        }
+      }
+    }
+  }
+
   .table--qa {
     margin: 1em 3em;
     table {
