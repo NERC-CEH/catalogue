@@ -99,7 +99,7 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
             .setNcDrivers(grab(getKeywordsByVocabulary(document, NC_DRIVERS_URL), Keyword::getValue))
             .setNcEcosystemServices(grab(getKeywordsByVocabulary(document, NC_ECOSYSTEM_SERVICES_URL), Keyword::getValue))
             .setNcGeographicalScale(grab(getKeywordsByVocabulary(document, NC_GEOGRAPHICAL_SCALE_URL), Keyword::getValue))
-            .setRecordType(codeLookupService.lookup("metadata.recordType", document.getType()))
+            .setRecordType(getRecordType(document))
             .setResourceType(codeLookupService.lookup("metadata.resourceType", document.getType()))
             .setState(getState(document))
             .setTitle(document.getTitle())
@@ -111,6 +111,14 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
             ;
     }
 
+    private String getRecordType(MetadataDocument document) {
+        log.debug("Catalogue: {}", document.getCatalogue());
+        if (document.getCatalogue().equals("eidc")) {
+            return codeLookupService.lookup("metadata.recordType", document.getType());
+        } else {
+            return codeLookupService.lookup("metadata.resourceType", document.getType());
+        }
+    }
 
     private String getCondition(MetadataDocument document) {
         if(document instanceof ErammpDatacube){
