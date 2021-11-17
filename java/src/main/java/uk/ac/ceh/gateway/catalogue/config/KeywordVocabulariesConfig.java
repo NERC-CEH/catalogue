@@ -77,6 +77,48 @@ public class KeywordVocabulariesConfig {
         );
     }
 
+    @Profile("server:datalabs")
+    @Bean
+    public KeywordVocabulary dukemsPollutant(
+        @Qualifier("sparql") RestTemplate restTemplate,
+        SolrClient solrClient,
+        @Value("${sparql.endpoint}") String sparqlEndpoint
+    ) {
+        val catalogueIds = List.of("datalabs");
+        val where = "?uri skos:broader+ <http://vocabs.ceh.ac.uk.org/dukems#16> . ?uri skos:prefLabel ?label .";
+        return new SparqlKeywordVocabulary(
+            restTemplate,
+            solrClient,
+            sparqlEndpoint,
+            "urn:x-evn-master:dukems",
+            where,
+            "dukems-pollutant",
+            "Pollutants",
+            catalogueIds
+        );
+    }
+
+    @Profile("server:datalabs")
+    @Bean
+    public KeywordVocabulary dukemsSector(
+        @Qualifier("sparql") RestTemplate restTemplate,
+        SolrClient solrClient,
+        @Value("${sparql.endpoint}") String sparqlEndpoint
+    ) {
+        val catalogueIds = List.of("datalabs");
+        val where = "?uri skos:broader+ <http://vocabs.ceh.ac.uk.org/dukems#50> . ?uri skos:prefLabel ?label .";
+        return new SparqlKeywordVocabulary(
+            restTemplate,
+            solrClient,
+            sparqlEndpoint,
+            "urn:x-evn-master:dukems",
+            where,
+            "dukems-sector",
+            "Sectors",
+            catalogueIds
+        );
+    }
+
     @Profile("server:elter")
     @Bean
     public KeywordVocabulary envThesVocabulary(

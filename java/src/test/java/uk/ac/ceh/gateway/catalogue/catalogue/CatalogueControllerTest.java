@@ -78,6 +78,11 @@ public class CatalogueControllerTest {
                     }
 
                     @Override
+                    public String getGraph() {
+                        return "urn:x-evn-master:CEHMD";
+                    }
+
+                    @Override
                     public boolean usedInCatalogue(String catalogueId) {
                         return true;
                     }

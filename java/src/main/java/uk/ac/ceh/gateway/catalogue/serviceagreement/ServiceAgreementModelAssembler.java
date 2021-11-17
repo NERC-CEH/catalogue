@@ -48,14 +48,23 @@ public class ServiceAgreementModelAssembler extends RepresentationModelAssembler
         if ("pending publication".equals(serviceAgreement.getState())) {
             val gemini = documentRepository.read(serviceAgreement.getId());
             if (gemini.getState().equals("draft")) {
-                val link = linkTo(methodOn(ServiceAgreementController.class)
+                val publishLink = linkTo(methodOn(ServiceAgreementController.class)
                         .publishServiceAgreement(
                                 null,
                                 serviceAgreement.getId()
                         ))
                         .withRel("publish")
                         .withTitle("Publish");
-                model.add(link);
+                model.add(publishLink);
+
+                val permissionLink = linkTo(methodOn(ServiceAgreementController.class)
+                        .giveDepositorEditPermission(
+                                null,
+                                serviceAgreement.getId()
+                        ))
+                        .withRel("add-editor")
+                        .withTitle("Further Edits Required");
+                model.add(permissionLink);
             }
         }
         log.debug("model: {}", model);

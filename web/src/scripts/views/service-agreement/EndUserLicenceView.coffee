@@ -1,43 +1,48 @@
 define [
   'cs!views/editor/ObjectInputView'
-  'cs!views/editor/ResourceConstraintView'
   'tpl!templates/service-agreement/EndUserLicence.tpl'
-], (ObjectInputView, ResourceConstraintView, template) -> ObjectInputView.extend
+], (ObjectInputView, template) -> ObjectInputView.extend
 
   template: template
 
   className: 'col-sm-3'
 
   events:
-    'change .ogl': 'setOGL'
+    'change .ogl': 'setOgl'
     'change .other': 'setOther'
     'change .value': 'setValue'
     'change .uri': 'setUri'
 
   initialize: (options) ->
     ObjectInputView.prototype.initialize.call @, options
-    @licence =
-      value:'This resource is available under the terms of the Open Government Licence',
-      code:'license',
-      uri:'https://eidc.ceh.ac.uk/licences/OGL/plain'
-    @setOGL()
+    @$resourceConstraint = @$('#resourceConstraint')
+    hasUri = @model.has('uri')
+    hasValue = @model.has('value')
 
-  render: ->
-    ObjectInputView.prototype.render.apply @
-    @
+    if hasUri || hasValue
+      if hasUri && @model.get('uri') == 'https://eidc.ceh.ac.uk/licences/OGL/plain'
+        @$('input.ogl').prop('checked', true)
+      else
+        @$('input.other').prop('checked', true)
+        @$resourceConstraint.removeClass('hidden')
+        if hasValue
+          @$('.value').val(@model.get 'value')
+    else
+      @$('input.ogl').prop('checked', true).change()
 
-  setOGL: ->
-    @$('#resourceConstraint').addClass('hidden')
-    @model.set @licence
+  setOgl: ->
+    @$resourceConstraint.addClass('hidden')
+    @model.set
+      value: 'This resource is available under the terms of the Open Government Licence'
+      code: 'license'
+      uri: 'https://eidc.ceh.ac.uk/licences/OGL/plain'
 
   setOther: ->
-    @$('#resourceConstraint').removeClass('hidden')
+    @$resourceConstraint.removeClass('hidden')
+    @model.unset 'uri'
+    @model.unset 'value'
 
   setValue:(event) ->
-    @licence.value = event.target.value
-    @model.set(@licence)
-
-  setUri:(event) ->
-    @licence.uri = event.target.value
-    @model.set(@licence)
-
+    @model.set
+      code: 'license'
+      value: event.target.value

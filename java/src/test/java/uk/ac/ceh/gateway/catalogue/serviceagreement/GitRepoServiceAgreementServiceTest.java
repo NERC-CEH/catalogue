@@ -307,6 +307,53 @@ public class GitRepoServiceAgreementServiceTest {
                 format("Service Agreement: %s has been agreed upon and published", serviceAgreement.getTitle()));
     }
 
+    @Test
+    @SneakyThrows
+    public void canGiveDepositorEditPermission() {
+        //Given
+        givenPendingPublicationServiceAgreement();
+        givenDraftGeminiDocument();
+        givenPendingPublicationServiceAgreement();
+
+        DataOngoingCommit dataOngoingCommit = mock(DataOngoingCommit.class);
+        given(repo.submitData(any(), any())).willReturn(dataOngoingCommit);
+
+        //When
+        service.giveDepositorEditPermission(user, ID);
+
+        //Then
+        verify(jiraService).comment(
+                serviceAgreement.getDepositReference(),
+                format("Service Agreement (%s): %s has been sent back for further changes",
+                        serviceAgreement.getId(),
+                        serviceAgreement.getTitle()
+                )
+        );
+        verify(dataOngoingCommit).commit(user, "updating service agreement metadata " + ID);
+        verify(documentRepository).read(ID);
+    }
+
+    @Test
+    @SneakyThrows
+    void cannotGiveDepositorEditPermission() {
+        // given
+        givenPublishedServiceAgreement();
+        givenDraftGeminiDocument();
+
+        given(serviceAgreementMapper.readInfo(any()))
+                .willReturn(serviceAgreement);
+
+        // when
+        assertThrows(ServiceAgreementException.class, () ->
+                service.giveDepositorEditPermission(user, ID)
+        );
+
+        // then
+        verify(jiraService, never()).comment(serviceAgreement.getDepositReference(),
+                format("Service Agreement (%s): %s has been sent back for further changes", serviceAgreement.getId(),
+                        serviceAgreement.getTitle()));
+    }
+
 
     @SneakyThrows
     private void givenPublishedServiceAgreement() {
@@ -369,6 +416,7 @@ public class GitRepoServiceAgreementServiceTest {
         serviceAgreement.setTitle("this is a test");
         serviceAgreement.setEndUserLicence(new ResourceConstraint("test", "test", "test"));
         serviceAgreement.setDepositReference("test");
+        serviceAgreement.setDepositorContactDetails("test");
     }
 
     @SneakyThrows

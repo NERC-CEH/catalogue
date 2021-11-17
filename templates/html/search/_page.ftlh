@@ -2,40 +2,49 @@
   This freemarker fragment generates the search results as static HTML content
   from the catalogue api.
 
-  IMPORTANT: If you change the structure of this, please update the corresponding 
+  IMPORTANT: If you change the structure of this, please update the corresponding
   javascript template /web/src/scripts/templates/SearchPage.tpl
 -->
 <div class="results__header">
   <span id="num-records">${numFound}</span> records found
 </div>
 
+<#list relatedSearches>
+  <div class="results__related_searches">
+    <h3>Related Searches</h3>
+    <#items as relatedSearch>
+      <a href="${relatedSearch.href}">${relatedSearch.title}</a><#if relatedSearch_has_next>, </#if>
+    </#items>
+  </div>
+</#list>
+
 <div class="results__list">
 <#list results as result>
   <a href="/${docroot}/${result.identifier}" class="result result--${result.state} <#if (result.resourceStatus??)>result--${result.resourceStatus}</#if>" data-location="${(result.locations?join('|'))!}" id="${result.identifier}">
-   
+
     <div class="result__tags">
       <div class="recordType">
       <#if result.documentType?? && result.documentType == "LINK_DOCUMENT" >
-        <i class="fas fa-link"></i> Linked 
+        <i class="fas fa-link"></i> Linked
       </#if>
       ${result.recordType!""}
       </div>
-      
+
       <#if result.resourceStatus?? >
           <div class="resourceStatus">${result.resourceStatus}</div>
       </#if>
-      
+
       <div class="state">${codes.lookup('publication.state', result.state)?upper_case!''}</div>
-      
+
       <#if result.condition?? >
         <div class="condition">${result.condition}</div>
       </#if>
-      
+
     </div>
-        
-    <div class="result__title">${result.title}</div> 
+
+    <div class="result__title">${result.title}</div>
     <div class="result__description">${result.shortenedDescription}</div>
-    
+
     <#if result.incomingCitationCount gt 0 >
       <div class="result__citationCount">${result.incomingCitationCount} citation<#if result.incomingCitationCount gt 1 >s</#if></div>
     </#if>

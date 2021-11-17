@@ -1,11 +1,13 @@
 package uk.ac.ceh.gateway.catalogue.indexing.solr;
 
 import lombok.SneakyThrows;
+import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.DescriptiveKeywords;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -16,9 +18,8 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
 import uk.ac.ceh.gateway.catalogue.osdp.MonitoringFacility;
-import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
-import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.sparql.VocabularyService;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,11 +27,13 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class SolrIndexMetadataDocumentGeneratorTest {
+class SolrIndexMetadataDocumentGeneratorTest {
 
     @Mock CodeLookupService codeLookupService;
     @Mock DocumentIdentifierService documentIdentifierService;
@@ -38,7 +41,7 @@ public class SolrIndexMetadataDocumentGeneratorTest {
     private SolrIndexMetadataDocumentGenerator generator;
 
     @BeforeEach
-    public void createGeminiDocumentSolrIndexGenerator() {
+    void createGeminiDocumentSolrIndexGenerator() {
         generator = new SolrIndexMetadataDocumentGenerator(
             codeLookupService,
             documentIdentifierService,
@@ -47,8 +50,44 @@ public class SolrIndexMetadataDocumentGeneratorTest {
     }
 
     @Test
+    void serviceRecordTypeForEidc() {
+        //given
+        val document = new GeminiDocument();
+        document.setType("service");
+        document.setMetadata(MetadataInfo.builder().catalogue("eidc").build());
+        given(codeLookupService.lookup("metadata.resourceType", "service"))
+            .willReturn("Service");
+        given(codeLookupService.lookup("metadata.recordType", "service"))
+            .willReturn("Map (web service)");
+
+        //when
+        val actual = generator.generateIndex(document);
+
+        //then
+        assertThat(actual.getRecordType(), equalTo("Map (web service)"));
+    }
+
+    @Test
+    void serviceRecordTypeForNonEidc() {
+        //given
+        val document = new GeminiDocument();
+        document.setType("service");
+        document.setMetadata(MetadataInfo.builder().catalogue("ukscape").build());
+        given(codeLookupService.lookup("metadata.resourceType", "service"))
+            .willReturn("Service");
+        given(codeLookupService.lookup("metadata.recordType", "service"))
+            .willReturn("Map (web service)");
+
+        //when
+        val actual = generator.generateIndex(document);
+
+        //then
+        assertThat(actual.getRecordType(), equalTo("Service"));
+    }
+
+    @Test
     @SneakyThrows
-    public void boundingBoxAndGeometryLocationsAddedToIndex() {
+    void boundingBoxAndGeometryLocationsAddedToIndex() {
         //Given
         MonitoringFacility document = new MonitoringFacility();
         document.setBoundingBox(BoundingBox.builder()
@@ -64,12 +103,15 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         SolrIndex actual = generator.generateIndex(document);
 
         //Then
-        assertThat("locations transferred to index", actual.getLocations(), hasItems("POLYGON((30 10, 40 40, 20 40, 10 20, 30 10))", "POLYGON((-0.5 53.3, -0.5 59.4, 2.4 59.4, 2.4 53.3, -0.5 53.3))"));
+        assertThat(
+            actual.getLocations(),
+            hasItems("POLYGON((30 10, 40 40, 20 40, 10 20, 30 10))", "POLYGON((-0.5 53.3, -0.5 59.4, 2.4 59.4, 2.4 53.3, -0.5 53.3))")
+        );
     }
 
     @Test
     @SneakyThrows
-    public void geometryLocationsAddedToIndex() {
+    void geometryLocationsAddedToIndex() {
         //Given
         MonitoringFacility document = new MonitoringFacility();
         document.setGeometry("POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))");
@@ -78,12 +120,15 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         SolrIndex actual = generator.generateIndex(document);
 
         //Then
-        assertThat("locations transferred to index", actual.getLocations(), hasItems("POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))"));
+        assertThat(
+            actual.getLocations(),
+            hasItems("POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))")
+        );
     }
 
     @Test
     @SneakyThrows
-    public void boundingBoxLocationsAddedToIndex() {
+    void boundingBoxLocationsAddedToIndex() {
         //Given
         MonitoringFacility document = new MonitoringFacility();
         document.setBoundingBox(BoundingBox.builder()
@@ -98,11 +143,15 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         SolrIndex actual = generator.generateIndex(document);
 
         //Then
-        assertThat("locations transferred to index", actual.getLocations(), hasItems("POLYGON((-0.5 53.3, -0.5 59.4, 2.4 59.4, 2.4 53.3, -0.5 53.3))"));
+        assertThat(
+            "locations transferred to index",
+            actual.getLocations(),
+            hasItems("POLYGON((-0.5 53.3, -0.5 59.4, 2.4 59.4, 2.4 53.3, -0.5 53.3))")
+        );
     }
 
     @Test
-    public void applicationScaleAddedToIndex() throws Exception {
+    void applicationScaleAddedToIndex() {
         //Given
         Model document = new Model();
         document.setApplicationScale("global");
@@ -111,11 +160,11 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         SolrIndex actual = generator.generateIndex(document);
 
         //Then
-        assertThat(actual.getImpScale().contains("global"), is(true));
+        assertTrue(actual.getImpScale().contains("global"));
     }
 
     @Test
-    public void scaleAddedFromModel() throws Exception {
+    void scaleAddedFromModel() {
         //Given
         CehModel model = new CehModel();
         model.setKeywords(Arrays.asList(
@@ -128,12 +177,12 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         List<String> actual = index.getImpScale();
 
         //Then
-        assertThat(actual.contains("global"), is(true));
-        assertThat(actual.contains("catchment"), is(true));
+        assertTrue(actual.contains("global"));
+        assertTrue(actual.contains("catchment"));
     }
 
     @Test
-    public void scaleAddedFromModelApplication() throws Exception {
+    void scaleAddedFromModelApplication() {
         //Given
         CehModelApplication application = new CehModelApplication();
         application.setKeywords(Arrays.asList(
@@ -150,13 +199,13 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         List<String> actual = index.getImpScale();
 
         //Then
-        assertThat(actual.contains("global"), is(true));
-        assertThat(actual.contains("catchment"), is(true));
-        assertThat(actual.contains("plot"), is(true));
+        assertTrue(actual.contains("global"));
+        assertTrue(actual.contains("catchment"));
+        assertTrue(actual.contains("plot"));
     }
 
     @Test
-    public void topicAddedFromModelApplication() throws Exception {
+    void topicAddedFromModelApplication() {
         //Given
         CehModelApplication application = new CehModelApplication();
         application.setKeywords(Arrays.asList(
@@ -170,12 +219,12 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         List<String> actual = index.getImpTopic();
 
         //Then
-        assertThat("Solr index should have model application topic", actual.contains("nitrogen"));
-        assertThat("Solr index should have model application topic", actual.contains("management"));
+        assertTrue(actual.contains("nitrogen"));
+        assertTrue(actual.contains("management"));
     }
 
     @Test
-    public void checkThatTitleIsTransferedToIndex() {
+    void checkThatTitleIsTransferredToIndex() {
         //Given
         GeminiDocument document = new GeminiDocument();
         document.setTitle("my gemini document");
@@ -188,9 +237,9 @@ public class SolrIndexMetadataDocumentGeneratorTest {
     }
 
     @Test
-    public void checkThatIdTransferedToIndex() {
+    void checkThatIdTransferredToIndex() {
         //Given
-        String id = "some crazy long, hard to rememember, number";
+        String id = "some crazy long, hard to remember, number";
         when(documentIdentifierService.generateFileId(id)).thenReturn("myid");
         GeminiDocument document = new GeminiDocument();
         document.setId(id);
@@ -203,7 +252,7 @@ public class SolrIndexMetadataDocumentGeneratorTest {
     }
 
     @Test
-    public void checkThatDescriptionIsTransferedToIndex() {
+    void checkThatDescriptionIsTransferredToIndex() {
         //Given
         String description = "Once upon a time, there was a metadata record...";
         GeminiDocument document = new GeminiDocument();
@@ -217,7 +266,7 @@ public class SolrIndexMetadataDocumentGeneratorTest {
     }
 
     @Test
-    public void checkThatResourceTypeIsTransferedToIndex() {
+    void checkThatResourceTypeIsTransferredToIndex() {
         //Given
         GeminiDocument document = new GeminiDocument();
         document.setResourceType(Keyword.builder().value("dataset").build());
@@ -230,8 +279,9 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         assertEquals("Dataset", index.getResourceType());
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Test
-    public void checkThatLongDescriptionWithSpacesIsShortened(){
+    void checkThatLongDescriptionWithSpacesIsShortened(){
         //Given
         int maxDescriptionLength = SolrIndex.MAX_DESCRIPTION_CHARACTER_LENGTH;
         String description = "Once_upon_a_time,_there_was_a_metadata_description_that_had_to_be_more_than_" + maxDescriptionLength + "_characters_in_length.__It_started_its_life_at_only_30_characters_long,_but_it_ate_its_porridge_every_morning_and_soon_started_to_grow.__After_a_month_it_was_241_characters_in_length.__At_this_stage_Description_Growth_Hormone_(DGH)_really_kicked_in_and_in_now_time_it_was_all_grown_up_happily_exceeded_the_required_number_of_characters_and_ready_to_be_used_for_junit_testing._And_here_is_more_guff._And_here_is_more_guff_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more.";
@@ -239,11 +289,13 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         document.setDescription(description);
 
         //Then
-        assertThat(maxDescriptionLength < description.length(), is(true));
-        assertThat(description.length() > document.getShortenedDescription().length(), is(true)); }
+        assertTrue(description.length() > maxDescriptionLength);
+        assertTrue(description.length() > document.getShortenedDescription().length());
+    }
 
+    @SuppressWarnings("ConstantConditions")
     @Test
-    public void checkThatLongDescriptionWithoutSpacesIsShortened(){
+    void checkThatLongDescriptionWithoutSpacesIsShortened(){
         //Given
         int maxDescriptionLength = SolrIndex.MAX_DESCRIPTION_CHARACTER_LENGTH;
         String description = "Once_upon_a_time,_there_was_a_metadata_description_that_had_to_be_more_than_" + maxDescriptionLength + "_characters_in_length.__It_started_its_life_at_only_30_characters_long,_but_it_ate_its_porridge_every_morning_and_soon_started_to_grow.__After_a_month_it_was_241_characters_in_length.__At_this_stage_Description_Growth_Hormone_(DGH)_really_kicked_in_and_in_now_time_it_was_all_grown_up_happily_exceeded_the_required_number_of_characters_and_ready_to_be_used_for_junit_testing._And_here_is_more_guff._And_here_is_more_guff_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more_and_more.";
@@ -251,13 +303,14 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         document.setDescription(description);
 
         //Then
-        assertThat((maxDescriptionLength < (description.length())), is(true));
-        assertThat((description.length() > document.getShortenedDescription().length()), is(true));
+        assertTrue(description.length() > maxDescriptionLength);
+        assertTrue(description.length() > document.getShortenedDescription().length());
 
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Test
-    public void checkThatShortDescriptionIsNotShortened(){
+    void checkThatShortDescriptionIsNotShortened(){
         //Given
         int maxDescriptionLength = SolrIndex.MAX_DESCRIPTION_CHARACTER_LENGTH;
         String description = "I am short";
@@ -265,8 +318,8 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         document.setDescription(description);
 
         //Then
-        assertThat((maxDescriptionLength > description.length()), is(true));
-        assertEquals(description.length(), document.getShortenedDescription().length());
+        assertTrue(description.length() < maxDescriptionLength);
+        assertThat(description.length(), equalTo(document.getShortenedDescription().length()));
     }
 
     @Test
@@ -283,7 +336,7 @@ public class SolrIndexMetadataDocumentGeneratorTest {
     }
 
     @Test
-    public void checkThatCatalogueIsTransferedToIndex() {
+    public void checkThatCatalogueIsTransferredToIndex() {
         //Given
         MetadataInfo info = MetadataInfo.builder().catalogue("eidc").build();
         MetadataDocument document = new GeminiDocument().setMetadata(info);
@@ -300,7 +353,7 @@ public class SolrIndexMetadataDocumentGeneratorTest {
     }
 
     @Test
-    public void checkThatVocabularyServiceUsed() {
+    void checkThatVocabularyServiceUsed() {
         //Given
         DescriptiveKeywords ncterms = DescriptiveKeywords.builder()
             .keywords(Arrays.asList(
@@ -322,7 +375,7 @@ public class SolrIndexMetadataDocumentGeneratorTest {
                     .build(),
                 Keyword.builder()
                     .value("Blue")
-                    .URI("http://example.com/blue")
+                    .URI("https://example.com/blue")
                     .build()
                 )
             ).build();
@@ -332,7 +385,7 @@ public class SolrIndexMetadataDocumentGeneratorTest {
 
 
         //When
-        SolrIndex index = generator.generateIndex(document);
+        generator.generateIndex(document);
 
         //Then
         verify(vocabularyService).isMember(
@@ -345,7 +398,7 @@ public class SolrIndexMetadataDocumentGeneratorTest {
         );
         verify(vocabularyService).isMember(
             "http://vocabs.ceh.ac.uk/ncterms/geographical_scale",
-            "http://example.com/blue"
+            "https://example.com/blue"
         );
     }
 
@@ -372,7 +425,7 @@ public class SolrIndexMetadataDocumentGeneratorTest {
                     .build(),
                 Keyword.builder()
                     .value("Blue")
-                    .URI("http://example.com/blue")
+                    .URI("https://example.com/blue")
                     .build()
             )
         ).build();
@@ -414,7 +467,7 @@ public class SolrIndexMetadataDocumentGeneratorTest {
                     .build(),
                 Keyword.builder()
                     .value("Blue")
-                    .URI("http://example.com/blue")
+                    .URI("https://example.com/blue")
                     .build()
             )
         ).build();
@@ -456,7 +509,7 @@ public class SolrIndexMetadataDocumentGeneratorTest {
                     .build(),
                 Keyword.builder()
                     .value("Blue")
-                    .URI("http://example.com/blue")
+                    .URI("https://example.com/blue")
                     .build()
             )
         ).build();

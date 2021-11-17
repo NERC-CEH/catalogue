@@ -12,6 +12,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 @Slf4j
@@ -25,11 +26,11 @@ public class SparqlVocabularyRetriever implements VocabularyRetriever {
         this.template = template;
         this.query = URI.create(sparqlEndpoint +
             "?query=" +
-            URLEncoder.encode("PREFIX skos:<http://www.w3.org/2004/02/skos/core#> ", "UTF-8") +
-            URLEncoder.encode("SELECT ?concept ?topConcept ", "UTF-8") +
-            URLEncoder.encode("WHERE {GRAPH <", "UTF-8") +
-            URLEncoder.encode(graph, "UTF-8") +
-            URLEncoder.encode("> {?concept skos:broader ?topConcept .}}", "UTF-8") +
+            URLEncoder.encode("PREFIX skos:<http://www.w3.org/2004/02/skos/core#> ", StandardCharsets.UTF_8) +
+            URLEncoder.encode("SELECT ?concept ?topConcept ", StandardCharsets.UTF_8) +
+            URLEncoder.encode("WHERE {GRAPH <", StandardCharsets.UTF_8) +
+            URLEncoder.encode(graph, StandardCharsets.UTF_8) +
+            URLEncoder.encode("> {?concept skos:broader ?topConcept .}}", StandardCharsets.UTF_8) +
             "&format=json-simple"
         );
         log.info("Creating {}", this);

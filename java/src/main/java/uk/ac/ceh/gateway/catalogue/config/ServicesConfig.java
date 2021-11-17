@@ -99,7 +99,9 @@ public class ServicesConfig {
         );
         messageConverter.setSupportedMediaTypes(supportedMediaTypes);
         val restTemplate = new RestTemplate();
-        restTemplate.setMessageConverters(Collections.singletonList(messageConverter));
+        restTemplate.setMessageConverters(List.of(
+            messageConverter
+        ));
         return restTemplate;
     }
 

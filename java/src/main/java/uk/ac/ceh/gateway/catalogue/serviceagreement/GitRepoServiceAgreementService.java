@@ -210,6 +210,38 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         }
     }
 
+    @SneakyThrows
+    public void giveDepositorEditPermission(CatalogueUser user, String id) {
+            val serviceAgreement = get(id);
+            val serviceAgreementState = serviceAgreement.getState();
+            val metadata = serviceAgreement.getMetadata();
+            val gemini = (GeminiDocument) documentRepository.read(id);
+            val metadataRecordState = gemini.getState();
+        if (metadataRecordState.equals(DRAFT) && serviceAgreementState.equals(PENDING_PUBLICATION)) {
+            Optional.ofNullable(serviceAgreement.getDepositReference())
+                    .ifPresent(depositReference ->
+                            jiraService.comment(
+                                    depositReference,
+                                    format(
+                                            "Service Agreement (%s): %s has been sent back for further changes",
+                                            serviceAgreement.getId(),
+                                            serviceAgreement.getTitle()
+                                    )
+                            )
+                    );
+            addPermissionsForDepositor(metadata, serviceAgreement);
+            updateState(user, id, serviceAgreement, DRAFT);
+        } else {
+            val message = format(
+                    "Cannot return edit permission for Service Agreement %s as state is %s and GeminiDocument state is %s",
+                    id,
+                    serviceAgreementState,
+                    metadataRecordState
+            );
+            throw new ServiceAgreementException(message);
+        }
+    }
+
     private void updateState(CatalogueUser user, String id, ServiceAgreement serviceAgreement, String state) {
         val metadataInfo = serviceAgreement.getMetadata();
         updateMetadata(user, id, metadataInfo.withState(state));
