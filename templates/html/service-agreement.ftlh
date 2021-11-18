@@ -38,7 +38,7 @@
                 This agreement authorises the EIDC to preserve and to distribute the data under the terms specified in
                 this document. To do so, the EIDC will store the data and, where necessary, duplicate and transform
                 copies.</p>
-            <h3>Our responsibilities:</h3>
+            <h2>Our responsibilities:</h2>
             <ul>
                 <li>We will take every care to preserve the integrity of the data and protect it from loss or damage
                 </li>
@@ -229,11 +229,11 @@
 
 <#macro displayRelatedDataHoldings>
     <#if relatedDataHoldings?? && relatedDataHoldings?has_content>
-        <h3>Related Data Holdings</h3><br>
+        <h3>Related Data Holdings</h3>
         <dl>
             <#list relatedDataHoldings as dataHolding>
                 <dt>Title: ${dataHolding.title}</dt>
-                <dd>URL: ${dataHolding.href}</dd><br>
+                <dd>URL: ${dataHolding.href}</dd>
             </#list>
         </dl>
     </#if>

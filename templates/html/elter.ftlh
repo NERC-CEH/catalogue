@@ -114,7 +114,7 @@
               <#include "document/_contacts.ftlh">
 
               <#if topicCategories?? || descriptiveKeywords?? ||  inspireTheme?? || funding?? || spatialRepresentationTypes?? || spatialReferenceSystems??>
-                <h2>Additional metadata</h3>
+                <h2>Additional metadata</h2>
                 <dl id="otherInfo" class="dl-horizontal">
                   <#include "document/_tags.ftlh">
                   <#include "document/_funding.ftlh">

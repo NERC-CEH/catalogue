@@ -5,7 +5,7 @@
     <#assign dataDistributors = func.filter(distributorContacts, "role", "distributor") >
 </#if>
 
-<div id="document-thirdParty">   
+<div id="document-thirdParty">
     <div class="panel panel-default hidden-print" id="document-distribution">
         <div class="panel-body">
             <#assign distributor = "a third party">
@@ -13,18 +13,18 @@
                 <#if dataDistributors?first.organisationName?has_content>
                     <#assign distributor = dataDistributors?first.organisationName>
                 </#if>
-                
+
                 <#if dataDistributors?first.email?has_content>
                     <#assign distributor = " <a href='mailto:" + dataDistributors?first.email + "' title='" + dataDistributors?first.email + "'>" + distributor + "</a>" >
                 </#if>
             </#if>
             <p class="panel-title"> <i class="fas fa-info-circle"> </i> This is a dataset managed by ${distributor}</p>
-            
+
             <#if distributionURLs?has_content>
                 <div class="signpostURL">To access the data visit <a href="${distributionURLs?first.url}">${distributionURLs?first.url}</a></div>
             </#if>
 
-            
+
             <#if licences?has_content>
                 <div class="licenceText">
                     <div class="divider"></div>
@@ -63,7 +63,7 @@
 
     <#if websites?? &&  websites?has_content >
     <div class="websites">
-        <h2>Website<#if websites?size gt 1>s</#if></h3>
+        <h2>Website<#if websites?size gt 1>s</#if></h2>
             <#list websites as website>
                 <div class="website">
                     <a href="${website.url}" target="_blank" rel="noopener noreferrer" title="${website.description}">
