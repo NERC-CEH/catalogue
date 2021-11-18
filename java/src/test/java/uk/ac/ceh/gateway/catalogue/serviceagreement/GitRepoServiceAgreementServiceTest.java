@@ -19,6 +19,7 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.JiraService;
 
 import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.String.format;
@@ -39,6 +40,7 @@ public class GitRepoServiceAgreementServiceTest {
 
     private static final String FOLDER = "service-agreements/";
     private static final String ID = "7c60707c-80ee-4d67-bac2-3c9a93e61557";
+    private static final String VERSION = "version";
 
     @Mock private DataRepository<CatalogueUser> repo;
     @Mock private DocumentInfoMapper<MetadataInfo> metadataInfoMapper;
@@ -354,6 +356,74 @@ public class GitRepoServiceAgreementServiceTest {
                         serviceAgreement.getTitle()));
     }
 
+    @Test
+    @SneakyThrows
+    public void canGetHistory() {
+        //Given
+        List<DataRevision<CatalogueUser>> revisions = new ArrayList<>();
+        given(repo.getRevisions(FOLDER + ID))
+                .willReturn(revisions);
+
+        //When
+        val result = service.getHistory(ID);
+
+        //Then
+        assertThat(result,is(equalTo(revisions)));
+    }
+
+    @Test
+    @SneakyThrows
+    public void cannotGetHistory() {
+        //Given
+        given(repo.getRevisions(FOLDER + ID))
+                .willThrow(new DataRepositoryException("test"));
+
+        //When
+        assertThrows(ServiceAgreementException.class, () ->
+                service.getHistory(ID));
+    }
+
+    @Test
+    @SneakyThrows
+    public void getPreviousVersion() {
+        //Given
+        givenServiceAgreementPreviousVersion();
+
+        //When
+        service.getPreviousVersion(ID, VERSION);
+
+        //Then
+    }
+
+    @Test
+    @SneakyThrows
+    public void canNotGetPreviousVersionRaw() {
+        //Given
+        given(repo.getData(VERSION, FOLDER + ID + ".raw"))
+                .willThrow(new DataRepositoryException("Fail"));
+
+        //When
+        assertThrows(DataRepositoryException.class, () ->
+                service.getPreviousVersion(ID, VERSION));
+    }
+
+    @Test
+    @SneakyThrows
+    public void canNotGetPreviousVersionMeta() {
+        //Given
+        val rawInfoDocument = mock(DataDocument.class);
+        given(repo.getData(VERSION, FOLDER + ID + ".raw"))
+                .willReturn(rawInfoDocument);
+
+        given(repo.getData(VERSION, FOLDER + ID + ".meta"))
+                .willThrow(new DataRepositoryException("Fail"));
+
+        //When
+        assertThrows(DataRepositoryException.class, () ->
+                service.getPreviousVersion(ID, VERSION)
+        );
+    }
+
 
     @SneakyThrows
     private void givenPublishedServiceAgreement() {
@@ -454,6 +524,34 @@ public class GitRepoServiceAgreementServiceTest {
         geminiDocument.setMetadata(metadataInfo);
         given(documentRepository.read(ID))
             .willReturn(geminiDocument);
+    }
+
+    @SneakyThrows
+    private void givenServiceAgreementPreviousVersion() {
+        val metadataInfoDocument = mock(DataDocument.class);
+        given(repo.getData(VERSION, FOLDER + ID + ".meta"))
+                .willReturn(metadataInfoDocument);
+        given(metadataInfoDocument.getInputStream())
+                .willReturn(new ByteArrayInputStream("meta".getBytes()));
+
+        val metadata = MetadataInfo.builder()
+                .state("published")
+                .rawType(APPLICATION_JSON_VALUE)
+                .build();
+        given(metadataInfoMapper.readInfo(any()))
+                .willReturn(metadata);
+
+        val rawDocument = mock(DataDocument.class);
+        given(repo.getData(VERSION,  FOLDER + ID + ".raw"))
+                .willReturn(rawDocument);
+        given(rawDocument.getInputStream())
+                .willReturn(new ByteArrayInputStream("file".getBytes()));
+        given(serviceAgreementMapper.readInfo(any()))
+                .willReturn(serviceAgreement);
+        serviceAgreement.setMetadata(metadata);
+        serviceAgreement.setTitle("this is a test");
+        serviceAgreement.setEndUserLicence(new ResourceConstraint("test", "test", "test"));
+        serviceAgreement.setDepositorContactDetails("deposit@example.com");
     }
 
     @SneakyThrows

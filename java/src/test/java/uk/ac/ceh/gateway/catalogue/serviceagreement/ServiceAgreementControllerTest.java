@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
 import lombok.SneakyThrows;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.jupiter.api.BeforeAll;
@@ -13,13 +14,17 @@ import org.springframework.context.annotation.Import;
 import org.springframework.hateoas.Link;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.permission.CrowdPermissionServiceTest;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
@@ -45,6 +50,7 @@ class ServiceAgreementControllerTest {
 
     private static ServiceAgreement serviceAgreement;
     private static final String ID = "test";
+    private static final String VERSION = "version";
 
     @Autowired
     private MockMvc mvc;
@@ -367,6 +373,71 @@ class ServiceAgreementControllerTest {
         verifyNoInteractions(serviceAgreementService);
     }
 
+
+    @Test
+    @SneakyThrows
+    void getHistory() {
+        // given
+        givenUserCanEdit();
+        givenMetadataRecordExists();
+        givenHistory();
+
+        val expectedResponse = """
+            {
+                "historyOf":"test",
+                "revisions":[
+                    {
+                        "id":"version1",
+                        "href":"test/version/version1"
+                    },
+                    {
+                        "id":"version2",
+                        "href":"test/version/version2"
+                    }
+                ]
+            }
+            """;
+
+        // when
+        mvc.perform(post("/service-agreement/{id}/history", ID)
+                        .accept(HAL_JSON)
+                        .header("Forwarded", "proto=https;host=catalogue"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(HAL_JSON))
+                .andExpect(content().json(expectedResponse));
+    }
+
+
+    @Test
+    @SneakyThrows
+    void getPreviousServiceAgreement() {
+        // given
+        givenUserCanEdit();
+        givenMetadataRecordExists();
+        givenPreviousServiceAgreement();
+        givenServiceAgreementModel();
+
+        val expectedResponse = """
+            {
+                "id": "test",
+                "title": "Test Service Agreement",
+                "_links": {
+                    "self": {
+                        "href": "https://catalogue/service-agreement/test"
+                    }
+                }
+            }
+            """;
+
+        // when
+        mvc.perform(post("/service-agreement/{id}/version/{version}", ID, VERSION)
+                        .accept(HAL_JSON)
+                        .header("Forwarded", "proto=https;host=catalogue"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(HAL_JSON))
+                .andExpect(content().json(expectedResponse));
+    }
+
     private void givenServiceAgreementModel() {
         val self = Link.of("https://catalogue/service-agreement/test", "self");
         val model = new ServiceAgreementModel(serviceAgreement);
@@ -437,6 +508,11 @@ class ServiceAgreementControllerTest {
             .willReturn(serviceAgreement);
     }
 
+    private void givenPreviousServiceAgreement() {
+        given(serviceAgreementService.getPreviousVersion(ID, VERSION))
+                .willReturn(serviceAgreement);
+    }
+
     private void givenMetadataRecordExists() {
         given(serviceAgreementService.metadataRecordExists(ID))
             .willReturn(true);
@@ -445,5 +521,37 @@ class ServiceAgreementControllerTest {
     private void givenMedataRecordDoesNotExist() {
         given(serviceAgreementService.metadataRecordExists(ID))
             .willReturn(false);
+    }
+    private void givenHistory() {
+        List history = new ArrayList();
+        history.add(new TestRevision("version1"));
+        history.add(new TestRevision("version2"));
+        given(serviceAgreementService.getHistory(ID))
+                .willReturn(history);
+    }
+
+    @Value
+    public static class TestRevision implements DataRevision<CatalogueUser> {
+        String revision;
+
+        @Override
+        public String getRevisionID() {
+            return revision;
+        }
+
+        @Override
+        public String getMessage() {
+            return null;
+        }
+
+        @Override
+        public String getShortMessage() {
+            return null;
+        }
+
+        @Override
+        public CatalogueUser getAuthor() {
+            return null;
+        }
     }
 }

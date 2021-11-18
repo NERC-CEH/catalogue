@@ -165,7 +165,7 @@ public class ServiceAgreementController {
             }
 
             return new History()
-                    .setHistoryOf(UUID.fromString(id))
+                    .setHistoryOf(id)
                     .setRevisions(revisionsToReturn);
 
         }else{
@@ -174,7 +174,7 @@ public class ServiceAgreementController {
     }
 
     @PreAuthorize("@permission.userCanEdit(#id)")
-    @GetMapping("{id}/version/{version}")
+    @PostMapping("{id}/version/{version}")
     public ServiceAgreementModel getPreviousVersion(@PathVariable("id") String id,
                                            @PathVariable String version) {
         if (serviceAgreementService.metadataRecordExists(id)) {

@@ -17,7 +17,7 @@ import java.util.UUID;
         @Template(called = "html/service-agreement-history.ftlh", whenRequestedAs = MediaType.TEXT_HTML_VALUE),
 })
 public class History {
-    private UUID historyOf;
+    private String historyOf;
     private List<Revision> revisions;
 
     @Data
