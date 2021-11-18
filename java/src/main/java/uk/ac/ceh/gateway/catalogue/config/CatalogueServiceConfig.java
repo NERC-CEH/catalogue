@@ -11,7 +11,7 @@ import uk.ac.ceh.gateway.catalogue.vocabularies.KeywordVocabulary;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static uk.ac.ceh.gateway.catalogue.DocumentTypes.*;
+import static uk.ac.ceh.gateway.catalogue.quality.DocumentTypes.*;
 
 @SuppressWarnings("HttpUrlsUsage")
 @Configuration
@@ -58,7 +58,6 @@ public class CatalogueServiceConfig {
                 .facetKey("assistResearchThemes")
                 .facetKey("assistTopics")
                 .documentType(GEMINI_TYPE)
-                .documentType(SERVICE_AGREEMENT_TYPE)
                 .documentType(CEH_MODEL_TYPE)
                 .documentType(CEH_MODEL_APPLICATION_TYPE)
                 .documentType(LINK_TYPE)

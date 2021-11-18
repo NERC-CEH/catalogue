@@ -27,7 +27,6 @@
                 </div>
             </#if>
 
-            <br>
             <#if permission.userCanEdit(id)>
                 <#include "_serviceAgreementQualityAlert.ftlh">
             </#if>

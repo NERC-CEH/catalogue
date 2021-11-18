@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue;
+package uk.ac.ceh.gateway.catalogue.quality;
 
 import static uk.ac.ceh.gateway.catalogue.catalogue.Catalogue.DocumentType;
 
@@ -137,12 +137,6 @@ public class DocumentTypes {
         .title("Sample Archive")
         .type(SAMPLE_ARCHIVE)
         .build();
-
-    public static final String SERVICE_AGREEMENT = "service-agreement";
-    public static DocumentType SERVICE_AGREEMENT_TYPE = DocumentType.builder()
-            .title("Sample Archive")
-            .type(SERVICE_AGREEMENT)
-            .build();
 
     public static final String UKEMS_DOCUMENT = "ukems-document";
     public static DocumentType UKEMS_TYPE = DocumentType.builder()

@@ -1,9 +1,7 @@
 {
-  "resourceType": {
-    "value": "dataset"
-  },
   "title": "title",
   "description": "The description needs to be a minimum of 100 (one hundred) characters long. This is a completely arbitrary number chosen by the INSPIRE people.",
+  "depositorContactDetails": "depositor@ceh.ac.uk",
   "lineage": "lineage",
   "resourceStatus": "resourceStatus",
   "useConstraints": [

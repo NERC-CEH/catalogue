@@ -27,7 +27,6 @@ public class FreemarkerConfig {
     private final JenaLookupService jenaLookupService;
     private final MapServerDetailsService mapServerDetailsService;
     private final MetadataQualityService metadataQualityService;
-    private final ServiceAgreementQualityService serviceAgreementQualityService;
     private final PermissionService permissionService;
     private final ProfileService profileService;
 
@@ -41,7 +40,6 @@ public class FreemarkerConfig {
         freemarkerConfiguration.setSharedVariable("jena", jenaLookupService);
         freemarkerConfiguration.setSharedVariable("mapServerDetails", mapServerDetailsService);
         freemarkerConfiguration.setSharedVariable("metadataQuality", metadataQualityService);
-        freemarkerConfiguration.setSharedVariable("serviceAgreementQuality", serviceAgreementQualityService);
         freemarkerConfiguration.setSharedVariable("permission", permissionService);
         freemarkerConfiguration.setSharedVariable("profile", profileService);
     }

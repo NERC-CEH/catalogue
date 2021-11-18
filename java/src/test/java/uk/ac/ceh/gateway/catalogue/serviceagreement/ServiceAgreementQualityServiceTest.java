@@ -23,6 +23,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.util.ResourceUtils;
 import uk.ac.ceh.gateway.catalogue.document.reading.DocumentReader;
+import uk.ac.ceh.gateway.catalogue.quality.CatalogueResults;
+import uk.ac.ceh.gateway.catalogue.quality.MetadataCheck;
+import uk.ac.ceh.gateway.catalogue.quality.Results;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,9 +38,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreementQualityService.*;
-import static uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreementQualityService.Severity.ERROR;
-import static uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreementQualityService.Severity.WARNING;
+import static uk.ac.ceh.gateway.catalogue.quality.Results.Severity.ERROR;
+import static uk.ac.ceh.gateway.catalogue.quality.Results.Severity.WARNING;
 
 @Slf4j
 @ActiveProfiles({"service-agreement"})
@@ -268,11 +270,11 @@ public class ServiceAgreementQualityServiceTest {
     public void resultsErrors() {
         //given
         val checks = Arrays.asList(
-                new ServiceAgreementCheck("check 1", ERROR),
-                new ServiceAgreementCheck("check 2", ERROR),
-                new ServiceAgreementCheck("check 3", WARNING),
-                new ServiceAgreementCheck("check 4", ERROR),
-                new ServiceAgreementCheck("check 5", ERROR)
+                new MetadataCheck("check 1", ERROR),
+                new MetadataCheck("check 2", ERROR),
+                new MetadataCheck("check 3", WARNING),
+                new MetadataCheck("check 4", ERROR),
+                new MetadataCheck("check 5", ERROR)
         );
 
         //when
@@ -286,11 +288,11 @@ public class ServiceAgreementQualityServiceTest {
     public void resultsWarnings() {
         //given
         val checks = Arrays.asList(
-                new ServiceAgreementCheck("check 1", WARNING),
-                new ServiceAgreementCheck("check 2", ERROR),
-                new ServiceAgreementCheck("check 3", WARNING),
-                new ServiceAgreementCheck("check 4", ERROR),
-                new ServiceAgreementCheck("check 5", WARNING)
+                new MetadataCheck("check 1", WARNING),
+                new MetadataCheck("check 2", ERROR),
+                new MetadataCheck("check 3", WARNING),
+                new MetadataCheck("check 4", ERROR),
+                new MetadataCheck("check 5", WARNING)
         );
 
         //when
@@ -305,23 +307,23 @@ public class ServiceAgreementQualityServiceTest {
         //given
         val expected = Arrays.asList(ERROR, ERROR, ERROR, ERROR, WARNING, WARNING, WARNING, WARNING, WARNING, WARNING);
         val checks = Arrays.asList(
-                new ServiceAgreementCheck("check 1", WARNING),
-                new ServiceAgreementCheck("check 2", ERROR),
-                new ServiceAgreementCheck("check 3", WARNING),
-                new ServiceAgreementCheck("check 4", ERROR),
-                new ServiceAgreementCheck("check 5", WARNING),
-                new ServiceAgreementCheck("check 6", WARNING),
-                new ServiceAgreementCheck("check 7", ERROR),
-                new ServiceAgreementCheck("check 8", WARNING),
-                new ServiceAgreementCheck("check 9", ERROR),
-                new ServiceAgreementCheck("check 10", WARNING)
+                new MetadataCheck("check 1", WARNING),
+                new MetadataCheck("check 2", ERROR),
+                new MetadataCheck("check 3", WARNING),
+                new MetadataCheck("check 4", ERROR),
+                new MetadataCheck("check 5", WARNING),
+                new MetadataCheck("check 6", WARNING),
+                new MetadataCheck("check 7", ERROR),
+                new MetadataCheck("check 8", WARNING),
+                new MetadataCheck("check 9", ERROR),
+                new MetadataCheck("check 10", WARNING)
         );
 
         //when
         val actual = new Results(checks, "test")
                 .getProblems()
                 .stream()
-                .map(ServiceAgreementQualityService.ServiceAgreementCheck::getSeverity)
+                .map(MetadataCheck::getSeverity)
                 .collect(Collectors.toList());
 
         //then
@@ -334,16 +336,16 @@ public class ServiceAgreementQualityServiceTest {
         val expectedTotalErrors = 8L;
         val expectedTotalWarnings = 12L;
         val checks = Arrays.asList(
-                new ServiceAgreementCheck("check 1", WARNING),
-                new ServiceAgreementCheck("check 2", ERROR),
-                new ServiceAgreementCheck("check 3", WARNING),
-                new ServiceAgreementCheck("check 4", ERROR),
-                new ServiceAgreementCheck("check 5", WARNING),
-                new ServiceAgreementCheck("check 6", WARNING),
-                new ServiceAgreementCheck("check 7", ERROR),
-                new ServiceAgreementCheck("check 8", WARNING),
-                new ServiceAgreementCheck("check 9", ERROR),
-                new ServiceAgreementCheck("check 10", WARNING)
+                new MetadataCheck("check 1", WARNING),
+                new MetadataCheck("check 2", ERROR),
+                new MetadataCheck("check 3", WARNING),
+                new MetadataCheck("check 4", ERROR),
+                new MetadataCheck("check 5", WARNING),
+                new MetadataCheck("check 6", WARNING),
+                new MetadataCheck("check 7", ERROR),
+                new MetadataCheck("check 8", WARNING),
+                new MetadataCheck("check 9", ERROR),
+                new MetadataCheck("check 10", WARNING)
         );
 
         val results =Arrays.asList(
@@ -352,7 +354,7 @@ public class ServiceAgreementQualityServiceTest {
         );
 
         //when
-        val actual = new ServiceAgreementResults(results);
+        val actual = new CatalogueResults(results);
 
         //then
         assertThat(actual.getTotalErrors(), equalTo(expectedTotalErrors));
