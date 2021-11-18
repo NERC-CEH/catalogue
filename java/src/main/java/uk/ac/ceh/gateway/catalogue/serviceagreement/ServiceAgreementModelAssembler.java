@@ -35,15 +35,22 @@ public class ServiceAgreementModelAssembler extends RepresentationModelAssembler
     @Override
     protected ServiceAgreementModel instantiateModel(ServiceAgreement serviceAgreement) {
         val model = new ServiceAgreementModel(serviceAgreement);
+
+        val historyLink = linkTo(methodOn(ServiceAgreementController.class)
+                .getHistory(serviceAgreement.getId()))
+                .withRel("history")
+                .withTitle("History");
+        model.add(historyLink);
+
         if ("draft".equals(serviceAgreement.getState())) {
-            val link = linkTo(methodOn(ServiceAgreementController.class)
+            val submitLink = linkTo(methodOn(ServiceAgreementController.class)
                     .submitServiceAgreement(
                             null,
                             serviceAgreement.getId()
                     ))
                     .withRel("submit")
                     .withTitle("Submit");
-            model.add(link);
+            model.add(submitLink);
         }
         if ("pending publication".equals(serviceAgreement.getState())) {
             val gemini = documentRepository.read(serviceAgreement.getId());
@@ -66,11 +73,6 @@ public class ServiceAgreementModelAssembler extends RepresentationModelAssembler
                         .withTitle("Further Edits Required");
                 model.add(permissionLink);
             }
-            val link = linkTo(methodOn(ServiceAgreementController.class)
-                    .getHistory(serviceAgreement.getId()))
-                    .withRel("history")
-                    .withTitle("History");
-            model.add(link);
         }
         log.debug("model: {}", model);
         return model;
