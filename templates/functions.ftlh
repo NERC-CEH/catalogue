@@ -1,3 +1,11 @@
+<#function recordTypeOrResourceType>
+    <#if metadata.catalogue == "eidc">
+        <#return codes.lookup('metadata.recordType', resourceType.value)?lower_case>
+    <#else>
+        <#return codes.lookup('metadata.resourceType', resourceType.value)?lower_case>
+    </#if>
+</#function>
+
 <#function filter things name value negate=false>
     <#local result = []>
     <#list things as thing>
