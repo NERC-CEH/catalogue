@@ -21,6 +21,8 @@ public interface ServiceAgreementService {
 
     void publishServiceAgreement(CatalogueUser user, String id);
 
+    void giveDepositorEditPermission(CatalogueUser user, String id);
+
     List<DataRevision<CatalogueUser>> getHistory(String id);
 
     ServiceAgreement getPreviousVersion(String id, String version);

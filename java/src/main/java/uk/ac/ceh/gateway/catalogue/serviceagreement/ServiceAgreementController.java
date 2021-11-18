@@ -135,6 +135,20 @@ public class ServiceAgreementController {
     }
 
     @PreAuthorize("@permission.userCanEdit(#id)")
+    @PostMapping("{id}/add-editor")
+    public RedirectView giveDepositorEditPermission(@ActiveUser CatalogueUser user,
+                                                @PathVariable("id") String id
+    ) {
+        if (serviceAgreementService.metadataRecordExists(id)) {
+            log.info("GIVING DEPOSITOR EDIT PERMISSION FOR SERVICE AGREEMENT {}", id);
+            serviceAgreementService.giveDepositorEditPermission(user, id);
+            return new RedirectView("/service-agreement/" + id);
+        }else{
+            throw new ResourceNotFoundException("Metadata record does not exist");
+        }
+    }
+
+    @PreAuthorize("@permission.userCanEdit(#id)")
     @GetMapping("{id}/history")
     public History getHistory(@PathVariable("id") String id) {
         if (serviceAgreementService.metadataRecordExists(id)) {
