@@ -57,6 +57,11 @@ public class ServiceAgreementModelAssembler extends RepresentationModelAssembler
                         .withTitle("Publish");
                 model.add(link);
             }
+            val link = linkTo(methodOn(ServiceAgreementController.class)
+                    .getHistory(serviceAgreement.getId()))
+                    .withRel("history")
+                    .withTitle("History");
+            model.add(link);
         }
         log.debug("model: {}", model);
         return model;

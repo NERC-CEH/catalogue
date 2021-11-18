@@ -7,8 +7,10 @@ import lombok.val;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import uk.ac.ceh.components.datastore.DataDocument;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
+import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -16,6 +18,7 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.JiraService;
 
+import java.util.List;
 import java.util.Optional;
 
 import static java.lang.String.format;
@@ -65,15 +68,9 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     @Override
     @SneakyThrows
     public ServiceAgreement get(String id) {
-        val metadataDoc = repo.getData(FOLDER + id + ".meta");
-        val metadataInfo = metadataInfoMapper.readInfo(metadataDoc.getInputStream());
-        log.debug("metadataInfo = {}", metadataInfo);
 
-        val dataDoc = repo.getData(FOLDER + id + ".raw");
-        val serviceAgreement = serviceAgreementMapper.readInfo(dataDoc.getInputStream());
-        serviceAgreement.setMetadata(metadataInfo);
-        log.debug("Service Agreement: {}", serviceAgreement);
-        return serviceAgreement;
+        return dataDocumentToServiceAgreement(repo.getData(FOLDER + id + ".raw"),
+                repo.getData(FOLDER + id + ".meta"));
     }
 
     @SneakyThrows
@@ -208,6 +205,34 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
             );
             throw new ServiceAgreementException(message);
         }
+    }
+
+    @SneakyThrows
+    public List<DataRevision<CatalogueUser>> getHistory(
+            String id
+    ) {
+        return repo.getRevisions(id);
+    }
+
+    @SneakyThrows
+    public ServiceAgreement getPreviousVersion(
+            String id,
+            String version
+    ) {
+        return dataDocumentToServiceAgreement(repo.getData(version, FOLDER + id + ".raw"),
+                repo.getData(version, FOLDER + id + ".meta"));
+    }
+
+    @SneakyThrows
+    private ServiceAgreement dataDocumentToServiceAgreement(DataDocument dataDoc, DataDocument metadataDoc) {
+        val metadataInfo = metadataInfoMapper.readInfo(metadataDoc.getInputStream());
+        log.debug("metadataInfo = {}", metadataInfo);
+
+        val serviceAgreement = serviceAgreementMapper.readInfo(dataDoc.getInputStream());
+        serviceAgreement.setMetadata(metadataInfo);
+        log.debug("Service Agreement: {}", serviceAgreement);
+
+        return serviceAgreement;
     }
 
     private void updateState(CatalogueUser user, String id, ServiceAgreement serviceAgreement, String state) {

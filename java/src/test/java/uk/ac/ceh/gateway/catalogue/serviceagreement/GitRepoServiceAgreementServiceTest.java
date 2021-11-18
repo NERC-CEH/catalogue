@@ -89,10 +89,6 @@ public class GitRepoServiceAgreementServiceTest {
     @SneakyThrows
     public void canNotGetRaw() {
         //Given
-        val metadataInfoDocument = mock(DataDocument.class);
-        given(repo.getData(FOLDER + ID + ".meta"))
-                .willReturn(metadataInfoDocument);
-
         given(repo.getData(FOLDER + ID + ".raw"))
                 .willThrow(new DataRepositoryException("Fail"));
 
@@ -106,6 +102,10 @@ public class GitRepoServiceAgreementServiceTest {
     @SneakyThrows
     public void canNotGetMeta() {
         //Given
+        val rawInfoDocument = mock(DataDocument.class);
+        given(repo.getData(FOLDER + ID + ".raw"))
+                .willReturn(rawInfoDocument);
+
         given(repo.getData(FOLDER + ID + ".meta"))
                 .willThrow(new DataRepositoryException("Fail"));
 
