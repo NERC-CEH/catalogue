@@ -40,6 +40,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.ac.ceh.gateway.catalogue.quality.Results.Severity.ERROR;
 import static uk.ac.ceh.gateway.catalogue.quality.Results.Severity.WARNING;
+import static uk.ac.ceh.gateway.catalogue.serviceagreement.GitRepoServiceAgreementService.FOLDER;
 
 @Slf4j
 @ActiveProfiles({"service-agreement"})
@@ -63,8 +64,6 @@ public class ServiceAgreementQualityServiceTest {
 
     @Mock
     private DocumentReader documentReader;
-
-    private static final String FOLDER = "service-agreements/";
 
     @BeforeEach
     public void setup() {

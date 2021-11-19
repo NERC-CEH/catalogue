@@ -32,7 +32,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     private final DocumentRepository documentRepository;
     private final JiraService jiraService;
 
-    private static final String FOLDER = "service-agreements/";
+    public static final String FOLDER = "service-agreements/";
     private static final String DRAFT = "draft";
     private static final String PENDING_PUBLICATION = "pending publication";
     private static final String PUBLISHED = "published";
