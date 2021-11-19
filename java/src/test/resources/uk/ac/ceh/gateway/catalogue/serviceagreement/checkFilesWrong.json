@@ -1,0 +1,14 @@
+{
+  "files": [
+    {
+      "name": "",
+      "format": "test",
+      "size": ""
+    },
+    {
+      "name": "file2.test",
+      "format": "",
+      "size": "200mb"
+    }
+  ]
+}

@@ -1,6 +1,6 @@
-<#import "blocks.ftlh" as blocks>
-<#import "skeleton.ftlh" as skeleton>
-<#import "../functions.ftlh" as func>
+<#import "../blocks.ftlh" as blocks>
+<#import "../skeleton.ftlh" as skeleton>
+<#import "../../functions.ftlh" as func>
 
 <@skeleton.master "Service Agreement">
 
@@ -25,6 +25,10 @@
                         </#list>
                     </div>
                 </div>
+            </#if>
+
+            <#if permission.userCanEdit(id)>
+                <#include "_serviceAgreementQualityAlert.ftlh">
             </#if>
 
             <h1>Environmental Information Data Centre - Service Agreement</h1>
@@ -120,6 +124,9 @@
             <@displayData "Lineage" lineage/>
             <@displayKeywords/>
             <@displayArea/>
+            <#if permission.userCanEdit(id)>
+                <#include "_serviceAgreementQualityReport.ftlh">
+            </#if>
         </div>
     </div>
 </@skeleton.master>
@@ -166,7 +173,7 @@
 <#macro displayFiles>
     <#if files?has_content && files?size gt 0 >
         <div id="document-files">
-            <p id="files"><b>Files<#if files?size gt 1>s</#if></b></p>
+            <p id="files"><b>File<#if files?size gt 1>s</#if></b></p>
 
             <#list files>
                 <#assign filesMaxSize = 30 >
