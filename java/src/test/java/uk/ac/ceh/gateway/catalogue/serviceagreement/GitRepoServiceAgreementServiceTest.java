@@ -361,7 +361,7 @@ public class GitRepoServiceAgreementServiceTest {
     public void canGetHistory() {
         //Given
         List<DataRevision<CatalogueUser>> revisions = new ArrayList<>();
-        given(repo.getRevisions(FOLDER + ID))
+        given(repo.getRevisions(FOLDER + ID + ".raw"))
                 .willReturn(revisions);
 
         //When
@@ -375,7 +375,7 @@ public class GitRepoServiceAgreementServiceTest {
     @SneakyThrows
     public void cannotGetHistory() {
         //Given
-        given(repo.getRevisions(FOLDER + ID))
+        given(repo.getRevisions(FOLDER + ID + ".raw"))
                 .willThrow(new DataRepositoryException("test"));
 
         //When
