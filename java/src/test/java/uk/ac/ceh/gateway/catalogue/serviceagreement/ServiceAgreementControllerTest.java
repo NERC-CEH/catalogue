@@ -430,7 +430,7 @@ class ServiceAgreementControllerTest {
             """;
 
         // when
-        mvc.perform(post("/service-agreement/{id}/version/{version}", ID, VERSION)
+        mvc.perform(get("/service-agreement/{id}/version/{version}", ID, VERSION)
                         .accept(HAL_JSON)
                         .header("Forwarded", "proto=https;host=catalogue"))
                 .andExpect(status().isOk())
