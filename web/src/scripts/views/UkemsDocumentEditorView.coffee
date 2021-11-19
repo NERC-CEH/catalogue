@@ -1,15 +1,12 @@
 define [
-  'cs!models/editor/BoundingBox'
-  'cs!models/editor/Contact'
   'cs!models/editor/DistributionFormat'
   'cs!models/editor/MultipleDate'
   'cs!models/editor/SpatialResolution'
   'cs!models/editor/Supplemental'
-  'cs!views/editor/BoundingBoxView'
-  'cs!views/editor/ContactView'
   'cs!views/editor/DatasetReferenceDateView'
   'cs!views/editor/DistributionFormatView'
   'cs!views/editor/InputView'
+  'cs!views/editor/KeywordView'
   'cs!views/editor/ParentView'
   'cs!views/editor/PredefinedParentView'
   'cs!views/editor/SingleObjectView'
@@ -21,17 +18,14 @@ define [
   'cs!views/editor/TextareaView'
   'cs!views/EditorView'
 ], (
-  BoundingBox
-  Contact
   DistributionFormat
   MultipleDate
   SpatialResolution
   Supplemental
-  BoundingBoxView
-  ContactView
   DatasetReferenceDateView
   DistributionFormatView
   InputView
+  KeywordView
   ParentView
   PredefinedParentView
   SingleObjectView
@@ -60,12 +54,6 @@ define [
           modelAttribute: 'description'
           label: 'Description'
           rows: 12
-        new ParentView
-          model: @model
-          modelAttribute: 'responsibleParties'
-          ModelType: Contact
-          label: 'Contacts'
-          ObjectInputView: ContactView
         new SingleObjectView
           model: @model
           modelAttribute: 'datasetReferenceDate'
@@ -78,7 +66,11 @@ define [
                     <p>For embargoed resources, <b>Release(d)</b> is the date on which the embargo was lifted <i class='text-red'><b>or is due to be lifted</b></i>.</p>
                     <p><b>Superseded</b> is the date on which the resource was superseded by another resource (where relevant).</p>
                     """
-
+        new ParentView
+          model: @model
+          modelAttribute: 'keywords'
+          label: 'Keywords'
+          ObjectInputView: KeywordView
       ]
     ,
       label: 'Time & Space'
@@ -90,64 +82,6 @@ define [
           ModelType: MultipleDate
           label: 'Temporal extent'
           ObjectInputView: TemporalExtentView
-        new PredefinedParentView
-          model: @model
-          modelAttribute: 'boundingBoxes'
-          ModelType: BoundingBox
-          label: 'Spatial extent'
-          ObjectInputView: BoundingBoxView
-          multiline: true
-          predefined:
-            'England':
-              northBoundLatitude: 55.812
-              eastBoundLongitude: 1.768
-              southBoundLatitude: 49.864
-              westBoundLongitude: -6.452
-              extentName: 'England'
-              extentUri: 'http://sws.geonames.org/6269131'
-            'Great Britain':
-              northBoundLatitude: 60.861
-              eastBoundLongitude: 1.768
-              southBoundLatitude: 49.864
-              westBoundLongitude: -8.648
-              extentName: 'Great Britain'
-            'Northern Ireland':
-              northBoundLatitude: 55.313
-              eastBoundLongitude: -5.432
-              southBoundLatitude: 54.022
-              westBoundLongitude: -8.178
-              extentName: 'Northern Ireland'
-              extentUri: 'http://sws.geonames.org/2641364'
-            Scotland:
-              northBoundLatitude: 60.861
-              eastBoundLongitude: -0.728
-              southBoundLatitude: 54.634
-              westBoundLongitude: -8.648
-              extentName: 'Scotland'
-              extentUri: 'http://sws.geonames.org/2638360'
-            'United Kingdom':
-              northBoundLatitude: 60.861
-              eastBoundLongitude: 1.768
-              southBoundLatitude: 49.864
-              westBoundLongitude: -8.648
-              extentName: 'United Kingdom'
-              extentUri: 'http://sws.geonames.org/2635167'
-            Wales:
-              northBoundLatitude: 53.434
-              eastBoundLongitude: -2.654
-              southBoundLatitude: 51.375
-              westBoundLongitude: -5.473
-              extentName: 'Wales'
-              extentUri: 'http://sws.geonames.org/2634895'
-            World:
-              northBoundLatitude: 90.00
-              eastBoundLongitude: 180.00
-              southBoundLatitude: -90.00
-              westBoundLongitude: -180.00
-          helpText: """
-                    <p>A bounding box representing the limits of the data resource's study area.</p>
-                    <p>If you do not wish to reveal the exact location publicly (for example, if locations are sensitive) it is recommended that you generalise the location.</p>
-                    """
 
         new PredefinedParentView
           model: @model
@@ -208,19 +142,33 @@ define [
               name: 'NetCDF'
               type: 'application/netcdf'
               version: '4'
-            'Shapefile':
-              name: 'Shapefile'
-              type: ''
-              version: 'unknown'
-            'TIFF':
-              name: 'TIFF'
-              type: 'image/tiff'
-              version: 'unknown'
            helpText: """
                     <p><b>Name</b> is the filename (including extension) and is mandatory.</p>
                     <p><b>Type</b> is the machine-readable media type.  If you do not know it, leave it blank.</p>
                     <p><b>Version</b> is mandatory; if it's not applicable, enter '<i>unknown</i>'</p>
                     """
+        new ParentView
+          model: @model
+          modelAttribute: 'supplemental'
+          ModelType: Supplemental
+          multiline: true
+          label: 'Additional information'
+          ObjectInputView: SupplementalView
+          helpText: """
+                    <p>You can add information not documented elsewhere here. This includes links to related papers, grey literature or websites.  For example:</p>
+                    <ul><li>papers that cite this resource</li><li>papers/reports that provide relevant supporting information but which do not cite this resource</li><li>project websites</li></ul>
+                    <p>When linking to published articles, please use DOIs whenever possible.</p>
+                    <p><small class='text-danger'><i class='fas fa-exclamation-triangle'> </i> NOTE: Some websites may be maintained for a limited period and may therefore soon become unavailable.</small></p>
+                    """
+        new InputView
+          model: @model
+          modelAttribute: 'units'
+          label: 'Units'
+        new TextareaView
+          model: @model
+          modelAttribute: 'provenance'
+          label: 'Provenance information'
+          rows: 12
       ]
     ]
 

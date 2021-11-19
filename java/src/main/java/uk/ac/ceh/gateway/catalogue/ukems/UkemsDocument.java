@@ -24,7 +24,7 @@ import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 @ToString(callSuper=true)
 @Accessors(chain=true)
 @ConvertUsing({
-    @Template(called="html/ukems/ukems-document.ftlh", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
+    @Template(called="html/ukems.ftlh", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
 })
 public class UkemsDocument extends AbstractMetadataDocument {
     private Keyword resourceType;
@@ -42,7 +42,25 @@ public class UkemsDocument extends AbstractMetadataDocument {
 
     @ToString
     public enum EmissionComponent {
-        EMISSION, ACTIVITY, EMISSION_FACTOR
+        EMISSION {
+            @Override
+            public String format() {
+                return "emission";
+            }
+        },
+        ACTIVITY {
+            @Override
+            public String format() {
+                return "activity";
+            }
+        },
+        EMISSION_FACTOR {
+            @Override
+            public String format() {
+                return "emission factor";
+            }
+        };
+        public abstract String format();
     }
 
     @Override
