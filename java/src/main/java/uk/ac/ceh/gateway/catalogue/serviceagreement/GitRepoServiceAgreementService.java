@@ -242,7 +242,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     @SneakyThrows
     public List<DataRevision<CatalogueUser>> getHistory(String id) {
         try{
-            return repo.getRevisions(FOLDER + id);
+            return repo.getRevisions(FOLDER + id + ".raw");
         }catch(DataRepositoryException ex){
             throw new ServiceAgreementException((ex.getMessage()));
         }
