@@ -45,6 +45,7 @@ import uk.ac.ceh.gateway.catalogue.osdp.*;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
+import uk.ac.ceh.gateway.catalogue.serviceagreement.History;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreementModel;
 import uk.ac.ceh.gateway.catalogue.sparql.SparqlResponse;
 import uk.ac.ceh.gateway.catalogue.ukems.UkemsDocument;
@@ -91,6 +92,7 @@ public class WebConfig implements WebMvcConfigurer {
         converters.add(new Object2TemplatedMessageConverter<>(ErammpDatacube.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(ErrorResponse.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(Facility.class, freemarkerConfiguration));
+        converters.add(new Object2TemplatedMessageConverter<>(History.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(LinkDocument.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(MaintenanceResponse.class, freemarkerConfiguration));
         converters.add(new Object2TemplatedMessageConverter<>(Model.class, freemarkerConfiguration));

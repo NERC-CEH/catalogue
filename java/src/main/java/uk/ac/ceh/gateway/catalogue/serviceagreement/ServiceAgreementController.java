@@ -161,7 +161,7 @@ public class ServiceAgreementController {
             for (DataRevision revision: history) {
                 revisionsToReturn.add(new Revision()
                         .setId(revision.getRevisionID())
-                        .setHref(id + "/version/" + revision.getRevisionID()));
+                        .setHref("/service-agreement/" + id + "/version/" + revision.getRevisionID()));
             }
 
             return new History()
@@ -174,7 +174,7 @@ public class ServiceAgreementController {
     }
 
     @PreAuthorize("@permission.userCanEdit(#id)")
-    @PostMapping("{id}/version/{version}")
+    @GetMapping("{id}/version/{version}")
     public ServiceAgreementModel getPreviousVersion(@PathVariable("id") String id,
                                            @PathVariable String version) {
         if (serviceAgreementService.metadataRecordExists(id)) {

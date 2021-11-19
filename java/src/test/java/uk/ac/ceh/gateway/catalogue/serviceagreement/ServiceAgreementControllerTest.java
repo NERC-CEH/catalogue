@@ -388,11 +388,11 @@ class ServiceAgreementControllerTest {
                 "revisions":[
                     {
                         "id":"version1",
-                        "href":"test/version/version1"
+                        "href":"/service-agreement/test/version/version1"
                     },
                     {
                         "id":"version2",
-                        "href":"test/version/version2"
+                        "href":"/service-agreement/test/version/version2"
                     }
                 ]
             }
