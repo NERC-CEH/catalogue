@@ -8,8 +8,7 @@ import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSuppor
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @Profile("service-agreement")
 @Slf4j
@@ -35,19 +34,18 @@ public class ServiceAgreementModelAssembler extends RepresentationModelAssembler
     @Override
     protected ServiceAgreementModel instantiateModel(ServiceAgreement serviceAgreement) {
         val model = new ServiceAgreementModel(serviceAgreement);
+        val id = serviceAgreement.getId();
 
         val historyLink = linkTo(methodOn(ServiceAgreementController.class)
-                .getHistory(serviceAgreement.getId()))
-                .withRel("history")
-                .withTitle("History");
+            .getHistory(id))
+            .withRel("history")
+            .withTitle("History");
+
         model.add(historyLink);
 
         if ("draft".equals(serviceAgreement.getState())) {
             val submitLink = linkTo(methodOn(ServiceAgreementController.class)
-                    .submitServiceAgreement(
-                            null,
-                            serviceAgreement.getId()
-                    ))
+                    .submitServiceAgreement(null, id))
                     .withRel("submit")
                     .withTitle("Submit");
             model.add(submitLink);
@@ -56,22 +54,16 @@ public class ServiceAgreementModelAssembler extends RepresentationModelAssembler
             val gemini = documentRepository.read(serviceAgreement.getId());
             if (gemini.getState().equals("draft")) {
                 val publishLink = linkTo(methodOn(ServiceAgreementController.class)
-                        .publishServiceAgreement(
-                                null,
-                                serviceAgreement.getId()
-                        ))
+                        .publishServiceAgreement(null, id))
                         .withRel("publish")
                         .withTitle("Publish");
                 model.add(publishLink);
 
-                val permissionLink = linkTo(methodOn(ServiceAgreementController.class)
-                        .giveDepositorEditPermission(
-                                null,
-                                serviceAgreement.getId()
-                        ))
+                val addEdit = linkTo(methodOn(ServiceAgreementController.class)
+                        .giveDepositorEditPermission(null, id))
                         .withRel("add-editor")
                         .withTitle("Further Edits Required");
-                model.add(permissionLink);
+                model.add(addEdit);
             }
         }
         log.debug("model: {}", model);

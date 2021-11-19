@@ -16,7 +16,6 @@ import uk.ac.ceh.gateway.catalogue.serviceagreement.History.Revision;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Profile("service-agreement")
 @Slf4j
@@ -129,7 +128,7 @@ public class ServiceAgreementController {
             log.info("PUBLISHING SERVICE AGREEMENT {}", id);
             serviceAgreementService.publishServiceAgreement(user, id);
             return new RedirectView("/service-agreement/" + id);
-        }else{
+        } else {
             throw new ResourceNotFoundException("Metadata record does not exist");
         }
     }
@@ -143,7 +142,7 @@ public class ServiceAgreementController {
             log.info("GIVING DEPOSITOR EDIT PERMISSION FOR SERVICE AGREEMENT {}", id);
             serviceAgreementService.giveDepositorEditPermission(user, id);
             return new RedirectView("/service-agreement/" + id);
-        }else{
+        } else {
             throw new ResourceNotFoundException("Metadata record does not exist");
         }
     }
@@ -168,15 +167,17 @@ public class ServiceAgreementController {
                     .setHistoryOf(id)
                     .setRevisions(revisionsToReturn);
 
-        }else{
+        } else {
             throw new ResourceNotFoundException("Metadata record does not exist");
         }
     }
 
     @PreAuthorize("@permission.userCanEdit(#id)")
     @GetMapping("{id}/version/{version}")
-    public ServiceAgreementModel getPreviousVersion(@PathVariable("id") String id,
-                                           @PathVariable String version) {
+    public ServiceAgreementModel getPreviousVersion(
+        @PathVariable("id") String id,
+        @PathVariable String version
+    ) {
         if (serviceAgreementService.metadataRecordExists(id)) {
             log.info("GETTING SERVICE AGREEMENT {} HISTORY", id);
             val serviceAgreement = serviceAgreementService.getPreviousVersion(id, version);

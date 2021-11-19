@@ -68,9 +68,10 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     @Override
     @SneakyThrows
     public ServiceAgreement get(String id) {
-
-        return dataDocumentToServiceAgreement(repo.getData(FOLDER + id + ".raw"),
-                repo.getData(FOLDER + id + ".meta"));
+        return dataDocumentToServiceAgreement(
+            repo.getData(FOLDER + id + ".raw"),
+            repo.getData(FOLDER + id + ".meta")
+        );
     }
 
     @SneakyThrows
@@ -243,7 +244,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     public List<DataRevision<CatalogueUser>> getHistory(String id) {
         try{
             return repo.getRevisions(FOLDER + id + ".raw");
-        }catch(DataRepositoryException ex){
+        } catch (DataRepositoryException ex){
             throw new ServiceAgreementException((ex.getMessage()));
         }
     }
@@ -253,8 +254,10 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
             String id,
             String version
     ) {
-        return dataDocumentToServiceAgreement(repo.getData(version, FOLDER + id + ".raw"),
-                repo.getData(version, FOLDER + id + ".meta"));
+        return dataDocumentToServiceAgreement(
+            repo.getData(version, FOLDER + id + ".raw"),
+            repo.getData(version, FOLDER + id + ".meta")
+        );
     }
 
     @SneakyThrows
