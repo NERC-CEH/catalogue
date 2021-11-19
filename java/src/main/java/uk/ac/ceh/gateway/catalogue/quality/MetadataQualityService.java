@@ -17,7 +17,7 @@ import java.math.BigDecimal;
 import java.util.*;
 
 import static java.lang.String.format;
-import static uk.ac.ceh.gateway.catalogue.quality.DocumentTypes.GEMINI;
+import static uk.ac.ceh.gateway.catalogue.DocumentTypes.GEMINI;
 import static uk.ac.ceh.gateway.catalogue.quality.Results.Severity.*;
 
 @SuppressWarnings("rawtypes")

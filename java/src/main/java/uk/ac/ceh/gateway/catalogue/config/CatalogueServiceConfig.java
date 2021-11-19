@@ -11,7 +11,7 @@ import uk.ac.ceh.gateway.catalogue.vocabularies.KeywordVocabulary;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static uk.ac.ceh.gateway.catalogue.quality.DocumentTypes.*;
+import static uk.ac.ceh.gateway.catalogue.DocumentTypes.*;
 
 @SuppressWarnings("HttpUrlsUsage")
 @Configuration

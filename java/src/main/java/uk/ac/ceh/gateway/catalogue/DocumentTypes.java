@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.quality;
+package uk.ac.ceh.gateway.catalogue;
 
 import static uk.ac.ceh.gateway.catalogue.catalogue.Catalogue.DocumentType;
 

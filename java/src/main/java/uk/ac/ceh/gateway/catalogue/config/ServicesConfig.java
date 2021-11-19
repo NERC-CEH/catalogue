@@ -73,7 +73,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static uk.ac.ceh.gateway.catalogue.quality.DocumentTypes.*;
+import static uk.ac.ceh.gateway.catalogue.DocumentTypes.*;
 
 @Slf4j
 @Configuration
