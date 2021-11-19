@@ -19,7 +19,6 @@ import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.permission.CrowdPermissionServiceTest;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 
 import java.util.ArrayList;
@@ -399,11 +398,10 @@ class ServiceAgreementControllerTest {
             """;
 
         // when
-        mvc.perform(post("/service-agreement/{id}/history", ID)
-                        .accept(HAL_JSON)
-                        .header("Forwarded", "proto=https;host=catalogue"))
+        mvc.perform(get("/service-agreement/{id}/history", ID)
+                        .accept(APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(HAL_JSON))
+                .andExpect(content().contentType(APPLICATION_JSON))
                 .andExpect(content().json(expectedResponse));
     }
 

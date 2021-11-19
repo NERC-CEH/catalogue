@@ -148,7 +148,7 @@ public class ServiceAgreementController {
     }
 
     @PreAuthorize("@permission.userCanEdit(#id)")
-    @PostMapping("{id}/history")
+    @GetMapping("{id}/history")
     public History getHistory(@PathVariable("id") String id) {
         if (serviceAgreementService.metadataRecordExists(id)) {
             log.info("GETTING SERVICE AGREEMENT {} HISTORY", id);
