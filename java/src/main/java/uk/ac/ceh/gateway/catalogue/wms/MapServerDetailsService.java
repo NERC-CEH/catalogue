@@ -65,9 +65,8 @@ public class MapServerDetailsService {
     public boolean isMapServiceHostable(MetadataDocument document) {
         if (document.getType().equals("service")) {
             return getMapDataDefinition(document) != null;
-        } else {
-            return false;
         }
+        return false;
     }
 
     /**
@@ -78,15 +77,18 @@ public class MapServerDetailsService {
      */
     public MapDataDefinition getMapDataDefinition(MetadataDocument document) {
         if (document instanceof GeminiDocument geminiDocument) {
-            val mapDataDefinition = geminiDocument.getMapDataDefinition();
-            if (mapDataDefinition.getData().isEmpty()) {
-                return null;
-            } else {
-                return mapDataDefinition;
+            val possibleMapDataDefinition = Optional.ofNullable(geminiDocument.getMapDataDefinition());
+            if (possibleMapDataDefinition.isPresent()) {
+                val mapDataDefinition = possibleMapDataDefinition.get();
+                val possibleData = Optional.ofNullable(mapDataDefinition.getData());
+                if (possibleData.isPresent()) {
+                    if (!mapDataDefinition.getData().isEmpty()) {
+                        return mapDataDefinition;
+                    }
+                }
             }
-        } else {
-            return null;
         }
+        return null;
     }
 
     /**

@@ -59,6 +59,21 @@ public class MapServerDetailsServiceTest {
     }
 
     @Test
+    void checkThatServiceGeminiDocumentWithoutDataIsNotHostable() {
+        //Given
+        val mapDataDefinition = new MapDataDefinition();
+        val document = new GeminiDocument();
+        document.setType("service");
+        document.setMapDataDefinition(mapDataDefinition);
+
+        //When
+        boolean isHostable = service.isMapServiceHostable(document);
+
+        //Then
+        assertFalse(isHostable);
+    }
+
+    @Test
     void checkThatServiceGeminiDocumentEmptyServiceDefinitionIsNotHostable() {
         //Given
         val mapDataDefinition = new MapDataDefinition();
