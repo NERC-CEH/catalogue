@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.wms;
 
+import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -7,18 +8,16 @@ import uk.ac.ceh.gateway.catalogue.gemini.MapDataDefinition;
 import uk.ac.ceh.gateway.catalogue.gemini.MapDataDefinition.DataSource;
 import uk.ac.ceh.gateway.catalogue.gemini.MapDataDefinition.DataSource.Attribute.Bucket;
 import uk.ac.ceh.gateway.catalogue.gemini.MapDataDefinition.Projection;
-import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.wms.MapServerDetailsService;
 import uk.ac.ceh.gateway.catalogue.wms.MapServerDetailsService.MapBucketDetails;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -44,29 +43,48 @@ public class MapServerDetailsServiceTest {
     }
 
     @Test
-    public void checkThatGeminiDocumentWithServiceDefinitionIsHostable() {
+    void checkThatServiceGeminiDocumentWithServiceDefinitionIsHostable() {
         //Given
-        GeminiDocument document = mock(GeminiDocument.class);
-        MapDataDefinition definition = mock(MapDataDefinition.class);
-        when(document.getMapDataDefinition()).thenReturn(definition);
+        val mapDataDefinition = new MapDataDefinition();
+        mapDataDefinition.setData(List.of(new DataSource()));
+        val document = new GeminiDocument();
+        document.setType("service");
+        document.setMapDataDefinition(mapDataDefinition);
 
         //When
         boolean isHostable = service.isMapServiceHostable(document);
 
         //Then
-        assertThat(isHostable, is(true));
+        assertTrue(isHostable);
     }
 
     @Test
-    public void checkThatUnknownMetadataDocumentIsNotHostable() {
+    void checkThatServiceGeminiDocumentEmptyServiceDefinitionIsNotHostable() {
         //Given
-        MetadataDocument document = mock(MetadataDocument.class);
+        val mapDataDefinition = new MapDataDefinition();
+        mapDataDefinition.setData(Collections.emptyList());
+        val document = new GeminiDocument();
+        document.setType("service");
+        document.setMapDataDefinition(mapDataDefinition);
 
         //When
         boolean isHostable = service.isMapServiceHostable(document);
 
         //Then
-        assertThat(isHostable, is(false));
+        assertFalse(isHostable);
+    }
+
+    @Test
+    void checkThatDatasetGeminiDocumentIsNotHostable() {
+        //Given
+        val document = new GeminiDocument();
+        document.setType("dataset");
+
+        //When
+        boolean isHostable = service.isMapServiceHostable(document);
+
+        //Then
+        assertFalse(isHostable);
     }
 
     @Test
@@ -114,8 +132,8 @@ public class MapServerDetailsServiceTest {
         when(datasource.getEpsgCode()).thenReturn("CODE1");
         Projection reproj = mock(Projection.class);
         when(reproj.getEpsgCode()).thenReturn("CODE2");
-        when(datasource.getReprojections()).thenReturn(Arrays.asList(reproj));
-        when(map.getData()).thenReturn(Arrays.asList(datasource));
+        when(datasource.getReprojections()).thenReturn(List.of(reproj));
+        when(map.getData()).thenReturn(List.of(datasource));
 
         //When
         List<String> projectionSystems = service.getProjectionSystems(map);
@@ -131,7 +149,7 @@ public class MapServerDetailsServiceTest {
         DataSource datasource = mock(DataSource.class);
         when(datasource.getEpsgCode()).thenReturn("CODE1");
         when(datasource.getReprojections()).thenReturn(null);
-        when(map.getData()).thenReturn(Arrays.asList(datasource));
+        when(map.getData()).thenReturn(List.of(datasource));
 
         //When
         List<String> projectionSystems = service.getProjectionSystems(map);
@@ -147,7 +165,7 @@ public class MapServerDetailsServiceTest {
         when(datasource.getEpsgCode()).thenReturn("default");
         Projection proj1 = mock(Projection.class);
         when(proj1.getEpsgCode()).thenReturn("27700");
-        when(datasource.getReprojections()).thenReturn(Arrays.asList(proj1));
+        when(datasource.getReprojections()).thenReturn(List.of(proj1));
 
         //When
         Projection pref = service.getFavouredProjection(datasource, "27700");
@@ -176,7 +194,7 @@ public class MapServerDetailsServiceTest {
         when(datasource.getEpsgCode()).thenReturn("27700");
         Projection proj1 = mock(Projection.class);
         when(proj1.getEpsgCode()).thenReturn("27700");
-        when(datasource.getReprojections()).thenReturn(Arrays.asList(proj1));
+        when(datasource.getReprojections()).thenReturn(List.of(proj1));
 
         //When
         Projection pref = service.getFavouredProjection(datasource, "27700");
