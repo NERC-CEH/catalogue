@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.wms;
 
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponents;
@@ -62,7 +63,11 @@ public class MapServerDetailsService {
      * @return if the supplied document can create a map service document
      */
     public boolean isMapServiceHostable(MetadataDocument document) {
-        return getMapDataDefinition(document) != null;
+        if (document.getType().equals("service")) {
+            return getMapDataDefinition(document) != null;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -72,10 +77,16 @@ public class MapServerDetailsService {
      * @return the map data definition for the given metadata document (or null)
      */
     public MapDataDefinition getMapDataDefinition(MetadataDocument document) {
-        if(document instanceof GeminiDocument) {
-            return ((GeminiDocument)document).getMapDataDefinition();
+        if (document instanceof GeminiDocument geminiDocument) {
+            val mapDataDefinition = geminiDocument.getMapDataDefinition();
+            if (mapDataDefinition.getData().isEmpty()) {
+                return null;
+            } else {
+                return mapDataDefinition;
+            }
+        } else {
+            return null;
         }
-        return null;
     }
 
     /**

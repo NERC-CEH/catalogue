@@ -40,8 +40,7 @@ public class MapServerIndexGenerator implements IndexGenerator<MetadataDocument,
             val definition = mapServerDetailsService.getMapDataDefinition(toIndex);
             val projSystems = mapServerDetailsService.getProjectionSystems(definition);
             return new MapFile(templateConfiguration, mapfileTemplate.get(), projSystems, toIndex);
-        }
-        else {
+        } else {
             return null;
         }
     }
