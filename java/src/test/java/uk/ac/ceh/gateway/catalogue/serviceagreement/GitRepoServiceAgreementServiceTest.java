@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
 import lombok.SneakyThrows;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.jupiter.api.BeforeAll;
@@ -41,6 +42,7 @@ public class GitRepoServiceAgreementServiceTest {
     private static final String FOLDER = "service-agreements/";
     private static final String ID = "7c60707c-80ee-4d67-bac2-3c9a93e61557";
     private static final String VERSION = "version";
+    private static final String BASE_URI = "https://catalogue.ceh.ac.uk";
 
     @Mock private DataRepository<CatalogueUser> repo;
     @Mock private DocumentInfoMapper<MetadataInfo> metadataInfoMapper;
@@ -63,6 +65,7 @@ public class GitRepoServiceAgreementServiceTest {
     @BeforeEach
     void setup() {
         service = new GitRepoServiceAgreementService(
+            BASE_URI,
             repo,
             metadataInfoMapper,
             serviceAgreementMapper,
@@ -361,6 +364,8 @@ public class GitRepoServiceAgreementServiceTest {
     public void canGetHistory() {
         //Given
         List<DataRevision<CatalogueUser>> revisions = new ArrayList<>();
+        revisions.add(new TestRevision("revision1"));
+        revisions.add(new TestRevision("revision2"));
         given(repo.getRevisions(FOLDER + ID + ".raw"))
                 .willReturn(revisions);
 
@@ -368,7 +373,8 @@ public class GitRepoServiceAgreementServiceTest {
         val result = service.getHistory(ID);
 
         //Then
-        assertThat(result,is(equalTo(revisions)));
+        assertThat(result.getRevisions().get(0).getVersion(),is(equalTo("1")));
+        assertThat(result.getRevisions().get(1).getVersion(),is(equalTo("2")));
     }
 
     @Test
@@ -562,6 +568,31 @@ public class GitRepoServiceAgreementServiceTest {
         geminiDocument.setMetadata(metadataInfo);
         given(documentRepository.read(ID))
             .willReturn(geminiDocument);
+    }
+
+    @Value
+    public static class TestRevision implements DataRevision<CatalogueUser> {
+        String revision;
+
+        @Override
+        public String getRevisionID() {
+            return revision;
+        }
+
+        @Override
+        public String getMessage() {
+            return null;
+        }
+
+        @Override
+        public String getShortMessage() {
+            return null;
+        }
+
+        @Override
+        public CatalogueUser getAuthor() {
+            return null;
+        }
     }
 
 }

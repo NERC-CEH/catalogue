@@ -154,19 +154,7 @@ public class ServiceAgreementController {
         if (serviceAgreementService.metadataRecordExists(id)) {
             log.info("GETTING SERVICE AGREEMENT {} HISTORY", id);
 
-            List<Revision> revisionsToReturn = new ArrayList<>();
-
-            val history = serviceAgreementService.getHistory(id);
-
-            for (DataRevision revision: history) {
-                revisionsToReturn.add(new Revision()
-                        .setId(revision.getRevisionID())
-                        .setHref("/service-agreement/" + id + "/version/" + revision.getRevisionID()));
-            }
-
-            return new History()
-                    .setHistoryOf(id)
-                    .setRevisions(revisionsToReturn);
+            return serviceAgreementService.getHistory(id);
 
         }else{
             throw new ResourceNotFoundException("Metadata record does not exist");

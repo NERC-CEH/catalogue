@@ -384,18 +384,15 @@ class ServiceAgreementControllerTest {
 
         val expectedResponse = """
             {
-                "historyOf":"test",
-                "revisions":[
-                    {
-                        "id":"version1",
-                        "href":"/service-agreement/test/version/version1"
-                    },
-                    {
-                        "id":"version2",
-                        "href":"/service-agreement/test/version/version2"
-                    }
-                ]
+            "historyOf":"test",
+            "revisions":[
+            {
+            "version":"1",
+            "href":"test/service-agreement/test/version/revision1"},
+            {
+            "version":"2","href":"test/service-agreement/test/version/revision2"
             }
+            ]}
             """;
 
         // when
@@ -523,9 +520,10 @@ class ServiceAgreementControllerTest {
             .willReturn(false);
     }
     private void givenHistory() {
-        List history = new ArrayList();
-        history.add(new TestRevision("version1"));
-        history.add(new TestRevision("version2"));
+        List revisions = new ArrayList();
+        revisions.add(new TestRevision("revision1"));
+        revisions.add(new TestRevision("revision2"));
+        History history = new History(ID, revisions, "test");
         given(serviceAgreementService.getHistory(ID))
                 .willReturn(history);
     }
