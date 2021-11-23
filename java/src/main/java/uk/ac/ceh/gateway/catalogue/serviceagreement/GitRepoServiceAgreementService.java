@@ -18,8 +18,6 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.JiraService;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import static java.lang.String.format;
@@ -71,9 +69,10 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     @Override
     @SneakyThrows
     public ServiceAgreement get(String id) {
-
-        return dataDocumentToServiceAgreement(repo.getData(FOLDER + id + ".raw"),
-                repo.getData(FOLDER + id + ".meta"));
+        return dataDocumentToServiceAgreement(
+            repo.getData(FOLDER + id + ".raw"),
+            repo.getData(FOLDER + id + ".meta")
+        );
     }
 
     @SneakyThrows
@@ -256,8 +255,10 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
             String id,
             String version
     ) {
-        return dataDocumentToServiceAgreement(repo.getData(version, FOLDER + id + ".raw"),
-                repo.getData(version, FOLDER + id + ".meta"));
+        return dataDocumentToServiceAgreement(
+            repo.getData(version, FOLDER + id + ".raw"),
+            repo.getData(version, FOLDER + id + ".meta")
+        );
     }
 
     @SneakyThrows

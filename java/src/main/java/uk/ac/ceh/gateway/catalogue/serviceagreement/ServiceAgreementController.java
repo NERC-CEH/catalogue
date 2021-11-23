@@ -8,15 +8,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
-import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
-import uk.ac.ceh.gateway.catalogue.serviceagreement.History.Revision;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Profile("service-agreement")
 @Slf4j
@@ -129,7 +125,7 @@ public class ServiceAgreementController {
             log.info("PUBLISHING SERVICE AGREEMENT {}", id);
             serviceAgreementService.publishServiceAgreement(user, id);
             return new RedirectView("/service-agreement/" + id);
-        }else{
+        } else {
             throw new ResourceNotFoundException("Metadata record does not exist");
         }
     }
@@ -143,28 +139,30 @@ public class ServiceAgreementController {
             log.info("GIVING DEPOSITOR EDIT PERMISSION FOR SERVICE AGREEMENT {}", id);
             serviceAgreementService.giveDepositorEditPermission(user, id);
             return new RedirectView("/service-agreement/" + id);
-        }else{
+        } else {
             throw new ResourceNotFoundException("Metadata record does not exist");
         }
     }
 
     @PreAuthorize("@permission.userCanEdit(#id)")
-    @PostMapping("{id}/history")
+    @GetMapping("{id}/history")
     public History getHistory(@PathVariable("id") String id) {
         if (serviceAgreementService.metadataRecordExists(id)) {
             log.info("GETTING SERVICE AGREEMENT {} HISTORY", id);
 
             return serviceAgreementService.getHistory(id);
 
-        }else{
+        } else {
             throw new ResourceNotFoundException("Metadata record does not exist");
         }
     }
 
     @PreAuthorize("@permission.userCanEdit(#id)")
     @GetMapping("{id}/version/{version}")
-    public ServiceAgreementModel getPreviousVersion(@PathVariable("id") String id,
-                                           @PathVariable String version) {
+    public ServiceAgreementModel getPreviousVersion(
+        @PathVariable("id") String id,
+        @PathVariable String version
+    ) {
         if (serviceAgreementService.metadataRecordExists(id)) {
             log.info("GETTING SERVICE AGREEMENT {} HISTORY", id);
             val serviceAgreement = serviceAgreementService.getPreviousVersion(id, version);

@@ -92,7 +92,7 @@ public class GitRepoServiceAgreementServiceTest {
 
     @Test
     @SneakyThrows
-    public void canNotGetRaw() {
+    public void cannotGetRaw() {
         //Given
         given(repo.getData(FOLDER + ID + ".raw"))
                 .willThrow(new DataRepositoryException("Fail"));
@@ -105,7 +105,7 @@ public class GitRepoServiceAgreementServiceTest {
 
     @Test
     @SneakyThrows
-    public void canNotGetMeta() {
+    public void cannotGetMeta() {
         //Given
         val rawInfoDocument = mock(DataDocument.class);
         given(repo.getData(FOLDER + ID + ".raw"))
@@ -386,12 +386,13 @@ public class GitRepoServiceAgreementServiceTest {
 
         //When
         assertThrows(ServiceAgreementException.class, () ->
-                service.getHistory(ID));
+                service.getHistory(ID)
+        );
     }
 
     @Test
     @SneakyThrows
-    public void getPreviousVersion() {
+    public void canGetPreviousVersion() {
         //Given
         givenServiceAgreementPreviousVersion();
 
@@ -403,19 +404,20 @@ public class GitRepoServiceAgreementServiceTest {
 
     @Test
     @SneakyThrows
-    public void canNotGetPreviousVersionRaw() {
+    public void cannotGetPreviousVersionRaw() {
         //Given
         given(repo.getData(VERSION, FOLDER + ID + ".raw"))
                 .willThrow(new DataRepositoryException("Fail"));
 
         //When
         assertThrows(DataRepositoryException.class, () ->
-                service.getPreviousVersion(ID, VERSION));
+                service.getPreviousVersion(ID, VERSION)
+        );
     }
 
     @Test
     @SneakyThrows
-    public void canNotGetPreviousVersionMeta() {
+    public void cannotGetPreviousVersionMeta() {
         //Given
         val rawInfoDocument = mock(DataDocument.class);
         given(repo.getData(VERSION, FOLDER + ID + ".raw"))
@@ -558,16 +560,6 @@ public class GitRepoServiceAgreementServiceTest {
         serviceAgreement.setTitle("this is a test");
         serviceAgreement.setEndUserLicence(new ResourceConstraint("test", "test", "test"));
         serviceAgreement.setDepositorContactDetails("deposit@example.com");
-    }
-
-    @SneakyThrows
-    private void givenPublishedGeminiDocument() {
-        val metadataInfo = MetadataInfo.builder().state("published").build();
-        val geminiDocument = new GeminiDocument();
-        geminiDocument.setId(ID);
-        geminiDocument.setMetadata(metadataInfo);
-        given(documentRepository.read(ID))
-            .willReturn(geminiDocument);
     }
 
     @Value
