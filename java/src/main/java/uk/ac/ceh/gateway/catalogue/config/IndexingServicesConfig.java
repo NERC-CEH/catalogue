@@ -20,7 +20,10 @@ import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
 import uk.ac.ceh.gateway.catalogue.elter.ElterDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.indexing.*;
+import uk.ac.ceh.gateway.catalogue.indexing.ClassMap;
+import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
+import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
+import uk.ac.ceh.gateway.catalogue.indexing.PrioritisedClassMap;
 import uk.ac.ceh.gateway.catalogue.indexing.async.AsyncDocumentIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.datacite.DataciteIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.jena.*;
@@ -35,8 +38,6 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.sparql.VocabularyService;
-import uk.ac.ceh.gateway.catalogue.indexing.ClassMap;
-import uk.ac.ceh.gateway.catalogue.indexing.PrioritisedClassMap;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 import uk.ac.ceh.gateway.catalogue.validation.MediaTypeValidator;
@@ -98,8 +99,7 @@ public class IndexingServicesConfig {
     }
 
     @Bean(initMethod = "initialIndex") @Qualifier("mapserver-index")
-    @SuppressWarnings("rawtypes")
-    public MapServerIndexingService mapServerIndexingService(
+    public MapServerIndexingService<MetadataDocument> mapServerIndexingService(
         BundledReaderService<MetadataDocument> bundledReaderService,
         DataRepository<CatalogueUser> dataRepository,
         DocumentListingService documentListingService,

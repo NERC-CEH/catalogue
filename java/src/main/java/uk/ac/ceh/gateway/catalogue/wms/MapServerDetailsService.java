@@ -57,19 +57,6 @@ public class MapServerDetailsService {
     }
 
     /**
-     * Determine if the specified metadata document can be used to set up a map
-     * service
-     * @param document to check if this document can define a map server service
-     * @return if the supplied document can create a map service document
-     */
-    public boolean isMapServiceHostable(MetadataDocument document) {
-        if (document.getType().equals("service")) {
-            return getMapDataDefinition(document) != null;
-        }
-        return false;
-    }
-
-    /**
      * Locate a MapDataDefinition object from the supplied MetadataDocument (if
      * it has one) else return null
      * @param document to get a map data definition from
