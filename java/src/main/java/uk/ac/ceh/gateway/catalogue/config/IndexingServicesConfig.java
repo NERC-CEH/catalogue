@@ -50,7 +50,6 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.SchemaFactory;
 import java.io.File;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -185,8 +184,8 @@ public class IndexingServicesConfig {
 
         val htmlValidator = new MediaTypeValidator("HTML Generation", MediaType.TEXT_HTML, documentWritingService);
 
-        ClassMap<IndexGenerator<?, ValidationReport>> mappings = new PrioritisedClassMap<IndexGenerator<?, ValidationReport>>()
-            .register(GeminiDocument.class, new ValidationIndexGenerator(Arrays.asList(
+        val mappings = new PrioritisedClassMap<IndexGenerator<?, ValidationReport>>()
+            .register(GeminiDocument.class, new ValidationIndexGenerator(List.of(
                 new XSDSchemaValidator("Gemini", MediaType.parseMediaType(GEMINI_XML_VALUE), documentWritingService, geminiSchema),
                 htmlValidator
             )))
