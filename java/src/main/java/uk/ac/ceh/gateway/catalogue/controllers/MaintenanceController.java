@@ -16,6 +16,7 @@ import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.mapserver.MapServerIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.MaintenanceResponse;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.services.DataRepositoryOptimizingService;
 
 import java.util.Arrays;
@@ -30,14 +31,14 @@ public class MaintenanceController {
     private final DocumentIndexingService solrIndex;
     private final DocumentIndexingService linkingService;
     private final DocumentIndexingService validationService;
-    private final MapServerIndexingService mapserverService;
+    private final MapServerIndexingService<MetadataDocument> mapserverService;
 
     public MaintenanceController(
         DataRepositoryOptimizingService repoService,
         @Qualifier("solr-index") DocumentIndexingService solrIndex,
         @Qualifier("jena-index") DocumentIndexingService linkingService,
         @Qualifier("validation-index") DocumentIndexingService validationService,
-        @Qualifier("mapserver-index") MapServerIndexingService mapserverService
+        @Qualifier("mapserver-index") MapServerIndexingService<MetadataDocument> mapserverService
     ) {
         this.repoService = repoService;
         this.solrIndex = solrIndex;

@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import uk.ac.ceh.gateway.catalogue.indexing.validation.ValidationIndexingService;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.ValidationResponse;
 import uk.ac.ceh.gateway.catalogue.validation.ValidationLevel;
 import uk.ac.ceh.gateway.catalogue.validation.ValidationReport;
@@ -20,12 +21,11 @@ import java.util.stream.Collectors;
 @RequestMapping("maintenance/validation")
 @Secured(DocumentController.MAINTENANCE_ROLE)
 public class ValidationController {
-    private final ValidationIndexingService<?> validationIndexingService;
+    private final ValidationIndexingService<MetadataDocument> validationIndexingService;
 
-    @SuppressWarnings("rawtypes")
-    public ValidationController(ValidationIndexingService validationIndexingService) {
+    public ValidationController(ValidationIndexingService<MetadataDocument> validationIndexingService) {
         this.validationIndexingService = validationIndexingService;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @GetMapping

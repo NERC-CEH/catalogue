@@ -1,25 +1,36 @@
 package uk.ac.ceh.gateway.catalogue.indexing.validation;
 
-import java.util.Arrays;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.junit.jupiter.api.Test;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.validation.ValidationResult;
+import uk.ac.ceh.gateway.catalogue.validation.Validator;
+
+import java.util.List;
+
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import uk.ac.ceh.gateway.catalogue.indexing.validation.ValidationIndexGenerator;
-import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.validation.Validator;
-
-public class ValidationIndexGeneratorTest {
+@Slf4j
+class ValidationIndexGeneratorTest {
     @Test
-    public void checkThatValidationDelegatesToValidator() {
+    void checkThatValidationDelegatesToValidator() {
         //Given
-        MetadataDocument toValidate = mock(MetadataDocument.class);
-        Validator validator = mock(Validator.class, RETURNS_DEEP_STUBS);
-        ValidationIndexGenerator generator = new ValidationIndexGenerator(Arrays.asList(validator));
+        val toValidate = new GeminiDocument();
+        toValidate.setId("1234");
+        val validator = mock(Validator.class);
+        given(validator.getName())
+            .willReturn("test");
+        given(validator.validate(toValidate))
+            .willReturn(new ValidationResult());
+        val generator = new ValidationIndexGenerator(List.of(validator));
+
 
         //When
-        generator.generateIndex(toValidate);
+        val validationReport = generator.generateIndex(toValidate);
+        log.info(validationReport.toString());
 
         //Then
         verify(validator).validate(toValidate);
