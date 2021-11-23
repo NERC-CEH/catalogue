@@ -373,8 +373,8 @@ public class GitRepoServiceAgreementServiceTest {
         val result = service.getHistory(ID);
 
         //Then
-        assertThat(result.getRevisions().get(0).getVersion(),is(equalTo("1")));
-        assertThat(result.getRevisions().get(1).getVersion(),is(equalTo("2")));
+        assertThat(result.getRevisions().get(0).getVersion(),is(equalTo("2")));
+        assertThat(result.getRevisions().get(1).getVersion(),is(equalTo("1")));
     }
 
     @Test

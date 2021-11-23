@@ -386,10 +386,10 @@ class ServiceAgreementControllerTest {
             "historyOf":"test",
             "revisions":[
             {
-            "version":"1",
-            "href":"test/service-agreement/test/version/revision1"},
+            "version":"2",
+            "href":"test/service-agreement/test/version/revision2"},
             {
-            "version":"2","href":"test/service-agreement/test/version/revision2"
+            "version":"1","href":"test/service-agreement/test/version/revision1"
             }
             ]}
             """;
@@ -519,8 +519,8 @@ class ServiceAgreementControllerTest {
     }
     private void givenHistory() {
         List revisions = new ArrayList();
-        revisions.add(new TestRevision("revision1"));
         revisions.add(new TestRevision("revision2"));
+        revisions.add(new TestRevision("revision1"));
         History history = new History(ID, revisions, "test");
         given(serviceAgreementService.getHistory(ID))
                 .willReturn(history);

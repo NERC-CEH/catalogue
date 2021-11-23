@@ -23,10 +23,10 @@ public class History {
     public  History(String id, List<DataRevision<CatalogueUser>> history, String baseUri) {
         historyOf = id;
         revisions = new ArrayList<>();
-        int version = 1;
+        int version = history.size();
         for (DataRevision revision : history) {
             revisions.add(new History.Revision(historyOf, String.valueOf(version), revision.getRevisionID(), baseUri));
-            version++;
+            version--;
         }
     }
 

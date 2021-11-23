@@ -18,9 +18,15 @@
                         </div>
                         <#list getModelLinks() as link>
                             <div class="btn-group btn-group-sm">
-                                <form action="${link.href}" method="post">
-                                    <input type="submit" value="${link.title}" class="btn btn-default btn-wide">
-                                </form>
+                                <#if link.title != 'History'>
+                                    <form action="${link.href}" method="post">
+                                        <input type="submit" value="${link.title}" class="btn btn-default btn-wide">
+                                    </form>
+                                <#else>
+                                    <form action="${link.href}" method="get">
+                                        <input type="submit" value="${link.title}" class="btn btn-default btn-wide">
+                                    </form>
+                                </#if>
                             </div>
                         </#list>
                     </div>
