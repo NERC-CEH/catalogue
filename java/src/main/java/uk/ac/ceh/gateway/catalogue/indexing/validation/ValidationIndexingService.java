@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.indexing.validation;
 
+import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.components.datastore.DataRepository;
@@ -94,7 +95,8 @@ public class ValidationIndexingService<D extends MetadataDocument> extends Abstr
     }
 
     @Override
-    protected D readDocument(String document, String revision) throws Exception {
+    @SneakyThrows
+    protected D readDocument(String document, String revision) {
         D toReturn = super.readDocument(document, revision);
         toReturn.setUri(documentIdentifierService.generateUri(document));
         postProcessingService.postProcess(toReturn);

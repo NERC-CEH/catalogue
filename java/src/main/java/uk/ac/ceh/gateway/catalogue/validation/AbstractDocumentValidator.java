@@ -10,7 +10,7 @@ import java.io.InputStream;
 
 /**
  * The following is a validator which will read a document from the
- * documentWritingService as a specified mediatype. It will then delegate the
+ * documentWritingService as a specified media-type. It will then delegate the
  * read InputStream to the subclasses #validate(InputStream) method.
  */
 @Slf4j
@@ -24,7 +24,7 @@ public abstract class AbstractDocumentValidator implements Validator {
         this.name = name;
         this.mediaType = mediaType;
         this.documentWritingService = documentWritingService;
-        log.info("Creating {}", this);
+        log.info("Creating {} for {}", this.name, this.mediaType);
     }
 
     @Override

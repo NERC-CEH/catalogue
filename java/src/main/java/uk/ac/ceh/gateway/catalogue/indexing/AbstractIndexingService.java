@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.indexing;
 
+import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -48,6 +49,10 @@ public abstract class AbstractIndexingService<D, I> implements DocumentIndexingS
     protected abstract void clearIndex() throws DocumentIndexingException;
     protected abstract void index(I toIndex) throws Exception;
 
+    protected boolean canIndex(D doc) {
+        return true;
+    }
+
     @Override
     public void rebuildIndex() throws DocumentIndexingException {
         try {
@@ -70,8 +75,12 @@ public abstract class AbstractIndexingService<D, I> implements DocumentIndexingS
             try {
                 log.debug("Indexing: {}, revision: {}", document, revision);
                 val doc = readDocument(document, revision);
-                val toIndex = indexGenerator.generateIndex(doc);
-                index(toIndex);
+                if (canIndex(doc)) {
+                    val toIndex = indexGenerator.generateIndex(doc);
+                    index(toIndex);
+                } else {
+                    log.debug("Not indexing {}", document);
+                }
             }
             catch(Exception ex) {
                 joinedException.addSuppressed(
@@ -112,13 +121,14 @@ public abstract class AbstractIndexingService<D, I> implements DocumentIndexingS
      * @param document id of the document to read
      * @param revision the revision which to read at
      * @return a document which has been read
-     * @throws Exception if something went wrong
      */
-    protected D readDocument(String document, String revision) throws Exception {
+    @SneakyThrows
+    protected D readDocument(String document, String revision) {
         return reader.readBundle(document, revision);
     }
 
-    protected D readDocument(String document) throws Exception {
+    @SneakyThrows
+    protected D readDocument(String document) {
         return reader.readBundle(document);
     }
 }

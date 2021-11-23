@@ -1,9 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.wms;
 
-import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.MapDataDefinition;
 import uk.ac.ceh.gateway.catalogue.gemini.MapDataDefinition.DataSource;
 import uk.ac.ceh.gateway.catalogue.gemini.MapDataDefinition.DataSource.Attribute.Bucket;
@@ -12,12 +10,12 @@ import uk.ac.ceh.gateway.catalogue.wms.MapServerDetailsService.MapBucketDetails;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -40,66 +38,6 @@ public class MapServerDetailsServiceTest {
         //Then
         assertThat(isDataBtye, is(false));
 
-    }
-
-    @Test
-    void checkThatServiceGeminiDocumentWithServiceDefinitionIsHostable() {
-        //Given
-        val mapDataDefinition = new MapDataDefinition();
-        mapDataDefinition.setData(List.of(new DataSource()));
-        val document = new GeminiDocument();
-        document.setType("service");
-        document.setMapDataDefinition(mapDataDefinition);
-
-        //When
-        boolean isHostable = service.isMapServiceHostable(document);
-
-        //Then
-        assertTrue(isHostable);
-    }
-
-    @Test
-    void checkThatServiceGeminiDocumentWithoutDataIsNotHostable() {
-        //Given
-        val mapDataDefinition = new MapDataDefinition();
-        val document = new GeminiDocument();
-        document.setType("service");
-        document.setMapDataDefinition(mapDataDefinition);
-
-        //When
-        boolean isHostable = service.isMapServiceHostable(document);
-
-        //Then
-        assertFalse(isHostable);
-    }
-
-    @Test
-    void checkThatServiceGeminiDocumentEmptyServiceDefinitionIsNotHostable() {
-        //Given
-        val mapDataDefinition = new MapDataDefinition();
-        mapDataDefinition.setData(Collections.emptyList());
-        val document = new GeminiDocument();
-        document.setType("service");
-        document.setMapDataDefinition(mapDataDefinition);
-
-        //When
-        boolean isHostable = service.isMapServiceHostable(document);
-
-        //Then
-        assertFalse(isHostable);
-    }
-
-    @Test
-    void checkThatDatasetGeminiDocumentIsNotHostable() {
-        //Given
-        val document = new GeminiDocument();
-        document.setType("dataset");
-
-        //When
-        boolean isHostable = service.isMapServiceHostable(document);
-
-        //Then
-        assertFalse(isHostable);
     }
 
     @Test
