@@ -1,0 +1,28 @@
+{
+  "ownersOfIpr": [
+    {
+      "individualName": "Author 0",
+      "organisationName": "Organisation 0",
+      "role": "owner",
+      "email": "test@test.com"
+    },
+    {
+      "individualName": "Author 1",
+      "organisationName": "Organisation 0",
+      "role": "owner",
+      "email": "test@test.com"
+    },
+    {
+      "individualName": "Author 2",
+      "organisationName": "Organisation 0",
+      "role": "owner",
+      "email": "test@test.com"
+    },
+    {
+      "individualName": "Distributor 0",
+      "organisationName": "Organisation 0",
+      "role": "owner",
+      "email": "test@test.com"
+    }
+  ]
+}

@@ -18,6 +18,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -49,10 +50,9 @@ public class MapServerIndexingService<D extends MetadataDocument> extends Abstra
     }
 
     @Override
-    protected void clearIndex() throws DocumentIndexingException {
-        for (File file : mapFiles.listFiles(new MapFileFilenameFilter())) {
-            FileUtils.deleteQuietly(file);
-        }
+    protected void clearIndex() {
+        Arrays.stream(Objects.requireNonNull(mapFiles.listFiles(new MapFileFilenameFilter())))
+            .forEach(FileUtils::deleteQuietly);
     }
 
     @Override
@@ -92,11 +92,10 @@ public class MapServerIndexingService<D extends MetadataDocument> extends Abstra
     @Override
     public void unindexDocuments(List<String> unIndex) throws DocumentIndexingException {
         for(String indexed: unIndex) {
-            Arrays.asList(mapFiles.listFiles(new MapFileFilenameFilter()))
-                .stream()
+            Arrays.stream(Objects.requireNonNull(mapFiles.listFiles(new MapFileFilenameFilter())))
                 .filter((f) -> f.getName().startsWith(indexed))
                 .filter((f) -> MAP_FILE_PATTERN.matcher(f.getName().substring(indexed.length())).matches())
-                .forEach((f) -> FileUtils.deleteQuietly(f));
+                .forEach(FileUtils::deleteQuietly);
         }
     }
 
@@ -112,8 +111,7 @@ public class MapServerIndexingService<D extends MetadataDocument> extends Abstra
      * @return a list of ids indexed
      */
     public List<String> getIndexedFiles() {
-        return Arrays.asList(mapFiles.listFiles(new MapFileFilenameFilter()))
-                .stream()
+        return Arrays.stream(Objects.requireNonNull(mapFiles.listFiles(new MapFileFilenameFilter())))
                 .map(File::getName)
                 .map((f) -> f.substring(0, f.lastIndexOf('_')))
                 .distinct()

@@ -31,7 +31,7 @@
 </#if>
 
 <#if rel_memberOf?has_content && rel_memberOf?size gt 0 >
-	<h2>This ${recordType} is included in the following collection<#if rel_memberOf?size gt 1>s</#if></h3>
+	<h2>This ${recordType} is included in the following collection<#if rel_memberOf?size gt 1>s</#if></h2>
 	<div id="parents">
 		<div class="cardlist">
 			<#list rel_memberOf?sort_by("title") as item>

@@ -87,17 +87,18 @@ define [
     @$el.html template @model.getResults().attributes
     $relatedSearches = @$('.results__related_searches')
     relatedSearches = @model.getResults().get('relatedSearches')
-    if relatedSearches.length > 0
-      $relatedSearches.append('<h3>Related Searches</h3>')
+    if relatedSearches?
+      if relatedSearches.length > 0
+        $relatedSearches.append('<h3>Related Searches</h3>')
 
-    relatedSearches.forEach((relatedSearch, index) ->
-      if index > 0
-        prefix = ', '
-      else
-        prefix = ''
-      $relatedSearches.append(
-        "#{prefix}<a href=\"#{relatedSearch.href}\">#{relatedSearch.title}</a>"
+      relatedSearches.forEach((relatedSearch, index) ->
+        if index > 0
+          prefix = ', '
+        else
+          prefix = ''
+        $relatedSearches.append(
+          "#{prefix}<a href=\"#{relatedSearch.href}\">#{relatedSearch.title}</a>"
+        )
       )
-    )
     do @findSelected # Find the selected
     do @padResults   # Pad the results pane

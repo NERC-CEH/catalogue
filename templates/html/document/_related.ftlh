@@ -30,8 +30,8 @@
 
       <#-- Data resources linked to this service -->
       <@displayRelatives "datasets" "Datasets associated with this service" rel_uses />
-      
-      <#-- CHILD records 
+
+      <#-- CHILD records
       <@displayRelatives "children" "This ${recordType} includes the following resources" rel_hasMember />-->
 
       <#-- PARENT record(s) -->

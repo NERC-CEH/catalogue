@@ -143,5 +143,4 @@ public class DocumentTypes {
         .title("UK-EMS Document")
         .type(UKEMS_DOCUMENT)
         .build();
-
 }

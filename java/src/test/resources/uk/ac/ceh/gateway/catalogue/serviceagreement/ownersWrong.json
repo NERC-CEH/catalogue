@@ -1,0 +1,23 @@
+{
+  "ownersOfIpr": [
+    {
+      "individualName": "Author 0",
+      "organisationName": "Organisation 0",
+      "role": "author"
+    },
+    {
+      "individualName": "",
+      "organisationName": "Organisation 0",
+      "role": "author"
+    },
+    {
+      "organisationName": "Organisation 0",
+      "role": "author"
+    },
+    {
+      "individualName": "Distributor 0",
+      "organisationName": "Organisation 0",
+      "role": "distributor"
+    }
+  ]
+}
