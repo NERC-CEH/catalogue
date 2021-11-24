@@ -17,6 +17,7 @@ import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
 import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.document.DocumentListingService;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreement;
 
 import java.util.List;
@@ -61,7 +62,9 @@ public class JenaIndexingService<D> extends AbstractIndexingService<D, List<Stat
 
     @Override
     protected boolean canIndex(D doc) {
-        log.debug("can index? {}", doc);
+        if (log.isDebugEnabled() && doc instanceof MetadataDocument document) {
+            log.debug("can index? {}", document.getId());
+        }
         if (doc == null) {
             return false;
         }

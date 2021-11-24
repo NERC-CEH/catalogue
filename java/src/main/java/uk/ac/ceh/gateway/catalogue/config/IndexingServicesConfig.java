@@ -24,7 +24,6 @@ import uk.ac.ceh.gateway.catalogue.indexing.ClassMap;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.PrioritisedClassMap;
-import uk.ac.ceh.gateway.catalogue.indexing.async.AsyncDocumentIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.datacite.DataciteIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.jena.*;
 import uk.ac.ceh.gateway.catalogue.indexing.mapserver.MapServerIndexGenerator;
@@ -50,7 +49,6 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.SchemaFactory;
 import java.io.File;
-import java.util.Collections;
 import java.util.List;
 
 import static java.util.stream.Stream.of;
@@ -65,13 +63,11 @@ public class IndexingServicesConfig {
         BundledReaderService<MetadataDocument> bundledReaderService,
         DataciteService dataciteService
     ) {
-        return new AsyncDocumentIndexingService(
-            new DataciteIndexingService(bundledReaderService, dataciteService)
-        );
+       return new DataciteIndexingService(bundledReaderService, dataciteService);
     }
 
-    @Bean(initMethod = "initialIndex") @Qualifier("jena-index")
-    public JenaIndexingService<MetadataDocument> jenaIndexingService(
+    @Bean @Qualifier("jena-index")
+    public DocumentIndexingService jenaIndexingService(
         @Value("${documents.baseUri}") String baseUri,
         BundledReaderService<MetadataDocument> bundledReaderService,
         DataRepository<CatalogueUser> dataRepository,
@@ -97,8 +93,8 @@ public class IndexingServicesConfig {
         );
     }
 
-    @Bean(initMethod = "initialIndex") @Qualifier("mapserver-index")
-    public MapServerIndexingService<MetadataDocument> mapServerIndexingService(
+    @Bean @Qualifier("mapserver-index")
+    public DocumentIndexingService mapServerIndexingService(
         BundledReaderService<MetadataDocument> bundledReaderService,
         DataRepository<CatalogueUser> dataRepository,
         DocumentListingService documentListingService,
@@ -115,8 +111,8 @@ public class IndexingServicesConfig {
             mapsLocation);
     }
 
-    @Bean(initMethod = "initialIndex") @Qualifier("solr-index")
-    public SolrIndexingService<MetadataDocument> solrIndexingService(
+    @Bean @Qualifier("solr-index")
+    public DocumentIndexingService solrIndexingService(
         BundledReaderService<MetadataDocument> bundledReaderService,
         CodeLookupService codeLookupService,
         DataRepository<CatalogueUser> dataRepository,
@@ -158,15 +154,8 @@ public class IndexingServicesConfig {
 
     @Bean
     @Qualifier("validation-index")
-    public DocumentIndexingService asyncValidationIndexingService(
-        ValidationIndexingService<MetadataDocument> validationIndexingService
-    ) {
-        return new AsyncDocumentIndexingService(validationIndexingService);
-    }
-
-    @Bean
     @SneakyThrows
-    public ValidationIndexingService<MetadataDocument> validationIndexingService(
+    public DocumentIndexingService validationIndexingService(
         BundledReaderService<MetadataDocument> bundledReaderService,
         DataRepository<CatalogueUser> dataRepository,
         DocumentIdentifierService documentIdentifierService,
@@ -183,13 +172,14 @@ public class IndexingServicesConfig {
         );
 
         val htmlValidator = new MediaTypeValidator("HTML Generation", MediaType.TEXT_HTML, documentWritingService);
+        val schemaValidator = new XSDSchemaValidator("Gemini", MediaType.parseMediaType(GEMINI_XML_VALUE), documentWritingService, geminiSchema);
 
         val mappings = new PrioritisedClassMap<IndexGenerator<?, ValidationReport>>()
             .register(GeminiDocument.class, new ValidationIndexGenerator(List.of(
-                new XSDSchemaValidator("Gemini", MediaType.parseMediaType(GEMINI_XML_VALUE), documentWritingService, geminiSchema),
+                schemaValidator,
                 htmlValidator
             )))
-            .register(MetadataDocument.class, new ValidationIndexGenerator(Collections.singletonList(htmlValidator)));
+            .register(MetadataDocument.class, new ValidationIndexGenerator(List.of(htmlValidator)));
 
         return new ValidationIndexingService<>(
             bundledReaderService,

@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.indexing.validation;
 import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.indexing.AbstractIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
@@ -51,12 +52,14 @@ public class ValidationIndexingService<D extends MetadataDocument> extends Abstr
         return results.isEmpty() && failed.isEmpty();
     }
 
+    @Async
     @Override
     protected void clearIndex() {
         results.clear();
         failed.clear();
     }
 
+    @Async
     @Override
     public void indexDocuments(List<String> documents, String revision) throws DocumentIndexingException {
         try {
@@ -73,6 +76,7 @@ public class ValidationIndexingService<D extends MetadataDocument> extends Abstr
         results.put(toIndex.getDocumentId(), toIndex);
     }
 
+    @Async
     @Override
     public void unindexDocuments(List<String> unIndex) {
         unIndex.forEach(results::remove);

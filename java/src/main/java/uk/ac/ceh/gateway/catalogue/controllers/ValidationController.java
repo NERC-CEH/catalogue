@@ -2,8 +2,12 @@ package uk.ac.ceh.gateway.catalogue.controllers;
 
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.validation.ValidationIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.ValidationResponse;
@@ -21,10 +25,18 @@ import java.util.stream.Collectors;
 @RequestMapping("maintenance/validation")
 @Secured(DocumentController.MAINTENANCE_ROLE)
 public class ValidationController {
-    private final ValidationIndexingService<MetadataDocument> validationIndexingService;
+    private final ValidationIndexingService<MetadataDocument> indexingService;
 
-    public ValidationController(ValidationIndexingService<MetadataDocument> validationIndexingService) {
-        this.validationIndexingService = validationIndexingService;
+    public ValidationController(
+        @Qualifier("validation-index") DocumentIndexingService indexingService
+    ) {
+        if (indexingService instanceof ValidationIndexingService validationIndexingService) {
+            //noinspection unchecked
+            this.indexingService = validationIndexingService;
+        } else {
+            throw new IllegalArgumentException("Not a ValidationIndexingService");
+        }
+
         log.info("Creating");
     }
 
@@ -32,7 +44,7 @@ public class ValidationController {
     public ValidationResponse getValidationResults() {
         Map<String,Map<ValidationLevel,ValidatorState>> toReturn = new HashMap<>();
 
-        for(ValidationReport report: validationIndexingService.getResults() ) {
+        for(ValidationReport report: indexingService.getResults() ) {
             for(Map.Entry<String, ValidationLevel> documentState: report.getResults().entrySet()) {
                 toReturn.putIfAbsent(documentState.getKey(), new EnumMap<>(ValidationLevel.class));
                 ValidationLevel level = documentState.getValue();
@@ -48,6 +60,6 @@ public class ValidationController {
                 .stream()
                 .map((e) -> new ValidatorResult(e.getKey(), new ArrayList<>(e.getValue().values())))
                 .collect(Collectors.toList());
-        return new ValidationResponse(results, validationIndexingService.getFailed());
+        return new ValidationResponse(results, indexingService.getFailed());
     }
 }

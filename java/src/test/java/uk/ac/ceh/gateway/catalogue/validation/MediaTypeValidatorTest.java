@@ -35,7 +35,7 @@ public class MediaTypeValidatorTest {
     }
 
     @Test
-    public void checkThatReturnsAValidValidationIfCanRead() throws IOException {
+    public void checkThatReturnsAValidValidationIfCanRead() {
         //Given
         MediaTypeValidator validator = new MediaTypeValidator("test", MediaType.ALL, writer);
         InputStream in = new ByteArrayInputStream(new byte[]{'a', 'b', 'c'});

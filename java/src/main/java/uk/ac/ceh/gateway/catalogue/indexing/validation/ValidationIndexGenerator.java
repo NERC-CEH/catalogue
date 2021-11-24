@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.indexing.validation;
 
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.validation.ValidationReport;
@@ -24,11 +25,12 @@ public class ValidationIndexGenerator implements IndexGenerator<MetadataDocument
 
     @Override
     public ValidationReport generateIndex(MetadataDocument toIndex) {
-        ValidationReport toReturn = new ValidationReport(toIndex.getId());
+        val validationReport = new ValidationReport(toIndex.getId());
 
         for(Validator validator: validators) {
-            toReturn.addValidationResult(validator.getName(), validator.validate(toIndex));
+            validationReport.addValidationResult(validator.getName(), validator.validate(toIndex));
         }
-        return toReturn;
+        log.debug(validationReport.toString());
+        return validationReport;
     }
 }
