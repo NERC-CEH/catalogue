@@ -167,7 +167,7 @@ define [
                     """
       ]
     ,
-      label: 'References'
+      label: 'References & links'
       title: 'References'
       views: [
 

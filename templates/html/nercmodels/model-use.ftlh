@@ -21,53 +21,36 @@
             </@m.key>
           </#if>
 
-
-          <#if (references?? && references?has_content) ||  (onlineResources?? && onlineResources?has_content)>
-          <div>
-            <h2>References/Online resources</h2>
-             
-              <#if (references?? && references?has_content)>
-                <#list references as link>
-                <div>
-                  <#if link.name?? && link.name?has_content>${link.name}</#if>
-                  <#if link.url?? && link.url?has_content><@m.Url link.url/></#if>
-                  <#if link.description?? && link.description?has_content>${link.description}</#if>
-                </div>
-                </#list>
-               </#if>
-            
-              <#if (onlineResources?? && onlineResources?has_content)>
-                <#list onlineResources as link>
-                <div>
-                  <#if link.name?? && link.name?has_content>${link.name}</#if>
-                  <#if link.url?? && link.url?has_content><@m.Url link.url/></#if>
-                  <#if link.description?? && link.description?has_content>${link.description}</#if>
-                </div>
-                </#list>
-               </#if>
-
-          </div>
-          </#if>
-
           <#if modelInfos?? && modelInfos?has_content>
-            <div>
             <h2>Model Information</h2>
+            <div class="models">
               <#list modelInfos as modelInfo>
                 <#assign model=jena.metadata(modelInfo.id)!""/>
-                <div class="modelinfo">
-                    <div data-toggle="collapse" data-target="#collapse${modelInfo?index}" aria-expanded="false" aria-controls="collapseExample">
-                      <a href="${model.href}">${model.title} <i class="fas fa-chevron-down"></i></a>
-                    </div>
-                    <div class="collapse in" id="collapse${modelInfo?index}">
-                      <div class="extra">
+                <div class="models--modelinfo">
+                  <div class="models--modelinfo--title"><a href="${model.href}">${model.title}</a></div>
+                    <#if
+                    (modelInfo.spatialExtentOfApplication?? && modelInfo.spatialExtentOfApplication?has_content )
+                    || (modelInfo.availableSpatialData?? && modelInfo.availableSpatialData?has_content)
+                    || (modelInfo.spatialResolutionOfApplication?? && modelInfo.spatialResolutionOfApplication?has_content)
+                    || (modelInfo.temporalExtentOfApplicationStartDate?? && modelInfo.temporalExtentOfApplicationStartDate?has_content)
+                    || (modelInfo.temporalExtentOfApplicationEndDate?? && modelInfo.temporalExtentOfApplicationEndDate?has_content)
+                    || (modelInfo.temporalExtentOfApplicationStartDate?? && modelInfo.temporalExtentOfApplicationStartDate?has_content)
+                    || (modelInfo.temporalExtentOfApplicationEndDate?? && modelInfo.temporalExtentOfApplicationEndDate?has_content)
+                    || (modelInfo.calibrationConditions?? && modelInfo.calibrationConditions?has_content)
+                    || (modelInfo.notes?? && modelInfo.notes?has_content)
+                    >
+                    <div class="models--modelinfo--extra">
                         <#if modelInfo.spatialExtentOfApplication?? && modelInfo.spatialExtentOfApplication?has_content>
-                          <div>Spatial extent</div><div>${modelInfo.spatialExtentOfApplication}</div>
+                          <div>Spatial extent</div>
+                          <div>${modelInfo.spatialExtentOfApplication}</div>
                         </#if>
                         <#if modelInfo.availableSpatialData?? && modelInfo.availableSpatialData?has_content>
-                          <div>Available spatial data</div><div>${modelInfo.availableSpatialData}</div>
+                          <div>Available spatial data</div>
+                          <div>${modelInfo.availableSpatialData}</div>
                         </#if>
                         <#if modelInfo.spatialResolutionOfApplication?? && modelInfo.spatialResolutionOfApplication?has_content>
-                          <div>Spatial resolution</div><div>${modelInfo.spatialResolutionOfApplication}</div>
+                          <div>Spatial resolution</div>
+                          <div>${modelInfo.spatialResolutionOfApplication}</div>
                         </#if>
                         <#if (modelInfo.temporalExtentOfApplicationStartDate?? && modelInfo.temporalExtentOfApplicationStartDate?has_content) || (modelInfo.temporalExtentOfApplicationEndDate?? && modelInfo.temporalExtentOfApplicationEndDate?has_content)>
                             <div>Temporal extent</div>
@@ -81,16 +64,55 @@
                             </div>
                         </#if>
                         <#if modelInfo.calibrationConditions?? && modelInfo.calibrationConditions?has_content>
-                          <div>Calibration</div><div>${modelInfo.calibrationConditions}</div>
+                          <div>Calibration</div>
+                          <div>${modelInfo.calibrationConditions}</div>
                         </#if>
                         <#if modelInfo.notes?? && modelInfo.notes?has_content>
-                          <div>Notes</div><div>${modelInfo.notes}</div>
+                          <div>Notes</div>
+                          <div>${modelInfo.notes}</div>
                         </#if>
-                      </div>
                     </div>
+                  </#if>
                 </div>
               </#list>
             </div>
+          </#if>
+
+          <#if (references?? && references?has_content) ||  (onlineResources?? && onlineResources?has_content)>
+          <div class="links">
+            <h2>References and online resources</h2>
+             
+              <#if (references?? && references?has_content)>
+                <#list references as link>
+                <div class="links--link">
+                  <#if link.description?? && link.description?has_content>
+                    <div class="links--link--description">${link.description}</div>
+                  <#elseif link.name?? && link.name?has_content>
+                    <div class="links--link--name">${link.name}</div>
+                  <#else>
+                    <div>Reference</div>
+                  </#if>
+                  <#if link.url?? && link.url?has_content><div class="links--link--url"><@m.Url link.url/></div></#if>
+                </div>
+                </#list>
+               </#if>
+            
+              <#if (onlineResources?? && onlineResources?has_content)>
+                <#list onlineResources as link>
+                <div class="links--link">
+                  <#if link.description?? && link.description?has_content>
+                    <div class="links--link--description">${link.description}</div>
+                  <#elseif link.name?? && link.name?has_content>
+                    <div class="links--link--name">${link.name}</div>
+                  <#else>
+                    <div>Website</div>
+                  </#if>
+                  <#if link.url?? && link.url?has_content><div class="links--link--url"><@m.Url link.url/></div></#if>
+                </div>
+                </#list>
+               </#if>
+
+          </div>
           </#if>
 
           <@m.additionalMetadata />

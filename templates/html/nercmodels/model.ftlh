@@ -29,41 +29,50 @@
             </#if>
         </h1>
       </#if>
-
-      <div class="access">
-        <#if code?? && code?has_content>
-          <#list code as link>
-            <#if link.url?? && link.url?has_content>
-              <@m.urlButton link "code">
-                <i class="fas fa-code fa-lg"></i> 
-                <#if link.name?? && link.name?has_content>
-                  ${link.name}
-                <#else>
-                  ${link.url}
-                </#if>
-              </@m.urlButton>
-            </#if>
-          </#list>
-        </#if>
-
-        <#if documents?? && documents?has_content>
-          <#list documents as link>
-            <#if link.url?? && link.url?has_content>
-              <@m.urlButton link "documentation">
-                <i class="fas fa-book fa-lg"></i>
-                <#if link.name?? && link.name?has_content>
-                  ${link.name}
-                <#else>
-                  ${link.url}
-                </#if>
-              </@m.urlButton>
-            </#if>
-          </#list>
-        </#if>
-      </div>
     </div>
     
-    <div class="model--main">
+    <div class="model--body">
+    
+      <#if (code?? && code?has_content) ||(documents?? && documents?has_content)>
+        <div class="model--body--access">
+          <div>Access</div>
+          <#if code?? && code?has_content>
+            <#list code as link>
+              <#if link.url?? && link.url?has_content>
+                <@m.urlAccess link "code">
+                  <span class="fas fa-code fa-lg"></span> 
+                  <span>
+                  <#if link.name?? && link.name?has_content>
+                    ${link.name}
+                  <#else>
+                    Access the code
+                  </#if>
+                  </span>
+                </@m.urlAccess>
+              </#if>
+            </#list>
+          </#if>
+
+          <#if documents?? && documents?has_content>
+            <#list documents as link>
+              <#if link.url?? && link.url?has_content>
+                <@m.urlAccess link "documentation">
+                  <span class="fas fa-book fa-lg"></span>
+                  <span>
+                  <#if link.name?? && link.name?has_content>
+                    ${link.name}
+                  <#else>
+                    Access documentation
+                  </#if>
+                  </span>
+                </@m.urlAccess>
+              </#if>
+            </#list>
+          </#if>    
+        </div>
+      </#if>
+
+      <div class="model--body--main">
         <#if description?? && description?has_content>
           <div class="description clearfix">
             <#if image?? && image?has_content>
@@ -153,7 +162,6 @@
           <#if spatialDomain?? && spatialDomain?has_content>
             <@m.key "Spatial domain">${spatialDomain}</@m.key>
           </#if>
-
         </div>
         </#if>
 
@@ -177,7 +185,6 @@
           </#if>
         </div>
         </#if>
-
 
         <div>
           <h2>Quality assurance</h2>
@@ -249,6 +256,7 @@
 
         <@m.additionalMetadata />
       </div>
+    </div>
 
   </@b.metadataContainer>
   <#include "_footer.ftlh">

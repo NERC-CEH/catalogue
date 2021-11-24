@@ -19,12 +19,12 @@
   </#if>
 </#macro>
 
-<#macro urlButton value btntype="default" newWindow=true>
+<#macro urlAccess value class="" newWindow=true>
   <#if value.url?matches("^http(s)?://.*")>
     <#if newWindow==true>
-      <a class="btn btn-${btntype} btn-sm" href="${value.url}" title="${value.url}" target="_blank" rel="noopener noreferrer"><#nested></a>
+      <a class="${class}" href="${value.url}" title="${value.url}" target="_blank" rel="noopener noreferrer"><#nested></a>
     <#else>
-      <a class="btn btn-${btntype} btn-sm" href="${value.url}" title="${value.url}"><#nested></a>
+      <a class="${class}" href="${value.url}" title="${value.url}"><#nested></a>
     </#if>
   </#if>
 </#macro>
