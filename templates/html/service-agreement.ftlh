@@ -6,7 +6,7 @@
 
     <div id="metadata">
         <div class="container" role="main">
-            <#if permission.userCanEdit(id)>
+            <#if permission.userCanEdit(id) && isHistorical == "false">
                 <div class="row hidden-print" id="adminPanel">
                     <div class="text-right" id="adminToolbar" role="toolbar">
                         <div class="btn-group btn-group-sm">
@@ -31,8 +31,24 @@
                         </#list>
                     </div>
                 </div>
+            <#elseif permission.userCanEdit(id) && isHistorical == "true">
+                <div class="row hidden-print" id="adminPanel">
+                    <div class="text-right" id="adminToolbar" role="toolbar">
+                        <#list getModelLinks() as link>
+                            <#if link.title == 'History'>
+                                <form action="${link.href}" method="get">
+                                    <input type="submit" value="${link.title}" class="btn btn-default btn-wide">
+                                </form>
+                            </#if>
+                        </#list>
+                    </div>
+                </div>
             </#if>
 
+            <#if isHistorical == "true">
+            <h1 class="text-danger">Previous Version</h1>
+            <p class="text-danger"><b>IMPORTANT</b> This is an older version of this Service Agreement record and cannot be edited</p>
+            </#if>
             <h1>Environmental Information Data Centre - Service Agreement</h1>
             <p><b>IMPORTANT</b> Once a DOI has been issued, these details cannot be changed</p>
             <p>For more information/guidance about this document see <a href="https://eidc.ac.uk/support/agreement">https://eidc.ac.uk/support/agreement</a>

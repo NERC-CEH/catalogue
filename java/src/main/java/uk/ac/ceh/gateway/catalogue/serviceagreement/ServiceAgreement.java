@@ -96,6 +96,11 @@ public class ServiceAgreement extends AbstractMetadataDocument {
     private String lineage;
     private List<BoundingBox> areaOfStudy;
 
+    /*
+    FLAGS
+    */
+    private String historical;
+
     @Override
     @JsonIgnore
     public List<Keyword> getAllKeywords() {
