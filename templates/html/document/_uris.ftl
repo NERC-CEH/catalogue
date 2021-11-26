@@ -1,5 +1,5 @@
 <#if resourceIdentifiers?has_content>
-  <h2>Dataset identifiers</h3>
+  <h2>Dataset identifiers</h2>
   <p>
     <#list resourceIdentifiers as uri>
       <#if uri.codeSpace="doi:">

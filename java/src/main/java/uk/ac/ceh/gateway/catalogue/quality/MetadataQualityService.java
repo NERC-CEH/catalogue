@@ -5,18 +5,20 @@ import com.google.common.collect.ImmutableSet;
 import com.jayway.jsonpath.*;
 import com.jayway.jsonpath.spi.json.JacksonJsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
-import lombok.*;
+import lombok.NonNull;
+import lombok.SneakyThrows;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.document.reading.DocumentReader;
 
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static uk.ac.ceh.gateway.catalogue.DocumentTypes.GEMINI;
-import static uk.ac.ceh.gateway.catalogue.quality.MetadataQualityService.Severity.*;
+import static uk.ac.ceh.gateway.catalogue.quality.Results.Severity.*;
 
 @SuppressWarnings("rawtypes")
 @Slf4j
@@ -774,80 +776,5 @@ public class MetadataQualityService {
         }
         testPath.append("])].value");
         return parsed.read(testPath.toString(), List.class).isEmpty();
-    }
-
-    public enum Severity {
-        ERROR(1), WARNING(2), INFO(3);
-
-        private final int priority;
-
-        Severity(int priority) {
-            this.priority = priority;
-        }
-    }
-
-    @Value
-    public static class MetadataCheck {
-        String test;
-        Severity severity;
-    }
-
-    @Value
-    public static class Results {
-        List<MetadataCheck> problems;
-        String id, message;
-
-        public Results(@NonNull List<MetadataCheck> problems, @NonNull String id) {
-            this(problems, id, "");
-        }
-
-        public Results(@NonNull List<MetadataCheck> problems, @NonNull String id, @NonNull String message) {
-            this.problems = problems.stream()
-                .sorted(Comparator.comparingInt(o -> o.getSeverity().priority))
-                .collect(Collectors.toList());
-            this.id = id;
-            this.message = message;
-        }
-
-        public long getErrors() {
-            return problems.stream()
-                .filter(m -> ERROR.equals(m.getSeverity()))
-                .count();
-        }
-
-        public long getWarnings() {
-            return problems.stream()
-                .filter(m -> WARNING.equals(m.getSeverity()))
-                .count();
-        }
-
-        public long getInfo() {
-            return problems.stream()
-                .filter(m -> INFO.equals(m.getSeverity()))
-                .count();
-        }
-    }
-
-    @Value
-    public static class CatalogueResults {
-        List<Results> results;
-
-        public long getTotalErrors() {
-            return results.stream()
-                .mapToLong(Results::getErrors)
-                .sum();
-        }
-
-        public long getTotalWarnings() {
-            return results.stream()
-                .mapToLong(Results::getWarnings)
-                .sum();
-        }
-
-        public long getTotalInfo() {
-            return results.stream()
-                .mapToLong(Results::getInfo)
-                .sum();
-        }
     }
 }

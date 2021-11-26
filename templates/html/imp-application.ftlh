@@ -68,7 +68,7 @@
           </#if>
         </dl>
         <#if models?? >
-          <h2>Models</h3>
+          <h2>Models</h2>
           <#list models as model>
           <dl class="dl-horizontal">
             <#if model.name?has_content>
@@ -102,7 +102,7 @@
           </#list>
         </#if>
         <#if inputData?? >
-          <h2>Input Data</h3>
+          <h2>Input Data</h2>
           <ul>
           <#list inputData as input>
             <li>${input}</li>
@@ -110,7 +110,7 @@
           </ul>
         </#if>
         <#if associatedResources?? >
-          <h2>Associated Resources</h3>
+          <h2>Associated Resources</h2>
           <ul>
           <#list associatedResources as resource>
             <li>${resource.associationType!} <a href="${resource.href!}">${resource.title!resource.href}</a></li>

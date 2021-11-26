@@ -138,10 +138,11 @@ public class DocumentTypes {
         .type(SAMPLE_ARCHIVE)
         .build();
 
+    public static final String SERVICE_AGREEMENT = "service-agreement";
+
     public static final String UKEMS_DOCUMENT = "ukems-document";
     public static DocumentType UKEMS_TYPE = DocumentType.builder()
         .title("UK-EMS Document")
         .type(UKEMS_DOCUMENT)
         .build();
-
 }

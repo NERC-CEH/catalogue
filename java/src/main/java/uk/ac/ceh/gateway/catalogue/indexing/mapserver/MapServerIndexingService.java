@@ -2,15 +2,17 @@ package uk.ac.ceh.gateway.catalogue.indexing.mapserver;
 
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import uk.ac.ceh.components.datastore.DataRepository;
+import uk.ac.ceh.gateway.catalogue.document.DocumentListingService;
+import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
+import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.AbstractIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
-import uk.ac.ceh.gateway.catalogue.document.DocumentListingService;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -18,6 +20,8 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -42,17 +46,35 @@ public class MapServerIndexingService<D extends MetadataDocument> extends Abstra
             DocumentListingService listingService,
             DataRepository<?> repo,
             IndexGenerator<D, MapFile> indexGenerator,
-            @Qualifier("mapsLocation") File mapFiles) {
+            @Qualifier("mapsLocation") File mapFiles
+    ) {
         super(reader, listingService, repo, indexGenerator);
         this.mapFiles = mapFiles;
         log.info("Creating {}", this);
     }
 
     @Override
-    protected void clearIndex() throws DocumentIndexingException {
-        for (File file : mapFiles.listFiles(new MapFileFilenameFilter())) {
-            FileUtils.deleteQuietly(file);
+    protected void clearIndex() {
+        Arrays.stream(Objects.requireNonNull(mapFiles.listFiles(new MapFileFilenameFilter())))
+            .forEach(FileUtils::deleteQuietly);
+    }
+
+    @Override
+    protected boolean canIndex(D doc) {
+        if (doc instanceof GeminiDocument gemini) {
+            if (gemini.getType().equals("service")) {
+                val possibleMapDataDefinition = Optional.ofNullable(gemini.getMapDataDefinition());
+                if (possibleMapDataDefinition.isPresent()) {
+                    val mapDataDefinition = possibleMapDataDefinition.get();
+                    val possibleData = Optional.ofNullable(mapDataDefinition.getData());
+                    if (possibleData.isPresent()) {
+                        val data = possibleData.get();
+                        return !data.isEmpty();
+                    }
+                }
+            }
         }
+        return false;
     }
 
     @Override
@@ -92,11 +114,10 @@ public class MapServerIndexingService<D extends MetadataDocument> extends Abstra
     @Override
     public void unindexDocuments(List<String> unIndex) throws DocumentIndexingException {
         for(String indexed: unIndex) {
-            Arrays.asList(mapFiles.listFiles(new MapFileFilenameFilter()))
-                .stream()
+            Arrays.stream(Objects.requireNonNull(mapFiles.listFiles(new MapFileFilenameFilter())))
                 .filter((f) -> f.getName().startsWith(indexed))
                 .filter((f) -> MAP_FILE_PATTERN.matcher(f.getName().substring(indexed.length())).matches())
-                .forEach((f) -> FileUtils.deleteQuietly(f));
+                .forEach(FileUtils::deleteQuietly);
         }
     }
 
@@ -112,8 +133,7 @@ public class MapServerIndexingService<D extends MetadataDocument> extends Abstra
      * @return a list of ids indexed
      */
     public List<String> getIndexedFiles() {
-        return Arrays.asList(mapFiles.listFiles(new MapFileFilenameFilter()))
-                .stream()
+        return Arrays.stream(Objects.requireNonNull(mapFiles.listFiles(new MapFileFilenameFilter())))
                 .map(File::getName)
                 .map((f) -> f.substring(0, f.lastIndexOf('_')))
                 .distinct()

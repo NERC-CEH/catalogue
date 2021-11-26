@@ -1,6 +1,6 @@
-<#import "blocks.ftlh" as blocks>
-<#import "skeleton.ftlh" as skeleton>
-<#import "../functions.ftlh" as func>
+<#import "../blocks.ftlh" as blocks>
+<#import "../skeleton.ftlh" as skeleton>
+<#import "../../functions.ftlh" as func>
 
 <@skeleton.master "Service Agreement">
 
@@ -49,6 +49,11 @@
             <h1 class="text-danger">Previous Version</h1>
             <p class="text-danger"><b>IMPORTANT</b> This is an older version of this Service Agreement record and cannot be edited</p>
             </#if>
+
+            <#if permission.userCanEdit(id)>
+                <#include "_serviceAgreementQualityAlert.ftlh">
+            </#if>
+
             <h1>Environmental Information Data Centre - Service Agreement</h1>
             <p><b>IMPORTANT</b> Once a DOI has been issued, these details cannot be changed</p>
             <p>For more information/guidance about this document see <a href="https://eidc.ac.uk/support/agreement">https://eidc.ac.uk/support/agreement</a>
@@ -60,7 +65,7 @@
                 This agreement authorises the EIDC to preserve and to distribute the data under the terms specified in
                 this document. To do so, the EIDC will store the data and, where necessary, duplicate and transform
                 copies.</p>
-            <h3>Our responsibilities:</h3>
+            <h2>Our responsibilities:</h2>
             <ul>
                 <li>We will take every care to preserve the integrity of the data and protect it from loss or damage
                 </li>
@@ -142,6 +147,9 @@
             <@displayData "Lineage" lineage/>
             <@displayKeywords/>
             <@displayArea/>
+            <#if permission.userCanEdit(id)>
+                <#include "_serviceAgreementQualityReport.ftlh">
+            </#if>
         </div>
     </div>
 </@skeleton.master>
@@ -188,7 +196,7 @@
 <#macro displayFiles>
     <#if files?has_content && files?size gt 0 >
         <div id="document-files">
-            <p id="files"><b>Files<#if files?size gt 1>s</#if></b></p>
+            <p id="files"><b>File<#if files?size gt 1>s</#if></b></p>
 
             <#list files>
                 <#assign filesMaxSize = 30 >
@@ -251,11 +259,11 @@
 
 <#macro displayRelatedDataHoldings>
     <#if relatedDataHoldings?? && relatedDataHoldings?has_content>
-        <h3>Related Data Holdings</h3><br>
+        <h3>Related Data Holdings</h3>
         <dl>
             <#list relatedDataHoldings as dataHolding>
                 <dt>Title: ${dataHolding.title}</dt>
-                <dd>URL: ${dataHolding.href}</dd><br>
+                <dd>URL: ${dataHolding.href}</dd>
             </#list>
         </dl>
     </#if>

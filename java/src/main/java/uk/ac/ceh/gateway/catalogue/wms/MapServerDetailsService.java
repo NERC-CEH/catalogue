@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.wms;
 
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponents;
@@ -56,24 +57,23 @@ public class MapServerDetailsService {
     }
 
     /**
-     * Determine if the specified metadata document can be used to set up a map
-     * service
-     * @param document to check if this document can define a map server service
-     * @return if the supplied document can create a map service document
-     */
-    public boolean isMapServiceHostable(MetadataDocument document) {
-        return getMapDataDefinition(document) != null;
-    }
-
-    /**
      * Locate a MapDataDefinition object from the supplied MetadataDocument (if
      * it has one) else return null
      * @param document to get a map data definition from
      * @return the map data definition for the given metadata document (or null)
      */
     public MapDataDefinition getMapDataDefinition(MetadataDocument document) {
-        if(document instanceof GeminiDocument) {
-            return ((GeminiDocument)document).getMapDataDefinition();
+        if (document instanceof GeminiDocument geminiDocument) {
+            val possibleMapDataDefinition = Optional.ofNullable(geminiDocument.getMapDataDefinition());
+            if (possibleMapDataDefinition.isPresent()) {
+                val mapDataDefinition = possibleMapDataDefinition.get();
+                val possibleData = Optional.ofNullable(mapDataDefinition.getData());
+                if (possibleData.isPresent()) {
+                    if (!mapDataDefinition.getData().isEmpty()) {
+                        return mapDataDefinition;
+                    }
+                }
+            }
         }
         return null;
     }

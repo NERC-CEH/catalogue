@@ -17,7 +17,7 @@ import java.util.stream.StreamSupport;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @ConvertUsing({
-        @Template(called = "html/service-agreement.ftlh", whenRequestedAs = MediaType.TEXT_HTML_VALUE),
+        @Template(called = "html/service_agreement/service-agreement.ftlh", whenRequestedAs = MediaType.TEXT_HTML_VALUE),
 })
 public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementModel> {
 

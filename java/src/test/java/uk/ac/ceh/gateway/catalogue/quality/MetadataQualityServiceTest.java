@@ -20,7 +20,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.util.ResourceUtils;
-import uk.ac.ceh.gateway.catalogue.quality.MetadataQualityService.MetadataCheck;
 import uk.ac.ceh.gateway.catalogue.document.reading.DocumentReader;
 
 import java.util.ArrayList;
@@ -34,8 +33,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static uk.ac.ceh.gateway.catalogue.quality.MetadataQualityService.Severity.ERROR;
-import static uk.ac.ceh.gateway.catalogue.quality.MetadataQualityService.Severity.WARNING;
+import static uk.ac.ceh.gateway.catalogue.quality.Results.Severity.ERROR;
+import static uk.ac.ceh.gateway.catalogue.quality.Results.Severity.WARNING;
+
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
@@ -486,7 +486,7 @@ public class MetadataQualityServiceTest {
         );
 
         //when
-        val actual = new MetadataQualityService.Results(checks, "test").getErrors();
+        val actual = new Results(checks, "test").getErrors();
 
         //then
         assertThat(actual, equalTo(4L));
@@ -504,7 +504,7 @@ public class MetadataQualityServiceTest {
         );
 
         //when
-        val actual = new MetadataQualityService.Results(checks, "test").getWarnings();
+        val actual = new Results(checks, "test").getWarnings();
 
         //then
         assertThat(actual, equalTo(3L));
@@ -528,7 +528,7 @@ public class MetadataQualityServiceTest {
         );
 
         //when
-        val actual = new MetadataQualityService.Results(checks, "test")
+        val actual = new Results(checks, "test")
             .getProblems()
             .stream()
             .map(MetadataCheck::getSeverity)
@@ -557,12 +557,12 @@ public class MetadataQualityServiceTest {
         );
 
         val results =Arrays.asList(
-            new MetadataQualityService.Results(checks, "test0"),
-            new MetadataQualityService.Results(checks, "test1")
+            new Results(checks, "test0"),
+            new Results(checks, "test1")
         );
 
         //when
-        val actual = new MetadataQualityService.CatalogueResults(results);
+        val actual = new CatalogueResults(results);
 
         //then
         assertThat(actual.getTotalErrors(), equalTo(expectedTotalErrors));

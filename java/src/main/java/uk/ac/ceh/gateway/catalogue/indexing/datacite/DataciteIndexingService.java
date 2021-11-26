@@ -32,7 +32,7 @@ public class DataciteIndexingService implements DocumentIndexingService {
     }
 
     /**
-     * Loop around all of the documents ids in the toIndex. Read these and if a
+     * Loop around all the documents ids in the toIndex. Read these and if a
      * GeminiDocument was detected then submit this to #indexDocument(GeminiDocument)
      * @param toIndex list of ids to index
      * @param revision the revision to index at
@@ -42,8 +42,8 @@ public class DataciteIndexingService implements DocumentIndexingService {
         for(String metadataId: toIndex) {
             try {
                 MetadataDocument document = bundleReader.readBundle(metadataId, revision);
-                if (document instanceof GeminiDocument) {
-                    indexDocument((GeminiDocument)document);
+                if (document instanceof GeminiDocument geminiDocument) {
+                    indexDocument(geminiDocument);
                 }
             }
             catch(Exception ex) {
@@ -57,9 +57,8 @@ public class DataciteIndexingService implements DocumentIndexingService {
      * If this request differs to the one which datacite already have then we can
      * submit an update.
      * @param document to check if updates are required
-     * @throws Exception if any problems occur when trying to index
      */
-    public void indexDocument(GeminiDocument document) throws Exception {
+    public void indexDocument(GeminiDocument document) {
         if(datacite.isDatacited(document)) {
             String lastRequest = datacite.getDoiMetadata(document); //Get the latest request
             String newRequest = datacite.getDatacitationRequest(document);
@@ -71,7 +70,7 @@ public class DataciteIndexingService implements DocumentIndexingService {
     }
 
     /**
-     * Datacitation repository is assumed to never be empty
+     * Data citation repository is assumed to never be empty
      * @return false
      * @throws DocumentIndexingException
      */

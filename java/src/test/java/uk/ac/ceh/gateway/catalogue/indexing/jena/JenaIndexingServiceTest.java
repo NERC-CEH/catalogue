@@ -1,10 +1,13 @@
 package uk.ac.ceh.gateway.catalogue.indexing.jena;
 
+import lombok.SneakyThrows;
+import lombok.val;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.tdb.TDBFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,116 +15,148 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.components.datastore.DataRepository;
-import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
-import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
-import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.document.DocumentListingService;
+import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
+import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
+import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
+import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreement;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class JenaIndexingServiceTest {
 
-    @Mock BundledReaderService reader;
+    @Mock BundledReaderService<MetadataDocument> reader;
     @Mock DocumentListingService listingService;
-    @Mock DataRepository repo;
-    @Mock
-    IndexGenerator indexGenerator;
+    @Mock DataRepository<CatalogueUser> repo;
+    @Mock IndexGenerator<MetadataDocument,  List<Statement>> indexGenerator;
     @Mock DocumentIdentifierService documentIdentifierService;
     private Dataset jenaTdb;
-    private JenaIndexingService service;
+    private JenaIndexingService<MetadataDocument> service;
 
     @BeforeEach
     public void init() {
         jenaTdb = TDBFactory.createDataset();
-        service = spy(new JenaIndexingService(reader, listingService, repo, indexGenerator, documentIdentifierService, jenaTdb));
+        service = spy(new JenaIndexingService<>(reader, listingService, repo, indexGenerator, documentIdentifierService, jenaTdb));
     }
 
     @Test
-    public void checkThatCanDetectAnEmptyModel() throws DocumentIndexingException {
+    @SneakyThrows
+    void serviceAgreementNotIndexed() {
+        //given
+        String revId = "Latest";
+        List<String> documents = List.of("serviceAgreement1");
+        val serviceAgreement = new ServiceAgreement();
+        given(reader.readBundle("serviceAgreement1"))
+            .willReturn(serviceAgreement);
+        given(reader.readBundle("serviceAgreement1", revId))
+            .willReturn(serviceAgreement);
+
+        //when
+        service.indexDocuments(documents, revId);
+
+        //then
+        verify(indexGenerator, never()).generateIndex(any(MetadataDocument.class));
+    }
+
+    @Test
+    void checkThatCanDetectAnEmptyModel() throws DocumentIndexingException {
         //When
         boolean isEmpty = service.isIndexEmpty();
 
         //Then
-        assertThat(isEmpty, is(true));
+        assertTrue(isEmpty);
     }
 
     @Test
-    public void canCheckThatTheModelHasTriplesIn() throws DocumentIndexingException, Exception {
+    void canCheckThatTheModelHasTriplesIn() throws Exception {
         //Given
         Resource subject = ResourceFactory.createResource("http://www.google.com");
         Property predicate = ResourceFactory.createProperty("http://www.google.com");
         Resource object = ResourceFactory.createResource("http://www.google.com");
-        service.index(Arrays.asList(ResourceFactory.createStatement(subject, predicate, object)));
+        service.index(List.of(ResourceFactory.createStatement(subject, predicate, object)));
 
         //When
         boolean isEmpty = service.isIndexEmpty();
 
         //Then
-        assertThat(isEmpty, is(false));
+        assertFalse(isEmpty);
     }
 
     @Test
-    public void canCheckThatTheEmptyTheModel() throws DocumentIndexingException, Exception {
+    void canCheckThatTheEmptyTheModel() throws Exception {
         //Given
         Resource subject = ResourceFactory.createResource("http://www.google.com");
         Property predicate = ResourceFactory.createProperty("http://www.google.com");
         Resource object = ResourceFactory.createResource("http://www.google.com");
-        service.index(Arrays.asList(ResourceFactory.createStatement(subject, predicate, object)));
+        service.index(List.of(ResourceFactory.createStatement(subject, predicate, object)));
 
         //When
         service.clearIndex();
 
         //Then
-        assertThat(service.isIndexEmpty(), is(true));
+        assertTrue(service.isIndexEmpty());
     }
 
     @Test
-    public void checkThatCanUnindexSubjectTriples() throws Exception {
+    void checkThatCanUnindexSubjectTriples() throws Exception {
         //Given
-        String subjectUri = "http://www.ceh.ac.uk/removeMe";
-        Resource subject = ResourceFactory.createResource(subjectUri);
-        Property predicate = ResourceFactory.createProperty("http://ceh.ac.uk/property");
-        Resource object = ResourceFactory.createResource("http://ceh.ac.uk/linkedId");
-        service.index(Arrays.asList(ResourceFactory.createStatement(subject, predicate, object)));
+        val subjectUri = "https://www.ceh.ac.uk/removeMe";
+        val subject = ResourceFactory.createResource(subjectUri);
+        val predicate = ResourceFactory.createProperty("https://ceh.ac.uk/property");
+        val object = ResourceFactory.createResource("https://ceh.ac.uk/linkedId");
+        service.index(List.of(ResourceFactory.createStatement(subject, predicate, object)));
 
-        when(documentIdentifierService.generateUri("removeMe")).thenReturn(subjectUri);
+        given(documentIdentifierService.generateUri("removeMe"))
+            .willReturn(subjectUri);
+
+        given(reader.readBundle("removeMe"))
+            .willReturn(new GeminiDocument());
 
         //When
-        service.unindexDocuments(Arrays.asList("removeMe"));
+        service.unindexDocuments(List.of("removeMe"));
 
         //Then
-        assertThat(service.isIndexEmpty(), is(true));
+        assertTrue(service.isIndexEmpty());
     }
 
     @Test
-    public void checkThatCannotUnindexObjectTriples() throws Exception {
+    void checkThatCannotUnindexObjectTriples() throws Exception {
         /*
         Do not want to remove Object triples as they have been asserted by
         another resource.
         */
         //Given
-        String objectUri = "http://www.ceh.ac.uk/removeMe";
-        Resource subject = ResourceFactory.createResource("http://www.external.com/subject");
-        Property predicate = ResourceFactory.createProperty("http://ceh.ac.uk/property");
-        Resource object = ResourceFactory.createResource(objectUri);
-        service.index(Arrays.asList(ResourceFactory.createStatement(subject, predicate, object)));
+        val objectUri = "https://www.ceh.ac.uk/removeMe";
+        val subject = ResourceFactory.createResource("https://www.external.com/subject");
+        val predicate = ResourceFactory.createProperty("https://ceh.ac.uk/property");
+        val object = ResourceFactory.createResource(objectUri);
+        service.index(List.of(ResourceFactory.createStatement(subject, predicate, object)));
 
-        when(documentIdentifierService.generateUri("removeMe")).thenReturn(objectUri);
+        given(documentIdentifierService.generateUri("removeMe"))
+            .willReturn(objectUri);
+
+        given(reader.readBundle("removeMe"))
+            .willReturn(new GeminiDocument());
 
         //When
-        service.unindexDocuments(Arrays.asList("removeMe"));
+        service.unindexDocuments(List.of("removeMe"));
 
         //Then
-        assertThat(service.isIndexEmpty(), is(false));
+        assertFalse(service.isIndexEmpty());
     }
 
     @Test
@@ -137,7 +172,7 @@ public class JenaIndexingServiceTest {
     }
 
     @Test
-    public void checkThatisInTransactionIsThreadSpecific() throws Exception {
+    public void checkThatIsInTransactionIsThreadSpecific() throws Exception {
         //Given
         jenaTdb.begin(ReadWrite.WRITE);
 
