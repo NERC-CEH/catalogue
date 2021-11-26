@@ -36,7 +36,7 @@ class ValidationIndexingServiceTest {
     @Mock private DocumentIdentifierService documentIdentifierService;
     @Mock private IndexGenerator<GeminiDocument, ValidationReport> indexGenerator;
 
-    @InjectMocks private ValidationIndexingService<GeminiDocument> service;
+    @InjectMocks private ValidationIndexingService service;
 
 
     @Test

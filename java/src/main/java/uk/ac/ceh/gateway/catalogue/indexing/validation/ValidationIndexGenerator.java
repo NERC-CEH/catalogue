@@ -24,11 +24,11 @@ public class ValidationIndexGenerator implements IndexGenerator<MetadataDocument
     }
 
     @Override
-    public ValidationReport generateIndex(MetadataDocument toIndex) {
-        val validationReport = new ValidationReport(toIndex.getId());
+    public ValidationReport generateIndex(MetadataDocument metadataDocument) {
+        val validationReport = new ValidationReport(metadataDocument.getId());
 
         for(Validator validator: validators) {
-            validationReport.addValidationResult(validator.getName(), validator.validate(toIndex));
+            validationReport.addValidationResult(validator.getName(), validator.validate(metadataDocument));
         }
         log.debug(validationReport.toString());
         return validationReport;

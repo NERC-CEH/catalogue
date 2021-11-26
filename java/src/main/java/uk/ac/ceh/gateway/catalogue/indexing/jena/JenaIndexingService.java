@@ -17,6 +17,7 @@ import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
 import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.document.DocumentListingService;
+import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreement;
 
@@ -26,19 +27,18 @@ import java.util.List;
  * This is the Jena Indexing Service. Instances of this can read documents from
  * a DataRepository and index them with the supplied IndexGenerator. The indexes
  * will then go into a Jena Triple Store for later retrieval.
- * @param <D> type of documents to be read from the DataRepository
  */
 @Slf4j
 @ToString(callSuper = true)
-public class JenaIndexingService<D> extends AbstractIndexingService<D, List<Statement>> {
+public class JenaIndexingService extends AbstractIndexingService<MetadataDocument, List<Statement>> {
     private final DocumentIdentifierService documentIdentifierService;
     private final Dataset jenaTdb;
 
     public JenaIndexingService(
-            BundledReaderService<D> reader,
+            BundledReaderService<MetadataDocument> reader,
             DocumentListingService listingService,
-            DataRepository<?> repo,
-            IndexGenerator<D, List<Statement>> indexGenerator,
+            DataRepository<CatalogueUser> repo,
+            IndexGenerator<MetadataDocument, List<Statement>> indexGenerator,
             DocumentIdentifierService documentIdentifierService,
             Dataset jenaTdb) {
         super(reader, listingService, repo, indexGenerator);
@@ -53,7 +53,7 @@ public class JenaIndexingService<D> extends AbstractIndexingService<D, List<Stat
     }
 
     @Override
-    public void rebuildIndex() throws DocumentIndexingException {
+    public void rebuildIndex() {
         perform(ReadWrite.WRITE, () -> {
             super.rebuildIndex();
             return null;
@@ -61,10 +61,8 @@ public class JenaIndexingService<D> extends AbstractIndexingService<D, List<Stat
     }
 
     @Override
-    protected boolean canIndex(D doc) {
-        if (log.isDebugEnabled() && doc instanceof MetadataDocument document) {
-            log.debug("can index? {}", document.getId());
-        }
+    protected boolean canIndex(MetadataDocument doc) {
+        log.debug("can index? {}", doc.getId());
         if (doc == null) {
             return false;
         }
@@ -102,9 +100,7 @@ public class JenaIndexingService<D> extends AbstractIndexingService<D, List<Stat
                     );
                     return pss;
                 })
-                .forEach((pss) -> {
-                    UpdateExecutionFactory.create(pss.asUpdate(), jenaTdb).execute();
-                });
+                .forEach((pss) -> UpdateExecutionFactory.create(pss.asUpdate(), jenaTdb).execute());
             return null;
         });
     }
