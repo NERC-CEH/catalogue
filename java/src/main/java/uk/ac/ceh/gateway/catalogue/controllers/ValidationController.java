@@ -2,8 +2,11 @@ package uk.ac.ceh.gateway.catalogue.controllers;
 
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import uk.ac.ceh.gateway.catalogue.indexing.validation.ValidationIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.ValidationResponse;
 import uk.ac.ceh.gateway.catalogue.validation.ValidationLevel;
@@ -20,19 +23,20 @@ import java.util.stream.Collectors;
 @RequestMapping("maintenance/validation")
 @Secured(DocumentController.MAINTENANCE_ROLE)
 public class ValidationController {
-    private final ValidationIndexingService<?> validationIndexingService;
+    private final ValidationIndexingService indexingService;
 
-    @SuppressWarnings("rawtypes")
-    public ValidationController(ValidationIndexingService validationIndexingService) {
-        this.validationIndexingService = validationIndexingService;
-        log.info("Creating {}", this);
+    public ValidationController(
+        @Qualifier("validation-index") ValidationIndexingService indexingService
+    ) {
+        this.indexingService = indexingService;
+        log.info("Creating");
     }
 
     @GetMapping
     public ValidationResponse getValidationResults() {
         Map<String,Map<ValidationLevel,ValidatorState>> toReturn = new HashMap<>();
 
-        for(ValidationReport report: validationIndexingService.getResults() ) {
+        for(ValidationReport report: indexingService.getResults() ) {
             for(Map.Entry<String, ValidationLevel> documentState: report.getResults().entrySet()) {
                 toReturn.putIfAbsent(documentState.getKey(), new EnumMap<>(ValidationLevel.class));
                 ValidationLevel level = documentState.getValue();
@@ -48,6 +52,6 @@ public class ValidationController {
                 .stream()
                 .map((e) -> new ValidatorResult(e.getKey(), new ArrayList<>(e.getValue().values())))
                 .collect(Collectors.toList());
-        return new ValidationResponse(results, validationIndexingService.getFailed());
+        return new ValidationResponse(results, indexingService.getFailed());
     }
 }

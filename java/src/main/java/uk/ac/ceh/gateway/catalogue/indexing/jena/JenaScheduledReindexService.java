@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.indexing.solr;
+package uk.ac.ceh.gateway.catalogue.indexing.jena;
 
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -12,17 +12,17 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @ToString
 @Service
-public class SolrScheduledReindexService {
+public class JenaScheduledReindexService {
     private final DocumentIndexingService indexingService;
 
-    public SolrScheduledReindexService(
-            @Qualifier("solr-index") DocumentIndexingService indexingService
+    public JenaScheduledReindexService(
+            @Qualifier("jena-index") DocumentIndexingService indexingService
     ) {
         this.indexingService = indexingService;
         log.info("Creating");
     }
 
-    @Scheduled(fixedDelay = 30, timeUnit = TimeUnit.MINUTES)
+    @Scheduled(initialDelay = 1, fixedDelay = 30, timeUnit = TimeUnit.MINUTES)
     protected void reindex() {
         indexingService.attemptIndexing();
     }

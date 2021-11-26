@@ -1,9 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
+import freemarker.template.Configuration;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,8 @@ import org.springframework.hateoas.Link;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
+import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
+import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -33,27 +37,44 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles({"service-agreement", "test"})
 @DisplayName("ServiceAgreementController")
 @Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
-@WebMvcTest(ServiceAgreementController.class)
+@WebMvcTest(
+    controllers = ServiceAgreementController.class,
+    properties="spring.freemarker.template-loader-path=file:../templates"
+)
 class ServiceAgreementControllerTest {
     @MockBean private ServiceAgreementSearch search;
     @MockBean private ServiceAgreementService serviceAgreementService;
     @MockBean private ServiceAgreementModelAssembler assembler;
-
-    private @MockBean(name="permission")
-    PermissionService permissionService;
-
+    @MockBean private CatalogueService catalogueService;
+    private @MockBean(name="permission") PermissionService permissionService;
 
     private static ServiceAgreement serviceAgreement;
     private static final String ID = "test";
 
-    @Autowired
-    private MockMvc mvc;
+    @Autowired private MockMvc mvc;
+    @Autowired private Configuration configuration;
 
     @BeforeAll
     static void init() {
         serviceAgreement = new ServiceAgreement();
         serviceAgreement.setId(ID);
         serviceAgreement.setTitle("Test Service Agreement");
+    }
+
+    @BeforeEach
+    @SneakyThrows
+    void setup() {
+        configuration.setSharedVariable("catalogues", catalogueService);
+    }
+
+    private void givenDefaultCatalogue() {
+        given(catalogueService.defaultCatalogue())
+            .willReturn(Catalogue.builder()
+                .id("eidc")
+                .title("Foo")
+                .url("https://example.com")
+                .contactUrl("")
+                .build());
     }
 
     @Test
@@ -104,6 +125,7 @@ class ServiceAgreementControllerTest {
     void noAccessToServiceAgreements() {
         // given
         givenUserCanNotView();
+        givenDefaultCatalogue();
 
         // when
         mvc.perform(get("/service-agreement/{id}", ID))
@@ -152,6 +174,7 @@ class ServiceAgreementControllerTest {
     void userCannotCreateServiceAgreement() {
         // given
         givenUserCanNotEdit();
+        givenDefaultCatalogue();
 
         // when
         mvc.perform(post("/service-agreement/{id}", ID)
@@ -225,6 +248,7 @@ class ServiceAgreementControllerTest {
     void userCannotUpdateServiceAgreement() {
         // given
         givenUserCanNotEdit();
+        givenDefaultCatalogue();
 
         // when
         mvc.perform(put("/service-agreement/{id}", ID)
@@ -254,6 +278,8 @@ class ServiceAgreementControllerTest {
     void userCannotDeleteServiceAgreement() {
         //given
         givenUserCanNotDelete();
+        givenDefaultCatalogue();
+
 
         //When
         mvc.perform(delete("/service-agreement/{id}",ID))
@@ -298,6 +324,7 @@ class ServiceAgreementControllerTest {
         //given
         givenUserCanNotEdit();
         givenMetadataRecordExists();
+        givenDefaultCatalogue();
 
         //When
         mvc.perform(post("/service-agreement/{id}/submit", ID))
@@ -328,6 +355,7 @@ class ServiceAgreementControllerTest {
         //given
         givenUserCanNotEdit();
         givenMetadataRecordExists();
+        givenDefaultCatalogue();
 
         //When
         mvc.perform(post("/service-agreement/{id}/publish", ID))
@@ -358,6 +386,7 @@ class ServiceAgreementControllerTest {
         //given
         givenUserCanNotEdit();
         givenMetadataRecordExists();
+        givenDefaultCatalogue();
 
         //When
         mvc.perform(post("/service-agreement/{id}/add-editor", ID))

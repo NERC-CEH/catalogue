@@ -7,4 +7,5 @@ public interface DocumentIndexingService {
     void rebuildIndex() throws DocumentIndexingException;
     void indexDocuments(List<String> toIndex, String revision) throws DocumentIndexingException;
     void unindexDocuments(List<String> unIndex) throws DocumentIndexingException;
+    void attemptIndexing();
 }

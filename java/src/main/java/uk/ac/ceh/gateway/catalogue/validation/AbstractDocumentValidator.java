@@ -3,8 +3,10 @@ package uk.ac.ceh.gateway.catalogue.validation;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 
 import java.io.InputStream;
 
@@ -28,11 +30,14 @@ public abstract class AbstractDocumentValidator implements Validator {
     }
 
     @Override
-    public ValidationResult validate(Object input) {
+    public ValidationResult validate(MetadataDocument metadataDocument) {
         try {
-            return validate(documentWritingService.write(input, mediaType));
+            log.debug("Validate for {}", mediaType);
+            val stream = documentWritingService.write(metadataDocument, mediaType);
+            log.debug("about to validate");
+            return validate(stream);
         } catch (Exception ex) {
-            log.error("Failed to validate document {}", ex.getMessage());
+            log.error("Failed to validate {}, {}", metadataDocument.getId(), ex.getMessage());
             return new ValidationResult()
                     .reject(ex.getMessage(), ValidationLevel.FAILED_TO_READ);
         }
