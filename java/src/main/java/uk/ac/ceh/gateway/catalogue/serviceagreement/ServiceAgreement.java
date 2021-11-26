@@ -42,6 +42,7 @@ public class ServiceAgreement extends AbstractMetadataDocument {
     TWO: Policies & Legislation
    */
     private String otherPoliciesOrLegislation;
+    private String fundersOfResearch;
 
     /*
     THREE: The data

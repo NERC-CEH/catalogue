@@ -107,10 +107,17 @@ define [
                    <p>Data and supporting documentation should not contain names, addresses or other personal information relating to 'identifiable natural persons'.  Discovery metadata (the catalogue record) may contain names and contact details of the authors of this data (<a href="https://eidc.ac.uk/policies/retentionPersonalData">see our policy on retention and use of personal data</a>).</p>
                    <p>If other policies/legislation applies (e.g. <a href="https://inspire.ec.europa.eu/">INSPIRE</a>), please specify below.</p>
                    """
+
         new TextareaView
           model: @model
           modelAttribute: 'otherPoliciesOrLegislation'
           label: 'Other Policies or Legislation'
+          rows: 15
+
+        new TextareaView
+          model: @model
+          modelAttribute: 'fundersOfResearch'
+          label: 'Funders of research generating the data'
           rows: 15
 
         new TextOnlyView

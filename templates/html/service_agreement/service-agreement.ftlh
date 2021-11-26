@@ -92,6 +92,7 @@
             <h3>Policies & legislation</h3>
             <dl class="dl-horizontal">
                 <@displayData "Other Policies or Legislation" otherPoliciesOrLegislation/>
+                <@displayData "Funders of research generating the data" fundersOfResearch/>
             </dl>
             <h3>The data</h3>
             <@displayFiles/>
