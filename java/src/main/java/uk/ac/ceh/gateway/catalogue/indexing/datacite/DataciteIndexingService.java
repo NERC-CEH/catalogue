@@ -2,12 +2,13 @@ package uk.ac.ceh.gateway.catalogue.indexing.datacite;
 
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
+import uk.ac.ceh.gateway.catalogue.datacite.DataciteService;
+import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
-import uk.ac.ceh.gateway.catalogue.datacite.DataciteService;
 
 import java.util.List;
 
@@ -37,6 +38,7 @@ public class DataciteIndexingService implements DocumentIndexingService {
      * @param toIndex list of ids to index
      * @param revision the revision to index at
      */
+    @Async
     @Override
     public void indexDocuments(List<String> toIndex, String revision) {
         for(String metadataId: toIndex) {
@@ -58,7 +60,7 @@ public class DataciteIndexingService implements DocumentIndexingService {
      * submit an update.
      * @param document to check if updates are required
      */
-    public void indexDocument(GeminiDocument document) {
+    private void indexDocument(GeminiDocument document) {
         if(datacite.isDatacited(document)) {
             String lastRequest = datacite.getDoiMetadata(document); //Get the latest request
             String newRequest = datacite.getDatacitationRequest(document);
@@ -86,4 +88,8 @@ public class DataciteIndexingService implements DocumentIndexingService {
     // Do nothing here
     @Override
     public void unindexDocuments(List<String> unIndex) throws DocumentIndexingException {}
+
+    // Do nothing here
+    @Override
+    public void attemptIndexing() {}
 }

@@ -16,7 +16,7 @@
     <#if boundingBoxes[0]?has_content>
         <@base.boundedBy boundingBoxes[0]/>
     </#if>
-    <@base.responsibleParty metadata.author/>
+    <@base.responsibleParty metadata.author!/>
 	<@base.inspireId/>
     <@base.orNilReason "ef:onlineResource" onlineResources!>
         <#list onlineResources as x>

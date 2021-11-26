@@ -12,6 +12,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.AbstractIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
+import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 
 import java.io.File;
@@ -30,11 +31,10 @@ import static java.lang.String.format;
 /**
  * The following indexing service is responsible for producing Map Server MapFiles
  * in a specified directory.
- * @param <D> Document type which a map service can be created from
  */
 @Slf4j
 @ToString(callSuper = true)
-public class MapServerIndexingService<D extends MetadataDocument> extends AbstractIndexingService<D, MapFile> {
+public class MapServerIndexingService extends AbstractIndexingService<MetadataDocument, MapFile> {
     private static final Pattern MAP_FILE_PATTERN = Pattern.compile("_.*\\.map$");
     private static final String MAP_FILE_EXTENSION = ".map";
     private static final String FALLBACK_PROJECTION = "default";
@@ -42,10 +42,10 @@ public class MapServerIndexingService<D extends MetadataDocument> extends Abstra
     private final File mapFiles;
 
     public MapServerIndexingService(
-            BundledReaderService<D> reader,
+            BundledReaderService<MetadataDocument> reader,
             DocumentListingService listingService,
-            DataRepository<?> repo,
-            IndexGenerator<D, MapFile> indexGenerator,
+            DataRepository<CatalogueUser> repo,
+            IndexGenerator<MetadataDocument, MapFile> indexGenerator,
             @Qualifier("mapsLocation") File mapFiles
     ) {
         super(reader, listingService, repo, indexGenerator);
@@ -60,7 +60,7 @@ public class MapServerIndexingService<D extends MetadataDocument> extends Abstra
     }
 
     @Override
-    protected boolean canIndex(D doc) {
+    protected boolean canIndex(MetadataDocument doc) {
         if (doc instanceof GeminiDocument gemini) {
             if (gemini.getType().equals("service")) {
                 val possibleMapDataDefinition = Optional.ofNullable(gemini.getMapDataDefinition());

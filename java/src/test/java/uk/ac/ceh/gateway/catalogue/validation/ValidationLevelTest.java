@@ -10,38 +10,30 @@ import static uk.ac.ceh.gateway.catalogue.validation.ValidationLevel.VALID;
 public class ValidationLevelTest {
     @Test
     public void checkThatFailedIsMoreSevere() {
-        //Given
-        ValidationLevel valid = VALID;
-        ValidationLevel failed = FAILED_TO_READ;
-        
         //When
-        boolean moreSevere = failed.isMoreSevere(valid);
-        
+        boolean moreSevere = FAILED_TO_READ.isMoreSevere(VALID);
+
         //Then
         assertTrue(moreSevere);
     }
-    
+
     @Test
     public void checkThatValidIsLessSevere() {
-        //Given
-        ValidationLevel valid = VALID;
-        ValidationLevel failed = FAILED_TO_READ;
-        
         //When
-        boolean moreSevere = valid.isMoreSevere(failed);
-        
+        boolean moreSevere = VALID.isMoreSevere(FAILED_TO_READ);
+
         //Then
         assertFalse(moreSevere);
     }
-    
+
     @Test
     public void checkSameLevelIsNotMoreSevere() {
         //Given
         ValidationLevel valid = VALID;
-        
+
         //When
         boolean moreSevere = valid.isMoreSevere(valid);
-        
+
         //Then
         assertFalse(moreSevere);
     }

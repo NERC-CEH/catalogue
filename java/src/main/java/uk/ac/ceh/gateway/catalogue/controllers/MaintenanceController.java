@@ -37,13 +37,13 @@ public class MaintenanceController {
         @Qualifier("solr-index") DocumentIndexingService solrIndex,
         @Qualifier("jena-index") DocumentIndexingService linkingService,
         @Qualifier("validation-index") DocumentIndexingService validationService,
-        @Qualifier("mapserver-index") MapServerIndexingService mapserverService
+        @Qualifier("mapserver-index") DocumentIndexingService mapserverService
     ) {
         this.repoService = repoService;
         this.solrIndex = solrIndex;
         this.linkingService = linkingService;
         this.validationService = validationService;
-        this.mapserverService = mapserverService;
+        this.mapserverService = (MapServerIndexingService) mapserverService;
         log.info("Creating");
     }
 

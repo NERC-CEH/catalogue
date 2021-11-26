@@ -6,6 +6,7 @@ import lombok.val;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
@@ -13,12 +14,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
+import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
+import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.indexing.validation.ValidationIndexingService;
-import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
-import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.validation.ValidationLevel;
 import uk.ac.ceh.gateway.catalogue.validation.ValidationReport;
 import uk.ac.ceh.gateway.catalogue.validation.ValidationResult;
@@ -46,10 +46,11 @@ import static uk.ac.ceh.gateway.catalogue.controllers.DocumentController.MAINTEN
 class ValidationControllerTest {
     @MockBean
     private CatalogueService catalogueService;
-    @MockBean private ValidationIndexingService<MetadataDocument> validationIndexingService;
+    @Qualifier("validation-index")
+    @MockBean
+    private ValidationIndexingService validationIndexingService;
 
-    @Autowired
-    private MockMvc mvc;
+    @Autowired private MockMvc mvc;
     @Autowired private Configuration configuration;
 
     private final String catalogueKey = "eidc";
