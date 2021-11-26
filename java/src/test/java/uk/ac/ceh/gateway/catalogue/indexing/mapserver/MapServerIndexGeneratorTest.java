@@ -10,14 +10,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.MapDataDefinition;
-import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.wms.MapServerDetailsService;
 
-import java.util.Arrays;
+import java.util.List;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 @ExtendWith(MockitoExtension.class)
 public class MapServerIndexGeneratorTest {
@@ -26,19 +24,11 @@ public class MapServerIndexGeneratorTest {
     @Mock MapServerDetailsService mapServerDetailsService;
     @InjectMocks private MapServerIndexGenerator generator;
 
-    private MetadataDocument doc;
+    private GeminiDocument doc;
 
     @BeforeEach
     void setup() {
         doc = new GeminiDocument();
-    }
-
-    private void givenMapServiceIsHostable() {
-        given(mapServerDetailsService.isMapServiceHostable(doc)).willReturn(true);
-    }
-
-    private void givenMapServiceIsNotHostable() {
-        given(mapServerDetailsService.isMapServiceHostable(doc)).willReturn(false);
     }
 
     private void givenMapDetails() {
@@ -46,16 +36,12 @@ public class MapServerIndexGeneratorTest {
         given(mapServerDetailsService.getMapDataDefinition(doc))
             .willReturn(mapDataDefinition);
         given(mapServerDetailsService.getProjectionSystems(mapDataDefinition))
-            .willReturn(Arrays.asList(
-                "foo",
-                "bar"
-            ));
+            .willReturn(List.of("foo", "bar"));
     }
 
     @Test
     void generateIndex() {
         //given
-        givenMapServiceIsHostable();
         givenMapDetails();
 
         //when
@@ -64,43 +50,4 @@ public class MapServerIndexGeneratorTest {
         //then
         verifyNoInteractions(templateConfig);
     }
-
-    @Test
-    void noIndexGenerated() {
-        //given
-        givenMapServiceIsNotHostable();
-
-        //when
-        generator.generateIndex(doc);
-
-        //then
-        verifyNoInteractions(templateConfig);
-        verifyNoMoreInteractions(mapServerDetailsService);
-    }
-
-//    @Test
-//    public void checkThatCanLocateTheMapServerServiceTemplate() {
-//        //Given
-//        val document = new GeminiDocument();
-//        given(mapServerDetailsService.isMapServiceHostable(document)).willReturn(true);
-//
-//        //When
-//        String templateName = generator.getMapFileTemplate(document);
-//
-//        //Then
-//        assertThat(templateName, equalTo("mapfile/service.map.ftl"));
-//    }
-//
-//    @Test
-//    public void checkThatUnknownDocumentReturnsNullTemplate() {
-//        //Given
-//        val document = new GeminiDocument();
-//        given(mapServerDetailsService.isMapServiceHostable(document)).willReturn(false);
-//
-//        //When
-//        String templateName = generator.getMapFileTemplate(document);
-//
-//        //Then
-//        assertNull(templateName);
-//    }
 }

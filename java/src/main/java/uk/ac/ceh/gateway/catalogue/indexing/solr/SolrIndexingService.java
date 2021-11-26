@@ -13,6 +13,7 @@ import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
 import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.document.DocumentListingService;
+import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreement;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 
 import java.io.IOException;
@@ -31,7 +32,7 @@ public class SolrIndexingService<D> extends AbstractIndexingService<D, SolrIndex
     private final SolrClient solrClient;
     private final JenaLookupService lookupService;
     private final DocumentIdentifierService identifierService;
-    private static final String DOCUMENTS = "documents";
+    public static final String DOCUMENTS = "documents";
 
     public SolrIndexingService(
             BundledReaderService<D> reader,
@@ -71,6 +72,14 @@ public class SolrIndexingService<D> extends AbstractIndexingService<D, SolrIndex
     }
 
     @Override
+    protected boolean canIndex(D doc) {
+        if (doc == null) {
+            return false;
+        }
+        return !(doc instanceof ServiceAgreement);
+    }
+
+    @Override
     public void unindexDocuments(List<String> documents) throws DocumentIndexingException {
         try {
             solrClient.deleteById(DOCUMENTS, documents);
@@ -95,7 +104,7 @@ public class SolrIndexingService<D> extends AbstractIndexingService<D, SolrIndex
     }
 
     @Override
-    protected D readDocument(String document, String revision) throws Exception {
+    protected D readDocument(String document, String revision) {
         return readDocument(document);
     }
 

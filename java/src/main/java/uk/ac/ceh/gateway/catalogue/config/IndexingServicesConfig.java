@@ -20,7 +20,10 @@ import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
 import uk.ac.ceh.gateway.catalogue.elter.ElterDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.indexing.*;
+import uk.ac.ceh.gateway.catalogue.indexing.ClassMap;
+import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
+import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
+import uk.ac.ceh.gateway.catalogue.indexing.PrioritisedClassMap;
 import uk.ac.ceh.gateway.catalogue.indexing.async.AsyncDocumentIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.datacite.DataciteIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.jena.*;
@@ -35,8 +38,6 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.sparql.VocabularyService;
-import uk.ac.ceh.gateway.catalogue.indexing.ClassMap;
-import uk.ac.ceh.gateway.catalogue.indexing.PrioritisedClassMap;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 import uk.ac.ceh.gateway.catalogue.validation.MediaTypeValidator;
@@ -49,7 +50,6 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.SchemaFactory;
 import java.io.File;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -98,8 +98,7 @@ public class IndexingServicesConfig {
     }
 
     @Bean(initMethod = "initialIndex") @Qualifier("mapserver-index")
-    @SuppressWarnings("rawtypes")
-    public MapServerIndexingService mapServerIndexingService(
+    public MapServerIndexingService<MetadataDocument> mapServerIndexingService(
         BundledReaderService<MetadataDocument> bundledReaderService,
         DataRepository<CatalogueUser> dataRepository,
         DocumentListingService documentListingService,
@@ -185,8 +184,8 @@ public class IndexingServicesConfig {
 
         val htmlValidator = new MediaTypeValidator("HTML Generation", MediaType.TEXT_HTML, documentWritingService);
 
-        ClassMap<IndexGenerator<?, ValidationReport>> mappings = new PrioritisedClassMap<IndexGenerator<?, ValidationReport>>()
-            .register(GeminiDocument.class, new ValidationIndexGenerator(Arrays.asList(
+        val mappings = new PrioritisedClassMap<IndexGenerator<?, ValidationReport>>()
+            .register(GeminiDocument.class, new ValidationIndexGenerator(List.of(
                 new XSDSchemaValidator("Gemini", MediaType.parseMediaType(GEMINI_XML_VALUE), documentWritingService, geminiSchema),
                 htmlValidator
             )))

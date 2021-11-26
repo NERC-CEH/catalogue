@@ -1,6 +1,13 @@
-<input type="hidden" data-name="role" value="author"/>
-
 <div class="row">
+    <div class="col-sm-4">
+        <label class="control-label" for="contacts<%= data.index %>Role">Role</label>
+    </div>
+    <div class="col-sm-10">
+        <input data-name="role" class="editor-input" id="contacts<%= data.index %>Role" value="<%= data.role %>" placeholder='author' readonly>
+    </div>
+
+    <div class="col-sm-10 col-sm-offset-2 hidden-xs"><hr></div>
+
     <div class="col-sm-2">
         <label class="control-label" for="contacts<%= data.index %>Name">Name</label>
     </div>

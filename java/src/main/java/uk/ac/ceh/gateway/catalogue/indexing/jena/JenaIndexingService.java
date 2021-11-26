@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.indexing.jena;
 
+import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.jena.query.Dataset;
@@ -16,6 +17,7 @@ import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
 import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.document.DocumentListingService;
+import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreement;
 
 import java.util.List;
 
@@ -41,7 +43,7 @@ public class JenaIndexingService<D> extends AbstractIndexingService<D, List<Stat
         super(reader, listingService, repo, indexGenerator);
         this.documentIdentifierService = documentIdentifierService;
         this.jenaTdb = jenaTdb;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @Override
@@ -58,6 +60,15 @@ public class JenaIndexingService<D> extends AbstractIndexingService<D, List<Stat
     }
 
     @Override
+    protected boolean canIndex(D doc) {
+        log.debug("can index? {}", doc);
+        if (doc == null) {
+            return false;
+        }
+        return !(doc instanceof ServiceAgreement);
+    }
+
+    @Override
     public void indexDocuments(List<String> documents, String revision) throws DocumentIndexingException {
         perform(ReadWrite.WRITE, () -> {
             unindexDocuments(documents);
@@ -69,37 +80,47 @@ public class JenaIndexingService<D> extends AbstractIndexingService<D, List<Stat
     @Override
     public void unindexDocuments(List<String> documents) throws DocumentIndexingException {
         perform(ReadWrite.WRITE, () -> {
-            documents.stream().map((document) -> {
-                //Remove any triples where this document uri is the subject
-                ParameterizedSparqlString pss = new ParameterizedSparqlString("DELETE WHERE { ?id ?p ?o }");
-                pss.setParam(
-                    "id",
-                    ResourceFactory.createResource(
-                        documentIdentifierService.generateUri(document)
-                    )
-                );
-                return pss;
-            }).forEach((pss) -> {
-                UpdateExecutionFactory.create(pss.asUpdate(), jenaTdb).execute();
-            });
+            documents.stream()
+                .filter(document -> {
+                    try {
+                        return canIndex(readDocument(document));
+                    } catch (Exception e) {
+                       return false;
+                    }
+                })
+                .map(document -> {
+                    //Remove any triples where this document uri is the subject
+                    ParameterizedSparqlString pss = new ParameterizedSparqlString("DELETE WHERE { ?id ?p ?o }");
+                    pss.setParam(
+                        "id",
+                        ResourceFactory.createResource(
+                            documentIdentifierService.generateUri(document)
+                        )
+                    );
+                    return pss;
+                })
+                .forEach((pss) -> {
+                    UpdateExecutionFactory.create(pss.asUpdate(), jenaTdb).execute();
+                });
             return null;
         });
     }
 
     @Override
-    protected void clearIndex() throws DocumentIndexingException {
+    protected void clearIndex() {
         jenaTdb.getDefaultModel().removeAll();
     }
 
     @Override
-    protected void index(List<Statement> toIndex) throws Exception {
+    protected void index(List<Statement> toIndex) {
         jenaTdb.getDefaultModel().add(toIndex);
     }
 
     // Define the transaction around advice for performing a jena transaction.
     // This method will not recreate a transaction if one is already on going.
     // @see https://jena.apache.org/documentation/tdb/tdb_transactions.html
-    private <T> T perform(ReadWrite action, DocumentIndexingSupplier<T> supplier) throws DocumentIndexingException {
+    @SneakyThrows
+    private <T> T perform(ReadWrite action, DocumentIndexingSupplier<T> supplier) {
         if(jenaTdb.isInTransaction()) {
             return supplier.get();
         }

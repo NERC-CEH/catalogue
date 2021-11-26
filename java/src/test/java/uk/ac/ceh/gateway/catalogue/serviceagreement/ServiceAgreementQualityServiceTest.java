@@ -1,0 +1,362 @@
+package uk.ac.ceh.gateway.catalogue.serviceagreement;
+
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.guava.GuavaModule;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
+import com.google.common.collect.ImmutableMap;
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.Option;
+import com.jayway.jsonpath.spi.json.JacksonJsonProvider;
+import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.util.ResourceUtils;
+import uk.ac.ceh.gateway.catalogue.document.reading.DocumentReader;
+import uk.ac.ceh.gateway.catalogue.quality.CatalogueResults;
+import uk.ac.ceh.gateway.catalogue.quality.MetadataCheck;
+import uk.ac.ceh.gateway.catalogue.quality.Results;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static uk.ac.ceh.gateway.catalogue.quality.Results.Severity.ERROR;
+import static uk.ac.ceh.gateway.catalogue.quality.Results.Severity.WARNING;
+import static uk.ac.ceh.gateway.catalogue.serviceagreement.GitRepoServiceAgreementService.FOLDER;
+
+@Slf4j
+@ActiveProfiles({"service-agreement"})
+@ExtendWith(MockitoExtension.class)
+public class ServiceAgreementQualityServiceTest {
+    private ServiceAgreementQualityService service;
+    // Keep ObjectMapper options same as ObjectMapper in config/ApplicationConfig.java
+    private ObjectMapper objectMapper = new ObjectMapper()
+            .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
+            .registerModule(new GuavaModule())
+            .registerModule(new JaxbAnnotationModule())
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+    private Configuration config = Configuration.defaultConfiguration()
+            .jsonProvider(new JacksonJsonProvider(objectMapper))
+            .mappingProvider(new JacksonMappingProvider(objectMapper))
+            .addOptions(
+                    Option.DEFAULT_PATH_LEAF_TO_NULL,
+                    Option.SUPPRESS_EXCEPTIONS
+            );
+
+    @Mock
+    private DocumentReader documentReader;
+
+    @BeforeEach
+    public void setup() {
+        this.service = new ServiceAgreementQualityService(documentReader, objectMapper);
+    }
+
+
+    @Test
+    public void checkBasicsCorrect() {
+        //given
+        val parsed = JsonPath.parse(getClass().getResourceAsStream("basicsCorrect.json"), this.config);
+
+        //when
+        val actual = this.service.checkBasics(parsed).isPresent();
+
+        //then
+        assertFalse(actual);
+    }
+
+    @Test
+    public void checkBasicsWrong() {
+        //given
+        val parsed = JsonPath.parse(getClass().getResourceAsStream("basicsWrong.json"), this.config);
+
+        //when
+        val actual = this.service.checkBasics(parsed).isPresent();
+
+        //then
+        assertTrue(actual);
+    }
+
+    @Test
+    @SneakyThrows
+    public void successfullyCheckExistingDocument() {
+        //given
+        given(documentReader.read(FOLDER + "test1", "raw"))
+                .willReturn(
+                        ResourceUtils.getFile(getClass().getResource("test1.raw"))
+                );
+        given(documentReader.read(FOLDER + "test1", "meta"))
+                .willReturn(
+                        ResourceUtils.getFile(getClass().getResource("test1.meta"))
+                );
+
+        //when
+        this.service.check("test1");
+
+        //then
+        verify(documentReader).read(FOLDER + "test1", "raw");
+        verify(documentReader).read(FOLDER + "test1", "meta"); //meta not working
+    }
+
+    @Test
+    @SneakyThrows
+    public void successfullyCheckEmptyDocument() {
+        //given
+        given(documentReader.read(FOLDER + "test0", "raw"))
+                .willReturn(
+                        ResourceUtils.getFile(getClass().getResource("test0.raw"))
+                );
+        given(documentReader.read(FOLDER + "test0", "meta"))
+                .willReturn(
+                        ResourceUtils.getFile(getClass().getResource("test0.meta"))
+                );
+
+        //when
+        this.service.check("test0");
+
+        //then
+        verify(documentReader).read(FOLDER + "test0", "raw"); // raw not working
+        verify(documentReader).read(FOLDER + "test0", "meta");
+    }
+
+    @Test
+    public void checkAddressOrganisationName() {
+        //given
+        val addresses = new ArrayList<Map<String, String>>(Arrays.asList(
+                ImmutableMap.of("organisationName", "Test organisation 0"),
+                ImmutableMap.of("organisationName", "Test organisation 1"),
+                ImmutableMap.of("organisationName", "Test organisation 2")
+        ));
+
+        //when
+        val actual = this.service.checkAddress(addresses, "Test").isPresent();
+
+        //then
+        assertFalse(actual);
+    }
+
+    @Test
+    public void checkWrongAddressOrganisationName() {
+        //given
+        val addresses = new ArrayList<Map<String, String>>(Arrays.asList(
+                ImmutableMap.of("organisationName", "Test organisation 0"),
+                ImmutableMap.of("organisationName", "Test organisation 1"),
+                ImmutableMap.of("individualName", "Test individual 0")
+        ));
+
+        //when
+        val actual = this.service.checkAddress(addresses, "Test").isPresent();
+
+        //then
+        assertTrue(actual);
+    }
+
+    @Test
+    public void checkAuthorCorrect() {
+        //given
+        val parsed = JsonPath.parse(getClass().getResourceAsStream("authorsRight.json"), this.config);
+
+        //when
+        val actual = this.service.checkAuthors(parsed).isPresent();
+
+        //then
+        assertFalse(actual);
+    }
+
+    @Test
+    public void checkAuthorWrong() {
+        //given
+        val parsed = JsonPath.parse(getClass().getResourceAsStream("authorsWrong.json"), this.config);
+
+        //when
+        val actual = this.service.checkAuthors(parsed).isPresent();
+
+        //then
+        assertTrue(actual);
+    }
+
+    @Test
+    public void checkOwnersCorrect() {
+        //given
+        val parsed = JsonPath.parse(getClass().getResourceAsStream("ownersRight.json"), this.config);
+
+        //when
+        val actual = this.service.checkOwnerOfIpr(parsed).isPresent();
+
+        //then
+        assertFalse(actual);
+    }
+
+    @Test
+    public void checkOwnersWrong() {
+        //given
+        val parsed = JsonPath.parse(getClass().getResourceAsStream("ownersWrong.json"), this.config);
+
+        //when
+        val actual = this.service.checkOwnerOfIpr(parsed).isPresent();
+
+        //then
+        assertTrue(actual);
+    }
+
+    @Test
+    public void checkDepositorContactDetailsCorrect() {
+        //given
+        val parsed = JsonPath.parse(getClass().getResourceAsStream("contactDetailsRight.json"), this.config);
+
+        //when
+        val actual = this.service.checkDepositorContactDetails(parsed).isPresent();
+
+        //then
+        assertFalse(actual);
+    }
+
+    @Test
+    public void checkDepositorContactDetailsWrong() {
+        //given
+        val parsed = JsonPath.parse(getClass().getResourceAsStream("contactDetailsWrong.json"), this.config);
+
+        //when
+        val actual = this.service.checkDepositorContactDetails(parsed).isPresent();
+
+        //then
+        assertTrue(actual);
+    }
+
+    @Test
+    public void checkFilesCorrect() {
+        //given
+        val parsed = JsonPath.parse(getClass().getResourceAsStream("checkFilesRight.json"), this.config);
+
+        //when
+        val actual = this.service.checkFiles(parsed).isPresent();
+
+        //then
+        assertFalse(actual);
+    }
+
+    @Test
+    public void checkFilesWrong() {
+        //given
+        val parsed = JsonPath.parse(getClass().getResourceAsStream("checkFilesWrong.json"), this.config);
+
+        //when
+        val actual = this.service.checkFiles(parsed).isPresent();
+
+        //then
+        assertTrue(actual);
+    }
+
+    @Test
+    public void resultsErrors() {
+        //given
+        val checks = Arrays.asList(
+                new MetadataCheck("check 1", ERROR),
+                new MetadataCheck("check 2", ERROR),
+                new MetadataCheck("check 3", WARNING),
+                new MetadataCheck("check 4", ERROR),
+                new MetadataCheck("check 5", ERROR)
+        );
+
+        //when
+        val actual = new Results(checks, "test").getErrors();
+
+        //then
+        assertThat(actual, equalTo(4L));
+    }
+
+    @Test
+    public void resultsWarnings() {
+        //given
+        val checks = Arrays.asList(
+                new MetadataCheck("check 1", WARNING),
+                new MetadataCheck("check 2", ERROR),
+                new MetadataCheck("check 3", WARNING),
+                new MetadataCheck("check 4", ERROR),
+                new MetadataCheck("check 5", WARNING)
+        );
+
+        //when
+        val actual = new Results(checks, "test").getWarnings();
+
+        //then
+        assertThat(actual, equalTo(3L));
+    }
+
+    @Test
+    public void problemsSortedBySeverity() {
+        //given
+        val expected = Arrays.asList(ERROR, ERROR, ERROR, ERROR, WARNING, WARNING, WARNING, WARNING, WARNING, WARNING);
+        val checks = Arrays.asList(
+                new MetadataCheck("check 1", WARNING),
+                new MetadataCheck("check 2", ERROR),
+                new MetadataCheck("check 3", WARNING),
+                new MetadataCheck("check 4", ERROR),
+                new MetadataCheck("check 5", WARNING),
+                new MetadataCheck("check 6", WARNING),
+                new MetadataCheck("check 7", ERROR),
+                new MetadataCheck("check 8", WARNING),
+                new MetadataCheck("check 9", ERROR),
+                new MetadataCheck("check 10", WARNING)
+        );
+
+        //when
+        val actual = new Results(checks, "test")
+                .getProblems()
+                .stream()
+                .map(MetadataCheck::getSeverity)
+                .collect(Collectors.toList());
+
+        //then
+        assertThat(actual, equalTo(expected));
+    }
+
+    @Test
+    public void totalErrorsAndWarnings() {
+        //given
+        val expectedTotalErrors = 8L;
+        val expectedTotalWarnings = 12L;
+        val checks = Arrays.asList(
+                new MetadataCheck("check 1", WARNING),
+                new MetadataCheck("check 2", ERROR),
+                new MetadataCheck("check 3", WARNING),
+                new MetadataCheck("check 4", ERROR),
+                new MetadataCheck("check 5", WARNING),
+                new MetadataCheck("check 6", WARNING),
+                new MetadataCheck("check 7", ERROR),
+                new MetadataCheck("check 8", WARNING),
+                new MetadataCheck("check 9", ERROR),
+                new MetadataCheck("check 10", WARNING)
+        );
+
+        val results =Arrays.asList(
+                new Results(checks, "test0"),
+                new Results(checks, "test1")
+        );
+
+        //when
+        val actual = new CatalogueResults(results);
+
+        //then
+        assertThat(actual.getTotalErrors(), equalTo(expectedTotalErrors));
+        assertThat(actual.getTotalWarnings(), equalTo(expectedTotalWarnings));
+    }
+}

@@ -7,7 +7,6 @@ import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.UpdateResponse;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,23 +25,24 @@ import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.permission.CrowdPermissionServiceTest;
+import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreement;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
+import static uk.ac.ceh.gateway.catalogue.indexing.solr.SolrIndexingService.DOCUMENTS;
 
 @DisplayName("SolrIndexing")
 @ExtendWith(MockitoExtension.class)
 class SolrIndexingServiceTest {
 
-    @Mock private BundledReaderService<GeminiDocument> reader;
+    @Mock private BundledReaderService<MetadataDocument> reader;
     @Mock private DocumentListingService listingService;
     @Mock private DataRepository<CatalogueUser> repo;
     @Mock private IndexGenerator<GeminiDocument, SolrIndex> indexGenerator;
@@ -64,13 +64,31 @@ class SolrIndexingServiceTest {
 
         //when
         assertThrows(DocumentIndexingException.class, () ->
-            service.indexDocuments(Collections.singletonList(doc), revision)
+            service.indexDocuments(List.of(doc), revision)
         );
 
         //then
         verify(solrClient).commit("documents");
         verify(solrClient, never()).addBean(any(SolrIndex.class));
         verifyNoInteractions(indexGenerator);
+    }
+
+    @Test
+    @SneakyThrows
+    void serviceAgreementNotIndexed() {
+        //given
+        String revId = "Latest";
+        List<String> documents = List.of("serviceAgreement1");
+        val serviceAgreement = new ServiceAgreement();
+        given(reader.readBundle("serviceAgreement1"))
+            .willReturn(serviceAgreement);
+
+        //when
+        service.indexDocuments(documents, revId);
+
+        //then
+        verify(indexGenerator, never()).generateIndex(any(GeminiDocument.class));
+        verify(solrClient, never()).addBean(eq(DOCUMENTS), any(SolrIndex.class));
     }
 
     @Test
@@ -82,7 +100,7 @@ class SolrIndexingServiceTest {
         val revId = "Latest";
         given(repo.getLatestRevision()).willReturn(new CrowdPermissionServiceTest.DummyRevision(revId));
 
-        val documents = Arrays.asList("doc1", "doc2");
+        val documents = List.of("doc1", "doc2");
         given(listingService.filterFilenames(any(List.class))).willReturn(documents);
 
         val doc = new GeminiDocument();
@@ -105,7 +123,7 @@ class SolrIndexingServiceTest {
     void checkThatIndexesAllSpecifiedFiles() {
         //Given
         String revId = "Latest";
-        List<String> documents = Arrays.asList("doc1", "doc2");
+        List<String> documents = List.of("doc1", "doc2");
 
         GeminiDocument document1 = new GeminiDocument();
         GeminiDocument document2 = new GeminiDocument();
@@ -127,12 +145,19 @@ class SolrIndexingServiceTest {
 
     @Test
     @SneakyThrows
-    public void checkThatContinuesToIndexIfOneDocumentFails() {
+    void checkThatContinuesToIndexIfOneDocumentFails() {
         //Given
-        String revId = "Latest";
-        List<String> documents = Arrays.asList("doc1", "doc2");
-        when(solrClient.addBean(any(Object.class))).thenThrow(new SolrServerException("Please carry on"))
-                                                   .thenReturn(new UpdateResponse());
+        val revId = "Latest";
+        val documents = Arrays.asList("doc1", "doc2");
+        val document1 = new GeminiDocument();
+        val document2 = new GeminiDocument();
+        given(reader.readBundle("doc1"))
+            .willReturn(document1);
+        given(reader.readBundle("doc2"))
+            .willReturn(document2);
+        given(solrClient.addBean(any(Object.class)))
+            .willThrow(new SolrServerException("Please carry on"))
+            .willReturn(new UpdateResponse());
 
         //When
         try {
@@ -146,28 +171,31 @@ class SolrIndexingServiceTest {
 
     @Test
     @SneakyThrows
-    public void checkThatExceptionIsThrownIfDocumentFailsToIndex() {
-        Assertions.assertThrows(DocumentIndexingException.class, () -> {
-            //Given
-            String revId = "Latest";
-            List<String> documents = Arrays.asList("doc1", "doc2");
+    void checkThatExceptionIsThrownIfDocumentFailsToIndex() {
+        //Given
+        val revId = "Latest";
+        val documents = List.of("doc1", "doc2");
+        val document1 = new GeminiDocument();
+        val document2 = new GeminiDocument();
+        given(reader.readBundle("doc1"))
+            .willReturn(document1);
+        given(reader.readBundle("doc2"))
+            .willReturn(document2);
 
-            when(solrClient.addBean(eq(COLLECTION), any(SolrIndex.class))).thenThrow(new SolrServerException("Please carry on"))
-                    .thenReturn(null);
+        given(solrClient.addBean(eq(COLLECTION), any(SolrIndex.class)))
+            .willThrow(new SolrServerException("Please carry on"))
+            .willReturn(null);
 
-            //When
-            service.indexDocuments(documents, revId);
-
-            //Then
-            fail("Expected to fail with a DocumentIndexingException");
-        });
+        //When
+        assertThrows(DocumentIndexingException.class, () ->
+            service.indexDocuments(documents, revId)
+        );
     }
 
     @Test
     public void checkThatCanRemoveIndexForSpecificDocuments() throws DocumentIndexingException, SolrServerException, IOException, UnknownContentTypeException {
         //Given
         List<String> documents = Arrays.asList("doc1", "doc2", "doc3");
-
 
         //When
         service.unindexDocuments(documents);

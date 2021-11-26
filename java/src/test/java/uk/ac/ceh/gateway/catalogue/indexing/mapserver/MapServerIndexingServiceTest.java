@@ -1,5 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.indexing.mapserver;
 
+import lombok.SneakyThrows;
+import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -7,16 +9,21 @@ import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.components.datastore.DataRepository;
-import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
-import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.document.DocumentListingService;
+import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
+import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.MapDataDefinition;
+import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
+import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreement;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -24,26 +31,86 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class MapServerIndexingServiceTest {
 
     @TempDir Path directory;
-    @Mock BundledReaderService reader;
+    @Mock BundledReaderService<MetadataDocument> reader;
     @Mock DocumentListingService listingService;
-    @Mock DataRepository repo;
-    @Mock
-    IndexGenerator indexGenerator;
+    @Mock DataRepository<CatalogueUser> repo;
+    @Mock IndexGenerator<GeminiDocument, MapFile> indexGenerator;
     @Mock MetadataDocument metadataDocument;
-    @Mock
-    MapFile mapFile;
+    @Mock MapFile mapFile;
 
-    private MapServerIndexingService service;
+    private MapServerIndexingService<MetadataDocument> service;
 
     @BeforeEach
     public void init() {
         service = new MapServerIndexingService(reader, listingService, repo, indexGenerator, directory.toFile());
+    }
+
+    @Test
+    void checkThatServiceGeminiDocumentWithServiceDefinitionIsIndexed() {
+        //Given
+        val mapDataDefinition = new MapDataDefinition();
+        mapDataDefinition.setData(List.of(new MapDataDefinition.DataSource()));
+        val document = new GeminiDocument();
+        document.setType("service");
+        document.setMapDataDefinition(mapDataDefinition);
+
+        //When
+        val canIndex = service.canIndex(document);
+
+        //Then
+        assertTrue(canIndex);
+    }
+
+    @Test
+    void checkThatServiceGeminiDocumentWithoutDataIsNotIndexed() {
+        //Given
+        val mapDataDefinition = new MapDataDefinition();
+        val document = new GeminiDocument();
+        document.setType("service");
+        document.setMapDataDefinition(mapDataDefinition);
+
+        //When
+        val canIndex = service.canIndex(document);
+
+        //Then
+        assertFalse(canIndex);
+    }
+
+    @Test
+    void checkThatServiceGeminiDocumentEmptyServiceDefinitionIsNotIndexed() {
+        //Given
+        val mapDataDefinition = new MapDataDefinition();
+        mapDataDefinition.setData(Collections.emptyList());
+        val document = new GeminiDocument();
+        document.setType("service");
+        document.setMapDataDefinition(mapDataDefinition);
+
+        //When
+        boolean canIndex = service.canIndex(document);
+
+        //Then
+        assertFalse(canIndex);
+    }
+
+    @Test
+    void checkThatDatasetGeminiDocumentIsNotIndexed() {
+        //Given
+        val document = new GeminiDocument();
+        document.setType("dataset");
+
+        //When
+        val canIndex = service.canIndex(document);
+
+        //Then
+        assertFalse(canIndex);
     }
 
     @Test
@@ -60,13 +127,30 @@ public class MapServerIndexingServiceTest {
     }
 
     @Test
+    @SneakyThrows
+    void serviceAgreementNotIndexed() {
+        //given
+        val revId = "Latest";
+        val documents = List.of("serviceAgreement1");
+        val serviceAgreement = new ServiceAgreement();
+        given(reader.readBundle("serviceAgreement1", revId))
+            .willReturn(serviceAgreement);
+
+        //when
+        service.indexDocuments(documents, revId);
+
+        //then
+        verify(indexGenerator, never()).generateIndex(any(GeminiDocument.class));
+    }
+
+    @Test
     public void checkThatHavingMapFileMeansIndexIsNotEmpty() throws Exception {
         //Given
         Path someFile = directory.resolve("SomeFile_default.map");
         Files.createFile(someFile);
 
         //When
-        List<String> indexed = service.getIndexedFiles();
+        val indexed = service.getIndexedFiles();
 
         //Then
         assertFalse(service.isIndexEmpty());

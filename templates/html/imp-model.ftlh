@@ -84,7 +84,7 @@
 
         <#if keyReferences?? >
           <#list keyReferences>
-            <h2>Key References</h3>
+            <h2>Key References</h2>
             <ul>
             <#items as reference>
               <li>${reference}</li>
@@ -95,7 +95,7 @@
 
         <#if inputData?? >
           <#list inputData>
-            <h2>Input Data</h3>
+            <h2>Input Data</h2>
             <ul>
             <#items as input>
               <li>${input}</li>
@@ -106,7 +106,7 @@
 
         <#if outputData?? >
           <#list outputData>
-            <h2>Output Data</h3>
+            <h2>Output Data</h2>
             <ul>
               <#items as output>
                 <li>${output}</li>
@@ -115,7 +115,7 @@
           </#list>
         </#if>
 
-        <h2>Quality Assurance</h3>
+        <h2>Quality Assurance</h2>
         <dl class="dl-horizontal">
           <dt>Developer Testing</dt><dd><#if developerTesting?has_content>${developerTesting?then('Yes', 'No')}<#else>Unknown</#if></dd>
           <dt>Internal Peer Review</dt><dd><#if internalPeerReview?has_content>${internalPeerReview?then('Yes', 'No')}<#else>Unknown</#if></dd>

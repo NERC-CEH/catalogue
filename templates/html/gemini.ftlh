@@ -57,19 +57,19 @@
   <div id="metadata" class="${metadata.state?lower_case}">
     <div class="container" role="main">
       <#if resourceType?has_content && resourceType.value !=''>
-      <#assign recordType = codes.lookup('metadata.recordType',resourceType.value)?lower_case>
-      <#include "document/_admin.ftlh">
-      <div id="section-Top">
-        <#include "document/_title.ftlh">
-      </div>
+        <#assign recordType = func.recordTypeOrResourceType()>
+        <#include "document/_admin.ftlh">
+        <div id="section-Top">
+            <#include "document/_title.ftlh">
+        </div>
 
-      <#if rel_supersedes?has_content && rel_supersedes?size gt 0>
-        <#include "document/_latestVersion.ftlh">
-      </#if>
+        <#if rel_supersedes?has_content && rel_supersedes?size gt 0>
+            <#include "document/_latestVersion.ftlh">
+        </#if>
 
-      <#if permission.userCanEditRestrictedFields(metadata.catalogue) && metadata.catalogue == "eidc">
-        <#include "document/_metadataqualityAlert.ftlh">
-      </#if>
+        <#if permission.userCanEditRestrictedFields(metadata.catalogue) && metadata.catalogue == "eidc">
+            <#include "document/_metadataqualityAlert.ftlh">
+        </#if>
 
         <div id="document-description" class="clearfix">
             <#include "document/_browseGraphic.ftlh">

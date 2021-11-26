@@ -11,7 +11,7 @@
 
 <#list relatedSearches>
   <div class="results__related_searches">
-    <h3>Related Searches</h3>
+    <h2>Related Searches</h2>
     <#items as relatedSearch>
       <a href="${relatedSearch.href}">${relatedSearch.title}</a><#if relatedSearch_has_next>, </#if>
     </#items>
