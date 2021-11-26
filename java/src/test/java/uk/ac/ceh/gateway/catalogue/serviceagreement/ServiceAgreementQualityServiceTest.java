@@ -40,12 +40,13 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.ac.ceh.gateway.catalogue.quality.Results.Severity.ERROR;
 import static uk.ac.ceh.gateway.catalogue.quality.Results.Severity.WARNING;
-import static uk.ac.ceh.gateway.catalogue.serviceagreement.GitRepoServiceAgreementService.FOLDER;
 
 @Slf4j
 @ActiveProfiles({"service-agreement"})
 @ExtendWith(MockitoExtension.class)
 public class ServiceAgreementQualityServiceTest {
+    
+    private static final String FOLDER = "service-agreements/";
     private ServiceAgreementQualityService service;
     // Keep ObjectMapper options same as ObjectMapper in config/ApplicationConfig.java
     private ObjectMapper objectMapper = new ObjectMapper()
