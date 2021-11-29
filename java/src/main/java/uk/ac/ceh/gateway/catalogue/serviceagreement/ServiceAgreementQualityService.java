@@ -21,6 +21,7 @@ import java.util.*;
 import static java.lang.String.format;
 import static uk.ac.ceh.gateway.catalogue.quality.Results.Severity.ERROR;
 import static uk.ac.ceh.gateway.catalogue.quality.Results.Severity.INFO;
+import static uk.ac.ceh.gateway.catalogue.serviceagreement.GitRepoServiceAgreementService.FOLDER;
 
 @Profile("service-agreement")
 @Slf4j
@@ -30,7 +31,6 @@ public class ServiceAgreementQualityService {
 
     private final DocumentReader documentReader;
     private final Configuration config;
-    private static final String FOLDER = "service-agreements/";
 
     private final TypeRef<List<Map<String, String>>> typeRefStringString = new TypeRef<>() {};
 

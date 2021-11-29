@@ -518,7 +518,7 @@ class ServiceAgreementControllerTest {
             .willReturn(false);
     }
     private void givenHistory() {
-        List revisions = new ArrayList();
+        List<DataRevision<CatalogueUser>> revisions = new ArrayList<>();
         revisions.add(new TestRevision("revision2"));
         revisions.add(new TestRevision("revision1"));
         History history = new History(ID, revisions, "test");
