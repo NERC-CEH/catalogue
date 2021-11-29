@@ -3,26 +3,16 @@
 <#import "../functions.ftlh" as func>
 
 <#assign
-    authors = []
-    pocs = []
-    custodians = []
-    publishers = []
-    depositors = []
-    originators = []
-    rightsHolders = []
-    owners = []
-    originators = []
-    resourceProviders = []
-    otherContacts = custodians + publishers + depositors + originators + owners + resourceProviders + rightsHolders
-    catalogue = catalogues.retrieve(metadata.catalogue)
+  catalogue = catalogues.retrieve(metadata.catalogue)
 />
 
 <#if supplemental?has_content>
   <#assign
-  referencedBy = func.filter(supplemental, "function", "isReferencedBy")
-  supplementTo = func.filter(supplemental, "function", "isSupplementTo")
-  websites = func.filter(supplemental, "function", "website")
-  supOther = func.filter(supplemental, "function", "") + func.filter(supplemental, "function", "relatedArticle") + func.filter(supplemental, "function", "relatedDataset")>
+    referencedBy = func.filter(supplemental, "function", "isReferencedBy")
+    supplementTo = func.filter(supplemental, "function", "isSupplementTo")
+    websites = func.filter(supplemental, "function", "website")
+    supOther = func.filter(supplemental, "function", "") + func.filter(supplemental, "function", "relatedArticle") + func.filter(supplemental, "function", "relatedDataset")
+  >
 </#if>
 
 <#macro getLabel val array>
