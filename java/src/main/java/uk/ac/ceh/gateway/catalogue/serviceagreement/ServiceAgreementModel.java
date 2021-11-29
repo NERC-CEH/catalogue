@@ -41,7 +41,7 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
     TWO: Policies & Legislation
    */
     private String otherPoliciesOrLegislation;
-    private String fundersOfResearch;
+    private List<Funding> funding;
 
     /*
     THREE: The data
@@ -107,7 +107,7 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
         this.eidcContactDetails = serviceAgreement.getEidcContactDetails();
         this.authors = serviceAgreement.getAuthors();
         this.otherPoliciesOrLegislation = serviceAgreement.getOtherPoliciesOrLegislation();
-        this.fundersOfResearch = serviceAgreement.getFundersOfResearch();
+        this.funding = serviceAgreement.getFunding();
         this.fileNumber = serviceAgreement.getFileNumber();
         this.files = serviceAgreement.getFiles();
         this.transferMethod = serviceAgreement.getTransferMethod();
