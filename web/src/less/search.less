@@ -21,10 +21,11 @@
       height: auto; // Re allow height
       position: fixed;
       padding: 0;
-      top: @nav-bar-height;
+      top: @navbar-height + (@navbar-border-width * 2);
       bottom: 0;
       left: 0;
       background-color: @panel-bg;
+      border-right:1px solid lighten(@gray-light, 25%);
     }
 
     .header {
@@ -119,7 +120,7 @@
   form.search-form {
     .make-md-column-offset(@filters-columns);
     position: fixed;
-    top: @nav-bar-height;
+    top: @navbar-height + (@navbar-border-width *2) ;
     left: 0;
     right: 0;
     padding: 8px;

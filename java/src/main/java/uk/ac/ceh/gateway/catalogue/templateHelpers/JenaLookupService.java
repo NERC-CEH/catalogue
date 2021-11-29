@@ -21,7 +21,7 @@ import static uk.ac.ceh.gateway.catalogue.indexing.jena.Ontology.*;
  * A simple lookup service powered by the jena linking database. This just looks
  * up any literals associated to a given uri
  */
-@SuppressWarnings({"HttpUrlsUsage", "unused"})
+@SuppressWarnings({"unused"})
 @Slf4j
 @ToString
 @Service
@@ -78,6 +78,28 @@ public class JenaLookupService {
     public List<Link> models(String uri) {
         return links(uri, "PREFIX dc: <http://purl.org/dc/terms/> SELECT ?node ?title ?type ?rel WHERE { ?me ?rel ?node; dc:references ?node. ?node dc:title ?title; dc:type ?type; dc:type 'model'}");
     }
+
+
+    /**
+     * NERC Modeluse linked to this NERC model
+     * @param uri of model
+     * @return list of Links to modelApplications
+     */
+    public List<Link> nercModelUses(String uri) {
+        return links(uri, "PREFIX dc: <http://purl.org/dc/terms/> SELECT ?node ?title ?type ?rel WHERE {?node ?rel ?me; dc:references ?me; dc:title ?title; dc:type ?type; dc:type 'nercModelUse'}");
+    }
+
+    /**
+     * NERC Models linked to this NERC Modeluse
+     * @param uri of modelUse
+     * @return list of Links to models
+     */
+    public List<Link> nercModels(String uri) {
+        return links(uri, "PREFIX dc: <http://purl.org/dc/terms/> SELECT ?node ?title ?type ?rel WHERE { ?me ?rel ?node; dc:references ?node. ?node dc:title ?title; dc:type ?type; dc:type 'nercModels'}");
+    }
+
+
+
 
     public List<Link> datasets(String uri) {
         return links(uri, "PREFIX dc: <http://purl.org/dc/terms/> SELECT ?node ?title ?type ?rel WHERE {{{?me ?rel ?node; dc:references ?node.}UNION{?node ?rel ?me; dc:references ?me.} ?node dc:title ?title; dc:type ?type; dc:type 'dataset'.}UNION{?me ?rel ?node; dc:references ?node. ?node dc:source _:n . _:n dc:title ?title; dc:type ?type; dc:type 'dataset'.}}");

@@ -10,6 +10,13 @@
 
 >
 
+<#assign hasCitation = 0>
+<#if citation?? && citation?has_content>
+  <#if citation.doi?? && citation.doi?matches("^10.5285/[\\w-]+$")>
+    <#assign hasCitation = 1>
+  </#if>
+</#if>
+
 <#if onlineResources?has_content>
   <#assign
     orderResources = func.filter(onlineResources, "function", "order")
@@ -29,19 +36,11 @@
   <div class="row hidden-print" id="adminPanel">
     <div class="text-right" id="adminToolbar" role="toolbar">
       <div class="btn-group btn-group-sm">
-        <button type="button"
-                class="btn btn-default btn-wide edit-control"
-                data-document-type="${metadata.documentType}"
-        >
+        <button type="button" class="btn btn-default btn-wide edit-control" data-document-type="${metadata.documentType}">
           Edit
         </button>
         <#if isRestrictedFieldsEditor>
-          <button type="button"
-                  class="btn btn-default dropdown-toggle"
-                  data-toggle="dropdown"
-                  aria-haspopup="true"
-                  aria-expanded="false"
-          >
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
             <span class="caret"></span>
             <span class="sr-only">Toggle Dropdown</span>
           </button>
@@ -80,73 +79,55 @@
       </div>
 
       <#if isRestrictedFieldsEditor>
-
-        <#-- DOI button -->
         <#if isNotLinkDocument>
-          <#if isEidcWithResourceType>
-            <div class="btn-group btn-group-sm" role="group">
-              <button type="button"
-                class="btn btn-default btn-wide dropdown-toggle"
-                data-toggle="dropdown"
-              >
-                <#if dataciteMintable>
-                  Mint DOI
-                <#elseif !datacitable>
-                  <i class='fas fa-exclamation-triangle text-red'></i> DOI
-                <#else>
-                  DOI
-                </#if>
-                <span class="caret"></span>
-              </button>
-              <ul class="dropdown-menu dropdown-menu-right">
-                <#if dataciteMintable>
-                  <li>
-                    <div class="msg text-success">
-                      <i class="fas fa-check text-success"></i>
-                      There is enough information<br>to assign a DOI to this resource
-                    </div>
-                  </li>
-                  <#if permission.userCanDatacite()>
-                    <form action="/documents/${id}/datacite" method="POST" class="mintDOI">
-                        <button type="submit" class="btn btn-success" value="Mint DOI">Mint DOI</button>
-                    </form>
+
+          <#-- DOI button -->
+          <#if hasCitation = 0>
+            <#if isEidcWithResourceType>
+              <div class="btn-group btn-group-sm" role="group">
+                <button type="button" class="btn btn-default btn-wide dropdown-toggle" data-toggle="dropdown">
+                  <#if !datacitable>
+                    <i class='fas fa-exclamation-triangle text-red'></i>
                   </#if>
-                  <li class="divider"></li>
-                <#elseif !datacitable>
-                  <li>
-                    <div class="msg text-red">
-                      <i class="fas fa-exclamation"></i>
-                      Conditions for assigning a <br>DOI have not been met
-                    </div>
-                  </li>
-                  <li>
-                    <a href="https://eidc.ceh.ac.uk/admin/guidance/mintADOId"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                      Help
-                    </a>
-                  </li>
-                <#elseif datacitable>
-                  <li>
-                    <a href="/documents/${id}/datacite.xml">
-                      View DataCite XML
-                    </a>
-                  </li>
-                </#if>
-              </ul>
-            </div>
+                  DOI <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right">
+                  <#if dataciteMintable>
+                    <li>
+                      <div class="msg text-success">
+                        <i class="fas fa-check text-success"></i>
+                        There is enough information<br>to assign a DOI to this resource
+                      </div>
+                    </li>
+                    <#if permission.userCanDatacite()>
+                      <form action="/documents/${id}/datacite" method="POST" class="mintDOI">
+                          <button type="submit" class="btn btn-success" value="Mint DOI">Mint DOI</button>
+                      </form>
+                    </#if>
+                    <li class="divider"></li>
+                  <#elseif !datacitable>
+                    <li>
+                      <div class="msg text-red">
+                        <i class="fas fa-exclamation"></i>
+                        Conditions for assigning a <br>DOI have not been met
+                      </div>
+                    </li>
+                    <li>
+                      <a href="https://eidc.ceh.ac.uk/admin/guidance/mintADOId" target="_blank" rel="noopener noreferrer" >
+                        Help
+                      </a>
+                    </li>
+                  </#if>
+                </ul>
+              </div>
+            </#if>
           </#if>
 
           <#-- 'More' button -->
           <#if isSimpleUpload || hasOrders || isEidcCustodian || isEidcWithResourceType>
             <div class="btn-group btn-group-sm" role="group">
-              <button type="button"
-                      class="btn btn-default btn-wide dropdown-toggle"
-                      data-toggle="dropdown"
-              >
-                More
-                <span class="caret"></span>
+              <button type="button"  class="btn btn-default btn-wide dropdown-toggle" data-toggle="dropdown">
+                More <span class="caret"></span>
               </button>
               <ul class="dropdown-menu dropdown-menu-right">
                 <#if isSimpleUpload || isEidcWithResourceType>
@@ -184,8 +165,10 @@
               </ul>
             </div>
           </#if>
+
         </#if>
-      </div>
-    </#if>
+      </#if>
+
+    </div>
   </div>
 </#if>
