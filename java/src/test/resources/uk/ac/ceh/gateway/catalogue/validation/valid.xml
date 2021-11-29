@@ -1,0 +1,488 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gsr="http://www.isotc211.org/2005/gsr" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gss="http://www.isotc211.org/2005/gss" xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:srv="http://www.isotc211.org/2005/srv" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.isotc211.org/2005/gmd http://inspire.ec.europa.eu/draft-schemas/inspire-md-schemas/apiso-inspire/apiso-inspire.xsd">
+    <gmd:fileIdentifier><gco:CharacterString>40da9509-999f-4d61-85fe-59d7b32e7ca6</gco:CharacterString></gmd:fileIdentifier>
+    <gmd:language>
+        <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/php/code_list.php" codeListValue="eng">English</gmd:LanguageCode>
+    </gmd:language>
+    <gmd:characterSet>
+        <gmd:MD_CharacterSetCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="8859part1">ISO/IEC 8859-1 (also known as Latin 1)</gmd:MD_CharacterSetCode>
+    </gmd:characterSet>
+    <gmd:hierarchyLevel>
+        <gmd:MD_ScopeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_ScopeCode" codeListValue="dataset">dataset</gmd:MD_ScopeCode>
+    </gmd:hierarchyLevel>
+    <gmd:hierarchyLevelName>
+        <gco:CharacterString>dataset</gco:CharacterString>
+    </gmd:hierarchyLevelName>
+    <gmd:contact>
+        <gmd:CI_ResponsibleParty>
+            <gmd:organisationName><gco:CharacterString>Environmental Information Data Centre</gco:CharacterString></gmd:organisationName>
+            <gmd:contactInfo>
+                <gmd:CI_Contact>
+                    <gmd:address>
+                        <gmd:CI_Address>
+                            <gmd:deliveryPoint><gco:CharacterString>Lancaster Environment Centre, Library Avenue, Bailrigg</gco:CharacterString></gmd:deliveryPoint>
+                            <gmd:city><gco:CharacterString>Lancaster</gco:CharacterString></gmd:city>
+                            <gmd:postalCode><gco:CharacterString>LA1 4AP</gco:CharacterString></gmd:postalCode>
+                            <gmd:country><gco:CharacterString>UK</gco:CharacterString></gmd:country>
+                            <gmd:electronicMailAddress><gco:CharacterString>info@eidc.ac.uk</gco:CharacterString></gmd:electronicMailAddress>
+                        </gmd:CI_Address>
+                    </gmd:address>
+                </gmd:CI_Contact>
+            </gmd:contactInfo>
+            <gmd:role>
+                <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="pointOfContact">pointOfContact</gmd:CI_RoleCode>
+            </gmd:role>
+        </gmd:CI_ResponsibleParty>
+    </gmd:contact>
+    <gmd:dateStamp>
+        <gco:DateTime>2021-06-25T18:40:41</gco:DateTime>
+    </gmd:dateStamp>
+    <gmd:metadataStandardName>
+        <gmx:Anchor xlink:href="http://vocab.nerc.ac.uk/collection/MD1/current/GEMINI/">UK GEMINI</gmx:Anchor>
+    </gmd:metadataStandardName>
+    <gmd:metadataStandardVersion>
+        <gco:CharacterString>2.3</gco:CharacterString>
+    </gmd:metadataStandardVersion>
+    <gmd:referenceSystemInfo>
+        <gmd:MD_ReferenceSystem>
+            <gmd:referenceSystemIdentifier>
+                <gmd:RS_Identifier>
+                    <gmd:code>
+                        <gmx:Anchor xlink:href="http://www.opengis.net/def/crs/EPSG/0/27700">OSGB 1936 / British National Grid</gmx:Anchor>
+                    </gmd:code>
+                </gmd:RS_Identifier>
+            </gmd:referenceSystemIdentifier>
+        </gmd:MD_ReferenceSystem>
+    </gmd:referenceSystemInfo>
+    <gmd:identificationInfo>
+        <gmd:MD_DataIdentification>
+            <gmd:citation>
+                <gmd:CI_Citation>
+                    <gmd:title>
+                        <gco:CharacterString>River Habitat Survey (RHS) data 2007 [Countryside Survey] </gco:CharacterString>
+                    </gmd:title>
+                    <gmd:date>
+                        <gmd:CI_Date>
+                            <gmd:date>
+                                <gco:Date>2016-11-21</gco:Date>
+                            </gmd:date>
+                            <gmd:dateType>
+                                <CI_DateTypeCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</CI_DateTypeCode>
+                            </gmd:dateType>
+                        </gmd:CI_Date>
+                    </gmd:date>
+                    <gmd:date>
+                        <gmd:CI_Date>
+                            <gmd:date>
+                                <gco:Date>2007-11-01</gco:Date>
+                            </gmd:date>
+                            <gmd:dateType>
+                                <CI_DateTypeCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="creation">creation</CI_DateTypeCode>
+                            </gmd:dateType>
+                        </gmd:CI_Date>
+                    </gmd:date>
+                    <gmd:identifier>
+                        <gmd:MD_Identifier>
+                            <gmd:code>
+                                <gco:CharacterString>https://catalogue.ceh.ac.uk/id/40da9509-999f-4d61-85fe-59d7b32e7ca6</gco:CharacterString>
+                            </gmd:code>
+                        </gmd:MD_Identifier>
+                    </gmd:identifier>
+                    <gmd:identifier>
+                        <gmd:RS_Identifier>
+                            <gmd:code><gco:CharacterString>10.5285/40da9509-999f-4d61-85fe-59d7b32e7ca6</gco:CharacterString></gmd:code>
+                            <gmd:codeSpace><gco:CharacterString>doi:</gco:CharacterString></gmd:codeSpace>
+                        </gmd:RS_Identifier>
+                    </gmd:identifier>
+                    <gmd:otherCitationDetails>
+                        <gco:CharacterString>Dunbar, M., Murphy, J., Clarke, R., Davies, C., Scarlett, P. (2016). River Habitat Survey (RHS) data 2007 [Countryside Survey] . NERC Environmental Information Data Centre 10.5285/40da9509-999f-4d61-85fe-59d7b32e7ca6</gco:CharacterString>
+                    </gmd:otherCitationDetails>
+                </gmd:CI_Citation>
+            </gmd:citation>
+            <gmd:abstract>
+                <gco:CharacterString>River Habitat Survey (RHS) data from rivers and streams surveyed in 2007 as part of the Countryside Survey project. River Habitat Survey (RHS) is an assessment of the physical structure of freshwater streams and rivers based on a standard 500m length sample unit. It does not require specialist geomorphological or botanical expertise but consistent recognition of features included on the form is essential. To ensure consistency of recording all surveyors must be accredited, and recording follows standard protocols. Data were collected under the Countryside Survey long term monitoring project managed by the Centre for Ecology &amp; Hydrology. The Countryside Survey is a unique study or &apos;audit&apos; of the natural resources of the UK&apos;s countryside. The sample sites are chosen from a stratified random sample, based on a 15 by 15 km grid of GB. Headwater stream surveys have been carried out in 1990, 1998 and 2007 with repeated visits to the majority of sites. The countryside is sampled and surveyed using rigorous scientific methods, allowing us to compare new results with those from previous surveys. In this way we can detect the gradual and subtle changes that occur in the UK&apos;s countryside over time. In addition to headwater stream data, soil data, habitat areas, vegetation species data and linear habitat data are also gathered by Countryside Survey. Full details about this dataset can be found at https://doi.org/10.5285/40da9509-999f-4d61-85fe-59d7b32e7ca6</gco:CharacterString>
+            </gmd:abstract>
+            <gmd:pointOfContact>
+                <gmd:CI_ResponsibleParty>
+                    <gmd:organisationName><gco:CharacterString>NERC EDS Environmental Information Data Centre</gco:CharacterString></gmd:organisationName>
+                    <gmd:contactInfo>
+                        <gmd:CI_Contact>
+                            <gmd:address>
+                                <gmd:CI_Address>
+                                    <gmd:electronicMailAddress><gco:CharacterString>
+                                        info@eidc.ac.uk
+                                    </gco:CharacterString></gmd:electronicMailAddress>
+                                </gmd:CI_Address>
+                            </gmd:address>
+                        </gmd:CI_Contact>
+                    </gmd:contactInfo>
+                    <gmd:role>
+                        <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="custodian">custodian</gmd:CI_RoleCode>
+                    </gmd:role>
+                </gmd:CI_ResponsibleParty>
+            </gmd:pointOfContact>
+            <gmd:pointOfContact>
+                <gmd:CI_ResponsibleParty>
+                    <gmd:organisationName><gco:CharacterString>NERC Environmental Information Data Centre</gco:CharacterString></gmd:organisationName>
+                    <gmd:contactInfo>
+                        <gmd:CI_Contact>
+                            <gmd:address>
+                                <gmd:CI_Address>
+                                    <gmd:electronicMailAddress><gco:CharacterString>
+                                        info@eidc.ac.uk
+                                    </gco:CharacterString></gmd:electronicMailAddress>
+                                </gmd:CI_Address>
+                            </gmd:address>
+                        </gmd:CI_Contact>
+                    </gmd:contactInfo>
+                    <gmd:role>
+                        <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="publisher">publisher</gmd:CI_RoleCode>
+                    </gmd:role>
+                </gmd:CI_ResponsibleParty>
+            </gmd:pointOfContact>
+            <gmd:pointOfContact>
+                <gmd:CI_ResponsibleParty>
+                    <gmd:individualName><gco:CharacterString>Scarlett, P.</gco:CharacterString></gmd:individualName>
+                    <gmd:organisationName><gco:CharacterString>UK Centre for Ecology &amp; Hydrology</gco:CharacterString></gmd:organisationName>
+                    <gmd:contactInfo>
+                        <gmd:CI_Contact>
+                            <gmd:address>
+                                <gmd:CI_Address>
+                                    <gmd:electronicMailAddress><gco:CharacterString>
+                                        enquiries@ceh.ac.uk
+                                    </gco:CharacterString></gmd:electronicMailAddress>
+                                </gmd:CI_Address>
+                            </gmd:address>
+                        </gmd:CI_Contact>
+                    </gmd:contactInfo>
+                    <gmd:role>
+                        <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="pointOfContact">pointOfContact</gmd:CI_RoleCode>
+                    </gmd:role>
+                </gmd:CI_ResponsibleParty>
+            </gmd:pointOfContact>
+            <gmd:pointOfContact>
+                <gmd:CI_ResponsibleParty>
+                    <gmd:individualName><gco:CharacterString>Dunbar, M.</gco:CharacterString></gmd:individualName>
+                    <gmd:organisationName><gco:CharacterString>Centre for Ecology &amp; Hydrology</gco:CharacterString></gmd:organisationName>
+                    <gmd:contactInfo>
+                        <gmd:CI_Contact>
+                            <gmd:address>
+                                <gmd:CI_Address>
+                                    <gmd:electronicMailAddress><gco:CharacterString>
+                                        enquiries@ceh.ac.uk
+                                    </gco:CharacterString></gmd:electronicMailAddress>
+                                </gmd:CI_Address>
+                            </gmd:address>
+                        </gmd:CI_Contact>
+                    </gmd:contactInfo>
+                    <gmd:role>
+                        <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="author">author</gmd:CI_RoleCode>
+                    </gmd:role>
+                </gmd:CI_ResponsibleParty>
+            </gmd:pointOfContact>
+            <gmd:pointOfContact>
+                <gmd:CI_ResponsibleParty>
+                    <gmd:individualName><gco:CharacterString>Murphy, J.</gco:CharacterString></gmd:individualName>
+                    <gmd:organisationName><gco:CharacterString>Centre for Ecology &amp; Hydrology</gco:CharacterString></gmd:organisationName>
+                    <gmd:contactInfo>
+                        <gmd:CI_Contact>
+                            <gmd:address>
+                                <gmd:CI_Address>
+                                    <gmd:electronicMailAddress><gco:CharacterString>
+                                        enquiries@ceh.ac.uk
+                                    </gco:CharacterString></gmd:electronicMailAddress>
+                                </gmd:CI_Address>
+                            </gmd:address>
+                        </gmd:CI_Contact>
+                    </gmd:contactInfo>
+                    <gmd:role>
+                        <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="author">author</gmd:CI_RoleCode>
+                    </gmd:role>
+                </gmd:CI_ResponsibleParty>
+            </gmd:pointOfContact>
+            <gmd:pointOfContact>
+                <gmd:CI_ResponsibleParty>
+                    <gmd:individualName><gco:CharacterString>Clarke, R.</gco:CharacterString></gmd:individualName>
+                    <gmd:organisationName><gco:CharacterString>Centre for Ecology &amp; Hydrology</gco:CharacterString></gmd:organisationName>
+                    <gmd:contactInfo>
+                        <gmd:CI_Contact>
+                            <gmd:address>
+                                <gmd:CI_Address>
+                                    <gmd:electronicMailAddress><gco:CharacterString>
+                                        enquiries@ceh.ac.uk
+                                    </gco:CharacterString></gmd:electronicMailAddress>
+                                </gmd:CI_Address>
+                            </gmd:address>
+                        </gmd:CI_Contact>
+                    </gmd:contactInfo>
+                    <gmd:role>
+                        <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="author">author</gmd:CI_RoleCode>
+                    </gmd:role>
+                </gmd:CI_ResponsibleParty>
+            </gmd:pointOfContact>
+            <gmd:pointOfContact>
+                <gmd:CI_ResponsibleParty>
+                    <gmd:individualName><gco:CharacterString>Davies, C.</gco:CharacterString></gmd:individualName>
+                    <gmd:organisationName><gco:CharacterString>Centre for Ecology &amp; Hydrology</gco:CharacterString></gmd:organisationName>
+                    <gmd:contactInfo>
+                        <gmd:CI_Contact>
+                            <gmd:address>
+                                <gmd:CI_Address>
+                                    <gmd:electronicMailAddress><gco:CharacterString>
+                                        enquiries@ceh.ac.uk
+                                    </gco:CharacterString></gmd:electronicMailAddress>
+                                </gmd:CI_Address>
+                            </gmd:address>
+                        </gmd:CI_Contact>
+                    </gmd:contactInfo>
+                    <gmd:role>
+                        <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="author">author</gmd:CI_RoleCode>
+                    </gmd:role>
+                </gmd:CI_ResponsibleParty>
+            </gmd:pointOfContact>
+            <gmd:pointOfContact>
+                <gmd:CI_ResponsibleParty>
+                    <gmd:individualName><gco:CharacterString>Scarlett, P.</gco:CharacterString></gmd:individualName>
+                    <gmd:organisationName><gco:CharacterString>Centre for Ecology &amp; Hydrology</gco:CharacterString></gmd:organisationName>
+                    <gmd:contactInfo>
+                        <gmd:CI_Contact>
+                            <gmd:address>
+                                <gmd:CI_Address>
+                                    <gmd:electronicMailAddress><gco:CharacterString>
+                                        enquiries@ceh.ac.uk
+                                    </gco:CharacterString></gmd:electronicMailAddress>
+                                </gmd:CI_Address>
+                            </gmd:address>
+                        </gmd:CI_Contact>
+                    </gmd:contactInfo>
+                    <gmd:role>
+                        <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="author">author</gmd:CI_RoleCode>
+                    </gmd:role>
+                </gmd:CI_ResponsibleParty>
+            </gmd:pointOfContact>
+            <gmd:resourceMaintenance>
+                <gmd:MD_MaintenanceInformation>
+                    <gmd:maintenanceAndUpdateFrequency>
+                        <gmd:MD_MaintenanceFrequencyCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_MaintenanceFrequencyCode" codeListValue="notPlanned">notPlanned</gmd:MD_MaintenanceFrequencyCode>
+                    </gmd:maintenanceAndUpdateFrequency>
+                </gmd:MD_MaintenanceInformation>
+            </gmd:resourceMaintenance>
+            <gmd:descriptiveKeywords>
+                <gmd:MD_Keywords>
+                    <gmd:keyword>
+                        <gco:CharacterString>Environmental Monitoring Facilities</gco:CharacterString>
+                    </gmd:keyword>
+                    <gmd:type>
+                        <gmd:MD_KeywordTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="theme">theme</gmd:MD_KeywordTypeCode>
+                    </gmd:type>
+                    <gmd:thesaurusName>
+                        <gmd:CI_Citation>
+                            <gmd:title>
+                                <gco:CharacterString>GEMET - INSPIRE themes, version 1.0</gco:CharacterString>
+                            </gmd:title>
+                            <gmd:date>
+                                <gmd:CI_Date>
+                                    <gmd:date>
+                                        <gco:Date>2008-06-01</gco:Date>
+                                    </gmd:date>
+                                    <gmd:dateType>
+                                        <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</gmd:CI_DateTypeCode>
+                                    </gmd:dateType>
+                                </gmd:CI_Date>
+                            </gmd:date>
+                        </gmd:CI_Citation>
+                    </gmd:thesaurusName>
+                </gmd:MD_Keywords>
+            </gmd:descriptiveKeywords>
+            <gmd:descriptiveKeywords>
+                <gmd:MD_Keywords>
+                    <gmd:keyword>
+                        <gmx:Anchor xlink:href="http://onto.nerc.ac.uk/CEHMD/topic/7">Environmental survey</gmx:Anchor>
+                    </gmd:keyword>
+                    <gmd:keyword>
+                        <gmx:Anchor xlink:href="http://onto.nerc.ac.uk/CEHMD/topic/16">Water quality</gmx:Anchor>
+                    </gmd:keyword>
+                    <gmd:keyword>
+                        <gmx:Anchor xlink:href="http://onto.nerc.ac.uk/CEHMD/scienceArea/NC">Natural capital</gmx:Anchor>
+                    </gmd:keyword>
+                </gmd:MD_Keywords>
+            </gmd:descriptiveKeywords>
+            <gmd:resourceConstraints>
+                <gmd:MD_LegalConstraints>
+                    <gmd:accessConstraints>
+                        <gmd:MD_RestrictionCode
+                                codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions">otherRestrictions</gmd:MD_RestrictionCode>
+                    </gmd:accessConstraints>
+                    <gmd:otherConstraints>
+                        <gmx:Anchor xlink:href="http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/noLimitations">no limitations</gmx:Anchor>
+                    </gmd:otherConstraints>
+                </gmd:MD_LegalConstraints>
+            </gmd:resourceConstraints>
+            <gmd:resourceConstraints>
+                <gmd:MD_LegalConstraints>
+                    <gmd:useConstraints>
+                        <gmd:MD_RestrictionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions">otherRestrictions</gmd:MD_RestrictionCode>
+                    </gmd:useConstraints>
+                    <gmd:otherConstraints>
+                        <gmx:Anchor xlink:title="Licence terms and conditions apply" xlink:href="https://eidc.ceh.ac.uk/licences/CS/plain">Licence terms and conditions apply</gmx:Anchor>
+                    </gmd:otherConstraints>
+                </gmd:MD_LegalConstraints>
+            </gmd:resourceConstraints>
+            <gmd:resourceConstraints>
+                <gmd:MD_LegalConstraints>
+                    <gmd:useConstraints>
+                        <gmd:MD_RestrictionCode codeList='http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_RestrictionCode' codeListValue='otherRestrictions'>otherRestrictions</gmd:MD_RestrictionCode>
+                    </gmd:useConstraints>
+                    <gmd:otherConstraints>
+                        <gco:CharacterString>If you reuse this data, you should cite: Dunbar, M., Murphy, J., Clarke, R., Davies, C., Scarlett, P. (2016). River Habitat Survey (RHS) data 2007 [Countryside Survey] . NERC Environmental Information Data Centre https://doi.org/10.5285/40da9509-999f-4d61-85fe-59d7b32e7ca6</gco:CharacterString>
+                    </gmd:otherConstraints>
+                </gmd:MD_LegalConstraints>
+            </gmd:resourceConstraints>
+            <gmd:spatialRepresentationType>
+                <gmd:MD_SpatialRepresentationTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_SpatialRepresentationTypeCode" codeListValue="textTable">textTable</gmd:MD_SpatialRepresentationTypeCode>
+            </gmd:spatialRepresentationType>
+            <gmd:language>
+                <LanguageCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://www.loc.gov/standards/iso639-2/php/code_list.php" codeListValue="eng">English</LanguageCode>
+            </gmd:language>
+            <gmd:characterSet>
+                <MD_CharacterSetCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8">utf8</MD_CharacterSetCode>
+            </gmd:characterSet>
+            <gmd:topicCategory>
+                <gmd:MD_TopicCategoryCode>environment</gmd:MD_TopicCategoryCode>
+            </gmd:topicCategory>
+            <gmd:topicCategory>
+                <gmd:MD_TopicCategoryCode>inlandWaters</gmd:MD_TopicCategoryCode>
+            </gmd:topicCategory>
+            <gmd:extent>
+                <gmd:EX_Extent>
+                    <gmd:temporalElement>
+                        <gmd:EX_TemporalExtent>
+                            <gmd:extent>
+                                <gml:TimePeriod gml:id="EIDC798540">
+                                    <gml:beginPosition>2007-05-01</gml:beginPosition>
+                                    <gml:endPosition>2007-11-01</gml:endPosition>
+                                </gml:TimePeriod>
+                            </gmd:extent>
+                        </gmd:EX_TemporalExtent>
+                    </gmd:temporalElement>
+                </gmd:EX_Extent>
+            </gmd:extent>
+            <gmd:extent>
+                <gmd:EX_Extent>
+                    <gmd:geographicElement>
+                        <gmd:EX_GeographicBoundingBox>
+                            <gmd:westBoundLongitude><gco:Decimal>-8.648</gco:Decimal></gmd:westBoundLongitude>
+                            <gmd:eastBoundLongitude><gco:Decimal>1.768</gco:Decimal></gmd:eastBoundLongitude>
+                            <gmd:southBoundLatitude><gco:Decimal>49.864</gco:Decimal></gmd:southBoundLatitude>
+                            <gmd:northBoundLatitude><gco:Decimal>60.861</gco:Decimal></gmd:northBoundLatitude>
+                        </gmd:EX_GeographicBoundingBox>
+                    </gmd:geographicElement>
+                </gmd:EX_Extent>
+            </gmd:extent>
+        </gmd:MD_DataIdentification>
+    </gmd:identificationInfo><gmd:distributionInfo>
+    <gmd:MD_Distribution>
+        <gmd:distributionFormat>
+            <gmd:MD_Format>
+                <gmd:name><gco:CharacterString>Comma-separated values (CSV)</gco:CharacterString></gmd:name>
+                <gmd:version gco:nilReason="unknown"/>
+            </gmd:MD_Format>
+        </gmd:distributionFormat>
+        <gmd:distributor>
+            <gmd:MD_Distributor>
+                <gmd:distributorContact>
+                    <gmd:CI_ResponsibleParty>
+                        <gmd:organisationName><gco:CharacterString>NERC EDS Environmental Information Data Centre</gco:CharacterString></gmd:organisationName>
+                        <gmd:contactInfo>
+                            <gmd:CI_Contact>
+                                <gmd:address>
+                                    <gmd:CI_Address>
+                                        <gmd:electronicMailAddress><gco:CharacterString>info@eidc.ac.uk</gco:CharacterString></gmd:electronicMailAddress>
+                                    </gmd:CI_Address>
+                                </gmd:address>
+                            </gmd:CI_Contact>
+                        </gmd:contactInfo>
+                        <gmd:role>
+                            <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="distributor">distributor</gmd:CI_RoleCode>
+                        </gmd:role>
+                    </gmd:CI_ResponsibleParty>
+                </gmd:distributorContact>
+            </gmd:MD_Distributor>
+        </gmd:distributor>
+        <gmd:transferOptions>
+            <gmd:MD_DigitalTransferOptions>
+                <gmd:onLine>
+                    <gmd:CI_OnlineResource>
+                        <gmd:linkage><gmd:URL>https://data-package.ceh.ac.uk/data/40da9509-999f-4d61-85fe-59d7b32e7ca6</gmd:URL></gmd:linkage>
+                        <gmd:name><gco:CharacterString>Download the data</gco:CharacterString></gmd:name>
+                        <gmd:description><gco:CharacterString>Download a copy of this data</gco:CharacterString></gmd:description>
+                        <gmd:function>
+                            <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="download">download</gmd:CI_OnLineFunctionCode>
+                        </gmd:function>
+                    </gmd:CI_OnlineResource>
+                </gmd:onLine>
+            </gmd:MD_DigitalTransferOptions>
+        </gmd:transferOptions>
+        <gmd:transferOptions>
+            <gmd:MD_DigitalTransferOptions>
+                <gmd:onLine>
+                    <gmd:CI_OnlineResource>
+                        <gmd:linkage><gmd:URL>https://data-package.ceh.ac.uk/sd/40da9509-999f-4d61-85fe-59d7b32e7ca6.zip</gmd:URL></gmd:linkage>
+                        <gmd:name><gco:CharacterString>Supporting information</gco:CharacterString></gmd:name>
+                        <gmd:description><gco:CharacterString>Supporting information available to assist in re-use of this dataset</gco:CharacterString></gmd:description>
+                        <gmd:function>
+                            <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="information">information</gmd:CI_OnLineFunctionCode>
+                        </gmd:function>
+                    </gmd:CI_OnlineResource>
+                </gmd:onLine>
+            </gmd:MD_DigitalTransferOptions>
+        </gmd:transferOptions>
+    </gmd:MD_Distribution>
+</gmd:distributionInfo><gmd:dataQualityInfo>
+    <gmd:DQ_DataQuality>
+        <gmd:scope>
+            <gmd:DQ_Scope>
+                <gmd:level>
+                    <gmd:MD_ScopeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_ScopeCode" codeListValue="dataset">dataset</gmd:MD_ScopeCode>
+                </gmd:level>
+                <gmd:levelDescription>
+                    <gmd:MD_ScopeDescription>
+                        <gmd:other><gco:CharacterString>dataset</gco:CharacterString></gmd:other>
+                    </gmd:MD_ScopeDescription>
+                </gmd:levelDescription>
+            </gmd:DQ_Scope>
+        </gmd:scope>
+        <gmd:report>
+            <gmd:DQ_DomainConsistency>
+                <gmd:result>
+                    <gmd:DQ_ConformanceResult>
+                        <gmd:specification>
+                            <gmd:CI_Citation>
+                                <gmd:title>
+                                    <gco:CharacterString>Commission Regulation (EU) No 1089/2010 of 23 November 2010 implementing Directive 2007/2/EC of the European Parliament and of the Council as regards interoperability of spatial data sets and services</gco:CharacterString>
+                                </gmd:title>
+                                <gmd:date>
+                                    <gmd:CI_Date>
+                                        <gmd:date>
+                                            <gco:Date>2010-12-08</gco:Date>
+                                        </gmd:date>
+                                        <gmd:dateType>
+                                            <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication"/>
+                                        </gmd:dateType>
+                                    </gmd:CI_Date>
+                                </gmd:date>
+                            </gmd:CI_Citation>
+                        </gmd:specification>
+                        <gmd:explanation gco:nilReason="inapplicable"/>
+                        <gmd:pass gco:nilReason="unknown"/>
+                    </gmd:DQ_ConformanceResult>
+                </gmd:result>
+            </gmd:DQ_DomainConsistency>
+        </gmd:report>
+        <gmd:lineage>
+            <gmd:LI_Lineage>
+                <gmd:statement><gco:CharacterString>The data were recorded onto electronic field tablets in the summer of 2007 by professional surveyors. Data were recorded from up to 591 1km squares sited across Britain, selected by random stratified sample. Data are managed by the Centre for Ecology &amp; Hydrology, Lancaster.</gco:CharacterString></gmd:statement>
+            </gmd:LI_Lineage>
+        </gmd:lineage>
+    </gmd:DQ_DataQuality>
+</gmd:dataQualityInfo></gmd:MD_Metadata>

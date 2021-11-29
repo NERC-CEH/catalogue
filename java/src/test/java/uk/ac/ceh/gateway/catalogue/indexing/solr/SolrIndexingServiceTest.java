@@ -52,7 +52,7 @@ class SolrIndexingServiceTest {
     private static final String COLLECTION = "documents";
 
     @InjectMocks
-    private SolrIndexingService<MetadataDocument> service;
+    private SolrIndexingService service;
 
     @Test
     @SneakyThrows

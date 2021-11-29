@@ -42,15 +42,15 @@ public class JenaIndexingServiceTest {
     @Mock BundledReaderService<MetadataDocument> reader;
     @Mock DocumentListingService listingService;
     @Mock DataRepository<CatalogueUser> repo;
-    @Mock IndexGenerator<MetadataDocument,  List<Statement>> indexGenerator;
+    @Mock IndexGenerator<MetadataDocument, List<Statement>> indexGenerator;
     @Mock DocumentIdentifierService documentIdentifierService;
     private Dataset jenaTdb;
-    private JenaIndexingService<MetadataDocument> service;
+    private JenaIndexingService service;
 
     @BeforeEach
     public void init() {
         jenaTdb = TDBFactory.createDataset();
-        service = spy(new JenaIndexingService<>(reader, listingService, repo, indexGenerator, documentIdentifierService, jenaTdb));
+        service = spy(new JenaIndexingService(reader, listingService, repo, indexGenerator, documentIdentifierService, jenaTdb));
     }
 
     @Test

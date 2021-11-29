@@ -9,10 +9,9 @@ import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.components.datastore.DataSubmittedEvent;
+import uk.ac.ceh.gateway.catalogue.document.DocumentListingService;
 import uk.ac.ceh.gateway.catalogue.indexing.solr.SolrIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.document.DocumentListingService;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,7 +22,7 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 public class IndexingFileEventSubscriberTest {
     @Mock
-    private SolrIndexingService<MetadataDocument> service;
+    private SolrIndexingService service;
 
     @Mock
     private DataSubmittedEvent<DataRepository<CatalogueUser>> event;

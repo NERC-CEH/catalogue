@@ -27,7 +27,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles({"elter", "test"})
 @DisplayName("DeimsSiteSearchController")
 @Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
-@WebMvcTest(DeimsSiteSearchController.class)
+@WebMvcTest(
+    controllers=DeimsSiteSearchController.class,
+    properties="spring.freemarker.template-loader-path=file:../templates"
+)
 class DeimsSiteSearchControllerTest {
 
     public static final String SITE_1 = "site1";

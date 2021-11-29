@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import freemarker.template.Configuration;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.jupiter.api.Assertions;
@@ -10,14 +11,22 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import uk.ac.ceh.gateway.catalogue.CatalogueWebTest;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
+import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
+import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.*;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.HubbubService;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadController;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadService;
 
+import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @Slf4j
@@ -77,5 +86,27 @@ class EidcApplicationContextTest {
         assertNotNull(freemarkerConfiguration.getSharedVariable("permission"));
         assertNotNull(freemarkerConfiguration.getSharedVariable("profile"));
         assertNotNull(freemarkerConfiguration.getSharedVariable("serviceAgreementQuality"));
+    }
+
+    @Test
+    @SneakyThrows
+    @DisplayName("DocumentWritingService is configured to write JSON")
+    void documentWritingService() {
+        //given
+        val gemini = new GeminiDocument();
+        gemini.setTitle("Test");
+        gemini.setType("dataset");
+        val outputStream = new ByteArrayOutputStream();
+        val expected = "{\"type\":\"dataset\",\"title\":\"Test\",\"resourceType\":{\"value\":\"dataset\"},\"notGEMINI\":false,\"incomingCitationCount\":0}";
+
+        //when
+        val documentWritingService = applicationContext.getBean(DocumentWritingService.class);
+        assertNotNull(documentWritingService);
+
+        documentWritingService.write(gemini, MediaType.APPLICATION_JSON, outputStream);
+
+        //then
+        val actual = outputStream.toString(StandardCharsets.UTF_8);
+        assertThat(actual, equalTo(expected));
     }
 }

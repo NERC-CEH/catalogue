@@ -38,10 +38,13 @@ public class MessageConverterWritingService implements DocumentWritingService {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public <T> void write(T document, MediaType contentType, OutputStream output) throws IOException, UnknownContentTypeException {
         for(HttpMessageConverter converter: messageConverters) {
+            log.debug("Supported Media Types: {}", converter.getSupportedMediaTypes());
+            log.debug("Media Type requested: {}, for {}", contentType, document.getClass());
             if(converter.canWrite(document.getClass(), contentType)) {
                 converter.write(document, contentType, new HttpOutputMessageWrapper(output));
                 return;
             }
+            log.debug("Cannot write for: {}", contentType);
         }
         throw new UnknownContentTypeException("I don't know how to read " + contentType);
     }

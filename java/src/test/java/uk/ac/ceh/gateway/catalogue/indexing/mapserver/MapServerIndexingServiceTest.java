@@ -42,11 +42,11 @@ public class MapServerIndexingServiceTest {
     @Mock BundledReaderService<MetadataDocument> reader;
     @Mock DocumentListingService listingService;
     @Mock DataRepository<CatalogueUser> repo;
-    @Mock IndexGenerator<GeminiDocument, MapFile> indexGenerator;
+    @Mock IndexGenerator<MetadataDocument, MapFile> indexGenerator;
     @Mock MetadataDocument metadataDocument;
     @Mock MapFile mapFile;
 
-    private MapServerIndexingService<MetadataDocument> service;
+    private MapServerIndexingService service;
 
     @BeforeEach
     public void init() {
