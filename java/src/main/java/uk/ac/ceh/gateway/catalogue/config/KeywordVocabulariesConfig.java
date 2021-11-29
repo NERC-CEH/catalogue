@@ -85,7 +85,7 @@ public class KeywordVocabulariesConfig {
         @Value("${sparql.endpoint}") String sparqlEndpoint
     ) {
         val catalogueIds = List.of("datalabs");
-        val where = "?uri skos:broader+ <http://vocabs.ceh.ac.uk.org/dukems#16> . ?uri skos:prefLabel ?label .";
+        val where = "?uri skos:broader+ <http://vocabs.ceh.ac.uk/dukems#16> . ?uri skos:prefLabel ?label .";
         return new SparqlKeywordVocabulary(
             restTemplate,
             solrClient,
@@ -106,7 +106,7 @@ public class KeywordVocabulariesConfig {
         @Value("${sparql.endpoint}") String sparqlEndpoint
     ) {
         val catalogueIds = List.of("datalabs");
-        val where = "?uri skos:broader+ <http://vocabs.ceh.ac.uk.org/dukems#50> . ?uri skos:prefLabel ?label .";
+        val where = "?uri skos:broader+ <http://vocabs.ceh.ac.uk/dukems#50> . ?uri skos:prefLabel ?label .";
         return new SparqlKeywordVocabulary(
             restTemplate,
             solrClient,
