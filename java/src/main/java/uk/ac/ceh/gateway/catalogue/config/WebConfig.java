@@ -162,6 +162,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
         // Before standard Spring message converters
         converters.addAll(0, beforeStandardMessageConverters);
+        // Cannot add to beforeStandardMessageConverters as need to call 'httpClient()' once bean created
         converters.add(0, new TransparentProxyMessageConverter(httpClient()));
         // After standard Spring message converters
         converters.addAll(afterStandardMessageConverters);
