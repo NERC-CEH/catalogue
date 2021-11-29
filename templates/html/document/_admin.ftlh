@@ -1,7 +1,8 @@
+<#import "../../functions.ftlh" as func>
 <#assign
   isDraft = metadata.state == 'draft'
   isEidcCatalogue = metadata.catalogue == "eidc"
-  isEidcCustodian = func.filter(custodians, "organisationName", "NERC EDS Environmental Information Data Centre")?size gt 0
+  isEidcCustodian = func.filter(custodians![], "organisationName", "NERC EDS Environmental Information Data Centre")?size gt 0
   isEidcWithResourceType=isEidcCatalogue && (resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'application')
   isNotLinkDocument = metadata.documentType != 'LINK_DOCUMENT'
   isRestrictedFieldsEditor = permission.userCanEditRestrictedFields(metadata.catalogue)
