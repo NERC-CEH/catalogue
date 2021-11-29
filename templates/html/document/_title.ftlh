@@ -61,7 +61,7 @@
     <#include "_source.ftlh">
   </#if>
 
-  <#if resourceType.value == 'signpost' >
+  <#if resourceType?? && resourceType.value == 'signpost' >
     <div id="signpost" class="alert alert-warning" role="alert">
       <i class="fas fa-info-circle"></i>
       <#include "_signpost.ftlh">
