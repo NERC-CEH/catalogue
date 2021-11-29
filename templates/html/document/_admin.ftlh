@@ -11,8 +11,8 @@
 >
 
 <#assign hasCitation = 0>
-<#if citation?? & citation?has_content>
-  <#if citation.doi?? & citation.doi?matches("^10.5285/[\\w-]+$")>
+<#if citation?? && citation?has_content>
+  <#if citation.doi?? && citation.doi?matches("^10.5285/[\\w-]+$")>
     <#assign hasCitation = 1>
   </#if>
 </#if>

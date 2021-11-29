@@ -21,7 +21,7 @@ import static uk.ac.ceh.gateway.catalogue.indexing.jena.Ontology.*;
  * A simple lookup service powered by the jena linking database. This just looks
  * up any literals associated to a given uri
  */
-@SuppressWarnings({"HttpUrlsUsage", "unused"})
+@SuppressWarnings({"unused"})
 @Slf4j
 @ToString
 @Service
