@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
 import freemarker.template.Configuration;
 import lombok.SneakyThrows;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.jupiter.api.BeforeAll;
@@ -15,6 +16,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.hateoas.Link;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
@@ -23,7 +25,9 @@ import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
@@ -50,6 +54,7 @@ class ServiceAgreementControllerTest {
 
     private static ServiceAgreement serviceAgreement;
     private static final String ID = "test";
+    private static final String VERSION = "version";
 
     @Autowired private MockMvc mvc;
     @Autowired private Configuration configuration;
@@ -396,6 +401,67 @@ class ServiceAgreementControllerTest {
         verifyNoInteractions(serviceAgreementService);
     }
 
+
+    @Test
+    @SneakyThrows
+    void getHistory() {
+        // given
+        givenUserCanEdit();
+        givenMetadataRecordExists();
+        givenHistory();
+
+        val expectedResponse = """
+            {
+            "historyOf":"test",
+            "revisions":[
+            {
+            "version":"2",
+            "href":"test/service-agreement/test/version/revision2"},
+            {
+            "version":"1","href":"test/service-agreement/test/version/revision1"
+            }
+            ]}
+            """;
+
+        // when
+        mvc.perform(get("/service-agreement/{id}/history", ID)
+                        .accept(APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(APPLICATION_JSON))
+                .andExpect(content().json(expectedResponse));
+    }
+
+
+    @Test
+    @SneakyThrows
+    void getPreviousServiceAgreement() {
+        // given
+        givenUserCanEdit();
+        givenMetadataRecordExists();
+        givenPreviousServiceAgreement();
+        givenServiceAgreementModel();
+
+        val expectedResponse = """
+            {
+                "id": "test",
+                "title": "Test Service Agreement",
+                "_links": {
+                    "self": {
+                        "href": "https://catalogue/service-agreement/test"
+                    }
+                }
+            }
+            """;
+
+        // when
+        mvc.perform(get("/service-agreement/{id}/version/{version}", ID, VERSION)
+                        .accept(HAL_JSON)
+                        .header("Forwarded", "proto=https;host=catalogue"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(HAL_JSON))
+                .andExpect(content().json(expectedResponse));
+    }
+
     private void givenServiceAgreementModel() {
         val self = Link.of("https://catalogue/service-agreement/test", "self");
         val model = new ServiceAgreementModel(serviceAgreement);
@@ -466,6 +532,11 @@ class ServiceAgreementControllerTest {
             .willReturn(serviceAgreement);
     }
 
+    private void givenPreviousServiceAgreement() {
+        given(serviceAgreementService.getPreviousVersion(ID, VERSION))
+                .willReturn(serviceAgreement);
+    }
+
     private void givenMetadataRecordExists() {
         given(serviceAgreementService.metadataRecordExists(ID))
             .willReturn(true);
@@ -474,5 +545,38 @@ class ServiceAgreementControllerTest {
     private void givenMedataRecordDoesNotExist() {
         given(serviceAgreementService.metadataRecordExists(ID))
             .willReturn(false);
+    }
+    private void givenHistory() {
+        List<DataRevision<CatalogueUser>> revisions = new ArrayList<>();
+        revisions.add(new TestRevision("revision2"));
+        revisions.add(new TestRevision("revision1"));
+        History history = new History(ID, revisions, "test");
+        given(serviceAgreementService.getHistory(ID))
+                .willReturn(history);
+    }
+
+    @Value
+    public static class TestRevision implements DataRevision<CatalogueUser> {
+        String revision;
+
+        @Override
+        public String getRevisionID() {
+            return revision;
+        }
+
+        @Override
+        public String getMessage() {
+            return null;
+        }
+
+        @Override
+        public String getShortMessage() {
+            return null;
+        }
+
+        @Override
+        public CatalogueUser getAuthor() {
+            return null;
+        }
     }
 }

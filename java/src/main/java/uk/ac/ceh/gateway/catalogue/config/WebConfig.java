@@ -46,6 +46,7 @@ import uk.ac.ceh.gateway.catalogue.osdp.*;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
+import uk.ac.ceh.gateway.catalogue.serviceagreement.History;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreementModel;
 import uk.ac.ceh.gateway.catalogue.sparql.SparqlResponse;
 import uk.ac.ceh.gateway.catalogue.ukems.UkemsDocument;
@@ -81,6 +82,7 @@ public class WebConfig implements WebMvcConfigurer {
         val errorResponse = new Object2TemplatedMessageConverter<>(ErrorResponse.class, freemarkerConfiguration);
         val facility = new Object2TemplatedMessageConverter<>(Facility.class, freemarkerConfiguration);
         val gemini = new Object2TemplatedMessageConverter<>(GeminiDocument.class, freemarkerConfiguration);
+        val history = new Object2TemplatedMessageConverter<>(History.class, freemarkerConfiguration);
         val link = new Object2TemplatedMessageConverter<>(LinkDocument.class, freemarkerConfiguration);
         val maintenanceResponse = new Object2TemplatedMessageConverter<>(MaintenanceResponse.class, freemarkerConfiguration);
         val model = new Object2TemplatedMessageConverter<>(Model.class, freemarkerConfiguration);
@@ -125,6 +127,7 @@ public class WebConfig implements WebMvcConfigurer {
             erammpModel,
             errorResponse,
             facility,
+            history,
             link,
             maintenanceResponse,
             model,
@@ -159,6 +162,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
         // Before standard Spring message converters
         converters.addAll(0, beforeStandardMessageConverters);
+        // Cannot add to beforeStandardMessageConverters as need to call 'httpClient()' once bean created
         converters.add(0, new TransparentProxyMessageConverter(httpClient()));
         // After standard Spring message converters
         converters.addAll(afterStandardMessageConverters);
@@ -170,12 +174,12 @@ public class WebConfig implements WebMvcConfigurer {
             beforeStandardMessageConverters.stream(),
             afterStandardMessageConverters.stream()
         ).collect(Collectors.toList());
-        allMessageConverters.addAll(allMessageConverters);
-        return new MessageConverterWritingService(messageConverters);
+        allMessageConverters.addAll(messageConverters);
+        return new MessageConverterWritingService(allMessageConverters);
     }
 
     @Bean
-    public  FilterRegistrationBean<WmsFormatParameterFilter> wmsFormatParameterFilter() {
+    public FilterRegistrationBean<WmsFormatParameterFilter> wmsFormatParameterFilter() {
         FilterRegistrationBean<WmsFormatParameterFilter> registrationBean
             = new FilterRegistrationBean<>();
         registrationBean.setFilter(new WmsFormatParameterFilter());

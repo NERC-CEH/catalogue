@@ -125,7 +125,7 @@ public class ServiceAgreementController {
             log.info("PUBLISHING SERVICE AGREEMENT {}", id);
             serviceAgreementService.publishServiceAgreement(user, id);
             return new RedirectView("/service-agreement/" + id);
-        }else{
+        } else {
             throw new ResourceNotFoundException("Metadata record does not exist");
         }
     }
@@ -139,6 +139,34 @@ public class ServiceAgreementController {
             log.info("GIVING DEPOSITOR EDIT PERMISSION FOR SERVICE AGREEMENT {}", id);
             serviceAgreementService.giveDepositorEditPermission(user, id);
             return new RedirectView("/service-agreement/" + id);
+        } else {
+            throw new ResourceNotFoundException("Metadata record does not exist");
+        }
+    }
+
+    @PreAuthorize("@permission.userCanEdit(#id)")
+    @GetMapping("{id}/history")
+    public History getHistory(@PathVariable("id") String id) {
+        if (serviceAgreementService.metadataRecordExists(id)) {
+            log.info("GETTING SERVICE AGREEMENT {} HISTORY", id);
+
+            return serviceAgreementService.getHistory(id);
+
+        } else {
+            throw new ResourceNotFoundException("Metadata record does not exist");
+        }
+    }
+
+    @PreAuthorize("@permission.userCanEdit(#id)")
+    @GetMapping("{id}/version/{version}")
+    public ServiceAgreementModel getPreviousVersion(
+        @PathVariable("id") String id,
+        @PathVariable String version
+    ) {
+        if (serviceAgreementService.metadataRecordExists(id)) {
+            log.info("GETTING SERVICE AGREEMENT {} HISTORY", id);
+            val serviceAgreement = serviceAgreementService.getPreviousVersion(id, version);
+            return serviceAgreementModelAssembler.toModel(serviceAgreement);
         }else{
             throw new ResourceNotFoundException("Metadata record does not exist");
         }
