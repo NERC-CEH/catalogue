@@ -4,7 +4,7 @@
 
 <@skeleton.master "Service Agreement">
 
-    <div id="metadata">
+    <div id="serviceAgreement" class="serviceAgreement">
         <div class="container" role="main">
             <#if permission.userCanEdit(id)>
                 <div class="row hidden-print" id="adminPanel">
@@ -31,55 +31,34 @@
                 <#include "_serviceAgreementQualityAlert.ftlh">
             </#if>
 
-            <h1>Environmental Information Data Centre - Service Agreement</h1>
-            <p><b>IMPORTANT</b> Once a DOI has been issued, these details cannot be changed</p>
-            <p>For more information/guidance about this document see <a href="https://eidc.ac.uk/support/agreement">https://eidc.ac.uk/support/agreement</a>
-            </p>
-            <h2>The Agreement</h2>
-            <p>As a depositor you must consent to this service agreement which establishes the terms and conditions of
-                use of your data. This document sets out your rights and responsibilities as depositor and ours as the
-                data distributor.
-                This agreement authorises the EIDC to preserve and to distribute the data under the terms specified in
-                this document. To do so, the EIDC will store the data and, where necessary, duplicate and transform
-                copies.</p>
-            <h2>Our responsibilities:</h2>
-            <ul>
-                <li>We will take every care to preserve the integrity of the data and protect it from loss or damage
-                </li>
-                <li>We will make the data publicly available, subject to any conditions specified in this Service
-                    Agreement.
-                </li>
-                <li>Unless otherwise requested, we will issue a Digital Object Identifier (DOI) to facilitate the proper
-                    citation of the dataset.
-                </li>
-                <li>We will ask users of the data to agree to an end user licence.</li>
-                <li>We require users of the data to acknowledge and cite sources when re-using data.</li>
-                <li>We will only process personal information in connection with long-term archiving services, in
-                    accordance with our <a href="https://eidc.ac.uk/policies/privacy">Privacy Notice</a></li>
-            </ul>
-            <h3>Your responsibilities:</h3>
-            <ul>
-                <li>You provide assurances that you are entitled to deposit the data resource in the EIDC and that the
-                    agreement of all parties who may have an interest in the resource has been obtained.
-                </li>
-                <li>You confirm that the resource is not already available elsewhere.</li>
-                <li>You agree to supply sufficient supporting information (metadata) to enable discovery, management and
-                    reuse of the data.
-                </li>
-                <li>You ensure that in the case of research data with human subjects that consents collected are
-                    ethically and legally appropriate and sufficient to allow deposit of the resource.
-                </li>
-                <li>You agree to notify the EIDC promptly of any copyright, confidentiality, privacy, data protection,
-                    defamation or similar issues pertaining to the data.
-                </li>
-                <li>You guarantee that nothing in the resource or supporting information contravenes the UK data
-                    protection laws or any other UK law (e.g., the Wildlife and Countryside Act 1981).
-                </li>
-                <li>You agree to notify the EIDC if it is subsequently found that the data resource is no longer fit for
-                    purpose (e.g. errors are found in the dataset).
-                </li>
-            </ul>
-            <h2>${title}</h2>
+            <h1>EIDC Deposit Agreement for ${title}</h1>
+            
+            <div>
+                <h2>The Agreement</h2>
+                <p>As a depositor you must consent to this service agreement which establishes the terms and conditions of use of your data. This document sets out your rights and responsibilities as depositor and ours as the data distributor. This agreement authorises the EIDC to preserve and to distribute the data under the terms specified in this document. To do so, the EIDC will store the data and, where necessary, duplicate and transform copies.</p>
+                <h3>Our responsibilities:</h3>
+                <ul>
+                    <li>We will take every care to preserve the integrity of the data and protect it from loss or damage.</li>
+                    <li>We will make the data publicly available, subject to any conditions specified in this Agreement.</li>
+                    <li>Unless otherwise requested, we will issue a Digital Object Identifier (DOI) to facilitate the proper citation of the dataset. </li>
+                    <li>We will ask users of the data to agree to an end user licence.</li>
+                    <li>We require users of the data to acknowledge and cite sources when re-using data.</li>
+                    <li>We will only process personal information in connection with long-term archiving services, in accordance with our <a href="https://eidc.ac.uk/policies/privacy">Privacy Notice</a></li>
+                </ul>
+                <h3>Your responsibilities:</h3>
+                <ul>
+                    <li>You provide assurances that you are entitled to deposit the data resource in the EIDC and that the agreement of all parties who may have an interest in the resource has been obtained.</li>
+                    <li>You confirm that the resource is not already available elsewhere.</li>
+                    <li>You agree to supply sufficient supporting information (metadata) to enable discovery, management and reuse of the data. </li>
+                    <li>You ensure that in the case of research data with human subjects that consents collected are ethically and legally appropriate and sufficient to allow deposit of the resource.</li>
+                    <li>You agree to notify the EIDC promptly of any copyright, confidentiality, privacy, data protection, defamation or similar issues pertaining to the data.</li>
+                    <li>You guarantee that nothing in the resource or supporting information contravenes the UK data protection laws or any other UK law (e.g., the Wildlife and Countryside Act 1981).</li>
+                    <li>You agree to notify the EIDC if it is subsequently found that the data resource is no longer fit forpurpose (e.g. if errors are found in the dataset).</li>
+                </ul>
+            </div>
+
+            <div>
+            
             <dl class="dl-horizontal">
                 <@displayData "Deposit reference" depositReference/>
                 <@displayData "Depositor name" depositorName/>
@@ -87,32 +66,64 @@
                 <@displayData "For the EIDC name" eidcName/>
                 <@displayData "For the EIDC contact details" eidcContactDetails/>
             </dl>
-            <h3>Data identification and citation</h3>
-            <@displayAuthors/>
-            <h3>Policies & legislation</h3>
-            <dl class="dl-horizontal">
-                <@displayData "Other Policies or Legislation" otherPoliciesOrLegislation/>
-            </dl>
-            <h3>The data</h3>
-            <@displayFiles/>
-            <@displayData "Transfer method" transferMethod/>
-            <@displayRelatedDataHoldings/>
-            <@displayDataCategory/>
-            <h3>Supporting documentation</h3>
-            <@supportingDocuments/>
-            <@displayData "Content Included" contentIncluded/>
-            <h3>Data retention</h3>
-            <#if policyExceptions??> <p>Policy Exceptions: ${policyExceptions}</p> </#if>
-            <@displayData "Policy Exceptions" policyExceptions/>
-            <h3>Availability and access</h3>
-            <dl class="dl-horizontal">
-                <@displayData "Availability" availability/>
-                <@displayData "Specific Requirements" specificRequirements/>
-                <@displayData "Other services required" otherServicesRequired/>
-            </dl>
-            <h3>Licensing and IPR</h3>
-            <@displayEndUserLicence/>
-            <@displayOwnerOfIpr/>
+            </div>
+
+            <div>
+                <h2>Data identification and citation</h2>
+                <h2>${title}</h2>
+                <@displayData "Title" title/>
+
+                <div class="authors">
+                    <h3>Authors</h3>
+                    <#if authors?has_content && authors?size gt 0 >
+                        <#list authors>
+                            <div class="authors--list">
+                            <#items as author>
+                                <div><#if author.individualName?has_content >${author.individualName}<#else><span class="error">Author's name missing</span></#if></div>
+                                <div><#if author.organisationName?has_content >${author.organisationName}<#else><span class="error">Affiliation missing</span></#if></div>
+                                <div><#if author.email?has_content>${author.email}<#else><span class="error">Email missing</span></#if></div>
+                                <div><#if author.nameIdentifier?has_content >${author.nameIdentifier}<#else>&nbsp;</#if></div>
+                            </#items>
+                            </div>
+                        </#list>
+                    <#else>
+                    <div class="error">NO AUTHORS LISTED</div>
+                    </#if>
+                </div>
+
+                <h3>Policies & legislation</h3>
+                <dl class="dl-horizontal">
+                    <@displayData "Other Policies or Legislation" otherPoliciesOrLegislation/>
+                </dl>
+            </div>
+
+            <div>
+                <h2>The data</h2>
+                <@displayFiles/>
+                <@displayData "Transfer method" transferMethod/>
+                <@displayRelatedDataHoldings/>
+                <@displayDataCategory/>
+                <h3>Supporting documentation</h3>
+                <@supportingDocuments/>
+                <@displayData "Content Included" contentIncluded/>
+                <h3>Data retention</h3>
+                <#if policyExceptions??> <p>Policy Exceptions: ${policyExceptions}</p> </#if>
+                <@displayData "Policy Exceptions" policyExceptions/>
+                <h3>Availability and access</h3>
+                <dl class="dl-horizontal">
+                    <@displayData "Availability" availability/>
+                    <@displayData "Specific Requirements" specificRequirements/>
+                    <@displayData "Other services required" otherServicesRequired/>
+                </dl>
+            </div>
+
+            <div>
+                <h2>Licensing and IPR</h2>
+                <@displayEndUserLicence/>
+                <@displayOwnerOfIpr/>
+            </div>
+        
+            
             <@displayData "Use constraints" useConstraints/>
             <h3>Superseding existing data (if applicable)</h3>
             <@displayData "Metadata Id" supersededMetadataId/>
@@ -131,49 +142,15 @@
     </div>
 </@skeleton.master>
 
-<#macro displayData title object=''>
-    <#if object!=''> <dt>${title}</dt> <dd>${object}</dd> </#if>
+<#macro displayData key value=''>
+    <#if value!=''> <dt>${key}</dt> <dd>${value}</dd> </#if>
 </#macro>
 
-<#macro displayAuthors>
-    <#if authors?has_content && authors?size gt 0 >
-        <div id="document-authors">
-            <p id="authors"><b>Author<#if authors?size gt 1>s</#if></b></p>
-
-            <#list authors>
-                <#assign ownersMaxSize = 30 >
-                <#assign moreOwners = authors?size-ownersMaxSize >
-                <#items as author>
-                    <#assign rpClass="responsibleParty">
-                    <#if author?counter gt ownersMaxSize>
-                        <#assign rpClass="responsibleParty responsiblePartyCollapse collapse">
-                    </#if>
-
-                    <div class="${rpClass}">
-                        <@func.displayContact author false false true />
-                    </div>
-
-                </#items>
-
-                <#if authors?size gt ownersMaxSize >
-                    <p>
-                        <small>
-                            <a href=".responsiblePartyCollapse" class="moreAuthors collapsed" data-toggle="collapse"
-                               aria-controls="responsiblePartyCollapse" area-expanded="false">
-                                <span>${moreOwners} more authors. </span>Show
-                            </a>
-                        </small>
-                    </p>
-                </#if>
-            </#list>
-        </div>
-    </#if>
-</#macro>
 
 <#macro displayFiles>
     <#if files?has_content && files?size gt 0 >
-        <div id="document-files">
-            <p id="files"><b>File<#if files?size gt 1>s</#if></b></p>
+        <div>
+            <h3>File<#if files?size gt 1>s</#if></h3>
 
             <#list files>
                 <#assign filesMaxSize = 30 >
