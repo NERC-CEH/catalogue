@@ -19,7 +19,7 @@
                         <#list getModelLinks() as link>
                             <div class="btn-group btn-group-sm">
                                 <#if link.rel == 'history'>
-                                    <a href="${link.href}" class="btn btn-default btn-wide">${link.title}></a>
+                                    <a href="${link.href}" class="btn btn-default btn-wide">${link.title}</a>
                                 <#else>
                                     <form action="${link.href}" method="post">
                                         <input type="submit" value="${link.title}" class="btn btn-default btn-wide">
