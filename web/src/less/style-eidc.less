@@ -1,10 +1,105 @@
-@import "style-ceh";
+// Import our own style sheets
+@import "theme";
+@import "../vendor/font-awesome-5/less/fontawesome";
+@import "../vendor/font-awesome-5/less/regular";
+@import "../vendor/font-awesome-5/less/solid";
+@import "message-panel";
+@import "search";
+@import "mapviewer";
+@import "metadata";
+@import "editor";
+@import "validation";
+@import "documents-upload";
+@import "upload-simple";
 
-@brand-success: #337085;
-@gray-lighter: @brand-success;
+@fa-font-path: "../vendor/font-awesome-5/webfonts";
+
+@eidc-blue: hsl(195, 45%, 36%);
+@brand-success: @eidc-blue;
+@gray-lighter: @eidc-blue;
 @header-text: #fff;
 @link-hover-color: #e75f22;
 @panel-default-text: @header-text;
+@footer-height: 3.25em;
+
+@navbar-height: 74px;
+@navbar-default-bg: white;
+@navbar-margin-bottom: @line-height-computed;
+@navbar-default-border: @eidc-blue;
+@navbar-border-width: 8px;
+@navbar-border-radius: 0;
+@navbar-default-color: @gray-light;
+@navbar-default-border: @eidc-blue;
+@navbar-default-link-color: @eidc-blue;
+@navbar-default-link-hover-color: @link-hover-color;
+@navbar-default-link-hover-bg: darken(@navbar-default-bg, 5%);
+@navbar-default-link-active-color: @navbar-default-link-hover-color;
+@navbar-default-link-active-bg: darken(@navbar-default-bg, 5%);
+@navbar-default-link-disabled-color: #444;
+@navbar-default-link-disabled-bg: transparent;
+@navbar-default-brand-color: @navbar-default-link-color;
+@navbar-default-brand-hover-color: #fff;
+@navbar-default-brand-hover-bg: transparent;
+@navbar-default-toggle-hover-bg: #333;
+@navbar-default-toggle-icon-bar-bg: #fff;
+@navbar-default-toggle-border-color: #333;
+
+html {
+  overflow-y: scroll;
+  min-height: 100%;
+  position: relative;
+}
+
+body {
+  margin-top: @navbar-height + (@navbar-border-width*2);
+  margin-bottom: @footer-height;
+}
+
+.navbar {
+  border-bottom-width: @navbar-border-width;
+  a {
+    font-weight: bolder;
+  }
+  &-toggle {
+    background-color: black;
+    color: white;
+  }
+}
+
+a.navbar-brand {
+  min-height: 70px;
+  min-width: 173px;
+  margin: 3px;
+  background-image: url("https://eidc.ceh.ac.uk/images/sitelogo.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  img {
+    display: none;
+  }
+}
+
+.adminToolbar {
+  margin-top: 1em;
+}
+
+.input-group-addon {
+  background-color: #eee;
+}
+
+.modal-open {
+  padding: 0 !important;
+}
+
+.cy {
+  height: 550px;
+  width: 100%;
+}
+
+.fa-spin-2x {
+  -webkit-animation: fa-spin 1s infinite linear;
+  animation: fa-spin 1s infinite linear;
+}
 
 .text-red {
   color: #ee0000;
@@ -34,12 +129,12 @@ h1#document-title {
       i {
         margin-right: 0.35em;
         font-size: 1.85em;
-        color: @brand-success;
+        color: @eidc-blue;
       }
 
       span {
         font-size: 1.85em;
-        color: @brand-success;
+        color: @eidc-blue;
       }
     }
   }
@@ -54,7 +149,7 @@ h1#document-title {
 
     div {
       &:hover {
-        background-color: @brand-success;
+        background-color: @eidc-blue;
       }
     }
   }
@@ -169,3 +264,5 @@ a#atlwdg-trigger {
     display: none;
   }
 }
+
+@import "style-serviceagreement";

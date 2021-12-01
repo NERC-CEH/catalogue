@@ -302,7 +302,7 @@ define [
             window.location.href = "/service-agreement/#{id}"
           error: ->
             new ServiceAgreementEditorView
-              el: '#serviceAgreement'
+              el: '#metadata'
               model: new ServiceAgreementEditorMetadata(data, options)
 
   ###

@@ -34,7 +34,6 @@ define [
   'cs!views/service-agreement/EndUserLicenceView'
 ], (Backbone, _, EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, AccessLimitationView, AccessLimitation, InspireTheme, CategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, OnlineResourceView, OnlineResource, ResourceConstraintView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, MapDataSource, RelatedRecordView, ReadOnlyView, ParentStringView, BoundingBox, BoundingBoxView, TextOnlyView, AuthorView, FileView, EndUserLicenceView) -> EditorView.extend
 
-
   initialize: ->
     @catalogue = $('html').data('catalogue')
     @delegate "click #exitWithoutSaving": "exit"
@@ -44,23 +43,10 @@ define [
       label: 'General'
       title:  ''
       views: [
-
-        new TextOnlyView
-          model: @model
-          text: """<p>Provide a title that best describes that data resource. Include references to the subject, spatial and temporal aspects of the data resource.</p>
-                <p>Only the leading letter and proper nouns of the title should be capitalised.  If it's necessary to include acronyms in the title, then include both the acronym (in parentheses) and the phrase/word from which it was formed. Acronyms should not include full-stops between each letter.</p>
-                <p>If there are multiple titles or translations of titles (e.g. in Welsh), these should be added as alternative titles.</p>
-                """
-
         new InputView
           model: @model
           modelAttribute: 'depositReference'
           label: 'Deposit Reference'
-
-        new InputView
-          model: @model
-          modelAttribute: 'title'
-          label: 'Title'
 
         new InputView
           model: @model
@@ -75,36 +61,17 @@ define [
         new InputView
           model: @model
           modelAttribute: 'eidcName'
-          label: 'For the EIDC: Name'
+          label: 'EIDC contact name'
 
         new ReadOnlyView
           model: @model
           modelAttribute: 'eidcContactDetails'
           label: 'For the EIDC: contact details'
 
-      ]
-    ,
-      label: 'Data identification and citation'
-      title: 'Data identification and citation'
-      views: [
-
         new ReadOnlyView
           model: @model
           modelAttribute: 'id'
           label: 'Data identifier'
-
-        new ParentView
-          model: @model
-          ModelType: Contact
-          modelAttribute: 'authors'
-          label: 'Authors'
-          ObjectInputView: AuthorView
-          multiline: true
-      ]
-    ,
-      label: 'Policies & Legislation'
-      title: 'Policies & Legislation'
-      views: [
 
         new TextOnlyView
           model: @model
@@ -113,6 +80,7 @@ define [
                    <p>Data and supporting documentation should not contain names, addresses or other personal information relating to 'identifiable natural persons'.  Discovery metadata (the catalogue record) may contain names and contact details of the authors of this data (<a href="https://eidc.ac.uk/policies/retentionPersonalData">see our policy on retention and use of personal data</a>).</p>
                    <p>If other policies/legislation applies (e.g. <a href="https://inspire.ec.europa.eu/">INSPIRE</a>), please specify below.</p>
                    """
+        
         new TextareaView
           model: @model
           modelAttribute: 'otherPoliciesOrLegislation'
@@ -121,7 +89,41 @@ define [
 
         new TextOnlyView
           model: @model
-          text: """<p>The depositor may also wish to provide an image to accompany the dataset which may subsequently be used to advertise its availability on social media.  If no image is provided, the EIDC may source a suitable picture.</p>"""
+          text: """
+          <p>Data given a DOI will be kept in perpetuity. If the data not given a DOI, the period for which the EIDC guarantees to curate data is ten years, after which it will be periodically reviewed and may be discarded.</p>
+          <p>Please note below any exceptions to this policy.</p>
+          """
+
+        new TextareaView
+          model: @model
+          modelAttribute: 'policyExceptions'
+          label: 'Data retention exception'
+          rows: 3
+      ]
+    ,
+
+      label: 'Data identification and citation'
+      title: 'Data identification and citation'
+      views: [
+        new InputView
+          model: @model
+          modelAttribute: 'title'
+          label: 'Title'
+
+        new TextOnlyView
+          model: @model
+          text: """<p>Provide a title that best describes that data resource. Include references to the subject, spatial and temporal aspects of the data resource.</p>
+                <p>Only the leading letter and proper nouns of the title should be capitalised.  If it's necessary to include acronyms in the title, then include both the acronym (in parentheses) and the phrase/word from which it was formed. Acronyms should not include full-stops between each letter.</p>
+                <p>If there are multiple titles or translations of titles (e.g. in Welsh), these should be added as alternative titles.</p>
+                """
+
+        new ParentView
+          model: @model
+          ModelType: Contact
+          modelAttribute: 'authors'
+          label: 'Authors'
+          ObjectInputView: AuthorView
+          multiline: true
       ]
     ,
       label: 'The Data'
@@ -177,29 +179,6 @@ define [
           modelAttribute: 'contentIncluded'
           label: 'Content Included'
           rows: 15
-
-        new TextOnlyView
-          model: @model
-          text: """<p>The depositor may also wish to provide an image to accompany the dataset which may subsequently be used to advertise its availability on social media.  If no image is provided, the EIDC may source a suitable picture."""
-
-      ]
-    ,
-      label: 'Data retention'
-      title: 'Data retention'
-      views: [
-
-        new TextOnlyView
-          model: @model
-          text: """
-          <h2>Data given a DOI will be kept in perpetuity.</h2>
-          <p>For data not given a DOI, the period for which the EIDC guarantees to curate data is ten years, after which it will be periodically reviewed and may be discarded. Please note below any exceptions to this policy.</p>
-          """
-
-        new TextareaView
-          model: @model
-          modelAttribute: 'policyExceptions'
-          label: 'Policy Exceptions'
-          rows: 15
       ]
     ,
       label: 'Availability and access'
@@ -246,32 +225,14 @@ define [
         new SingleObjectView
           model: @model
           modelAttribute: 'endUserLicence'
-          label: 'End user license'
+          label: 'License'
           ObjectInputView: EndUserLicenceView
-          helpText: """
-                    <p>Describe any restrictions and legal prerequisites placed on the <strong>use</strong> of a data resource once it has been accessed. For example:</p>
-                    <ul class="list-unstyled">
-                      <li>"Licence conditions apply"</li>
-                      <li>"If you reuse this data you must cite …"</li>
-                      <li>"Do not use for navigation purposes"</li>
-                    </ul>
-                    <p>Where possible include a link to a document describing the terms and conditions.</p>
-                    <p>You MUST enter something even if there are no constraints. In the rare case that there are none, enter "no conditions apply".</p>
-                    """
 
         new TextareaView
           model: @model
           modelAttribute: 'useConstraints'
           label: 'Additional Use Constraints'
-          rows: 15
-
-        new TextOnlyView
-          model: @model
-          text: """
-                <p>The names of Owner should be in the format <code>Surname, First Initial. Second Initial.</code> For example <i>Brown, A.B.</i></p>
-                <p>Role and organisation name are mandatory.</p>
-                <p>The preferred identifier for individuals is an ORCiD.  You must enter the identifier as a <i>fully qualified</i> ID (e.g.  <b>https://orcid.org/1234-5678-0123-987X</b> rather than <b>1234-5678-0123-987X</b>).</p>
-                """
+          rows: 5
 
         new ParentView
           model: @model
@@ -290,7 +251,7 @@ define [
         new TextOnlyView
           model: @model
           text: """
-          <p>If the data is intended to supersede an existing dataset held by the EIDC, the depositor should explain why it is to be replaced, including details of any errors found.</p>
+          <p>If the data is superseding an existing dataset held by the EIDC, please explain why it is to be replaced.  Include details of any errors found.</p>
           """
 
         new InputView
@@ -370,13 +331,6 @@ define [
                     <p>Keywords (preferably taken from a controlled vocabulary) categorising and describing the data resource.</p>
                     <p>Good quality keywords help to improve the efficiency of search, making it easier to find relevant records.</p>
                     """
-
-        new TextOnlyView
-          model: @model
-          Text: """
-                <p>A bounding box representing the limits of the data resource's study area.</p>
-                <p>If you do not wish to reveal the exact location publicly (for example, if locations are sensitive) it is recommended that you generalise the location.</p>
-                """
 
         new PredefinedParentView
           model: @model

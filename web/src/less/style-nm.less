@@ -27,7 +27,7 @@
 @navbar-border-radius: 0;
 @navbar-default-color: @gray-light;
 @navbar-default-border: @nerc-blue;
-@navbar-default-link-color: black;
+@navbar-default-link-color: @nerc-blue;
 @navbar-default-link-hover-color: @nerc-blue;
 @navbar-default-link-hover-bg: darken(@navbar-default-bg, 5%);
 @navbar-default-link-active-color: @navbar-default-link-hover-color;
@@ -62,6 +62,24 @@ body {
   &-toggle {
     background-color: black;
     color: white;
+  }
+  a {
+    font-weight: bolder;
+
+    &::after {
+      @linethickness:2px;
+      content: " ";
+      display: block;
+      background-color: @navbar-default-link-hover-color;
+      width: 0;
+      height: @linethickness;
+      margin: @linethickness 0 -(@linethickness) 0;
+    }
+    &:hover {
+      &::after {
+        width: 100%;
+      }
+    }
   }
 }
 
@@ -210,8 +228,8 @@ a.navbar-brand {
           grid-template-columns: 200px auto;
         }
         div:nth-of-type(odd) {
-            font-weight: bolder;
-            text-align: right;
+          font-weight: bolder;
+          text-align: right;
         }
       }
     }
