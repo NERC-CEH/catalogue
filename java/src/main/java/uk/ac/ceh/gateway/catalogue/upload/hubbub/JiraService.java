@@ -47,25 +47,7 @@ public class JiraService {
         log.info("Creating {}", this);
     }
 
-    public void comment (String key, String comment) {
-        log.info("Commenting on {}: {}", key, comment);
-        val url = UriComponentsBuilder
-            .fromHttpUrl(jiraEndpoint)
-            .path("issue/{key}")
-            .buildAndExpand(key)
-            .toUri();
-        val requestBody = String.format("{\"update\":{\"comment\":[{\"add\":{\"body\":\"%s\"}}]}}", comment);
-        val headers = withBasicAuth(username, password);
-        headers.setContentType(APPLICATION_JSON);
-        restTemplate.exchange(
-            url,
-            HttpMethod.PUT,
-            new HttpEntity<>(requestBody, headers),
-            Void.class
-        );
-    }
-
-    public void commentServiceAgreement(String key, String comment) throws RestClientResponseException {
+    public void comment(String key, String comment) throws RestClientResponseException {
         log.info("Commenting on {}: {}", key, comment);
         val url = UriComponentsBuilder
                 .fromHttpUrl(jiraEndpoint)

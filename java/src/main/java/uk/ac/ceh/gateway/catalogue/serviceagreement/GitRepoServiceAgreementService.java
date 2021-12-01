@@ -151,7 +151,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
             try {
                 Optional.ofNullable(serviceAgreement.getDepositReference())
                         .ifPresent(depositReference ->
-                                jiraService.commentServiceAgreement(
+                                jiraService.comment(
                                         depositReference,
                                         format(
                                                 "Service Agreement (%s): %s submitted for review",
@@ -195,7 +195,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
             try {
                 Optional.ofNullable(serviceAgreement.getDepositReference())
                         .ifPresent(depositReference ->
-                                jiraService.commentServiceAgreement(
+                                jiraService.comment(
                                         depositReference,
                                         format(
                                                 "Service Agreement (%s): %s has been agreed upon and published",
@@ -230,7 +230,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
             try {
                 Optional.ofNullable(serviceAgreement.getDepositReference())
                         .ifPresent(depositReference ->
-                                jiraService.commentServiceAgreement(
+                                jiraService.comment(
                                         depositReference,
                                         format(
                                                 "Service Agreement (%s): %s has been sent back for further changes",

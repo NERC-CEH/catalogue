@@ -242,7 +242,7 @@ public class GitRepoServiceAgreementServiceTest {
         service.submitServiceAgreement(user, ID);
 
         //Then
-        verify(jiraService).commentServiceAgreement(
+        verify(jiraService).comment(
                 serviceAgreement.getDepositReference(),
                 format("Service Agreement (%s): %s submitted for review", ID, serviceAgreement.getTitle())
         );
@@ -276,7 +276,7 @@ public class GitRepoServiceAgreementServiceTest {
                 .willReturn(serviceAgreement);
 
         RestClientResponseException restClientResponseException = mock(RestClientResponseException.class);
-        doThrow(restClientResponseException).when(jiraService).commentServiceAgreement(any(), any());
+        doThrow(restClientResponseException).when(jiraService).comment(any(), any());
 
         //when
         assertThrows(ServiceAgreementException.class, () ->
@@ -305,7 +305,7 @@ public class GitRepoServiceAgreementServiceTest {
         service.publishServiceAgreement(user, ID);
 
         //Then
-        verify(jiraService).commentServiceAgreement(
+        verify(jiraService).comment(
                 serviceAgreement.getDepositReference(),
                 format("Service Agreement (%s): %s has been agreed upon and published",
                         serviceAgreement.getId(),
@@ -334,7 +334,7 @@ public class GitRepoServiceAgreementServiceTest {
                 .willReturn(serviceAgreement);
 
         RestClientResponseException restClientResponseException = mock(RestClientResponseException.class);
-        doThrow(restClientResponseException).when(jiraService).commentServiceAgreement(any(), any());
+        doThrow(restClientResponseException).when(jiraService).comment(any(), any());
 
         //when
         assertThrows(ServiceAgreementException.class, () ->
@@ -376,7 +376,7 @@ public class GitRepoServiceAgreementServiceTest {
         service.giveDepositorEditPermission(user, ID);
 
         //Then
-        verify(jiraService).commentServiceAgreement(
+        verify(jiraService).comment(
                 serviceAgreement.getDepositReference(),
                 format("Service Agreement (%s): %s has been sent back for further changes",
                         serviceAgreement.getId(),
@@ -417,7 +417,7 @@ public class GitRepoServiceAgreementServiceTest {
         givenPendingPublicationServiceAgreement();
 
         RestClientResponseException restClientResponseException = mock(RestClientResponseException.class);
-        doThrow(restClientResponseException).when(jiraService).commentServiceAgreement(any(), any());
+        doThrow(restClientResponseException).when(jiraService).comment(any(), any());
 
         //when
         assertThrows(ServiceAgreementException.class, () ->

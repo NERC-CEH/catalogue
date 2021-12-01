@@ -47,21 +47,20 @@ define [
 
         new TextOnlyView
           model: @model
-          text: """<p>Provide a title that best describes that data resource. Include references to the subject, spatial and temporal aspects of the data resource.</p>
-                <p>Only the leading letter and proper nouns of the title should be capitalised.  If it's necessary to include acronyms in the title, then include both the acronym (in parentheses) and the phrase/word from which it was formed. Acronyms should not include full-stops between each letter.</p>
-                <p>If there are multiple titles or translations of titles (e.g. in Welsh), these should be added as alternative titles.</p>
-                """
-
-        new TextOnlyView
-          model: @model
-          text: """<p>Deposit Reference should be a valid EIDC Jira ticket URL.</p>"""
-
+          text: """<p>Deposit Reference should be a valid EIDC Jira ticket i.e. EIDCHELP-{n}</p>"""
 
         new InputView
           model: @model
           modelAttribute: 'depositReference'
           label: 'Deposit Reference'
 
+        new TextOnlyView
+          model: @model
+          text: """<p>Provide a title that best describes that data resource. Include references to the subject, spatial and temporal aspects of the data resource.</p>
+                <p>Only the leading letter and proper nouns of the title should be capitalised.  If it's necessary to include acronyms in the title, then include both the acronym (in parentheses) and the phrase/word from which it was formed. Acronyms should not include full-stops between each letter.</p>
+                <p>If there are multiple titles or translations of titles (e.g. in Welsh), these should be added as alternative titles.</p>
+                """
+          
         new InputView
           model: @model
           modelAttribute: 'title'
