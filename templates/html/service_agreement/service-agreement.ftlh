@@ -96,6 +96,7 @@
             <h3>Policies & legislation</h3>
             <dl class="dl-horizontal">
                 <@displayData "Other Policies or Legislation" otherPoliciesOrLegislation/>
+                <#if funding??><#include "../document/_funding.ftlh"></#if>
             </dl>
             <h3>The data</h3>
             <@displayFiles/>
@@ -291,7 +292,7 @@
 </#macro>
 
 <#macro displayOwnerOfIpr>
-    <#if ownersOfIpr?has_content &&ownersOfIpr?size gt 0 >
+    <#if ownersOfIpr?has_content && ownersOfIpr?size gt 0 >
         <dt id="pointOfContact">Owner of IPR</dt>
         <dd class="descriptive-keywords">
             <#list ownersOfIpr>

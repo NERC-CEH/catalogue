@@ -32,11 +32,11 @@ define [
   'cs!views/service-agreement/AuthorView'
   'cs!views/service-agreement/FileView'
   'cs!views/service-agreement/EndUserLicenceView'
-], (Backbone, _, EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, AccessLimitationView, AccessLimitation, InspireTheme, CategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, OnlineResourceView, OnlineResource, ResourceConstraintView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, MapDataSource, RelatedRecordView, ReadOnlyView, ParentStringView, BoundingBox, BoundingBoxView, TextOnlyView, AuthorView, FileView, EndUserLicenceView) -> EditorView.extend
-
+  'cs!views/editor/FundingView'
+  'cs!models/editor/Funding'
+], (Backbone, _, EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, AccessLimitationView, AccessLimitation, InspireTheme, CategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, OnlineResourceView, OnlineResource, ResourceConstraintView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, MapDataSource, RelatedRecordView, ReadOnlyView, ParentStringView, BoundingBox, BoundingBoxView, TextOnlyView, AuthorView, FileView, EndUserLicenceView, FundingView, Funding) -> EditorView.extend
 
   initialize: ->
-    @catalogue = $('html').data('catalogue')
     @delegate "click #exitWithoutSaving": "exit"
     @delegate "click #editorExit": "attemptExit"
 
@@ -60,7 +60,7 @@ define [
                 <p>Only the leading letter and proper nouns of the title should be capitalised.  If it's necessary to include acronyms in the title, then include both the acronym (in parentheses) and the phrase/word from which it was formed. Acronyms should not include full-stops between each letter.</p>
                 <p>If there are multiple titles or translations of titles (e.g. in Welsh), these should be added as alternative titles.</p>
                 """
-          
+
         new InputView
           model: @model
           modelAttribute: 'title'
@@ -117,6 +117,7 @@ define [
                    <p>Data and supporting documentation should not contain names, addresses or other personal information relating to 'identifiable natural persons'.  Discovery metadata (the catalogue record) may contain names and contact details of the authors of this data (<a href="https://eidc.ac.uk/policies/retentionPersonalData">see our policy on retention and use of personal data</a>).</p>
                    <p>If other policies/legislation applies (e.g. <a href="https://inspire.ec.europa.eu/">INSPIRE</a>), please specify below.</p>
                    """
+
         new TextareaView
           model: @model
           modelAttribute: 'otherPoliciesOrLegislation'
@@ -126,6 +127,46 @@ define [
         new TextOnlyView
           model: @model
           text: """<p>The depositor may also wish to provide an image to accompany the dataset which may subsequently be used to advertise its availability on social media.  If no image is provided, the EIDC may source a suitable picture.</p>"""
+
+        new TextOnlyView
+          model: @model
+          text: """<p>Include here details of any grants or awards that were used to generate this resource.</p>
+                   <p>If you include funding information, the Funding body is MANDATORY, other fields are useful but optional.</p>
+                   <p>Award URL is either the unique identifier for the award or sa link to the funder's  grant page (if it exists). It is <b>NOT</b> a link to a project website.</p>
+                """
+
+        new PredefinedParentView
+          model: @model
+          modelAttribute: 'funding'
+          ModelType: Funding
+          multiline: true
+          label: 'Funding'
+          ObjectInputView: FundingView
+          predefined:
+            'BBSRC':
+              funderName: 'Biotechnology and Biological Sciences Research Council'
+              funderIdentifier: 'https://ror.org/00cwqg982'
+            'Defra':
+              funderName: 'Department for Environment Food and Rural Affairs'
+              funderIdentifier: 'https://ror.org/00tnppw48'
+            'EPSRC':
+              funderName: 'Engineering and Physical Sciences Research Council'
+              funderIdentifier: 'https://ror.org/0439y7842'
+            'ESRC':
+              funderName: 'Economic and Social Research Council'
+              funderIdentifier: 'https://ror.org/03n0ht308'
+            'Innovate UK':
+              funderName: 'Innovate UK'
+              funderIdentifier: 'https://ror.org/05ar5fy68'
+            'MRC':
+              funderName: 'Medical Research Council'
+              funderIdentifier: 'https://ror.org/03x94j517'
+            'NERC':
+              funderName: 'Natural Environment Research Council'
+              funderIdentifier: 'https://ror.org/02b5d8509'
+            'STFC':
+              funderName: 'Science and Technology Facilities Council'
+              funderIdentifier: 'https://ror.org/057g20z61'
       ]
     ,
       label: 'The Data'
