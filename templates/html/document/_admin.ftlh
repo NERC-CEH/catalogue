@@ -7,7 +7,7 @@
   isNotLinkDocument = metadata.documentType != 'LINK_DOCUMENT'
   isRestrictedFieldsEditor = permission.userCanEditRestrictedFields(metadata.catalogue)
   isSimpleUpload = !isEidcCatalogue && permission.userCanUpload(id)
-  isServiceAgreement = profile.isActive("service-agreement")
+  isServiceAgreement = profile.isActive("service-agreement") && geminiHelper.isNewServiceAgreement
 
 >
 

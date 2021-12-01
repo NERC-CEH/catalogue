@@ -5,25 +5,33 @@ import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
-import uk.ac.ceh.gateway.catalogue.gemini.DescriptiveKeywords;
-import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import uk.ac.ceh.gateway.catalogue.gemini.*;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class GeminiExtractorTest {
+    @Mock
+    private LocalDate serviceAgreementStart;
+
+    @InjectMocks
     private GeminiExtractor service;
     
     @BeforeEach
     public void init() {
-        service = new GeminiExtractor();
+        String localDateStr = "2021-12-20";
+//        given(LocalDate.parse(localDateStr))
+//                .willReturn(serviceAgreementStart);
+        service = new GeminiExtractor(localDateStr);
     }
 
     @Test
@@ -126,5 +134,39 @@ public class GeminiExtractorTest {
         assertThat(env.getMinY(), is(2d));
         assertThat(env.getMaxX(), is(7d));
         assertThat(env.getMaxY(), is(8d));
+    }
+
+    @Test
+    public void isNewServiceAgreementTest() {
+        //Given
+        GeminiDocument document = mock(GeminiDocument.class);
+        DatasetReferenceDate datasetReferenceDate = DatasetReferenceDate.builder()
+                .creationDate(LocalDate.parse("2022-12-20"))
+                .build();
+          given(document.getDatasetReferenceDate())
+            .willReturn(datasetReferenceDate);
+
+        //When
+        Boolean isNewServiceAgreement = service.isNewServiceAgreement(document);
+
+        //Then
+        assertThat(isNewServiceAgreement, is(true));
+    }
+
+    @Test
+    public void isNotNewServiceAgreementTest() {
+        //Given
+        GeminiDocument document = mock(GeminiDocument.class);
+        DatasetReferenceDate datasetReferenceDate = DatasetReferenceDate.builder()
+                .creationDate(LocalDate.parse("2020-12-20"))
+                .build();
+        given(document.getDatasetReferenceDate())
+                .willReturn(datasetReferenceDate);
+
+        //When
+        Boolean isNewServiceAgreement = service.isNewServiceAgreement(document);
+
+        //Then
+        assertThat(isNewServiceAgreement, is(false));
     }
 }

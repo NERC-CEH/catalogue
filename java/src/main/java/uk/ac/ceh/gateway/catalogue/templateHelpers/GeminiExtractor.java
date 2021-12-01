@@ -8,12 +8,14 @@ import com.vividsolutions.jts.io.WKTReader;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.DescriptiveKeywords;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -27,8 +29,12 @@ import java.util.stream.Collectors;
 @Service
 public class GeminiExtractor {
     private final static Envelope GLOBAL_EXTENT = new Envelope(-180, 180, -90, 90);
+    private LocalDate serviceAgreementStart;
 
-    public GeminiExtractor() {
+    public GeminiExtractor(@Value("${serviceagreement.start}") String localDateStr) {
+        if (localDateStr != null && !localDateStr.isEmpty()) {
+            serviceAgreementStart = LocalDate.parse(localDateStr);
+        }
         log.info("Creating {}", this);
     }
 
@@ -41,6 +47,15 @@ public class GeminiExtractor {
                 .map(Keyword::getValue)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
+    }
+
+    public boolean isNewServiceAgreement(GeminiDocument document){
+        var creationDate = document.getDatasetReferenceDate().getCreationDate();
+        if (creationDate.isAfter(serviceAgreementStart)){
+            return true;
+        }else {
+            return false;
+        }
     }
     
     /**
