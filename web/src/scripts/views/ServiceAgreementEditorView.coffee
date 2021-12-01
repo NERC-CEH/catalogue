@@ -52,6 +52,11 @@ define [
                 <p>If there are multiple titles or translations of titles (e.g. in Welsh), these should be added as alternative titles.</p>
                 """
 
+        new TextOnlyView
+          model: @model
+          text: """<p>Deposit Reference should be a valid EIDC Jira ticket URL.</p>"""
+
+
         new InputView
           model: @model
           modelAttribute: 'depositReference'

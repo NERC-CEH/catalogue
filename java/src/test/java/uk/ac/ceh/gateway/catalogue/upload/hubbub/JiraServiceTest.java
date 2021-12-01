@@ -96,6 +96,24 @@ public class JiraServiceTest {
     }
 
     @Test
+    public void addingAServiceAgreementCommentToIssueWithKey() {
+        // Given
+        val expectedRequestBody = """
+            { "update": { "comment": [{ "add": { "body": "this is a comment"}}]}}
+        """;
+        mockServer
+                .expect(requestTo("https://example.com/api/issue/TEST-123"))
+                .andExpect(method(HttpMethod.PUT))
+                .andExpect(content().contentType(APPLICATION_JSON))
+                .andExpect(content().json(expectedRequestBody))
+                .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic amlyYTpwYXNzd29yZA=="))
+                .andRespond(withSuccess());
+
+        // When
+        jiraService.commentServiceAgreement(key, "this is a comment");
+    }
+
+    @Test
     public void transitioningIssueWithKeyToTransitionId() {
         // Given
         val expectedRequestBody = """

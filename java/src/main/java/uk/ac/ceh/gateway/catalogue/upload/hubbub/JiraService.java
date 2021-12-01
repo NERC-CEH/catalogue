@@ -11,6 +11,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -62,6 +63,35 @@ public class JiraService {
             new HttpEntity<>(requestBody, headers),
             Void.class
         );
+    }
+
+    public void commentServiceAgreement(String key, String comment) throws RestClientResponseException {
+        log.info("Commenting on {}: {}", key, comment);
+        val url = UriComponentsBuilder
+                .fromHttpUrl(jiraEndpoint)
+                .path("issue/{key}")
+                .buildAndExpand(key)
+                .toUri();
+        val requestBody = String.format("{\"update\":{\"comment\":[{\"add\":{\"body\":\"%s\"}}]}}", comment);
+        val headers = withBasicAuth(username, password);
+        headers.setContentType(APPLICATION_JSON);
+        try {
+            restTemplate.exchange(
+                    url,
+                    HttpMethod.PUT,
+                    new HttpEntity<>(requestBody, headers),
+                    Void.class
+            );
+        }catch (RestClientResponseException ex) {
+            log.error(
+                    "Error communicating with supplied URL: (statusCode={}, status={}, headers={}, body={})",
+                    ex.getRawStatusCode(),
+                    ex.getStatusText(),
+                    ex.getResponseHeaders(),
+                    ex.getResponseBodyAsString()
+            );
+            throw ex;
+        }
     }
 
     public void transition (String key, String id) {
