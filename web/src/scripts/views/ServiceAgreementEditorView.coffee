@@ -1,4 +1,6 @@
 define [
+  'backbone'
+  'underscore'
   'cs!views/EditorView'
   'cs!views/editor/SingleObjectView'
   'cs!views/editor/InputView'
@@ -30,9 +32,13 @@ define [
   'cs!views/service-agreement/AuthorView'
   'cs!views/service-agreement/FileView'
   'cs!views/service-agreement/EndUserLicenceView'
-], (EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, AccessLimitationView, AccessLimitation, InspireTheme, CategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, OnlineResourceView, OnlineResource, ResourceConstraintView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, MapDataSource, RelatedRecordView, ReadOnlyView, ParentStringView, BoundingBox, BoundingBoxView, TextOnlyView, AuthorView, FileView, EndUserLicenceView) -> EditorView.extend
+], (Backbone, _, EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, AccessLimitationView, AccessLimitation, InspireTheme, CategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, OnlineResourceView, OnlineResource, ResourceConstraintView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, MapDataSource, RelatedRecordView, ReadOnlyView, ParentStringView, BoundingBox, BoundingBoxView, TextOnlyView, AuthorView, FileView, EndUserLicenceView) -> EditorView.extend
+
 
   initialize: ->
+    @catalogue = $('html').data('catalogue')
+    @delegate "click #exitWithoutSaving": "exit"
+    @delegate "click #editorExit": "attemptExit"
 
     @sections = [
       label: 'General'
@@ -430,3 +436,20 @@ define [
     ]
 
     EditorView.prototype.initialize.apply @
+
+
+  attemptExit: ->
+    if @saveRequired
+      @$('#confirmExit').modal 'show'
+    else
+      do @exit
+
+  exit: ->
+    @$('#confirmExit').modal 'hide'
+    _.invoke @sections, 'remove'
+    do @remove
+
+    if Backbone.history.location.pathname == "/documents/#{@model.get 'id'}"
+      Backbone.history.location.replace "/service-agreement/#{@model.get 'id'}"
+    else
+      do Backbone.history.location.reload

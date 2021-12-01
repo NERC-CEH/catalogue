@@ -8,7 +8,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
 
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -21,13 +20,11 @@ public class SolrScheduledReindexServiceTest {
     public void reindex() {
         //given
         val service = new SolrScheduledReindexService(documentIndexingService);
-        given(documentIndexingService.isIndexEmpty()).willReturn(true);
 
         //when
         service.reindex();
 
         //then
-        verify(documentIndexingService).isIndexEmpty();
-        verify(documentIndexingService).rebuildIndex();
+        verify(documentIndexingService).attemptIndexing();
     }
 }

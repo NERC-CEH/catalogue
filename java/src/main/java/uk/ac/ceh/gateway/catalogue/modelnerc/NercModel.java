@@ -17,35 +17,33 @@ import uk.ac.ceh.gateway.catalogue.model.OnlineLink;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.model.DataTypeSchema;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
+import uk.ac.ceh.gateway.catalogue.gemini.Supplemental;
+import uk.ac.ceh.gateway.catalogue.gemini.Funding;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ConvertUsing({
-    @Template(called="html/nerc-model.ftlh", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
+    @Template(called="html/nercmodels/model.ftlh", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
 })
 public class NercModel extends AbstractMetadataDocument implements WellKnownText {
     private String
-        primaryPurpose,
-        seniorResponsibleOfficer,
-        seniorResponsibleOfficerEmail,
+        purpose,
         licenseType,
-        website,
-        codeRepositoryUrl,
         modelType,
-        currentModelVersion,
-        modelCalibration,
+        version,
+        calibration,
         spatialDomain,
-        spatialResolution,
-        temporalResolutionMin,
-        temporalResolutionMax,
         language,
         compiler,
         operatingSystem,
         systemMemory,
         documentation,
-        releaseDate;
+        releaseDate,
+        configuration;
 
     private List<BoundingBox> boundingBoxes;
+
+    private List<Funding> funding;
 
     private List<DataTypeSchema>
         inputVariables,
@@ -57,56 +55,24 @@ public class NercModel extends AbstractMetadataDocument implements WellKnownText
         keyOutputVariables;
 
     private List<OnlineLink> onlineResources;
-
-    private List<Reference> references;
-
-    private QualityAssurance
-        developerTesting,
-        internalPeerReview,
-        externalPeerReview,
-        internalModelAudit,
-        externalModelAudit,
-        qaGuidelinesAndChecklists,
-        governance,
-        transparency,
-        periodicReview;
-
-    private List<VersionHistory> versionHistories;
+    private List<Supplemental> references;
     private List<ResponsibleParty> responsibleParties;
-    private List<ProjectUsage> projectUsages;
+    private List<QA> qa;
+    private List<ModelResolution> resolution;
 
     @Data
-    public static class Reference {
+    public static class QA {
         private String
-            citation,
-            doi,
-            nora;
-    }
-
-    @Data
-    public static class QualityAssurance {
-        private String
-            done,
-            modelVersion,
-            owner,
-            note,
+            category,
+            notes,
             date;
     }
-
     @Data
-    public static class VersionHistory {
+    public static class ModelResolution {
         private String
-            version,
-            note,
-            date;
-    }
-
-    @Data
-    public static class ProjectUsage {
-        private String
-            project,
-            version,
-            date;
+            category,
+            min,
+            max;
     }
 
     @Override

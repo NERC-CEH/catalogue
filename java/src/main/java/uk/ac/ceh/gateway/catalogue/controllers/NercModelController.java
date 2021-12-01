@@ -53,7 +53,7 @@ public class NercModelController extends AbstractDocumentController {
       @RequestBody NercModelUse document,
       @RequestParam("catalogue") String catalogue
   ) {
-    return saveNewMetadataDocument(user, document, catalogue, "new Model use (NERC)");
+    return saveNewMetadataDocument(user, document, catalogue, "new Model implementation (NERC)");
   }
 
   @PreAuthorize("@permission.userCanEdit(#file)")

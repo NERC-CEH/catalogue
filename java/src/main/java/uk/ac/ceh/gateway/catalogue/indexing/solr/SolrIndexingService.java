@@ -13,6 +13,8 @@ import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
 import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.document.DocumentListingService;
+import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreement;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 
@@ -24,21 +26,20 @@ import java.util.stream.Collectors;
  * This is the Solr Indexing Service. Instances of this can read documents from
  * a DataRepository and index them with the supplied IndexGenerator. The indexes
  * will then go into an instance of Solr for speedy text based searches.
- * @param <D> type of documents to be read from the DataRepository
  */
 @Slf4j
 @ToString(callSuper = true)
-public class SolrIndexingService<D> extends AbstractIndexingService<D, SolrIndex> {
+public class SolrIndexingService extends AbstractIndexingService<MetadataDocument, SolrIndex> {
     private final SolrClient solrClient;
     private final JenaLookupService lookupService;
     private final DocumentIdentifierService identifierService;
     public static final String DOCUMENTS = "documents";
 
     public SolrIndexingService(
-            BundledReaderService<D> reader,
+            BundledReaderService<MetadataDocument> reader,
             DocumentListingService listingService,
-            DataRepository<?> repo,
-            IndexGenerator<D, SolrIndex> indexGenerator,
+            DataRepository<CatalogueUser> repo,
+            IndexGenerator<MetadataDocument, SolrIndex> indexGenerator,
             SolrClient solrClient,
             JenaLookupService lookupService,
             DocumentIdentifierService identifierService
@@ -72,7 +73,7 @@ public class SolrIndexingService<D> extends AbstractIndexingService<D, SolrIndex
     }
 
     @Override
-    protected boolean canIndex(D doc) {
+    protected boolean canIndex(MetadataDocument doc) {
         if (doc == null) {
             return false;
         }
@@ -104,7 +105,7 @@ public class SolrIndexingService<D> extends AbstractIndexingService<D, SolrIndex
     }
 
     @Override
-    protected D readDocument(String document, String revision) {
+    protected MetadataDocument readDocument(String document, String revision) {
         return readDocument(document);
     }
 

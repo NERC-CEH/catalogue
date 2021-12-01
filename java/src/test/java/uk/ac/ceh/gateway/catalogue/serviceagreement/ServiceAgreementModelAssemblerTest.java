@@ -58,6 +58,19 @@ class ServiceAgreementModelAssemblerTest {
     }
 
     @Test
+    void historyLinkAppears() {
+        //given
+        val serviceAgreement = new ServiceAgreement();
+        serviceAgreement.setId(id);
+
+        //when
+        val model = assembler.toModel(serviceAgreement);
+
+        //then
+        assertTrue(model.getLink("history").isPresent());
+    }
+
+    @Test
     void permissionLinkAppears() {
         //given
         val serviceAgreement = new ServiceAgreement();

@@ -1,9 +1,12 @@
 package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
+import freemarker.template.Configuration;
 import lombok.SneakyThrows;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,13 +16,18 @@ import org.springframework.context.annotation.Import;
 import org.springframework.hateoas.Link;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.ac.ceh.components.datastore.DataRevision;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
+import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
+import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
@@ -33,27 +41,45 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles({"service-agreement", "test"})
 @DisplayName("ServiceAgreementController")
 @Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
-@WebMvcTest(ServiceAgreementController.class)
+@WebMvcTest(
+    controllers = ServiceAgreementController.class,
+    properties="spring.freemarker.template-loader-path=file:../templates"
+)
 class ServiceAgreementControllerTest {
     @MockBean private ServiceAgreementSearch search;
     @MockBean private ServiceAgreementService serviceAgreementService;
     @MockBean private ServiceAgreementModelAssembler assembler;
-
-    private @MockBean(name="permission")
-    PermissionService permissionService;
-
+    @MockBean private CatalogueService catalogueService;
+    private @MockBean(name="permission") PermissionService permissionService;
 
     private static ServiceAgreement serviceAgreement;
     private static final String ID = "test";
+    private static final String VERSION = "version";
 
-    @Autowired
-    private MockMvc mvc;
+    @Autowired private MockMvc mvc;
+    @Autowired private Configuration configuration;
 
     @BeforeAll
     static void init() {
         serviceAgreement = new ServiceAgreement();
         serviceAgreement.setId(ID);
         serviceAgreement.setTitle("Test Service Agreement");
+    }
+
+    @BeforeEach
+    @SneakyThrows
+    void setup() {
+        configuration.setSharedVariable("catalogues", catalogueService);
+    }
+
+    private void givenDefaultCatalogue() {
+        given(catalogueService.defaultCatalogue())
+            .willReturn(Catalogue.builder()
+                .id("eidc")
+                .title("Foo")
+                .url("https://example.com")
+                .contactUrl("")
+                .build());
     }
 
     @Test
@@ -104,6 +130,7 @@ class ServiceAgreementControllerTest {
     void noAccessToServiceAgreements() {
         // given
         givenUserCanNotView();
+        givenDefaultCatalogue();
 
         // when
         mvc.perform(get("/service-agreement/{id}", ID))
@@ -152,6 +179,7 @@ class ServiceAgreementControllerTest {
     void userCannotCreateServiceAgreement() {
         // given
         givenUserCanNotEdit();
+        givenDefaultCatalogue();
 
         // when
         mvc.perform(post("/service-agreement/{id}", ID)
@@ -225,6 +253,7 @@ class ServiceAgreementControllerTest {
     void userCannotUpdateServiceAgreement() {
         // given
         givenUserCanNotEdit();
+        givenDefaultCatalogue();
 
         // when
         mvc.perform(put("/service-agreement/{id}", ID)
@@ -254,6 +283,8 @@ class ServiceAgreementControllerTest {
     void userCannotDeleteServiceAgreement() {
         //given
         givenUserCanNotDelete();
+        givenDefaultCatalogue();
+
 
         //When
         mvc.perform(delete("/service-agreement/{id}",ID))
@@ -298,6 +329,7 @@ class ServiceAgreementControllerTest {
         //given
         givenUserCanNotEdit();
         givenMetadataRecordExists();
+        givenDefaultCatalogue();
 
         //When
         mvc.perform(post("/service-agreement/{id}/submit", ID))
@@ -328,6 +360,7 @@ class ServiceAgreementControllerTest {
         //given
         givenUserCanNotEdit();
         givenMetadataRecordExists();
+        givenDefaultCatalogue();
 
         //When
         mvc.perform(post("/service-agreement/{id}/publish", ID))
@@ -358,6 +391,7 @@ class ServiceAgreementControllerTest {
         //given
         givenUserCanNotEdit();
         givenMetadataRecordExists();
+        givenDefaultCatalogue();
 
         //When
         mvc.perform(post("/service-agreement/{id}/add-editor", ID))
@@ -365,6 +399,67 @@ class ServiceAgreementControllerTest {
 
         //then
         verifyNoInteractions(serviceAgreementService);
+    }
+
+
+    @Test
+    @SneakyThrows
+    void getHistory() {
+        // given
+        givenUserCanEdit();
+        givenMetadataRecordExists();
+        givenHistory();
+
+        val expectedResponse = """
+            {
+            "historyOf":"test",
+            "revisions":[
+            {
+            "version":"2",
+            "href":"test/service-agreement/test/version/revision2"},
+            {
+            "version":"1","href":"test/service-agreement/test/version/revision1"
+            }
+            ]}
+            """;
+
+        // when
+        mvc.perform(get("/service-agreement/{id}/history", ID)
+                        .accept(APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(APPLICATION_JSON))
+                .andExpect(content().json(expectedResponse));
+    }
+
+
+    @Test
+    @SneakyThrows
+    void getPreviousServiceAgreement() {
+        // given
+        givenUserCanEdit();
+        givenMetadataRecordExists();
+        givenPreviousServiceAgreement();
+        givenServiceAgreementModel();
+
+        val expectedResponse = """
+            {
+                "id": "test",
+                "title": "Test Service Agreement",
+                "_links": {
+                    "self": {
+                        "href": "https://catalogue/service-agreement/test"
+                    }
+                }
+            }
+            """;
+
+        // when
+        mvc.perform(get("/service-agreement/{id}/version/{version}", ID, VERSION)
+                        .accept(HAL_JSON)
+                        .header("Forwarded", "proto=https;host=catalogue"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(HAL_JSON))
+                .andExpect(content().json(expectedResponse));
     }
 
     private void givenServiceAgreementModel() {
@@ -437,6 +532,11 @@ class ServiceAgreementControllerTest {
             .willReturn(serviceAgreement);
     }
 
+    private void givenPreviousServiceAgreement() {
+        given(serviceAgreementService.getPreviousVersion(ID, VERSION))
+                .willReturn(serviceAgreement);
+    }
+
     private void givenMetadataRecordExists() {
         given(serviceAgreementService.metadataRecordExists(ID))
             .willReturn(true);
@@ -445,5 +545,38 @@ class ServiceAgreementControllerTest {
     private void givenMedataRecordDoesNotExist() {
         given(serviceAgreementService.metadataRecordExists(ID))
             .willReturn(false);
+    }
+    private void givenHistory() {
+        List<DataRevision<CatalogueUser>> revisions = new ArrayList<>();
+        revisions.add(new TestRevision("revision2"));
+        revisions.add(new TestRevision("revision1"));
+        History history = new History(ID, revisions, "test");
+        given(serviceAgreementService.getHistory(ID))
+                .willReturn(history);
+    }
+
+    @Value
+    public static class TestRevision implements DataRevision<CatalogueUser> {
+        String revision;
+
+        @Override
+        public String getRevisionID() {
+            return revision;
+        }
+
+        @Override
+        public String getMessage() {
+            return null;
+        }
+
+        @Override
+        public String getShortMessage() {
+            return null;
+        }
+
+        @Override
+        public CatalogueUser getAuthor() {
+            return null;
+        }
     }
 }

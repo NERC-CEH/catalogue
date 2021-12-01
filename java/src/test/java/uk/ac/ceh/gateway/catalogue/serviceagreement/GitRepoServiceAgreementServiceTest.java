@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
 import lombok.SneakyThrows;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.jupiter.api.BeforeAll;
@@ -19,6 +20,7 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.JiraService;
 
 import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.String.format;
@@ -39,6 +41,8 @@ public class GitRepoServiceAgreementServiceTest {
 
     private static final String FOLDER = "service-agreements/";
     private static final String ID = "7c60707c-80ee-4d67-bac2-3c9a93e61557";
+    private static final String VERSION = "version";
+    private static final String BASE_URI = "https://catalogue.ceh.ac.uk";
 
     @Mock private DataRepository<CatalogueUser> repo;
     @Mock private DocumentInfoMapper<MetadataInfo> metadataInfoMapper;
@@ -61,6 +65,7 @@ public class GitRepoServiceAgreementServiceTest {
     @BeforeEach
     void setup() {
         service = new GitRepoServiceAgreementService(
+            BASE_URI,
             repo,
             metadataInfoMapper,
             serviceAgreementMapper,
@@ -87,12 +92,8 @@ public class GitRepoServiceAgreementServiceTest {
 
     @Test
     @SneakyThrows
-    public void canNotGetRaw() {
+    public void cannotGetRaw() {
         //Given
-        val metadataInfoDocument = mock(DataDocument.class);
-        given(repo.getData(FOLDER + ID + ".meta"))
-                .willReturn(metadataInfoDocument);
-
         given(repo.getData(FOLDER + ID + ".raw"))
                 .willThrow(new DataRepositoryException("Fail"));
 
@@ -104,8 +105,12 @@ public class GitRepoServiceAgreementServiceTest {
 
     @Test
     @SneakyThrows
-    public void canNotGetMeta() {
+    public void cannotGetMeta() {
         //Given
+        val rawInfoDocument = mock(DataDocument.class);
+        given(repo.getData(FOLDER + ID + ".raw"))
+                .willReturn(rawInfoDocument);
+
         given(repo.getData(FOLDER + ID + ".meta"))
                 .willThrow(new DataRepositoryException("Fail"));
 
@@ -354,6 +359,79 @@ public class GitRepoServiceAgreementServiceTest {
                         serviceAgreement.getTitle()));
     }
 
+    @Test
+    @SneakyThrows
+    public void canGetHistory() {
+        //Given
+        List<DataRevision<CatalogueUser>> revisions = new ArrayList<>();
+        revisions.add(new TestRevision("revision1"));
+        revisions.add(new TestRevision("revision2"));
+        given(repo.getRevisions(FOLDER + ID + ".raw"))
+                .willReturn(revisions);
+
+        //When
+        val result = service.getHistory(ID);
+
+        //Then
+        assertThat(result.getRevisions().get(0).getVersion(),is(equalTo("2")));
+        assertThat(result.getRevisions().get(1).getVersion(),is(equalTo("1")));
+    }
+
+    @Test
+    @SneakyThrows
+    public void cannotGetHistory() {
+        //Given
+        given(repo.getRevisions(FOLDER + ID + ".raw"))
+                .willThrow(new DataRepositoryException("test"));
+
+        //When
+        assertThrows(ServiceAgreementException.class, () ->
+                service.getHistory(ID)
+        );
+    }
+
+    @Test
+    @SneakyThrows
+    public void canGetPreviousVersion() {
+        //Given
+        givenServiceAgreementPreviousVersion();
+
+        //When
+        service.getPreviousVersion(ID, VERSION);
+
+        //Then
+    }
+
+    @Test
+    @SneakyThrows
+    public void cannotGetPreviousVersionRaw() {
+        //Given
+        given(repo.getData(VERSION, FOLDER + ID + ".raw"))
+                .willThrow(new DataRepositoryException("Fail"));
+
+        //When
+        assertThrows(DataRepositoryException.class, () ->
+                service.getPreviousVersion(ID, VERSION)
+        );
+    }
+
+    @Test
+    @SneakyThrows
+    public void cannotGetPreviousVersionMeta() {
+        //Given
+        val rawInfoDocument = mock(DataDocument.class);
+        given(repo.getData(VERSION, FOLDER + ID + ".raw"))
+                .willReturn(rawInfoDocument);
+
+        given(repo.getData(VERSION, FOLDER + ID + ".meta"))
+                .willThrow(new DataRepositoryException("Fail"));
+
+        //When
+        assertThrows(DataRepositoryException.class, () ->
+                service.getPreviousVersion(ID, VERSION)
+        );
+    }
+
 
     @SneakyThrows
     private void givenPublishedServiceAgreement() {
@@ -457,13 +535,56 @@ public class GitRepoServiceAgreementServiceTest {
     }
 
     @SneakyThrows
-    private void givenPublishedGeminiDocument() {
-        val metadataInfo = MetadataInfo.builder().state("published").build();
-        val geminiDocument = new GeminiDocument();
-        geminiDocument.setId(ID);
-        geminiDocument.setMetadata(metadataInfo);
-        given(documentRepository.read(ID))
-            .willReturn(geminiDocument);
+    private void givenServiceAgreementPreviousVersion() {
+        val metadataInfoDocument = mock(DataDocument.class);
+        given(repo.getData(VERSION, FOLDER + ID + ".meta"))
+                .willReturn(metadataInfoDocument);
+        given(metadataInfoDocument.getInputStream())
+                .willReturn(new ByteArrayInputStream("meta".getBytes()));
+
+        val metadata = MetadataInfo.builder()
+                .state("published")
+                .rawType(APPLICATION_JSON_VALUE)
+                .build();
+        given(metadataInfoMapper.readInfo(any()))
+                .willReturn(metadata);
+
+        val rawDocument = mock(DataDocument.class);
+        given(repo.getData(VERSION,  FOLDER + ID + ".raw"))
+                .willReturn(rawDocument);
+        given(rawDocument.getInputStream())
+                .willReturn(new ByteArrayInputStream("file".getBytes()));
+        given(serviceAgreementMapper.readInfo(any()))
+                .willReturn(serviceAgreement);
+        serviceAgreement.setMetadata(metadata);
+        serviceAgreement.setTitle("this is a test");
+        serviceAgreement.setEndUserLicence(new ResourceConstraint("test", "test", "test"));
+        serviceAgreement.setDepositorContactDetails("deposit@example.com");
+    }
+
+    @Value
+    public static class TestRevision implements DataRevision<CatalogueUser> {
+        String revision;
+
+        @Override
+        public String getRevisionID() {
+            return revision;
+        }
+
+        @Override
+        public String getMessage() {
+            return null;
+        }
+
+        @Override
+        public String getShortMessage() {
+            return null;
+        }
+
+        @Override
+        public CatalogueUser getAuthor() {
+            return null;
+        }
     }
 
 }

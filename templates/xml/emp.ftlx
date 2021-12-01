@@ -19,7 +19,7 @@
             <@base.link "legalBackground" x/>
         </#list>
     </@base.orNilReason>
-    <@base.responsibleParty metadata.author/>
+    <@base.responsibleParty metadata.author!/>
     <#list responsibleParties as x>
         <@base.responsibleParty x/>
     </#list>
