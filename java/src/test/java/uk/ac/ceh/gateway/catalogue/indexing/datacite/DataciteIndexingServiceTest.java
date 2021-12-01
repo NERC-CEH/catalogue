@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.indexing.datacite;
 
+import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -7,14 +8,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.gateway.catalogue.datacite.DataciteService;
+import uk.ac.ceh.gateway.catalogue.document.UnknownContentTypeException;
+import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
-import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
-import uk.ac.ceh.gateway.catalogue.document.UnknownContentTypeException;
 
-import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
@@ -23,21 +23,23 @@ import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class DataciteIndexingServiceTest {
+class DataciteIndexingServiceTest {
     @Mock BundledReaderService<MetadataDocument> bundleReader;
     @Mock DataciteService datacite;
     private DataciteIndexingService service;
 
     @BeforeEach
-    public void init() throws XPathExpressionException {
+    void init() {
         service = new DataciteIndexingService(bundleReader, datacite);
     }
 
     @Test
-    public void checkThatIndexIsEmpty() throws DocumentIndexingException {
+    void checkThatIndexIsEmpty() throws DocumentIndexingException {
         //Given
         //Nothing
 
@@ -49,7 +51,7 @@ public class DataciteIndexingServiceTest {
     }
 
     @Test
-    public void checkThatUpdatesDoiOfDocumentWhichRequestHasChanged() throws Exception {
+    void checkThatUpdatesDoiOfDocumentWhichRequestHasChanged() throws Exception {
         //Given
         String dataciteRequest = IOUtils.toString(
             Objects.requireNonNull(
@@ -58,19 +60,25 @@ public class DataciteIndexingServiceTest {
             StandardCharsets.UTF_8
         );
         GeminiDocument document = new GeminiDocument();
-        when(datacite.isDatacited(document)).thenReturn(true);
-        when(datacite.getDoiMetadata(document)).thenReturn(dataciteRequest);
-        when(datacite.getDatacitationRequest(eq(document))).thenReturn("Different doi");
+        given(datacite.isDatacited(document))
+            .willReturn(true);
+        given(datacite.getDoiMetadata(document))
+            .willReturn(dataciteRequest);
+        given(datacite.getDatacitationRequest(eq(document)))
+            .willReturn("Different doi");
+        given(bundleReader.readBundle("document", "latest"))
+            .willReturn(document);
+
 
         //When
-        service.indexDocument(document);
+        service.indexDocuments(List.of("document"), "latest");
 
         //Then
         verify(datacite).updateDoiMetadata(document);
     }
 
     @Test
-    public void checkThatDoesntUpdateDocumentWhichRequestHasntChanged() throws Exception {
+    void checkThatDoesntUpdateDocumentWhichRequestHasNotChanged() throws Exception {
         //Given
         String dataciteRequest = IOUtils.toString(
             Objects.requireNonNull(
@@ -79,25 +87,33 @@ public class DataciteIndexingServiceTest {
             StandardCharsets.UTF_8
         );
         GeminiDocument document = new GeminiDocument();
-        when(datacite.isDatacited(document)).thenReturn(true);
-        when(datacite.getDoiMetadata(document)).thenReturn(dataciteRequest);
-        when(datacite.getDatacitationRequest(eq(document))).thenReturn(dataciteRequest);
+        given(datacite.isDatacited(document))
+            .willReturn(true);
+        given(datacite.getDoiMetadata(document))
+            .willReturn(dataciteRequest);
+        given(datacite.getDatacitationRequest(eq(document)))
+            .willReturn(dataciteRequest);
+        given(bundleReader.readBundle("document", "latest"))
+            .willReturn(document);
 
         //When
-        service.indexDocument(document);
+        service.indexDocuments(List.of("document"), "latest");
 
         //Then
         verify(datacite, never()).updateDoiMetadata(document);
     }
 
     @Test
-    public void checkThatRecordWhichIsNotDatacitedIsIgnored() throws Exception {
+    @SneakyThrows
+    void checkThatRecordWhichIsNotDatacitedIsIgnored() {
         //Given
         GeminiDocument document = new GeminiDocument();
-        when(datacite.isDatacited(document)).thenReturn(false);
+        given(datacite.isDatacited(document)).willReturn(false);
+        given(bundleReader.readBundle("document", "latest"))
+            .willReturn(document);
 
         //When
-        service.indexDocument(document);
+        service.indexDocuments(List.of("document"), "latest");
 
         //Then
         verify(datacite, never()).updateDoiMetadata(document);

@@ -6,13 +6,13 @@
 
     <div class="filters-panel">
       <div class="header facet-heading">
-        <h2>Filters</h2>
+        <h3>Filters</h3>
       </div>
       <div class="facet-filter"><#include "search/_facets.ftlh"></div>
 
       <div class="header map-heading">
         <div class="drawing-control pull-right"><#include "search/_drawing.ftlh"></div>
-        <h2>Map Search</h2>
+        <h3>Map Search</h3>
       </div>
       <div class="map-filter openlayers"></div>
     </div>

@@ -18,12 +18,10 @@
                         </div>
                         <#list getModelLinks() as link>
                             <div class="btn-group btn-group-sm">
-                                <#if link.title != 'History'>
-                                    <form action="${link.href}" method="post">
-                                        <input type="submit" value="${link.title}" class="btn btn-default btn-wide">
-                                    </form>
+                                <#if link.rel == 'history'>
+                                    <a href="${link.href}" class="btn btn-default btn-wide">${link.title}</a>
                                 <#else>
-                                    <form action="${link.href}" method="get">
+                                    <form action="${link.href}" method="post">
                                         <input type="submit" value="${link.title}" class="btn btn-default btn-wide">
                                     </form>
                                 </#if>
@@ -230,25 +228,25 @@
                 <#if files?size gt filesMaxSize >
                     <p>
                     <small>
-                    <#if file.name?has_content>
-                        <div>
-                            <p>Name: ${file.name}</p>
-                        </div>
-                    </#if>
-                    <#if file.format?has_content>
-                        <div>
-                            <p>Format: ${file.format}</p>
-                        </div>
-                    </#if>
-                    <#if file.size?has_content>
-                        <div>
-                            <p>Size: ${file.size}</p>
-                        </div>
-                    </#if>
-                    <a href=".fileCollapse" class="moreFiles collapsed" data-toggle="collapse"
-                       aria-controls="filePartyCollapse" area-expanded="false">
-                        <span>${moreFiles} more files. </span>Show
-                    </a>
+                        <#if file.name?has_content>
+                            <div>
+                                <p>Name: ${file.name}</p>
+                            </div>
+                        </#if>
+                        <#if file.format?has_content>
+                            <div>
+                                <p>Format: ${file.format}</p>
+                            </div>
+                        </#if>
+                        <#if file.size?has_content>
+                            <div>
+                                <p>Size: ${file.size}</p>
+                            </div>
+                        </#if>
+                        <a href=".fileCollapse" class="moreFiles collapsed" data-toggle="collapse"
+                           aria-controls="filePartyCollapse" area-expanded="false">
+                            <span>${moreFiles} more files. </span>Show
+                        </a>
                     </small>
                     </p>
                 </#if>

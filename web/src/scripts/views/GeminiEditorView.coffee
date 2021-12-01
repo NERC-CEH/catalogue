@@ -41,14 +41,14 @@ define [
   'cs!models/editor/SpatialResolution'
   'cs!views/editor/FundingView'
   'cs!models/editor/Funding'
-  'cs!views/editor/SupplementalView'
+  'cs!views/editor/SupplementalEIDCView'
   'cs!models/editor/Supplemental'
   'cs!views/editor/ServiceView'
   'cs!models/editor/Service'
   'cs!models/editor/MapDataSource'
   'cs!views/editor/MapDataSourceView'
   'cs!views/editor/RelatedRecordView'
-], (EditorView, SingleObjectView, InputView, CheckboxView, ReadOnlyView, TextareaView, ParentView, ParentLargeView, PredefinedParentView, PredefinedParentLargeView, ParentStringView, ResourceTypeView, ResourceType, AccessLimitationView, AccessLimitation, InspireTheme, InspireThemeView, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, MultipleDate, Contact, BoundingBox, BoundingBoxView, OnlineResourceView, OnlineResource, ResourceConstraintView, OtherConstraintView, TemporalExtentView,  ResourceMaintenanceView, SpatialReferenceSystemView, SpatialRepresentationTypeView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, SpatialResolutionView, SpatialResolution, FundingView, Funding, SupplementalView, Supplemental, ServiceView, Service, MapDataSource, MapDataSourceView, RelatedRecordView) -> EditorView.extend
+], (EditorView, SingleObjectView, InputView, CheckboxView, ReadOnlyView, TextareaView, ParentView, ParentLargeView, PredefinedParentView, PredefinedParentLargeView, ParentStringView, ResourceTypeView, ResourceType, AccessLimitationView, AccessLimitation, InspireTheme, InspireThemeView, TopicCategory, TopicCategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, MultipleDate, Contact, BoundingBox, BoundingBoxView, OnlineResourceView, OnlineResource, ResourceConstraintView, OtherConstraintView, TemporalExtentView,  ResourceMaintenanceView, SpatialReferenceSystemView, SpatialRepresentationTypeView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, SpatialResolutionView, SpatialResolution, FundingView, Funding, SupplementalEIDCView, Supplemental, ServiceView, Service, MapDataSource, MapDataSourceView, RelatedRecordView) -> EditorView.extend
 
   initialize: ->
 
@@ -551,7 +551,7 @@ define [
           ModelType: Supplemental
           multiline: true
           label: 'Additional information'
-          ObjectInputView: SupplementalView
+          ObjectInputView: SupplementalEIDCView
           helpText: """
                     <p>You can add information not documented elsewhere here. This includes links to related papers, grey literature or websites.  For example:</p>
                     <ul><li>papers that cite this resource</li><li>papers/reports that provide relevant supporting information but which do not cite this resource</li><li>project websites</li></ul>

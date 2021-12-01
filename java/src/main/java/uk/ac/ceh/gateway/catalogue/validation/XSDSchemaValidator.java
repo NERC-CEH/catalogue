@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.validation;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.w3c.dom.Document;
 import org.xml.sax.ErrorHandler;
@@ -21,6 +22,7 @@ import java.io.InputStream;
  * The following is an XML schema validator which can validate XML document
  * representations against some schema.
  */
+@Slf4j
 public class XSDSchemaValidator extends AbstractDocumentValidator {
     private final Schema schema;
 
@@ -31,7 +33,7 @@ public class XSDSchemaValidator extends AbstractDocumentValidator {
 
     @Override
     public ValidationResult validate(InputStream stream) {
-        ValidationResult toReturn = new ValidationResult();
+        ValidationResult validationResult = new ValidationResult();
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setNamespaceAware(true);
@@ -42,23 +44,23 @@ public class XSDSchemaValidator extends AbstractDocumentValidator {
             validator.setErrorHandler(new ErrorHandler(){
                 @Override
                 public void warning(SAXParseException ex) {
-                    toReturn.reject(ex.getMessage(), ValidationLevel.WARNING);
+                    validationResult.reject(ex.getMessage(), ValidationLevel.WARNING);
                 }
 
                 @Override
                 public void error(SAXParseException ex) {
-                    toReturn.reject(ex.getMessage(), ValidationLevel.ERROR);
+                    validationResult.reject(ex.getMessage(), ValidationLevel.ERROR);
                 }
 
                 @Override
                 public void fatalError(SAXParseException ex) {
-                    toReturn.reject(ex.getMessage(), ValidationLevel.FAILED_TO_READ);
+                    validationResult.reject(ex.getMessage(), ValidationLevel.FAILED_TO_READ);
                 }
             });
             validator.validate(new DOMSource(doc));
         } catch (IOException | SAXException | ParserConfigurationException ex) {
-            toReturn.reject(ex.getMessage(), ValidationLevel.FAILED_TO_READ);
+            validationResult.reject(ex.getMessage(), ValidationLevel.FAILED_TO_READ);
         }
-        return toReturn;
+        return validationResult;
     }
 }

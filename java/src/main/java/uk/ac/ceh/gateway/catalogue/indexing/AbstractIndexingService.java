@@ -101,13 +101,13 @@ public abstract class AbstractIndexingService<D, I> implements DocumentIndexingS
         return joinedException.getSuppressed().length != 0;
     }
 
-    public void initialIndex() {
+    @Override
+    public void attemptIndexing() {
         try {
             if(this.isIndexEmpty()) {
                 this.rebuildIndex();
             }
         } catch (Exception ex) {
-            log.error("There were records that did not index successfully at container creation. This does not stop the container starting");
             log.error("Suppressed indexing errors", (Object[]) ex.getSuppressed());
         }
     }
@@ -116,7 +116,7 @@ public abstract class AbstractIndexingService<D, I> implements DocumentIndexingS
      * An overridable method which uses the message bundle reader to load a
      * particular document.
      *
-     * Sub classes are free to adjust this method to add postprocessing
+     * Subclasses are free to adjust this method to add postprocessing
      * capabilities to the reading logic
      * @param document id of the document to read
      * @param revision the revision which to read at
@@ -124,6 +124,7 @@ public abstract class AbstractIndexingService<D, I> implements DocumentIndexingS
      */
     @SneakyThrows
     protected D readDocument(String document, String revision) {
+        log.debug("Reading {} at revision {}", document, revision);
         return reader.readBundle(document, revision);
     }
 

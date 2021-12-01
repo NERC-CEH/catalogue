@@ -5,7 +5,8 @@ define [
 
   template: template
 
-  render: ->
+  ### render: ->
     ObjectInputView.prototype.render.apply @
     @$('select.function').val @model.get 'function'
     @
+ ###

@@ -8,8 +8,10 @@ import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.Relationship;
+import uk.ac.ceh.gateway.catalogue.model.OnlineLink;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.gemini.Funding;
+import uk.ac.ceh.gateway.catalogue.gemini.Supplemental;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -19,20 +21,21 @@ import java.util.stream.Collectors;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ConvertUsing({
-    @Template(called="html/nerc-model-use.ftlh", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
+    @Template(called="html/nercmodels/model-use.ftlh", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
 })
 public class NercModelUse extends AbstractMetadataDocument {
     private String
-        objectives,
         completionDate;
 
     private List<ResponsibleParty> responsibleParties;
 
     private List<Funding> funding;
 
-    private List<NercModel.Reference> references;
-
+    private List<Supplemental> references;
+    
     private List<ModelInfo> modelInfos;
+
+    private List<OnlineLink> onlineResources;
 
     private List<DataInfo>
         inputData,
@@ -60,8 +63,7 @@ public class NercModelUse extends AbstractMetadataDocument {
         private String
             name,
             id,
-            version,
-            rationale,
+            notes,
             spatialExtentOfApplication,
             availableSpatialData,
             spatialResolutionOfApplication,

@@ -5,42 +5,25 @@ define [
   'cs!views/editor/ParentView'
   'cs!views/editor/PredefinedParentView'
   'cs!views/editor/ParentStringView'
-  'cs!views/editor/KeywordView'
-  'cs!views/editor/ReferenceView'
+  'cs!views/editor/KeywordVocabularyView'
   'cs!views/editor/ContactView'
-  'cs!models/editor/Reference'
   'cs!views/editor/SingleObjectView'
   'cs!views/editor/QaView'
   'cs!views/editor/VersionHistoryView'
-  'cs!views/editor/ProjectUsageView'
+  'cs!views/editor/ModelQAView'
+  'cs!views/editor/ModelResolutionView'
   'cs!views/editor/OnlineLinkView'
   'cs!models/editor/Contact'
   'cs!models/editor/DataTypeSchema'
   'cs!views/editor/DataTypeSchemaSimpleView'
   'cs!models/editor/BoundingBox'
   'cs!views/editor/BoundingBoxView'
-
+  'cs!views/editor/SupplementalView'
+  'cs!models/editor/Supplemental'
+  'cs!views/editor/FundingView'
+  'cs!models/editor/Funding'
 ], (
-  EditorView,
-  InputView,
-  TextareaView,
-  ParentView,
-  PredefinedParentView,
-  ParentStringView,
-  KeywordView,
-  ReferenceView,
-  ContactView,
-  Reference,
-  SingleObjectView,
-  QaView,
-  VersionHistoryView,
-  ProjectUsageView,
-  OnlineLinkView,
-  Contact,
-  DataTypeSchema,
-  DataTypeSchemaSimpleView,
-  BoundingBox,
-  BoundingBoxView
+  EditorView, InputView, TextareaView, ParentView, PredefinedParentView, ParentStringView, KeywordVocabularyView, ContactView, SingleObjectView, QaView, VersionHistoryView, ModelQAView, ModelResolutionView, OnlineLinkView, Contact, DataTypeSchema, DataTypeSchemaSimpleView, BoundingBox, BoundingBoxView, SupplementalView, Supplemental, FundingView, Funding
 ) -> EditorView.extend
 
   initialize: ->
@@ -56,59 +39,42 @@ define [
           model: @model
           modelAttribute: 'title'
           label: 'Title'
-          helpText: """
-                    <p>Name of the model</p>
-                    """
 
         new TextareaView
           model: @model
           modelAttribute: 'description'
-          label: 'Model description'
-          rows: 7
+          label: 'Description'
+          rows: 6
           helpText: """
                     <p>Longer description of model e.g. development history, use to answer science questions, overview of structure</p>
                     """
 
         new TextareaView
           model: @model
-          modelAttribute: 'primaryPurpose'
-          label: 'Primary purpose'
-          rows: 3
-          helpText: """
-                    <p>Short phrase to describe primary aim of model</p>
-                    """
+          modelAttribute: 'purpose'
+          label: 'Purpose'
+          rows: 6
 
         new InputView
           model: @model
           modelAttribute: 'modelType'
           label: 'Model type'
           listAttribute: """
-                    <option value='Unknown' />
                     <option value='Deterministic' />
                     <option value='Stochastic' />
-                    """
-          helpText: """
-                    <p>Type which best fits the model</p>
                     """
 
         new InputView
           model: @model
-          modelAttribute: 'currentModelVersion'
-          label: 'Current model version'
+          modelAttribute: 'version'
+          label: 'Version'
           placeholderAttribute: 'e.g. 2.5.10'
-          helpText: """
-                    <p>Most recent release version (if applicable)</p>
-                    """
 
         new InputView
           model: @model
           modelAttribute: 'releaseDate'
-          typeAttribute: 'date'
+          typeAttribute: 'text'
           label: 'Release date'
-          placeholderAttribute: 'yyyy-mm-dd'
-          helpText: """
-                    <p>Date of release of current model version (if applicable)</p>
-                    """
 
         new PredefinedParentView
           model: @model
@@ -118,22 +84,80 @@ define [
           ObjectInputView: ContactView
           multiline: true
           predefined:
-            'SRO - UKCEH':
+            'BAS':
+              role: 'pointOfContact'
+              organisationName: 'British Antarctic Survey'
+              email: 'information@bas.ac.uk'
+              organisationIdentifier: 'https://ror.org/01rhff309'
+            'BGS':
+              role: 'pointOfContact'
+              organisationName: 'British Geological Survey'
+              email: 'enquiries@bgs.ac.uk'
+              organisationIdentifier: 'https://ror.org/04a7gbp98'
+            'CEDA':
+              role: 'pointOfContact'
+              organisationName: 'Centre for Environmental Data Analysis'
+            'NOC':
+              role: 'pointOfContact'
+              organisationName: 'National Oceanography Centre'
+              organisationIdentifier: 'https://ror.org/00874hx02'
+            'UKCEH':
+              role: 'pointOfContact'
               organisationName: 'UK Centre for Ecology & Hydrology'
-              role: 'owner'
+              email: 'enquiries@ceh.ac.uk'
               organisationIdentifier: 'https://ror.org/00pggkr55'
-          helpText: """
-                    <p>You <b>must</b> include one Senior Responsible Officer (SRO) - the person who is the "owner" and primary contact for the model</p>
-                    """
 
         new ParentView
           model: @model
           modelAttribute: 'keywords'
           label: 'Keywords'
-          ObjectInputView: KeywordView
+          ObjectInputView: KeywordVocabularyView
           helpText: """
-                    <p>Keywords for model discovery e.g. rainfall; species distribution; nitrogen deposition; global circulation model</p>
+                    <p>Keywords help with model discovery</p>
                     """
+
+        new PredefinedParentView
+          model: @model
+          modelAttribute: 'funding'
+          ModelType: Funding
+          multiline: true
+          label: 'Funding'
+          ObjectInputView: FundingView
+          predefined:
+            'BBSRC':
+              funderName: 'Biotechnology and Biological Sciences Research Council'
+              funderIdentifier: 'https://ror.org/00cwqg982'
+            'Defra':
+              funderName: 'Department for Environment Food and Rural Affairs'
+              funderIdentifier: 'https://ror.org/00tnppw48'
+            'EPSRC':
+              funderName: 'Engineering and Physical Sciences Research Council'
+              funderIdentifier: 'https://ror.org/0439y7842'
+            'ESRC':
+              funderName: 'Economic and Social Research Council'
+              funderIdentifier: 'https://ror.org/03n0ht308'
+            'Innovate UK':
+              funderName: 'Innovate UK'
+              funderIdentifier: 'https://ror.org/05ar5fy68'
+            'MRC':
+              funderName: 'Medical Research Council'
+              funderIdentifier: 'https://ror.org/03x94j517'
+            'NERC':
+              funderName: 'Natural Environment Research Council'
+              funderIdentifier: 'https://ror.org/02b5d8509'
+            'STFC':
+              funderName: 'Science and Technology Facilities Council'
+              funderIdentifier: 'https://ror.org/057g20z61'
+          helpText: """
+                    <p>Include here details of any grants or awards that were used to generate this resource.</p>
+                    <p>If you include funding information, the Funding body is MANDATORY, other fields are useful but optional.</p>
+                    <p>Award URL is either the unique identifier for the award or sa link to the funder's  grant page (if it exists). It is <b>NOT</b> a link to a project website.</p>
+                    """
+      ]
+    ,
+      label: 'Access'
+      title: 'Access'
+      views: [
         
         new ParentView
           model: @model
@@ -142,15 +166,14 @@ define [
           ObjectInputView: OnlineLinkView
           multiline: true
           listAttribute: """
-                    <option value='code'>Location of the model code such as GitHub repository</option>
-                    <option value='documentation'>Online documentation describing how to use the model</option>
+                    <option value='code'>Link to location of the model code (e.g. GitHub repository)</option>
+                    <option value='documentation'>Link to documentation describing how to use the model</option>
                     <option value='website'/>
                     <option value='browseGraphic'>Image to display on metadata record</option>
                     """
           helpText: """
-                    <p>Websites and online resources to access and further descibe the model</p>
-                    <p>You should include the location of the model code repository e.g. https://github.com/NERC-CEH/...</p>
-                    <p><b>If your model is not currently under version control and you are unsure about how to achieve this please talk to your Informatics Liaison representative.</b></p>
+                    <p>Websites/online resources to access and further descibe the model</p>
+                    <p>You should include the location of the model code repository e.g. https://github.com/...</p>
                     """
 
         new InputView
@@ -158,7 +181,6 @@ define [
           modelAttribute: 'licenseType'
           label: 'License'
           listAttribute: """
-                    <option value='unknown' />
                     <option value='open' />
                     <option value='non-open' />
                     """
@@ -167,80 +189,61 @@ define [
                     """
       ]
     ,
-      label: 'Input variables'
-      title: 'Input variables'
+      label: 'Technical'
+      title: 'Technical information'
       views: [
-        new PredefinedParentView
+        new TextareaView
           model: @model
-          ModelType: DataTypeSchema
-          modelAttribute: 'inputVariables'
-          multiline: true
-          label: 'Input variables'
-          ObjectInputView: DataTypeSchemaSimpleView
-          predefined:
-            'Boolean (true/false)':
-              type: 'boolean'
-            'Date':
-              type: 'date'
-            'Date & time':
-              type: 'datetime'
-            'Decimal number':
-              type: 'number'
-            'Geographic point':
-              type: 'geopoint'
-            'Integer':
-              type: 'integer'
-            'Text':
-              type: 'string'
-            'Time':
-              type: 'time'
-              format: 'hh:mm:ss'
-            'URI':
-              type: 'string'
-              format: 'uri'
-            'UUID':
-              type: 'string'
-              format: 'uuid'
+          modelAttribute: 'calibration'
+          label: 'Model calibration'
+          rows: 7
+          helpText: """
+                    <p>Does the model need calibration before running? If so, what needs to be supplied to do this? (if applicable)</p>
+                    """
+
+        new TextareaView
+          model: @model
+          modelAttribute: 'configuration'
+          label: 'Model configuration'
+          rows: 7
+
+        new InputView
+          model: @model
+          modelAttribute: 'language'
+          label: 'Language'
+          placeholderAttribute: 'e.g. Python 2.7, C++, R 3.6'
+          helpText: """
+                    <p>Language in which the model is written.  You should include the release number if relevant</p>
+                    """
+
+        new InputView
+          model: @model
+          modelAttribute: 'compiler'
+          label: 'Compiler'
+          placeholderAttribute: 'e.g. C++ compiler'
+          helpText: """
+                    <p>Compiler required (if applicable)</p>
+                    """
+
+        new InputView
+          model: @model
+          modelAttribute: 'operatingSystem'
+          label: 'Operating system'
+          helpText: """
+                    <p>Operating system typically used to run the model</p>
+                    """
+
+         new InputView
+          model: @model
+          modelAttribute: 'systemMemory'
+          label: 'System memory'
+          helpText: """
+                    <p>Memory required to run code (if known)</p>
+                    """
       ]
     ,
-      label: 'Output variables'
-      title: 'Output variables'
-      views: [
-        new PredefinedParentView
-          model: @model
-          ModelType: DataTypeSchema
-          modelAttribute: 'outputVariables'
-          multiline: true
-          label: 'Output variables'
-          ObjectInputView: DataTypeSchemaSimpleView
-          predefined:
-            'Boolean (true/false)':
-              type: 'boolean'
-            'Date':
-              type: 'date'
-            'Date & time':
-              type: 'datetime'
-            'Decimal number':
-              type: 'number'
-            'Geographic point':
-              type: 'geopoint'
-            'Integer':
-              type: 'integer'
-            'Text':
-              type: 'string'
-            'Time':
-              type: 'time'
-              format: 'hh:mm:ss'
-            'URI':
-              type: 'string'
-              format: 'uri'
-            'UUID':
-              type: 'string'
-              format: 'uuid'
-      ]
-    ,
-      label: 'Spatio-temporal'
-      title: 'Spatio-temporal details'
+      label: 'Scale'
+      title: 'Spatial and temporal scale'
       views: [
         new PredefinedParentView
           model: @model
@@ -313,166 +316,26 @@ define [
           helpText: """
                     <p>Is the model only applicable to certain areas?</p>
                     """
-
-        new InputView
+        
+        new ParentView
           model: @model
-          modelAttribute: 'spatialResolution'
-          label: 'Spatial resolution'
-          placeholderAttribute: 'e.g. 1km2 or 5m2;'
-          helpText: """
-                    <p>Spatial resolution at which model works or at which model outputs are generated (if applicable)</p>
-                    """
+          modelAttribute: 'resolution'
+          multiline: true
+          label: 'Resolution'
+          ObjectInputView: ModelResolutionView
 
-        new InputView
-          model: @model
-          modelAttribute: 'temporalResolutionMin'
-          label: 'Temporal resolution (min)'
-          placeholderAttribute: 'e.g. 1 second or 10 days'
-          helpText: """
-                    <p>Minimum time step supported by the model (if applicable) </p>
-                    """
 
-        new InputView
-          model: @model
-          modelAttribute: 'temporalResolutionMax'
-          label: 'Temporal resolution (max)'
-          placeholderAttribute: 'e.g. annual or decadal '
-          helpText: """
-                    <p>Maximum time step supported by the model (if applicable) </p>
-                    """
-
-      ]
-    ,
-      label: 'Technical info'
-      title: 'Technical info'
-      views: [
-        new TextareaView
-          model: @model
-          modelAttribute: 'modelCalibration'
-          label: 'Model calibration'
-          rows: 7
-          helpText: """
-                    <p>Does the model need calibration before running? If so, what needs to be supplied to do this? (if applicable)</p>
-                    """
-
-        new InputView
-          model: @model
-          modelAttribute: 'language'
-          label: 'Language'
-          placeholderAttribute: 'e.g. Python 2.7, C++, R 3.6'
-          helpText: """
-                    <p>Language in which the model is written.  You should include the release number if relevant</p>
-                    """
-
-        new InputView
-          model: @model
-          modelAttribute: 'compiler'
-          label: 'Compiler'
-          placeholderAttribute: 'e.g. C++ compiler'
-          helpText: """
-                    <p>Compiler required (if applicable)</p>
-                    """
-
-        new InputView
-          model: @model
-          modelAttribute: 'operatingSystem'
-          label: 'Operating system'
-          helpText: """
-                    <p>Operating system typically used to run the model</p>
-                    """
-
-         new InputView
-          model: @model
-          modelAttribute: 'systemMemory'
-          label: 'System memory'
-          helpText: """
-                    <p>Memory required to run code (if known)</p>
-                    """
       ]
     ,
       label: 'Quality'
-      title: 'Quality assurance'
+      title: 'Quality'
       views: [
-        new SingleObjectView
+        new ParentView
           model: @model
-          modelAttribute: 'developerTesting'
-          label: 'Developer testing'
-          ObjectInputView: QaView
-          helpText: """
-                    <p>Use of a range of developer tools including parallel build and analytical review or sense check</p>
-                    """
-
-        new SingleObjectView
-          model: @model
-          modelAttribute: 'internalPeerReview'
-          label: 'Internal peer review'
-          ObjectInputView: QaView
-          helpText: """
-                    <p>Obtaining a critical evaluation from a third party independent of the development of the model but from within the same organisation</p>
-                    """
-
-        new SingleObjectView
-          model: @model
-          modelAttribute: 'externalPeerReview'
-          label: 'External peer review'
-          ObjectInputView: QaView
-          helpText: """
-                    <p>Formal or informal engagement of a third party to conduct critical evaluation from outside the organisation in which the model is being developed</p>
-                    """
-
-        new SingleObjectView
-          model: @model
-          modelAttribute: 'internalModelAudit'
-          label: 'Internal model audit'
-          ObjectInputView: QaView
-          helpText: """
-                    <p>Formal audit of a model within the organisation, perhaps involving use of internal audit functions</p>
-                    """
-
-        new SingleObjectView
-          model: @model
-          modelAttribute: 'externalModelAudit'
-          label: 'External model audit'
-          ObjectInputView: QaView
-          helpText: """
-                    <p>Formal engagement of external professional to conduct a critical evaluation of the model, perhaps involving audit professionals</p>
-                    """
-
-        new SingleObjectView
-          model: @model
-          modelAttribute: 'qaGuidelinesAndChecklists'
-          label: 'Quality assurance guidelines & checklists'
-          ObjectInputView: QaView
-          helpText: """
-                    <p>Model development refers to department’s guidance or other documented QA processes (e.g. third party publications)</p>
-                    """
-
-        new SingleObjectView
-          model: @model
-          modelAttribute: 'governance'
-          label: 'Governance'
-          ObjectInputView: QaView
-          helpText: """
-                    <p>At least one of planning, design and/or sign-off of model for use is referred to a more senior person.  There is a clear line of accountability for the model</p>
-                    """
-
-        new SingleObjectView
-          model: @model
-          modelAttribute: 'transparency'
-          label: 'Transparency'
-          ObjectInputView: QaView
-          helpText: """
-                    <p>Model is placed in the wider domain for scrutiny, and/or results are published</p>
-                    """
-
-        new SingleObjectView
-          model: @model
-          modelAttribute: 'periodicReview'
-          label: 'Periodic review'
-          ObjectInputView: QaView
-          helpText: """
-                    <p>Model is reviewed at intervals to ensure it remains fit for the intended purpose, if used on an ongoing basis</p>
-                    """
+          modelAttribute: 'qa'
+          multiline: true
+          label: 'Quality assurance'
+          ObjectInputView: ModelQAView
       ]
     ,
       label: 'References'
@@ -480,39 +343,90 @@ define [
       views: [
         new ParentView
           model: @model
-          ModelType: Reference
           modelAttribute: 'references'
+          ModelType: Supplemental
+          multiline: true
           label: 'References'
-          ObjectInputView: ReferenceView
-          multiline: true
+          ObjectInputView: SupplementalView
+          helpText: """
+                    <p>You can add information not documented elsewhere here. This includes links to related papers, grey literature or websites.  For example:</p>
+                    <ul><li>papers that cite this resource</li><li>papers/reports that provide relevant supporting information but which do not cite this resource</li><li>project websites</li></ul>
+                    <p>When linking to published articles, please use DOIs whenever possible.</p>
+                    <p><small class='text-danger'><i class='fas fa-exclamation-triangle'> </i> NOTE: Some websites may be maintained for a limited period and may therefore soon become unavailable.</small></p>
+                    """    
       ]
     ,
-      label: 'Version control'
-      title: 'Version control history'
+      label: 'Input variables'
+      title: 'Input variables'
       views: [
-        new ParentView
+        new PredefinedParentView
           model: @model
-          modelAttribute: 'versionHistories'
-          label: 'Version control change notes'
-          ObjectInputView: VersionHistoryView
+          ModelType: DataTypeSchema
+          modelAttribute: 'inputVariables'
           multiline: true
-          helpText: """
-                    <p>Use a unique identifier for different versions of a model</p>
-                    """
+          label: 'Input variables'
+          ObjectInputView: DataTypeSchemaSimpleView
+          predefined:
+            'Boolean (true/false)':
+              type: 'boolean'
+            'Date':
+              type: 'date'
+            'Date & time':
+              type: 'datetime'
+            'Decimal number':
+              type: 'number'
+            'Geographic point':
+              type: 'geopoint'
+            'Integer':
+              type: 'integer'
+            'Text':
+              type: 'string'
+            'Time':
+              type: 'time'
+              format: 'hh:mm:ss'
+            'URI':
+              type: 'string'
+              format: 'uri'
+            'UUID':
+              type: 'string'
+              format: 'uuid'
       ]
     ,
-      label: 'Project use'
-      title: 'Project use'
+      label: 'Output variables'
+      title: 'Output variables'
       views: [
-        new ParentView
+        new PredefinedParentView
           model: @model
-          modelAttribute: 'projectUsages'
-          label: 'Project usage'
-          ObjectInputView: ProjectUsageView
-          helpText: """
-                    <p>Use of model in projects</p>
-                    """
-      ]
+          ModelType: DataTypeSchema
+          modelAttribute: 'outputVariables'
+          multiline: true
+          label: 'Output variables'
+          ObjectInputView: DataTypeSchemaSimpleView
+          predefined:
+            'Boolean (true/false)':
+              type: 'boolean'
+            'Date':
+              type: 'date'
+            'Date & time':
+              type: 'datetime'
+            'Decimal number':
+              type: 'number'
+            'Geographic point':
+              type: 'geopoint'
+            'Integer':
+              type: 'integer'
+            'Text':
+              type: 'string'
+            'Time':
+              type: 'time'
+              format: 'hh:mm:ss'
+            'URI':
+              type: 'string'
+              format: 'uri'
+            'UUID':
+              type: 'string'
+              format: 'uuid'
+      ]      
     ]
 
     EditorView.prototype.initialize.apply @

@@ -1,5 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
+import freemarker.template.Configuration;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +11,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
+import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
+import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.datalabs.DatalabsDocument;
@@ -36,6 +40,8 @@ import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.DATALABS_JSON_VALU
 class DatalabsDocumentControllerTest {
     @MockBean private DocumentRepository documentRepository;
     @MockBean(name="permission") private PermissionService permissionService;
+    @Autowired private Configuration configuration;
+    @MockBean private CatalogueService catalogueService;
 
     @Autowired private MockMvc mvc;
 
@@ -50,6 +56,12 @@ class DatalabsDocumentControllerTest {
             }
             """;
 
+    @SneakyThrows
+    private void givenFreemarkerConfiguration() {
+        configuration.setSharedVariable("catalogues", catalogueService);
+        configuration.setSharedVariable("permission", permissionService);
+    }
+
     private void givenUserCanCreate() {
         given(permissionService.userCanCreate(catalogue))
             .willReturn(true);
@@ -60,13 +72,28 @@ class DatalabsDocumentControllerTest {
             .willReturn(true);
     }
 
+    private void givenCatalogue() {
+        given(catalogueService.retrieve(catalogue))
+            .willReturn(Catalogue.builder()
+                .id(catalogue)
+                .title("Foo")
+                .url("https://example.com")
+                .contactUrl("")
+                .build()
+            );
+    }
+
     @Test
     public void checkCanCreateDatalabsDocument() throws Exception {
         //Given
         givenUserCanCreate();
+        givenFreemarkerConfiguration();
+        givenCatalogue();
 
         DatalabsDocument document = new DatalabsDocument();
         document.setUri("https://catalogue.ceh.ac.uk/id/123-test");
+        document.setMetadata(MetadataInfo.builder().catalogue(catalogue).build());
+        document.setTitle("Test");
         String message = "new DataLabs document";
 
         given(documentRepository.saveNew(

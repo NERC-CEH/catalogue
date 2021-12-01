@@ -1,1 +1,318 @@
-@import "style-ceh";
+@import "theme";
+@import "../vendor/font-awesome-5/less/fontawesome";
+@import "../vendor/font-awesome-5/less/regular";
+@import "../vendor/font-awesome-5/less/solid";
+@import "message-panel";
+@import "search";
+@import "mapviewer";
+@import "metadata";
+@import "editor";
+
+@fa-font-path: "../vendor/font-awesome-5/webfonts";
+
+//colours
+@ukri-blue: hsla(241, 37%, 28%, 1);
+@nerc-blue: @ukri-blue;
+@nerc-lightgreen: hsla(106, 48%, 53%, 1);
+@nerc-darkgreen: hsla(120, 37%, 38%, 1);
+@nerc-hightlight: hsla(341, 59%, 50%, 1);
+
+@link-hover-color: @nerc-blue;
+
+@navbar-height: 68px;
+@navbar-default-bg: white;
+@navbar-margin-bottom: @line-height-computed;
+@navbar-default-border: @nerc-darkgreen;
+@navbar-border-width: 12px;
+@navbar-border-radius: 0;
+@navbar-default-color: @gray-light;
+@navbar-default-border: @nerc-blue;
+@navbar-default-link-color: black;
+@navbar-default-link-hover-color: @nerc-blue;
+@navbar-default-link-hover-bg: darken(@navbar-default-bg, 5%);
+@navbar-default-link-active-color: @navbar-default-link-hover-color;
+@navbar-default-link-active-bg: darken(@navbar-default-bg, 5%);
+@navbar-default-link-disabled-color: #444;
+@navbar-default-link-disabled-bg: transparent;
+@navbar-default-brand-color: @navbar-default-link-color;
+@navbar-default-brand-hover-color: #fff;
+@navbar-default-brand-hover-bg: transparent;
+@navbar-default-toggle-hover-bg: #333;
+@navbar-default-toggle-icon-bar-bg: #fff;
+@navbar-default-toggle-border-color: #333;
+
+@footer-height: 3.25em;
+@header-text: @gray-dark;
+@panel-default-heading-bg: @nerc-lightgreen;
+
+html {
+  overflow-y: scroll;
+  min-height: 100%;
+  position: relative;
+}
+
+body {
+  margin-top: @navbar-height + (@navbar-border-width*2);
+  margin-bottom: @footer-height;
+}
+
+.navbar {
+  border-bottom-width: @navbar-border-width;
+  box-shadow: 0 0 0 (@navbar-border-width)/2 @nerc-darkgreen;
+  &-toggle {
+    background-color: black;
+    color: white;
+  }
+}
+
+.filters-panel {
+  .header {
+    h3 {
+      color: white;
+    }
+  }
+}
+.adminToolbar {
+  margin-top: 1em;
+}
+
+.navbar-fixed-bottom {
+  background-color: #eee;
+}
+
+a.navbar-brand {
+  min-height: @navbar-height;
+  min-width: 280px;
+  background-image: url("https://eidc.ceh.ac.uk/images/nerc_small.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  img {
+    display: none;
+  }
+}
+.description {
+  margin-bottom: 2em;
+}
+
+.key-value {
+  border-top: none;
+  margin-bottom: 2em;
+
+  .key {
+    font-weight: bold;
+  }
+}
+
+.nerc-model {
+  #adminPanel {
+    padding: 1em 0.5em;
+  }
+  p.text-danger {
+    font-weight: bolder;
+    color: red;
+  }
+
+  .btn {
+    &-code {
+      background-color: lighten(@nerc-blue, 60%);
+      color: black;
+      border-color: lightgray;
+      border-radius: 6px;
+    }
+    &-documentation {
+      color: black;
+      border-color: lightgray;
+      border-radius: 6px;
+    }
+  }
+
+  .model--header {
+    margin-bottom: 1.6em;
+    h1 {
+      border-bottom: 1px solid lightgray;
+      margin-bottom: 0.6em;
+      padding-bottom: 0.6em;
+    }
+  }
+
+  .model--body {
+    gap: 1em;
+    display: grid;
+    grid-template-columns: auto 250px;
+    grid-template-areas:
+      "access access"
+      "main main";
+    &--access {
+      grid-area: access;
+      border: 1px solid lightgrey;
+      display: flex;
+      gap: 0 3em;
+      div {
+        padding: 1em;
+        flex-grow: 1;
+        background-color: #eee;
+        font-weight: bolder;
+      }
+      a {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 1em;
+        span:first-child {
+          margin-right: 0.3em;
+        }
+      }
+    }
+    &--main {
+      grid-area: main;
+    }
+  }
+  .model--body--access a:hover {
+    background-color: #eee;
+    text-decoration: none;
+  }
+  @media only screen and (min-width: 993px) {
+    .model--body {
+      grid-template-areas: "main access";
+      &--access {
+        flex-direction: column;
+        justify-content: flex-start;
+        div {
+          flex-grow: 0;
+        }
+        a {
+          justify-content: left;
+        }
+      }
+    }
+  }
+
+  .key-value {
+    display: grid;
+  }
+
+  .models {
+    display: grid;
+    gap: 1em;
+    &--modelinfo {
+      &--title {
+        padding: 0.5em 0;
+        font-weight: bolder;
+        text-transform: uppercase;
+      }
+      &--extra {
+        margin-left: 3em;
+        display: grid;
+        gap: 0.65em 1em;
+        grid-template-columns: 1fr;
+        @media (min-width: 600px) {
+          grid-template-columns: 200px auto;
+        }
+        div:nth-of-type(odd) {
+            font-weight: bolder;
+            text-align: right;
+        }
+      }
+    }
+  }
+
+  .table--qa {
+    margin: 1em 3em;
+    table {
+      thead {
+        th {
+          background-color: #eee;
+          border-width: 0;
+        }
+      }
+      tbody {
+        td,
+        th {
+          border-color: #ddd !important;
+        }
+      }
+    }
+    @media only screen and (max-width: 760px),
+      (min-device-width: 768px) and (max-device-width: 1024px) {
+      // On small screens, force qa table to not display as a table
+      @head-width: 100px;
+
+      table,
+      thead,
+      tbody,
+      th,
+      td,
+      tr {
+        display: block;
+        border-width: 0 !important;
+      }
+
+      // Hide table headers (for accessibility, don't use display:none )
+      thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+      }
+
+      tr {
+        margin: 0 0 3rem 0;
+      }
+
+      td {
+        border: none;
+        position: relative;
+        margin-left: @head-width*1.2;
+        padding: 0.4em !important;
+        &:before {
+          position: absolute;
+          padding: 0.4em 0.6em;
+          top: 0;
+          left: 3em;
+          margin-left: -(@head-width*1.5);
+          text-align: right;
+          width: @head-width;
+          font-weight: bolder;
+          white-space: nowrap;
+        }
+        &:nth-of-type(1):before {
+          content: "Category";
+        }
+        &:nth-of-type(2):before {
+          content: "Date";
+        }
+        &:nth-of-type(3):before {
+          content: "Notes";
+        }
+      }
+    }
+  }
+}
+
+.links {
+  display: grid;
+  gap: 1.6em;
+  &--link {
+    &--url {
+      font-weight: bolder;
+      margin-left: 1.6em;
+    }
+  }
+}
+
+//media query for screens wider than 600px
+@media only screen and (min-width: 600px) {
+  .nerc-model {
+    .container {
+      .key-value {
+        grid-template-columns: 13em auto;
+      }
+      .key-value > div {
+        padding: 0 1em;
+      }
+      .key {
+        text-align: right;
+      }
+    }
+  }
+}

@@ -15,7 +15,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.components.datastore.DataRepository;
@@ -34,7 +33,6 @@ import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.document.JacksonDocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.document.reading.*;
 import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
-import uk.ac.ceh.gateway.catalogue.document.writing.MessageConverterWritingService;
 import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
 import uk.ac.ceh.gateway.catalogue.elter.ElterDocument;
 import uk.ac.ceh.gateway.catalogue.erammp.ErammpDatacube;
@@ -264,15 +262,5 @@ public class ServicesConfig {
         @Value("${solr.server.url}") String solrDocumentServerUrl
     ){
         return new HttpSolrClient.Builder(solrDocumentServerUrl).build();
-    }
-
-    @Bean
-    DocumentWritingService documentWritingService(
-        List<HttpMessageConverter<?>> messageConverters
-    ) {
-        if (log.isDebugEnabled()) {
-            messageConverters.forEach(converter -> log.debug(converter.toString()));
-        }
-        return new MessageConverterWritingService(messageConverters);
     }
 }

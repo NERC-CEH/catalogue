@@ -74,13 +74,13 @@ public class DocumentTypes {
 
     public static final String NERC_MODEL = "nerc-model";
     public static DocumentType NERC_MODEL_TYPE = DocumentType.builder()
-        .title("Model")
+        .title("Model code")
         .type(NERC_MODEL)
         .build();
 
     public static final String NERC_MODEL_USE = "nerc-model-use";
     public static DocumentType NERC_MODEL_USE_TYPE = DocumentType.builder()
-        .title("Model use")
+        .title("Model implementation")
         .type(NERC_MODEL_USE)
         .build();
 
