@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
-class HServiceAgreementModelAssemblerTest {
+class ServiceAgreementModelAssemblerTest {
     @Mock private DocumentRepository documentRepository;
 
     private ServiceAgreementModelAssembler assembler;
