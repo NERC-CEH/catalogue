@@ -25,7 +25,6 @@ import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -545,10 +544,11 @@ class ServiceAgreementControllerTest {
             .willReturn(false);
     }
     private void givenHistory() {
-        List revisions = new ArrayList();
-        revisions.add(new TestRevision("revision1"));
-        revisions.add(new TestRevision("currentRevision"));
-        History history = new History(ID, revisions, "test");
+        List<DataRevision<CatalogueUser>> revisions = List.of(
+            new TestRevision("currentRevision"),
+            new TestRevision("revision1")
+        );
+        History history = new History("test", ID, revisions);
         given(serviceAgreementService.getHistory(ID))
                 .willReturn(history);
     }

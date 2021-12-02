@@ -246,7 +246,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     @SneakyThrows
     public History getHistory(String id) {
         try {
-            return new History(id, repo.getRevisions(FOLDER + id + ".raw"), baseUri);
+            return new History(baseUri, id, repo.getRevisions(FOLDER + id + ".raw"));
         } catch (DataRepositoryException ex) {
             throw new ServiceAgreementException((ex.getMessage()));
         }

@@ -20,7 +20,6 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.JiraService;
 
 import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.String.format;
@@ -363,9 +362,10 @@ public class GitRepoServiceAgreementServiceTest {
     @SneakyThrows
     public void canGetHistory() {
         //Given
-        List<DataRevision<CatalogueUser>> revisions = new ArrayList<>();
-        revisions.add(new TestRevision("revision1"));
-        revisions.add(new TestRevision("current version"));
+        List<DataRevision<CatalogueUser>> revisions = List.of(
+            new TestRevision("current version"),
+            new TestRevision("revision1")
+        );
         given(repo.getRevisions(FOLDER + ID + ".raw"))
                 .willReturn(revisions);
 
@@ -373,10 +373,10 @@ public class GitRepoServiceAgreementServiceTest {
         val result = service.getHistory(ID);
 
         //Then
-        assertThat(result.getRevisions().get(0).getVersion(),is(equalTo("1")));
-        assertThat(result.getRevisions().get(0).getHref(), is(equalTo(
+        assertThat(result.getRevisions().get(0).getVersion(), equalTo("1"));
+        assertThat(result.getRevisions().get(0).getHref(), equalTo(
                         "https://catalogue.ceh.ac.uk/service-agreement/" +
-                                "7c60707c-80ee-4d67-bac2-3c9a93e61557/version/revision1")));
+                                "7c60707c-80ee-4d67-bac2-3c9a93e61557/version/revision1"));
     }
 
     @Test
