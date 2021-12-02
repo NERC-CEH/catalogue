@@ -25,7 +25,6 @@ import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -414,14 +413,12 @@ class ServiceAgreementControllerTest {
             {
             "historyOf":"test",
             "revisions":[
-            {
-            "version":"2",
-            "href":"test/service-agreement/test/version/revision2"},
-            {
-            "version":"1","href":"test/service-agreement/test/version/revision1"
-            }
-            ]}
-            """;
+                {
+                "version":"1",
+                "href":"test/service-agreement/test/version/revision1"
+                }
+            ]
+            }""";
 
         // when
         mvc.perform(get("/service-agreement/{id}/history", ID)
@@ -547,10 +544,11 @@ class ServiceAgreementControllerTest {
             .willReturn(false);
     }
     private void givenHistory() {
-        List<DataRevision<CatalogueUser>> revisions = new ArrayList<>();
-        revisions.add(new TestRevision("revision2"));
-        revisions.add(new TestRevision("revision1"));
-        History history = new History(ID, revisions, "test");
+        List<DataRevision<CatalogueUser>> revisions = List.of(
+            new TestRevision("currentRevision"),
+            new TestRevision("revision1")
+        );
+        History history = new History("test", ID, revisions);
         given(serviceAgreementService.getHistory(ID))
                 .willReturn(history);
     }

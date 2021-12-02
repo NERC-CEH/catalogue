@@ -70,10 +70,12 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     @Override
     @SneakyThrows
     public ServiceAgreement get(String id) {
-        return dataDocumentToServiceAgreement(
+       val serviceAgreement = dataDocumentToServiceAgreement(
                 repo.getData(FOLDER + id + ".raw"),
                 repo.getData(FOLDER + id + ".meta")
         );
+       serviceAgreement.setHistorical(false);
+        return serviceAgreement;
     }
 
     @SneakyThrows
@@ -258,7 +260,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     @SneakyThrows
     public History getHistory(String id) {
         try {
-            return new History(id, repo.getRevisions(FOLDER + id + ".raw"), baseUri);
+            return new History(baseUri, id, repo.getRevisions(FOLDER + id + ".raw"));
         } catch (DataRepositoryException ex) {
             throw new ServiceAgreementException((ex.getMessage()));
         }
@@ -269,10 +271,12 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
             String id,
             String version
     ) {
-        return dataDocumentToServiceAgreement(
-                repo.getData(version, FOLDER + id + ".raw"),
-                repo.getData(version, FOLDER + id + ".meta")
+        val serviceAgreement = dataDocumentToServiceAgreement(
+            repo.getData(version, FOLDER + id + ".raw"),
+            repo.getData(version, FOLDER + id + ".meta")
         );
+        serviceAgreement.setHistorical(true);
+        return serviceAgreement;
     }
 
     @SneakyThrows
