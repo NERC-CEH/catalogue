@@ -15,7 +15,6 @@ import java.util.List;
         @Template(called = "html/service_agreement/service-agreement-history.ftlh", whenRequestedAs = MediaType.TEXT_HTML_VALUE),
 })
 public class History {
-    private static String VERSION = "Version";
     private String historyOf;
     private List<Revision> revisions;
 

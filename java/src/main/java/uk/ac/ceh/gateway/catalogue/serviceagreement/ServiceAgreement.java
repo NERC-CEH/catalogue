@@ -99,7 +99,8 @@ public class ServiceAgreement extends AbstractMetadataDocument {
     /*
     FLAGS
     */
-    private String historical;
+    @JsonIgnore
+    private boolean historical;
 
     @Override
     @JsonIgnore

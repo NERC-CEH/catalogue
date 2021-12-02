@@ -6,7 +6,7 @@
 
     <div id="metadata">
         <div class="container" role="main">
-            <#if permission.userCanEdit(id) && isHistorical == "false">
+            <#if permission.userCanEdit(id) && !isHistorical()>
                 <div class="row hidden-print" id="adminPanel">
                     <div class="text-right" id="adminToolbar" role="toolbar">
                         <div class="btn-group btn-group-sm">
@@ -29,28 +29,28 @@
                         </#list>
                     </div>
                 </div>
-            <#elseif permission.userCanEdit(id) && isHistorical == "true">
+            <#elseif permission.userCanEdit(id) && isHistorical()>
                 <div class="row hidden-print" id="adminPanel">
                     <div class="text-right" id="adminToolbar" role="toolbar">
                         <#list getModelLinks() as link>
                             <#if link.title == 'History'>
-                                <form action="${link.href}" method="get">
-                                    <input type="submit" value="${link.title}" class="btn btn-default btn-wide">
-                                </form>
+                                <a href="${link.href}" class="btn btn-default btn-wide">${link.title}</a>
                             </#if>
                         </#list>
                     </div>
                 </div>
             </#if>
 
-            <#if isHistorical == "true">
+            <#if isHistorical()>
             <h1 class="text-danger">Previous Version</h1>
             <p class="text-danger"><b>IMPORTANT</b> This is an older version of this Service Agreement record and cannot be edited</p>
             </#if>
 
-            <#if permission.userCanEdit(id)>
-                <#include "_serviceAgreementQualityAlert.ftlh">
-            </#if>
+            <div>
+                <#if permission.userCanEdit(id)>
+                    <#include "_serviceAgreementQualityAlert.ftlh">
+                </#if>
+            </div>
 
             <h1>Environmental Information Data Centre - Service Agreement</h1>
             <p><b>IMPORTANT</b> Once a DOI has been issued, these details cannot be changed</p>

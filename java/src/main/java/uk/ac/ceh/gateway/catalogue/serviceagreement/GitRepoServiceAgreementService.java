@@ -73,7 +73,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
                 repo.getData(FOLDER + id + ".raw"),
                 repo.getData(FOLDER + id + ".meta")
         );
-       serviceAgreement.setHistorical("false");
+       serviceAgreement.setHistorical(false);
         return serviceAgreement;
     }
 
@@ -261,7 +261,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
             repo.getData(version, FOLDER + id + ".raw"),
             repo.getData(version, FOLDER + id + ".meta")
         );
-        serviceAgreement.setHistorical("true");
+        serviceAgreement.setHistorical(true);
         return serviceAgreement;
     }
 

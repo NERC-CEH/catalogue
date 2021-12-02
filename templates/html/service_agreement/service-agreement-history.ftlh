@@ -5,11 +5,9 @@
         <div class="container" role="main">
             <h4>Edit history for Service Agreement: ${historyOf}</h4>
             <ul>
-                <a href="/service-agreement/${historyOf}"><li>Current Version</li><a/>
-            <#list revisions>
-                <#items as revision>
-                    <a href="${revision.href}"><li>Version ${revision.version}</li><a/>
-                </#items>
+                <li><a href="/service-agreement/${historyOf}">Current Version</a></li>
+            <#list revisions as revision>
+                <li><a href="${revision.href}">Version ${revision.version}</a></li>
             </#list>
             </ul>
         </div>

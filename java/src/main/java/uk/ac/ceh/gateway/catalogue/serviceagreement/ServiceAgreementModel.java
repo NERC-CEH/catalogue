@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.hateoas.Link;
@@ -99,7 +100,8 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
     /*
     FLAGS
     */
-    private String isHistorical;
+    @JsonIgnore
+    private boolean historical;
 
     public ServiceAgreementModel(ServiceAgreement serviceAgreement) {
         this.id = serviceAgreement.getId();
@@ -133,7 +135,7 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
         this.description = serviceAgreement.getDescription();
         this.lineage = serviceAgreement.getLineage();
         this.areaOfStudy = serviceAgreement.getAreaOfStudy();
-        this.isHistorical = serviceAgreement.getHistorical();
+        this.historical = serviceAgreement.isHistorical();
     }
 
     @SuppressWarnings("unused")
