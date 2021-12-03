@@ -175,13 +175,13 @@
 </#if>
 
 <#function isNewServiceAgreement>
+  <#if metadata.state == "draft">
+    <#return true>
+  </#if>
   <#if datasetReferenceDate??>
     <#if datasetReferenceDate.creationDate??>
       <#return geminiHelper.isNewServiceAgreement(datasetReferenceDate.creationDate)>
     </#if>
-  </#if>
-  <#if state == "draft">
-    <#return true>
   </#if>
   <#return false>
 </#function>
