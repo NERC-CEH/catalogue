@@ -23,7 +23,6 @@ define [
   'cs!views/editor/DistributionFormatView'
   'cs!models/editor/DistributionFormat'
   'cs!models/editor/MapDataSource'
-  'cs!views/editor/RelatedRecordView'
   'cs!views/editor/ReadOnlyView'
   'cs!views/editor/ParentStringView'
   'cs!models/editor/BoundingBox'
@@ -34,7 +33,7 @@ define [
   'cs!views/service-agreement/EndUserLicenceView'
   'cs!views/editor/FundingView'
   'cs!models/editor/Funding'
-], (Backbone, _, EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, AccessLimitationView, AccessLimitation, InspireTheme, CategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, OnlineResourceView, OnlineResource, ResourceConstraintView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, MapDataSource, RelatedRecordView, ReadOnlyView, ParentStringView, BoundingBox, BoundingBoxView, TextOnlyView, AuthorView, FileView, EndUserLicenceView, FundingView, Funding) -> EditorView.extend
+], (Backbone, _, EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, AccessLimitationView, AccessLimitation, InspireTheme, CategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, OnlineResourceView, OnlineResource, ResourceConstraintView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, MapDataSource, ReadOnlyView, ParentStringView, BoundingBox, BoundingBoxView, TextOnlyView, AuthorView, FileView, EndUserLicenceView, FundingView, Funding) -> EditorView.extend
 
   initialize: ->
     @delegate "click #exitWithoutSaving": "exit"
@@ -190,12 +189,11 @@ define [
           modelAttribute: 'transferMethod'
           label: 'Transfer Method'
 
-        new ParentView
+        new TextareaView
           model: @model
           modelAttribute: 'relatedDataHoldings'
           label: 'Related Data Holdings'
-          ObjectInputView: RelatedRecordView
-          multiline: true
+          rows: 15
 
         new SingleObjectView
           model: @model

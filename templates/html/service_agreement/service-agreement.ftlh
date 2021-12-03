@@ -118,7 +118,7 @@
             <h3>The data</h3>
             <@displayFiles/>
             <@displayData "Transfer method" transferMethod/>
-            <@displayRelatedDataHoldings/>
+            <@displayData "Related Data Holdings" relatedDataHoldings/>
             <@displayDataCategory/>
             <h3>Supporting documentation</h3>
             <@supportingDocuments/>
@@ -253,18 +253,6 @@
                 </#if>
             </#list>
         </div>
-    </#if>
-</#macro>
-
-<#macro displayRelatedDataHoldings>
-    <#if relatedDataHoldings?? && relatedDataHoldings?has_content>
-        <h3>Related Data Holdings</h3>
-        <dl>
-            <#list relatedDataHoldings as dataHolding>
-                <dt>Title: ${dataHolding.title}</dt>
-                <dd>URL: ${dataHolding.href}</dd>
-            </#list>
-        </dl>
     </#if>
 </#macro>
 

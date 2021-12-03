@@ -50,7 +50,7 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
     private String fileNumber;
     private List<File> files;
     private String transferMethod;
-    private List<RelatedRecord> relatedDataHoldings;
+    private String relatedDataHoldings;
     private Keyword dataCategory;
 
     /*
