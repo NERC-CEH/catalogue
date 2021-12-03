@@ -7,7 +7,7 @@
   isNotLinkDocument = metadata.documentType != 'LINK_DOCUMENT'
   isRestrictedFieldsEditor = permission.userCanEditRestrictedFields(metadata.catalogue)
   isSimpleUpload = !isEidcCatalogue && permission.userCanUpload(id)
-  isServiceAgreement = profile.isActive("service-agreement") && geminiHelper.isNewServiceAgreement
+  isServiceAgreement = profile.isActive("service-agreement") && isNewServiceAgreement()
 
 >
 
@@ -173,3 +173,15 @@
     </div>
   </div>
 </#if>
+
+<#function isNewServiceAgreement>
+  <#if datasetReferenceDate??>
+    <#if datasetReferenceDate.creationDate??>
+      <#return geminiHelper.isNewServiceAgreement(datasetReferenceDate.creationDate)>
+    </#if>
+  </#if>
+  <#if state == "draft">
+    <#return true>
+  </#if>
+  <#return false>
+</#function>

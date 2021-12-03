@@ -5,8 +5,6 @@ import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import uk.ac.ceh.gateway.catalogue.gemini.*;
 
 import java.time.LocalDate;
@@ -15,22 +13,16 @@ import java.util.Arrays;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class GeminiExtractorTest {
-    @Mock
-    private LocalDate serviceAgreementStart;
 
-    @InjectMocks
     private GeminiExtractor service;
     
     @BeforeEach
     public void init() {
         String localDateStr = "2021-12-20";
-//        given(LocalDate.parse(localDateStr))
-//                .willReturn(serviceAgreementStart);
         service = new GeminiExtractor(localDateStr);
     }
 
@@ -138,16 +130,8 @@ public class GeminiExtractorTest {
 
     @Test
     public void isNewServiceAgreementTest() {
-        //Given
-        GeminiDocument document = mock(GeminiDocument.class);
-        DatasetReferenceDate datasetReferenceDate = DatasetReferenceDate.builder()
-                .creationDate(LocalDate.parse("2022-12-20"))
-                .build();
-          given(document.getDatasetReferenceDate())
-            .willReturn(datasetReferenceDate);
-
         //When
-        Boolean isNewServiceAgreement = service.isNewServiceAgreement(document);
+        Boolean isNewServiceAgreement = service.isNewServiceAgreement(LocalDate.parse("2022-12-20"));
 
         //Then
         assertThat(isNewServiceAgreement, is(true));
@@ -155,16 +139,8 @@ public class GeminiExtractorTest {
 
     @Test
     public void isNotNewServiceAgreementTest() {
-        //Given
-        GeminiDocument document = mock(GeminiDocument.class);
-        DatasetReferenceDate datasetReferenceDate = DatasetReferenceDate.builder()
-                .creationDate(LocalDate.parse("2020-12-20"))
-                .build();
-        given(document.getDatasetReferenceDate())
-                .willReturn(datasetReferenceDate);
-
         //When
-        Boolean isNewServiceAgreement = service.isNewServiceAgreement(document);
+        Boolean isNewServiceAgreement = service.isNewServiceAgreement(LocalDate.parse("2020-12-20"));
 
         //Then
         assertThat(isNewServiceAgreement, is(false));

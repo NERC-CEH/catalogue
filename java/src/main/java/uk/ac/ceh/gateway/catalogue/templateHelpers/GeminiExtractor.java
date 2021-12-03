@@ -32,9 +32,7 @@ public class GeminiExtractor {
     private LocalDate serviceAgreementStart;
 
     public GeminiExtractor(@Value("${serviceagreement.start}") String localDateStr) {
-        if (localDateStr != null && !localDateStr.isEmpty()) {
-            serviceAgreementStart = LocalDate.parse(localDateStr);
-        }
+        serviceAgreementStart = LocalDate.parse(localDateStr);
         log.info("Creating {}", this);
     }
 
@@ -49,35 +47,30 @@ public class GeminiExtractor {
                 .collect(Collectors.toList());
     }
 
-    public boolean isNewServiceAgreement(GeminiDocument document){
-        var creationDate = document.getDatasetReferenceDate().getCreationDate();
-        if (creationDate.isAfter(serviceAgreementStart)){
-            return true;
-        }else {
-            return false;
-        }
+    public boolean isNewServiceAgreement(LocalDate creationDate) {
+        return creationDate.isAfter(serviceAgreementStart);
     }
-    
+
     /**
      * Returns the smallest extent which encompasses all of the bounding boxes
+     *
      * @param document Gemini document to extract extent
      * @return smallest extent for the supplied bounding boxes
      * @throws com.vividsolutions.jts.io.ParseException if the wkt of the bbox
-     * is incorrect
+     *                                                  is incorrect
      */
     public Envelope getExtent(GeminiDocument document) throws ParseException {
         val possibleBBoxes = Optional.ofNullable(document.getBoundingBoxes());
         if (possibleBBoxes.isPresent()) {
             List<BoundingBox> clone = new ArrayList<>(document.getBoundingBoxes());
-            if(!clone.isEmpty()) {
+            if (!clone.isEmpty()) {
                 WKTReader reader = new WKTReader();
                 Geometry geo = reader.read(clone.remove(0).getWkt());
-                for(BoundingBox bbox: clone) {
+                for (BoundingBox bbox : clone) {
                     geo = geo.union(reader.read(bbox.getWkt()));
                 }
                 return geo.getEnvelopeInternal();
-            }
-            else {
+            } else {
                 return GLOBAL_EXTENT;
             }
         } else {
