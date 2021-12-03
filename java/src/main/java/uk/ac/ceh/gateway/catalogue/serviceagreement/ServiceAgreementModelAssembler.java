@@ -15,10 +15,12 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 @Service
 public class ServiceAgreementModelAssembler extends RepresentationModelAssemblerSupport<ServiceAgreement, ServiceAgreementModel> {
     private final DocumentRepository documentRepository;
-
-    public ServiceAgreementModelAssembler(DocumentRepository documentRepository) {
+    private final ServiceAgreementQualityService serviceAgreementQualityService;
+    public ServiceAgreementModelAssembler(DocumentRepository documentRepository,
+                                          ServiceAgreementQualityService serviceAgreementQualityService) {
         super(ServiceAgreementController.class, ServiceAgreementModel.class);
         this.documentRepository = documentRepository;
+        this.serviceAgreementQualityService = serviceAgreementQualityService;
         log.info("Creating");
     }
 
@@ -43,7 +45,8 @@ public class ServiceAgreementModelAssembler extends RepresentationModelAssembler
 
         model.add(historyLink);
 
-        if ("draft".equals(serviceAgreement.getState())) {
+        if ("draft".equals(serviceAgreement.getState()) &&
+                serviceAgreementQualityService.check(serviceAgreement.getId()).getErrors() == 0) {
             val submitLink = linkTo(methodOn(ServiceAgreementController.class)
                     .submitServiceAgreement(null, id))
                     .withRel("submit")
