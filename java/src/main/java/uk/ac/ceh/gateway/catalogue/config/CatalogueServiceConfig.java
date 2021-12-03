@@ -212,7 +212,7 @@ public class CatalogueServiceConfig {
 
             Catalogue.builder()
                 .id("sa")
-                .title("Sample Archive")
+                .title("UK Environmental Specimen Bank")
                 .url("https://www.ceh.ac.uk/")
                 .contactUrl("https://www.ceh.ac.uk/contact-us")
                 .facetKey("saTaxon")
