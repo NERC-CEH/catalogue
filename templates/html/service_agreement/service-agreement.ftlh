@@ -2,7 +2,7 @@
 <#import "../skeleton.ftlh" as skeleton>
 <#import "../../functions.ftlh" as func>
 
-<@skeleton.master "Service Agreement">
+<@skeleton.master title=title catalogue=catalogues.defaultCatalogue()>
 
     <div id="metadata">
         <div class="container" role="main">
