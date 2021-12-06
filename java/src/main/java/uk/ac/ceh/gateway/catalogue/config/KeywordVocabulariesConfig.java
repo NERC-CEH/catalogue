@@ -163,6 +163,66 @@ public class KeywordVocabulariesConfig {
 
     @Profile("server:eidc")
     @Bean
+    public KeywordVocabulary ukesbPhysicalStateVocabulary(
+        @Qualifier("sparql") RestTemplate restTemplate,
+        SolrClient solrClient,
+        @Value("${sparql.endpoint}") String sparqlEndpoint
+    ) {
+        val catalogueIds = List.of("sa");
+        return new SparqlKeywordVocabulary(
+            restTemplate,
+            solrClient,
+            sparqlEndpoint,
+            "urn:x-evn-master:esb",
+            "?uri skos:broader <http://vocab.ceh.ac.uk/esb#physicalstate> ; skos:prefLabel ?label .",
+            "ukesb-physical-state",
+            "Physical State",
+            catalogueIds
+        );
+    }
+
+    @Profile("server:eidc")
+    @Bean
+    public KeywordVocabulary ukesbSampleTypeVocabulary(
+        @Qualifier("sparql") RestTemplate restTemplate,
+        SolrClient solrClient,
+        @Value("${sparql.endpoint}") String sparqlEndpoint
+    ) {
+        val catalogueIds = List.of("sa");
+        return new SparqlKeywordVocabulary(
+            restTemplate,
+            solrClient,
+            sparqlEndpoint,
+            "urn:x-evn-master:esb",
+            "?uri skos:broader+ <http://vocab.ceh.ac.uk/esb#sampletype> ; skos:prefLabel ?label .",
+            "ukesb-sample-type",
+            "Sample Type",
+            catalogueIds
+        );
+    }
+
+    @Profile("server:eidc")
+    @Bean
+    public KeywordVocabulary ukesbTaxonVocabulary(
+        @Qualifier("sparql") RestTemplate restTemplate,
+        SolrClient solrClient,
+        @Value("${sparql.endpoint}") String sparqlEndpoint
+    ) {
+        val catalogueIds = List.of("sa");
+        return new SparqlKeywordVocabulary(
+            restTemplate,
+            solrClient,
+            sparqlEndpoint,
+            "urn:x-evn-master:esb",
+            "?uri skos:broader <http://vocab.ceh.ac.uk/esb#taxon> ; skos:prefLabel ?label .",
+            "ukesb-taxon",
+            "Taxon",
+            catalogueIds
+        );
+    }
+
+    @Profile("server:eidc")
+    @Bean
     public KeywordVocabulary ukscapeResearchProjectVocabulary(
         @Qualifier("sparql") RestTemplate restTemplate,
         SolrClient solrClient,
