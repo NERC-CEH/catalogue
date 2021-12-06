@@ -22,7 +22,7 @@
 @panel-default-text: @header-text;
 @footer-height: 3.25em;
 
-@navbar-height: 74px;
+@navbar-height: 90px;
 @navbar-default-bg: white;
 @navbar-margin-bottom: @line-height-computed;
 @navbar-default-border: @eidc-blue;
@@ -43,6 +43,13 @@
 @navbar-default-toggle-hover-bg: #333;
 @navbar-default-toggle-icon-bar-bg: #fff;
 @navbar-default-toggle-border-color: #333;
+
+@filter-heading-background: darken(@eidc-blue, 5%);
+@filter-heading-color: hsl(0, 0%, 100%);
+@filter-body-background: @eidc-blue;
+@filter-body-colour: hsl(0, 0%, 100%);
+@filter-body-link-colour: hsl(0, 0%, 100%);
+@filter-border: none;
 
 html {
   overflow-y: scroll;
@@ -67,8 +74,8 @@ body {
 }
 
 a.navbar-brand {
-  min-height: 70px;
-  min-width: 173px;
+  height: (@navbar-height)-10;
+  //min-width: 173px;
   margin: 3px;
   background-image: url("https://eidc.ceh.ac.uk/images/sitelogo.png");
   background-position: center;
@@ -255,7 +262,7 @@ h1#document-title {
 }
 
 a#atlwdg-trigger {
-  font-size: 1.25em;
+  font-size: 1.5rem;
   padding: 0.25em 1.5em;
   background-color: #337085;
 }

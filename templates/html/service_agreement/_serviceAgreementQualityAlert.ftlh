@@ -16,22 +16,23 @@ alerticon="exclamation"
     <#elseif infos gte 1 >
         <#assign alertclass="info" alerticon="info-circle">
     </#if>
-    <div id="qualityAlert" class="hidden-print">
-        <div class="alert alert--${alertclass} alert-dismissible" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close" title="dismiss"><span aria-hidden="true">
-                <i class="fas fa-times"></i>
-            </span></button>
-            <i class="fas fa-${alerticon}"></i> <b>SERVICE AGREEMENT QUALITY</b>
-            <#if errors gte 1>
-                <span>${errors} error<#if errors gt 1>s</#if></span>
-            </#if>
-            <#if warnings gte 1>
-                <span>${warnings} warning<#if warnings gt 1>s</#if></span>
-            </#if>
-            <#if infos gte 1>
-                <span>${infos} issue<#if infos gt 1>s</#if></span>
-            </#if>
-            &nbsp;<a href="#section-serviceAgreementQuality">details</a>
+    <div class="hidden-print">
+        <div class="qualityalert qualityalert--${alertclass}" role="alert">
+            <div class="qualityalert__header">
+                <i class="fas fa-${alerticon}"></i> SERVICE AGREEMENT QUALITY
+            </div>
+            <div class="qualityalert__body">
+                <#if errors gte 1>
+                    <span>${errors} error<#if errors gt 1>s</#if></span>
+                </#if>
+                <#if warnings gte 1>
+                    <span>${warnings} warning<#if warnings gt 1>s</#if></span>
+                </#if>
+                <#if infos gte 1>
+                    <span>${infos} issue<#if infos gt 1>s</#if></span>
+                </#if>
+                &nbsp;<a href="#section-serviceAgreementQuality">details</a>
+            </div>
         </div>
     </div>
 </#if>

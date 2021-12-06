@@ -1,5 +1,5 @@
 <div class="row">
-  <div class="col-sm-3 col-lg-3">
+  <div class="col-sm-3 datalabel">
     <label for="input-<%= data.modelAttribute %>">
       <%= data.label %>
       <% if(data.helpText) { %>
@@ -10,5 +10,5 @@
        <%= data.helpText %>
     </div>
   </div>
-  <div class="col-sm-9 col-lg-9 dataentry"></div>
+  <div class="col-sm-9 dataentry"></div>
 </div>

@@ -1,53 +1,51 @@
 <#import "../../functions.ftlh" as func>
 <div id="section-serviceAgreementQuality" class="clearfix hidden-print">
-    <h2>Service Agreement Quality</h2>
-        <#if problems?? && problems?has_content>
-            <#assign errors = func.filter(problems, "severity", "ERROR")>
-            <#assign warnings = func.filter(problems, "severity", "WARNING")>
-            <#assign infos = func.filter(problems, "severity", "INFO")>
+    <#if problems?? && problems?has_content>
+        <#assign errors = func.filter(problems, "severity", "ERROR")>
+        <#assign warnings = func.filter(problems, "severity", "WARNING")>
+        <#assign infos = func.filter(problems, "severity", "INFO")>
 
-            <div class="panel panel-info">
-                <#if errors?? && errors?has_content>
-                    <div class="panel-heading MDquality_error">
+        <div class="panel">
+            <#if errors?? && errors?has_content>
+                <div class=" quality_error">
+                    <div class="panel-heading ">
                         <div class="row">
-                            <div class="col-sm-3 col-xs-12"> <i class="fas fa-exclamation-triangle" > </i> ERRORS<br></div>
-                            <div class="col-sm-9 hidden-xs"><small>These should always be fixed</small></div>
+                            <span class="error">ERRORS</span>
                         </div>
                     </div>
-                    <ul class="list-group MDquality_error">
+                    <ul class="list-group">
                         <#list errors as error>
-                            <li class="list-group-item">${error.test}</li>
+                            <li class="list-group-item error">${error.test}</li>
                         </#list>
                     </ul>
-                </#if>
-                <#if warnings?? && warnings?has_content>
-                    <div class="panel-heading MDquality_warning">
+                </div>
+            </#if>
+            <#if warnings?? && warnings?has_content>
+                <div class=" quality_warning">
+                    <div class="panel-heading">
                         <div class="row">
-                            <div class="col-sm-3 col-xs-12"><i class="fas fa-exclamation" > </i> WARNINGS</div>
-                            <div class="col-sm-9 hidden-xs"><small>These are usually problems but in some circumstances they <i><b><u>MAY</u></b></i> be acceptable - please check carefully</small></div>
+                            <i class="fas fa-exclamation" > </i> WARNINGS
                         </div>
                     </div>
-                    <ul class="list-group SAquality_warning">
+                    <ul class="list-group">
                         <#list warnings as warning>
                             <li class="list-group-item">${warning.test}</li>
                         </#list>
                     </ul>
-                </#if>
-                <#if infos?? && infos?has_content>
-                    <div class="panel-heading MDquality_info">
-                        <div class="row">
-                            <div class="col-sm-3 col-xs-12"><i class="fas fa-info-circle" > </i> OTHER ISSUES</div>
-                            <div class="col-sm-9 hidden-xs"><small>For absolute best practice, these issues should be addressed</small></div>
-                        </div>
+                </div>
+            </#if>
+            <#if infos?? && infos?has_content>
+                <div class="quality_info">
+                    <div class="panel-heading">
+                        <i class="fas fa-info-circle" > </i> OTHER ISSUES
                     </div>
-                    <ul class="list-group MDquality_info">
+                    <ul class="list-group">
                         <#list infos as info>
                             <li class="list-group-item">${info.test}</li>
                         </#list>
                     </ul>
-                </#if>
-            </div>
-        <#else>
-            <p class="text-success"><i class="fas fa-check-circle"></i> No service agreement issues found</p>
-        </#if>
+                </div>
+            </#if>
+        </div>
+    </#if>
 </div>

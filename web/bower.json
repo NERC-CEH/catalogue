@@ -9,7 +9,7 @@
     "coffee-script": "1.9.3",
     "dropzone": "5.7.2",
     "filesize": "4.1.2",
-    "font-awesome-5": "^5.8.1",
+    "font-awesome-5": "^5.15.4",
     "isInViewport": "2.2.4",
     "jquery": "1.11.3",
     "jquery-deparam": "0.4.0",

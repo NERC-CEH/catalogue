@@ -58,11 +58,11 @@
                 Publication status
               </a>
             </li>
-            <#if isEidcCatalogue && isServiceAgreement>
+            <#if isEidcWithResourceType && isServiceAgreement>
               <li class="service-agreement" data-id="${id}" id="service-agreement-gemini">
                 <a href="/service-agreement/${id}">
                   <i class="fas fa-file"></i>
-                  Service Agreement
+                  Service agreement
                 </a>
               </li>
             </#if>

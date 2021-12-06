@@ -72,28 +72,7 @@ define [
           model: @model
           modelAttribute: 'id'
           label: 'Data identifier'
-
-        new TextOnlyView
-          model: @model
-          text: """<p>All environmental data deposited into the EIDC are subject to the requirements of the <a href="https://nerc.ukri.org/research/sites/environmental-data-service-eds/policy/">NERC Data Policy.</a></p>
-                   <p>By depositing data, you confirm that the data is compliant with the provisions of UK data protection laws.</p>
-                   <p>Data and supporting documentation should not contain names, addresses or other personal information relating to 'identifiable natural persons'.  Discovery metadata (the catalogue record) may contain names and contact details of the authors of this data (<a href="https://eidc.ac.uk/policies/retentionPersonalData">see our policy on retention and use of personal data</a>).</p>
-                   <p>If other policies/legislation applies (e.g. <a href="https://inspire.ec.europa.eu/">INSPIRE</a>), please specify below.</p>
-                   """
         
-        new TextareaView
-          model: @model
-          modelAttribute: 'otherPoliciesOrLegislation'
-          label: 'Other Policies or Legislation'
-          rows: 15
-
-        new TextOnlyView
-          model: @model
-          text: """
-          <p>Data given a DOI will be kept in perpetuity. If the data not given a DOI, the period for which the EIDC guarantees to curate data is ten years, after which it will be periodically reviewed and may be discarded.</p>
-          <p>Please note below any exceptions to this policy.</p>
-          """
-
         new TextareaView
           model: @model
           modelAttribute: 'policyExceptions'
@@ -105,17 +84,17 @@ define [
       label: 'Data identification and citation'
       title: 'Data identification and citation'
       views: [
+        new TextOnlyView
+          model: @model
+          text: """<p>Provide a title that best describes that data resource. Include references to the subject, spatial and temporal aspects of the data resource.</p>
+                <p>Only the leading letter and proper nouns of the title should be capitalised.  If it's necessary to include acronyms in the title, then include both the acronym (in parentheses) and the phrase/word from which it was formed. <a href="">link to guidance</a></p>
+
+                """
+
         new InputView
           model: @model
           modelAttribute: 'title'
           label: 'Title'
-
-        new TextOnlyView
-          model: @model
-          text: """<p>Provide a title that best describes that data resource. Include references to the subject, spatial and temporal aspects of the data resource.</p>
-                <p>Only the leading letter and proper nouns of the title should be capitalised.  If it's necessary to include acronyms in the title, then include both the acronym (in parentheses) and the phrase/word from which it was formed. Acronyms should not include full-stops between each letter.</p>
-                <p>If there are multiple titles or translations of titles (e.g. in Welsh), these should be added as alternative titles.</p>
-                """
 
         new ParentView
           model: @model
@@ -135,11 +114,17 @@ define [
           modelAttribute: 'fileNumber'
           label: 'Number of data files'
 
-        new ParentView
+        new PredefinedParentView
           model: @model
           modelAttribute: 'files'
           label: 'Files'
           ObjectInputView: FileView
+          predefined:
+            'CSV':
+              format: 'csv'
+            'NetCDF':
+              format: 'NetCDF'
+
           multiline: true
 
         new InputView
@@ -181,41 +166,10 @@ define [
           rows: 15
       ]
     ,
-      label: 'Availability and access'
-      title: 'Availability and access'
+      label: 'Availability, access and licensing'
+      title: 'Availability, access and licensing'
       views: [
-
-        new TextOnlyView
-          model: @model
-          text: """
-          <p>Depositors may request that access to the data be restricted for an agreed period (embargoed).</p>
-          <p>Approving embargoes and the negotiation of the duration of an embargo period are subject to funder requirements. For NERC-funded research, a reasonable embargo period is considered to be a maximum of two years <i><u>from the end of data collection.</u></i></p>
-          <p>If the EIDC receives a request for access to data during the embargo period, it is treated as a request under the Environmental Information Regulations (EIR) and follows the designated NERC procedure for such requests.</p>
-          """
-
-        new TextareaView
-          model: @model
-          modelAttribute: 'availability'
-          label: 'Availability'
-          multiline: true
-
-        new TextareaView
-          model: @model
-          modelAttribute: 'specificRequirements'
-          label: 'Specific Requirements'
-          rows: 15
-
-        new TextareaView
-          model: @model
-          modelAttribute: 'otherServicesRequired'
-          label: 'Other Services Required'
-          rows: 15
-      ]
-    ,
-      label: 'Licensing and IPR'
-      title: 'Licensing and IPR'
-      views: [
-
+       
         new TextOnlyView
           model: @model
           text: """
@@ -241,6 +195,44 @@ define [
           label: 'Owner of IPR'
           ObjectInputView: ContactView
           multiline: true
+
+        new TextOnlyView
+          model: @model
+          text: """
+          <p>Depositors may request that access to the data be restricted for an agreed period (embargoed).</p>
+          <p>Approving embargoes and the negotiation of the duration of an embargo period are subject to funder requirements. For NERC-funded research, a reasonable embargo period is considered to be a maximum of two years <i><u>from the end of data collection.</u></i></p>
+          <p>If the EIDC receives a request for access to data during the embargo period, it is treated as a request under the Environmental Information Regulations (EIR) and follows the designated NERC procedure for such requests.</p>
+          """
+
+        new TextareaView
+          model: @model
+          modelAttribute: 'availability'
+          label: 'Availability'
+          multiline: true
+
+        new TextareaView
+          model: @model
+          modelAttribute: 'specificRequirements'
+          label: 'Specific Requirements'
+          rows: 4
+        
+        new TextOnlyView
+          model: @model
+          text: """
+          <p>BLAHB BLAH</p>
+          """
+          
+        new TextareaView
+          model: @model
+          modelAttribute: 'otherPoliciesOrLegislation'
+          label: 'Other Policies or Legislation'
+          rows: 3
+
+        new TextareaView
+          model: @model
+          modelAttribute: 'otherServicesRequired'
+          label: 'Other Services Required'
+          rows: 4
 
       ]
     ,
@@ -311,7 +303,7 @@ define [
           model: @model
           modelAttribute: 'lineage'
           label: 'Lineage'
-          rows: 15
+          rows: 10
           helpText: """
                     <p>Information about the source data used in the construction of this data resource.</p>
                     <p>Quality assessments and enhancement processes applied to the data resource can also be noted and summarised here.</p>

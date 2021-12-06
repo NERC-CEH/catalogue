@@ -2,8 +2,6 @@
   @search-form-height: 52px;
   @filters-columns: 4;
   @results-columns: @grid-columns - @filters-columns;
-  @filter-heading-height: 40px;
-  @filter-heading-gap: 3px;
 
   .make-row();
   .container-fixed();
@@ -24,21 +22,24 @@
       top: @navbar-height + (@navbar-border-width * 2);
       bottom: 0;
       left: 0;
-      background-color: @panel-bg;
-      border-right:1px solid lighten(@gray-light, 25%);
+      background-color: @filter-body-background; // @panel-bg;
+      border-right: @filter-border;
     }
-
+    h3 {
+      font-size: 1.2em;
+      color: @filter-body-colour;
+    }
     .header {
       height: @filter-heading-height;
       width: 100%;
-      background-color: @panel-default-heading-bg;
+      background-color: @filter-heading-background ;//;@panel-default-heading-bg;
       padding: 10px 15px;
 
       h3 {
         display: inline;
         margin: 0px;
-        font-size: 15px;
-        color: @header-text;
+        font-size: 1.3em;
+        color: @filter-heading-color;//@header-text;
         cursor: pointer;
         &:hover {
           text-decoration: underline;
@@ -73,11 +74,11 @@
             padding-bottom: 3px;
             .facet-count {
               margin-left: 0.5em;
-              color: #337085;
+              color: lighten(@filter-body-link-colour,10%);
             }
 
             a {
-              color: black;
+              color: @filter-body-link-colour;
             }
           }
         }
@@ -120,7 +121,7 @@
   form.search-form {
     .make-md-column-offset(@filters-columns);
     position: fixed;
-    top: @navbar-height + (@navbar-border-width *2) ;
+    top: @navbar-height + (@navbar-border-width * 2);
     left: 0;
     right: 0;
     padding: 8px;
