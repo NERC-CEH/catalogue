@@ -50,7 +50,7 @@ public class ServiceAgreement extends AbstractMetadataDocument {
     private String fileNumber;
     private List<File> files;
     private String transferMethod;
-    private List<RelatedRecord> relatedDataHoldings;
+    private String relatedDataHoldings;
     private Keyword dataCategory;
 
     /*
