@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientResponseException;
 import uk.ac.ceh.components.datastore.DataDocument;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
@@ -69,10 +70,12 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     @Override
     @SneakyThrows
     public ServiceAgreement get(String id) {
-        return dataDocumentToServiceAgreement(
-            repo.getData(FOLDER + id + ".raw"),
-            repo.getData(FOLDER + id + ".meta")
+        val serviceAgreement = dataDocumentToServiceAgreement(
+                repo.getData(FOLDER + id + ".raw"),
+                repo.getData(FOLDER + id + ".meta")
         );
+        serviceAgreement.setHistorical(false);
+        return serviceAgreement;
     }
 
     @SneakyThrows
@@ -147,17 +150,21 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         ServiceAgreement serviceAgreement = get(id);
         String metadataRecordState = serviceAgreement.getState();
         if (metadataRecordState.equals(DRAFT)) {
-            Optional.ofNullable(serviceAgreement.getDepositReference())
-                    .ifPresent(depositReference ->
-                            jiraService.comment(
-                                    depositReference,
-                                    format(
-                                            "Service Agreement (%s): %s submitted for review",
-                                            serviceAgreement.getId(),
-                                            serviceAgreement.getTitle()
-                                    )
-                            )
-                    );
+            try {
+                Optional.ofNullable(serviceAgreement.getDepositReference())
+                        .ifPresent(depositReference ->
+                                jiraService.comment(
+                                        depositReference,
+                                        format(
+                                                "Service Agreement (%s): %s submitted for review",
+                                                serviceAgreement.getId(),
+                                                serviceAgreement.getTitle()
+                                        )
+                                )
+                        );
+            } catch (RestClientResponseException ex) {
+                throw new ServiceAgreementException("Unable to comment on Jira issue");
+            }
             updateState(user, id, serviceAgreement, PENDING_PUBLICATION);
             removeEditPermissions(user, id, serviceAgreement);
         } else {
@@ -186,17 +193,22 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
                     "populated from service agreement"
             );
             log.info("Publishing Service Agreement: {}", id);
-            Optional.ofNullable(serviceAgreement.getDepositReference())
-                    .ifPresent(depositReference ->
-                            jiraService.comment(
-                                    depositReference,
-                                    format(
-                                            "Service Agreement (%s): %s has been agreed upon and published",
-                                            serviceAgreement.getId(),
-                                            serviceAgreement.getTitle()
-                                    )
-                            )
-                    );
+
+            try {
+                Optional.ofNullable(serviceAgreement.getDepositReference())
+                        .ifPresent(depositReference ->
+                                jiraService.comment(
+                                        depositReference,
+                                        format(
+                                                "Service Agreement (%s): %s has been agreed upon and published",
+                                                serviceAgreement.getId(),
+                                                serviceAgreement.getTitle()
+                                        )
+                                )
+                        );
+            } catch (RestClientResponseException ex) {
+                throw new ServiceAgreementException("Unable to comment on Jira issue");
+            }
             updateState(user, id, serviceAgreement, PUBLISHED);
         } else {
             val message = format(
@@ -217,17 +229,21 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         val gemini = (GeminiDocument) documentRepository.read(id);
         val metadataRecordState = gemini.getState();
         if (metadataRecordState.equals(DRAFT) && serviceAgreementState.equals(PENDING_PUBLICATION)) {
-            Optional.ofNullable(serviceAgreement.getDepositReference())
-                    .ifPresent(depositReference ->
-                            jiraService.comment(
-                                    depositReference,
-                                    format(
-                                            "Service Agreement (%s): %s has been sent back for further changes",
-                                            serviceAgreement.getId(),
-                                            serviceAgreement.getTitle()
-                                    )
-                            )
-                    );
+            try {
+                Optional.ofNullable(serviceAgreement.getDepositReference())
+                        .ifPresent(depositReference ->
+                                jiraService.comment(
+                                        depositReference,
+                                        format(
+                                                "Service Agreement (%s): %s has been sent back for further changes",
+                                                serviceAgreement.getId(),
+                                                serviceAgreement.getTitle()
+                                        )
+                                )
+                        );
+            } catch (RestClientResponseException ex) {
+                throw new ServiceAgreementException("Unable to comment on Jira issue");
+            }
             addPermissionsForDepositor(metadata, serviceAgreement);
             updateState(user, id, serviceAgreement, DRAFT);
         } else {
@@ -244,7 +260,8 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     @SneakyThrows
     public History getHistory(String id) {
         try {
-            return new History(id, repo.getRevisions(FOLDER + id + ".raw"), baseUri);
+            val dataRevisions = repo.getRevisions(FOLDER + id + ".raw");
+            return new History(baseUri, id, dataRevisions);
         } catch (DataRepositoryException ex) {
             throw new ServiceAgreementException((ex.getMessage()));
         }
@@ -255,10 +272,12 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
             String id,
             String version
     ) {
-        return dataDocumentToServiceAgreement(
+        val serviceAgreement = dataDocumentToServiceAgreement(
             repo.getData(version, FOLDER + id + ".raw"),
             repo.getData(version, FOLDER + id + ".meta")
         );
+        serviceAgreement.setHistorical(true);
+        return serviceAgreement;
     }
 
     @SneakyThrows

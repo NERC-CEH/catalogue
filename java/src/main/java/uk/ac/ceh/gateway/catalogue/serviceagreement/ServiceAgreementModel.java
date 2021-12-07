@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.hateoas.Link;
@@ -41,6 +42,7 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
     TWO: Policies & Legislation
    */
     private String otherPoliciesOrLegislation;
+    private List<Funding> funding;
 
     /*
     THREE: The data
@@ -48,7 +50,7 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
     private String fileNumber;
     private List<File> files;
     private String transferMethod;
-    private List<RelatedRecord> relatedDataHoldings;
+    private String relatedDataHoldings;
     private Keyword dataCategory;
 
     /*
@@ -96,6 +98,12 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
     private String lineage;
     private List<BoundingBox> areaOfStudy;
 
+    /*
+    FLAGS
+    */
+    @JsonIgnore
+    private boolean historical;
+
     public ServiceAgreementModel(ServiceAgreement serviceAgreement) {
         this.id = serviceAgreement.getId();
         this.title = serviceAgreement.getTitle();
@@ -106,6 +114,7 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
         this.eidcContactDetails = serviceAgreement.getEidcContactDetails();
         this.authors = serviceAgreement.getAuthors();
         this.otherPoliciesOrLegislation = serviceAgreement.getOtherPoliciesOrLegislation();
+        this.funding = serviceAgreement.getFunding();
         this.fileNumber = serviceAgreement.getFileNumber();
         this.files = serviceAgreement.getFiles();
         this.transferMethod = serviceAgreement.getTransferMethod();
@@ -128,6 +137,7 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
         this.description = serviceAgreement.getDescription();
         this.lineage = serviceAgreement.getLineage();
         this.areaOfStudy = serviceAgreement.getAreaOfStudy();
+        this.historical = serviceAgreement.isHistorical();
     }
 
     @SuppressWarnings("unused")

@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.client.RestClientResponseException;
 import uk.ac.ceh.components.datastore.*;
 import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -20,7 +21,6 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.JiraService;
 
 import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.String.format;
@@ -245,7 +245,7 @@ public class GitRepoServiceAgreementServiceTest {
 
     @Test
     @SneakyThrows
-    void cannotSubmitServiceAgent() {
+    void cannotSubmitServiceAgreement() {
         //given
         givenPublishedServiceAgreement();
 
@@ -259,6 +259,23 @@ public class GitRepoServiceAgreementServiceTest {
 
         //then
         verifyNoInteractions(jiraService);
+    }
+
+    @Test
+    @SneakyThrows
+    void cannotSubmitServiceAgreementJiraFail() {
+        //given
+        givenDraftServiceAgreement();
+        given(serviceAgreementMapper.readInfo(any()))
+                .willReturn(serviceAgreement);
+
+        RestClientResponseException restClientResponseException = mock(RestClientResponseException.class);
+        doThrow(restClientResponseException).when(jiraService).comment(any(), any());
+
+        //when
+        assertThrows(ServiceAgreementException.class, () ->
+                service.submitServiceAgreement(user, ID)
+        );
     }
 
     @Test
@@ -295,7 +312,33 @@ public class GitRepoServiceAgreementServiceTest {
 
     @Test
     @SneakyThrows
-    void cannotPublishServiceAgent() {
+    void cannotPublishServiceAgreementJiraFail() {
+        //given
+        givenPendingPublicationServiceAgreement();
+        givenDraftGeminiDocument();
+        val expected = new GeminiDocument();
+        expected.setId(ID);
+        expected.setTitle("this is a test");
+        expected.setMetadata(MetadataInfo.builder().state("draft").build());
+        expected.setUseConstraints(List.of(serviceAgreement.getEndUserLicence()));
+
+        givenPendingPublicationServiceAgreement();
+
+        given(serviceAgreementMapper.readInfo(any()))
+                .willReturn(serviceAgreement);
+
+        RestClientResponseException restClientResponseException = mock(RestClientResponseException.class);
+        doThrow(restClientResponseException).when(jiraService).comment(any(), any());
+
+        //when
+        assertThrows(ServiceAgreementException.class, () ->
+                service.publishServiceAgreement(user, ID)
+        );
+    }
+
+    @Test
+    @SneakyThrows
+    void cannotPublishServiceAgreement() {
         // given
         givenPublishedServiceAgreement();
 
@@ -361,11 +404,29 @@ public class GitRepoServiceAgreementServiceTest {
 
     @Test
     @SneakyThrows
+    void cannotGiveDepositorEditPermissionJiraFail() {
+        //given
+        givenPendingPublicationServiceAgreement();
+        givenDraftGeminiDocument();
+        givenPendingPublicationServiceAgreement();
+
+        RestClientResponseException restClientResponseException = mock(RestClientResponseException.class);
+        doThrow(restClientResponseException).when(jiraService).comment(any(), any());
+
+        //when
+        assertThrows(ServiceAgreementException.class, () ->
+                service.giveDepositorEditPermission(user, ID)
+        );
+    }
+
+    @Test
+    @SneakyThrows
     public void canGetHistory() {
         //Given
-        List<DataRevision<CatalogueUser>> revisions = new ArrayList<>();
-        revisions.add(new TestRevision("revision1"));
-        revisions.add(new TestRevision("revision2"));
+        List<DataRevision<CatalogueUser>> revisions = List.of(
+            new TestRevision("current version"),
+            new TestRevision("revision1")
+        );
         given(repo.getRevisions(FOLDER + ID + ".raw"))
                 .willReturn(revisions);
 
@@ -373,8 +434,10 @@ public class GitRepoServiceAgreementServiceTest {
         val result = service.getHistory(ID);
 
         //Then
-        assertThat(result.getRevisions().get(0).getVersion(),is(equalTo("2")));
-        assertThat(result.getRevisions().get(1).getVersion(),is(equalTo("1")));
+        assertThat(result.getRevisions().get(0).getVersion(), equalTo("1"));
+        assertThat(result.getRevisions().get(0).getHref(), equalTo(
+                        "https://catalogue.ceh.ac.uk/service-agreement/" +
+                                "7c60707c-80ee-4d67-bac2-3c9a93e61557/version/revision1"));
     }
 
     @Test
@@ -550,7 +613,7 @@ public class GitRepoServiceAgreementServiceTest {
                 .willReturn(metadata);
 
         val rawDocument = mock(DataDocument.class);
-        given(repo.getData(VERSION,  FOLDER + ID + ".raw"))
+        given(repo.getData(VERSION, FOLDER + ID + ".raw"))
                 .willReturn(rawDocument);
         given(rawDocument.getInputStream())
                 .willReturn(new ByteArrayInputStream("file".getBytes()));

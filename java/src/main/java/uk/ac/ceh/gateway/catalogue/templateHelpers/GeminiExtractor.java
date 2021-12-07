@@ -8,12 +8,14 @@ import com.vividsolutions.jts.io.WKTReader;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.DescriptiveKeywords;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -27,8 +29,10 @@ import java.util.stream.Collectors;
 @Service
 public class GeminiExtractor {
     private final static Envelope GLOBAL_EXTENT = new Envelope(-180, 180, -90, 90);
+    private LocalDate serviceAgreementStart;
 
-    public GeminiExtractor() {
+    public GeminiExtractor(@Value("${serviceagreement.start}") String localDateStr) {
+        serviceAgreementStart = LocalDate.parse(localDateStr);
         log.info("Creating {}", this);
     }
 
@@ -42,27 +46,31 @@ public class GeminiExtractor {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
-    
+
+    public boolean isNewServiceAgreement(LocalDate creationDate) {
+        return creationDate.isAfter(serviceAgreementStart);
+    }
+
     /**
      * Returns the smallest extent which encompasses all of the bounding boxes
+     *
      * @param document Gemini document to extract extent
      * @return smallest extent for the supplied bounding boxes
      * @throws com.vividsolutions.jts.io.ParseException if the wkt of the bbox
-     * is incorrect
+     *                                                  is incorrect
      */
     public Envelope getExtent(GeminiDocument document) throws ParseException {
         val possibleBBoxes = Optional.ofNullable(document.getBoundingBoxes());
         if (possibleBBoxes.isPresent()) {
             List<BoundingBox> clone = new ArrayList<>(document.getBoundingBoxes());
-            if(!clone.isEmpty()) {
+            if (!clone.isEmpty()) {
                 WKTReader reader = new WKTReader();
                 Geometry geo = reader.read(clone.remove(0).getWkt());
-                for(BoundingBox bbox: clone) {
+                for (BoundingBox bbox : clone) {
                     geo = geo.union(reader.read(bbox.getWkt()));
                 }
                 return geo.getEnvelopeInternal();
-            }
-            else {
+            } else {
                 return GLOBAL_EXTENT;
             }
         } else {

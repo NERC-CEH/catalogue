@@ -42,6 +42,7 @@ public class ServiceAgreement extends AbstractMetadataDocument {
     TWO: Policies & Legislation
    */
     private String otherPoliciesOrLegislation;
+    private List<Funding> funding;
 
     /*
     THREE: The data
@@ -49,7 +50,7 @@ public class ServiceAgreement extends AbstractMetadataDocument {
     private String fileNumber;
     private List<File> files;
     private String transferMethod;
-    private List<RelatedRecord> relatedDataHoldings;
+    private String relatedDataHoldings;
     private Keyword dataCategory;
 
     /*
@@ -95,6 +96,12 @@ public class ServiceAgreement extends AbstractMetadataDocument {
     private List<DescriptiveKeywords> descriptiveKeywords;
     private String lineage;
     private List<BoundingBox> areaOfStudy;
+
+    /*
+    FLAGS
+    */
+    @JsonIgnore
+    private boolean historical;
 
     @Override
     @JsonIgnore
