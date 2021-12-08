@@ -114,6 +114,8 @@
       </@key>
     </#if>
 
+    <#include "../document/_funding.ftlh">
+
     <#if onlineResources?? && onlineResources?has_content>
       <@key "Further information">
         <#list onlineResources as onlineResource>
