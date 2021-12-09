@@ -22,80 +22,26 @@ import java.util.stream.StreamSupport;
 })
 public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementModel> {
 
-    /*
-    GENERAL
-    */
-    private String id;
-    private String title;
-    private String depositReference;
-    private String depositorName;
-    private String depositorContactDetails;
-    private String eidcName;
-    private String eidcContactDetails;
+    private String id, title, depositReference, depositorName, depositorContactDetails, eidcName, eidcContactDetails,otherPoliciesOrLegislation, transferMethod, relatedDataHoldings, contentIncluded, fileNumber, policyExceptions, availability, useConstraints, supersededData, otherInfo, description, lineage;
 
-    /*
-    ONE: Data Identification and Citation
-    */
     private List<ResponsibleParty> authors;
 
-    /*
-    TWO: Policies & Legislation
-   */
-    private String otherPoliciesOrLegislation;
     private List<Funding> funding;
 
-    /*
-    THREE: The data
-    */
-    private String fileNumber;
     private List<File> files;
-    private String transferMethod;
-    private String relatedDataHoldings;
+
     private Keyword dataCategory;
 
-    /*
-    FOUR: Supporting documentation
-    */
     private List<String> supportingDocumentNames;
-    private String contentIncluded;
 
-    /*
-    FIVE: Data retention
-    */
-    private String policyExceptions;
-
-    /*
-    SIX: Availability and access
-    */
-    private String availability;
-    private String specificRequirements;
-    private String otherServicesRequired;
-
-    /*
-    SEVEN: Licensing and IPR
-    */
     private ResourceConstraint endUserLicence;
+   
     private List<ResponsibleParty> ownersOfIpr;
-    private String useConstraints;
-
-    /*
-    EIGHT: Superseding existing data (if applicable)
-    */
-    private String supersededMetadataId;
-    private String supersededReason;
-
-    /*
-    NINE: Miscellaneous
-    */
-    private String otherInfo;
-
-    /*
-    TEN: Discovery metadata
-    */
+    
     private List<Keyword> allKeywords;
+
     private List<DescriptiveKeywords> descriptiveKeywords;
-    private String description;
-    private String lineage;
+
     private List<BoundingBox> areaOfStudy;
 
     /*
@@ -124,13 +70,10 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
         this.contentIncluded = serviceAgreement.getContentIncluded();
         this.policyExceptions = serviceAgreement.getPolicyExceptions();
         this.availability = serviceAgreement.getAvailability();
-        this.specificRequirements = serviceAgreement.getSpecificRequirements();
-        this.otherServicesRequired = serviceAgreement.getOtherServicesRequired();
         this.endUserLicence = serviceAgreement.getEndUserLicence();
         this.ownersOfIpr = serviceAgreement.getOwnersOfIpr();
         this.useConstraints = serviceAgreement.getUseConstraints();
-        this.supersededMetadataId = serviceAgreement.getSupersededMetadataId();
-        this.supersededReason = serviceAgreement.getSupersededReason();
+        this.supersededData = serviceAgreement.getSupersededData();
         this.otherInfo = serviceAgreement.getOtherInfo();
         this.allKeywords = serviceAgreement.getAllKeywords();
         this.descriptiveKeywords = serviceAgreement.getDescriptiveKeywords();

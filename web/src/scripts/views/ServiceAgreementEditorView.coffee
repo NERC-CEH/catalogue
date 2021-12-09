@@ -43,17 +43,14 @@ define [
       label: 'General'
       title:  ''
       views: [
+        new TextOnlyView
+          model: @model
+          text: """<h1>EIDC service agreement</h1><p>For more information/guidance about this document see <a href='https://eidc.ac.uk/support/agreement' target='_blank' rel='noopener noreferrer'>https://eidc.ac.uk/deposit/agreement</a></p>"""
+
         new InputView
           model: @model
           modelAttribute: 'depositReference'
           label: 'Deposit Reference'
-
-        new TextOnlyView
-          model: @model
-          text: """<p>Provide a title that best describes that data resource. Include references to the subject, spatial and temporal aspects of the data resource.</p>
-                <p>Only the leading letter and proper nouns of the title should be capitalised.  If it's necessary to include acronyms in the title, then include both the acronym (in parentheses) and the phrase/word from which it was formed. Acronyms should not include full-stops between each letter.</p>
-                <p>If there are multiple titles or translations of titles (e.g. in Welsh), these should be added as alternative titles.</p>
-                """
 
         new InputView
           model: @model
@@ -63,7 +60,7 @@ define [
         new InputView
           model: @model
           modelAttribute: 'depositorContactDetails'
-          label: 'Depositor Contact Details'
+          label: "Depositor's contact details"
 
         new InputView
           model: @model
@@ -73,17 +70,22 @@ define [
         new ReadOnlyView
           model: @model
           modelAttribute: 'eidcContactDetails'
-          label: 'For the EIDC: contact details'
+          label: "EIDC's contact details"
 
         new ReadOnlyView
           model: @model
           modelAttribute: 'id'
           label: 'Data identifier'
-        
+         
+        new TextOnlyView
+          model: @model
+          label: 'Data retention'
+          text: """<p>The EIDC's policy is to assign a DOI to all deposited data; such data will be kept in perpetuity.  If a DOI is not required or there are any other exceptions to this policy, please state them below.</p>
+                """
+       
         new TextareaView
           model: @model
           modelAttribute: 'policyExceptions'
-          label: 'Data retention exception'
           rows: 3
       ]
     ,
@@ -93,60 +95,173 @@ define [
       views: [
         new TextOnlyView
           model: @model
-          text: """<p>Provide a title that best describes that data resource. Include references to the subject, spatial and temporal aspects of the data resource.</p>
-                <p>Only the leading letter and proper nouns of the title should be capitalised.  If it's necessary to include acronyms in the title, then include both the acronym (in parentheses) and the phrase/word from which it was formed. <a href="">link to guidance</a></p>
-
+          label: 'Title'
+          text: """<p>Provide a brief title that best describes the data resource, <strong>not</strong> the project or activity from which the data were derived. Include references to the subject, spatial and temporal aspects of the data resource. <a href='https://eidc.ac.uk/deposit/metadata/guidance' target='_blank' rel='noopener noreferrer' >Further guidance is available on our website</a>.</p>
+                <p><strong>Please note: once the dataset is published, the title cannot be changed</strong><p>
                 """
 
         new InputView
           model: @model
           modelAttribute: 'title'
-          label: 'Title'
+        
+        new TextOnlyView
+          model: @model
+          label: 'Authors'
+          text: """<p>List authors below in the order in which they will appear in the citation.</p>
+          <p>Author's names must be in the format <code>Surname &laquo;comma&raquo; Initial(s)</code>. For example, <code>Smith, K.P.</code> <strong>not</strong> <code>Kim P. Smith</code></p>
+          <p>Authors' details will be published in a public data catalogue and held in EIDC systems.  UK law requires us to inform all individuals listed that they are being proposed as an author.  We therefore require a current, valid email address (or phone number) for all living authors.  Those without valid contact details are not eligible for authorship.  Please see our <a href='http://eidc.ceh.ac.uk/policies/privacy' target='_blank' rel='noopener noreferrer'>Privacy Notice</a> for further information</p>
+          <p><strong>Please note: once the dataset is published, the authors cannot be changed</strong><p>
+          """
 
         new ParentView
           model: @model
           ModelType: Contact
           modelAttribute: 'authors'
-          label: 'Authors'
           ObjectInputView: AuthorView
           multiline: true
       ]
     ,
-      label: 'Policies & Legislation'
-      title: 'Policies & Legislation'
+      label: 'The Data'
+      title: 'The Data'
+      views: [
+
+        new InputView
+          model: @model
+          modelAttribute: 'fileNumber'
+          label: 'Number of files to be deposited'
+
+        new TextOnlyView
+          model: @model
+          label: 'Files'
+          text: """
+                <p>List the files to be deposited below - filenames must not include any spaces or special characters</p>
+                <p>If there are a too many files to list separately, specify a naming convention instead.</p>
+                """
+
+        new PredefinedParentView
+          model: @model
+          modelAttribute: 'files'
+          ObjectInputView: FileView
+          predefined:
+            'CSV':
+              format: 'csv'
+            'NetCDF':
+              format: 'NetCDF'
+          multiline: true
+
+        new InputView
+          model: @model
+          modelAttribute: 'transferMethod'
+          label: 'Transfer Method'
+          listAttribute: """
+                  <option value='Upload via EIDC catalogue' />
+                  """
+
+        new SingleObjectView
+          model: @model
+          modelAttribute: 'dataCategory'
+          label: 'Data Category'
+          ObjectInputView: CategoryView
+          helpText: """
+                    <p>This is only required for data funded by NERC</p>
+                    """
+      ]
+    ,
+      label: 'Supporting documentation'
+      title: 'Supporting documentation'
       views: [
 
         new TextOnlyView
           model: @model
-          text: """<p>All environmental data deposited into the EIDC are subject to the requirements of the <a href="https://nerc.ukri.org/research/sites/environmental-data-service-eds/policy/">NERC Data Policy.</a></p>
+          label: 'Document(s) to be provided'
+          text: """<p>Please provide the title and file extension of document(s) you will provide to enable re-use of the data (see <a href="https://eidc.ac.uk/deposit/supportingDocumentation">https://eidc.ac.uk/deposit/supportingDocumentation</a>).</a>"""
+
+        new ParentStringView
+          model: @model
+          modelAttribute: 'supportingDocumentNames'
+        
+        new TextOnlyView
+          model: @model
+          label: 'Content of supporting document(s)'
+          text: """<p>Describe the content of the documentation to be supplied.</p>
+                  <p>Mandatory elements are:</p>
+                  <ul><li>Collection/generation methods</li><li>Nature and Units of recorded values</li><li>Quality control</li><li>Details of data structure</li></ul>
+                  <p>Required elements (if appropriate) include:</p>
+                  <ul><li>Experimental design/Sampling regime</li><li>Fieldwork and laboratory instrumentation</li><li>Calibration steps and values</li><li>Analytical methods</li><li>Any other information useful to the interpretation of the data</li></ul>
+                """
+
+        new TextareaView
+          model: @model
+          modelAttribute: 'contentIncluded'
+          rows: 8
+      ]
+    ,
+      label: 'Availability, access and licensing'
+      title: 'Availability, access and licensing'
+      views: [
+       
+        new TextOnlyView
+          model: @model
+          label: 'End user licence'
+          text: """
+          <p>Please state under which licence the data will be made available. the vast majority of NERC-funded data are provided under the Open Government Licence. We recommend that you seek guidance from your institution and/or funding agency as to the appropriate licence.</p>
+          """
+
+        new SingleObjectView
+          model: @model
+          modelAttribute: 'endUserLicence'
+          ObjectInputView: EndUserLicenceView
+
+        new ParentView
+          model: @model
+          ModelType: Contact
+          modelAttribute: 'ownersOfIpr'
+          label: 'Owner of IPR'
+          ObjectInputView: ContactView
+          multiline: true
+
+        new TextOnlyView
+          model: @model
+          label: 'Availability'
+          text: """
+          <p>Depositors may request that access to the data be restricted for an agreed period (embargoed).  Embargoes and embargo periods may be subject to funder requirements. For NERC-funded research, a reasonable embargo period is considered to be a maximum of two years <strong>from the end of data collection.</strong></p>
+          <p>If an embargo is required, please specify below.</p>
+          """
+
+        new InputView
+          model: @model
+          modelAttribute: 'availability'
+       
+        new TextareaView
+          model: @model
+          modelAttribute: 'useConstraints'
+          label: 'Additional Use Constraints'
+          rows: 3
+      ]
+    ,
+      label: 'Legislation & funding'
+      title: 'Legislation & funding'
+      views: [
+        new TextOnlyView
+          model: @model
+          label: 'Other policies/legislation'
+          text: """<p>All environmental data deposited into the EIDC are subject to the requirements of the <a href='https://nerc.ukri.org/research/sites/environmental-data-service-eds/policy/' target='_blank' rel='noopener noreferrer'>NERC Data Policy.</a></p>
                    <p>By depositing data, you confirm that the data is compliant with the provisions of UK data protection laws.</p>
-                   <p>Data and supporting documentation should not contain names, addresses or other personal information relating to 'identifiable natural persons'.  Discovery metadata (the catalogue record) may contain names and contact details of the authors of this data (<a href="https://eidc.ac.uk/policies/retentionPersonalData">see our policy on retention and use of personal data</a>).</p>
-                   <p>If other policies/legislation applies (e.g. <a href="https://inspire.ec.europa.eu/">INSPIRE</a>), please specify below.</p>
+                   <p>Data and supporting documentation should not contain names, addresses or other personal information relating to 'identifiable natural persons'.  Discovery metadata (the catalogue record) may contain names and contact details of the authors of this data (<a href='https://eidc.ac.uk/policies/retentionPersonalData' target='_blank' rel='noopener noreferrer'>see our policy on retention and use of personal data</a>).</p>
+                   <p>If other policies/legislation applies, please specify below.</p>
                    """
 
         new TextareaView
           model: @model
           modelAttribute: 'otherPoliciesOrLegislation'
-          label: 'Other Policies or Legislation'
-          rows: 15
-
-        new TextOnlyView
-          model: @model
-          text: """<p>The depositor may also wish to provide an image to accompany the dataset which may subsequently be used to advertise its availability on social media.  If no image is provided, the EIDC may source a suitable picture.</p>"""
-
-        new TextOnlyView
-          model: @model
-          text: """<p>Include here details of any grants or awards that were used to generate this resource.</p>
-                   <p>If you include funding information, the Funding body is MANDATORY, other fields are useful but optional.</p>
-                   <p>Award URL is either the unique identifier for the award or sa link to the funder's  grant page (if it exists). It is <b>NOT</b> a link to a project website.</p>
-                """
+          rows: 5
 
         new PredefinedParentView
           model: @model
-          modelAttribute: 'funding'
+          modelAttribute: 'Funding'
           ModelType: Funding
           multiline: true
-          label: 'Funding'
+          label: 'Grants/awards used to generate this resource'
           ObjectInputView: FundingView
           predefined:
             'BBSRC':
@@ -175,166 +290,31 @@ define [
               funderIdentifier: 'https://ror.org/057g20z61'
       ]
     ,
-      label: 'The Data'
-      title: 'The Data'
+      label: 'Miscellaneous'
+      title: 'Miscellaneous'
       views: [
 
-        new InputView
+        new TextOnlyView
           model: @model
-          modelAttribute: 'fileNumber'
-          label: 'Number of data files'
+          label: 'Superseding existing data'
+          text: """
+          <p>If the data is superseding an existing dataset held by the EIDC, please specify and explain why it is to be replaced. Include details of any errors found.</p>
+          """
 
-        new PredefinedParentView
+        new TextareaView
           model: @model
-          modelAttribute: 'files'
-          label: 'Files'
-          ObjectInputView: FileView
-          predefined:
-            'CSV':
-              format: 'csv'
-            'NetCDF':
-              format: 'NetCDF'
-
-          multiline: true
-
-        new InputView
-          model: @model
-          modelAttribute: 'transferMethod'
-          label: 'Transfer Method'
-
+          modelAttribute: 'supersededReason'
+          rows: 5
+  
         new TextareaView
           model: @model
           modelAttribute: 'relatedDataHoldings'
           label: 'Related Data Holdings'
           rows: 5
-
-        new SingleObjectView
-          model: @model
-          modelAttribute: 'dataCategory'
-          label: 'Data Category'
-          ObjectInputView: CategoryView
-      ]
-    ,
-      label: 'Supporting documentation'
-      title: 'Supporting documentation'
-      views: [
-
+      
         new TextOnlyView
           model: @model
-          text: """<p>Please provide the title and file extension of document(s) you will provide to enable re-use of the data (see <a href="https://eidc.ac.uk/deposit/supportingDocumentation">https://eidc.ac.uk/deposit/supportingDocumentation</a>).</a>"""
-
-        new ParentStringView
-          model: @model
-          modelAttribute: 'supportingDocumentNames'
-          label: 'Supporting Documents'
-
-        new TextareaView
-          model: @model
-          modelAttribute: 'contentIncluded'
-          label: 'Content Included'
-          rows: 15
-      ]
-    ,
-      label: 'Availability, access and licensing'
-      title: 'Availability, access and licensing'
-      views: [
-       
-        new TextOnlyView
-          model: @model
-          text: """
-          <p>The EIDC recommends that the depositor seeks guidance from their own institution and/or funding agency as to the appropriate licence.</p>
-          """
-
-        new SingleObjectView
-          model: @model
-          modelAttribute: 'endUserLicence'
-          label: 'License'
-          ObjectInputView: EndUserLicenceView
-
-        new TextareaView
-          model: @model
-          modelAttribute: 'useConstraints'
-          label: 'Additional Use Constraints'
-          rows: 5
-
-        new ParentView
-          model: @model
-          ModelType: Contact
-          modelAttribute: 'ownersOfIpr'
-          label: 'Owner of IPR'
-          ObjectInputView: ContactView
-          multiline: true
-
-        new TextOnlyView
-          model: @model
-          text: """
-          <p>Depositors may request that access to the data be restricted for an agreed period (embargoed).</p>
-          <p>Approving embargoes and the negotiation of the duration of an embargo period are subject to funder requirements. For NERC-funded research, a reasonable embargo period is considered to be a maximum of two years <i><u>from the end of data collection.</u></i></p>
-          <p>If the EIDC receives a request for access to data during the embargo period, it is treated as a request under the Environmental Information Regulations (EIR) and follows the designated NERC procedure for such requests.</p>
-          """
-
-        new TextareaView
-          model: @model
-          modelAttribute: 'availability'
-          label: 'Availability'
-          multiline: true
-
-        new TextareaView
-          model: @model
-          modelAttribute: 'specificRequirements'
-          label: 'Specific Requirements'
-          rows: 4
-        
-        new TextOnlyView
-          model: @model
-          text: """
-          <p>BLAHB BLAH</p>
-          """
-          
-        new TextareaView
-          model: @model
-          modelAttribute: 'otherPoliciesOrLegislation'
-          label: 'Other Policies or Legislation'
-          rows: 3
-
-        new TextareaView
-          model: @model
-          modelAttribute: 'otherServicesRequired'
-          label: 'Other Services Required'
-          rows: 4
-
-      ]
-    ,
-      label: 'Superseding existing data'
-      title: 'Superseding existing data (if applicable)'
-      views: [
-
-        new TextOnlyView
-          model: @model
-          text: """
-          <p>If the data is superseding an existing dataset held by the EIDC, please explain why it is to be replaced.  Include details of any errors found.</p>
-          """
-
-        new InputView
-          model: @model
-          modelAttribute: 'supersededMetadataId'
-          label: 'Superseded Metadata Id'
-
-        new TextareaView
-          model: @model
-          modelAttribute: 'supersededReason'
-          label: 'Reason for change'
-          rows: 7
-          helpText: """
-                    <p>If this record is being retracted, the reasons for withdrawal or replacement should be explained here.</p>
-                    """
-      ]
-    ,
-      label: 'Miscellaneous'
-      title: 'Miscellaneous'
-      views: [
-        new TextOnlyView
-          model: @model
+          label: 'Other info'
           text: """
           <p>If there is any other information you wish to provide, please include it below.</p>
           """
@@ -342,7 +322,6 @@ define [
         new TextareaView
           model: @model
           modelAttribute: 'otherInfo'
-          label: 'Other Info'
           rows: 7
       ]
     ,
@@ -353,7 +332,7 @@ define [
         new TextOnlyView
           model: @model
           text: """
-          <p>Data resources deposited with the EIDC have an entry in the EIDC data catalogue, enabling users to find and access them. Please provide the following information to help complete the catalogue record. Further details on discovery metadata are available from our website.</p>
+          <p>Data resources deposited with the EIDC have an entry in the EIDC data catalogue, enabling users to find and access them. Please provide the following information to help complete the catalogue record. <a href='https://eidc.ac.uk/deposit/metadata/guidance' target='_blank' rel='noopener noreferrer' >Further guidance is available on our website</a>.</p>
           <p><em>Please note, this information is not fixed and may be subject to change and improvement over time</em></p>
           """
 

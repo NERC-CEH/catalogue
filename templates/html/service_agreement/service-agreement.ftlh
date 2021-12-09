@@ -4,8 +4,15 @@
 
 <@skeleton.master title=title catalogue=catalogues.defaultCatalogue()>
 
-    <div id="metadata" class="serviceAgreement">
+<#if isHistorical()>
+    <#assign mdclass="historical">
+<#else>
+    <#assign mdclass="">
+</#if>
+
+    <div id="metadata" class="serviceAgreement ${mdclass}">
         <div class="container" role="main">
+            
             <#if permission.userCanEdit(id) && !isHistorical()>
                 <div class="row hidden-print" id="adminPanel">
                     <div class="text-right" id="adminToolbar" role="toolbar">
@@ -36,8 +43,11 @@
             </#if>
 
             <#if isHistorical()>
-            <h1 class="text-danger">Previous Version</h1>
-            <p class="text-danger"><b>IMPORTANT</b> This is an older version of this Service Agreement record and cannot be edited</p>
+                <h1 class="text-red">Historic version<br><small><strong>IMPORTANT</strong> This is a historic version of this Service Agreement</small></h1>
+            </#if>
+
+            <#if permission.userCanEdit(id)>
+                <#include "_serviceAgreementQualityAlert.ftlh">
             </#if>
 
             <div class="title">
@@ -72,7 +82,7 @@
 
             <div class="section">
                 <@displayData "Deposit reference" depositReference/>
-                <#if depositorName!=''>
+                <#if depositorName?? && depositorName!=''>
                     <div class="keyvalue">
                         <div class="key">Depositor</div>
                         <div class="value">
@@ -81,7 +91,7 @@
                         </div>
                     </div>
                 </#if>
-                <#if eidcName!=''>
+                <#if eidcName?? && eidcName!=''>
                     <div class="keyvalue">
                         <div class="key">For the EIDC</div>
                         <div class="value">
@@ -109,16 +119,6 @@
                 </div>
             </div>
 
-            <div class="section section--2">
-                <h2>Policies & legislation</h2>
-                <p>All environmental data deposited into the EIDC are subject to the requirements of the NERC Data Policy.</p>
-                <p>By depositing data, you confirm that the data is compliant with the provisions of UK data protection laws.</p>
-                <p>Data and supporting documentation should not contain names, addresses or other personal information relating to 'identifiable natural persons'.  Discovery metadata (the catalogue record) may contain names and contact details of the authors of this data (<a href="#">see our policy on retention and use of personal data</a>).</p>
-                <dl class="dl-horizontal">
-                    <@displayData "Other policies/legislation that applies:" otherPoliciesOrLegislation/>
-                </dl>
-            </div>
-
             <div class="section section--3">
                 <h2>Data and supporting documentation</h2>
                 <#if files?has_content && files?size gt 0 >
@@ -128,31 +128,51 @@
                 <#if supportingDocumentNames?? && supportingDocumentNames?has_content>
                     <@displaySupportingDocuments/>
                 </#if>
-                <@displayData "Content Included" contentIncluded/>
+
+                <#if contentIncluded??>
+                    <div class="keyvalue">
+                        <div class="key">
+                            Content Included
+                        </div>
+                        <div class="value">
+                            <@blocks.linebreaks contentIncluded!"" />
+                        </div>
+                    </div>
+                </#if>
 
                 <@displayData "Agreed transfer method for data and supporting documents" transferMethod/>
-                <!--@displayData "Data category" dataCategory.value/>
-                <@displayRelatedDataHoldings/>-->
+                
+                <@displayData "Data category" dataCategory.value/>
+
+                <@displayData "Related data" relatedDataHoldings/>
+                
             </div>
 
+            <div class="section section--2">
+                <h2>Policies & legislation</h2>
+                <p>Is is EIDC policy is to assign a DOI to all deposited data.  Such data will be kept in perpetuity. Exceptions to this policy are listed below.</p>
+                <#if policyExceptions??>
+                    <p>${policyExceptions}</p>
+                </#if>
 
-            <#if policyExceptions??>
-            <div class="section section--5">
-                <h2>Data retention</h2>
-                <p>Policy Exceptions: ${policyExceptions}</p> 
+                <p>All environmental data deposited into the EIDC are subject to the requirements of the NERC Data Policy.</p>
+                <p>By depositing data, you confirm that the data is compliant with the provisions of UK data protection laws.</p>
+                <p>Data and supporting documentation should not contain names, addresses or other personal information relating to 'identifiable natural persons'.  Discovery metadata (the catalogue record) may contain names and contact details of the authors of this data (<a href="#">see our policy on retention and use of personal data</a>).</p>
+                <dl class="dl-horizontal">
+                    <@displayData "Other policies/legislation that applies:" otherPoliciesOrLegislation/>
+                </dl>
             </div>
-            </#if>
+            
 
-            <#if availability?? || specificRequirements?? || otherServicesRequired??>
                 <div class="section section--6">
                     <h2>Availability and access</h2>
-                    <dl class="dl-horizontal">
+                    <#if availability??>
                         <@displayData "Availability" availability/>
-                        <@displayData "Specific Requirements" specificRequirements/>
-                        <@displayData "Other services required" otherServicesRequired/>
-                    </dl>
+                    <#else>
+                        <p>Data will be made publicly available as soon as possible</p>
+                    </#if>
                 </div>
-            </#if>
+           
 
             <#if endUserLicence?has_content || (ownersOfIpr?has_content &&ownersOfIpr?size gt 0)>
                 <div class="section section--7">
@@ -162,11 +182,10 @@
                 </div>
             </#if>
 
-            <#if useConstraints?? || supersededMetadataId?? || supersededReason??>
+            <#if useConstraints?? || supersededData?? >
                 <div class="section section--8">
                     <@displayData "Use constraints" useConstraints/>
-                    <@displayData "Metadata Id" supersededMetadataId/>
-                    <@displayData "Reason" supersededReason/>
+                    <@displayData "Metadata Id" supersededData/>
                 </div>
             </#if>
 
@@ -261,30 +280,15 @@
     </#list>
 </#macro>
 
-<#macro displayRelatedDataHoldings>
-    <#if relatedDataHoldings?? && relatedDataHoldings?has_content>
-        <h3>Related Data Holdings</h3>
-        <#list relatedDataHoldings as holding>
-            <#if holding.href?has_content>
-                <#assign holdinglabel = holding.href>
-                <#if holding.title?has_content>
-                    <#assign holdinglabel = holding.title>
-                </#if>
-                <a href="${holding.href}">${holdinglabel}</a>
-            <#elseif holding.title?has_content>
-                ${holding.title}
-            </#if>
-        </#list>
-    </#if>
-</#macro>
-
 <#macro displaySupportingDocuments>
-    <p class="supportingDocumentNames">
-    <b>Supporting Documents</b><br>
-    <#list supportingDocumentNames as name>
-        ${name}<#sep><br></#sep>
-    </#list>
-    </p>
+    <div class="keyvalue">
+        <div class="key">Supporting documents</div>
+        <div class="value">
+            <#list supportingDocumentNames as name>
+                ${name}<#sep><br></#sep>
+            </#list>
+        </div>
+    </div>
 </#macro>
 
 <#macro displayEndUserLicence>
@@ -317,35 +321,35 @@
 
 <#macro displayKeywords>
     <#if allKeywords?has_content>
-        <dt>Keywords</dt>
-        <dd class="descriptive-keywords">
-            <#list allKeywords?sort_by("value") as keyword>
-                <span>
-                 <#if keyword.uri?has_content>
-                     <a href="${keyword.uri}" target="_blank"
-                        rel="noopener noreferrer">${keyword.value?trim}</a><#if keyword_has_next>,&nbsp;</#if>
-                 <#else>
-                     ${keyword.value?trim}<#if keyword_has_next>,&nbsp;</#if>
-                 </#if>
-                </span>
-            </#list>
-        </dd>
+        <div class="keyvalue">
+            <div class="key">Keywords</div>
+            <div class="value">
+                <#list allKeywords?sort_by("value") as keyword>
+                    <span>
+                        <#if keyword.uri?has_content>
+                            <a href="${keyword.uri}" target="_blank"
+                            rel="noopener noreferrer">${keyword.value?trim}</a><#if keyword_has_next>,&nbsp;</#if>
+                        <#else>
+                            ${keyword.value?trim}<#if keyword_has_next>,&nbsp;</#if>
+                        </#if>
+                    </span>
+                </#list>
+            </div>
+        </div>
     </#if>
 </#macro>
 
 <#macro displayArea>
     <#if areaOfStudy??>
-        <div id="section-extent">
-            <dl>
-                <dt>Study area</dt>
-                <dd>
-                    <div id="studyarea-map">
-                        <#list areaOfStudy as extent>
-                            <span content="${extent.wkt}" datatype="geo:wktLiteral"/>
-                        </#list>
-                    </div>
-                </dd>
-            </dl>
-        </div>
+        <div class="keyvalue">
+            <div class="key">Area of study</div>
+            <div class="key">
+                <div id="studyarea-map">
+                    <#list areaOfStudy as extent>
+                        <span content="${extent.wkt}" datatype="geo:wktLiteral"/>
+                    </#list>
+                </div>
+            </div>
+        </div>        
     </#if>
 </#macro>
