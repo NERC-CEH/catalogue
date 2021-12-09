@@ -38,7 +38,7 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
         this.topicIndexer = topicIndexer;
         this.metadataDocumentSolrIndex = metadataDocumentSolrIndex;
         this.codeLookupService = codeLookupService;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @Override

@@ -114,7 +114,23 @@
       </@key>
     </#if>
 
-    <#include "../document/_funding.ftlh">
+    <#if funding??>
+      <@key "Funding">
+        <#list funding as fund>
+          <#if fund.funderName?has_content >
+            ${fund.funderName}
+          </#if>
+          <#if fund.awardNumber?has_content >
+              <#if fund.awardURI?has_content>
+                <a href="${fund.awardURI}" target="_blank" rel="noopener noreferrer">Award: ${fund.awardNumber}</a>
+              <#else>
+                Award: ${fund.awardNumber}
+              </#if>
+          </#if>
+          <#sep><br></#sep>
+        </#list>
+      </@key>
+    </#if>
 
     <#if onlineResources?? && onlineResources?has_content>
       <@key "Further information">
