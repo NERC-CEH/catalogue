@@ -51,7 +51,7 @@
       <@key "Storage">${storage}</@key>
     </#if>
     <#if healthSafety?? && healthSafety?has_content>
-      <@key "Health &amp; safety">${healthSafety}</@key>
+      <@key "Health & safety">${healthSafety}</@key>
     </#if>
 
     <#if specimenTypes?? && specimenTypes?has_content>
