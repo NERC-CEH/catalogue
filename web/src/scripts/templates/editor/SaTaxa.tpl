@@ -17,7 +17,7 @@
   <option value="Nematode">Nematode</option>
   <option value="Plankton">Plankton</option>
   <option value="Plant">Plant</option>
-  <option value="Platyhelminthe">Platyhelminthe</option>
+  <option value="Platyhelminthes">Platyhelminthes</option>
   <option value="Protozoa">Protozoa</option>
   <option value="Reptile">Reptile</option>
   <option value="Virus">Virus</option>
