@@ -35,6 +35,7 @@ import uk.ac.ceh.gateway.catalogue.model.LinkDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
 import uk.ac.ceh.gateway.catalogue.sparql.VocabularyService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
@@ -134,6 +135,7 @@ public class IndexingServicesConfig {
         val mappings = new PrioritisedClassMap<IndexGenerator<?, SolrIndex>>()
             .register(GeminiDocument.class, new SolrIndexGeminiDocumentGenerator(new ExtractTopicFromDocument(), metadataDocumentGenerator, codeLookupService))
             .register(ElterDocument.class, new SolrIndexElterDocumentGenerator(metadataDocumentGenerator))
+            .register(SampleArchive.class, new SampleArchiveIndexGenerator(metadataDocumentGenerator))
             .register(LinkDocument.class, linkDocumentGenerator)
             .register(MetadataDocument.class, metadataDocumentGenerator);
 

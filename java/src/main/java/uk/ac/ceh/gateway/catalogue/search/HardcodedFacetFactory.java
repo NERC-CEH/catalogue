@@ -133,9 +133,24 @@ public class HardcodedFacetFactory implements FacetFactory {
                 .displayName("Rights holder")
                 .hierarchical(false)
                 .build();
+            case "saPhysicalState" -> Facet.builder()
+                .fieldName("saPhysicalState")
+                .displayName("Physical State")
+                .hierarchical(false)
+                .build();
+            case "saSpecimenType" -> Facet.builder()
+                .fieldName("saSpecimenType")
+                .displayName("Specimen Type")
+                .hierarchical(false)
+                .build();
             case "saTaxon" -> Facet.builder()
                 .fieldName("saTaxon")
                 .displayName("Taxa")
+                .hierarchical(false)
+                .build();
+            case "saTissue" -> Facet.builder()
+                .fieldName("saTissue")
+                .displayName("Tissue")
                 .hierarchical(false)
                 .build();
             case "state" -> Facet.builder()
