@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.indexing.jena;
 
+import com.google.common.base.Strings;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.jena.rdf.model.Resource;
@@ -37,24 +38,42 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
         Resource me = generator.resource(document.getId());
         toReturn.add(createStatement(me, IDENTIFIER, createPlainLiteral(me.getURI()))); //Add as an identifier of itself
 
-        Optional.ofNullable(document.getBoundingBoxes()).orElse(Collections.emptyList()).forEach(b -> {
-            toReturn.add(createStatement(me, HAS_GEOMETRY, createTypedLiteral(b.getWkt(), WKT_LITERAL)));
-        });
+        Optional.ofNullable(document.getBoundingBoxes())
+            .orElse(Collections.emptyList())
+            .forEach(b ->
+                toReturn.add(createStatement(me, HAS_GEOMETRY, createTypedLiteral(b.getWkt(), WKT_LITERAL)))
+            );
 
-        Optional.ofNullable(document.getResourceIdentifiers()).orElse(Collections.emptyList())
-                .stream()
-                .filter(r -> !r.getCoupledResource().isEmpty()).forEach( r -> {
-                    toReturn.add(createStatement(me, IDENTIFIER, createPlainLiteral(r.getCoupledResource())));
-        });
+        Optional.ofNullable(document.getResourceIdentifiers())
+            .orElse(Collections.emptyList())
+            .stream()
+            .filter(r -> !r.getCoupledResource().isEmpty())
+            .forEach(r ->
+                toReturn.add(createStatement(me, IDENTIFIER, createPlainLiteral(r.getCoupledResource())))
+            );
 
 
-        document.getCoupledResources().stream().filter(r -> !r.isEmpty()).forEach( r -> {
-            toReturn.add(createStatement(me, EIDCUSES, createResource(r)));
-        });
+        Optional.ofNullable(document.getCoupledResources())
+            .orElse(Collections.emptyList())
+            .stream()
+            .filter(r -> !r.isEmpty())
+            .forEach(r ->
+                toReturn.add(createStatement(me, EIDCUSES, createResource(r)))
+            );
 
-        Optional.ofNullable(document.getRelatedRecords()).orElse(Collections.emptyList()).forEach(rr -> {
-            toReturn.add(createStatement(me, createProperty(rr.getRel()), createProperty(baseUri + "/id/" + rr.getIdentifier())));
-        });
+        Optional.ofNullable(document.getRelatedRecords())
+            .orElse(Collections.emptyList())
+            .stream()
+            .filter(rr -> !Strings.isNullOrEmpty(rr.getRel()))
+            .filter(rr -> !Strings.isNullOrEmpty(rr.getIdentifier()))
+            .forEach(rr -> {
+                log.debug(rr.toString());
+                toReturn.add(createStatement(
+                    me,
+                    createProperty(rr.getRel()),
+                    createProperty(baseUri + "/id/" + rr.getIdentifier())
+                ));
+            });
 
         return toReturn;
     }

@@ -7,8 +7,8 @@ import lombok.Value;
 
 @Value
 public class RelatedRecord {
-    private final @NonNull String rel, identifier;
-    private final String href, title, associationType;
+    @NonNull String rel, identifier;
+    String href, title, associationType;
 
     @JsonCreator
     public RelatedRecord(
@@ -16,7 +16,8 @@ public class RelatedRecord {
         @JsonProperty("identifier") String identifier,
         @JsonProperty("href") String href,
         @JsonProperty("title") String title,
-        @JsonProperty("associationType") String associationType) {
+        @JsonProperty("associationType") String associationType
+    ) {
         this.rel = rel;
         this.identifier = identifier;
         this.href = href;
