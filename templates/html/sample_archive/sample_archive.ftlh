@@ -51,7 +51,7 @@
       <@key "Storage">${storage}</@key>
     </#if>
     <#if healthSafety?? && healthSafety?has_content>
-      <@key "Health &amp; safety">${healthSafety}</@key>
+      <@key "Health & safety">${healthSafety}</@key>
     </#if>
 
     <#if specimenTypes?? && specimenTypes?has_content>
@@ -110,6 +110,24 @@
           <div class="responsibleParty">
             <@func.displayContact contact, true, true />
           </div>
+        </#list>
+      </@key>
+    </#if>
+
+    <#if funding??>
+      <@key "Funding">
+        <#list funding as fund>
+          <#if fund.funderName?has_content >
+            ${fund.funderName}
+          </#if>
+          <#if fund.awardNumber?has_content >
+              <#if fund.awardURI?has_content>
+                <a href="${fund.awardURI}" target="_blank" rel="noopener noreferrer">Award: ${fund.awardNumber}</a>
+              <#else>
+                Award: ${fund.awardNumber}
+              </#if>
+          </#if>
+          <#sep><br></#sep>
         </#list>
       </@key>
     </#if>

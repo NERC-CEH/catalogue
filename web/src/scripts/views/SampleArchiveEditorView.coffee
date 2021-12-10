@@ -27,7 +27,8 @@ define [
   'cs!views/editor/SaTissueView'
   'cs!views/editor/PointOfContactView'
   'cs!views/editor/OnlineLinkView'
-], (EditorView, InputView, TextareaView, KeywordView, ParentView, ParentStringView, ParentStringTextboxView, PredefinedParentView, BoundingBox, Contact, MultipleDate, PointOfContact, TopicCategory, SaTaxa, SaPhysicalState, SaSpecimenType, SaTissue, BoundingBoxView, TemporalExtentView, SingleObjectView, SingleView, TopicCategoryView, SaTaxaView, SaPhysicalStateView, SaSpecimenTypeView, SaTissueView, PointOfContactView, OnlineLinkView) -> EditorView.extend
+  'cs!views/editor/FundingView'
+], (EditorView, InputView, TextareaView, KeywordView, ParentView, ParentStringView, ParentStringTextboxView, PredefinedParentView, BoundingBox, Contact, MultipleDate, PointOfContact, TopicCategory, SaTaxa, SaPhysicalState, SaSpecimenType, SaTissue, BoundingBoxView, TemporalExtentView, SingleObjectView, SingleView, TopicCategoryView, SaTaxaView, SaPhysicalStateView, SaSpecimenTypeView, SaTissueView, PointOfContactView, OnlineLinkView, FundingView) -> EditorView.extend
 
   initialize: ->
     @model.set('type', 'sampleArchive') unless @model.has('type')
@@ -137,6 +138,40 @@ define [
       title:  'Additional information'
       views: [
 
+        new PredefinedParentView
+          model: @model
+          modelAttribute: 'funding'
+          label: 'Funding'
+          ObjectInputView: FundingView
+          multiline: true
+          helpText: """
+                    <p>Details of funding organisations</p>
+                    """
+          predefined:
+            'BBSRC':
+              funderName: 'Biotechnology and Biological Sciences Research Council'
+              funderIdentifier: 'https://ror.org/00cwqg982'
+            'Defra':
+              funderName: 'Department for Environment Food and Rural Affairs'
+              funderIdentifier: 'https://ror.org/00tnppw48'
+            'EPSRC':
+              funderName: 'Engineering and Physical Sciences Research Council'
+              funderIdentifier: 'https://ror.org/0439y7842'
+            'ESRC':
+              funderName: 'Economic and Social Research Council'
+              funderIdentifier: 'https://ror.org/03n0ht308'
+            'Innovate UK':
+              funderName: 'Innovate UK'
+              funderIdentifier: 'https://ror.org/05ar5fy68'
+            'MRC':
+              funderName: 'Medical Research Council'
+              funderIdentifier: 'https://ror.org/03x94j517'
+            'NERC':
+              funderName: 'Natural Environment Research Council'
+              funderIdentifier: 'https://ror.org/02b5d8509'
+            'STFC':
+              funderName: 'Science and Technology Facilities Council'
+              funderIdentifier: 'https://ror.org/057g20z61'
 
         new SingleObjectView
           model: @model
@@ -145,7 +180,7 @@ define [
           label: 'Temporal extent'
           ObjectInputView: TemporalExtentView,
           helpText: """
-                    <pStart date is mandatory and it represents the earliest sample in the archive - if not precisely known, it  may be approximated. End date is optional, if it is provided it represents the last sample in the archive.</p>
+                    <p>Start date is mandatory and it represents the earliest sample in the archive - if not precisely known, it  may be approximated. End date is optional, if it is provided it represents the last sample in the archive.</p>
                     """
 
         new PredefinedParentView
@@ -195,7 +230,7 @@ define [
           helpText: """
                     <p>A bounding box showing the area that the archive covers. It will encompass the remit of the archive, which may be larger than that represented by the samples actually in the archive. It is represented by north, south, east and west in decimal degrees (WGS84).</p><p>If you don't know the bounding box values, click on the map to place a rectangle at the approximate location and adjust by dragging it or changing its shape using the handles on the rectangle.</p>
                     """
-        
+
         new ParentView
           model: @model
           modelAttribute: 'onlineResources'
@@ -208,7 +243,7 @@ define [
           helpText: """
                     <p>A list of websites that may be of use to the user</p>
                     """
-     
+
      ]
     ,
       label: 'Classification'
@@ -290,5 +325,5 @@ define [
                     """
       ]
     ]
-    
+
     EditorView.prototype.initialize.apply @

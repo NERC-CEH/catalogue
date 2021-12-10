@@ -112,7 +112,10 @@
     <field name="resourceStatus" type="keywords" multiValued="false"/>
     <field name="resourceType" type="keywords" multiValued="false"/>
     <field name="ror" type="rors"/>
+    <field name="saPhysicalState" type="keywords"/>
+    <field name="saSpecimenType" type="keywords"/>
     <field name="saTaxon" type="keywords"/>
+    <field name="saTissue" type="keywords"/>
     <field name="state" type="keywords" multiValued="false"/>
     <field name="supplementalDescription" type="text_general"/>
     <field name="supplementalName" type="text_general"/>

@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
+import uk.ac.ceh.gateway.catalogue.gemini.Funding;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.TimePeriod;
 import uk.ac.ceh.gateway.catalogue.indexing.solr.WellKnownText;
@@ -34,6 +35,7 @@ public class SampleArchive extends AbstractMetadataDocument implements WellKnown
   private List<BoundingBox> boundingBoxes;
   private List<ResponsibleParty> archiveLocations, archiveContacts, metadataContacts;
   private List<OnlineLink> onlineResources;
+  private List<Funding> funding;
 
   @Override
   public List<String> getWKTs() {
