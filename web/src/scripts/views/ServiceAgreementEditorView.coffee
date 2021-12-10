@@ -29,11 +29,12 @@ define [
   'cs!views/editor/BoundingBoxView'
   'cs!views/service-agreement/TextOnlyView'
   'cs!views/service-agreement/AuthorView'
+  'cs!views/service-agreement/RightsHolderView'
   'cs!views/service-agreement/FileView'
   'cs!views/service-agreement/EndUserLicenceView'
   'cs!views/editor/FundingView'
   'cs!models/editor/Funding'
-], (Backbone, _, EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, AccessLimitationView, AccessLimitation, InspireTheme, CategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, OnlineResourceView, OnlineResource, ResourceConstraintView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, MapDataSource, ReadOnlyView, ParentStringView, BoundingBox, BoundingBoxView, TextOnlyView, AuthorView, FileView, EndUserLicenceView, FundingView, Funding) -> EditorView.extend
+], (Backbone, _, EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, AccessLimitationView, AccessLimitation, InspireTheme, CategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, OnlineResourceView, OnlineResource, ResourceConstraintView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, MapDataSource, ReadOnlyView, ParentStringView, BoundingBox, BoundingBoxView, TextOnlyView, AuthorView, RightsHolderView, FileView, EndUserLicenceView, FundingView, Funding) -> EditorView.extend
 
   initialize: ->
     @delegate "click #exitWithoutSaving": "exit"
@@ -135,7 +136,7 @@ define [
           label: 'Files'
           text: """
                 <p>List the files to be deposited below - filenames must not include any spaces or special characters</p>
-                <p>If there are a too many files to list separately, specify a naming convention instead.</p>
+                <p>If there are a too many files to list separately, you can specify a naming convention below <strong>instead</strong>. (If doing so, please also indicate the total size of the deposit (e.g. 500Gb).)</p>
                 """
 
         new PredefinedParentView
@@ -148,6 +149,15 @@ define [
             'NetCDF':
               format: 'NetCDF'
           multiline: true
+
+        new TextareaView
+          model: @model
+          label: 'Naming convention '
+          modelAttribute: 'fileNamingConvention'
+          rows: 5
+          helpText: """
+                    <p>Specify a naming convention <strong>only</strong> if there are too many files to list individually.  Please also indicate the total size of the deposit (e.g. 500Gb).</p>
+                    """
 
         new InputView
           model: @model
@@ -217,7 +227,7 @@ define [
           ModelType: Contact
           modelAttribute: 'ownersOfIpr'
           label: 'Owner of IPR'
-          ObjectInputView: ContactView
+          ObjectInputView: RightsHolderView
           multiline: true
 
         new TextOnlyView
@@ -258,7 +268,7 @@ define [
 
         new PredefinedParentView
           model: @model
-          modelAttribute: 'Funding'
+          modelAttribute: 'funding'
           ModelType: Funding
           multiline: true
           label: 'Grants/awards used to generate this resource'
@@ -303,7 +313,7 @@ define [
 
         new TextareaView
           model: @model
-          modelAttribute: 'supersededReason'
+          modelAttribute: 'supersededData'
           rows: 5
   
         new TextareaView

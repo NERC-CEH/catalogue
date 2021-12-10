@@ -1,5 +1,5 @@
-<#import "../blocks.ftlh" as blocks>
 <#import "../skeleton.ftlh" as skeleton>
+<#import "../blocks.ftlh" as blocks>
 <#import "../../functions.ftlh" as func>
 
 <@skeleton.master title=title catalogue=catalogues.defaultCatalogue()>
@@ -14,40 +14,38 @@
         <div class="container" role="main">
             
             <#if permission.userCanEdit(id) && !isHistorical()>
-                <div class="row hidden-print" id="adminPanel">
-                    <div class="text-right" id="adminToolbar" role="toolbar">
-                        <button type="button" class="btn btn-default btn-wide edit-control" data-document-type="service-agreement">
-                            Edit
-                        </button>
+                <div class="row hidden-print adminPanel" role="toolbar">
+                    <div class="text-right">
+                        <button type="button" class="btn btn-default edit-control" data-document-type="service-agreement">Edit</button>
                         <#list getModelLinks() as link>
                             <#if link.rel == 'history'>
-                                <a href="${link.href}" class="btn btn-default btn-wide">${link.title}</a>
+                                <a href="${link.href}" class="btn btn-default">${link.title}</a>
                             <#else>
                                 <form action="${link.href}" method="post">
-                                    <input type="submit" value="${link.title}" class="btn btn-default btn-wide">
+                                    <input type="submit" value="${link.title}" class="btn btn-default">
                                 </form>
                             </#if>
                         </#list>
                     </div>
                 </div>
             <#elseif permission.userCanEdit(id) && isHistorical()>
-                <div class="row hidden-print" id="adminPanel">
-                    <div class="text-right" id="adminToolbar" role="toolbar">
+                <div class="row hidden-print adminPanel" role="toolbar">
+                    <div class="text-right">
                         <#list getModelLinks() as link>
                             <#if link.title == 'History'>
-                                <a href="${link.href}" class="btn btn-default btn-wide">${link.title}</a>
+                                <a href="${link.href}" class="btn btn-default">${link.title}</a>
                             </#if>
                         </#list>
                     </div>
                 </div>
             </#if>
 
-            <#if isHistorical()>
-                <h1 class="text-red">Historic version<br><small><strong>IMPORTANT</strong> This is a historic version of this Service Agreement</small></h1>
+            <#if permission.userCanEdit(id) && !isHistorical()>
+                <#include "_serviceAgreementQualityReport.ftlh">
             </#if>
 
-            <#if permission.userCanEdit(id)>
-                <#include "_serviceAgreementQualityAlert.ftlh">
+            <#if isHistorical()>
+                <h1 class="text-red">Historic version<br><small><strong>IMPORTANT</strong> This is a historic version of this Service Agreement</small></h1>
             </#if>
 
             <div class="title">
@@ -55,14 +53,23 @@
                 <h1>EIDC Deposit Agreement for ${title}</h1>
             </div>
 
-            <div class="preamble">
-                <p>As a depositor you must consent to this service agreement which establishes the terms and conditions of use of your data.  This document sets out your rights and responsibilities as depositor and ours as the data distributor.</p><p>This agreement authorises the EIDC to preserve and to distribute the data under the terms specified in this document.  To do so, the EIDC will store the data and, where necessary, duplicate and transform copies.</p>
+            <div class="depositReference">
+                <strong>Deposit reference</strong> <span>${depositReference}</span>
+            </div>
+
+            <div class="terms">
+                <p>This document sets out your rights and responsibilities as depositor and ours as the data distributor.</p>
+                <p>As a depositor you must consent to this service agreement which establishes the terms and conditions of use of your data.</p>
+                <p>This agreement authorises the EIDC to preserve and to distribute the data under the terms specified in this document.  To do so, the EIDC will store the data and, where necessary, duplicate and transform copies.</p>
+                <p>All environmental data deposited into the EIDC are subject to the requirements of the NERC Data Policy.</p>
+                <p>By depositing data, you confirm that the data is compliant with the provisions of UK data protection laws.</p>
+
                 <div class="indent--1">
                     <h3>Our responsibilities:</h3>
                     <ul>
                         <li>We will take every care to preserve the integrity of the data and protect it from loss or damage.</li>
                         <li>We will make the data publicly available, subject to any conditions specified in this Agreement.</li>
-                        <li>Unless otherwise requested, we will issue a Digital Object Identifier (DOI) to facilitate the proper citation of the dataset. </li>
+                        <li>Unless otherwise requested, we will issue a Digital Object Identifier (DOI) to facilitate the proper citation of the dataset. Such data will be kept in perpetuity. </li>
                         <li>We will ask users of the data to agree to an end user licence.</li>
                         <li>We require users of the data to acknowledge and cite sources when re-using data.</li>
                         <li>We will only process personal information in connection with long-term archiving services, in accordance with our <a href="https://eidc.ac.uk/policies/privacy" target="_blank" rel="noopener noreferrer" >Privacy Notice</a></li>
@@ -77,11 +84,18 @@
                         <li>You guarantee that nothing in the resource or supporting information contravenes the UK data protection laws or any other UK law (e.g., the Wildlife and Countryside Act 1981).</li>
                         <li>You agree to notify the EIDC if it is subsequently found that the data resource is no longer fit for purpose (e.g. if errors are found in the dataset).</li>
                     </ul>
+
+                    <#if policyExceptions??>
+                        <h3>Exceptions to the general policy are listed below:</h3>
+                        <ul>
+                            <li>${policyExceptions}</li>
+                            <li>otherPoliciesOrLegislation</li>
+                        </ul>
+                    </#if>
                 </div>
             </div>
 
-            <div class="section">
-                <@displayData "Deposit reference" depositReference/>
+            <div class="contactDetails">
                 <#if depositorName?? && depositorName!=''>
                     <div class="keyvalue">
                         <div class="key">Depositor</div>
@@ -104,13 +118,13 @@
 
             <div class="section section--1">
                 <h2>Data identification and citation</h2>
-                <p><strong class="text-red"><i class="fas fa-exclamation-triangle" ></i> PLEASE NOTE: ONCE A DOI HAS BEEN ISSUED, THE INFORMATION PROVIDED IN THIS SECTION CANNOT BE CHANGED</strong></p>
-
-                <h3>Title of data resource</h3>
-                <p>${title}</p>
+                <p><strong class="text-red"><i class="fas fa-exclamation-triangle" ></i> PLEASE NOTE: ONCE A DOI HAS BEEN ISSUED, THE INFORMATION PROVIDED IN THIS SECTION CANNOT BE CHANGED</strong><br>&nbsp;</p>
+                <h4><strong>Title of data resource:</strong> ${title}</h4>
 
                 <div class="authors">
                     <h3>Authors</h3>
+                    <p>This information will be used in discovery metadata for this dataset (the catalogue record).  <a href="#">See our policy on retention and use of personal data</a>.</p>
+
                     <#if authors?has_content && authors?size gt 0 >
                          <@displayAuthors/>
                     <#else>
@@ -121,91 +135,76 @@
 
             <div class="section section--3">
                 <h2>Data and supporting documentation</h2>
+                <p>Data and supporting documentation should not contain names, addresses or other personal information relating to 'identifiable natural persons' (<a href="#">see our policy on retention and use of personal data</a>).</p>
+
                 <#if files?has_content && files?size gt 0 >
                     <@displayFiles/>
                 </#if>
                 
+                <@displayData "File naming convention" fileNamingConvention/>
+                
+                <@displayData "Number of files to be deposited" fileNumber/>
+
                 <#if supportingDocumentNames?? && supportingDocumentNames?has_content>
                     <@displaySupportingDocuments/>
                 </#if>
 
                 <#if contentIncluded??>
                     <div class="keyvalue">
-                        <div class="key">
-                            Content Included
-                        </div>
+                        <div class="key">Content of supporting document(s)</div>
                         <div class="value">
                             <@blocks.linebreaks contentIncluded!"" />
                         </div>
                     </div>
                 </#if>
 
-                <@displayData "Agreed transfer method for data and supporting documents" transferMethod/>
-                
-                <@displayData "Data category" dataCategory.value/>
-
-                <@displayData "Related data" relatedDataHoldings/>
-                
-            </div>
-
-            <div class="section section--2">
-                <h2>Policies & legislation</h2>
-                <p>Is is EIDC policy is to assign a DOI to all deposited data.  Such data will be kept in perpetuity. Exceptions to this policy are listed below.</p>
-                <#if policyExceptions??>
-                    <p>${policyExceptions}</p>
+                <#if dataCategory?has_content>
+                    <@displayData "Data category" dataCategory.value/>
                 </#if>
 
-                <p>All environmental data deposited into the EIDC are subject to the requirements of the NERC Data Policy.</p>
-                <p>By depositing data, you confirm that the data is compliant with the provisions of UK data protection laws.</p>
-                <p>Data and supporting documentation should not contain names, addresses or other personal information relating to 'identifiable natural persons'.  Discovery metadata (the catalogue record) may contain names and contact details of the authors of this data (<a href="#">see our policy on retention and use of personal data</a>).</p>
-                <dl class="dl-horizontal">
-                    <@displayData "Other policies/legislation that applies:" otherPoliciesOrLegislation/>
-                </dl>
+                <@displayData "Agreed transfer method for data and supporting documents" transferMethod/>
+                
             </div>
+
             
-
-                <div class="section section--6">
-                    <h2>Availability and access</h2>
-                    <#if availability??>
-                        <@displayData "Availability" availability/>
-                    <#else>
-                        <p>Data will be made publicly available as soon as possible</p>
-                    </#if>
+            <div class="section section--6">
+                <h2>Availability, access and licensing</h2>
+                <div class="keyvalue">
+                    <div class="key">Availability</div>
+                    <div class="value">
+                        <#if availability??>
+                            ${availability}
+                        <#else>
+                            <p>Data will be made publicly available as soon as possible</p>
+                        </#if>
+                    </div>
                 </div>
-           
 
-            <#if endUserLicence?has_content || (ownersOfIpr?has_content &&ownersOfIpr?size gt 0)>
-                <div class="section section--7">
-                    <h2>Licensing and IPR</h2>
-                    <@displayEndUserLicence/>
-                    <@displayOwnerOfIpr/>
-                </div>
-            </#if>
-
-            <#if useConstraints?? || supersededData?? >
-                <div class="section section--8">
-                    <@displayData "Use constraints" useConstraints/>
-                    <@displayData "Metadata Id" supersededData/>
-                </div>
-            </#if>
-
-            <div class="section section--9">
-                <h2>Miscellaneous</h2>
-                <@displayData "Other Info" otherInfo/>
+                <@displayEndUserLicence/>
+                <@displayOwnerOfIpr/>
+                <@displayData "Use constraints" useConstraints/>
             </div>
+
+
+            <#if otherInfo?? || supersededData?? || relatedDataHoldings?? || funding?has_content>
+                <div class="section section--9">
+                    <h2>Miscellaneous</h2>
+                    <@displayData "Superseding dataset" supersededData/>
+                    <@displayData "Related data" relatedDataHoldings/>
+                    <@displayData "Other information" otherInfo/>
+                    <@displayGrants/>
+                </div>
+            </#if>
 
             <#if description?has_content || lineage?has_content || allKeywords?has_content || areaOfStudy??>
                 <div class="section section--metadata">
                     <h2>Discovery metadata</h2>
+                    <p><i>Information in this section will be used to create a record in the EIDC data catalogue.</i></p>
                     <@displayData "Description" description/>
                     <@displayData "Lineage" lineage/>
                     <@displayKeywords/>
                     <@displayArea/>
                 </div>
-            </#if>
-
-            <#if permission.userCanEdit(id)>
-                <#include "_serviceAgreementQualityReport.ftlh">
             </#if>
 
         </div>
@@ -257,6 +256,7 @@
 
 <#macro displayFiles>
     <#list files>
+    <p>Files to be deposited</p>
     <div class="tbl tbl--collapse tbl--files">
         <table>
             <thead>
@@ -290,24 +290,28 @@
         </div>
     </div>
 </#macro>
-
+              
 <#macro displayEndUserLicence>
-    <#if endUserLicence?has_content>
-        <#if endUserLicence.code == 'license'>
-            <#assign licenceText = endUserLicence.value >
-            <#if endUserLicence.uri?has_content>
-                <a rel="license" href="${endUserLicence.uri}">${licenceText}</a>
-            <#else>
-                ${licenceText}
+    <div class="keyvalue">
+        <div class="key">Licence</div>
+        <div class="value">
+            <#if endUserLicence?has_content && endUserLicence.code == 'license'>
+                <#assign licenceText = endUserLicence.value?replace('is available','will be made available') >
+                <#if endUserLicence.uri?has_content>
+                    <a rel="license" href="${endUserLicence.uri}">${licenceText}</a>
+                <#else>
+                    ${licenceText}
+                </#if>
             </#if>
-        </#if>
-    </#if>
+        </div>
+    </div>
 </#macro>
 
 <#macro displayOwnerOfIpr>
     <#if ownersOfIpr?has_content && ownersOfIpr?size gt 0 >
-        <dt id="pointOfContact">Owner of IPR</dt>
-        <dd class="descriptive-keywords">
+     <div class="keyvalue">
+        <div class="key">Owner<#if ownersOfIpr?size gt 1>s</#if> of IPR</div>
+        <div class="value">
             <#list ownersOfIpr>
                 <#items as owner>
                     <div class="responsibleParty">
@@ -315,9 +319,26 @@
                     </div>
                 </#items>
             </#list>
-        </dd>
+        </div>
+    </div>
     </#if>
 </#macro>
+
+<#macro displayGrants>
+    <#if funding?has_content && funding?size gt 0 >
+     <div class="keyvalue">
+        <div class="key">Funding</div>
+        <div class="value">
+            <#list funding>
+                <#items as grant>
+                   <div>${grant.awardNumber} (${grant.funderName})</div>
+                </#items>
+            </#list>
+        </div>
+    </div>
+    </#if>
+</#macro>
+
 
 <#macro displayKeywords>
     <#if allKeywords?has_content>

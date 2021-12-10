@@ -22,7 +22,7 @@ import java.util.stream.StreamSupport;
 })
 public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementModel> {
 
-    private String id, title, depositReference, depositorName, depositorContactDetails, eidcName, eidcContactDetails,otherPoliciesOrLegislation, transferMethod, relatedDataHoldings, contentIncluded, fileNumber, policyExceptions, availability, useConstraints, supersededData, otherInfo, description, lineage;
+    private String id, title, depositReference, depositorName, depositorContactDetails, eidcName, eidcContactDetails,otherPoliciesOrLegislation, transferMethod, relatedDataHoldings, contentIncluded, fileNumber, fileNamingConvention, policyExceptions, availability, useConstraints, supersededData, otherInfo, description, lineage;
 
     private List<ResponsibleParty> authors;
 
@@ -62,6 +62,7 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
         this.otherPoliciesOrLegislation = serviceAgreement.getOtherPoliciesOrLegislation();
         this.funding = serviceAgreement.getFunding();
         this.fileNumber = serviceAgreement.getFileNumber();
+        this.fileNamingConvention = serviceAgreement.getFileNamingConvention();
         this.files = serviceAgreement.getFiles();
         this.transferMethod = serviceAgreement.getTransferMethod();
         this.relatedDataHoldings = serviceAgreement.getRelatedDataHoldings();

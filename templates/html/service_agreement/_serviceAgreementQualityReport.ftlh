@@ -1,51 +1,40 @@
 <#import "../../functions.ftlh" as func>
-<div id="section-serviceAgreementQuality" class="clearfix hidden-print">
-    <#if problems?? && problems?has_content>
-        <#assign errors = func.filter(problems, "severity", "ERROR")>
-        <#assign warnings = func.filter(problems, "severity", "WARNING")>
-        <#assign infos = func.filter(problems, "severity", "INFO")>
+<#assign
+    SA_checks = serviceAgreementQuality.check(id)
+    problems = SA_checks.getProblems()
+    errors = SA_checks.getErrors()
+    infos =  SA_checks.getInfo()
+    warnings = SA_checks.getWarnings()
+    alertclass="warning"
+    alerticon="exclamation"
+>
 
+<#if problems?? && problems?has_content>
+    <#assign errors = func.filter(problems, "severity", "ERROR")>
+    <#assign warnings = func.filter(problems, "severity", "WARNING")>
+    <#assign infos = func.filter(problems, "severity", "INFO")>
+
+    <div id="section-serviceAgreementQuality" class="clearfix hidden-print">
         <div class="panel">
-            <#if errors?? && errors?has_content>
-                <div class=" quality_error">
-                    <div class="panel-heading ">
-                        <div class="row">
-                            <span class="error">ERRORS</span>
-                        </div>
-                    </div>
-                    <ul class="list-group">
+            <div class=" quality_error">
+                <ul class="list-group">
+                    <#if errors?? && errors?has_content>
                         <#list errors as error>
                             <li class="list-group-item error">${error.test}</li>
-                        </#list>
-                    </ul>
-                </div>
-            </#if>
-            <#if warnings?? && warnings?has_content>
-                <div class=" quality_warning">
-                    <div class="panel-heading">
-                        <div class="row">
-                            <i class="fas fa-exclamation" > </i> WARNINGS
-                        </div>
-                    </div>
-                    <ul class="list-group">
+                        </#list>       
+                    </#if>
+                    <#if warnings?? && warnings?has_content>
                         <#list warnings as warning>
-                            <li class="list-group-item">${warning.test}</li>
+                            <li class="list-group-item warning">${warning.test}</li>
                         </#list>
-                    </ul>
-                </div>
-            </#if>
-            <#if infos?? && infos?has_content>
-                <div class="quality_info">
-                    <div class="panel-heading">
-                        <i class="fas fa-info-circle" > </i> OTHER ISSUES
-                    </div>
-                    <ul class="list-group">
+                    </#if>
+                    <#if infos?? && infos?has_content>
                         <#list infos as info>
-                            <li class="list-group-item">${info.test}</li>
+                            <li class="list-group-item info">${info.test}</li>
                         </#list>
-                    </ul>
-                </div>
-            </#if>
+                    </#if>
+                </ul>
+            </div>
         </div>
-    </#if>
-</div>
+    </div>
+</#if>

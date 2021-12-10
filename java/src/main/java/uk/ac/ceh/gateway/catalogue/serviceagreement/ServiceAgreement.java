@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 public class ServiceAgreement extends AbstractMetadataDocument {
 
-    private String depositReference, depositorName, depositorContactDetails, eidcName, eidcContactDetails, otherPoliciesOrLegislation, fileNumber, transferMethod, relatedDataHoldings, contentIncluded, useConstraints, supersededData, policyExceptions, availability, otherInfo, lineage;
+    private String depositReference, depositorName, depositorContactDetails, eidcName, eidcContactDetails, otherPoliciesOrLegislation, fileNumber, fileNamingConvention, transferMethod, relatedDataHoldings, contentIncluded, useConstraints, supersededData, policyExceptions, availability, otherInfo, lineage;
 
     private List<ResponsibleParty> authors;
 

@@ -118,10 +118,10 @@
 
 <div class="row">
   <div class="col-sm-2">
-    <label class="control-label" for="contacts<%= data.index %>organisationIdentifier">Organisation ID</label>
+    <label class="control-label" for="contacts<%= data.index %>organisationIdentifier">Organisation's RoR</label>
   </div>
   <div class="col-sm-10">
-    <input data-name='organisationIdentifier' placeholder='(e.g.RoR)' class="editor-input" id="contacts<%= data.index %>organisationIdentifier" value="<%= data.organisationIdentifier %>">
+    <input data-name='organisationIdentifier' class="editor-input" id="contacts<%= data.index %>organisationIdentifier" value="<%= data.organisationIdentifier %>">
   </div>
 </div>
 
