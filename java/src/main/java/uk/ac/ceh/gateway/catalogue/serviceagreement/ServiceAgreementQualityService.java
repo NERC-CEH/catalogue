@@ -32,7 +32,8 @@ public class ServiceAgreementQualityService {
     private final DocumentReader documentReader;
     private final Configuration config;
 
-    private final TypeRef<List<Map<String, String>>> typeRefStringString = new TypeRef<>() {};
+    private final TypeRef<List<Map<String, String>>> typeRefStringString = new TypeRef<>() {
+    };
 
     public ServiceAgreementQualityService(
             @NonNull DocumentReader documentReader,
@@ -81,13 +82,14 @@ public class ServiceAgreementQualityService {
     }
 
     Optional<List<MetadataCheck>> checkBasics(DocumentContext parsedDoc) {
-        val requiredKeys = ImmutableSet.of("title", "description", "depositorContactDetails");
+        val requiredKeys = ImmutableSet.of("title", "depositorContactDetails", "eidcName", "contentIncluded", "transferMethod", "depositReference");
         val toReturn = new ArrayList<MetadataCheck>();
         val toCheck = parsedDoc.read(
-                "$.['title','description', 'depositorContactDetails']",
+                "$.['title', 'depositorContactDetails', 'eidcName', 'contentIncluded', 'transferMethod', 'depositReference']",
                 new TypeRef<Map<String, String>>() {
                 }
         );
+
         requiredKeys.forEach(key -> {
             if (fieldIsMissing(toCheck, key)) {
                 toReturn.add(new MetadataCheck(key + " is missing", ERROR));
@@ -95,8 +97,28 @@ public class ServiceAgreementQualityService {
         });
 
         try {
+            val depositReference = parsedDoc.read("$.depositReference", String.class).trim();
+            if (!depositReference.matches("^EIDCHELP-\\d{1,9}$")) {
+                Optional.of(toReturn.add(new MetadataCheck("Deposit reference must be present and must " +
+                        "match the regex ^EIDCHELP-\\d{1,9}$", ERROR)));
+            }
+        } catch (NullPointerException ex) {
+            toReturn.add(new MetadataCheck("Deposit reference must be present and must " +
+                    "match the regex ^EIDCHELP-\\d{1,9}$", ERROR));
+        }
+
+        try {
+            val supportingDocumentNames = parsedDoc.read("$.supportingDocumentNames", List.class);
+            if (supportingDocumentNames.size() < 1) {
+                Optional.of(toReturn.add(new MetadataCheck("At least one supporting document name must be present", ERROR)));
+            }
+        } catch (NullPointerException ex) {
+            toReturn.add(new MetadataCheck("At least one supporting document name must be present", ERROR));
+        }
+
+        try {
             val description = parsedDoc.read("$.description", String.class).trim();
-            if (description.trim().length() < 100) {
+            if (description.trim().length() < 100 && description.trim().length() != 0) {
                 toReturn.add(new MetadataCheck("Description is too short (minimum 100 characters)", ERROR));
             }
         } catch (NullPointerException ex) {
@@ -127,11 +149,8 @@ public class ServiceAgreementQualityService {
         if (authors.stream().anyMatch(author -> fieldIsMissing(author, "organisationName"))) {
             toReturn.add(new MetadataCheck("Author's affiliation (organisation name) is missing", ERROR));
         }
-        authors.stream()
-                .filter(author -> author.containsKey("email"))
-                .map(author -> author.get("email"))
-                .filter(email -> email.endsWith("@ceh.ac.uk") && !email.equals("enquiries@ceh.ac.uk") && !email.equals("info@eidc.ac.uk"))
-                .forEach(email -> toReturn.add(new MetadataCheck(format("Author's email address is %s", email), ERROR)));
+
+        checkEmail(authors, "Author's email address is %s").ifPresent(toReturn::addAll);
 
         if (toReturn.isEmpty()) {
             return Optional.empty();
@@ -160,11 +179,8 @@ public class ServiceAgreementQualityService {
         if (owners.stream().anyMatch(owner -> fieldIsMissing(owner, "organisationName"))) {
             toReturn.add(new MetadataCheck("Owner's affiliation (organisation name) is missing", ERROR));
         }
-        owners.stream()
-                .filter(owner -> owner.containsKey("email"))
-                .map(owner -> owner.get("email"))
-                .filter(email -> email.endsWith("@ceh.ac.uk") && !email.equals("enquiries@ceh.ac.uk") && !email.equals("info@eidc.ac.uk"))
-                .forEach(email -> toReturn.add(new MetadataCheck(format("Author's email address is %s", email), ERROR)));
+
+        checkEmail(owners, "Owner's email address is %s").ifPresent(toReturn::addAll);
 
         if (toReturn.isEmpty()) {
             return Optional.empty();
@@ -197,12 +213,8 @@ public class ServiceAgreementQualityService {
             toReturn.add(new MetadataCheck("Depositor's email address is missing", ERROR));
         }
 
-        if(depositorContactDetails.equals("enquiries@ceh.ac.uk") || depositorContactDetails.equals("info@eidc.ac.uk")){
+        if (isInvalidEmail(depositorContactDetails)) {
             toReturn.add(new MetadataCheck(format("Depositor's email address is %s", depositorContactDetails), ERROR));
-        }
-
-        if(!depositorContactDetails.endsWith("@ceh.ac.uk")){
-            toReturn.add(new MetadataCheck(format("Depositor's email address is %s which is not a CEH email address", depositorContactDetails), ERROR));
         }
 
         if (toReturn.isEmpty()) {
@@ -221,7 +233,7 @@ public class ServiceAgreementQualityService {
 
         if (files.stream().anyMatch(file -> fieldIsMissing(file, "name"))) {
             toReturn.add(new MetadataCheck("File name is missing", ERROR));
-        }else{
+        } else {
             if (files.stream().anyMatch(file -> file.get("name").contains(" "))) {
                 toReturn.add(new MetadataCheck("File names should not contain any spaces", ERROR));
             }
@@ -240,6 +252,29 @@ public class ServiceAgreementQualityService {
             return Optional.empty();
         } else {
             return Optional.of(toReturn);
+        }
+    }
+
+    private Optional<List<MetadataCheck>> checkEmail(List<Map<String, String>> maps, String errorMessage) {
+        List<MetadataCheck> toReturn = new ArrayList<>();
+        maps.stream()
+                .filter(map -> map.containsKey("email"))
+                .map(map -> map.get("email"))
+                .filter(email -> isInvalidEmail(email))
+                .forEach(email -> toReturn.add(new MetadataCheck(format(errorMessage, email), ERROR)));
+        return Optional.of(toReturn);
+    }
+
+    private boolean isInvalidEmail(String email) {
+        if (email.contains("@") &&
+                email.endsWith(".co.uk")
+                || email.endsWith(".ac.uk")
+                || email.endsWith(".com")
+                && !email.equals("enquiries@ceh.ac.uk")
+                && !email.equals("info@eidc.ac.uk")) {
+            return false;
+        } else {
+            return true;
         }
     }
 
