@@ -4,7 +4,6 @@
     </div>
     <div class="col-sm-10">
         <input data-name='organisationName' class="editor-input" id="contacts<%= data.index %>Organisation" value="<%= data.organisationName %>">
-        <input data-name="role" class="editor-input" value="rightsHolder" type="hidden">
     </div>
 </div>
 <div class="row">

@@ -11,10 +11,10 @@ define [
   'cs!models/editor/AccessLimitation'
   'cs!models/editor/InspireTheme'
   'cs!views/service-agreement/CategoryView'
-  'cs!views/editor/ContactView'
   'cs!views/editor/ResourceIdentifierView'
   'cs!views/editor/DatasetReferenceDateView'
-  'cs!models/editor/Contact'
+  'cs!models/editor/ServiceAgreementAuthor'
+  'cs!models/editor/ServiceAgreementRightsHolder'
   'cs!views/editor/OnlineResourceView'
   'cs!models/editor/OnlineResource'
   'cs!views/editor/ResourceConstraintView'
@@ -34,7 +34,7 @@ define [
   'cs!views/service-agreement/EndUserLicenceView'
   'cs!views/editor/FundingView'
   'cs!models/editor/Funding'
-], (Backbone, _, EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, AccessLimitationView, AccessLimitation, InspireTheme, CategoryView, ContactView, ResourceIdentifierView, DatasetReferenceDateView, Contact, OnlineResourceView, OnlineResource, ResourceConstraintView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, MapDataSource, ReadOnlyView, ParentStringView, BoundingBox, BoundingBoxView, TextOnlyView, AuthorView, RightsHolderView, FileView, EndUserLicenceView, FundingView, Funding) -> EditorView.extend
+], (Backbone, _, EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, AccessLimitationView, AccessLimitation, InspireTheme, CategoryView, ResourceIdentifierView, DatasetReferenceDateView, ServiceAgreementAuthor, ServiceAgreementRightsHolder, OnlineResourceView, OnlineResource, ResourceConstraintView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, MapDataSource, ReadOnlyView, ParentStringView, BoundingBox, BoundingBoxView, TextOnlyView, AuthorView, RightsHolderView, FileView, EndUserLicenceView, FundingView, Funding) -> EditorView.extend
 
   initialize: ->
     @delegate "click #exitWithoutSaving": "exit"
@@ -116,7 +116,7 @@ define [
 
         new ParentView
           model: @model
-          ModelType: Contact
+          ModelType: ServiceAgreementAuthor
           modelAttribute: 'authors'
           ObjectInputView: AuthorView
           multiline: true
@@ -224,7 +224,7 @@ define [
 
         new ParentView
           model: @model
-          ModelType: Contact
+          ModelType: ServiceAgreementRightsHolder
           modelAttribute: 'ownersOfIpr'
           label: 'Owner of IPR'
           ObjectInputView: RightsHolderView

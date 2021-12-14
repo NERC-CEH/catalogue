@@ -5,8 +5,6 @@ define [
 
   template: template
 
-  className: ''
-
   events:
     'change .ogl': 'setOgl'
     'change .other': 'setOther'

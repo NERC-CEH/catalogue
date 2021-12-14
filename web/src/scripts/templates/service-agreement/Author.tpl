@@ -25,6 +25,5 @@
     </div>
     <div class="col-sm-4">
         <input data-name='nameIdentifier' placeholder='https://orcid.org/0000-0000-0000-0000' class="editor-input" id="contacts<%= data.index %>nameIdentifier" value="<%= data.nameIdentifier %>">
-        <input data-name="role" class="editor-input" value="author" type="hidden">
     </div>
 </div>
