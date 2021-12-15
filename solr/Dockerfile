@@ -7,6 +7,5 @@ COPY create-cores /opt/docker-solr/scripts
 COPY deims /opt/solr/server/solr/configsets/deims
 COPY documents /opt/solr/server/solr/configsets/documents
 COPY keywords /opt/solr/server/solr/configsets/keywords
-COPY service-agreements /opt/solr/server/solr/configsets/service-agreements
 
 CMD ["create-cores"]
