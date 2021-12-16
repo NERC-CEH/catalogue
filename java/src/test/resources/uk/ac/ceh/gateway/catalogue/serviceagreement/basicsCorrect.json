@@ -1,14 +1,19 @@
 {
   "title": "title",
   "description": "The description needs to be a minimum of 100 (one hundred) characters long. This is a completely arbitrary number chosen by the INSPIRE people.",
+  "eidcName": "EidcName",
   "depositorContactDetails": "depositor@ceh.ac.uk",
+  "depositReference": "EIDCHELP-5",
   "lineage": "lineage",
   "resourceStatus": "resourceStatus",
+  "contentIncluded": "contentIncluded",
+  "transferMethod": "transferMethod",
   "useConstraints": [
     {
       "value": "This resource is made available under the terms of the Open Government Licence",
       "code": "license",
       "uri":"https://www.eidc.ac.uk/licences/OGL/plain"
     }
-  ]
+  ],
+  "supportingDocumentNames": ["January", "February", "March", "April", "May", "June", "July"]
 }
