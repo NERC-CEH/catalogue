@@ -9,7 +9,6 @@ import uk.ac.ceh.components.userstore.inmemory.InMemoryGroupStore;
 import uk.ac.ceh.components.userstore.inmemory.InMemoryUserStore;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
-import javax.annotation.PostConstruct;
 import java.util.Arrays;
 
 import static uk.ac.ceh.gateway.catalogue.controllers.DataciteController.DATACITE_ROLE;
@@ -68,231 +67,257 @@ public class DevelopmentUserStoreConfig {
                 .forEach(group -> groupStore().grantGroupToUser(user, group));
     }
 
-    @PostConstruct
-    public void admin() throws UsernameAlreadyTakenException {
+    @Bean
+    public CatalogueUser admin() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser()
             .setUsername(ADMIN)
             .setEmail("admin@ceh.ac.uk");
         addUserToGroup(user, MAINTENANCE_ROLE);
         userStore().addUser(user, "password");
+        return user;
     }
 
-    @PostConstruct
-    public void assistEditor() throws UsernameAlreadyTakenException {
+    @Bean
+    public CatalogueUser assistEditor() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser()
             .setUsername("assist-editor")
             .setEmail("assist-editor@ceh.ac.uk");
         addUserToGroup(user, ASSIST_EDITOR);
         userStore().addUser(user, "password");
+        return user;
     }
 
-    @PostConstruct
-    public void assistPublisher() throws UsernameAlreadyTakenException {
+    @Bean
+    public CatalogueUser assistPublisher() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser()
             .setUsername("assist-publisher")
             .setEmail("assist-publisher@ceh.ac.uk");
         addUserToGroup(user, ASSIST_EDITOR, ASSIST_PUBLISHER);
         userStore().addUser(user, "password");
+        return user;
     }
 
-    @PostConstruct
-    public void cmpEditor() throws UsernameAlreadyTakenException {
+    @Bean
+    public CatalogueUser cmpEditor() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser()
             .setUsername("cmp-editor")
             .setEmail("cmp-editor@ceh.ac.uk");
         addUserToGroup(user, CMP_EDITOR);
         userStore().addUser(user, "password");
+        return user;
     }
 
-    @PostConstruct
-    public void cmpPublisher() throws UsernameAlreadyTakenException {
+    @Bean
+    public CatalogueUser cmpPublisher() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser()
             .setUsername("cmp-publisher")
             .setEmail("cmp-publisher@ceh.ac.uk");
         addUserToGroup(user, CMP_EDITOR, CMP_PUBLISHER);
         userStore().addUser(user, "password");
+        return user;
     }
 
-    @PostConstruct
-    public void datalabsEditor() throws UsernameAlreadyTakenException {
+    @Bean
+    public CatalogueUser datalabsEditor() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser()
                 .setUsername("datalabs-editor")
                 .setEmail("datalabs-editor@ceh.ac.uk");
         addUserToGroup(user, DATALABS_EDITOR);
         userStore().addUser(user, "password");
+        return user;
     }
 
-    @PostConstruct
-    public void datalabsPublisher() throws UsernameAlreadyTakenException {
+    @Bean
+    public CatalogueUser datalabsPublisher() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser()
                 .setUsername("datalabs-publisher")
                 .setEmail("datalabs-publisher@ceh.ac.uk");
         addUserToGroup(user, DATALABS_EDITOR, DATALABS_PUBLISHER);
         userStore().addUser(user, "password");
+        return user;
     }
 
-    @PostConstruct
-    public void eidcEditor() throws UsernameAlreadyTakenException {
+    @Bean
+    public CatalogueUser eidcEditor() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser()
             .setUsername("eidc-editor")
             .setEmail("eidc-editor@ceh.ac.uk");
         addUserToGroup(user, EIDC_EDITOR);
         userStore().addUser(user, "password");
+        return user;
     }
 
-    @PostConstruct
-    public void eidcPublisher() throws UsernameAlreadyTakenException {
+    @Bean
+    public CatalogueUser eidcPublisher() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser()
             .setUsername(EIDC_PUBLISHER_USERNAME)
             .setEmail("eidc-publisher@ceh.ac.uk");
         addUserToGroup(user, DATACITE_ROLE, EIDC_EDITOR, EIDC_PUBLISHER);
         userStore().addUser(user, "password");
+        return user;
     }
 
-    @PostConstruct
-    public void elterEditor() throws UsernameAlreadyTakenException {
+    @Bean
+    public CatalogueUser elterEditor() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser()
             .setUsername("elter-editor")
             .setEmail("elter-editor@ceh.ac.uk");
         addUserToGroup(user, ELTER_EDITOR);
         userStore().addUser(user, "password");
+        return user;
     }
 
-    @PostConstruct
-    public void elterPublisher() throws UsernameAlreadyTakenException {
+    @Bean
+    public CatalogueUser elterPublisher() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser()
             .setUsername("elter-publisher")
             .setEmail("elter-publisher@ceh.ac.uk");
         addUserToGroup(user, ELTER_EDITOR, ELTER_PUBLISHER);
         userStore().addUser(user, "password");
+        return user;
     }
 
-    @PostConstruct
-    public void erammpEditor() throws UsernameAlreadyTakenException {
+    @Bean
+    public CatalogueUser erammpEditor() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser()
             .setUsername("erammp-editor")
             .setEmail("erammp-editor@ceh.ac.uk");
         addUserToGroup(user, ERAMMP_EDITOR);
         userStore().addUser(user, "password");
+        return user;
     }
 
-    @PostConstruct
-    public void erammpPublisher() throws UsernameAlreadyTakenException {
+    @Bean
+    public CatalogueUser erammpPublisher() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser()
             .setUsername("erammp-publisher")
             .setEmail("erammp-publisher@ceh.ac.uk");
         addUserToGroup(user, ERAMMP_EDITOR, ERAMMP_PUBLISHER);
         userStore().addUser(user, "password");
+        return user;
     }
 
-    @PostConstruct
-    public void inmsPublisher() throws UsernameAlreadyTakenException {
+    @Bean
+    public CatalogueUser inmsPublisher() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser()
             .setUsername("inms-publisher")
             .setEmail("inms-publisher@ceh.ac.uk");
         addUserToGroup(user, INMS_EDITOR, INMS_PUBLISHER);
         userStore().addUser(user, "password");
+        return user;
     }
 
-    @PostConstruct
-    public void mPublisher() throws UsernameAlreadyTakenException {
+    @Bean
+    public CatalogueUser mPublisher() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser()
             .setUsername("m-publisher")
             .setEmail("m-publisher@ceh.ac.uk");
         addUserToGroup(user, M_EDITOR, M_PUBLISHER);
         userStore().addUser(user, "password");
+        return user;
     }
 
-    @PostConstruct
-    public void nmPublisher() throws UsernameAlreadyTakenException {
+    @Bean
+    public CatalogueUser nmPublisher() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser()
             .setUsername("nm-publisher")
             .setEmail("nm-publisher@ceh.ac.uk");
         addUserToGroup(user, NM_EDITOR, NM_PUBLISHER);
         userStore().addUser(user, "password");
+        return user;
     }
 
-    @PostConstruct
-    public void ncEditor() throws UsernameAlreadyTakenException {
+    @Bean
+    public CatalogueUser ncEditor() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser()
             .setUsername("nc-editor")
             .setEmail("nc-editor@ceh.ac.uk");
         addUserToGroup(user, NC_EDITOR);
         userStore().addUser(user, "password");
+        return user;
     }
 
-    @PostConstruct
-    public void ncPublisher() throws UsernameAlreadyTakenException {
+    @Bean
+    public CatalogueUser ncPublisher() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser()
             .setUsername("nc-publisher")
             .setEmail("nc-publisher@ceh.ac.uk");
         addUserToGroup(user, NC_EDITOR, NC_PUBLISHER);
         userStore().addUser(user, "password");
+        return user;
     }
 
-    @PostConstruct
-    public void osdpPublisher() throws UsernameAlreadyTakenException {
+    @Bean
+    public CatalogueUser osdpPublisher() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser()
             .setUsername("osdp-publisher")
             .setEmail("osdp-publisher@ceh.ac.uk");
         addUserToGroup(user, OSDP_EDITOR, OSDP_PUBLISHER);
         userStore().addUser(user, "password");
+        return user;
     }
 
-    @PostConstruct
-    public void readonly() throws UsernameAlreadyTakenException {
+    @Bean
+    public CatalogueUser readonly() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser()
             .setUsername("readonly")
             .setEmail("readonly@ceh.ac.uk");
         addUserToGroup(user, READONLY_GROUP);
         userStore().addUser(user, "password");
+        return user;
     }
 
-    @PostConstruct
-    public void saPublisher() throws UsernameAlreadyTakenException {
+    @Bean
+    public CatalogueUser saPublisher() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser()
             .setUsername("sa-publisher")
             .setEmail("sa-publisher@ceh.ac.uk");
         addUserToGroup(user, SA_EDITOR, SA_PUBLISHER);
         userStore().addUser(user, "password");
+        return user;
     }
 
-    @PostConstruct
-    public void superadmin() throws UsernameAlreadyTakenException {
+    @Bean
+    public CatalogueUser superadmin() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser()
             .setUsername("superadmin")
             .setEmail("superadmin@ceh.ac.uk");
         addUserToGroup(user, CEH_GROUP_NAME, EIDC_EDITOR, EIDC_PUBLISHER, MAINTENANCE_ROLE, DATACITE_ROLE);
         userStore().addUser(user, "password");
+        return user;
     }
 
-    @PostConstruct
-    public void ukscapePublisher() throws UsernameAlreadyTakenException {
+    @Bean
+    public CatalogueUser ukscapePublisher() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser()
             .setUsername("ukscape-publisher")
             .setEmail("ukscape-publisher@ceh.ac.uk");
         addUserToGroup(user, UKSCAPE_EDITOR, UKSCAPE_PUBLISHER);
         userStore().addUser(user, "password");
+        return user;
     }
 
-    @PostConstruct
-    public void unprivilegedUser() throws UsernameAlreadyTakenException {
+    @Bean
+    public CatalogueUser unprivilegedUser() throws UsernameAlreadyTakenException {
         // Used in UploadControllerTest to check upload permissions
         val user = new CatalogueUser()
             .setUsername(UNPRIVILEGED_USERNAME)
             .setEmail("unprivileged@example.com");
         userStore().addUser(user, "password");
+        return user;
     }
 
-    @PostConstruct
-    public void uploader() throws UsernameAlreadyTakenException {
+    @Bean
+    public CatalogueUser uploader() throws UsernameAlreadyTakenException {
         // Used in UploadControllerTest to check upload permissions
         val user = new CatalogueUser()
             .setUsername(UPLOADER_USERNAME)
             .setEmail("uploader@example.com");
         userStore().addUser(user, "password");
+        return user;
     }
 
+    @SuppressWarnings("DuplicatedCode")
     @Bean
     public InMemoryGroupStore<CatalogueUser> groupStore() {
         val groupStore = new InMemoryGroupStore<CatalogueUser>();
