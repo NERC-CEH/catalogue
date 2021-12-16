@@ -13,7 +13,7 @@ RUN node_modules/.bin/bower install --allow-root
 RUN node_modules/.bin/grunt
 
 # Build Java
-FROM gradle:7.2.0-jdk16 AS build-java
+FROM gradle:7.2-jdk16 AS build-java
 WORKDIR /app
 COPY --chown=gradle:gradle java/src src/
 COPY --chown=gradle:gradle java/build.gradle .
