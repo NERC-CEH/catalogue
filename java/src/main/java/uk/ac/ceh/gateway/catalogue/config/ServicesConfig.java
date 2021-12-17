@@ -215,22 +215,16 @@ public class ServicesConfig {
     }
 
     @Bean
-    public AnnotatedUserHelper<CatalogueUser> phantomUserBuilderFactory() {
-        return new AnnotatedUserHelper<>(CatalogueUser.class);
-    }
-
-    @Bean
     @SuppressWarnings("UnstableApiUsage")
     @SneakyThrows
     public DataRepository<CatalogueUser> dataRepository(
         @Value("${data.repository.location}") String dataRepositoryLocation,
-        AnnotatedUserHelper<CatalogueUser> annotatedUserHelper,
         EventBus eventBus
     ) {
         return new GitDataRepository<>(
             new File(dataRepositoryLocation),
             new InMemoryUserStore<>(),
-            annotatedUserHelper,
+            new AnnotatedUserHelper<>(CatalogueUser.class),
             eventBus
         );
     }
@@ -259,8 +253,8 @@ public class ServicesConfig {
 
     @Bean
     public SolrClient solrClient(
-        @Value("${solr.server.url}") String solrDocumentServerUrl
+        @Value("${solr.server.url}") String solrServerUrl
     ){
-        return new HttpSolrClient.Builder(solrDocumentServerUrl).build();
+        return new HttpSolrClient.Builder(solrServerUrl).build();
     }
 }
