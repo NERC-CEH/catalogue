@@ -5,8 +5,6 @@ define [
 
   template: template
 
-  className: 'col-sm-3'
-
   events:
     'change .ogl': 'setOgl'
     'change .other': 'setOther'
@@ -15,7 +13,7 @@ define [
 
   initialize: (options) ->
     ObjectInputView.prototype.initialize.call @, options
-    @$resourceConstraint = @$('#resourceConstraint')
+    @$resourceConstraint = @$('.resourceConstraint')
     hasUri = @model.has('uri')
     hasValue = @model.has('value')
 

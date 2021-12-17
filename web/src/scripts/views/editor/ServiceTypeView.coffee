@@ -5,7 +5,7 @@ define [
 
   template: template
 
-  className: 'component visible'
+  className: 'component component--servicetype visible'
 
   render: ->
     ObjectInputView.prototype.render.apply @

@@ -2,9 +2,11 @@ define [
   'underscore'
   'cs!views/editor/SingleView'
   'tpl!templates/service-agreement/TextOnly.tpl'
-], (_, SingleView, template) -> SingleView.extend
+], (_, SingleView, template) -> SingleView.extend 
 
   template: template
+
+  className: 'component component--textonly'
 
   initialize: (options) ->
     SingleView.prototype.initialize.call @, options

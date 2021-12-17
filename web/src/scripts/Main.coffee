@@ -46,14 +46,14 @@ define [
   'cs!views/ElterLinkedEditorView'
   'cs!views/upload/simple/AppView'
   'cs!views/ServiceAgreementEditorView'
-  'cs!models/ServiceAgreementEditorMetadata'
+  'cs!models/service-agreement/ServiceAgreement'
 ], (
     _, $, Backbone, Bootstrap, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter, SearchRouter,
     EditorMetadata, GeminiEditorView, MonitoringEditorView, PermissionApp, PermissionRouter, PermissionAppView, Catalogue, CatalogueView,
     ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata, CehModelEditorView, CehModelApplicationEditorView, OsdpAgentEditorView,
     OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
     OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, ErammpModelEditorView, NercModelEditorView, NercModelUseEditorView, ErammpDatacubeEditorView, UkemsDocumentEditorView,
-    DatalabsDocumentEditorView, ClipboardCopyView, DataTypeEditorView, ElterEditorView, ElterLinkedEditorView, SimpleUploadView, ServiceAgreementEditorView, ServiceAgreementEditorMetadata
+    DatalabsDocumentEditorView, ClipboardCopyView, DataTypeEditorView, ElterEditorView, ElterLinkedEditorView, SimpleUploadView, ServiceAgreementEditorView, ServiceAgreement
 ) ->
 
   ###
@@ -208,7 +208,7 @@ define [
         mediaType: 'application/vnd.linked-elter+json'
       'service-agreement':
         View: ServiceAgreementEditorView
-        Model: ServiceAgreementEditorMetadata
+        Model: ServiceAgreement
         mediaType: 'application/json'
       'ukems-document':
         View: UkemsDocumentEditorView
@@ -285,7 +285,7 @@ define [
   ###
   initServiceAgreement: ->
 
-    $gemini = $ '#service-agreement-gemini'
+    $gemini = $('#service-agreement-gemini')
 
     $('.service-agreement').on 'click', (event) ->
 
@@ -303,7 +303,7 @@ define [
           error: ->
             new ServiceAgreementEditorView
               el: '#metadata'
-              model: new ServiceAgreementEditorMetadata(data, options)
+              model: new ServiceAgreement(data, options)
 
   ###
   Initialize the simple dataset upload
