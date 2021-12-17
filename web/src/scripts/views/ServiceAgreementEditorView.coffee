@@ -13,8 +13,8 @@ define [
   'cs!views/service-agreement/CategoryView'
   'cs!views/editor/ResourceIdentifierView'
   'cs!views/editor/DatasetReferenceDateView'
-  'cs!models/editor/ServiceAgreementAuthor'
-  'cs!models/editor/ServiceAgreementRightsHolder'
+  'cs!models/service-agreement/Author'
+  'cs!models/service-agreement/RightsHolder'
   'cs!views/editor/OnlineResourceView'
   'cs!models/editor/OnlineResource'
   'cs!views/editor/ResourceConstraintView'
@@ -34,7 +34,7 @@ define [
   'cs!views/service-agreement/EndUserLicenceView'
   'cs!views/editor/FundingView'
   'cs!models/editor/Funding'
-], (Backbone, _, EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, AccessLimitationView, AccessLimitation, InspireTheme, CategoryView, ResourceIdentifierView, DatasetReferenceDateView, ServiceAgreementAuthor, ServiceAgreementRightsHolder, OnlineResourceView, OnlineResource, ResourceConstraintView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, MapDataSource, ReadOnlyView, ParentStringView, BoundingBox, BoundingBoxView, TextOnlyView, AuthorView, RightsHolderView, FileView, EndUserLicenceView, FundingView, Funding) -> EditorView.extend
+], (Backbone, _, EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, AccessLimitationView, AccessLimitation, InspireTheme, CategoryView, ResourceIdentifierView, DatasetReferenceDateView, Author, RightsHolder, OnlineResourceView, OnlineResource, ResourceConstraintView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, MapDataSource, ReadOnlyView, ParentStringView, BoundingBox, BoundingBoxView, TextOnlyView, AuthorView, RightsHolderView, FileView, EndUserLicenceView, FundingView, Funding) -> EditorView.extend
 
   initialize: ->
     @delegate "click #exitWithoutSaving": "exit"
@@ -77,13 +77,13 @@ define [
           model: @model
           modelAttribute: 'id'
           label: 'Data identifier'
-         
+
         new TextOnlyView
           model: @model
           label: 'Data retention'
           text: """<p>The EIDC's policy is to assign a DOI to all deposited data; such data will be kept in perpetuity.  If a DOI is not required or there are any other exceptions to this policy, please state them below.</p>
                 """
-       
+
         new TextareaView
           model: @model
           modelAttribute: 'policyExceptions'
@@ -104,7 +104,7 @@ define [
         new InputView
           model: @model
           modelAttribute: 'title'
-        
+
         new TextOnlyView
           model: @model
           label: 'Authors'
@@ -116,7 +116,7 @@ define [
 
         new ParentView
           model: @model
-          ModelType: ServiceAgreementAuthor
+          ModelType: Author
           modelAttribute: 'authors'
           ObjectInputView: AuthorView
           multiline: true
@@ -189,7 +189,7 @@ define [
         new ParentStringView
           model: @model
           modelAttribute: 'supportingDocumentNames'
-        
+
         new TextOnlyView
           model: @model
           label: 'Content of supporting document(s)'
@@ -209,7 +209,7 @@ define [
       label: 'Availability, access and licensing'
       title: 'Availability, access and licensing'
       views: [
-       
+
         new TextOnlyView
           model: @model
           label: 'End user licence'
@@ -224,7 +224,7 @@ define [
 
         new ParentView
           model: @model
-          ModelType: ServiceAgreementRightsHolder
+          ModelType: RightsHolder
           modelAttribute: 'ownersOfIpr'
           label: 'Owner of IPR'
           ObjectInputView: RightsHolderView
@@ -241,7 +241,7 @@ define [
         new InputView
           model: @model
           modelAttribute: 'availability'
-       
+
         new TextareaView
           model: @model
           modelAttribute: 'useConstraints'
@@ -315,13 +315,13 @@ define [
           model: @model
           modelAttribute: 'supersededData'
           rows: 5
-  
+
         new TextareaView
           model: @model
           modelAttribute: 'relatedDataHoldings'
           label: 'Related Data Holdings'
           rows: 5
-      
+
         new TextOnlyView
           model: @model
           label: 'Other info'

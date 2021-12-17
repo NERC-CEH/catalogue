@@ -6,12 +6,5 @@ define [
   template: template
 
   modify: (event) ->
-    $target = $(event.target)
-    name = $target.data('name')
-    value = $target.val()
-
-    if value
-      @model.set 'role', 'rightsHolder'
-      @model.set name, value
-    else
-      @model.unset name
+    ObjectInputView.prototype.modify.call @, event
+    @model.set 'role', 'rightsHolder'

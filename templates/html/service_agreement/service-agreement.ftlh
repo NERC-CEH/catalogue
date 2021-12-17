@@ -12,7 +12,7 @@
 
     <div id="metadata" class="serviceAgreement ${mdclass}">
         <div class="container" role="main">
-            
+
             <#if permission.userCanEdit(id) && !isHistorical()>
                 <div class="row hidden-print adminPanel" role="toolbar">
                     <div class="text-right">
@@ -140,9 +140,9 @@
                 <#if files?has_content && files?size gt 0 >
                     <@displayFiles/>
                 </#if>
-                
+
                 <@displayData "File naming convention" fileNamingConvention/>
-                
+
                 <@displayData "Number of files to be deposited" fileNumber/>
 
                 <#if supportingDocumentNames?? && supportingDocumentNames?has_content>
@@ -163,10 +163,10 @@
                 </#if>
 
                 <@displayData "Agreed transfer method for data and supporting documents" transferMethod/>
-                
+
             </div>
 
-            
+
             <div class="section section--6">
                 <h2>Availability, access and licensing</h2>
                 <div class="keyvalue">
@@ -230,26 +230,26 @@
             <li>Please see our <a href="http://eidc.ceh.ac.uk/policies/privacy" target="_blank" rel="noopener noreferrer" >Privacy Notice</a> for further information</li>
             </ul>
         <div class="tbl tbl--collapse tbl--authors">
-        <table class="">
-        <thead>
-            <tr>
-                <th>Author name</th>
-                <th>Affiliation</th>
-                <th>Email address</th>
-                <th>ORCiD</th>
-            </tr>
-        </thead>
-        <tbody>
-        <#items as author>
-            <tr>
-                <td><#if author.individualName?has_content >${author.individualName}<#else><span class="error">missing</span></#if></td>
-                <td><#if author.organisationName?has_content >${author.organisationName}<#else><span class="error">missing</span></#if></td>
-                <td><#if author.email?has_content>${author.email}<#else><span class="error">missing</span></#if></td>
-                <td><#if author.nameIdentifier?has_content >${author.nameIdentifier}<#else><small class="text-muted">Not provided</small></#if></td>
-            </tr>
-        </#items>
-        </tbody>
-        </table>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Author name</th>
+                        <th>Affiliation</th>
+                        <th>Email address</th>
+                        <th>ORCiD</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <#items as author>
+                    <tr>
+                        <td><#if author.individualName?has_content >${author.individualName}<#else><span class="error">missing</span></#if></td>
+                        <td><#if author.organisationName?has_content >${author.organisationName}<#else><span class="error">missing</span></#if></td>
+                        <td><#if author.email?has_content>${author.email}<#else><span class="error">missing</span></#if></td>
+                        <td><#if author.nameIdentifier?has_content >${author.nameIdentifier}<#else><small class="text-muted">Not provided</small></#if></td>
+                    </tr>
+                </#items>
+                </tbody>
+            </table>
         </div>
     </#list>
 </#macro>
@@ -266,7 +266,7 @@
                     <th>Size</th>
                 </tr>
             </thead>
-            <tbody>                    
+            <tbody>
             <#items as file>
                 <tr>
                     <td><#if file.name?has_content>${file.name}<#else><span class="error">missing</span></#if></td>
@@ -290,7 +290,7 @@
         </div>
     </div>
 </#macro>
-              
+
 <#macro displayEndUserLicence>
     <div class="keyvalue">
         <div class="key">Licence</div>
@@ -371,6 +371,6 @@
                     </#list>
                 </div>
             </div>
-        </div>        
+        </div>
     </#if>
 </#macro>
