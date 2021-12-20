@@ -1,33 +1,28 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
-import lombok.val;
-import net.sf.ehcache.config.CacheConfiguration;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.ehcache.EhCacheCacheManager;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import uk.ac.ceh.components.userstore.crowd.CrowdEhCacheSupport;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.cache.JCacheManagerCustomizer;
+import org.springframework.stereotype.Component;
 
-@Configuration
-public class CachingConfig {
-    @Bean
-    public CacheManager cacheManager() {
-        val config = CrowdEhCacheSupport.createCrowdCacheConfiguration()
-            .cache(capabilities())
-            .cache(metadataListings());
-        val cacheManager = net.sf.ehcache.CacheManager.newInstance(config);
-        return new EhCacheCacheManager(cacheManager);
-    }
+import javax.cache.configuration.MutableConfiguration;
+import javax.cache.expiry.AccessedExpiryPolicy;
+import javax.cache.expiry.Duration;
+import java.util.concurrent.TimeUnit;
 
-    private CacheConfiguration capabilities() {
-        return new CacheConfiguration("capabilities", 20)
-            .timeToIdleSeconds(60L)
-            .timeToLiveSeconds(120L);
-    }
+@Slf4j
+@Component
+public class CachingConfig implements JCacheManagerCustomizer {
 
-    private CacheConfiguration metadataListings() {
-        return new CacheConfiguration("metadata-listings", 20)
-            .timeToIdleSeconds(60L)
-            .timeToLiveSeconds(120L);
+    @Override
+    public void customize(javax.cache.CacheManager cacheManager) {
+        log.info("Customizing caches");
+        cacheManager.createCache("capabilities", new MutableConfiguration<>()
+            .setExpiryPolicyFactory(AccessedExpiryPolicy.factoryOf(new Duration(TimeUnit.MINUTES, 5))));
+        cacheManager.createCache("crowd-user", new MutableConfiguration<>()
+            .setExpiryPolicyFactory(AccessedExpiryPolicy.factoryOf(new Duration(TimeUnit.MINUTES, 30))));
+        cacheManager.createCache("crowd-user-groups", new MutableConfiguration<>()
+            .setExpiryPolicyFactory(AccessedExpiryPolicy.factoryOf(new Duration(TimeUnit.MINUTES, 30))));
+        cacheManager.createCache("metadata-listings", new MutableConfiguration<>()
+            .setExpiryPolicyFactory(AccessedExpiryPolicy.factoryOf(new Duration(TimeUnit.MINUTES, 3))));
     }
 }
