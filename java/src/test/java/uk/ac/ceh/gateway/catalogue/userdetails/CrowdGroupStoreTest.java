@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.userdetails;
 
-import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,28 +7,31 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
-import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
+import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.components.userstore.UnknownUserException;
-import uk.ac.ceh.components.userstore.UserStore;
+import uk.ac.ceh.components.userstore.crowd.model.CrowdGroup;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.contains;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.*;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
-class CrowdUserStoreTest {
-    private UserStore<CatalogueUser> userStore;
+public class CrowdGroupStoreTest {
+    private GroupStore<CatalogueUser> groupStore;
     private MockRestServiceServer mockServer;
 
-    private final String username = "foo";
+    private final CatalogueUser user = new CatalogueUser()
+        .setUsername("foo")
+        .setEmail("foo@example.com");
 
     @BeforeEach
     void setup() {
         val restTemplate = new RestTemplate();
-        userStore = new CrowdUserStore(
+        groupStore = new CrowdGroupStore(
             "https://example.com/latest",
             "abc",
             "1234",
@@ -39,68 +41,74 @@ class CrowdUserStoreTest {
     }
 
     @Test
-    @SneakyThrows
-    void getUser() {
+    void getGroup() {
         //given
         val response = """
                        {
-                        "name": "foo",
-                        "email": "foo@example.com"
+                        "groups": [
+                            { "name": "group-1" },
+                            { "name": "group-2" },
+                            { "name": "group-3" }
+                        ]
                        }
                        """;
-        mockServer.expect(requestTo("https://example.com/latest/user?username=foo&expand=attributes"))
+        mockServer.expect(requestTo("https://example.com/latest/user/group/nested?username=foo"))
             .andExpect(method(HttpMethod.GET))
             .andExpect(header("authorization", "Basic YWJjOjEyMzQ="))
             .andRespond(withSuccess(response, MediaType.APPLICATION_JSON));
 
-        //when
-        val user = userStore.getUser(username);
+        val groups = groupStore.getGroups(user);
 
         //then
-        assertThat(user.getUsername(), equalTo(username));
-        assertThat(user.getEmail(), equalTo("foo@example.com"));
+        assertThat(groups, contains(
+            new CrowdGroup("group-1"),
+            new CrowdGroup("group-2"),
+            new CrowdGroup("group-3")
+        ));
     }
 
     @Test
-    void userNotFound() {
+    void groupNotFound() {
         //given
-        mockServer.expect(requestTo("https://example.com/latest/user?username=foo&expand=attributes"))
+        mockServer.expect(requestTo("https://example.com/latest/user/group/nested?username=foo"))
             .andExpect(method(HttpMethod.GET))
             .andRespond(withStatus(HttpStatus.NOT_FOUND));
 
         //when
         assertThrows(UnknownUserException.class, () ->
-            userStore.getUser(username)
+            groupStore.getGroups(user)
         );
     }
 
     @Test
-    void otherError() {
-        //given
-        mockServer.expect(requestTo("https://example.com/latest/user?username=foo&expand=attributes"))
-            .andExpect(method(HttpMethod.GET))
-            .andRespond(withServerError());
-
-        //when
-        assertThrows(HttpServerErrorException.InternalServerError.class, () ->
-            userStore.getUser(username)
-        );
-    }
-
-    @Test
-    void userExistsError() {
+    void groupNotImplemented() {
         //when
         assertThrows(NotImplementedException.class, () ->
-            userStore.userExists(username)
+            groupStore.getGroup("test")
         );
     }
 
     @Test
-    void authenticationError() {
+    void allGroupsNotImplemented() {
         //when
         assertThrows(NotImplementedException.class, () ->
-            userStore.authenticate(username, "password")
+            groupStore.getAllGroups()
         );
     }
 
+    @Test
+    void isGroupInExistanceNotImplemented() {
+        //when
+        assertThrows(NotImplementedException.class, () ->
+            groupStore.isGroupInExistance("test")
+        );
+    }
+
+    @Test
+    void isGroupDeletableNotImplemented() {
+        //when
+        assertThrows(NotImplementedException.class, () ->
+            groupStore.isGroupDeletable("test")
+        );
+    }
 }

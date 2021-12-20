@@ -24,19 +24,19 @@ import static uk.ac.ceh.gateway.catalogue.util.Headers.withBasicAuth;
 @Service
 public class CrowdUserStore implements UserStore<CatalogueUser> {
     private final String address;
-    private final String username;
-    private final String password;
+    private final String crowdUsername;
+    private final String crowdPassword;
     private final RestTemplate restTemplate;
 
     public CrowdUserStore(
         @Value("${crowd.address}") String address,
-        @Value("${crowd.username}") String username,
-        @Value("${crowd.password}") String password,
+        @Value("${crowd.username}") String crowdUsername,
+        @Value("${crowd.password}") String crowdPassword,
         @Qualifier("normal") RestTemplate restTemplate
     ) {
         this.address = address;
-        this.username = username;
-        this.password = password;
+        this.crowdUsername = crowdUsername;
+        this.crowdPassword = crowdPassword;
         this.restTemplate = restTemplate;
     }
 
@@ -48,7 +48,7 @@ public class CrowdUserStore implements UserStore<CatalogueUser> {
             val response = restTemplate.exchange(
                 uriTemplate,
                 HttpMethod.GET,
-                new HttpEntity<>(withBasicAuth(username, password)),
+                new HttpEntity<>(withBasicAuth(crowdUsername, crowdPassword)),
                 JsonNode.class,
                 username
             );
