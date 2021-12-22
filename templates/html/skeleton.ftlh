@@ -98,6 +98,7 @@
                 </div>
               </li>
             </#if>
+            <li id="sso-user"></li>
           </ul>
         </div>
       </div>
