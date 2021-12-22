@@ -54,6 +54,7 @@ public class SearchQueryTest {
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
                 .contactUrl("")
+                .logo("")
                 .build(),
             DEFAULT_FACETS
         );
@@ -86,6 +87,7 @@ public class SearchQueryTest {
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
                 .contactUrl("")
+                .logo("")
                 .build(),
             DEFAULT_FACETS
         );
@@ -119,6 +121,7 @@ public class SearchQueryTest {
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
                 .contactUrl("")
+                .logo("")
                 .build(),
             DEFAULT_FACETS
         );
@@ -134,7 +137,7 @@ public class SearchQueryTest {
     public void publisherDoesNotHaveViewFilter() {
         //Given
         CatalogueUser user = new CatalogueUser().setUsername("publisher");
-        given(groupStore.getGroups(user)).willReturn(Arrays.asList(createGroup("ROLE_EIDC_PUBLISHER")));
+        given(groupStore.getGroups(user)).willReturn(List.of(createGroup("ROLE_EIDC_PUBLISHER")));
 
         SearchQuery query = new SearchQuery(
             ENDPOINT,
@@ -152,6 +155,7 @@ public class SearchQueryTest {
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
                 .contactUrl("")
+                .logo("")
                 .build(),
             DEFAULT_FACETS
         );
@@ -160,7 +164,7 @@ public class SearchQueryTest {
         SolrQuery solrQuery = query.build();
 
         //Then
-        assertThat("Solr query should have view filter", not(solrQuery.getFilterQueries().toString().contains("view:(public OR publisher OR role_cig_publisher)")));
+        assertThat("Solr query should have view filter", not(Arrays.toString(solrQuery.getFilterQueries()).contains("view:(public OR publisher OR role_cig_publisher)")));
     }
 
     private Group createGroup(String name) {
@@ -197,6 +201,7 @@ public class SearchQueryTest {
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
                 .contactUrl("")
+                .logo("")
                 .build(),
             DEFAULT_FACETS
         );
@@ -234,6 +239,7 @@ public class SearchQueryTest {
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
                 .contactUrl("")
+                .logo("")
                 .build(),
             DEFAULT_FACETS
         );
@@ -266,6 +272,7 @@ public class SearchQueryTest {
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
                 .contactUrl("")
+                .logo("")
                 .build(),
             DEFAULT_FACETS
         );
@@ -274,7 +281,7 @@ public class SearchQueryTest {
 
         //Then
         assertThat("Solr query should be the default text", solrQuery.getQuery(), equalTo(term));
-        assertThat("Solr query sort order should not be 'random'", solrQuery.getSorts().isEmpty(), equalTo(true));
+        assertTrue(solrQuery.getSorts().isEmpty());
     }
 
     @Test
@@ -288,8 +295,8 @@ public class SearchQueryTest {
             SpatialOperation.ISWITHIN,
             DEFAULT_PAGE,
             DEFAULT_ROWS,
-            Arrays.asList(
-                new FacetFilter("resourceType","dataset")),
+            List.of(
+                new FacetFilter("resourceType", "dataset")),
             groupStore,
             Catalogue
                 .builder()
@@ -297,6 +304,7 @@ public class SearchQueryTest {
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
                 .contactUrl("")
+                .logo("")
                 .build(),
             DEFAULT_FACETS
         );
@@ -304,8 +312,8 @@ public class SearchQueryTest {
         SolrQuery solrQuery = query.build();
 
         //Then
-        assertThat(Arrays.asList(solrQuery.getQuery()).contains(SearchQuery.DEFAULT_SEARCH_TERM), is(true));
-        assertThat(Arrays.asList(solrQuery.getFilterQueries()).contains("{!term f=resourceType}dataset"), is(true));
+        assertThat(solrQuery.getQuery(), equalTo(SearchQuery.DEFAULT_SEARCH_TERM));
+        assertTrue(List.of(solrQuery.getFilterQueries()).contains("{!term f=resourceType}dataset"));
     }
 
     @Test
@@ -329,6 +337,7 @@ public class SearchQueryTest {
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
                 .contactUrl("")
+                .logo("")
                 .build(),
             DEFAULT_FACETS
         );
@@ -361,6 +370,7 @@ public class SearchQueryTest {
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
                 .contactUrl("")
+                .logo("")
                 .build(),
             DEFAULT_FACETS
         );
@@ -391,6 +401,7 @@ public class SearchQueryTest {
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
                 .contactUrl("")
+                .logo("")
                 .build(),
             DEFAULT_FACETS
         );
@@ -415,7 +426,7 @@ public class SearchQueryTest {
             SpatialOperation.ISWITHIN,
             18,
             DEFAULT_ROWS,
-            Arrays.asList(filter),
+            List.of(filter),
             groupStore,
             Catalogue
                 .builder()
@@ -423,6 +434,7 @@ public class SearchQueryTest {
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
                 .contactUrl("")
+                .logo("")
                 .build(),
             DEFAULT_FACETS
         );
@@ -454,6 +466,7 @@ public class SearchQueryTest {
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
                 .contactUrl("")
+                .logo("")
                 .build(),
             DEFAULT_FACETS
         );
@@ -477,7 +490,7 @@ public class SearchQueryTest {
             SpatialOperation.ISWITHIN,
             18,
             DEFAULT_ROWS,
-            Arrays.asList(filter),
+            List.of(filter),
             groupStore,
             Catalogue
                 .builder()
@@ -485,6 +498,7 @@ public class SearchQueryTest {
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
                 .contactUrl("")
+                .logo("")
                 .build(),
             DEFAULT_FACETS
         );
@@ -499,7 +513,7 @@ public class SearchQueryTest {
     @Test
     public void checkThatContainsFilterDelegatesToList() {
         //Given
-        List<FacetFilter> filters = Arrays.asList(new FacetFilter("hey", "lo"));
+        List<FacetFilter> filters = List.of(new FacetFilter("hey", "lo"));
         SearchQuery query = new SearchQuery(
             ENDPOINT,
             CatalogueUser.PUBLIC_USER,
@@ -516,6 +530,7 @@ public class SearchQueryTest {
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
                 .contactUrl("")
+                .logo("")
                 .build(),
             DEFAULT_FACETS
         );
@@ -540,7 +555,7 @@ public class SearchQueryTest {
             SpatialOperation.ISWITHIN,
             24,
             30,
-            Arrays.asList(new FacetFilter("licence","b")),
+            List.of(new FacetFilter("licence", "b")),
             groupStore,
             Catalogue
                 .builder()
@@ -548,6 +563,7 @@ public class SearchQueryTest {
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
                 .contactUrl("")
+                .logo("")
                 .build(),
             DEFAULT_FACETS
         );
@@ -576,7 +592,7 @@ public class SearchQueryTest {
             SpatialOperation.ISWITHIN,
             24,
             30,
-            Arrays.asList(new FacetFilter("licence%7Cb")),
+            List.of(new FacetFilter("licence%7Cb")),
             groupStore,
             Catalogue
                 .builder()
@@ -584,6 +600,7 @@ public class SearchQueryTest {
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
                 .contactUrl("")
+                .logo("")
                 .build(),
             DEFAULT_FACETS
         );
@@ -614,6 +631,7 @@ public class SearchQueryTest {
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
                 .contactUrl("")
+                .logo("")
                 .build(),
             DEFAULT_FACETS
         );
@@ -646,6 +664,7 @@ public class SearchQueryTest {
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
                 .contactUrl("")
+                .logo("")
                 .build(),
             DEFAULT_FACETS
         );
@@ -676,6 +695,7 @@ public class SearchQueryTest {
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
                 .contactUrl("")
+                .logo("")
                 .build(),
             DEFAULT_FACETS
         );
@@ -695,6 +715,7 @@ public class SearchQueryTest {
                 .title("Catchment Management Modelling Platform")
                 .url("http://www.ceh.ac.uk")
                 .contactUrl("")
+                .logo("eidc.png")
                 .facetKey("impCaMMPIssues")
                 .facetKey("impDataType")
                 .facetKey("impScale")

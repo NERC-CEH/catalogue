@@ -84,6 +84,7 @@ public class MapViewerControllerTest {
                     .title("test")
                     .url("https://example.com")
                     .contactUrl("")
+                    .logo("eidc.png")
                     .build()
             );
     }

@@ -49,9 +49,9 @@ public class CatalogueControllerTest {
     private final String file = "955b5a6e-dd3f-4b20-a3b5-a9d1d04ba052";
 
     private void givenCataloguesRetrieveAll() {
-        Catalogue a = Catalogue.builder().id("a").title("a").url("a").contactUrl("").build();
-        Catalogue b = Catalogue.builder().id("b").title("b").url("b").contactUrl("").build();
-        Catalogue c = Catalogue.builder().id("c").title("c").url("c").contactUrl("").build();
+        Catalogue a = Catalogue.builder().id("a").title("a").url("a").contactUrl("").logo("eidc.png").build();
+        Catalogue b = Catalogue.builder().id("b").title("b").url("b").contactUrl("").logo("eidc.png").build();
+        Catalogue c = Catalogue.builder().id("c").title("c").url("c").contactUrl("").logo("eidc.png").build();
 
         given(catalogueService.retrieveAll()).willReturn(List.of(a, b, c));
     }
@@ -62,6 +62,7 @@ public class CatalogueControllerTest {
             .title("EIDC")
             .url("url")
             .contactUrl("contact")
+            .logo("eidc.png")
             .vocabularies(List.of(
                 new KeywordVocabulary() {
                     @Override
@@ -170,9 +171,9 @@ public class CatalogueControllerTest {
     @SneakyThrows
     public void getCataloguesMinusB() {
         //given
-        Catalogue a = Catalogue.builder().id("a").title("a").url("a").contactUrl("").build();
-        Catalogue b = Catalogue.builder().id("b").title("b").url("b").contactUrl("").build();
-        Catalogue c = Catalogue.builder().id("c").title("c").url("c").contactUrl("").build();
+        Catalogue a = Catalogue.builder().id("a").title("a").url("a").contactUrl("").logo("eidc.png").build();
+        Catalogue b = Catalogue.builder().id("b").title("b").url("b").contactUrl("").logo("eidc.png").build();
+        Catalogue c = Catalogue.builder().id("c").title("c").url("c").contactUrl("").logo("eidc.png").build();
 
         given(catalogueService.retrieveAll()).willReturn(List.of(a, b, c));
         given(catalogueService.retrieve("b")).willReturn(b);
@@ -198,9 +199,9 @@ public class CatalogueControllerTest {
     @Test
     public void getCataloguesWithUnknownCatalogue() {
         //given
-        Catalogue a = Catalogue.builder().id("a").title("a").url("a").contactUrl("").build();
-        Catalogue b = Catalogue.builder().id("b").title("b").url("b").contactUrl("").build();
-        Catalogue c = Catalogue.builder().id("c").title("c").url("c").contactUrl("").build();
+        Catalogue a = Catalogue.builder().id("a").title("a").url("a").contactUrl("").logo("eidc.png").build();
+        Catalogue b = Catalogue.builder().id("b").title("b").url("b").contactUrl("").logo("eidc.png").build();
+        Catalogue c = Catalogue.builder().id("c").title("c").url("c").contactUrl("").logo("eidc.png").build();
 
         given(catalogueService.retrieveAll()).willReturn(List.of(a, b, c));
         given(catalogueService.retrieve("x")).willThrow(CatalogueException.class);
@@ -229,9 +230,9 @@ public class CatalogueControllerTest {
     @Test
     public void getCataloguesForIdentifier() {
         //given
-        Catalogue a = Catalogue.builder().id("a").title("a").url("a").contactUrl("").build();
-        Catalogue b = Catalogue.builder().id("b").title("b").url("b").contactUrl("").build();
-        Catalogue c = Catalogue.builder().id("c").title("c").url("c").contactUrl("").build();
+        Catalogue a = Catalogue.builder().id("a").title("a").url("a").contactUrl("").logo("eidc.png").build();
+        Catalogue b = Catalogue.builder().id("b").title("b").url("b").contactUrl("").logo("eidc.png").build();
+        Catalogue c = Catalogue.builder().id("c").title("c").url("c").contactUrl("").logo("eidc.png").build();
 
         val document = new GeminiDocument()
             .setMetadata(MetadataInfo.builder().catalogue("a").build());
@@ -262,9 +263,9 @@ public class CatalogueControllerTest {
     @Test
     public void getCataloguesForUnknownIdentifier() throws Exception {
         //given
-        Catalogue a = Catalogue.builder().id("a").title("a").url("a").contactUrl("").build();
-        Catalogue b = Catalogue.builder().id("b").title("b").url("b").contactUrl("").build();
-        Catalogue c = Catalogue.builder().id("c").title("c").url("c").contactUrl("").build();
+        Catalogue a = Catalogue.builder().id("a").title("a").url("a").contactUrl("").logo("eidc.png").build();
+        Catalogue b = Catalogue.builder().id("b").title("b").url("b").contactUrl("").logo("eidc.png").build();
+        Catalogue c = Catalogue.builder().id("c").title("c").url("c").contactUrl("").logo("eidc.png").build();
 
         given(catalogueService.retrieveAll()).willReturn(List.of(a, b, c));
         given(documentRepository.read("unknown")).willThrow(DocumentRepositoryException.class);

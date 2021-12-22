@@ -79,6 +79,7 @@ class DatalabsDocumentControllerTest {
                 .title("Foo")
                 .url("https://example.com")
                 .contactUrl("")
+                .logo("eidc.png")
                 .build()
             );
     }

@@ -101,6 +101,7 @@ class SolrSearcherTest {
                 .title("title")
                 .url("https://example.com")
                 .contactUrl("https://example.com/aboutus")
+                .logo("eidc.png")
                 .facetKey("facet1")
                 .facetKey("facet2")
                 .build()

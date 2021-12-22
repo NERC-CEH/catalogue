@@ -80,7 +80,7 @@ class PublicationControllerTest {
 
     private void givenCatalogue() {
         given(catalogueService.retrieve(catalogueKey))
-            .willReturn(Catalogue.builder().id(catalogueKey).title("Foo").url("https://example.com").contactUrl("").build());
+            .willReturn(Catalogue.builder().id(catalogueKey).title("Foo").url("https://example.com").contactUrl("").logo("eidc.png").build());
     }
 
     @SneakyThrows

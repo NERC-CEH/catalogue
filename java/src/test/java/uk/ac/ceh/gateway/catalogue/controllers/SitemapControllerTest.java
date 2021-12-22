@@ -59,14 +59,14 @@ class SitemapControllerTest {
 
     private void givenCatalogue() {
         given(catalogueService.retrieve(catalogueKey))
-            .willReturn(Catalogue.builder().id("A").title("A").url("").contactUrl("").build());
+            .willReturn(Catalogue.builder().id("A").title("A").url("").contactUrl("").logo("eidc.png").build());
     }
 
     private void givenAllCatalogues() {
         given(catalogueService.retrieveAll())
             .willReturn(Arrays.asList(
-                Catalogue.builder().id("A").title("A").url("").contactUrl("").build(),
-                Catalogue.builder().id("B").title("B").url("").contactUrl("").build()
+                Catalogue.builder().id("A").title("A").url("").contactUrl("").logo("eidc.png").build(),
+                Catalogue.builder().id("B").title("B").url("").contactUrl("").logo("eidc.png").build()
             ));
     }
 

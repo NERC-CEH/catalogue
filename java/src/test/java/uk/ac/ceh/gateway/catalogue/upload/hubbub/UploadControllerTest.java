@@ -105,6 +105,7 @@ class UploadControllerTest {
                 .id("eidc")
                 .url("bar")
                 .contactUrl("")
+                .logo("eidc.png")
                 .build()
             );
     }

@@ -44,6 +44,7 @@ public class SearchResultsTest {
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
                 .contactUrl("")
+                .logo("")
                 .build(),
             SearchQueryTest.DEFAULT_FACETS
         );
@@ -78,6 +79,7 @@ public class SearchResultsTest {
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
                 .contactUrl("")
+                .logo("")
                 .build(),
             SearchQueryTest.DEFAULT_FACETS
         );
@@ -120,6 +122,7 @@ public class SearchResultsTest {
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
                 .contactUrl("")
+                .logo("")
                 .build(),
             SearchQueryTest.DEFAULT_FACETS
         );
@@ -153,6 +156,7 @@ public class SearchResultsTest {
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
                 .contactUrl("")
+                .logo("")
                 .build(),
             SearchQueryTest.DEFAULT_FACETS
         );
@@ -186,6 +190,7 @@ public class SearchResultsTest {
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
                 .contactUrl("")
+                .logo("")
                 .build(),
             SearchQueryTest.DEFAULT_FACETS
         );
@@ -221,6 +226,7 @@ public class SearchResultsTest {
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
                 .contactUrl("")
+                .logo("")
                 .build(),
             SearchQueryTest.DEFAULT_FACETS
         );
@@ -257,6 +263,7 @@ public class SearchResultsTest {
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
                 .contactUrl("")
+                .logo("")
                 .build(),
             SearchQueryTest.DEFAULT_FACETS
         );
@@ -289,6 +296,7 @@ public class SearchResultsTest {
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
                 .contactUrl("")
+                .logo("")
                 .build(),
             SearchQueryTest.DEFAULT_FACETS
         );
@@ -322,6 +330,7 @@ public class SearchResultsTest {
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
                 .contactUrl("")
+                .logo("")
                 .build(),
             SearchQueryTest.DEFAULT_FACETS
         );
@@ -356,6 +365,7 @@ public class SearchResultsTest {
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
                 .contactUrl("")
+                .logo("")
                 .build(),
             SearchQueryTest.DEFAULT_FACETS
         );
@@ -389,6 +399,7 @@ public class SearchResultsTest {
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
                 .contactUrl("")
+                .logo("")
                 .build(),
             SearchQueryTest.DEFAULT_FACETS
         );
@@ -423,6 +434,7 @@ public class SearchResultsTest {
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
                 .contactUrl("")
+                .logo("")
                 .build(),
             SearchQueryTest.DEFAULT_FACETS
         );
@@ -457,6 +469,7 @@ public class SearchResultsTest {
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
                 .contactUrl("")
+                .logo("")
                 .build(),
             SearchQueryTest.DEFAULT_FACETS
         );
@@ -487,6 +500,7 @@ public class SearchResultsTest {
                 .title("Environmental Information Data Centre")
                 .url("https://eidc-catalogue.ceh.ac.uk")
                 .contactUrl("")
+                .logo("")
                 .build(),
             SearchQueryTest.DEFAULT_FACETS
         );
