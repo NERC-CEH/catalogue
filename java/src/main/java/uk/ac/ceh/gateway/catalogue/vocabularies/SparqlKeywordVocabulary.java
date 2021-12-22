@@ -8,6 +8,7 @@ import lombok.val;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.StreamSupport;
 
+import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static uk.ac.ceh.gateway.catalogue.TimeConstants.ONE_MINUTE;
 import static uk.ac.ceh.gateway.catalogue.TimeConstants.SEVEN_DAYS;
@@ -73,35 +75,43 @@ public class SparqlKeywordVocabulary implements KeywordVocabulary {
     @Scheduled(initialDelay = ONE_MINUTE, fixedDelay = SEVEN_DAYS)
     public void retrieve() {
         log.info("Retrieving vocabulary ({}) {}", vocabularyId, vocabularyName);
-        val response = restTemplate.getForEntity(
-            queryUrl,
-            JsonNode.class
-        );
-        log.debug(response.toString());
-        val vocabularyNode = Optional.ofNullable(response.getBody())
-            .orElseThrow(() -> new KeywordVocabularyException("Cannot get response body"));
+        try {
+            val response = restTemplate.getForEntity(
+                queryUrl,
+                JsonNode.class
+            );
+            log.debug(response.toString());
+            val vocabularyNode = Optional.ofNullable(response.getBody())
+                .orElseThrow(() -> new KeywordVocabularyException("Cannot get response body"));
 
-        if (vocabularyNode.isArray()) {
-            log.info("Retrieved {} terms", vocabularyNode.size());
-            solrClient.deleteByQuery(COLLECTION, "vocabId:" + vocabularyId);
-            StreamSupport.stream(vocabularyNode.spliterator(), false)
-                .map(node -> {
-                    val url = node.get("uri").asText();
-                    val label = node.get("label").asText();
-                    return new Keyword(label, vocabularyId, url);
-                })
-                .forEach(keyword -> {
-                    try {
-                        solrClient.addBean(COLLECTION, keyword);
-                    } catch (IOException | SolrServerException ex) {
-                        throw new KeywordVocabularyException("Failed to index " + keyword + "for " + vocabularyId, ex);
-                    }
-                });
-            try {
+            if (vocabularyNode.isArray()) {
+                log.info("Retrieved {} terms", vocabularyNode.size());
+                solrClient.deleteByQuery(COLLECTION, "vocabId:" + vocabularyId);
+                StreamSupport.stream(vocabularyNode.spliterator(), false)
+                    .map(node -> {
+                        val url = node.get("uri").asText();
+                        val label = node.get("label").asText();
+                        return new Keyword(label, vocabularyId, url);
+                    })
+                    .forEach(keyword -> {
+                        try {
+                            solrClient.addBean(COLLECTION, keyword);
+                        } catch (IOException | SolrServerException ex) {
+                            throw new KeywordVocabularyException("Failed to index " + keyword + "for " + vocabularyId, ex);
+                        }
+                    });
                 solrClient.commit(COLLECTION);
-            } catch (IOException | SolrServerException ex) {
-                throw new KeywordVocabularyException("Failed to commit keywords for " + vocabularyId, ex);
             }
+        } catch (HttpStatusCodeException ex) {
+            throw new KeywordVocabularyException(
+                format("Cannot retrieve %s from vocab server, error: %s %s", vocabularyId, ex.getRawStatusCode(), ex.getResponseBodyAsString()),
+                ex
+            );
+        } catch (IOException | SolrServerException ex) {
+            throw new KeywordVocabularyException(
+                format("Failed to communicate with Solr for %s", vocabularyId),
+                ex
+            );
         }
     }
 

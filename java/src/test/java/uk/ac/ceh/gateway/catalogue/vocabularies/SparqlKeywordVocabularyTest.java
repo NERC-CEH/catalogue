@@ -5,13 +5,13 @@ import lombok.val;
 import org.apache.commons.io.IOUtils;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
@@ -22,15 +22,14 @@ import java.util.Arrays;
 import java.util.Objects;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 @ExtendWith(MockitoExtension.class)
@@ -85,7 +84,7 @@ class SparqlKeywordVocabularyTest {
 
     @Test
     @SneakyThrows
-    public void throwKeywordVocabularyException() {
+    public void failToCommunicateWithSolr() {
 
         //Given
         val response = IOUtils.toString(
@@ -102,9 +101,31 @@ class SparqlKeywordVocabularyTest {
                 .willThrow(new SolrServerException("Test"));
 
         //When
-        Assertions.assertThrows(KeywordVocabularyException.class, () ->
-            target.retrieve()
+        assertThrows(
+            KeywordVocabularyException.class,
+            () -> target.retrieve()
         );
+
+        //then
+        verify(solrClient, never()).commit(COLLECTION);
+    }
+
+    @Test
+    @SneakyThrows
+    public void failToCommunicateWithVocabServer() {
+        //Given
+        mockServer.expect(requestTo(getURI(GRAPH, WHERE)))
+            .andExpect(method(HttpMethod.GET))
+            .andRespond(withStatus(HttpStatus.NOT_FOUND));
+
+        //When
+        assertThrows(
+            KeywordVocabularyException.class,
+            () -> target.retrieve()
+        );
+
+        //then
+        verifyNoInteractions(solrClient);
     }
 
     @Test
