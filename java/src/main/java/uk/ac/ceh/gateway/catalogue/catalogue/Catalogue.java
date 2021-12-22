@@ -11,7 +11,7 @@ import java.util.List;
 @Value
 @Builder
 public class Catalogue implements Comparable<Catalogue> {
-    @NonNull String id, title, url, contactUrl;
+    @NonNull String id, title, url, contactUrl, logo;
     @Singular List<String> facetKeys;
     @Singular List<DocumentType> documentTypes;
     List<KeywordVocabulary> vocabularies;

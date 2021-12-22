@@ -65,6 +65,7 @@ class SearchControllerTest {
         .title("Env Data Centre")
         .url("https://example.com")
         .contactUrl("")
+        .logo("eidc.png")
         .build();
 
     private void givenDefaultCatalogue() {
@@ -75,6 +76,7 @@ class SearchControllerTest {
                     .title("test")
                     .url("https://example.com")
                     .contactUrl("")
+                    .logo("eidc.png")
                     .build()
             );
     }
@@ -87,6 +89,7 @@ class SearchControllerTest {
                     .title("Env Data Centre")
                     .url("https://example.com")
                     .contactUrl("")
+                    .logo("eidc.png")
                     .build()
             );
     }

@@ -132,6 +132,7 @@ class DocumentControllerTest {
                     .title("Env Data Centre")
                     .url("https://example.com")
                     .contactUrl("")
+                    .logo("eidc.png")
                     .build()
             );
     }
@@ -144,6 +145,7 @@ class DocumentControllerTest {
                     .title("Env Data Centre")
                     .url("https://example.com")
                     .contactUrl("")
+                    .logo("eidc.png")
                     .build()
             );
     }

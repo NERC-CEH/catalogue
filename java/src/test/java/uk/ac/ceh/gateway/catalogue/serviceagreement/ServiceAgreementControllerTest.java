@@ -77,6 +77,7 @@ class ServiceAgreementControllerTest {
                 .id("eidc")
                 .title("Foo")
                 .url("https://example.com")
+                .logo("eidc.png")
                 .contactUrl("")
                 .build());
     }

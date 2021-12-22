@@ -48,35 +48,35 @@
   <body data-edit-restricted="${can_edit_restricted?then('','disabled')}">
     <div class="navbar navbar-default navbar-fixed-top" role="navigation">
       <div class="${containerClass}">
-        <div id="sso-brand" class="navbar-header">
+        <div class="navbar-header">
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
             <span class="sr-only">Toggle navigation</span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <h3 class="navbar-text" href="#">Not Proxied</h3>
+          <#if catalogue?has_content>
+            <a href="${catalogue.url}" class="navbar-brand"><img src="/static/img/logo/${catalogue.logo}" alt="${catalogue.title}"/></a>
+          <#else>
+            <a href="" class="navbar-brand"><img src="/static/img/logo/ukceh.png" alt="UKCEH"/></a>
+          </#if>
         </div>
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-          <#if catalogue?has_content>
-            <li class="navbar-title">
-            <#if catalogue.url?? && catalogue.url == "">
-              <div>${catalogue.title}</div>
-            <#else>
-              <a href="${catalogue.url!'/'}">${catalogue.title}</a>
+            <#if catalogue?has_content>
+              <li class="navbar-title">
+                <a href="${catalogue.url}">${catalogue.title}</a>
+              </li>
+              <#if catalogue.id == "assist">
+                <#include "menus/assist.ftlh">
+              <#elseif catalogue.id == 'eidc'>
+                <#include "menus/eidc.ftlh">
+              <#elseif catalogue.id == "erammp">
+                <#include "menus/erammp.ftlh">
+              <#else>
+                <li class="<#if searching>active</#if>"><a href="/${catalogue.id}/documents">Search</a></li>
+              </#if>
             </#if>
-            </li>
-            <#if catalogue.id == "assist">
-              <#include "menus/assist.ftlh">
-            <#elseif catalogue.id == 'eidc'>
-              <#include "menus/eidc.ftlh">
-            <#elseif catalogue.id == "erammp">
-              <#include "menus/erammp.ftlh">
-            <#else>
-              <li class="<#if searching>active</#if>"><a href="/${catalogue.id}/documents">Search</a></li>
-            </#if>
-          </#if>
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <#if searching && catalogue?has_content && permission.userCanCreate(catalogue.id)>
@@ -98,7 +98,6 @@
                 </div>
               </li>
             </#if>
-            <li id="sso-user"><a>Joe Bloggs</a></li>
           </ul>
         </div>
       </div>

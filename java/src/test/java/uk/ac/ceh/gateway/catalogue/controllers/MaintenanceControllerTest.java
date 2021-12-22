@@ -82,6 +82,7 @@ public class MaintenanceControllerTest {
                     .title("Env Data Centre")
                     .url("https://example.com")
                     .contactUrl("")
+                    .logo("eidc.png")
                     .build()
             );
     }

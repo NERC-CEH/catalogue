@@ -92,6 +92,7 @@ class UploadControllerTest {
                     .title("test")
                     .url("http://example.com")
                     .contactUrl("")
+                    .logo("eidc.png")
                     .build()
             );
     }
@@ -104,6 +105,7 @@ class UploadControllerTest {
                     .title("Env Data Centre")
                     .url("https://example.com")
                     .contactUrl("")
+                    .logo("eidc.png")
                     .build()
             );
     }

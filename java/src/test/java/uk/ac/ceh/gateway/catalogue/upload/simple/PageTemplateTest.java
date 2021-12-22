@@ -58,7 +58,7 @@ public class PageTemplateTest {
         val expected = StreamUtils.copyToString(
                 getClass().getResourceAsStream("page.html"),
                 StandardCharsets.UTF_8
-        );
+        ).trim();
         val model = configureModel();
         val config = configureFreemarker();
         val catalogue = Catalogue.builder()
@@ -66,6 +66,7 @@ public class PageTemplateTest {
                 .title("Test Catalogue")
                 .url("https://example.com")
                 .contactUrl("")
+                .logo("eidc.png")
                 .build();
 
         given(catalogueService.retrieve("test")).willReturn(catalogue);
@@ -77,6 +78,6 @@ public class PageTemplateTest {
         template.process(model, out);
 
         //then
-        assertThat(out.toString(), equalTo(expected));
+        assertThat(out.toString().trim(), equalTo(expected));
     }
 }

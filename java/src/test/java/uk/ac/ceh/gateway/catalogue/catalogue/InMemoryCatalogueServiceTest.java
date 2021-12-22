@@ -13,9 +13,9 @@ public class InMemoryCatalogueServiceTest {
     @Test
     public void retrieveAllCatalogues() {
         //given
-        Catalogue t1 = Catalogue.builder().id("t1").title("t").url("u").contactUrl("").build();
-        Catalogue t2 = Catalogue.builder().id("t2").title("t").url("u").contactUrl("").build();
-        Catalogue t3 = Catalogue.builder().id("t3").title("t").url("u").contactUrl("").build();
+        Catalogue t1 = Catalogue.builder().id("t1").title("t").url("u").contactUrl("").logo("eidc.png").build();
+        Catalogue t2 = Catalogue.builder().id("t2").title("t").url("u").contactUrl("").logo("eidc.png").build();
+        Catalogue t3 = Catalogue.builder().id("t3").title("t").url("u").contactUrl("").logo("eidc.png").build();
 
         catalogueService = new InMemoryCatalogueService("t1", t1, t2, t3);
 
