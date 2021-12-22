@@ -1,5 +1,5 @@
 <#import "skeleton.ftlh" as skeleton>
-<@skeleton.master title="Metadata File Upload">
+<@skeleton.master title="Metadata File Upload" catalogue=catalogues.defaultCatalogue()>
 <div class="container">
   <div class="row">
     <div class="col-sm-offset-2 col-sm-8">

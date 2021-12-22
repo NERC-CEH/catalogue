@@ -1,5 +1,5 @@
 <#import "skeleton.ftlh" as skeleton>
-<@skeleton.master title="Sparql Tester">
+<@skeleton.master title="Sparql Tester" catalogue=catalogues.defaultCatalogue()>
     <div class="container-fluid">
       <form method="POST" action="/maintenance/sparql">
         <div class="form-group">

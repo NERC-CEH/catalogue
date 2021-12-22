@@ -1,5 +1,5 @@
 <#import "skeleton.ftlh" as skeleton>
-<@skeleton.master title="Validation Page">
+<@skeleton.master title="Validation Page" catalogue=catalogues.defaultCatalogue()>
   <div class="container">
     <h1>Output format validation report</h1>
 

@@ -1,5 +1,5 @@
 <#import "skeleton.ftlh" as skeleton>
-<@skeleton.master title="Maintenance Page">
+<@skeleton.master title="Maintenance Page" catalogue=catalogues.defaultCatalogue()>
   <div class="container">
     <h1>Catalogue Maintenance</h1>
 
