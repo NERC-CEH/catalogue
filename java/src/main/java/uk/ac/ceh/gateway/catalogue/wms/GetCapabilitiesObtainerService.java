@@ -27,7 +27,7 @@ public class GetCapabilitiesObtainerService {
         log.info("Creating {}", this);
     }
 
-    @Cacheable("capabilities")
+    @Cacheable(cacheNames = "capabilities", key = "#resource.url")
     public WmsCapabilities getWmsCapabilities(OnlineResource resource) {
         if(resource.getType().equals(OnlineResource.Type.WMS_GET_CAPABILITIES)) {
             try {
