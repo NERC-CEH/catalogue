@@ -50,11 +50,11 @@
 
             <div class="title">
                 <div class="logo"></div>
-                <h1>EIDC Deposit Agreement for ${title}</h1>
+                <h1>EIDC Deposit Agreement for ${title!"NOT PROVIDED"}</h1>
             </div>
 
             <div class="depositReference">
-                <strong>Deposit reference</strong> <span>${depositReference}</span>
+                <strong>Deposit reference</strong> <span>${depositReference!"NOT PROVIDED"}</span>
             </div>
 
             <div class="terms">
