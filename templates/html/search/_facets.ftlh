@@ -10,9 +10,9 @@
     <#list results as facet>
       <#if facet.name?has_content>
       <li>
-        <a href="${facet.url}">${facet.name} <small class="facet-count">(${facet.count})</small></a>
+        <a href="${facet.url}" title="${facet.name} (${facet.count})">${facet.name} <small class="facet-count">(${facet.count})</small></a>
         <#if facet.active >
-          <a href="${facet.url}">
+          <a href="${facet.url}" title="${facet.name} (${facet.count})">
             <span class="fas fa-times"></span>
           </a>
         </#if>

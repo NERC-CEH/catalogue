@@ -71,6 +71,9 @@ body {
     background-color: black;
     color: white;
   }
+  img {
+    margin: 9px 0;
+  }
 }
 
 .adminToolbar {
@@ -201,7 +204,7 @@ h1#document-title {
 }
 
 /*Change menu collapse breakpoint */
-@media (max-width: 992px) {
+@media (max-width: 1200px) {
   .navbar-header {
     float: none;
   }
@@ -222,7 +225,7 @@ h1#document-title {
 
   .navbar-fixed-top {
     top: 0;
-    border-width: 0 0 1px;
+    border-width: 0 0 @navbar-border-width 0;
   }
 
   .navbar-collapse.collapse {
