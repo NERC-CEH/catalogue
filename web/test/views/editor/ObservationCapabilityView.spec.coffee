@@ -22,7 +22,7 @@ define [
       it 'should exist', ->
         expect(view).toBeDefined()
 
-    describe '_setObject', ->     
+    describe '_setObject', ->
       
       it '_setObject for object', ->
         objectName = 'test'
