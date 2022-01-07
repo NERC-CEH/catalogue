@@ -1,44 +1,58 @@
-define [
-  'jquery'
-  'backbone'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'jquery',
+  'backbone',
   'tpl!templates/DrawingControl.tpl'
-], ($, Backbone, template) -> Backbone.View.extend
-  events:
-    "click #drawing-toggle":       "toggleDrawing"
+], function($, Backbone, template) { return Backbone.View.extend({
+  events: {
+    "click #drawing-toggle":       "toggleDrawing",
     "click #spatial-op-dropdown":  "open"
+  },
 
-  ###
+  /*
   This is the drawing control view. If not bounding box is currently set, it 
   will show a drawing tool so that a boundbox area can be selected
-  ###
-  initialize: ->
-    do @render
-    @listenTo @model, 'results-change', @render
-    @listenTo @model, 'change:drawing', @updateDrawingToggle
+  */
+  initialize() {
+    (this.render)();
+    this.listenTo(this.model, 'results-change', this.render);
+    return this.listenTo(this.model, 'change:drawing', this.updateDrawingToggle);
+  },
 
-  ###
+  /*
   Ensure that the panel is open
-  ###
-  open:-> @model.set mapsearch:true
+  */
+  open() { return this.model.set({mapsearch:true}); },
 
-  ###
+  /*
   Toggle the drawing mode of the model and ensure app is in map search mode
-  ###
-  toggleDrawing: -> 
-    @model.set
-      drawing:   not @model.get 'drawing'
+  */
+  toggleDrawing() { 
+    return this.model.set({
+      drawing:   !this.model.get('drawing'),
       mapsearch: true
+    });
+  },
 
-  ###
+  /*
   Update the state of the drawing toggle button. Add and remove the active
   class depending on the drawing state of the model
-  ###
-  updateDrawingToggle:-> 
-    toggle = if @model.get 'drawing' then 'addClass' else 'removeClass'
-    @$('button')[toggle] 'active'
+  */
+  updateDrawingToggle() { 
+    const toggle = this.model.get('drawing') ? 'addClass' : 'removeClass';
+    return this.$('button')[toggle]('active');
+  },
 
-  render: ->  @$el.html template
-    url:              @model.getResults().get 'url'
-    withoutBbox:      @model.getResults().get 'withoutBbox'
-    withinBbox:       @model.getResults().get 'withinBbox'
-    intersectingBbox: @model.getResults().get 'intersectingBbox'
+  render() {  return this.$el.html(template({
+    url:              this.model.getResults().get('url'),
+    withoutBbox:      this.model.getResults().get('withoutBbox'),
+    withinBbox:       this.model.getResults().get('withinBbox'),
+    intersectingBbox: this.model.getResults().get('intersectingBbox')
+  })
+  ); }
+});
+ });

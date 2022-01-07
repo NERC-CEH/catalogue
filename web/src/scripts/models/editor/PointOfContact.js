@@ -1,9 +1,17 @@
-define [
-  'underscore'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'underscore',
   'cs!models/editor/Contact'
-], (_, Contact) -> Contact.extend
+], (_, Contact) => Contact.extend({
 
-  defaults: _.extend({}, Contact.prototype.defaults, {role: 'pointOfContact'})
+  defaults: _.extend({}, Contact.prototype.defaults, {role: 'pointOfContact'})}));
 
-intialize: ->
-  Contact.prototype.initialize.apply @
+({
+  intialize() {
+    return Contact.prototype.initialize.apply(this);
+  }
+});

@@ -1,34 +1,44 @@
-define [
-  'jquery'
-  'backbone'
-  'cs!collections/upload/simple/FileCollection'
-  'cs!views/upload/simple/FileListView'
-  'cs!views/upload/simple/MessageListView'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'jquery',
+  'backbone',
+  'cs!collections/upload/simple/FileCollection',
+  'cs!views/upload/simple/FileListView',
+  'cs!views/upload/simple/MessageListView',
   'cs!views/upload/simple/UploadView'
-], ($, Backbone, FileCollection, FileListView, MessageListView, UploadView) -> Backbone.View.extend
+], ($, Backbone, FileCollection, FileListView, MessageListView, UploadView) => Backbone.View.extend({
 
-  initialize: (options) ->
-    files = new FileCollection
+  initialize(options) {
+    const files = new FileCollection({
+      url: options.url});
+
+    const messages = new Backbone.Collection();
+
+    const messageListView = new MessageListView({
+      el: '#messages',
+      messages
+    });
+
+    const uploadView = new UploadView({
+      el: '#simple-upload-dropzone',
+      files,
+      messages,
       url: options.url
+    });
 
-    messages = new Backbone.Collection()
+    const fileListView = new FileListView({
+      el: '#files',
+      files,
+      messages
+    });
 
-    messageListView = new MessageListView
-      el: '#messages'
-      messages: messages
-
-    uploadView = new UploadView
-      el: '#simple-upload-dropzone'
-      files: files
-      messages: messages
-      url: options.url
-
-    fileListView = new FileListView
-      el: '#files'
-      files: files
-      messages: messages
-
-    $filesData = $('#files-data')
-    files.reset(JSON.parse($filesData.text())) if $filesData.length
-    $messageData = $('#messages-data')
-    messages.reset(JSON.parse($messageData.text())) if $messageData.length
+    const $filesData = $('#files-data');
+    if ($filesData.length) { files.reset(JSON.parse($filesData.text())); }
+    const $messageData = $('#messages-data');
+    if ($messageData.length) { return messages.reset(JSON.parse($messageData.text())); }
+  }
+}));

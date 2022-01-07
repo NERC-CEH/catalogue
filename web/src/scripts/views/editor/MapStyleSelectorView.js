@@ -1,52 +1,69 @@
-define [
-  'underscore'
-  'cs!views/editor/ObjectInputView'
-  'tpl!templates/editor/MapStyleSelector.tpl'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'underscore',
+  'cs!views/editor/ObjectInputView',
+  'tpl!templates/editor/MapStyleSelector.tpl',
   'colorpicker'
-], (_, ObjectInputView, template) -> ObjectInputView.extend
+], function(_, ObjectInputView, template) { return ObjectInputView.extend({
 
-  template: template
+  template,
 
-  events:
-    'changeColor':          'setColour'
+  events: {
+    'changeColor':          'setColour',
     'click a[data-symbol]': 'setSymbol'
+  },
 
-  buttonColour: '#fff'
+  buttonColour: '#fff',
 
-  defaultColour: '#fff'
+  defaultColour: '#fff',
 
-  symbols:
-    circle: 
+  symbols: {
+    circle: { 
       icon: '⬤', label: 'Circle'
-    square:
+    },
+    square: {
       icon: '⬛',  label: 'Square'
+    }
+  },
 
-  initialize: (options) ->
-    ObjectInputView.prototype.initialize.call @, _.extend {}, options,
-      symbols: @symbols
+  initialize(options) {
+    ObjectInputView.prototype.initialize.call(this, _.extend({}, options,
+      {symbols: this.symbols})
+    );
 
-    do @update
+    (this.update)();
   
-    @$('input').colorpicker format: 'hex'
-    @listenTo @model, 'change:colour change:symbol', @update
+    this.$('input').colorpicker({format: 'hex'});
+    return this.listenTo(this.model, 'change:colour change:symbol', this.update);
+  },
 
-  update: ->
-    color = @model.get 'colour'
-    @$('input').val color
-    if @model.has 'symbol'
-      symbol = @model.get 'symbol'
-      @$('.selected').html @symbols[symbol].icon
-      @$('button').css backgroundColor: @buttonColour
-    else
-      @$('.selected').html '&nbsp;'
-      @$('button').css backgroundColor: color
+  update() {
+    const color = this.model.get('colour');
+    this.$('input').val(color);
+    if (this.model.has('symbol')) {
+      const symbol = this.model.get('symbol');
+      this.$('.selected').html(this.symbols[symbol].icon);
+      this.$('button').css({backgroundColor: this.buttonColour});
+    } else {
+      this.$('.selected').html('&nbsp;');
+      this.$('button').css({backgroundColor: color});
+    }
 
-    @$('.icon').css color: color
+    return this.$('.icon').css({color});
+  },
 
-  setColour: -> @model.set 'colour', @$('input').val()
+  setColour() { return this.model.set('colour', this.$('input').val()); },
 
-  setSymbol: (e) ->
-    if $(e.target).data('symbol') isnt 'blank'
-      @model.set 'symbol', $(e.target).data 'symbol'
-    else
-      @model.unset 'symbol'
+  setSymbol(e) {
+    if ($(e.target).data('symbol') !== 'blank') {
+      return this.model.set('symbol', $(e.target).data('symbol'));
+    } else {
+      return this.model.unset('symbol');
+    }
+  }
+});
+ });

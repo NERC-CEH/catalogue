@@ -1,46 +1,63 @@
-define [
-  'cs!views/editor/ObjectInputView'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'cs!views/editor/ObjectInputView',
   'tpl!templates/service-agreement/EndUserLicence.tpl'
-], (ObjectInputView, template) -> ObjectInputView.extend
+], function(ObjectInputView, template) { return ObjectInputView.extend({
 
-  template: template
+  template,
 
-  events:
-    'change .ogl': 'setOgl'
-    'change .other': 'setOther'
-    'change .value': 'setValue'
+  events: {
+    'change .ogl': 'setOgl',
+    'change .other': 'setOther',
+    'change .value': 'setValue',
     'change .uri': 'setUri'
+  },
 
-  initialize: (options) ->
-    ObjectInputView.prototype.initialize.call @, options
-    @$resourceConstraint = @$('.resourceConstraint')
-    hasUri = @model.has('uri')
-    hasValue = @model.has('value')
+  initialize(options) {
+    ObjectInputView.prototype.initialize.call(this, options);
+    this.$resourceConstraint = this.$('.resourceConstraint');
+    const hasUri = this.model.has('uri');
+    const hasValue = this.model.has('value');
 
-    if hasUri || hasValue
-      if hasUri && @model.get('uri') == 'https://eidc.ceh.ac.uk/licences/OGL/plain'
-        @$('input.ogl').prop('checked', true)
-      else
-        @$('input.other').prop('checked', true)
-        @$resourceConstraint.removeClass('hidden')
-        if hasValue
-          @$('.value').val(@model.get 'value')
-    else
-      @$('input.ogl').prop('checked', true).change()
+    if (hasUri || hasValue) {
+      if (hasUri && (this.model.get('uri') === 'https://eidc.ceh.ac.uk/licences/OGL/plain')) {
+        return this.$('input.ogl').prop('checked', true);
+      } else {
+        this.$('input.other').prop('checked', true);
+        this.$resourceConstraint.removeClass('hidden');
+        if (hasValue) {
+          return this.$('.value').val(this.model.get('value'));
+        }
+      }
+    } else {
+      return this.$('input.ogl').prop('checked', true).change();
+    }
+  },
 
-  setOgl: ->
-    @$resourceConstraint.addClass('hidden')
-    @model.set
-      value: 'This resource is available under the terms of the Open Government Licence'
-      code: 'license'
+  setOgl() {
+    this.$resourceConstraint.addClass('hidden');
+    return this.model.set({
+      value: 'This resource is available under the terms of the Open Government Licence',
+      code: 'license',
       uri: 'https://eidc.ceh.ac.uk/licences/OGL/plain'
+    });
+  },
 
-  setOther: ->
-    @$resourceConstraint.removeClass('hidden')
-    @model.unset 'uri'
-    @model.unset 'value'
+  setOther() {
+    this.$resourceConstraint.removeClass('hidden');
+    this.model.unset('uri');
+    return this.model.unset('value');
+  },
 
-  setValue:(event) ->
-    @model.set
-      code: 'license'
+  setValue(event) {
+    return this.model.set({
+      code: 'license',
       value: event.target.value
+    });
+  }
+});
+ });

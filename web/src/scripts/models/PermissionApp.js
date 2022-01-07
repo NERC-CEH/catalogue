@@ -1,21 +1,33 @@
-define [
-  'underscore'
-  'backbone'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'underscore',
+  'backbone',
   'cs!models/Permission'
-], (_, Backbone, Permission) -> Backbone.Model.extend
+], function(_, Backbone, Permission) { return Backbone.Model.extend({
 
-  loadPermission: (identifier) ->
-    permission = new Permission
-      id: identifier
+  loadPermission(identifier) {
+    const permission = new Permission({
+      id: identifier});
 
-    permission.fetch
-      success: (model) =>
-        do model.loadCollection
-        @set 'permission', model
-        @trigger 'loaded'
+    return permission.fetch({
+      success: model => {
+        (model.loadCollection)();
+        this.set('permission', model);
+        return this.trigger('loaded');
+      },
 
-      error: (model) =>
-        @trigger 'error', "Unable to load permission for: #{model.id}"
+      error: model => {
+        return this.trigger('error', `Unable to load permission for: ${model.id}`);
+      }
+    });
+  },
 
-  getPermission: ->
-    _.clone(@get 'permission')
+  getPermission() {
+    return _.clone(this.get('permission'));
+  }
+});
+ });

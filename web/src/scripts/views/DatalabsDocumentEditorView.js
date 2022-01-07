@@ -1,43 +1,57 @@
-define [
-  'cs!views/EditorView'
-  'cs!views/editor/InputView'
-  'cs!views/editor/TextareaView'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'cs!views/EditorView',
+  'cs!views/editor/InputView',
+  'cs!views/editor/TextareaView',
   'cs!views/editor/ParentStringView'
-], (
-  EditorView
-  InputView
-  TextareaView
+], function(
+  EditorView,
+  InputView,
+  TextareaView,
   ParentStringView
-) -> EditorView.extend
+) { return EditorView.extend({
 
-  initialize: ->
-    @model.set 'type', 'dataset' unless @model.has 'type'
+  initialize() {
+    if (!this.model.has('type')) { this.model.set('type', 'dataset'); }
 
-    @sections = [
-      label: 'Basic Info'
-      title: 'Basic Info'
+    this.sections = [{
+      label: 'Basic Info',
+      title: 'Basic Info',
       views: [
-          new InputView
-            model: @model
-            modelAttribute: 'title'
+          new InputView({
+            model: this.model,
+            modelAttribute: 'title',
             label: 'Title'
-          new InputView
-            model: @model
-            modelAttribute: 'description'
+          }),
+          new InputView({
+            model: this.model,
+            modelAttribute: 'description',
             label: 'Description'
-          new InputView
-            model: @model
-            modelAttribute: 'version'
+          }),
+          new InputView({
+            model: this.model,
+            modelAttribute: 'version',
             label: 'Version'
-          new InputView
-            model: @model
-            modelAttribute: 'masterUrl'
+          }),
+          new InputView({
+            model: this.model,
+            modelAttribute: 'masterUrl',
             label: 'Master URL'
-          new ParentStringView
-            model: @model
-            modelAttribute: 'owners'
+          }),
+          new ParentStringView({
+            model: this.model,
+            modelAttribute: 'owners',
             label: 'Owners'
+          })
       ]
-    ]
+    }
+    ];
 
-    EditorView.prototype.initialize.apply @
+    return EditorView.prototype.initialize.apply(this);
+  }
+});
+ });

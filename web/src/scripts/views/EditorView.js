@@ -1,131 +1,166 @@
-define [
-  'underscore'
-  'jquery'
-  'backbone'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'underscore',
+  'jquery',
+  'backbone',
   'tpl!templates/Editor.tpl'
-], (_, $, Backbone, template) -> Backbone.View.extend
+], function(_, $, Backbone, template) { return Backbone.View.extend({
 
-  events:
-    'click #editorDelete': 'attemptDelete'
-    'click #confirmDeleteYes': 'delete'
-    'click #editorExit': 'attemptExit'
-    'click #exitWithoutSaving': 'exit'
-    'click #editorSave': 'save'
-    'click #editorBack': 'back'
-    'click #editorNext': 'next'
+  events: {
+    'click #editorDelete': 'attemptDelete',
+    'click #confirmDeleteYes': 'delete',
+    'click #editorExit': 'attemptExit',
+    'click #exitWithoutSaving': 'exit',
+    'click #editorSave': 'save',
+    'click #editorBack': 'back',
+    'click #editorNext': 'next',
     'click #editorNav li': 'direct'
+  },
 
-  initialize: ->
-    @currentStep = 1
-    @saveRequired = false
-    @catalogue = $('html').data('catalogue')
+  initialize() {
+    this.currentStep = 1;
+    this.saveRequired = false;
+    this.catalogue = $('html').data('catalogue');
 
-    @listenTo @model, 'error', (model, response) ->
-      @$('#editorAjax').toggleClass 'visible'
-      @$('#editorErrorMessage')
-        .find('#editorErrorMessageResponse').text("#{response.status} #{response.statusText}")
+    this.listenTo(this.model, 'error', function(model, response) {
+      this.$('#editorAjax').toggleClass('visible');
+      return this.$('#editorErrorMessage')
+        .find('#editorErrorMessageResponse').text(`${response.status} ${response.statusText}`)
         .end()
-        .find('#editorErrorMessageJson').text(JSON.stringify model.toJSON())
+        .find('#editorErrorMessageJson').text(JSON.stringify(model.toJSON()))
         .end()
-        .modal 'show'
-    @listenTo @model, 'sync', ->
-      @$('#editorAjax').toggleClass 'visible'
-      @saveRequired = false
-    @listenTo @model, 'change save:required', ->
-      @saveRequired = true
-    @listenTo @model, 'request', ->
-      @$('#editorAjax').toggleClass 'visible'
-    @listenTo @model, 'invalid', (model, errors) ->
-      $modalBody = @$('#editorValidationMessage .modal-body')
-      $modalBody.html ''
-      _.each errors, (error) ->
-        $modalBody.append @$("<p>#{error}</p>")
-      @$('#editorValidationMessage').modal 'show'
+        .modal('show');
+    });
+    this.listenTo(this.model, 'sync', function() {
+      this.$('#editorAjax').toggleClass('visible');
+      return this.saveRequired = false;
+    });
+    this.listenTo(this.model, 'change save:required', function() {
+      return this.saveRequired = true;
+    });
+    this.listenTo(this.model, 'request', function() {
+      return this.$('#editorAjax').toggleClass('visible');
+    });
+    this.listenTo(this.model, 'invalid', function(model, errors) {
+      const $modalBody = this.$('#editorValidationMessage .modal-body');
+      $modalBody.html('');
+      _.each(errors, function(error) {
+        return $modalBody.append(this.$(`<p>${error}</p>`));
+      });
+      return this.$('#editorValidationMessage').modal('show');
+    });
 
-    do @render
-    _.invoke @sections[0].views, 'show'
-    $editorNav = @$('#editorNav')
-    _.each @sections, (section) ->
-      $editorNav.append(@$("<li title='#{section.title}'>#{section.label}</li>"))
+    (this.render)();
+    _.invoke(this.sections[0].views, 'show');
+    const $editorNav = this.$('#editorNav');
+    _.each(this.sections, function(section) {
+      return $editorNav.append(this.$(`<li title='${section.title}'>${section.label}</li>`));
+    });
 
-    $editorNav.find('li').first().addClass('active')
+    return $editorNav.find('li').first().addClass('active');
+  },
 
-  attemptDelete: ->
-    @$('#confirmDelete').modal 'show'
+  attemptDelete() {
+    return this.$('#confirmDelete').modal('show');
+  },
 
-  delete: ->
-    @$('#confirmDelete').modal 'hide'
-    @model.destroy
-      success: =>
-        _.invoke @sections, 'remove'
-        do @remove
-        Backbone.history.location.replace "/#{@catalogue}/documents"
+  delete() {
+    this.$('#confirmDelete').modal('hide');
+    return this.model.destroy({
+      success: () => {
+        _.invoke(this.sections, 'remove');
+        (this.remove)();
+        return Backbone.history.location.replace(`/${this.catalogue}/documents`);
+      }
+    });
+  },
 
-  save: ->
-    do @model.save
+  save() {
+    return (this.model.save)();
+  },
 
-  attemptExit: ->
-    if @saveRequired
-      @$('#confirmExit').modal 'show'
-    else
-      do @exit
+  attemptExit() {
+    if (this.saveRequired) {
+      return this.$('#confirmExit').modal('show');
+    } else {
+      return (this.exit)();
+    }
+  },
 
-  exit: ->
-    @$('#confirmExit').modal 'hide'
-    _.invoke @sections, 'remove'
-    do @remove
+  exit() {
+    this.$('#confirmExit').modal('hide');
+    _.invoke(this.sections, 'remove');
+    (this.remove)();
 
-    if Backbone.history.location.pathname == "/#{@catalogue}/documents" and not @model.isNew()
-      Backbone.history.location.replace "/documents/#{@model.get 'id'}"
-    else
-      do Backbone.history.location.reload
+    if ((Backbone.history.location.pathname === `/${this.catalogue}/documents`) && !this.model.isNew()) {
+      return Backbone.history.location.replace(`/documents/${this.model.get('id')}`);
+    } else {
+      return (Backbone.history.location.reload)();
+    }
+  },
 
-  back: ->
-    @navigate @currentStep - 1
+  back() {
+    return this.navigate(this.currentStep - 1);
+  },
 
-  next: ->
-    @navigate @currentStep + 1
+  next() {
+    return this.navigate(this.currentStep + 1);
+  },
 
-  direct: (event) ->
-    node = event.currentTarget
-    step = 0
-    while node != null
-      step++
-      node = node.previousElementSibling
+  direct(event) {
+    let node = event.currentTarget;
+    let step = 0;
+    while (node !== null) {
+      step++;
+      node = node.previousElementSibling;
+    }
 
-    @navigate step
+    return this.navigate(step);
+  },
 
-  navigate: (newStep) ->
-    $nav = @$('#editorNav li')
-    maxStep = $nav.length
-    @currentStep = newStep
-    @currentStep = 1 if @currentStep < 1
-    @currentStep = maxStep if @currentStep > maxStep
+  navigate(newStep) {
+    const $nav = this.$('#editorNav li');
+    const maxStep = $nav.length;
+    this.currentStep = newStep;
+    if (this.currentStep < 1) { this.currentStep = 1; }
+    if (this.currentStep > maxStep) { this.currentStep = maxStep; }
 
-    $back = @$('#editorBack')
-    if @currentStep == 1
-      $back.prop 'disabled', true
-    else
-      $back.prop 'disabled', false
+    const $back = this.$('#editorBack');
+    if (this.currentStep === 1) {
+      $back.prop('disabled', true);
+    } else {
+      $back.prop('disabled', false);
+    }
 
-    $next = @$('#editorNext')
-    if @currentStep == maxStep
-      $next.prop 'disabled', true
-    else
-      $next.prop 'disabled', false
+    const $next = this.$('#editorNext');
+    if (this.currentStep === maxStep) {
+      $next.prop('disabled', true);
+    } else {
+      $next.prop('disabled', false);
+    }
 
-    $nav.filter('.active').toggleClass 'active'
-    @$($nav[@currentStep - 1]).toggleClass 'active'
+    $nav.filter('.active').toggleClass('active');
+    this.$($nav[this.currentStep - 1]).toggleClass('active');
 
-    _.each @sections, (section, index) =>
-      method = 'hide'
-      if (@currentStep - 1) == index
-        method = 'show'
-      _.invoke section.views, method
+    return _.each(this.sections, (section, index) => {
+      let method = 'hide';
+      if ((this.currentStep - 1) === index) {
+        method = 'show';
+      }
+      return _.invoke(section.views, method);
+    });
+  },
 
-  render: ->
-    @$el.html template
-    _.each @sections, (section) ->
-      _.each section.views, (view) ->
-        @$('#editor').append view.el
-    @
+  render() {
+    this.$el.html(template);
+    _.each(this.sections, section => _.each(section.views, function(view) {
+      return this.$('#editor').append(view.el);
+    }));
+    return this;
+  }
+});
+ });

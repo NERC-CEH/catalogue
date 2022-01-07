@@ -1,64 +1,80 @@
-define [
-  'backbone'
-  'tpl!templates/LayerControls.tpl'
-  'tpl!templates/LayerInfo.tpl'
-  'jquery-ui/slider'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'backbone',
+  'tpl!templates/LayerControls.tpl',
+  'tpl!templates/LayerInfo.tpl',
+  'jquery-ui/slider',
   'bootstrap'
-], (Backbone, controlsTemplate, infoTemplate) -> Backbone.View.extend
+], function(Backbone, controlsTemplate, infoTemplate) { return Backbone.View.extend({
 
-  events:
-    "change input.visibility": "updateVisibility"
-    "slide .slider" : (evt, ui) -> @model.set 'opacity', ui.value
+  events: {
+    "change input.visibility": "updateVisibility",
+    "slide .slider"(evt, ui) { return this.model.set('opacity', ui.value); },
     "click .info" : "toggleLayerInfo"
+  },
 
-  initialize: ->
-    do @render
+  initialize() {
+    (this.render)();
 
-    @listenTo @model, 'change:visibility', @updateToggle
-    @listenTo @model, 'change:opacity', @updateOpacity
-    @listenTo @model, 'change:infoVisible', @updateInfoVisibility
+    this.listenTo(this.model, 'change:visibility', this.updateToggle);
+    this.listenTo(this.model, 'change:opacity', this.updateOpacity);
+    return this.listenTo(this.model, 'change:infoVisible', this.updateInfoVisibility);
+  },
 
-  toggleLayerInfo: ->
-    @model.setInfoVisibility not @model.get 'infoVisible'
+  toggleLayerInfo() {
+    return this.model.setInfoVisibility(!this.model.get('infoVisible'));
+  },
 
-  updateInfoVisibility:-> 
-    visibility = if @model.get 'infoVisible' then 'show' else 'hide'
-    @$('.info').popover visibility
+  updateInfoVisibility() { 
+    const visibility = this.model.get('infoVisible') ? 'show' : 'hide';
+    return this.$('.info').popover(visibility);
+  },
 
-  ###
+  /*
   Updates the toggle based upon the state of the visibility property
-  ###
-  updateToggle: ->
-    @$("input.visibility").prop "checked", @model.get "visibility"
+  */
+  updateToggle() {
+    return this.$("input.visibility").prop("checked", this.model.get("visibility"));
+  },
 
-  ###
+  /*
   Updates the visibility property on the model based upon the state of the of 
   the ui toggle 
-  ###
-  updateVisibility: ->
-    toggle = @$('input.visibility').is ':checked'
-    @model.set 'visibility', toggle
+  */
+  updateVisibility() {
+    const toggle = this.$('input.visibility').is(':checked');
+    return this.model.set('visibility', toggle);
+  },
 
-  ###
+  /*
   Syncs the value for opacity set in the model to the value the slider is
   currently showing
-  ###
-  updateOpacity: ->
-    @opacity = @model.getOpacity()
-    @opacitySlider.slider "value", @opacity
+  */
+  updateOpacity() {
+    this.opacity = this.model.getOpacity();
+    return this.opacitySlider.slider("value", this.opacity);
+  },
 
-  render: ->
-    @$el.html controlsTemplate @model.toJSON()
-    @opacitySlider = @$('.slider').slider max: 1, step: 0.01
+  render() {
+    this.$el.html(controlsTemplate(this.model.toJSON()));
+    this.opacitySlider = this.$('.slider').slider({max: 1, step: 0.01});
     
-    @infoPopover = @$('.info').popover
-      placement: 'right'
-      content:    infoTemplate @model # Generate some info content
-      trigger:    'manual'            # We will handle the popover in backbone
-      html:       true
-      animation:  false
-      viewport:   '#mapviewer'
+    this.infoPopover = this.$('.info').popover({
+      placement: 'right',
+      content:    infoTemplate(this.model), // Generate some info content
+      trigger:    'manual',            // We will handle the popover in backbone
+      html:       true,
+      animation:  false,
+      viewport:   '#mapviewer',
       container:  '#mapviewer'
+    });
 
-    do @updateOpacity #Ensure that the opacity value is set correctly
-    do @updateInfoVisibility
+    (this.updateOpacity)(); //Ensure that the opacity value is set correctly
+    return (this.updateInfoVisibility)();
+  }
+});
+ });

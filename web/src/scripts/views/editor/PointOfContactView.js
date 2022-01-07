@@ -1,33 +1,46 @@
-define [
-  'underscore'
-  'cs!views/editor/ObjectInputView'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'underscore',
+  'cs!views/editor/ObjectInputView',
   'tpl!templates/editor/PointOfContact.tpl'
-], (_, ObjectInputView, template) -> ObjectInputView.extend
+], function(_, ObjectInputView, template) { return ObjectInputView.extend({
 
-  template: template
+  template,
 
-  initialize: (options) ->
-    ObjectInputView.prototype.initialize.apply @
+  initialize(options) {
+    return ObjectInputView.prototype.initialize.apply(this);
+  },
 
-  render: ->
-    ObjectInputView.prototype.render.apply @
-    @
+  render() {
+    ObjectInputView.prototype.render.apply(this);
+    return this;
+  },
 
-  modify: (event) ->
-    $target = $(event.target)
-    name = $target.data('name')
-    value = $target.val()
+  modify(event) {
+    const $target = $(event.target);
+    const name = $target.data('name');
+    const value = $target.val();
 
-    if _.contains(['deliveryPoint', 'city', 'administrativeArea', 'country', 'postalCode'], name)
-      address = _.clone @model.get 'address'
-      if value
-        address[name] = value
-        @model.set 'address', address
-      else
-        address = _.omit address, name
-        @model.set 'address', address
-    else
-      if value
-        @model.set name, value
-      else
-        @model.unset name
+    if (_.contains(['deliveryPoint', 'city', 'administrativeArea', 'country', 'postalCode'], name)) {
+      let address = _.clone(this.model.get('address'));
+      if (value) {
+        address[name] = value;
+        return this.model.set('address', address);
+      } else {
+        address = _.omit(address, name);
+        return this.model.set('address', address);
+      }
+    } else {
+      if (value) {
+        return this.model.set(name, value);
+      } else {
+        return this.model.unset(name);
+      }
+    }
+  }
+});
+ });

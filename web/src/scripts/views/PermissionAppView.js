@@ -1,14 +1,23 @@
-define [
-  'backbone'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'backbone',
   'cs!views/PermissionView'
-], (Backbone, PermissionView) -> Backbone.View.extend
-  el: '.permission'
+], function(Backbone, PermissionView) { return Backbone.View.extend({
+  el: '.permission',
 
-  initialize: ->
-    @listenTo @model, 'loaded', @render
+  initialize() {
+    return this.listenTo(this.model, 'loaded', this.render);
+  },
 
-  render: ->
-    view = new PermissionView
-     model: @model.getPermission()
-    do view.render
-    return @
+  render() {
+    const view = new PermissionView({
+     model: this.model.getPermission()});
+    (view.render)();
+    return this;
+  }
+});
+ });

@@ -1,50 +1,67 @@
-define [
-  'underscore'
-  'backbone'
-  'cs!views/upload/simple/FileView'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'underscore',
+  'backbone',
+  'cs!views/upload/simple/FileView',
   'tpl!templates/upload/simple/Files.tpl'
-], (_, Backbone, FileView, template) -> Backbone.View.extend
+], function(_, Backbone, FileView, template) { return Backbone.View.extend({
 
-  events:
-    'click .delete-selected': 'deleteSelected'
+  events: {
+    'click .delete-selected': 'deleteSelected',
     'click .select-all': 'selectAll'
+  },
 
-  template: template
+  template,
 
-  initialize: (options) ->
-    @files = options.files
-    @messages = options.messages
+  initialize(options) {
+    this.files = options.files;
+    this.messages = options.messages;
 
-    @$fileList = @$('#files-list')
-    @$tools = @$('#files-tools')
+    this.$fileList = this.$('#files-list');
+    this.$tools = this.$('#files-tools');
 
-    @listenTo(@files, 'add', @addOne)
-    @listenTo(@files, 'reset', @addAll)
+    this.listenTo(this.files, 'add', this.addOne);
+    this.listenTo(this.files, 'reset', this.addAll);
 
-    @render()
+    return this.render();
+  },
 
-  addOne: (file) ->
-    view = new FileView({model: file})
-    @$fileList.append(view.render().el)
+  addOne(file) {
+    const view = new FileView({model: file});
+    return this.$fileList.append(view.render().el);
+  },
 
-  addAll: ->
-    @$fileList.empty()
-    @files.each(@addOne, @)
+  addAll() {
+    this.$fileList.empty();
+    return this.files.each(this.addOne, this);
+  },
 
-  deleteSelected: ->
-    toDelete = @files.where({'toDelete': true})
-    if confirm("Delete #{toDelete.length} files?")
-      options = {
-        success: (model) =>
-          @messages.add(new Backbone.Model({message: "Deleted: #{model.get('name')}", type: 'info'}))
-        error: (model, response) =>
-          @messages.add(new Backbone.Model(response))
-      }
-      _.invoke(toDelete, 'destroy', options)
+  deleteSelected() {
+    const toDelete = this.files.where({'toDelete': true});
+    if (confirm(`Delete ${toDelete.length} files?`)) {
+      const options = {
+        success: model => {
+          return this.messages.add(new Backbone.Model({message: `Deleted: ${model.get('name')}`, type: 'info'}));
+        },
+        error: (model, response) => {
+          return this.messages.add(new Backbone.Model(response));
+        }
+      };
+      return _.invoke(toDelete, 'destroy', options);
+    }
+  },
 
-  selectAll: ->
-    @files.invoke('set', 'toDelete', true)
+  selectAll() {
+    return this.files.invoke('set', 'toDelete', true);
+  },
 
-  render: ->
-    @$tools.html(@template())
-    @
+  render() {
+    this.$tools.html(this.template());
+    return this;
+  }
+});
+ });

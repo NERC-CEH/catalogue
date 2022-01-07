@@ -1,95 +1,119 @@
-define [
-  'underscore'
-  'cs!views/editor/ObjectInputView'
-  'tpl!templates/editor/BoundingBox.tpl'
-  'cs!views/OpenLayersView'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'underscore',
+  'cs!views/editor/ObjectInputView',
+  'tpl!templates/editor/BoundingBox.tpl',
+  'cs!views/OpenLayersView',
   'openlayers'
 ],
-(
+function(
   _,
   ObjectInputView,
   template,
   OpenLayersView,
-  OpenLayers) -> ObjectInputView.extend
+  OpenLayers) { return ObjectInputView.extend({
 
-  template: template
+  template,
 
-  events: ->
-    _.extend {}, ObjectInputView.prototype.events,
-      'click button': 'viewMap'
+  events() {
+    return _.extend({}, ObjectInputView.prototype.events,
+      {'click button': 'viewMap'});
+  },
 
-  initialize: (options) ->
-    _.bindAll(@,
+  initialize(options) {
+    _.bindAll(this,
       'handleDrawnFeature',
       'handleTransformedFeature'
-    )
-    do @render
-    @listenTo @model, 'change:westBoundLongitude', (model, value) ->
-      @$('#boundingBoxWestBoundLongitude').val value
-    @listenTo @model, 'change:southBoundLatitude', (model, value) ->
-      @$('#boundingBoxSouthBoundLatitude').val value
-    @listenTo @model, 'change:eastBoundLongitude', (model, value) ->
-      @$('#boundingBoxEastBoundLongitude').val value
-    @listenTo @model, 'change:northBoundLatitude', (model, value) ->
-      @$('#boundingBoxNorthBoundLatitude').val value
-    @listenTo @model.collection, 'visible', @viewMap
+    );
+    (this.render)();
+    this.listenTo(this.model, 'change:westBoundLongitude', function(model, value) {
+      return this.$('#boundingBoxWestBoundLongitude').val(value);
+    });
+    this.listenTo(this.model, 'change:southBoundLatitude', function(model, value) {
+      return this.$('#boundingBoxSouthBoundLatitude').val(value);
+    });
+    this.listenTo(this.model, 'change:eastBoundLongitude', function(model, value) {
+      return this.$('#boundingBoxEastBoundLongitude').val(value);
+    });
+    this.listenTo(this.model, 'change:northBoundLatitude', function(model, value) {
+      return this.$('#boundingBoxNorthBoundLatitude').val(value);
+    });
+    return this.listenTo(this.model.collection, 'visible', this.viewMap);
+  },
 
-  viewMap: ->
-    $map = @$('.map')
-    $map.html ''
-    mapView = new OpenLayersView
-      el: $map
-    @map = mapView.map
+  viewMap() {
+    const $map = this.$('.map');
+    $map.html('');
+    const mapView = new OpenLayersView({
+      el: $map});
+    this.map = mapView.map;
 
-    @boundingBoxLayer = new OpenLayers.Layer.Vector "Bounding Box"
-    @map.addLayer @boundingBoxLayer
+    this.boundingBoxLayer = new OpenLayers.Layer.Vector("Bounding Box");
+    this.map.addLayer(this.boundingBoxLayer);
 
-    @transform = new OpenLayers.Control.TransformFeature @boundingBoxLayer,
-      rotate: false
+    this.transform = new OpenLayers.Control.TransformFeature(this.boundingBoxLayer, {
+      rotate: false,
       irregular: true
-    @transform.events.register(
-      'transformcomplete', @boundingBoxLayer, @handleTransformedFeature
-      )
-    @map.addControl @transform
+    }
+    );
+    this.transform.events.register(
+      'transformcomplete', this.boundingBoxLayer, this.handleTransformedFeature
+      );
+    this.map.addControl(this.transform);
 
-    @drawing = new OpenLayers.Control.DrawFeature @boundingBoxLayer,
-      OpenLayers.Handler.RegularPolygon,
-      title: 'Draw Bounding Box'
-      handlerOptions:
+    this.drawing = new OpenLayers.Control.DrawFeature(this.boundingBoxLayer,
+      OpenLayers.Handler.RegularPolygon, {
+      title: 'Draw Bounding Box',
+      handlerOptions: {
         sides: 4,
         irregular: true
-    @drawing.events.register(
-      'featureadded', @boundingBoxLayer, @handleDrawnFeature
-      )
-    @map.addControl @drawing
+      }
+    }
+    );
+    this.drawing.events.register(
+      'featureadded', this.boundingBoxLayer, this.handleDrawnFeature
+      );
+    this.map.addControl(this.drawing);
 
-    if @model.hasBoundingBox()
-      do @createFeature
-      @map.zoomToExtent(@boundingBoxLayer.getDataExtent())
-      do @transform.activate
-    else
-      do mapView.refresh
-      do @drawing.activate
+    if (this.model.hasBoundingBox()) {
+      (this.createFeature)();
+      this.map.zoomToExtent(this.boundingBoxLayer.getDataExtent());
+      return (this.transform.activate)();
+    } else {
+      (mapView.refresh)();
+      return (this.drawing.activate)();
+    }
+  },
 
-  createFeature: ->
-    boundingBox = @model.getBoundingBox()
-    @boundingBoxLayer.addFeatures [boundingBox]
-    @transform.setFeature boundingBox
+  createFeature() {
+    const boundingBox = this.model.getBoundingBox();
+    this.boundingBoxLayer.addFeatures([boundingBox]);
+    return this.transform.setFeature(boundingBox);
+  },
 
-  handleDrawnFeature: (obj) ->
-    do @drawing.deactivate
-    do @transform.activate
-    @transform.setFeature obj.feature
-    @handleTransformedFeature(obj)
+  handleDrawnFeature(obj) {
+    (this.drawing.deactivate)();
+    (this.transform.activate)();
+    this.transform.setFeature(obj.feature);
+    return this.handleTransformedFeature(obj);
+  },
 
-  handleTransformedFeature: (obj) ->
-    bounds = obj.feature.geometry
+  handleTransformedFeature(obj) {
+    const bounds = obj.feature.geometry
       .clone()
       .transform('EPSG:3857', 'EPSG:4326')
-      .getBounds()
+      .getBounds();
 
-    @model.set
-      westBoundLongitude: bounds.left.toFixed 3
-      southBoundLatitude: bounds.bottom.toFixed 3
-      eastBoundLongitude: bounds.right.toFixed 3
-      northBoundLatitude: bounds.top.toFixed 3
+    return this.model.set({
+      westBoundLongitude: bounds.left.toFixed(3),
+      southBoundLatitude: bounds.bottom.toFixed(3),
+      eastBoundLongitude: bounds.right.toFixed(3),
+      northBoundLatitude: bounds.top.toFixed(3)
+    });
+  }
+  });
+ });

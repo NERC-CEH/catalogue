@@ -1,7 +1,12 @@
-define [
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
   'backbone'
-], (Backbone) -> Backbone.Collection.extend
-  ###
+], function(Backbone) { return Backbone.Collection.extend({
+  /*
   Moves an existing element in the the collection from position index 
   to newPosition. Any "position" listeners of this instance will be 
   notified with the arguments: 
@@ -9,8 +14,11 @@ define [
     collection - this Layers instance
     newPosition - the new position of the model
     oldPosition - the position the model was in
-  ###
-  position: (index, newPosition) ->
-    toMove = (@models.splice index, 1)[0]
-    @models.splice newPosition, 0, toMove
-    @trigger "position", toMove, @, newPosition, index
+  */
+  position(index, newPosition) {
+    const toMove = (this.models.splice(index, 1))[0];
+    this.models.splice(newPosition, 0, toMove);
+    return this.trigger("position", toMove, this, newPosition, index);
+  }
+});
+ });

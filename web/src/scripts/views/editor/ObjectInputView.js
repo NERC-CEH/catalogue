@@ -1,71 +1,91 @@
-define [
-  'underscore'
-  'jquery'
-  'backbone'
-  'cs!collections/Positionable'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'underscore',
+  'jquery',
+  'backbone',
+  'cs!collections/Positionable',
   'tpl!templates/editor/Validation.tpl'
-], (_, $, Backbone, Positionable, validationTemplate) -> Backbone.View.extend
+], function(_, $, Backbone, Positionable, validationTemplate) { return Backbone.View.extend({
 
-  events:
+  events: {
     'change': 'modify'
+  },
 
-  initialize: (options) ->
-    @data = options
-    @listenTo @model, 'remove', -> do @remove
-    @listenTo @model, 'change', (model) ->
-      $validation = @$('>.validation')
-      if model.isValid()
-        $validation.hide()
-      else
-        $validation.show()
-        $validationList = $('div.warnings', $validation)
-        $validationList.html ''
-        _.each model.validationError, (error) ->
-          $validationList.append $("<p>#{error.message}</p>")
-    do @render
+  initialize(options) {
+    this.data = options;
+    this.listenTo(this.model, 'remove', function() { return (this.remove)(); });
+    this.listenTo(this.model, 'change', function(model) {
+      const $validation = this.$('>.validation');
+      if (model.isValid()) {
+        return $validation.hide();
+      } else {
+        $validation.show();
+        const $validationList = $('div.warnings', $validation);
+        $validationList.html('');
+        return _.each(model.validationError, error => $validationList.append($(`<p>${error.message}</p>`)));
+      }
+    });
+    return (this.render)();
+  },
 
-  render: ->
-    @$el.html @template data:  _.extend {}, @data, @model.attributes
-    @$el.append validationTemplate()
-    @
+  render() {
+    this.$el.html(this.template({data:  _.extend({}, this.data, this.model.attributes)}));
+    this.$el.append(validationTemplate());
+    return this;
+  },
 
-  modify: (event) ->
-    $target = $(event.target)
-    name = $target.data('name')
-    value = $target.val()
+  modify(event) {
+    const $target = $(event.target);
+    const name = $target.data('name');
+    const value = $target.val();
 
-    if not value
-      @model.unset name
-    else
-      @model.set name, value
+    if (!value) {
+      this.model.unset(name);
+    } else {
+      this.model.set(name, value);
+    }
 
-    return false # disable bubbling
+    return false;
+  }, // disable bubbling
 
-  ###
+  /*
   Defines a sortable list view which is bound to a positionable collection.
   The supplied `view` callback function is required to generate a constructed
   child view element which will be renederd on to the list
-  ###
-  createList: (collection, selector, view)->
-    element = @$ selector
-    addView = => 
-      newView = view.apply @, arguments
-      element.append newView.el
+  */
+  createList(collection, selector, view){
+    const element = this.$(selector);
+    const addView = function() { 
+      const newView = view.apply(this, arguments);
+      return element.append(newView.el);
+    }.bind(this);
 
-    resetView = =>
-      do element.empty
-      collection.each addView, @
+    const resetView = () => {
+      (element.empty)();
+      return collection.each(addView, this);
+    };
 
-    @listenTo collection, 'add', addView
-    @listenTo collection, 'reset', resetView
+    this.listenTo(collection, 'add', addView);
+    this.listenTo(collection, 'reset', resetView);
 
-    pos = null
-    if !(@data.disabled == 'disabled')
-      element.sortable
-        start: (event, ui) =>
-          pos = ui.item.index()
-        update: (event, ui) =>
-          collection.position pos, ui.item.index()
+    let pos = null;
+    if (!(this.data.disabled === 'disabled')) {
+      element.sortable({
+        start: (event, ui) => {
+          return pos = ui.item.index();
+        },
+        update: (event, ui) => {
+          return collection.position(pos, ui.item.index());
+        }
+      });
+    }
 
-    do resetView
-    return collection
+    resetView();
+    return collection;
+  }
+});
+ });

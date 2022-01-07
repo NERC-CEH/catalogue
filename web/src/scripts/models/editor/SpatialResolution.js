@@ -1,24 +1,36 @@
-define [
-  'underscore'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'underscore',
   'backbone'
-], (_, Backbone) -> Backbone.Model.extend {
+], (_, Backbone) => Backbone.Model.extend({
 
 
-  validate: (attrs) ->
+  validate(attrs) {
 
-    errors = []
+    const errors = [];
 
-    equivalentScale = attrs.equivalentScale
-    distance = attrs.distance
+    const {
+      equivalentScale
+    } = attrs;
+    const {
+      distance
+    } = attrs;
 
-    if equivalentScale && distance
-      errors.push
-        message: "You can <b>EITHER</b> enter an Equivalent scale <b>OR</b> a Distance but not both."
+    if (equivalentScale && distance) {
+      errors.push({
+        message: "You can <b>EITHER</b> enter an Equivalent scale <b>OR</b> a Distance but not both."});
+    }
 
-    if _.isEmpty errors
-      # return nothing from Backbone.Model.validate
-      # because returning something signals a validation error.
-      return
-    else
-      return errors
-}
+    if (_.isEmpty(errors)) {
+      // return nothing from Backbone.Model.validate
+      // because returning something signals a validation error.
+      return;
+    } else {
+      return errors;
+    }
+  }
+}));

@@ -1,23 +1,27 @@
-define [
-  'backbone'
-  'dropzone'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'backbone',
+  'dropzone',
   'cs!models/upload/simple/File'
-], (Backbone, Dropzone, File) -> Backbone.View.extend
+], function(Backbone, Dropzone, File) { return Backbone.View.extend({
 
-  initialize: (options) ->
-    # Prevent Dropzone auto discovery
-    Dropzone.simpleUploadDropzone = false
-    # Enable Dropzone CSS styling
-    @$el.addClass('dropzone')
+  initialize(options) {
+    // Prevent Dropzone auto discovery
+    Dropzone.simpleUploadDropzone = false;
+    // Enable Dropzone CSS styling
+    this.$el.addClass('dropzone');
 
-    dropzone = new Dropzone(@el)
-    dropzone.on('success', (file) ->
-      options.messages.add(new Backbone.Model(message: "Uploaded: #{file.name}", type: 'info'))
-      options.files.add(new File({name: file.name}))
-    )
-    dropzone.on('error', (file, errorMessage) ->
-      options.messages.add(new Backbone.Model(errorMessage))
-    )
-    dropzone.on('complete', (file) ->
-      dropzone.removeFile(file)
-    )
+    const dropzone = new Dropzone(this.el);
+    dropzone.on('success', function(file) {
+      options.messages.add(new Backbone.Model({message: `Uploaded: ${file.name}`, type: 'info'}));
+      return options.files.add(new File({name: file.name}));
+    });
+    dropzone.on('error', (file, errorMessage) => options.messages.add(new Backbone.Model(errorMessage)));
+    return dropzone.on('complete', file => dropzone.removeFile(file));
+  }
+});
+ });

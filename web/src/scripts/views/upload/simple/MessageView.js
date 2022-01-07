@@ -1,15 +1,24 @@
-define [
-  'backbone'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'backbone',
   'tpl!templates/upload/simple/Message.tpl'
-], (Backbone, template) -> Backbone.View.extend
+], function(Backbone, template) { return Backbone.View.extend({
 
-  tagName: 'li'
+  tagName: 'li',
 
-  template: template
+  template,
 
-  initialize: ->
-    @.listenTo(@model, 'remove', @remove)
+  initialize() {
+    return this.listenTo(this.model, 'remove', this.remove);
+  },
 
-  render: ->
-    @$el.html(@template(@model.attributes))
-    @
+  render() {
+    this.$el.html(this.template(this.model.attributes));
+    return this;
+  }
+});
+ });

@@ -1,65 +1,90 @@
-define [
-  'underscore'
-  'cs!views/editor/SingleView'
-  'tpl!templates/editor/Parent.tpl'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'underscore',
+  'cs!views/editor/SingleView',
+  'tpl!templates/editor/Parent.tpl',
   'tpl!templates/editor/MultiString.tpl'
-], (_, SingleView, parentTemplate, childTemplate) -> SingleView.extend
+], function(_, SingleView, parentTemplate, childTemplate) { return SingleView.extend({
 
-  childTemplate: childTemplate
+  childTemplate,
 
-  events:
-    change: 'modify'
-    'click .remove': 'removeChild'
+  events: {
+    change: 'modify',
+    'click .remove': 'removeChild',
     'click .add': 'addChild'
+  },
 
-  initialize: (options) ->
-    SingleView.prototype.initialize.call @, options
-    @array = if @model.has @data.modelAttribute then _.clone @model.get @data.modelAttribute else []
-    do @render
+  initialize(options) {
+    SingleView.prototype.initialize.call(this, options);
+    this.array = this.model.has(this.data.modelAttribute) ? _.clone(this.model.get(this.data.modelAttribute)) : [];
+    (this.render)();
 
-    @$(".existing").sortable
-      start: (event, ui) =>
-        @_oldPosition = ui.item.index()
-      update: (event, ui) =>
-        toMove = (@array.splice @_oldPosition, 1)[0]
-        @array.splice ui.item.index(), 0, toMove
-        do @updateModel
+    return this.$(".existing").sortable({
+      start: (event, ui) => {
+        return this._oldPosition = ui.item.index();
+      },
+      update: (event, ui) => {
+        const toMove = (this.array.splice(this._oldPosition, 1))[0];
+        this.array.splice(ui.item.index(), 0, toMove);
+        return (this.updateModel)();
+      }
+    });
+  },
 
-  renderParent: ->
-        @$el.html parentTemplate data: @data
+  renderParent() {
+        return this.$el.html(parentTemplate({data: this.data}));
+      },
 
-  render: ->
-    do @renderParent
-    $attach = @$(".existing")
-    _.each @array, (string, index) =>
-      $attach.append @childTemplate data: _.extend {}, @data,
-        index: index
+  render() {
+    (this.renderParent)();
+    const $attach = this.$(".existing");
+    _.each(this.array, (string, index) => {
+      return $attach.append(this.childTemplate({data: _.extend({}, this.data, {
+        index,
         value: string
-    @
+      }
+      )
+      })
+      );
+    });
+    return this;
+  },
 
-  modify: (event) ->
-    $target = $(event.target)
-    index = $target.data('index')
-    value = $target.val()
-    @array.splice index, 1, value
-    do @updateModel
+  modify(event) {
+    const $target = $(event.target);
+    const index = $target.data('index');
+    const value = $target.val();
+    this.array.splice(index, 1, value);
+    return (this.updateModel)();
+  },
 
-  removeChild: (event) ->
-    do event.preventDefault
-    $target = $(event.currentTarget)
-    index = $target.data('index')
-    @array.splice index, 1
-    @$("#input#{ @data.modelAttribute}#{ index }").remove()
-    do @updateModel
+  removeChild(event) {
+    (event.preventDefault)();
+    const $target = $(event.currentTarget);
+    const index = $target.data('index');
+    this.array.splice(index, 1);
+    this.$(`#input${ this.data.modelAttribute}${ index }`).remove();
+    return (this.updateModel)();
+  },
 
-  addChild: (event) ->
-    do event.preventDefault
-    @array.push ""
-    index = @array.length - 1
-    @$(".existing").append @childTemplate data: _.extend {}, @data,
-      index: index
-    @$("#input#{ @data.modelAttribute}#{ index } input").focus()
-    do @updateModel
+  addChild(event) {
+    (event.preventDefault)();
+    this.array.push("");
+    const index = this.array.length - 1;
+    this.$(".existing").append(this.childTemplate({data: _.extend({}, this.data,
+      {index})
+    })
+    );
+    this.$(`#input${ this.data.modelAttribute}${ index } input`).focus();
+    return (this.updateModel)();
+  },
 
-  updateModel: ->
-    @model.set @data.modelAttribute, _.clone @array
+  updateModel() {
+    return this.model.set(this.data.modelAttribute, _.clone(this.array));
+  }
+});
+ });

@@ -1,12 +1,19 @@
-define [
-  'underscore'
-  'cs!views/editor/ObjectInputView'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'underscore',
+  'cs!views/editor/ObjectInputView',
   'tpl!templates/editor/MapReprojection.tpl'
-], (_, ObjectInputView, template) -> ObjectInputView.extend
+], function(_, ObjectInputView, template) { return ObjectInputView.extend({
 
-  template: template
+  template,
 
-  events: _.extend {}, ObjectInputView.prototype.events,
-    'click button.remove': 'delete'
+  events: _.extend({}, ObjectInputView.prototype.events,
+    {'click button.remove': 'delete'}),
 
-  delete: -> @model.collection.remove @model
+  delete() { return this.model.collection.remove(this.model); }
+});
+ });

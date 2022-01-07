@@ -1,30 +1,40 @@
-define [
-  'underscore'
-  'cs!views/editor/ParentLargeView'
-  'tpl!templates/editor/PredefinedParent.tpl'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'underscore',
+  'cs!views/editor/ParentLargeView',
+  'tpl!templates/editor/PredefinedParent.tpl',
   'tpl!templates/editor/PredefinedParentDropdown.tpl'
-], (_, ParentLargeView, template, dropdownTemplate) -> ParentLargeView.extend
+], function(_, ParentLargeView, template, dropdownTemplate) { return ParentLargeView.extend({
 
-  events:
+  events: {
     'click .dropdown-menu': 'setPredefined'
+  },
 
-  render: ->
-    ParentLargeView.prototype.render.apply @
-    @$('button.add').replaceWith template data: @data
-    @$('button').prop @data.disabled, @data.disabled
-    $dropdown = @$('ul.dropdown-menu')
-    _.chain(@data.predefined)
+  render() {
+    ParentLargeView.prototype.render.apply(this);
+    this.$('button.add').replaceWith(template({data: this.data}));
+    this.$('button').prop(this.data.disabled, this.data.disabled);
+    const $dropdown = this.$('ul.dropdown-menu');
+    _.chain(this.data.predefined)
     .keys()
-    .each (item) ->
-      $dropdown.append dropdownTemplate predefined: item
-    @
+    .each(item => $dropdown.append(dropdownTemplate({predefined: item})));
+    return this;
+  },
 
-  setPredefined: (event) ->
-    do event.preventDefault
-    value = $(event.target).text()
-    selected = {}
+  setPredefined(event) {
+    (event.preventDefault)();
+    const value = $(event.target).text();
+    let selected = {};
 
-    if value != 'Custom'
-      selected = @data.predefined[value]
+    if (value !== 'Custom') {
+      selected = this.data.predefined[value];
+    }
 
-    @collection.add selected
+    return this.collection.add(selected);
+  }
+});
+ });

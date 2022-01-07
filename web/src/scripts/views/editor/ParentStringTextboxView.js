@@ -1,9 +1,17 @@
-define [
-  'cs!views/editor/ParentStringView'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'cs!views/editor/ParentStringView',
   'tpl!templates/editor/MultiStringTextbox.tpl'
-], (ParentStringView, childTemplate) -> ParentStringView.extend
+], function(ParentStringView, childTemplate) { return ParentStringView.extend({
 
-  childTemplate: childTemplate
+  childTemplate,
 
-  initialize: (options) ->
-    ParentStringView.prototype.initialize.call @, options
+  initialize(options) {
+    return ParentStringView.prototype.initialize.call(this, options);
+  }
+});
+ });

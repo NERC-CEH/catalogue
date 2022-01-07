@@ -1,17 +1,28 @@
-define [
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
   'backbone'
-], (Backbone) -> Backbone.Model.extend
+], function(Backbone) { return Backbone.Model.extend({
 
-  defaults:
+  defaults: {
     value: ''
+  },
 
-  uris:
-    dataset: 'http://inspire.ec.europa.eu/metadata-codelist/ResourceType/dataset'
-    series: 'http://inspire.ec.europa.eu/metadata-codelist/ResourceType/series'
+  uris: {
+    dataset: 'http://inspire.ec.europa.eu/metadata-codelist/ResourceType/dataset',
+    series: 'http://inspire.ec.europa.eu/metadata-codelist/ResourceType/series',
     service: 'http://inspire.ec.europa.eu/metadata-codelist/ResourceType/services'
+  },
 
-  initialize: ->
-    @on 'change:value', @updateUri
+  initialize() {
+    return this.on('change:value', this.updateUri);
+  },
 
-  updateUri: (model, value) ->
-    @set 'uri', if @uris[value] then @uris[value] else ''
+  updateUri(model, value) {
+    return this.set('uri', this.uris[value] ? this.uris[value] : '');
+  }
+});
+ });

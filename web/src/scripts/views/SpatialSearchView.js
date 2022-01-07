@@ -1,66 +1,89 @@
-define [
-  'jquery'
-  'underscore'
-  'cs!views/ExtentHighlightingMapView'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS103: Rewrite code to no longer use __guard__, or convert again using --optional-chaining
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'jquery',
+  'underscore',
+  'cs!views/ExtentHighlightingMapView',
   'openlayers'
-], ($, _, ExtentHighlightingMapView, OpenLayers) -> ExtentHighlightingMapView.extend
-  restriction:
-    strokeColor: '#1c1b1e'
+], function($, _, ExtentHighlightingMapView, OpenLayers) { return ExtentHighlightingMapView.extend({
+  restriction: {
+    strokeColor: '#1c1b1e',
     fillOpacity: 0
+  },
 
-  initialize: ->
-    ExtentHighlightingMapView.prototype.initialize.call this, arguments #Initialize super
+  initialize() {
+    ExtentHighlightingMapView.prototype.initialize.call(this, arguments); //Initialize super
 
-    # Create the layers to draw the search results on
-    @drawingLayer = new OpenLayers.Layer.Vector "Drawing Layer", style: @restriction
+    // Create the layers to draw the search results on
+    this.drawingLayer = new OpenLayers.Layer.Vector("Drawing Layer", {style: this.restriction});
 
-    @drawingControl = new OpenLayers.Control.DrawFeature @drawingLayer, 
-      OpenLayers.Handler.RegularPolygon, 
-      handlerOptions:
+    this.drawingControl = new OpenLayers.Control.DrawFeature(this.drawingLayer, 
+      OpenLayers.Handler.RegularPolygon, { 
+      handlerOptions: {
         sides: 4,
         irregular: true
+      }
+    }
+    );
 
-    # Bind the handle drawn feature method to this class before registering it
-    # as an openlayers event listener
-    _.bindAll this, 'handleDrawnFeature'
-    @drawingLayer.events.register "featureadded", @drawingLayer, @handleDrawnFeature
+    // Bind the handle drawn feature method to this class before registering it
+    // as an openlayers event listener
+    _.bindAll(this, 'handleDrawnFeature');
+    this.drawingLayer.events.register("featureadded", this.drawingLayer, this.handleDrawnFeature);
 
-    @map.addLayer  @drawingLayer
-    @map.addControl @drawingControl
+    this.map.addLayer(this.drawingLayer);
+    this.map.addControl(this.drawingControl);
 
-    do @updateHighlightedRecord
-    @listenTo @model, 'cleared:results results-change:selected', @updateHighlightedRecord
-    @listenTo @model, 'change:drawing', @updateDrawingMode
-    @listenTo @model, 'change:bbox', @updateDrawingLayer
+    (this.updateHighlightedRecord)();
+    this.listenTo(this.model, 'cleared:results results-change:selected', this.updateHighlightedRecord);
+    this.listenTo(this.model, 'change:drawing', this.updateDrawingMode);
+    return this.listenTo(this.model, 'change:bbox', this.updateDrawingLayer);
+  },
 
-  ###
+  /*
   Update the drawing layer with the restricted bounding box used for searching.
-  ###
-  updateDrawingLayer: ->
-    do @drawingLayer.removeAllFeatures # Remove all the drawn features
-    if @model.has 'bbox'               # Draw the bbox if specified
-      @drawingLayer.addFeatures @readWKT @model.get 'bbox'
+  */
+  updateDrawingLayer() {
+    (this.drawingLayer.removeAllFeatures)(); // Remove all the drawn features
+    if (this.model.has('bbox')) {               // Draw the bbox if specified
+      return this.drawingLayer.addFeatures(this.readWKT(this.model.get('bbox')));
+    }
+  },
 
 
-  ###
+  /*
   Toggle the drawing control depending on weather or not the model is in 
   drawing mode
-  ###
-  updateDrawingMode:->
-    mode = if @model.get('drawing') then 'activate' else 'deactivate'
-    do @drawingControl[mode]
+  */
+  updateDrawingMode() {
+    const mode = this.model.get('drawing') ? 'activate' : 'deactivate';
+    return (this.drawingControl[mode])();
+  },
 
-  ###
+  /*
   Obtain the drawn bounding box from the drawing layer and register it as a new
   bounding box to search within on the model
-  ###
-  handleDrawnFeature: (evt) ->
-    feature = evt.feature.clone() #clone the feature so we can perform a transformation
-    feature.geometry.transform @map.getProjectionObject(), @epsg4326 #convert to 4326
-    @model.set 'bbox', feature.geometry.toString()
+  */
+  handleDrawnFeature(evt) {
+    const feature = evt.feature.clone(); //clone the feature so we can perform a transformation
+    feature.geometry.transform(this.map.getProjectionObject(), this.epsg4326); //convert to 4326
+    return this.model.set('bbox', feature.geometry.toString());
+  },
 
-  ###
+  /*
   Set the highlighted records based upon the current search result's locations
-  ###
-  updateHighlightedRecord: ->
-    @setHighlighted @model.getResults()?.getSelectedResult()?.locations if @model.getResults()?.getSelectedResult()?.locations?
+  */
+  updateHighlightedRecord() {
+    if (__guard__(__guard__(this.model.getResults(), x1 => x1.getSelectedResult()), x => x.locations) != null) { return this.setHighlighted(__guard__(__guard__(this.model.getResults(), x3 => x3.getSelectedResult()), x2 => x2.locations)); }
+  }
+});
+ });
+
+function __guard__(value, transform) {
+  return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+}

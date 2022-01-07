@@ -1,17 +1,26 @@
-define [
-  'cs!views/editor/InputView'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'cs!views/editor/InputView',
   'tpl!templates/editor/Checkbox.tpl'
-], (InputView, template) -> InputView.extend
+], function(InputView, template) { return InputView.extend({
 
-  template: template
+  template,
 
-  render: ->
-    InputView.prototype.render.apply @
-    @$('[type="checkbox"]').prop 'checked', @model.get @data.modelAttribute
-    @
+  render() {
+    InputView.prototype.render.apply(this);
+    this.$('[type="checkbox"]').prop('checked', this.model.get(this.data.modelAttribute));
+    return this;
+  },
 
-  modify: (event) ->
-    $target = $ event.target
-    name = $target.data 'name'
-    value = $target.prop 'checked'
-    @model.set name, value
+  modify(event) {
+    const $target = $(event.target);
+    const name = $target.data('name');
+    const value = $target.prop('checked');
+    return this.model.set(name, value);
+  }
+});
+ });

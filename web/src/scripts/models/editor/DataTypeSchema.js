@@ -1,13 +1,23 @@
-define [
-  'backbone'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'backbone',
   'underscore'
-], (Backbone, _) -> Backbone.Model.extend
+], function(Backbone, _) { return Backbone.Model.extend({
 
-  defaults:
+  defaults: {
     constraints: {}
+  },
 
-  toJSON: ->
-    if _.isEmpty @get 'constraints'
-      return _.omit @attributes, 'constraints'
-    else
-      return _.clone @attributes
+  toJSON() {
+    if (_.isEmpty(this.get('constraints'))) {
+      return _.omit(this.attributes, 'constraints');
+    } else {
+      return _.clone(this.attributes);
+    }
+  }
+});
+ });

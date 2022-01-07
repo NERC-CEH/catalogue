@@ -1,40 +1,56 @@
-define [
-  'underscore'
-  'backbone'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'underscore',
+  'backbone',
   'tpl!templates/editor/ChildLarge.tpl'
-], (_, Backbone, template) -> Backbone.View.extend
+], function(_, Backbone, template) { return Backbone.View.extend({
 
-  className: 'row'
+  className: 'row',
 
-  events:
-    'click button.remove': 'delete'
+  events: {
+    'click button.remove': 'delete',
     'click button.showhide': 'showhide'
+  },
 
-  initialize: (options) ->
-    @data = options
-    @listenTo @model, 'remove', -> do @remove
-    @listenTo @model, 'showhide', -> do @showhide
-    @index = @model.collection.indexOf @model
-    do @render
-    new @data.ObjectInputView _.extend {}, @data,
-      el: @$('.dataentry')
-      model: @model
-      index: @index
+  initialize(options) {
+    this.data = options;
+    this.listenTo(this.model, 'remove', function() { return (this.remove)(); });
+    this.listenTo(this.model, 'showhide', function() { return (this.showhide)(); });
+    this.index = this.model.collection.indexOf(this.model);
+    (this.render)();
+    return new this.data.ObjectInputView(_.extend({}, this.data, {
+      el: this.$('.dataentry'),
+      model: this.model,
+      index: this.index
+    }
+    )
+    );
+  },
 
-  render: ->
-    @$el.html template index: @index, data: @data
-    @
+  render() {
+    this.$el.html(template({index: this.index, data: this.data}));
+    return this;
+  },
 
-  delete: ->
-    @model.collection.remove @model
+  delete() {
+    return this.model.collection.remove(this.model);
+  },
 
-  showhide: ->
-    if @$('.extended').hasClass('hidden') 
-      @$('.extended').removeClass 'hidden'
-      @$('.showhide span').removeClass 'fa-chevron-down'
-      @$('.showhide span').addClass 'fa-chevron-up'
-    else
-      @$('.extended').addClass 'hidden'
-      @$('.showhide span').removeClass 'fa-chevron-up'
-      @$('.showhide span').addClass 'fa-chevron-down'
+  showhide() {
+    if (this.$('.extended').hasClass('hidden')) { 
+      this.$('.extended').removeClass('hidden');
+      this.$('.showhide span').removeClass('fa-chevron-down');
+      return this.$('.showhide span').addClass('fa-chevron-up');
+    } else {
+      this.$('.extended').addClass('hidden');
+      this.$('.showhide span').removeClass('fa-chevron-up');
+      return this.$('.showhide span').addClass('fa-chevron-down');
+    }
+  }
+});
+ });
 

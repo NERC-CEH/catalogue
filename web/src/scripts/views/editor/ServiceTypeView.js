@@ -1,12 +1,20 @@
-define [
-  'cs!views/editor/ObjectInputView'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'cs!views/editor/ObjectInputView',
   'tpl!templates/editor/ServiceType.tpl'
-], (ObjectInputView, template) -> ObjectInputView.extend
+], function(ObjectInputView, template) { return ObjectInputView.extend({
 
-  template: template
+  template,
 
-  className: 'component component--servicetype visible'
+  className: 'component component--servicetype visible',
 
-  render: ->
-    ObjectInputView.prototype.render.apply @
-    @$('select').val @model.get @data.modelAttribute
+  render() {
+    ObjectInputView.prototype.render.apply(this);
+    return this.$('select').val(this.model.get(this.data.modelAttribute));
+  }
+});
+ });

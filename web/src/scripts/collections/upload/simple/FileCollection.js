@@ -1,10 +1,18 @@
-define [
-  'backbone'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'backbone',
   'cs!models/upload/simple/File'
-], (Backbone, File) -> Backbone.Collection.extend
-    model: File
+], function(Backbone, File) { return Backbone.Collection.extend({
+    model: File,
 
-    comparator: 'name'
+    comparator: 'name',
 
-    initialize: (options) ->
-      @url = options.url
+    initialize(options) {
+      return this.url = options.url;
+    }
+});
+ });

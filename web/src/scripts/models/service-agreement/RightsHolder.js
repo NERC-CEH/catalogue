@@ -1,48 +1,67 @@
-define [
-  'backbone'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'backbone',
   'underscore'
-], (Backbone, _) -> Backbone.Model.extend
+], function(Backbone, _) { return Backbone.Model.extend({
 
-  defaults:
+  defaults: {
     address: {}
+  },
 
-  validate: (attrs) ->
+  validate(attrs) {
 
-    rorRegEx = ///
-      ^https?:\/\/ror.org\/\w{8,10}$
-    ///
+    const rorRegEx = new RegExp(`\
+^https?:\\/\\/ror.org\\/\\w{8,10}$\
+`);
 
-    errors = []
+    const errors = [];
 
-    organisationName = attrs.organisationName
-    organisationIdentifier =attrs.organisationIdentifier
+    const {
+      organisationName
+    } = attrs;
+    const {
+      organisationIdentifier
+    } = attrs;
 
-    isValidROR = (id) ->
-      rorRegEx.test id
+    const isValidROR = id => rorRegEx.test(id);
 
-    if organisationIdentifier && !isValidROR organisationIdentifier
-      errors.push
+    if (organisationIdentifier && !isValidROR(organisationIdentifier)) {
+      errors.push({
         message:
           "That RoR is invalid "
+      });
+    }
 
-    if ! organisationName
-      errors.push
-        message: "Affiliation (organisation name) is  mandatory."
+    if (!organisationName) {
+      errors.push({
+        message: "Affiliation (organisation name) is  mandatory."});
+    }
 
-    if _.isEmpty errors
-      # return nothing from Backbone.Model.validate
-      # because returning something signals a validation error.
-      return
-    else
-      return errors
+    if (_.isEmpty(errors)) {
+      // return nothing from Backbone.Model.validate
+      // because returning something signals a validation error.
+      return;
+    } else {
+      return errors;
+    }
 
-    if _.isEmpty warnings
-      return
-    else
-      return warnings
+    if (_.isEmpty(warnings)) {
+      return;
+    } else {
+      return warnings;
+    }
+  },
 
-  toJSON: ->
-    if _.isEmpty @get 'address'
-      return _.omit @attributes, 'address'
-    else
-      return _.clone @attributes
+  toJSON() {
+    if (_.isEmpty(this.get('address'))) {
+      return _.omit(this.attributes, 'address');
+    } else {
+      return _.clone(this.attributes);
+    }
+  }
+});
+ });
