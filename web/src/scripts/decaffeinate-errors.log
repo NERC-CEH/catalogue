@@ -1,0 +1,28 @@
+===== /home/thosta/Documents/GitHub/catalogue/web/src/scripts/views/DataTypeEditorView.coffee
+/usr/local/lib/node_modules/decaffeinate/dist/cli.js:307
+        throw err;
+        ^
+
+Error: unexpected EOF while in context PAREN
+    at BufferedStream.step [as _getNextLocation] (/usr/local/lib/node_modules/decaffeinate/node_modules/coffee-lex/dist/index.js:763:31)
+    at BufferedStream.shift (/usr/local/lib/node_modules/decaffeinate/node_modules/coffee-lex/dist/utils/BufferedStream.js:9:45)
+    at /usr/local/lib/node_modules/decaffeinate/node_modules/coffee-lex/dist/utils/BufferedStream.js:19:30
+    at Array.every (<anonymous>)
+    at BufferedStream.hasNext (/usr/local/lib/node_modules/decaffeinate/node_modules/coffee-lex/dist/utils/BufferedStream.js:18:28)
+    at Object.calculateNormalStringPadding [as default] (/usr/local/lib/node_modules/decaffeinate/node_modules/coffee-lex/dist/utils/calculateNormalStringPadding.js:16:16)
+    at Object.lex [as default] (/usr/local/lib/node_modules/decaffeinate/node_modules/coffee-lex/dist/index.js:42:78)
+    at sourceLex (/usr/local/lib/node_modules/decaffeinate/node_modules/decaffeinate-parser/dist/parser.js:19:39)
+    at Function.ParseContext.fromSource (/usr/local/lib/node_modules/decaffeinate/node_modules/decaffeinate-parser/dist/util/ParseContext.js:94:32)
+    at Object.parse (/usr/local/lib/node_modules/decaffeinate/node_modules/decaffeinate-parser/dist/parser.js:21:45)
+    at Function.DecaffeinateContext.create (/usr/local/lib/node_modules/decaffeinate/dist/utils/DecaffeinateContext.js:21:45)
+    at Function.TransformCoffeeScriptStage.run (/usr/local/lib/node_modules/decaffeinate/dist/stages/TransformCoffeeScriptStage.js:22:53)
+    at runStage (/usr/local/lib/node_modules/decaffeinate/dist/index.js:97:22)
+    at /usr/local/lib/node_modules/decaffeinate/dist/index.js:89:18
+    at Array.forEach (<anonymous>)
+    at runStages (/usr/local/lib/node_modules/decaffeinate/dist/index.js:88:12)
+    at Object.convert (/usr/local/lib/node_modules/decaffeinate/dist/index.js:61:18)
+    at runWithCode (/usr/local/lib/node_modules/decaffeinate/dist/cli.js:299:28)
+    at ReadStream.<anonymous> (/usr/local/lib/node_modules/decaffeinate/dist/cli.js:281:42)
+    at ReadStream.emit (node:events:390:28)
+    at endReadableNT (node:internal/streams/readable:1343:12)
+    at processTicksAndRejections (node:internal/process/task_queues:83:21)
