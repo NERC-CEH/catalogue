@@ -2,7 +2,8 @@ define [
   'underscore'
   'backbone'
   'openlayers'
-], (_, Backbone, Openlayers) -> Backbone.Model.extend {
+  'leaflet'
+], (_, Backbone, Openlayers,Leaflet) -> Backbone.Model.extend {
 
   hasBoundingBox: ->
     return @has('westBoundLongitude') &&
@@ -19,6 +20,10 @@ define [
         @get('northBoundLatitude'))
       .toGeometry().transform('EPSG:4326', 'EPSG:3857')
     )
+
+  getBoundingBoxLeaflet: ->
+    bounds = [[@get('westBoundLongitude'), @get('southBoundLatitude')], [@get('eastBoundLongitude'), @get('northBoundLatitude')]];
+    return L.rectangle(bounds, {color: "#ff7800", weight: 1});
 
   validate: (attrs) ->
     labels =

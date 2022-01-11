@@ -21,6 +21,7 @@
     "requirejs-text": "2.0.14",
     "requirejs-tpl": "*",
     "respond": "1.4.2",
-    "underscore": "1.11.0"
+    "underscore": "1.11.0",
+    "leaflet": "^1.7.1"
   }
 }
