@@ -3,6 +3,7 @@ FROM node:15.11.0-stretch AS build-web
 WORKDIR /app
 COPY --chown=1000:1000 web/src/less src/less
 COPY --chown=1000:1000 web/src/scripts src/scripts
+COPY --chown=1000:1000 web/src/permission src/dist
 COPY --chown=1000:1000 web/.bowerrc .
 COPY --chown=1000:1000 web/bower.json .
 COPY --chown=1000:1000 web/Gruntfile.js .

@@ -13,3 +13,4 @@
 !web/Gruntfile.js
 !web/package.json
 !web/package-lock.json
+!web/src/permission/dist
