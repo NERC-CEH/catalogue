@@ -1,63 +1,85 @@
-define [
-  'underscore'
-  'backbone'
-  'tpl!templates/Permission.tpl'
-  'cs!views/IdentityPermissionView'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'underscore',
+  'backbone',
+  'tpl!templates/Permission.tpl',
+  'cs!views/IdentityPermissionView',
   'cs!models/IdentityPermission'
-], (_, Backbone, template, IdentityPermissionView, IdentityPermission) -> Backbone.View.extend
-  el: '.permission'
+], function(_, Backbone, template, IdentityPermissionView, IdentityPermission) { return Backbone.View.extend({
+  el: '.permission',
 
-  events:
-    'click #permissionSave': 'save'
+  events: {
+    'click #permissionSave': 'save',
     'click #permissionAdd': 'add'
+  },
 
-  initialize: ->
-    @listenTo @model, 'sync', @reload
-    @listenTo @model, 'permission:add', @addAll
-    @listenTo @model, 'permission:remove', @addAll
-    @listenTo @model, 'save:success', @leave
+  initialize() {
+    this.listenTo(this.model, 'sync', this.reload);
+    this.listenTo(this.model, 'permission:add', this.addAll);
+    this.listenTo(this.model, 'permission:remove', this.addAll);
+    return this.listenTo(this.model, 'save:success', this.leave);
+  },
 
-  save: ->
-    @model.save {},
-      success: =>
-        @model.trigger 'save:success', "Save successful"
-      error: (model, response) =>
-        @model.trigger 'save:error', "Error saving permission: #{response.status} (#{response.statusText})"
+  save() {
+    return this.model.save({}, {
+      success: () => {
+        return this.model.trigger('save:success', "Save successful");
+      },
+      error: (model, response) => {
+        return this.model.trigger('save:error', `Error saving permission: ${response.status} (${response.statusText})`);
+      }
+    }
+    );
+  },
 
-  addOne: (permission) ->
-    _.extend permission, parent: @model
-    view = new IdentityPermissionView model: permission
-    @$('tbody').append view.render().el
+  addOne(permission) {
+    _.extend(permission, {parent: this.model});
+    const view = new IdentityPermissionView({model: permission});
+    return this.$('tbody').append(view.render().el);
+  },
 
-  addAll: ->
-    @$('tbody').html('')
-    @model.get('permissions').each @addOne, @
+  addAll() {
+    this.$('tbody').html('');
+    return this.model.get('permissions').each(this.addOne, this);
+  },
 
-  render: ->
-    @$el.html template @model.toJSON()
-    do @addAll
-    return @
+  render() {
+    this.$el.html(template(this.model.toJSON()));
+    (this.addAll)();
+    return this;
+  },
 
-  reload: ->
-    do @model.loadCollection
-    do @addAll
+  reload() {
+    (this.model.loadCollection)();
+    return (this.addAll)();
+  },
 
-  add: ->
-    identity = $('#identity').val()
-    if identity
-      permission = new IdentityPermission
-        identity: identity
-        canView: $('#canView').prop('checked')
-        canEdit: $('#canEdit').prop('checked')
-        canDelete: $('#canDelete').prop('checked')
+  add() {
+    const identity = $('#identity').val();
+    if (identity) {
+      const permission = new IdentityPermission({
+        identity,
+        canView: $('#canView').prop('checked'),
+        canEdit: $('#canEdit').prop('checked'),
+        canDelete: $('#canDelete').prop('checked'),
         canUpload: $('#canUpload').prop('checked')
-      @model.addPermission permission
+      });
+      this.model.addPermission(permission);
+    }
 
-    $('#identity').val ""
-    $('#canView').prop 'checked', false
-    $('#canEdit').prop 'checked', false
-    $('#canDelete').prop 'checked', false
-    $('#canUpload').prop 'checked', false
+    $('#identity').val("");
+    $('#canView').prop('checked', false);
+    $('#canEdit').prop('checked', false);
+    $('#canDelete').prop('checked', false);
+    return $('#canUpload').prop('checked', false);
+  },
 
-  leave: ->
-    window.location.assign "/documents/#{@model.get 'id'}/permission"
+  leave() {
+    return window.location.assign(`/documents/${this.model.get('id')}/permission`);
+  }
+});
+ });

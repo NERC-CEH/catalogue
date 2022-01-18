@@ -1,20 +1,31 @@
-define [
-  'backbone'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'backbone',
   'tpl!templates/IdentityPermission.tpl'
-], (Backbone, template) -> Backbone.View.extend
-  tagName: 'tr'
+], function(Backbone, template) { return Backbone.View.extend({
+  tagName: 'tr',
 
-  events:
-    'click button': 'removePermission'
+  events: {
+    'click button': 'removePermission',
     'click [type="checkbox"]': 'update'
+  },
 
-  removePermission: ->
-    @model.parent.removePermission @model
+  removePermission() {
+    return this.model.parent.removePermission(this.model);
+  },
 
-  update: (event) ->
-    permission = $(event.target).data('permission')
-    @model.set permission, not @model.get(permission)
+  update(event) {
+    const permission = $(event.target).data('permission');
+    return this.model.set(permission, !this.model.get(permission));
+  },
 
-  render: ->
-    @$el.html template @model.toJSON()
-    return @
+  render() {
+    this.$el.html(template(this.model.toJSON()));
+    return this;
+  }
+});
+ });
