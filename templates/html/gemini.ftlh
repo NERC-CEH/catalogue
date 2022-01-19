@@ -38,8 +38,8 @@
   <#assign
     referencedBy = func.filter(supplemental, "function", "isReferencedBy")
     supplementTo = func.filter(supplemental, "function", "isSupplementTo")
-    websites = func.filter(supplemental, "function", "website")
-    supOther = func.filter(supplemental, "function", "") + func.filter(supplemental, "function", "relatedArticle") + func.filter(supplemental, "function", "relatedDataset")
+    citations = func.filter(supplemental, "function", "isSupplementTo") + func.filter(supplemental, "function", "isReferencedBy")
+    supOther = func.filter(supplemental, "function", "") + func.filter(supplemental, "function", "website") + func.filter(supplemental, "function", "relatedArticle") + func.filter(supplemental, "function", "relatedDataset")
   >
 </#if>
 
@@ -113,6 +113,7 @@
                 <#include "document/_related.ftlh">
               <#-- END OF to be replaced -->
 
+              <#include "document/_citation_list.ftlh">
               <#include "document/_supplemental.ftlh">
               <#include "document/_contacts.ftlh">
 

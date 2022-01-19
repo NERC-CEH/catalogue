@@ -8,7 +8,7 @@
 <ul>
   <% _.each(results, function(facet) { %>
     <li>
-      <a href="<%=facet.url%>" title="<%=facet.name%> (<%=facet.count%>)"><%=facet.name%></a> <small class="facet-count">(<%=facet.count%>)</small>
+      <a href="<%=facet.url%>" title="<%=facet.name%> (<%=facet.count%>)"><%=facet.name%> <small class="facet-count">(<%=facet.count%>)</small></a>
 
       <% if(facet.active) { %>
         <a href="<%=facet.url%>" title="<%=facet.name%> (<%=facet.count%>)">

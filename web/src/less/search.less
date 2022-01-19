@@ -19,7 +19,7 @@
       height: auto; // Re allow height
       position: fixed;
       padding: 0;
-      top: @navbar-height + (@navbar-border-width * 2);
+      top: @navbar-height + @navbar-border-width;
       bottom: 0;
       left: 0;
       background-color: @filter-body-background; // @panel-bg;
@@ -32,14 +32,14 @@
     .header {
       height: @filter-heading-height;
       width: 100%;
-      background-color: @filter-heading-background ;//;@panel-default-heading-bg;
-      padding: 10px 15px;
+      background-color: @filter-heading-background; //;@panel-default-heading-bg;
+      padding: 15px;
 
       h3 {
         display: inline;
         margin: 0px;
         font-size: 1.3em;
-        color: @filter-heading-color;//@header-text;
+        color: @filter-heading-color; //@header-text;
         cursor: pointer;
         &:hover {
           text-decoration: underline;
@@ -62,6 +62,8 @@
         left: 0;
         right: 0;
         overflow-y: auto;
+        overflow-x: hidden;
+        scrollbar-width: thin /* Firefox only*/;
 
         // Style the facet panel
         padding-left: 1em;
@@ -74,7 +76,7 @@
             padding-bottom: 3px;
             .facet-count {
               margin-left: 0.5em;
-              color: lighten(@filter-body-link-colour,10%);
+              color: lighten(@filter-body-link-colour, 10%);
             }
 
             a {
@@ -86,6 +88,20 @@
         .facet {
           margin-bottom: 2em;
         }
+      }
+      /* For webkit browsers only*/
+      .facet-filter::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      .facet-filter::-webkit-scrollbar-track {
+        background: @brand-success;
+      }
+
+      .facet-filter::-webkit-scrollbar-thumb {
+        background-color: white;
+        border-radius: 20px;
+        border: 1px solid @brand-success;
       }
     }
 

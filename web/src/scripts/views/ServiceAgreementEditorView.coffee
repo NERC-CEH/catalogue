@@ -31,10 +31,11 @@ define [
   'cs!views/service-agreement/AuthorView'
   'cs!views/service-agreement/RightsHolderView'
   'cs!views/service-agreement/FileView'
+  'cs!views/service-agreement/SupportingDocView'
   'cs!views/service-agreement/EndUserLicenceView'
   'cs!views/editor/FundingView'
   'cs!models/editor/Funding'
-], (Backbone, _, EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, AccessLimitationView, AccessLimitation, InspireTheme, CategoryView, ResourceIdentifierView, DatasetReferenceDateView, Author, RightsHolder, OnlineResourceView, OnlineResource, ResourceConstraintView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, MapDataSource, ReadOnlyView, ParentStringView, BoundingBox, BoundingBoxView, TextOnlyView, AuthorView, RightsHolderView, FileView, EndUserLicenceView, FundingView, Funding) -> EditorView.extend
+], (Backbone, _, EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, AccessLimitationView, AccessLimitation, InspireTheme, CategoryView, ResourceIdentifierView, DatasetReferenceDateView, Author, RightsHolder, OnlineResourceView, OnlineResource, ResourceConstraintView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, MapDataSource, ReadOnlyView, ParentStringView, BoundingBox, BoundingBoxView, TextOnlyView, AuthorView, RightsHolderView, FileView, SupportingDocView, EndUserLicenceView, FundingView, Funding) -> EditorView.extend
 
   initialize: ->
     @delegate "click #exitWithoutSaving": "exit"
@@ -67,38 +68,18 @@ define [
           model: @model
           modelAttribute: 'eidcName'
           label: 'EIDC contact name'
-
-        new ReadOnlyView
-          model: @model
-          modelAttribute: 'eidcContactDetails'
-          label: "EIDC's contact details"
-
-        new ReadOnlyView
-          model: @model
-          modelAttribute: 'id'
-          label: 'Data identifier'
-
+        
         new TextOnlyView
           model: @model
-          label: 'Data retention'
-          text: """<p>The EIDC's policy is to assign a DOI to all deposited data; such data will be kept in perpetuity.  If a DOI is not required or there are any other exceptions to this policy, please state them below.</p>
+          text: """
+                <h3>Data identification and citation</h3>
+                <p><strong>PLEASE NOTE: once the dataset is published, the title and authors cannot be changed</strong><p>
                 """
 
-        new TextareaView
-          model: @model
-          modelAttribute: 'policyExceptions'
-          rows: 3
-      ]
-    ,
-
-      label: 'Data identification and citation'
-      title: 'Data identification and citation'
-      views: [
         new TextOnlyView
           model: @model
           label: 'Title'
           text: """<p>Provide a brief title that best describes the data resource, <strong>not</strong> the project or activity from which the data were derived. Include references to the subject, spatial and temporal aspects of the data resource. <a href='https://eidc.ac.uk/deposit/metadata/guidance' target='_blank' rel='noopener noreferrer' >Further guidance is available on our website</a>.</p>
-                <p><strong>Please note: once the dataset is published, the title cannot be changed</strong><p>
                 """
 
         new InputView
@@ -111,7 +92,6 @@ define [
           text: """<p>List authors below in the order in which they will appear in the citation.</p>
           <p>Author's names must be in the format <code>Surname &laquo;comma&raquo; Initial(s)</code>. For example, <code>Smith, K.P.</code> <strong>not</strong> <code>Kim P. Smith</code></p>
           <p>Authors' details will be published in a public data catalogue and held in EIDC systems.  UK law requires us to inform all individuals listed that they are being proposed as an author.  We therefore require a current, valid email address (or phone number) for all living authors.  Those without valid contact details are not eligible for authorship.  Please see our <a href='http://eidc.ceh.ac.uk/policies/privacy' target='_blank' rel='noopener noreferrer'>Privacy Notice</a> for further information</p>
-          <p><strong>Please note: once the dataset is published, the authors cannot be changed</strong><p>
           """
 
         new ParentView
@@ -125,6 +105,17 @@ define [
       label: 'The Data'
       title: 'The Data'
       views: [
+
+        new TextOnlyView
+          model: @model
+          label: 'Data retention'
+          text: """<p>The EIDC's policy is to assign a DOI to all deposited data; such data will be kept in perpetuity.  If a DOI is not required or there are any other exceptions to this policy, please state them below.</p>
+                """
+
+        new TextareaView
+          model: @model
+          modelAttribute: 'policyExceptions'
+          rows: 3
 
         new InputView
           model: @model
@@ -152,7 +143,7 @@ define [
 
         new TextareaView
           model: @model
-          label: 'Naming convention '
+          label: 'Naming convention'
           modelAttribute: 'fileNamingConvention'
           rows: 5
           helpText: """
@@ -184,26 +175,20 @@ define [
         new TextOnlyView
           model: @model
           label: 'Document(s) to be provided'
-          text: """<p>Please provide the title and file extension of document(s) you will provide to enable re-use of the data (see <a href="https://eidc.ac.uk/deposit/supportingDocumentation">https://eidc.ac.uk/deposit/supportingDocumentation</a>).</a>"""
-
-        new ParentStringView
-          model: @model
-          modelAttribute: 'supportingDocumentNames'
-
-        new TextOnlyView
-          model: @model
-          label: 'Content of supporting document(s)'
-          text: """<p>Describe the content of the documentation to be supplied.</p>
-                  <p>Mandatory elements are:</p>
+          text: """<p>Please provide the title and file extension of document(s) you will provide to enable re-use of the data (see <a href="https://eidc.ac.uk/deposit/supportingDocumentation">https://eidc.ac.uk/deposit/supportingDocumentation</a>).</a>
+                  <p>Describe the content of the documentation to be supplied. Mandatory elements are:</p>
                   <ul><li>Collection/generation methods</li><li>Nature and Units of recorded values</li><li>Quality control</li><li>Details of data structure</li></ul>
                   <p>Required elements (if appropriate) include:</p>
                   <ul><li>Experimental design/Sampling regime</li><li>Fieldwork and laboratory instrumentation</li><li>Calibration steps and values</li><li>Analytical methods</li><li>Any other information useful to the interpretation of the data</li></ul>
                 """
 
-        new TextareaView
+        new ParentView
           model: @model
-          modelAttribute: 'contentIncluded'
-          rows: 8
+          label: 'Supporting documnents'
+          modelAttribute: 'supportingDocs'
+          ObjectInputView: SupportingDocView
+          multiline: true
+
       ]
     ,
       label: 'Availability, access and licensing'
@@ -241,6 +226,7 @@ define [
         new InputView
           model: @model
           modelAttribute: 'availability'
+          typeAttribute: 'date'
 
         new TextareaView
           model: @model
@@ -274,6 +260,9 @@ define [
           label: 'Grants/awards used to generate this resource'
           ObjectInputView: FundingView
           predefined:
+            'NERC':
+              funderName: 'Natural Environment Research Council'
+              funderIdentifier: 'https://ror.org/02b5d8509'
             'BBSRC':
               funderName: 'Biotechnology and Biological Sciences Research Council'
               funderIdentifier: 'https://ror.org/00cwqg982'
@@ -292,9 +281,6 @@ define [
             'MRC':
               funderName: 'Medical Research Council'
               funderIdentifier: 'https://ror.org/03x94j517'
-            'NERC':
-              funderName: 'Natural Environment Research Council'
-              funderIdentifier: 'https://ror.org/02b5d8509'
             'STFC':
               funderName: 'Science and Technology Facilities Council'
               funderIdentifier: 'https://ror.org/057g20z61'
@@ -349,7 +335,7 @@ define [
         new TextareaView
           model: @model
           modelAttribute: 'description'
-          label: 'Description'
+          label: 'Description (min 100 characters)'
           rows: 12
           helpText: """
                     <p>The description should describe the data resource in question, NOT the project/activity which produced it.</p>

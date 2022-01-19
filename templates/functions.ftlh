@@ -117,7 +117,7 @@
         <#if contact.nameIdentifier?has_content && contact.nameIdentifier?matches("^http(|s)://orcid.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$") && showOrcid>
             <div class="nameIdentifier">
               <a href="${contact.nameIdentifier}" target="_blank" rel="noopener noreferrer" title="View this authors record on ORCID.org">
-                <img src="/static/img/orcid_16x16.png" alt="ORCID iD icon" title="ORCID iD">${contact.nameIdentifier}
+                <img src="/static/img/orcid_16x16.png" alt="ORCID iD icon" title="ORCID iD">&nbsp;${contact.nameIdentifier}
               </a>
             </div>
         </#if>
@@ -133,11 +133,10 @@
 
 </#macro>
 
-
 <#macro displaySupplemental supplement showName=false>
-    <div class="supplemental-item">
+    <div class="supplement">
         <#if showName = true &&  supplement.name?has_content>
-            <div class="supplemental-name">
+            <div class="supplement_name">
                 <#if supplement.url?has_content>
                     <a href="${supplement.url}" target="_blank" rel="noopener noreferrer" title="${supplement.url}">${supplement.name}</a>
                 <#else>
@@ -146,12 +145,12 @@
             </div>
         </#if>
         <#if supplement.description?has_content>
-            <div class="supplemental-description">
+            <div class="supplement_description">
                 ${supplement.description}
             </div>
         </#if>
         <#if (showName = false && supplement.url?has_content) || (showName && supplement.url?has_content && !supplement.name?has_content)>
-            <div class="supplemental-url">
+            <div class="supplement_url">
                 <a href="${supplement.url}" target='_blank' rel="noopener noreferrer">${supplement.url}</a>
             </div>
         </#if>

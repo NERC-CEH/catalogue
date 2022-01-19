@@ -3,19 +3,19 @@
 <#import "../../functions.ftlh" as func>
 
 <@skeleton.master title=title catalogue=catalogues.defaultCatalogue()>
-
-<#if isHistorical()>
-    <#assign mdclass="historical">
-<#else>
-    <#assign mdclass="">
-</#if>
+    <#if isHistorical()>
+        <#assign mdclass="historical">
+    <#else>
+        <#assign mdclass="">
+    </#if>
 
     <div id="metadata" class="serviceAgreement ${mdclass}">
         <div class="container" role="main">
 
-            <#if permission.userCanEdit(id) && !isHistorical()>
+            <#if permission.userCanEdit(id)>
+            <div class="text-right">
                 <div class="row hidden-print adminPanel" role="toolbar">
-                    <div class="text-right">
+                    <#if !isHistorical()>
                         <button type="button" class="btn btn-default edit-control" data-document-type="service-agreement">Edit</button>
                         <#list getModelLinks() as link>
                             <#if link.rel == 'history'>
@@ -26,20 +26,17 @@
                                 </form>
                             </#if>
                         </#list>
-                    </div>
-                </div>
-            <#elseif permission.userCanEdit(id) && isHistorical()>
-                <div class="row hidden-print adminPanel" role="toolbar">
-                    <div class="text-right">
+                    <#elseif  isHistorical()>
                         <#list getModelLinks() as link>
                             <#if link.title == 'History'>
                                 <a href="${link.href}" class="btn btn-default">${link.title}</a>
                             </#if>
                         </#list>
-                    </div>
+                    </#if>
                 </div>
+            </div>
             </#if>
-
+                
             <#if permission.userCanEdit(id) && !isHistorical()>
                 <#include "_serviceAgreementQualityReport.ftlh">
             </#if>
@@ -126,9 +123,9 @@
                     <p>This information will be used in discovery metadata for this dataset (the catalogue record).  <a href="#">See our policy on retention and use of personal data</a>.</p>
 
                     <#if authors?has_content && authors?size gt 0 >
-                         <@displayAuthors/>
+                        <@displayAuthors/>
                     <#else>
-                    <div class="error">NO AUTHORS LISTED</div>
+                    <div class="alert alert--error">NO AUTHORS LISTED</div>
                     </#if>
                 </div>
             </div>
@@ -145,17 +142,13 @@
 
                 <@displayData "Number of files to be deposited" fileNumber/>
 
-                <#if supportingDocumentNames?? && supportingDocumentNames?has_content>
-                    <@displaySupportingDocuments/>
-                </#if>
-
-                <#if contentIncluded??>
-                    <div class="keyvalue">
-                        <div class="key">Content of supporting document(s)</div>
-                        <div class="value">
-                            <@blocks.linebreaks contentIncluded!"" />
-                        </div>
-                    </div>
+                <#if supportingDocs?has_content && supportingDocs?size gt 0 >
+                    <#list supportingDocs as doc>
+                        <div>
+                            <strong>${doc.filename}</strong>
+                            <@blocks.linebreaks doc.content />
+                        </div> 
+                    </#list>
                 </#if>
 
                 <#if dataCategory?has_content>
@@ -242,9 +235,9 @@
                 <tbody>
                 <#items as author>
                     <tr>
-                        <td><#if author.individualName?has_content >${author.individualName}<#else><span class="error">missing</span></#if></td>
-                        <td><#if author.organisationName?has_content >${author.organisationName}<#else><span class="error">missing</span></#if></td>
-                        <td><#if author.email?has_content>${author.email}<#else><span class="error">missing</span></#if></td>
+                        <td><#if author.individualName?has_content >${author.individualName}<#else><span class="alert alert--error">missing</span></#if></td>
+                        <td><#if author.organisationName?has_content >${author.organisationName}<#else><span class="alert alert--error">missing</span></#if></td>
+                        <td><#if author.email?has_content>${author.email}<#else><span class="alert alert--error">missing</span></#if></td>
                         <td><#if author.nameIdentifier?has_content >${author.nameIdentifier}<#else><small class="text-muted">Not provided</small></#if></td>
                     </tr>
                 </#items>
@@ -269,9 +262,9 @@
             <tbody>
             <#items as file>
                 <tr>
-                    <td><#if file.name?has_content>${file.name}<#else><span class="error">missing</span></#if></td>
-                    <td><#if file.format?has_content>${file.format}<#else><span class="error">missing</span></#if></td>
-                    <td><#if file.size?has_content>${file.size}<#else><span class="error">missing</span></#if></td>
+                    <td><#if file.name?has_content>${file.name}<#else><span class="alert alert--error">missing</span></#if></td>
+                    <td><#if file.format?has_content>${file.format}<#else><span class="alert alert--error">missing</span></#if></td>
+                    <td><#if file.size?has_content>${file.size}<#else><span class="alert alert--error">missing</span></#if></td>
                 </tr>
             </#items>
             </tbody>

@@ -16,21 +16,21 @@
 
     <div id="section-serviceAgreementQuality" class="clearfix hidden-print">
         <div class="panel">
-            <div class=" quality_error">
+            <div>
                 <ul class="list-group">
                     <#if errors?? && errors?has_content>
                         <#list errors as error>
-                            <li class="list-group-item error">${error.test}</li>
+                            <li class="list-group-item alert alert--error">${error.test}</li>
                         </#list>       
                     </#if>
                     <#if warnings?? && warnings?has_content>
                         <#list warnings as warning>
-                            <li class="list-group-item warning">${warning.test}</li>
+                            <li class="list-group-item alert alert--warning">${warning.test}</li>
                         </#list>
                     </#if>
                     <#if infos?? && infos?has_content>
                         <#list infos as info>
-                            <li class="list-group-item info">${info.test}</li>
+                            <li class="list-group-item alert alert--info">${info.test}</li>
                         </#list>
                     </#if>
                 </ul>
