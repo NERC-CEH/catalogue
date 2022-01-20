@@ -1,14 +1,7 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
-define([
-  'backbone',
-  'tpl!templates/IdentityPermission.tpl'
-], function(Backbone, template) { return Backbone.View.extend({
+import Backbone from 'backbone'
+import template from "../templates/IdentityPermission.tpl";
+
+export var IdentityPermissionView = Backbone.View.extend({
   tagName: 'tr',
 
   events: {
@@ -30,4 +23,3 @@ define([
     return this;
   }
 });
- });

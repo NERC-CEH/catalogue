@@ -1,16 +1,8 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
-define([
-  'underscore',
-  'backbone',
-  'cs!collections/IdentityPermissions',
-  'cs!models/IdentityPermission'
-], function(_, Backbone, IdentityPermissions, IdentityPermission) { return Backbone.Model.extend({
+import Backbone from 'backbone'
+import _ from 'underscore'
+import {IdentityPermissions} from "../collections/IdentityPermissions";
+
+export var Permission = Backbone.Model.extend({
 
   url() {
     return (this.urlRoot)();
@@ -40,4 +32,3 @@ define([
     return this.trigger("permission:remove");
   }
 });
- });

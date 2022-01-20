@@ -1,14 +1,9 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
-define([
-  'backbone',
-  'cs!models/IdentityPermission'
-], (Backbone, IdentityPermission) => Backbone.Collection.extend({
+import Backbone from 'backbone'
+import {IdentityPermission} from "../models/IdentityPermission";
+
+export var IdentityPermissions = Backbone.Collection.extend({
+
   model: IdentityPermission,
   comparator: 'identity'
-}));
+
+});

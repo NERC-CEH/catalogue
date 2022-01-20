@@ -1,15 +1,8 @@
-// TODO: This file was created by bulk-decaffeinate.
-// Sanity-check the conversion and remove this comment.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
-define([
-  'underscore',
-  'backbone',
-  'cs!models/Permission'
-], function(_, Backbone, Permission) { return Backbone.Model.extend({
+import Backbone from 'backbone'
+import _ from 'underscore'
+import {Permission} from "../models/Permission";
+
+export var PermissionApp = Backbone.Model.extend({
 
   loadPermission(identifier) {
     const permission = new Permission({
@@ -32,4 +25,3 @@ define([
     return _.clone(this.get('permission'));
   }
 });
- });
