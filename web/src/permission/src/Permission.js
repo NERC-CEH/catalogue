@@ -1,6 +1,6 @@
 import Backbone from 'backbone'
 import _ from 'underscore'
-import {IdentityPermissions} from "../collections/IdentityPermissions";
+import {IdentityPermissions} from "./IdentityPermissions";
 
 export var Permission = Backbone.Model.extend({
 

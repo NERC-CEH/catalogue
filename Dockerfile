@@ -3,7 +3,6 @@ FROM node:15.11.0-stretch AS build-web
 WORKDIR /app
 COPY --chown=1000:1000 web/src/less src/less
 COPY --chown=1000:1000 web/src/scripts src/scripts
-COPY --chown=1000:1000 web/src/permission src/dist
 COPY --chown=1000:1000 web/.bowerrc .
 COPY --chown=1000:1000 web/bower.json .
 COPY --chown=1000:1000 web/Gruntfile.js .
@@ -38,6 +37,7 @@ COPY --from=build-java /app/build/libs/application/ ./
 COPY templates /opt/ceh-catalogue/templates
 COPY --from=build-web /app/src/css /opt/ceh-catalogue/static/css
 COPY web/src/img /opt/ceh-catalogue/static/img
+COPY web/src/permission/dist/main.js /opt/ceh-catalogue/static/scripts/main.js
 COPY --from=build-web /app/src/scripts/main-out.js /opt/ceh-catalogue/static/scripts/main-out.js
 COPY --from=build-web /app/src/scripts/upload-out.js /opt/ceh-catalogue/static/scripts/upload-out.js
 COPY --from=build-web /app/src/vendor/font-awesome-5/webfonts /opt/ceh-catalogue/static/vendor/font-awesome-5/webfonts

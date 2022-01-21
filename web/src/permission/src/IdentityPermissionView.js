@@ -1,5 +1,5 @@
 import Backbone from 'backbone'
-import template from "../templates/IdentityPermission.tpl";
+import template from "./IdentityPermission.tpl";
 
 export var IdentityPermissionView = Backbone.View.extend({
   tagName: 'tr',

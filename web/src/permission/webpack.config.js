@@ -1,10 +1,7 @@
 const HtmlWebPackPlugin = require('html-webpack-plugin')
 
 module.exports = {
-    devServer: {
-        host: '0.0.0.0',
-        port: 3000
-    },
+    mode: 'development',
     module: {
         rules: [
             {
@@ -24,7 +21,7 @@ module.exports = {
                 ]
             },
             {
-                test: /\.(png|svg|jpg|gif)$/,
+                test: /\.(png|svg|jpg|gif|tpl)$/,
                 use: [
                     'file-loader'
                 ]

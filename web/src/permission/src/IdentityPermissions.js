@@ -1,5 +1,5 @@
 import Backbone from 'backbone'
-import {IdentityPermission} from "../models/IdentityPermission";
+import {IdentityPermission} from "./IdentityPermission";
 
 export var IdentityPermissions = Backbone.Collection.extend({
 
