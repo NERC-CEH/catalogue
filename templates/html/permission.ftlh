@@ -1,6 +1,11 @@
 <#import "skeleton.ftlh" as skeleton>
 <#assign canEdit = permission.userCanEdit(id)>
-<@skeleton.master title="Permissions" catalogue=catalogues.retrieve(catalogue) scripts="/static/scripts/main.js">
+
+<#assign permissionScripts>
+  <script src="/static/scripts/main.js"></script>
+</#assign>
+
+<@skeleton.master title="Permissions" catalogue=catalogues.retrieve(catalogue) scripts=permissionScripts>
   <div id="metadata" class="container permission">
     <h2>Permissions</h2>
     <div>
