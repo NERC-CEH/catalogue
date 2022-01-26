@@ -21,7 +21,7 @@ COPY --chown=1000:1000 web/src/permission/src src
 COPY --chown=1000:1000 web/src/permission/package.json .
 COPY --chown=1000:1000 web/src/permission/package-lock.json .
 COPY --chown=1000:1000 web/src/permission/webpack.config.js .
-RUN npm install webpack --unsafe-perm -g && npm install && npm run build
+RUN npm install && npm run build
 
 # Build Java
 FROM gradle:7.2-jdk16 AS build-java
