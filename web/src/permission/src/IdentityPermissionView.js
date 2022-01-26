@@ -1,5 +1,6 @@
 import Backbone from 'backbone'
-import template from "./IdentityPermission.tpl";
+import tpl from "./IdentityPermission.tpl";
+import _ from "underscore/underscore-node.mjs";
 
 export var IdentityPermissionView = Backbone.View.extend({
   tagName: 'tr',
@@ -19,6 +20,7 @@ export var IdentityPermissionView = Backbone.View.extend({
   },
 
   render() {
+    const template = _.template(tpl);
     this.$el.html(template(this.model.toJSON()));
     return this;
   }

@@ -10,9 +10,8 @@ export var PermissionAppView = Backbone.View.extend({
   },
 
   render() {
-    const view = new PermissionView({
-     model: this.model.getPermission()});
-    (view.render)();
+    const view = new PermissionView({model: this.model.getPermission()});
+    view.render();
     return this;
   }
 });

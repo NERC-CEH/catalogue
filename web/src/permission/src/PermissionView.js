@@ -1,6 +1,6 @@
 import Backbone from 'backbone'
 import _ from 'underscore'
-import template from "./Permissions.tpl";
+import tpl from "./Permissions.tpl";
 import {IdentityPermissionView} from "./IdentityPermissionView";
 import {IdentityPermission} from "./IdentityPermission";
 
@@ -43,8 +43,9 @@ export var PermissionView = Backbone.View.extend({
   },
 
   render() {
+    const template = _.template(tpl);
     this.$el.html(template(this.model.toJSON()));
-    (this.addAll)();
+    this.addAll();
     return this;
   },
 

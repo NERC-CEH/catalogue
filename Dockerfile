@@ -14,16 +14,14 @@ RUN node_modules/.bin/grunt
 
 
 # Build Permission app (javascript & css)
-FROM node:15.11.0-stretch AS build-permissions
-WORKDIR /app
+FROM node:17.4.0 AS build-permissions
+WORKDIR web/src/permission
 COPY --chown=1000:1000 web/src/permission src/src
 COPY --chown=1000:1000 web/src/permission/src src
 COPY --chown=1000:1000 web/src/permission/package.json .
 COPY --chown=1000:1000 web/src/permission/package-lock.json .
 COPY --chown=1000:1000 web/src/permission/webpack.config.js .
-WORKDIR web/src/permission
-RUN npm install
-RUN npm run build
+RUN npm install webpack --unsafe-perm -g && npm install && npm run build
 
 # Build Java
 FROM gradle:7.2-jdk16 AS build-java
@@ -50,7 +48,7 @@ COPY --from=build-java /app/build/libs/application/ ./
 COPY templates /opt/ceh-catalogue/templates
 COPY --from=build-web /app/src/css /opt/ceh-catalogue/static/css
 COPY web/src/img /opt/ceh-catalogue/static/img
-COPY web/src/permission/dist/main.js /opt/ceh-catalogue/static/scripts/main.js
+COPY --from=build-permissions web/src/permission/dist/permission-app.js /opt/ceh-catalogue/static/scripts/permission-app.js
 COPY --from=build-web /app/src/scripts/main-out.js /opt/ceh-catalogue/static/scripts/main-out.js
 COPY --from=build-web /app/src/scripts/upload-out.js /opt/ceh-catalogue/static/scripts/upload-out.js
 COPY --from=build-web /app/src/vendor/font-awesome-5/webfonts /opt/ceh-catalogue/static/vendor/font-awesome-5/webfonts

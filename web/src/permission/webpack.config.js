@@ -12,7 +12,7 @@ module.exports = {
                 }
             },
             {
-                test: /\.html$/,
+                test: /\.(html|tpl)$/,
                 use: [
                     {
                         loader: "html-loader",
@@ -21,7 +21,7 @@ module.exports = {
                 ]
             },
             {
-                test: /\.(png|svg|jpg|gif|tpl)$/,
+                test: /\.(png|svg|jpg|gif)$/,
                 use: [
                     'file-loader'
                 ]
@@ -29,8 +29,11 @@ module.exports = {
         ]
     },
     devServer: {
-        port: 8081,
-        host: '0.0.0.0'
+        host: '0.0.0.0',
+        port: 8081
+    },
+    output: {
+        filename: "permission-app.js"
     },
     plugins: [
         new HtmlWebPackPlugin({
