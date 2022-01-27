@@ -10,9 +10,7 @@
         <button id="editorNext" class="btn btn-sm btn-default navbar-btn">Next <i class="fas fa-chevron-right"></i></button>
       </div>
         <button id="editorSave" class="btn btn-sm btn-default navbar-btn">Save <i class="far fa-save"></i></button>
-       <#if permission.userCanDelete(id)>
-          <button id="editorDelete" class="btn btn-sm btn-danger navbar-btn">Delete <i class="fas fa-times"></i></button>
-        </#if>
+        <button id="editorDelete" class="btn btn-sm btn-danger navbar-btn">Delete <i class="fas fa-times"></i></button>
       <button id="editorExit" class="btn btn-sm btn-default navbar-btn">Exit <i class="fas fa-power-off"></i></button>
     </div>
   </div>
