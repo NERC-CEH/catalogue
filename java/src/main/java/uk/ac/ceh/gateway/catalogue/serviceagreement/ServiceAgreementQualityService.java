@@ -133,19 +133,19 @@ public class ServiceAgreementQualityService {
         try {
             val lineage = parsed.read("$.lineage", String.class).trim();
             if (stringIsMissing(lineage)) {
-                Optional.of(toReturn.add(new MetadataCheck("Lineage is incomplete", INFO)));
+                Optional.of(toReturn.add(new MetadataCheck("Lineage is incomplete", ERROR)));
             }
         } catch (NullPointerException ex) {
-            toReturn.add(new MetadataCheck("Lineage is incomplete", INFO));
+            toReturn.add(new MetadataCheck("Lineage is incomplete", ERROR));
         }
 
         try {
             val description = parsed.read("$.description", String.class).trim();
             if (!stringIsMissing(description) && description.length() < 100)  {
-                Optional.of(toReturn.add(new MetadataCheck("Description is incomplete (minimum 100 characters)", INFO)));
+                Optional.of(toReturn.add(new MetadataCheck("Description is incomplete (minimum 100 characters)", ERROR)));
             } 
         } catch (NullPointerException ex) {
-            toReturn.add(new MetadataCheck("Description is incomplete (minimum 100 characters)", INFO));
+            toReturn.add(new MetadataCheck("Description is incomplete (minimum 100 characters)", ERROR));
         }
 
         if (toReturn.isEmpty()) {
@@ -189,7 +189,7 @@ public class ServiceAgreementQualityService {
         );
 
         if (owners.size() == 0) {
-            toReturn.add(new MetadataCheck("There are no IPR owners", INFO));
+            toReturn.add(new MetadataCheck("There are no IPR owners", ERROR));
         }
 
         if (owners.stream().anyMatch(owner -> fieldIsMissing(owner, "organisationName"))) {
@@ -213,7 +213,7 @@ public class ServiceAgreementQualityService {
         }
 
         if (isInvalidEmail(depositorContactDetails)) {
-            toReturn.add(new MetadataCheck(format("Depositor's email address is %s", depositorContactDetails), ERROR));
+            toReturn.add(new MetadataCheck(format("Depositor's email address is incorrect  (%s)", depositorContactDetails), ERROR));
         }
 
         if (toReturn.isEmpty()) {

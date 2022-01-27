@@ -137,7 +137,8 @@ public class ServiceAgreementQualityServiceTest {
         verify(documentReader).read(FOLDER + "test0", "meta");
     }
 
-    @Test
+/*
+     @Test
     public void checkAddressOrganisationName() {
         //given
         val addresses = new ArrayList<Map<String, String>>(Arrays.asList(
@@ -168,8 +169,9 @@ public class ServiceAgreementQualityServiceTest {
         //then
         assertTrue(actual);
     }
+ */
 
-    @Test
+     @Test
     public void checkAuthorCorrect() {
         //given
         val parsed = JsonPath.parse(getClass().getResourceAsStream("authorsRight.json"), this.config);

@@ -13,7 +13,9 @@
     <#assign errors = func.filter(problems, "severity", "ERROR")>
     <#assign warnings = func.filter(problems, "severity", "WARNING")>
     <#assign infos = func.filter(problems, "severity", "INFO")>
-
+    <#if errors?? && errors?has_content>
+        <div>This service agreement is incomplete and cannot be submitted until all errors are cleared</div>
+    </#if>
     <div id="section-serviceAgreementQuality" class="clearfix hidden-print">
         <div class="panel">
             <div>

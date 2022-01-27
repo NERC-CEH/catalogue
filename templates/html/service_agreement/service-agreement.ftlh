@@ -12,6 +12,11 @@
     <div id="metadata" class="serviceAgreement ${mdclass}">
         <div class="container" role="main">
 
+            <div class="title">
+                <div class="logo"></div>
+                <h1>EIDC Deposit Agreement for ${title!"NOT PROVIDED"}</h1>
+            </div>
+
             <#if permission.userCanEdit(id)>
             <div class="text-right">
                 <div class="row hidden-print adminPanel" role="toolbar">
@@ -44,15 +49,6 @@
             <#if isHistorical()>
                 <h1 class="text-red">Historic version<br><small><strong>IMPORTANT</strong> This is a historic version of this Service Agreement</small></h1>
             </#if>
-
-            <div class="title">
-                <div class="logo"></div>
-                <h1>EIDC Deposit Agreement for ${title!"NOT PROVIDED"}</h1>
-            </div>
-
-            <div class="depositReference">
-                <strong>Deposit reference</strong> <span>${depositReference!"NOT PROVIDED"}</span>
-            </div>
 
             <div class="terms">
                 <p>This document sets out your rights and responsibilities as depositor and ours as the data distributor.</p>
@@ -93,6 +89,10 @@
             </div>
 
             <div class="contactDetails">
+                <div class="keyvalue">
+                    <div class="key">Deposit reference</div>
+                    <div class="value"><span>${depositReference!"NOT PROVIDED"}</span></div>
+                </div>
                 <#if depositorName?? && depositorName!=''>
                     <div class="keyvalue">
                         <div class="key">Depositor</div>
@@ -143,12 +143,15 @@
                 <@displayData "Number of files to be deposited" fileNumber/>
 
                 <#if supportingDocs?has_content && supportingDocs?size gt 0 >
-                    <#list supportingDocs as doc>
-                        <div>
-                            <strong>${doc.filename}</strong>
-                            <@blocks.linebreaks doc.content />
-                        </div> 
-                    </#list>
+                    <div class="keyvalue">
+                        <div class="key">Supporting documents</div>
+                        <div class="value">
+                            <#list supportingDocs as doc>
+                                <div><i>${doc.filename}</i></div> 
+                                <div><@blocks.linebreaks doc.content /></div> 
+                            </#list>
+                        </div>
+                    </div>
                 </#if>
 
                 <#if dataCategory?has_content>

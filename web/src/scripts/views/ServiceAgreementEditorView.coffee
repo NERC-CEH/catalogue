@@ -31,11 +31,12 @@ define [
   'cs!views/service-agreement/AuthorView'
   'cs!views/service-agreement/RightsHolderView'
   'cs!views/service-agreement/FileView'
+  'cs!models/service-agreement/SupportingDoc'
   'cs!views/service-agreement/SupportingDocView'
   'cs!views/service-agreement/EndUserLicenceView'
   'cs!views/editor/FundingView'
   'cs!models/editor/Funding'
-], (Backbone, _, EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, AccessLimitationView, AccessLimitation, InspireTheme, CategoryView, ResourceIdentifierView, DatasetReferenceDateView, Author, RightsHolder, OnlineResourceView, OnlineResource, ResourceConstraintView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, MapDataSource, ReadOnlyView, ParentStringView, BoundingBox, BoundingBoxView, TextOnlyView, AuthorView, RightsHolderView, FileView, SupportingDocView, EndUserLicenceView, FundingView, Funding) -> EditorView.extend
+], (Backbone, _, EditorView, SingleObjectView, InputView, TextareaView, ParentView, PredefinedParentView, AccessLimitationView, AccessLimitation, InspireTheme, CategoryView, ResourceIdentifierView, DatasetReferenceDateView, Author, RightsHolder, OnlineResourceView, OnlineResource, ResourceConstraintView, DescriptiveKeywordView, DescriptiveKeyword, DistributionFormatView, DistributionFormat, MapDataSource, ReadOnlyView, ParentStringView, BoundingBox, BoundingBoxView, TextOnlyView, AuthorView, RightsHolderView, FileView, SupportingDoc, SupportingDocView, EndUserLicenceView, FundingView, Funding) -> EditorView.extend
 
   initialize: ->
     @delegate "click #exitWithoutSaving": "exit"
@@ -157,15 +158,17 @@ define [
           listAttribute: """
                   <option value='Upload via EIDC catalogue' />
                   """
+        
+        new TextOnlyView
+          model: @model
+          label: 'Data Category'
+          text: """<p>If the data are wholly or partly funded by NERC, the data must be categorised as either <strong>Environmental Data</strong> or <strong>Information Product</strong>.</p><p>Environmental data are '<i>individual items or records ... obtained by measurement, observation or modelling of the natural world... including all necessary calibration and quality control. This includes data generated through complex systems, such as ... models, including the model code used to produce the data.</i>' </p><p>Information Products are '<i>created by adding a level of intellectual input that refines or adds value to data through interpretation and/or combination with other data</i>'.</p>
+                """
 
         new SingleObjectView
           model: @model
           modelAttribute: 'dataCategory'
-          label: 'Data Category'
           ObjectInputView: CategoryView
-          helpText: """
-                    <p>This is only required for data funded by NERC</p>
-                    """
       ]
     ,
       label: 'Supporting documentation'
@@ -184,9 +187,10 @@ define [
 
         new ParentView
           model: @model
+          ModelType: SupportingDoc
           label: 'Supporting documnents'
           modelAttribute: 'supportingDocs'
-          ObjectInputView: SupportingDocView
+          ObjectInputView: SupportingDocView 
           multiline: true
 
       ]
