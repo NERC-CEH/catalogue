@@ -11,7 +11,7 @@ export var IdentityPermissionView = Backbone.View.extend({
   },
 
   initialize () {
-    this.model.set(_.template(template))
+    this.template = _.template(template)
   },
 
   removePermission () {
@@ -20,11 +20,11 @@ export var IdentityPermissionView = Backbone.View.extend({
 
   update (event) {
     const permission = $(event.target).data('permission')
-    return this.model.set(permission, !this.model.get(permission))
+    this.model.set(permission, !this.model.get(permission))
   },
 
   render () {
-    this.$el.html(this.model.attributes())
+    this.$el.html(this.model.attributes)
     return this
   }
 })

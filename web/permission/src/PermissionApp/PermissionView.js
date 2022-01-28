@@ -12,7 +12,7 @@ export var PermissionView = Backbone.View.extend({
   },
 
   initialize () {
-    this.model.set(_.template(template))
+    this.template = _.template(template)
     this.listenTo(this.model, 'sync', this.reload)
     this.listenTo(this.model, 'permission:add', this.addAll)
     this.listenTo(this.model, 'permission:remove', this.addAll)
@@ -20,12 +20,12 @@ export var PermissionView = Backbone.View.extend({
   },
 
   save () {
-    return this.model.save({}, {
+    this.model.save({}, {
       success: () => {
-        return this.model.trigger('save:success', 'Save successful')
+        this.model.trigger('save:success', 'Save successful')
       },
       error: (model, response) => {
-        return this.model.trigger('save:error', `Error saving permission: ${response.status} (${response.statusText})`)
+        this.model.trigger('save:error', `Error saving permission: ${response.status} (${response.statusText})`)
       }
     }
     )
@@ -34,23 +34,23 @@ export var PermissionView = Backbone.View.extend({
   addOne (permission) {
     _.extend(permission, { parent: this.model })
     const view = new IdentityPermissionView({ model: permission })
-    return this.$('tbody').append(view.render().el)
+    this.$('tbody').append(view.render().el)
   },
 
   addAll () {
     this.$('tbody').html('')
-    return this.model.get('permissions').each(this.addOne, this)
+    this.model.get('permissions').each(this.addOne, this)
   },
 
   render () {
-    this.$el.html(this.model.toJSON())
+    this.$el.html(this.model.attributes)
     this.addAll()
     return this
   },
 
   reload () {
-    (this.model.loadCollection)()
-    return (this.addAll)()
+    this.model.loadCollection()
+    this.addAll()
   },
 
   add () {
@@ -70,7 +70,7 @@ export var PermissionView = Backbone.View.extend({
     $('#canView').prop('checked', false)
     $('#canEdit').prop('checked', false)
     $('#canDelete').prop('checked', false)
-    return $('#canUpload').prop('checked', false)
+    $('#canUpload').prop('checked', false)
   },
 
   leave () {
