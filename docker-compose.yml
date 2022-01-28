@@ -23,6 +23,7 @@ services:
       - ./templates:/opt/ceh-catalogue/templates
       # Uncomment to work on styling (LESS) & javascript in Docker container
       #- ./web/src:/opt/ceh-catalogue/static
+      - .web/permission/dist:/opt/ceh-catalogue/permission/dist
     environment:
       - documents.baseUri=http://localhost:8080
       - doi.api=https://api.test.datacite.org/dois

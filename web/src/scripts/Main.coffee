@@ -14,9 +14,6 @@ define [
   'cs!models/EditorMetadata'
   'cs!views/GeminiEditorView'
   'cs!views/MonitoringEditorView'
-  'cs!models/PermissionApp'
-  'cs!routers/PermissionRouter'
-  'cs!views/PermissionAppView'
   'cs!models/Catalogue'
   'cs!views/CatalogueView'
   'cs!views/ChartView'
@@ -49,7 +46,7 @@ define [
   'cs!models/service-agreement/ServiceAgreement'
 ], (
     _, $, Backbone, Bootstrap, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter, SearchRouter,
-    EditorMetadata, GeminiEditorView, MonitoringEditorView, PermissionApp, PermissionRouter, PermissionAppView, Catalogue, CatalogueView,
+    EditorMetadata, GeminiEditorView, MonitoringEditorView, Catalogue, CatalogueView,
     ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata, CehModelEditorView, CehModelApplicationEditorView, OsdpAgentEditorView,
     OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
     OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, ErammpModelEditorView, NercModelEditorView, NercModelUseEditorView, ErammpDatacubeEditorView, UkemsDocumentEditorView,
@@ -77,7 +74,6 @@ define [
     do @initEditor if $('.edit-control').length
     do @initGeometryMap if $('#geometry-map').length
     do @initMapviewer if $('#mapviewer').length
-    do @initPermission if $('.permission').length
     do @initSearch if $('#search').length
     do @initServiceAgreement if $('.service-agreement').length
     do @initSimpleUpload if $('#simple-upload').length
@@ -257,16 +253,6 @@ define [
     app    = new MapViewerApp()
     view   = new MapViewerAppView model: app
     router = new LayersRouter model: app
-
-    @createMessageViewFor app
-
-  ###
-  Initialize the permission application
-  ###
-  initPermission: ->
-    app = new PermissionApp()
-    view = new PermissionAppView model: app
-    router = new PermissionRouter model: app
 
     @createMessageViewFor app
 

@@ -1,7 +1,12 @@
 <#import "skeleton.ftlh" as skeleton>
 <#assign canEdit = permission.userCanEdit(id)>
-<@skeleton.master title="Permissions" catalogue=catalogues.retrieve(catalogue)>
-  <div id="metadata" class="container permission">
+
+<#assign permissionScript>
+  <script src="/static/scripts/permission-app.js"></script>
+</#assign>
+
+<@skeleton.master title="Permissions" catalogue=catalogues.retrieve(catalogue) scripts=permissionScript>
+  <div id="metadata" data-id="${id}" class="container permission">
     <h2>Permissions</h2>
     <div>
       <p><i class="fas fa-info-circle fa-2x pull-right"></i> Amend permissions for users or groups.. For external users, the username is the email address with which they registered an account.<br>For UKCEH staff it is their login username <b>not</b> their email address.</p>
