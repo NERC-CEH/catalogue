@@ -1,6 +1,7 @@
 import Backbone from 'backbone'
 import template from './IdentityPermission.tpl'
 import _ from 'underscore/underscore-node.mjs'
+import $ from 'jquery'
 
 export var IdentityPermissionView = Backbone.View.extend({
   tagName: 'tr',
@@ -24,7 +25,7 @@ export var IdentityPermissionView = Backbone.View.extend({
   },
 
   render () {
-    this.$el.html(this.model.attributes)
+    this.$el.html(this.template(this.model.attributes))
     return this
   }
 })
