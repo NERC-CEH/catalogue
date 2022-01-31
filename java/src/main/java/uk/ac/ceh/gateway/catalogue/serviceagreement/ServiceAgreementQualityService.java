@@ -161,19 +161,27 @@ public class ServiceAgreementQualityService {
                 "$.authors[*][?(@.role == 'author')].['individualName', 'organisationName','email']",
                 typeRefStringString
         );
+
         if (authors.size() == 0) {
             toReturn.add(new MetadataCheck("There are no authors", ERROR));
         }
 
-        if (authors.stream().anyMatch(author -> fieldIsMissing(author, "individualName"))) {
-            toReturn.add(new MetadataCheck("Author's name is missing", INFO));
+        if (authors.size() >= 1 ) {
+            if (authors.stream().anyMatch(author -> fieldIsMissing(author, "individualName"))) {
+                toReturn.add(new MetadataCheck("Author's name is missing", ERROR));
+            } else {
+                if (!authors.stream().anyMatch(author -> AUTHOR_PATTERN.matcher(author.get("individualName")).matches())) {
+                    toReturn.add(new MetadataCheck("Author name format incorrect", ERROR));
+                }
+            }
+            
+            if (authors.stream().anyMatch(author -> fieldIsMissing(author, "organisationName"))) {
+                toReturn.add(new MetadataCheck("Author's affiliation (organisation name) is missing", ERROR));
+            }
+    
+            checkEmail(authors, "Author's email address is incorrect (%s)").ifPresent(toReturn::addAll);    
         }
-        if (authors.stream().anyMatch(author -> fieldIsMissing(author, "organisationName"))) {
-            toReturn.add(new MetadataCheck("Author's affiliation (organisation name) is missing", ERROR));
-        }
-
-        checkEmail(authors, "Author's email address is incorrect (%s)").ifPresent(toReturn::addAll);
-
+        
         if (toReturn.isEmpty()) {
             return Optional.empty();
         } else {

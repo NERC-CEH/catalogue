@@ -147,8 +147,10 @@
                         <div class="key">Supporting documents</div>
                         <div class="value">
                             <#list supportingDocs as doc>
-                                <div><i>${doc.filename}</i></div> 
-                                <div><@blocks.linebreaks doc.content /></div> 
+                                <div class="supportingDoc">
+                                    <div class="supportingDoc__name"><i>${doc.filename}</i></div> 
+                                    <div class="supportingDoc__content"><@blocks.linebreaks doc.content /></div>
+                                </div>
                             </#list>
                         </div>
                     </div>
@@ -196,7 +198,7 @@
                 <div class="section section--metadata">
                     <h2>Discovery metadata</h2>
                     <p><i>Information in this section will be used to create a record in the EIDC data catalogue.</i></p>
-                    <@displayData "Description" description/>
+                    <@displayData "Description" description/> 
                     <@displayData "Lineage" lineage/>
                     <@displayKeywords/>
                     <@displayArea/>
