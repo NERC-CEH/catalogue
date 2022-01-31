@@ -140,8 +140,8 @@ module.exports = function(grunt) {
       datalabs: {
         files: {
           'src/css/style-datalabs.css': 'src/css/style-datalabs.css'
-          }
-        },
+        }
+      },
       edge: {
         files: {
           'src/css/style-edge.css': 'src/css/style-edge.css'
