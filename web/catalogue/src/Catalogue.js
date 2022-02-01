@@ -1,9 +1,18 @@
-define [
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
   'backbone'
-], (Backbone) -> Backbone.Model.extend
+], function(Backbone) { return Backbone.Model.extend({
 
-  url: ->
-    do @urlRoot
+  url() {
+    return (this.urlRoot)();
+  },
 
-  urlRoot: ->
-    "/documents/#{@id}/catalogue"
+  urlRoot() {
+    return `/documents/${this.id}/catalogue`;
+  }
+});
+ });
