@@ -32,8 +32,8 @@ public class ServiceAgreementQualityService {
 
     private final DocumentReader documentReader;
     private final Configuration config;
-    private final Pattern AUTHOR_PATTERN = Pattern.compile("^[\\w\\-\\s\\']+, (\\w\\.){1,5}$");
-    private final Pattern EMAIL_PATTERN = Pattern.compile("^[a-z0-9\\\\!\\#\\$\\%\\&\\'\\*\\+\\/\\=\\?\\^\\_\\`\\{\\|\\}\\~\\-]+(?:\\.[a-z0-9\\!\\#\\$\\%\\&\\'\\*\\+\\/\\=\\?\\^\\_\\`\\{\\|\\}\\~\\-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$");
+    private final Pattern AUTHOR_PATTERN = Pattern.compile("^[\\w\\-\\s']+, (\\w\\.){1,5}$");
+    private final Pattern EMAIL_PATTERN = Pattern.compile("^[a-z0-9\\\\!#$%&'*+/=?^_`{|}~\\-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~\\-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$");
 
 
     private final TypeRef<List<Map<String, String>>> typeRefStringString = new TypeRef<>() {
@@ -105,7 +105,7 @@ public class ServiceAgreementQualityService {
         try {
             val depositReference = parsedDoc.read("$.depositReference", String.class).trim();
             if (!depositReference.matches("^EIDCHELP-\\d{1,9}$")) {
-                Optional.of(toReturn.add(new MetadataCheck("Deposit reference must be present and must match EIDCHELP-XXXX", ERROR)));
+                toReturn.add(new MetadataCheck("Deposit reference must be present and must match EIDCHELP-XXXX", ERROR));
             }
         } catch (NullPointerException ex) {
             toReturn.add(new MetadataCheck("Deposit reference must be present and must match EIDCHELP-XXXX", ERROR));
@@ -133,7 +133,7 @@ public class ServiceAgreementQualityService {
         try {
             val lineage = parsed.read("$.lineage", String.class).trim();
             if (stringIsMissing(lineage)) {
-                Optional.of(toReturn.add(new MetadataCheck("Lineage is incomplete", ERROR)));
+                toReturn.add(new MetadataCheck("Lineage is incomplete", ERROR));
             }
         } catch (NullPointerException ex) {
             toReturn.add(new MetadataCheck("Lineage is incomplete", ERROR));
@@ -142,7 +142,7 @@ public class ServiceAgreementQualityService {
         try {
             val description = parsed.read("$.description", String.class).trim();
             if (!stringIsMissing(description) && description.length() < 100)  {
-                Optional.of(toReturn.add(new MetadataCheck("Description is incomplete (minimum 100 characters)", ERROR)));
+                toReturn.add(new MetadataCheck("Description is incomplete (minimum 100 characters)", ERROR));
             } 
         } catch (NullPointerException ex) {
             toReturn.add(new MetadataCheck("Description is incomplete (minimum 100 characters)", ERROR));
@@ -170,7 +170,7 @@ public class ServiceAgreementQualityService {
             if (authors.stream().anyMatch(author -> fieldIsMissing(author, "individualName"))) {
                 toReturn.add(new MetadataCheck("Author's name is missing", ERROR));
             } else {
-                if (!authors.stream().anyMatch(author -> AUTHOR_PATTERN.matcher(author.get("individualName")).matches())) {
+                if (authors.stream().noneMatch(author -> AUTHOR_PATTERN.matcher(author.get("individualName")).matches())) {
                     toReturn.add(new MetadataCheck("Author name format incorrect", ERROR));
                 }
             }
@@ -259,7 +259,7 @@ public class ServiceAgreementQualityService {
                 if (files.stream().anyMatch(file -> file.get("name").contains(" "))) {
                     toReturn.add(new MetadataCheck("File names should not contain any spaces", ERROR));
                 }
-                if (!files.stream().anyMatch(file -> file.get("name").matches("^[\\w\\-\\_\\.]*$"))) {
+                if (files.stream().noneMatch(file -> file.get("name").matches("^[\\w\\-\\_\\.]*$"))) {
                     toReturn.add(new MetadataCheck("File names should only consist of alphanumeric characters, underscore and hyphens", ERROR));
                 }
             }
@@ -297,7 +297,7 @@ public class ServiceAgreementQualityService {
                 if (supportingDocs.stream().anyMatch(supportingDoc -> supportingDoc.get("filename").contains(" "))) {
                     toReturn.add(new MetadataCheck("Supporting document filename should not contain any spaces", ERROR));
                 }
-                if (!supportingDocs.stream().anyMatch(supportingDoc -> supportingDoc.get("filename").matches("^[\\w\\-\\_\\.]*$"))) {
+                if (supportingDocs.stream().noneMatch(supportingDoc -> supportingDoc.get("filename").matches("^[\\w-_\\.]*$"))) {
                     toReturn.add(new MetadataCheck("Supporting document filename should only consist of alphanumeric characters, underscore and hyphens", ERROR));
                 }
             }

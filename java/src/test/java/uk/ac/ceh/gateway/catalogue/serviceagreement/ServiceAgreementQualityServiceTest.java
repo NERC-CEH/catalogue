@@ -137,40 +137,6 @@ public class ServiceAgreementQualityServiceTest {
         verify(documentReader).read(FOLDER + "test0", "meta");
     }
 
-/*
-     @Test
-    public void checkAddressOrganisationName() {
-        //given
-        val addresses = new ArrayList<Map<String, String>>(Arrays.asList(
-                ImmutableMap.of("organisationName", "Test organisation 0"),
-                ImmutableMap.of("organisationName", "Test organisation 1"),
-                ImmutableMap.of("organisationName", "Test organisation 2")
-        ));
-
-        //when
-        val actual = this.service.checkAddress(addresses, "Test").isPresent();
-
-        //then
-        assertFalse(actual);
-    }
-
-    @Test
-    public void checkWrongAddressOrganisationName() {
-        //given
-        val addresses = new ArrayList<Map<String, String>>(Arrays.asList(
-                ImmutableMap.of("organisationName", "Test organisation 0"),
-                ImmutableMap.of("organisationName", "Test organisation 1"),
-                ImmutableMap.of("individualName", "Test individual 0")
-        ));
-
-        //when
-        val actual = this.service.checkAddress(addresses, "Test").isPresent();
-
-        //then
-        assertTrue(actual);
-    }
- */
-
      @Test
     public void checkAuthorCorrect() {
         //given

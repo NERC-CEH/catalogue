@@ -22,16 +22,17 @@ import java.util.stream.StreamSupport;
 })
 public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementModel> {
 
-    private String id, title, depositReference, depositorName, depositorContactDetails, eidcName, eidcContactDetails,otherPoliciesOrLegislation, transferMethod, fileNumber, fileNamingConvention, policyExceptions, availability, useConstraints, supersededData, otherInfo, description, lineage;
+    private String id, title, depositReference, depositorName, depositorContactDetails, eidcName, eidcContactDetails,otherPoliciesOrLegislation, fileNumber,transferMethod, fileNamingConvention, policyExceptions, availability, useConstraints, supersededData, otherInfo, description, lineage;
 
     private List<ResponsibleParty> authors;
 
     private List<Funding> funding;
 
-    private List<File> files;
-    private List<SupportingDoc> supportingDocs;
-
     private Keyword dataCategory;
+
+    private List<File> files;
+   
+    private List<SupportingDoc> supportingDocs;
 
     private ResourceConstraint endUserLicence;
    
