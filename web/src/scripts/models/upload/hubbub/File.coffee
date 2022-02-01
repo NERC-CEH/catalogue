@@ -42,25 +42,23 @@ define [
 
   messages =
     CHANGED_HASH:
-      content: 'The file has changed'
+      content: 'THIS FILE HAS CHANGED !'
     CHANGED_MTIME:
       title: 'Detected a possible file change'
       content: """
-               The meta information about this file has changed
-               This could be as small as someone opening the file and saving it
-               Or it could mean the file contents have changed
-               Please "VALIDATE" this file then resolve any new errors
+               THIS FILE MAY HAVE CHANGED. 
+               Please VALIDATE to ensure the file has not been altered or corrupted
                """
     INVALID:
       content: 'Something went wrong with this file'
     MISSING:
-      content: 'This file is missing'
+      content: 'THIS FILE IS MISSING'
     MISSING_UNKNOWN:
-      content: 'This file was missing, but has been added manually'
+      content: 'This file was previously marked as missing but it has now been re-added'
     MOVED_UNKNOWN:
-      content: 'This file was moved, but has been added manually'
+      content: 'This file was previously marked as moved to a different location but it has been re-added here'
     MOVED_UNKNOWN_MISSING:
-      content: 'This file was moved, then added manually, now removed manually'
+      content: 'This file was previously marked as moved to a different location, then re-added, but is now missing' 
     MOVING_FROM:
       content: 'The file is currently being moved'
     MOVING_FROM_ERROR:
@@ -70,15 +68,15 @@ define [
     MOVING_TO_ERROR:
       content: 'The file failed to move'
     NO_HASH:
-      content: 'This file has not been validated or failed to validate'
+      content: 'This file has not yet been validated or has failed to validate'
     REMOVED_UNKNOWN:
-      content: 'This file, previously removed, has now been manually added'
+      content: 'This file was previously deleted but has now been re-added'
     VALIDATING_HASH:
-      content: 'This file is currently being validated, large files take a long time to process'
+      content: 'This file is currently being validated, please wait. Large files may take a long time to process'
     UNKNOWN:
-      content: 'This is an unknown file'
+      content: 'Unknown file'
     UNKNOWN_MISSING:
-      content: 'This was an unknown file, but has been removed manually'
+      content: 'This file was marked as unknown and has now been deleted'
     WRITING:
       content: 'The file is currently being written to disk'
     ZIPPED_UNKNOWN:
@@ -167,8 +165,6 @@ define [
         classes = 'panel-danger'
       else if open
         classes = 'panel-default'
-      else if errorType != 'valid'
-        classes = 'is-collapsed'
       else
         classes = 'panel-default is-collapsed'
 

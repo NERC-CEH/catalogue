@@ -6,7 +6,6 @@
   "depositReference": "EIDCHELP-5",
   "lineage": "lineage",
   "resourceStatus": "resourceStatus",
-  "contentIncluded": "contentIncluded",
   "transferMethod": "transferMethod",
   "useConstraints": [
     {
@@ -14,6 +13,6 @@
       "code": "license",
       "uri":"https://www.eidc.ac.uk/licences/OGL/plain"
     }
-  ],
-  "supportingDocumentNames": ["January", "February", "March", "April", "May", "June", "July"]
+  ]
+
 }

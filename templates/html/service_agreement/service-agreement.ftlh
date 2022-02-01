@@ -3,19 +3,24 @@
 <#import "../../functions.ftlh" as func>
 
 <@skeleton.master title=title catalogue=catalogues.defaultCatalogue()>
-
-<#if isHistorical()>
-    <#assign mdclass="historical">
-<#else>
-    <#assign mdclass="">
-</#if>
+    <#if isHistorical()>
+        <#assign mdclass="historical">
+    <#else>
+        <#assign mdclass="">
+    </#if>
 
     <div id="metadata" class="serviceAgreement ${mdclass}">
         <div class="container" role="main">
 
-            <#if permission.userCanEdit(id) && !isHistorical()>
+            <div class="title">
+                <div class="logo"></div>
+                <h1>EIDC Deposit Agreement for ${title!"NOT PROVIDED"}</h1>
+            </div>
+
+            <#if permission.userCanEdit(id)>
+            <div class="text-right">
                 <div class="row hidden-print adminPanel" role="toolbar">
-                    <div class="text-right">
+                    <#if !isHistorical()>
                         <button type="button" class="btn btn-default edit-control" data-document-type="service-agreement">Edit</button>
                         <#list getModelLinks() as link>
                             <#if link.rel == 'history'>
@@ -26,20 +31,17 @@
                                 </form>
                             </#if>
                         </#list>
-                    </div>
-                </div>
-            <#elseif permission.userCanEdit(id) && isHistorical()>
-                <div class="row hidden-print adminPanel" role="toolbar">
-                    <div class="text-right">
+                    <#elseif  isHistorical()>
                         <#list getModelLinks() as link>
                             <#if link.title == 'History'>
                                 <a href="${link.href}" class="btn btn-default">${link.title}</a>
                             </#if>
                         </#list>
-                    </div>
+                    </#if>
                 </div>
+            </div>
             </#if>
-
+                
             <#if permission.userCanEdit(id) && !isHistorical()>
                 <#include "_serviceAgreementQualityReport.ftlh">
             </#if>
@@ -47,15 +49,6 @@
             <#if isHistorical()>
                 <h1 class="text-red">Historic version<br><small><strong>IMPORTANT</strong> This is a historic version of this Service Agreement</small></h1>
             </#if>
-
-            <div class="title">
-                <div class="logo"></div>
-                <h1>EIDC Deposit Agreement for ${title!"NOT PROVIDED"}</h1>
-            </div>
-
-            <div class="depositReference">
-                <strong>Deposit reference</strong> <span>${depositReference!"NOT PROVIDED"}</span>
-            </div>
 
             <div class="terms">
                 <p>This document sets out your rights and responsibilities as depositor and ours as the data distributor.</p>
@@ -96,6 +89,10 @@
             </div>
 
             <div class="contactDetails">
+                <div class="keyvalue">
+                    <div class="key">Deposit reference</div>
+                    <div class="value"><span>${depositReference!"NOT PROVIDED"}</span></div>
+                </div>
                 <#if depositorName?? && depositorName!=''>
                     <div class="keyvalue">
                         <div class="key">Depositor</div>
@@ -126,9 +123,9 @@
                     <p>This information will be used in discovery metadata for this dataset (the catalogue record).  <a href="#">See our policy on retention and use of personal data</a>.</p>
 
                     <#if authors?has_content && authors?size gt 0 >
-                         <@displayAuthors/>
+                        <@displayAuthors/>
                     <#else>
-                    <div class="error">NO AUTHORS LISTED</div>
+                    <div class="alert alert--error">NO AUTHORS LISTED</div>
                     </#if>
                 </div>
             </div>
@@ -145,15 +142,16 @@
 
                 <@displayData "Number of files to be deposited" fileNumber/>
 
-                <#if supportingDocumentNames?? && supportingDocumentNames?has_content>
-                    <@displaySupportingDocuments/>
-                </#if>
-
-                <#if contentIncluded??>
+                <#if supportingDocs?has_content && supportingDocs?size gt 0 >
                     <div class="keyvalue">
-                        <div class="key">Content of supporting document(s)</div>
+                        <div class="key">Supporting documents</div>
                         <div class="value">
-                            <@blocks.linebreaks contentIncluded!"" />
+                            <#list supportingDocs as doc>
+                                <div class="supportingDoc">
+                                    <div class="supportingDoc__name"><i>${doc.filename}</i></div> 
+                                    <div class="supportingDoc__content"><@blocks.linebreaks doc.content /></div>
+                                </div>
+                            </#list>
                         </div>
                     </div>
                 </#if>
@@ -200,7 +198,7 @@
                 <div class="section section--metadata">
                     <h2>Discovery metadata</h2>
                     <p><i>Information in this section will be used to create a record in the EIDC data catalogue.</i></p>
-                    <@displayData "Description" description/>
+                    <@displayData "Description" description/> 
                     <@displayData "Lineage" lineage/>
                     <@displayKeywords/>
                     <@displayArea/>
@@ -242,9 +240,9 @@
                 <tbody>
                 <#items as author>
                     <tr>
-                        <td><#if author.individualName?has_content >${author.individualName}<#else><span class="error">missing</span></#if></td>
-                        <td><#if author.organisationName?has_content >${author.organisationName}<#else><span class="error">missing</span></#if></td>
-                        <td><#if author.email?has_content>${author.email}<#else><span class="error">missing</span></#if></td>
+                        <td><#if author.individualName?has_content >${author.individualName}<#else><span class="alert alert--error">missing</span></#if></td>
+                        <td><#if author.organisationName?has_content >${author.organisationName}<#else><span class="alert alert--error">missing</span></#if></td>
+                        <td><#if author.email?has_content>${author.email}<#else><span class="alert alert--error">missing</span></#if></td>
                         <td><#if author.nameIdentifier?has_content >${author.nameIdentifier}<#else><small class="text-muted">Not provided</small></#if></td>
                     </tr>
                 </#items>
@@ -269,9 +267,9 @@
             <tbody>
             <#items as file>
                 <tr>
-                    <td><#if file.name?has_content>${file.name}<#else><span class="error">missing</span></#if></td>
-                    <td><#if file.format?has_content>${file.format}<#else><span class="error">missing</span></#if></td>
-                    <td><#if file.size?has_content>${file.size}<#else><span class="error">missing</span></#if></td>
+                    <td><#if file.name?has_content>${file.name}<#else><span class="alert alert--error">missing</span></#if></td>
+                    <td><#if file.format?has_content>${file.format}<#else><span class="alert alert--error">missing</span></#if></td>
+                    <td><#if file.size?has_content>${file.size}<#else><span class="alert alert--error">missing</span></#if></td>
                 </tr>
             </#items>
             </tbody>

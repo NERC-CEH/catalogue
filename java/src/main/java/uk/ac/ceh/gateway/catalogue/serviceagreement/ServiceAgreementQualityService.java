@@ -17,6 +17,7 @@ import uk.ac.ceh.gateway.catalogue.quality.MetadataCheck;
 import uk.ac.ceh.gateway.catalogue.quality.Results;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
 import static java.lang.String.format;
 import static uk.ac.ceh.gateway.catalogue.quality.Results.Severity.ERROR;
@@ -31,6 +32,9 @@ public class ServiceAgreementQualityService {
 
     private final DocumentReader documentReader;
     private final Configuration config;
+    private final Pattern AUTHOR_PATTERN = Pattern.compile("^[\\w\\-\\s']+, (\\w\\.){1,5}$");
+    private final Pattern EMAIL_PATTERN = Pattern.compile("^[a-z0-9\\\\!#$%&'*+/=?^_`{|}~\\-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~\\-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$");
+
 
     private final TypeRef<List<Map<String, String>>> typeRefStringString = new TypeRef<>() {
     };
@@ -67,7 +71,9 @@ public class ServiceAgreementQualityService {
             if (isQualifyingDocument(parsedMeta)) {
                 val checks = new ArrayList<MetadataCheck>();
                 checkBasics(parsedDoc).ifPresent(checks::addAll);
+                checkDiscoveryMetadata(parsedDoc).ifPresent(checks::addAll);
                 checkAuthors(parsedDoc).ifPresent(checks::addAll);
+                checkSupportingDocs(parsedDoc).ifPresent(checks::addAll);
                 checkDepositorContactDetails(parsedDoc).ifPresent(checks::addAll);
                 checkOwnerOfIpr(parsedDoc).ifPresent(checks::addAll);
                 checkFiles(parsedDoc).ifPresent(checks::addAll);
@@ -82,10 +88,10 @@ public class ServiceAgreementQualityService {
     }
 
     Optional<List<MetadataCheck>> checkBasics(DocumentContext parsedDoc) {
-        val requiredKeys = ImmutableSet.of("title", "depositorContactDetails", "eidcName", "contentIncluded", "transferMethod", "depositReference");
+        val requiredKeys = ImmutableSet.of("title", "depositorContactDetails", "eidcName", "transferMethod", "depositReference");
         val toReturn = new ArrayList<MetadataCheck>();
         val toCheck = parsedDoc.read(
-                "$.['title', 'depositorContactDetails', 'eidcName', 'contentIncluded', 'transferMethod', 'depositReference']",
+                "$.['title', 'depositorContactDetails', 'eidcName', 'transferMethod', 'depositReference']",
                 new TypeRef<Map<String, String>>() {
                 }
         );
@@ -99,30 +105,47 @@ public class ServiceAgreementQualityService {
         try {
             val depositReference = parsedDoc.read("$.depositReference", String.class).trim();
             if (!depositReference.matches("^EIDCHELP-\\d{1,9}$")) {
-                Optional.of(toReturn.add(new MetadataCheck("Deposit reference must be present and must " +
-                        "match the regex ^EIDCHELP-\\d{1,9}$", ERROR)));
+                toReturn.add(new MetadataCheck("Deposit reference must be present and must match EIDCHELP-XXXX", ERROR));
             }
         } catch (NullPointerException ex) {
-            toReturn.add(new MetadataCheck("Deposit reference must be present and must " +
-                    "match the regex ^EIDCHELP-\\d{1,9}$", ERROR));
+            toReturn.add(new MetadataCheck("Deposit reference must be present and must match EIDCHELP-XXXX", ERROR));
+        }
+
+
+        if (toReturn.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(toReturn);
+        }
+    }
+
+    Optional<List<MetadataCheck>> checkDiscoveryMetadata(DocumentContext parsed) {
+        val toReturn = new ArrayList<MetadataCheck>();
+        val areaOfStudy = parsed.read(
+            "$.areaOfStudy[*]",
+            typeRefStringString
+        );
+
+        if (areaOfStudy.size() == 0 ) {
+            toReturn.add(new MetadataCheck("Area of study not included", INFO));
         }
 
         try {
-            val supportingDocumentNames = parsedDoc.read("$.supportingDocumentNames", List.class);
-            if (supportingDocumentNames.size() < 1) {
-                Optional.of(toReturn.add(new MetadataCheck("At least one supporting document name must be present", ERROR)));
+            val lineage = parsed.read("$.lineage", String.class).trim();
+            if (stringIsMissing(lineage)) {
+                toReturn.add(new MetadataCheck("Lineage is incomplete", ERROR));
             }
         } catch (NullPointerException ex) {
-            toReturn.add(new MetadataCheck("At least one supporting document name must be present", ERROR));
+            toReturn.add(new MetadataCheck("Lineage is incomplete", ERROR));
         }
 
         try {
-            val description = parsedDoc.read("$.description", String.class).trim();
-            if (description.trim().length() < 100 && description.trim().length() != 0) {
-                toReturn.add(new MetadataCheck("Description is too short (minimum 100 characters)", ERROR));
-            }
+            val description = parsed.read("$.description", String.class).trim();
+            if (!stringIsMissing(description) && description.length() < 100)  {
+                toReturn.add(new MetadataCheck("Description is incomplete (minimum 100 characters)", ERROR));
+            } 
         } catch (NullPointerException ex) {
-            toReturn.add(new MetadataCheck("Description is too short (minimum 100 characters)", ERROR));
+            toReturn.add(new MetadataCheck("Description is incomplete (minimum 100 characters)", ERROR));
         }
 
         if (toReturn.isEmpty()) {
@@ -138,20 +161,27 @@ public class ServiceAgreementQualityService {
                 "$.authors[*][?(@.role == 'author')].['individualName', 'organisationName','email']",
                 typeRefStringString
         );
+
         if (authors.size() == 0) {
-            toReturn.add(new MetadataCheck("There are no authors", INFO));
-        }
-        checkAddress(authors, "Author").ifPresent(toReturn::addAll);
-
-        if (authors.stream().anyMatch(author -> fieldIsMissing(author, "individualName"))) {
-            toReturn.add(new MetadataCheck("Author's name is missing", INFO));
-        }
-        if (authors.stream().anyMatch(author -> fieldIsMissing(author, "organisationName"))) {
-            toReturn.add(new MetadataCheck("Author's affiliation (organisation name) is missing", ERROR));
+            toReturn.add(new MetadataCheck("There are no authors", ERROR));
         }
 
-        checkEmail(authors, "Author's email address is %s").ifPresent(toReturn::addAll);
-
+        if (authors.size() >= 1 ) {
+            if (authors.stream().anyMatch(author -> fieldIsMissing(author, "individualName"))) {
+                toReturn.add(new MetadataCheck("Author's name is missing", ERROR));
+            } else {
+                if (authors.stream().noneMatch(author -> AUTHOR_PATTERN.matcher(author.get("individualName")).matches())) {
+                    toReturn.add(new MetadataCheck("Author name format incorrect", ERROR));
+                }
+            }
+            
+            if (authors.stream().anyMatch(author -> fieldIsMissing(author, "organisationName"))) {
+                toReturn.add(new MetadataCheck("Author's affiliation (organisation name) is missing", ERROR));
+            }
+    
+            checkEmail(authors, "Author's email address is incorrect (%s)").ifPresent(toReturn::addAll);    
+        }
+        
         if (toReturn.isEmpty()) {
             return Optional.empty();
         } else {
@@ -167,36 +197,13 @@ public class ServiceAgreementQualityService {
         );
 
         if (owners.size() == 0) {
-            toReturn.add(new MetadataCheck("There are no owners", INFO));
-        }
-
-        checkAddress(owners, "Owner").ifPresent(toReturn::addAll);
-
-        if (owners.stream().anyMatch(owner -> fieldIsMissing(owner, "email"))) {
-            toReturn.add(new MetadataCheck("Owner's email address is missing", ERROR));
+            toReturn.add(new MetadataCheck("There are no IPR owners", ERROR));
         }
 
         if (owners.stream().anyMatch(owner -> fieldIsMissing(owner, "organisationName"))) {
-            toReturn.add(new MetadataCheck("Owner's affiliation (organisation name) is missing", ERROR));
+            toReturn.add(new MetadataCheck("IPR owner's affiliation (organisation name) is missing", ERROR));
         }
 
-        checkEmail(owners, "Owner's email address is %s").ifPresent(toReturn::addAll);
-
-        if (toReturn.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(toReturn);
-        }
-    }
-
-    Optional<List<MetadataCheck>> checkAddress(List<Map<String, String>> addresses, String element) {
-        val toReturn = new ArrayList<MetadataCheck>();
-        if (addresses == null || addresses.isEmpty()) {
-            return Optional.of(Collections.singletonList(new MetadataCheck(element + " is missing", ERROR)));
-        }
-        if (addresses.stream().anyMatch(map -> fieldIsMissing(map, "organisationName"))) {
-            toReturn.add(new MetadataCheck(element + " organisation name is missing", ERROR));
-        }
         if (toReturn.isEmpty()) {
             return Optional.empty();
         } else {
@@ -214,7 +221,7 @@ public class ServiceAgreementQualityService {
         }
 
         if (isInvalidEmail(depositorContactDetails)) {
-            toReturn.add(new MetadataCheck(format("Depositor's email address is %s", depositorContactDetails), ERROR));
+            toReturn.add(new MetadataCheck(format("Depositor's email address is incorrect  (%s)", depositorContactDetails), ERROR));
         }
 
         if (toReturn.isEmpty()) {
@@ -226,26 +233,78 @@ public class ServiceAgreementQualityService {
 
     Optional<List<MetadataCheck>> checkFiles(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
+        val fileNamingConvention = parsed.read("$.fileNamingConvention", String.class);
+        val fileNumber = parsed.read("$.fileNumber", String.class);
         val files = parsed.read(
                 "$.files[*].['name','format', 'size']",
                 typeRefStringString
         );
 
-        if (files.stream().anyMatch(file -> fieldIsMissing(file, "name"))) {
-            toReturn.add(new MetadataCheck("File name is missing", ERROR));
+        if (files.size() == 0 && stringIsMissing(fileNamingConvention)) {
+            toReturn.add(new MetadataCheck("You must describe the files to be deposited (either a list of files or a naming convention)", ERROR));
+        }
+
+        if (files.size() >=1 && !stringIsMissing(fileNamingConvention)) {
+            toReturn.add(new MetadataCheck("You should EITHER list the files to be deposited OR  a naming convention, not both)", INFO));
+        }
+
+        if (stringIsMissing(fileNumber)) {
+            toReturn.add(new MetadataCheck("Number of files to be deposited is missing", ERROR));
+        }
+
+        if (files.size() >= 1 ) {
+            if (files.stream().anyMatch(file -> fieldIsMissing(file, "name"))) {
+                toReturn.add(new MetadataCheck("File name is missing", ERROR));
+            } else {
+                if (files.stream().anyMatch(file -> file.get("name").contains(" "))) {
+                    toReturn.add(new MetadataCheck("File names should not contain any spaces", ERROR));
+                }
+                if (files.stream().noneMatch(file -> file.get("name").matches("^[\\w\\-\\_\\.]*$"))) {
+                    toReturn.add(new MetadataCheck("File names should only consist of alphanumeric characters, underscore and hyphens", ERROR));
+                }
+            }
+            
+            if (files.stream().anyMatch(file -> fieldIsMissing(file, "format"))) {
+                toReturn.add(new MetadataCheck("File format is missing", ERROR));
+            }
+            if (files.stream().anyMatch(file -> fieldIsMissing(file, "size"))) {
+                toReturn.add(new MetadataCheck("File size is missing", ERROR));
+            }
+        }
+
+        if (toReturn.isEmpty()) {
+            return Optional.empty();
         } else {
-            if (files.stream().anyMatch(file -> file.get("name").contains(" "))) {
-                toReturn.add(new MetadataCheck("File names should not contain any spaces", ERROR));
-            }
-            if (!files.stream().anyMatch(file -> file.get("name").matches("^[\\w\\-\\_]*\\.\\w+?$"))) {
-                toReturn.add(new MetadataCheck("File names should only consist of alphanumeric characters, underscore, hyphen and dots", ERROR));
-            }
+            return Optional.of(toReturn);
         }
-        if (files.stream().anyMatch(file -> fieldIsMissing(file, "format"))) {
-            toReturn.add(new MetadataCheck("File format is missing", ERROR));
+    }
+
+    Optional<List<MetadataCheck>> checkSupportingDocs(DocumentContext parsed) {
+        val toReturn = new ArrayList<MetadataCheck>();
+        val supportingDocs = parsed.read(
+                "$.supportingDocs[*].['filename','content']",
+                typeRefStringString
+        );
+
+        if (supportingDocs.size() == 0) {
+            toReturn.add(new MetadataCheck("Supporting documentation is empty", ERROR));
         }
-        if (files.stream().anyMatch(file -> fieldIsMissing(file, "size"))) {
-            toReturn.add(new MetadataCheck("File size is missing", ERROR));
+
+        if (supportingDocs.size() >= 1 ) {
+            if (supportingDocs.stream().anyMatch(supportingDoc -> fieldIsMissing(supportingDoc, "filename"))) {
+                toReturn.add(new MetadataCheck("Supporting document filename is missing", ERROR));
+            } else {
+                if (supportingDocs.stream().anyMatch(supportingDoc -> supportingDoc.get("filename").contains(" "))) {
+                    toReturn.add(new MetadataCheck("Supporting document filename should not contain any spaces", ERROR));
+                }
+                if (supportingDocs.stream().noneMatch(supportingDoc -> supportingDoc.get("filename").matches("^[\\w-_\\.]*$"))) {
+                    toReturn.add(new MetadataCheck("Supporting document filename should only consist of alphanumeric characters, underscore and hyphens", ERROR));
+                }
+            }
+            
+            if (supportingDocs.stream().anyMatch(supportingDoc -> fieldIsMissing(supportingDoc, "content"))) {
+                toReturn.add(new MetadataCheck("Supporting document content is missing", ERROR));
+            }
         }
 
         if (toReturn.isEmpty()) {
@@ -266,10 +325,7 @@ public class ServiceAgreementQualityService {
     }
 
     private boolean isInvalidEmail(String email) {
-        if (email.contains("@") &&
-                email.endsWith(".co.uk")
-                || email.endsWith(".ac.uk")
-                || email.endsWith(".com")
+        if (EMAIL_PATTERN.matcher(email).matches()
                 && !email.equals("enquiries@ceh.ac.uk")
                 && !email.equals("info@eidc.ac.uk")) {
             return false;
@@ -281,6 +337,10 @@ public class ServiceAgreementQualityService {
     private boolean isQualifyingDocument(DocumentContext parsedMeta) {
         val docType = parsedMeta.read("$.documentType", String.class);
         return docType != null;
+    }
+
+    private boolean stringIsMissing(String key) {
+        return key == null || key.isEmpty();
     }
 
     private boolean fieldIsMissing(Map<String, String> map, String key) {

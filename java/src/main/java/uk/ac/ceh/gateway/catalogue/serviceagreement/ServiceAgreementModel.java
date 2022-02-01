@@ -22,17 +22,17 @@ import java.util.stream.StreamSupport;
 })
 public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementModel> {
 
-    private String id, title, depositReference, depositorName, depositorContactDetails, eidcName, eidcContactDetails,otherPoliciesOrLegislation, transferMethod, relatedDataHoldings, contentIncluded, fileNumber, fileNamingConvention, policyExceptions, availability, useConstraints, supersededData, otherInfo, description, lineage;
+    private String id, title, depositReference, depositorName, depositorContactDetails, eidcName, eidcContactDetails,otherPoliciesOrLegislation, fileNumber,transferMethod, fileNamingConvention, policyExceptions, availability, useConstraints, supersededData, otherInfo, description, lineage;
 
     private List<ResponsibleParty> authors;
 
     private List<Funding> funding;
 
-    private List<File> files;
-
     private Keyword dataCategory;
 
-    private List<String> supportingDocumentNames;
+    private List<File> files;
+   
+    private List<SupportingDoc> supportingDocs;
 
     private ResourceConstraint endUserLicence;
    
@@ -64,11 +64,9 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
         this.fileNumber = serviceAgreement.getFileNumber();
         this.fileNamingConvention = serviceAgreement.getFileNamingConvention();
         this.files = serviceAgreement.getFiles();
+        this.supportingDocs = serviceAgreement.getSupportingDocs();
         this.transferMethod = serviceAgreement.getTransferMethod();
-        this.relatedDataHoldings = serviceAgreement.getRelatedDataHoldings();
         this.dataCategory = serviceAgreement.getDataCategory();
-        this.supportingDocumentNames = serviceAgreement.getSupportingDocumentNames();
-        this.contentIncluded = serviceAgreement.getContentIncluded();
         this.policyExceptions = serviceAgreement.getPolicyExceptions();
         this.availability = serviceAgreement.getAvailability();
         this.endUserLicence = serviceAgreement.getEndUserLicence();

@@ -136,24 +136,16 @@
     margin-top: 3em;
   }
 
-  #section-supplemental {
-    .supplemental-block {
-      h4 {
-        margin: 2em 0 0 0;
-      }
-
-      .supplemental-item {
-        padding: 0.75em 0 0.75em 3em;
-        border-bottom: 1px solid #eee;
-        overflow: hidden;
-      }
-    }
+  .supplement,.citation {
+    margin: 2em 0;
+    overflow: hidden;
   }
 
   #document-distribution {
     .signpostURL {
       display: block;
       margin: 1em 0;
+      overflow: hidden;text-overflow: ellipsis;
     }
 
     .divider {
@@ -285,7 +277,7 @@
     .panel-title {
       font-size: 1.4em;
       font-weight: normal;
-      color: #bb4c1a ;
+      color: #bb4c1a;
       margin-bottom: 0.5em;
     }
   }
@@ -569,7 +561,10 @@
   position: absolute;
   width: 100%;
   bottom: 0;
-  span:not(:last-of-type)::after{content:"|"; margin:0 1em}
+  span:not(:last-of-type)::after {
+    content: "|";
+    margin: 0 1em;
+  }
 }
 
 dl.dl-horizontal {

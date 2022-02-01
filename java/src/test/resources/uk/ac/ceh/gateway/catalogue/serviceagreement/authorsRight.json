@@ -1,24 +1,19 @@
 {
   "authors": [
     {
-      "individualName": "Author 0",
+      "individualName": "Author, A.",
       "organisationName": "Organisation 0",
       "role": "author"
     },
     {
-      "individualName": "Author 1",
+      "individualName": "Author, B.",
       "organisationName": "Organisation 0",
       "role": "author"
     },
     {
-      "individualName": "Author 2",
+      "individualName": "Author, C.",
       "organisationName": "Organisation 0",
       "role": "author"
-    },
-    {
-      "individualName": "Distributor 0",
-      "organisationName": "Organisation 0",
-      "role": "distributor"
     }
   ]
 }
