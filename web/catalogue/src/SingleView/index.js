@@ -1,0 +1,1 @@
+export { SingleView } from './SingleView'

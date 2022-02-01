@@ -1,7 +1,7 @@
 <h2>Permissions</h2>
 <div>
   <p><i class="fas fa-info-circle fa-2x pull-right"></i> Amend permissions for users or groups.. For external users, the username is the email address with which they registered an account.<br>For UKCEH staff it is their login username <b>not</b> their email address.</p>
-  <p><b>NOTE</b>: Catalogue administrators have permission to add and edit all records regardless of permissions defined here.</p>
+  <p><b>NOTE</b>: CatalogueApp administrators have permission to add and edit all records regardless of permissions defined here.</p>
 </div>
 <table class="table table-striped">
   <thead>
