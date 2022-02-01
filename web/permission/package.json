@@ -6,13 +6,16 @@
   "private": "true",
   "scripts": {
     "build": "webpack --config=webpack.config.js",
+    "test": "babel-node spec/run.js",
+    "test-watch": "babel-watch spec/run.js",
     "lint": "eslint .",
     "lint:fix": "eslint --fix ."
   },
   "eslintConfig": {
     "env": {
       "browser": true,
-      "es2021": true
+      "es2021": true,
+      "jasmine": true
     },
     "extends": [
       "standard"
@@ -21,8 +24,7 @@
       "ecmaVersion": "latest",
       "sourceType": "module"
     },
-    "rules": {
-    }
+    "rules": {}
   },
   "keywords": [],
   "author": "",
@@ -30,7 +32,11 @@
   "devDependencies": {
     "@babel/core": "^7.16.7",
     "@babel/preset-env": "^7.16.8",
+    "babel-cli": "^6.26.0",
     "babel-loader": "^8.2.3",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-register": "^6.26.0",
+    "babel-watch": "^7.7.0",
     "backbone": "^1.4.0",
     "bootstrap": "^5.1.3",
     "bootstrap-colorpicker": "^3.4.0",
@@ -42,6 +48,7 @@
     "file-loader": "^6.2.0",
     "html-loader": "^3.1.0",
     "html-webpack-plugin": "^5.5.0",
+    "jasmine": "^4.0.2",
     "jquery": "3.6.0",
     "underscore": "^1.13.2",
     "webpack": "^5.66.0",
