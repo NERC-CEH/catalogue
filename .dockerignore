@@ -13,9 +13,7 @@
 !web/Gruntfile.js
 !web/package.json
 !web/package-lock.json
-!web/src/permission/dist
-!web/src/permission/dist/permission-app.js
-!web/src/permission/package.json
-!web/src/permission/package-lock.json
-!web/src/permission/webpack.config.js
-!web/src/permission/src/
+!web/permission/package.json
+!web/permission/package-lock.json
+!web/permission/webpack.config.js
+!web/permission/src/
