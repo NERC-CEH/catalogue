@@ -1,3 +1,8 @@
+/* eslint-disable
+    no-undef,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -5,14 +10,15 @@
  */
 define([
   'backbone'
-], function(Backbone) { return Backbone.Model.extend({
+], function (Backbone) {
+  return Backbone.Model.extend({
 
-  url() {
-    return (this.urlRoot)();
-  },
+    url () {
+      return (this.urlRoot)()
+    },
 
-  urlRoot() {
-    return `/documents/${this.id}/catalogue`;
-  }
-});
- });
+    urlRoot () {
+      return `/documents/${this.id}/catalogue`
+    }
+  })
+})
