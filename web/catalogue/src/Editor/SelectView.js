@@ -7,17 +7,18 @@ export var SelectView = InputView.extend({
   optionTemplate: _.template('<option value="<%= value %>"><%= label %></option>'),
 
   initialize (options) {
+    console.log('initialize select view')
     this.template = _.template(template)
     this.options = options.options
     return InputView.prototype.initialize.call(this, options)
   },
 
   render () {
+    console.log('selectview render')
     InputView.prototype.render.apply(this)
-    const $select = this.$('select')
-    this.options.forEach(option => {
-      $select.append(this.optionTemplate(option))
+    Array.prototype.forEach.call(this.options, option => {
+      this.$('select').append(this.optionTemplate(option))
     })
-    $select.val(this.model.get(this.data.modelAttribute))
+    this.$('select').val(this.model.get(this.data.modelAttribute))
   }
 })

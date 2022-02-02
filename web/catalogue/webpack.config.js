@@ -33,7 +33,7 @@ module.exports = {
     port: 8081
   },
   output: {
-    filename: 'permission-app.js'
+    filename: 'catalogue-app.js'
   },
   plugins: [
     new HtmlWebPackPlugin({

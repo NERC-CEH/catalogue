@@ -17,3 +17,7 @@
 !web/permission/package-lock.json
 !web/permission/webpack.config.js
 !web/permission/src/
+!web/catalogue/package.json
+!web/catalogue/package-lock.json
+!web/catalogue/webpack.config.js
+!web/catalogue/src/

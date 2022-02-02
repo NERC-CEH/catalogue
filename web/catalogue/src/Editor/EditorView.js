@@ -1,7 +1,7 @@
 import _ from 'underscore'
 import $ from 'jquery'
 import Backbone from 'backbone'
-import template from 'Editor.tpl'
+import template from './Editor.tpl'
 
 export var EditorView = Backbone.View.extend({
 
@@ -17,6 +17,7 @@ export var EditorView = Backbone.View.extend({
   },
 
   initialize () {
+    this.template = _.template(template)
     this.currentStep = 1
     this.saveRequired = false
     this.catalogue = $('html').data('catalogue')
@@ -53,7 +54,7 @@ export var EditorView = Backbone.View.extend({
     _.invoke(this.sections[0].views, 'show')
     const $editorNav = this.$('#editorNav')
     _.each(this.sections, function (section) {
-      $editorNav.append(this.$(`<li title='${section.title}'>${section.label}</li>`))
+      $editorNav.append($(`<li title='${section.title}'>${section.label}</li>`))
     })
 
     $editorNav.find('li').first().addClass('active')
@@ -151,9 +152,9 @@ export var EditorView = Backbone.View.extend({
   },
 
   render () {
-    this.$el.html(template)
+    this.$el.html(this.template(this.model.attributes))
     _.each(this.sections, section => _.each(section.views, function (view) {
-      this.$('#editor').append(view.el)
+      $('#editor').append(view.el)
     }))
   }
 })

@@ -1,9 +1,9 @@
-import EditorView from './EditorView'
-import SelectView from './SelectView'
+import { EditorView, SelectView } from '../Editor'
 
 export var CatalogueView = EditorView.extend({
 
   initialize () {
+    console.log('initialize catalogue view')
     this.sections = [{
       label: 'One',
       title: 'Catalogue',
@@ -13,7 +13,7 @@ export var CatalogueView = EditorView.extend({
           modelAttribute: 'value',
           label: 'Catalogue',
           options: this.model.options,
-          helpText: '<p>CatalogueApp</p>'
+          helpText: '<p>Catalogue</p>'
         })
       ]
     }

@@ -22,6 +22,15 @@ COPY --chown=1000:1000 web/permission/webpack.config.js .
 COPY --chown=1000:1000 web/permission/src src/
 RUN npm install && npm run build
 
+# Build Catalogue app (javascript & css)
+FROM node:17.4.0 AS build-catalogue
+WORKDIR web/catalogue
+COPY --chown=1000:1000 web/catalogue/package.json .
+COPY --chown=1000:1000 web/catalogue/package-lock.json .
+COPY --chown=1000:1000 web/catalogue/webpack.config.js .
+COPY --chown=1000:1000 web/catalogue/src src/
+RUN npm install && npm run build
+
 # Build Java
 FROM gradle:7.2-jdk16 AS build-java
 WORKDIR /app
@@ -48,6 +57,7 @@ COPY templates /opt/ceh-catalogue/templates
 COPY --from=build-web /app/src/css /opt/ceh-catalogue/static/css
 COPY web/src/img /opt/ceh-catalogue/static/img
 COPY --from=build-permissions web/permission/dist/permission-app.js /opt/ceh-catalogue/static/scripts/permission-app.js
+COPY --from=build-catalogue web/catalogue/dist/catalogue-app.js /opt/ceh-catalogue/static/scripts/catalogue-app.js
 COPY --from=build-web /app/src/scripts/main-out.js /opt/ceh-catalogue/static/scripts/main-out.js
 COPY --from=build-web /app/src/scripts/upload-out.js /opt/ceh-catalogue/static/scripts/upload-out.js
 COPY --from=build-web /app/src/vendor/font-awesome-5/webfonts /opt/ceh-catalogue/static/vendor/font-awesome-5/webfonts

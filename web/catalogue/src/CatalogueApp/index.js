@@ -1,2 +1,2 @@
-export { CatalogueApp } from './CatalogueApp'
+export { Catalogue } from './Catalogue'
 export { CatalogueView } from './CatalogueView'

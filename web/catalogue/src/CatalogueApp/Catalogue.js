@@ -1,6 +1,6 @@
 import Backbone from 'backbone'
 
-export var CatalogueApp = Backbone.Model.extend({
+export var Catalogue = Backbone.Model.extend({
 
   url () {
     return this.urlRoot()
