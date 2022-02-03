@@ -1,22 +1,9 @@
-/* eslint-disable
-    no-undef,
-    no-unused-vars,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
-define([
-  'jquery',
-  'backbone',
-  'cs!collections/upload/simple/FileCollection',
-  'cs!views/upload/simple/FileListView',
-  'cs!views/upload/simple/MessageListView',
-  'cs!views/upload/simple/UploadView'
-], ($, Backbone, FileCollection, FileListView, MessageListView, UploadView) => Backbone.View.extend({
+import $ from 'jquery'
+import Backbone from 'backbone'
+import { FileCollection, FileListView, UploadView } from '../File'
+import { MessageListView } from '../Message'
+
+export var SimpleUploadView = Backbone.View.extend({
 
   initialize (options) {
     const files = new FileCollection({ url: options.url })
@@ -46,4 +33,4 @@ define([
     const $messageData = $('#messages-data')
     if ($messageData.length) { return messages.reset(JSON.parse($messageData.text())) }
   }
-}))
+})

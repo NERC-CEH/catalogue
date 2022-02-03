@@ -41,7 +41,6 @@ define [
   'cs!views/DataTypeEditorView'
   'cs!views/ElterEditorView'
   'cs!views/ElterLinkedEditorView'
-  'cs!views/upload/simple/AppView'
   'cs!views/ServiceAgreementEditorView'
   'cs!models/service-agreement/ServiceAgreement'
 ], (
@@ -50,7 +49,7 @@ define [
     ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata, CehModelEditorView, CehModelApplicationEditorView, OsdpAgentEditorView,
     OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
     OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, ErammpModelEditorView, NercModelEditorView, NercModelUseEditorView, ErammpDatacubeEditorView, UkemsDocumentEditorView,
-    DatalabsDocumentEditorView, ClipboardCopyView, DataTypeEditorView, ElterEditorView, ElterLinkedEditorView, SimpleUploadView, ServiceAgreementEditorView, ServiceAgreement
+    DatalabsDocumentEditorView, ClipboardCopyView, DataTypeEditorView, ElterEditorView, ElterLinkedEditorView, ServiceAgreementEditorView, ServiceAgreement
 ) ->
 
   ###
@@ -76,7 +75,6 @@ define [
     do @initMapviewer if $('#mapviewer').length
     do @initSearch if $('#search').length
     do @initServiceAgreement if $('.service-agreement').length
-    do @initSimpleUpload if $('#simple-upload').length
     do @initStudyAreaMap if $('#studyarea-map').length
 
     $('.chart').each (i, e) -> new ChartView el: e
@@ -290,15 +288,6 @@ define [
             new ServiceAgreementEditorView
               el: '#metadata'
               model: new ServiceAgreement(data, options)
-
-  ###
-  Initialize the simple dataset upload
-  ###
-  initSimpleUpload: ->
-    url = $('#simple-upload-dropzone').attr('action')
-    view = new SimpleUploadView
-      el: '#simple-upload'
-      url: url
 
   ###
   Initialize the Study Area map
