@@ -3,7 +3,6 @@ import { EditorView, SelectView } from '../Editor'
 export var CatalogueView = EditorView.extend({
 
   initialize () {
-    console.log('initialize catalogue view')
     this.sections = [{
       label: 'One',
       title: 'Catalogue',

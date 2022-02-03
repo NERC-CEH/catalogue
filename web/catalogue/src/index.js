@@ -16,8 +16,6 @@ $(document).ready(function () {
   $('.catalogue-control').on('click', function (event) {
     event.preventDefault()
     $.getJSON($(event.target).attr('href'), function (data) {
-      console.log('data')
-      console.log(data)
       const model = new Catalogue(data)
       model.options = catalogues
 
@@ -25,6 +23,7 @@ $(document).ready(function () {
         el: '#metadata',
         model
       })
+      view.render()
     })
   })
 })
