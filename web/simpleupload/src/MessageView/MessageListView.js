@@ -1,33 +1,45 @@
-define [
-  'underscore'
-  'backbone'
-  'cs!views/upload/simple/MessageView'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'underscore',
+  'backbone',
+  'cs!views/upload/simple/MessageView',
   'tpl!templates/upload/simple/Messages.tpl'
-], (_, Backbone, MessageView, template) -> Backbone.View.extend
+], function(_, Backbone, MessageView, template) { return Backbone.View.extend({
 
-  events:
+  events: {
     'click .clear-all': 'clearAll'
+  },
 
-  template: template
+  template,
 
-  initialize: (options) ->
-    @messages = options.messages
+  initialize(options) {
+    this.messages = options.messages;
 
-    @$tools = @$('#messages-tools')
+    this.$tools = this.$('#messages-tools');
 
-    @$messageList = @$('#messages-list')
+    this.$messageList = this.$('#messages-list');
 
-    @listenTo(@messages, 'add', @addMessage)
+    this.listenTo(this.messages, 'add', this.addMessage);
 
-    @render()
+    return this.render();
+  },
 
-  addMessage: (message) ->
-    view = new MessageView({model: message})
-    @$messageList.append(view.render().el)
+  addMessage(message) {
+    const view = new MessageView({model: message});
+    return this.$messageList.append(view.render().el);
+  },
 
-  clearAll: ->
-    _.invoke(@messages.toArray(), 'destroy')
+  clearAll() {
+    return _.invoke(this.messages.toArray(), 'destroy');
+  },
 
-  render: ->
-    @$tools.html(@template())
-    @
+  render() {
+    this.$tools.html(this.template());
+    return this;
+  }
+});
+ });
