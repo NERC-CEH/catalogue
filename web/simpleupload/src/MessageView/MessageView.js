@@ -1,3 +1,8 @@
+/* eslint-disable
+    no-undef,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -6,19 +11,20 @@
 define([
   'backbone',
   'tpl!templates/upload/simple/Message.tpl'
-], function(Backbone, template) { return Backbone.View.extend({
+], function (Backbone, template) {
+  return Backbone.View.extend({
 
-  tagName: 'li',
+    tagName: 'li',
 
-  template,
+    template,
 
-  initialize() {
-    return this.listenTo(this.model, 'remove', this.remove);
-  },
+    initialize () {
+      return this.listenTo(this.model, 'remove', this.remove)
+    },
 
-  render() {
-    this.$el.html(this.template(this.model.attributes));
-    return this;
-  }
-});
- });
+    render () {
+      this.$el.html(this.template(this.model.attributes))
+      return this
+    }
+  })
+})

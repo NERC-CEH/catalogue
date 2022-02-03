@@ -1,3 +1,9 @@
+/* eslint-disable
+    no-undef,
+    no-unused-vars,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -12,33 +18,32 @@ define([
   'cs!views/upload/simple/UploadView'
 ], ($, Backbone, FileCollection, FileListView, MessageListView, UploadView) => Backbone.View.extend({
 
-  initialize(options) {
-    const files = new FileCollection({
-      url: options.url});
+  initialize (options) {
+    const files = new FileCollection({ url: options.url })
 
-    const messages = new Backbone.Collection();
+    const messages = new Backbone.Collection()
 
     const messageListView = new MessageListView({
       el: '#messages',
       messages
-    });
+    })
 
     const uploadView = new UploadView({
       el: '#simple-upload-dropzone',
       files,
       messages,
       url: options.url
-    });
+    })
 
     const fileListView = new FileListView({
       el: '#files',
       files,
       messages
-    });
+    })
 
-    const $filesData = $('#files-data');
-    if ($filesData.length) { files.reset(JSON.parse($filesData.text())); }
-    const $messageData = $('#messages-data');
-    if ($messageData.length) { return messages.reset(JSON.parse($messageData.text())); }
+    const $filesData = $('#files-data')
+    if ($filesData.length) { files.reset(JSON.parse($filesData.text())) }
+    const $messageData = $('#messages-data')
+    if ($messageData.length) { return messages.reset(JSON.parse($messageData.text())) }
   }
-}));
+}))

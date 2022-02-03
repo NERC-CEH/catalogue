@@ -1,3 +1,8 @@
+/* eslint-disable
+    no-undef,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -8,38 +13,39 @@ define([
   'backbone',
   'cs!views/upload/simple/MessageView',
   'tpl!templates/upload/simple/Messages.tpl'
-], function(_, Backbone, MessageView, template) { return Backbone.View.extend({
+], function (_, Backbone, MessageView, template) {
+  return Backbone.View.extend({
 
-  events: {
-    'click .clear-all': 'clearAll'
-  },
+    events: {
+      'click .clear-all': 'clearAll'
+    },
 
-  template,
+    template,
 
-  initialize(options) {
-    this.messages = options.messages;
+    initialize (options) {
+      this.messages = options.messages
 
-    this.$tools = this.$('#messages-tools');
+      this.$tools = this.$('#messages-tools')
 
-    this.$messageList = this.$('#messages-list');
+      this.$messageList = this.$('#messages-list')
 
-    this.listenTo(this.messages, 'add', this.addMessage);
+      this.listenTo(this.messages, 'add', this.addMessage)
 
-    return this.render();
-  },
+      return this.render()
+    },
 
-  addMessage(message) {
-    const view = new MessageView({model: message});
-    return this.$messageList.append(view.render().el);
-  },
+    addMessage (message) {
+      const view = new MessageView({ model: message })
+      return this.$messageList.append(view.render().el)
+    },
 
-  clearAll() {
-    return _.invoke(this.messages.toArray(), 'destroy');
-  },
+    clearAll () {
+      return _.invoke(this.messages.toArray(), 'destroy')
+    },
 
-  render() {
-    this.$tools.html(this.template());
-    return this;
-  }
-});
- });
+    render () {
+      this.$tools.html(this.template())
+      return this
+    }
+  })
+})
