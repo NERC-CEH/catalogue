@@ -153,14 +153,12 @@ export var EditorView = Backbone.View.extend({
 
   render () {
     this.$el.html(this.template(this.model.attributes))
-    const $editor = this.$('#editor')
     _.each(this.sections, function (section) {
       _.each(section.views, function (view) {
-        $editor.append(view.el)
+        this.$('#editor')
         console.log('view.el')
         console.log(view.el)
       })
     })
-    this.$('#editor').append($editor)
   }
 })
