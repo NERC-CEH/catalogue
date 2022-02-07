@@ -35,6 +35,7 @@ define [
   'cs!views/NercModelEditorView'
   'cs!views/NercModelUseEditorView'
   'cs!views/ErammpDatacubeEditorView'
+  'cs!views/RisDatacubeEditorView'
   'cs!views/UkemsDocumentEditorView'
   'cs!views/DatalabsDocumentEditorView'
   'cs!views/ClipboardCopyView'
@@ -49,7 +50,7 @@ define [
     EditorMetadata, GeminiEditorView, MonitoringEditorView, Catalogue, CatalogueView,
     ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata, CehModelEditorView, CehModelApplicationEditorView, OsdpAgentEditorView,
     OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
-    OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, ErammpModelEditorView, NercModelEditorView, NercModelUseEditorView, ErammpDatacubeEditorView, UkemsDocumentEditorView,
+    OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, ErammpModelEditorView, NercModelEditorView, NercModelUseEditorView, ErammpDatacubeEditorView, RisDatacubeEditorView, UkemsDocumentEditorView,
     DatalabsDocumentEditorView, ClipboardCopyView, DataTypeEditorView, ElterEditorView, ElterLinkedEditorView, SimpleUploadView, ServiceAgreementEditorView, ServiceAgreement
 ) ->
 
@@ -190,6 +191,10 @@ define [
         View: ErammpDatacubeEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.erammp-datacube+json'
+      'ris-datacube':
+        View: RisDatacubeEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.ris-datacube+json'
       'data-type':
         View: DataTypeEditorView
         Model: EditorMetadata

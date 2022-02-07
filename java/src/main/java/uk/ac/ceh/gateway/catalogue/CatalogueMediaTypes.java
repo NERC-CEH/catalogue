@@ -32,6 +32,8 @@ public class CatalogueMediaTypes {
     public static final String ERAMMP_MODEL_JSON_VALUE = "application/vnd.erammp-model+json";
     public static final String GEMINI_JSON_VALUE = "application/gemini+json";
 
+    public static final String RIS_DATACUBE_JSON_VALUE = "application/vnd.ris-datacube+json";
+
     public static final String GEMINI_XML_SHORT = "gemini";
     public static final String GEMINI_XML_VALUE = "application/x-gemini+xml";
     public static final MediaType GEMINI_XML = parseMediaType(GEMINI_XML_VALUE);

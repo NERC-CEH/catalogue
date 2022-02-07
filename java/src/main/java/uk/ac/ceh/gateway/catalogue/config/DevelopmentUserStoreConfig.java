@@ -57,6 +57,8 @@ public class DevelopmentUserStoreConfig {
     public static final String NC_PUBLISHER = "role_nc_publisher";
     public static final String OSDP_EDITOR = "role_osdp_editor";
     public static final String OSDP_PUBLISHER = "role_osdp_publisher";
+    public static final String RIS_EDITOR = "role_ris_editor";
+    public static final String RIS_PUBLISHER = "role_ris_publisher";
     public static final String SA_EDITOR = "role_sa_editor";
     public static final String SA_PUBLISHER = "role_sa_publisher";
     public static final String UKSCAPE_EDITOR = "role_ukscape_editor";
@@ -267,6 +269,29 @@ public class DevelopmentUserStoreConfig {
         return user;
     }
 
+
+    @Bean
+    public CatalogueUser risEditor() throws UsernameAlreadyTakenException {
+        val user = new CatalogueUser()
+            .setUsername("ris-editor")
+            .setEmail("ris-editor@ceh.ac.uk");
+        addUserToGroup(user, RIS_EDITOR);
+        userStore().addUser(user, "password");
+        return user;
+    }
+
+    @Bean
+    public CatalogueUser risPublisher() throws UsernameAlreadyTakenException {
+        val user = new CatalogueUser()
+            .setUsername("ris-publisher")
+            .setEmail("ris-publisher@ceh.ac.uk");
+        addUserToGroup(user, RIS_EDITOR, RIS_PUBLISHER);
+        userStore().addUser(user, "password");
+        return user;
+    }
+
+
+
     @Bean
     public CatalogueUser saPublisher() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser()
@@ -348,6 +373,8 @@ public class DevelopmentUserStoreConfig {
         groupStore.createGroup(OSDP_EDITOR, "");
         groupStore.createGroup(OSDP_PUBLISHER, "");
         groupStore.createGroup(READONLY_GROUP, "");
+        groupStore.createGroup(RIS_EDITOR, "");
+        groupStore.createGroup(RIS_PUBLISHER, "");
         groupStore.createGroup(SA_EDITOR, "");
         groupStore.createGroup(SA_PUBLISHER, "");
         groupStore.createGroup(UKSCAPE_PUBLISHER, "");

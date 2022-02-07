@@ -37,6 +37,7 @@ import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
 import uk.ac.ceh.gateway.catalogue.elter.ElterDocument;
 import uk.ac.ceh.gateway.catalogue.erammp.ErammpDatacube;
 import uk.ac.ceh.gateway.catalogue.erammp.ErammpModel;
+import uk.ac.ceh.gateway.catalogue.ris.RisDatacube;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.imp.ImpDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.ClassMap;
@@ -149,6 +150,7 @@ public class ServicesConfig {
             .register(DATALABS, DatalabsDocument.class)
             .register(EF_DOCUMENT, BaseMonitoringType.class)
             .register(ERAMMP_DATACUBE, ErammpDatacube.class)
+            .register(RIS_DATACUBE, RisDatacube.class)
             .register(ELTER, ElterDocument.class)
             .register(ERAMMP_MODEL, ErammpModel.class)
             .register(GEMINI, GeminiDocument.class)

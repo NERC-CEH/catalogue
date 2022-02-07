@@ -128,6 +128,18 @@ public class CatalogueServiceConfig {
                 .vocabularies(getCatalogueVocabularies(vocabularies, defaultCatalogueKey))
                 .fileUpload(false)
                 .build(),
+            
+            Catalogue.builder()
+                .id("ris")
+                .title("Research Infrastructure Catalogue")
+                .url("")
+                .contactUrl("")
+                .logo("ukceh.png")
+                .facetKey("recordType")
+                .documentType(RIS_DATACUBE_TYPE)
+                .vocabularies(getCatalogueVocabularies(vocabularies, "ris"))
+                .fileUpload(false)
+                .build(),
 
             Catalogue.builder()
                 .id("erammp")
