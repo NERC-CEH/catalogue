@@ -130,14 +130,13 @@ public class CatalogueServiceConfig {
                 .build(),
             
             Catalogue.builder()
-                .id("ris")
+                .id("ri")
                 .title("Research Infrastructure Catalogue")
                 .url("")
                 .contactUrl("")
                 .logo("ukceh.png")
                 .facetKey("recordType")
-                .documentType(RIS_DATACUBE_TYPE)
-                .vocabularies(getCatalogueVocabularies(vocabularies, "ris"))
+                .documentType(RI_DATACUBE_TYPE)
                 .fileUpload(false)
                 .build(),
 

@@ -48,10 +48,10 @@ public class DocumentTypes {
         .type(ERAMMP_MODEL)
         .build();
 
-    public static final String RIS_DATACUBE = "ris-datacube";
-        public static DocumentType RIS_DATACUBE_TYPE = DocumentType.builder()
+    public static final String RI_DATACUBE = "ri-datacube";
+        public static DocumentType RI_DATACUBE_TYPE = DocumentType.builder()
             .title("Research infrastructure")
-            .type(RIS_DATACUBE)
+            .type(RI_DATACUBE)
             .build();
     
     public static final String GEMINI = "GEMINI_DOCUMENT";

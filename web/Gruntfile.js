@@ -110,9 +110,9 @@ module.exports = function(grunt) {
           'src/css/style-osdp.css': 'src/less/style-osdp.less'
         }
       },
-      ris: {
+      ri: {
         files: {
-          'src/css/style-ris.css': 'src/less/style-ris.less'
+          'src/css/style-ri.css': 'src/less/style-ri.less'
         }
       },
       sa: {
@@ -197,9 +197,9 @@ module.exports = function(grunt) {
           'src/css/style-osdp.css': 'src/css/style-osdp.css'
         }
       },
-      ris: {
+      ri: {
         files: {
-          'src/css/style-ris.css': 'src/css/style-ris.css'
+          'src/css/style-ri.css': 'src/css/style-ri.css'
         }
       },
       sa: {

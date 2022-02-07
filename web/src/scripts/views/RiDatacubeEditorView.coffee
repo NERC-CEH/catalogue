@@ -14,11 +14,12 @@ define [
 	'cs!views/editor/PredefinedParentLargeView'
   	'cs!models/editor/Contact'
   	'cs!views/editor/ContactView'
+	'cs!views/editor/RelatedRecordView'
 
-], (EditorView, InputView, TextareaView, SingleObjectView, SingleView, SelectView, ReadOnlyView, ParentView, ParentLargeView, ParentStringView, ParentStringTextboxView, PredefinedParentView, PredefinedParentLargeView, Contact, ContactView) -> EditorView.extend
+], (EditorView, InputView, TextareaView, SingleObjectView, SingleView, SelectView, ReadOnlyView, ParentView, ParentLargeView, ParentStringView, ParentStringTextboxView, PredefinedParentView, PredefinedParentLargeView, Contact, ContactView, RelatedRecordView) -> EditorView.extend
 
 	initialize: ->
-		@model.set('type', 'risDatacube') unless @model.has('type')
+		@model.set('type', 'riDatacube') unless @model.has('type')
 
 		@sections = [
 			label: ' General '
@@ -31,6 +32,12 @@ define [
 					helpText: """
                     <p>Should reflect purpose (succinctly)</p><p>Should be consistent (within and across assets)</p>
                     """
+
+				new TextareaView
+				model: @model
+				modelAttribute: 'description'
+				label: 'Description'
+				rows: 8
 
 				new SelectView
 					model: @model
@@ -140,7 +147,14 @@ define [
 					model: @model
 					modelAttribute: 'scienceArea'
 					label: 'Science area'
-				]
+
+				new ParentView
+					model: @model
+					modelAttribute: 'relatedRecords'
+					label: 'Related records'
+					ObjectInputView: RelatedRecordView
+					multiline: true				
+			]
 		]
 
 		EditorView.prototype.initialize.apply @

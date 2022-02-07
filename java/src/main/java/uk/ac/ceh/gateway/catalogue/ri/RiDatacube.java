@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.ris;
+package uk.ac.ceh.gateway.catalogue.ri;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -12,6 +12,7 @@ import uk.ac.ceh.gateway.catalogue.indexing.solr.WellKnownText;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.OnlineLink;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
+import uk.ac.ceh.gateway.catalogue.gemini.RelatedRecord;
 
 import java.util.Collections;
 import java.util.List;
@@ -23,15 +24,17 @@ import java.util.stream.Collectors;
 @ToString(callSuper = true)
 @Accessors(chain = true)
 @ConvertUsing({
-  @Template(called="html/ris/ris_datacube.ftlh", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
+  @Template(called="html/ri/ri_datacube.ftlh", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
 })
-public class RisDatacube extends AbstractMetadataDocument {
+public class RiDatacube extends AbstractMetadataDocument {
   
   private String infrastructureClass, infrastructureCategory, purpose, capabilities, lifecycle,	uniqueness,	partners,	locationText,	access,	userCosts, fundingSources,	scienceArea ;
 
   private List<ResponsibleParty> owners;
 
   private List<String> users;
+
+  private List<RelatedRecord> relatedRecords;
 
 }
 
