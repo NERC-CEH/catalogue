@@ -7,9 +7,16 @@ describe('Test Permission app', () => {
     const app = new PermissionApp()
 
     // when
-    app.loadPermission(id)
+    app.loadPermission(id).then(function () {
+      console.log('Promise Resolved')
+    }).catch(function () {
+      console.log('Promise Rejected')
+    })
 
     // then
-    expect(app.getPermission().urlRoot()).toBe(`/documents/${id}/permission`)
+    expect(function () {
+      app.getPermission()
+    }).toThrow()
+    // expect(app.getPermission().id).toBe(id)
   })
 })

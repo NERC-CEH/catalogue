@@ -1,6 +1,6 @@
 import Backbone from 'backbone'
 import template from './IdentityPermission.tpl'
-import _ from 'underscore/underscore-node.mjs'
+import _ from 'underscore'
 import $ from 'jquery'
 
 export var IdentityPermissionView = Backbone.View.extend({
