@@ -1,6 +1,6 @@
 <#import "../skeleton.ftlh" as skeleton>
 
-<#assign rel_all=jena.allRelatedRecords(uri)>
+<#assign rel_all=jena.allRelatedRecords(uri) >
 
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
     <div id="metadata" class="metadata ris-metadata">
@@ -12,8 +12,12 @@
           <div id="pageTitle">
             <h1>${title}</h1>
           </div>
-        </#if>
+        </#if>    
 
+        <#if description??>
+          <div class="description">${description}</div>
+        </#if>
+        
         <#if infrastructureClass??><@displaykey infrastructureClass "Infrastructure class" /></#if>
         <#if infrastructureCategory??><@displaykey infrastructureCategory "Infrastructure category" /></#if>
         <#if purpose??><@displaykey purpose "Purpose" /></#if>
@@ -55,16 +59,20 @@
           </div>
         </#if>
 
-      
 
         <#if rel_all?has_content && rel_all?size gt 0>
-          <div class="relatedRecords>
-            <h2>Related</h2>
+          <div class="relatedRecords">
+
+            <div class="key-value">
+              <div>Related records</div>
+              <div>
+                <#list rel_all as item>
+                  <a href="${item.href}">${item.title}</a><#sep><br></#sep>
+                </#list>
+              </div>
+            </div>
           </div>
-        <#else>
-          No related records
         </#if>
- 
 
 
         <#assign lastUpdated = metadataDateTime?datetime.iso?datetime?string['dd MMMM yyyy  HH:mm']>

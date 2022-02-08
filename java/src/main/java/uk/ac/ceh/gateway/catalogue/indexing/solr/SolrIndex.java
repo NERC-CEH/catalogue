@@ -58,6 +58,7 @@ public class SolrIndex {
     private @Field List<String> saSpecimenType;
     private @Field List<String> saTaxon;
     private @Field List<String> saTissue;
+    private @Field String infrastructureClass;  //RI
     private @Field String state;
     private @Field List<String> supplementalDescription;
     private @Field List<String> supplementalName;

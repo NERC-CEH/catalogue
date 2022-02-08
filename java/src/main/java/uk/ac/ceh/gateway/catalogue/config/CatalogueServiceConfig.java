@@ -131,11 +131,12 @@ public class CatalogueServiceConfig {
             
             Catalogue.builder()
                 .id("ri")
-                .title("Research Infrastructure Catalogue")
+                .title("UKCEH Research Infrastructure Network (URIN)")
                 .url("")
                 .contactUrl("")
                 .logo("ukceh.png")
                 .facetKey("recordType")
+                .facetKey("infrastructureClass")
                 .documentType(RI_DATACUBE_TYPE)
                 .fileUpload(false)
                 .build(),

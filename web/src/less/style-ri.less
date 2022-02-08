@@ -14,6 +14,9 @@
 
 @fa-font-path: "../vendor/font-awesome-5/webfonts";
 
+@urin-yellow: hsl(56, 100%, 56%);
+@filter-heading-background:@urin-yellow;
+
 /*@navbar-height: 51px;*/
 @footer-height: 3.25em;
 @header-text: @gray-dark;
@@ -51,7 +54,7 @@ body {
 .key-value {
   display: grid;
   grid-template-columns:  auto;
-  margin-top: 1em;
+  margin: 2em 0;
   div {
     &:first-of-type {
       font-weight: bolder;
@@ -64,7 +67,7 @@ body {
  {
 .key-value {
   grid-template-columns: 300px auto;
-  gap: 2em;
+  gap: 1.6em;
   div {
     &:first-of-type {
       text-align: right;

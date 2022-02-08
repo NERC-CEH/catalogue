@@ -16,6 +16,7 @@ define [
   	'cs!views/editor/ContactView'
 	'cs!views/editor/RelatedRecordView'
 
+
 ], (EditorView, InputView, TextareaView, SingleObjectView, SingleView, SelectView, ReadOnlyView, ParentView, ParentLargeView, ParentStringView, ParentStringTextboxView, PredefinedParentView, PredefinedParentLargeView, Contact, ContactView, RelatedRecordView) -> EditorView.extend
 
 	initialize: ->
@@ -30,14 +31,8 @@ define [
 					modelAttribute: 'title'
 					label: 'Name'
 					helpText: """
-                    <p>Should reflect purpose (succinctly)</p><p>Should be consistent (within and across assets)</p>
+                    	<p>Should reflect purpose (succinctly)</p><p>Should be consistent (within and across assets)</p>
                     """
-
-				new TextareaView
-				model: @model
-				modelAttribute: 'description'
-				label: 'Description'
-				rows: 8
 
 				new SelectView
 					model: @model
@@ -47,9 +42,15 @@ define [
 						{value: '', label: ''},
 						{value: 'Environmental observatories', label: 'Class 1: Environmental observatories'},
 						{value: 'Environmental experiment platforms', label: 'Class 2: Environmental experiment platforms'},
-						{value: 'Analytical facilitie', label: 'Class 3: Analytical facilities'},
+						{value: 'Analytical facilities', label: 'Class 3: Analytical facilities'},
 						{value: 'Digital infrastructure', label: 'Class 4: Digital infrastructure'}
 					]
+
+				new TextareaView
+					model: @model
+					modelAttribute: 'description'
+					label: 'Description'
+					rows: 3
 
 				new InputView
 					model: @model
@@ -153,8 +154,11 @@ define [
 					modelAttribute: 'relatedRecords'
 					label: 'Related records'
 					ObjectInputView: RelatedRecordView
-					multiline: true				
-			]
+					multiline: true
+
+
+
+				]
 		]
 
 		EditorView.prototype.initialize.apply @
