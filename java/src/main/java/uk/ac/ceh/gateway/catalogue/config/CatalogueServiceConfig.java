@@ -138,6 +138,7 @@ public class CatalogueServiceConfig {
                 .facetKey("recordType")
                 .facetKey("infrastructureCategory")
                 .documentType(RI_DATACUBE_TYPE)
+                .documentType(LINK_TYPE)
                 .fileUpload(false)
                 .build(),
 

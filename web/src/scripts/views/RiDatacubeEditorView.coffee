@@ -6,22 +6,23 @@ define [
 	'cs!views/editor/SingleView'
 	'cs!views/editor/SelectView'
 	'cs!views/editor/ReadOnlyView'
+	'cs!views/service-agreement/TextOnlyView'
 	'cs!views/editor/ParentView'
 	'cs!views/editor/ParentLargeView'
 	'cs!views/editor/ParentStringView'
 	'cs!views/editor/ParentStringTextboxView'
 	'cs!views/editor/PredefinedParentView'
 	'cs!views/editor/PredefinedParentLargeView'
-  	'cs!models/editor/Contact'
-  	'cs!views/editor/ContactView'
+	'cs!models/editor/Contact'
+	'cs!views/editor/ContactView'
 	'cs!views/editor/RelatedRecordView'
-], (EditorView, InputView, TextareaView, SingleObjectView, SingleView, SelectView, ReadOnlyView, ParentView, ParentLargeView, ParentStringView, ParentStringTextboxView, PredefinedParentView, PredefinedParentLargeView, Contact, ContactView, RelatedRecordView) -> EditorView.extend
+], (EditorView, InputView, TextareaView, SingleObjectView, SingleView, SelectView, ReadOnlyView, TextOnlyView, ParentView, ParentLargeView, ParentStringView, ParentStringTextboxView, PredefinedParentView, PredefinedParentLargeView, Contact, ContactView, RelatedRecordView) -> EditorView.extend
 
 	initialize: ->
 		@model.set('type', 'riDatacube') unless @model.has('type')
 
 		@sections = [
-			label: ' General '
+			label: 'General'
 			title: 'General'
 			views: [
 				new InputView
@@ -32,10 +33,15 @@ define [
                     	<p>Should reflect purpose (succinctly)</p><p>Should be consistent (within and across assets)</p>
                     """
 
+				new TextOnlyView
+					model: @model
+					label: 'Purpose'
+					text: """<p>Explain strategic relevance: What does it do? Why? Who cares?</p><p>Write in plain English and avoid (or define) acronyms.</p><p>Explain relevance to government policy agenda</p>
+							"""
+
 				new TextareaView
 					model: @model
 					modelAttribute: 'description'
-					label: 'Description'
 					rows: 3
 
 				new SelectView
@@ -53,52 +59,12 @@ define [
 						{value: 'Legacy Experimental Platforms or sites', label: 'Legacy Experimental Platforms or sites'},
 						{value: 'Analysis facilities', label: 'Analysis facilities'},
 						{value: 'Test facilities', label: 'Test facilities'},
-						{value: 'Digital computing platforms ', label: 'Digital computing platforms '},
+						{value: 'Digital computing platforms ', label: 'Digital computing platforms'},
 						{value: 'Data and information', label: 'Data and information'},
 						{value: 'Digital labs for data analytics', label: 'Digital labs for data analytics'},
 						{value: 'UKCEH models', label: 'UKCEH models'},
 						{value: 'Community models', label: 'Community models'},
 					]
-
-				new TextareaView
-					model: @model
-					modelAttribute: 'capabilities'
-					label: 'Capabilities'				
-
-				new TextareaView
-					model: @model
-					modelAttribute: 'lifecycle'
-					label: 'Lifecycle'				
-
-				new TextareaView
-					model: @model
-					modelAttribute: 'uniqueness'
-					label: 'Uniqueness'				
-
-				new TextareaView
-					model: @model
-					modelAttribute: 'partners'
-					label: 'Partners'				
-									
-				new ParentStringView
-					model: @model
-					modelAttribute: 'users'
-					label: 'Users'		
-
-				new TextareaView
-					model: @model
-					modelAttribute: 'access'
-					label: 'Access'				
-
-				new TextareaView
-					model: @model
-					modelAttribute: 'userCosts'
-					label: 'User costs'	
-
-				new TextareaView
-					model: @model
-					modelAttribute: 'fundingSources'
-					label: 'Funding sources'
 
 				new PredefinedParentView
 					model: @model
@@ -137,6 +103,52 @@ define [
 					model: @model
 					modelAttribute: 'locationText'
 					label: 'Location'				
+
+				new TextareaView
+					model: @model
+					modelAttribute: 'capabilities'
+					label: 'Capabilities'				
+					helpText: """
+                    	<p>Describe the facility, experimental design.  What is it equipped to do or measure?</p><p>Be informative for external partners and users</p>
+                    """
+
+				new TextareaView
+					model: @model
+					modelAttribute: 'lifecycle'
+					label: 'Lifecycle'				
+
+				new TextareaView
+					model: @model
+					modelAttribute: 'uniqueness'
+					label: 'Uniqueness'				
+
+				new TextareaView
+					model: @model
+					modelAttribute: 'partners'
+					label: 'Partners'				
+									
+				new ParentStringView
+					model: @model
+					modelAttribute: 'users'
+					label: 'Users'		
+
+				new TextareaView
+					model: @model
+					modelAttribute: 'access'
+					label: 'Access'				
+
+				new TextareaView
+					model: @model
+					modelAttribute: 'userCosts'
+					label: 'User costs'	
+
+				new TextareaView
+					model: @model
+					modelAttribute: 'fundingSources'
+					label: 'Funding sources'
+					helpText: """
+                    	<p>Include all funding sources</p><p>Be specific about NC awards/programmes</p>
+                    """
 
 				new TextareaView
 					model: @model

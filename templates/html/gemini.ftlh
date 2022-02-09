@@ -43,6 +43,15 @@
   >
 </#if>
 
+<#assign isLinkedDoc="false" linkedClass="" >
+<#if rel_source?has_content && rel_source?size gt 0>
+  <#assign isLinkedDoc="true" linkedClass="linked" >
+</#if>
+
+<#if isLinkedDoc="true" && resourceIdentifiers?has_content>
+  <#assign masterDocument = func.filterRegex(resourceIdentifiers, "code", "https://catalogue.ceh.ac.uk/id/")>
+</#if>
+
 <#macro getLabel val array>
   <#list array as item>
     <#if item['value']==val>
@@ -54,7 +63,7 @@
 
 <@skeleton.master title=title catalogue=catalogue rdf="${uri}?format=ttl" schemaorg="${uri}?format=schema.org" canonical="${uri}" can_edit_restricted=permission.userCanEditRestrictedFields(metadata.catalogue)>
 
-  <div id="metadata" class="${metadata.state?lower_case}">
+  <div id="metadata" class="${metadata.state?lower_case} ${linkedClass}">
     <div class="container" role="main">
       <#if resourceType?has_content && resourceType.value !=''>
         <#assign recordType = func.recordTypeOrResourceType()>
@@ -81,30 +90,35 @@
 
           <div class="row">
             <div class="col-sm-4 col-sm-push-8 panel-right">
-              <#include "document/_uploadData.ftlh">
-              <#include "document/_metrics.ftlh">
 
-              <#if resourceStatus??>
-                <#if resourceStatus == 'Restricted'>
-                  <#include "document/_distribution_restricted.ftlh">
+                <#if isLinkedDoc="true"> 
+                  <#include "document/_linked.ftlh">
                 <#else>
-                  <#if resourceType.value == 'signpost'>
-                    <#include "document/_distribution_signpost.ftlh">
-                  <#elseif resourceType.value == 'service' && mapViewable>
-                    <#include "document/_distribution_service.ftlh">
-                  <#elseif resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'application'>
-                    <#include "document/_distribution_dataset.ftlh">
-                  </#if>
+                    <#include "document/_uploadData.ftlh">
+                    <#include "document/_metrics.ftlh">
+
+                    <#if resourceStatus??>
+                      <#if resourceStatus == 'Restricted'>
+                        <#include "document/_distribution_restricted.ftlh">
+                      <#else>
+                        <#if resourceType.value == 'signpost'>
+                          <#include "document/_distribution_signpost.ftlh">
+                        <#elseif resourceType.value == 'service' && mapViewable>
+                          <#include "document/_distribution_service.ftlh">
+                        <#elseif resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'application'>
+                          <#include "document/_distribution_dataset.ftlh">
+                        </#if>
+                      </#if>
+                    <#elseif metadata.catalogue != "eidc" &&  resourceType.value == 'signpost'>
+                      <#include "document/_distribution_signpost.ftlh">
+                    </#if>
+
+                    <#if resourceType.value == 'thirdPartyDataset'>
+                      <#include "document/_third_party.ftlh">
+                    </#if>
                 </#if>
-              <#elseif metadata.catalogue != "eidc" &&  resourceType.value == 'signpost'>
-                 <#include "document/_distribution_signpost.ftlh">
-              </#if>
-
-              <#if resourceType.value == 'thirdPartyDataset'>
-                <#include "document/_third_party.ftlh">
-              </#if>
-
             </div>
+
             <div class="col-sm-8 col-sm-pull-4">
               <#include "document/_extent.ftlh">
               <#include "document/_dataquality.ftlh">
