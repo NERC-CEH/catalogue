@@ -1,15 +1,36 @@
 import { IdentityPermissionView } from '../src/IdentityPermission/index.js'
+import { Permission } from '../src/PermissionApp/index.js'
+import template from '../src/IdentityPermission/IdentityPermission.tpl'
 
 describe('Test IdentityPermissionView', () => {
-  it('Permission app should load permission with correct id', () => {
-    // given
-    const id = 1
+  it('View should be defined', () => {
+    // when
     const view = new IdentityPermissionView()
 
+    // then
+    expect(view).toBeDefined()
+  })
+
+  it('Update should be called', () => {
+    // given
+    const model = new Permission({
+      identity: 1,
+      canView: true,
+      canEdit: true,
+      canDelete: true,
+      canUpload: false
+    })
+    const view = new IdentityPermissionView({ model: model })
+    view.template = template
+    spyOn(view, 'update')
+    view.initialize()
+    view.delegateEvents()
+    view.render()
+
     // when
-    const result = view.initialize(id)
+    view.$('[type="checkbox"]').trigger('click')
 
     // then
-    expect(null).toBeNull()
+    expect(view.update).toHaveBeenCalled()
   })
 })

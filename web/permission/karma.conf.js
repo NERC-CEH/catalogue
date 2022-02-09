@@ -30,7 +30,7 @@ module.exports = function (config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://www.npmjs.com/search?q=keywords:karma-preprocessor
     preprocessors: {
-      './src/IdentityPermissionView.js': ['webpack'],
+      './src/IdentityPermission/index.js': ['webpack'],
       './spec/IdentityPermission.spec.js': ['webpack']
     },
     webpack: webpackConfig,

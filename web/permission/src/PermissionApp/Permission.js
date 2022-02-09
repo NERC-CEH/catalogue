@@ -2,7 +2,7 @@ import Backbone from 'backbone'
 import _ from 'underscore'
 import { IdentityPermissions } from '../IdentityPermission'
 
-export default Backbone.Model.extend({
+export var Permission = Backbone.Model.extend({
 
   url () {
     return this.urlRoot()
