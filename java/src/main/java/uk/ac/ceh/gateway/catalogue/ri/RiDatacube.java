@@ -13,6 +13,7 @@ import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.OnlineLink;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.gemini.RelatedRecord;
+import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 
 import java.util.Collections;
 import java.util.List;
@@ -28,7 +29,7 @@ import java.util.stream.Collectors;
 })
 public class RiDatacube extends AbstractMetadataDocument {
   
-  private String infrastructureClass, infrastructureCategory, purpose, capabilities, lifecycle,	uniqueness,	partners,	locationText,	access,	userCosts, fundingSources,	scienceArea ;
+  private String capabilities, lifecycle, uniqueness, partners, locationText, access, userCosts, fundingSources, scienceArea, infrastructureCategory ;
 
   private List<ResponsibleParty> owners;
 

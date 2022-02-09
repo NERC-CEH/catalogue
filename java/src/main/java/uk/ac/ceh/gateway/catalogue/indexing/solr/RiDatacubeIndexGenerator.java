@@ -18,7 +18,8 @@ public class RiDatacubeIndexGenerator implements IndexGenerator<RiDatacube, Solr
     @Override
     public SolrIndex generateIndex(RiDatacube document) throws DocumentIndexingException {
         return metadataDocumentGenerator.generateIndex(document)
-            .setInfrastructureClass(document.getInfrastructureClass())
+            .setInfrastructureCategory(document.getInfrastructureCategory())
+            .setInfrastructureCapabilities(document.getCapabilities())
             ;
     }
 }

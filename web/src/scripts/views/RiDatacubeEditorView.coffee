@@ -15,8 +15,6 @@ define [
   	'cs!models/editor/Contact'
   	'cs!views/editor/ContactView'
 	'cs!views/editor/RelatedRecordView'
-
-
 ], (EditorView, InputView, TextareaView, SingleObjectView, SingleView, SelectView, ReadOnlyView, ParentView, ParentLargeView, ParentStringView, ParentStringTextboxView, PredefinedParentView, PredefinedParentLargeView, Contact, ContactView, RelatedRecordView) -> EditorView.extend
 
 	initialize: ->
@@ -34,33 +32,33 @@ define [
                     	<p>Should reflect purpose (succinctly)</p><p>Should be consistent (within and across assets)</p>
                     """
 
-				new SelectView
-					model: @model
-					modelAttribute: 'infrastructureClass'
-					label: 'Infrastructure class'			
-					options: [
-						{value: '', label: ''},
-						{value: 'Environmental observatories', label: 'Class 1: Environmental observatories'},
-						{value: 'Environmental experiment platforms', label: 'Class 2: Environmental experiment platforms'},
-						{value: 'Analytical facilities', label: 'Class 3: Analytical facilities'},
-						{value: 'Digital infrastructure', label: 'Class 4: Digital infrastructure'}
-					]
-
 				new TextareaView
 					model: @model
 					modelAttribute: 'description'
 					label: 'Description'
 					rows: 3
 
-				new InputView
+				new SelectView
 					model: @model
 					modelAttribute: 'infrastructureCategory'
-					label: 'Infrastructure category'				
-
-				new TextareaView
-					model: @model
-					modelAttribute: 'purpose'
-					label: 'Purpose'				
+					label: 'Infrastructure category'
+					options: [
+						{value: 'Instrumented sites', label: 'Instrumented sites'},
+						{value: 'Periodic surveys', label: 'Periodic surveys'},
+						{value: 'Wildlife monitoring schemes', label: 'Wildlife monitoring schemes'},
+						{value: 'Discovery collections and archives', label: 'Discovery collections and archives'},
+						{value: 'Mobile observing platforms', label: 'Mobile observing platforms'},
+						{value: 'Controlled environment facilities (micro- or mesocosms)', label: 'Controlled environment facilities (micro- or mesocosms)'},
+						{value: 'Field research facilities (macrocosms)', label: 'Field research facilities (macrocosms)'},
+						{value: 'Legacy Experimental Platforms or sites', label: 'Legacy Experimental Platforms or sites'},
+						{value: 'Analysis facilities', label: 'Analysis facilities'},
+						{value: 'Test facilities', label: 'Test facilities'},
+						{value: 'Digital computing platforms ', label: 'Digital computing platforms '},
+						{value: 'Data and information', label: 'Data and information'},
+						{value: 'Digital labs for data analytics', label: 'Digital labs for data analytics'},
+						{value: 'UKCEH models', label: 'UKCEH models'},
+						{value: 'Community models', label: 'Community models'},
+					]
 
 				new TextareaView
 					model: @model
@@ -113,28 +111,24 @@ define [
 						'UKCEH Bangor':
 							organisationName: 'UK Centre for Ecology & Hydrology'
 							role: 'owner'
-							email: 'enquiries@ceh.ac.uk'
 							organisationIdentifier: 'https://ror.org/00pggkr55'
 							address:
                 				city: 'Bangor'
 						'UKCEH Edinburgh':
 							organisationName: 'UK Centre for Ecology & Hydrology'
 							role: 'owner'
-							email: 'enquiries@ceh.ac.uk'
 							organisationIdentifier: 'https://ror.org/00pggkr55'
 							address:
                 				city: 'Edinburgh'
 						'UKCEH Lancaster':
 							organisationName: 'UK Centre for Ecology & Hydrology'
 							role: 'owner'
-							email: 'enquiries@ceh.ac.uk'
 							organisationIdentifier: 'https://ror.org/00pggkr55'
 							address:
                 				city: 'Lancaster'
 						'UKCEH Wallingford':
 							organisationName: 'UK Centre for Ecology & Hydrology'
 							role: 'owner'
-							email: 'enquiries@ceh.ac.uk'
 							organisationIdentifier: 'https://ror.org/00pggkr55'
 							address:
                 				city: 'Wallingford'
@@ -155,9 +149,6 @@ define [
 					label: 'Related records'
 					ObjectInputView: RelatedRecordView
 					multiline: true
-
-
-
 				]
 		]
 

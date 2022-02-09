@@ -136,7 +136,7 @@ public class CatalogueServiceConfig {
                 .contactUrl("")
                 .logo("ukceh.png")
                 .facetKey("recordType")
-                .facetKey("infrastructureClass")
+                .facetKey("infrastructureCategory")
                 .documentType(RI_DATACUBE_TYPE)
                 .fileUpload(false)
                 .build(),

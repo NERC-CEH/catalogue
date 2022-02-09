@@ -58,7 +58,6 @@ public class SolrIndex {
     private @Field List<String> saSpecimenType;
     private @Field List<String> saTaxon;
     private @Field List<String> saTissue;
-    private @Field String infrastructureClass;  //RI
     private @Field String state;
     private @Field List<String> supplementalDescription;
     private @Field List<String> supplementalName;
@@ -70,6 +69,9 @@ public class SolrIndex {
     private @Field List<String> ukscapeService;
     private @Field Number version;
     private @Field List<String> view;
+    // infrastructure catalogue
+    private @Field String infrastructureCategory;
+    private @Field String infrastructureCapabilities;
 
     public SolrIndex addLocations(List<String> locations) {
         this.locations.addAll(locations);

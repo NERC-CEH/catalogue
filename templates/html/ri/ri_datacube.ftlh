@@ -18,9 +18,7 @@
           <div class="description">${description}</div>
         </#if>
         
-        <#if infrastructureClass??><@displaykey infrastructureClass "Infrastructure class" /></#if>
         <#if infrastructureCategory??><@displaykey infrastructureCategory "Infrastructure category" /></#if>
-        <#if purpose??><@displaykey purpose "Purpose" /></#if>
         <#if capabilities??><@displaykey capabilities "Capabilities" /></#if>
         <#if lifecycle??><@displaykey lifecycle "Lifecycle" /></#if>
         <#if uniqueness??><@displaykey uniqueness "Uniqueness" /></#if>
