@@ -1,13 +1,8 @@
-// Karma configuration
-// Generated on Tue Feb 08 2022 14:50:21 GMT+0000 (Greenwich Mean Time)
 const webpackConfig = require('./webpack.config.js')
 webpackConfig.entry = {}
 
 module.exports = function (config) {
   config.set({
-
-    // base path that will be used to resolve all patterns (eg. files, exclude)
-    basePath: '',
 
     // frameworks to use
     // available frameworks: https://www.npmjs.com/search?q=keywords:karma-adapter
@@ -15,12 +10,13 @@ module.exports = function (config) {
 
     // list of files / patterns to load in the browser
     files: [
-      './dist/permission-app.js',
-      './spec/IdentityPermission.spec.js'
+      './test/**/*.js'
     ],
+
     // list of files / patterns to exclude
     exclude: [
     ],
+
     loggers: [
       {
         type: 'console'
@@ -30,9 +26,10 @@ module.exports = function (config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://www.npmjs.com/search?q=keywords:karma-preprocessor
     preprocessors: {
-      './src/IdentityPermission/index.js': ['webpack'],
-      './spec/IdentityPermission.spec.js': ['webpack']
+      './test/**/*.js': ['webpack']
     },
+
+    // points to webpack config file for preprocessing
     webpack: webpackConfig,
 
     // test results reporter to use
