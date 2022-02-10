@@ -76,6 +76,6 @@ export var PermissionView = Backbone.View.extend({
   },
 
   leave () {
-    return window.location.assign(`/documents/${this.model.get('id')}/permission`)
+    window.location.assign(`/documents/${this.model.get('id')}/permission`)
   }
 })
