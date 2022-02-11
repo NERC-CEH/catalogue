@@ -33,7 +33,7 @@ test_permissions:
   image: geekykaran/headless-chrome-node-docker:latest
   script:
     - cd web/permission
-    - npm install
+    - npm ci
     - npm run test
 
 build_application:
