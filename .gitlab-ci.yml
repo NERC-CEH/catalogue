@@ -30,7 +30,7 @@ test_web:
 
 test_permissions:
   stage: test
-  image: alpeware/chrome-headless-trunk:latest
+  image: inventis/karma-chrome:latest
   script:
     - cd web/permission
     - npm ci
