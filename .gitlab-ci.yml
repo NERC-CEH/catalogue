@@ -33,6 +33,7 @@ test_permissions:
   image: geekykaran/headless-chrome-node-docker:latest
   script:
     - cd web/permission
+    - nvm use 15.11.0-stretch
     - npm ci
     - npm run test
 
