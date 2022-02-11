@@ -30,10 +30,9 @@ test_web:
 
 test_permissions:
   stage: test
-  image: geekykaran/headless-chrome-node-docker:latest
+  image: browserless/chrome:latest
   script:
     - cd web/permission
-    - nvm use 15.11.0-stretch
     - npm ci
     - npm run test
 
