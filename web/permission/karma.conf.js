@@ -72,7 +72,7 @@ module.exports = function (config) {
       clearContext: true
     },
 
-    singleRun: false,
+    singleRun: true,
 
     // Concurrency level
     // how many browser instances should be started simultaneously
