@@ -33,7 +33,8 @@ test_permissions:
   image: geekykaran/headless-chrome-node-docker:latest
   script:
     - cd web/permission
-    - npm install -g npm@6.0.0
+    - yarn global add npm
+    - npm -v
     - npm ci
     - npm run test
 
