@@ -34,7 +34,6 @@ test_permissions:
   script:
     - cd web/permission
     - npm install -g npm@6.0.0
-    - npm update npm -g
     - npm ci
     - npm run test
 
