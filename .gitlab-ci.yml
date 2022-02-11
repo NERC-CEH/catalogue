@@ -33,6 +33,7 @@ test_permissions:
   image: ephesoft/headless_chrome:latest
   script:
     - cd web/permission
+    - npm install -g npm
     - npm ci
     - npm run test
 
