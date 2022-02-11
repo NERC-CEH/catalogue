@@ -28,6 +28,14 @@ test_web:
     - ./node_modules/.bin/bower install --allow-root
     - ./node_modules/.bin/grunt prep build    # test not actually run as are broken
 
+test_permissions:
+  stage: test
+  image: node:16.13.2
+  script:
+    - cd web/permission
+    - npm ci
+    - npm run test
+
 build_application:
   stage: build
   image: docker:20.10.5

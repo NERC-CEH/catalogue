@@ -1,4 +1,4 @@
 export { default as Permission } from './Permission'
-export { PermissionApp } from './PermissionApp'
-export { PermissionView } from './PermissionView'
-export { PermissionAppView } from './PermissionAppView'
+export { default as PermissionApp } from './PermissionApp'
+export { default as PermissionView } from './PermissionView'
+export { default as PermissionAppView } from './PermissionAppView'

@@ -3,7 +3,7 @@ import template from './IdentityPermission.tpl'
 import _ from 'underscore'
 import $ from 'jquery'
 
-export var IdentityPermissionView = Backbone.View.extend({
+export default Backbone.View.extend({
   tagName: 'tr',
 
   events: {
@@ -26,5 +26,6 @@ export var IdentityPermissionView = Backbone.View.extend({
 
   render () {
     this.$el.html(this.template(this.model.attributes))
+    return this
   }
 })
