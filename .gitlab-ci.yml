@@ -30,7 +30,7 @@ test_web:
 
 test_permissions:
   stage: test
-  image: zenato/puppeteer
+  image: geekykaran/headless-chrome-node-docker:latest
   script:
     - cd web/permission
     - npm ci
