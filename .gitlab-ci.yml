@@ -34,7 +34,6 @@ test_permissions:
   script:
     - cd web/permission
     - npm install
-    - npm ci
     - npm run test
 
 build_application:
