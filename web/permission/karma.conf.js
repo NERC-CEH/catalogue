@@ -1,3 +1,4 @@
+process.env.CHROME_BIN = require('puppeteer').executablePath()
 const webpackConfig = require('./webpack.config.js')
 webpackConfig.entry = {}
 
@@ -52,7 +53,7 @@ module.exports = function (config) {
 
     // start these browsers
     // available browser launchers: https://www.npmjs.com/search?q=keywords:karma-launcher
-    browsers: ['ChromeHeadless'],
+    browsers: ['ChromiumHeadless'],
 
     client: {
       clearContext: true
