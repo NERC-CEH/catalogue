@@ -34,7 +34,7 @@ test_permissions:
   script:
     - cd web/permission
     - npm ci
-    - karma start
+    - npm run test
 
 build_application:
   stage: build
