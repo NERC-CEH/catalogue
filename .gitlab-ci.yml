@@ -33,8 +33,7 @@ test_permissions:
   image: geekykaran/headless-chrome-node-docker:latest
   script:
     - cd web/permission
-    - npm ci
-    - npm run test
+    - karma start
 
 build_application:
   stage: build
