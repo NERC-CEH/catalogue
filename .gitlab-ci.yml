@@ -30,7 +30,7 @@ test_web:
 
 test_permissions:
   stage: test
-  image: browserless/chrome:latest
+  image: zenika/alpine-chrome:latest
   script:
     - cd web/permission
     - npm ci
