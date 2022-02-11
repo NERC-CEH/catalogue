@@ -1,4 +1,4 @@
-process.env.CHROME_BIN = require('puppeteer').executablePath()
+process.env.CHROMIUM_BIN = require('puppeteer').executablePath()
 const webpackConfig = require('./webpack.config.js')
 webpackConfig.entry = {}
 
