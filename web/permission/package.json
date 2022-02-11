@@ -36,8 +36,7 @@
     "karma-jasmine": "^4.0.1",
     "karma-jasmine-html-reporter": "^1.7.0",
     "karma-spec-reporter": "^0.0.33",
-    "karma-webpack": "^5.0.0",
-    "puppeteer": "^13.3.1"
+    "karma-webpack": "^5.0.0"
   },
   "dependencies": {
     "@babel/cli": "^7.17.0",
@@ -62,7 +61,8 @@
     "jquery": "3.6.0",
     "underscore": "^1.13.2",
     "webpack": "^5.66.0",
-    "webpack-cli": "^4.9.2"
+    "webpack-cli": "^4.9.2",
+    "puppeteer": "^13.3.1"
   },
   "description": ""
 }
