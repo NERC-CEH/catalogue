@@ -1,26 +1,13 @@
-/* eslint-disable
-    no-multi-str,
-    no-return-assign,
-    no-undef,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
-define([
-  'jquery',
-  'backbone',
-  'cs!views/upload/simple/FileListView',
-  'cs!collections/upload/simple/FileCollection'
-], ($, Backbone, FileListView, FileCollection) => describe('FileListView', function () {
+import $ from 'jquery'
+import Backbone from 'backbone'
+import { FileListView, FileCollection } from '../src/File'
+
+describe('Test FileListView', function () {
   const template =
-    '<div> \
-<div id="files-tools"></div> \
-<ul id="files-list"></ul> \
-</div>'
+    `<div> 
+<div id="files-tools"></div> 
+<ul id="files-list"></ul> 
+</div>`
   let el = null
   let files = null
   let messages = null
@@ -34,7 +21,7 @@ define([
     spyOn(FileListView.prototype, 'deleteSelected').and.callThrough()
     files = new FileCollection({ url: '/upload/test' })
     messages = new Backbone.Collection()
-    return view = new FileListView({
+    view = new FileListView({
       el,
       files,
       messages
@@ -58,10 +45,10 @@ define([
 
     // then
     expect($('#files-list li').length).toEqual(1)
-    return expect(view.addOne).toHaveBeenCalled()
+    expect(view.addOne).toHaveBeenCalled()
   })
 
-  return it('resetting collection triggers subview render', function () {
+  it('resetting collection triggers subview render', function () {
     // when
     files.reset([
       { name: 'test0.csv', urlEncodedName: 'test0.csv' },
@@ -71,6 +58,6 @@ define([
 
     // then
     expect($('#files-list li').length).toEqual(3)
-    return expect(view.addAll).toHaveBeenCalled()
+    expect(view.addAll).toHaveBeenCalled()
   })
-}))
+})

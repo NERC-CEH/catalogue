@@ -10,8 +10,6 @@ export var FileListView = Backbone.View.extend({
     'click .select-all': 'selectAll'
   },
 
-  template,
-
   initialize (options) {
     this.files = options.files
     this.messages = options.messages
@@ -27,12 +25,12 @@ export var FileListView = Backbone.View.extend({
 
   addOne (file) {
     const view = new FileView({ model: file })
-    return this.$fileList.append(view.render().el)
+    this.$fileList.append(view.render().el)
   },
 
   addAll () {
     this.$fileList.empty()
-    return this.files.each(this.addOne, this)
+    this.files.each(this.addOne, this)
   },
 
   deleteSelected () {
@@ -40,22 +38,22 @@ export var FileListView = Backbone.View.extend({
     if (confirm(`Delete ${toDelete.length} files?`)) {
       const options = {
         success: model => {
-          return this.messages.add(new Backbone.Model({ message: `Deleted: ${model.get('name')}`, type: 'info' }))
+          this.messages.add(new Backbone.Model({ message: `Deleted: ${model.get('name')}`, type: 'info' }))
         },
         error: (model, response) => {
-          return this.messages.add(new Backbone.Model(response))
+          this.messages.add(new Backbone.Model(response))
         }
       }
-      return _.invoke(toDelete, 'destroy', options)
+      _.invoke(toDelete, 'destroy', options)
     }
   },
 
   selectAll () {
-    return this.files.invoke('set', 'toDelete', true)
+    this.files.invoke('set', 'toDelete', true)
   },
 
   render () {
-    this.$tools.html(this.template())
+    this.$tools.html(_.template(template))
     return this
   }
 })

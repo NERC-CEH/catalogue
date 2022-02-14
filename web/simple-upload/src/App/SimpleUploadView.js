@@ -28,9 +28,7 @@ export var SimpleUploadView = Backbone.View.extend({
       messages
     })
 
-    const $filesData = $('#files-data')
-    if ($filesData.length) { files.reset(JSON.parse($filesData.text())) }
-    const $messageData = $('#messages-data')
-    if ($messageData.length) { return messages.reset(JSON.parse($messageData.text())) }
+    if ($('#files-data').length) { files.reset(JSON.parse($('#files-data').text())) }
+    if ($('#messages-data').length) { return messages.reset(JSON.parse($('#messages-data').text())) }
   }
 })

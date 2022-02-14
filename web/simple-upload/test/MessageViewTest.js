@@ -1,31 +1,31 @@
+import $ from 'jquery'
 import Backbone from 'backbone'
 import { MessageView } from '../src/Message'
-import template from '../src/Message/Message.tpl'
+describe('Test MessageView', function () {
+  let el = null
+  let collection = null
+  let model = null
+  let view = null
 
-describe('Test MessageView', () => {
-  it('View should be defined', () => {
-    // when
-    const view = new MessageView()
-
-    // then
-    expect(view).toBeDefined()
+  beforeEach(function () {
+    el = $('ul').appendTo($('body'))
+    spyOn(MessageView.prototype, 'remove').and.callThrough()
+    model = new Backbone.Model({
+      message: 'Hello World',
+      type: 'info'
+    })
+    collection = new Backbone.Collection([model])
+    view = new MessageView({
+      el,
+      model
+    })
   })
 
-  it('Remove should be triggered', () => {
-    // given
-    const model = new Backbone.Model({
-      type: 'any',
-      message: 'test'
-    })
-    const view = new MessageView({ model: model })
-    view.template = template
-    spyOn(view, 'remove')
-    view.initialize()
-    view.delegateEvents()
-    view.render()
+  afterEach(() => el.remove())
 
+  it('removed when model is destroyed', function () {
     // when
-    model.trigger('remove')
+    collection.pop()
 
     // then
     expect(view.remove).toHaveBeenCalled()

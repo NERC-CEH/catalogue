@@ -9,9 +9,8 @@ export var MessageListView = Backbone.View.extend({
     'click .clear-all': 'clearAll'
   },
 
-  template,
-
   initialize (options) {
+    this.template = _.template(template)
     this.messages = options.messages
     this.$tools = this.$('#messages-tools')
     this.$messageList = this.$('#messages-list')
@@ -30,5 +29,6 @@ export var MessageListView = Backbone.View.extend({
 
   render () {
     this.$tools.html(_.template(template))
+    return this
   }
 })

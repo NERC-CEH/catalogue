@@ -14,5 +14,6 @@ export var MessageView = Backbone.View.extend({
 
   render () {
     this.$el.html(this.template(this.model.attributes))
+    return this
   }
 })

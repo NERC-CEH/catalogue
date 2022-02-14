@@ -1,37 +1,41 @@
-import { MessageListView } from '../src/Message'
-import template from '../src/Message/Messages.tpl'
+import $ from 'jquery'
 import Backbone from 'backbone'
+import { MessageListView } from '../src/Message'
+describe('Test MessageListView', function () {
+  const template =
+    `<div> 
+<div id="messages-tools"></div> 
+<ul id="messages-list"></ul> 
+</div>`
+  let el = null
+  let messages = null
+  let view = null
 
-describe('Test MessageListView', () => {
-  it('View should be defined', () => {
-    // given
-    const messages = new Backbone.Collection()
-
-    // when
-    const view = new MessageListView({
-      el: '#messages',
+  beforeEach(function () {
+    el = $(template).appendTo($('body'))
+    spyOn(MessageListView.prototype, 'addMessage').and.callThrough()
+    messages = new Backbone.Collection()
+    view = new MessageListView({
+      el,
       messages
     })
-
-    // then
-    expect(view).toBeDefined()
   })
 
-  it('clearAll should be called', () => {
-    // given
-    const options = new Backbone.Model({
-      messages: ['message', 'message']
-    })
-    const view = new MessageListView({ options: options })
-    view.template = template
-    spyOn(view, 'clearAll')
-    view.delegateEvents()
-    view.render()
+  afterEach(() => el.remove())
 
+  it('renders Clear button', () => expect($('#messages-tools button')).toBeDefined())
+
+  it('message added to collection triggers subview render', function () {
     // when
-    view.$('.clear-all').trigger('click')
+    messages.add({ message: 'test', type: 'info' })
 
     // then
-    expect(view.clearAll).toHaveBeenCalled()
+    expect($('#messages-list li').length).toEqual(1)
+    expect(view.addMessage).toHaveBeenCalled()
+  })
+
+  it('has clear DOM events', function () {
+    expect(view.events['click .clear-all']).toBeDefined()
+    expect(view.events['click .clear-all']).toEqual('clearAll')
   })
 })
