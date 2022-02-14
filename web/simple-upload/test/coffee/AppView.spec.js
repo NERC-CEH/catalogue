@@ -1,3 +1,10 @@
+/* eslint-disable
+    no-multi-str,
+    no-return-assign,
+    no-undef,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -5,9 +12,9 @@
  */
 define([
   'cs!views/upload/simple/AppView'
-], AppView => describe('AppView', function() {
+], AppView => describe('AppView', function () {
   const template =
-    `<div id="messages"> \
+    '<div id="messages"> \
 <div id="messages-tools"></div> \
 <ul id="messages-list"></ul> \
 </div> \
@@ -25,28 +32,28 @@ define([
 </script> \
 <script id="messages-data" type="application/json"> \
 {"message": "Test message", "type": "info"} \
-</script>`;
-  let el = null;
-  let view = null;
+</script>'
+  let el = null
+  let view = null
 
-  beforeEach(function() {
-    el = $(template).appendTo($('body'));
+  beforeEach(function () {
+    el = $(template).appendTo($('body'))
     return view = new AppView({
       el,
       url: '/upload/test'
-    });
-  });
+    })
+  })
 
-  afterEach(() => el.remove());
+  afterEach(() => el.remove())
 
-  xit('has properties', function() {
-    expect(view.url).toBeDefined();
-    expect(view.files).toBeDefined();
-    return expect(view.messages).toBeDefined();
-  });
+  xit('has properties', function () {
+    expect(view.url).toBeDefined()
+    expect(view.files).toBeDefined()
+    return expect(view.messages).toBeDefined()
+  })
 
-  return xit('loads data from page', function() {
-    expect(view.files.length).toEqual(2);
-    return expect(view.messages.length).toEqual(1);
-  });
-}));
+  return xit('loads data from page', function () {
+    expect(view.files.length).toEqual(2)
+    return expect(view.messages.length).toEqual(1)
+  })
+}))
