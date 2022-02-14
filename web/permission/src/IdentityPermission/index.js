@@ -1,3 +1,3 @@
 export { default as IdentityPermission } from './IdentityPermission'
-export { IdentityPermissions } from './IdentityPermissions'
-export { IdentityPermissionView } from './IdentityPermissionView'
+export { default as IdentityPermissions } from './IdentityPermissions'
+export { default as IdentityPermissionView } from './IdentityPermissionView'

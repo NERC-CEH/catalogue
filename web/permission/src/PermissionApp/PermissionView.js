@@ -5,7 +5,7 @@ import $ from 'jquery'
 
 import { IdentityPermission, IdentityPermissionView } from '../IdentityPermission'
 
-export var PermissionView = Backbone.View.extend({
+export default Backbone.View.extend({
   el: '.permission',
 
   events: {
@@ -76,6 +76,6 @@ export var PermissionView = Backbone.View.extend({
   },
 
   leave () {
-    return window.location.assign(`/documents/${this.model.get('id')}/permission`)
+    window.location.assign(`/documents/${this.model.get('id')}/permission`)
   }
 })
