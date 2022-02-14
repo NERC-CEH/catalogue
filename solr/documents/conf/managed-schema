@@ -117,6 +117,7 @@
     <field name="saTaxon" type="keywords"/>
     <field name="saTissue" type="keywords"/>
     <field name="infrastructureCategory" type="keywords" multiValued="false"/>
+    <field name="scienceArea" type="keywords" multiValued="false"/>
     <field name="infrastructureCapabilities" type="text_general" multiValued="false"/>
     <field name="state" type="keywords" multiValued="false"/>
     <field name="supplementalDescription" type="text_general"/>

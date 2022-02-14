@@ -257,7 +257,7 @@ Replace \n with line breaks
 <#macro linebreaks value>
     <#if value?has_content>
       <#list value?split("\n") as line>
-          ${line}<#sep><br>
+          ${line}<#sep><br></#sep>
       </#list>
     </#if>
 </#macro>

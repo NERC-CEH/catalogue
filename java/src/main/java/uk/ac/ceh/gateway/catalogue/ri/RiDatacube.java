@@ -14,6 +14,7 @@ import uk.ac.ceh.gateway.catalogue.model.OnlineLink;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.gemini.RelatedRecord;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
+import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 
 import java.util.Collections;
 import java.util.List;
@@ -36,6 +37,8 @@ public class RiDatacube extends AbstractMetadataDocument {
   private List<String> users;
 
   private List<RelatedRecord> relatedRecords;
+
+  private List<OnlineResource> onlineResources;
 
 }
 

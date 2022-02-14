@@ -71,6 +71,7 @@ public class SolrIndex {
     private @Field List<String> view;
     // infrastructure catalogue
     private @Field String infrastructureCategory;
+    private @Field String scienceArea;
     private @Field String infrastructureCapabilities;
 
     public SolrIndex addLocations(List<String> locations) {

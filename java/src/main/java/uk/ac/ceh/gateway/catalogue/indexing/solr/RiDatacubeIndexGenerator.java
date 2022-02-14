@@ -1,5 +1,4 @@
 package uk.ac.ceh.gateway.catalogue.indexing.solr;
-
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
@@ -19,6 +18,7 @@ public class RiDatacubeIndexGenerator implements IndexGenerator<RiDatacube, Solr
     public SolrIndex generateIndex(RiDatacube document) throws DocumentIndexingException {
         return metadataDocumentGenerator.generateIndex(document)
             .setInfrastructureCategory(document.getInfrastructureCategory())
+            .setScienceArea(document.getScienceArea())
             .setInfrastructureCapabilities(document.getCapabilities())
             ;
     }

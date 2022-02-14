@@ -138,6 +138,11 @@ public class HardcodedFacetFactory implements FacetFactory {
                 .displayName("Category")
                 .hierarchical(false)
                 .build();
+            case "scienceArea" -> Facet.builder()
+                .fieldName("scienceArea")
+                .displayName("Science area")
+                .hierarchical(false)
+                .build();
             case "saPhysicalState" -> Facet.builder()
                 .fieldName("saPhysicalState")
                 .displayName("Physical State")

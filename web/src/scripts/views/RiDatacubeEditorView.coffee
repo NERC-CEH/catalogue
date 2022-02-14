@@ -13,10 +13,12 @@ define [
 	'cs!views/editor/ParentStringTextboxView'
 	'cs!views/editor/PredefinedParentView'
 	'cs!views/editor/PredefinedParentLargeView'
+	'cs!views/editor/KeywordView'
 	'cs!models/editor/Contact'
 	'cs!views/editor/ContactView'
 	'cs!views/editor/RelatedRecordView'
-], (EditorView, InputView, TextareaView, SingleObjectView, SingleView, SelectView, ReadOnlyView, TextOnlyView, ParentView, ParentLargeView, ParentStringView, ParentStringTextboxView, PredefinedParentView, PredefinedParentLargeView, Contact, ContactView, RelatedRecordView) -> EditorView.extend
+	'cs!views/editor/RiOnlineLinkView'
+], (EditorView, InputView, TextareaView, SingleObjectView, SingleView, SelectView, ReadOnlyView, TextOnlyView, ParentView, ParentLargeView, ParentStringView, ParentStringTextboxView, PredefinedParentView, PredefinedParentLargeView, KeywordView, Contact, ContactView, RelatedRecordView, RiOnlineLinkView) -> EditorView.extend
 
 	initialize: ->
 		@model.set('type', 'riDatacube') unless @model.has('type')
@@ -42,7 +44,7 @@ define [
 				new TextareaView
 					model: @model
 					modelAttribute: 'description'
-					rows: 3
+					rows: 6
 
 				new SelectView
 					model: @model
@@ -57,13 +59,13 @@ define [
 						{value: 'Controlled environment facilities (micro- or mesocosms)', label: 'Controlled environment facilities (micro- or mesocosms)'},
 						{value: 'Field research facilities (macrocosms)', label: 'Field research facilities (macrocosms)'},
 						{value: 'Legacy Experimental Platforms or sites', label: 'Legacy Experimental Platforms or sites'},
-						{value: 'Analysis facilities', label: 'Analysis facilities'},
+						{value: 'Analytical facilities', label: 'Analytical facilities'},
 						{value: 'Test facilities', label: 'Test facilities'},
 						{value: 'Digital computing platforms ', label: 'Digital computing platforms'},
 						{value: 'Data and information', label: 'Data and information'},
 						{value: 'Digital labs for data analytics', label: 'Digital labs for data analytics'},
 						{value: 'UKCEH models', label: 'UKCEH models'},
-						{value: 'Community models', label: 'Community models'},
+						{value: 'Community models', label: 'Community models'}
 					]
 
 				new PredefinedParentView
@@ -150,10 +152,41 @@ define [
                     	<p>Include all funding sources</p><p>Be specific about NC awards/programmes</p>
                     """
 
-				new TextareaView
+				new SelectView
 					model: @model
 					modelAttribute: 'scienceArea'
 					label: 'Science area'
+					options: [
+						{value: 'Atmospheric Chemistry and Effects', label: 'Atmospheric Chemistry and Effects'},
+						{value: 'Biodiversity', label: 'Biodiversity'},
+						{value: 'Hydro-climate Risks', label: 'Hydro-climate Risks'},
+						{value: 'Pollution', label: 'Pollution'},
+						{value: 'Soils and Land Use', label: 'Soils and Land Use'},
+						{value: 'Water Resources', label: 'Water Resources'}
+					]
+
+				new ParentView
+					model: @model
+					modelAttribute: 'onlineResources'
+					label: 'Online resources'
+					ObjectInputView: RiOnlineLinkView
+					multiline: true
+					listAttribute: """
+								<option value='code'>Link to location of the model code (e.g. GitHub repository)</option>
+								<option value='documentation'>Link to documentation describing how to use the model</option>
+								<option value='website'/>
+								<option value='browseGraphic'>Image to display on metadata record</option>
+								"""
+					helpText: """
+								<p>Websites/online resources to access and further descibe the model</p>
+								<p>You should include the location of the model code repository e.g. https://github.com/...</p>
+								"""
+
+				new ParentView
+					model: @model
+					modelAttribute: 'keywords'
+					label: 'Keywords'
+					ObjectInputView: KeywordView
 
 				new ParentView
 					model: @model
