@@ -1,36 +1,44 @@
-define [
-  'jquery'
-  'backbone'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'jquery',
+  'backbone',
   'cs!views/upload/simple/FileView'
-], ($, Backbone, FileView) ->
+], ($, Backbone, FileView) => describe("FileView", function() {
+  let el = null;
+  const collection = null;
+  let model = null;
+  let view = null;
 
-  describe "FileView", ->
-    el = null
-    collection = null
-    model = null
-    view = null
+  beforeEach(function() {
+    el = $('ul').appendTo($('body'));
+    spyOn(FileView.prototype, 'remove').and.callThrough();
+    spyOn(FileView.prototype, 'render').and.callThrough();
+    model = new Backbone.Model({
+      message: 'Hello World',
+      type: 'info'
+    });
+    return view = new FileView({
+      el,
+      model
+    });
+  });
 
-    beforeEach ->
-      el = $('ul').appendTo($('body'))
-      spyOn(FileView.prototype, 'remove').and.callThrough()
-      spyOn(FileView.prototype, 'render').and.callThrough()
-      model = new Backbone.Model
-        message: 'Hello World'
-        type: 'info'
-      view = new FileView
-        el: el
-        model: model
+  afterEach(() => el.remove());
 
-    afterEach ->
-      el.remove()
+  it('has DOM events', function() {
+    expect(view.events['change input']).toBeDefined();
+    return expect(view.events['change input']).toEqual('select');
+  });
 
-    it 'has DOM events', ->
-      expect(view.events['change input']).toBeDefined()
-      expect(view.events['change input']).toEqual('select')
+  return it('rerenders when model changed', function() {
+    //when
+    model.set('toDelete', true);
 
-    it 'rerenders when model changed', ->
-      #when
-      model.set('toDelete', true)
-
-      #then
-      expect(view.render).toHaveBeenCalled()
+    //then
+    return expect(view.render).toHaveBeenCalled();
+  });
+}));

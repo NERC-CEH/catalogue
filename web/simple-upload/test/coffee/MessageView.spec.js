@@ -1,32 +1,39 @@
-define [
-  'jquery'
-  'backbone'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'jquery',
+  'backbone',
   'cs!views/upload/simple/MessageView'
-], ($, Backbone, MessageView) ->
+], ($, Backbone, MessageView) => describe("MessageView", function() {
+  let el = null;
+  let collection = null;
+  let model = null;
+  let view = null;
 
-  describe "MessageView", ->
-    el = null
-    collection = null
-    model = null
-    view = null
+  beforeEach(function() {
+    el = $('ul').appendTo($('body'));
+    spyOn(MessageView.prototype, 'remove').and.callThrough();
+    model = new Backbone.Model({
+      message: 'Hello World',
+      type: 'info'
+    });
+    collection = new Backbone.Collection([model]);
+    return view = new MessageView({
+      el,
+      model
+    });
+  });
 
-    beforeEach ->
-      el = $('ul').appendTo($('body'))
-      spyOn(MessageView.prototype, 'remove').and.callThrough()
-      model = new Backbone.Model
-        message: 'Hello World'
-        type: 'info'
-      collection = new Backbone.Collection([model])
-      view = new MessageView
-        el: el
-        model: model
+  afterEach(() => el.remove());
 
-    afterEach ->
-      el.remove()
+  return it('removed when model is destroyed', function() {
+    //when
+    collection.pop();
 
-    it 'removed when model is destroyed', ->
-      #when
-      collection.pop()
-
-      #then
-      expect(view.remove).toHaveBeenCalled()
+    //then
+    return expect(view.remove).toHaveBeenCalled();
+  });
+}));
