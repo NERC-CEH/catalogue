@@ -1,11 +1,11 @@
 <#import "../../skeleton.ftlh" as skeleton>
 
-<#assign scripts>
-  <script data-main="/static/scripts/main-out" src="/static/vendor/requirejs/require.js"></script>
+<#assign uploadScripts>
   <script src="/static/scripts/simple-upload-app.js"></script>
+  <script data-main="/static/scripts/main-out" src="/static/vendor/requirejs/require.js"></script>
 </#assign>
 
-<@skeleton.master title=title catalogue=catalogues.retrieve(catalogueKey)>
+<@skeleton.master title=title catalogue=catalogues.retrieve(catalogueKey) scripts=uploadScripts>
 <div class="container" id="simple-upload">
   <h1>${title}</h1>
   <a href="/documents/${id}">Return to metadata</a>

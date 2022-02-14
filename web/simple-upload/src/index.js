@@ -7,5 +7,4 @@ $(document).ready(function () {
     el: '#simple-upload',
     url
   })
-  view.render()
 })

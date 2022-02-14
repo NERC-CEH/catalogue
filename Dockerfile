@@ -22,8 +22,8 @@ COPY --chown=1000:1000 web/permission/webpack.config.js .
 COPY --chown=1000:1000 web/permission/src src/
 RUN npm install && npm run build
 
-# Build Permission app (javascript & css)
-FROM node:17.4.0 AS build-simpleupload
+# Build simple upload app (javascript & css)
+FROM node:17.4.0 AS build-simple-upload
 WORKDIR web/simple-upload
 COPY --chown=1000:1000 web/simple-upload/package.json .
 COPY --chown=1000:1000 web/simple-upload/package-lock.json .
@@ -57,7 +57,7 @@ COPY templates /opt/ceh-catalogue/templates
 COPY --from=build-web /app/src/css /opt/ceh-catalogue/static/css
 COPY web/src/img /opt/ceh-catalogue/static/img
 COPY --from=build-permissions web/permission/dist/permission-app.js /opt/ceh-catalogue/static/scripts/permission-app.js
-COPY --from=build-simpleupload web/simple-upload/dist/simple-upload-app.js /opt/ceh-catalogue/static/scripts/simple-upload-app.js
+COPY --from=build-simple-upload web/simple-upload/dist/simple-upload-app.js /opt/ceh-catalogue/static/scripts/simple-upload-app.js
 COPY --from=build-web /app/src/scripts/main-out.js /opt/ceh-catalogue/static/scripts/main-out.js
 COPY --from=build-web /app/src/scripts/upload-out.js /opt/ceh-catalogue/static/scripts/upload-out.js
 COPY --from=build-web /app/src/vendor/font-awesome-5/webfonts /opt/ceh-catalogue/static/vendor/font-awesome-5/webfonts
