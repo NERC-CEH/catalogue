@@ -5,7 +5,7 @@ import $ from 'jquery'
 
 import { IdentityPermission, IdentityPermissionView } from '../IdentityPermission'
 
-export var PermissionView = Backbone.View.extend({
+export default Backbone.View.extend({
   el: '.permission',
 
   events: {

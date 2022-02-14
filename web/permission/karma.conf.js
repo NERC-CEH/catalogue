@@ -1,3 +1,4 @@
+process.env.CHROME_BIN = require('puppeteer').executablePath()
 const webpackConfig = require('./webpack.config.js')
 webpackConfig.entry = {}
 
@@ -50,15 +51,28 @@ module.exports = function (config) {
     // enable / disable watching file and executing tests whenever any file changes
     autoWatch: true,
 
+    customLaunchers: {
+      ChromeHeadless_no_sandbox: {
+        base: 'Chrome',
+        flags: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--headless',
+          '--disable-gpu',
+          '--remote-debugging-port=9222'
+        ]
+      }
+    },
+
     // start these browsers
     // available browser launchers: https://www.npmjs.com/search?q=keywords:karma-launcher
-    browsers: [],
+    browsers: ['ChromeHeadless_no_sandbox'],
 
     client: {
       clearContext: true
     },
 
-    singleRun: false,
+    singleRun: true,
 
     // Concurrency level
     // how many browser instances should be started simultaneously

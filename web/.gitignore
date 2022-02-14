@@ -2,6 +2,7 @@
 src/vendor
 src/scripts/*-out.js
 src/css/*
+permission/dist
 
 # Ignore the node_modules
 node_modules
