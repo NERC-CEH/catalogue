@@ -13,27 +13,22 @@ export var MessageListView = Backbone.View.extend({
 
   initialize (options) {
     this.messages = options.messages
-
     this.$tools = this.$('#messages-tools')
-
     this.$messageList = this.$('#messages-list')
-
     this.listenTo(this.messages, 'add', this.addMessage)
-
-    return this.render()
+    this.render()
   },
 
   addMessage (message) {
     const view = new MessageView({ model: message })
-    return this.$messageList.append(view.render().el)
+    this.$messageList.append(view.render().el)
   },
 
   clearAll () {
-    return _.invoke(this.messages.toArray(), 'destroy')
+    _.invoke(this.messages.toArray(), 'destroy')
   },
 
   render () {
-    this.$tools.html(this.template())
-    return this
+    this.$tools.html(_.template(template))
   }
 })
