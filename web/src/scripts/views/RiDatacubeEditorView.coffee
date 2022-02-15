@@ -16,9 +16,12 @@ define [
 	'cs!views/editor/KeywordView'
 	'cs!models/editor/Contact'
 	'cs!views/editor/ContactView'
+	'cs!models/editor/BoundingBox'
+	'cs!views/editor/BoundingBoxView'
 	'cs!views/editor/RelatedRecordView'
 	'cs!views/editor/RiOnlineLinkView'
-], (EditorView, InputView, TextareaView, SingleObjectView, SingleView, SelectView, ReadOnlyView, TextOnlyView, ParentView, ParentLargeView, ParentStringView, ParentStringTextboxView, PredefinedParentView, PredefinedParentLargeView, KeywordView, Contact, ContactView, RelatedRecordView, RiOnlineLinkView) -> EditorView.extend
+
+], (EditorView, InputView, TextareaView, SingleObjectView, SingleView, SelectView, ReadOnlyView, TextOnlyView, ParentView, ParentLargeView, ParentStringView, ParentStringTextboxView, PredefinedParentView, PredefinedParentLargeView, KeywordView, Contact, ContactView, BoundingBox, BoundingBoxView, RelatedRecordView, RiOnlineLinkView) -> EditorView.extend
 
 	initialize: ->
 		@model.set('type', 'riDatacube') unless @model.has('type')
@@ -165,22 +168,26 @@ define [
 						{value: 'Water Resources', label: 'Water Resources'}
 					]
 
+				new PredefinedParentView
+					model: @model
+					modelAttribute: 'boundingBoxes'
+					ModelType: BoundingBox
+					label: 'Spatial extent'
+					ObjectInputView: BoundingBoxView
+					multiline: true
+					predefined:
+						'Great Britain':
+							northBoundLatitude: 60.861
+							eastBoundLongitude: 1.768
+							southBoundLatitude: 49.864
+							westBoundLongitude: -8.648
+
 				new ParentView
 					model: @model
 					modelAttribute: 'onlineResources'
 					label: 'Online resources'
 					ObjectInputView: RiOnlineLinkView
 					multiline: true
-					listAttribute: """
-								<option value='code'>Link to location of the model code (e.g. GitHub repository)</option>
-								<option value='documentation'>Link to documentation describing how to use the model</option>
-								<option value='website'/>
-								<option value='browseGraphic'>Image to display on metadata record</option>
-								"""
-					helpText: """
-								<p>Websites/online resources to access and further descibe the model</p>
-								<p>You should include the location of the model code repository e.g. https://github.com/...</p>
-								"""
 
 				new ParentView
 					model: @model

@@ -25,85 +25,97 @@
       <div class="metadata-grid">
         <div class="col1">
 
-          <#if infrastructureCategory??><@displaykey infrastructureCategory "Infrastructure category" /></#if>
-          <#if capabilities??><@displaykey capabilities "Capabilities" /></#if>
-          <#if lifecycle??><@displaykey lifecycle "Lifecycle" /></#if>
-          <#if uniqueness??><@displaykey uniqueness "Uniqueness" /></#if>
-          <#if partners??><@displaykey partners "Partners" /></#if>
-          <#if access??><@displaykey access "Access" /></#if>
-          <#if locationText??><@displaykey locationText "Location" /></#if>
-          <#if userCosts??><@displaykey userCosts "User costs"/></#if>
-          <#if fundingSources??><@displaykey fundingSources "Funding sources"/></#if>
-          <#if scienceArea??><@displaykey scienceArea "Science area" /></#if>
+          <#if infrastructureCategory??><@displaykey "Infrastructure category">${infrastructureCategory}</@displaykey></#if>
+          <#if capabilities??><@displaykey "Capabilities"><@linebreaks capabilities/></@displaykey></#if>
+          <#if lifecycle??><@displaykey "Lifecycle"><@linebreaks lifecycle/></@displaykey></#if>
+          <#if uniqueness??><@displaykey "Uniqueness"><@linebreaks uniqueness/></@displaykey></#if>
+          <#if partners??><@displaykey "Partners"><@linebreaks partners/></@displaykey></#if>
+          <#if access??><@displaykey "Access"><@linebreaks access/></@displaykey></#if>
+          <#if locationText??><@displaykey "Location"><@linebreaks locationText/></@displaykey></#if>
+          <#if userCosts??><@displaykey "User costs"><@linebreaks userCosts/></@displaykey></#if>
+          <#if fundingSources??><@displaykey "Funding sources"><@linebreaks fundingSources/></@displaykey></#if>
+          <#if userCosts??><@displaykey "User costs"><@linebreaks userCosts/></@displaykey></#if>
+          <#if scienceArea??><@displaykey "Science area">${scienceArea}</@displaykey></#if>
 
           <#if users?? >
-            <#assign numUsers = users?size>
-            <div class="key-value">
-              <div>User<#if numUsers gte 2>s</#if></div>
-              <div><dl>
-                <#list users as user>
-                  <dd>${user}</dd>
-                </#list>
-              </dl></div>
-            </div>
+              <@displaykey "Users">
+                <dl>
+                  <#list users as user>
+                    <dd>${user}</dd>
+                  </#list>
+                </dl>
+              </@displaykey>
           </#if>
 
           <#if onlineResources?? >
-           <#assign numLinks = onlineResources?size>
-            <div class="key-value">
-              <div>Link<#if numLinks gte 2>s</#if></div>
-              <div><dl>
+            <#assign onlineResourceLabel = "Link">
+            <#if onlineResources?size gte 2>
+              <#assign onlineResourceLabel = "Links">
+            </#if>
+              <@displaykey onlineResourceLabel>
+                <dl>
                 <#list onlineResources as link>
                   <dd>
                   <a href="${link.url}" target="_blank" rel="noopener noreferrer">${link.url} <i class="fas fa-external-link-alt fa-xs"></i></a>
                   </dd>
                 </#list>
-              </dl></div>
-            </div>
-
+              </dl>
+              </@displaykey>
           </#if>
 
-          <#if rel_all?has_content && rel_all?size gt 0>
-            <div class="relatedRecords">
 
-              <div class="key-value">
-                <div>Related records</div>
-                <div>
-                  <#list rel_all as item>
-                    <a href="${item.href}">${item.title}</a><#sep><br></#sep>
-                  </#list>
-                </div>
-              </div>
-            </div>
+          <#if rel_all?has_content && rel_all?size gt 0 >
+           
+              <@displaykey "Related">
+                <dl>
+                <#list rel_all as item>
+                  <dd>
+                  <a href="${item.href}">${item.title}</a>
+                  </dd>
+                </#list>
+              </dl>
+              </@displaykey>
           </#if>
 
           <#if keywords?? >
-            <div class="key-value">
-              <div>Keywords</div>
-              <div>
+            <#assign keywordLabel = "Keyword">
+            <#if users?size gte 2>
+              <#assign keywordLabel = "Keywords">
+            </#if>
+              <@displaykey keywordLabel>
                 <#list keywords as keyword>
                   ${keyword.value}<#sep>, </#sep>
                 </#list>
-              </div>
-            </div>
+              </@displaykey>
           </#if>
 
-          <@displaykey metadataDateTime?datetime.iso?datetime?string['dd MMMM yyyy  HH:mm'] "Last updated" />
+          <#if boundingBoxes?? && boundingBoxes?has_content >
+            <@displaykey "Location">
+              <div id="studyarea-map">
+               <#list boundingBoxes as extent>
+                <span content="${extent.wkt}" datatype="geo:wktLiteral"/>
+              </#list>
+             </div>
+            </@displaykey>
+          </#if>
 
-        
+          <@displaykey "Last updated">${metadataDateTime?datetime.iso?datetime?string['dd MMMM yyyy  HH:mm']}</@displaykey>
+
         </div>
         <div class="col2">
-          <div class="owner">
-            <div>Owner</div>
+          <div class="owners">
+            <div>Owner <span class="fas fa-user-tie"></span></div>
             <div>
               <#if owners?? >
                 <#list owners as owner>
-                  <#if owner.individualName??><div>${owner.individualName}</div></#if>
-                  <#if owner.organisationName?has_content><div>${owner.organisationName}</div></#if>
-                  <#if owner.address?has_content>
-                    <#if owner.address.city?has_content><div>${owner.address.city}</div></#if>
-                  </#if>
-                  <#if owner.email??><a href="mailto:${owner.email}"><div>${owner.email}</a></div></#if>
+                    <!--FIX THIS -->
+                    <#if owner.individualName?has_content><div>${owner.individualName}</div></#if>
+                    <#if owner.organisationName?? && owner.organisationName?has_content><div><strong>${owner.organisationName}</strong></div></#if>
+                    <#if owner.address?? && owner.address?has_content>
+                      <#if owner.address.city?has_content><div>${owner.address.city}</div></#if>
+                    </#if>
+                    <#if owner.email?? && owner.email?has_content><a href="mailto:${owner.email}"><div><span class="fas fa-xs fa-envelope"></span> ${owner.email}</a></div></#if>
+                  
                 </#list>
               <#else>
                 <p class="text-danger">NO OWNER IDENTIFIED</p>  
@@ -117,12 +129,15 @@
   <#include "_footer.ftlh">
 </@skeleton.master>
 
-<#macro displaykey key label>
+
+
+<#macro displaykey label>
   <div class="key-value">
     <div>${label}</div>
-    <div>${key}</div>
+    <div><#nested></div>
   </div>
 </#macro>
+
 <#macro linebreaks value>
     <#if value?has_content>
       <#list value?split("\n") as line>

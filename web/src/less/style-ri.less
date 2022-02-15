@@ -17,8 +17,6 @@
 
 @urin-yellow: hsl(56, 100%, 56%);
 @filter-heading-background: @urin-yellow;
-
-/*@navbar-height: 51px;*/
 @footer-height: 16em;
 @header-text: @gray-dark;
 
@@ -31,6 +29,14 @@ html {
 body {
   margin-top: @navbar-height + @navbar-border-width;
   margin-bottom: @footer-height;
+}
+
+.navbar-title {
+  a {
+    &:hover {
+      color: @urin-yellow;
+    }
+  }
 }
 
 #adminToolbar {
@@ -65,15 +71,19 @@ body {
     "col1 col1";
 }
 
-.owner {
-  --_ownercolor:lightgray;
-  border: 1px solid var(--_ownercolor);margin-top:2em;
-  >div {
+.owners {
+  --_ownercolor: lightgray;
+  border: 1px solid var(--_ownercolor);
+  margin-top: 2em;
+  > div {
     padding: 0.6em;
     &:first-of-type {
       background-color: var(--_ownercolor);
       font-weight: bolder;
     }
+  }
+  .owner {
+    margin-bottom: 2em;
   }
 }
 

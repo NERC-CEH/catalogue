@@ -18,4 +18,4 @@
     </div>
   </div>
 <hr>
-<div id="results"></div>
+<div id="results" class="results-linked"></div>
