@@ -37,6 +37,15 @@ test_permissions:
     - npm ci
     - npm run test
 
+test_catalogue:
+  stage: test
+  image: ephesoft/headless_chrome:latest
+  script:
+    - cd web/catalogue
+    - npm install -g npm
+    - npm ci
+    - npm run test
+
 build_application:
   stage: build
   image: docker:20.10.5

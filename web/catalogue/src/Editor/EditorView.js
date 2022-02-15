@@ -42,22 +42,21 @@ export var EditorView = Backbone.View.extend({
       this.$('#editorAjax').toggleClass('visible')
     })
     this.listenTo(this.model, 'invalid', function (model, errors) {
-      const $modalBody = this.$('#editorValidationMessage .modal-body')
-      $modalBody.html('')
+      this.$('#editorValidationMessage .modal-body').html('')
       _.each(errors, function (error) {
-        $modalBody.append(this.$(`<p>${error}</p>`))
+        this.$('#editorValidationMessage .modal-body').append(this.$(`<p>${error}</p>`))
       })
       this.$('#editorValidationMessage').modal('show')
     })
 
     this.render()
     _.invoke(this.sections[0].views, 'show')
-    const $editorNav = this.$('#editorNav')
-    _.each(this.sections, function (section) {
-      $editorNav.append($(`<li title='${section.title}'>${section.label}</li>`))
+
+    this.sections.forEach(section => {
+      this.$('#editorNav').append($(`<li title='${section.title}'>${section.label}</li>`))
     })
 
-    $editorNav.find('li').first().addClass('active')
+    this.$('#editorNav').find('li').first().addClass('active')
   },
 
   attemptDelete () {
@@ -153,12 +152,13 @@ export var EditorView = Backbone.View.extend({
 
   render () {
     this.$el.html(this.template(this.model.attributes))
-    _.each(this.sections, function (section) {
-      _.each(section.views, function (view) {
-        this.$('#editor')
-        console.log('view.el')
-        console.log(view.el)
+    this.sections.forEach(section => {
+      section.views.forEach(view => {
+        this.$('#editor').append(view)
+        console.log('view')
+        console.log(view)
       })
     })
+    return this
   }
 })

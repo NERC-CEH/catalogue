@@ -10,5 +10,5 @@
        <%= data.helpText %>
     </div>
   </div>
-  <div class="col-sm-9 dataentry"></div>
+  <div id="dataentry" class="col-sm-9 dataentry"></div>
 </div>

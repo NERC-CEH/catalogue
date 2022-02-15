@@ -10,7 +10,6 @@ export var InputView = SingleView.extend({
   },
 
   initialize (options) {
-    this.template = _.template(template)
     SingleView.prototype.initialize.call(this, options)
     this.render()
     this.listenTo(this.model, `change:${this.data.modelAttribute}`, this.render)
@@ -18,16 +17,20 @@ export var InputView = SingleView.extend({
 
   render () {
     SingleView.prototype.render.apply(this)
+    console.log('template input view')
+    console.log(this.template({ data: _.extend({}, this.data, { value: this.model.get(this.data.modelAttribute) }) }))
+    console.log('append dataentry')
+    console.log(this.$('.dataentry'))
     this.$('.dataentry').append(this.template({ data: _.extend({}, this.data, { value: this.model.get(this.data.modelAttribute) }) }))
     if (this.data.readonly) {
       this.$(':input').prop('readonly', true)
     }
+    return this
   },
 
   modify (event) {
-    const $target = $(event.target)
-    const name = $target.data('name')
-    const value = $target.val()
+    const name = $(event.target).data('name')
+    const value = $(event.target).val()
 
     if (!value) {
       this.model.unset(name)
