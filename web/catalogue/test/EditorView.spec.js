@@ -1,73 +1,90 @@
-define [
-  'jquery'
-  'cs!models/EditorMetadata'
-  'cs!views/GeminiEditorView'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'jquery',
+  'cs!models/EditorMetadata',
+  'cs!views/GeminiEditorView',
   'bootstrap'
-], ($, Metadata, EditorView) ->
-  describe 'EditorView', ->
-    view = null
-    model = new Metadata()
+], ($, Metadata, EditorView) => describe('EditorView', function() {
+  let view = null;
+  const model = new Metadata();
 
-    beforeEach ->
-      view = new EditorView
-        model: model
+  beforeEach(() => view = new EditorView({
+    model}));
 
-    describe 'when view is constructing', ->
-      it 'should exist', ->
-        expect(view).toBeDefined()
+  describe('when view is constructing', () => it('should exist', () => expect(view).toBeDefined()));
 
-    describe 'when exit clicked', ->
+  describe('when exit clicked', function() {
 
-      beforeEach ->
-        spyOn(view, 'exit')
-        do view.delegateEvents
-        do view.render
+    beforeEach(function() {
+      spyOn(view, 'exit');
+      (view.delegateEvents)();
+      return (view.render)();
+    });
 
-      it 'exit clicked', ->
-        view.$('#editorExit').trigger 'click'
-        expect(view.exit).toHaveBeenCalled()
+    return it('exit clicked', function() {
+      view.$('#editorExit').trigger('click');
+      return expect(view.exit).toHaveBeenCalled();
+    });
+  });
 
-    describe 'when next clicked', ->
+  describe('when next clicked', function() {
 
-      beforeEach ->
-        spyOn(view, 'next')
-        do view.delegateEvents
-        do view.render
+    beforeEach(function() {
+      spyOn(view, 'next');
+      (view.delegateEvents)();
+      return (view.render)();
+    });
 
-      it 'next method called', ->
-        view.$('#editorNext').trigger 'click'
-        expect(view.next).toHaveBeenCalled()
+    return it('next method called', function() {
+      view.$('#editorNext').trigger('click');
+      return expect(view.next).toHaveBeenCalled();
+    });
+  });
 
-    describe 'when back clicked', ->
+  describe('when back clicked', function() {
 
-      beforeEach ->
-        spyOn(view, 'back')
-        do view.delegateEvents
-        do view.render
+    beforeEach(function() {
+      spyOn(view, 'back');
+      (view.delegateEvents)();
+      return (view.render)();
+    });
 
-      it 'back clicked', ->
-        view.$('#editorBack').prop("disabled", false).trigger 'click'
-        expect(view.back).toHaveBeenCalled()
+    return it('back clicked', function() {
+      view.$('#editorBack').prop("disabled", false).trigger('click');
+      return expect(view.back).toHaveBeenCalled();
+    });
+  });
 
-    describe 'when save clicked', ->
+  describe('when save clicked', function() {
 
-      beforeEach ->
-        spyOn(view, 'save').and.callThrough()
-        spyOn(model, 'save')
-        do view.delegateEvents
-        do view.render
+    beforeEach(function() {
+      spyOn(view, 'save').and.callThrough();
+      spyOn(model, 'save');
+      (view.delegateEvents)();
+      return (view.render)();
+    });
 
-      it 'clicking Save calls method', ->
-        view.$('#editorSave').prop("disabled", false).trigger 'click'
-        expect(view.save).toHaveBeenCalled()
-        expect(model.save).toHaveBeenCalled()
+    return it('clicking Save calls method', function() {
+      view.$('#editorSave').prop("disabled", false).trigger('click');
+      expect(view.save).toHaveBeenCalled();
+      return expect(model.save).toHaveBeenCalled();
+    });
+  });
 
-    describe 'when delete clicked', ->
+  return describe('when delete clicked', function() {
 
-      beforeEach ->
-        spyOn(model, 'destroy')
-        do view.render
+    beforeEach(function() {
+      spyOn(model, 'destroy');
+      return (view.render)();
+    });
 
-      it 'clicking Delete calls method', ->
-        view.$('#confirmDeleteYes').trigger 'click'
-        expect(model.destroy).toHaveBeenCalled()
+    return it('clicking Delete calls method', function() {
+      view.$('#confirmDeleteYes').trigger('click');
+      return expect(model.destroy).toHaveBeenCalled();
+    });
+  });
+}));

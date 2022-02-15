@@ -1,15 +1,19 @@
-define [
-  'cs!views/editor/InputView'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'cs!views/editor/InputView',
   'cs!models/EditorMetadata'
-], (InputView, EditorMetadata) ->
-  describe 'InputView', ->
-    model = null
-    view = null
+], (InputView, EditorMetadata) => describe('InputView', function() {
+  let model = null;
+  let view = null;
 
-    beforeEach ->
-      model = new EditorMetadata title: 'some text'
-      view = new InputView model: model
+  beforeEach(function() {
+    model = new EditorMetadata({title: 'some text'});
+    return view = new InputView({model});
+  });
 
-    describe 'when view is constructing', ->
-      it 'should exist', ->
-        expect(view).toBeDefined()
+  return describe('when view is constructing', () => it('should exist', () => expect(view).toBeDefined()));
+}));
