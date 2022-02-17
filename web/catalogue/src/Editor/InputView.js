@@ -1,9 +1,9 @@
 import _ from 'underscore'
 import $ from 'jquery'
-import { SingleView } from '../SingleView'
+import SingleView from './SingleView'
 import template from './Input.tpl'
 
-export var InputView = SingleView.extend({
+export default SingleView.extend({
 
   events: {
     change: 'modify'
@@ -17,11 +17,7 @@ export var InputView = SingleView.extend({
 
   render () {
     SingleView.prototype.render.apply(this)
-    console.log('template input view')
-    console.log(this.template({ data: _.extend({}, this.data, { value: this.model.get(this.data.modelAttribute) }) }))
-    console.log('append dataentry')
-    console.log(this.$('.dataentry'))
-    this.$('.dataentry').append(this.template({ data: _.extend({}, this.data, { value: this.model.get(this.data.modelAttribute) }) }))
+    this.$('.dataentry').append(this.template({ data: _.extend({}, this.data, { value: this.model.get(this.data.modelAttribute) }) })) // make sure that these are populated in the test
     if (this.data.readonly) {
       this.$(':input').prop('readonly', true)
     }

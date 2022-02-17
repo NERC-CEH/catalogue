@@ -17,7 +17,7 @@
     </div>
   </div>
 </div>
-<div id="confirmExit" class="modal fade">
+<div id="confirmExit" class="modal">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">

@@ -1,65 +1,51 @@
-/* eslint-disable
-    no-return-assign,
-    no-undef,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
-define([
-  'underscore',
-  'backbone'
-], function (_, Backbone) {
-  return Backbone.Model.extend({
+import _ from 'underscore'
+import Backbone from 'backbone'
 
-    url () {
-      return (this.urlRoot)()
-    },
+export default Backbone.Model.extend({
 
-    urlRoot () {
-      if (this.isNew()) {
-        return `/documents?catalogue=${window.location.pathname.split('/')[1]}`
-      } else {
-        return `/documents/${this.id}`
-      }
-    },
+  url () {
+    return (this.urlRoot)()
+  },
 
-    initialize () {
-      if (arguments.length > 1) {
-        this.mediaType = arguments[1].mediaType
-        return this.title = arguments[2]
-      } else {
-        return this.mediaType = 'application/json'
-      }
-    },
+  urlRoot () {
+    if (this.isNew()) {
+      return `/documents?catalogue=${window.location.pathname.split('/')[1]}`
+    } else {
+      return `/documents/${this.id}`
+    }
+  },
 
-    sync (method, model, options) {
-      return Backbone.sync.call(this, method, model, _.extend(options, {
-        accepts: {
-          json: this.mediaType
-        },
-        contentType: this.mediaType
-      }
-      )
-      )
-    },
+  initialize () {
+    if (arguments.length > 1) {
+      this.mediaType = arguments[1].mediaType
+      this.title = arguments[2]
+    } else {
+      this.mediaType = 'application/json'
+    }
+  },
 
-    validate (attrs) {
-      const errors = []
-      if ((attrs != null ? attrs.title : undefined) == null) {
-        errors.push('A title is mandatory')
-      }
+  sync (method, model, options) {
+    return Backbone.sync.call(this, method, model, _.extend(options, {
+      accepts: {
+        json: this.mediaType
+      },
+      contentType: this.mediaType
+    }
+    )
+    )
+  },
 
-      if (_.isEmpty(errors)) {
+  validate (attrs) {
+    const errors = []
+    if ((attrs != null ? attrs.title : undefined) == null) {
+      errors.push('A title is mandatory')
+    }
+
+    if (_.isEmpty(errors)) {
       // return nothing from Backbone.Model.validate because returning something signals a validation error.
 
-      } else {
-        return errors
-      }
+    } else {
+      return errors
     }
-  })
+  }
 })

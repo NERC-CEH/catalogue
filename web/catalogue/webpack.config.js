@@ -25,6 +25,10 @@ module.exports = {
         use: [
           'file-loader'
         ]
+      },
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader']
       }
     ]
   },
@@ -40,5 +44,16 @@ module.exports = {
       template: './src/index.html',
       filename: './index.html'
     })
-  ]
+  ],
+  optimization: {
+    splitChunks: {
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]jquery[\\/]/,
+          name: 'vendor',
+          chunks: 'all'
+        }
+      }
+    }
+  }
 }

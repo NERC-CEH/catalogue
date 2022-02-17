@@ -1,9 +1,8 @@
 import Backbone from 'backbone'
 import _ from 'underscore'
 import template from './Single.tpl'
-import $ from 'jquery'
 
-export var SingleView = Backbone.View.extend({
+export default Backbone.View.extend({
 
   className: 'component',
 

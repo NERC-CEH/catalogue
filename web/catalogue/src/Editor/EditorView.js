@@ -3,7 +3,7 @@ import $ from 'jquery'
 import Backbone from 'backbone'
 import template from './Editor.tpl'
 
-export var EditorView = Backbone.View.extend({
+export default Backbone.View.extend({
 
   events: {
     'click #editorDelete': 'attemptDelete',
@@ -155,8 +155,6 @@ export var EditorView = Backbone.View.extend({
     this.sections.forEach(section => {
       section.views.forEach(view => {
         this.$('#editor').append(view)
-        console.log('view')
-        console.log(view)
       })
     })
     return this

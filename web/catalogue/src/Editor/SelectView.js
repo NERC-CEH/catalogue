@@ -1,9 +1,8 @@
 import _ from 'underscore'
-import $ from 'jquery'
-import { InputView } from './InputView'
+import InputView from './InputView'
 import template from './Select.tpl'
 
-export var SelectView = InputView.extend({
+export default InputView.extend({
 
   initialize (options) {
     this.optionTemplate = _.template('<option value="<%= value %>"><%= label %></option>')
