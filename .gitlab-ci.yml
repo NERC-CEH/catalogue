@@ -28,6 +28,15 @@ test_web:
     - ./node_modules/.bin/bower install --allow-root
     - ./node_modules/.bin/grunt prep build    # test not actually run as are broken
 
+test_permissions:
+  stage: test
+  image: ephesoft/headless_chrome:latest
+  script:
+    - cd web/permission
+    - npm install -g npm
+    - npm ci
+    - npm run test
+
 build_application:
   stage: build
   image: docker:20.10.5
