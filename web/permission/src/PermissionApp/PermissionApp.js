@@ -2,7 +2,7 @@ import Backbone from 'backbone'
 import _ from 'underscore'
 import Permission from './Permission'
 
-export var PermissionApp = Backbone.Model.extend({
+export default Backbone.Model.extend({
 
   loadPermission (identifier) {
     const permission = new Permission({
