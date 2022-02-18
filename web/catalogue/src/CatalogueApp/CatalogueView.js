@@ -1,6 +1,6 @@
 import { EditorView, SelectView } from '../Editor'
 
-export var CatalogueView = EditorView.extend({
+export default EditorView.extend({
 
   initialize () {
     this.sections = [{
@@ -11,7 +11,7 @@ export var CatalogueView = EditorView.extend({
           model: this.model,
           modelAttribute: 'value',
           label: 'Catalogue',
-          options: this.model.options,
+          options: this.model.get('options'),
           helpText: '<p>Catalogue</p>'
         })
       ]

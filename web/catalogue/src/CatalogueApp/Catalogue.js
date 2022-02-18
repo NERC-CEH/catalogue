@@ -1,6 +1,6 @@
 import Backbone from 'backbone'
 
-export var Catalogue = Backbone.Model.extend({
+export default Backbone.Model.extend({
 
   url () {
     return this.urlRoot()

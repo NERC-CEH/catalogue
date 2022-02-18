@@ -7,10 +7,12 @@ describe('Test InputView', function () {
   let view = null
 
   beforeEach(function () {
-    model = new EditorMetadata({ title: 'some text' })
+    model = new EditorMetadata({ title: 'some text', template: template })
     view = new InputView({ model })
-    view.template = _.template(template)
   })
 
-  describe('when view is constructing', () => it('should exist', () => expect(view).toBeDefined()))
+  it('when view is constructing should exist', () => {
+    // then
+    expect(view).toBeDefined()
+  })
 })

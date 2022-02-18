@@ -11,13 +11,18 @@ export default SingleView.extend({
 
   initialize (options) {
     SingleView.prototype.initialize.call(this, options)
+    if (options.template) {
+      _.template(options.template)
+    } else {
+      this.template = _.template(template)
+    }
     this.render()
     this.listenTo(this.model, `change:${this.data.modelAttribute}`, this.render)
   },
 
   render () {
     SingleView.prototype.render.apply(this)
-    this.$('.dataentry').append(this.template({ data: _.extend({}, this.data, { value: this.model.get(this.data.modelAttribute) }) })) // make sure that these are populated in the test
+    this.$('.dataentry').append(this.template({ data: _.extend({}, this.data, { value: this.model.get(this.data.modelAttribute) }) }))
     if (this.data.readonly) {
       this.$(':input').prop('readonly', true)
     }

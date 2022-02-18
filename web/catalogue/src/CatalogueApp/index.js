@@ -1,2 +1,2 @@
-export { Catalogue } from './Catalogue'
-export { CatalogueView } from './CatalogueView'
+export { default as Catalogue } from './Catalogue'
+export { default as CatalogueView } from './CatalogueView'

@@ -10,7 +10,6 @@ export default Backbone.View.extend({
     this.singleTemplate = _.template(template)
     this.data = options
     if (!this.data.ModelType) {
-      console.log('not a model type')
       this.data.ModelType = Backbone.Model
     }
   },
@@ -24,8 +23,6 @@ export default Backbone.View.extend({
   },
 
   render () {
-    console.log('single view')
-    console.log(this.singleTemplate({ data: this.data }))
     this.$el.html(this.singleTemplate({ data: this.data }))
     this.show()
     return this
