@@ -1,6 +1,6 @@
+import $ from 'jquery'
 import 'bootstrap'
 import _ from 'underscore'
-import $ from 'jquery'
 import Backbone from 'backbone'
 import template from './Editor.tpl'
 
@@ -25,7 +25,7 @@ export default Backbone.View.extend({
 
     this.listenTo(this.model, 'error', function (model, response) {
       this.$('#editorAjax').toggleClass('visible')
-      this.$('#editorErrorMessage')
+      window.$('#editorErrorMessage')
         .find('#editorErrorMessageResponse').text(`${response.status} ${response.statusText}`)
         .end()
         .find('#editorErrorMessageJson').text(JSON.stringify(model.toJSON()))
@@ -47,7 +47,7 @@ export default Backbone.View.extend({
       _.each(errors, function (error) {
         this.$('#editorValidationMessage .modal-body').append(this.$(`<p>${error}</p>`))
       })
-      this.$('#editorValidationMessage').modal('show')
+      window.$('#editorValidationMessage').modal('show')
     })
 
     this.render()
@@ -64,13 +64,11 @@ export default Backbone.View.extend({
   },
 
   attemptDelete () {
-    $.noConflict()
-    this.$('#confirmDelete').modal('show')
+    window.$('#confirmDelete').modal('show')
   },
 
   delete () {
-    $.noConflict()
-    this.$('#confirmDelete').modal('hide')
+    window.$('#confirmDelete').modal('hide')
     this.model.destroy({
       success: () => {
         _.invoke(this.sections, 'remove')
@@ -86,15 +84,14 @@ export default Backbone.View.extend({
 
   attemptExit () {
     if (this.saveRequired) {
-      this.$('#confirmExit').modal('show')
+      window.$('#confirmExit').modal('show')
     } else {
       this.exit()
     }
   },
 
   exit () {
-    $.noConflict()
-    this.$('#confirmExit').modal('hide')
+    window.$('#confirmExit').modal('hide')
     _.invoke(this.sections, 'remove')
     this.remove()
 
