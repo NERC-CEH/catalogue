@@ -55,7 +55,6 @@ export default Backbone.View.extend({
     this.sections.forEach(section => {
       section.views.forEach(view => {
         _.invoke(view, 'show')
-        view.show()
       })
       this.$('#editorNav').append($(`<li title='${section.title}'>${section.label}</li>`))
     })
