@@ -1,3 +1,4 @@
+import 'bootstrap'
 import _ from 'underscore'
 import $ from 'jquery'
 import Backbone from 'backbone'
@@ -50,9 +51,12 @@ export default Backbone.View.extend({
     })
 
     this.render()
-    _.invoke(this.sections[0].views, 'show')
 
     this.sections.forEach(section => {
+      section.views.forEach(view => {
+        _.invoke(view, 'show')
+        view.show()
+      })
       this.$('#editorNav').append($(`<li title='${section.title}'>${section.label}</li>`))
     })
 
@@ -60,10 +64,12 @@ export default Backbone.View.extend({
   },
 
   attemptDelete () {
+    $.noConflict()
     this.$('#confirmDelete').modal('show')
   },
 
   delete () {
+    $.noConflict()
     this.$('#confirmDelete').modal('hide')
     this.model.destroy({
       success: () => {
@@ -87,6 +93,7 @@ export default Backbone.View.extend({
   },
 
   exit () {
+    $.noConflict()
     this.$('#confirmExit').modal('hide')
     _.invoke(this.sections, 'remove')
     this.remove()
@@ -154,7 +161,7 @@ export default Backbone.View.extend({
     this.$el.html(this.template(this.model.attributes))
     this.sections.forEach(section => {
       section.views.forEach(view => {
-        this.$('#editor').append(view)
+        this.$('#editor').append(view.render().el)
       })
     })
     return this

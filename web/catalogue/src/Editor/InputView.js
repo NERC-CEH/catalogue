@@ -11,9 +11,7 @@ export default SingleView.extend({
 
   initialize (options) {
     SingleView.prototype.initialize.call(this, options)
-    if (options.template) {
-      _.template(options.template)
-    } else {
+    if (typeof this.template === 'undefined') {
       this.template = _.template(template)
     }
     this.render()

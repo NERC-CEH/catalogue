@@ -11,7 +11,7 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'value',
           label: 'Catalogue',
-          options: this.model.get('options'),
+          options: this.model.options,
           helpText: '<p>Catalogue</p>'
         })
       ]

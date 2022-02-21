@@ -50,8 +50,7 @@ module.exports = {
       cacheGroups: {
         vendor: {
           test: /[\\/]node_modules[\\/]jquery[\\/]/,
-          name: 'vendor',
-          chunks: 'all'
+          name: 'vendor'
         }
       }
     }
