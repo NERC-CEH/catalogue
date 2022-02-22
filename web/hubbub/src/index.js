@@ -1,3 +1,8 @@
+/* eslint-disable
+    no-undef,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -13,14 +18,14 @@ define([
   /*
   Initialize the Hubbub Uploader
   */
-  initialize() {
-//    TODO: load state of the app from html, state set from Jira state
-    const id = $('#document-upload').data('guid');
-    const model = new HubbubUploadModel();
-    model.set('id', id);
+  initialize () {
+    //    TODO: load state of the app from html, state set from Jira state
+    const id = $('#document-upload').data('guid')
+    const model = new HubbubUploadModel()
+    model.set('id', id)
     return new HubbubUploadView({
       el: '#document-upload',
       model
-    });
+    })
   }
-}));
+}))
