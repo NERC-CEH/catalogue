@@ -2,7 +2,7 @@ define [
   'jquery'
   'backbone'
   'bootstrap'
-  'cs!views/upload/hubbub/UploadView'
+  'cs!web/src/scripts/views/upload/hubbub/UploadView'
   'cs!models/upload/hubbub/Upload'
 ], (
     $, Backbone, Bootstrap, HubbubUploadView, HubbubUploadModel
