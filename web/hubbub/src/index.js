@@ -1,5 +1,5 @@
 import $ from 'jquery'
-import Bootstrap from 'bootstrap'
+import 'bootstrap'
 import { HubbubUploadView, HubbubUploadModel } from './Upload'
 
 $(document).ready(function () {
