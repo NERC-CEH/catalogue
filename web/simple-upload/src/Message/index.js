@@ -1,2 +1,2 @@
-export { MessageView } from './MessageView'
-export { MessageListView } from './MessageListView'
+export { default as MessageView } from './MessageView'
+export { default as MessageListView } from './MessageListView'

@@ -1,9 +1,9 @@
 import _ from 'underscore'
 import Backbone from 'backbone'
-import { FileView } from './FileView'
+import FileView from './FileView'
 import template from './Files.tpl'
 
-export var FileListView = Backbone.View.extend({
+export default Backbone.View.extend({
 
   events: {
     'click .delete-selected': 'deleteSelected',

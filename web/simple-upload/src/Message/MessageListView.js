@@ -1,9 +1,9 @@
 import _ from 'underscore'
 import Backbone from 'backbone'
-import { MessageView } from './MessageView'
+import MessageView from './MessageView'
 import template from './Messages.tpl'
 
-export var MessageListView = Backbone.View.extend({
+export default Backbone.View.extend({
 
   events: {
     'click .clear-all': 'clearAll'

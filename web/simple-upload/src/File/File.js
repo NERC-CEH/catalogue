@@ -1,5 +1,5 @@
 import Backbone from 'backbone'
-export var File = Backbone.Model.extend({
+export default Backbone.Model.extend({
 
   defaults: {
     toDelete: false
