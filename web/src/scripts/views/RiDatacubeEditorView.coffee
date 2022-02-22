@@ -20,8 +20,10 @@ define [
 	'cs!views/editor/BoundingBoxView'
 	'cs!views/editor/RelatedRecordView'
 	'cs!views/editor/RiOnlineLinkView'
+	'cs!models/editor/RiChallenge'
+	'cs!views/editor/RiChallengeView'
 
-], (EditorView, InputView, TextareaView, SingleObjectView, SingleView, SelectView, ReadOnlyView, TextOnlyView, ParentView, ParentLargeView, ParentStringView, ParentStringTextboxView, PredefinedParentView, PredefinedParentLargeView, KeywordView, Contact, ContactView, BoundingBox, BoundingBoxView, RelatedRecordView, RiOnlineLinkView) -> EditorView.extend
+], (EditorView, InputView, TextareaView, SingleObjectView, SingleView, SelectView, ReadOnlyView, TextOnlyView, ParentView, ParentLargeView, ParentStringView, ParentStringTextboxView, PredefinedParentView, PredefinedParentLargeView, KeywordView, Contact, ContactView, BoundingBox, BoundingBoxView, RelatedRecordView, RiOnlineLinkView, RiChallenge, RiChallengeView) -> EditorView.extend
 
 	initialize: ->
 		@model.set('type', 'riDatacube') unless @model.has('type')
@@ -30,6 +32,7 @@ define [
 			label: 'General'
 			title: 'General'
 			views: [
+
 				new InputView
 					model: @model
 					modelAttribute: 'title'
@@ -41,35 +44,13 @@ define [
 				new TextOnlyView
 					model: @model
 					label: 'Purpose'
-					text: """<p>Explain strategic relevance: What does it do? Why? Who cares?</p><p>Write in plain English and avoid (or define) acronyms.</p><p>Explain relevance to government policy agenda</p>
+					text: """<p>Explain strategic relevance: What does it do? Why? Who cares?<br>Write in plain English and avoid (or define) acronyms.<br>Explain relevance to government policy agenda</p>
 							"""
 
 				new TextareaView
 					model: @model
 					modelAttribute: 'description'
 					rows: 6
-
-				new SelectView
-					model: @model
-					modelAttribute: 'infrastructureCategory'
-					label: 'Infrastructure category'
-					options: [
-						{value: 'Instrumented sites', label: 'Instrumented sites'},
-						{value: 'Periodic surveys', label: 'Periodic surveys'},
-						{value: 'Wildlife monitoring schemes', label: 'Wildlife monitoring schemes'},
-						{value: 'Discovery collections and archives', label: 'Discovery collections and archives'},
-						{value: 'Mobile observing platforms', label: 'Mobile observing platforms'},
-						{value: 'Controlled environment facilities (micro- or mesocosms)', label: 'Controlled environment facilities (micro- or mesocosms)'},
-						{value: 'Field research facilities (macrocosms)', label: 'Field research facilities (macrocosms)'},
-						{value: 'Legacy Experimental Platforms or sites', label: 'Legacy Experimental Platforms or sites'},
-						{value: 'Analytical facilities', label: 'Analytical facilities'},
-						{value: 'Test facilities', label: 'Test facilities'},
-						{value: 'Digital computing platforms ', label: 'Digital computing platforms'},
-						{value: 'Data and information', label: 'Data and information'},
-						{value: 'Digital labs for data analytics', label: 'Digital labs for data analytics'},
-						{value: 'UKCEH models', label: 'UKCEH models'},
-						{value: 'Community models', label: 'Community models'}
-					]
 
 				new PredefinedParentView
 					model: @model
@@ -104,10 +85,101 @@ define [
 							address:
                 				city: 'Wallingford'
 
+			]
+		,  
+			label: 'Categorisation'
+			title: 'Categorisation'
+			views: [
+
+				new SelectView
+					model: @model
+					modelAttribute: 'infrastructureCategory'
+					label: 'Infrastructure category'
+					options: [
+						{value: 'Instrumented sites', label: 'Instrumented sites'},
+						{value: 'Periodic surveys', label: 'Periodic surveys'},
+						{value: 'Wildlife monitoring schemes', label: 'Wildlife monitoring schemes'},
+						{value: 'Discovery collections and archives', label: 'Discovery collections and archives'},
+						{value: 'Mobile observing platforms', label: 'Mobile observing platforms'},
+						{value: 'Controlled environment facilities (micro- or mesocosms)', label: 'Controlled environment facilities (micro- or mesocosms)'},
+						{value: 'Field research facilities (macrocosms)', label: 'Field research facilities (macrocosms)'},
+						{value: 'Legacy Experimental Platforms or sites', label: 'Legacy Experimental Platforms or sites'},
+						{value: 'Analytical facilities', label: 'Analytical facilities'},
+						{value: 'Test facilities', label: 'Test facilities'},
+						{value: 'Digital computing platforms ', label: 'Digital computing platforms'},
+						{value: 'Data and information', label: 'Data and information'},
+						{value: 'Digital labs for data analytics', label: 'Digital labs for data analytics'},
+						{value: 'UKCEH models', label: 'UKCEH models'},
+						{value: 'Community models', label: 'Community models'}
+					]
+
+				new ParentView
+					model: @model
+					ModelType: RiChallenge
+					modelAttribute: 'infrastructureChallenge'
+					label: 'Challenge/goal'
+					ObjectInputView: RiChallengeView
+
+				new SelectView
+					model: @model
+					modelAttribute: 'scienceArea'
+					label: 'Science area'
+					options: [
+						{value: 'Atmospheric Chemistry and Effects', label: 'Atmospheric Chemistry and Effects'},
+						{value: 'Biodiversity', label: 'Biodiversity'},
+						{value: 'Hydro-climate Risks', label: 'Hydro-climate Risks'},
+						{value: 'Pollution', label: 'Pollution'},
+						{value: 'Soils and Land Use', label: 'Soils and Land Use'},
+						{value: 'Water Resources', label: 'Water Resources'}
+					]
+
+				new ParentView
+					model: @model
+					modelAttribute: 'keywords'
+					label: 'Other keywords'
+					ObjectInputView: KeywordView
+
+
+			]
+		,  
+			label: 'Scale'
+			title: 'Scale'
+			views: [
+
 				new TextareaView
 					model: @model
 					modelAttribute: 'locationText'
-					label: 'Location'				
+					label: 'Location'
+				
+				new SelectView
+					model: @model
+					modelAttribute: 'infrastructureScale'
+					label: 'Scale'
+					options: [
+						{value: 'UK', label: 'UK-wide'},
+						{value: 'Landscape or catchment', label: 'Landscape or catchment'},
+						{value: 'Local area', label: 'Local area'}
+					]
+
+				new PredefinedParentView
+					model: @model
+					modelAttribute: 'boundingBoxes'
+					ModelType: BoundingBox
+					label: 'Spatial extent'
+					ObjectInputView: BoundingBoxView
+					multiline: true
+					predefined:
+						'Great Britain':
+							northBoundLatitude: 60.861
+							eastBoundLongitude: 1.768
+							southBoundLatitude: 49.864
+							westBoundLongitude: -8.648
+
+			]
+		,  
+			label: 'Capability'
+			title: 'Capability'
+			views: [
 
 				new TextareaView
 					model: @model
@@ -126,6 +198,13 @@ define [
 					model: @model
 					modelAttribute: 'uniqueness'
 					label: 'Uniqueness'				
+
+
+			]
+		,  
+			label: 'Use'
+			title: 'Use'
+			views: [
 
 				new TextareaView
 					model: @model
@@ -155,32 +234,11 @@ define [
                     	<p>Include all funding sources</p><p>Be specific about NC awards/programmes</p>
                     """
 
-				new SelectView
-					model: @model
-					modelAttribute: 'scienceArea'
-					label: 'Science area'
-					options: [
-						{value: 'Atmospheric Chemistry and Effects', label: 'Atmospheric Chemistry and Effects'},
-						{value: 'Biodiversity', label: 'Biodiversity'},
-						{value: 'Hydro-climate Risks', label: 'Hydro-climate Risks'},
-						{value: 'Pollution', label: 'Pollution'},
-						{value: 'Soils and Land Use', label: 'Soils and Land Use'},
-						{value: 'Water Resources', label: 'Water Resources'}
-					]
-
-				new PredefinedParentView
-					model: @model
-					modelAttribute: 'boundingBoxes'
-					ModelType: BoundingBox
-					label: 'Spatial extent'
-					ObjectInputView: BoundingBoxView
-					multiline: true
-					predefined:
-						'Great Britain':
-							northBoundLatitude: 60.861
-							eastBoundLongitude: 1.768
-							southBoundLatitude: 49.864
-							westBoundLongitude: -8.648
+			]
+		,  
+			label: 'Other'
+			title: 'Other'
+			views: [
 
 				new ParentView
 					model: @model
@@ -188,12 +246,6 @@ define [
 					label: 'Online resources'
 					ObjectInputView: RiOnlineLinkView
 					multiline: true
-
-				new ParentView
-					model: @model
-					modelAttribute: 'keywords'
-					label: 'Keywords'
-					ObjectInputView: KeywordView
 
 				new ParentView
 					model: @model

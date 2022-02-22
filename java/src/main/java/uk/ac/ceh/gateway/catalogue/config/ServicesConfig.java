@@ -150,7 +150,7 @@ public class ServicesConfig {
             .register(DATALABS, DatalabsDocument.class)
             .register(EF_DOCUMENT, BaseMonitoringType.class)
             .register(ERAMMP_DATACUBE, ErammpDatacube.class)
-            .register(RI_DATACUBE, RiDatacube.class)
+            .register(RIDATACUBE, RiDatacube.class)
             .register(ELTER, ElterDocument.class)
             .register(ERAMMP_MODEL, ErammpModel.class)
             .register(GEMINI, GeminiDocument.class)

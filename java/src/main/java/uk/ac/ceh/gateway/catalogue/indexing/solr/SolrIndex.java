@@ -73,6 +73,9 @@ public class SolrIndex {
     private @Field String infrastructureCategory;
     private @Field String scienceArea;
     private @Field String infrastructureCapabilities;
+    private @Field String infrastructureScale;
+    private @Field List<String> infrastructureChallenge;
+
 
     public SolrIndex addLocations(List<String> locations) {
         this.locations.addAll(locations);

@@ -191,10 +191,10 @@ define [
         View: ErammpDatacubeEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.erammp-datacube+json'
-      'ri-datacube':
+      'ridatacube':
         View: RiDatacubeEditorView
         Model: EditorMetadata
-        mediaType: 'application/vnd.ri-datacube+json'
+        mediaType: 'application/vnd.ridatacube+json'
       'data-type':
         View: DataTypeEditorView
         Model: EditorMetadata

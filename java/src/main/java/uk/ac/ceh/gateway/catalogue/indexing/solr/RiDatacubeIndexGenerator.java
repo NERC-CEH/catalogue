@@ -20,6 +20,8 @@ public class RiDatacubeIndexGenerator implements IndexGenerator<RiDatacube, Solr
             .setInfrastructureCategory(document.getInfrastructureCategory())
             .setScienceArea(document.getScienceArea())
             .setInfrastructureCapabilities(document.getCapabilities())
-            ;
+            .setInfrastructureScale(document.getInfrastructureScale())
+            .setInfrastructureChallenge(grab(document.getInfrastructureChallenge(), Keyword::getValue))
+;
     }
 }

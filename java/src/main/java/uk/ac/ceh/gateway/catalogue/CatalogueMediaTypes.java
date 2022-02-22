@@ -32,7 +32,7 @@ public class CatalogueMediaTypes {
     public static final String ERAMMP_MODEL_JSON_VALUE = "application/vnd.erammp-model+json";
     public static final String GEMINI_JSON_VALUE = "application/gemini+json";
 
-    public static final String RI_DATACUBE_JSON_VALUE = "application/vnd.ri-datacube+json";
+    public static final String RIDATACUBE_JSON_VALUE = "application/vnd.ridatacube+json";
 
     public static final String GEMINI_XML_SHORT = "gemini";
     public static final String GEMINI_XML_VALUE = "application/x-gemini+xml";

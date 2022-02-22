@@ -11,7 +11,7 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
-import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.RI_DATACUBE_JSON_VALUE;
+import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.RIDATACUBE_JSON_VALUE;
 
 @Slf4j
 @Controller
@@ -24,7 +24,7 @@ public class RiDatacubeController extends AbstractDocumentController {
   }
 
   @PreAuthorize("@permission.userCanCreate(#catalogue)")
-  @PostMapping(consumes = RI_DATACUBE_JSON_VALUE)
+  @PostMapping(consumes = RIDATACUBE_JSON_VALUE)
   public ResponseEntity<MetadataDocument> newRiDatacube(
       @ActiveUser CatalogueUser user,
       @RequestBody RiDatacube document,
@@ -34,7 +34,7 @@ public class RiDatacubeController extends AbstractDocumentController {
   }
 
   @PreAuthorize("@permission.userCanEdit(#file)")
-  @PutMapping(value = "{file}", consumes = RI_DATACUBE_JSON_VALUE)
+  @PutMapping(value = "{file}", consumes = RIDATACUBE_JSON_VALUE)
   public ResponseEntity<MetadataDocument> updateRiDatacube(
       @ActiveUser CatalogueUser user,
       @PathVariable("file") String file,
