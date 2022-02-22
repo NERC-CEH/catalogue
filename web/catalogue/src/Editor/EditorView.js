@@ -1,5 +1,4 @@
 import $ from 'jquery'
-import 'bootstrap'
 import _ from 'underscore'
 import Backbone from 'backbone'
 import template from './Editor.tpl'
