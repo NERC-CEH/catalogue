@@ -1,7 +1,7 @@
 <#import "../../skeleton.ftlh" as skeleton>
 
 <#assign uploadScripts>
-    <script data-main="/static/scripts/upload-out" src="/static/vendor/requirejs/require.js"></script>
+    <script src="/static/scripts/hubbub-app.js"></script>
 </#assign>
 
 <@skeleton.master title="Data Transfer for: " + title scripts=uploadScripts catalogue=catalogues.defaultCatalogue()>

@@ -33,7 +33,7 @@ module.exports = {
     port: 8081
   },
   output: {
-    filename: 'simple-upload-app.js'
+    filename: 'hubbub-app.js'
   },
   plugins: [
     new HtmlWebPackPlugin({

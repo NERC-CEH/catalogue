@@ -46,6 +46,15 @@ test_simple-upload:
     - npm ci
     - npm run test
 
+test_hubbub:
+  stage: test
+  image: ephesoft/headless_chrome:latest
+  script:
+    - cd web/hubbub
+    - npm install -g npm
+    - npm ci
+    - npm run test
+
 build_application:
   stage: build
   image: docker:20.10.5
