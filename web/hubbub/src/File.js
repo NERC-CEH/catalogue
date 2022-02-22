@@ -1,3 +1,9 @@
+/* eslint-disable
+    no-return-assign,
+    no-undef,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -6,9 +12,8 @@
 define([
   'backbone',
   'filesize'
-], function(Backbone, filesize) {
-
-  let File;
+], function (Backbone, filesize) {
+  let File
   const errorTypes = {
     CHANGED_HASH: 'hash',
     NO_HASH: 'hash',
@@ -23,13 +28,13 @@ define([
     ZIPPED_UNKNOWN: 'file',
     ZIPPED_UNKNOWN_MISSING: 'file',
     INVALID: 'file'
-  };
+  }
 
   const keyToAction = {
     datastore: 'move-metadata',
     dropbox: 'move-both',
     metadata: 'move-datastore'
-  };
+  }
 
   const errorToAction = {
     CHANGED_HASH: 'accept',
@@ -47,7 +52,7 @@ define([
     REMOVED_UNKNOWN: 'accept',
     ZIPPED_UNKNOWN: 'accept',
     ZIPPED_UNKNOWN_MISSING: 'ignore'
-  };
+  }
 
   const messages = {
     CHANGED_HASH: {
@@ -74,7 +79,7 @@ Please VALIDATE to ensure the file has not been altered or corrupted\
     },
     MOVED_UNKNOWN_MISSING: {
       content: 'This file was previously marked as moved to a different location, then re-added, but is now missing'
-    }, 
+    },
     MOVING_FROM: {
       content: 'The file is currently being moved'
     },
@@ -111,16 +116,16 @@ Please VALIDATE to ensure the file has not been altered or corrupted\
     ZIPPED_UNKNOWN_MISSING: {
       content: 'This file was zipped, was been manually added, now manually removed'
     }
-  };
+  }
 
   const validTypes = new Set([
-    "MOVING_FROM",
-    "MOVING_TO",
-    "NO_HASH",
-    "VALID",
-    "VALIDATING_HASH",
-    "WRITING"
-  ]);
+    'MOVING_FROM',
+    'MOVING_TO',
+    'NO_HASH',
+    'VALID',
+    'VALIDATING_HASH',
+    'WRITING'
+  ])
 
   // calculated using Hubbub on the SAN, 22/05/19, recalculate for better estimates
   const timeEstimate = {
@@ -153,73 +158,73 @@ Please VALIDATE to ensure the file has not been altered or corrupted\
     18000000000: '1h',
     46000000000: '2h',
     65000000000: '2h+'
-  };
+  }
 
-  const simpleDate = function(time) {
-    const date = new Date(time);
-    const d = date.getDate();
-    const M = date.getMonth() + 1;
-    const y = ('' + date.getFullYear()).slice(2);
+  const simpleDate = function (time) {
+    const date = new Date(time)
+    const d = date.getDate()
+    const M = date.getMonth() + 1
+    const y = ('' + date.getFullYear()).slice(2)
 
-    let h = date.getHours();
-    if (h < 10) { h = `0${h}`; }
+    let h = date.getHours()
+    if (h < 10) { h = `0${h}` }
 
-    let m = date.getMinutes();
-    if (m < 10) { m = `0${m}`; }
+    let m = date.getMinutes()
+    if (m < 10) { m = `0${m}` }
 
-    return `${d}/${M}/${y} - ${h}:${m}`;
-  };
+    return `${d}/${M}/${y} - ${h}:${m}`
+  }
 
-  const sizeToTime = function(size) {
-    let time;
-    for (let key in timeEstimate) {
-      const value = timeEstimate[key];
+  const sizeToTime = function (size) {
+    let time
+    for (const key in timeEstimate) {
+      const value = timeEstimate[key]
       if (size < key) {
-        time = value;
-        break;
+        time = value
+        break
       }
     }
-    return time;
-  };
+    return time
+  }
 
   return File = Backbone.Model.extend({
 
-    initialize() {
-      let action, classes, date, storage;
-      const path = this.get('path');
+    initialize () {
+      let action, classes, date, storage
+      const path = this.get('path')
       if (path.startsWith('/dropbox/')) {
-        storage = 'dropbox';
+        storage = 'dropbox'
       } else if (path.startsWith('/supporting-documents/')) {
-        storage = 'metadata';
+        storage = 'metadata'
       } else if (path.startsWith('/eidchub/')) {
-        storage = 'datastore';
+        storage = 'datastore'
       }
 
-      const status = this.get('status');
-      const errorType = status in errorTypes ? errorTypes[status] : 'valid';
-      const open = validTypes.has(status) ? false : true;
+      const status = this.get('status')
+      const errorType = status in errorTypes ? errorTypes[status] : 'valid'
+      const open = !validTypes.has(status)
 
       if (open && (errorType !== 'valid')) {
-        classes = 'panel-danger';
+        classes = 'panel-danger'
       } else if (open) {
-        classes = 'panel-default';
+        classes = 'panel-default'
       } else {
-        classes = 'panel-default is-collapsed';
+        classes = 'panel-default is-collapsed'
       }
 
       if (errorType === 'valid') {
-        action = keyToAction[storage];
+        action = keyToAction[storage]
       } else {
-        action = errorToAction[status];
+        action = errorToAction[status]
       }
 
-      const size = this.has('bytes') ? filesize(this.get('bytes')) : 0;
-      if (this.has('time')) { date = simpleDate(this.get('time')); }
-      const hash = this.has('hash') ? this.get('hash') : 'NO_HASH';
-      const estimate = sizeToTime(this.get('bytes'));
-      const message = messages[status];
-      const moving = status.includes('MOVING') || (status === 'WRITING');
-      const validating = status === 'VALIDATING_HASH';
+      const size = this.has('bytes') ? filesize(this.get('bytes')) : 0
+      if (this.has('time')) { date = simpleDate(this.get('time')) }
+      const hash = this.has('hash') ? this.get('hash') : 'NO_HASH'
+      const estimate = sizeToTime(this.get('bytes'))
+      const message = messages[status]
+      const moving = status.includes('MOVING') || (status === 'WRITING')
+      const validating = status === 'VALIDATING_HASH'
 
       return this.set({
         action,
@@ -233,10 +238,10 @@ Please VALIDATE to ensure the file has not been altered or corrupted\
         open,
         size,
         validating
-      });
+      })
     },
 
-    update(data) {
+    update (data) {
       this.set({
         check: false,
         date: simpleDate(data.time),
@@ -246,18 +251,18 @@ Please VALIDATE to ensure the file has not been altered or corrupted\
         moving: false,
         size: filesize(data.bytes),
         status: data.status
-      });
-      return this.initialize();
+      })
+      return this.initialize()
     },
 
-    copy(path) {
+    copy (path) {
       return new File({
         bytes: this.get('bytes'),
         check: true,
         name: this.get('name'),
         path: this.get('path').replace(/^\/(dropbox|eidchub|supporting-documents)\//, path),
         status: 'MOVING_TO'
-      });
+      })
     }
-  });
-});
+  })
+})

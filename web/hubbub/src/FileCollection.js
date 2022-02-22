@@ -1,3 +1,8 @@
+/* eslint-disable
+    no-undef,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -6,5 +11,4 @@
 define([
   'backbone',
   'cs!models/upload/hubbub/File'
-], (Backbone, File) => Backbone.Collection.extend({
-    model: File}));
+], (Backbone, File) => Backbone.Collection.extend({ model: File }))
