@@ -3,7 +3,7 @@ import Backbone from 'backbone'
 import { FileCollection, FileListView, UploadView } from '../File'
 import { MessageListView } from '../Message'
 
-export var SimpleUploadView = Backbone.View.extend({
+export default Backbone.View.extend({
 
   initialize (options) {
     const files = new FileCollection({ url: options.url })

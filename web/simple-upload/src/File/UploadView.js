@@ -1,8 +1,8 @@
 import Backbone from 'backbone'
 import Dropzone from 'dropzone'
-import { File } from './File'
+import File from './File'
 
-export var UploadView = Backbone.View.extend({
+export default Backbone.View.extend({
 
   initialize (options) {
     // Prevent Dropzone auto discovery

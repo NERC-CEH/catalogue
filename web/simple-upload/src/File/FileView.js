@@ -2,7 +2,7 @@ import Backbone from 'backbone'
 import template from './File.tpl'
 import _ from 'underscore'
 
-export var FileView = Backbone.View.extend({
+export default Backbone.View.extend({
 
   tagName: 'li',
 

@@ -1,7 +1,7 @@
 import Backbone from 'backbone'
 import _ from 'underscore'
 import template from './Message.tpl'
-export var MessageView = Backbone.View.extend({
+export default Backbone.View.extend({
 
   tagName: 'li',
 

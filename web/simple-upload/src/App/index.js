@@ -1,1 +1,1 @@
-export { SimpleUploadView } from './SimpleUploadView'
+export { default as SimpleUploadView } from './SimpleUploadView'
