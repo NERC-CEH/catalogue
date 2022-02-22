@@ -1,7 +1,7 @@
 import Backbone from 'backbone'
-import { PermissionView } from './PermissionView'
+import PermissionView from './PermissionView'
 
-export var PermissionAppView = Backbone.View.extend({
+export default Backbone.View.extend({
 
   el: '.permission',
 
