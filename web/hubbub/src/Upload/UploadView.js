@@ -1,8 +1,6 @@
 import $ from 'jquery'
 import Backbone from 'backbone'
-import FileCollection from './FileCollection'
-import File from './File'
-import FileView from './FileView'
+import { File, FileCollection, FileView } from '../File'
 import DropzoneView from './DropzoneView'
 
 export default Backbone.View.extend({

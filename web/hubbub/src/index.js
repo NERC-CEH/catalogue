@@ -1,7 +1,6 @@
 import $ from 'jquery'
 import Bootstrap from 'bootstrap'
-import HubbubUploadView from './UploadView'
-import HubbubUploadModel from './Upload'
+import { HubbubUploadView, HubbubUploadModel } from './Upload'
 
 $(document).ready(function () {
   //  TODO: load state of the app from html, state set from Jira state

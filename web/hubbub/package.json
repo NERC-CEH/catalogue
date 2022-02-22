@@ -59,6 +59,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.2.0",
     "file-loader": "^6.2.0",
+    "filesize": "^8.0.7",
     "html-loader": "^3.1.0",
     "html-webpack-plugin": "^5.5.0",
     "jquery": "3.6.0",
