@@ -51,12 +51,11 @@ export default Backbone.View.extend({
 
   // TODO: turn modal into a view as used in multiple places
   showModal (title, body, action) {
-    const $modal = $('#documentUploadModal')
-    $('.modal-title', $modal).html(title)
-    $('.modal-body', $modal).html(body)
-    $('.modal-accept', $modal).unbind('click')
-    $('.modal-accept', $modal).click(action.bind(this))
-    return $modal.modal('show')
+    $('.modal-title', $('#documentUploadModal')).html(title)
+    $('.modal-body', $('#documentUploadModal')).html(body)
+    $('.modal-accept', $('#documentUploadModal')).unbind('click')
+    $('.modal-accept', $('#documentUploadModal')).click(action.bind(this))
+    return window.$('#documentUploadModal').modal('show')
   },
 
   accept (event) {

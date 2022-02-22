@@ -124,12 +124,12 @@ export default Backbone.View.extend({
 
   showModal (title, body, action, event) {
     this.showInProgress(event)
-    const $modal = $('#documentUploadModal')
-    $('.modal-title', $modal).html(title)
-    $('.modal-body', $modal).html(body)
-    $('.modal-accept', $modal).unbind('click')
-    $('.modal-accept', $modal).click(action.bind(this))
-    return $modal.modal('show')
+    $('#documentUploadModal')
+    $('.modal-title', $('#documentUploadModal')).html(title)
+    $('.modal-body', $('#documentUploadModal')).html(body)
+    $('.modal-accept', $('#documentUploadModal')).unbind('click')
+    $('.modal-accept', $('#documentUploadModal')).click(action.bind(this))
+    window.$('#documentUploadModal').modal('show')
   },
 
   showInProgress (event) {
