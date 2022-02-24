@@ -74,12 +74,12 @@ export default Backbone.View.extend({
       model,
       url: this.model.url()
     })
-    return $container.append(view.render().el)
+    $container.append(view.render().el)
   },
 
   addAll (collection, $container) {
     $container.empty()
-    return collection.each(model => this.addOne(collection, $container, model))
+    collection.each(model => this.addOne(collection, $container, model))
   },
 
   loadMore (event, name, path, collection) {
@@ -92,33 +92,33 @@ export default Backbone.View.extend({
         this.showNormal(event, currentClasses)
         collection.add(data)
         if (data.length === size) {
-          return this.model.set(`${name}Page`, nextPage)
+          this.model.set(`${name}Page`, nextPage)
         }
       },
       error (err) {
         this.showInError(event)
-        return console.error('error', err)
+        console.error('error', err)
       }
     })
   },
 
   loadDatastore (event) {
-    return this.loadMore(event, 'datastore', 'eidchub', this.datastore)
+    this.loadMore(event, 'datastore', 'eidchub', this.datastore)
   },
 
   loadDropbox (event) {
-    return this.loadMore(event, 'dropbox', 'dropbox', this.dropbox)
+    this.loadMore(event, 'dropbox', 'dropbox', this.dropbox)
   },
 
   loadMetadata (event) {
-    return this.loadMore(event, 'metadata', 'supporting-documents', this.metadata)
+    this.loadMore(event, 'metadata', 'supporting-documents', this.metadata)
   },
 
   showEmptyStorage (collection, $container, title) {
     if (collection.length === 0) {
-      return $container.append(`<h3 class="no-documents text-center">NO FILES IN ${title.toUpperCase()}</h3>`)
+      $container.append(`<h3 class="no-documents text-center">NO FILES IN ${title.toUpperCase()}</h3>`)
     } else {
-      return $container.find('.no-documents').remove()
+      $container.find('.no-documents').remove()
     }
   },
 
@@ -145,18 +145,18 @@ export default Backbone.View.extend({
     const $el = $(event.currentTarget)
     $el.attr('disabled', false)
     const $icon = $('i', $el)
-    return $icon.attr('class', classes)
+    $icon.attr('class', classes)
   },
 
   showInError (event) {
     const $el = $(event.currentTarget)
     $el.attr('disabled', true)
     const $icon = $('i', $el)
-    return $icon.attr('class', 'btn-icon fa fa-exclamation-triangle')
+    $icon.attr('class', 'btn-icon fa fa-exclamation-triangle')
   },
 
   showFinish (event) {
-    return this.showModal(
+    this.showModal(
       'Have you finished uploading files?',
       'You will no longer be able to add, remove or update files.',
       function () { return this.finish(event) },

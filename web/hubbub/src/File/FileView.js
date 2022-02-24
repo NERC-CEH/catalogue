@@ -33,11 +33,9 @@ export default Backbone.View.extend({
       )
     }
     this.listenTo(this.model, 'change', this.render)
-    console.log('initialize')
   },
 
   getServerState (callback) {
-    console.log('get server state')
     return $.ajax({
       url: `${this.url}?path=${encodeURIComponent(this.model.get('path'))}`,
       dataType: 'json',
@@ -61,7 +59,6 @@ export default Backbone.View.extend({
   },
 
   accept (event) {
-    console.log('reached accept')
     const currentClasses = this.showInProgress(event)
     $.ajax({
       url: `${this.url}/accept?path=${encodeURIComponent(this.model.get('path'))}`,
@@ -114,7 +111,6 @@ export default Backbone.View.extend({
   },
 
   showDelete (event) {
-    console.log('show delete')
     this.showInProgress(event)
     this.showModal(
       `Delete ${this.model.get('name')}?`,
@@ -122,11 +118,9 @@ export default Backbone.View.extend({
       function () {
         this.delete(event)
       })
-    console.log('show delete end')
   },
 
   showIgnore (event) {
-    console.log('show ignore')
     this.showInProgress(event)
     this.showModal(
       `Ignore the error for ${this.model.get('name')}?`,
@@ -134,7 +128,6 @@ export default Backbone.View.extend({
       function () {
         this.delete(event)
       })
-    console.log('show ignore end')
   },
 
   delete (event) {
@@ -196,7 +189,6 @@ export default Backbone.View.extend({
 
   render () {
     this.$el.html(this.template(this.model.attributes))
-    console.log(this)
     return this
   },
 
@@ -216,15 +208,12 @@ export default Backbone.View.extend({
   },
 
   showInError (event) {
-    console.log('In Error')
     const $el = this.$(event.currentTarget)
-    console.log($el)
     $el.attr('disabled', true)
     $el.find('i').attr('class', 'btn-icon fa fa-exclamation-triangle')
   },
 
   validate (event) {
-    console.log('called validate')
     const currentClasses = this.showInProgress(event)
     $.ajax({
       url: `${this.url}/validate?path=${encodeURIComponent(this.model.get('path'))}`,
@@ -239,11 +228,9 @@ export default Backbone.View.extend({
         )
       },
       error: err => {
-        console.log('error validate')
         this.showInError(event)
         console.error('error', err)
       }
     })
-    console.log('ended validate')
   }
 })
