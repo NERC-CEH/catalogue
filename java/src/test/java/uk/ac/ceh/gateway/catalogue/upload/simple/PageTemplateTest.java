@@ -51,33 +51,33 @@ public class PageTemplateTest {
         return config;
     }
 
-//    @Test
-//    @SneakyThrows
-//    public void render() {
-//        //given
-//        val expected = StreamUtils.copyToString(
-//                getClass().getResourceAsStream("page.html"),
-//                StandardCharsets.UTF_8
-//        ).trim();
-//        val model = configureModel();
-//        val config = configureFreemarker();
-//        val catalogue = Catalogue.builder()
-//                .id("test")
-//                .title("Test Catalogue")
-//                .url("https://example.com")
-//                .contactUrl("")
-//                .logo("eidc.png")
-//                .build();
-//
-//        given(catalogueService.retrieve("test")).willReturn(catalogue);
-//
-//        val template = config.getTemplate("html/upload/simple/upload.ftlh");
-//        val out = new StringWriter();
-//
-//        //when
-//        template.process(model, out);
-//
-//        //then
-//        assertThat(out.toString().trim(), equalTo(expected));
-//    }
+    @Test
+    @SneakyThrows
+    public void render() {
+        //given
+        val expected = StreamUtils.copyToString(
+                getClass().getResourceAsStream("page.html"),
+                StandardCharsets.UTF_8
+        ).trim();
+        val model = configureModel();
+        val config = configureFreemarker();
+        val catalogue = Catalogue.builder()
+                .id("test")
+                .title("Test Catalogue")
+                .url("https://example.com")
+                .contactUrl("")
+                .logo("eidc.png")
+                .build();
+
+        given(catalogueService.retrieve("test")).willReturn(catalogue);
+
+        val template = config.getTemplate("html/upload/simple/upload.ftlh");
+        val out = new StringWriter();
+
+        //when
+        template.process(model, out);
+
+        //then
+        assertThat(out.toString().trim(), equalTo(expected));
+    }
 }
