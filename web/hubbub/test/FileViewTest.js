@@ -3,7 +3,6 @@ import Backbone from 'backbone'
 import { FileView, FileCollection } from '../src/File'
 
 describe('Test FileView', function () {
-  const el = null
   let model = null
   let view = null
 
