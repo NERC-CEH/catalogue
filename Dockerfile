@@ -33,7 +33,7 @@ RUN npm install && npm run build
 
 # Build hubbub app (javascript & css)
 FROM node:17.4.0 AS build-hubbub
-WORKDIR web/simple-upload
+WORKDIR web/hubbub
 COPY --chown=1000:1000 web/hubbub/package.json .
 COPY --chown=1000:1000 web/hubbub/package-lock.json .
 COPY --chown=1000:1000 web/hubbub/webpack.config.js .

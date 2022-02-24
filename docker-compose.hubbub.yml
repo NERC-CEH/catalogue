@@ -1,7 +1,7 @@
 version: "3.7"
 services:
   hubbub:
-    image: registry.gitlab.ceh.ac.uk/eip/hubbub:6.0.3
+    image: registry.gitlab.ceh.ac.uk/eip/hubbub:6.2.2
     command: ["gunicorn", "--access-logfile", "-", "--timeout", "6000", "-w", "2", "-b", "0.0.0.0:80", "server:create_app()"]
     environment:
       - REDIS_HOST=redis

@@ -1,5 +1,5 @@
 import Backbone from 'backbone'
-import filesize from 'filesize'
+import Filesize from 'filesize'
 
 export default Backbone.Model.extend({
 
@@ -32,7 +32,7 @@ export default Backbone.Model.extend({
       action = errorToAction[status]
     }
 
-    const size = this.has('bytes') ? filesize(this.get('bytes')) : 0
+    const size = this.has('bytes') ? Filesize(this.get('bytes')) : 0
     if (this.has('time')) { date = simpleDate(this.get('time')) }
     const hash = this.has('hash') ? this.get('hash') : 'NO_HASH'
     const estimate = sizeToTime(this.get('bytes'))
@@ -63,7 +63,7 @@ export default Backbone.Model.extend({
       hash: data.hash,
       message: messages[status],
       moving: false,
-      size: filesize(data.bytes),
+      size: Filesize(data.bytes),
       status: data.status
     })
     return this.initialize()
