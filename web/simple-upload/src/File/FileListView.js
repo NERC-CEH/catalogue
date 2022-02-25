@@ -20,7 +20,7 @@ export default Backbone.View.extend({
     this.listenTo(this.files, 'add', this.addOne)
     this.listenTo(this.files, 'reset', this.addAll)
 
-    return this.render()
+    this.render()
   },
 
   addOne (file) {
