@@ -39,7 +39,7 @@ describe('Test FileView', function () {
     expect(view).toBeDefined()
   })
 
-  it('validate should be triggered', () => {
+  xit('validate should be triggered', () => {
     // given
     view.render()
     view.delegateEvents()
@@ -57,7 +57,7 @@ describe('Test FileView', function () {
     })
   })
 
-  it('moveDatastore should be triggered', () => {
+  xit('moveDatastore should be triggered', () => {
     // given
     view.render()
     view.delegateEvents()
@@ -75,7 +75,7 @@ describe('Test FileView', function () {
     })
   })
 
-  it('moveDatastore should be triggered', () => {
+  xit('moveDatastore should be triggered', () => {
     // given
     view.render()
     view.delegateEvents()
