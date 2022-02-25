@@ -14,8 +14,6 @@ define [
   'cs!models/EditorMetadata'
   'cs!views/GeminiEditorView'
   'cs!views/MonitoringEditorView'
-  'cs!models/Catalogue'
-  'cs!views/CatalogueView'
   'cs!views/ChartView'
   'cs!views/ModelEditorView'
   'cs!views/LinkEditorView'
@@ -45,9 +43,8 @@ define [
   'cs!models/service-agreement/ServiceAgreement'
 ], (
     _, $, Backbone, Bootstrap, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter, SearchRouter,
-    EditorMetadata, GeminiEditorView, MonitoringEditorView, Catalogue, CatalogueView,
-    ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata, CehModelEditorView, CehModelApplicationEditorView, OsdpAgentEditorView,
-    OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
+    EditorMetadata, GeminiEditorView, MonitoringEditorView, ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata, CehModelEditorView, CehModelApplicationEditorView,
+    OsdpAgentEditorView,OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
     OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, ErammpModelEditorView, NercModelEditorView, NercModelUseEditorView, ErammpDatacubeEditorView, UkemsDocumentEditorView,
     DatalabsDocumentEditorView, ClipboardCopyView, DataTypeEditorView, ElterEditorView, ElterLinkedEditorView, ServiceAgreementEditorView, ServiceAgreement
 ) ->
@@ -68,7 +65,6 @@ define [
     # Remove once templates fixed
     window._ = _
 
-    do @initCatalogue if $('.catalogue-control').length
     do @initClipboard if $('.clipboard-copy').length
     do @initEditor if $('.edit-control').length
     do @initGeometryMap if $('#geometry-map').length
@@ -79,25 +75,6 @@ define [
 
     $('.chart').each (i, e) -> new ChartView el: e
     do Backbone.history.start
-
-  ###
-  Initialize the catalogue application
-  ###
-  initCatalogue: ->
-    catalogues = undefined
-
-    $.getJSON '/catalogues', (data) ->
-      catalogues = _.chain(data).map((c) -> { value: c.id, label: c.title }).value()
-
-    $('.catalogue-control').on 'click', (event) ->
-      do event.preventDefault
-      $.getJSON $(event.target).attr('href'), (data) ->
-        model = new Catalogue data
-        model.options = catalogues
-
-        new CatalogueView
-          el: '#metadata'
-          model: model
 
   ###
   Initialize clipboard copy
