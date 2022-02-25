@@ -17,3 +17,8 @@
 !web/permission/package-lock.json
 !web/permission/webpack.config.js
 !web/permission/src/
+
+!web/simple-upload/package.json
+!web/simple-upload/package-lock.json
+!web/simple-upload/webpack.config.js
+!web/simple-upload/src/
