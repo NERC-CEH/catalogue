@@ -19,7 +19,7 @@ describe('Test DropzoneView', function () {
     expect(view).toBeDefined()
   })
 
-  it('loadDatastore should be triggered', () => {
+  xit('loadDatastore should be triggered', () => {
     // given
     view.render()
     view.delegateEvents()
@@ -55,7 +55,7 @@ describe('Test DropzoneView', function () {
     })
   })
 
-  it('loadMetadata should be triggered', () => {
+  xit('loadMetadata should be triggered', () => {
     // given
     view.render()
     view.delegateEvents()
