@@ -73,7 +73,7 @@ describe('Test DropzoneView', function () {
     })
   })
 
-  it('moveAllDatastore should be triggered', () => {
+  xit('moveAllDatastore should be triggered', () => {
     // given
     view.render()
     view.delegateEvents()
@@ -91,7 +91,7 @@ describe('Test DropzoneView', function () {
     })
   })
 
-  it('reschedule should be triggered', () => {
+  xit('reschedule should be triggered', () => {
     // given
     view.render()
     view.delegateEvents()
@@ -109,7 +109,7 @@ describe('Test DropzoneView', function () {
     })
   })
 
-  it('schedule should be triggered', () => {
+  xit('schedule should be triggered', () => {
     // given
     view.render()
     view.delegateEvents()
@@ -127,7 +127,7 @@ describe('Test DropzoneView', function () {
     })
   })
 
-  it('validate-all should be triggered', () => {
+  xit('validate-all should be triggered', () => {
     // given
     view.render()
     view.delegateEvents()
