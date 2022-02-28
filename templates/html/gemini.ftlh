@@ -71,6 +71,7 @@
             <#include "document/_metadataqualityAlert.ftlh">
         </#if>
 
+
         <div id="document-description" class="clearfix">
             <#include "document/_browseGraphic.ftlh">
             <@blocks.linebreaks description!"" />
