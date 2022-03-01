@@ -13,6 +13,7 @@
 !web/Gruntfile.js
 !web/package.json
 !web/package-lock.json
+
 !web/permission/package.json
 !web/permission/package-lock.json
 !web/permission/webpack.config.js
@@ -25,3 +26,9 @@
 !web/simple-upload/package-lock.json
 !web/simple-upload/webpack.config.js
 !web/simple-upload/src/
+
+!web/hubbub/package.json
+!web/hubbub/package-lock.json
+!web/hubbub/webpack.config.js
+!web/hubbub/src/
+
