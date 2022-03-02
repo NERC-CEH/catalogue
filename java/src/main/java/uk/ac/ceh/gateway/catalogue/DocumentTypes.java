@@ -48,10 +48,10 @@ public class DocumentTypes {
         .type(ERAMMP_MODEL)
         .build();
 
-    public static final String RIDATACUBE = "ridatacube";
-        public static DocumentType RIDATACUBE_TYPE = DocumentType.builder()
+    public static final String RIRECORD = "rirecord";
+        public static DocumentType RIRECORD_TYPE = DocumentType.builder()
             .title("Research infrastructure")
-            .type(RIDATACUBE)
+            .type(RIRECORD)
             .build();
     
     public static final String GEMINI = "GEMINI_DOCUMENT";

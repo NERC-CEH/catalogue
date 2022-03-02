@@ -27,9 +27,9 @@ import java.util.stream.Collectors;
 @ToString(callSuper = true)
 @Accessors(chain = true)
 @ConvertUsing({
-  @Template(called="html/ri/ridatacube.ftlh", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
+  @Template(called="html/ri/rirecord.ftlh", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
 })
-public class RiDatacube extends AbstractMetadataDocument {
+public class RiRecord extends AbstractMetadataDocument {
   
   private String capabilities, lifecycle, uniqueness, partners, locationText, access, userCosts, fundingSources, scienceArea, infrastructureCategory, infrastructureScale ;
 

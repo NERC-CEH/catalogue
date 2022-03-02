@@ -5,7 +5,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
-import uk.ac.ceh.gateway.catalogue.ri.RiDatacube;
+import uk.ac.ceh.gateway.catalogue.ri.RiRecord;
 import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
 
 import java.util.Collections;
@@ -16,23 +16,23 @@ import static org.apache.jena.rdf.model.ResourceFactory.*;
 import static uk.ac.ceh.gateway.catalogue.indexing.jena.Ontology.*;
 
 /**
- * The following class extracts semantic details from a RiDatacube and
+ * The following class extracts semantic details from a RiRecord and
  * returns these as Jena Statements (triples)
  */
 @Slf4j
 @ToString
-public class JenaIndexRiDatacubeGenerator implements IndexGenerator<RiDatacube, List<Statement>> {
+public class JenaIndexRiRecordGenerator implements IndexGenerator<RiRecord, List<Statement>> {
     private final JenaIndexMetadataDocumentGenerator generator;
     private final String baseUri;
 
-    public JenaIndexRiDatacubeGenerator(JenaIndexMetadataDocumentGenerator generator, String baseUri) {
+    public JenaIndexRiRecordGenerator(JenaIndexMetadataDocumentGenerator generator, String baseUri) {
         this.generator = generator;
         this.baseUri = baseUri;
         log.info("Creating {}", this);
     }
 
     @Override
-    public List<Statement> generateIndex(RiDatacube document) {
+    public List<Statement> generateIndex(RiRecord document) {
         List<Statement> toReturn = generator.generateIndex(document);
 
         Resource me = generator.resource(document.getId());

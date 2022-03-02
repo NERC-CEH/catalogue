@@ -138,7 +138,7 @@ public class CatalogueServiceConfig {
                 .facetKey("infrastructureCategory")
                 .facetKey("infrastructureScale")
                 .facetKey("infrastructureChallenge")
-                .documentType(RIDATACUBE_TYPE)
+                .documentType(RIRECORD_TYPE)
                 .documentType(LINK_TYPE)
                 .fileUpload(false)
                 .build(),

@@ -26,7 +26,7 @@ define [
 ], (EditorView, InputView, TextareaView, SingleObjectView, SingleView, SelectView, ReadOnlyView, TextOnlyView, ParentView, ParentLargeView, ParentStringView, ParentStringTextboxView, PredefinedParentView, PredefinedParentLargeView, KeywordView, Contact, ContactView, BoundingBox, BoundingBoxView, RelatedRecordView, RiOnlineLinkView, RiChallenge, RiChallengeView) -> EditorView.extend
 
 	initialize: ->
-		@model.set('type', 'riDatacube') unless @model.has('type')
+		@model.set('type', 'riRecord') unless @model.has('type')
 
 		@sections = [
 			label: 'General'
