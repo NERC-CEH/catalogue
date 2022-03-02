@@ -136,7 +136,6 @@ public class CatalogueServiceConfig {
                 .contactUrl("")
                 .logo("ukceh.png")
                 .facetKey("infrastructureCategory")
-                .facetKey("scienceArea")
                 .facetKey("infrastructureScale")
                 .facetKey("infrastructureChallenge")
                 .documentType(RIDATACUBE_TYPE)

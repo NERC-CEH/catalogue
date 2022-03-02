@@ -61,7 +61,12 @@
   </#list>
 </#macro>
 
-<@skeleton.master title=title catalogue=catalogue rdf="${uri}?format=ttl" schemaorg="${uri}?format=schema.org" canonical="${uri}" can_edit_restricted=permission.userCanEditRestrictedFields(metadata.catalogue)>
+<#assign scripts>
+    <script data-main="/static/scripts/main-out" src="/static/vendor/requirejs/require.js"></script>
+    <script src="/static/scripts/catalogue-app.js"></script>
+</#assign>
+
+<@skeleton.master title=title catalogue=catalogue rdf="${uri}?format=ttl" schemaorg="${uri}?format=schema.org" canonical="${uri}" can_edit_restricted=permission.userCanEditRestrictedFields(metadata.catalogue) scripts=scripts>
 
   <div id="metadata" class="${metadata.state?lower_case} ${linkedClass}">
     <div class="container" role="main">
