@@ -45,14 +45,21 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
         List<Statement> toReturn = generator.generateIndex(document);
 
         Resource me = generator.resource(document.getId());
-
-        String recordType = document.getType();
         
         toReturn.add(createStatement(me, IDENTIFIER, createPlainLiteral(me.getURI()))); //Add as an identifier of itself
         
-        //Only if recordType = dataset/nongeographic dataset
-        toReturn.add(createStatement(me, RDF_TYPE, DCAT_DATASET_CLASS));
+        // This isn't working.  I don't know why.
+        Optional.ofNullable(document.getType())
+            .ifPresent(type -> {
+                if (type.trim().equals("dataset") || type.trim().equals("nonGeographicDataset") ) {
+                    createStatement(me, RDF_TYPE, DCAT_DATASET_CLASS);
+                }
+            });
 
+        Optional.ofNullable(document.getDatasetReferenceDate().getPublicationDate())
+            .ifPresent(pd -> toReturn.add(
+                createStatement(me, DCT_ISSUED, createTypedLiteral(pd.toString(), TYPE_DATE)))
+            );
 
         Optional.ofNullable(document.getBoundingBoxes())
             .orElse(Collections.emptyList())
@@ -68,7 +75,6 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
                 toReturn.add(createStatement(me, IDENTIFIER, createPlainLiteral(r.getCoupledResource())))
             );
 
-
         Optional.ofNullable(document.getCoupledResources())
             .orElse(Collections.emptyList())
             .stream()
@@ -77,7 +83,6 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
                 toReturn.add(createStatement(me, EIDCUSES, createResource(r)))
             );
         
-
         Optional.ofNullable(document.getRelatedRecords())
             .orElse(Collections.emptyList())
             .stream()
@@ -100,15 +105,11 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
             .forEach(onliner -> {
                 log.debug(onliner.toString());
                 Resource dist = generator.resource(document.getId() + "_dist");
-                //:dist needs to be unique eg :<id>_dist_<sequentialNumber>
+                //:dist needs to be unique eg : document.getId() + "_dist" + counter
                 toReturn.add(createStatement(dist, RDF_TYPE, DCAT_DISTRIBUTION_CLASS));
                 toReturn.add(createStatement(dist, DCAT_ACCESSURL, createProperty(onliner.getUrl())));
                 toReturn.add(createStatement(me, DCAT_DISTRIBUTION, dist));
             });
-
-        //Also want to add publication date:
-        //toReturn.add(createStatement(me, DCT_ISSUED, --publication date--, TYPE_DATE))); 
-
 
 
         return toReturn;
