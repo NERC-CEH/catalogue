@@ -12,6 +12,8 @@ describe('Test DropzoneView', function () {
     view = new HubbubUploadView({
       model
     })
+    const container = $('<div class ="dropzone-container"><div class="dropzone-files"><div class="fileinput-button"/></div></div>')
+    $(document.body).append(container)
   })
 
   it('is defined', function () {
@@ -19,7 +21,7 @@ describe('Test DropzoneView', function () {
     expect(view).toBeDefined()
   })
 
-  xit('loadDatastore should be triggered', () => {
+  it('loadDatastore should be triggered', () => {
     // given
     view.render()
     view.delegateEvents()
@@ -73,7 +75,7 @@ describe('Test DropzoneView', function () {
     })
   })
 
-  xit('moveAllDatastore should be triggered', () => {
+  it('moveAllDatastore should be triggered', () => {
     // given
     view.render()
     view.delegateEvents()
@@ -127,7 +129,7 @@ describe('Test DropzoneView', function () {
     })
   })
 
-  xit('validate-all should be triggered', () => {
+  it('validate-all should be triggered', () => {
     // given
     view.render()
     view.delegateEvents()
