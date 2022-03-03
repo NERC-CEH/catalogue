@@ -64,6 +64,15 @@ test_hubbub:
     - npm ci
     - npm run test
 
+test_clipboard:
+  stage: test
+  image: ephesoft/headless_chrome:latest
+  script:
+    - cd web/clipboard
+    - npm install -g npm
+    - npm ci
+    - npm run test
+
 build_application:
   stage: build
   image: docker:20.10.5
