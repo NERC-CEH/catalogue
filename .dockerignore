@@ -32,3 +32,8 @@
 !web/hubbub/webpack.config.js
 !web/hubbub/src/
 
+!web/clipboard/package.json
+!web/clipboard/package-lock.json
+!web/clipboard/webpack.config.js
+!web/clipboard/src/
+

@@ -3,6 +3,12 @@
 <#--
 OSDP base template
 -->
+
+<#assign odspScripts>
+  <script src="/static/scripts/clipboard-app.js"></script>
+  <script data-main="/static/scripts/main-out" src="/static/vendor/requirejs/require.js"></script>
+</#assign>
+
 <#macro base>
   <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
       <@b.metadataContainer "ceh-model">
