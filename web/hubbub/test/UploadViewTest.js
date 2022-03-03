@@ -1,7 +1,7 @@
 import $ from 'jquery'
 import { HubbubUploadModel, HubbubUploadView } from '../src/Upload'
 
-describe('Test UploadView', function () {
+describe('Test DropzoneView', function () {
   let model = null
   let view = null
 
@@ -12,6 +12,8 @@ describe('Test UploadView', function () {
     view = new HubbubUploadView({
       model
     })
+    const container = $('<div class ="dropzone-container"><div class="dropzone-files"><div class="fileinput-button"/></div></div>')
+    $(document.body).append(container)
   })
 
   it('is defined', function () {
@@ -19,10 +21,8 @@ describe('Test UploadView', function () {
     expect(view).toBeDefined()
   })
 
-  xit('loadDatastore should be triggered', () => {
+  it('loadDatastore should be triggered', () => {
     // given
-    const container = $('<div class ="dropzone-container"><div class="dropzone-files"><div class="fileinput-button"/></div></div>')
-    $(document.body).append(container)
     view.render()
     view.delegateEvents()
     spyOn($, 'ajax').and.callFake(function (e) {
@@ -39,7 +39,7 @@ describe('Test UploadView', function () {
     })
   })
 
-  xit('loadDropbox should be triggered', () => {
+  it('loadDropbox should be triggered', () => {
     // given
     view.render()
     view.delegateEvents()
@@ -75,10 +75,8 @@ describe('Test UploadView', function () {
     })
   })
 
-  xit('moveAllDatastore should be triggered', () => {
+  it('moveAllDatastore should be triggered', () => {
     // given
-    const container = $('<div class ="dropzone-container"><div class="dropzone-files"><div class="fileinput-button"/></div></div>')
-    $(document.body).append(container)
     view.render()
     view.delegateEvents()
     spyOn($, 'ajax').and.callFake(function (e) {
@@ -131,7 +129,7 @@ describe('Test UploadView', function () {
     })
   })
 
-  xit('validate-all should be triggered', () => {
+  it('validate-all should be triggered', () => {
     // given
     view.render()
     view.delegateEvents()
