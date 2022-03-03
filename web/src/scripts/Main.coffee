@@ -35,7 +35,6 @@ define [
   'cs!views/ErammpDatacubeEditorView'
   'cs!views/UkemsDocumentEditorView'
   'cs!views/DatalabsDocumentEditorView'
-  'cs!views/ClipboardCopyView'
   'cs!views/DataTypeEditorView'
   'cs!views/ElterEditorView'
   'cs!views/ElterLinkedEditorView'
@@ -46,7 +45,7 @@ define [
     EditorMetadata, GeminiEditorView, MonitoringEditorView, ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata, CehModelEditorView, CehModelApplicationEditorView,
     OsdpAgentEditorView,OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
     OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, ErammpModelEditorView, NercModelEditorView, NercModelUseEditorView, ErammpDatacubeEditorView, UkemsDocumentEditorView,
-    DatalabsDocumentEditorView, ClipboardCopyView, DataTypeEditorView, ElterEditorView, ElterLinkedEditorView, ServiceAgreementEditorView, ServiceAgreement
+    DatalabsDocumentEditorView, DataTypeEditorView, ElterEditorView, ElterLinkedEditorView, ServiceAgreementEditorView, ServiceAgreement
 ) ->
 
   ###
@@ -65,7 +64,6 @@ define [
     # Remove once templates fixed
     window._ = _
 
-    do @initClipboard if $('.clipboard-copy').length
     do @initEditor if $('.edit-control').length
     do @initGeometryMap if $('#geometry-map').length
     do @initMapviewer if $('#mapviewer').length
@@ -75,13 +73,6 @@ define [
 
     $('.chart').each (i, e) -> new ChartView el: e
     do Backbone.history.start
-
-  ###
-  Initialize clipboard copy
-  ###
-  initClipboard: ->
-    view = new ClipboardCopyView
-      el: '.clipboard-copy'
 
   ###
   Initialize the editor
