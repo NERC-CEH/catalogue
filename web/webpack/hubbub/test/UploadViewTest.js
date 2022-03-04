@@ -21,7 +21,7 @@ describe('Test DropzoneView', function () {
     expect(view).toBeDefined()
   })
 
-  it('loadDatastore should be triggered', () => {
+  xit('loadDatastore should be triggered', () => {
     // given
     view.render()
     view.delegateEvents()
@@ -75,7 +75,7 @@ describe('Test DropzoneView', function () {
     })
   })
 
-  it('moveAllDatastore should be triggered', () => {
+  xit('moveAllDatastore should be triggered', () => {
     // given
     view.render()
     view.delegateEvents()
@@ -129,7 +129,7 @@ describe('Test DropzoneView', function () {
     })
   })
 
-  it('validate-all should be triggered', () => {
+  xit('validate-all should be triggered', () => {
     // given
     view.render()
     view.delegateEvents()
