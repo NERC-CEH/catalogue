@@ -39,6 +39,27 @@ public class UkemsDocument extends AbstractMetadataDocument {
     private List<Supplemental> supplemental;
     private String units;
     private String provenance;
+    private Conformance conformance;
+    private String conformanceComment;
+    private String productChecks;
+    private Reliability reliabilityRating;
+
+
+    @ToString
+    public enum Conformance {
+        CONFORMS,
+        PARTIALLY_CONFORMS,
+        DOES_NOT_CONFORM;
+    }
+
+    @ToString
+    public enum Reliability {
+        LEVEL1,
+        LEVEL2,
+        LEVEL3,
+        LEVEL4,
+        LEVEL5;
+    }
 
     @ToString
     public enum EmissionComponent {
