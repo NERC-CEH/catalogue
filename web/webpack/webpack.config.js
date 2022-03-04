@@ -4,7 +4,10 @@ module.exports = {
 
   entry: {
     catalogue: './catalogue/src/index.js',
-    permission: './permission/src/index.js'
+    clipboard: './clipboard/src/index.js',
+    hubbub: './hubbub/src/index.js',
+    permission: './permission/src/index.js',
+    simpleupload: './simple-upload/src/index.js'
   },
   mode: 'development',
   module: {
@@ -46,7 +49,19 @@ module.exports = {
       filename: './index.html'
     }),
     new HtmlWebPackPlugin({
+      template: './clipboard/src/index.html',
+      filename: './index.html'
+    }),
+    new HtmlWebPackPlugin({
+      template: './hubbub/src/index.html',
+      filename: './index.html'
+    }),
+    new HtmlWebPackPlugin({
       template: './permission/src/index.html',
+      filename: './index.html'
+    }),
+    new HtmlWebPackPlugin({
+      template: './simple-upload/src/index.html',
       filename: './index.html'
     })
   ]

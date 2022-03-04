@@ -1,4 +1,3 @@
-import $ from 'jquery'
 import { ClipboardCopyView } from '../src/ClipboardCopy'
 
 describe('Test ClipboardCopyView', () => {
