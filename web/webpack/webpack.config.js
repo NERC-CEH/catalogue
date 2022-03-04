@@ -1,6 +1,11 @@
 const HtmlWebPackPlugin = require('html-webpack-plugin')
 
 module.exports = {
+
+  entry: {
+    catalogue: './catalogue/src/index.js',
+    permission: './permission/src/index.js'
+  },
   mode: 'development',
   module: {
     rules: [
@@ -33,11 +38,15 @@ module.exports = {
     port: 8081
   },
   output: {
-    filename: 'permission-app.js'
+    filename: '[name].bundle.js'
   },
   plugins: [
     new HtmlWebPackPlugin({
-      template: './src/index.html',
+      template: './catalogue/src/index.html',
+      filename: './index.html'
+    }),
+    new HtmlWebPackPlugin({
+      template: './permission/src/index.html',
       filename: './index.html'
     })
   ]

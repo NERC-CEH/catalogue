@@ -1,5 +1,5 @@
 {
-  "name": "catalogue",
+  "name": "webpack",
   "main": "index.js",
   "private": "true",
   "scripts": {
