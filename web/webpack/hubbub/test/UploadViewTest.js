@@ -39,7 +39,7 @@ describe('Test DropzoneView', function () {
     })
   })
 
-  it('loadDropbox should be triggered', () => {
+  xit('loadDropbox should be triggered', () => {
     // given
     view.render()
     view.delegateEvents()
