@@ -5,7 +5,7 @@ OSDP base template
 -->
 
 <#assign odspScripts>
-  <script src="/static/scripts/clipboard-app.js"></script>
+  <script src="/static/scripts/clipboard-bundle.js"></script>
   <script data-main="/static/scripts/main-out" src="/static/vendor/requirejs/require.js"></script>
 </#assign>
 

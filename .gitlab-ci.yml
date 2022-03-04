@@ -28,47 +28,11 @@ test_web:
     - ./node_modules/.bin/bower install --allow-root
     - ./node_modules/.bin/grunt prep build    # test not actually run as are broken
 
-test_permissions:
+test_webpack:
   stage: test
   image: ephesoft/headless_chrome:latest
   script:
-    - cd web/permission
-    - npm install -g npm
-    - npm ci
-    - npm run test
-
-test_catalogue:
-  stage: test
-  image: ephesoft/headless_chrome:latest
-  script:
-    - cd web/catalogue
-    - npm install -g npm
-    - npm ci
-    - npm run test
-
-test_simple-upload:
-  stage: test
-  image: ephesoft/headless_chrome:latest
-  script:
-    - cd web/simple-upload
-    - npm install -g npm
-    - npm ci
-    - npm run test
-
-test_hubbub:
-  stage: test
-  image: ephesoft/headless_chrome:latest
-  script:
-    - cd web/hubbub
-    - npm install -g npm
-    - npm ci
-    - npm run test
-
-test_clipboard:
-  stage: test
-  image: ephesoft/headless_chrome:latest
-  script:
-    - cd web/clipboard
+    - cd web/webpack
     - npm install -g npm
     - npm ci
     - npm run test

@@ -2,7 +2,7 @@
 <#assign canEdit = permission.userCanEdit(id)>
 
 <#assign permissionScript>
-  <script src="/static/scripts/permission-app.js"></script>
+  <script src="/static/scripts/permission.bundle.js"></script>
 </#assign>
 
 <@skeleton.master title="Permissions" catalogue=catalogues.retrieve(catalogue) scripts=permissionScript>

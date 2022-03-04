@@ -1,7 +1,7 @@
 <#import "../../skeleton.ftlh" as skeleton>
 
 <#assign uploadScripts>
-  <script src="/static/scripts/simple-upload-app.js"></script>
+  <script src="/static/scripts/simpleupload.bundle.js"></script>
   <script data-main="/static/scripts/main-out" src="/static/vendor/requirejs/require.js"></script>
 </#assign>
 
