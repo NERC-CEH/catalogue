@@ -34,13 +34,18 @@ public class UkemsDocument extends AbstractMetadataDocument {
     private List<String> spatialRepresentationTypes;
     private List<SpatialResolution> spatialResolutions;
     private List<DistributionInfo> distributionFormats;
+    // identifier corresponding to ERDDAP's datasetID
     private String ident;
     private EmissionComponent emissionComponent;
+    // supplemental documentation including QA/QC log
     private List<Supplemental> supplemental;
     private String units;
     private String provenance;
+    // degree to which dataset conforms to DUKEMS QA/QC guidance
     private Conformance conformance;
+    // comment explaining reason for PARTIALLY_CONFORMS or DOES_NOT_CONFORM
     private String conformanceComment;
+    // text on what QA/QC checks have been undertaken
     private String productChecks;
     private Reliability reliabilityRating;
 
