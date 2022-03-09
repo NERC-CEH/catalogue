@@ -13,15 +13,11 @@ RUN node_modules/.bin/bower install --allow-root
 RUN node_modules/.bin/grunt
 
 
-# Build Permission app (javascript & css)
+# Build webpack app (javascript & css)
 FROM node:17.4.0 AS build-webpack
-WORKDIR web/permission
-COPY --chown=1000:1000 web/permission/package.json .
-COPY --chown=1000:1000 web/permission/package-lock.json .
-COPY --chown=1000:1000 web/permission/webpack.config.js .
-COPY --chown=1000:1000 web/permission/src src/
+WORKDIR web/webpack
+COPY . /
 RUN npm install && npm run build
-
 
 # Build Java
 FROM gradle:7.2-jdk16 AS build-java

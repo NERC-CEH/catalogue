@@ -3,12 +3,8 @@ const HtmlWebPackPlugin = require('html-webpack-plugin')
 module.exports = {
 
   entry: {
-    catalogue: {
-      import: './catalogue/src/index.js',
-      dependOn: 'editor'
-    },
+    catalogue: './catalogue/src/index.js',
     clipboard: './clipboard/src/index.js',
-    editor: './editor/src/index.js',
     hubbub: './hubbub/src/index.js',
     permission: './permission/src/index.js',
     simpleupload: './simple-upload/src/index.js'
@@ -49,27 +45,6 @@ module.exports = {
   },
   plugins: [
     new HtmlWebPackPlugin({
-      template: './catalogue/src/index.html',
-      filename: './index.html'
-    }),
-    new HtmlWebPackPlugin({
-      template: './clipboard/src/index.html',
-      filename: './index.html'
-    }),
-    new HtmlWebPackPlugin({
-      template: './editor/src/index.html',
-      filename: './index.html'
-    }),
-    new HtmlWebPackPlugin({
-      template: './hubbub/src/index.html',
-      filename: './index.html'
-    }),
-    new HtmlWebPackPlugin({
-      template: './permission/src/index.html',
-      filename: './index.html'
-    }),
-    new HtmlWebPackPlugin({
-      template: './simple-upload/src/index.html',
       filename: './index.html'
     })
   ]
