@@ -1,4 +1,4 @@
-import { EditorView } from '../src/Editor'
+import { EditorView } from '../src'
 import Backbone from 'backbone'
 
 describe('Test EditorView', () => {

@@ -1,6 +1,5 @@
-import { InputView, EditorMetadata } from '../src/Editor'
-import _ from 'underscore'
-import template from '../src/Editor/Input.tpl'
+import { InputView, EditorMetadata } from '../src'
+import template from '../src/Input.tpl'
 
 describe('Test InputView', function () {
   let model = null

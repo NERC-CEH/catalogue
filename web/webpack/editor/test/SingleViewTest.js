@@ -1,4 +1,4 @@
-import { EditorMetadata, SingleView } from '../src/Editor'
+import { EditorMetadata, SingleView } from '../src'
 
 describe('Test SingleView', () => {
   let view = null
