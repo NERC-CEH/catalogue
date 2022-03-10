@@ -1,17 +1,6 @@
-/* eslint-disable
-    no-undef,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
-define([
-  'backbone'
-], function (Backbone) {
-  return Backbone.Model.extend({
+import Backbone from 'backbone'
+
+export default Backbone.Model.extend({
 
     defaults: {
       value: null
@@ -69,5 +58,4 @@ define([
       this.set('code', this.codes[value] ? this.codes[value] : null)
       return this.set('description', this.descriptions[value] ? this.descriptions[value] : null)
     }
-  })
 })

@@ -1,19 +1,6 @@
-/* eslint-disable
-    no-multi-str,
-    no-undef,
-    prefer-regex-literals,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
-define([
-  'underscore',
-  'backbone'
-], (_, Backbone) => Backbone.Model.extend({
+export _ from 'underscore'
+export Backbone from 'backbone'
+export default Backbone.Model.extend({
 
   validate (attrs) {
     // from https://github.com/jzaefferer/jquery-validation/blob/043fb91da7dab0371fded5e2a9fa7ebe4c836210/src/core.js#L1180
@@ -47,4 +34,4 @@ define([
       return errors
     }
   }
-}))
+})

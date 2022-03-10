@@ -1,21 +1,7 @@
-/* eslint-disable
-    no-multi-str,
-    no-undef,
-    no-unreachable,
-    prefer-regex-literals,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
-define([
-  'backbone',
-  'underscore'
-], function (Backbone, _) {
-  return Backbone.Model.extend({
+import Backbone from 'backbone'
+import _ from 'underscore'
+
+export default Backbone.Model.extend({
 
     defaults: {
       address: {}
@@ -115,5 +101,4 @@ define([
         return _.clone(this.attributes)
       }
     }
-  })
 })

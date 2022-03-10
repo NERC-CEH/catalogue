@@ -1,23 +1,8 @@
-/* eslint-disable
-    new-cap,
-    no-return-assign,
-    no-undef,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
-define([
-  'underscore',
-  'backbone',
-  'cs!collections/Positionable'
-], function (_, Backbone, Positionable) {
-  let NestedModel
-  return NestedModel = Backbone.Model.extend({
+import _ from 'underscore'
+import Backbone from 'backbone'
+import { Positionable } from '../collections'
+
+export default Backbone.Model.extend({
 
     /*
   Return a collection which is bound to an array attribute of the given model.
@@ -48,5 +33,4 @@ define([
       this.listenTo(model, 'change', () => this.set(attr, model.toJSON()))
       return model
     }
-  })
 })
