@@ -1,49 +1,67 @@
-define [
-  'underscore'
-  'cs!views/editor/ObjectInputView'
-  'cs!views/editor/ChildView'
-  'cs!views/editor/MapValueView'
-  'cs!views/editor/MapBucketView'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'underscore',
+  'cs!views/editor/ObjectInputView',
+  'cs!views/editor/ChildView',
+  'cs!views/editor/MapValueView',
+  'cs!views/editor/MapBucketView',
   'tpl!templates/editor/MapAttribute.tpl'
-], (_, ObjectInputView, ChildView, MapValueView, MapBucketView, template) -> ObjectInputView.extend
+], function(_, ObjectInputView, ChildView, MapValueView, MapBucketView, template) { return ObjectInputView.extend({
 
-  template: template
+  template,
   
-  defaultLegend:
-    style:
+  defaultLegend: {
+    style: {
       colour: '#000000'
+    }
+  },
 
   dataTypes:[
-    {name: 'Text',   value: 'TEXT'}
+    {name: 'Text',   value: 'TEXT'},
     {name: 'Number', value: 'NUMBER'}
-  ]
+  ],
 
-  events: ->
-    _.extend {}, ObjectInputView.prototype.events,
-      'click .addValue': 'addValue'
+  events() {
+    return _.extend({}, ObjectInputView.prototype.events, {
+      'click .addValue': 'addValue',
       'click .addBucket': 'addBucket'
+    }
+    );
+  },
 
-  initialize: (options) ->
-    ObjectInputView.prototype.initialize.call @, _.extend {}, options,
-      types: @dataTypes
+  initialize(options) {
+    ObjectInputView.prototype.initialize.call(this, _.extend({}, options,
+      {types: this.dataTypes})
+    );
 
-    @buckets = @model.getRelatedCollection 'buckets'
-    @values  = @model.getRelatedCollection 'values'
+    this.buckets = this.model.getRelatedCollection('buckets');
+    this.values  = this.model.getRelatedCollection('values');
 
-    @createList @buckets, '.buckets', @newBucket
-    @createList @values, '.values', @newValue
+    this.createList(this.buckets, '.buckets', this.newBucket);
+    return this.createList(this.values, '.values', this.newValue);
+  },
 
-  addValue:  -> @values.add @defaultLegend
-  addBucket: -> @buckets.add @defaultLegend
+  addValue() { return this.values.add(this.defaultLegend); },
+  addBucket() { return this.buckets.add(this.defaultLegend); },
 
-  newValue: (m) -> 
-    new ChildView 
-      model: m
-      ObjectInputView: MapValueView
-      disabled: @data.disabled
+  newValue(m) { 
+    return new ChildView({ 
+      model: m,
+      ObjectInputView: MapValueView,
+      disabled: this.data.disabled
+    });
+  },
 
-  newBucket: (m) -> 
-    new ChildView 
-      model: m
-      ObjectInputView: MapBucketView
-      disabled: @data.disabled
+  newBucket(m) { 
+    return new ChildView({ 
+      model: m,
+      ObjectInputView: MapBucketView,
+      disabled: this.data.disabled
+    });
+  }
+});
+ });

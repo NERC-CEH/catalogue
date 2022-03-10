@@ -1,6 +1,11 @@
-define [
-  'cs!views/editor/InputView'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'cs!views/editor/InputView',
   'tpl!templates/editor/Textarea.tpl'
-], (InputView, template) -> InputView.extend
+], (InputView, template) => InputView.extend({
 
-  template: template
+  template}));

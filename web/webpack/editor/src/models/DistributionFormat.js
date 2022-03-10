@@ -1,24 +1,39 @@
-define [
-  'underscore'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'underscore',
   'backbone'
-], (_, Backbone) -> Backbone.Model.extend 
+], (_, Backbone) => Backbone.Model.extend({ 
 
-  validate: (attrs) ->
+  validate(attrs) {
 
-    errors = []
+    const errors = [];
 
-    name = attrs.name
-    type = attrs.type
-    version = attrs.version
+    const {
+      name
+    } = attrs;
+    const {
+      type
+    } = attrs;
+    const {
+      version
+    } = attrs;
 
-    if ! version && (name || type) 
-      errors.push
-        message: "The version is mandatory - if it's not applicable, enter 'unknown'"
+    if (!version && (name || type)) { 
+      errors.push({
+        message: "The version is mandatory - if it's not applicable, enter 'unknown'"});
+    }
 
-    if _.isEmpty errors
-      # return nothing from Backbone.Model.validate
-      # because returning something signals a validation error.
-      return
-    else
-      return errors
+    if (_.isEmpty(errors)) {
+      // return nothing from Backbone.Model.validate
+      // because returning something signals a validation error.
+      return;
+    } else {
+      return errors;
+    }
+  }
+}));
 

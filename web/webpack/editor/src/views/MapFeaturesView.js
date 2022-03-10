@@ -1,15 +1,24 @@
-define [
-  'backbone'
-  'cs!views/editor/ObjectInputView'
-  'cs!views/editor/MapStyleSelectorView'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'backbone',
+  'cs!views/editor/ObjectInputView',
+  'cs!views/editor/MapStyleSelectorView',
   'tpl!templates/editor/MapFeatures.tpl'
-], (Backbone, ObjectInputView, MapStyleSelectorView, template) -> ObjectInputView.extend
+], function(Backbone, ObjectInputView, MapStyleSelectorView, template) { return ObjectInputView.extend({
 
-  template: template
+  template,
 
-  initialize: (options) ->    
-    ObjectInputView.prototype.initialize.call @, options
+  initialize(options) {    
+    ObjectInputView.prototype.initialize.call(this, options);
 
-    new MapStyleSelectorView
-      el: @$('.style-selector')
-      model: @model.getRelated 'style'
+    return new MapStyleSelectorView({
+      el: this.$('.style-selector'),
+      model: this.model.getRelated('style')
+    });
+  }
+});
+ });

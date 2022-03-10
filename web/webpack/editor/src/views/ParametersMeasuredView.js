@@ -1,15 +1,26 @@
-define [
-  'cs!views/editor/ObjectInputViewForObjects'
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'cs!views/editor/ObjectInputViewForObjects',
   'tpl!templates/editor/ParametersMeasured.tpl'
-], (ObjectInputViewForObjects, template) -> ObjectInputViewForObjects.extend
+], function(ObjectInputViewForObjects, template) { return ObjectInputViewForObjects.extend({
 
-  template:  template
+  template,
 
-  render: ->
-    unless 'name' in @data 
-      @data.name = {}
+  render() {
+    if (!Array.from(this.data).includes('name')) { 
+      this.data.name = {};
+    }
 
-    unless 'unitOfMeasure' in @data 
-      @data.unitOfMeasure = {}
+    if (!Array.from(this.data).includes('unitOfMeasure')) { 
+      this.data.unitOfMeasure = {};
+    }
 
-    ObjectInputViewForObjects.prototype.render.apply @
+    return ObjectInputViewForObjects.prototype.render.apply(this);
+  }
+});
+ });

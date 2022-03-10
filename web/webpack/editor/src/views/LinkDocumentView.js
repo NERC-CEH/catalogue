@@ -1,15 +1,25 @@
-define [
-  'backbone'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'backbone',
   'tpl!templates/editor/LinkDocument.tpl'
 ],
-(Backbone, template) -> Backbone.View.extend
+function(Backbone, template) { return Backbone.View.extend({
 
-  events:
+  events: {
     'click button': 'selected'
+  },
 
-  render: ->
-    @$el.html template  @model.attributes
-    @
+  render() {
+    this.$el.html(template(this.model.attributes));
+    return this;
+  },
 
-  selected: (event) ->
-    @model.trigger 'selected', @model.get 'identifier'
+  selected(event) {
+    return this.model.trigger('selected', this.model.get('identifier'));
+  }
+});
+ });

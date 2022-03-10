@@ -1,21 +1,32 @@
-define [
-  'underscore'
-  'cs!views/editor/ParentStringView'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'underscore',
+  'cs!views/editor/ParentStringView',
   'tpl!templates/editor/MultiStringDropdown.tpl'
-], (_, ParentStringView, childTemplate) -> ParentStringView.extend
+], function(_, ParentStringView, childTemplate) { return ParentStringView.extend({
 
-  ###
+  /*
     Edit a list of strings, the value of the string comes
     from the options of a dropdown list.
-  ###
+  */
 
-  childTemplate: childTemplate
+  childTemplate,
 
-  render: ->
-    do @renderParent
-    $attach = @$(".existing")
-    _.each @array, (string, index) =>
-      $attach.append @childTemplate data: _.extend {}, @data,
-        index: index
-      @$("#select#{@data.modelAttribute}#{index}").val string
-    @
+  render() {
+    (this.renderParent)();
+    const $attach = this.$(".existing");
+    _.each(this.array, (string, index) => {
+      $attach.append(this.childTemplate({data: _.extend({}, this.data,
+        {index})
+      })
+      );
+      return this.$(`#select${this.data.modelAttribute}${index}`).val(string);
+    });
+    return this;
+  }
+});
+ });

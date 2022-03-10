@@ -1,97 +1,125 @@
-define [
-  'underscore'
-  'cs!collections/Positionable'
-  'cs!views/editor/SingleView'
-  'cs!views/editor/ChildLargeView'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'underscore',
+  'cs!collections/Positionable',
+  'cs!views/editor/SingleView',
+  'cs!views/editor/ChildLargeView',
   'tpl!templates/editor/Parent.tpl'
-], (_, Positionable, SingleView, ChildLargeView, template) -> SingleView.extend
+], function(_, Positionable, SingleView, ChildLargeView, template) { return SingleView.extend({
 
-  events:
+  events: {
     'click button.add': 'add'
+  },
 
-  initialize: (options) ->
-    SingleView.prototype.initialize.call @, options
-    @collection = new Positionable [], model: @data.ModelType
+  initialize(options) {
+    SingleView.prototype.initialize.call(this, options);
+    this.collection = new Positionable([], {model: this.data.ModelType});
 
-    @listenTo @collection, 'add', @addOne
-    @listenTo @collection, 'reset', @addAll
-    @listenTo @collection, 'add remove change position', @updateModel
-    @listenTo @model, 'sync', @updateCollection
+    this.listenTo(this.collection, 'add', this.addOne);
+    this.listenTo(this.collection, 'reset', this.addAll);
+    this.listenTo(this.collection, 'add remove change position', this.updateModel);
+    this.listenTo(this.model, 'sync', this.updateCollection);
 
-    do @render
-    @$attach = @$(".existing")
-    @collection.reset @getModelData()
+    (this.render)();
+    this.$attach = this.$(".existing");
+    this.collection.reset(this.getModelData());
 
-    if @data.multiline
-      @$el.addClass 'multiline'
+    if (this.data.multiline) {
+      this.$el.addClass('multiline');
+    }
 
-    if !(@data.disabled == 'disabled')
-      @$attach.sortable
-        start: (event, ui) =>
-          @_oldPosition = ui.item.index()
-        update: (event, ui) =>
-          @collection.position @_oldPosition, ui.item.index()
+    if (!(this.data.disabled === 'disabled')) {
+      return this.$attach.sortable({
+        start: (event, ui) => {
+          return this._oldPosition = ui.item.index();
+        },
+        update: (event, ui) => {
+          return this.collection.position(this._oldPosition, ui.item.index());
+        }
+      });
+    }
+  },
 
-  render: ->
-    @$el.html template data: @data
-    @
+  render() {
+    this.$el.html(template({data: this.data}));
+    return this;
+  },
 
-  addOne: (model) ->
-    view = new ChildLargeView _.extend {}, @data,
-      model: model
-    @$attach.append view.el
+  addOne(model) {
+    const view = new ChildLargeView(_.extend({}, this.data,
+      {model})
+    );
+    return this.$attach.append(view.el);
+  },
 
-  addAll: ->
-    @$attach.html('')
-    @collection.each @addOne, @
+  addAll() {
+    this.$attach.html('');
+    return this.collection.each(this.addOne, this);
+  },
 
-  add: ->
-    @collection.add new @data.ModelType
+  add() {
+    return this.collection.add(new this.data.ModelType);
+  },
 
-  getModelData: ->
-    model = @model.attributes
-    path = @data.modelAttribute.split '.'
-    while path.length >= 2
-      model = model[path.shift()] or {}
+  getModelData() {
+    let model = this.model.attributes;
+    const path = this.data.modelAttribute.split('.');
+    while (path.length >= 2) {
+      model = model[path.shift()] || {};
+    }
 
-    return model[path[0]] or []
+    return model[path[0]] || [];
+  },
 
-  updateModel: ->
-    path = @data.modelAttribute.split '.'
-    data = @collection.toJSON()
+  updateModel() {
+    const path = this.data.modelAttribute.split('.');
+    let data = this.collection.toJSON();
 
-    while path.length > 0
-      oldData = data
-      data = {}
-      data[path.pop()] = oldData
-    @model.set data
+    while (path.length > 0) {
+      const oldData = data;
+      data = {};
+      data[path.pop()] = oldData;
+    }
+    return this.model.set(data);
+  },
 
-  updateCollection: (model) ->
-    if model.hasChanged @data.modelAttribute
-      updated = model.get @data.modelAttribute
+  updateCollection(model) {
+    if (model.hasChanged(this.data.modelAttribute)) {
+      const updated = model.get(this.data.modelAttribute);
 
-      collectionLength = @collection.length
-      # Update existing models
+      const collectionLength = this.collection.length;
+      // Update existing models
       _.chain(updated)
         .first(collectionLength)
-        .each((update, index) =>
-          @collection
+        .each((update, index) => {
+          return this.collection
             .at(index)
-            .set(update)
-        )
-      # Add new models
+            .set(update);
+        });
+      // Add new models
       _.chain(updated)
         .rest(collectionLength)
-        .each ((update) =>
-          @collection.add update
-        )
-      # Remove models not in updated
-      @collection.remove(@collection.rest(updated.length))
+        .each((update => {
+          return this.collection.add(update);
+        })
+      );
+      // Remove models not in updated
+      return this.collection.remove(this.collection.rest(updated.length));
+    }
+  },
 
-  show: ->
-    SingleView.prototype.show.apply @
-    @collection.trigger 'visible'
+  show() {
+    SingleView.prototype.show.apply(this);
+    return this.collection.trigger('visible');
+  },
 
-  hide: ->
-    SingleView.prototype.hide.apply @
-    @collection.trigger 'hidden'
+  hide() {
+    SingleView.prototype.hide.apply(this);
+    return this.collection.trigger('hidden');
+  }
+});
+ });

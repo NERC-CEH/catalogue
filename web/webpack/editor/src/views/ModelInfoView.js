@@ -1,34 +1,50 @@
-define [
-  'underscore'
-  'jquery'
-  'cs!views/editor/ObjectInputView'
-  'tpl!templates/editor/ModelInfo.tpl'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'underscore',
+  'jquery',
+  'cs!views/editor/ObjectInputView',
+  'tpl!templates/editor/ModelInfo.tpl',
   'jquery-ui/autocomplete'
-], (_, $, ObjectInputView, template) -> ObjectInputView.extend
+], function(_, $, ObjectInputView, template) { return ObjectInputView.extend({
 
-  template: template
+  template,
 
-  initialize: ->
-    ObjectInputView.prototype.initialize.apply @
-    catalogue = $('html').data('catalogue')
+  initialize() {
+    ObjectInputView.prototype.initialize.apply(this);
+    const catalogue = $('html').data('catalogue');
     
-    @$('.autocomplete').autocomplete
-      minLength: 0
-      source: (request, response) ->
-        term = request.term.trim()
-        if _.isEmpty term
-          query = "/#{catalogue}/documents?term=documentType:CEH_MODEL"
-        else
-          query = "/#{catalogue}/documents?term=documentType:CEH_MODEL AND #{request.term}"
+    this.$('.autocomplete').autocomplete({
+      minLength: 0,
+      source(request, response) {
+        let query;
+        const term = request.term.trim();
+        if (_.isEmpty(term)) {
+          query = `/${catalogue}/documents?term=documentType:CEH_MODEL`;
+        } else {
+          query = `/${catalogue}/documents?term=documentType:CEH_MODEL AND ${request.term}`;
+        }
         
-        $.getJSON query, (data) ->
-          response _.map data.results, (d) -> {value: d.title, label: d.title, identifier: d.identifier}
+        return $.getJSON(query, data => response(_.map(data.results, d => ({
+          value: d.title,
+          label: d.title,
+          identifier: d.identifier
+        }))));
+      }});
 
-    @$('.autocomplete').on 'autocompleteselect', (event, ui) =>
-        @model.set 'id', ui.item.identifier
-        @$('.identifier').val ui.item.identifier
+    return this.$('.autocomplete').on('autocompleteselect', (event, ui) => {
+        this.model.set('id', ui.item.identifier);
+        return this.$('.identifier').val(ui.item.identifier);
+    });
+  },
 
-  render: ->
-    ObjectInputView.prototype.render.apply @
-    @$('select.spatial-data').val @model.get 'availableSpatialData'
-    @
+  render() {
+    ObjectInputView.prototype.render.apply(this);
+    this.$('select.spatial-data').val(this.model.get('availableSpatialData'));
+    return this;
+  }
+});
+ });

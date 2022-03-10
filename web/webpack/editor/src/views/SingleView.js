@@ -1,24 +1,37 @@
-define [
-  'backbone'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'backbone',
   'tpl!templates/editor/Single.tpl'
-], (Backbone, template) -> Backbone.View.extend
+], function(Backbone, template) { return Backbone.View.extend({
 
-  className: 'component'
+  className: 'component',
 
-  initialize: (options) ->
-    @data = options
-    if not @data.ModelType
-      @data.ModelType = Backbone.Model
+  initialize(options) {
+    this.data = options;
+    if (!this.data.ModelType) {
+      return this.data.ModelType = Backbone.Model;
+    }
+  },
 
-  show: ->
-    @$el.addClass 'visible'
+  show() {
+    return this.$el.addClass('visible');
+  },
 
-  hide: ->
-    @$el.removeClass 'visible'
+  hide() {
+    return this.$el.removeClass('visible');
+  },
 
-  render: ->
-    @$el.html template  data: @data
-    @
+  render() {
+    this.$el.html(template({data: this.data}));
+    return this;
+  },
 
-  updateMetadataModel: (attribute) ->
-    @model.set @data.modelAttribute, attribute
+  updateMetadataModel(attribute) {
+    return this.model.set(this.data.modelAttribute, attribute);
+  }
+});
+ });
