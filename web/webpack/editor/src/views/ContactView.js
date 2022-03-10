@@ -1,23 +1,11 @@
-/* eslint-disable
-    no-undef,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
-define([
-  'underscore',
-  'cs!views/editor/ObjectInputView',
-  'tpl!templates/editor/Contact.tpl'
-], function (_, ObjectInputView, template) {
-  return ObjectInputView.extend({
+import _ from 'underscore'
+import ObjectInputView from './ObjectInputView'
+import template from '../templates/Contact.tpl'
 
-    template,
+export default ObjectInputView.extend({
 
     render () {
+      this.template = _.template(template)
       ObjectInputView.prototype.render.apply(this)
       this.$('select.role').val(this.model.get('role'))
       return this
@@ -45,5 +33,4 @@ define([
         }
       }
     }
-  })
 })

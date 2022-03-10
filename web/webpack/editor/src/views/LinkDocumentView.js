@@ -1,31 +1,20 @@
-/* eslint-disable
-    no-undef,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
-define([
-  'backbone',
-  'tpl!templates/editor/LinkDocument.tpl'
-],
-function (Backbone, template) {
-  return Backbone.View.extend({
+import Backbone from 'backbone'
+import template from '../templates/LinkDocument.tpl'
+import _ from 'underscore/underscore-node'
 
-    events: {
-      'click button': 'selected'
-    },
+export default Backbone.View.extend({
 
-    render () {
-      this.$el.html(template(this.model.attributes))
-      return this
-    },
+  events: {
+    'click button': 'selected'
+  },
 
-    selected (event) {
-      return this.model.trigger('selected', this.model.get('identifier'))
-    }
-  })
+  render () {
+    this.template = _.template(template)
+    this.$el.html(template(this.model.attributes))
+    return this
+  },
+
+  selected (event) {
+    return this.model.trigger('selected', this.model.get('identifier'))
+  }
 })

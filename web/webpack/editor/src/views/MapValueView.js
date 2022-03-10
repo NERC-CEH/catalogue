@@ -1,30 +1,18 @@
-/* eslint-disable
-    no-undef,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
-define([
-  'cs!views/editor/ObjectInputView',
-  'cs!views/editor/MapStyleSelectorView',
-  'tpl!templates/editor/MapValue.tpl'
-], function (ObjectInputView, MapStyleSelectorView, template) {
-  return ObjectInputView.extend({
+import ObjectInputView from './ObjectInputView'
+import MapStyleSelectorView from './MapStyleSelectorView'
+import template from '../templates/MapValue.tpl'
+import _ from 'underscore'
 
-    template,
+export default ObjectInputView.extend({
 
-    initialize (options) {
-      ObjectInputView.prototype.initialize.call(this, options)
+  initialize (options) {
+    this.template = _.template(template)
+    ObjectInputView.prototype.initialize.call(this, options)
 
-      return new MapStyleSelectorView({
-        el: this.$('.style-selector'),
-        model: this.model.getRelated('style'),
-        disabled: options.disabled
-      })
-    }
-  })
+    return new MapStyleSelectorView({
+      el: this.$('.style-selector'),
+      model: this.model.getRelated('style'),
+      disabled: options.disabled
+    })
+  }
 })

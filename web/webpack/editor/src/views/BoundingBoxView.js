@@ -1,29 +1,10 @@
-/* eslint-disable
-    no-undef,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
-define([
-  'underscore',
-  'cs!views/editor/ObjectInputView',
-  'tpl!templates/editor/BoundingBox.tpl',
-  'cs!views/OpenLayersView',
-  'openlayers'
-],
-function (
-  _,
-  ObjectInputView,
-  template,
-  OpenLayersView,
-  OpenLayers) {
-  return ObjectInputView.extend({
+import _ from 'underscore'
+import ObjectInputView from './ObjectInputView'
+import template from '../templates/BoundingBox.tpl'
+import OpenLayersView from './OpenLayersView'
+import OpenLayers from '../../../../src/vendor/OpenLayers-custom'
 
-    template,
+export default ObjectInputView.extend({
 
     events () {
       return _.extend({}, ObjectInputView.prototype.events,
@@ -31,6 +12,7 @@ function (
     },
 
     initialize (options) {
+      this.template = _.template(template)
       _.bindAll(this,
         'handleDrawnFeature',
         'handleTransformedFeature'
@@ -120,5 +102,4 @@ function (
         northBoundLatitude: bounds.top.toFixed(3)
       })
     }
-  })
 })

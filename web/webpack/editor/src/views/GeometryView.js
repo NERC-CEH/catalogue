@@ -1,23 +1,10 @@
-/* eslint-disable
-    no-undef,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
- * DS102: Remove unnecessary code created because of implicit returns
- * DS205: Consider reworking code to avoid use of IIFEs
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
-define([
-  'underscore',
-  'cs!views/editor/InputView',
-  'tpl!templates/editor/Geometry.tpl',
-  'cs!views/OpenLayersView',
-  'openlayers'
-],
-function (_, InputView, template, OpenLayersView, OpenLayers) {
+import _ from 'underscore'
+import { InputView } from '../index'
+import template from '../templates/Geometry.tpl'
+import OpenLayersView from './OpenLayersView'
+import OpenLayers from '../../../../src/vendor/OpenLayers-custom'
+
+
   const geometryLayer = new OpenLayers.Layer.Vector('Geometry')
 
   const controls = {
@@ -31,15 +18,15 @@ function (_, InputView, template, OpenLayersView, OpenLayers) {
     )
   }
 
-  const view = InputView.extend({
+  export default InputView.extend({
 
-    template,
 
     events: {
       'change input': 'toggleControls'
     },
 
     initialize (options) {
+      this.template = _.template(template)
       InputView.prototype.initialize.call(this, options)
       this.stopListening()
       _.bindAll(this,
@@ -106,5 +93,3 @@ function (_, InputView, template, OpenLayersView, OpenLayers) {
     }
   })
 
-  return view
-})

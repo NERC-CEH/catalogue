@@ -1,25 +1,13 @@
-/* eslint-disable
-    no-undef,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
-define([
-  'cs!views/editor/ObjectInputView',
-  'tpl!templates/editor/TopicCategory.tpl'
-], function (ObjectInputView, template) {
-  return ObjectInputView.extend({
+import ObjectInputView from './ObjectInputView'
+import template from '../templates/TopicCategory.tpl'
+import _ from 'underscore'
 
-    template,
+export default ObjectInputView.extend({
 
-    render () {
-      ObjectInputView.prototype.render.apply(this)
-      this.$('select').val(this.model.get('value'))
-      return this
-    }
-  })
+  render () {
+    this.template = _.template(template)
+    ObjectInputView.prototype.render.apply(this)
+    this.$('select').val(this.model.get('value'))
+    return this
+  }
 })

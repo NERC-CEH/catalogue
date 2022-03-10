@@ -1,23 +1,11 @@
-/* eslint-disable
-    no-undef,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
-define([
-  'underscore',
-  'backbone',
-  'cs!views/editor/ObjectInputView',
-  'cs!views/editor/ChildView',
-  'cs!views/editor/KeywordVocabularyView',
-  'tpl!templates/editor/DescriptiveKeyword.tpl'
-], function (_, Backbone, ObjectInputView, ChildView, KeywordVocabularyView, template) {
-  return ObjectInputView.extend({
+import _ from 'underscore'
+import Backbone from 'backbone'
+import ObjectInputView from './ObjectInputView'
+import ChildView from './ChildView'
+import KeywordVocabularyView from './KeywordVocabularyView'
+import template from '../templates/DescriptiveKeyword.tpl'
+
+export default ObjectInputView.extend({
 
     template,
 
@@ -31,6 +19,7 @@ define([
     },
 
     initialize (options) {
+      this.template = _.template(template)
       ObjectInputView.prototype.initialize.call(this, options);
       (this.render)()
       const keywordType = this.model.get('type')
@@ -88,5 +77,4 @@ define([
         return this.model.unset(name)
       }
     }
-  })
 })

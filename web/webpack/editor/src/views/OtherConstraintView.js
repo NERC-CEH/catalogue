@@ -1,14 +1,5 @@
-/* eslint-disable
-    no-undef,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
-define([
-  'cs!views/editor/ObjectInputView',
-  'tpl!templates/editor/OtherConstraint.tpl'
-], (ObjectInputView, template) => ObjectInputView.extend({ template }))
+import _ from 'underscore'
+import template from '../templates/OtherConstraint.tpl'
+import ObjectInputView from './ObjectInputView'
+
+export default ObjectInputView.extend({ template: _.template(template) })

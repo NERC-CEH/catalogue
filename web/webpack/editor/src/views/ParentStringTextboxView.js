@@ -1,23 +1,11 @@
-/* eslint-disable
-    no-undef,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
-define([
-  'cs!views/editor/ParentStringView',
-  'tpl!templates/editor/MultiStringTextbox.tpl'
-], function (ParentStringView, childTemplate) {
-  return ParentStringView.extend({
+import ParentStringView from './ParentStringView'
+import _ from 'underscore'
+import childTemplate from '../templates/MultiStringTextbox.tpl'
 
-    childTemplate,
+export default ParentStringView.extend({
 
-    initialize (options) {
-      return ParentStringView.prototype.initialize.call(this, options)
-    }
-  })
+  initialize (options) {
+    this.template = _.template(childTemplate)
+    return ParentStringView.prototype.initialize.call(this, options)
+  }
 })

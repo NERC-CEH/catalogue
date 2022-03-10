@@ -1,25 +1,12 @@
-/* eslint-disable
-    no-undef,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
-define([
-  'underscore',
-  'jquery',
-  'cs!views/editor/ObjectInputView',
-  'tpl!templates/editor/DeimsSite.tpl',
-  'jquery-ui/autocomplete'
-], function (_, $, ObjectInputView, template) {
-  return ObjectInputView.extend({
+import _ from 'underscore'
+import $ from 'jquery'
+import ObjectInputView from './ObjectInputView'
+import template from '../templates/DeimsSite.tpl'
 
-    template,
+export default ObjectInputView.extend({
 
     initialize () {
+      this.template = _.template(template)
       ObjectInputView.prototype.initialize.apply(this)
 
       this.$('.autocomplete').autocomplete({
@@ -51,5 +38,4 @@ define([
         return this.$('.url').val(ui.item.url)
       })
     }
-  })
 })

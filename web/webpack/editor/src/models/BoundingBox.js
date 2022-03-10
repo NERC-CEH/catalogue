@@ -1,6 +1,6 @@
 import _ from 'underscore'
 import Backbone from 'backbone'
-import Openlayers from '../../../../src/vendor/OpenLayers-custom'
+import OpenLayers from '../../../../src/vendor/OpenLayers-custom'
 
 export default Backbone.Model.extend({
 

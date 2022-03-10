@@ -1,22 +1,11 @@
-/* eslint-disable
-    no-undef,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
-define([
-  'cs!views/editor/ObjectInputView',
-  'tpl!templates/editor/AccessLimitation.tpl'
-], function (ObjectInputView, template) {
-  return ObjectInputView.extend({
+import ObjectInputView from './ObjectInputView'
+import template from '../templates/AccessLimitation.tpl'
+import _ from 'underscore'
 
-    template,
+export default ObjectInputView.extend({
 
     initialize () {
+      this.template = _.template(template)
       ObjectInputView.prototype.initialize.apply(this)
       return this.listenTo(this.model, 'change:accessLimitation', function (model, value) {
         return this.model.set('type', value.value)
@@ -28,5 +17,4 @@ define([
       this.$('select').val(this.model.get('value'))
       return this
     }
-  })
 })

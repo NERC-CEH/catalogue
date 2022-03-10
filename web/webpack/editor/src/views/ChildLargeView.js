@@ -1,19 +1,8 @@
-/* eslint-disable
-    no-undef,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
-define([
-  'underscore',
-  'backbone',
-  'tpl!templates/editor/ChildLarge.tpl'
-], function (_, Backbone, template) {
-  return Backbone.View.extend({
+import _ from 'underscore'
+import Backbone from 'backbone'
+import template from '../templates/ChildLarge.tpl'
+
+export default Backbone.View.extend({
 
     className: 'row',
 
@@ -23,6 +12,7 @@ define([
     },
 
     initialize (options) {
+      this.template = _.template(template)
       this.data = options
       this.listenTo(this.model, 'remove', function () { return (this.remove)() })
       this.listenTo(this.model, 'showhide', function () { return (this.showhide)() })
@@ -57,5 +47,4 @@ define([
         return this.$('.showhide span').addClass('fa-chevron-down')
       }
     }
-  })
 })

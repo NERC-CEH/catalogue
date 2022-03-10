@@ -1,24 +1,12 @@
-/* eslint-disable
-    no-new,
-    no-undef,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
-define([
-  'cs!views/editor/ObjectInputView',
-  'tpl!templates/editor/DataTypeProvenance.tpl',
-  'cs!views/editor/ParentStringView'
-], function (ObjectInputView, template, ParentStringView) {
-  return ObjectInputView.extend({
+import ObjectInputView from './ObjectInputView'
+import template from '../templates/DatasetReferenceDate.tpl'
+import ParentStringView from './ParentStringView'
+import _ from "underscore";
 
-    template,
+export default ObjectInputView.extend({
 
     render () {
+      this.template = _.template(template)
       ObjectInputView.prototype.render.apply(this)
       this.$('input').datepicker({ dateFormat: 'yy-mm-dd' })
 
@@ -30,7 +18,4 @@ define([
       })
       return this
     }
-  })
 })
-
-// # LOOK HERE!
