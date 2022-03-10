@@ -1,3 +1,8 @@
+/* eslint-disable
+    no-undef,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -8,29 +13,26 @@ define([
   'backbone'
 ], (_, Backbone) => Backbone.Model.extend({
 
-
-  validate(attrs) {
-
-    const errors = [];
+  validate (attrs) {
+    const errors = []
 
     const {
       equivalentScale
-    } = attrs;
+    } = attrs
     const {
       distance
-    } = attrs;
+    } = attrs
 
     if (equivalentScale && distance) {
-      errors.push({
-        message: "You can <b>EITHER</b> enter an Equivalent scale <b>OR</b> a Distance but not both."});
+      errors.push({ message: 'You can <b>EITHER</b> enter an Equivalent scale <b>OR</b> a Distance but not both.' })
     }
 
     if (_.isEmpty(errors)) {
       // return nothing from Backbone.Model.validate
       // because returning something signals a validation error.
-      return;
+
     } else {
-      return errors;
+      return errors
     }
   }
-}));
+}))

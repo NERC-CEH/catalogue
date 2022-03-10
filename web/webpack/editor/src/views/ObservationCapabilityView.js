@@ -1,3 +1,8 @@
+/* eslint-disable
+    no-undef,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
@@ -7,24 +12,25 @@
 define([
   'cs!views/editor/ObjectInputViewForObjects',
   'tpl!templates/editor/ObservationCapability.tpl'
-], function(ObjectInputViewForObjects, template) { return ObjectInputViewForObjects.extend({
+], function (ObjectInputViewForObjects, template) {
+  return ObjectInputViewForObjects.extend({
 
-  template,
+    template,
 
-  render() {
-    if (!Array.from(this.data).includes('observedPropertyName')) { 
-      this.data.observedPropertyName = {};
+    render () {
+      if (!Array.from(this.data).includes('observedPropertyName')) {
+        this.data.observedPropertyName = {}
+      }
+
+      if (!Array.from(this.data).includes('observedPropertyUnitOfMeasure')) {
+        this.data.observedPropertyUnitOfMeasure = {}
+      }
+
+      if (!Array.from(this.data).includes('procedureName')) {
+        this.data.procedureName = {}
+      }
+
+      return ObjectInputViewForObjects.prototype.render.apply(this)
     }
-
-    if (!Array.from(this.data).includes('observedPropertyUnitOfMeasure')) { 
-      this.data.observedPropertyUnitOfMeasure = {};
-    }
-
-    if (!Array.from(this.data).includes('procedureName')) { 
-      this.data.procedureName = {};
-    }
-
-    return ObjectInputViewForObjects.prototype.render.apply(this);
-  }
-});
- });
+  })
+})

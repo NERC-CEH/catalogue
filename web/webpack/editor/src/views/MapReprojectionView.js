@@ -1,3 +1,8 @@
+/* eslint-disable
+    no-undef,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -7,13 +12,14 @@ define([
   'underscore',
   'cs!views/editor/ObjectInputView',
   'tpl!templates/editor/MapReprojection.tpl'
-], function(_, ObjectInputView, template) { return ObjectInputView.extend({
+], function (_, ObjectInputView, template) {
+  return ObjectInputView.extend({
 
-  template,
+    template,
 
-  events: _.extend({}, ObjectInputView.prototype.events,
-    {'click button.remove': 'delete'}),
+    events: _.extend({}, ObjectInputView.prototype.events,
+      { 'click button.remove': 'delete' }),
 
-  delete() { return this.model.collection.remove(this.model); }
-});
- });
+    delete () { return this.model.collection.remove(this.model) }
+  })
+})

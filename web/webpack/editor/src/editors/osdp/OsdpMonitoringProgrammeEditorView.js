@@ -1,3 +1,9 @@
+/* eslint-disable
+    no-multi-str,
+    no-undef,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -17,7 +23,7 @@ define([
   'cs!views/editor/ResourceIdentifierView',
   'cs!models/editor/BoundingBox',
   'cs!views/editor/BoundingBoxView'
-], function(
+], function (
   EditorView,
   SingleObjectView,
   InputView,
@@ -31,88 +37,88 @@ define([
   ResourceIdentifierView,
   BoundingBox,
   BoundingBoxView
-) { return EditorView.extend({
+) {
+  return EditorView.extend({
 
-  initialize() {
+    initialize () {
+      if (!this.model.has('type')) { this.model.set('type', 'monitoringProgramme') }
 
-    if (!this.model.has('type')) { this.model.set('type', 'monitoringProgramme'); }
+      this.sections = [{
+        label: 'Basic Info',
+        title: 'Basic Info',
+        views: [
 
-    this.sections = [{
-      label: 'Basic Info',
-      title: 'Basic Info',
-      views: [
-
-        new InputView({
-          model: this.model,
-          modelAttribute: 'title',
-          label: 'Title',
-          helpText: `\
+          new InputView({
+            model: this.model,
+            modelAttribute: 'title',
+            label: 'Title',
+            helpText: '\
 <p>Name of Monitoring Programme</p>\
-`
-        }),
+'
+          }),
 
-        new TextareaView({
-          model: this.model,
-          modelAttribute: 'description',
-          rows: 13,
-          label: 'Description',
-          helpText: `\
+          new TextareaView({
+            model: this.model,
+            modelAttribute: 'description',
+            rows: 13,
+            label: 'Description',
+            helpText: '\
 <p>Description of Monitoring Programme</p>\
-`
-        }),
+'
+          }),
 
-        new SingleObjectView({
-          model: this.model,
-          modelAttribute: 'temporalExtent',
-          ModelType: MultipleDate,
-          label: 'Temporal Extent',
-          ObjectInputView: TemporalExtentView,
-          helpText: `\
+          new SingleObjectView({
+            model: this.model,
+            modelAttribute: 'temporalExtent',
+            ModelType: MultipleDate,
+            label: 'Temporal Extent',
+            ObjectInputView: TemporalExtentView,
+            helpText: '\
 <p>Temporal Extent of Monitoring Programme</p>\
-`
-        }),
+'
+          }),
 
-        new SingleObjectView({
-          model: this.model,
-          modelAttribute: 'boundingBox',
-          ModelType: BoundingBox,
-          label: 'Bounding Box',
-          ObjectInputView: BoundingBoxView,
-          helpText: `\
+          new SingleObjectView({
+            model: this.model,
+            modelAttribute: 'boundingBox',
+            ModelType: BoundingBox,
+            label: 'Bounding Box',
+            ObjectInputView: BoundingBoxView,
+            helpText: '\
 <p>Bounding Box of Monitoring Programme</p>\
-`
-        }),
+'
+          }),
 
-        new ParentView({
-          model: this.model,
-          modelAttribute: 'keywords',
-          label: 'Keywords',
-          ObjectInputView: KeywordView,
-          helpText: `\
+          new ParentView({
+            model: this.model,
+            modelAttribute: 'keywords',
+            label: 'Keywords',
+            ObjectInputView: KeywordView,
+            helpText: '\
 <p>Keywords for discovery</p>\
-`
-        }),
+'
+          }),
 
-        new ParentView({
-          model: this.model,
-          modelAttribute: 'relationships',
-          label: 'Relationships',
-          ObjectInputView: RelationshipView,
-          multiline: true,
-          options: [
-            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/associatedWith', label: 'Associated with'},
-            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/owns', label: 'Owns'},
-            {value: 'http://onto.nerc.ac.uk/CEHMD/rels/setupFor', label: 'Setup for'}
-          ],
-          helpText: `\
+          new ParentView({
+            model: this.model,
+            modelAttribute: 'relationships',
+            label: 'Relationships',
+            ObjectInputView: RelationshipView,
+            multiline: true,
+            options: [
+              { value: 'http://onto.nerc.ac.uk/CEHMD/rels/associatedWith', label: 'Associated with' },
+              { value: 'http://onto.nerc.ac.uk/CEHMD/rels/owns', label: 'Owns' },
+              { value: 'http://onto.nerc.ac.uk/CEHMD/rels/setupFor', label: 'Setup for' }
+            ],
+            helpText: '\
 <p>Relationships to other OSDP document types</p>\
-`
-        })
+'
+          })
+        ]
+      }
       ]
-    }
-    ];
 
-    return EditorView.prototype.initialize.apply(this);
-  }
-});
- });
+      return EditorView.prototype.initialize.apply(this)
+    }
+  })
+})

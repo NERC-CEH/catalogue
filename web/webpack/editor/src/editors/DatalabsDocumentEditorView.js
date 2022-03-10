@@ -1,3 +1,8 @@
+/* eslint-disable
+    no-undef,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -8,20 +13,21 @@ define([
   'cs!views/editor/InputView',
   'cs!views/editor/TextareaView',
   'cs!views/editor/ParentStringView'
-], function(
+], function (
   EditorView,
   InputView,
   TextareaView,
   ParentStringView
-) { return EditorView.extend({
+) {
+  return EditorView.extend({
 
-  initialize() {
-    if (!this.model.has('type')) { this.model.set('type', 'dataset'); }
+    initialize () {
+      if (!this.model.has('type')) { this.model.set('type', 'dataset') }
 
-    this.sections = [{
-      label: 'Basic Info',
-      title: 'Basic Info',
-      views: [
+      this.sections = [{
+        label: 'Basic Info',
+        title: 'Basic Info',
+        views: [
           new InputView({
             model: this.model,
             modelAttribute: 'title',
@@ -47,11 +53,11 @@ define([
             modelAttribute: 'owners',
             label: 'Owners'
           })
+        ]
+      }
       ]
-    }
-    ];
 
-    return EditorView.prototype.initialize.apply(this);
-  }
-});
- });
+      return EditorView.prototype.initialize.apply(this)
+    }
+  })
+})

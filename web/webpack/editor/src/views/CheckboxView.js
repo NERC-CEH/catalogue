@@ -1,3 +1,8 @@
+/* eslint-disable
+    no-undef,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -6,21 +11,22 @@
 define([
   'cs!views/editor/InputView',
   'tpl!templates/editor/Checkbox.tpl'
-], function(InputView, template) { return InputView.extend({
+], function (InputView, template) {
+  return InputView.extend({
 
-  template,
+    template,
 
-  render() {
-    InputView.prototype.render.apply(this);
-    this.$('[type="checkbox"]').prop('checked', this.model.get(this.data.modelAttribute));
-    return this;
-  },
+    render () {
+      InputView.prototype.render.apply(this)
+      this.$('[type="checkbox"]').prop('checked', this.model.get(this.data.modelAttribute))
+      return this
+    },
 
-  modify(event) {
-    const $target = $(event.target);
-    const name = $target.data('name');
-    const value = $target.prop('checked');
-    return this.model.set(name, value);
-  }
-});
- });
+    modify (event) {
+      const $target = $(event.target)
+      const name = $target.data('name')
+      const value = $target.prop('checked')
+      return this.model.set(name, value)
+    }
+  })
+})

@@ -1,3 +1,8 @@
+/* eslint-disable
+    no-undef,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -6,34 +11,31 @@
 define([
   'underscore',
   'backbone'
-], (_, Backbone) => Backbone.Model.extend({ 
+], (_, Backbone) => Backbone.Model.extend({
 
-  validate(attrs) {
-
-    const errors = [];
+  validate (attrs) {
+    const errors = []
 
     const {
       name
-    } = attrs;
+    } = attrs
     const {
       type
-    } = attrs;
+    } = attrs
     const {
       version
-    } = attrs;
+    } = attrs
 
-    if (!version && (name || type)) { 
-      errors.push({
-        message: "The version is mandatory - if it's not applicable, enter 'unknown'"});
+    if (!version && (name || type)) {
+      errors.push({ message: "The version is mandatory - if it's not applicable, enter 'unknown'" })
     }
 
     if (_.isEmpty(errors)) {
       // return nothing from Backbone.Model.validate
       // because returning something signals a validation error.
-      return;
+
     } else {
-      return errors;
+      return errors
     }
   }
-}));
-
+}))

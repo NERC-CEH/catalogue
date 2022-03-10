@@ -1,3 +1,8 @@
+/* eslint-disable
+    no-undef,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
@@ -12,9 +17,8 @@ define([
   'cs!views/OpenLayersView',
   'openlayers'
 ],
-function(_, InputView, template, OpenLayersView, OpenLayers) {
-
-  const geometryLayer = new OpenLayers.Layer.Vector("Geometry");
+function (_, InputView, template, OpenLayersView, OpenLayers) {
+  const geometryLayer = new OpenLayers.Layer.Vector('Geometry')
 
   const controls = {
     create: new OpenLayers.Control.DrawFeature(
@@ -23,9 +27,9 @@ function(_, InputView, template, OpenLayersView, OpenLayers) {
     ),
     modify: new OpenLayers.Control.ModifyFeature(geometryLayer),
     delete: new OpenLayers.Control.SelectFeature(geometryLayer,
-      {onSelect(feature) { return geometryLayer.removeFeatures(feature); }}
+      { onSelect (feature) { return geometryLayer.removeFeatures(feature) } }
     )
-  };
+  }
 
   const view = InputView.extend({
 
@@ -35,72 +39,72 @@ function(_, InputView, template, OpenLayersView, OpenLayers) {
       'change input': 'toggleControls'
     },
 
-    initialize(options) {
-      InputView.prototype.initialize.call(this, options);
-      this.stopListening();
+    initialize (options) {
+      InputView.prototype.initialize.call(this, options)
+      this.stopListening()
       _.bindAll(this,
         'setModel'
-      );
+      )
 
       geometryLayer.events.on({
-        'beforefeatureadded'() { if (geometryLayer.features.length > 0) { return false; } },
-        'afterfeaturemodified': this.setModel,
-        'featureadded': this.setModel,
-        'featureremoved': this.setModel
-      });
+        'beforefeatureadded' () { if (geometryLayer.features.length > 0) { return false } },
+        afterfeaturemodified: this.setModel,
+        featureadded: this.setModel,
+        featureremoved: this.setModel
+      })
 
       this.wktFactory = new OpenLayers.Format.WKT({
         internalProjection: this.map.baseLayer.projection,
         externalProjection: new OpenLayers.Projection('EPSG:4326')
-      });
+      })
 
       if (this.model.has('geometry')) {
-        return geometryLayer.addFeatures(this.wktFactory.read(this.model.get('geometry')));
+        return geometryLayer.addFeatures(this.wktFactory.read(this.model.get('geometry')))
       }
     },
 
-    render() {
-      InputView.prototype.render.apply(this);
+    render () {
+      InputView.prototype.render.apply(this)
 
-      const mapView = new OpenLayersView({el: this.$('.map')});
-      this.map = mapView.map;
-      this.map.addLayer(geometryLayer);
-      return this.map.addControls(_.values(controls));
+      const mapView = new OpenLayersView({ el: this.$('.map') })
+      this.map = mapView.map
+      this.map.addLayer(geometryLayer)
+      return this.map.addControls(_.values(controls))
     },
 
-    toggleControls(event) {
+    toggleControls (event) {
       const {
         target
-      } = event;
+      } = event
       return (() => {
-        const result = [];
-        for (let key of Array.from(_.keys(controls))) {
-          const control = controls[key];
+        const result = []
+        for (const key of Array.from(_.keys(controls))) {
+          const control = controls[key]
           if ((target.value === key) && target.checked) {
-            result.push(control.activate());
+            result.push(control.activate())
           } else {
-            result.push(control.deactivate());
+            result.push(control.deactivate())
           }
         }
-        return result;
-      })();
+        return result
+      })()
     },
 
-    setModel() {
+    setModel () {
       const {
         features
-      } = geometryLayer;
+      } = geometryLayer
       if (features.length > 0) {
         if (features[0].geometry.getArea() === 0) { // prevent points being added
-          return geometryLayer.removeFeatures(features[0]);
+          return geometryLayer.removeFeatures(features[0])
         } else {
-          return this.model.set('geometry', this.wktFactory.write(features[0]));
+          return this.model.set('geometry', this.wktFactory.write(features[0]))
         }
       } else {
-        return this.model.unset('geometry');
+        return this.model.unset('geometry')
       }
     }
-  });
+  })
 
-  return view;
-});
+  return view
+})

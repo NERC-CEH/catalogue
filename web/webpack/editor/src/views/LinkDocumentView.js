@@ -1,3 +1,8 @@
+/* eslint-disable
+    no-undef,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -7,19 +12,20 @@ define([
   'backbone',
   'tpl!templates/editor/LinkDocument.tpl'
 ],
-function(Backbone, template) { return Backbone.View.extend({
+function (Backbone, template) {
+  return Backbone.View.extend({
 
-  events: {
-    'click button': 'selected'
-  },
+    events: {
+      'click button': 'selected'
+    },
 
-  render() {
-    this.$el.html(template(this.model.attributes));
-    return this;
-  },
+    render () {
+      this.$el.html(template(this.model.attributes))
+      return this
+    },
 
-  selected(event) {
-    return this.model.trigger('selected', this.model.get('identifier'));
-  }
-});
- });
+    selected (event) {
+      return this.model.trigger('selected', this.model.get('identifier'))
+    }
+  })
+})

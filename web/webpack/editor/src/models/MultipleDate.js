@@ -1,3 +1,10 @@
+/* eslint-disable
+    no-multi-str,
+    no-undef,
+    prefer-regex-literals,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -9,7 +16,7 @@ define([
 ], (_, Backbone) => Backbone.Model.extend({
 // N.B. Use in Views that only has date attributes
 
-  validate(attrs) {
+  validate (attrs) {
     const labels = {
       creationDate: 'Creation date',
       publicationDate: 'Publication date',
@@ -19,9 +26,9 @@ define([
       releasedDate: 'Date released',
       begin: 'Begin',
       end: 'End'
-    };
+    }
 
-    const dateRegExp = new RegExp(`\
+    const dateRegExp = new RegExp('\
 ^\
 \\d{4}\
 -\
@@ -29,46 +36,46 @@ define([
 -\
 \\d{2}\
 $\
-`);
-    const errors = [];
+')
+    const errors = []
 
     _.chain(attrs)
       .keys()
-      .each(function(key) {
-        const dateString = attrs[key];
+      .each(function (key) {
+        const dateString = attrs[key]
         if (!(dateString.match(dateRegExp))) {
           errors.push({
             message:
               `${labels[key]} is wrong. The date format is supposed to be yyyy-mm-dd`
-          });
+          })
         }
 
         if (isNaN(Date.parse(dateString))) {
           return errors.push({
             message:
               `${labels[key]} doesn't look like a date to me`
-          });
+          })
         }
-    });
+      })
 
     if (attrs.begin && attrs.end) {
-      const begin = Date.parse(attrs.begin);
-      const end = Date.parse(attrs.end);
+      const begin = Date.parse(attrs.begin)
+      const end = Date.parse(attrs.end)
 
       if (begin > end) {
         errors.push({
           message:
-            "Collection of this data finished before it started!"
-        });
+            'Collection of this data finished before it started!'
+        })
       }
     }
 
     if (_.isEmpty(errors)) {
       // return nothing from Backbone.Model.validate
       // because returning something signals a validation error.
-      return;
+
     } else {
-      return errors;
+      return errors
     }
   }
-}));
+}))

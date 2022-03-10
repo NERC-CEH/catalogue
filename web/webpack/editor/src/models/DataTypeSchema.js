@@ -1,3 +1,8 @@
+/* eslint-disable
+    no-undef,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -6,18 +11,19 @@
 define([
   'backbone',
   'underscore'
-], function(Backbone, _) { return Backbone.Model.extend({
+], function (Backbone, _) {
+  return Backbone.Model.extend({
 
-  defaults: {
-    constraints: {}
-  },
+    defaults: {
+      constraints: {}
+    },
 
-  toJSON() {
-    if (_.isEmpty(this.get('constraints'))) {
-      return _.omit(this.attributes, 'constraints');
-    } else {
-      return _.clone(this.attributes);
+    toJSON () {
+      if (_.isEmpty(this.get('constraints'))) {
+        return _.omit(this.attributes, 'constraints')
+      } else {
+        return _.clone(this.attributes)
+      }
     }
-  }
-});
- });
+  })
+})

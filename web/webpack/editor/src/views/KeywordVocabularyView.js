@@ -1,3 +1,8 @@
+/* eslint-disable
+    no-undef,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -11,55 +16,56 @@ define([
   'tpl!templates/editor/KeywordVocabulary.tpl',
   'cs!views/editor/KeywordCheckboxView',
   'jquery-ui/autocomplete'
-], function(_, $, Backbone, ObjectInputView, template, KeywordCheckboxView) { return ObjectInputView.extend({
-  template,
+], function (_, $, Backbone, ObjectInputView, template, KeywordCheckboxView) {
+  return ObjectInputView.extend({
+    template,
 
-  initialize() {
-    ObjectInputView.prototype.initialize.apply(this);
-    this.vocabularies = new Backbone.Collection();
-    const catalogue = $('html').data('catalogue');
-    this.$vocabularies = this.$('.vocabularyPicker');
-    this.listenTo(this.vocabularies, 'add', this.addOne);
-    this.listenTo(this.vocabularies, 'reset', this.addAll);
-    $.getJSON(`/catalogues/${catalogue}`, data => {
-      return this.vocabularies.reset(data.vocabularies);
-    });
+    initialize () {
+      ObjectInputView.prototype.initialize.apply(this)
+      this.vocabularies = new Backbone.Collection()
+      const catalogue = $('html').data('catalogue')
+      this.$vocabularies = this.$('.vocabularyPicker')
+      this.listenTo(this.vocabularies, 'add', this.addOne)
+      this.listenTo(this.vocabularies, 'reset', this.addAll)
+      $.getJSON(`/catalogues/${catalogue}`, data => {
+        return this.vocabularies.reset(data.vocabularies)
+      })
 
-    this.$('.autocomplete').autocomplete({
-      minLength: 2,
-      source: (request, response) => {
-        let query;
-        const vocab = _.pluck(this.vocabularies.where({'toSearch': true}), 'id');
-        const term = request.term.trim();
-        if (_.isEmpty(term)) {
-          query = `/vocabulary/keywords?vocab=${vocab}`;
-        } else {
-          query = `/vocabulary/keywords?query=${request.term}&vocab=${vocab}`;
+      this.$('.autocomplete').autocomplete({
+        minLength: 2,
+        source: (request, response) => {
+          let query
+          const vocab = _.pluck(this.vocabularies.where({ toSearch: true }), 'id')
+          const term = request.term.trim()
+          if (_.isEmpty(term)) {
+            query = `/vocabulary/keywords?vocab=${vocab}`
+          } else {
+            query = `/vocabulary/keywords?query=${request.term}&vocab=${vocab}`
+          }
+          return $.getJSON(query, data => response(_.map(data, d => ({
+            value: d.label,
+            label: `${d.label} (${d.vocabId})`,
+            url: d.url
+          }))))
         }
-        return $.getJSON(query, data => response(_.map(data, d => ({
-          value: d.label,
-          label: `${d.label} (${d.vocabId})`,
-          url: d.url
-        }))));
-      }});
+      })
 
-    return this.$('.autocomplete').on('autocompleteselect', (event, ui) => {
-      this.model.set('value', ui.item.value);
-      this.$('.value').val(ui.item.value);
-      this.model.set('uri', ui.item.url);
-      return this.$('.uri').val(ui.item.url);
-    });
-  },
+      return this.$('.autocomplete').on('autocompleteselect', (event, ui) => {
+        this.model.set('value', ui.item.value)
+        this.$('.value').val(ui.item.value)
+        this.model.set('uri', ui.item.url)
+        return this.$('.uri').val(ui.item.url)
+      })
+    },
 
+    addAll () {
+      return this.vocabularies.each(this.addOne, this)
+    },
 
-  addAll() {
-    return this.vocabularies.each(this.addOne, this);
-  },
-
-  addOne(vocabulary) {
-    vocabulary.set({'toSearch': true});
-    const view = new KeywordCheckboxView({model: vocabulary});
-    return this.$vocabularies.append(view.render().el);
-  }
-});
- });
+    addOne (vocabulary) {
+      vocabulary.set({ toSearch: true })
+      const view = new KeywordCheckboxView({ model: vocabulary })
+      return this.$vocabularies.append(view.render().el)
+    }
+  })
+})

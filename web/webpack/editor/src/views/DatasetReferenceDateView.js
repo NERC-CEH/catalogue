@@ -1,3 +1,8 @@
+/* eslint-disable
+    no-undef,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -7,14 +12,15 @@ define([
   'cs!views/editor/ObjectInputView',
   'tpl!templates/editor/DatasetReferenceDate.tpl',
   'jquery-ui/datepicker'
-], function(ObjectInputView, template) { return ObjectInputView.extend({
+], function (ObjectInputView, template) {
+  return ObjectInputView.extend({
 
-  template,
+    template,
 
-  render() {
-    ObjectInputView.prototype.render.apply(this);
-    this.$('input').datepicker({dateFormat: "yy-mm-dd"});
-    return this;
-  }
-});
- });
+    render () {
+      ObjectInputView.prototype.render.apply(this)
+      this.$('input').datepicker({ dateFormat: 'yy-mm-dd' })
+      return this
+    }
+  })
+})

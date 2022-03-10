@@ -1,3 +1,8 @@
+/* eslint-disable
+    no-undef,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -7,110 +12,112 @@ define([
   'underscore',
   'backbone',
   'openlayers'
-], function(_, Backbone, Openlayers) { return Backbone.Model.extend({
+], function (_, Backbone, Openlayers) {
+  return Backbone.Model.extend({
 
-  hasBoundingBox() {
-    return this.has('westBoundLongitude') &&
+    hasBoundingBox () {
+      return this.has('westBoundLongitude') &&
       this.has('southBoundLatitude') &&
       this.has('eastBoundLongitude') &&
-      this.has('northBoundLatitude');
-  },
+      this.has('northBoundLatitude')
+    },
 
-  getBoundingBox() {
-    return new OpenLayers.Feature.Vector(
-      new OpenLayers.Bounds(
-        this.get('westBoundLongitude'),
-        this.get('southBoundLatitude'),
-        this.get('eastBoundLongitude'),
-        this.get('northBoundLatitude'))
-      .toGeometry().transform('EPSG:4326', 'EPSG:3857')
-    );
-  },
+    getBoundingBox () {
+      return new OpenLayers.Feature.Vector(
+        new OpenLayers.Bounds(
+          this.get('westBoundLongitude'),
+          this.get('southBoundLatitude'),
+          this.get('eastBoundLongitude'),
+          this.get('northBoundLatitude'))
+          .toGeometry().transform('EPSG:4326', 'EPSG:3857')
+      )
+    },
 
-  validate(attrs) {
-    const labels = {
-      westBoundLongitude: 'West Bounding Longitude',
-      eastBoundLongitude: 'East Bounding Longitude',
-      northBoundLatitude: 'North Bounding Longitude',
-      southBoundLatitude: 'South Bounding Longitude'
-    };
-
-    const errors = [];
-
-    const isStringANumber = input => // coerce attribute to a number with + then check if operation produced NaN
-    !isNaN(+ input);
-
-    const isGreater = function(first, second) {
-      if (isStringANumber(first) && isStringANumber(second)) {
-        first = parseFloat(first);
-        second = parseFloat(second);
-        return first > second;
+    validate (attrs) {
+      const labels = {
+        westBoundLongitude: 'West Bounding Longitude',
+        eastBoundLongitude: 'East Bounding Longitude',
+        northBoundLatitude: 'North Bounding Longitude',
+        southBoundLatitude: 'South Bounding Longitude'
       }
-    };
 
-    const isOutOfRange = function(input, min, max) {
-      if (isStringANumber(input)) {
-        input = parseFloat(input);
-        return !((input <= max) && (input >= min));
-      }
-    };
+      const errors = []
 
-    _.chain(attrs)
-      .keys()
-      .each(function(key) {
-        if (!isStringANumber(attrs[key])) {
-          return errors.push({message: `${labels[key]} needs to be a number`});
+      const isStringANumber = input => // coerce attribute to a number with + then check if operation produced NaN
+        !isNaN(+input)
+
+      const isGreater = function (first, second) {
+        if (isStringANumber(first) && isStringANumber(second)) {
+          first = parseFloat(first)
+          second = parseFloat(second)
+          return first > second
         }
-    });
+      }
 
-    if (isGreater(attrs.westBoundLongitude, attrs.eastBoundLongitude)) {
-      errors.push({
-        message:
-          "West Bounding Longitude should be less the East Bounding Longitude"
-      });
-    }
+      const isOutOfRange = function (input, min, max) {
+        if (isStringANumber(input)) {
+          input = parseFloat(input)
+          return !((input <= max) && (input >= min))
+        }
+      }
 
-    if (isGreater(attrs.southBoundLatitude, attrs.northBoundLatitude)) {
-      errors.push({
-        message:
-          "South Bounding Longitude should be less the North Bounding Longitude"
-      });
-    }
+      _.chain(attrs)
+        .keys()
+        .each(function (key) {
+          if (!isStringANumber(attrs[key])) {
+            return errors.push({ message: `${labels[key]} needs to be a number` })
+          }
+        })
 
-    if (isOutOfRange(attrs.westBoundLongitude, -180, 180)) {
-      errors.push({
-        message:
-          "West Bounding Longitude should be between -180&deg; and 180&deg;"
-      });
-    }
+      if (isGreater(attrs.westBoundLongitude, attrs.eastBoundLongitude)) {
+        errors.push({
+          message:
+          'West Bounding Longitude should be less the East Bounding Longitude'
+        })
+      }
 
-    if (isOutOfRange(attrs.eastBoundLongitude, -180, 180)) {
-      errors.push({
-        message:
-          "East Bounding Longitude should be between -180&deg; and 180&deg;"
-      });
-    }
+      if (isGreater(attrs.southBoundLatitude, attrs.northBoundLatitude)) {
+        errors.push({
+          message:
+          'South Bounding Longitude should be less the North Bounding Longitude'
+        })
+      }
 
-    if (isOutOfRange(attrs.northBoundLatitude, -90, 90)) {
-      errors.push({
-        message:
-          "North Bounding Longitude should be between -90&deg; and 90&deg;"
-      });
-    }
+      if (isOutOfRange(attrs.westBoundLongitude, -180, 180)) {
+        errors.push({
+          message:
+          'West Bounding Longitude should be between -180&deg; and 180&deg;'
+        })
+      }
 
-    if (isOutOfRange(attrs.southBoundLatitude, -90, 90)) {
-      errors.push({
-        message:
-          "South Bounding Longitude should be between -90&deg; and 90&deg;"
-      });
-    }
+      if (isOutOfRange(attrs.eastBoundLongitude, -180, 180)) {
+        errors.push({
+          message:
+          'East Bounding Longitude should be between -180&deg; and 180&deg;'
+        })
+      }
 
-    if (_.isEmpty(errors)) {
+      if (isOutOfRange(attrs.northBoundLatitude, -90, 90)) {
+        errors.push({
+          message:
+          'North Bounding Longitude should be between -90&deg; and 90&deg;'
+        })
+      }
+
+      if (isOutOfRange(attrs.southBoundLatitude, -90, 90)) {
+        errors.push({
+          message:
+          'South Bounding Longitude should be between -90&deg; and 90&deg;'
+        })
+      }
+
+      if (_.isEmpty(errors)) {
       // return nothing from Backbone.Model.validate
       // because returning something signals a validation error.
-      return;
-    } else {
-      return errors;
+
+      } else {
+        return errors
+      }
     }
-  }
-}); });
+  })
+})
