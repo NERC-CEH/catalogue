@@ -1,6 +1,6 @@
 import Backbone from 'backbone'
 import template from '../templates/KeywordCheckbox.tpl'
-import _ from 'underscore/underscore-node'
+import _ from 'underscore'
 
 export default Backbone.View.extend({
 

@@ -1,6 +1,7 @@
 import GeminiEditorView from './editors/GeminiEditorView'
 import EditorMetadata from './EditorMetadata'
 import $ from 'jquery'
+import LinkEditorMetadata from './LinkEditorMetadata'
 import {
   CehModelApplicationEditorView,
   CehModelEditorView, DatalabsDocumentEditorView,
@@ -9,21 +10,22 @@ import {
   ElterLinkedEditorView,
   ErammpDatacubeEditorView,
   ErammpModelEditorView,
-  LinkEditorMetadata,
   LinkEditorView,
   ModelEditorView,
   MonitoringEditorView,
   NercModelEditorView,
-  NercModelUseEditorView,
-  OsdpAgentEditorView,
-  OsdpDatasetEditorView,
-  OsdpModelEditorView,
-  OsdpMonitoringActivityEditorView,
-  OsdpMonitoringFacilityEditorView,
-  OsdpMonitoringProgrammeEditorView,
-  OsdpPublicationEditorView,
-  OsdpSampleEditorView,
-  SampleArchiveEditorView, ServiceAgreement, ServiceAgreementEditorView, UkemsDocumentEditorView
+  NercModelUseEditorView, UkemsDocumentEditorView
+  // OsdpAgentEditorView,
+  // OsdpDatasetEditorView,
+  // OsdpModelEditorView,
+  // OsdpMonitoringActivityEditorView,
+  // OsdpMonitoringFacilityEditorView,
+  // OsdpMonitoringProgrammeEditorView,
+  // OsdpPublicationEditorView,
+  // OsdpSampleEditorView,
+  // SampleArchiveEditorView,
+  // UkemsDocumentEditorView //,
+  // , ServiceAgreementEditorView,
 } from './editors'
 
 export { default as EditorView } from './EditorView'
@@ -63,51 +65,51 @@ const lookup = {
     Model: LinkEditorMetadata,
     mediaType: 'application/link+json'
   },
-  'osdp-agent': {
-    View: OsdpAgentEditorView,
-    Model: EditorMetadata,
-    mediaType: 'application/vnd.osdp.agent+json'
-  },
-  'osdp-dataset': {
-    View: OsdpDatasetEditorView,
-    Model: EditorMetadata,
-    mediaType: 'application/vnd.osdp.dataset+json'
-  },
-  'osdp-model': {
-    View: OsdpModelEditorView,
-    Model: EditorMetadata,
-    mediaType: 'application/vnd.osdp.model+json'
-  },
-  'osdp-sample': {
-    View: OsdpSampleEditorView,
-    Model: EditorMetadata,
-    mediaType: 'application/vnd.osdp.sample+json'
-  },
-  'osdp-publication': {
-    View: OsdpPublicationEditorView,
-    Model: EditorMetadata,
-    mediaType: 'application/vnd.osdp.publication+json'
-  },
-  'osdp-monitoring-activity': {
-    View: OsdpMonitoringActivityEditorView,
-    Model: EditorMetadata,
-    mediaType: 'application/vnd.osdp.monitoring-activity+json'
-  },
-  'osdp-monitoring-programme': {
-    View: OsdpMonitoringProgrammeEditorView,
-    Model: EditorMetadata,
-    mediaType: 'application/vnd.osdp.monitoring-programme+json'
-  },
-  'osdp-monitoring-facility': {
-    View: OsdpMonitoringFacilityEditorView,
-    Model: EditorMetadata,
-    mediaType: 'application/vnd.osdp.monitoring-facility+json'
-  },
-  'sample-archive': {
-    View: SampleArchiveEditorView,
-    Model: EditorMetadata,
-    mediaType: 'application/vnd.sample-archive+json'
-  },
+  // 'osdp-agent': {
+  //   View: OsdpAgentEditorView,
+  //   Model: EditorMetadata,
+  //   mediaType: 'application/vnd.osdp.agent+json'
+  // },
+  // 'osdp-dataset': {
+  //   View: OsdpDatasetEditorView,
+  //   Model: EditorMetadata,
+  //   mediaType: 'application/vnd.osdp.dataset+json'
+  // },
+  // 'osdp-model': {
+  //   View: OsdpModelEditorView,
+  //   Model: EditorMetadata,
+  //   mediaType: 'application/vnd.osdp.model+json'
+  // },
+  // 'osdp-sample': {
+  //   View: OsdpSampleEditorView,
+  //   Model: EditorMetadata,
+  //   mediaType: 'application/vnd.osdp.sample+json'
+  // },
+  // 'osdp-publication': {
+  //   View: OsdpPublicationEditorView,
+  //   Model: EditorMetadata,
+  //   mediaType: 'application/vnd.osdp.publication+json'
+  // },
+  // 'osdp-monitoring-activity': {
+  //   View: OsdpMonitoringActivityEditorView,
+  //   Model: EditorMetadata,
+  //   mediaType: 'application/vnd.osdp.monitoring-activity+json'
+  // },
+  // 'osdp-monitoring-programme': {
+  //   View: OsdpMonitoringProgrammeEditorView,
+  //   Model: EditorMetadata,
+  //   mediaType: 'application/vnd.osdp.monitoring-programme+json'
+  // },
+  // 'osdp-monitoring-facility': {
+  //   View: OsdpMonitoringFacilityEditorView,
+  //   Model: EditorMetadata,
+  //   mediaType: 'application/vnd.osdp.monitoring-facility+json'
+  // },
+  // 'sample-archive': {
+  //   View: SampleArchiveEditorView,
+  //   Model: EditorMetadata,
+  //   mediaType: 'application/vnd.sample-archive+json'
+  // },
   'erammp-model': {
     View: ErammpModelEditorView,
     Model: EditorMetadata,
@@ -143,11 +145,11 @@ const lookup = {
     Model: EditorMetadata,
     mediaType: 'application/vnd.linked-elter+json'
   },
-  'service-agreement': {
-    View: ServiceAgreementEditorView,
-    Model: ServiceAgreement,
-    mediaType: 'application/json'
-  },
+  // 'service-agreement': {
+  //   View: ServiceAgreementEditorView,
+  //   Model: ServiceAgreement,
+  //   mediaType: 'application/json'
+  // },
   'ukems-document': {
     View: UkemsDocumentEditorView,
     Model: EditorMetadata,

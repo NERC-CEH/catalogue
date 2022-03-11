@@ -1,17 +1,17 @@
 import ObjectInputView from './ObjectInputView'
 import template from '../templates/InspireTheme.tpl'
-import _ from "underscore/underscore-node";
+import _ from 'underscore'
 
 export default ObjectInputView.extend({
 
-    initialize () {
-      this.template = _.template(template)
-    },
+  initialize () {
+    this.template = _.template(template)
+  },
 
-    render () {
-      ObjectInputView.prototype.render.apply(this)
-      this.$('select.theme').val(this.model.get('theme'))
-      this.$('select.conformity').val(this.model.get('conformity'))
-      return this
-    }
+  render () {
+    ObjectInputView.prototype.render.apply(this)
+    this.$('select.theme').val(this.model.get('theme'))
+    this.$('select.conformity').val(this.model.get('conformity'))
+    return this
+  }
 })

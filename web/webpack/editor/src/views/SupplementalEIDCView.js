@@ -1,5 +1,5 @@
 import ObjectInputView from './ObjectInputView'
-import template from '../templates/SupplementalEIDC.tpl.tpl'
+import template from '../templates/SupplementalEIDC.tpl'
 import _ from 'underscore'
 export default ObjectInputView.extend({
 
