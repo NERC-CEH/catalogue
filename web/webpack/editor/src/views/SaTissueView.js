@@ -1,5 +1,6 @@
 import _ from 'underscore'
-import template from '../templates/SaPTissueView.tpl'
+import template from '../templates/SaTissue.tpl'
+import ObjectInputView from './ObjectInputView'
 
 export default ObjectInputView.extend({
 
