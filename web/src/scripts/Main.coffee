@@ -33,6 +33,7 @@ define [
   'cs!views/NercModelEditorView'
   'cs!views/NercModelUseEditorView'
   'cs!views/ErammpDatacubeEditorView'
+  'cs!views/RiRecordEditorView'
   'cs!views/UkemsDocumentEditorView'
   'cs!views/DatalabsDocumentEditorView'
   'cs!views/ClipboardCopyView'
@@ -45,7 +46,7 @@ define [
     _, $, Backbone, Bootstrap, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter, SearchRouter,
     EditorMetadata, GeminiEditorView, MonitoringEditorView, ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata, CehModelEditorView, CehModelApplicationEditorView,
     OsdpAgentEditorView,OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
-    OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, ErammpModelEditorView, NercModelEditorView, NercModelUseEditorView, ErammpDatacubeEditorView, UkemsDocumentEditorView,
+    OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, ErammpModelEditorView, NercModelEditorView, NercModelUseEditorView, ErammpDatacubeEditorView, RiRecordEditorView, UkemsDocumentEditorView,
     DatalabsDocumentEditorView, ClipboardCopyView, DataTypeEditorView, ElterEditorView, ElterLinkedEditorView, ServiceAgreementEditorView, ServiceAgreement
 ) ->
 
@@ -165,6 +166,10 @@ define [
         View: ErammpDatacubeEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.erammp-datacube+json'
+      'rirecord':
+        View: RiRecordEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.rirecord+json'
       'data-type':
         View: DataTypeEditorView
         Model: EditorMetadata
