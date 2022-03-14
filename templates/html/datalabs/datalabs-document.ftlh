@@ -1,6 +1,11 @@
 <#import "../skeleton.ftlh" as skeleton>
 
-<@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
+<#assign datalabsScripts>
+  <script data-main="/static/scripts/main-out" src="/static/vendor/requirejs/require.js"></script>
+  <script src="/static/scripts/editor.bundle.js"></script>
+</#assign>
+
+<@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) scripts=datalabsScripts>
 
   <div id="metadata">
   <div class="container">

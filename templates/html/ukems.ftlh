@@ -24,7 +24,12 @@
   </#list>
 </#macro>
 
-<@skeleton.master title=title catalogue=catalogue>
+<#assign ukemsScripts>
+  <script data-main="/static/scripts/main-out" src="/static/vendor/requirejs/require.js"></script>
+  <script src="/static/scripts/editor.bundle.js"></script>
+</#assign>
+
+<@skeleton.master title=title catalogue=catalogue scripts=ukemsScripts>
 
 <div id="metadata">
   <div class="container">

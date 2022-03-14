@@ -1,5 +1,11 @@
 <#import "skeleton.ftlh" as skeleton>
-<@skeleton.master title="Metadata File Upload" catalogue=catalogues.defaultCatalogue()>
+
+<#assign uploadScripts>
+  <script src="/static/scripts/editor-bundle.js"></script>
+  <script data-main="/static/scripts/main-out" src="/static/vendor/requirejs/require.js"></script>
+</#assign>
+
+<@skeleton.master title="Metadata File Upload" catalogue=catalogues.defaultCatalogue() scripts=uploadScripts>
 <div class="container">
   <div class="row">
     <div class="col-sm-offset-2 col-sm-8">

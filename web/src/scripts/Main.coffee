@@ -12,10 +12,27 @@ define [
   'cs!routers/LayersRouter'
   'cs!routers/SearchRouter'
   'cs!models/EditorMetadata'
+  'cs!views/GeminiEditorView'
+  'cs!views/ChartView'
+  'cs!views/CehModelEditorView'
+  'cs!views/OsdpDatasetEditorView'
+  'cs!views/OsdpMonitoringActivityEditorView'
+  'cs!views/OsdpMonitoringProgrammeEditorView'
+  'cs!views/OsdpMonitoringFacilityEditorView'
+  'cs!views/SampleArchiveEditorView'
+  'cs!views/ErammpModelEditorView'
+  'cs!views/NercModelEditorView'
+  'cs!views/ErammpDatacubeEditorView'
+  'cs!views/RiRecordEditorView'
+  'cs!views/ClipboardCopyView'
+  'cs!views/ElterEditorView'
   'cs!views/ServiceAgreementEditorView'
   'cs!models/service-agreement/ServiceAgreement'
 ], (
-    _, $, Backbone, Bootstrap, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter, SearchRouter, ServiceAgreementEditorView, ServiceAgreement, EditorMetadata
+  _, $, Backbone, Bootstrap, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter, SearchRouter,
+  EditorMetadata, GeminiEditorView, ChartView, CehModelEditorView,
+  OsdpDatasetEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
+  OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, ErammpModelEditorView, NercModelEditorView, ErammpDatacubeEditorView, RiRecordEditorView, ClipboardCopyView, ElterEditorView, ServiceAgreementEditorView, ServiceAgreement
 ) ->
 
   ###
@@ -24,8 +41,8 @@ define [
   we like globally.
   ###
   initialize: ->
-    # shim
-    # http://stackoverflow.com/a/646643
+# shim
+# http://stackoverflow.com/a/646643
     String::startsWith ?= (s) -> @slice(0, s.length) == s
     String::endsWith   ?= (s) -> s == '' or @slice(-s.length) == s
 
@@ -34,6 +51,8 @@ define [
     # Remove once templates fixed
     window._ = _
 
+    do @initClipboard if $('.clipboard-copy').length
+    do @initEditor if $('.edit-control').length
     do @initGeometryMap if $('#geometry-map').length
     do @initMapviewer if $('#mapviewer').length
     do @initSearch if $('#search').length
@@ -42,6 +61,96 @@ define [
 
     $('.chart').each (i, e) -> new ChartView el: e
     do Backbone.history.start
+
+  ###
+  Initialize clipboard copy
+  ###
+  initClipboard: ->
+    view = new ClipboardCopyView
+      el: '.clipboard-copy'
+
+  ###
+  Initialize the editor
+  ###
+  initEditor: ->
+
+    lookup =
+      GEMINI_DOCUMENT:
+        View: GeminiEditorView
+        Model: EditorMetadata
+        mediaType: 'application/gemini+json'
+      CEH_MODEL:
+        View: CehModelEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.ceh.model+json'
+      'osdp-dataset':
+        View: OsdpDatasetEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.osdp.dataset+json'
+      'osdp-monitoring-activity':
+        View: OsdpMonitoringActivityEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.osdp.monitoring-activity+json'
+      'osdp-monitoring-programme':
+        View: OsdpMonitoringProgrammeEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.osdp.monitoring-programme+json'
+      'osdp-monitoring-facility':
+        View: OsdpMonitoringFacilityEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.osdp.monitoring-facility+json'
+      'sample-archive':
+        View: SampleArchiveEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.sample-archive+json'
+      'erammp-model':
+        View: ErammpModelEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.erammp-model+json'
+      'nerc-model':
+        View: NercModelEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.nerc-model+json'
+      'erammp-datacube':
+        View: ErammpDatacubeEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.erammp-datacube+json'
+      'rirecord':
+        View: RiRecordEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.rirecord+json'
+      'elter':
+        View: ElterEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.elter+json'
+      'service-agreement':
+        View: ServiceAgreementEditorView
+        Model: ServiceAgreement
+        mediaType: 'application/json'
+
+    # the create document dropdown
+    $editorCreate = $ '#editorCreate'
+
+    $('.edit-control').on 'click', (event) ->
+      do event.preventDefault
+
+      title = $(event.target).data('documentType')
+      documentType = lookup[title]
+
+      if $editorCreate.length
+        new documentType.View
+          model: new documentType.Model null, documentType, title
+          el: '#search'
+      else
+        $.ajax
+          url: $(location).attr('href')
+          dataType: 'json'
+          accepts:
+            json: documentType.mediaType
+          success: (data) ->
+            new documentType.View
+              model: new documentType.Model data, documentType, title
+              el: '#metadata'
 
   ###
   Initialize the geometry map

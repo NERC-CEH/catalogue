@@ -1,7 +1,12 @@
 <#import "blocks.ftlh" as blocks>
 <#import "skeleton.ftlh" as skeleton>
 
-<@skeleton.master title="Link Document" catalogue=catalogues.retrieve(metadata.catalogue)>
+<#assign linkScripts>
+    <script src="/static/scripts/editor-bundle.js"></script>
+    <script data-main="/static/scripts/main-out" src="/static/vendor/requirejs/require.js"></script>
+</#assign>
+
+<@skeleton.master title="Link Document" catalogue=catalogues.retrieve(metadata.catalogue) scripts=linkScripts>
   <div id="metadata">
    <div class="container">
     <div id="section-Top">
