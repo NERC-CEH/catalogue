@@ -12,40 +12,10 @@ define [
   'cs!routers/LayersRouter'
   'cs!routers/SearchRouter'
   'cs!models/EditorMetadata'
-  'cs!views/GeminiEditorView'
-  'cs!views/MonitoringEditorView'
-  'cs!views/ChartView'
-  'cs!views/ModelEditorView'
-  'cs!views/LinkEditorView'
-  'cs!models/LinkEditorMetadata'
-  'cs!views/CehModelEditorView'
-  'cs!views/CehModelApplicationEditorView'
-  'cs!views/OsdpAgentEditorView'
-  'cs!views/OsdpDatasetEditorView'
-  'cs!views/OsdpModelEditorView'
-  'cs!views/OsdpSampleEditorView'
-  'cs!views/OsdpPublicationEditorView'
-  'cs!views/OsdpMonitoringActivityEditorView'
-  'cs!views/OsdpMonitoringProgrammeEditorView'
-  'cs!views/OsdpMonitoringFacilityEditorView'
-  'cs!views/SampleArchiveEditorView'
-  'cs!views/ErammpModelEditorView'
-  'cs!views/NercModelEditorView'
-  'cs!views/NercModelUseEditorView'
-  'cs!views/ErammpDatacubeEditorView'
-  'cs!views/UkemsDocumentEditorView'
-  'cs!views/DatalabsDocumentEditorView'
-  'cs!views/DataTypeEditorView'
-  'cs!views/ElterEditorView'
-  'cs!views/ElterLinkedEditorView'
   'cs!views/ServiceAgreementEditorView'
   'cs!models/service-agreement/ServiceAgreement'
 ], (
-    _, $, Backbone, Bootstrap, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter, SearchRouter,
-    EditorMetadata, GeminiEditorView, MonitoringEditorView, ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata, CehModelEditorView, CehModelApplicationEditorView,
-    OsdpAgentEditorView,OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
-    OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, ErammpModelEditorView, NercModelEditorView, NercModelUseEditorView, ErammpDatacubeEditorView, UkemsDocumentEditorView,
-    DatalabsDocumentEditorView, DataTypeEditorView, ElterEditorView, ElterLinkedEditorView, ServiceAgreementEditorView, ServiceAgreement
+    _, $, Backbone, Bootstrap, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter, SearchRouter, ServiceAgreementEditorView, ServiceAgreement, EditorMetadata
 ) ->
 
   ###
@@ -64,7 +34,6 @@ define [
     # Remove once templates fixed
     window._ = _
 
-    do @initEditor if $('.edit-control').length
     do @initGeometryMap if $('#geometry-map').length
     do @initMapviewer if $('#mapviewer').length
     do @initSearch if $('#search').length
@@ -73,137 +42,6 @@ define [
 
     $('.chart').each (i, e) -> new ChartView el: e
     do Backbone.history.start
-
-  ###
-  Initialize the editor
-  ###
-  initEditor: ->
-
-    lookup =
-      GEMINI_DOCUMENT:
-        View: GeminiEditorView
-        Model: EditorMetadata
-        mediaType: 'application/gemini+json'
-      EF_DOCUMENT:
-        View: MonitoringEditorView
-        Model: EditorMetadata
-        mediaType: 'application/monitoring+json'
-      IMP_DOCUMENT:
-        View: ModelEditorView
-        Model: EditorMetadata
-        mediaType: 'application/model+json'
-      CEH_MODEL:
-        View: CehModelEditorView
-        Model: EditorMetadata
-        mediaType: 'application/vnd.ceh.model+json'
-      CEH_MODEL_APPLICATION:
-        View: CehModelApplicationEditorView
-        Model: EditorMetadata
-        mediaType: 'application/vnd.ceh.model.application+json'
-      LINK_DOCUMENT:
-        View: LinkEditorView
-        Model: LinkEditorMetadata
-        mediaType: 'application/link+json'
-      'osdp-agent':
-        View: OsdpAgentEditorView
-        Model: EditorMetadata
-        mediaType: 'application/vnd.osdp.agent+json'
-      'osdp-dataset':
-        View: OsdpDatasetEditorView
-        Model: EditorMetadata
-        mediaType: 'application/vnd.osdp.dataset+json'
-      'osdp-model':
-        View: OsdpModelEditorView
-        Model: EditorMetadata
-        mediaType: 'application/vnd.osdp.model+json'
-      'osdp-sample':
-        View: OsdpSampleEditorView
-        Model: EditorMetadata
-        mediaType: 'application/vnd.osdp.sample+json'
-      'osdp-publication':
-        View: OsdpPublicationEditorView
-        Model: EditorMetadata
-        mediaType: 'application/vnd.osdp.publication+json'
-      'osdp-monitoring-activity':
-        View: OsdpMonitoringActivityEditorView
-        Model: EditorMetadata
-        mediaType: 'application/vnd.osdp.monitoring-activity+json'
-      'osdp-monitoring-programme':
-        View: OsdpMonitoringProgrammeEditorView
-        Model: EditorMetadata
-        mediaType: 'application/vnd.osdp.monitoring-programme+json'
-      'osdp-monitoring-facility':
-        View: OsdpMonitoringFacilityEditorView
-        Model: EditorMetadata
-        mediaType: 'application/vnd.osdp.monitoring-facility+json'
-      'sample-archive':
-        View: SampleArchiveEditorView
-        Model: EditorMetadata
-        mediaType: 'application/vnd.sample-archive+json'
-      'erammp-model':
-        View: ErammpModelEditorView
-        Model: EditorMetadata
-        mediaType: 'application/vnd.erammp-model+json'
-      'nerc-model':
-        View: NercModelEditorView
-        Model: EditorMetadata
-        mediaType: 'application/vnd.nerc-model+json'
-      'nerc-model-use':
-        View: NercModelUseEditorView
-        Model: EditorMetadata
-        mediaType: 'application/vnd.nerc-model-use+json'
-      'erammp-datacube':
-        View: ErammpDatacubeEditorView
-        Model: EditorMetadata
-        mediaType: 'application/vnd.erammp-datacube+json'
-      'data-type':
-        View: DataTypeEditorView
-        Model: EditorMetadata
-        mediaType: 'application/vnd.data-type+json'
-      'elter':
-        View: ElterEditorView
-        Model: EditorMetadata
-        mediaType: 'application/vnd.elter+json'
-      'linked-elter':
-        View: ElterLinkedEditorView
-        Model: EditorMetadata
-        mediaType: 'application/vnd.linked-elter+json'
-      'service-agreement':
-        View: ServiceAgreementEditorView
-        Model: ServiceAgreement
-        mediaType: 'application/json'
-      'ukems-document':
-        View: UkemsDocumentEditorView
-        Model: EditorMetadata
-        mediaType: 'application/vnd.ukems-document+json'
-      'datalabs-document':
-        View: DatalabsDocumentEditorView
-        Model: EditorMetadata
-        mediaType: 'application/vnd.datalabs-document+json'
-
-    # the create document dropdown
-    $editorCreate = $ '#editorCreate'
-
-    $('.edit-control').on 'click', (event) ->
-      do event.preventDefault
-
-      title = $(event.target).data('documentType')
-      documentType = lookup[title]
-
-      if $editorCreate.length
-        new documentType.View
-          model: new documentType.Model null, documentType, title
-          el: '#search'
-      else
-        $.ajax
-          url: $(location).attr('href')
-          dataType: 'json'
-          accepts:
-            json: documentType.mediaType
-          success: (data) ->
-            new documentType.View
-              model: new documentType.Model data, documentType, title
-              el: '#metadata'
 
   ###
   Initialize the geometry map
