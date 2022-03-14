@@ -1,0 +1,1 @@
+<input data-name="<%= data.modelAttribute %>" id="input-<%= data.modelAttribute %>" value="<%= data.value %>" type="checkbox" >
