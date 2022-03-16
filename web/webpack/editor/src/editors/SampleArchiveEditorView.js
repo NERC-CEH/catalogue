@@ -1,6 +1,6 @@
-import { EditorView, InputView } from '../index'
+import EditorView from '../EditorView'
+import InputView from '../InputView'
 import {
-  BoundingBoxView,
   FundingView,
   KeywordView,
   OnlineLinkView,
@@ -194,62 +194,62 @@ export default EditorView.extend({
 `
         }),
 
-        new PredefinedParentView({
-          model: this.model,
-          modelAttribute: 'boundingBoxes',
-          ModelType: BoundingBox,
-          label: 'Spatial coverage',
-          ObjectInputView: BoundingBoxView,
-          multiline: true,
-          // These bounding box values were copied from terraCatalog
-          predefined: {
-            England: {
-              northBoundLatitude: 55.812,
-              eastBoundLongitude: 1.768,
-              southBoundLatitude: 49.864,
-              westBoundLongitude: -6.452
-            },
-            'Great Britain': {
-              northBoundLatitude: 60.861,
-              eastBoundLongitude: 1.768,
-              southBoundLatitude: 49.864,
-              westBoundLongitude: -8.648
-            },
-            'Northern Ireland': {
-              northBoundLatitude: 55.313,
-              eastBoundLongitude: -5.432,
-              southBoundLatitude: 54.022,
-              westBoundLongitude: -8.178
-            },
-            Scotland: {
-              northBoundLatitude: 60.861,
-              eastBoundLongitude: -0.728,
-              southBoundLatitude: 54.634,
-              westBoundLongitude: -8.648
-            },
-            'United Kingdom': {
-              northBoundLatitude: 60.861,
-              eastBoundLongitude: 1.768,
-              southBoundLatitude: 49.864,
-              westBoundLongitude: -8.648
-            },
-            Wales: {
-              northBoundLatitude: 53.434,
-              eastBoundLongitude: -2.654,
-              southBoundLatitude: 51.375,
-              westBoundLongitude: -5.473
-            },
-            World: {
-              northBoundLatitude: 90.00,
-              eastBoundLongitude: 180.00,
-              southBoundLatitude: -90.00,
-              westBoundLongitude: -180.00
-            }
-          },
-          helpText: `
-<p>A bounding box showing the area that the archive covers. It will encompass the remit of the archive, which may be larger than that represented by the samples actually in the archive. It is represented by north, south, east and west in decimal degrees (WGS84).</p><p>If you don't know the bounding box values, click on the map to place a rectangle at the approximate location and adjust by dragging it or changing its shape using the handles on the rectangle.</p>
-`
-        }),
+        //         new PredefinedParentView({
+        //           model: this.model,
+        //           modelAttribute: 'boundingBoxes',
+        //           ModelType: BoundingBox,
+        //           label: 'Spatial coverage',
+        //           ObjectInputView: BoundingBoxView,
+        //           multiline: true,
+        //           // These bounding box values were copied from terraCatalog
+        //           predefined: {
+        //             England: {
+        //               northBoundLatitude: 55.812,
+        //               eastBoundLongitude: 1.768,
+        //               southBoundLatitude: 49.864,
+        //               westBoundLongitude: -6.452
+        //             },
+        //             'Great Britain': {
+        //               northBoundLatitude: 60.861,
+        //               eastBoundLongitude: 1.768,
+        //               southBoundLatitude: 49.864,
+        //               westBoundLongitude: -8.648
+        //             },
+        //             'Northern Ireland': {
+        //               northBoundLatitude: 55.313,
+        //               eastBoundLongitude: -5.432,
+        //               southBoundLatitude: 54.022,
+        //               westBoundLongitude: -8.178
+        //             },
+        //             Scotland: {
+        //               northBoundLatitude: 60.861,
+        //               eastBoundLongitude: -0.728,
+        //               southBoundLatitude: 54.634,
+        //               westBoundLongitude: -8.648
+        //             },
+        //             'United Kingdom': {
+        //               northBoundLatitude: 60.861,
+        //               eastBoundLongitude: 1.768,
+        //               southBoundLatitude: 49.864,
+        //               westBoundLongitude: -8.648
+        //             },
+        //             Wales: {
+        //               northBoundLatitude: 53.434,
+        //               eastBoundLongitude: -2.654,
+        //               southBoundLatitude: 51.375,
+        //               westBoundLongitude: -5.473
+        //             },
+        //             World: {
+        //               northBoundLatitude: 90.00,
+        //               eastBoundLongitude: 180.00,
+        //               southBoundLatitude: -90.00,
+        //               westBoundLongitude: -180.00
+        //             }
+        //           },
+        //           helpText: `
+        // <p>A bounding box showing the area that the archive covers. It will encompass the remit of the archive, which may be larger than that represented by the samples actually in the archive. It is represented by north, south, east and west in decimal degrees (WGS84).</p><p>If you don't know the bounding box values, click on the map to place a rectangle at the approximate location and adjust by dragging it or changing its shape using the handles on the rectangle.</p>
+        // `
+        //         }),
 
         new ParentView({
           model: this.model,

@@ -1,4 +1,5 @@
-import { EditorView, InputView } from '../index'
+import EditorView from '../EditorView'
+import InputView from '../InputView'
 import { KeywordView, ParentView, RelationshipView, TextareaView } from '../views'
 
 export default EditorView.extend({

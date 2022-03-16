@@ -4,27 +4,18 @@ import $ from 'jquery'
 import LinkEditorMetadata from './LinkEditorMetadata'
 import {
   CehModelApplicationEditorView,
-  CehModelEditorView, DatalabsDocumentEditorView,
+  DatalabsDocumentEditorView,
   DataTypeEditorView,
-  ElterEditorView,
   ElterLinkedEditorView,
-  ErammpDatacubeEditorView,
-  ErammpModelEditorView,
   LinkEditorView,
   ModelEditorView,
   MonitoringEditorView,
-  NercModelEditorView,
   NercModelUseEditorView,
   UkemsDocumentEditorView,
   OsdpAgentEditorView,
-  OsdpDatasetEditorView,
   OsdpModelEditorView,
-  OsdpMonitoringActivityEditorView,
-  OsdpMonitoringFacilityEditorView,
-  OsdpMonitoringProgrammeEditorView,
   OsdpPublicationEditorView,
-  OsdpSampleEditorView,
-  SampleArchiveEditorView
+  OsdpSampleEditorView
   // UkemsDocumentEditorView //,
   // , ServiceAgreementEditorView,
 } from './editors'
@@ -35,12 +26,14 @@ export { default as InputView } from './InputView'
 export { default as SelectView } from './SelectView'
 export { default as SingleView } from './SingleView'
 
+console.log('reached editor')
+
 const lookup = {
-  // GEMINI_DOCUMENT: {
-  //   View: GeminiEditorView,
-  //   Model: EditorMetadata,
-  //   mediaType: 'application/gemini+json'
-  // },
+  GEMINI_DOCUMENT: {
+    View: GeminiEditorView,
+    Model: EditorMetadata,
+    mediaType: 'application/gemini+json'
+  },
   EF_DOCUMENT: {
     View: MonitoringEditorView,
     Model: EditorMetadata,
@@ -170,6 +163,8 @@ $('.edit-control').on('click', function (event) {
   (event.preventDefault)()
 
   const title = $(event.target).data('documentType')
+  console.log('title')
+  console.log(title)
   const documentType = lookup[title]
 
   if ($editorCreate.length) {

@@ -1,5 +1,5 @@
 import { KeywordVocabularyView, LinkDocumentSelectorView, ParentView } from '../views'
-import { EditorView } from '../index'
+import EditorView from '../EditorView'
 
 export default EditorView.extend({
 

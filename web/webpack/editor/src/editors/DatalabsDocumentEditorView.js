@@ -1,5 +1,6 @@
 import { ParentStringView } from '../views'
-import { EditorView, InputView } from '../index'
+import EditorView from '../EditorView'
+import InputView from '../InputView'
 
 export default EditorView.extend({
 

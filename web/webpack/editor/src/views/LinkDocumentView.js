@@ -10,7 +10,7 @@ export default Backbone.View.extend({
 
   render () {
     this.template = _.template(template)
-    this.$el.html(template(this.model.attributes))
+    this.$el.html(this.template(this.model.attributes))
     return this
   },
 

@@ -1,7 +1,7 @@
 import $ from 'jquery'
 import {
   AccessLimitationView,
-  BoundingBoxView, CheckboxView,
+  CheckboxView,
   ContactView,
   DatasetReferenceDateView,
   DeimsSiteView,
@@ -16,7 +16,7 @@ import {
   RelatedRecordView, ResourceConstraintView, ResourceIdentifierView,
   ResourceTypeView,
   ServiceView,
-  SingleObjectView, SpatialReferenceSystemView, SpatialRepresentationTypeView, SpatialResolutionView,
+  SingleObjectView,
   SupplementalView,
   TemporalExtentView,
   TextareaView,
@@ -24,16 +24,16 @@ import {
 } from '../views'
 import {
   AccessLimitation,
-  BoundingBox,
   Contact,
   DescriptiveKeyword, DistributionFormat, Funding,
   InspireTheme, MapDataSource,
   MultipleDate,
   OnlineResource,
-  ResourceType, Service, SpatialResolution, Supplemental,
+  ResourceType, Service, Supplemental,
   TopicCategory
 } from '../models'
-import { EditorView, InputView } from '../index'
+import EditorView from '../EditorView'
+import InputView from '../InputView'
 
 export default EditorView.extend({
 
@@ -343,250 +343,250 @@ export default EditorView.extend({
         })
       ]
     },
-    {
-      label: 'Spatial',
-      title: 'Spatial characteristics',
-      views: [
-        new PredefinedParentView({
-          model: this.model,
-          modelAttribute: 'boundingBoxes',
-          ModelType: BoundingBox,
-          label: 'Spatial extent',
-          ObjectInputView: BoundingBoxView,
-          multiline: true,
-          predefined: {
-            Austria: {
-              northBoundLatitude: 49.021,
-              eastBoundLongitude: 17.161,
-              southBoundLatitude: 46.372,
-              westBoundLongitude: 9.531,
-              extentName: 'Austria'
-            },
-            Belgium: {
-              northBoundLatitude: 51.505,
-              eastBoundLongitude: 6.407,
-              southBoundLatitude: 49.497,
-              westBoundLongitude: 2.546,
-              extentName: 'Belgium'
-            },
-            Bulgaria: {
-              northBoundLatitude: 44.216,
-              eastBoundLongitude: 28.607,
-              southBoundLatitude: 41.236,
-              westBoundLongitude: 22.357,
-              extentName: 'Bulgaria'
-            },
-            'Czech Republic': {
-              northBoundLatitude: 51.055,
-              eastBoundLongitude: 18.859,
-              southBoundLatitude: 48.552,
-              westBoundLongitude: 12.092,
-              extentName: 'Czech Republic'
-            },
-            Denmark: {
-              northBoundLatitude: 57.752,
-              eastBoundLongitude: 15.193,
-              southBoundLatitude: 54.560,
-              westBoundLongitude: 8.076,
-              extentName: 'Denmark'
-            },
-            Finland: {
-              northBoundLatitude: 70.092,
-              eastBoundLongitude: 31.586,
-              southBoundLatitude: 59.766,
-              westBoundLongitude: 19.312,
-              extentName: 'Finland'
-            },
-            France: {
-              northBoundLatitude: 51.089,
-              eastBoundLongitude: 8.233,
-              southBoundLatitude: 42.333,
-              westBoundLongitude: -4.795,
-              extentName: 'France'
-            },
-            Germany: {
-              northBoundLatitude: 55.058,
-              eastBoundLongitude: 15.041,
-              southBoundLatitude: 47.270,
-              westBoundLongitude: 5.868,
-              extentName: 'Germany'
-            },
-            Greece: {
-              northBoundLatitude: 41.749,
-              eastBoundLongitude: 29.645,
-              southBoundLatitude: 34.802,
-              westBoundLongitude: 19.374,
-              extentName: 'Greece'
-            },
-            Hungary: {
-              northBoundLatitude: 48.585,
-              eastBoundLongitude: 22.896,
-              southBoundLatitude: 45.738,
-              westBoundLongitude: 16.114,
-              extentName: 'Hungary'
-            },
-            Israel: {
-              northBoundLatitude: 33.290,
-              eastBoundLongitude: 35.684,
-              southBoundLatitude: 29.493,
-              westBoundLongitude: 34.269,
-              extentName: 'Israel'
-            },
-            Italy: {
-              northBoundLatitude: 47.92,
-              eastBoundLongitude: 18.519,
-              southBoundLatitude: 35.493,
-              westBoundLongitude: 6.627,
-              extentName: 'Italy'
-            },
-            Latvia: {
-              northBoundLatitude: 58.084,
-              eastBoundLongitude: 28.241,
-              southBoundLatitude: 55.675,
-              westBoundLongitude: 20.971,
-              extentName: 'Latvia'
-            },
-            Norway: {
-              northBoundLatitude: 71.184,
-              eastBoundLongitude: 31.168,
-              southBoundLatitude: 57.960,
-              westBoundLongitude: 4.503,
-              extentName: 'Norway'
-            },
-            Poland: {
-              northBoundLatitude: 54.836,
-              eastBoundLongitude: 24.145,
-              southBoundLatitude: 49.003,
-              westBoundLongitude: 14.123,
-              extentName: 'Poland'
-            },
-            Portugal: {
-              northBoundLatitude: 42.154,
-              eastBoundLongitude: -6.189,
-              southBoundLatitude: 36.970,
-              westBoundLongitude: -9.500,
-              extentName: 'Portugal'
-            },
-            Romania: {
-              northBoundLatitude: 48.264,
-              eastBoundLongitude: 29.713,
-              southBoundLatitude: 43.620,
-              westBoundLongitude: 20.264,
-              extentName: 'Romania'
-            },
-            Serbia: {
-              northBoundLatitude: 46.189,
-              eastBoundLongitude: 23.006,
-              southBoundLatitude: 41.858,
-              westBoundLongitude: 18.849,
-              extentName: 'Serbia'
-            },
-            Slovakia: {
-              northBoundLatitude: 49.614,
-              eastBoundLongitude: 22.567,
-              southBoundLatitude: 47.731,
-              westBoundLongitude: 16.834,
-              extentName: 'Slovakia'
-            },
-            Slovenia: {
-              northBoundLatitude: 46.876,
-              eastBoundLongitude: 16.597,
-              southBoundLatitude: 45.422,
-              westBoundLongitude: 13.375,
-              extentName: 'Slovenia'
-            },
-            Spain: {
-              northBoundLatitude: 43.788,
-              eastBoundLongitude: 3.321,
-              southBoundLatitude: 36.008,
-              westBoundLongitude: -9.298,
-              extentName: 'Spain'
-            },
-            Sweden: {
-              northBoundLatitude: 69.060,
-              eastBoundLongitude: 24.167,
-              southBoundLatitude: 55.338,
-              westBoundLongitude: 10.966,
-              extentName: 'Sweden'
-            },
-            Switzerland: {
-              northBoundLatitude: 47.807,
-              eastBoundLongitude: 10.492,
-              southBoundLatitude: 45.818,
-              westBoundLongitude: 5.956,
-              extentName: 'Switzerland'
-            },
-            'United Kingdom': {
-              northBoundLatitude: 60.86,
-              eastBoundLongitude: 1.77,
-              southBoundLatitude: 49.86,
-              westBoundLongitude: -8.65,
-              extentName: 'United Kingdom',
-              extentUri: 'http://sws.geonames.org/2635167'
-            },
-            World: {
-              northBoundLatitude: 90.0,
-              eastBoundLongitude: 180.0,
-              southBoundLatitude: -90.0,
-              westBoundLongitude: -180.0
-            }
-          },
-          helpText: `\
-<p>A bounding box representing the limits of the data resource's study area.</p>
-<p>If you do not wish to reveal the exact location publicly (for example, if locations are sensitive) it is recommended that you generalise the location.</p>\
-`
-        }),
-
-        new PredefinedParentView({
-          model: this.model,
-          modelAttribute: 'spatialReferenceSystems',
-          label: 'Spatial reference systems',
-          ObjectInputView: SpatialReferenceSystemView,
-          predefined: {
-            'British National Grid (EPSG::27700)': {
-              code: 'http://www.opengis.net/def/crs/EPSG/0/27700',
-              title: 'OSGB 1936 / British National Grid'
-            },
-            'GB place names': {
-              code: 'https://data.ordnancesurvey.co.uk/datasets/opennames',
-              title: 'GB place names'
-            },
-            'GB postcodes': {
-              code: 'https://data.ordnancesurvey.co.uk/datasets/os-linked-data',
-              title: 'GB postcodes'
-            },
-            'Lat/long (WGS84) (EPSG::4326)': {
-              code: 'http://www.opengis.net/def/crs/EPSG/0/4326',
-              title: 'WGS 84'
-            },
-            'Web mercator (EPSG::3857)': {
-              code: 'http://www.opengis.net/def/crs/EPSG/0/3857',
-              title: 'WGS 84 / Pseudo-Mercator'
-            }
-          },
-          helpText: `
-<p>The spatial referencing system used within the data resource.  <strong>This is mandatory for datasets</strong>; if the dataset has no spatial component (e.g. if it is a laboratory study) the resource type ‘non-geographic data’ should be used instead.</p>
-`
-        }),
-
-        new SpatialRepresentationTypeView({
-          model: this.model,
-          modelAttribute: 'spatialRepresentationTypes',
-          label: 'Spatial Representation Types'
-        }),
-
-        new ParentView({
-          model: this.model,
-          modelAttribute: 'spatialResolutions',
-          ModelType: SpatialResolution,
-          label: 'Spatial resolution',
-          ObjectInputView: SpatialResolutionView,
-          helpText: `
-<p>This is an indication of the level of spatial detail/accuracy. Enter a distance OR equivalent scale but not both. For most datasets, <i>distance</i> is more appropriate.</p>For gridded data, distance is the area of the ground (in metres) represented in each pixel. For point data, it is the degree of confidence in the point's location (e.g. for a point expressed as a six-figure grid reference, SN666781, the resolution would be 100m)</p>
-`
-        })
-      ]
-    },
+    //     {
+    //       label: 'Spatial',
+    //       title: 'Spatial characteristics',
+    //       views: [
+    //         new PredefinedParentView({
+    //           model: this.model,
+    //           modelAttribute: 'boundingBoxes',
+    //           ModelType: BoundingBox,
+    //           label: 'Spatial extent',
+    //           ObjectInputView: BoundingBoxView,
+    //           multiline: true,
+    //           predefined: {
+    //             Austria: {
+    //               northBoundLatitude: 49.021,
+    //               eastBoundLongitude: 17.161,
+    //               southBoundLatitude: 46.372,
+    //               westBoundLongitude: 9.531,
+    //               extentName: 'Austria'
+    //             },
+    //             Belgium: {
+    //               northBoundLatitude: 51.505,
+    //               eastBoundLongitude: 6.407,
+    //               southBoundLatitude: 49.497,
+    //               westBoundLongitude: 2.546,
+    //               extentName: 'Belgium'
+    //             },
+    //             Bulgaria: {
+    //               northBoundLatitude: 44.216,
+    //               eastBoundLongitude: 28.607,
+    //               southBoundLatitude: 41.236,
+    //               westBoundLongitude: 22.357,
+    //               extentName: 'Bulgaria'
+    //             },
+    //             'Czech Republic': {
+    //               northBoundLatitude: 51.055,
+    //               eastBoundLongitude: 18.859,
+    //               southBoundLatitude: 48.552,
+    //               westBoundLongitude: 12.092,
+    //               extentName: 'Czech Republic'
+    //             },
+    //             Denmark: {
+    //               northBoundLatitude: 57.752,
+    //               eastBoundLongitude: 15.193,
+    //               southBoundLatitude: 54.560,
+    //               westBoundLongitude: 8.076,
+    //               extentName: 'Denmark'
+    //             },
+    //             Finland: {
+    //               northBoundLatitude: 70.092,
+    //               eastBoundLongitude: 31.586,
+    //               southBoundLatitude: 59.766,
+    //               westBoundLongitude: 19.312,
+    //               extentName: 'Finland'
+    //             },
+    //             France: {
+    //               northBoundLatitude: 51.089,
+    //               eastBoundLongitude: 8.233,
+    //               southBoundLatitude: 42.333,
+    //               westBoundLongitude: -4.795,
+    //               extentName: 'France'
+    //             },
+    //             Germany: {
+    //               northBoundLatitude: 55.058,
+    //               eastBoundLongitude: 15.041,
+    //               southBoundLatitude: 47.270,
+    //               westBoundLongitude: 5.868,
+    //               extentName: 'Germany'
+    //             },
+    //             Greece: {
+    //               northBoundLatitude: 41.749,
+    //               eastBoundLongitude: 29.645,
+    //               southBoundLatitude: 34.802,
+    //               westBoundLongitude: 19.374,
+    //               extentName: 'Greece'
+    //             },
+    //             Hungary: {
+    //               northBoundLatitude: 48.585,
+    //               eastBoundLongitude: 22.896,
+    //               southBoundLatitude: 45.738,
+    //               westBoundLongitude: 16.114,
+    //               extentName: 'Hungary'
+    //             },
+    //             Israel: {
+    //               northBoundLatitude: 33.290,
+    //               eastBoundLongitude: 35.684,
+    //               southBoundLatitude: 29.493,
+    //               westBoundLongitude: 34.269,
+    //               extentName: 'Israel'
+    //             },
+    //             Italy: {
+    //               northBoundLatitude: 47.92,
+    //               eastBoundLongitude: 18.519,
+    //               southBoundLatitude: 35.493,
+    //               westBoundLongitude: 6.627,
+    //               extentName: 'Italy'
+    //             },
+    //             Latvia: {
+    //               northBoundLatitude: 58.084,
+    //               eastBoundLongitude: 28.241,
+    //               southBoundLatitude: 55.675,
+    //               westBoundLongitude: 20.971,
+    //               extentName: 'Latvia'
+    //             },
+    //             Norway: {
+    //               northBoundLatitude: 71.184,
+    //               eastBoundLongitude: 31.168,
+    //               southBoundLatitude: 57.960,
+    //               westBoundLongitude: 4.503,
+    //               extentName: 'Norway'
+    //             },
+    //             Poland: {
+    //               northBoundLatitude: 54.836,
+    //               eastBoundLongitude: 24.145,
+    //               southBoundLatitude: 49.003,
+    //               westBoundLongitude: 14.123,
+    //               extentName: 'Poland'
+    //             },
+    //             Portugal: {
+    //               northBoundLatitude: 42.154,
+    //               eastBoundLongitude: -6.189,
+    //               southBoundLatitude: 36.970,
+    //               westBoundLongitude: -9.500,
+    //               extentName: 'Portugal'
+    //             },
+    //             Romania: {
+    //               northBoundLatitude: 48.264,
+    //               eastBoundLongitude: 29.713,
+    //               southBoundLatitude: 43.620,
+    //               westBoundLongitude: 20.264,
+    //               extentName: 'Romania'
+    //             },
+    //             Serbia: {
+    //               northBoundLatitude: 46.189,
+    //               eastBoundLongitude: 23.006,
+    //               southBoundLatitude: 41.858,
+    //               westBoundLongitude: 18.849,
+    //               extentName: 'Serbia'
+    //             },
+    //             Slovakia: {
+    //               northBoundLatitude: 49.614,
+    //               eastBoundLongitude: 22.567,
+    //               southBoundLatitude: 47.731,
+    //               westBoundLongitude: 16.834,
+    //               extentName: 'Slovakia'
+    //             },
+    //             Slovenia: {
+    //               northBoundLatitude: 46.876,
+    //               eastBoundLongitude: 16.597,
+    //               southBoundLatitude: 45.422,
+    //               westBoundLongitude: 13.375,
+    //               extentName: 'Slovenia'
+    //             },
+    //             Spain: {
+    //               northBoundLatitude: 43.788,
+    //               eastBoundLongitude: 3.321,
+    //               southBoundLatitude: 36.008,
+    //               westBoundLongitude: -9.298,
+    //               extentName: 'Spain'
+    //             },
+    //             Sweden: {
+    //               northBoundLatitude: 69.060,
+    //               eastBoundLongitude: 24.167,
+    //               southBoundLatitude: 55.338,
+    //               westBoundLongitude: 10.966,
+    //               extentName: 'Sweden'
+    //             },
+    //             Switzerland: {
+    //               northBoundLatitude: 47.807,
+    //               eastBoundLongitude: 10.492,
+    //               southBoundLatitude: 45.818,
+    //               westBoundLongitude: 5.956,
+    //               extentName: 'Switzerland'
+    //             },
+    //             'United Kingdom': {
+    //               northBoundLatitude: 60.86,
+    //               eastBoundLongitude: 1.77,
+    //               southBoundLatitude: 49.86,
+    //               westBoundLongitude: -8.65,
+    //               extentName: 'United Kingdom',
+    //               extentUri: 'http://sws.geonames.org/2635167'
+    //             },
+    //             World: {
+    //               northBoundLatitude: 90.0,
+    //               eastBoundLongitude: 180.0,
+    //               southBoundLatitude: -90.0,
+    //               westBoundLongitude: -180.0
+    //             }
+    //           },
+    //           helpText: `\
+    // <p>A bounding box representing the limits of the data resource's study area.</p>
+    // <p>If you do not wish to reveal the exact location publicly (for example, if locations are sensitive) it is recommended that you generalise the location.</p>\
+    // `
+    //         }),
+    //
+    //         new PredefinedParentView({
+    //           model: this.model,
+    //           modelAttribute: 'spatialReferenceSystems',
+    //           label: 'Spatial reference systems',
+    //           ObjectInputView: SpatialReferenceSystemView,
+    //           predefined: {
+    //             'British National Grid (EPSG::27700)': {
+    //               code: 'http://www.opengis.net/def/crs/EPSG/0/27700',
+    //               title: 'OSGB 1936 / British National Grid'
+    //             },
+    //             'GB place names': {
+    //               code: 'https://data.ordnancesurvey.co.uk/datasets/opennames',
+    //               title: 'GB place names'
+    //             },
+    //             'GB postcodes': {
+    //               code: 'https://data.ordnancesurvey.co.uk/datasets/os-linked-data',
+    //               title: 'GB postcodes'
+    //             },
+    //             'Lat/long (WGS84) (EPSG::4326)': {
+    //               code: 'http://www.opengis.net/def/crs/EPSG/0/4326',
+    //               title: 'WGS 84'
+    //             },
+    //             'Web mercator (EPSG::3857)': {
+    //               code: 'http://www.opengis.net/def/crs/EPSG/0/3857',
+    //               title: 'WGS 84 / Pseudo-Mercator'
+    //             }
+    //           },
+    //           helpText: `
+    // <p>The spatial referencing system used within the data resource.  <strong>This is mandatory for datasets</strong>; if the dataset has no spatial component (e.g. if it is a laboratory study) the resource type ‘non-geographic data’ should be used instead.</p>
+    // `
+    //         }),
+    //
+    //         new SpatialRepresentationTypeView({
+    //           model: this.model,
+    //           modelAttribute: 'spatialRepresentationTypes',
+    //           label: 'Spatial Representation Types'
+    //         }),
+    //
+    //         new ParentView({
+    //           model: this.model,
+    //           modelAttribute: 'spatialResolutions',
+    //           ModelType: SpatialResolution,
+    //           label: 'Spatial resolution',
+    //           ObjectInputView: SpatialResolutionView,
+    //           helpText: `
+    // <p>This is an indication of the level of spatial detail/accuracy. Enter a distance OR equivalent scale but not both. For most datasets, <i>distance</i> is more appropriate.</p>For gridded data, distance is the area of the ground (in metres) represented in each pixel. For point data, it is the degree of confidence in the point's location (e.g. for a point expressed as a six-figure grid reference, SN666781, the resolution would be 100m)</p>
+    // `
+    //         })
+    //       ]
+    //     },
     {
       label: 'Quality',
       title: 'Quality',

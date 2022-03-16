@@ -1,7 +1,7 @@
-import { EditorView, InputView } from '../index'
+import EditorView from '../EditorView'
+import InputView from '../InputView'
 import {
   TextareaView,
-  GeometryView,
   ResourceIdentifierView,
   ParentView,
   RelationshipView,
@@ -48,14 +48,14 @@ export default EditorView.extend({
 `
         }),
 
-        new GeometryView({
-          model: this.model,
-          modelAttribute: 'geometry',
-          label: 'Geometry',
-          helpText: `
-<p>Geometry of Sample</p>
-`
-        }),
+        //         new GeometryView({
+        //           model: this.model,
+        //           modelAttribute: 'geometry',
+        //           label: 'Geometry',
+        //           helpText: `
+        // <p>Geometry of Sample</p>
+        // `
+        //         }),
 
         new SingleObjectView({
           model: this.model,

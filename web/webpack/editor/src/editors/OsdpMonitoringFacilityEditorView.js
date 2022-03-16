@@ -1,16 +1,15 @@
-import { EditorView, InputView } from '../index'
+import EditorView from '../EditorView'
+import InputView from '../InputView'
 import {
-  BoundingBoxView,
   KeywordView,
   ParentView,
   RelationshipView,
   SingleObjectView,
   TemporalExtentView,
   TextareaView,
-  ObservationCapabilityView,
-  GeometryView
+  ObservationCapabilityView
 } from '../views'
-import { BoundingBox, MultipleDate } from '../models'
+import { MultipleDate } from '../models'
 
 export default EditorView.extend({
 
@@ -71,25 +70,25 @@ export default EditorView.extend({
 `
         }),
 
-        new SingleObjectView({
-          model: this.model,
-          modelAttribute: 'boundingBox',
-          ModelType: BoundingBox,
-          label: 'Bounding Box',
-          ObjectInputView: BoundingBoxView,
-          helpText: `
-<p>Bounding Box of Monitoring Facility</p>
-`
-        }),
+        //         new SingleObjectView({
+        //           model: this.model,
+        //           modelAttribute: 'boundingBox',
+        //           ModelType: BoundingBox,
+        //           label: 'Bounding Box',
+        //           ObjectInputView: BoundingBoxView,
+        //           helpText: `
+        // <p>Bounding Box of Monitoring Facility</p>
+        // `
+        //         }),
 
-        new GeometryView({
-          model: this.model,
-          modelAttribute: 'geometry',
-          label: 'Geometry',
-          helpText: `
-<p>Geometry of Monitoring Facility</p>
-`
-        }),
+        //         new GeometryView({
+        //           model: this.model,
+        //           modelAttribute: 'geometry',
+        //           label: 'Geometry',
+        //           helpText: `
+        // <p>Geometry of Monitoring Facility</p>
+        // `
+        //         }),
 
         new ParentView({
           model: this.model,

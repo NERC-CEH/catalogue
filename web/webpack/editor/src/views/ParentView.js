@@ -1,6 +1,6 @@
 import _ from 'underscore'
 import { Positionable } from '../collections'
-import { SingleView } from '../index'
+import SingleView from '../SingleView'
 import ChildView from './ChildView'
 import template from '../templates/Parent.tpl'
 
@@ -43,7 +43,7 @@ export default SingleView.extend({
   },
 
   render () {
-    this.$el.html(template({ data: this.data }))
+    this.$el.html(this.template({ data: this.data }))
     return this
   },
 

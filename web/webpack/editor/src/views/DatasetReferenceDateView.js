@@ -1,6 +1,7 @@
 import ObjectInputView from './ObjectInputView'
 import template from '../templates/DatasetReferenceDate.tpl'
 import _ from 'underscore'
+import 'jquery-ui/ui/widgets/datepicker'
 
 export default ObjectInputView.extend({
 

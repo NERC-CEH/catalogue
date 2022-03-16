@@ -1,5 +1,4 @@
 import {
-  BoundingBoxView,
   DataLocationView,
   DataTypeSchemaView,
   KeywordView,
@@ -9,8 +8,10 @@ import {
   ReadOnlyView, ResourceConstraintView,
   SpatialReferenceSystemView, TextareaView
 } from '../views'
-import { EditorView, InputView, SelectView } from '../index'
-import { BoundingBox, DataTypeSchema, PointOfContact } from '../models'
+import EditorView from '../EditorView'
+import InputView from '../InputView'
+import SelectView from '../SelectView'
+import { DataTypeSchema, PointOfContact } from '../models'
 
 export default EditorView.extend({
 
@@ -227,44 +228,44 @@ export default EditorView.extend({
 '
         }),
 
-        new PredefinedParentView({
-          model: this.model,
-          modelAttribute: 'boundingBoxes',
-          ModelType: BoundingBox,
-          label: 'Spatial coverage',
-          ObjectInputView: BoundingBoxView,
-          multiline: true,
-          predefined: {
-            Wales: {
-              northBoundLatitude: 53.434,
-              eastBoundLongitude: -2.654,
-              southBoundLatitude: 51.375,
-              westBoundLongitude: -5.473
-            },
-            'England & Wales': {
-              northBoundLatitude: 55.812,
-              eastBoundLongitude: 1.768,
-              southBoundLatitude: 49.864,
-              westBoundLongitude: -6.452
-            },
-            'UK (or Great Britain)': {
-              northBoundLatitude: 60.861,
-              eastBoundLongitude: 1.768,
-              southBoundLatitude: 49.864,
-              westBoundLongitude: -8.648
-            },
-            World: {
-              northBoundLatitude: 90.00,
-              eastBoundLongitude: 180.00,
-              southBoundLatitude: -90.00,
-              westBoundLongitude: -180.00
-            }
-          },
-          helpText: `\
-<p>A bounding box showing the area that the archive covers. It will encompass the remit of the archive, which may be larger than that represented by the samples actually in the archive. It is represented by north, south, east and west in decimal degrees (WGS84).</p>
-<p>Enter the values, or click on the map to draw a  rectangle at the approximate location.</p>\
-`
-        }),
+        //         new PredefinedParentView({
+        //           model: this.model,
+        //           modelAttribute: 'boundingBoxes',
+        //           ModelType: BoundingBox,
+        //           label: 'Spatial coverage',
+        //           ObjectInputView: BoundingBoxView,
+        //           multiline: true,
+        //           predefined: {
+        //             Wales: {
+        //               northBoundLatitude: 53.434,
+        //               eastBoundLongitude: -2.654,
+        //               southBoundLatitude: 51.375,
+        //               westBoundLongitude: -5.473
+        //             },
+        //             'England & Wales': {
+        //               northBoundLatitude: 55.812,
+        //               eastBoundLongitude: 1.768,
+        //               southBoundLatitude: 49.864,
+        //               westBoundLongitude: -6.452
+        //             },
+        //             'UK (or Great Britain)': {
+        //               northBoundLatitude: 60.861,
+        //               eastBoundLongitude: 1.768,
+        //               southBoundLatitude: 49.864,
+        //               westBoundLongitude: -8.648
+        //             },
+        //             World: {
+        //               northBoundLatitude: 90.00,
+        //               eastBoundLongitude: 180.00,
+        //               southBoundLatitude: -90.00,
+        //               westBoundLongitude: -180.00
+        //             }
+        //           },
+        //           helpText: `\
+        // <p>A bounding box showing the area that the archive covers. It will encompass the remit of the archive, which may be larger than that represented by the samples actually in the archive. It is represented by north, south, east and west in decimal degrees (WGS84).</p>
+        // <p>Enter the values, or click on the map to draw a  rectangle at the approximate location.</p>\
+        // `
+        //         }),
 
         new SelectView({
           model: this.model,

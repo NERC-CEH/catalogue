@@ -32,7 +32,7 @@ export default Backbone.View.extend({
 
   render () {
     this.$el.html(this.template({ data: _.extend({}, this.data, this.model.attributes) }))
-    this.$el.append(validationTemplate())
+    this.$el.append(_.template(validationTemplate))
     return this
   },
 

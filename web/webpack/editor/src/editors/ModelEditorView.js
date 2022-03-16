@@ -1,4 +1,6 @@
-import { EditorView, InputView, SelectView } from '../index'
+import EditorView from '../EditorView'
+import InputView from '../InputView'
+import SelectView from '../SelectView'
 import {
   CheckboxView, KeywordView, LinkView,
   ModelApplicationModelView,

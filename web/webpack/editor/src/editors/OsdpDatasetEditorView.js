@@ -1,6 +1,7 @@
-import { EditorView, InputView } from '../index'
+import EditorView from '../EditorView'
+import InputView from '../InputView'
 import {
-  BoundingBoxView, DatasetReferenceDateView,
+  DatasetReferenceDateView,
   KeywordView,
   LinkView, ParametersMeasuredView,
   ParentView,
@@ -100,16 +101,16 @@ export default EditorView.extend({
 `
         }),
 
-        new SingleObjectView({
-          model: this.model,
-          modelAttribute: 'boundingBox',
-          ModelType: BoundingBox,
-          label: 'Bounding Box',
-          ObjectInputView: BoundingBoxView,
-          helpText: `
-<p>Bounding Box of Dataset</p>
-`
-        }),
+        //         new SingleObjectView({
+        //           model: this.model,
+        //           modelAttribute: 'boundingBox',
+        //           ModelType: BoundingBox,
+        //           label: 'Bounding Box',
+        //           ObjectInputView: BoundingBoxView,
+        //           helpText: `
+        // <p>Bounding Box of Dataset</p>
+        // `
+        //         }),
 
         new ParentView({
           model: this.model,

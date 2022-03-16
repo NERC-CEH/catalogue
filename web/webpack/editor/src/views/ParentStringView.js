@@ -3,6 +3,8 @@ import SingleView from '../SingleView'
 import parentTemplate from '../templates/Parent.tpl'
 import childTemplate from '../templates/MultiString.tpl'
 import template from '../templates/ChildLarge.tpl'
+import $ from 'jquery'
+import 'jquery-ui/ui/widgets/sortable'
 
 export default SingleView.extend({
 
@@ -18,6 +20,9 @@ export default SingleView.extend({
     }
     if (typeof this.childTemplate === 'undefined') {
       this.childTemplate = _.template(childTemplate)
+    }
+    if (typeof this.parentTemplate === 'undefined') {
+      this.parentTemplate = _.template(parentTemplate)
     }
     SingleView.prototype.initialize.call(this, options)
     this.array = this.model.has(this.data.modelAttribute) ? _.clone(this.model.get(this.data.modelAttribute)) : [];
@@ -36,7 +41,7 @@ export default SingleView.extend({
   },
 
   renderParent () {
-    return this.$el.html(parentTemplate({ data: this.data }))
+    return this.$el.html(this.parentTemplate({ data: this.data }))
   },
 
   render () {

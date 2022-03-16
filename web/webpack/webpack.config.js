@@ -5,6 +5,7 @@ module.exports = {
   entry: {
     catalogue: './catalogue/src/index.js',
     clipboard: './clipboard/src/index.js',
+    editor: './editor/src/index.js',
     hubbub: './hubbub/src/index.js',
     permission: './permission/src/index.js',
     simpleupload: './simple-upload/src/index.js'

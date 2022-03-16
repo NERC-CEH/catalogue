@@ -10,7 +10,8 @@
 //   TextareaView,
 //   TextOnlyView
 // } from '../views'
-// import { EditorView, InputView } from '../index'
+// import EditorView from '../EditorView'
+import InputView from '../InputView'
 // import {
 //   Author,
 //   BoundingBox,

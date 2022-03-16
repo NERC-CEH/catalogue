@@ -22,4 +22,3 @@ require.config({
   },
   waitSeconds:1000
 });
-require(['cs!Upload'], function(Upload){ Upload.initialize(); });

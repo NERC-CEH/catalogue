@@ -1,5 +1,5 @@
 import _ from 'underscore'
-import { SingleView } from '../index'
+import SingleView from '../SingleView'
 
 export default SingleView.extend({
 

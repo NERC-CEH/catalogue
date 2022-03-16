@@ -1,7 +1,7 @@
-import { EditorView, InputView } from '../index'
+import EditorView from '../EditorView'
+import InputView from '../InputView'
 import {
   AccessLimitationView,
-  BoundingBoxView,
   CheckboxView,
   ContactView,
   DatasetReferenceDateView,
@@ -19,23 +19,22 @@ import {
   ResourceMaintenanceView,
   ResourceTypeView, ServiceView,
   SingleObjectView,
-  SpatialReferenceSystemView,
-  SpatialRepresentationTypeView,
-  SpatialResolutionView,
+
   SupplementalEIDCView,
   TemporalExtentView,
   TextareaView,
   TopicCategoryView
 } from '../views'
 import {
-  AccessLimitation, BoundingBox,
+  AccessLimitation,
   Contact,
   DescriptiveKeyword, DistributionFormat, Funding,
   InspireTheme, MapDataSource,
   MultipleDate, OnlineResource,
-  ResourceType, Service, SpatialResolution, Supplemental,
+  ResourceType, Service, Supplemental,
   TopicCategory
 } from '../models'
+import $ from 'jquery'
 
 export default EditorView.extend({
 
@@ -451,128 +450,128 @@ export default EditorView.extend({
         })
       ]
     },
-    {
-      label: 'Spatial',
-      title: 'Spatial characteristics',
-      views: [
-        new PredefinedParentView({
-          model: this.model,
-          modelAttribute: 'boundingBoxes',
-          ModelType: BoundingBox,
-          label: 'Spatial extent',
-          ObjectInputView: BoundingBoxView,
-          multiline: true,
-          predefined: {
-            England: {
-              northBoundLatitude: 55.812,
-              eastBoundLongitude: 1.768,
-              southBoundLatitude: 49.864,
-              westBoundLongitude: -6.452,
-              extentName: 'England',
-              extentUri: 'http://sws.geonames.org/6269131'
-            },
-            'Great Britain': {
-              northBoundLatitude: 60.861,
-              eastBoundLongitude: 1.768,
-              southBoundLatitude: 49.864,
-              westBoundLongitude: -8.648,
-              extentName: 'Great Britain'
-            },
-            'Northern Ireland': {
-              northBoundLatitude: 55.313,
-              eastBoundLongitude: -5.432,
-              southBoundLatitude: 54.022,
-              westBoundLongitude: -8.178,
-              extentName: 'Northern Ireland',
-              extentUri: 'http://sws.geonames.org/2641364'
-            },
-            Scotland: {
-              northBoundLatitude: 60.861,
-              eastBoundLongitude: -0.728,
-              southBoundLatitude: 54.634,
-              westBoundLongitude: -8.648,
-              extentName: 'Scotland',
-              extentUri: 'http://sws.geonames.org/2638360'
-            },
-            'United Kingdom': {
-              northBoundLatitude: 60.861,
-              eastBoundLongitude: 1.768,
-              southBoundLatitude: 49.864,
-              westBoundLongitude: -8.648,
-              extentName: 'United Kingdom',
-              extentUri: 'http://sws.geonames.org/2635167'
-            },
-            Wales: {
-              northBoundLatitude: 53.434,
-              eastBoundLongitude: -2.654,
-              southBoundLatitude: 51.375,
-              westBoundLongitude: -5.473,
-              extentName: 'Wales',
-              extentUri: 'http://sws.geonames.org/2634895'
-            },
-            World: {
-              northBoundLatitude: 90.00,
-              eastBoundLongitude: 180.00,
-              southBoundLatitude: -90.00,
-              westBoundLongitude: -180.00
-            }
-          },
-          helpText: `\
-<p>A bounding box representing the limits of the data resource's study area.</p>
-<p>If you do not wish to reveal the exact location publicly (for example, if locations are sensitive) it is recommended that you generalise the location.</p>\
-`
-        }),
-
-        new PredefinedParentView({
-          model: this.model,
-          modelAttribute: 'spatialReferenceSystems',
-          label: 'Spatial reference systems',
-          ObjectInputView: SpatialReferenceSystemView,
-          predefined: {
-            'British National Grid (EPSG::27700)': {
-              code: 'http://www.opengis.net/def/crs/EPSG/0/27700',
-              title: 'OSGB 1936 / British National Grid'
-            },
-            'GB place names': {
-              code: 'https://data.ordnancesurvey.co.uk/datasets/opennames',
-              title: 'GB place names'
-            },
-            'GB postcodes': {
-              code: 'https://data.ordnancesurvey.co.uk/datasets/os-linked-data',
-              title: 'GB postcodes'
-            },
-            'Lat/long (WGS84) (EPSG::4326)': {
-              code: 'http://www.opengis.net/def/crs/EPSG/0/4326',
-              title: 'WGS 84'
-            },
-            'Web mercator (EPSG::3857)': {
-              code: 'http://www.opengis.net/def/crs/EPSG/0/3857',
-              title: 'WGS 84 / Pseudo-Mercator'
-            }
-          },
-          helpText: `
-<p>The spatial referencing system used within the data resource.  <strong>This is mandatory for datasets</strong>; if the dataset has no spatial component (e.g. if it is a laboratory study) the resource type ‘non-geographic data’ should be used instead.</p>
-`
-        }),
-
-        new SpatialRepresentationTypeView({
-          model: this.model,
-          modelAttribute: 'spatialRepresentationTypes',
-          label: 'Spatial Representation Types'
-        }),
-
-        new ParentView({
-          model: this.model,
-          modelAttribute: 'spatialResolutions',
-          ModelType: SpatialResolution,
-          label: 'Spatial resolution',
-          ObjectInputView: SpatialResolutionView,
-          helpText: `
-<p>This is an indication of the level of spatial detail/accuracy.</p><p>For gridded data, distance is the area of the ground (in metres) represented in each pixel. For point data, it is the degree of confidence in the point's location (e.g. for a point expressed as a six-figure grid reference, SN666781, the resolution would be 100m)</p>
-`
-        })
-      ]
-    },
+    //     {
+    //       label: 'Spatial',
+    //       title: 'Spatial characteristics',
+    //       views: [
+    //         new PredefinedParentView({
+    //           model: this.model,
+    //           modelAttribute: 'boundingBoxes',
+    //           ModelType: BoundingBox,
+    //           label: 'Spatial extent',
+    //           ObjectInputView: BoundingBoxView,
+    //           multiline: true,
+    //           predefined: {
+    //             England: {
+    //               northBoundLatitude: 55.812,
+    //               eastBoundLongitude: 1.768,
+    //               southBoundLatitude: 49.864,
+    //               westBoundLongitude: -6.452,
+    //               extentName: 'England',
+    //               extentUri: 'http://sws.geonames.org/6269131'
+    //             },
+    //             'Great Britain': {
+    //               northBoundLatitude: 60.861,
+    //               eastBoundLongitude: 1.768,
+    //               southBoundLatitude: 49.864,
+    //               westBoundLongitude: -8.648,
+    //               extentName: 'Great Britain'
+    //             },
+    //             'Northern Ireland': {
+    //               northBoundLatitude: 55.313,
+    //               eastBoundLongitude: -5.432,
+    //               southBoundLatitude: 54.022,
+    //               westBoundLongitude: -8.178,
+    //               extentName: 'Northern Ireland',
+    //               extentUri: 'http://sws.geonames.org/2641364'
+    //             },
+    //             Scotland: {
+    //               northBoundLatitude: 60.861,
+    //               eastBoundLongitude: -0.728,
+    //               southBoundLatitude: 54.634,
+    //               westBoundLongitude: -8.648,
+    //               extentName: 'Scotland',
+    //               extentUri: 'http://sws.geonames.org/2638360'
+    //             },
+    //             'United Kingdom': {
+    //               northBoundLatitude: 60.861,
+    //               eastBoundLongitude: 1.768,
+    //               southBoundLatitude: 49.864,
+    //               westBoundLongitude: -8.648,
+    //               extentName: 'United Kingdom',
+    //               extentUri: 'http://sws.geonames.org/2635167'
+    //             },
+    //             Wales: {
+    //               northBoundLatitude: 53.434,
+    //               eastBoundLongitude: -2.654,
+    //               southBoundLatitude: 51.375,
+    //               westBoundLongitude: -5.473,
+    //               extentName: 'Wales',
+    //               extentUri: 'http://sws.geonames.org/2634895'
+    //             },
+    //             World: {
+    //               northBoundLatitude: 90.00,
+    //               eastBoundLongitude: 180.00,
+    //               southBoundLatitude: -90.00,
+    //               westBoundLongitude: -180.00
+    //             }
+    //           },
+    //           helpText: `\
+    // <p>A bounding box representing the limits of the data resource's study area.</p>
+    // <p>If you do not wish to reveal the exact location publicly (for example, if locations are sensitive) it is recommended that you generalise the location.</p>\
+    // `
+    //         }),
+    //
+    //         new PredefinedParentView({
+    //           model: this.model,
+    //           modelAttribute: 'spatialReferenceSystems',
+    //           label: 'Spatial reference systems',
+    //           ObjectInputView: SpatialReferenceSystemView,
+    //           predefined: {
+    //             'British National Grid (EPSG::27700)': {
+    //               code: 'http://www.opengis.net/def/crs/EPSG/0/27700',
+    //               title: 'OSGB 1936 / British National Grid'
+    //             },
+    //             'GB place names': {
+    //               code: 'https://data.ordnancesurvey.co.uk/datasets/opennames',
+    //               title: 'GB place names'
+    //             },
+    //             'GB postcodes': {
+    //               code: 'https://data.ordnancesurvey.co.uk/datasets/os-linked-data',
+    //               title: 'GB postcodes'
+    //             },
+    //             'Lat/long (WGS84) (EPSG::4326)': {
+    //               code: 'http://www.opengis.net/def/crs/EPSG/0/4326',
+    //               title: 'WGS 84'
+    //             },
+    //             'Web mercator (EPSG::3857)': {
+    //               code: 'http://www.opengis.net/def/crs/EPSG/0/3857',
+    //               title: 'WGS 84 / Pseudo-Mercator'
+    //             }
+    //           },
+    //           helpText: `
+    // <p>The spatial referencing system used within the data resource.  <strong>This is mandatory for datasets</strong>; if the dataset has no spatial component (e.g. if it is a laboratory study) the resource type ‘non-geographic data’ should be used instead.</p>
+    // `
+    //         }),
+    //
+    //         new SpatialRepresentationTypeView({
+    //           model: this.model,
+    //           modelAttribute: 'spatialRepresentationTypes',
+    //           label: 'Spatial Representation Types'
+    //         }),
+    //
+    //         new ParentView({
+    //           model: this.model,
+    //           modelAttribute: 'spatialResolutions',
+    //           ModelType: SpatialResolution,
+    //           label: 'Spatial resolution',
+    //           ObjectInputView: SpatialResolutionView,
+    //           helpText: `
+    // <p>This is an indication of the level of spatial detail/accuracy.</p><p>For gridded data, distance is the area of the ground (in metres) represented in each pixel. For point data, it is the degree of confidence in the point's location (e.g. for a point expressed as a six-figure grid reference, SN666781, the resolution would be 100m)</p>
+    // `
+    //         })
+    //       ]
+    //     },
     {
       label: 'Quality',
       title: 'Quality',

@@ -1,5 +1,5 @@
 import _ from 'underscore'
-import { SingleView } from '../index'
+import SingleView from '../SingleView'
 import ServiceTypeView from './ServiceTypeView'
 import { Service } from '../models'
 import ParentView from './ParentView'

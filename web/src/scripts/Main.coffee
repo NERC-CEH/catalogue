@@ -24,15 +24,13 @@ define [
   'cs!views/NercModelEditorView'
   'cs!views/ErammpDatacubeEditorView'
   'cs!views/RiRecordEditorView'
-  'cs!views/ClipboardCopyView'
   'cs!views/ElterEditorView'
   'cs!views/ServiceAgreementEditorView'
   'cs!models/service-agreement/ServiceAgreement'
 ], (
   _, $, Backbone, Bootstrap, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter, SearchRouter,
-  EditorMetadata, GeminiEditorView, ChartView, CehModelEditorView,
-  OsdpDatasetEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
-  OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, ErammpModelEditorView, NercModelEditorView, ErammpDatacubeEditorView, RiRecordEditorView, ClipboardCopyView, ElterEditorView, ServiceAgreementEditorView, ServiceAgreement
+  EditorMetadata, GeminiEditorView, ChartView, CehModelEditorView, OsdpDatasetEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
+  OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, ErammpModelEditorView, NercModelEditorView, ErammpDatacubeEditorView, RiRecordEditorView, ElterEditorView, ServiceAgreementEditorView, ServiceAgreement
 ) ->
 
   ###
@@ -51,7 +49,6 @@ define [
     # Remove once templates fixed
     window._ = _
 
-    do @initClipboard if $('.clipboard-copy').length
     do @initEditor if $('.edit-control').length
     do @initGeometryMap if $('#geometry-map').length
     do @initMapviewer if $('#mapviewer').length
@@ -63,22 +60,11 @@ define [
     do Backbone.history.start
 
   ###
-  Initialize clipboard copy
-  ###
-  initClipboard: ->
-    view = new ClipboardCopyView
-      el: '.clipboard-copy'
-
-  ###
   Initialize the editor
   ###
   initEditor: ->
 
     lookup =
-      GEMINI_DOCUMENT:
-        View: GeminiEditorView
-        Model: EditorMetadata
-        mediaType: 'application/gemini+json'
       CEH_MODEL:
         View: CehModelEditorView
         Model: EditorMetadata
