@@ -4,7 +4,7 @@ import Filesize from 'filesize'
 export default Backbone.Model.extend({
 
   initialize () {
-    let action, classes, date, storage
+    let action, classes, storage
     const datastore = this.get('datastore')
     if (datastore === 'dropbox') {
       storage = 'dropbox'
@@ -33,11 +33,12 @@ export default Backbone.Model.extend({
     }
 
     const size = this.has('bytes') ? Filesize(this.get('bytes')) : 0
-    if (this.has('time')) { date = simpleDate(this.get('time')) }
+    const date = this.get('lastValidated')
     const hash = this.has('hash') ? this.get('hash') : 'NO_HASH'
     const estimate = sizeToTime(this.get('bytes'))
     const message = messages[status]
-    const moving = status.includes('MOVING') || (status === 'WRITING')
+    const moving = status === 'MOVING_FROM' || status === 'MOVING_TO' || (status === 'WRITING')
+    const path = this.get('path')
     const validating = status === 'VALIDATING_HASH'
 
     return this.set({
@@ -50,6 +51,7 @@ export default Backbone.Model.extend({
       message,
       moving,
       open,
+      path,
       size,
       validating
     })
@@ -58,23 +60,24 @@ export default Backbone.Model.extend({
   update (data) {
     this.set({
       check: false,
-      date: simpleDate(data.time),
+      date: data.date,
       estimate: sizeToTime(data.bytes),
       hash: data.hash,
-      message: messages[status],
+      message: messages[data.status],
       moving: false,
+      path: data.path,
       size: Filesize(data.bytes),
       status: data.status
     })
     return this.initialize()
   },
 
-  copy (path) {
+  copy () {
     return new File({
       bytes: this.get('bytes'),
       check: true,
       name: this.get('name'),
-      path: this.get('path').replace(/^\/(dropbox|eidchub|supporting-documents)\//, path),
+      path: this.get('path'),
       status: 'MOVING_TO'
     })
   }
@@ -224,21 +227,6 @@ const timeEstimate = {
   18000000000: '1h',
   46000000000: '2h',
   65000000000: '2h+'
-}
-
-const simpleDate = function (time) {
-  const date = new Date(time)
-  const d = date.getDate()
-  const M = date.getMonth() + 1
-  const y = ('' + date.getFullYear()).slice(2)
-
-  let h = date.getHours()
-  if (h < 10) { h = `0${h}` }
-
-  let m = date.getMinutes()
-  if (m < 10) { m = `0${m}` }
-
-  return `${d}/${M}/${y} - ${h}:${m}`
 }
 
 const sizeToTime = function (size) {

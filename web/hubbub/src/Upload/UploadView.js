@@ -56,13 +56,22 @@ export default Backbone.View.extend({
     this.listenTo(this.metadata, 'update', function () { return this.showEmptyStorage(this.metadata, this.$metadata, 'metadata') })
 
     const $datastoreData = $('#datastore-data')
-    if ($datastoreData.length) { this.datastore.reset(JSON.parse($datastoreData.text())) }
+    if ($datastoreData.length) {
+      const response = JSON.parse($datastoreData.text())
+      this.datastore.reset(response.data)
+    }
 
     const $dropboxData = $('#dropbox-data')
-    if ($dropboxData.length) { this.dropbox.reset(JSON.parse($dropboxData.text())) }
+    if ($dropboxData.length) {
+      const response = JSON.parse($dropboxData.text())
+      this.dropbox.reset(response.data)
+    }
 
     const $metadataData = $('#metadata-data')
-    if ($metadataData.length) { return this.metadata.reset(JSON.parse($metadataData.text())) }
+    if ($metadataData.length) {
+      const response = JSON.parse($metadataData.text())
+      return this.metadata.reset(response.data)
+    }
   },
 
   addOne (collection, $container, model) {
@@ -185,7 +194,7 @@ export default Backbone.View.extend({
       url: `${this.model.url()}/move-all-datastore`,
       type: 'POST',
       success: () => {
-        this.dropbox.each(model => this.addOne(this.datastore, this.$datastore, model.copy('/eidchub/')))
+        this.dropbox.each(model => this.addOne(this.datastore, this.$datastore, model.copy()))
         this.dropbox.reset()
         return this.showNormal(event, currentClasses)
       },
@@ -203,7 +212,7 @@ export default Backbone.View.extend({
       type: 'POST',
       success: () => {
         this.showNormal(event, currentClasses)
-        //        TODO: re-render based on changed state of model rather than reloading
+        // TODO: re-render based on changed state of model rather than reloading
         return window.location.reload()
       },
       error: err => {

@@ -1,4 +1,4 @@
 dataset_id,datastore,path,status,hash,hashing_time,last_modified_time,last_validated_time,bytes,format
-c88921ba-f871-44c3-9339-51c5bee4024a,eidchub,data1.csv,VALID,23,0,2019-03-16 14:42:22.000000,,1,csv
-c88921ba-f871-44c3-9339-51c5bee4024a,eidchub,data2.csv,VALID,12,0,2013-03-16 14:42:27.000000,,1,csv
-c88921ba-f871-44c3-9339-51c5bee4024a,supporting-documents,support.txt,VALID,43,0,2009-03-16 14:42:33.000000,,1,txt
+c88921ba-f871-44c3-9339-51c5bee4024a,eidchub,data2.csv,VALID,12,0,2013-03-16 14:42:27.000000,2022-02-11 08:56:22.000000,1,csv
+c88921ba-f871-44c3-9339-51c5bee4024a,supporting-documents,support.txt,VALID,43,0,2009-03-16 14:42:33.000000,2022-03-16 10:20:19.000000,1,txt
+c88921ba-f871-44c3-9339-51c5bee4024a,eidchub,data1.csv,VALID,23,0,2019-03-16 14:42:22.000000,2022-03-16 15:56:14.000000,1,csv

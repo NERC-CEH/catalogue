@@ -3,17 +3,17 @@
         <% if (errorType === 'file') { %>
             <span class="panel-heading-filename">
                 <i class="file-icon fas fa-exclamation-circle"></i>
-                <%= name %>
+                <%= path %>
             </span>
             <span class="panel-heading-type"><%= status %></span>
         <% } else if (status !== 'VALID') { %>
-            <span class="panel-heading-filename"><%= name %></span>
+            <span class="panel-heading-filename"><%= path %></span>
             <span class="panel-heading-type"><%= status %></span>
             <% if (status === 'MOVING_FROM' || status === 'MOVING_TO' || status === 'WRITING') { %>
             <span class="panel-heading-type"><%= size %></span> <div><i class="fas fa-sync fa-spin"></i></div>
             <% } %>
         <% } else { %>
-            <span class="panel-heading-filename"><%= name %></span>
+            <span class="panel-heading-filename"><%= path %></span>
         <% } %>
         <i class="panel-heading-chevron fas fa-chevron-down"></i>
     </div>

@@ -51,11 +51,12 @@ export default Backbone.View.extend({
 
   // TODO: turn modal into a view as used in multiple places
   showModal (title, body, action) {
-    $('.modal-title', $('#documentUploadModal')).html(title)
-    $('.modal-body', $('#documentUploadModal')).html(body)
-    $('.modal-accept', $('#documentUploadModal')).unbind('click')
-    $('.modal-accept', $('#documentUploadModal')).click(action.bind(this))
-    window.$('#documentUploadModal').modal('show')
+    const $documentUploadModal = $('#documentUploadModal')
+    $('.modal-title', $documentUploadModal).html(title)
+    $('.modal-body', $documentUploadModal).html(body)
+    $('.modal-accept', $documentUploadModal).unbind('click')
+    $('.modal-accept', $documentUploadModal).click(action.bind(this))
+    $documentUploadModal.modal('show')
   },
 
   accept (event) {
@@ -161,7 +162,7 @@ export default Backbone.View.extend({
         delete
         this.remove()
         this.collection.remove(this.model)
-        this.datastore.add(this.model.copy('/eidchub/'))
+        this.datastore.add(this.model.copy())
       },
       error: err => {
         this.showInError(event)
@@ -178,7 +179,7 @@ export default Backbone.View.extend({
       success: () => {
         this.remove()
         this.collection.remove(this.model)
-        return this.metadata.add(this.model.copy('/supporting-documents/'))
+        return this.metadata.add(this.model.copy())
       },
       error: err => {
         this.showInError(event)
