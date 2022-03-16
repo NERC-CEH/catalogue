@@ -166,8 +166,8 @@ public class UploadService {
         }
         val file = Paths.get(directory.toString(), filename).toFile();
         log.debug("new file {}", file);
-        writing(datasetId, filename, username, multipartFile.getSize());
         multipartFile.transferTo(file);
+        writing(datasetId, filename, username, multipartFile.getSize());
     }
 
     public void validate(String datasetId, String datastore, Optional<String> possiblePath, String user) {
