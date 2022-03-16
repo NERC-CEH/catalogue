@@ -1,4 +1,3 @@
-import GeminiEditorView from './editors/GeminiEditorView'
 import EditorMetadata from './EditorMetadata'
 import $ from 'jquery'
 import LinkEditorMetadata from './LinkEditorMetadata'
@@ -16,7 +15,7 @@ import {
   OsdpModelEditorView,
   OsdpPublicationEditorView,
   OsdpSampleEditorView
-  // UkemsDocumentEditorView //,
+  // UkemsDocumentEditorView ,
   // , ServiceAgreementEditorView,
 } from './editors'
 
@@ -26,14 +25,14 @@ export { default as InputView } from './InputView'
 export { default as SelectView } from './SelectView'
 export { default as SingleView } from './SingleView'
 
-console.log('reached editor')
-
+// Some editors are commented out as they still use OpenLayers 2 which cannot be used with webpack
+// They will be added back in when Openlayers 2 is replaced with Leaflet
 const lookup = {
-  GEMINI_DOCUMENT: {
-    View: GeminiEditorView,
-    Model: EditorMetadata,
-    mediaType: 'application/gemini+json'
-  },
+  // GEMINI_DOCUMENT: {
+  //   View: GeminiEditorView,
+  //   Model: EditorMetadata,
+  //   mediaType: 'application/gemini+json'
+  // },
   EF_DOCUMENT: {
     View: MonitoringEditorView,
     Model: EditorMetadata,

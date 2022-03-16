@@ -65,6 +65,10 @@ define [
   initEditor: ->
 
     lookup =
+      GEMINI_DOCUMENT:
+       View: GeminiEditorView
+       Model: EditorMetadata
+       mediaType: 'application/gemini+json'
       CEH_MODEL:
         View: CehModelEditorView
         Model: EditorMetadata
