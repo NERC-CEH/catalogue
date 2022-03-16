@@ -30,8 +30,7 @@ export default Backbone.View.extend({
         this.dropbox.add(model)
         return $(file.previewElement).remove()
       }
-
-      const dropzoneView = new DropzoneView({
+      new DropzoneView({
         el: '.dropzone-container',
         success: dropzoneSuccess,
         url: this.model.url()
@@ -124,12 +123,12 @@ export default Backbone.View.extend({
 
   showModal (title, body, action, event) {
     this.showInProgress(event)
-    $('#documentUploadModal')
-    $('.modal-title', $('#documentUploadModal')).html(title)
-    $('.modal-body', $('#documentUploadModal')).html(body)
-    $('.modal-accept', $('#documentUploadModal')).unbind('click')
-    $('.modal-accept', $('#documentUploadModal')).click(action.bind(this))
-    window.$('#documentUploadModal').modal('show')
+    const $documentUploadModal = $('#documentUploadModal')
+    $('.modal-title', $documentUploadModal).html(title)
+    $('.modal-body', $documentUploadModal).html(body)
+    $('.modal-accept', $documentUploadModal).unbind('click')
+    $('.modal-accept', $documentUploadModal).click(action.bind(this))
+    $documentUploadModal.modal('show')
   },
 
   showInProgress (event) {

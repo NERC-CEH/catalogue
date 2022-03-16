@@ -161,17 +161,29 @@ Getting everything running
 ```commandline
 docker-compose -f docker-compose.yml -f docker-compose.hubbub.yml -f docker-compose.override.yml up -d --build
 ```
+### Populate the database
+
 Postgres database needs the schema creating.
 
-Checkout the Hubbub git repo, there is a script to create the schema.
+1. Checkout the Hubbub git repo, there is a script to create the schema.
 
-In the Hubbub repo project directory
-```commandline
-. venv/bin/activate
-python -m migration.schema --user gardener --password cabbages
-```
+2. In the Hubbub repo project directory
+    ```commandline
+    . venv/bin/activate
+    python -m migration.schema --user gardener --password cabbages
+    ```
 
-Import the `migration/status.csv` file into the database
+3. Import the `migration/status.csv` file into the database
+4. Back in the Catalogue project import `fixtures/upload/file.csv`
+
+### Javascript development
+
+1. In `docker-compose.override.yml` add volume to mount hubbub javascript into container.
+    ```yaml
+   volumes:
+     - ./web/hubbub/dist/hubbub-app.js:/opt/ceh-catalogue/static/scripts/hubbub-app.js
+    ```
+2. Run `npm run watch` to recompile `hubbub-app.js` on code changes.
 
 ## Map Viewer
 

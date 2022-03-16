@@ -1,13 +1,13 @@
 import $ from 'jquery'
 import 'bootstrap'
-import { HubbubUploadView, HubbubUploadModel } from './Upload'
+import { UploadView, UploadModel } from './Upload'
 
 $(document).ready(function () {
   //  TODO: load state of the app from html, state set from Jira state
   const id = $('#document-upload').data('guid')
-  const model = new HubbubUploadModel()
+  const model = new UploadModel()
   model.set('id', id)
-  return new HubbubUploadView({
+  return new UploadView({
     el: '#document-upload',
     model
   })

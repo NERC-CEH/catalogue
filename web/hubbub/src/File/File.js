@@ -5,12 +5,12 @@ export default Backbone.Model.extend({
 
   initialize () {
     let action, classes, date, storage
-    const path = this.get('path')
-    if (path.startsWith('/dropbox/')) {
+    const datastore = this.get('datastore')
+    if (datastore === 'dropbox') {
       storage = 'dropbox'
-    } else if (path.startsWith('/supporting-documents/')) {
+    } else if (datastore === 'supporting-documents') {
       storage = 'metadata'
-    } else if (path.startsWith('/eidchub/')) {
+    } else if (datastore === 'eidchub') {
       storage = 'datastore'
     }
 

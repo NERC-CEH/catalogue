@@ -1,3 +1,3 @@
 export { default as DropzoneView } from './DropzoneView'
-export { default as HubbubUploadModel } from './Upload'
-export { default as HubbubUploadView } from './UploadView'
+export { default as UploadModel } from './Upload'
+export { default as UploadView } from './UploadView'
