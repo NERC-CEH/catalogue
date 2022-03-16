@@ -148,33 +148,30 @@ another catalogue using the Link document type.
 The catalogue is designed to sit behind a **Security Proxy** (
 see [RequestHeaderAuthenticationFilter](http://docs.spring.io/autorepo/docs/spring-security/3.2.0.RELEASE/apidocs/org/springframework/security/web/authentication/preauth/RequestHeaderAuthenticationFilter.html) which acts as the authentication source for the application. Therefore, the catalogue will respond to the `Remote-User` header and handle requests as the specified user.
 
-To simplify development, the `DevelopmentUserStoreConfig` is applied by default. This creates some dummy users in various different groups which you can masquerade as. The simplest way to do this is use a browser extension which applies the `Remote-User` header. I recommend **ModHeader for chrome**.
+To simplify development, the `DevelopmentUserStoreConfig` is applied by default. This creates some dummy users in various different groups which you can masquerade as. The simplest way to do this is use a browser extension which applies the `Remote-User` header. I recommend **ModHeader for Chrome**.
 
 Then set the request header:
 
     Remote-User: superadmin
 
-Other available users are:
+Other users are configured in [DevelopmentUserStoreConfig](java/src/main/java/uk/ac/ceh/gateway/catalogue/config/DevelopmentUserStoreConfig.java) for the different catalogues.
 
-- superadmin
-- bamboo
-- readonly
-- admin
-- eidc-editor
-- eidc-publisher
-- cmp-editor
-- cmp-publisher
-- nc-editor
-- nc-publisher
-- m-publisher
-- inms-publisher
-- osdp-publisher
-- sa-publisher
+## Developing with Upload Hubbub
+Getting everything running
+```commandline
+docker-compose -f docker-compose.yml -f docker-compose.hubbub.yml -f docker-compose.override.yml up -d --build
+```
+Postgres database needs the schema creating.
 
+Checkout the Hubbub git repo, there is a script to create the schema.
 
-Also, be sure to go to http://foo.ceh.ac.uk:8080/documents rather than http://localhost:8080/documents, which needs an edit to your hosts file:
+In the Hubbub repo project directory
+```commandline
+. venv/bin/activate
+python -m migration.schema --user gardener --password cabbages
+```
 
-eg `127.0.0.1       localhost foo.ceh.ac.uk`
+Import the `migration/status.csv` file into the database
 
 ## Map Viewer
 
