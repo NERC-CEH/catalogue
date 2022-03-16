@@ -15,11 +15,11 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
+import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
@@ -27,6 +27,7 @@ import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
 import java.io.PrintWriter;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Optional;
@@ -43,7 +44,7 @@ import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.TEXT_CSV;
 import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.UPLOADER_USERNAME;
 import static uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadController.*;
 
-@WithMockCatalogueUser
+@WithMockCatalogueUser(username = UPLOADER_USERNAME)
 @Slf4j
 @ActiveProfiles({"test", "upload:hubbub"})
 @Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
@@ -63,16 +64,18 @@ class UploadControllerTest {
     @Autowired private MockMvc mvc;
     @Autowired private Configuration configuration;
 
-    private final String id = "164ef14f-95a5-45c7-8f36-d2000ba45516";
-    private final String path = "/dropbox/" + id + "/dataset.csv";
+    private final String datasetId = "164ef14f-95a5-45c7-8f36-d2000ba45516";
+    private final String path = "dataset.csv";
+    private final LocalDateTime lastModified = LocalDateTime.of(2022, 3, 12, 14, 26, 52);
+    private final LocalDateTime lastValidated = LocalDateTime.of(2022, 3, 26, 23, 9, 12);
     private final String jiraKey = "TEST-1";
 
     private void givenUserCanUpload() {
-        given(permissionService.userCanUpload(id)).willReturn(true);
+        given(permissionService.userCanUpload(datasetId)).willReturn(true);
     }
 
     private void givenUserCanAccess() {
-        given(permissionService.toAccess(any(CatalogueUser.class), eq(id), eq("VIEW")))
+        given(permissionService.toAccess(any(CatalogueUser.class), eq(datasetId), eq("VIEW")))
             .willReturn(true);
     }
 
@@ -88,8 +91,8 @@ class UploadControllerTest {
     private void givenGeminiDocument() {
         val gemini = new GeminiDocument();
         gemini.setTitle("Foo");
-        gemini.setId(id);
-        given(documentRepository.read(id))
+        gemini.setId(datasetId);
+        given(documentRepository.read(datasetId))
             .willReturn(gemini);
     }
 
@@ -118,7 +121,7 @@ class UploadControllerTest {
         val dataTransfer = new JiraIssue();
         dataTransfer.setFields(fields);
         dataTransfer.setKey(jiraKey);
-        given(jiraService.retrieveDataTransferIssue(id))
+        given(jiraService.retrieveDataTransferIssue(datasetId))
             .willReturn(Optional.of(dataTransfer));
     }
 
@@ -130,7 +133,7 @@ class UploadControllerTest {
         val dataTransfer = new JiraIssue();
         dataTransfer.setFields(fields);
         dataTransfer.setKey(jiraKey);
-        given(jiraService.retrieveDataTransferIssue(id))
+        given(jiraService.retrieveDataTransferIssue(datasetId))
             .willReturn(Optional.of(dataTransfer));
     }
 
@@ -139,38 +142,65 @@ class UploadControllerTest {
         val info = MetadataInfo.builder().build();
         val metadata = new GeminiDocument();
         metadata.setMetadata(info);
-        given(documentRepository.read(id))
+        given(documentRepository.read(datasetId))
             .willReturn(metadata);
     }
 
     private void givenDatastore() {
         val data = Collections.singletonList(
-            new FileInfo(23L, "hash", "name", "/eidchub/path", "status", 234234234L)
+            new HubbubResponse.FileInfo(
+                456L,
+                datasetId,
+                DATASTORE,
+                "csv",
+                "fc3facd3122cb0250f4bf82746d4bd13",
+                0.32,
+                lastModified,
+                lastValidated,
+                path,
+                "VALID"
+            )
         );
-        given(uploadService.get(id, "dropbox", 1, 20))
-            .willReturn(data);
+        given(uploadService.get(datasetId, DATASTORE, 1, 20))
+            .willReturn(new HubbubResponse(data, null, null));
     }
 
     private void givenDropbox() {
         val data = Collections.singletonList(
-            new FileInfo(23L, "hash", "name", "/dropbox/path", "status", 234234234L)
+            new HubbubResponse.FileInfo(
+                456L,
+                datasetId,
+                DROPBOX,
+                "csv",
+                "fc3facd3122cb0250f4bf82746d4bd13",
+                0.32,
+                lastModified,
+                lastValidated,
+                path,
+                "VALID"
+            )
         );
-        given(uploadService.get(id, "dropbox", 1, 20))
-            .willReturn(data);
+        given(uploadService.get(datasetId, DROPBOX, 1, 20))
+            .willReturn(new HubbubResponse(data, null, null));
     }
 
     private void givenMetadata() {
         val data = Collections.singletonList(
-            new FileInfo(23L, "hash", "name", "/supporting-documents/path", "status", 234234234L)
+            new HubbubResponse.FileInfo(
+                456L,
+                datasetId,
+                METADATA,
+                "csv",
+                "fc3facd3122cb0250f4bf82746d4bd13",
+                0.32,
+                lastModified,
+                lastValidated,
+                path,
+                "VALID"
+            )
         );
-        given(uploadService.get(id, "dropbox", 1, 20))
-            .willReturn(data);
-    }
-
-    private void givenFileInfo() {
-        val fileInfo = new FileInfo(23L, "hash", "name", "path", "status", 234234234L);
-        given(uploadService.get(id, path))
-            .willReturn(fileInfo);
+        given(uploadService.get(datasetId, METADATA, 1, 20))
+            .willReturn(new HubbubResponse(data, null, null));
     }
 
     @Test
@@ -189,12 +219,12 @@ class UploadControllerTest {
 
         //when
         mvc.perform(
-            get("/upload/{id}", id)
+            get("/upload/{datasetId}", datasetId)
         )
             .andExpect(status().isOk())
             .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
             .andExpect(view().name("html/upload/hubbub/upload"))
-            .andExpect(model().attribute("id", id))
+            .andExpect(model().attribute("id", datasetId))
             .andExpect(model().attribute("title", "Foo"))
             .andExpect(model().attribute("isAdmin", true))
             .andExpect(model().attribute("isOpen", false))
@@ -220,12 +250,12 @@ class UploadControllerTest {
 
         //when
         mvc.perform(
-                get("/upload/{id}", id)
+                get("/upload/{datasetId}", datasetId)
             )
             .andExpect(status().isOk())
             .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
             .andExpect(view().name("html/upload/hubbub/upload"))
-            .andExpect(model().attribute("id", id))
+            .andExpect(model().attribute("id", datasetId))
             .andExpect(model().attribute("title", "Foo"))
             .andExpect(model().attribute("isAdmin", true))
             .andExpect(model().attribute("isOpen", false))
@@ -249,12 +279,12 @@ class UploadControllerTest {
 
         //when
         mvc.perform(
-                get("/upload/{id}", id)
+                get("/upload/{datasetId}", datasetId)
             )
             .andExpect(status().isOk())
             .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
             .andExpect(view().name("html/upload/hubbub/upload"))
-            .andExpect(model().attribute("id", id))
+            .andExpect(model().attribute("id", datasetId))
             .andExpect(model().attribute("title", "Foo"))
             .andExpect(model().attribute("isAdmin", false))
             .andExpect(model().attribute("isOpen", false))
@@ -274,28 +304,11 @@ class UploadControllerTest {
 
         //when
         mvc.perform(
-            get("/upload/{id}/dropbox", id)
+            get("/upload/{datasetId}/dropbox", datasetId)
         )
             .andExpect(status().isOk())
             .andExpect(content().contentType(APPLICATION_JSON));
 
-    }
-
-    @Test
-    @SneakyThrows
-    void getIndividualFileInfo() {
-        //given
-        givenUserCanAccess();
-        givenFileInfo();
-
-        //when
-        mvc.perform(
-            get("/upload/{id}", id)
-            .queryParam("path", path)
-            .accept(APPLICATION_JSON)
-        )
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(APPLICATION_JSON));
     }
 
     @Test
@@ -312,14 +325,14 @@ class UploadControllerTest {
 
         //when
         mvc.perform(
-            multipart("/upload/{id}", id)
+            multipart("/upload/{datasetId}", datasetId)
                 .file(multipartFile)
                 .header("remote-user", UPLOADER_USERNAME)
         )
             .andExpect(status().is2xxSuccessful());
 
         //then
-        verify(uploadService).upload(id, multipartFile);
+        verify(uploadService).upload(datasetId, UPLOADER_USERNAME, multipartFile);
     }
 
     @Test
@@ -329,13 +342,13 @@ class UploadControllerTest {
         givenUserCanUpload();
 
         //when
-        mvc.perform(post("/upload/{id}/accept", id)
+        mvc.perform(post("/upload/{datasetId}/{datastore}/accept", datasetId, DROPBOX)
             .queryParam("path", path)
             .header("remote-user", UPLOADER_USERNAME)
         ).andExpect(status().is2xxSuccessful());
 
         //then
-        verify(uploadService).accept(path);
+        verify(uploadService).accept(datasetId, DROPBOX, path, UPLOADER_USERNAME);
     }
 
     @Test
@@ -345,13 +358,13 @@ class UploadControllerTest {
         givenUserCanUpload();
 
         //when
-        mvc.perform(post("/upload/{id}/cancel", id)
+        mvc.perform(post("/upload/{datasetId}/{datastore}/cancel", datasetId, DROPBOX)
             .queryParam("path", path)
             .header("remote-user", UPLOADER_USERNAME)
         ).andExpect(status().is2xxSuccessful());
 
         //then
-        verify(uploadService).cancel(path);
+        verify(uploadService).cancel(datasetId, DROPBOX, path, UPLOADER_USERNAME);
     }
 
     @Test
@@ -361,13 +374,13 @@ class UploadControllerTest {
         givenUserCanAccess();
 
         //when
-        mvc.perform(get("/upload/{id}", id)
+        mvc.perform(get("/upload/{datasetId}", datasetId)
             .accept(TEXT_CSV)
             .header("remote-user", UPLOADER_USERNAME)
         ).andExpect(status().is2xxSuccessful());
 
         //then
-        verify(uploadService).csv(any(PrintWriter.class), eq(id));
+        verify(uploadService).csv(any(PrintWriter.class), eq(datasetId));
     }
 
     @Test
@@ -377,13 +390,13 @@ class UploadControllerTest {
         givenUserCanAccess();
 
         //when
-        mvc.perform(get("/upload/{id}", id)
+        mvc.perform(get("/upload/{datasetId}", datasetId)
             .queryParam("format", "csv")
             .header("remote-user", UPLOADER_USERNAME)
         ).andExpect(status().is2xxSuccessful());
 
         //then
-        verify(uploadService).csv(any(PrintWriter.class), eq(id));
+        verify(uploadService).csv(any(PrintWriter.class), eq(datasetId));
     }
 
     @Test
@@ -393,13 +406,13 @@ class UploadControllerTest {
         givenUserCanUpload();
 
         //when
-        mvc.perform(delete("/upload/{id}", id)
+        mvc.perform(delete("/upload/{datasetId}/{datastore}", datasetId, DROPBOX)
             .queryParam("path", path)
             .header("remote-user", UPLOADER_USERNAME)
         ).andExpect(status().is2xxSuccessful());
 
         //then
-        verify(uploadService).delete(path);
+        verify(uploadService).delete(datasetId, DROPBOX, path, UPLOADER_USERNAME);
     }
 
     @Test
@@ -411,7 +424,7 @@ class UploadControllerTest {
         givenMetadataDocument();
 
         //when
-        mvc.perform(post("/upload/{id}/finish", id)
+        mvc.perform(post("/upload/{datasetId}/finish", datasetId)
             .header("remote-user", UPLOADER_USERNAME)
         ).andExpect(status().is2xxSuccessful());
 
@@ -419,7 +432,7 @@ class UploadControllerTest {
         verify(jiraService).transition(jiraKey, START_PROGRESS);
         verify(jiraService).comment(eq(jiraKey), any(String.class));
         verify(documentRepository)
-            .save(any(CatalogueUser.class), any(MetadataDocument.class), eq(id), any(String.class));
+            .save(any(CatalogueUser.class), any(MetadataDocument.class), eq(datasetId), any(String.class));
     }
 
     @Test
@@ -429,13 +442,14 @@ class UploadControllerTest {
         givenUserCanUpload();
 
         //when
-        mvc.perform(post("/upload/{id}/move-datastore", id)
+        mvc.perform(post("/upload/{datasetId}/{datastore}/move", datasetId, DROPBOX)
             .queryParam("path", path)
+            .queryParam("to", DATASTORE)
             .header("remote-user", UPLOADER_USERNAME)
         ).andExpect(status().is2xxSuccessful());
 
         //then
-        verify(uploadService).move(path, DATASTORE);
+        verify(uploadService).move(datasetId, DROPBOX, Optional.of(path), UPLOADER_USERNAME, DATASTORE);
     }
 
     @Test
@@ -445,13 +459,14 @@ class UploadControllerTest {
         givenUserCanUpload();
 
         //when
-        mvc.perform(post("/upload/{id}/move-metadata", id)
+        mvc.perform(post("/upload/{datasetId}/{datastore}/move", datasetId, DROPBOX)
             .queryParam("path", path)
+            .queryParam("to", METADATA)
             .header("remote-user", UPLOADER_USERNAME)
         ).andExpect(status().is2xxSuccessful());
 
         //then
-        verify(uploadService).move(path, METADATA);
+        verify(uploadService).move(datasetId, DROPBOX, Optional.of(path), UPLOADER_USERNAME, METADATA);
     }
 
     @Test
@@ -461,12 +476,13 @@ class UploadControllerTest {
         givenUserCanUpload();
 
         //when
-        mvc.perform(post("/upload/{id}/move-all-datastore", id)
+        mvc.perform(post("/upload/{datasetId}/{datastore}/move", datasetId, DROPBOX)
+            .queryParam("to", DATASTORE)
             .header("remote-user", UPLOADER_USERNAME)
         ).andExpect(status().is2xxSuccessful());
 
         //then
-        verify(uploadService).moveAllToDataStore(id);
+        verify(uploadService).move(datasetId, DROPBOX, Optional.empty(), UPLOADER_USERNAME, DATASTORE);
     }
 
     @Test
@@ -477,7 +493,7 @@ class UploadControllerTest {
         givenDataTransferIssue();
 
         //when
-        mvc.perform(post("/upload/{id}/reschedule", id)
+        mvc.perform(post("/upload/{datasetId}/reschedule", datasetId)
             .header("remote-user", UPLOADER_USERNAME)
         ).andExpect(status().is2xxSuccessful());
 
@@ -497,7 +513,7 @@ class UploadControllerTest {
         givenDataTransferIssue();
 
         //when
-        mvc.perform(post("/upload/{id}/schedule", id)
+        mvc.perform(post("/upload/{datasetId}/schedule", datasetId)
             .header("remote-user", UPLOADER_USERNAME)
         ).andExpect(status().is2xxSuccessful());
 
@@ -514,13 +530,13 @@ class UploadControllerTest {
         givenUserCanUpload();
 
         //when
-        mvc.perform(post("/upload/{id}/validate", id)
+        mvc.perform(post("/upload/{datasetId}/{datastore}/validate", datasetId, DROPBOX)
             .queryParam("path", path)
             .header("remote-user", UPLOADER_USERNAME)
         ).andExpect(status().is2xxSuccessful());
 
         //then
-        verify(uploadService).validate(path);
+        verify(uploadService).validate(datasetId, DROPBOX, Optional.of(path), UPLOADER_USERNAME);
     }
 
     @Test
@@ -530,11 +546,12 @@ class UploadControllerTest {
         givenUserCanUpload();
 
         //when
-        mvc.perform(post("/upload/{id}/validate", id)
+        mvc.perform(post("/upload/{datasetId}/{datastore}/validate", datasetId, DATASTORE)
+            .queryParam("username", UPLOADER_USERNAME)
             .header("remote-user", UPLOADER_USERNAME)
         ).andExpect(status().is2xxSuccessful());
 
         //then
-        verify(uploadService).validate(id);
+        verify(uploadService).validate(datasetId, DATASTORE,Optional.empty(), UPLOADER_USERNAME);
     }
 }

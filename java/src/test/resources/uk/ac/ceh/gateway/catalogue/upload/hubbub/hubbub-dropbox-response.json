@@ -1,0 +1,40 @@
+{
+  "data": [
+    {
+      "bytes": 4988991,
+      "datasetId": "c5db2755-bdbb-470f-987b-da71d9489fd0",
+      "datastore": "dropbox",
+      "format": "csv",
+      "hash": "bf282a37aebdee0acf6981737552e6a7",
+      "hashingTime": 0.71,
+      "lastModified": "2002-12-19T23:34:12",
+      "lastValidated": "2021-09-02T08:21:08",
+      "path": "CBESS_Eddy_Covariance_data_Cartmel_Sands.csv",
+      "status": "WRITING"
+    },
+    {
+      "bytes": 578982,
+      "datasetId": "c5db2755-bdbb-470f-987b-da71d9489fd0",
+      "datastore": "dropbox",
+      "format": "csv",
+      "hash": "ag482a37aebdee0acf69817375558ac5",
+      "hashingTime": 0.23,
+      "lastModified": "2002-12-19T23:34:12",
+      "lastValidated": "2021-09-02T08:21:08",
+      "path": "CBESS_data_Cartmel_Sands.csv",
+      "status": "WRITING"
+    }
+  ],
+  "links":{
+    "self": "",
+    "first": "",
+    "prev": "",
+    "next": "",
+    "last": ""
+  },
+  "meta": {
+    "currentPage": 1,
+    "pageSize": 2,
+    "lastPage": 3
+  }
+}

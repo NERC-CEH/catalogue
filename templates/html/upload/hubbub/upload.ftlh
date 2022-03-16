@@ -226,7 +226,7 @@
     <#list files>
         <script id="${title}-data" type="application/json">
         [<#items as file>
-            {"bytes":${file.bytes?c},"hash":"${file.hash}","name":"${file.name}","path":"${file.path}","status":"${file.status}","time":${file.time?c}}<#sep>,</#sep>
+            {"bytes":${file.bytes?c},"datasetId":"${file.datasetId}","datastore":"${file.datastore}","format":"${file.format}","hash":"${file.hash}","hashingTime":${file.hashingTime},"lastModified":"${file.lastModified}","lastValidated":"${file.lastValidated}","path":"${file.path}","status":"${file.status}}"<#sep>,</#sep>
         </#items>]
         </script>
     </#list>
