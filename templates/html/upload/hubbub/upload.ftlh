@@ -223,13 +223,9 @@
 </#macro>
 
 <#macro data title files>
-    <#list files>
-        <script id="${title}-data" type="application/json">
-        [<#items as file>
-            {"bytes":${file.bytes?c},"datasetId":"${file.datasetId}","datastore":"${file.datastore}","format":"${file.format}","hash":"${file.hash}","hashingTime":${file.hashingTime},"lastModified":"${file.lastModified}","lastValidated":"${file.lastValidated}","path":"${file.path}","status":"${file.status}}"<#sep>,</#sep>
-        </#items>]
-        </script>
-    </#list>
+    <script id="${title}-data" type="application/json">
+        ${files?no_esc}
+    </script>
 </#macro>
 
 <#macro documentUploadModal>

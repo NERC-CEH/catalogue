@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.upload.hubbub;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.multipart.MultipartFile;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -49,6 +51,7 @@ public class UploadController {
     private final DocumentRepository documentRepository;
     private final JiraService jiraService;
     private final PermissionService permissionService;
+    private final ObjectMapper mapper;
     @ToString.Include
     private final String maxFileSize;
 
@@ -57,12 +60,14 @@ public class UploadController {
         DocumentRepository documentRepository,
         JiraService jiraService,
         PermissionService permissionService,
+        ObjectMapper mapper,
         @Value("${spring.servlet.multipart.max-file-size}") String maxFileSize
     ) {
         this.uploadService = uploadService;
         this.documentRepository = documentRepository;
         this.jiraService = jiraService;
         this.permissionService = permissionService;
+        this.mapper = mapper;
         this.maxFileSize = maxFileSize;
         log.info("Creating {}", this);
     }
@@ -92,49 +97,29 @@ public class UploadController {
         model.addAttribute("maxFileSize", maxFileSize);
 
         if (dataTransfer.isScheduled()) {
-            model.addAttribute(
-                DROPBOX,
-                uploadService
-                    .get(datasetId, DROPBOX, 1, 20)
-                    .getData()
-            );
+            addHubbubResponse(model, DROPBOX, datasetId, DROPBOX);
             if (isAdmin) {
-                model.addAttribute(
-                    "datastore",
-                    uploadService
-                        .get(datasetId, DATASTORE, 1, 20)
-                        .getData()
-                );
-                model.addAttribute(
-                    "metadata",
-                    uploadService
-                        .get(datasetId, METADATA, 1, 20)
-                        .getData()
-                );
+                addHubbubResponse(model, "datastore", datasetId, DATASTORE);
+                addHubbubResponse(model, "metadata", datasetId, METADATA);
             }
         } else if (dataTransfer.isInProgress() || isAdmin) {
-            model.addAttribute(
-                "datastore",
-                uploadService
-                    .get(datasetId, DATASTORE, 1, 20)
-                    .getData()
-            );
-            model.addAttribute(
-                DROPBOX,
-                uploadService
-                    .get(datasetId, DROPBOX, 1, 20)
-                    .getData()
-            );
-            model.addAttribute(
-                "metadata",
-                uploadService
-                    .get(datasetId, METADATA, 1, 20)
-                    .getData()
-            );
+            addHubbubResponse(model, DROPBOX, datasetId, DROPBOX);
+            addHubbubResponse(model, "datastore", datasetId, DATASTORE);
+            addHubbubResponse(model, "metadata", datasetId, METADATA);
         }
 
         log.debug("Model keys: {}", model.asMap().keySet());
         return "html/upload/hubbub/upload";
+    }
+
+    @SneakyThrows
+    private void addHubbubResponse(Model model, String attribute, String datasetId, String datastore) {
+        try {
+            val response = uploadService.get(datasetId, datastore, 1, 20);
+            model.addAttribute(attribute, mapper.writeValueAsString(response));
+        } catch (RestClientException ex) {
+            log.debug("{}, {} not added to {}.\n{}", datasetId, datastore, attribute, ex.getMessage());
+        }
     }
 
     @ResponseBody
