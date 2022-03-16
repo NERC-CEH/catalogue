@@ -36,6 +36,9 @@
     <#if (metadata.state == 'draft' || metadata.state == 'pending') >
       <small class="text-danger"><b>${codes.lookup('publication.state', metadata.state)?upper_case!''}</b></small>
     </#if>
+     <#if isLinkedDoc="true"> 
+        <i class="fas fa-link" title="linked document"></i>
+      </#if>
     ${title}
     <#if alternateTitles?? && alternateTitles?has_content>
       <br><small class="alternateTitles">
@@ -56,11 +59,7 @@
   <#if resourceStatus??>
     <#include "_status.ftlh">
   </#if>
-
-  <#if rel_source?has_content && rel_source?size gt 0>
-    <#include "_source.ftlh">
-  </#if>
-
+  
   <#if resourceType?? && resourceType.value == 'signpost' >
     <div id="signpost" class="alert alert-warning" role="alert">
       <i class="fas fa-info-circle"></i>

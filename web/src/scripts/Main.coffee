@@ -39,8 +39,8 @@ define [
   we like globally.
   ###
   initialize: ->
-# shim
-# http://stackoverflow.com/a/646643
+    # shim
+    # http://stackoverflow.com/a/646643
     String::startsWith ?= (s) -> @slice(0, s.length) == s
     String::endsWith   ?= (s) -> s == '' or @slice(-s.length) == s
 
@@ -109,6 +109,10 @@ define [
         View: RiRecordEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.rirecord+json'
+      'data-type':
+        View: DataTypeEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.data-type+json'
       'elter':
         View: ElterEditorView
         Model: EditorMetadata
