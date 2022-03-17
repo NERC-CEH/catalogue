@@ -80,7 +80,6 @@ COPY --from=build-catalogue web/catalogue/dist/9e7d2efc7b95d476f73e.gif /opt/ceh
 COPY --from=build-simple-upload web/simple-upload/dist/simple-upload-app.js /opt/ceh-catalogue/static/scripts/simple-upload-app.js
 COPY --from=build-hubbub web/hubbub/dist/hubbub-app.js /opt/ceh-catalogue/static/scripts/hubbub-app.js
 COPY --from=build-web /app/src/scripts/main-out.js /opt/ceh-catalogue/static/scripts/main-out.js
-COPY --from=build-web /app/src/scripts/upload-out.js /opt/ceh-catalogue/static/scripts/upload-out.js
 COPY --from=build-web /app/src/vendor/font-awesome-5/webfonts /opt/ceh-catalogue/static/vendor/font-awesome-5/webfonts
 COPY --from=build-web /app/src/vendor/requirejs/require.js /opt/ceh-catalogue/static/vendor/requirejs/require.js
 RUN chown spring:spring -R /app \

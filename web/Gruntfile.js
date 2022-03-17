@@ -222,15 +222,6 @@ module.exports = function(grunt) {
           name: 'main',
           mainConfigFile: 'src/scripts/main.js'
         }
-      },
-      upload: {
-        options: {
-          exclude: ['coffee-script'],
-          baseUrl: 'src/scripts',
-          out: 'src/scripts/upload-out.js',
-          name: 'upload',
-          mainConfigFile: 'src/scripts/upload.js'
-        }
       }
     },
     combine_harvester: {
@@ -265,10 +256,6 @@ module.exports = function(grunt) {
       main: {
         src: 'src/scripts/main.js',
         dest: 'src/scripts/main-out.js'
-      },
-      upload: {
-        src: 'src/scripts/upload.js',
-        dest: 'src/scripts/upload-out.js'
       }
     },
     clean: {
