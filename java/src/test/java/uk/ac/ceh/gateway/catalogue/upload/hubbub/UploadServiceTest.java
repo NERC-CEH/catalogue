@@ -197,7 +197,7 @@ class UploadServiceTest {
     void upload() {
         //given
         mockServer
-            .expect(requestTo(startsWith("https://example.com/v7/writing/c5db2755-bdbb-470f-987b-da71d9489fd0/dropbox")))
+            .expect(requestTo(startsWith("https://example.com/v7/register/c5db2755-bdbb-470f-987b-da71d9489fd0")))
             .andExpect(method(HttpMethod.POST))
             .andExpect(queryParam("path", path))
             .andExpect(queryParam("username", username))
@@ -245,7 +245,7 @@ class UploadServiceTest {
         val filename = "Dataset With Spaces And Uppercase.csv";
         val expectedFilename = "dataset-with-spaces-and-uppercase.csv";
         mockServer
-            .expect(requestTo(startsWith("https://example.com/v7/writing/c5db2755-bdbb-470f-987b-da71d9489fd0/dropbox")))
+            .expect(requestTo(startsWith("https://example.com/v7/register/c5db2755-bdbb-470f-987b-da71d9489fd0")))
             .andExpect(method(HttpMethod.POST))
             .andExpect(queryParam("path", expectedFilename))
             .andExpect(queryParam("username", username))

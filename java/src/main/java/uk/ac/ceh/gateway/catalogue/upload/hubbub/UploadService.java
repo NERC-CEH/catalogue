@@ -166,8 +166,8 @@ public class UploadService {
         }
         val file = Paths.get(directory.toString(), filename).toFile();
         log.debug("new file {}", file);
+        register(datasetId, filename, username, multipartFile.getSize());
         multipartFile.transferTo(file);
-        writing(datasetId, filename, username, multipartFile.getSize());
     }
 
     public void validate(String datasetId, String datastore, Optional<String> possiblePath, String user) {
@@ -197,8 +197,8 @@ public class UploadService {
         }
     }
 
-    private void writing(String datasetId, String path, String user, long size) {
-        val urlTemplate = format("%s/writing/{datasetId}/dropbox?path={path}&username={user}&size={size}", address);
+    private void register(String datasetId, String path, String user, long size) {
+        val urlTemplate = format("%s/register/{datasetId}?path={path}&username={user}&size={size}", address);
         restTemplate.exchange(
             urlTemplate,
             POST,
