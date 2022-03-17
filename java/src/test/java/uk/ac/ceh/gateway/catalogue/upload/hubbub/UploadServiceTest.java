@@ -157,6 +157,23 @@ class UploadServiceTest {
     }
 
     @Test
+    void getIndividual() {
+        //given
+        mockServer
+            .expect(requestTo(startsWith("https://example.com/v7/c5db2755-bdbb-470f-987b-da71d9489fd0/dropbox")))
+            .andExpect(method(GET))
+            .andExpect(queryParam("path", path))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
+            .andRespond(withSuccess(success, MediaType.APPLICATION_JSON));
+
+        //when
+        service.get(datasetId, DROPBOX, path);
+
+        //then
+        mockServer.verify();
+    }
+
+    @Test
     void move() {
         //given
         mockServer

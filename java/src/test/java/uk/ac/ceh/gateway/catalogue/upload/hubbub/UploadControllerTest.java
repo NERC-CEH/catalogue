@@ -165,6 +165,25 @@ class UploadControllerTest {
             .willReturn(new HubbubResponse(data, null, null));
     }
 
+    private void givenIndividualFile() {
+        val data = Collections.singletonList(
+            new HubbubResponse.FileInfo(
+                456L,
+                datasetId,
+                DROPBOX,
+                "csv",
+                "fc3facd3122cb0250f4bf82746d4bd13",
+                0.32,
+                lastModified,
+                lastValidated,
+                path,
+                "VALID"
+            )
+        );
+        given(uploadService.get(datasetId, DROPBOX, path))
+            .willReturn(new HubbubResponse(data, null, null));
+    }
+
     private void givenDropbox() {
         val data = Collections.singletonList(
             new HubbubResponse.FileInfo(
@@ -306,6 +325,22 @@ class UploadControllerTest {
         mvc.perform(
             get("/upload/{datasetId}/dropbox", datasetId)
         )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(APPLICATION_JSON));
+
+    }
+
+    @Test
+    @SneakyThrows
+    void getIndividualFile() {
+        //given
+        givenUserCanAccess();
+        givenIndividualFile();
+
+        //when
+        mvc.perform(
+                get("/upload/{datasetId}/dropbox?path={path}", datasetId, path)
+            )
             .andExpect(status().isOk())
             .andExpect(content().contentType(APPLICATION_JSON));
 

@@ -120,6 +120,20 @@ public class UploadService {
         return response.getBody();
     }
 
+    public HubbubResponse get(String datasetId, String datastore, String path) {
+        val urlTemplate = format("%s/{datasetId}/{datastore}?path={path}", address);
+        val response = restTemplate.exchange(
+            urlTemplate,
+            GET,
+            new HttpEntity<>(withBasicAuth(username, password)),
+            HubbubResponse.class,
+            datasetId,
+            datastore,
+            path
+        );
+        return response.getBody();
+    }
+
     public void move(String datasetId, String datastore, Optional<String> possiblePath, String user, String destination) {
         if (possiblePath.isPresent()) {
             val urlTemplate = format("%s/move/{datasetId}/{datastore}?path={path}&username={user}&destination={destination}", address);

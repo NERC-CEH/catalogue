@@ -129,10 +129,15 @@ public class UploadController {
         @ActiveUser CatalogueUser user,
         @PathVariable("datasetId") String datasetId,
         @PathVariable("datastore") String datastore,
+        @RequestParam(value = "path", required = false) Optional<String> possiblePath,
         @RequestParam(value = "page", defaultValue = "1") int page,
         @RequestParam(value = "size", defaultValue = "20") int size
     ) {
-        return uploadService.get(datasetId, datastore, page, size);
+        if (possiblePath.isPresent()) {
+            return uploadService.get(datasetId, datastore, possiblePath.get());
+        } else {
+            return uploadService.get(datasetId, datastore, page, size);
+        }
     }
 
     @SneakyThrows
