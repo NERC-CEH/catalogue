@@ -7,16 +7,7 @@ import template from './DropzoneFileRow.tpl'
 export default Backbone.View.extend({
 
   initialize (options) {
-    const {
-      el
-    } = options
-    const {
-      success
-    } = options
-    const {
-      url
-    } = options
-
+    const { el, success, url } = options
     return new Dropzone(el, this.dropzoneOptions(url, success))
   },
 

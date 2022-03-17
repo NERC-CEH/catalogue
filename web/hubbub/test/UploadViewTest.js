@@ -1,15 +1,15 @@
 import $ from 'jquery'
-import { HubbubUploadModel, HubbubUploadView } from '../src/Upload'
+import { UploadModel, UploadView } from '../src/Upload'
 
-describe('Test DropzoneView', function () {
+describe('UploadView', function () {
   let model = null
   let view = null
 
   beforeEach(function () {
-    const id = $('#document-upload').data('guid')
-    model = new HubbubUploadModel()
-    model.set('id', id)
-    view = new HubbubUploadView({
+    model = new UploadModel({
+      id: 'ebaf006d-b014-4d8b-9131-7677e61519dd'
+    })
+    view = new UploadView({
       model
     })
   })

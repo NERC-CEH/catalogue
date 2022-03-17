@@ -164,6 +164,9 @@ Please VALIDATE to ensure the file has not been altered or corrupted\
   NO_HASH: {
     content: 'This file has not yet been validated or has failed to validate'
   },
+  REMOVED_ERROR: {
+    content: 'This file failed to be removed'
+  },
   REMOVED_UNKNOWN: {
     content: 'This file was previously deleted but has now been re-added'
   },

@@ -5,10 +5,6 @@ import template from './FileRow.tpl'
 
 export default Backbone.View.extend({
 
-  defaults: {
-    check: false
-  },
-
   events: {
     'click .panel-heading': 'expand',
     'click .accept': 'accept',
@@ -37,7 +33,7 @@ export default Backbone.View.extend({
 
   getServerState (callback) {
     return $.ajax({
-      url: `${this.url}?path=${encodeURIComponent(this.model.get('path'))}`,
+      url: `${this.url}/${this.model.get('datastore')}?path=${encodeURIComponent(this.model.get('path'))}`,
       dataType: 'json',
       success: data => {
         this.model.update(data)
@@ -217,7 +213,7 @@ export default Backbone.View.extend({
   validate (event) {
     const currentClasses = this.showInProgress(event)
     $.ajax({
-      url: `${this.url}/validate?path=${encodeURIComponent(this.model.get('path'))}`,
+      url: `${this.url}/${this.model.get('datastore')}/validate?path=${encodeURIComponent(this.model.get('path'))}`,
       type: 'POST',
       success: () => {
         setTimeout(

@@ -1,5 +1,4 @@
 import $ from 'jquery'
-import Backbone from 'backbone'
 import { DropzoneView } from '../src/Upload'
 import { File } from '../src/File'
 

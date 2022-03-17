@@ -6,14 +6,14 @@
                 <%= path %>
             </span>
             <span class="panel-heading-type"><%= status %></span>
-        <% } else if (status !== 'VALID') { %>
+        <% } else if (status === 'VALID' || status === 'WRITING') { %>
             <span class="panel-heading-filename"><%= path %></span>
-            <span class="panel-heading-type"><%= status %></span>
-            <% if (status === 'MOVING_FROM' || status === 'MOVING_TO' || status === 'WRITING') { %>
-            <span class="panel-heading-type"><%= size %></span> <div><i class="fas fa-sync fa-spin"></i></div>
-            <% } %>
         <% } else { %>
             <span class="panel-heading-filename"><%= path %></span>
+            <span class="panel-heading-type"><%= status %></span>
+            <% if (status === 'MOVING_FROM' || status === 'MOVING_TO') { %>
+                <span class="panel-heading-type"><%= size %></span>
+            <% } %>
         <% } %>
         <i class="panel-heading-chevron fas fa-chevron-down"></i>
     </div>
@@ -37,13 +37,13 @@
             <div class="col-md-3"><%= estimate %></div>
         </div>
 
-       <% if (message) { %>
-        <div class="panel-file-message">
-            <% if (message.title) { %>
-            <span class="panel-file-message-title"><%= message.title %></span>
-            <% } %>
-            <p class="panel-file-message-body"><%= message.content %></p>
-        </div>
+        <% if (message) { %>
+            <div class="panel-file-message">
+                <% if (message.title) { %>
+                <span class="panel-file-message-title"><%= message.title %></span>
+                <% } %>
+                <p class="panel-file-message-body"><%= message.content %></p>
+            </div>
         <% } %>
     </div>
     <div class="panel-footer">

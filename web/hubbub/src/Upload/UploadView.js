@@ -18,23 +18,24 @@ export default Backbone.View.extend({
 
   initialize () {
     if (this.$('.dropzone-container').length) {
-      const dropzoneSuccess = file => {
+      function dropzoneSuccess (file) {
         const filename = file.name.toLowerCase().replaceAll(' ', '-')
         const model = new File({
           bytes: file.size,
-          name: filename,
-          path: `/dropbox/${this.model.get('id')}/${filename}`,
+          path: filename,
           status: 'WRITING',
-          check: true
+          check: false
         })
         this.dropbox.add(model)
-        return $(file.previewElement).remove()
+        $(file.previewElement).remove()
       }
+      /* eslint-disable no-new */
       new DropzoneView({
         el: '.dropzone-container',
         success: dropzoneSuccess,
         url: this.model.url()
       })
+      /* eslint-enable no-new */
     }
 
     this.$datastore = this.$('.datastore-files')
