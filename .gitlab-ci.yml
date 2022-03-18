@@ -57,7 +57,7 @@ test_simple_upload:
 
 test_hubbub:
   stage: test
-  image: ephesoft/headless_chrome:latest
+  image: node:15.11.0-stretch
   script:
     - cd web/hubbub
     - npm install
