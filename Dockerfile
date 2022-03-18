@@ -47,7 +47,8 @@ COPY --chown=1000:1000 web/hubbub/package.json .
 COPY --chown=1000:1000 web/hubbub/package-lock.json .
 COPY --chown=1000:1000 web/hubbub/webpack.config.js .
 COPY --chown=1000:1000 web/hubbub/src src/
-RUN npm install && npm run build
+RUN npm install
+RUN npm run build-prod
 
 # Build Java
 FROM gradle:7.2-jdk16 AS build-java

@@ -16,12 +16,10 @@ export default Backbone.View.extend({
       timeout: -1,
       url,
       maxFilesize: 20 * 1000 * 1000,
-      autoQueue: true,
       previewTemplate: template,
       previewsContainer: '.dropzone-files',
       clickable: '.fileinput-button',
-      parallelUploads: 1,
-      init () {
+      init: function () {
         this.on('addedfile', function (file) {
           const $file = $(file.previewElement)
           $file.find('.cancel').click(() => this.removeFile(file))

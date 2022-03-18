@@ -4,9 +4,10 @@
   "private": "true",
   "scripts": {
     "build": "webpack",
+    "build-prod": "webpack --mode=production",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "test": "karma start",
+    "test": "karma start --single-run",
     "test-watch": "babel-watch karma start",
     "watch": "webpack --watch"
   },
@@ -48,9 +49,11 @@
     "eslint-plugin-promise": "^5.2.0",
     "file-loader": "^6.2.0",
     "html-loader": "^3.1.0",
+    "jasmine-core": "^4.0.1",
     "karma": "^6.3.16",
     "karma-chrome-launcher": "^3.1.0",
     "karma-jasmine": "^4.0.1",
+    "karma-junit-reporter": "^2.0.1",
     "karma-webpack": "^5.0.0",
     "puppeteer": "^13.3.1",
     "webpack": "^5.66.0",

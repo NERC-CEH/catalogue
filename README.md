@@ -156,8 +156,22 @@ Then set the request header:
 
 Other users are configured in [DevelopmentUserStoreConfig](java/src/main/java/uk/ac/ceh/gateway/catalogue/config/DevelopmentUserStoreConfig.java) for the different catalogues.
 
-## Developing with Upload Hubbub
+## Developing Upload - Hubbub API
 Getting everything running
+
+Minimum configuration needed in `docker-compose.override.yaml`
+```yaml
+version: "3.7"
+services:
+  web:
+    volumes:
+      - ./templates:/opt/ceh-catalogue/templates
+      - ./web/hubbub/dist/hubbub-app.js:/opt/ceh-catalogue/static/scripts/hubbub-app.js
+    environment:
+      - spring.profiles.active=development,upload:hubbub,server:eidc,search:basic
+      - jira.username=<your username>
+```
+
 ```commandline
 docker-compose -f docker-compose.yml -f docker-compose.hubbub.yml -f docker-compose.override.yml up -d --build
 ```
@@ -178,12 +192,11 @@ Postgres database needs the schema creating.
 
 ### Javascript development
 
-1. In `docker-compose.override.yml` add volume to mount hubbub javascript into container.
-    ```yaml
-   volumes:
-     - ./web/hubbub/dist/hubbub-app.js:/opt/ceh-catalogue/static/scripts/hubbub-app.js
-    ```
-2. Run `npm run watch` to recompile `hubbub-app.js` on code changes.
+1. Run `npm run watch` to recompile `hubbub-app.js` on code changes.
+2. You will need access to the EIDCHELP Jira project to run the app.
+3. The [Busy Buzy Bumblebees](http://localhost:8080/upload/c88921ba-f871-44c3-9339-51c5bee4024a) upload page has a [Jira issue](https://jira.ceh.ac.uk/browse/EIDCHELP-52451) in the EIDCHELP project
+4. Set the requests header `remote-user: uploader` to see page as a data depositor.
+   Or `remote-user: superadmin` to see it as data centre staff.
 
 ## Map Viewer
 

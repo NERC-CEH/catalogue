@@ -16,7 +16,8 @@ export default Backbone.View.extend({
     'click .validate-all': 'validateAll'
   },
 
-  initialize () {
+  initialize: function () {
+    const that = this
     if (this.$('.dropzone-container').length) {
       function dropzoneSuccess (file) {
         const filename = file.name.toLowerCase().replaceAll(' ', '-')
@@ -26,7 +27,7 @@ export default Backbone.View.extend({
           status: 'WRITING',
           check: false
         })
-        this.dropbox.add(model)
+        that.dropbox.add(model)
         $(file.previewElement).remove()
       }
       /* eslint-disable no-new */
@@ -40,38 +41,53 @@ export default Backbone.View.extend({
 
     this.$datastore = this.$('.datastore-files')
     this.datastore = new FileCollection()
-    this.listenTo(this.datastore, 'reset', function (collection) { return this.addAll(collection, this.$datastore) })
-    this.listenTo(this.datastore, 'add', function (model) { return this.addOne(this.datastore, this.$datastore, model) })
-    this.listenTo(this.datastore, 'update', function () { return this.showEmptyStorage(this.datastore, this.$datastore, 'datastore') })
+    this.listenTo(this.datastore, 'reset', function (collection) { this.addAll(collection, this.$datastore) })
+    this.listenTo(this.datastore, 'add', function (model) { this.addOne(this.datastore, this.$datastore, model) })
+    this.listenTo(this.datastore, 'update', function () { this.showEmptyStorage(this.datastore, this.$datastore, 'datastore') })
 
     this.$dropbox = this.$('.data-files')
     this.dropbox = new FileCollection()
-    this.listenTo(this.dropbox, 'reset', function (collection) { return this.addAll(collection, this.$dropbox) })
-    this.listenTo(this.dropbox, 'add', function (model) { return this.addOne(this.dropbox, this.$dropbox, model) })
-    this.listenTo(this.dropbox, 'update', function () { return this.showEmptyStorage(this.dropbox, this.$dropbox, 'data') })
+    this.listenTo(this.dropbox, 'reset', function (collection) { this.addAll(collection, this.$dropbox) })
+    this.listenTo(this.dropbox, 'add', function (model) { this.addOne(this.dropbox, this.$dropbox, model) })
+    this.listenTo(this.dropbox, 'update', function () { this.showEmptyStorage(this.dropbox, this.$dropbox, 'data') })
 
     this.$metadata = this.$('.metadata-files')
     this.metadata = new FileCollection()
-    this.listenTo(this.metadata, 'reset', function (collection) { return this.addAll(collection, this.$metadata) })
-    this.listenTo(this.metadata, 'add', function (model) { return this.addOne(this.metadata, this.$metadata, model) })
-    this.listenTo(this.metadata, 'update', function () { return this.showEmptyStorage(this.metadata, this.$metadata, 'metadata') })
+    this.listenTo(this.metadata, 'reset', function (collection) { this.addAll(collection, this.$metadata) })
+    this.listenTo(this.metadata, 'add', function (model) { this.addOne(this.metadata, this.$metadata, model) })
+    this.listenTo(this.metadata, 'update', function () { this.showEmptyStorage(this.metadata, this.$metadata, 'metadata') })
 
     const $datastoreData = $('#datastore-data')
     if ($datastoreData.length) {
       const response = JSON.parse($datastoreData.text())
+      this.model.set({
+        datastorePage: response.meta.currentPage,
+        datastoreSize: response.meta.pageSize,
+        datastoreLastPage: response.meta.lastPage
+      })
       this.datastore.reset(response.data)
     }
 
     const $dropboxData = $('#dropbox-data')
     if ($dropboxData.length) {
       const response = JSON.parse($dropboxData.text())
+      this.model.set({
+        dropboxPage: response.meta.currentPage,
+        dropboxSize: response.meta.pageSize,
+        dropboxLastPage: response.meta.lastPage
+      })
       this.dropbox.reset(response.data)
     }
 
     const $metadataData = $('#metadata-data')
     if ($metadataData.length) {
       const response = JSON.parse($metadataData.text())
-      return this.metadata.reset(response.data)
+      this.model.set({
+        metadataPage: response.meta.currentPage,
+        metadataSize: response.meta.pageSize,
+        metadataLastPage: response.meta.lastPage
+      })
+      this.metadata.reset(response.data)
     }
   },
 
@@ -91,24 +107,26 @@ export default Backbone.View.extend({
     collection.each(model => this.addOne(collection, $container, model))
   },
 
-  loadMore (event, name, path, collection) {
-    const currentClasses = this.showInProgress(event)
+  loadMore: function (event, name, path, collection) {
+    const that = this
     const nextPage = this.model.get(`${name}Page`) + 1
     const size = this.model.get(`${name}Size`)
-    return $.ajax({
-      url: `${this.model.url()}/${path}?page=${nextPage}&size=${size}`,
-      success: data => {
-        this.showNormal(event, currentClasses)
-        collection.add(data)
-        if (data.length === size) {
-          this.model.set(`${name}Page`, nextPage)
+    const lastPage = this.model.get(`${name}LastPage`)
+    if (nextPage <= lastPage) {
+      const currentClasses = this.showInProgress(event)
+      return $.ajax({
+        url: `${this.model.url()}/${path}?page=${nextPage}&size=${size}`,
+        success: function (response) {
+          that.showNormal(event, currentClasses)
+          collection.add(response.data)
+          that.model.set(`${name}Page`, response.meta.currentPage)
+        },
+        error: function (err) {
+          that.showInError(event)
+          console.error('error', err)
         }
-      },
-      error (err) {
-        this.showInError(event)
-        console.error('error', err)
-      }
-    })
+      })
+    }
   },
 
   loadDatastore (event) {
