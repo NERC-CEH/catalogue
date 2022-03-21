@@ -6,9 +6,8 @@ describe('index.js', function () {
   it('initializes view', function () {
     // given
     const id = 'dacaa5ae-67bd-40d8-ad7f-f37ece3ff09a'
-    $(document.body).empty()
     $(document.body)
-      .append(`
+      .html(`
         <div id="document-upload" data-guid="${id}">
             <div class="document-upload"></div>
         </div>

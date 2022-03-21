@@ -461,7 +461,9 @@ class UploadControllerTest {
         //when
         mvc.perform(post("/upload/{datasetId}/finish", datasetId)
             .header("remote-user", UPLOADER_USERNAME)
-        ).andExpect(status().is2xxSuccessful());
+        )
+            .andExpect(status().is3xxRedirection())
+            .andExpect(header().string("location", "/documents/164ef14f-95a5-45c7-8f36-d2000ba45516"));
 
         //then
         verify(jiraService).transition(jiraKey, START_PROGRESS);

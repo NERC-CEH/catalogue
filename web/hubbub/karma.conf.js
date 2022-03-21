@@ -3,11 +3,23 @@ const webpackConfig = require('./webpack.config.js')
 
 module.exports = function (config) {
   config.set({
-    browsers: ['ChromeHeadless'],
+    browsers: ['ChromeHeadless_no_sandbox'],
+    customLaunchers: {
+      ChromeHeadless_no_sandbox: {
+        base: 'Chrome',
+        flags: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--headless',
+          '--disable-gpu',
+          '--remote-debugging-port=9222'
+        ]
+      }
+    },
     files: [
       './test/**/*.js'
     ],
-    frameworks: ['jasmine', 'webpack'],
+    frameworks: ['jasmine-ajax', 'jasmine', 'webpack'],
     preprocessors: {
       './test/**/*.js': ['webpack']
     },

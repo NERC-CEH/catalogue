@@ -19,7 +19,7 @@ describe('Test DropzoneView', function () {
       return $(file.previewElement).remove()
     }
     const container = $('<div class ="dropzone-container"><div class="dropzone-files"><div class="fileinput-button"/></div></div>')
-    $(document.body).append(container)
+    $(document.body).html(container)
 
     view = new DropzoneView({
       el: '.dropzone-container',
