@@ -6,7 +6,7 @@ import DropzoneView from './DropzoneView'
 export default Backbone.View.extend({
 
   events: {
-    'click .finish': 'showFinish',
+    'click .finish': 'finish',
     'click .load.datastore': 'loadDatastore',
     'click .load.data': 'loadDropbox',
     'click .load.metadata': 'loadMetadata',
@@ -149,16 +149,6 @@ export default Backbone.View.extend({
     }
   },
 
-  showModal (title, body, action, event) {
-    this.showInProgress(event)
-    const $documentUploadModal = $('#documentUploadModal')
-    $('.modal-title', $documentUploadModal).html(title)
-    $('.modal-body', $documentUploadModal).html(body)
-    $('.modal-accept', $documentUploadModal).unbind('click')
-    $('.modal-accept', $documentUploadModal).click(action.bind(this))
-    $documentUploadModal.modal('show')
-  },
-
   showInProgress (event) {
     const $el = $(event.currentTarget)
     $el.attr('disabled', true)
@@ -182,27 +172,14 @@ export default Backbone.View.extend({
     $icon.attr('class', 'btn-icon fa fa-exclamation-triangle')
   },
 
-  showFinish (event) {
-    this.showModal(
-      'Have you finished uploading files?',
-      'You will no longer be able to add, remove or update files.',
-      function () { return this.finish(event) },
-      event
-    )
-  },
-
   finish (event) {
-    const currentClasses = this.showInProgress(event)
+    const that = this
     return $.ajax({
       url: `${this.model.url()}/finish`,
       type: 'POST',
-      success: () => {
-        this.showNormal(event, currentClasses)
-        return window.location.assign(`/documents/${this.model.get('id')}`)
-      },
-      error (err) {
-        this.showInError(event)
-        return console.error('error', err)
+      error: function (err) {
+        that.showInError(event)
+        console.error('error', err)
       }
     })
   },
