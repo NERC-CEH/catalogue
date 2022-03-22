@@ -198,7 +198,7 @@ class UploadServiceTest {
             .andExpect(method(HttpMethod.POST))
             .andExpect(queryParam("path", path))
             .andExpect(queryParam("username", username))
-            .andExpect(queryParam("destination", DATASTORE))
+            .andExpect(queryParam("to", DATASTORE))
             .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
             .andRespond(withNoContent());
 
@@ -216,7 +216,7 @@ class UploadServiceTest {
             .expect(requestTo(startsWith("https://example.com/v7/move/c5db2755-bdbb-470f-987b-da71d9489fd0/dropbox")))
             .andExpect(method(HttpMethod.POST))
             .andExpect(queryParam("username", username))
-            .andExpect(queryParam("destination", DATASTORE))
+            .andExpect(queryParam("to", DATASTORE))
             .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
             .andRespond(withNoContent());
 

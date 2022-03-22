@@ -136,7 +136,7 @@ public class UploadService {
 
     public void move(String datasetId, String datastore, Optional<String> possiblePath, String user, String destination) {
         if (possiblePath.isPresent()) {
-            val urlTemplate = format("%s/move/{datasetId}/{datastore}?path={path}&username={user}&destination={destination}", address);
+            val urlTemplate = format("%s/move/{datasetId}/{datastore}?path={path}&username={user}&to={destination}", address);
             restTemplate.exchange(
                 urlTemplate,
                 POST,
@@ -149,7 +149,7 @@ public class UploadService {
                 destination
             );
         } else {
-            val urlTemplate = format("%s/move/{datasetId}/{datastore}?username={user}&destination={destination}",address);
+            val urlTemplate = format("%s/move/{datasetId}/{datastore}?username={user}&to={destination}",address);
             restTemplate.exchange(
                 urlTemplate,
                 POST,
