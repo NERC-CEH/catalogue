@@ -28,11 +28,10 @@ export default Backbone.View.extend({
         7000
       )
     }
-    this.listenTo(this.model, 'change', this.render)
   },
 
   getServerState (callback) {
-    return $.ajax({
+    $.ajax({
       url: `${this.url}/${this.model.get('datastore')}?path=${encodeURIComponent(this.model.get('path'))}`,
       dataType: 'json',
       success (response) {
@@ -56,22 +55,21 @@ export default Backbone.View.extend({
   },
 
   accept (event) {
+    const that = this
     const currentClasses = this.showInProgress(event)
     $.ajax({
       url: `${this.url}/accept?path=${encodeURIComponent(this.model.get('path'))}`,
       type: 'POST',
-      success: () => {
-        return setTimeout(
+      success () {
+        setTimeout(
           () => {
-            return this.getServerState(function () { return this.showNormal(event, currentClasses) })
-          }
-          ,
+            that.getServerState(function () { that.showNormal(event, currentClasses) })
+          },
           3000
         )
       },
-      error: err => {
-        this.showInError(event)
-        console.error('error', err)
+      error () {
+        that.showInError(event)
       }
     })
   },
@@ -87,22 +85,22 @@ export default Backbone.View.extend({
   },
 
   cancel (event) {
+    const that = this
     const currentClasses = this.showInProgress(event)
     $.ajax({
       url: `${this.url}/cancel?path=${encodeURIComponent(this.model.get('path'))}`,
       type: 'POST',
-      success: () => {
+      success () {
         setTimeout(
           () => {
-            this.getServerState(function () { return this.showNormal(event, currentClasses) })
+            that.getServerState(() => { return that.showNormal(event, currentClasses) })
           }
           ,
           3000
         )
       },
-      error: err => {
-        this.showInError(event)
-        console.error('error', err)
+      error () {
+        that.showInError(event)
       }
     })
   },
@@ -128,17 +126,17 @@ export default Backbone.View.extend({
   },
 
   delete (event) {
+    const that = this
     this.showInProgress(event)
     $.ajax({
       url: `${this.url}?path=${encodeURIComponent(this.model.get('path'))}`,
       type: 'DELETE',
-      success: () => {
+      success () {
         this.remove()
         this.collection.remove(this.model)
       },
-      error: err => {
-        this.showInError(event)
-        console.error('error', err)
+      error () {
+        that.showInError(event)
       }
     })
   },
@@ -150,36 +148,36 @@ export default Backbone.View.extend({
   },
 
   moveDatastore (event) {
+    const that = this
     this.showInProgress(event)
     $.ajax({
       url: `${this.url}/move-datastore?path=${encodeURIComponent(this.model.get('path'))}`,
       type: 'POST',
-      success: () => {
+      success () {
         delete
         this.remove()
         this.collection.remove(this.model)
         this.datastore.add(this.model.copy('eidchub'))
       },
-      error: err => {
-        this.showInError(event)
-        console.error('error', err)
+      error () {
+        that.showInError(event)
       }
     })
   },
 
   moveMetadata (event) {
+    const that = this
     this.showInProgress(event)
     $.ajax({
       url: `${this.url}/move-metadata?path=${encodeURIComponent(this.model.get('path'))}`,
       type: 'POST',
-      success: () => {
+      success () {
         this.remove()
         this.collection.remove(this.model)
-        return this.metadata.add(this.model.copy('supporting-documents'))
+        this.metadata.add(this.model.copy('supporting-documents'))
       },
-      error: err => {
-        this.showInError(event)
-        console.error('error', err)
+      error () {
+        that.showInError(event)
       }
     })
   },
@@ -211,22 +209,21 @@ export default Backbone.View.extend({
   },
 
   validate (event) {
+    const that = this
     const currentClasses = this.showInProgress(event)
     $.ajax({
       url: `${this.url}/${this.model.get('datastore')}/validate?path=${encodeURIComponent(this.model.get('path'))}`,
       type: 'POST',
-      success: () => {
+      success () {
         setTimeout(
           () => {
-            this.getServerState(function () { return this.showNormal(event, currentClasses) })
-          }
-          ,
+            that.getServerState(() => { that.showNormal(event, currentClasses) })
+          },
           5000
         )
       },
-      error: err => {
-        this.showInError(event)
-        console.error('error', err)
+      error () {
+        that.showInError(event)
       }
     })
   }

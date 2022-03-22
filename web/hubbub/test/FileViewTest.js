@@ -1,42 +1,33 @@
 import $ from 'jquery'
-import Backbone from 'backbone'
-import { FileView, FileCollection } from '../src/File'
+import { File, FileCollection, FileView } from '../src/File'
 
-describe('Test FileView', function () {
+describe('FileView', function () {
   let model = null
   let view = null
 
   beforeEach(function () {
-    model = new Backbone.Model({
-      url: 'test.com',
-      datastore: 'datastore',
-      metadata: 'metadata',
-      classes: 'classes',
-      errorType: 'errorType',
-      path: 'path',
-      size: 'size',
-      hash: 'hash',
-      date: 'date',
-      estimate: 'estimate',
-      message: 'message',
-      moving: 'moving',
+    model = new File({
+      datastore: 'eidchub',
+      path: 'data.csv',
+      size: 23,
+      hash: '28111a4e084f1a57c7a0f50bc9a35472',
+      lastValidated: '2022-03-05T06:23:57',
       status: 'VALID'
-
     })
+
     view = new FileView({
       collection: new FileCollection(),
       datastore: new FileCollection(),
       metadata: new FileCollection(),
       model,
-      url: '/file/post'
+      url: '/upload/28936d69-34b4-47df-96b4-dd7b45f7dbbd'
     })
-    const container = $('<div id="document-upload"></div>')
-    $(document.body).append(container)
   })
 
-  it('is defined', function () {
+  it('initialize', function () {
     // then
     expect(view).toBeDefined()
+    expect(view.url).toBe('/upload/28936d69-34b4-47df-96b4-dd7b45f7dbbd')
   })
 
   xit('validate should be triggered', () => {
