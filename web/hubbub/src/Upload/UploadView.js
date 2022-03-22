@@ -7,6 +7,7 @@ export default Backbone.View.extend({
 
   events: {
     'click .finish': 'finish',
+    'click .hash-dropbox': 'hashDropbox',
     'click .load.datastore': 'loadDatastore',
     'click .load.data': 'loadDropbox',
     'click .load.metadata': 'loadMetadata',
@@ -16,7 +17,7 @@ export default Backbone.View.extend({
     'click .validate-all': 'validateAll'
   },
 
-  initialize: function () {
+  initialize () {
     const that = this
     if (this.$('.dropzone-container').length) {
       function dropzoneSuccess (file) {
@@ -107,7 +108,7 @@ export default Backbone.View.extend({
     collection.each(model => this.addOne(collection, $container, model))
   },
 
-  loadMore: function (event, name, path, collection) {
+  loadMore (event, name, path, collection) {
     const that = this
     const nextPage = this.model.get(`${name}Page`) + 1
     const size = this.model.get(`${name}Size`)
@@ -116,14 +117,13 @@ export default Backbone.View.extend({
       const currentClasses = this.showInProgress(event)
       return $.ajax({
         url: `${this.model.url()}/${path}?page=${nextPage}&size=${size}`,
-        success: function (response) {
+        success (response) {
           that.showNormal(event, currentClasses)
           collection.add(response.data)
           that.model.set(`${name}Page`, response.meta.currentPage)
         },
-        error: function (err) {
+        error () {
           that.showInError(event)
-          console.error('error', err)
         }
       })
     }
@@ -174,100 +174,133 @@ export default Backbone.View.extend({
 
   finish (event) {
     const that = this
+    const currentClasses = this.showInProgress(event)
     return $.ajax({
       url: `${this.model.url()}/finish`,
       type: 'POST',
-      error: function (err) {
+      success () {
+        that.showNormal(event, currentClasses)
+        that.redirectToDocuments()
+      },
+      error () {
         that.showInError(event)
-        console.error('error', err)
+      }
+    })
+  },
+
+  redirectToDocuments () {
+    window.location.assign(`/documents/${this.model.get('id')}`)
+  },
+
+  hashDropbox (event) {
+    const that = this
+    const currentClasses = this.showInProgress(event)
+    return $.ajax({
+      url: `${this.model.url()}/hash`,
+      type: 'POST',
+      success () {
+        that.collectionSuccess(event, currentClasses, 'dropbox', 'dropbox', that.dropbox)
+      },
+      error () {
+        that.showInError(event)
       }
     })
   },
 
   moveAllDatastore (event) {
+    const that = this
     const currentClasses = this.showInProgress(event)
-    return $.ajax({
-      url: `${this.model.url()}/move-all-datastore`,
+    $.ajax({
+      url: `${this.model.url()}/dropbox/move?to=eidchub`,
       type: 'POST',
-      success: () => {
-        this.dropbox.each(model => this.addOne(this.datastore, this.$datastore, model.copy()))
-        this.dropbox.reset()
-        return this.showNormal(event, currentClasses)
+      success () {
+        that.dropbox.each(model => that.addOne(that.datastore, that.$datastore, model.copy()))
+        that.dropbox.reset()
+        that.showNormal(event, currentClasses)
       },
-      error: err => {
-        this.showInError(event)
-        return console.error('error', err)
+      error () {
+        that.showInError(event)
       }
     })
   },
 
   reschedule (event) {
+    const that = this
     const currentClasses = this.showInProgress(event)
-    return $.ajax({
+    $.ajax({
       url: `${this.model.url()}/reschedule`,
       type: 'POST',
-      success: () => {
-        this.showNormal(event, currentClasses)
-        // TODO: re-render based on changed state of model rather than reloading
-        return window.location.reload()
+      success () {
+        that.showNormal(event, currentClasses)
+        that.reloadPage()
       },
-      error: err => {
-        this.showInError(event)
-        return console.error('error', err)
+      error () {
+        that.showInError(event)
       }
     })
   },
 
+  reloadPage () {
+    window.location.reload()
+  },
+
   schedule (event) {
+    const that = this
     const currentClasses = this.showInProgress(event)
     return $.ajax({
       url: `${this.model.url()}/schedule`,
       type: 'POST',
-      success: () => {
-        this.showNormal(event, currentClasses)
-        //        TODO: re-render based on changed state of model rather than reloading
-        return window.location.reload()
+      success () {
+        that.showNormal(event, currentClasses)
+        that.reloadPage()
       },
-      error: err => {
-        this.showInError(event)
-        return console.error('error', err)
+      error () {
+        that.showInError(event)
       }
     })
   },
 
   validateAll (event) {
+    this.validate(event, 'dropbox', 'dropbox', this.dropbox)
+    this.validate(event, 'metadata', 'supporting-documents', this.metadata)
+    this.validate(event, 'datastore', 'eidchub', this.datastore)
+  },
+
+  validate (event, name, datastore, collection) {
+    const that = this
     const currentClasses = this.showInProgress(event)
-    return $.ajax({
-      url: `${this.model.url()}/validate`,
+    $.ajax({
+      url: `${this.model.url()}/${datastore}/validate`,
       type: 'POST',
-      success: () => {
-        const showNormal = () => this.showNormal(event, currentClasses)
-        const datastore = () => this.getServerState('datastore', 'eidchub', this.datastore, showNormal)
-        const dropbox = () => this.getServerState('dropbox', 'dropbox', this.dropbox, datastore)
-        const metadata = () => this.getServerState('metadata', 'supporting-documents', this.metadata, dropbox)
-        return setTimeout(metadata, 7000)
+      success () {
+        that.collectionSuccess(event, currentClasses, name, datastore, collection)
       },
-      error: err => {
-        this.showInError(event)
-        return console.error('error', err)
+      error () {
+        that.showInError(event)
       }
     })
   },
 
-  getServerState (name, path, collection, callback) {
+  collectionSuccess (event, currentClasses, name, datastore, collection) {
+    function showNormal () { this.showNormal(event, currentClasses) }
+    function collectionState () { this.getServerState(name, datastore, collection, showNormal) }
+    setTimeout(collectionState, 7000)
+  },
+
+  getServerState (name, datastore, collection, callback) {
     const page = 1
     const collectionSize = collection.length
-    let size = this.model.get(`${name}Size`)
+    let size = (this.model.has(`${name}Size`)) ? this.model.get(`${name}Size`) : 20
     if (collectionSize > size) { size = collectionSize }
-    this.model.set({ [`${name}Page`]: page })
-    this.model.set({ [`${name}Size`]: size })
+    this.model.set(`${name}Page`, page)
+    this.model.set(`${name}Size`, size)
 
-    return $.ajax({
-      url: `${this.model.url()}/${path}?page=${page}&size=${size}`,
+    $.ajax({
+      url: `${this.model.url()}/${datastore}?page=${page}&size=${size}`,
       dataType: 'json',
-      success (data) {
-        collection.reset(data)
-        if (callback) { return callback() }
+      success (response) {
+        collection.reset(response.data)
+        if (callback) { callback() }
       }
     })
   }

@@ -6,6 +6,18 @@ describe('UploadView', function () {
   const id = 'ebaf006d-b014-4d8b-9131-7677e61519dd'
   let model
   let view
+  const testResponses = {
+    success: {
+      status: 204
+    },
+    error: {
+      status: 500
+    },
+    serverState: {
+      status: 200,
+      responseText: '{"data":[{},{}],"meta":{"currentPage":7}}'
+    }
+  }
 
   describe('initializing', function () {
     beforeEach(function () {
@@ -213,7 +225,7 @@ describe('UploadView', function () {
       // given
       const event = {}
       const collection = new FileCollection()
-      const TestResponses = {
+      const testResponses = {
         success: {
           status: 200,
           responseText: '{"data":[{},{}],"meta":{"currentPage":7}}'
@@ -227,7 +239,7 @@ describe('UploadView', function () {
       // then
       const request = jasmine.Ajax.requests.mostRecent()
       // noinspection JSCheckFunctionSignatures
-      request.respondWith(TestResponses.success)
+      request.respondWith(testResponses.success)
 
       expect(request.method).toBe('GET')
       expect(request.url).toBe(`/upload/${id}/eidchub?page=7&size=3`)
@@ -253,18 +265,6 @@ describe('UploadView', function () {
   })
 
   describe('finish', function () {
-    const testResponses = {
-      success: {
-        status: 302,
-        responseHeaders: {
-          location: `/documents/${id}`
-        }
-      },
-      error: {
-        status: 500
-      }
-    }
-
     beforeEach(function () {
       jasmine.Ajax.install()
       $(document.body)
@@ -286,13 +286,16 @@ describe('UploadView', function () {
 
     it('success', function () {
       // given
-      const $finish = view.$('.finish')
+      const $finishBtn = view.$('.finish')
+      spyOn(view, 'showInProgress')
+      spyOn(view, 'showNormal')
+      spyOn(view, 'redirectToDocuments')
 
       // when
-      $finish.trigger('click')
+      $finishBtn.trigger('click')
 
       // then
-      expect($finish.length).toEqual(1)
+      expect($finishBtn.length).toEqual(1)
 
       const request = jasmine.Ajax.requests.mostRecent()
       // noinspection JSCheckFunctionSignatures
@@ -300,8 +303,10 @@ describe('UploadView', function () {
 
       expect(request.method).toBe('POST')
       expect(request.url).toBe(`/upload/${id}/finish`)
-      expect(request.status).toBe(302)
-      expect(request.getResponseHeader('location')).toBe(`/documents/${id}`)
+      expect(request.status).toBe(204)
+      expect(view.showInProgress).toHaveBeenCalled()
+      expect(view.showNormal).toHaveBeenCalled()
+      expect(view.redirectToDocuments).toHaveBeenCalled()
     })
 
     it('error', function () {
@@ -329,75 +334,240 @@ describe('UploadView', function () {
     })
   })
 
-  xit('moveAllDatastore should be triggered', () => {
-    // given
-    view.render()
-    view.delegateEvents()
-    spyOn($, 'ajax').and.callFake(function (e) {
-      return ''
+  describe('move', function () {
+    beforeEach(function () {
+      jasmine.Ajax.install()
+      $(document.body)
+        .html(`
+            <div class="document-upload">
+                <button class="move-all"></button>
+            </div>
+        `)
+      model = new UploadModel({ id })
+      view = new UploadView({
+        el: '.document-upload',
+        model
+      })
     })
-    spyOn(view, 'loadMetadata')
 
-    // when
-    view.$('.move-all').trigger('click')
-
-    // then
-    setTimeout(function () {
-      expect(view.moveAllDatastore).toHaveBeenCalled()
+    afterEach(function () {
+      jasmine.Ajax.uninstall()
     })
-  })
 
-  xit('reschedule should be triggered', () => {
-    // given
-    view.render()
-    view.delegateEvents()
-    spyOn($, 'ajax').and.callFake(function (e) {
-      return ''
-    })
-    spyOn(view, 'reschedule')
+    it('success', () => {
+      // given
+      spyOn(view, 'showInProgress')
+      spyOn(view, 'showNormal')
+      spyOn(view.dropbox, 'each')
+      spyOn(view.dropbox, 'reset')
 
-    // when
-    view.$('.reschedule').trigger('click')
+      // when
+      view.$('.move-all').trigger('click')
 
-    // then
-    setTimeout(function () {
-      expect(view.reschedule).toHaveBeenCalled()
-    })
-  })
+      // then
+      const request = jasmine.Ajax.requests.mostRecent()
+      // noinspection JSCheckFunctionSignatures
+      request.respondWith(testResponses.serverState)
 
-  xit('schedule should be triggered', () => {
-    // given
-    view.render()
-    view.delegateEvents()
-    spyOn($, 'ajax').and.callFake(function (e) {
-      return ''
-    })
-    spyOn(view, 'schedule')
-
-    // when
-    view.$('.schedule').trigger('click')
-
-    // then
-    setTimeout(function () {
-      expect(view.schedule).toHaveBeenCalled()
+      expect(request.method).toBe('POST')
+      expect(request.url).toBe(`/upload/${id}/dropbox/move?to=eidchub`)
+      expect(view.showInProgress).toHaveBeenCalled()
+      expect(view.showNormal).toHaveBeenCalled()
+      expect(view.dropbox.each).toHaveBeenCalled()
+      expect(view.dropbox.reset).toHaveBeenCalled()
     })
   })
 
-  xit('validate-all should be triggered', () => {
-    // given
-    view.render()
-    view.delegateEvents()
-    spyOn($, 'ajax').and.callFake(function (e) {
-      return ''
+  describe('scheduling', function () {
+    beforeEach(function () {
+      jasmine.Ajax.install()
+      $(document.body)
+        .html(`
+            <div class="document-upload">
+                <button class="schedule"></button>
+                <button class="reschedule"></button>
+            </div>
+        `)
+      model = new UploadModel({
+        id,
+        datastoreSize: 20
+      })
+      view = new UploadView({
+        el: '.document-upload',
+        model
+      })
     })
-    spyOn(view, 'validateAll')
 
-    // when
-    view.$('.validate-all').trigger('click')
+    afterEach(function () {
+      jasmine.Ajax.uninstall()
+    })
 
-    // then
-    setTimeout(function () {
-      expect(view.validateAll).toHaveBeenCalled()
+    it('trigger reschedule', function () {
+      // given
+      spyOn(view, 'showInProgress')
+      spyOn(view, 'showNormal')
+      spyOn(view, 'reloadPage')
+
+      // when
+      view.$('.reschedule').trigger('click')
+
+      // then
+      const request = jasmine.Ajax.requests.mostRecent()
+      // noinspection JSCheckFunctionSignatures
+      request.respondWith(testResponses.success)
+
+      expect(request.method).toBe('POST')
+      expect(request.url).toBe(`/upload/${id}/reschedule`)
+      expect(view.showInProgress).toHaveBeenCalled()
+      expect(view.showNormal).toHaveBeenCalled()
+      expect(view.reloadPage).toHaveBeenCalled()
+    })
+
+    it('trigger schedule', function () {
+      // given
+      spyOn(view, 'showInProgress')
+      spyOn(view, 'showNormal')
+      spyOn(view, 'reloadPage')
+
+      // when
+      view.$('.schedule').trigger('click')
+
+      // then
+      const request = jasmine.Ajax.requests.mostRecent()
+      // noinspection JSCheckFunctionSignatures
+      request.respondWith(testResponses.success)
+
+      expect(request.method).toBe('POST')
+      expect(request.url).toBe(`/upload/${id}/schedule`)
+      expect(view.showInProgress).toHaveBeenCalled()
+      expect(view.showNormal).toHaveBeenCalled()
+      expect(view.reloadPage).toHaveBeenCalled()
+    })
+
+    it('error', function () {
+      // given
+      spyOn(view, 'showInProgress')
+      spyOn(view, 'showNormal')
+      spyOn(view, 'reloadPage')
+      spyOn(view, 'showInError')
+
+      // when
+      view.$('.schedule').trigger('click')
+
+      // then
+      const request = jasmine.Ajax.requests.mostRecent()
+      // noinspection JSCheckFunctionSignatures
+      request.respondWith(testResponses.error)
+
+      expect(request.method).toBe('POST')
+      expect(request.url).toBe(`/upload/${id}/schedule`)
+      expect(view.showInProgress).toHaveBeenCalled()
+      expect(view.showNormal).not.toHaveBeenCalled()
+      expect(view.reloadPage).not.toHaveBeenCalled()
+      expect(view.showInError).toHaveBeenCalled()
+    })
+  })
+
+  describe('validate', function () {
+    beforeEach(function () {
+      jasmine.Ajax.install()
+      $(document.body)
+        .html(`
+            <div class="document-upload">
+                <button class="validate-all"></button>
+            </div>
+        `)
+      model = new UploadModel({ id })
+      view = new UploadView({
+        el: '.document-upload',
+        model
+      })
+    })
+
+    afterEach(function () {
+      jasmine.Ajax.uninstall()
+    })
+
+    it('validate-all', function () {
+      // given
+      spyOn(view, 'validate')
+
+      // when
+      view.$('.validate-all').trigger('click')
+
+      // then
+      expect(view.validate).toHaveBeenCalledTimes(3)
+    })
+
+    it('success', function () {
+      // given
+      const collection = new FileCollection()
+      const event = {}
+      spyOn(view, 'collectionSuccess')
+
+      // when
+      view.validate(event, 'datastore', 'eidchub', collection)
+
+      // then
+      const request = jasmine.Ajax.requests.mostRecent()
+      // noinspection JSCheckFunctionSignatures
+      request.respondWith(testResponses.success)
+      expect(request.method).toBe('POST')
+      expect(request.url).toBe(`/upload/${id}/eidchub/validate`)
+      expect(view.collectionSuccess).toHaveBeenCalledWith(event, undefined, 'datastore', 'eidchub', collection)
+    })
+
+    it('getServerState', function () {
+      // given
+      const collection = new FileCollection()
+      spyOn(collection, 'reset')
+      const callback = jasmine.createSpy('callback')
+      // when
+      view.getServerState('datastore', 'eidchub', collection, callback)
+      // then
+      const request = jasmine.Ajax.requests.mostRecent()
+      // noinspection JSCheckFunctionSignatures
+      request.respondWith(testResponses.serverState)
+      expect(request.method).toBe('GET')
+      expect(request.url).toBe(`/upload/${id}/eidchub?page=1&size=20`)
+      expect(collection.reset).toHaveBeenCalledWith([{}, {}])
+      expect(callback).toHaveBeenCalled()
+    })
+  })
+  describe('hash', function () {
+    beforeEach(function () {
+      jasmine.Ajax.install()
+      $(document.body)
+        .html(`
+            <div class="document-upload">
+                <button class="hash-dropbox"></button>
+            </div>
+        `)
+      model = new UploadModel({ id })
+      view = new UploadView({
+        el: '.document-upload',
+        model
+      })
+    })
+
+    afterEach(function () {
+      jasmine.Ajax.uninstall()
+    })
+
+    it('success', function () {
+      // given
+      spyOn(view, 'collectionSuccess')
+
+      // when
+      view.$('.hash-dropbox').trigger('click')
+
+      // then
+      const request = jasmine.Ajax.requests.mostRecent()
+      // noinspection JSCheckFunctionSignatures
+      request.respondWith(testResponses.success)
+      expect(request.method).toBe('POST')
+      expect(request.url).toBe(`/upload/${id}/hash`)
+      expect(view.collectionSuccess).toHaveBeenCalledWith(jasmine.anything(), undefined, 'dropbox', 'dropbox', jasmine.anything())
     })
   })
 })

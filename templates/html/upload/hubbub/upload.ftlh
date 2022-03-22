@@ -1,6 +1,7 @@
 <#import "../../skeleton.ftlh" as skeleton>
 
 <#assign uploadScripts>
+    <#--noinspection HtmlUnknownTarget-->
     <script src="/static/scripts/hubbub-app.js"></script>
 </#assign>
 
@@ -20,26 +21,35 @@
             <@loadMoreRow "data"/>
             <#if isAdmin && isInProgress>
                 <@row>
-                    <div class="col-md-3 col-md-offset-6">
+                    <div class="col-md-3 col-md-offset-3">
                         <@moveAllDatastoreButton/>
                     </div>
                     <div class="col-md-3">
                         <@rescheduleButton/>
                     </div>
+                    <div class="col-md-3">
+                        <@hashDropboxButton/>
+                    </div>
                 </@row>
             <#elseif isAdmin && isOpen>
                 <@row>
-                    <div class="col-md-3 col-md-offset-6">
+                    <div class="col-md-3 col-md-offset-3">
                         <@moveAllDatastoreButton/>
                     </div>
                     <div class="col-md-3">
                         <@scheduleButton/>
                     </div>
+                    <div class="col-md-3">
+                        <@hashDropboxButton/>
+                    </div>
                 </@row>
             <#elseif isAdmin>
                 <@row>
-                    <div class="col-md-3 col-md-offset-9">
+                    <div class="col-md-3 col-md-offset-6">
                         <@moveAllDatastoreButton/>
+                    </div>
+                    <div class="col-md-3">
+                        <@hashDropboxButton/>
                     </div>
                 </@row>
             </#if>
@@ -189,6 +199,10 @@
 
 <#macro finishUploadingButton>
     <@button "Finish Uploading" "finish" "check" "primary"/>
+</#macro>
+
+<#macro hashDropboxButton>
+    <@button "Generate Dropbox checksums" "hash-dropbox" "microchip"/>
 </#macro>
 
 <#macro loadMoreButton storage>
