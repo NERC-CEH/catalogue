@@ -174,6 +174,23 @@ class UploadServiceTest {
     }
 
     @Test
+    void hashDropbox() {
+        //given
+        mockServer
+            .expect(requestTo(startsWith("https://example.com/v7/hash/c5db2755-bdbb-470f-987b-da71d9489fd0")))
+            .andExpect(method(HttpMethod.POST))
+            .andExpect(queryParam("username", username))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
+            .andRespond(withNoContent());
+
+        //when
+        service.hashDropbox(datasetId, username);
+
+        //then
+        mockServer.verify();
+    }
+
+    @Test
     void move() {
         //given
         mockServer

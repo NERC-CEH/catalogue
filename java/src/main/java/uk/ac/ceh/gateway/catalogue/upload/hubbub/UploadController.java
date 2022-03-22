@@ -189,6 +189,17 @@ public class UploadController {
         return new RedirectView("/documents/" + datasetId);
     }
 
+    @SneakyThrows
+    @PreAuthorize("@permission.userCanUpload(#datasetId)")
+    @ResponseStatus(NO_CONTENT)
+    @PostMapping("hash")
+    public void hashDropbox(
+        @ActiveUser CatalogueUser user,
+        @PathVariable("datasetId") String datasetId
+    ) {
+        uploadService.hashDropbox(datasetId, user.getUsername());
+    }
+
     @PreAuthorize("@permission.userCanUpload(#datasetId)")
     @ResponseStatus(NO_CONTENT)
     @PostMapping("schedule")

@@ -474,6 +474,21 @@ class UploadControllerTest {
 
     @Test
     @SneakyThrows
+    void hashDropbox() {
+        //given
+        givenUserCanUpload();
+
+        //when
+        mvc.perform(post("/upload/{datasetId}/hash", datasetId)
+            .header("remote-user", UPLOADER_USERNAME)
+        ).andExpect(status().is2xxSuccessful());
+
+        //then
+        verify(uploadService).hashDropbox(datasetId, UPLOADER_USERNAME);
+    }
+
+    @Test
+    @SneakyThrows
     void moveDatastore() {
         //given
         givenUserCanUpload();

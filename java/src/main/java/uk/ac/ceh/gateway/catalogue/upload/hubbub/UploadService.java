@@ -224,4 +224,16 @@ public class UploadService {
             size
         );
     }
+
+    public void hashDropbox(String datasetId, String user) {
+        val urlTemplate = format("%s/hash/{datasetId}?username={user}", address);
+        restTemplate.exchange(
+            urlTemplate,
+            POST,
+            new HttpEntity<>(withBasicAuth(username, password)),
+            Void.class,
+            datasetId,
+            user
+        );
+    }
 }
