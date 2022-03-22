@@ -1,7 +1,7 @@
 import Backbone from 'backbone'
 import Filesize from 'filesize'
 
-const File = Backbone.Model.extend({
+export const File = Backbone.Model.extend({
 
   initialize () {
     let action, classes, storage
@@ -81,8 +81,6 @@ const File = Backbone.Model.extend({
     })
   }
 })
-
-export { File }
 
 const errorTypes = {
   CHANGED_HASH: 'hash',
