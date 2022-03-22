@@ -13,6 +13,10 @@ public class Ontology {
     public static final Property DCAT_ACCESSURL = ResourceFactory.createProperty("http://www.w3.org/ns/dcat#accessURL");
     public static final Property DCT_ISSUED  = ResourceFactory.createProperty("http://purl.org/dc/terms/issued");
 
+    public static final Property VCARD_INDIVIDUAL_CLASS  = ResourceFactory.createProperty("http://www.w3.org/2006/vcard/ns#Individual");
+    public static final Property VCARD_NAME  = ResourceFactory.createProperty("http://www.w3.org/2006/vcard/ns#n");
+    public static final Property VCARD_ORGNAME  = ResourceFactory.createProperty("http://www.w3.org/2006/vcard/ns#organization-name");
+
     public static final Property IDENTIFIER = ResourceFactory.createProperty("http://purl.org/dc/terms/identifier");
     public static final Property TITLE = ResourceFactory.createProperty("http://purl.org/dc/terms/title");
     public static final Property TYPE = ResourceFactory.createProperty("http://purl.org/dc/terms/type");

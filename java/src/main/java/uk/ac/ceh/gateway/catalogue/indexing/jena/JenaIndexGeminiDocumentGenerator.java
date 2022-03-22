@@ -34,6 +34,15 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
             CASE_INSENSITIVE
         );
 
+    private static final Pattern orcidPattern = Pattern
+        .compile("^http[s]?:\\/\\/orcid\\.org\\/0000(-\\d{4}){2}-\\d{3}[\\dX]$")
+        ;
+    
+    private static final Pattern rorPattern = Pattern
+        .compile("^http[s]?:\\/\\/ror\\.org\\/\\w{9}$")
+        ;
+
+
     public JenaIndexGeminiDocumentGenerator(JenaIndexMetadataDocumentGenerator generator, String baseUri) {
         this.generator = generator;
         this.baseUri = baseUri;
@@ -97,6 +106,20 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
                 ));
             });
 
+        //authors with orcids
+        Optional.ofNullable(document.getResponsibleParties())
+            .orElse(Collections.emptyList())
+            .stream()
+            .filter(author -> !Strings.isNullOrEmpty(author.getIndividualName()))
+            //.filter(author -> author.getRole().equalsIgnoreCase("author"))
+            //.filter(author -> orcidPattern.matcher(author.getNameIdentifier()).matches())
+            .forEach(author -> {
+                log.debug(author.toString());
+                toReturn.add(createStatement(createProperty(author.getNameIdentifier()), RDF_TYPE , VCARD_INDIVIDUAL_CLASS));
+                toReturn.add(createStatement(createProperty(author.getNameIdentifier()), VCARD_NAME, createPlainLiteral(author.getIndividualName())));
+                toReturn.add(createStatement(createProperty(author.getNameIdentifier()), VCARD_ORGNAME, createPlainLiteral(author.getOrganisationName())));
+            });
+
         Optional.ofNullable(document.getOnlineResources())
             .orElse(Collections.emptyList())
             .stream()
@@ -104,13 +127,13 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
             .filter(onliner -> downloadPattern.matcher(onliner.getUrl()).matches())
             .forEach(onliner -> {
                 log.debug(onliner.toString());
-                Resource dist = generator.resource(document.getId() + "_dist");
-                //:dist needs to be unique eg : document.getId() + "_dist" + counter
-                toReturn.add(createStatement(dist, RDF_TYPE, DCAT_DISTRIBUTION_CLASS));
-                toReturn.add(createStatement(dist, DCAT_ACCESSURL, createProperty(onliner.getUrl())));
-                toReturn.add(createStatement(me, DCAT_DISTRIBUTION, dist));
+                Resource dist_uri = generator.resource(document.getId() + "_dist");
+                //dist_uri needs to be unique eg : document.getId() + "_dist" + counter
+                toReturn.add(createStatement(dist_uri, RDF_TYPE, DCAT_DISTRIBUTION_CLASS));
+                toReturn.add(createStatement(dist_uri, DCAT_ACCESSURL, createProperty(onliner.getUrl())));
+                toReturn.add(createStatement(me, DCAT_DISTRIBUTION, dist_uri));
             });
-
+ 
 
         return toReturn;
     }
