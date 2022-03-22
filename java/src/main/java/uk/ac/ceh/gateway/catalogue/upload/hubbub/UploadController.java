@@ -14,7 +14,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.view.RedirectView;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -179,14 +178,14 @@ public class UploadController {
 
     @SneakyThrows
     @PreAuthorize("@permission.userCanUpload(#datasetId)")
+    @ResponseStatus(NO_CONTENT)
     @PostMapping("finish")
-    public RedirectView finish(
+    public void finish(
         @ActiveUser CatalogueUser user,
         @PathVariable("datasetId") String datasetId
     ) {
         transitionIssueToStartProgress(user, datasetId);
         removeUploadPermission(user, datasetId);
-        return new RedirectView("/documents/" + datasetId);
     }
 
     @SneakyThrows
