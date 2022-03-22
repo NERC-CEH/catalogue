@@ -1,25 +1,17 @@
 import $ from 'jquery'
 import { DropzoneView } from '../src/Upload'
-import { File } from '../src/File'
 
-describe('Test DropzoneView', function () {
+describe('DropzoneView', function () {
   let view = null
 
   beforeEach(function () {
-    const dropzoneSuccess = file => {
-      const filename = file.name.toLowerCase().replaceAll(' ', '-')
-      const model = new File({
-        bytes: file.size,
-        name: filename,
-        path: `/dropbox/${this.model.get('id')}/${filename}`,
-        status: 'WRITING',
-        check: true
-      })
-      this.dropbox.add(model)
-      return $(file.previewElement).remove()
-    }
-    const container = $('<div class ="dropzone-container"><div class="dropzone-files"><div class="fileinput-button"/></div></div>')
-    $(document.body).html(container)
+    const dropzoneSuccess = jasmine.createSpy('dropzoneSuccess')
+    $(document.body).html(`
+        <div class ="dropzone-container">
+            <div class="dropzone-files"></div>
+            <div class="fileinput-button"></div>
+        </div>
+    `)
 
     view = new DropzoneView({
       el: '.dropzone-container',

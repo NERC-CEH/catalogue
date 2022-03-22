@@ -8,7 +8,8 @@ export default Backbone.View.extend({
 
   initialize (options) {
     const { el, success, url } = options
-    return new Dropzone(el, this.dropzoneOptions(url, success))
+    // eslint-disable-next-line no-new
+    new Dropzone(el, this.dropzoneOptions(url, success))
   },
 
   dropzoneOptions (url, success) {
@@ -19,7 +20,7 @@ export default Backbone.View.extend({
       previewTemplate: template,
       previewsContainer: '.dropzone-files',
       clickable: '.fileinput-button',
-      init: function () {
+      init () {
         this.on('addedfile', function (file) {
           const $file = $(file.previewElement)
           $file.find('.cancel').click(() => this.removeFile(file))
@@ -38,7 +39,7 @@ export default Backbone.View.extend({
 
         this.on('success', success)
 
-        return this.on('error', function (file, error, xhr) {
+        this.on('error', function (file, error, xhr) {
           let message
           const $file = $(file.previewElement)
           $file.find('.file-status').text('Error')
@@ -50,7 +51,7 @@ export default Backbone.View.extend({
             500: 'Internal Server Error'
           }
           if (xhr) { message = errorMessages[xhr.status] || error.error }
-          return $file.find('.file-message').text(message)
+          $file.find('.file-message').text(message)
         })
       }
     }

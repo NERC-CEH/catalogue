@@ -1,7 +1,7 @@
 import Backbone from 'backbone'
 import Filesize from 'filesize'
 
-export default Backbone.Model.extend({
+const File = Backbone.Model.extend({
 
   initialize () {
     let action, classes, storage
@@ -38,7 +38,6 @@ export default Backbone.Model.extend({
     const estimate = sizeToTime(this.get('bytes'))
     const message = messages[status]
     const moving = status === 'MOVING_FROM' || status === 'MOVING_TO' || (status === 'WRITING')
-    const path = this.get('path')
     const validating = status === 'VALIDATING_HASH'
 
     return this.set({
@@ -51,7 +50,6 @@ export default Backbone.Model.extend({
       message,
       moving,
       open,
-      path,
       size,
       validating
     })
@@ -69,19 +67,22 @@ export default Backbone.Model.extend({
       size: Filesize(data.bytes),
       status: data.status
     })
-    return this.initialize()
+    this.initialize()
   },
 
-  copy () {
+  copy (datastore) {
     return new File({
       bytes: this.get('bytes'),
       check: true,
-      name: this.get('name'),
+      dataset: this.get('datasetId'),
+      datastore,
       path: this.get('path'),
       status: 'MOVING_TO'
     })
   }
 })
+
+export { File }
 
 const errorTypes = {
   CHANGED_HASH: 'hash',

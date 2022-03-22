@@ -35,9 +35,9 @@ export default Backbone.View.extend({
     return $.ajax({
       url: `${this.url}/${this.model.get('datastore')}?path=${encodeURIComponent(this.model.get('path'))}`,
       dataType: 'json',
-      success: data => {
-        this.model.update(data)
-        if (callback) { return callback() }
+      success (response) {
+        this.model.update(response.data)
+        if (callback) { callback() }
       },
       error (err) {
         console.error('error', err)
@@ -158,7 +158,7 @@ export default Backbone.View.extend({
         delete
         this.remove()
         this.collection.remove(this.model)
-        this.datastore.add(this.model.copy())
+        this.datastore.add(this.model.copy('eidchub'))
       },
       error: err => {
         this.showInError(event)
@@ -175,7 +175,7 @@ export default Backbone.View.extend({
       success: () => {
         this.remove()
         this.collection.remove(this.model)
-        return this.metadata.add(this.model.copy())
+        return this.metadata.add(this.model.copy('supporting-documents'))
       },
       error: err => {
         this.showInError(event)

@@ -31,13 +31,12 @@ export default Backbone.View.extend({
         that.dropbox.add(model)
         $(file.previewElement).remove()
       }
-      /* eslint-disable no-new */
+      // eslint-disable-next-line no-new
       new DropzoneView({
         el: '.dropzone-container',
         success: dropzoneSuccess,
         url: this.model.url()
       })
-      /* eslint-enable no-new */
     }
 
     this.$datastore = this.$('.datastore-files')
