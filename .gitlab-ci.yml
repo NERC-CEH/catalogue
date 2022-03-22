@@ -61,7 +61,7 @@ test_hubbub:
   script:
     - cd web/hubbub
     - npm install -g npm
-    - npm install
+    - npm ci
     - npm run test
   artifacts:
     when: always
