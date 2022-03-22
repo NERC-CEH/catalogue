@@ -12,7 +12,7 @@ export var NestedModel = Backbone.Model.extend({
   getRelatedCollection (attr, model, collection) {
     if (model == null) { model = NestedModel }
     if (collection == null) { collection = Positionable }
-    collection = new collection(this.get(attr),
+    collection = new Backbone.Collection(this.get(attr),
       { model })
 
     this.listenTo(collection, 'add remove change position', () => {
@@ -28,7 +28,7 @@ export var NestedModel = Backbone.Model.extend({
   */
   getRelated (attr, model) {
     if (model == null) { model = NestedModel }
-    model = new model(this.get(attr))
+    model = new Backbone.Model(this.get(attr))
     this.listenTo(model, 'change', () => this.set(attr, model.toJSON()))
     return model
   }

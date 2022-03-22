@@ -46,9 +46,8 @@ export default SingleView.extend({
 
   render () {
     (this.renderParent)()
-    const $attach = this.$('.existing')
     _.each(this.array, (string, index) => {
-      return $attach.append(this.childTemplate({
+      return this.$('.existing').append(this.childTemplate({
         data: _.extend({}, this.data, {
           index,
           value: string

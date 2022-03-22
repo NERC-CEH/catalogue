@@ -1,8 +1,8 @@
 import _ from 'underscore'
-import { Positionable } from '../collections'
 import SingleView from '../SingleView'
 import ChildView from './ChildView'
 import template from '../templates/Parent.tpl'
+import { Positionable } from '../collections'
 
 export default SingleView.extend({
 
@@ -23,7 +23,6 @@ export default SingleView.extend({
     this.listenTo(this.model, 'sync', this.updateCollection)
 
     this.render()
-    this.$attach = this.$('.existing')
     this.collection.reset(this.getModelData())
 
     if (this.data.multiline) {
@@ -31,7 +30,7 @@ export default SingleView.extend({
     }
 
     if (!(this.data.disabled === 'disabled')) {
-      return this.$attach.sortable({
+      this.$('.existing').sortable({
         start: (event, ui) => {
           this._oldPosition = ui.item.index()
         },
@@ -48,19 +47,17 @@ export default SingleView.extend({
   },
 
   addOne (model) {
-    const view = new ChildView(_.extend({}, this.data,
-      { model })
-    )
-    return this.$attach.append(view.el)
+    const view = new ChildView(_.extend({}, this.data, { model }))
+    this.$('.existing').append(view.el)
   },
 
   addAll () {
-    this.$attach.html('')
-    return this.collection.each(this.addOne, this)
+    this.$('.existing').html('')
+    this.collection.each(this.addOne, this)
   },
 
   add () {
-    return this.collection.add(new this.data.ModelType())
+    this.collection.add(new this.data.ModelType())
   },
 
   getModelData () {

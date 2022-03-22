@@ -18,6 +18,7 @@ import {
   // UkemsDocumentEditorView ,
   // , ServiceAgreementEditorView,
 } from './editors'
+import GeminiEditorView from './editors/GeminiEditorView'
 
 export { default as EditorView } from './EditorView'
 export { default as EditorMetadata } from './EditorMetadata'
@@ -28,11 +29,11 @@ export { default as SingleView } from './SingleView'
 // Some editors are commented out as they still use OpenLayers 2 which cannot be used with webpack
 // They will be added back in when Openlayers 2 is replaced with Leaflet
 const lookup = {
-  // GEMINI_DOCUMENT: {
-  //   View: GeminiEditorView,
-  //   Model: EditorMetadata,
-  //   mediaType: 'application/gemini+json'
-  // },
+  GEMINI_DOCUMENT: {
+    View: GeminiEditorView,
+    Model: EditorMetadata,
+    mediaType: 'application/gemini+json'
+  },
   EF_DOCUMENT: {
     View: MonitoringEditorView,
     Model: EditorMetadata,
@@ -162,8 +163,6 @@ $('.edit-control').on('click', function (event) {
   (event.preventDefault)()
 
   const title = $(event.target).data('documentType')
-  console.log('title')
-  console.log(title)
   const documentType = lookup[title]
 
   if ($editorCreate.length) {

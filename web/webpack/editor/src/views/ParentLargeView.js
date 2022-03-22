@@ -18,10 +18,9 @@ export default SingleView.extend({
     this.listenTo(this.collection, 'add', this.addOne)
     this.listenTo(this.collection, 'reset', this.addAll)
     this.listenTo(this.collection, 'add remove change position', this.updateModel)
-    this.listenTo(this.model, 'sync', this.updateCollection);
+    this.listenTo(this.model, 'sync', this.updateCollection)
 
-    (this.render)()
-    this.$attach = this.$('.existing')
+    this.render()
     this.collection.reset(this.getModelData())
 
     if (this.data.multiline) {
@@ -29,9 +28,9 @@ export default SingleView.extend({
     }
 
     if (!(this.data.disabled === 'disabled')) {
-      return this.$attach.sortable({
+      return this.$('.existing').sortable({
         start: (event, ui) => {
-          return this._oldPosition = ui.item.index()
+          this._oldPosition = ui.item.index()
         },
         update: (event, ui) => {
           return this.collection.position(this._oldPosition, ui.item.index())
@@ -49,11 +48,11 @@ export default SingleView.extend({
     const view = new ChildLargeView(_.extend({}, this.data,
       { model })
     )
-    return this.$attach.append(view.el)
+    return this.$('.existing').append(view.el)
   },
 
   addAll () {
-    this.$attach.html('')
+    this.$('.existing').html('')
     return this.collection.each(this.addOne, this)
   },
 

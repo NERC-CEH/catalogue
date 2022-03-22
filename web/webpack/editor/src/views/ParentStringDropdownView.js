@@ -12,9 +12,8 @@ export default ParentStringView.extend({
   render () {
     this.template = _.template(childTemplate)
     ParentStringView.render()
-    const $attach = this.$('.existing')
     _.each(this.array, (string, index) => {
-      $attach.append(this.childTemplate({
+      this.$('.existing').append(this.childTemplate({
         data: _.extend({}, this.data,
           { index })
       })

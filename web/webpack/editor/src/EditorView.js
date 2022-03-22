@@ -17,7 +17,9 @@ export default Backbone.View.extend({
   },
 
   initialize () {
-    this.template = _.template(template)
+    if (typeof this.template === 'undefined') {
+      this.template = _.template(template)
+    }
     this.currentStep = 1
     this.saveRequired = false
     this.catalogue = $('html').data('catalogue')
@@ -50,11 +52,8 @@ export default Backbone.View.extend({
     })
 
     this.render()
-
+    _.invoke(this.sections[0].views, 'show')
     this.sections.forEach(section => {
-      section.views.forEach(view => {
-        _.invoke(view, 'show')
-      })
       this.$('#editorNav').append($(`<li title='${section.title}'>${section.label}</li>`))
     })
 

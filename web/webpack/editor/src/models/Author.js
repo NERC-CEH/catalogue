@@ -7,7 +7,7 @@ export default Backbone.Model.extend({
     address: {}
   },
 
-  validate (attrs) {
+  validate: function (attrs) {
     const emailRegEx = new RegExp(`
 ^[a-zA-Z0-9.!#$%&'*+\\/=?^_\`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$
 `)
@@ -37,14 +37,14 @@ export default Backbone.Model.extend({
     if (email && !isValidEmail(email)) {
       errors.push({
         message:
-            'That email address is invalid'
+                    'That email address is invalid'
       })
     }
 
     if (nameIdentifier && !isValidORCID(nameIdentifier)) {
       errors.push({
         message:
-            'That ORCiD is invalid.  ORCiDs should be entered as https://orcid.org/0000-1234-5678-999X <b>not</b> 0000-1234-5678-999X'
+                    'That ORCiD is invalid.  ORCiDs should be entered as https://orcid.org/0000-1234-5678-999X <b>not</b> 0000-1234-5678-999X'
       })
     }
 
