@@ -43,6 +43,15 @@
   >
 </#if>
 
+<#assign isLinkedDoc="false" linkedClass="" >
+<#if rel_source?has_content && rel_source?size gt 0>
+  <#assign isLinkedDoc="true" linkedClass="linked" >
+</#if>
+
+<#if isLinkedDoc="true" && resourceIdentifiers?has_content>
+  <#assign masterDocument = func.filterRegex(resourceIdentifiers, "code", "https://catalogue.ceh.ac.uk/id/")>
+</#if>
+
 <#macro getLabel val array>
   <#list array as item>
     <#if item['value']==val>
@@ -59,7 +68,7 @@
 
 <@skeleton.master title=title catalogue=catalogue rdf="${uri}?format=ttl" schemaorg="${uri}?format=schema.org" canonical="${uri}" can_edit_restricted=permission.userCanEditRestrictedFields(metadata.catalogue) scripts=scripts>
 
-  <div id="metadata" class="${metadata.state?lower_case}">
+  <div id="metadata" class="${metadata.state?lower_case} ${linkedClass}">
     <div class="container" role="main">
       <#if resourceType?has_content && resourceType.value !=''>
         <#assign recordType = func.recordTypeOrResourceType()>
@@ -87,30 +96,35 @@
 
           <div class="row">
             <div class="col-sm-4 col-sm-push-8 panel-right">
-              <#include "document/_uploadData.ftlh">
-              <#include "document/_metrics.ftlh">
 
-              <#if resourceStatus??>
-                <#if resourceStatus == 'Restricted'>
-                  <#include "document/_distribution_restricted.ftlh">
+                <#if isLinkedDoc="true"> 
+                  <#include "document/_linked.ftlh">
                 <#else>
-                  <#if resourceType.value == 'signpost'>
-                    <#include "document/_distribution_signpost.ftlh">
-                  <#elseif resourceType.value == 'service' && mapViewable>
-                    <#include "document/_distribution_service.ftlh">
-                  <#elseif resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'application'>
-                    <#include "document/_distribution_dataset.ftlh">
-                  </#if>
+                    <#include "document/_uploadData.ftlh">
+                    <#include "document/_metrics.ftlh">
+
+                    <#if resourceStatus??>
+                      <#if resourceStatus == 'Restricted'>
+                        <#include "document/_distribution_restricted.ftlh">
+                      <#else>
+                        <#if resourceType.value == 'signpost'>
+                          <#include "document/_distribution_signpost.ftlh">
+                        <#elseif resourceType.value == 'service' && mapViewable>
+                          <#include "document/_distribution_service.ftlh">
+                        <#elseif resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'application'>
+                          <#include "document/_distribution_dataset.ftlh">
+                        </#if>
+                      </#if>
+                    <#elseif metadata.catalogue != "eidc" &&  resourceType.value == 'signpost'>
+                      <#include "document/_distribution_signpost.ftlh">
+                    </#if>
+
+                    <#if resourceType.value == 'thirdPartyDataset'>
+                      <#include "document/_third_party.ftlh">
+                    </#if>
                 </#if>
-              <#elseif metadata.catalogue != "eidc" &&  resourceType.value == 'signpost'>
-                 <#include "document/_distribution_signpost.ftlh">
-              </#if>
-
-              <#if resourceType.value == 'thirdPartyDataset'>
-                <#include "document/_third_party.ftlh">
-              </#if>
-
             </div>
+
             <div class="col-sm-8 col-sm-pull-4">
               <#include "document/_extent.ftlh">
               <#include "document/_dataquality.ftlh">
@@ -165,5 +179,13 @@
   <script type="application/ld+json">
 	  <#include "../schema.org/schema.org.ftlh">
   </script>
+  <@eidcJiraIssueCollector catalogue/>
 
 </@skeleton.master>
+
+<#macro eidcJiraIssueCollector catalogue>
+  <#if catalogue?has_content && catalogue.id == "eidc">
+    <script type="text/javascript" src="https://jira.ceh.ac.uk/s/d41d8cd98f00b204e9800998ecf8427e-CDN/-8wgtt1/813004/fe1f443e9c2ab11853ac2c907ebc1d28/2.2.4.7/_/download/batch/com.atlassian.plugins.jquery:jquery/com.atlassian.plugins.jquery:jquery.js?collectorId=1977b77c"></script>
+    <script type="text/javascript" src="https://jira.ceh.ac.uk/s/743f218046d73ea8e8033c2a0fad57f5-T/-8wgtt1/813004/fe1f443e9c2ab11853ac2c907ebc1d28/4.0.4/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?locale=en-UK&collectorId=1977b77c"></script>
+  </#if>
+</#macro>

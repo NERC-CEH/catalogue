@@ -129,6 +129,12 @@
     <field name="version" type="pfloat" default="1"/>
     <field name="view" type="keywords"/>
 
+    <field name="infrastructureCategory" type="keywords" multiValued="false"/>
+    <field name="scienceArea" type="keywords" multiValued="false"/>
+    <field name="infrastructureScale" type="keywords" multiValued="false"/>
+    <field name="infrastructureCapabilities" type="text_general" multiValued="false"/>
+    <field name="infrastructureChallenge" type="keywords"/>
+
     <copyField source="individual" dest="surname" multiValued="true"/>
     <dynamicField name="random*" type="random"/>
 </schema>

@@ -40,6 +40,15 @@ COPY --chown=1000:1000 web/simple-upload/webpack.config.js .
 COPY --chown=1000:1000 web/simple-upload/src src/
 RUN npm install && npm run build
 
+# Build hubbub app (javascript & css)
+FROM node:17.4.0 AS build-hubbub
+WORKDIR web/hubbub
+COPY --chown=1000:1000 web/hubbub/package.json .
+COPY --chown=1000:1000 web/hubbub/package-lock.json .
+COPY --chown=1000:1000 web/hubbub/webpack.config.js .
+COPY --chown=1000:1000 web/hubbub/src src/
+RUN npm install && npm run build
+
 # Build Java
 FROM gradle:7.2-jdk16 AS build-java
 WORKDIR /app
@@ -69,6 +78,7 @@ COPY --from=build-permissions web/permission/dist/permission-app.js /opt/ceh-cat
 COPY --from=build-catalogue web/catalogue/dist/catalogue-app.js /opt/ceh-catalogue/static/scripts/catalogue-app.js
 COPY --from=build-catalogue web/catalogue/dist/9e7d2efc7b95d476f73e.gif /opt/ceh-catalogue/static/scripts/9e7d2efc7b95d476f73e.gif
 COPY --from=build-simple-upload web/simple-upload/dist/simple-upload-app.js /opt/ceh-catalogue/static/scripts/simple-upload-app.js
+COPY --from=build-hubbub web/hubbub/dist/hubbub-app.js /opt/ceh-catalogue/static/scripts/hubbub-app.js
 COPY --from=build-web /app/src/scripts/main-out.js /opt/ceh-catalogue/static/scripts/main-out.js
 COPY --from=build-web /app/src/scripts/upload-out.js /opt/ceh-catalogue/static/scripts/upload-out.js
 COPY --from=build-web /app/src/vendor/font-awesome-5/webfonts /opt/ceh-catalogue/static/vendor/font-awesome-5/webfonts

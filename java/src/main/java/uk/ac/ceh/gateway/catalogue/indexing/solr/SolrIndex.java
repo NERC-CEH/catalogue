@@ -69,6 +69,13 @@ public class SolrIndex {
     private @Field List<String> ukscapeService;
     private @Field Number version;
     private @Field List<String> view;
+    // infrastructure catalogue
+    private @Field String infrastructureCategory;
+    private @Field String scienceArea;
+    private @Field String infrastructureCapabilities;
+    private @Field String infrastructureScale;
+    private @Field List<String> infrastructureChallenge;
+
 
     public SolrIndex addLocations(List<String> locations) {
         this.locations.addAll(locations);

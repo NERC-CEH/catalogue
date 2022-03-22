@@ -1,9 +1,9 @@
-<h2>
-  <a href="/documents/<%=identifier%>" target="_new"><%=title%></a> <small><span class="fas fa-external-link-alt" aria-hidden="true"></span></small>
-</h2>
-<div class="row">
-  <div class="col-sm-10 col-lg-10"><%=shortenedDescription%></div>
-  <div class="col-sm-2 col-lg-2">
-   <button class="btn btn-success">Select</button>
+<div class="row result ">
+    <div class="col-sm-11">
+      <p class="result--title"><a href="/documents/<%=identifier%>" target="_new"><%=title%></a></h2>
+      <p class="result--description"><%=shortenedDescription%></p>
+    </div>
+    <div class="col-sm-1">
+    <button class="btn btn-success">Select</button>
+    </div>
   </div>
-</div>

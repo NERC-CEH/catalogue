@@ -4,6 +4,7 @@ src/scripts/*-out.js
 src/css/*
 permission/dist
 simple-upload/dist
+hubbub/dist
 
 # Ignore the node_modules
 node_modules
