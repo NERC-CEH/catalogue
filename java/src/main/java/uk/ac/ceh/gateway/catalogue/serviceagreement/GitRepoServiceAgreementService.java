@@ -301,6 +301,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         val metadataInfo = serviceAgreement.getMetadata();
         val email = serviceAgreement.getDepositorContactDetails();
         metadataInfo.removePermission(EDIT, email);
+        metadataInfo.removePermission(VIEW, email);
         updateMetadata(user, id, metadataInfo);
     }
 }
