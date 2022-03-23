@@ -2,7 +2,7 @@ import $ from 'jquery'
 import { DropzoneView } from '../../src/Upload'
 
 describe('DropzoneView', function () {
-  let view = null
+  let view
 
   beforeEach(function () {
     const dropzoneSuccess = jasmine.createSpy('dropzoneSuccess')

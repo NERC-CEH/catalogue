@@ -5,6 +5,7 @@ describe('FileView', function () {
   const id = '658bc1ee-c1f9-42fd-ab94-fdd2909259c6'
   let model
   let view
+  let collection
   const testResponses = {
     success: {
       status: 204
@@ -30,8 +31,10 @@ describe('FileView', function () {
       status: 'VALID'
     })
 
+    collection = new FileCollection([model])
+
     view = new FileView({
-      collection: new FileCollection(),
+      collection,
       datastore: new FileCollection(),
       metadata: new FileCollection(),
       model,
@@ -132,55 +135,116 @@ describe('FileView', function () {
     })
   })
 
-  xit('moveDatastore should be triggered', function () {
-    // given
-    view.render()
-    view.delegateEvents()
-    spyOn($, 'ajax').and.callFake(function (e) {
-      return ''
-    })
-    spyOn(view, 'moveDatastore')
+  describe('move', function () {
+    it('datastore trigger', function () {
+      // given
+      model.set({ action: 'move-datastore' })
+      view.render()
+      const $moveBtn = view.$('.move-datastore')
+      spyOn(view, 'moveDatastore')
+      view.delegateEvents()
 
-    // when
-    view.$('.move-datastore').trigger('click')
+      // when
+      $moveBtn.trigger('click')
 
-    // then
-    setTimeout(function () {
+      // then
+      expect($moveBtn).toHaveSize(1)
       expect(view.moveDatastore).toHaveBeenCalled()
     })
-  })
 
-  xit('moveDatastore should be triggered', function () {
-    // given
-    view.render()
-    view.delegateEvents()
-    spyOn($, 'ajax').and.callFake(function (e) {
-      return ''
-    })
-    spyOn(view, 'moveMetadata')
+    it('metadata trigger', function () {
+      // given
+      model.set({ action: 'move-metadata' })
+      view.render()
+      const $moveBtn = view.$('.move-metadata')
+      spyOn(view, 'moveMetadata')
+      view.delegateEvents()
 
-    // when
-    view.$('.move-metadata').trigger('click')
+      // when
+      $moveBtn.trigger('click')
 
-    // then
-    setTimeout(function () {
+      // then
+      expect($moveBtn).toHaveSize(1)
       expect(view.moveMetadata).toHaveBeenCalled()
     })
+
+    it('success', function () {
+      // given
+      model.set({ datastore: 'dropbox' })
+      const event = {}
+      spyOn(view, 'showInProgress')
+      spyOn(view, 'remove')
+
+      // when
+      view.move(event, 'eidchub')
+
+      // then
+      const request = jasmine.Ajax.requests.mostRecent()
+      // noinspection JSCheckFunctionSignatures
+      request.respondWith(testResponses.success)
+
+      expect(request.method).toBe('POST')
+      expect(request.url).toBe(`/upload/${id}/dropbox/move?path=data.csv&to=eidchub`)
+      expect(view.showInProgress).toHaveBeenCalled()
+      expect(view.remove).toHaveBeenCalled()
+      expect(collection).toHaveSize(0)
+      expect(view.datastore).toHaveSize(1)
+    })
   })
 
-  xit('showDelete should be triggered', function () {
-    // given
-    view.render()
-    view.delegateEvents()
-    spyOn(view, 'showDelete')
-    model.set({ action: 'move-both' })
+  describe('delete', function () {
+    it('trigger', function () {
+      // given
+      model.set({ action: 'move-both' })
+      view.render()
+      const $deleteBtn = view.$('.delete')
+      spyOn(view, 'showDelete')
+      view.delegateEvents()
 
-    // when
-    view.$('.delete').trigger('click')
+      // when
+      $deleteBtn.trigger('click')
 
-    // then
+      // then
+      expect($deleteBtn).toHaveSize(1)
+      expect(view.showDelete).toHaveBeenCalled()
+    })
 
-    expect(view.showDelete).toHaveBeenCalled()
+    it('showDelete', function () {
+      // given
+      const event = {}
+      spyOn(view, 'showConfirm')
+
+      // when
+      view.showDelete(event)
+
+      // then
+      expect(view.showConfirm).toHaveBeenCalledWith(
+        jasmine.anything(),
+        'Delete file: data.csv?',
+        view.delete
+      )
+    })
+
+    it('success', function () {
+      // given
+      const event = {}
+      spyOn(view, 'remove')
+      spyOn(collection, 'remove')
+
+      // when
+      view.delete(event)
+
+      // then
+      const request = jasmine.Ajax.requests.mostRecent()
+      // noinspection JSCheckFunctionSignatures
+      request.respondWith(testResponses.success)
+
+      expect(request.method).toBe('DELETE')
+      expect(request.url).toBe(`/upload/${id}/eidchub?path=data.csv`)
+
+      expect(view.remove).toHaveBeenCalled()
+      expect(collection.remove).toHaveBeenCalled()
+    })
   })
 
   xit('showIgnore should be triggered', function () {
@@ -198,30 +262,67 @@ describe('FileView', function () {
     expect(view.showIgnore).toHaveBeenCalled()
   })
 
-  xit('showCancel should be triggered', function () {
-    // given
-    view.render()
-    view.delegateEvents()
-    spyOn(view, 'showCancel')
-    model.set({ action: 'moving' })
+  describe('cancel', function () {
+    it('trigger', function () {
+      // given
+      model.set({ moving: true })
+      view.render()
+      const $cancelBtn = view.$('.cancel')
+      spyOn(view, 'showCancel')
+      view.delegateEvents()
 
-    // when
-    view.$('.cancel').trigger('click')
+      // when
+      $cancelBtn.trigger('click')
 
-    // then
+      // then
+      expect($cancelBtn).toHaveSize(1)
+      expect(view.showCancel).toHaveBeenCalled()
+    })
 
-    expect(view.showCancel).toHaveBeenCalled()
+    it('showCancel', function () {
+      // given
+      const event = {}
+      spyOn(view, 'showConfirm')
+
+      // when
+      view.showCancel(event)
+
+      // then
+      expect(view.showConfirm).toHaveBeenCalledWith(
+        jasmine.anything(),
+        'Cancel moving file: data.csv?',
+        view.cancel
+      )
+    })
+
+    it('request', function () {
+      // given
+      const event = {}
+      spyOn(view, 'request')
+
+      // when
+      view.cancel(event)
+
+      // then
+      // noinspection JSCheckFunctionSignatures
+      expect(view.request).toHaveBeenCalledWith(
+        jasmine.anything(),
+        `/upload/${id}/eidchub/cancel?path=data.csv`,
+        'POST',
+        jasmine.any(Function)
+      )
+    })
   })
 
   describe('accept', function () {
-    it('should be triggered', function () {
+    it('trigger', function () {
       // given
       model.set({ action: 'accept' })
       view.render()
       const $acceptBtn = view.$('.accept')
       spyOn(view, 'accept')
-
       view.delegateEvents()
+
       // when
       $acceptBtn.trigger('click')
 
@@ -230,26 +331,24 @@ describe('FileView', function () {
       expect(view.accept).toHaveBeenCalled()
     })
 
-    it('success', function () {
+    it('request', function () {
       // given
       const event = {}
       spyOn(view, 'showInProgress')
-      spyOn(view, 'getServerState')
+      spyOn(view, 'request')
 
       // when
       view.accept(event)
 
       // then
-      const request = jasmine.Ajax.requests.mostRecent()
-      // noinspection JSCheckFunctionSignatures
-      request.respondWith(testResponses.success)
-
-      expect(request.method).toBe('POST')
-      expect(request.url).toBe(`/upload/${id}/eidchub/accept?path=data.csv`)
-
       expect(view.showInProgress).toHaveBeenCalledWith(event)
       // noinspection JSCheckFunctionSignatures
-      expect(view.getServerState).toHaveBeenCalledWith(3000, jasmine.any(Function))
+      expect(view.request).toHaveBeenCalledWith(
+        event,
+        `/upload/${id}/eidchub/accept?path=data.csv`,
+        'POST',
+        jasmine.any(Function)
+      )
     })
 
     it('error', function () {

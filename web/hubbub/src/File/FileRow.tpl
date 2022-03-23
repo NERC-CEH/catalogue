@@ -68,7 +68,7 @@
                     <i class="btn-icon fas fa-trash"></i>
                     <span>Delete</span>
                 </button>
-                <button class="move-both move-metadata btn btn-success" data-filename="<%= path %>">
+                <button class="move-both move-metadata btn btn-success">
                     <i class="btn-icon fas fa-level-down-alt"></i>
                     <span>Move to Metadata</span>
                 </button>

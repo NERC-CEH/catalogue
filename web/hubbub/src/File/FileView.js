@@ -42,65 +42,72 @@ export default Backbone.View.extend({
     const $documentUploadModal = $('#documentUploadModal')
     $('.modal-title', $documentUploadModal).html(title)
     $('.modal-body', $documentUploadModal).html(body)
-    $('.modal-accept', $documentUploadModal).unbind('click')
-    $('.modal-accept', $documentUploadModal).click(action.bind(this))
+    $('.modal-accept', $documentUploadModal).off('click')
+    $('.modal-accept', $documentUploadModal).on('click', action)
     $documentUploadModal.modal('show')
   },
 
   accept (event) {
-    const that = this
     const currentClasses = this.showInProgress(event)
-    $.ajax({
-      url: `${this.url}/${this.model.get('datastore')}/accept?path=${encodeURIComponent(this.model.get('path'))}`,
-      type: 'POST',
-      success () {
-        that.getServerState(3000, () => that.showNormal(event, currentClasses))
-      },
-      error () {
-        that.showInError(event)
-      }
-    })
+    this.request(
+      event,
+      `${this.url}/${this.model.get('datastore')}/accept?path=${encodeURIComponent(this.model.get('path'))}`,
+      'POST',
+      () => this.getServerState(3000, () => this.showNormal(event, currentClasses))
+    )
   },
 
   showCancel (event) {
-    this.showInProgress(event)
-    this.showModal(
-      `Cancel moving ${this.model.get('name')}?`,
-      'This will not stop the file from being moved.<br/>Only do this if you feel the file is no longer moving to the desired destination,<br/>e.g. due to a server error.',
-      function () {
-        this.cancel(event)
-      })
+    this.showConfirm(
+      event,
+      `Cancel moving file: ${this.model.get('path')}?`,
+      this.cancel
+    )
   },
 
   cancel (event) {
-    const that = this
     const currentClasses = this.showInProgress(event)
+    this.request(
+      event,
+      `${this.url}/${this.model.get('datastore')}/cancel?path=${encodeURIComponent(this.model.get('path'))}`,
+      'POST',
+      () => this.getServerState(3000, () => this.showNormal(event, currentClasses))
+    )
+  },
+
+  request (event, url, method, success) {
+    const that = this
     $.ajax({
-      url: `${this.url}/cancel?path=${encodeURIComponent(this.model.get('path'))}`,
-      type: 'POST',
-      success () {
-        that.getServerState(3000, () => { that.showNormal(event, currentClasses) })
-      },
+      url,
+      type: method,
+      success,
       error () {
         that.showInError(event)
       }
     })
   },
 
+  showConfirm (event, message, func) {
+    const currentClasses = this.showInProgress(event)
+    if (window.confirm(message)) {
+      func(event)
+    } else {
+      this.showNormal(event, currentClasses)
+    }
+  },
+
   showDelete (event) {
-    this.showInProgress(event)
-    this.showModal(
-      `Delete ${this.model.get('name')}?`,
-      `This will permanently delete the file<br/><b>${this.model.get('path')}</b>`,
-      function () {
-        this.delete(event)
-      })
+    this.showConfirm(
+      event,
+      `Delete file: ${this.model.get('path')}?`,
+      this.delete
+    )
   },
 
   showIgnore (event) {
     this.showInProgress(event)
     this.showModal(
-      `Ignore the error for ${this.model.get('name')}?`,
+      `Ignore the error for ${this.model.get('path')}?`,
       `You are about to ignore the error for<br/><b>${this.model.get('path')}</b><br/>You will lose all infomation about this file if you continue with this action.<br/>This will permanently delete the file.`,
       function () {
         this.delete(event)
@@ -109,13 +116,12 @@ export default Backbone.View.extend({
 
   delete (event) {
     const that = this
-    this.showInProgress(event)
     $.ajax({
-      url: `${this.url}?path=${encodeURIComponent(this.model.get('path'))}`,
+      url: `${this.url}/${this.model.get('datastore')}?path=${encodeURIComponent(this.model.get('path'))}`,
       type: 'DELETE',
       success () {
-        this.remove()
-        this.collection.remove(this.model)
+        that.remove()
+        that.collection.remove(this.model)
       },
       error () {
         that.showInError(event)
@@ -129,17 +135,16 @@ export default Backbone.View.extend({
       .toggleClass('is-collapsed')
   },
 
-  moveDatastore (event) {
+  move (event, to) {
     const that = this
     this.showInProgress(event)
     $.ajax({
-      url: `${this.url}/move-datastore?path=${encodeURIComponent(this.model.get('path'))}`,
+      url: `${this.url}/${this.model.get('datastore')}/move?path=${encodeURIComponent(this.model.get('path'))}&to=${to}`,
       type: 'POST',
       success () {
-        delete
-        this.remove()
-        this.collection.remove(this.model)
-        this.datastore.add(this.model.copy('eidchub'))
+        that.remove()
+        that.collection.remove(that.model)
+        that.datastore.add(that.model.copy(to))
       },
       error () {
         that.showInError(event)
@@ -147,21 +152,12 @@ export default Backbone.View.extend({
     })
   },
 
+  moveDatastore (event) {
+    this.move(event, 'eidchub')
+  },
+
   moveMetadata (event) {
-    const that = this
-    this.showInProgress(event)
-    $.ajax({
-      url: `${this.url}/move-metadata?path=${encodeURIComponent(this.model.get('path'))}`,
-      type: 'POST',
-      success () {
-        this.remove()
-        this.collection.remove(this.model)
-        this.metadata.add(this.model.copy('supporting-documents'))
-      },
-      error () {
-        that.showInError(event)
-      }
-    })
+    this.move(event, 'supporting-documents')
   },
 
   render () {
