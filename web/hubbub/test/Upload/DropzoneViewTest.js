@@ -1,5 +1,5 @@
 import $ from 'jquery'
-import { DropzoneView } from '../src/Upload'
+import { DropzoneView } from '../../src/Upload'
 
 describe('DropzoneView', function () {
   let view = null

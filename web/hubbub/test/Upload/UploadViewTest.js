@@ -1,6 +1,6 @@
 import $ from 'jquery'
-import { UploadModel, UploadView } from '../src/Upload'
-import FileCollection from '../src/File/FileCollection'
+import { UploadModel, UploadView } from '../../src/Upload'
+import FileCollection from '../../src/File/FileCollection'
 
 describe('UploadView', function () {
   const id = 'ebaf006d-b014-4d8b-9131-7677e61519dd'
@@ -354,7 +354,7 @@ describe('UploadView', function () {
       jasmine.Ajax.uninstall()
     })
 
-    it('success', () => {
+    it('success', function () {
       // given
       spyOn(view, 'showInProgress')
       spyOn(view, 'showNormal')

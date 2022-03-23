@@ -1,4 +1,4 @@
-import { File } from '../src/File'
+import { File } from '../../src/File'
 
 describe('File model', function () {
   const attributes = {
