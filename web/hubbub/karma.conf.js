@@ -1,3 +1,5 @@
+// noinspection JSUnresolvedFunction
+process.env.CHROME_BIN = require('puppeteer').executablePath()
 const webpackConfig = require('./webpack.config.js')
 
 module.exports = function (config) {

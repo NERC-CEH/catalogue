@@ -53,6 +53,7 @@
     "karma-jasmine-ajax": "^0.1.13",
     "karma-junit-reporter": "^2.0.1",
     "karma-webpack": "^5.0.0",
+    "puppeteer": "^13.3.1",
     "webpack": "^5.66.0",
     "webpack-cli": "^4.9.2"
   },
