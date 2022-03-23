@@ -62,7 +62,7 @@ test_hubbub:
     - cd web/hubbub
     - npm install -g npm
     - npm ci
-    - npm run test
+    - npm test
   artifacts:
     when: always
     reports:

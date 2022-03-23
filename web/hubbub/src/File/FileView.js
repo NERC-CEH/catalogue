@@ -22,26 +22,19 @@ export default Backbone.View.extend({
     this.datastore = options.datastore
     this.metadata = options.metadata
     this.listenTo(this.model, 'change', this.render)
-    if (this.model.get('check')) {
-      setTimeout(
-        () => this.getServerState(),
-        7000
-      )
-    }
+    if (this.model.get('check')) this.getServerState(7000)
   },
 
-  getServerState (callback) {
-    $.ajax({
+  getServerState (timeout = 0, callback) {
+    const that = this
+    setTimeout($.ajax({
       url: `${this.url}/${this.model.get('datastore')}?path=${encodeURIComponent(this.model.get('path'))}`,
       dataType: 'json',
       success (response) {
-        this.model.update(response.data)
-        if (callback) { callback() }
-      },
-      error (err) {
-        console.error('error', err)
+        that.model.update(response.data)
+        if (callback) callback()
       }
-    })
+    }), timeout)
   },
 
   // TODO: turn modal into a view as used in multiple places
@@ -58,15 +51,10 @@ export default Backbone.View.extend({
     const that = this
     const currentClasses = this.showInProgress(event)
     $.ajax({
-      url: `${this.url}/accept?path=${encodeURIComponent(this.model.get('path'))}`,
+      url: `${this.url}/${this.model.get('datastore')}/accept?path=${encodeURIComponent(this.model.get('path'))}`,
       type: 'POST',
       success () {
-        setTimeout(
-          () => {
-            that.getServerState(function () { that.showNormal(event, currentClasses) })
-          },
-          3000
-        )
+        that.getServerState(3000, () => that.showNormal(event, currentClasses))
       },
       error () {
         that.showInError(event)
@@ -91,13 +79,7 @@ export default Backbone.View.extend({
       url: `${this.url}/cancel?path=${encodeURIComponent(this.model.get('path'))}`,
       type: 'POST',
       success () {
-        setTimeout(
-          () => {
-            that.getServerState(() => { return that.showNormal(event, currentClasses) })
-          }
-          ,
-          3000
-        )
+        that.getServerState(3000, () => { that.showNormal(event, currentClasses) })
       },
       error () {
         that.showInError(event)
@@ -215,12 +197,7 @@ export default Backbone.View.extend({
       url: `${this.url}/${this.model.get('datastore')}/validate?path=${encodeURIComponent(this.model.get('path'))}`,
       type: 'POST',
       success () {
-        setTimeout(
-          () => {
-            that.getServerState(() => { that.showNormal(event, currentClasses) })
-          },
-          5000
-        )
+        that.getServerState(5000, () => { that.showNormal(event, currentClasses) })
       },
       error () {
         that.showInError(event)
