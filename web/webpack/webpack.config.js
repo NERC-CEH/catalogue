@@ -6,6 +6,7 @@ module.exports = {
     catalogue: './catalogue/src/index.js',
     clipboard: './clipboard/src/index.js',
     editor: './editor/src/index.js',
+    geometry: './geometryMap/src/index.js',
     hubbub: './hubbub/src/index.js',
     permission: './permission/src/index.js',
     simpleupload: './simple-upload/src/index.js'
@@ -30,7 +31,14 @@ module.exports = {
         ]
       },
       {
-        test: /\.(png|svg|jpg|gif)$/,
+        test: /\.css$/,
+        use: [
+          { loader: 'style-loader' },
+          { loader: 'css-loader' }
+        ]
+      },
+      {
+        test: /\.(png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)$/,
         use: [
           'file-loader'
         ]

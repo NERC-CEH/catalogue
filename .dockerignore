@@ -17,6 +17,7 @@
 web/webpack/catalogue/test/
 web/webpack/clipboard/test/
 web/webpack/editor/test/
+web/webpack/geometryMap/test/
 web/webpack/hubbub/test/
 web/webpack/permission/test/
 web/webpack/simple-upload/test/

@@ -2,7 +2,6 @@ import _ from 'underscore'
 import $ from 'jquery'
 import Backbone from 'backbone'
 import validationTemplate from '../templates/Validation.tpl'
-import template from '../templates/MapReprojection.tpl'
 
 export default Backbone.View.extend({
 
@@ -11,20 +10,15 @@ export default Backbone.View.extend({
   },
 
   initialize (options) {
-    if (typeof this.template === 'undefined') {
-      this.template = _.template(template)
-    }
     this.data = options
-    this.listenTo(this.model, 'remove', function () { return (this.remove)() })
+    this.listenTo(this.model, 'remove', function () { return this.remove() })
     this.listenTo(this.model, 'change', function (model) {
-      const $validation = this.$('>.validation')
       if (model.isValid()) {
-        return $validation.hide()
+        return this.$('>.validation').hide()
       } else {
-        $validation.show()
-        const $validationList = $('div.warnings', $validation)
-        $validationList.html('')
-        return _.each(model.validationError, error => $validationList.append($(`<p>${error.message}</p>`)))
+        this.$('>.validation').show()
+        $('div.warnings', this.$('>.validation')).html('')
+        return _.each(model.validationError, error => $('div.warnings', this.$('>.validation')).append($(`<p>${error.message}</p>`)))
       }
     })
     return this.render()
@@ -37,9 +31,8 @@ export default Backbone.View.extend({
   },
 
   modify (event) {
-    const $target = $(event.target)
-    const name = $target.data('name')
-    const value = $target.val()
+    const name = $(event.target).data('name')
+    const value = $(event.target).val()
 
     if (!value) {
       this.model.unset(name)
@@ -63,7 +56,7 @@ export default Backbone.View.extend({
     }.bind(this)
 
     const resetView = () => {
-      (element.empty)()
+      element.empty()
       return collection.each(addView, this)
     }
 

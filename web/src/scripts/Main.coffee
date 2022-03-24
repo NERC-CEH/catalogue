@@ -27,10 +27,11 @@ define [
   'cs!views/ElterEditorView'
   'cs!views/ServiceAgreementEditorView'
   'cs!models/service-agreement/ServiceAgreement'
+  'cs!views/DataTypeEditorView'
 ], (
   _, $, Backbone, Bootstrap, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter, SearchRouter,
   EditorMetadata, GeminiEditorView, ChartView, CehModelEditorView, OsdpDatasetEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
-  OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, ErammpModelEditorView, NercModelEditorView, ErammpDatacubeEditorView, RiRecordEditorView, ElterEditorView, ServiceAgreementEditorView, ServiceAgreement
+  OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, ErammpModelEditorView, NercModelEditorView, ErammpDatacubeEditorView, RiRecordEditorView, ElterEditorView, ServiceAgreementEditorView, ServiceAgreement, DataTypeEditorView
 ) ->
 
   ###
@@ -65,10 +66,10 @@ define [
   initEditor: ->
 
     lookup =
-      GEMINI_DOCUMENT:
-       View: GeminiEditorView
-       Model: EditorMetadata
-       mediaType: 'application/gemini+json'
+#      GEMINI_DOCUMENT:
+#       View: GeminiEditorView
+#       Model: EditorMetadata
+#       mediaType: 'application/gemini+json'
       CEH_MODEL:
         View: CehModelEditorView
         Model: EditorMetadata
@@ -146,12 +147,6 @@ define [
               model: new documentType.Model data, documentType, title
               el: '#metadata'
 
-  ###
-  Initialize the geometry map
-  ###
-  initGeometryMap: ->
-    view = new StudyAreaView
-      el: '#geometry-map'
 
   ###
   Initialize the WMS map viewer
