@@ -1,15 +1,14 @@
 import _ from 'underscore'
 import { ObjectInputView } from '../../editor/src/views'
 import 'leaflet/dist/leaflet.css'
-import 'leaflet-draw/dist/images/spritesheet.png'
-import 'leaflet-draw/dist/leaflet.draw.css'
+import 'leaflet-draw/dist/leaflet.draw-src.css'
 import L from 'leaflet'
 import 'leaflet-draw'
 import template from './BoundingBox.tpl'
 import $ from 'jquery'
 
 let map
-let boundingBox
+let shapeDrawn
 export default ObjectInputView.extend({
 
   events () {
@@ -41,29 +40,63 @@ export default ObjectInputView.extend({
   },
 
   createMap () {
-    boundingBox = L.rectangle([
-      [this.model.attributes.southBoundLatitude, this.model.attributes.westBoundLongitude],
-      [this.model.attributes.northBoundLatitude, this.model.attributes.eastBoundLongitude]
-    ])
-    map = L.map(this.$('.map')[0], { drawControl: true }).setView(boundingBox.getBounds().getCenter(), 4)
-    L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
-      attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-      maxZoom: 18,
-      id: 'mapbox/streets-v11',
-      tileSize: 512,
-      zoomOffset: -1,
-      accessToken: 'pk.eyJ1IjoidGhvc3RhY2VoIiwiYSI6ImNsMTJiNmtvdzAxaHEzZXF1Zjl2YTJ3dWQifQ.aEAYlPpuHr1a4mVWORRCJA'
-    }).addTo(map)
+    map = L.map(this.$('.map')[0]).setView([51.513, -0.09], 4)
+
+    const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+    })
+
+    const googleLayer = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+      maxZoom: 19,
+      subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+      attribution: '&copy; <a href="www.google.com">Google</a>'
+    })
+
+    const baseLayers = {
+      OpenStreetMap: osmLayer,
+      Google: googleLayer
+    }
+
+    L.control.layers(baseLayers).addTo(map)
+    osmLayer.addTo(map)
 
     // FeatureGroup is to store editable layers
     const drawnItems = new L.FeatureGroup()
     map.addLayer(drawnItems)
     const drawControl = new L.Control.Draw({
+      position: 'topright',
+      draw: {
+        polygon: true,
+        circle: true,
+        rectangle: true,
+        marker: false,
+        polyline: false,
+        circlemarker: false
+      },
       edit: {
-        featureGroup: drawnItems
+        featureGroup: drawnItems,
+        edit: true,
+        delete: true
       }
     })
-    map.addControl(drawnItems)
+    map.addControl(drawControl)
+    map.on('draw:created', function (e) {
+      const type = e.layerType
+      const layer = e.layer
+
+      if (type === 'marker') {
+        // Do marker specific actions
+      }
+
+      // Do whatever else you need to. (save to db, add to map etc)
+
+      if (shapeDrawn !== true) {
+        // layer.editing.enable()
+        drawnItems.addLayer(layer)
+        shapeDrawn = true
+      }
+    })
   },
 
   viewMap () {
@@ -77,11 +110,7 @@ export default ObjectInputView.extend({
   },
 
   handleTransformedFeature (obj) {
-    console.log('handle transformed feature')
-    boundingBox = L.rectangle([
-      [this.model.attributes.southBoundLatitude, this.model.attributes.westBoundLongitude],
-      [this.model.attributes.northBoundLatitude, this.model.attributes.eastBoundLongitude]
-    ]).update(map)
+
   },
 
   render () {
