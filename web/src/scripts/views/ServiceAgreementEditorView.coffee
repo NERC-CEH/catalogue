@@ -27,7 +27,7 @@ define [
   'cs!views/editor/ParentStringView'
   'cs!models/editor/BoundingBox'
   'cs!views/editor/BoundingBoxView'
-  'cs!views/service-agreement/TextOnlyView'
+  'cs!views/editor/TextOnlyView'
   'cs!views/service-agreement/AuthorView'
   'cs!views/service-agreement/RightsHolderView'
   'cs!views/service-agreement/FileView'

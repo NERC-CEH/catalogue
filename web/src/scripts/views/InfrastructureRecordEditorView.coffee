@@ -6,7 +6,7 @@ define [
 	'cs!views/editor/SingleView'
 	'cs!views/editor/SelectView'
 	'cs!views/editor/ReadOnlyView'
-	'cs!views/service-agreement/TextOnlyView'
+	'cs!views/editor/TextOnlyView'
 	'cs!views/editor/ParentView'
 	'cs!views/editor/ParentLargeView'
 	'cs!views/editor/ParentStringView'
@@ -19,14 +19,14 @@ define [
 	'cs!models/editor/BoundingBox'
 	'cs!views/editor/BoundingBoxView'
 	'cs!views/editor/RelatedRecordView'
-	'cs!views/editor/RiOnlineLinkView'
-	'cs!models/editor/RiChallenge'
-	'cs!views/editor/RiChallengeView'
+	'cs!views/editor/InfrastructureOnlineLinkView'
+	'cs!models/editor/InfrastructureChallenge'
+	'cs!views/editor/InfrastructureChallengeView'
 
-], (EditorView, InputView, TextareaView, SingleObjectView, SingleView, SelectView, ReadOnlyView, TextOnlyView, ParentView, ParentLargeView, ParentStringView, ParentStringTextboxView, PredefinedParentView, PredefinedParentLargeView, KeywordView, Contact, ContactView, BoundingBox, BoundingBoxView, RelatedRecordView, RiOnlineLinkView, RiChallenge, RiChallengeView) -> EditorView.extend
+], (EditorView, InputView, TextareaView, SingleObjectView, SingleView, SelectView, ReadOnlyView, TextOnlyView, ParentView, ParentLargeView, ParentStringView, ParentStringTextboxView, PredefinedParentView, PredefinedParentLargeView, KeywordView, Contact, ContactView, BoundingBox, BoundingBoxView, RelatedRecordView, InfrastructureOnlineLinkView, InfrastructureChallenge, InfrastructureChallengeView) -> EditorView.extend
 
 	initialize: ->
-		@model.set('type', 'riRecord') unless @model.has('type')
+		@model.set('type', 'infrastructureRecord') unless @model.has('type')
 
 		@sections = [
 			label: 'General'
@@ -115,10 +115,10 @@ define [
 
 				new ParentView
 					model: @model
-					ModelType: RiChallenge
+					ModelType: InfrastructureChallenge
 					modelAttribute: 'infrastructureChallenge'
 					label: 'Challenge/goal'
-					ObjectInputView: RiChallengeView
+					ObjectInputView: InfrastructureChallengeView
 
 				new SelectView
 					model: @model
@@ -184,7 +184,8 @@ define [
 				new TextareaView
 					model: @model
 					modelAttribute: 'capabilities'
-					label: 'Capabilities'				
+					label: 'Capabilities'
+					rows: 6
 					helpText: """
                     	<p>Describe the facility, experimental design.  What is it equipped to do or measure?</p><p>Be informative for external partners and users</p>
                     """
@@ -193,12 +194,13 @@ define [
 					model: @model
 					modelAttribute: 'lifecycle'
 					label: 'Lifecycle'				
+					rows: 6
 
 				new TextareaView
 					model: @model
 					modelAttribute: 'uniqueness'
 					label: 'Uniqueness'				
-
+					rows: 6
 
 			]
 		,  
@@ -209,31 +211,34 @@ define [
 				new TextareaView
 					model: @model
 					modelAttribute: 'partners'
-					label: 'Partners'				
+					label: 'Partners'
+					rows: 6			
 									
 				new ParentStringView
 					model: @model
 					modelAttribute: 'users'
-					label: 'Users'		
+					label: 'Users'
 
 				new TextareaView
 					model: @model
 					modelAttribute: 'access'
-					label: 'Access'				
+					label: 'Access'
+					rows: 6
 
 				new TextareaView
 					model: @model
 					modelAttribute: 'userCosts'
-					label: 'User costs'	
+					label: 'User costs'
+					rows: 6
 
 				new TextareaView
 					model: @model
 					modelAttribute: 'fundingSources'
 					label: 'Funding sources'
+					rows: 6
 					helpText: """
                     	<p>Include all funding sources</p><p>Be specific about NC awards/programmes</p>
                     """
-
 			]
 		,  
 			label: 'Other'
@@ -244,7 +249,7 @@ define [
 					model: @model
 					modelAttribute: 'onlineResources'
 					label: 'Online resources'
-					ObjectInputView: RiOnlineLinkView
+					ObjectInputView: InfrastructureOnlineLinkView
 					multiline: true
 
 				new ParentView

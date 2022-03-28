@@ -130,15 +130,15 @@ public class CatalogueServiceConfig {
                 .build(),
             
             Catalogue.builder()
-                .id("ri")
-                .title("UKCEH Research Infrastructure Catalogue Demo")
+                .id("infrastructure")
+                .title("UKCEH Science Infrastructure Catalogue")
                 .url("")
                 .contactUrl("")
                 .logo("ukceh.png")
                 .facetKey("infrastructureCategory")
                 .facetKey("infrastructureScale")
                 .facetKey("infrastructureChallenge")
-                .documentType(RIRECORD_TYPE)
+                .documentType(INFRASTRUCTURERECORD_TYPE)
                 .documentType(LINK_TYPE)
                 .fileUpload(false)
                 .build(),
