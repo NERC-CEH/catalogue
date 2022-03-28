@@ -158,7 +158,7 @@ define [
 					options: [
 						{value: 'UK', label: 'UK-wide'},
 						{value: 'Landscape or catchment', label: 'Landscape or catchment'},
-						{value: 'Local area', label: 'Local area'}
+						{value: 'Area, city, farm, habitat', label: 'Area, city, farm, habitat'}
 					]
 
 				new PredefinedParentView

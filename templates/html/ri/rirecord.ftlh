@@ -35,7 +35,6 @@
           <#if userCosts??><@displaykey "User costs"><@linebreaks userCosts/></@displaykey></#if>
           <#if fundingSources??><@displaykey "Funding sources"><@linebreaks fundingSources/></@displaykey></#if>
           <#if userCosts??><@displaykey "User costs"><@linebreaks userCosts/></@displaykey></#if>
-          <#if scienceArea??><@displaykey "Science area">${scienceArea}</@displaykey></#if>
 
           <#if users?? >
               <@displaykey "Users">
