@@ -16,6 +16,8 @@ public class Ontology {
     public static final Property VCARD_INDIVIDUAL_CLASS  = ResourceFactory.createProperty("http://www.w3.org/2006/vcard/ns#Individual");
     public static final Property VCARD_NAME  = ResourceFactory.createProperty("http://www.w3.org/2006/vcard/ns#n");
     public static final Property VCARD_ORGNAME  = ResourceFactory.createProperty("http://www.w3.org/2006/vcard/ns#organization-name");
+    public static final Property PHTR_REFERENCE  = ResourceFactory.createProperty("http://www.w3.org/nonsense/ns#referencedBy");
+
 
     public static final Property IDENTIFIER = ResourceFactory.createProperty("http://purl.org/dc/terms/identifier");
     public static final Property TITLE = ResourceFactory.createProperty("http://purl.org/dc/terms/title");

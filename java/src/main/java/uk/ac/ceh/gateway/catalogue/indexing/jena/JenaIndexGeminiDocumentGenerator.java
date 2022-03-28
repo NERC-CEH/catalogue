@@ -38,10 +38,13 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
         .compile("^http[s]?:\\/\\/orcid\\.org\\/0000(-\\d{4}){2}-\\d{3}[\\dX]$")
         ;
     
+    private static final Pattern doiPattern = Pattern
+        .compile("^^http[s]?:\\/\\/(dx\\.)?doi\\.org\\/10\\.\\d+\\/[\\d\\w]+")
+        ;
+    
     private static final Pattern rorPattern = Pattern
         .compile("^http[s]?:\\/\\/ror\\.org\\/\\w{9}$")
         ;
-
 
     public JenaIndexGeminiDocumentGenerator(JenaIndexMetadataDocumentGenerator generator, String baseUri) {
         this.generator = generator;
@@ -134,6 +137,15 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
                 toReturn.add(createStatement(me, DCAT_DISTRIBUTION, dist_uri));
             });
  
+        Optional.ofNullable(document.getSupplemental())
+            .orElse(Collections.emptyList())
+            .stream()
+            .filter(supp -> supp.getFunction().equalsIgnoreCase("isReferencedBy"))
+            .filter(supp -> doiPattern.matcher(supp.getUrl()).matches())
+            .forEach(supp -> {
+                log.debug(supp.toString());
+                toReturn.add(createStatement(me, PHTR_REFERENCE, createProperty(supp.getUrl())));
+            });
 
         return toReturn;
     }
