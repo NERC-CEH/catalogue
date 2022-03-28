@@ -303,6 +303,24 @@ class UploadServiceTest {
     }
 
     @Test
+    void unregister() {
+        //given
+        mockServer
+            .expect(requestTo(startsWith("https://example.com/v7/unregister/c5db2755-bdbb-470f-987b-da71d9489fd0/eidchub")))
+            .andExpect(method(HttpMethod.POST))
+            .andExpect(queryParam("path", path))
+            .andExpect(queryParam("username", username))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
+            .andRespond(withNoContent());
+
+        //when
+        service.unregister(datasetId, datastore, path, username);
+
+        //then
+        mockServer.verify();
+    }
+
+    @Test
     void validate() {
         //given
         mockServer

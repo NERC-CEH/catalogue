@@ -488,6 +488,22 @@ class UploadControllerTest {
 
     @Test
     @SneakyThrows
+    void unregister() {
+        //given
+        givenUserCanUpload();
+
+        //when
+        mvc.perform(post("/upload/{datasetId}/{datastore}/unregister", datasetId, DATASTORE)
+            .queryParam("path", path)
+            .header("remote-user", UPLOADER_USERNAME)
+        ).andExpect(status().is2xxSuccessful());
+
+        //then
+        verify(uploadService).unregister(datasetId, DATASTORE, path, UPLOADER_USERNAME);
+    }
+
+    @Test
+    @SneakyThrows
     void moveDatastore() {
         //given
         givenUserCanUpload();

@@ -225,6 +225,20 @@ public class UploadService {
         );
     }
 
+    public void unregister(String datasetId, String datastore, String path, String user) {
+        val urlTemplate = format("%s/unregister/{datasetId}/{datastore}?path={path}&username={user}", address);
+        restTemplate.exchange(
+            urlTemplate,
+            POST,
+            new HttpEntity<>(withBasicAuth(username, password)),
+            Void.class,
+            datasetId,
+            datastore,
+            path,
+            user
+        );
+    }
+
     public void hashDropbox(String datasetId, String user) {
         val urlTemplate = format("%s/hash/{datasetId}?username={user}", address);
         restTemplate.exchange(
