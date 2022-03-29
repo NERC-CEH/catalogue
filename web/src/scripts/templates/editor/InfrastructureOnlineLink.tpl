@@ -18,7 +18,7 @@
     <label for="<%= data.modelAttribute %><%= data.index %>Function">Purpose</label>
   </div>
   <div class="col-sm-10">
-    <select data-name="function" id="<%= data.modelAttribute %><%= data.index %>Function" class="editor-input">
+    <select data-name="function" id="<%= data.modelAttribute %><%= data.index %>Function" class="function editor-input">
       <option value="" selected>  </option>
       <option value="website">Website</option>
       <option value="image">Image</option>

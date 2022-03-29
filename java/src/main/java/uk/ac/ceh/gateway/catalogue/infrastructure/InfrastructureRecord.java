@@ -31,20 +31,15 @@ import java.util.stream.Collectors;
 })
 public class InfrastructureRecord extends AbstractMetadataDocument {
   
-  private String capabilities, lifecycle, uniqueness, partners, locationText, access, userCosts, fundingSources, scienceArea, infrastructureCategory, infrastructureScale ;
+  private String capabilities, lifecycle, uniqueness, partners, locationText, access, userCosts, fundingSources, scienceArea, infrastructureScale ;
 
-  private List<ResponsibleParty> owners;
-
-  private List<String> users;
-
-  private List<RelatedRecord> relatedRecords;
-
-  private List<OnlineResource> onlineResources;
-
-  private List<BoundingBox> boundingBoxes;
-
+  private InfrastructureCategory infrastructureCategory;
   private List<Keyword> infrastructureChallenge;
-
+  private List<ResponsibleParty> owners;
+  private List<String> users;
+  private List<BoundingBox> boundingBoxes;
+  private List<OnlineResource> onlineResources;
+  private List<RelatedRecord> relatedRecords;
 }
 
 

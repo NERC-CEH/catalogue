@@ -19,7 +19,7 @@
 @filter-heading-background: @ri-blue;
 @footer-height: 16em;
 @header-text: @gray-dark;
-
+@line-height: 1.8;
 html {
   overflow-y: scroll;
   min-height: 100%;
@@ -31,10 +31,22 @@ body {
   margin-bottom: @footer-height;
 }
 
-.navbar-title {
-  a {
-    &:hover {
-      color: @ri-blue;
+.navbar-nav {
+  .navbar-title {
+    a {
+      color: white !important;
+      font-weight: bold;
+    }
+  }
+
+  li {
+    &:not(.navbar-title) {
+      a {
+        &:hover {
+          border-bottom: white 3px solid;
+          padding-bottom: 3px;
+        }
+      }
     }
   }
 }
@@ -71,6 +83,31 @@ body {
     "col1 col1";
 }
 
+.description {
+  display: grid;
+  gap: 2em;
+  grid-template-columns: auto 300px;
+  grid-template-areas:
+    "browseimage browseimage"
+    "desctext desctext";
+  .browseimage {
+    grid-area: browseimage;
+    justify-self: center;
+    img {
+      max-width: 100%;
+      max-height: 200px;
+    }
+  }
+  .description-text {
+    grid-area: desctext;
+    line-height: @line-height;
+  }
+
+  @media only screen and (min-width: 640px) {
+    grid-template-areas: "desctext browseimage";
+  }
+}
+
 .owners {
   --_ownercolor: lightgray;
   border: 1px solid var(--_ownercolor);
@@ -83,12 +120,25 @@ body {
     }
   }
   .owner {
-    margin-bottom: 2em;
+    margin-bottom: 1em;
+    .contact {
+      margin: 1em 0.5em;
+      &:not(:last-of-type) {
+        margin-bottom: 2em;
+      }
+    }
   }
 }
 
+.browseimages {
+  text-align: center;
+  img {
+    max-width: 100%;
+  }
+}
 .key-value {
   margin: 2em 0;
+  line-height: @line-height;
   div {
     &:first-of-type {
       font-weight: bolder;

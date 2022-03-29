@@ -1,6 +1,15 @@
 <#import "../skeleton.ftlh" as skeleton>
+<#import "../../functions.ftlh" as func>
 
 <#assign rel_all=jena.allRelatedRecords(uri) >
+
+<#if onlineResources??>
+<#assign
+    weblinks = func.filter(onlineResources, "function", "website")
+    images = func.filter(onlineResources, "function", "image")
+>
+</#if>
+
 
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
   <div id="metadata" class="metadata ris-metadata">
@@ -19,13 +28,22 @@
       </#if>    
 
       <#if description??>
-        <div class="description"><@linebreaks description/></div>
+        <div class="description">
+          <div class="browseimage">
+            <#if images?? && images?has_content>
+              <img src="${images?first.url}" alt="${images?first.name}"/>
+            </#if>
+          </div>
+          <div class="description-text">
+            <@linebreaks description/>
+          </div>
+        </div>
       </#if>
       
       <div class="metadata-grid">
         <div class="col1">
 
-          <#if infrastructureCategory??><@displaykey "Infrastructure category">${infrastructureCategory}</@displaykey></#if>
+          <#if infrastructureCategory??><@displaykey "Category">${infrastructureCategory.description}</@displaykey></#if>
           <#if capabilities??><@displaykey "Capabilities"><@linebreaks capabilities/></@displaykey></#if>
           <#if lifecycle??><@displaykey "Lifecycle"><@linebreaks lifecycle/></@displaykey></#if>
           <#if uniqueness??><@displaykey "Uniqueness"><@linebreaks uniqueness/></@displaykey></#if>
@@ -46,23 +64,6 @@
               </@displaykey>
           </#if>
 
-          <#if onlineResources?? >
-            <#assign onlineResourceLabel = "Link">
-            <#if onlineResources?size gte 2>
-              <#assign onlineResourceLabel = "Links">
-            </#if>
-              <@displaykey onlineResourceLabel>
-                <dl>
-                <#list onlineResources as link>
-                  <dd>
-                  <a href="${link.url}" target="_blank" rel="noopener noreferrer">${link.url} <i class="fas fa-external-link-alt fa-xs"></i></a>
-                  </dd>
-                </#list>
-              </dl>
-              </@displaykey>
-          </#if>
-
-
           <#if rel_all?has_content && rel_all?size gt 0 >
            
               <@displaykey "Related">
@@ -78,7 +79,7 @@
 
           <#if keywords?? >
             <#assign keywordLabel = "Keyword">
-            <#if users?size gte 2>
+            <#if keywords?size gte 2>
               <#assign keywordLabel = "Keywords">
             </#if>
               <@displaykey keywordLabel>
@@ -88,47 +89,71 @@
               </@displaykey>
           </#if>
 
-          <#if boundingBoxes?? && boundingBoxes?has_content >
-            <@displaykey "Location">
-              <div id="studyarea-map">
-               <#list boundingBoxes as extent>
-                <span content="${extent.wkt}" datatype="geo:wktLiteral"/>
-              </#list>
-             </div>
+          <#if infrastructureScale?? ||  (boundingBoxes?? && boundingBoxes?has_content)>           
+            <@displaykey "Scale">
+              <#if infrastructureScale??>${infrastructureScale}</#if>
             </@displaykey>
+            
+            <#if boundingBoxes?? && boundingBoxes?has_content >
+                <div id="studyarea-map">
+                <#list boundingBoxes as extent>
+                  <span content="${extent.wkt}" datatype="geo:wktLiteral"/>
+                </#list>
+              </div>
+            </#if>
           </#if>
 
           <@displaykey "Last updated">${metadataDateTime?datetime.iso?datetime?string['dd MMMM yyyy  HH:mm']}</@displaykey>
 
         </div>
         <div class="col2">
+
           <div class="owners">
-            <div>Owner <span class="fas fa-user-tie"></span></div>
+            <div><span class="fas fa-user"></span> Owner/Contacts</div>
             <div>
               <#if owners?? >
                 <#list owners as owner>
-                    <!--FIX THIS -->
-                    <#if owner.individualName?has_content><div>${owner.individualName}</div></#if>
-                    <#if owner.organisationName?? && owner.organisationName?has_content><div><strong>${owner.organisationName}</strong></div></#if>
-                    <#if owner.address?? && owner.address?has_content>
-                      <#if owner.address.city?has_content><div>${owner.address.city}</div></#if>
+                  <div class="contact">
+                    <#if owner.individualName?has_content>
+                      <div>${owner.individualName}</div>
                     </#if>
-                    <#if owner.email?? && owner.email?has_content><a href="mailto:${owner.email}"><div><span class="fas fa-xs fa-envelope"></span> ${owner.email}</a></div></#if>
-                  
+                    <#if owner.organisationName?? && owner.organisationName?has_content>
+                      <div>${owner.organisationName}</div>
+                    </#if>
+                    <#if owner.address?? && owner.address?has_content>
+                      <#if owner.address.city?has_content>
+                        <div>${owner.address.city}</div>
+                      </#if>
+                    </#if>
+                    <#if owner.email?? && owner.email?has_content>
+                      <div><a href="mailto:${owner.email}"><span class="fas fa-xs fa-envelope"></span> ${owner.email}</a></div>
+                    </#if>
+                  </div>
                 </#list>
               <#else>
                 <p class="text-danger">NO OWNER IDENTIFIED</p>  
               </#if>
             </div>
           </div>
+
+            <#if weblinks?? && weblinks?has_content >
+              <#assign linkLabel = "Link">
+              <#if weblinks?size gte 2>
+                <#assign linkLabel = "Links">
+              </#if>
+                <@displaykey linkLabel>
+                  <#list weblinks as link>
+                   <@displayLink link />
+                  </#list>
+                </@displaykey>
+            </#if>
+
         </div>
     </div>
   </div>
 
   <#include "_footer.ftlh">
 </@skeleton.master>
-
-
 
 <#macro displaykey label>
   <div class="key-value">
@@ -138,9 +163,18 @@
 </#macro>
 
 <#macro linebreaks value>
-    <#if value?has_content>
-      <#list value?split("\n") as line>
-          ${line}<#sep><br>
-      </#list>
-    </#if>
+  <#if value?has_content>
+    <#list value?split("\n") as line>
+        ${line}<#sep><br>
+    </#list>
+  </#if>
+</#macro>
+
+<#macro displayLink link>
+  <#if link.name?has_content>
+    <#local linkDisplay = link.name>
+  <#else>
+    <#local linkDisplay = link.url>
+  </#if>
+  <p><a href="${link.url}" target="_blank" rel="noopener noreferrer">${linkDisplay} <i class="fas fa-external-link-alt fa-xs"></i></a></p>
 </#macro>

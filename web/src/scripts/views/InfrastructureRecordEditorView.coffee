@@ -22,8 +22,10 @@ define [
 	'cs!views/editor/InfrastructureOnlineLinkView'
 	'cs!models/editor/InfrastructureChallenge'
 	'cs!views/editor/InfrastructureChallengeView'
+	'cs!models/editor/InfrastructureCategory'
+	'cs!views/editor/InfrastructureCategoryView'
 
-], (EditorView, InputView, TextareaView, SingleObjectView, SingleView, SelectView, ReadOnlyView, TextOnlyView, ParentView, ParentLargeView, ParentStringView, ParentStringTextboxView, PredefinedParentView, PredefinedParentLargeView, KeywordView, Contact, ContactView, BoundingBox, BoundingBoxView, RelatedRecordView, InfrastructureOnlineLinkView, InfrastructureChallenge, InfrastructureChallengeView) -> EditorView.extend
+], (EditorView, InputView, TextareaView, SingleObjectView, SingleView, SelectView, ReadOnlyView, TextOnlyView, ParentView, ParentLargeView, ParentStringView, ParentStringTextboxView, PredefinedParentView, PredefinedParentLargeView, KeywordView, Contact, ContactView, BoundingBox, BoundingBoxView, RelatedRecordView, InfrastructureOnlineLinkView, InfrastructureChallenge, InfrastructureChallengeView, InfrastructureCategory, InfrastructureCategoryView) -> EditorView.extend
 
 	initialize: ->
 		@model.set('type', 'infrastructureRecord') unless @model.has('type')
@@ -63,24 +65,28 @@ define [
 						'UKCEH Bangor':
 							organisationName: 'UK Centre for Ecology & Hydrology'
 							role: 'owner'
+							email: 'enquiries@ceh.ac.uk'
 							organisationIdentifier: 'https://ror.org/00pggkr55'
 							address:
                 				city: 'Bangor'
 						'UKCEH Edinburgh':
 							organisationName: 'UK Centre for Ecology & Hydrology'
 							role: 'owner'
+							email: 'enquiries@ceh.ac.uk'
 							organisationIdentifier: 'https://ror.org/00pggkr55'
 							address:
                 				city: 'Edinburgh'
 						'UKCEH Lancaster':
 							organisationName: 'UK Centre for Ecology & Hydrology'
 							role: 'owner'
+							email: 'enquiries@ceh.ac.uk'
 							organisationIdentifier: 'https://ror.org/00pggkr55'
 							address:
                 				city: 'Lancaster'
 						'UKCEH Wallingford':
 							organisationName: 'UK Centre for Ecology & Hydrology'
 							role: 'owner'
+							email: 'enquiries@ceh.ac.uk'
 							organisationIdentifier: 'https://ror.org/00pggkr55'
 							address:
                 				city: 'Wallingford'
@@ -90,28 +96,12 @@ define [
 			label: 'Categorisation'
 			title: 'Categorisation'
 			views: [
-
-				new SelectView
+				new SingleObjectView
 					model: @model
 					modelAttribute: 'infrastructureCategory'
+					ModelType: InfrastructureCategory
 					label: 'Infrastructure category'
-					options: [
-						{value: 'Instrumented sites', label: 'Instrumented sites'},
-						{value: 'Periodic surveys', label: 'Periodic surveys'},
-						{value: 'Wildlife monitoring schemes', label: 'Wildlife monitoring schemes'},
-						{value: 'Discovery collections and archives', label: 'Discovery collections and archives'},
-						{value: 'Mobile observing platforms', label: 'Mobile observing platforms'},
-						{value: 'Controlled environment facilities (micro- or mesocosms)', label: 'Controlled environment facilities (micro- or mesocosms)'},
-						{value: 'Field research facilities (macrocosms)', label: 'Field research facilities (macrocosms)'},
-						{value: 'Legacy Experimental Platforms or sites', label: 'Legacy Experimental Platforms or sites'},
-						{value: 'Analytical facilities', label: 'Analytical facilities'},
-						{value: 'Test facilities', label: 'Test facilities'},
-						{value: 'Digital computing platforms ', label: 'Digital computing platforms'},
-						{value: 'Data and information', label: 'Data and information'},
-						{value: 'Digital labs for data analytics', label: 'Digital labs for data analytics'},
-						{value: 'UKCEH models', label: 'UKCEH models'},
-						{value: 'Community models', label: 'Community models'}
-					]
+					ObjectInputView: InfrastructureCategoryView
 
 				new ParentView
 					model: @model
