@@ -2,6 +2,8 @@ import EditorView from '../EditorView'
 import InputView from '../InputView'
 import { TextareaView, ParentView, PredefinedParentView, KeywordView, ReferenceView, ContactView, SingleObjectView, QaView, VersionHistoryView, ProjectUsageView, OnlineLinkView, DataTypeSchemaSimpleView } from '../views'
 import { Contact, DataTypeSchema, Reference } from '../models'
+import BoundingBoxView from '../geometryMap/BoundingBoxView'
+import BoundingBox from '../geometryMap/BoundingBox'
 
 export default EditorView.extend({
 
@@ -238,124 +240,124 @@ export default EditorView.extend({
         })
       ]
     },
-    //     {
-    //       label: 'Spatio-temporal',
-    //       title: 'Spatio-temporal details',
-    //       views: [
-    //         new PredefinedParentView({
-    //           model: this.model,
-    //           modelAttribute: 'boundingBoxes',
-    //           ModelType: BoundingBox,
-    //           label: 'Spatial extent',
-    //           ObjectInputView: BoundingBoxView,
-    //           multiline: true,
-    //           predefined: {
-    //             England: {
-    //               northBoundLatitude: 55.812,
-    //               eastBoundLongitude: 1.768,
-    //               southBoundLatitude: 49.864,
-    //               westBoundLongitude: -6.452,
-    //               extentName: 'England',
-    //               extentUri: 'http://sws.geonames.org/6269131'
-    //             },
-    //             'Great Britain': {
-    //               northBoundLatitude: 60.861,
-    //               eastBoundLongitude: 1.768,
-    //               southBoundLatitude: 49.864,
-    //               westBoundLongitude: -8.648,
-    //               extentName: 'Great Britain'
-    //             },
-    //             'Northern Ireland': {
-    //               northBoundLatitude: 55.313,
-    //               eastBoundLongitude: -5.432,
-    //               southBoundLatitude: 54.022,
-    //               westBoundLongitude: -8.178,
-    //               extentName: 'Northern Ireland',
-    //               extentUri: 'http://sws.geonames.org/2641364'
-    //             },
-    //             Scotland: {
-    //               northBoundLatitude: 60.861,
-    //               eastBoundLongitude: -0.728,
-    //               southBoundLatitude: 54.634,
-    //               westBoundLongitude: -8.648,
-    //               extentName: 'Scotland',
-    //               extentUri: 'http://sws.geonames.org/2638360'
-    //             },
-    //             'United Kingdom': {
-    //               northBoundLatitude: 60.861,
-    //               eastBoundLongitude: 1.768,
-    //               southBoundLatitude: 49.864,
-    //               westBoundLongitude: -8.648,
-    //               extentName: 'United Kingdom',
-    //               extentUri: 'http://sws.geonames.org/2635167'
-    //             },
-    //             Wales: {
-    //               northBoundLatitude: 53.434,
-    //               eastBoundLongitude: -2.654,
-    //               southBoundLatitude: 51.375,
-    //               westBoundLongitude: -5.473,
-    //               extentName: 'Wales',
-    //               extentUri: 'http://sws.geonames.org/2634895'
-    //             },
-    //             World: {
-    //               northBoundLatitude: 90.00,
-    //               eastBoundLongitude: 180.00,
-    //               southBoundLatitude: -90.00,
-    //               westBoundLongitude: -180.00
-    //             }
-    //           },
-    //           helpText: `\
-    // <p>A bounding box representing the limits of the data resource's study area.</p>
-    // <p>If you do not wish to reveal the exact location publicly (for example, if locations are sensitive) it is recommended that you generalise the location.</p>\
-    // `
-    //         }),
-    //
-    //         new InputView({
-    //           model: this.model,
-    //           modelAttribute: 'spatialDomain',
-    //           label: 'Spatial domain',
-    //           placeholderAttribute: 'e.g. Parameterised for UK only or global',
-    //           listAttribute: `\
-    // <option value='UK' />
-    // <option value='Global' />\
-    // `,
-    //           helpText: `
-    // <p>Is the model only applicable to certain areas?</p>
-    // `
-    //         }),
-    //
-    //         new InputView({
-    //           model: this.model,
-    //           modelAttribute: 'spatialResolution',
-    //           label: 'Spatial resolution',
-    //           placeholderAttribute: 'e.g. 1km2 or 5m2;',
-    //           helpText: `
-    // <p>Spatial resolution at which model works or at which model outputs are generated (if applicable)</p>
-    // `
-    //         }),
-    //
-    //         new InputView({
-    //           model: this.model,
-    //           modelAttribute: 'temporalResolutionMin',
-    //           label: 'Temporal resolution (min)',
-    //           placeholderAttribute: 'e.g. 1 second or 10 days',
-    //           helpText: `
-    // <p>Minimum time step supported by the model (if applicable) </p>
-    // `
-    //         }),
-    //
-    //         new InputView({
-    //           model: this.model,
-    //           modelAttribute: 'temporalResolutionMax',
-    //           label: 'Temporal resolution (max)',
-    //           placeholderAttribute: 'e.g. annual or decadal ',
-    //           helpText: `
-    // <p>Maximum time step supported by the model (if applicable) </p>
-    // `
-    //         })
-    //
-    //       ]
-    //     },
+    {
+      label: 'Spatio-temporal',
+      title: 'Spatio-temporal details',
+      views: [
+        new PredefinedParentView({
+          model: this.model,
+          modelAttribute: 'boundingBoxes',
+          ModelType: BoundingBox,
+          label: 'Spatial extent',
+          ObjectInputView: BoundingBoxView,
+          multiline: true,
+          predefined: {
+            England: {
+              northBoundLatitude: 55.812,
+              eastBoundLongitude: 1.768,
+              southBoundLatitude: 49.864,
+              westBoundLongitude: -6.452,
+              extentName: 'England',
+              extentUri: 'http://sws.geonames.org/6269131'
+            },
+            'Great Britain': {
+              northBoundLatitude: 60.861,
+              eastBoundLongitude: 1.768,
+              southBoundLatitude: 49.864,
+              westBoundLongitude: -8.648,
+              extentName: 'Great Britain'
+            },
+            'Northern Ireland': {
+              northBoundLatitude: 55.313,
+              eastBoundLongitude: -5.432,
+              southBoundLatitude: 54.022,
+              westBoundLongitude: -8.178,
+              extentName: 'Northern Ireland',
+              extentUri: 'http://sws.geonames.org/2641364'
+            },
+            Scotland: {
+              northBoundLatitude: 60.861,
+              eastBoundLongitude: -0.728,
+              southBoundLatitude: 54.634,
+              westBoundLongitude: -8.648,
+              extentName: 'Scotland',
+              extentUri: 'http://sws.geonames.org/2638360'
+            },
+            'United Kingdom': {
+              northBoundLatitude: 60.861,
+              eastBoundLongitude: 1.768,
+              southBoundLatitude: 49.864,
+              westBoundLongitude: -8.648,
+              extentName: 'United Kingdom',
+              extentUri: 'http://sws.geonames.org/2635167'
+            },
+            Wales: {
+              northBoundLatitude: 53.434,
+              eastBoundLongitude: -2.654,
+              southBoundLatitude: 51.375,
+              westBoundLongitude: -5.473,
+              extentName: 'Wales',
+              extentUri: 'http://sws.geonames.org/2634895'
+            },
+            World: {
+              northBoundLatitude: 90.00,
+              eastBoundLongitude: 180.00,
+              southBoundLatitude: -90.00,
+              westBoundLongitude: -180.00
+            }
+          },
+          helpText: `\
+    <p>A bounding box representing the limits of the data resource's study area.</p>
+    <p>If you do not wish to reveal the exact location publicly (for example, if locations are sensitive) it is recommended that you generalise the location.</p>\
+    `
+        }),
+
+        new InputView({
+          model: this.model,
+          modelAttribute: 'spatialDomain',
+          label: 'Spatial domain',
+          placeholderAttribute: 'e.g. Parameterised for UK only or global',
+          listAttribute: `\
+    <option value='UK' />
+    <option value='Global' />\
+    `,
+          helpText: `
+    <p>Is the model only applicable to certain areas?</p>
+    `
+        }),
+
+        new InputView({
+          model: this.model,
+          modelAttribute: 'spatialResolution',
+          label: 'Spatial resolution',
+          placeholderAttribute: 'e.g. 1km2 or 5m2;',
+          helpText: `
+    <p>Spatial resolution at which model works or at which model outputs are generated (if applicable)</p>
+    `
+        }),
+
+        new InputView({
+          model: this.model,
+          modelAttribute: 'temporalResolutionMin',
+          label: 'Temporal resolution (min)',
+          placeholderAttribute: 'e.g. 1 second or 10 days',
+          helpText: `
+    <p>Minimum time step supported by the model (if applicable) </p>
+    `
+        }),
+
+        new InputView({
+          model: this.model,
+          modelAttribute: 'temporalResolutionMax',
+          label: 'Temporal resolution (max)',
+          placeholderAttribute: 'e.g. annual or decadal ',
+          helpText: `
+    <p>Maximum time step supported by the model (if applicable) </p>
+    `
+        })
+
+      ]
+    },
     {
       label: 'Technical info',
       title: 'Technical info',

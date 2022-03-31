@@ -9,7 +9,9 @@ import {
   SingleObjectView, TemporalExtentView,
   TextareaView
 } from '../views'
-import { BoundingBox, MultipleDate } from '../models'
+import BoundingBoxView from '../geometryMap/BoundingBoxView'
+import { MultipleDate } from '../models'
+import BoundingBox from '../geometryMap/BoundingBox'
 
 export default EditorView.extend({
 
@@ -101,16 +103,16 @@ export default EditorView.extend({
 `
         }),
 
-        //         new SingleObjectView({
-        //           model: this.model,
-        //           modelAttribute: 'boundingBox',
-        //           ModelType: BoundingBox,
-        //           label: 'Bounding Box',
-        //           ObjectInputView: BoundingBoxView,
-        //           helpText: `
-        // <p>Bounding Box of Dataset</p>
-        // `
-        //         }),
+        new SingleObjectView({
+          model: this.model,
+          modelAttribute: 'boundingBox',
+          ModelType: BoundingBox,
+          label: 'Bounding Box',
+          ObjectInputView: BoundingBoxView,
+          helpText: `
+        <p>Bounding Box of Dataset</p>
+        `
+        }),
 
         new ParentView({
           model: this.model,

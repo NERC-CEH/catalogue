@@ -35,8 +35,8 @@ import {
   TopicCategory
 } from '../models'
 import $ from 'jquery'
-import BoundingBoxView from '../../../geometryMap/src/BoundingBoxView'
-import BoundingBox from '../../../geometryMap/src/BoundingBox'
+import BoundingBox from '../geometryMap/BoundingBox'
+import BoundingBoxView from '../geometryMap/BoundingBoxView'
 
 export default EditorView.extend({
 

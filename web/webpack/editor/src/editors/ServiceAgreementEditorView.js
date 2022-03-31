@@ -11,7 +11,7 @@
 //   TextOnlyView
 // } from '../views'
 // import EditorView from '../EditorView'
-import InputView from '../InputView'
+// import InputView from '../InputView'
 // import {
 //   Author,
 //   BoundingBox,

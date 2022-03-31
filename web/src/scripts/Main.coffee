@@ -51,7 +51,6 @@ define [
     window._ = _
 
     do @initEditor if $('.edit-control').length
-    do @initGeometryMap if $('#geometry-map').length
     do @initMapviewer if $('#mapviewer').length
     do @initSearch if $('#search').length
     do @initServiceAgreement if $('.service-agreement').length
@@ -66,58 +65,6 @@ define [
   initEditor: ->
 
     lookup =
-#      GEMINI_DOCUMENT:
-#       View: GeminiEditorView
-#       Model: EditorMetadata
-#       mediaType: 'application/gemini+json'
-      CEH_MODEL:
-        View: CehModelEditorView
-        Model: EditorMetadata
-        mediaType: 'application/vnd.ceh.model+json'
-      'osdp-dataset':
-        View: OsdpDatasetEditorView
-        Model: EditorMetadata
-        mediaType: 'application/vnd.osdp.dataset+json'
-      'osdp-monitoring-activity':
-        View: OsdpMonitoringActivityEditorView
-        Model: EditorMetadata
-        mediaType: 'application/vnd.osdp.monitoring-activity+json'
-      'osdp-monitoring-programme':
-        View: OsdpMonitoringProgrammeEditorView
-        Model: EditorMetadata
-        mediaType: 'application/vnd.osdp.monitoring-programme+json'
-      'osdp-monitoring-facility':
-        View: OsdpMonitoringFacilityEditorView
-        Model: EditorMetadata
-        mediaType: 'application/vnd.osdp.monitoring-facility+json'
-      'sample-archive':
-        View: SampleArchiveEditorView
-        Model: EditorMetadata
-        mediaType: 'application/vnd.sample-archive+json'
-      'erammp-model':
-        View: ErammpModelEditorView
-        Model: EditorMetadata
-        mediaType: 'application/vnd.erammp-model+json'
-      'nerc-model':
-        View: NercModelEditorView
-        Model: EditorMetadata
-        mediaType: 'application/vnd.nerc-model+json'
-      'erammp-datacube':
-        View: ErammpDatacubeEditorView
-        Model: EditorMetadata
-        mediaType: 'application/vnd.erammp-datacube+json'
-      'rirecord':
-        View: RiRecordEditorView
-        Model: EditorMetadata
-        mediaType: 'application/vnd.rirecord+json'
-      'data-type':
-        View: DataTypeEditorView
-        Model: EditorMetadata
-        mediaType: 'application/vnd.data-type+json'
-      'elter':
-        View: ElterEditorView
-        Model: EditorMetadata
-        mediaType: 'application/vnd.elter+json'
       'service-agreement':
         View: ServiceAgreementEditorView
         Model: ServiceAgreement

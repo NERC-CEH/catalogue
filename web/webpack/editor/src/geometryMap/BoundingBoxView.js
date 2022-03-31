@@ -1,5 +1,5 @@
 import _ from 'underscore'
-import { ObjectInputView } from '../../editor/src/views'
+import { ObjectInputView } from '../views'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet-draw/dist/leaflet.draw-src.css'
 import L from 'leaflet'

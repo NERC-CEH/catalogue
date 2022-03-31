@@ -1,7 +1,6 @@
 import EditorView from '../EditorView'
 import InputView from '../InputView'
 import {
-  // BoundingBoxView,
   KeywordView,
   ParentView,
   RelationshipView,
@@ -10,6 +9,8 @@ import {
   TextareaView
 } from '../views'
 import { MultipleDate } from '../models'
+import BoundingBoxView from '../geometryMap/BoundingBoxView'
+import BoundingBox from '../geometryMap/BoundingBox'
 
 export default EditorView.extend({
 
@@ -51,16 +52,16 @@ export default EditorView.extend({
 `
         }),
 
-        //         new SingleObjectView({
-        //           model: this.model,
-        //           modelAttribute: 'boundingBox',
-        //           ModelType: BoundingBox,
-        //           label: 'Bounding Box',
-        //           ObjectInputView: BoundingBoxView,
-        //           helpText: `
-        // <p>Bounding Box of Monitoring Programme</p>
-        // `
-        //         }),
+        new SingleObjectView({
+          model: this.model,
+          modelAttribute: 'boundingBox',
+          ModelType: BoundingBox,
+          label: 'Bounding Box',
+          ObjectInputView: BoundingBoxView,
+          helpText: `
+        <p>Bounding Box of Monitoring Programme</p>
+        `
+        }),
 
         new ParentView({
           model: this.model,
