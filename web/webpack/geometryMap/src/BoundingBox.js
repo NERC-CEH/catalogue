@@ -11,7 +11,30 @@ export default Backbone.Model.extend({
   },
 
   getBoundingBox () {
-    return [this.get('westBoundLongitude'), this.get('southBoundLatitude'), this.get('eastBoundLongitude'), this.get('northBoundLatitude')]
+    return [[[this.get('northBoundLatitude'), this.get('westBoundLongitude')],
+      [this.get('southBoundLatitude'), this.get('eastBoundLongitude')]]]
+  },
+
+  setBounds (bounds) {
+    this.set('northBoundLatitude', bounds.getNorth().toFixed(3))
+    this.set('eastBoundLongitude', bounds.getEast().toFixed(3))
+    this.set('southBoundLatitude', bounds.getSouth().toFixed(3))
+    this.set('westBoundLongitude', bounds.getWest().toFixed(3))
+  },
+
+  clearBounds () {
+    this.set('northBoundLatitude', null)
+    this.set('eastBoundLongitude', null)
+    this.set('southBoundLatitude', null)
+    this.set('westBoundLongitude', null)
+  },
+
+  boundsExist () {
+    if (this.get('northBoundLatitude') === null && this.get('westBoundLongitude') === null &&
+        this.get('southBoundLatitude') === null && this.get('eastBoundLongitude') === null) {
+      return false
+    }
+    return true
   },
 
   validate (attrs) {

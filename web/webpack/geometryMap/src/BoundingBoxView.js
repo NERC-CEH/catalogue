@@ -8,15 +8,11 @@ import template from './BoundingBox.tpl'
 
 export default ObjectInputView.extend({
 
-  // events () {
-  //   _.extend({}, ObjectInputView.prototype.events, { 'click #update': 'viewMap' })
-  // },
-
   events: {
     'click #update': 'viewMap'
   },
 
-  initialize (options) {
+  initialize () {
     this.template = _.template(template)
 
     this.render()
@@ -33,43 +29,19 @@ export default ObjectInputView.extend({
       return this.$('#boundingBoxNorthBoundLatitude').val(value)
     })
     this.listenTo(this.model.collection, 'visible', this.viewMap)
-
-    this.listenTo(this.map, L.Draw.Event.CREATED, function (event) {
-      console.log('created')
-      if (this.shapeDrawn !== true) {
-        const layer = event.layer
-        this.drawnItems.addLayer(layer)
-        this.shapeDrawn = true
-        this.setBounds(event.layer.getBounds())
-      }
-    })
-
-    this.listenTo(this.map, 'draw:deleted', function (event) {
-      console.log('deleted')
-      this.shapeDrawn = false
-      this.clearBounds()
-    })
-
-    this.listenTo(this.map, 'draw:editmove', function (event) {
-      console.log('editmove')
-      const layer = event.layer
-      this.setBounds(layer.getBounds())
-    })
   },
 
   createMap () {
     this.map = new L.Map(this.$('.map')[0], { center: new L.LatLng(51.513, -0.09), zoom: 4 })
     this.drawnItems = L.featureGroup()
-    if (this.model.get('northBoundLatitude') !== null && this.model.get('westBoundLongitude') !== null &&
-    this.model.get('southBoundLatitude') !== null && this.model.get('eastBoundLongitude') !== null) {
-      console.log('shape drawn true')
+    if (this.model.boundsExist()) {
       this.shapeDrawn = true
-      this.addBoundingBox()
+      this.rectangle = L.rectangle(this.model.getBoundingBox())
+      this.drawnItems.addLayer(this.rectangle)
     } else {
-      console.log('shape drawn false')
-      this.drawnItems.addTo(this.map)
       this.shapeDrawn = false
     }
+    this.drawnItems.addTo(this.map)
     L.control.layers({
       osm: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
@@ -79,10 +51,12 @@ export default ObjectInputView.extend({
         attribution: 'google'
       })
     }, { drawlayer: this.drawnItems }, { position: 'topright', collapsed: false }).addTo(this.map)
+
     this.map.addControl(new L.Control.Draw({
       position: 'topleft',
       edit: {
-        featureGroup: this.drawnItems
+        featureGroup: this.drawnItems,
+        cancel: false
       },
       draw: {
         rectangle: true,
@@ -91,41 +65,41 @@ export default ObjectInputView.extend({
         marker: false,
         circle: false,
         circlemarker: false
-      }
+      },
+      cancel: false,
+      save: true
     }))
 
-    // this.map.on(L.Draw.Event.CREATED, function (event) {
-    //   const layer = event.layer
-    //   this.drawnItems.addLayer(layer)
-    // })
-  },
+    this.listenTo(this.map, L.Draw.Event.CREATED, function (event) {
+      if (this.shapeDrawn !== true) {
+        const layer = event.layer
+        this.drawnItems.addLayer(layer)
+        this.shapeDrawn = true
+        this.model.setBounds(event.layer.getBounds())
+      }
+    })
 
-  addBoundingBox () {
-    const bounds = [[this.model.get('northBoundLatitude'), this.model.get('westBoundLongitude')],
-      [this.model.get('southBoundLatitude'), this.model.get('eastBoundLongitude')]]
-    this.rectangle = L.rectangle(bounds)
-    this.drawnItems.addLayer(this.rectangle)
-    this.drawnItems.addTo(this.map)
-  },
+    this.listenTo(this.map, L.Draw.Event.DELETED, function () {
+      this.shapeDrawn = false
+      this.model.clearBounds()
+    })
 
-  setBounds (bounds) {
-    console.log('setbounds')
-    console.log(bounds)
-    this.model.set('northBoundLatitude', bounds.getNorth().toFixed(3))
-    this.model.set('eastBoundLongitude', bounds.getEast().toFixed(3))
-    this.model.set('southBoundLatitude', bounds.getSouth().toFixed(3))
-    this.model.set('westBoundLongitude', bounds.getWest().toFixed(3))
-  },
+    this.listenTo(this.map, L.Draw.Event.EDITMOVE, function (event) {
+      const layer = event.layer
+      this.model.setBounds(layer.getBounds())
+    })
 
-  clearBounds () {
-    this.model.set('northBoundLatitude', null)
-    this.model.set('eastBoundLongitude', null)
-    this.model.set('southBoundLatitude', null)
-    this.model.set('westBoundLongitude', null)
+    this.listenTo(this.map, L.Draw.Event.EDITRESIZE, function (event) {
+      const layer = event.layer
+      this.model.setBounds(layer.getBounds())
+    })
+
+    this.listenTo(this.map, L.Draw.Event.EDITSTOP, function () {
+      this.viewMap()
+    })
   },
 
   viewMap () {
-    console.log('viewmap')
     if (this.map) {
       this.map.off()
       this.map.remove()
