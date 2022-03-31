@@ -1,8 +1,5 @@
 <head>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ==" crossorigin="" />
-    <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet-src.js" integrity="sha512-IkGU/uDhB9u9F8k+2OsA6XXoowIhOuQL1NTgNZHY1nkURnqEGlDZq3GsfmdJdKFe1k1zOc6YU2K7qY+hF9AodA==" crossorigin=""></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.2/dist/leaflet.draw-src.css" />
-    <script src="https://unpkg.com/leaflet-draw@1.0.2/dist/leaflet.draw-src.js"></script>
 </head>
 <div class="row">
     <div class="col-sm-2 col-lg-2">
@@ -19,7 +16,7 @@
         <label for="boundingBox<%= data.index %>EastBoundLongitude">East Bounding Longitude</label>
         <input data-name="eastBoundLongitude" id="boundingBox<%= data.index %>EastBoundLongitude" class="editor-input" value="<%= data.eastBoundLongitude %>">
         <br>
-        <button class="editor-button" title="Show/Update map"><span class="fas fa-globe" aria-hidden="true"></span></button>
+        <button id="update" class="editor-button" title="Show/Update map"><span class="fas fa-globe" aria-hidden="true"></span></button>
     </div>
     <div class="col-sm-6 col-lg-6">
         <div class="row">

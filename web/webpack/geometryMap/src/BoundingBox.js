@@ -18,8 +18,8 @@ export default Backbone.Model.extend({
     const labels = {
       westBoundLongitude: 'West Bounding Longitude',
       eastBoundLongitude: 'East Bounding Longitude',
-      northBoundLatitude: 'North Bounding Longitude',
-      southBoundLatitude: 'South Bounding Longitude'
+      northBoundLatitude: 'North Bounding Latitude',
+      southBoundLatitude: 'South Bounding Latitude'
     }
 
     const errors = []

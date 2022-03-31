@@ -5,24 +5,20 @@ import 'leaflet-draw/dist/leaflet.draw-src.css'
 import L from 'leaflet'
 import 'leaflet-draw'
 import template from './BoundingBox.tpl'
-import $ from 'jquery'
 
-let map
-let shapeDrawn
 export default ObjectInputView.extend({
 
-  events () {
-    return _.extend({}, ObjectInputView.prototype.events,
-      { 'click button': 'viewMap' })
+  // events () {
+  //   _.extend({}, ObjectInputView.prototype.events, { 'click #update': 'viewMap' })
+  // },
+
+  events: {
+    'click #update': 'viewMap'
   },
 
   initialize (options) {
     this.template = _.template(template)
 
-    _.bindAll(this,
-      'handleDrawnFeature',
-      'handleTransformedFeature'
-    )
     this.render()
     this.listenTo(this.model, 'change:westBoundLongitude', function (model, value) {
       return this.$('#boundingBoxWestBoundLongitude').val(value)
@@ -37,80 +33,104 @@ export default ObjectInputView.extend({
       return this.$('#boundingBoxNorthBoundLatitude').val(value)
     })
     this.listenTo(this.model.collection, 'visible', this.viewMap)
+
+    this.listenTo(this.map, L.Draw.Event.CREATED, function (event) {
+      console.log('created')
+      if (this.shapeDrawn !== true) {
+        const layer = event.layer
+        this.drawnItems.addLayer(layer)
+        this.shapeDrawn = true
+        this.setBounds(event.layer.getBounds())
+      }
+    })
+
+    this.listenTo(this.map, 'draw:deleted', function (event) {
+      console.log('deleted')
+      this.shapeDrawn = false
+      this.clearBounds()
+    })
+
+    this.listenTo(this.map, 'draw:editmove', function (event) {
+      console.log('editmove')
+      const layer = event.layer
+      this.setBounds(layer.getBounds())
+    })
   },
 
   createMap () {
-    map = L.map(this.$('.map')[0]).setView([51.513, -0.09], 4)
-
-    const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
-    })
-
-    const googleLayer = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
-      maxZoom: 19,
-      subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
-      attribution: '&copy; <a href="www.google.com">Google</a>'
-    })
-
-    const baseLayers = {
-      OpenStreetMap: osmLayer,
-      Google: googleLayer
+    this.map = new L.Map(this.$('.map')[0], { center: new L.LatLng(51.513, -0.09), zoom: 4 })
+    this.drawnItems = L.featureGroup()
+    if (this.model.get('northBoundLatitude') !== null && this.model.get('westBoundLongitude') !== null &&
+    this.model.get('southBoundLatitude') !== null && this.model.get('eastBoundLongitude') !== null) {
+      console.log('shape drawn true')
+      this.shapeDrawn = true
+      this.addBoundingBox()
+    } else {
+      console.log('shape drawn false')
+      this.drawnItems.addTo(this.map)
+      this.shapeDrawn = false
     }
-
-    L.control.layers(baseLayers).addTo(map)
-    osmLayer.addTo(map)
-
-    // FeatureGroup is to store editable layers
-    const drawnItems = new L.FeatureGroup()
-    map.addLayer(drawnItems)
-    const drawControl = new L.Control.Draw({
-      position: 'topright',
-      draw: {
-        polygon: true,
-        circle: true,
-        rectangle: true,
-        marker: false,
-        polyline: false,
-        circlemarker: false
-      },
+    L.control.layers({
+      osm: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+      }).addTo(this.map),
+      google: L.tileLayer('http://www.google.cn/maps/vt?lyrs=s@189&gl=cn&x={x}&y={y}&z={z}', {
+        attribution: 'google'
+      })
+    }, { drawlayer: this.drawnItems }, { position: 'topright', collapsed: false }).addTo(this.map)
+    this.map.addControl(new L.Control.Draw({
+      position: 'topleft',
       edit: {
-        featureGroup: drawnItems,
-        edit: true,
-        delete: true
+        featureGroup: this.drawnItems
+      },
+      draw: {
+        rectangle: true,
+        polygon: false,
+        polyline: false,
+        marker: false,
+        circle: false,
+        circlemarker: false
       }
-    })
-    map.addControl(drawControl)
-    map.on('draw:created', function (e) {
-      const type = e.layerType
-      const layer = e.layer
+    }))
 
-      if (type === 'marker') {
-        // Do marker specific actions
-      }
+    // this.map.on(L.Draw.Event.CREATED, function (event) {
+    //   const layer = event.layer
+    //   this.drawnItems.addLayer(layer)
+    // })
+  },
 
-      // Do whatever else you need to. (save to db, add to map etc)
+  addBoundingBox () {
+    const bounds = [[this.model.get('northBoundLatitude'), this.model.get('westBoundLongitude')],
+      [this.model.get('southBoundLatitude'), this.model.get('eastBoundLongitude')]]
+    this.rectangle = L.rectangle(bounds)
+    this.drawnItems.addLayer(this.rectangle)
+    this.drawnItems.addTo(this.map)
+  },
 
-      if (shapeDrawn !== true) {
-        // layer.editing.enable()
-        drawnItems.addLayer(layer)
-        shapeDrawn = true
-      }
-    })
+  setBounds (bounds) {
+    console.log('setbounds')
+    console.log(bounds)
+    this.model.set('northBoundLatitude', bounds.getNorth().toFixed(3))
+    this.model.set('eastBoundLongitude', bounds.getEast().toFixed(3))
+    this.model.set('southBoundLatitude', bounds.getSouth().toFixed(3))
+    this.model.set('westBoundLongitude', bounds.getWest().toFixed(3))
+  },
+
+  clearBounds () {
+    this.model.set('northBoundLatitude', null)
+    this.model.set('eastBoundLongitude', null)
+    this.model.set('southBoundLatitude', null)
+    this.model.set('westBoundLongitude', null)
   },
 
   viewMap () {
-    map.off()
-    map.remove()
+    console.log('viewmap')
+    if (this.map) {
+      this.map.off()
+      this.map.remove()
+    }
     this.createMap()
-  },
-
-  handleDrawnFeature (obj) {
-    console.log('handle drawn feature')
-  },
-
-  handleTransformedFeature (obj) {
-
   },
 
   render () {
