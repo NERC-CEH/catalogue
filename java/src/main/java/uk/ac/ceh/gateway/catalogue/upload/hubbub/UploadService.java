@@ -92,7 +92,7 @@ public class UploadService {
     }
 
     public void delete(String datasetId, String datastore, String path, String user) {
-        val urlTemplate = format("%s/{datasetId}/{datastore}?path={path}&username={user}", address);
+        val urlTemplate = format("%s/delete/{datasetId}/{datastore}?path={path}&username={user}", address);
         restTemplate.exchange(
             urlTemplate,
             DELETE,

@@ -124,7 +124,7 @@ class UploadServiceTest {
     void delete() {
         //given
         mockServer
-            .expect(requestTo(startsWith("https://example.com/v7/c5db2755-bdbb-470f-987b-da71d9489fd0/eidchub")))
+            .expect(requestTo(startsWith("https://example.com/v7/delete/c5db2755-bdbb-470f-987b-da71d9489fd0/eidchub")))
             .andExpect(method(DELETE))
             .andExpect(queryParam("path", path))
             .andExpect(queryParam("username", username))
