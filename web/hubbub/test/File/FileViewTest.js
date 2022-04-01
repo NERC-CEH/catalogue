@@ -1,4 +1,3 @@
-import $ from 'jquery'
 import { File, FileCollection, FileView } from '../../src/File'
 
 describe('FileView', function () {
@@ -6,6 +5,12 @@ describe('FileView', function () {
   let model
   let view
   let collection
+  const response = {
+    data: [
+      { bytes: 532, datasetId: id, datastore: 'eidchub', format: 'csv', hash: '5a000e6b27f42ad444721c1feeb77818', hashingTime: 0.23, lastModified: '2022-01-13T16:45:28', lastValidated: '2022-03-02T23:09:25', path: 'data4.csv', status: 'VALID' }
+    ],
+    meta: { currentPage: 1 }
+  }
   const testResponses = {
     success: {
       status: 204
@@ -15,7 +20,7 @@ describe('FileView', function () {
     },
     serverState: {
       status: 200,
-      responseText: `{"data":[{"bytes":532,"datasetId":"${id}","datastore":"eidchub","format":"csv","hash":"5a000e6b27f42ad444721c1feeb77818","hashingTime":0.23,"lastModified":"2022-01-13T16:45:28","lastValidated":"2022-03-02T23:09:25","path":"data4.csv","status":"VALID"}],"meta":{"currentPage":1}}`
+      responseText: JSON.stringify(response)
     }
   }
 
@@ -56,6 +61,7 @@ describe('FileView', function () {
       // then
       expect(view).toBeDefined()
       expect(view.url).toBe(`/upload/${id}`)
+      expect(view.el).toBeDefined()
     })
 
     it('with check', function () {
@@ -73,37 +79,36 @@ describe('FileView', function () {
       })
 
       // then
-      expect(view.getServerState).toHaveBeenCalledWith(7000)
+      expect(view.getServerState).toHaveBeenCalledWith(
+        view,
+        3000
+      )
     })
   })
 
   describe('getServerState', function () {
-    it('success', function () {
+    xit('request', function () {
       // given
       const callback = jasmine.createSpy('callback')
-      spyOn(view.model, 'update')
 
       // when
-      view.getServerState(0, callback)
+      view.getServerState(view, 0, callback)
 
       // then
       const request = jasmine.Ajax.requests.mostRecent()
       // noinspection JSCheckFunctionSignatures
       request.respondWith(testResponses.serverState)
-
-      expect(request.method).toBe('GET')
       expect(request.url).toBe(`/upload/${id}/eidchub?path=data.csv`)
-
-      expect(callback).toHaveBeenCalled()
-      expect(view.model.update).toHaveBeenCalled()
+      expect(request.method).toBe('GET')
     })
 
-    it('error', function () {
+    xit('error', function () {
       // given
-      const callback = jasmine.createSpy('callback')
+      const callback = () => {}
+      spyOn(view, 'showInError')
 
       // when
-      view.getServerState(0, callback)
+      view.getServerState(view, 0, callback)
 
       // then
       const request = jasmine.Ajax.requests.mostRecent()
@@ -112,31 +117,49 @@ describe('FileView', function () {
 
       expect(request.method).toBe('GET')
       expect(request.url).toBe(`/upload/${id}/eidchub?path=data.csv`)
-
-      expect(callback).not.toHaveBeenCalled()
+      expect(view.showInError).toHaveBeenCalled()
     })
   })
 
-  xit('validate should be triggered', function () {
-    // given
-    view.render()
-    view.delegateEvents()
-    spyOn($, 'ajax').and.callFake(function (e) {
-      return ''
-    })
-    spyOn(view, 'validate')
+  describe('validate', function () {
+    it('trigger', function () {
+      // given
+      model.set({ action: 'validate' })
+      view.render()
+      const $validateBtn = view.$('.validate')
+      spyOn(view, 'validate')
+      view.delegateEvents()
 
-    // when
-    view.$('.validate').trigger('click')
+      // when
+      $validateBtn.trigger('click')
 
-    // then
-    setTimeout(function () {
+      // then
+      expect($validateBtn).toHaveSize(1)
       expect(view.validate).toHaveBeenCalled()
+    })
+
+    it('request', function () {
+      // given
+      const event = new Event('click')
+      spyOn(view, 'request')
+
+      // when
+      view.validate(event)
+
+      // then
+      // noinspection JSCheckFunctionSignatures
+      expect(view.request).toHaveBeenCalledWith(
+        jasmine.anything(),
+        event,
+        `/upload/${id}/eidchub/validate?path=data.csv`,
+        'POST',
+        jasmine.any(Function)
+      )
     })
   })
 
   describe('move', function () {
-    it('datastore trigger', function () {
+    it('trigger - datastore', function () {
       // given
       model.set({ action: 'move-datastore' })
       view.render()
@@ -152,7 +175,7 @@ describe('FileView', function () {
       expect(view.moveDatastore).toHaveBeenCalled()
     })
 
-    it('metadata trigger', function () {
+    it('trigger - metadata', function () {
       // given
       model.set({ action: 'move-metadata' })
       view.render()
@@ -168,149 +191,174 @@ describe('FileView', function () {
       expect(view.moveMetadata).toHaveBeenCalled()
     })
 
-    it('success', function () {
+    it('request', function () {
       // given
       model.set({ datastore: 'dropbox' })
-      const event = {}
-      spyOn(view, 'showInProgress')
-      spyOn(view, 'remove')
+      const event = new Event('click')
+      spyOn(view, 'request')
 
       // when
       view.move(event, 'eidchub')
 
       // then
-      const request = jasmine.Ajax.requests.mostRecent()
-      // noinspection JSCheckFunctionSignatures
-      request.respondWith(testResponses.success)
-
-      expect(request.method).toBe('POST')
-      expect(request.url).toBe(`/upload/${id}/dropbox/move?path=data.csv&to=eidchub`)
-      expect(view.showInProgress).toHaveBeenCalled()
-      expect(view.remove).toHaveBeenCalled()
-      expect(collection).toHaveSize(0)
-      expect(view.datastore).toHaveSize(1)
-    })
-  })
-
-  describe('delete', function () {
-    it('trigger', function () {
-      // given
-      model.set({ action: 'move-both' })
-      view.render()
-      const $deleteBtn = view.$('.delete')
-      spyOn(view, 'showDelete')
-      view.delegateEvents()
-
-      // when
-      $deleteBtn.trigger('click')
-
-      // then
-      expect($deleteBtn).toHaveSize(1)
-      expect(view.showDelete).toHaveBeenCalled()
-    })
-
-    it('showDelete', function () {
-      // given
-      const event = {}
-      spyOn(view, 'showConfirm')
-
-      // when
-      view.showDelete(event)
-
-      // then
-      expect(view.showConfirm).toHaveBeenCalledWith(
-        jasmine.anything(),
-        'Delete file: data.csv?',
-        view.delete
-      )
-    })
-
-    it('success', function () {
-      // given
-      const event = {}
-      spyOn(view, 'remove')
-      spyOn(collection, 'remove')
-
-      // when
-      view.delete(event)
-
-      // then
-      const request = jasmine.Ajax.requests.mostRecent()
-      // noinspection JSCheckFunctionSignatures
-      request.respondWith(testResponses.success)
-
-      expect(request.method).toBe('DELETE')
-      expect(request.url).toBe(`/upload/${id}/eidchub?path=data.csv`)
-
-      expect(view.remove).toHaveBeenCalled()
-      expect(collection.remove).toHaveBeenCalled()
-    })
-  })
-
-  xit('showIgnore should be triggered', function () {
-    // given
-    view.render()
-    view.delegateEvents()
-    spyOn(view, 'showIgnore')
-    model.set({ action: 'ignore' })
-
-    // when
-    view.$('.ignore').trigger('click')
-
-    // then
-
-    expect(view.showIgnore).toHaveBeenCalled()
-  })
-
-  describe('cancel', function () {
-    it('trigger', function () {
-      // given
-      model.set({ moving: true })
-      view.render()
-      const $cancelBtn = view.$('.cancel')
-      spyOn(view, 'showCancel')
-      view.delegateEvents()
-
-      // when
-      $cancelBtn.trigger('click')
-
-      // then
-      expect($cancelBtn).toHaveSize(1)
-      expect(view.showCancel).toHaveBeenCalled()
-    })
-
-    it('showCancel', function () {
-      // given
-      const event = {}
-      spyOn(view, 'showConfirm')
-
-      // when
-      view.showCancel(event)
-
-      // then
-      expect(view.showConfirm).toHaveBeenCalledWith(
-        jasmine.anything(),
-        'Cancel moving file: data.csv?',
-        view.cancel
-      )
-    })
-
-    it('request', function () {
-      // given
-      const event = {}
-      spyOn(view, 'request')
-
-      // when
-      view.cancel(event)
-
-      // then
       // noinspection JSCheckFunctionSignatures
       expect(view.request).toHaveBeenCalledWith(
         jasmine.anything(),
-        `/upload/${id}/eidchub/cancel?path=data.csv`,
+        event,
+        `/upload/${id}/dropbox/move?path=data.csv&to=eidchub`,
         'POST',
         jasmine.any(Function)
       )
+    })
+  })
+  describe('confirm buttons', function () {
+    beforeEach(function () {
+      this.event = new Event('click')
+      spyOn(view, 'showInProgress').and.returnValue('btn test')
+      spyOn(view, 'request')
+      spyOn(view, 'showNormal')
+    })
+    describe('cancel', function () {
+      it('trigger', function () {
+        // given
+        model.set({ moving: true })
+        view.render()
+        const $cancelBtn = view.$('.cancel')
+        spyOn(view, 'cancel')
+        view.delegateEvents()
+
+        // when
+        $cancelBtn.trigger('click')
+
+        // then
+        expect($cancelBtn).toHaveSize(1)
+        expect(view.cancel).toHaveBeenCalled()
+      })
+
+      it('cancel', function () {
+        // given
+        spyOn(window, 'confirm').and.returnValue(false)
+
+        // when
+        view.cancel(this.event)
+
+        // then
+        expect(view.request).not.toHaveBeenCalled()
+        expect(view.showNormal).toHaveBeenCalled()
+      })
+
+      it('ok', function () {
+        // given
+        spyOn(window, 'confirm').and.returnValue(true)
+
+        // when
+        view.cancel(this.event)
+
+        // then
+        // noinspection JSCheckFunctionSignatures
+        expect(view.request).toHaveBeenCalledWith(
+          jasmine.anything(),
+          this.event,
+          `/upload/${id}/eidchub/cancel?path=data.csv`,
+          'POST',
+          jasmine.any(Function)
+        )
+      })
+    })
+
+    describe('ignore', function () {
+      it('trigger', function () {
+        // given
+        model.set({ action: 'ignore' })
+        view.render()
+        const $ignoreBtn = view.$('.ignore')
+        spyOn(view, 'ignore')
+        view.delegateEvents()
+
+        // when
+        $ignoreBtn.trigger('click')
+
+        // then
+        expect($ignoreBtn).toHaveSize(1)
+        expect(view.ignore).toHaveBeenCalled()
+      })
+
+      xit('cancel', function () {
+        // given
+        spyOn(window, 'location').and.returnValue(false)
+
+        // when
+        view.ignore(this.event)
+
+        // then
+        expect(view.request).not.toHaveBeenCalled()
+        expect(view.showNormal).toHaveBeenCalled()
+      })
+
+      xit('ok', function () {
+        // given
+        spyOn(window, 'location').and.returnValue(true)
+
+        // when
+        view.ignore(this.event)
+
+        // then
+        // noinspection JSCheckFunctionSignatures
+        expect(view.request).toHaveBeenCalledWith(
+          view,
+          this.event,
+          `/upload/${id}/eidchub/ignore?path=data.csv`,
+          'POST',
+          jasmine.any(Function)
+        )
+      })
+    })
+    describe('delete', function () {
+      it('trigger', function () {
+        // given
+        model.set({ action: 'move-both' })
+        view.render()
+        const $deleteBtn = view.$('.delete')
+        spyOn(view, 'delete')
+        view.delegateEvents()
+
+        // when
+        $deleteBtn.trigger('click')
+
+        // then
+        expect($deleteBtn).toHaveSize(1)
+        expect(view.delete).toHaveBeenCalled()
+      })
+
+      it('cancel', function () {
+        // given
+        spyOn(window, 'confirm').and.returnValue(false)
+
+        // when
+        view.delete(this.event)
+
+        // then
+        expect(view.request).not.toHaveBeenCalled()
+        expect(view.showNormal).toHaveBeenCalled()
+      })
+
+      it('ok', function () {
+        // given
+        spyOn(window, 'confirm').and.returnValue(true)
+
+        // when
+        view.delete(this.event)
+
+        // then
+        // noinspection JSCheckFunctionSignatures
+        expect(view.request).toHaveBeenCalledWith(
+          jasmine.anything(),
+          this.event,
+          `/upload/${id}/eidchub?path=data.csv`,
+          'DELETE',
+          jasmine.any(Function)
+        )
+      })
     })
   })
 
@@ -333,7 +381,7 @@ describe('FileView', function () {
 
     it('request', function () {
       // given
-      const event = {}
+      const event = new Event('click')
       spyOn(view, 'showInProgress')
       spyOn(view, 'request')
 
@@ -344,28 +392,69 @@ describe('FileView', function () {
       expect(view.showInProgress).toHaveBeenCalledWith(event)
       // noinspection JSCheckFunctionSignatures
       expect(view.request).toHaveBeenCalledWith(
+        jasmine.anything(),
         event,
         `/upload/${id}/eidchub/accept?path=data.csv`,
         'POST',
         jasmine.any(Function)
       )
     })
+  })
+
+  xdescribe('request', function () {
+    const event = new Event('click')
+    const url = `/upload/${id}/eidchub/accept?path=data.csv`
+    const method = 'POST'
+    const success = jasmine.createSpy('success')
+
+    it('without response body', function () {
+      // given
+
+      // when
+      view.request(event, url, method, success)
+
+      // then
+      const request = jasmine.Ajax.requests.mostRecent()
+      // noinspection JSCheckFunctionSignatures
+      request.respondWith(testResponses.success)
+
+      expect(request.method).toBe(method)
+      expect(request.url).toBe(url)
+      expect(success).toHaveBeenCalled()
+    })
+
+    it('with response body', function () {
+      // given
+
+      // when
+      view.request(event, url, method, success)
+
+      // then
+      const request = jasmine.Ajax.requests.mostRecent()
+      // noinspection JSCheckFunctionSignatures
+      request.respondWith(testResponses.serverState)
+
+      expect(request.method).toBe(method)
+      expect(request.url).toBe(url)
+      // noinspection JSCheckFunctionSignatures
+      expect(success).toHaveBeenCalledWith(response, 'success', jasmine.anything())
+    })
 
     it('error', function () {
       // given
-      const event = {}
       spyOn(view, 'showInError')
 
       // when
-      view.accept(event)
+      view.request(event, url, method, success)
 
       // then
       const request = jasmine.Ajax.requests.mostRecent()
       // noinspection JSCheckFunctionSignatures
       request.respondWith(testResponses.error)
 
-      expect(request.method).toBe('POST')
-      expect(request.url).toBe(`/upload/${id}/eidchub/accept?path=data.csv`)
+      expect(request.method).toBe(method)
+      expect(request.url).toBe(url)
+      expect(success).not.toHaveBeenCalled()
       expect(view.showInError).toHaveBeenCalledWith(event)
     })
   })
