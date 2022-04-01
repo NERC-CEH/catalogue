@@ -1,270 +1,257 @@
 package uk.ac.ceh.gateway.catalogue.upload.hubbub;
 
+import lombok.SneakyThrows;
 import lombok.val;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.File;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.Objects;
+import java.util.Optional;
 
-import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
+import static org.springframework.http.HttpMethod.*;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withNoContent;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
+import static uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadController.DATASTORE;
 import static uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadController.DROPBOX;
-import static uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadService.BIG_PAGE_SIZE;
-import static uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadService.VISIBLE_STATUS;
 
 @ExtendWith(MockitoExtension.class)
 class UploadServiceTest {
+    private MockRestServiceServer mockServer;
+    private byte[] success;
     @TempDir File directory;
-    private final String id = "02068a9e-8e29-42e7-938f-146aee390c98";
-    private final String filename = "dataset.csv";
-    private final String path = format("/dropbox/%s/%s", id, filename);
-    private final String badPath = "something-bad";
+    private final String datasetId = "c5db2755-bdbb-470f-987b-da71d9489fd0";
+    private final String datastore = "eidchub";
+    private final String path = "dataset.csv";
+    private final String username = "tester";
 
-    @Mock
-    private HubbubService hubbubService;
     private UploadService service;
 
-    private void givenHubbubResponseForData() {
-        val fileInfos = Arrays.asList(
-            new FileInfo(
-                456L,
-                "2ac4def6d4",
-                filename,
-                path,
-                "VALID",
-                34L
-            ),
-            new FileInfo(
-                83948L,
-                "7df5e2c6",
-                "data2.csv",
-                "/dropbox/" + id + "/data2.csv",
-                "VALID",
-                543L
-            )
-        );
-        given(hubbubService.get("/eidchub/" + id, 1, BIG_PAGE_SIZE, "VALID"))
-            .willReturn(fileInfos);
-    }
-
-    private void givenHubbubResponseForDropbox() {
-        val fileInfos = Arrays.asList(
-            new FileInfo(
-                456L,
-                "2ac4def6d4",
-                filename,
-                path,
-                "VALID",
-                34L
-            ),
-            new FileInfo(
-                83948L,
-                "7df5e2c6",
-                "data2.csv",
-                "/dropbox/" + id + "/data2.csv",
-                "VALID",
-                543L
-            )
-        );
-        given(hubbubService.get("/dropbox/" + id, 1, 20, VISIBLE_STATUS))
-            .willReturn(fileInfos);
-    }
-
-    private void givenHubbubResponseForFileInfo() {
-        val fileInfos = Collections.singletonList(
-            new FileInfo(
-                83948L,
-                "7df5e2c6",
-                "data2.csv",
-                path,
-                "VALID",
-                543L
-            )
-        );
-        given(hubbubService.get(path, 1, 1, VISIBLE_STATUS))
-            .willReturn(fileInfos);
-    }
-
     @BeforeEach
-    void setup() {
+    @SneakyThrows
+    public void setup() {
+        val restTemplate = new RestTemplate();
+        mockServer = MockRestServiceServer.bindTo(restTemplate).build();
         service = new UploadService(
-            hubbubService,
-            directory.getPath(),
-            1L
+            restTemplate,
+            "https://example.com/v7",
+            "hubbub",
+            "password01234",
+            directory.getPath()
+        );
+        success = IOUtils.toByteArray(
+            Objects.requireNonNull(
+                getClass().getResource("hubbub-dropbox-response.json")
+            )
         );
     }
 
     @Test
     void accept() {
         //given
+        mockServer
+            .expect(requestTo(startsWith("https://example.com/v7/accept/c5db2755-bdbb-470f-987b-da71d9489fd0/eidchub")))
+            .andExpect(method(POST))
+            .andExpect(queryParam("path", path))
+            .andExpect(queryParam("username", username))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
+            .andRespond(withNoContent());
 
         //when
-        service.accept(path);
+        service.accept(datasetId, datastore, path, username);
 
         //then
-        verify(hubbubService).post("/accept", path);
-    }
-
-    @Test
-    void acceptWithBadPath() {
-        //given
-
-        //when
-        assertThrows(UploadException.class, () ->
-            service.accept(badPath)
-        );
-
-        //then
-        verifyNoInteractions(hubbubService);
+        mockServer.verify();
     }
 
     @Test
     void cancel() {
         //given
+        mockServer
+            .expect(requestTo(startsWith("https://example.com/v7/cancel/c5db2755-bdbb-470f-987b-da71d9489fd0/eidchub")))
+            .andExpect(method(POST))
+            .andExpect(queryParam("path", path))
+            .andExpect(queryParam("username", username))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
+            .andRespond(withNoContent());
 
         //when
-        service.cancel(path);
+        service.cancel(datasetId, datastore, path, username);
 
         //then
-        verify(hubbubService).post("/cancel", path);
-    }
-
-    @Test
-    void cancelWithBadPath() {
-        //given
-
-        //when
-        assertThrows(UploadException.class, () ->
-            service.accept(badPath)
-        );
-
-        //then
-        verifyNoInteractions(hubbubService);
+        mockServer.verify();
     }
 
     @Test void csv() {
         //given
         val printWriter = mock(PrintWriter.class);
-        givenHubbubResponseForData();
+        mockServer
+            .expect(requestTo(startsWith("https://example.com/v7/c5db2755-bdbb-470f-987b-da71d9489fd0/eidchub")))
+            .andExpect(method(GET))
+            .andExpect(queryParam("page", "1"))
+            .andExpect(queryParam("size", "1000000"))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
+            .andRespond(withSuccess(success, MediaType.APPLICATION_JSON));
 
         //when
-        service.csv(printWriter, id);
+        service.csv(printWriter, datasetId);
 
         //then
-        verify(printWriter, times(2)).println(any(String.class));
+        verify(printWriter, times(3)).println(any(String.class));
+        mockServer.verify();
     }
 
     @Test
     void delete() {
         //given
+        mockServer
+            .expect(requestTo(startsWith("https://example.com/v7/delete/c5db2755-bdbb-470f-987b-da71d9489fd0/eidchub")))
+            .andExpect(method(DELETE))
+            .andExpect(queryParam("path", path))
+            .andExpect(queryParam("username", username))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
+            .andRespond(withNoContent());
 
         //when
-        service.delete(path);
+        service.delete(datasetId, datastore, path, username);
 
         //then
-        verify(hubbubService).delete(path);
+        mockServer.verify();
     }
 
     @Test
-    void deleteWithBadPath() {
+    void get() {
         //given
+        mockServer
+            .expect(requestTo(startsWith("https://example.com/v7/c5db2755-bdbb-470f-987b-da71d9489fd0/dropbox")))
+            .andExpect(method(GET))
+            .andExpect(queryParam("page", "1"))
+            .andExpect(queryParam("size", "20"))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
+            .andRespond(withSuccess(success, MediaType.APPLICATION_JSON));
 
         //when
-        assertThrows(UploadException.class, () ->
-            service.delete(badPath)
-        );
+        service.get(datasetId, DROPBOX, 1, 20);
 
         //then
-        verifyNoInteractions(hubbubService);
+        mockServer.verify();
     }
 
     @Test
-    void getForFileInfo() {
+    void getIndividual() {
         //given
-        givenHubbubResponseForFileInfo();
+        mockServer
+            .expect(requestTo(startsWith("https://example.com/v7/c5db2755-bdbb-470f-987b-da71d9489fd0/dropbox")))
+            .andExpect(method(GET))
+            .andExpect(queryParam("path", path))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
+            .andRespond(withSuccess(success, MediaType.APPLICATION_JSON));
 
         //when
-        service.get(id, path);
+        service.get(datasetId, DROPBOX, path);
+
+        //then
+        mockServer.verify();
     }
 
     @Test
-    void getForStorage() {
+    void hashDropbox() {
         //given
-        givenHubbubResponseForDropbox();
+        mockServer
+            .expect(requestTo(startsWith("https://example.com/v7/hash/c5db2755-bdbb-470f-987b-da71d9489fd0")))
+            .andExpect(method(HttpMethod.POST))
+            .andExpect(queryParam("username", username))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
+            .andRespond(withNoContent());
 
         //when
-        service.get(id, DROPBOX, 1, 20);
+        service.hashDropbox(datasetId, username);
+
+        //then
+        mockServer.verify();
     }
 
     @Test
     void move() {
         //given
-        val destination = "eidchub";
+        mockServer
+            .expect(requestTo(startsWith("https://example.com/v7/move/c5db2755-bdbb-470f-987b-da71d9489fd0/dropbox")))
+            .andExpect(method(HttpMethod.POST))
+            .andExpect(queryParam("path", path))
+            .andExpect(queryParam("username", username))
+            .andExpect(queryParam("to", DATASTORE))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
+            .andRespond(withNoContent());
 
         //when
-        service.move(path, destination);
+        service.move(datasetId, DROPBOX, Optional.of(path), username, DATASTORE);
 
         //then
-        verify(hubbubService).postQuery("/move", path, "to", destination);
-    }
-
-    @Test
-    void moveWithBadDestination() {
-        //given
-        val badDestination = "another";
-
-        //when
-        assertThrows(UploadException.class, () ->
-            service.move(path, badDestination)
-        );
-
-        //then
-        verifyNoInteractions(hubbubService);
+        mockServer.verify();
     }
 
     @Test
     void moveAll() {
         //given
+        mockServer
+            .expect(requestTo(startsWith("https://example.com/v7/move/c5db2755-bdbb-470f-987b-da71d9489fd0/dropbox")))
+            .andExpect(method(HttpMethod.POST))
+            .andExpect(queryParam("username", username))
+            .andExpect(queryParam("to", DATASTORE))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
+            .andRespond(withNoContent());
 
         //when
-        service.moveAllToDataStore(id);
+        service.move(datasetId, DROPBOX, Optional.empty(), username, DATASTORE);
 
         //then
-        verify(hubbubService).post("/move_all", id);
+        mockServer.verify();
     }
 
     @Test
     void upload() {
         //given
+        mockServer
+            .expect(requestTo(startsWith("https://example.com/v7/register/c5db2755-bdbb-470f-987b-da71d9489fd0")))
+            .andExpect(method(HttpMethod.POST))
+            .andExpect(queryParam("path", path))
+            .andExpect(queryParam("username", username))
+            .andExpect(queryParam("size", "17"))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
+            .andRespond(withNoContent());
+
         val multipartFile = new MockMultipartFile(
             "file",
-            filename,
+            path,
             "text/csv",
             "some file content".getBytes(UTF_8)
         );
 
         //when
-        service.upload(id, multipartFile);
+        service.upload(datasetId, username, multipartFile);
 
         //then
-        verify(hubbubService).postQuery("/writing", path, "size", "17");
-        verify(hubbubService).post("/accept", path);
-        verify(hubbubService).postQuery("/validate", path, "force", "true");
-        val uploadedFile = Paths.get(directory.getPath(), id, filename);
+        mockServer.verify();
+        val uploadedFile = Paths.get(directory.getPath(), datasetId, path);
         assertTrue(Files.exists(uploadedFile));
     }
 
@@ -280,7 +267,7 @@ class UploadServiceTest {
 
         //when
         assertThrows(UploadException.class, () ->
-            service.upload(id, multipartFile)
+            service.upload(datasetId, username, multipartFile)
         );
 
         //then
@@ -291,7 +278,14 @@ class UploadServiceTest {
         //given
         val filename = "Dataset With Spaces And Uppercase.csv";
         val expectedFilename = "dataset-with-spaces-and-uppercase.csv";
-        val path = format("/dropbox/%s/%s", id, expectedFilename);
+        mockServer
+            .expect(requestTo(startsWith("https://example.com/v7/register/c5db2755-bdbb-470f-987b-da71d9489fd0")))
+            .andExpect(method(HttpMethod.POST))
+            .andExpect(queryParam("path", expectedFilename))
+            .andExpect(queryParam("username", username))
+            .andExpect(queryParam("size", "17"))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
+            .andRespond(withNoContent());
         val multipartFile = new MockMultipartFile(
             "file",
             filename,
@@ -300,65 +294,64 @@ class UploadServiceTest {
         );
 
         //when
-        service.upload(id, multipartFile);
+        service.upload(datasetId, username, multipartFile);
 
         //then
-        verify(hubbubService).postQuery("/writing", path, "size", "17");
-        verify(hubbubService).post("/accept", path);
-        verify(hubbubService).postQuery("/validate", path, "force", "true");
-        val uploadedFile = Paths.get(directory.getPath(), id, expectedFilename);
+        mockServer.verify();
+        val uploadedFile = Paths.get(directory.getPath(), datasetId, expectedFilename);
         assertTrue(Files.exists(uploadedFile));
     }
 
     @Test
-    void uploadMultipleFiles() {
+    void unregister() {
         //given
-        val filename1 = "Dataset With Spaces And Uppercase.csv";
-        val expectedFilename1 = "dataset-with-spaces-and-uppercase.csv";
-        val path1 = format("/dropbox/%s/%s", id, expectedFilename1);
-        val multipartFile1 = new MockMultipartFile(
-            "file",
-            filename1,
-            "text/csv",
-            "some file content".getBytes(UTF_8)
-        );
-        val filename2 = "Another.csv";
-        val expectedFilename2 = "another.csv";
-        val path2 = format("/dropbox/%s/%s", id, expectedFilename2);
-        val multipartFile2 = new MockMultipartFile(
-            "file",
-            filename2,
-            "text/csv",
-            "different content".getBytes(UTF_8)
-        );
+        mockServer
+            .expect(requestTo(startsWith("https://example.com/v7/unregister/c5db2755-bdbb-470f-987b-da71d9489fd0/eidchub")))
+            .andExpect(method(HttpMethod.POST))
+            .andExpect(queryParam("path", path))
+            .andExpect(queryParam("username", username))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
+            .andRespond(withNoContent());
 
         //when
-        service.upload(id, multipartFile1);
-        service.upload(id, multipartFile2);
+        service.unregister(datasetId, datastore, path, username);
 
         //then
-        verify(hubbubService).postQuery("/writing", path1, "size", "17");
-        verify(hubbubService).post("/accept", path1);
-        verify(hubbubService).postQuery("/validate", path1, "force", "true");
-        val uploadedFile1 = Paths.get(directory.getPath(), id, expectedFilename1);
-        assertTrue(Files.exists(uploadedFile1));
-
-        verify(hubbubService).postQuery("/writing", path2, "size", "17");
-        verify(hubbubService).post("/accept", path2);
-        verify(hubbubService).postQuery("/validate", path2, "force", "true");
-        val uploadedFile2 = Paths.get(directory.getPath(), id, expectedFilename2);
-        assertTrue(Files.exists(uploadedFile2));
+        mockServer.verify();
     }
 
     @Test
     void validate() {
         //given
+        mockServer
+            .expect(requestTo(startsWith("https://example.com/v7/validate/c5db2755-bdbb-470f-987b-da71d9489fd0/dropbox")))
+            .andExpect(method(HttpMethod.POST))
+            .andExpect(queryParam("path", path))
+            .andExpect(queryParam("username", username))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
+            .andRespond(withNoContent());
 
         //when
-        service.validate(path);
+        service.validate(datasetId, DROPBOX, Optional.of(path), username);
 
         //then
-        verify(hubbubService).postQuery("/validate", path, "force", "true");
+        mockServer.verify();
     }
 
+    @Test
+    void validateAll() {
+        //given
+        mockServer
+            .expect(requestTo(startsWith("https://example.com/v7/validate/c5db2755-bdbb-470f-987b-da71d9489fd0/dropbox")))
+            .andExpect(method(HttpMethod.POST))
+            .andExpect(queryParam("username", username))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
+            .andRespond(withNoContent());
+
+        //when
+        service.validate(datasetId, DROPBOX, Optional.empty(), username);
+
+        //then
+        mockServer.verify();
+    }
 }

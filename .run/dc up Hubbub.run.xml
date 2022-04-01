@@ -14,13 +14,11 @@
           <list>
             <option value="web" />
             <option value="solr" />
-            <option value="redis" />
+            <option value="db" />
             <option value="hubbub" />
           </list>
         </option>
         <option name="sourceFilePath" value="docker-compose.yml" />
-        <option name="upExitCodeFromService" value="" />
-        <option name="upTimeout" value="" />
       </settings>
     </deployment>
     <method v="2" />

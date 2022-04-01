@@ -5,16 +5,12 @@ import template from './FileRow.tpl'
 
 export default Backbone.View.extend({
 
-  defaults: {
-    check: false
-  },
-
   events: {
     'click .panel-heading': 'expand',
     'click .accept': 'accept',
-    'click .cancel': 'showCancel',
-    'click .delete': 'showDelete',
-    'click .ignore': 'showIgnore',
+    'click .cancel': 'cancel',
+    'click .delete': 'delete',
+    'click .ignore': 'ignore',
     'click .move-datastore': 'moveDatastore',
     'click .move-metadata': 'moveMetadata',
     'click .validate': 'validate'
@@ -26,124 +22,95 @@ export default Backbone.View.extend({
     this.datastore = options.datastore
     this.metadata = options.metadata
     this.listenTo(this.model, 'change', this.render)
-    if (this.model.get('check')) {
-      setTimeout(
-        () => this.getServerState(),
-        7000
-      )
-    }
-    this.listenTo(this.model, 'change', this.render)
+    if (this.model.get('check')) this.getServerState(this, 3000)
   },
 
-  getServerState (callback) {
-    return $.ajax({
-      url: `${this.url}?path=${encodeURIComponent(this.model.get('path'))}`,
-      dataType: 'json',
-      success: data => {
-        this.model.update(data)
-        if (callback) { return callback() }
-      },
-      error (err) {
-        console.error('error', err)
+  getServerState: (self, timeout = 0, callback) => {
+    setTimeout(
+      $.ajax,
+      timeout,
+      {
+        url: `${self.url}/${self.model.get('datastore')}?path=${encodeURIComponent(self.model.get('path'))}`,
+        method: 'GET',
+        success: (response) => {
+          self.model.update(response.data[0])
+          if (callback) callback()
+        },
+        error: self.showInError
       }
-    })
-  },
-
-  // TODO: turn modal into a view as used in multiple places
-  showModal (title, body, action) {
-    $('.modal-title', $('#documentUploadModal')).html(title)
-    $('.modal-body', $('#documentUploadModal')).html(body)
-    $('.modal-accept', $('#documentUploadModal')).unbind('click')
-    $('.modal-accept', $('#documentUploadModal')).click(action.bind(this))
-    window.$('#documentUploadModal').modal('show')
+    )
   },
 
   accept (event) {
     const currentClasses = this.showInProgress(event)
-    $.ajax({
-      url: `${this.url}/accept?path=${encodeURIComponent(this.model.get('path'))}`,
-      type: 'POST',
-      success: () => {
-        return setTimeout(
-          () => {
-            return this.getServerState(function () { return this.showNormal(event, currentClasses) })
-          }
-          ,
-          3000
-        )
-      },
-      error: err => {
-        this.showInError(event)
-        console.error('error', err)
-      }
-    })
-  },
-
-  showCancel (event) {
-    this.showInProgress(event)
-    this.showModal(
-      `Cancel moving ${this.model.get('name')}?`,
-      'This will not stop the file from being moved.<br/>Only do this if you feel the file is no longer moving to the desired destination,<br/>e.g. due to a server error.',
-      function () {
-        this.cancel(event)
-      })
+    this.request(
+      this,
+      event,
+      `${this.url}/${this.model.get('datastore')}/accept?path=${encodeURIComponent(this.model.get('path'))}`,
+      'POST',
+      () => this.getServerState(this, 3000, () => this.showNormal(event, currentClasses))
+    )
   },
 
   cancel (event) {
     const currentClasses = this.showInProgress(event)
+    if (window.confirm(`Cancel moving file: ${this.model.get('path')}?`)) {
+      this.request(
+        this,
+        event,
+        `${this.url}/${this.model.get('datastore')}/cancel?path=${encodeURIComponent(this.model.get('path'))}`,
+        'POST',
+        () => this.getServerState(this, 3000, () => this.showNormal(event, currentClasses))
+      )
+    } else {
+      this.showNormal(event, currentClasses)
+    }
+  },
+
+  request (self, event, url, method, success) {
     $.ajax({
-      url: `${this.url}/cancel?path=${encodeURIComponent(this.model.get('path'))}`,
-      type: 'POST',
-      success: () => {
-        setTimeout(
-          () => {
-            this.getServerState(function () { return this.showNormal(event, currentClasses) })
-          }
-          ,
-          3000
-        )
-      },
-      error: err => {
-        this.showInError(event)
-        console.error('error', err)
+      url,
+      type: method,
+      success,
+      error () {
+        self.showInError(event)
       }
     })
-  },
-
-  showDelete (event) {
-    this.showInProgress(event)
-    this.showModal(
-      `Delete ${this.model.get('name')}?`,
-      `This will permanently delete the file<br/><b>${this.model.get('path')}</b>`,
-      function () {
-        this.delete(event)
-      })
-  },
-
-  showIgnore (event) {
-    this.showInProgress(event)
-    this.showModal(
-      `Ignore the error for ${this.model.get('name')}?`,
-      `You are about to ignore the error for<br/><b>${this.model.get('path')}</b><br/>You will lose all infomation about this file if you continue with this action.<br/>This will permanently delete the file.`,
-      function () {
-        this.delete(event)
-      })
   },
 
   delete (event) {
-    this.showInProgress(event)
-    $.ajax({
-      url: `${this.url}?path=${encodeURIComponent(this.model.get('path'))}`,
-      type: 'DELETE',
-      success: () => {
-        this.remove()
-        this.collection.remove(this.model)
-      },
-      error: err => {
-        this.showInError(event)
-        console.error('error', err)
-      }
-    })
+    const currentClasses = this.showInProgress(event)
+    if (window.confirm(`Delete file: ${this.model.get('path')}?`)) {
+      this.request(
+        this,
+        event,
+        `${this.url}/${this.model.get('datastore')}?path=${encodeURIComponent(this.model.get('path'))}`,
+        'DELETE',
+        () => {
+          this.remove()
+          this.collection.remove(self.model)
+        }
+      )
+    } else {
+      this.showNormal(event, currentClasses)
+    }
+  },
+
+  ignore (event) {
+    const currentClasses = this.showInProgress(event)
+    if (window.confirm(`Ignore file: ${this.model.get('path')}? File will be unregistered from system`)) {
+      this.request(
+        event,
+        `${this.url}/${this.model.get('datastore')}/ignore?path=${this.model.get('path')}`,
+        'POST',
+        () => {
+          this.remove()
+          this.collection.remove(this.model)
+        }
+      )
+    } else {
+      this.showNormal(event, currentClasses)
+    }
   },
 
   expand (event) {
@@ -152,39 +119,26 @@ export default Backbone.View.extend({
       .toggleClass('is-collapsed')
   },
 
-  moveDatastore (event) {
-    this.showInProgress(event)
-    $.ajax({
-      url: `${this.url}/move-datastore?path=${encodeURIComponent(this.model.get('path'))}`,
-      type: 'POST',
-      success: () => {
-        delete
+  move (event, to, toCollection) {
+    this.request(
+      this,
+      event,
+      `${this.url}/${this.model.get('datastore')}/move?path=${encodeURIComponent(this.model.get('path'))}&to=${to}`,
+      'POST',
+      () => {
         this.remove()
         this.collection.remove(this.model)
-        this.datastore.add(this.model.copy('/eidchub/'))
-      },
-      error: err => {
-        this.showInError(event)
-        console.error('error', err)
+        toCollection.add(this.model.copy(to))
       }
-    })
+    )
+  },
+
+  moveDatastore (event) {
+    this.move(event, 'eidchub', this.datastore)
   },
 
   moveMetadata (event) {
-    this.showInProgress(event)
-    $.ajax({
-      url: `${this.url}/move-metadata?path=${encodeURIComponent(this.model.get('path'))}`,
-      type: 'POST',
-      success: () => {
-        this.remove()
-        this.collection.remove(this.model)
-        return this.metadata.add(this.model.copy('/supporting-documents/'))
-      },
-      error: err => {
-        this.showInError(event)
-        console.error('error', err)
-      }
-    })
+    this.move(event, 'supporting-documents', this.metadata)
   },
 
   render () {
@@ -208,29 +162,19 @@ export default Backbone.View.extend({
   },
 
   showInError (event) {
-    const $el = this.$(event.currentTarget)
+    const $el = $(event.currentTarget)
     $el.attr('disabled', true)
     $el.find('i').attr('class', 'btn-icon fa fa-exclamation-triangle')
   },
 
   validate (event) {
     const currentClasses = this.showInProgress(event)
-    $.ajax({
-      url: `${this.url}/validate?path=${encodeURIComponent(this.model.get('path'))}`,
-      type: 'POST',
-      success: () => {
-        setTimeout(
-          () => {
-            this.getServerState(function () { return this.showNormal(event, currentClasses) })
-          }
-          ,
-          5000
-        )
-      },
-      error: err => {
-        this.showInError(event)
-        console.error('error', err)
-      }
-    })
+    this.request(
+      this,
+      event,
+      `${this.url}/${this.model.get('datastore')}/validate?path=${encodeURIComponent(this.model.get('path'))}`,
+      'POST',
+      () => this.getServerState(this, 3000, () => this.showNormal(event, currentClasses))
+    )
   }
 })

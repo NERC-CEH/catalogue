@@ -1,27 +1,23 @@
 version: "3.7"
 services:
-  hubbub:
-    image: registry.gitlab.ceh.ac.uk/eip/hubbub:6.2.2
-    command: [ "gunicorn", "--access-logfile", "-", "--timeout", "6000", "-w", "2", "-b", "0.0.0.0:80", "hubbub:create_app()" ]
+  db:
+    image: postgres:14.1-alpine
+    restart: always
     environment:
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - REDIS_PASSWORD=aaaaaaaaal
-      - DROPBOX_DIR=/mnt/dropbox
-      - EIDCHUB_DIR=/mnt/eidchub
-      - SUPPORTING_DOCUMENTS_DIR=/mnt/supporting-documents
-      - MNT=/mnt
+      POSTGRES_PASSWORD: &db_password cabbages
+      POSTGRES_USER: &db_user gardener
+      POSTGRES_DB: hubbub
     ports:
-      - '8082:80'
+      - "5432:5432"
+  hubbub:
+    image: registry.gitlab.ceh.ac.uk/eip/hubbub:7.4.1
+    environment:
+      DB_HOST: db
+      DB_PASSWORD: *db_password
+      DB_USER: *db_user
+    ports:
+      - '8082:8080'
     volumes:
       - dropbox:/mnt/dropbox
-      - ./mnt/eidchub:/mnt/eidchub
-  redis:
-    image: docker.io/bitnami/redis:6.2
-    environment:
-      - REDIS_PASSWORD=aaaaaaaaal
-      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
-    ports:
-      - '6379:6379'
-
-
+      - ./fixtures/upload/eidchub:/mnt/eidchub
+      - ./fixtures/upload/supporting-documents:/mnt/supporting-documents
