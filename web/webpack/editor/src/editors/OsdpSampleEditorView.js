@@ -9,8 +9,6 @@ import {
   LinkView, SingleObjectView, TemporalExtentView, DatasetReferenceDateView
 } from '../views'
 import { MultipleDate } from '../models'
-import BoundingBox from '../geometryMap/BoundingBox'
-import BoundingBoxView from '../geometryMap/BoundingBoxView'
 
 export default EditorView.extend({
 
@@ -50,16 +48,13 @@ export default EditorView.extend({
 `
         }),
 
-        new SingleObjectView({
-          model: this.model,
-          modelAttribute: 'boundingBox',
-          ModelType: BoundingBox,
-          label: 'Bounding Box',
-          ObjectInputView: BoundingBoxView,
-          helpText: `
-        <p>Bounding Box of Sample</p>
-        `
-        }), // replaced geometryView
+        //     new GeometryView
+        //     model: @model
+        // modelAttribute: 'geometry'
+        // label: 'Geometry'
+        // helpText: """
+        // <p>Geometry of Sample</p>
+        // """
 
         new SingleObjectView({
           model: this.model,

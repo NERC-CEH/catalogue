@@ -38,6 +38,7 @@ export default ObjectInputView.extend({
       this.shapeDrawn = true
       this.rectangle = L.rectangle(this.model.getBoundingBox())
       this.drawnItems.addLayer(this.rectangle)
+      this.rectangle.editing.enable()
     } else {
       this.shapeDrawn = false
     }
@@ -56,7 +57,7 @@ export default ObjectInputView.extend({
       position: 'topleft',
       edit: {
         featureGroup: this.drawnItems,
-        cancel: false
+        edit: false
       },
       draw: {
         rectangle: true,
@@ -65,15 +66,14 @@ export default ObjectInputView.extend({
         marker: false,
         circle: false,
         circlemarker: false
-      },
-      cancel: false,
-      save: true
+      }
     }))
 
     this.listenTo(this.map, L.Draw.Event.CREATED, function (event) {
       if (this.shapeDrawn !== true) {
-        const layer = event.layer
-        this.drawnItems.addLayer(layer)
+        this.rectangle = event.layer
+        this.rectangle.editing.enable()
+        this.drawnItems.addLayer(this.rectangle)
         this.shapeDrawn = true
         this.model.setBounds(event.layer.getBounds())
       }
@@ -92,10 +92,6 @@ export default ObjectInputView.extend({
     this.listenTo(this.map, L.Draw.Event.EDITRESIZE, function (event) {
       const layer = event.layer
       this.model.setBounds(layer.getBounds())
-    })
-
-    this.listenTo(this.map, L.Draw.Event.EDITSTOP, function () {
-      this.viewMap()
     })
   },
 
