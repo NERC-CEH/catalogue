@@ -29,14 +29,6 @@ export default Backbone.Model.extend({
     this.set('westBoundLongitude', null)
   },
 
-  boundsExist () {
-    if (this.get('northBoundLatitude') === null && this.get('westBoundLongitude') === null &&
-        this.get('southBoundLatitude') === null && this.get('eastBoundLongitude') === null) {
-      return false
-    }
-    return true
-  },
-
   validate (attrs) {
     const labels = {
       westBoundLongitude: 'West Bounding Longitude',

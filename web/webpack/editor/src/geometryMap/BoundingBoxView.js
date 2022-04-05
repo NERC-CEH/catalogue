@@ -34,53 +34,48 @@ export default ObjectInputView.extend({
   createMap () {
     this.map = new L.Map(this.$('.map')[0], { center: new L.LatLng(51.513, -0.09), zoom: 4 })
     this.drawnItems = L.featureGroup()
-    if (this.model.boundsExist()) {
+    if (this.model.get('northBoundLatitude') && this.model.get('westBoundLongitude') &&
+        this.model.get('southBoundLatitude') && this.model.get('eastBoundLongitude')) {
       this.shapeDrawn = true
       this.rectangle = L.rectangle(this.model.getBoundingBox())
       this.drawnItems.addLayer(this.rectangle)
       this.rectangle.editing.enable()
+      this.drawControl = this.deleteToolbar()
     } else {
+      this.drawControl = this.createToolbar()
       this.shapeDrawn = false
     }
     this.drawnItems.addTo(this.map)
     L.control.layers({
-      osm: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      OSM: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
       }).addTo(this.map),
-      google: L.tileLayer('http://www.google.cn/maps/vt?lyrs=s@189&gl=cn&x={x}&y={y}&z={z}', {
+      Google: L.tileLayer('http://www.google.cn/maps/vt?lyrs=s@189&gl=cn&x={x}&y={y}&z={z}', {
         attribution: 'google'
       })
     }, { drawlayer: this.drawnItems }, { position: 'topright', collapsed: false }).addTo(this.map)
 
-    this.map.addControl(new L.Control.Draw({
-      position: 'topleft',
-      edit: {
-        featureGroup: this.drawnItems,
-        edit: false
-      },
-      draw: {
-        rectangle: true,
-        polygon: false,
-        polyline: false,
-        marker: false,
-        circle: false,
-        circlemarker: false
-      }
-    }))
+    this.map.addControl(this.drawControl)
 
     this.listenTo(this.map, L.Draw.Event.CREATED, function (event) {
-      if (this.shapeDrawn !== true) {
+      if (this.shapeDrawn === false) {
         this.rectangle = event.layer
         this.rectangle.editing.enable()
         this.drawnItems.addLayer(this.rectangle)
         this.shapeDrawn = true
+        this.map.removeControl(this.drawControl)
+        this.drawControl = this.deleteToolbar()
+        this.map.addControl(this.drawControl)
         this.model.setBounds(event.layer.getBounds())
       }
     })
 
     this.listenTo(this.map, L.Draw.Event.DELETED, function () {
       this.shapeDrawn = false
+      this.map.removeControl(this.drawControl)
+      this.drawControl = this.createToolbar()
+      this.map.addControl(this.drawControl)
       this.model.clearBounds()
     })
 
@@ -95,6 +90,43 @@ export default ObjectInputView.extend({
     })
   },
 
+  createToolbar () {
+    return new L.Control.Draw({
+      position: 'topleft',
+      edit: {
+        featureGroup: this.drawnItems,
+        edit: false,
+        remove: false
+      },
+      draw: {
+        rectangle: true,
+        polygon: false,
+        polyline: false,
+        marker: false,
+        circle: false,
+        circlemarker: false
+      }
+    })
+  },
+
+  deleteToolbar () {
+    return new L.Control.Draw({
+      position: 'topleft',
+      edit: {
+        featureGroup: this.drawnItems,
+        edit: false,
+        remove: true
+      },
+      draw: {
+        rectangle: false,
+        polygon: false,
+        polyline: false,
+        marker: false,
+        circle: false,
+        circlemarker: false
+      }
+    })
+  },
   viewMap () {
     if (this.map) {
       this.map.off()
