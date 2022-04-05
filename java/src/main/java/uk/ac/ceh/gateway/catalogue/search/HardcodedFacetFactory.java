@@ -133,6 +133,11 @@ public class HardcodedFacetFactory implements FacetFactory {
                 .displayName("Rights holder")
                 .hierarchical(false)
                 .build();
+            case "infrastructureClass" -> Facet.builder()
+                .fieldName("infrastructureClass")
+                .displayName("Infrastructure class")
+                .hierarchical(false)
+                .build();
             case "infrastructureCategory" -> Facet.builder()
                 .fieldName("infrastructureCategory")
                 .displayName("Category")

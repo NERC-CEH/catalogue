@@ -6,39 +6,39 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
-import uk.ac.ceh.gateway.catalogue.ri.RiRecord;
+import uk.ac.ceh.gateway.catalogue.infrastructure.InfrastructureRecord;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
-import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.RIRECORD_JSON_VALUE;
+import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.INFRASTRUCTURERECORD_JSON_VALUE;
 
 @Slf4j
 @Controller
 @RequestMapping("documents")
-public class RiRecordController extends AbstractDocumentController {
+public class InfrastructureRecordController extends AbstractDocumentController {
 
-  public RiRecordController(DocumentRepository documentRepository) {
+  public InfrastructureRecordController(DocumentRepository documentRepository) {
     super(documentRepository);
     log.info("Creating");
   }
 
   @PreAuthorize("@permission.userCanCreate(#catalogue)")
-  @PostMapping(consumes = RIRECORD_JSON_VALUE)
-  public ResponseEntity<MetadataDocument> newRiRecord(
+  @PostMapping(consumes = INFRASTRUCTURERECORD_JSON_VALUE)
+  public ResponseEntity<MetadataDocument> newInfrastructureRecord(
       @ActiveUser CatalogueUser user,
-      @RequestBody RiRecord document,
+      @RequestBody InfrastructureRecord document,
       @RequestParam("catalogue") String catalogue
   ) {
-    return saveNewMetadataDocument(user, document, catalogue, "new Research infrastructure");
+    return saveNewMetadataDocument(user, document, catalogue, "new infrastructure record");
   }
 
   @PreAuthorize("@permission.userCanEdit(#file)")
-  @PutMapping(value = "{file}", consumes = RIRECORD_JSON_VALUE)
-  public ResponseEntity<MetadataDocument> updateRiRecord(
+  @PutMapping(value = "{file}", consumes = INFRASTRUCTURERECORD_JSON_VALUE)
+  public ResponseEntity<MetadataDocument> updateInfrastructureRecord(
       @ActiveUser CatalogueUser user,
       @PathVariable("file") String file,
-      @RequestBody RiRecord document
+      @RequestBody InfrastructureRecord document
   ) {
     return saveMetadataDocument(user, file, document);
   }

@@ -110,9 +110,9 @@ module.exports = function(grunt) {
           'src/css/style-osdp.css': 'src/less/style-osdp.less'
         }
       },
-      ri: {
+      infrastructure: {
         files: {
-          'src/css/style-ri.css': 'src/less/style-ri.less'
+          'src/css/style-infrastructure.css': 'src/less/style-infrastructure.less'
         }
       },
       sa: {
@@ -197,9 +197,9 @@ module.exports = function(grunt) {
           'src/css/style-osdp.css': 'src/css/style-osdp.css'
         }
       },
-      ri: {
+      infrastructure: {
         files: {
-          'src/css/style-ri.css': 'src/css/style-ri.css'
+          'src/css/style-infrastructure.css': 'src/css/style-infrastructure.css'
         }
       },
       sa: {

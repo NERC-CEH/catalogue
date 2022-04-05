@@ -1,11 +1,10 @@
 define [
   'cs!views/editor/ObjectInputView'
-  'tpl!templates/editor/RiChallenge.tpl'
+  'tpl!templates/editor/InfrastructureOnlineLink.tpl'
 ], (ObjectInputView, template) -> ObjectInputView.extend
 
   template: template
 
   render: ->
     ObjectInputView.prototype.render.apply @
-    @$('select').val @model.get 'value'
-    @
+    @$('select.function').val @model.get 'function'

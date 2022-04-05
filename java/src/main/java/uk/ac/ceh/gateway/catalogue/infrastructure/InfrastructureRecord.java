@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.ri;
+package uk.ac.ceh.gateway.catalogue.infrastructure;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -27,24 +27,19 @@ import java.util.stream.Collectors;
 @ToString(callSuper = true)
 @Accessors(chain = true)
 @ConvertUsing({
-  @Template(called="html/ri/rirecord.ftlh", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
+  @Template(called="html/infrastructure/infrastructurerecord.ftlh", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
 })
-public class RiRecord extends AbstractMetadataDocument {
+public class InfrastructureRecord extends AbstractMetadataDocument {
   
-  private String capabilities, lifecycle, uniqueness, partners, locationText, access, userCosts, fundingSources, scienceArea, infrastructureCategory, infrastructureScale ;
+  private String capabilities, lifecycle, uniqueness, partners, locationText, access, userCosts, fundingSources, scienceArea, infrastructureScale ;
 
-  private List<ResponsibleParty> owners;
-
-  private List<String> users;
-
-  private List<RelatedRecord> relatedRecords;
-
-  private List<OnlineResource> onlineResources;
-
-  private List<BoundingBox> boundingBoxes;
-
+  private InfrastructureCategory infrastructureCategory;
   private List<Keyword> infrastructureChallenge;
-
+  private List<ResponsibleParty> owners;
+  private List<String> users;
+  private List<BoundingBox> boundingBoxes;
+  private List<OnlineResource> onlineResources;
+  private List<RelatedRecord> relatedRecords;
 }
 
 

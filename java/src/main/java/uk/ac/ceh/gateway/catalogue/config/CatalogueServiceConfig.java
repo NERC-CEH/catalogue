@@ -130,15 +130,16 @@ public class CatalogueServiceConfig {
                 .build(),
             
             Catalogue.builder()
-                .id("ri")
-                .title("UKCEH Research Infrastructure Catalogue Demo")
-                .url("")
-                .contactUrl("")
+                .id("infrastructure")
+                .title("UKCEH Science Infrastructure Catalogue")
+                .url("https://www.ceh.ac.uk/science-infrastructure/catalogue")
+                .contactUrl("https://www.ceh.ac.uk/contact-us")
                 .logo("ukceh.png")
+                .facetKey("infrastructureClass")
                 .facetKey("infrastructureCategory")
                 .facetKey("infrastructureScale")
                 .facetKey("infrastructureChallenge")
-                .documentType(RIRECORD_TYPE)
+                .documentType(INFRASTRUCTURERECORD_TYPE)
                 .documentType(LINK_TYPE)
                 .fileUpload(false)
                 .build(),

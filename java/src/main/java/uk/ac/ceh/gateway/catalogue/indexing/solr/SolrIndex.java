@@ -70,11 +70,12 @@ public class SolrIndex {
     private @Field Number version;
     private @Field List<String> view;
     // infrastructure catalogue
-    private @Field String infrastructureCategory;
     private @Field String scienceArea;
     private @Field String infrastructureCapabilities;
     private @Field String infrastructureScale;
     private @Field List<String> infrastructureChallenge;
+    private @Field List<String> infrastructureCategory;
+    private @Field List<String> infrastructureClass;
 
 
     public SolrIndex addLocations(List<String> locations) {
