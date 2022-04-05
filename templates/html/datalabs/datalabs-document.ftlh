@@ -24,11 +24,15 @@
         <small>${masterUrl}</small>
       </div>
     </#if>
+    
     <#if owners?? && owners?has_content>
       <div id="owners">
         <h3>Owners</h3>
-        <#list owners as owner>
-          <small>${owner}<#if owner_has_next>,</#if></small>
+        <#list owners as o>
+          <div>
+            <#if o.individualName??>${o.individualName}</#if>
+            <#if o.organisationName??>${o.organisationName}</#if>
+            </div>
         </#list>
       </div>
     </#if>

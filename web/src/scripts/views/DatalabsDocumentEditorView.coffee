@@ -3,11 +3,19 @@ define [
   'cs!views/editor/InputView'
   'cs!views/editor/TextareaView'
   'cs!views/editor/ParentStringView'
+  'cs!views/editor/PredefinedParentView'
+  'cs!views/editor/ContactView'
+  'cs!models/editor/Contact'
+
+
 ], (
   EditorView
   InputView
   TextareaView
   ParentStringView
+  PredefinedParentView
+  ContactView
+  Contact
 ) -> EditorView.extend
 
   initialize: ->
@@ -21,22 +29,38 @@ define [
             model: @model
             modelAttribute: 'title'
             label: 'Title'
-          new InputView
+          
+          new TextareaView
             model: @model
             modelAttribute: 'description'
             label: 'Description'
+            rows: 10
+
           new InputView
             model: @model
             modelAttribute: 'version'
             label: 'Version'
+          
           new InputView
             model: @model
             modelAttribute: 'masterUrl'
             label: 'Master URL'
-          new ParentStringView
-            model: @model
-            modelAttribute: 'owners'
-            label: 'Owners'
+
+        new PredefinedParentView
+          model: @model
+          ModelType: Contact
+          modelAttribute: 'owners'
+          label: 'Owners'
+          ObjectInputView: ContactView
+          multiline: true
+          predefined:
+            'UKCEH':
+              organisationName: 'UK Centre for Ecology & Hydrology'
+              role: 'owner'
+              email: 'enquiries@ceh.ac.uk'
+              organisationIdentifier: 'https://ror.org/00pggkr55'
+            'Oher owner':
+              role: 'owner'
       ]
     ]
 
