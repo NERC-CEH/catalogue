@@ -134,7 +134,6 @@
     <field name="infrastructureScale" type="keywords" multiValued="false"/>
     <field name="infrastructureCapabilities" type="text_general" multiValued="false"/>
     <field name="infrastructureChallenge" type="keywords"/>
-    <field name="infrastructureCategory2" type="keywords"/>
     <field name="infrastructureClass" type="keywords"/>
 
     <copyField source="individual" dest="surname" multiValued="true"/>

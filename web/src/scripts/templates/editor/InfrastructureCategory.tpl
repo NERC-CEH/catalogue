@@ -1,4 +1,4 @@
-<select data-name="value" class="editor-input" id="input-infrastructureCategory2" <%= data.disabled%>>
+<select data-name="value" class="editor-input" id="input-infrastructureCategory" <%= data.disabled%>>
   <option value=""> -- Choose an option -- </option>
   <optgroup label="Environmental observatories">
     <option value="instrumentedSites">Instrumented sites</option>
