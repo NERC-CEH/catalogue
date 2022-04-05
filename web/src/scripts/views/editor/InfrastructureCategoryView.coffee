@@ -7,7 +7,7 @@ define [
 
   initialize: ->
     ObjectInputView.prototype.initialize.apply @
-    @listenTo @model, 'change:infrastructureCategory2', (model, value) ->
+    @listenTo @model, 'change:infrastructureCategory', (model, value) ->
       @model.set 'type', value.value
 
   render: ->
