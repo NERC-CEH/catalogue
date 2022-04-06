@@ -1,1 +1,22 @@
 @import "style-ceh";
+
+@datalab-green: hsl(174, 63%, 40%);
+@brand-success: @datalab-green;
+
+:root {
+  --datalab-green: @datalab-green;
+}
+
+.navbar-brand {
+  border: transparent;
+  img {
+    margin: 0 1em 0 3em;
+  }
+}
+
+.section {
+  padding: 1em 0 2em 0;
+  &-grey {
+    background-color: #eee;
+  }
+}

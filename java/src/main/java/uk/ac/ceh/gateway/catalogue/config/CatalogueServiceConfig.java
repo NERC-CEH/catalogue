@@ -30,7 +30,7 @@ public class CatalogueServiceConfig {
                 .title("Datalabs")
                 .url("https://datalab.datalabs.ceh.ac.uk/")
                 .contactUrl("https://nerc-datalabs.slack.com/")
-                .logo("ukceh.png")
+                .logo("datalabs.png")
                 .facetKey("resourceType")
                 .documentType(GEMINI_TYPE)
                 .documentType(CEH_MODEL_TYPE)
