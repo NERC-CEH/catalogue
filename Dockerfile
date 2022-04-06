@@ -44,14 +44,7 @@ COPY --from=build-java /app/build/libs/application/ ./
 COPY templates /opt/ceh-catalogue/templates
 COPY --from=build-web /app/src/css /opt/ceh-catalogue/static/css
 COPY web/src/img /opt/ceh-catalogue/static/img
-COPY --from=build-webpack web/webpack/dist/permission.bundle.js /opt/ceh-catalogue/static/scripts/permission.bundle.js
-COPY --from=build-webpack web/webpack/dist/catalogue.bundle.js /opt/ceh-catalogue/static/scripts/catalogue.bundle.js
-COPY --from=build-webpack web/webpack/dist/editor.bundle.js /opt/ceh-catalogue/static/scripts/editor.bundle.js
-COPY --from=build-webpack web/webpack/dist/9e7d2efc7b95d476f73e.gif /opt/ceh-catalogue/static/scripts/9e7d2efc7b95d476f73e.gif
-COPY --from=build-webpack web/webpack/dist/simpleupload.bundle.js /opt/ceh-catalogue/static/scripts/simpleupload.bundle.js
-COPY --from=build-webpack web/webpack/dist/hubbub.bundle.js /opt/ceh-catalogue/static/scripts/hubbub.bundle.js
-COPY --from=build-webpack web/webpack/dist/clipboard.bundle.js /opt/ceh-catalogue/static/scripts/clipboard.bundle.js
-
+COPY --from=build-webpack web/webpack/dist/ /opt/ceh-catalogue/static/scripts/
 COPY --from=build-web /app/src/scripts/main-out.js /opt/ceh-catalogue/static/scripts/main-out.js
 COPY --from=build-web /app/src/scripts/upload-out.js /opt/ceh-catalogue/static/scripts/upload-out.js
 COPY --from=build-web /app/src/vendor/font-awesome-5/webfonts /opt/ceh-catalogue/static/vendor/font-awesome-5/webfonts

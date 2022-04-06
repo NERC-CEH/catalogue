@@ -30,10 +30,22 @@ module.exports = {
         ]
       },
       {
-        test: /\.css$/,
+        test: /\.(sa|sc|c)ss$/,
         use: [
           { loader: 'style-loader' },
-          { loader: 'css-loader' }
+          {
+            loader: 'css-loader',
+            options: {
+              sourceMap: true
+            }
+          },
+          {
+            loader: 'resolve-url-loader',
+            options: {
+              sourceMap: true,
+              engine: 'rework'
+            }
+          }
         ]
       },
       {

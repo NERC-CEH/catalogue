@@ -37,6 +37,8 @@ import {
 import $ from 'jquery'
 import BoundingBox from '../geometryMap/BoundingBox'
 import BoundingBoxView from '../geometryMap/BoundingBoxView'
+import PolygonView from '../geometryMap/PolygonView'
+import Polygon from '../geometryMap/Polygon'
 
 export default EditorView.extend({
 
@@ -520,6 +522,18 @@ export default EditorView.extend({
           },
           helpText: `\
     <p>A bounding box representing the limits of the data resource's study area.</p>
+    <p>If you do not wish to reveal the exact location publicly (for example, if locations are sensitive) it is recommended that you generalise the location.</p>\
+    `
+        }),
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'polygon',
+          ModelType: Polygon,
+          label: 'Spatial extent polygon',
+          ObjectInputView: PolygonView,
+          multiline: true,
+          helpText: `\
+    <p>A polygon representing the limits of the data resource's study area.</p>
     <p>If you do not wish to reveal the exact location publicly (for example, if locations are sensitive) it is recommended that you generalise the location.</p>\
     `
         }),
