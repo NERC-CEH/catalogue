@@ -211,7 +211,7 @@ export default Backbone.View.extend({
       url: `${this.model.url()}/dropbox/move?to=eidchub`,
       type: 'POST',
       success () {
-        that.dropbox.each(model => that.addOne(that.datastore, that.$datastore, model.copy('dropbox')))
+        that.dropbox.each(model => that.addOne(that.datastore, that.$datastore, model.copy('eidchub')))
         that.dropbox.reset()
         that.showNormal(event, currentClasses)
       },
