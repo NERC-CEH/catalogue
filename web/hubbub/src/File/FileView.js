@@ -128,7 +128,8 @@ export default Backbone.View.extend({
       () => {
         this.remove()
         this.collection.remove(this.model)
-        toCollection.add(this.model.copy(to))
+        const toModel = this.model.copy(to)
+        toCollection.add(toModel)
       }
     )
   },
