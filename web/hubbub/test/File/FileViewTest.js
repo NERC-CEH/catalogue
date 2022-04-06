@@ -221,7 +221,10 @@ describe('FileView', function () {
     describe('cancel', function () {
       it('trigger', function () {
         // given
-        model.set({ moving: true })
+        model.set({
+          datastore: 'dropbox',
+          moving: true
+        })
         view.render()
         const $cancelBtn = view.$('.cancel')
         spyOn(view, 'cancel')
@@ -269,7 +272,10 @@ describe('FileView', function () {
     describe('ignore', function () {
       it('trigger', function () {
         // given
-        model.set({ action: 'ignore' })
+        model.set({
+          action: 'ignore',
+          datastore: 'dropbox'
+        })
         view.render()
         const $ignoreBtn = view.$('.ignore')
         spyOn(view, 'ignore')
@@ -365,7 +371,10 @@ describe('FileView', function () {
   describe('accept', function () {
     it('trigger', function () {
       // given
-      model.set({ action: 'accept' })
+      model.set({
+        action: 'accept',
+        datastore: 'dropbox'
+      })
       view.render()
       const $acceptBtn = view.$('.accept')
       spyOn(view, 'accept')
