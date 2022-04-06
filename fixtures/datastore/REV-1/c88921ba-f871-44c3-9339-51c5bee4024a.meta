@@ -1,1 +1,1 @@
-{"rawType":"application/json","state":"published","documentType":"GEMINI_DOCUMENT","permissions":{"VIEW":["public"]},"catalogue":"eidc"}
+{"rawType":"application/json","state":"published","documentType":"GEMINI_DOCUMENT","permissions":{"VIEW":["public","uploader"],"EDIT":["uploader"],"UPLOAD":["uploader"]},"catalogue":"eidc"}

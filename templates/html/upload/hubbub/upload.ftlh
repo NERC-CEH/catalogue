@@ -1,6 +1,7 @@
 <#import "../../skeleton.ftlh" as skeleton>
 
 <#assign uploadScripts>
+    <#--noinspection HtmlUnknownTarget-->
     <script src="/static/scripts/hubbub-app.js"></script>
 </#assign>
 
@@ -20,26 +21,35 @@
             <@loadMoreRow "data"/>
             <#if isAdmin && isInProgress>
                 <@row>
-                    <div class="col-md-3 col-md-offset-6">
+                    <div class="col-md-3 col-md-offset-3">
                         <@moveAllDatastoreButton/>
                     </div>
                     <div class="col-md-3">
                         <@rescheduleButton/>
                     </div>
+                    <div class="col-md-3">
+                        <@hashDropboxButton/>
+                    </div>
                 </@row>
             <#elseif isAdmin && isOpen>
                 <@row>
-                    <div class="col-md-3 col-md-offset-6">
+                    <div class="col-md-3 col-md-offset-3">
                         <@moveAllDatastoreButton/>
                     </div>
                     <div class="col-md-3">
                         <@scheduleButton/>
                     </div>
+                    <div class="col-md-3">
+                        <@hashDropboxButton/>
+                    </div>
                 </@row>
             <#elseif isAdmin>
                 <@row>
-                    <div class="col-md-3 col-md-offset-9">
+                    <div class="col-md-3 col-md-offset-6">
                         <@moveAllDatastoreButton/>
+                    </div>
+                    <div class="col-md-3">
+                        <@hashDropboxButton/>
                     </div>
                 </@row>
             </#if>
@@ -81,7 +91,6 @@
     <#if metadata??>
         <@data "metadata" metadata/>
     </#if>
-    <@documentUploadModal/>
 </@skeleton.master>
 
 <#macro documentContainer>
@@ -191,6 +200,10 @@
     <@button "Finish Uploading" "finish" "check" "primary"/>
 </#macro>
 
+<#macro hashDropboxButton>
+    <@button "Generate Dropbox checksums" "hash-dropbox" "microchip"/>
+</#macro>
+
 <#macro loadMoreButton storage>
     <@button "View More" "load ${storage}" "angle-double-down"/>
 </#macro>
@@ -223,31 +236,7 @@
 </#macro>
 
 <#macro data title files>
-    <#list files>
-        <script id="${title}-data" type="application/json">
-        [<#items as file>
-            {"bytes":${file.bytes?c},"hash":"${file.hash}","name":"${file.name}","path":"${file.path}","status":"${file.status}","time":${file.time?c}}<#sep>,</#sep>
-        </#items>]
-        </script>
-    </#list>
-</#macro>
-
-<#macro documentUploadModal>
-    <div class="modal fade" id="documentUploadModal" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    <h4 class="modal-title"></h4>
-                </div>
-                <div class="modal-body"></div>
-                <div class="modal-footer">
-                    <button class="btn btn-default modal-dismiss" data-dismiss="modal">NO</button>
-                    <button class="btn btn-danger modal-accept"  data-dismiss="modal">YES</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <script id="${title}-data" type="application/json">
+        ${files?no_esc}
+    </script>
 </#macro>

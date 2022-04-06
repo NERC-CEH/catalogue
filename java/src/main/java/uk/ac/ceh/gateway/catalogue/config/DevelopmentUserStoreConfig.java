@@ -57,8 +57,8 @@ public class DevelopmentUserStoreConfig {
     public static final String NC_PUBLISHER = "role_nc_publisher";
     public static final String OSDP_EDITOR = "role_osdp_editor";
     public static final String OSDP_PUBLISHER = "role_osdp_publisher";
-    public static final String RI_EDITOR = "role_ri_editor";
-    public static final String RI_PUBLISHER = "role_ri_publisher";
+    public static final String INFRASTRUCTURE_EDITOR = "role_infrastructure_editor";
+    public static final String INFRASTRUCTURE_PUBLISHER = "role_infrastructure_publisher";
     public static final String SA_EDITOR = "role_sa_editor";
     public static final String SA_PUBLISHER = "role_sa_publisher";
     public static final String UKSCAPE_EDITOR = "role_ukscape_editor";
@@ -271,26 +271,24 @@ public class DevelopmentUserStoreConfig {
 
 
     @Bean
-    public CatalogueUser riEditor() throws UsernameAlreadyTakenException {
+    public CatalogueUser infrastructureEditor() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser()
-            .setUsername("ri-editor")
-            .setEmail("ri-editor@ceh.ac.uk");
-        addUserToGroup(user, RI_EDITOR);
+            .setUsername("infrastructure-editor")
+            .setEmail("infrastructure-editor@ceh.ac.uk");
+        addUserToGroup(user, INFRASTRUCTURE_EDITOR);
         userStore().addUser(user, "password");
         return user;
     }
 
     @Bean
-    public CatalogueUser riPublisher() throws UsernameAlreadyTakenException {
+    public CatalogueUser infrastructurePublisher() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser()
-            .setUsername("ri-publisher")
-            .setEmail("ri-publisher@ceh.ac.uk");
-        addUserToGroup(user, RI_EDITOR, RI_PUBLISHER);
+            .setUsername("infrastructure-publisher")
+            .setEmail("infrastructure-publisher@ceh.ac.uk");
+        addUserToGroup(user, INFRASTRUCTURE_EDITOR, INFRASTRUCTURE_PUBLISHER);
         userStore().addUser(user, "password");
         return user;
     }
-
-
 
     @Bean
     public CatalogueUser saPublisher() throws UsernameAlreadyTakenException {
@@ -373,8 +371,8 @@ public class DevelopmentUserStoreConfig {
         groupStore.createGroup(OSDP_EDITOR, "");
         groupStore.createGroup(OSDP_PUBLISHER, "");
         groupStore.createGroup(READONLY_GROUP, "");
-        groupStore.createGroup(RI_EDITOR, "");
-        groupStore.createGroup(RI_PUBLISHER, "");
+        groupStore.createGroup(INFRASTRUCTURE_EDITOR, "");
+        groupStore.createGroup(INFRASTRUCTURE_PUBLISHER, "");
         groupStore.createGroup(SA_EDITOR, "");
         groupStore.createGroup(SA_PUBLISHER, "");
         groupStore.createGroup(UKSCAPE_PUBLISHER, "");

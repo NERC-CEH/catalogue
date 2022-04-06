@@ -1,5 +1,3 @@
-const HtmlWebPackPlugin = require('html-webpack-plugin')
-
 module.exports = {
   mode: 'development',
   module: {
@@ -15,7 +13,7 @@ module.exports = {
         }
       },
       {
-        test: /\.(html|tpl)$/,
+        test: /\.tpl$/,
         use: [
           {
             loader: 'html-loader',
@@ -31,17 +29,7 @@ module.exports = {
       }
     ]
   },
-  devServer: {
-    host: '0.0.0.0',
-    port: 8081
-  },
   output: {
     filename: 'hubbub-app.js'
-  },
-  plugins: [
-    new HtmlWebPackPlugin({
-      template: './src/index.html',
-      filename: './index.html'
-    })
-  ]
+  }
 }

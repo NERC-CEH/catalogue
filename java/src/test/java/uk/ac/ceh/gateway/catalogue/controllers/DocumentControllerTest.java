@@ -30,7 +30,7 @@ import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.ef.*;
 import uk.ac.ceh.gateway.catalogue.erammp.ErammpDatacube;
 import uk.ac.ceh.gateway.catalogue.erammp.ErammpModel;
-import uk.ac.ceh.gateway.catalogue.ri.RiRecord;
+import uk.ac.ceh.gateway.catalogue.infrastructure.InfrastructureRecord;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
@@ -258,8 +258,8 @@ class DocumentControllerTest {
             Arguments.of(new ErammpModel(), APPLICATION_JSON, JSON, null),
             Arguments.of(new ErammpDatacube(), TEXT_HTML, HTML, null),
             Arguments.of(new ErammpDatacube(), APPLICATION_JSON, JSON, null),
-            Arguments.of(new RiRecord(), TEXT_HTML, HTML, null),
-            Arguments.of(new RiRecord(), APPLICATION_JSON, JSON, null),
+            Arguments.of(new InfrastructureRecord(), TEXT_HTML, HTML, null),
+            Arguments.of(new InfrastructureRecord(), APPLICATION_JSON, JSON, null),
             Arguments.of(facility, TEXT_HTML, HTML, null),
             Arguments.of(facility, APPLICATION_JSON, JSON, null),
             Arguments.of(facility, EF_INSPIRE_XML, EF_INSPIRE_XML_SHORT, null),

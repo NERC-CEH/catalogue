@@ -148,33 +148,56 @@ another catalogue using the Link document type.
 The catalogue is designed to sit behind a **Security Proxy** (
 see [RequestHeaderAuthenticationFilter](http://docs.spring.io/autorepo/docs/spring-security/3.2.0.RELEASE/apidocs/org/springframework/security/web/authentication/preauth/RequestHeaderAuthenticationFilter.html) which acts as the authentication source for the application. Therefore, the catalogue will respond to the `Remote-User` header and handle requests as the specified user.
 
-To simplify development, the `DevelopmentUserStoreConfig` is applied by default. This creates some dummy users in various different groups which you can masquerade as. The simplest way to do this is use a browser extension which applies the `Remote-User` header. I recommend **ModHeader for chrome**.
+To simplify development, the `DevelopmentUserStoreConfig` is applied by default. This creates some dummy users in various different groups which you can masquerade as. The simplest way to do this is use a browser extension which applies the `Remote-User` header. I recommend **ModHeader for Chrome**.
 
 Then set the request header:
 
     Remote-User: superadmin
 
-Other available users are:
+Other users are configured in [DevelopmentUserStoreConfig](java/src/main/java/uk/ac/ceh/gateway/catalogue/config/DevelopmentUserStoreConfig.java) for the different catalogues.
 
-- superadmin
-- bamboo
-- readonly
-- admin
-- eidc-editor
-- eidc-publisher
-- cmp-editor
-- cmp-publisher
-- nc-editor
-- nc-publisher
-- m-publisher
-- inms-publisher
-- osdp-publisher
-- sa-publisher
+## Developing Upload - Hubbub API
+Getting everything running
 
+Minimum configuration needed in `docker-compose.override.yaml`
+```yaml
+version: "3.7"
+services:
+  web:
+    volumes:
+      - ./templates:/opt/ceh-catalogue/templates
+      - ./web/hubbub/dist/hubbub-app.js:/opt/ceh-catalogue/static/scripts/hubbub-app.js
+    environment:
+      - spring.profiles.active=development,upload:hubbub,server:eidc,search:basic
+      - jira.username=<your username>
+```
 
-Also, be sure to go to http://foo.ceh.ac.uk:8080/documents rather than http://localhost:8080/documents, which needs an edit to your hosts file:
+```commandline
+docker-compose -f docker-compose.yml -f docker-compose.hubbub.yml -f docker-compose.override.yml up -d --build
+```
+### Populate the database
 
-eg `127.0.0.1       localhost foo.ceh.ac.uk`
+Postgres database needs the schema creating.
+
+1. Checkout the Hubbub git repo, there is a script to create the schema.
+
+2. In the Hubbub repo project directory
+    ```commandline
+    . venv/bin/activate
+    python -m migration.schema --user gardener --password cabbages
+    ```
+
+3. Import the `migration/status.csv` file into the database
+4. Back in the Catalogue project import `fixtures/upload/file.csv`
+
+### Javascript development
+
+1. Run `npm run test-server` to recompile `hubbub-app.js` on code changes and run tests.
+   1. `npm run watch` if you just want the code to recompile on changes
+2. You will need access to the EIDCHELP Jira project to run the app.
+3. The [Busy Buzy Bumblebees](http://localhost:8080/upload/c88921ba-f871-44c3-9339-51c5bee4024a) upload page has a [Jira issue](https://jira.ceh.ac.uk/browse/EIDCHELP-52451) in the EIDCHELP project
+4. Set the requests header `remote-user: uploader` to see page as a data depositor.
+   Or `remote-user: superadmin` to see it as data centre staff.
 
 ## Map Viewer
 

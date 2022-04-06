@@ -46,7 +46,7 @@ test_catalogue:
     - npm ci
     - npm run test
 
-test_simple-upload:
+test_simple_upload:
   stage: test
   image: ephesoft/headless_chrome:latest
   script:
@@ -62,7 +62,11 @@ test_hubbub:
     - cd web/hubbub
     - npm install -g npm
     - npm ci
-    - npm run test
+    - npm test
+  artifacts:
+    when: always
+    reports:
+      junit: web/hubbub/TESTS-*.xml
 
 build_application:
   stage: build
