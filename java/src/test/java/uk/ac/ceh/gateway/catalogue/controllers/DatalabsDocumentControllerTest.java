@@ -51,8 +51,7 @@ class DatalabsDocumentControllerTest {
             {
                 "title": "Datalabs test",
                 "version": "1",
-                "masterUrl": "https://example.com/datalabs",
-                "owners": ["Abe", "Bee", "Cee"]
+                "masterUrl": "https://example.com/datalabs"
             }
             """;
 

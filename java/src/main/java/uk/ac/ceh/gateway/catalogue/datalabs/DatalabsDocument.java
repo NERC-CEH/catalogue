@@ -28,7 +28,7 @@ import java.util.List;
 public class DatalabsDocument extends AbstractMetadataDocument {
     private String assetType, version, masterUrl, primaryLanguage, secondaryLanguage;
     private List<String> packages, inputs, outputs;
-    private List<ResponsibleParty> owners;
+    private List<ResponsibleParty> responsibleParties;
     private List<ResourceConstraint> useConstraints;
     private DatasetReferenceDate referenceDate;
     private List<InspireTheme> inspireThemes;
