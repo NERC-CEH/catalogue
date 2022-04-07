@@ -1,15 +1,20 @@
+# You can override the included template(s) by including variable overrides
+# SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
+# Secret Detection customization: https://docs.gitlab.com/ee/user/application_security/secret_detection/#customizing-settings
+# Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
+# Container Scanning customization: https://docs.gitlab.com/ee/user/application_security/container_scanning/#customizing-the-container-scanning-settings
+# Note that environment variables can be set in several places
+# See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
 variables:
-  DOCKER_DAEMON_ARGS: -g /cache/docker
+  DOCKER_DAEMON_ARGS: "-g /cache/docker"
   DOCKER_DRIVER: overlay2
   DEPLOYMENT_SCRIPT: https://gitlab.ceh.ac.uk/scripts/deployment/raw/master/puppet-deploy.sh
   NODE_KEY: catalogue_version
-  NODE_VALUE: $CI_COMMIT_REF_NAME
-
+  NODE_VALUE: "$CI_COMMIT_REF_NAME"
 stages:
-  - test
-  - build
-  - deploy
-
+- test
+- build
+- deploy
 test_java:
   stage: test
   image: gradle:7.2.0-jdk16
@@ -18,80 +23,73 @@ test_java:
     when: always
     reports:
       junit: java/build/test-results/test/**/TEST-*.xml
-
 test_web:
   stage: test
   image: node:15.11.0-stretch
   script:
-    - cd web
-    - npm ci
-    - ./node_modules/.bin/bower install --allow-root
-    - ./node_modules/.bin/grunt prep build    # test not actually run as are broken
-
+  - cd web
+  - npm ci
+  - "./node_modules/.bin/bower install --allow-root"
+  - "./node_modules/.bin/grunt prep build"
 test_permissions:
   stage: test
   image: ephesoft/headless_chrome:latest
   script:
-    - cd web/permission
-    - npm install -g npm
-    - npm ci
-    - npm run test
-
+  - cd web/permission
+  - npm install -g npm
+  - npm ci
+  - npm run test
 test_catalogue:
   stage: test
   image: ephesoft/headless_chrome:latest
   script:
-    - cd web/catalogue
-    - npm install -g npm
-    - npm ci
-    - npm run test
-
+  - cd web/catalogue
+  - npm install -g npm
+  - npm ci
+  - npm run test
 test_simple_upload:
   stage: test
   image: ephesoft/headless_chrome:latest
   script:
-    - cd web/simple-upload
-    - npm install -g npm
-    - npm ci
-    - npm run test
-
+  - cd web/simple-upload
+  - npm install -g npm
+  - npm ci
+  - npm run test
 test_hubbub:
   stage: test
   image: ephesoft/headless_chrome:latest
   script:
-    - cd web/hubbub
-    - npm install -g npm
-    - npm ci
-    - npm test
+  - cd web/hubbub
+  - npm install -g npm
+  - npm ci
+  - npm test
   artifacts:
     when: always
     reports:
       junit: web/hubbub/TESTS-*.xml
-
 build_application:
   stage: build
   image: docker:20.10.5
   services:
-    - name: docker:20.10.5-dind
-      alias: docker
+  - name: docker:20.10.5-dind
+    alias: docker
   before_script:
-    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+  - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
   script:
-    - docker build --target prod -t $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA .
-    - docker build --target datalabs -t $CI_REGISTRY_IMAGE/app:$CI_COMMIT_REF_NAME-datalabs .
-    - docker tag $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/app:$CI_COMMIT_REF_NAME
-    - docker push $CI_REGISTRY_IMAGE/app --all-tags
+  - docker build --target prod -t $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA .
+  - docker build --target datalabs -t $CI_REGISTRY_IMAGE/app:$CI_COMMIT_REF_NAME-datalabs
+    .
+  - docker tag $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/app:$CI_COMMIT_REF_NAME
+  - docker push $CI_REGISTRY_IMAGE/app --all-tags
   only:
-    - tags
-
+  - tags
 build_solr:
   extends: build_application
   script:
-    - docker build -t $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_SHA solr
-    - docker tag $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_REF_NAME
-    - docker tag $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_REF_NAME-datalabs
-    - docker push $CI_REGISTRY_IMAGE/solr --all-tags
-
+  - docker build -t $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_SHA solr
+  - docker tag $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_REF_NAME
+  - docker tag $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_REF_NAME-datalabs
+  - docker push $CI_REGISTRY_IMAGE/solr --all-tags
 deploy_staging:
   image: ruby:2
   stage: deploy
@@ -101,16 +99,18 @@ deploy_staging:
     name: staging
     url: https://catalogue-staging.ceh.ac.uk/eidc/documents
   script:
-    - curl $DEPLOYMENT_SCRIPT | bash
+  - curl $DEPLOYMENT_SCRIPT | bash
   only:
-    - tags
-
+  - tags
 deploy_production:
   extends: deploy_staging
   variables:
     SERVER: cig-prod.nerc-lancaster.ac.uk
   environment:
     name: production
-    url:  https://catalogue.ceh.ac.uk/eidc/documents
+    url: https://catalogue.ceh.ac.uk/eidc/documents
   when: manual
-
+sast:
+  stage: test
+include:
+- template: Security/SAST.gitlab-ci.yml
