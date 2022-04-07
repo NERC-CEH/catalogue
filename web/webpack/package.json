@@ -69,7 +69,6 @@
     "jquery": "3.6.0",
     "jquery-ui": "^1.13.1",
     "leaflet": "0.7.7",
-    "leaflet-defaulticon-compatibility": "^0.1.1",
     "leaflet-draw": "^1.0.4",
     "npm": "^8.5.5",
     "resolve-url-loader": "3.0.0",

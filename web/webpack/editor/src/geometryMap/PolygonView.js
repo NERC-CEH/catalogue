@@ -1,13 +1,10 @@
 import _ from 'underscore'
 import { ObjectInputView } from '../views'
 import 'leaflet/dist/leaflet.css'
+import 'leaflet-draw/dist/leaflet.draw-src.css'
 import L from 'leaflet'
 import 'leaflet-draw'
 import template from './Polygon.tpl'
-import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png'
-import iconUrl from 'leaflet/dist/images/marker-icon.png'
-import shadowUrl from 'leaflet/dist/images/marker-shadow.png'
-
 export default ObjectInputView.extend({
 
   events: {
@@ -16,16 +13,6 @@ export default ObjectInputView.extend({
 
   initialize () {
     L.Icon.Default.imagePath = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.4.0/images'
-    L.Marker.prototype.options.icon = L.icon({
-      iconRetinaUrl,
-      iconUrl,
-      shadowUrl,
-      iconSize: [25, 41],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-      tooltipAnchor: [16, -28],
-      shadowSize: [41, 41]
-    })
     this.template = _.template(template)
     this.render()
     this.listenTo(this.model.collection, 'visible', this.viewMap)
@@ -34,6 +21,21 @@ export default ObjectInputView.extend({
   createMap () {
     this.map = new L.Map(this.$('.map')[0], { center: new L.LatLng(51.513, -0.09), zoom: 4 })
     this.drawnItems = L.featureGroup()
+    if (this.model.get('polygon')) {
+      this.polygon = L.geoJson(JSON.parse(this.model.get('polygon')))
+      this.drawnItems.addLayer(this.polygon)
+      this.polygonButton = false
+    } else {
+      this.polygonButton = true
+    }
+    if (this.model.get('marker')) {
+      const marker = JSON.parse(this.model.get('marker'))
+      this.marker = L.marker([marker.lat, marker.lng])
+      this.drawnItems.addLayer(this.marker)
+      this.markerButton = false
+    } else {
+      this.markerButton = true
+    }
     this.drawControl = this.createToolbar()
     this.drawnItems.addTo(this.map)
     L.control.layers({
@@ -52,37 +54,68 @@ export default ObjectInputView.extend({
       const type = event.layerType
       const layer = event.layer
       if (type === 'marker') {
-        // Do marker specific actions
+        this.model.set('marker', JSON.stringify(layer.getLatLng()))
+        this.markerButton = false
       }
+      if (type === 'polygon') {
+        this.model.set('polygon', JSON.stringify(layer.toGeoJSON()))
+        this.polygonButton = false
+      }
+      this.map.removeControl(this.drawControl)
+      this.drawControl = this.createToolbar()
+      this.map.addControl(this.drawControl)
 
-      // Do whatever else you need to. (save to db; add to map etc)
-      this.model.setPolygon(layer.toGeoJSON())
-      this.map.addLayer(layer)
+      this.drawnItems.addLayer(layer)
     })
 
-    this.listenTo(this.map, L.Draw.Event.DELETED, function () {
-      this.model.clearPolygon()
-    })
-
-    this.listenTo(this.map, L.Draw.Event.EDITED, function (event) {
-      const layer = event.layer
-      this.model.setPolygon(layer.toGeoJSON())
+    this.listenTo(this.map, L.Draw.Event.DELETED, function (event) {
+      const layers = event.layers
+      const that = this
+      layers.eachLayer(function (layer) {
+        const type = that.getShapeType(layer)
+        if (type === 'marker') {
+          that.model.set('marker', null)
+          that.markerButton = true
+        }
+        if (type === 'polygon') {
+          that.model.set('polygon', null)
+          that.polygonButton = true
+        }
+      })
+      this.map.removeControl(this.drawControl)
+      this.drawControl = this.createToolbar()
+      this.map.addControl(this.drawControl)
     })
   },
 
+  getShapeType (layer) {
+    if (layer instanceof L.Marker) {
+      return 'marker'
+    }
+
+    if ((layer instanceof L.Polygon) && !(layer instanceof L.Rectangle)) {
+      return 'polygon'
+    }
+  },
+
   createToolbar () {
+    if (this.polygonButton === true && this.markerButton === true) {
+      this.deleteButton = false
+    } else {
+      this.deleteButton = true
+    }
     return new L.Control.Draw({
       position: 'topleft',
       edit: {
         featureGroup: this.drawnItems,
-        edit: true,
-        remove: true
+        edit: false,
+        remove: this.deleteButton
       },
       draw: {
         rectangle: false,
-        polygon: true,
+        polygon: this.polygonButton,
         polyline: false,
-        marker: true,
+        marker: this.markerButton,
         circle: false,
         circlemarker: false
       }
