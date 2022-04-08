@@ -28,121 +28,122 @@
     <div class="section">
       <div class="container">
 
-      <#if assetType?? && assetType?has_content>
-        <@displaySimple "Type" assetType />
-      </#if>
+        <div class="grid">
 
-        <#if owners?? && owners?has_content>
-            <h3>Owner<#if owners?size gt 1>s</#if></h3>
-            <#list owners as item>
-              <div>
-                <#if item.individualName??>${item.individualName}</#if>
-                <#if item.organisationName??>${item.organisationName}</#if>
-                </div>
-            </#list>
-        </#if>
-
-        <#if contacts?? && contacts?has_content>
-            <h3>Contact<#if contacts?size gt 1>s</#if></h3>
-            <#list contacts as item>
-              <div>
-                <#if item.individualName??>${item.individualName}</#if>
-                <#if item.organisationName??>${item.organisationName}</#if>
-                </div>
-            </#list>
-        </#if>
-
-        <#if version?? && version?has_content>
-          <@displaySimple "Version" version />
-        </#if>
-        <#if masterUrl?? && masterUrl?has_content>
-          <@displaySimple "Master URL" masterUrl />
-        </#if>
-        <#if primaryLanguage?? && primaryLanguage?has_content>
-          <@displaySimple "Primary language" primaryLanguage />
-        </#if>
-        <#if secondaryLanguage?? && secondaryLanguage?has_content>
-          <@displaySimple "Secondary language" secondaryLanguage />
-        </#if>
-
-        <#if inputs?? && inputs?has_content>
-          <@displaySimpleList "Inputs" inputs />
-        </#if>
-        <#if outputs?? && outputs?has_content>
-          <@displaySimpleList "Outputs" outputs />
-        </#if>
-        <#if packages?? && packages?has_content>
-          <@displaySimpleList "Packages" packages />
-        </#if>
-
-        <#if keywords?has_content>
-        <h3>Keyword<#if keywords?size gt 1>s</#if></h3>
-        <div class="keywords">
-          <#list keywords?sort_by("value") as keyword>
-            <#if keyword.uri?has_content>
-              <a href="${keyword.uri}" target="_blank" rel="noopener noreferrer">${keyword.value?trim}</a><#sep>,&nbsp;</#sep>
-            <#else>
-              ${keyword.value?trim}<#sep>,&nbsp;</#sep>
+          <div class="grid--one">
+            <#if assetType?? && assetType?has_content>
+              <@displaySimple "Type" assetType />
             </#if>
-          </#list>
-        </div>
-        </#if>
-        
-        <#if inspireThemes?has_content>
-        <h3>INSPIRE theme<#if inspireThemes?size gt 1>s</#if></h3>
-        <div class="inspireThemes">
-          <#list inspireThemes?sort_by("theme") as theme>
-            <#if theme.uri?has_content>
-              <a href="${theme.uri}" target="_blank" rel="noopener noreferrer">${theme.theme?trim}</a><#sep><br></#sep>
-            <#else>
-              ${theme.value?trim}<#sep><br></#sep>
-            </#if>
-          </#list>
-        </div>
-        </#if>
+          </div>
 
-        <#if boundingBoxes?has_content>
-          <div>
-            <h3>Spatial extent</h3>
-              <div id="studyarea-map">
-                <#list boundingBoxes as extent>
-                  <span content="${extent.wkt}" datatype="geo:wktLiteral"/>
+          <div class="grid--two">
+
+            <#if owners?? && owners?has_content>
+                <@displayContact "Owner" owners />     
+            </#if>
+
+            <#if contacts?? && contacts?has_content>
+                <@displayContact "Contact" contacts />     
+            </#if>
+           
+          </div>
+
+          <div class="grid--three">
+            
+            <#if version?? && version?has_content>
+              <@displaySimple "Version" version />
+            </#if>
+            <#if masterUrl?? && masterUrl?has_content>
+              <@displaySimple "Master URL" masterUrl />
+            </#if>
+            <#if primaryLanguage?? && primaryLanguage?has_content>
+              <@displaySimple "Primary language" primaryLanguage />
+            </#if>
+            <#if secondaryLanguage?? && secondaryLanguage?has_content>
+              <@displaySimple "Secondary language" secondaryLanguage />
+            </#if>
+
+            <#if inputs?? && inputs?has_content>
+              <@displaySimpleList "Inputs" inputs />
+            </#if>
+            <#if outputs?? && outputs?has_content>
+              <@displaySimpleList "Outputs" outputs />
+            </#if>
+            <#if packages?? && packages?has_content>
+              <@displaySimpleList "Packages" packages />
+            </#if>
+
+            <#if boundingBoxes?has_content>
+              <div>
+                <h3>Spatial extent</h3>
+                  <div id="studyarea-map">
+                    <#list boundingBoxes as extent>
+                      <span content="${extent.wkt}" datatype="geo:wktLiteral"/>
+                    </#list>
+                  </div>
+              </div>
+            </#if>
+
+            <#if temporalExtents?has_content>
+              <div>
+              <h3>Temporal extent</h3>
+                <#list temporalExtents as extent>
+                    <#if extent.begin?has_content>
+                      <span class="extentBegin">${extent.begin?date}</span>
+                    <#else>
+                      &hellip;
+                    </#if>
+                    &nbsp;&nbsp;&nbsp;to&nbsp;&nbsp;&nbsp;
+                    <#if extent.end?has_content>
+                      <span class="extentEnd">${extent.end?date}</span>
+                    <#else>
+                      &hellip;
+                    </#if>
+                    <#sep><br>&nbsp;&nbsp;&nbsp;&nbsp;and <br></#sep>
                 </#list>
               </div>
-          </div>
-        </#if>
+            </#if>
 
-        <#if temporalExtents?has_content>
-          <div>
-          <h3>Temporal extent</h3>
-            <#list temporalExtents as extent>
-                <#if extent.begin?has_content>
-                  <span class="extentBegin">${extent.begin?date}</span>
+            <#if keywords?has_content>
+            <h3>Keyword<#if keywords?size gt 1>s</#if></h3>
+            <div class="keywords">
+              <#list keywords?sort_by("value") as keyword>
+                <#if keyword.uri?has_content>
+                  <a href="${keyword.uri}" target="_blank" rel="noopener noreferrer">${keyword.value?trim}</a><#sep>,&nbsp;</#sep>
                 <#else>
-                  &hellip;
+                  ${keyword.value?trim}<#sep>,&nbsp;</#sep>
                 </#if>
-                &nbsp;&nbsp;&nbsp;to&nbsp;&nbsp;&nbsp;
-                <#if extent.end?has_content>
-                  <span class="extentEnd">${extent.end?date}</span>
+              </#list>
+            </div>
+            </#if>
+            
+            <#if inspireThemes?has_content>
+            <h3>INSPIRE theme<#if inspireThemes?size gt 1>s</#if></h3>
+            <div class="inspireThemes">
+              <#list inspireThemes?sort_by("theme") as theme>
+                <#if theme.uri?has_content>
+                  <a href="${theme.uri}" target="_blank" rel="noopener noreferrer">${theme.theme?trim}</a><#sep><br></#sep>
                 <#else>
-                  &hellip;
+                  ${theme.value?trim}<#sep><br></#sep>
                 </#if>
-                <#sep><br>&nbsp;&nbsp;&nbsp;&nbsp;and <br></#sep>
-            </#list>
+              </#list>
+            </div>
+            </#if>
+
+
+            <@displayNest "Last updated">
+              ${metadataDateTime?datetime.iso?datetime?string['dd MMMM yyyy  HH:mm']}
+            </@displayNest>
+
           </div>
-        </#if>
-
-
-        <@displayNest "Last updated">
-          ${metadataDateTime?datetime.iso?datetime?string['dd MMMM yyyy  HH:mm']}
-        </@displayNest>
+        </div>
 
         </div>
     </div>
 
   </div>
 
-
+<#-- ########## MACROS ########## -->
 <#macro displayNest key>
   <div>
     <h3>${key}</h3>
@@ -159,9 +160,12 @@
 <#macro displaySimpleList key value>
    <@displayNest key>
       <#list value as item>
-        <div>
-          ${item} 
-        </div>
+        <#if item?matches("^http(s)?://.+$")>
+          <#local foo = "<a href='" + item + "'>" + item + "</a>"> 
+        <#else>
+        <#local foo = item> 
+        </#if>
+        <div>${foo?no_esc}</div>
       </#list>
    </@displayNest>
 </#macro>
@@ -173,4 +177,16 @@
     </#list>
   </#if>
 </#macro>
+
+<#macro displayContact key value>
+    <h3>${key}<#if value?size gt 1>s</#if></h3>
+    <#list value as item>
+      <div>
+        <#if item.individualName?? && item.individualName?has_content>${item.individualName}<br></#if>
+        <#if item.organisationName?? && item.organisationName?has_content>${item.organisationName}<br></#if>
+        <#if item.email?? && item.email?has_content><a href="mailto:${item.email}">${item.email}</a></#if>
+        </div>
+    </#list>
+</#macro>
 </@skeleton.master>
+

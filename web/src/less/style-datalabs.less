@@ -14,16 +14,48 @@
   }
 }
 .adminToolbar {
+  z-index: 1000;
   position: absolute;
   top: 8rem;
   right: 2rem;
+  width: fit-content;
   .btn-wide {
-    min-width: 10em;
+    min-width: 12rem;
   }
 }
 .section {
   padding: 1em 0 2em 0;
   &-grey {
-    background-color: #eee;
+    background-color: hsl(0, 0%, 95%);
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: auto 280px;
+  grid-template-areas:
+    "one one"
+    "two two"
+    "three three";
+
+  .grid--one {
+    grid-area: one;
+  }
+  .grid--two {
+    grid-area: two;
+  }
+  .grid--three {
+    grid-area: three;
+  }
+  @media screen and (min-width: 850px) {
+    --gridspacing: 1em;
+    grid-template-areas:
+      "one two"
+      "three two";
+    .grid--two {
+      border-left: 1px solid lightgray;
+      padding-left: var(--gridspacing);
+      margin-left: var(--gridspacing);
+    }
   }
 }
