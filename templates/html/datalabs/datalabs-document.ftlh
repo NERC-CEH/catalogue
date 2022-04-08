@@ -76,6 +76,32 @@
               <@displaySimpleList "Packages" packages />
             </#if>
 
+            <#if review?? && review?has_content>
+              <h3>Review</h3>
+              <dl class="dl-horizontal">
+              <#list review as r>
+                <#if (r.reviewDate?? && r.reviewDate?has_content) || (r.reviewProcess?? && r.reviewProcess?has_content)>
+                  <dt>
+                    <#if r.reviewDate?? && r.reviewDate?has_content>
+                      ${r.reviewDate?date?string['dd MMMM yyyy']}
+                    <#else>
+                      ---
+                    </#if>
+                  </dt>
+                  <dd>
+                    <#if r.reviewProcess?? && r.reviewProcess?has_content>
+                      ${r.reviewProcess}
+                    <#else>
+                      ---
+                    </#if>
+                  </dd>
+                </#if>
+              </#list>
+              </dl>
+            </#if>
+
+
+
             <#if boundingBoxes?has_content>
               <div>
                 <h3>Spatial extent</h3>
