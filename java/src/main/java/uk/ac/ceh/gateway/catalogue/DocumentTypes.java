@@ -24,7 +24,7 @@ public class DocumentTypes {
 
     public static final String DATALABS = "datalabs-document";
     public static DocumentType DATALABS_TYPE = DocumentType.builder()
-        .title("DataLabs Document")
+        .title("DataLabs document")
         .type(DATALABS)
         .build();
 

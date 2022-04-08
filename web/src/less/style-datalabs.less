@@ -53,9 +53,11 @@
       "one two"
       "three two";
     .grid--two {
-      border-left: 1px solid lightgray;
-      padding-left: var(--gridspacing);
-      margin-left: var(--gridspacing);
+      > div {
+        border-left: 1px solid lightgray;
+        padding-left: var(--gridspacing);
+        margin-left: var(--gridspacing);
+      }
     }
   }
 }

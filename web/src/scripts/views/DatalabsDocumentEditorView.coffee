@@ -43,7 +43,7 @@ define [
 ) -> EditorView.extend
 
   initialize: ->
-    @model.set 'type', 'dataset' unless @model.has 'type'
+    @model.set 'type', 'datalab' unless @model.has 'type'
 
     @sections = [
       label: 'Basic Info'

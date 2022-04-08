@@ -37,14 +37,17 @@
           </div>
 
           <div class="grid--two">
+            <#if (owners?? && owners?has_content) || (contacts?? && contacts?has_content)>
+            <div>
+              <#if owners?? && owners?has_content>
+                  <@displayContact "Owner" owners />     
+              </#if>
 
-            <#if owners?? && owners?has_content>
-                <@displayContact "Owner" owners />     
-            </#if>
-
-            <#if contacts?? && contacts?has_content>
-                <@displayContact "Contact" contacts />     
-            </#if>
+              <#if contacts?? && contacts?has_content>
+                  <@displayContact "Contact" contacts />     
+              </#if>
+             </div>
+             </#if>
            
           </div>
 
