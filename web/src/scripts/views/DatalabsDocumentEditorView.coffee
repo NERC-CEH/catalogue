@@ -18,6 +18,7 @@ define [
   'cs!views/editor/InspireThemeView'
   'cs!views/editor/TemporalExtentView'
   'cs!views/editor/ResourceConstraintView'
+  'cs!views/editor/ReviewView'
 
 
 ], (
@@ -40,6 +41,7 @@ define [
   InspireThemeView
   TemporalExtentView
   ResourceConstraintView
+  ReviewView
 ) -> EditorView.extend
 
   initialize: ->
@@ -233,6 +235,19 @@ define [
             ModelType: MultipleDate
             label: 'Temporal extent'
             ObjectInputView: TemporalExtentView
+         ]
+      ,
+        label: 'Review'
+        title: 'Review'
+        views: [        
+
+          new ParentView
+            model: @model
+            modelAttribute: 'review'
+            label: 'Review'
+            ObjectInputView: ReviewView
+            multiline: true
+
          ]
       ,
         label: 'Categorisation'

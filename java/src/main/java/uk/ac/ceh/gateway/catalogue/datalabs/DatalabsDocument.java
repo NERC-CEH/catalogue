@@ -34,5 +34,12 @@ public class DatalabsDocument extends AbstractMetadataDocument {
     private List<InspireTheme> inspireThemes;
     private List<BoundingBox> boundingBoxes;
     private List<TimePeriod> temporalExtents;
+    private List<Review> review;
+
+    @Data
+    public static class Review {
+        private String reviewDate, reviewProcess;
+    }
+
 
 }
