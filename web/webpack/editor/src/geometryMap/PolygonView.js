@@ -5,6 +5,7 @@ import 'leaflet-draw/dist/leaflet.draw-src.css'
 import L from 'leaflet'
 import 'leaflet-draw'
 import template from './Polygon.tpl'
+import $ from 'jquery'
 export default ObjectInputView.extend({
 
   events: {
@@ -15,7 +16,7 @@ export default ObjectInputView.extend({
     L.Icon.Default.imagePath = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.4.0/images'
     this.template = _.template(template)
     this.render()
-    this.listenTo(this.model.collection, 'visible', this.viewMap)
+    // this.listenTo(this.model.collection, 'visible', this.viewMap)
   },
 
   createMap () {
@@ -130,8 +131,11 @@ export default ObjectInputView.extend({
   },
 
   render () {
-    ObjectInputView.prototype.render.apply(this)
-    this.createMap()
-    return this
+    const that = this
+    $(document).ready(function () {
+      ObjectInputView.prototype.render.apply(that)
+      that.createMap()
+      return that
+    })
   }
 })

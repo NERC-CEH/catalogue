@@ -5,6 +5,7 @@ import 'leaflet-draw/dist/leaflet.draw-src.css'
 import L from 'leaflet'
 import 'leaflet-draw'
 import template from './BoundingBox.tpl'
+import $ from 'jquery'
 
 export default ObjectInputView.extend({
 
@@ -136,8 +137,11 @@ export default ObjectInputView.extend({
   },
 
   render () {
-    ObjectInputView.prototype.render.apply(this)
-    this.createMap()
-    return this
+    const that = this
+    $(document).ready(function () {
+      ObjectInputView.prototype.render.apply(that)
+      that.createMap()
+      return that
+    })
   }
 })
