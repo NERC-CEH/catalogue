@@ -4,7 +4,7 @@ import 'leaflet/dist/leaflet.css'
 import 'leaflet-draw/dist/leaflet.draw-src.css'
 import L from 'leaflet'
 import 'leaflet-draw'
-import template from './Polygon.tpl'
+import template from './Geometry.tpl'
 import $ from 'jquery'
 export default ObjectInputView.extend({
 
@@ -13,29 +13,22 @@ export default ObjectInputView.extend({
   },
 
   initialize () {
-    L.Icon.Default.imagePath = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.4.0/images'
+    L.Icon.Default.imagePath = 'https://unpkg.com/leaflet-draw@1.0.2/dist/images/' // fix for leaflet draw image bug
     this.template = _.template(template)
     this.render()
-    // this.listenTo(this.model.collection, 'visible', this.viewMap)
   },
 
   createMap () {
     this.map = new L.Map(this.$('.map')[0], { center: new L.LatLng(51.513, -0.09), zoom: 4 })
     this.drawnItems = L.featureGroup()
-    if (this.model.get('polygon')) {
-      this.polygon = L.geoJson(JSON.parse(this.model.get('polygon')))
-      this.drawnItems.addLayer(this.polygon)
-      this.polygonButton = false
+    if (this.model.get('geometry')) {
+      const parsedJson = JSON.parse(this.model.get('geometry'))
+      this.drawButtons = false
+
+      this.geometry = L.geoJson(parsedJson)
+      this.drawnItems.addLayer(this.geometry)
     } else {
-      this.polygonButton = true
-    }
-    if (this.model.get('marker')) {
-      const marker = JSON.parse(this.model.get('marker'))
-      this.marker = L.marker([marker.lat, marker.lng])
-      this.drawnItems.addLayer(this.marker)
-      this.markerButton = false
-    } else {
-      this.markerButton = true
+      this.drawButtons = true
     }
     this.drawControl = this.createToolbar()
     this.drawnItems.addTo(this.map)
@@ -52,16 +45,9 @@ export default ObjectInputView.extend({
     this.map.addControl(this.drawControl)
 
     this.listenTo(this.map, L.Draw.Event.CREATED, function (event) {
-      const type = event.layerType
       const layer = event.layer
-      if (type === 'marker') {
-        this.model.set('marker', JSON.stringify(layer.getLatLng()))
-        this.markerButton = false
-      }
-      if (type === 'polygon') {
-        this.model.set('polygon', JSON.stringify(layer.toGeoJSON()))
-        this.polygonButton = false
-      }
+      this.drawButtons = false
+      this.model.set('geometry', JSON.stringify(layer.toGeoJSON()))
       this.map.removeControl(this.drawControl)
       this.drawControl = this.createToolbar()
       this.map.addControl(this.drawControl)
@@ -69,20 +55,9 @@ export default ObjectInputView.extend({
       this.drawnItems.addLayer(layer)
     })
 
-    this.listenTo(this.map, L.Draw.Event.DELETED, function (event) {
-      const layers = event.layers
-      const that = this
-      layers.eachLayer(function (layer) {
-        const type = that.getShapeType(layer)
-        if (type === 'marker') {
-          that.model.set('marker', null)
-          that.markerButton = true
-        }
-        if (type === 'polygon') {
-          that.model.set('polygon', null)
-          that.polygonButton = true
-        }
-      })
+    this.listenTo(this.map, L.Draw.Event.DELETED, function () {
+      this.model.set('geometry', null)
+      this.drawButtons = true
       this.map.removeControl(this.drawControl)
       this.drawControl = this.createToolbar()
       this.map.addControl(this.drawControl)
@@ -100,7 +75,7 @@ export default ObjectInputView.extend({
   },
 
   createToolbar () {
-    if (this.polygonButton === true && this.markerButton === true) {
+    if (this.drawButtons === true) {
       this.deleteButton = false
     } else {
       this.deleteButton = true
@@ -114,9 +89,9 @@ export default ObjectInputView.extend({
       },
       draw: {
         rectangle: false,
-        polygon: this.polygonButton,
+        polygon: this.drawButtons,
         polyline: false,
-        marker: this.markerButton,
+        marker: this.drawButtons,
         circle: false,
         circlemarker: false
       }

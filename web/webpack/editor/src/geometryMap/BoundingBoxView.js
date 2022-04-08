@@ -29,7 +29,6 @@ export default ObjectInputView.extend({
     this.listenTo(this.model, 'change:northBoundLatitude', function (model, value) {
       return this.$('#boundingBoxNorthBoundLatitude').val(value)
     })
-    this.listenTo(this.model.collection, 'visible', this.viewMap)
   },
 
   createMap () {

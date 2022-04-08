@@ -16,7 +16,7 @@ import {
   RelatedRecordView, ResourceConstraintView, ResourceIdentifierView,
   ResourceTypeView,
   ServiceView,
-  SingleObjectView,
+  SingleObjectView, SpatialReferenceSystemView, SpatialRepresentationTypeView, SpatialResolutionView,
   SupplementalView,
   TemporalExtentView,
   TextareaView,
@@ -29,11 +29,13 @@ import {
   InspireTheme, MapDataSource,
   MultipleDate,
   OnlineResource,
-  ResourceType, Service, Supplemental,
+  ResourceType, Service, SpatialResolution, Supplemental,
   TopicCategory
 } from '../models'
 import EditorView from '../EditorView'
 import InputView from '../InputView'
+import BoundingBoxView from '../geometryMap/BoundingBoxView'
+import BoundingBox from '../geometryMap/BoundingBox'
 
 export default EditorView.extend({
 

@@ -1,6 +1,7 @@
 import _ from 'underscore'
 import ObjectInputView from './ObjectInputView'
 import template from '../templates/DataTypeSchema.tpl'
+import $ from 'underscore'
 
 export default ObjectInputView.extend({
 
