@@ -4,8 +4,6 @@ import ObjectInputView from './ObjectInputView'
 
 export default ObjectInputView.extend({
 
-  template,
-
   className: 'component component--servicetype visible',
 
   render () {

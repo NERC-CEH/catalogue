@@ -9,8 +9,6 @@ import $ from 'jquery'
 
 export default ObjectInputView.extend({
 
-  template,
-
   events () {
     return _.extend({}, ObjectInputView.prototype.events, {
       'click .addReprojection': 'addReprojection',

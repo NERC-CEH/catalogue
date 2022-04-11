@@ -9,10 +9,10 @@ export default InputView.extend({
 
   events () {
     return _.extend({}, InputView.prototype.events, {
-      'keyup #term' () { return (this.searchOnceComplete)() },
-      'change #term' () { return (this.search)() },
-      'change #catalogue' () { return (this.search)() },
-      'click button' () { return (this.search)() }
+      'keyup #term' () { return this.searchOnceComplete() },
+      'change #term' () { return this.search() },
+      'change #catalogue' () { return this.search() },
+      'click button' () { return this.search() }
     }
     )
   },
@@ -49,8 +49,8 @@ export default InputView.extend({
     const $select = this.$('#catalogue')
     _.each(this.catalogues, catalogue => {
       return $select.append(this.optionTemplate(_.extend({}, catalogue, { data: this.data })))
-    });
-    (this.search)()
+    })
+    this.search()
     return this
   },
 

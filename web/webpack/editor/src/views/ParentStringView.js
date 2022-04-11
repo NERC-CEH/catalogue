@@ -35,7 +35,7 @@ export default SingleView.extend({
       update: (event, ui) => {
         const toMove = (this.array.splice(this._oldPosition, 1))[0]
         this.array.splice(ui.item.index(), 0, toMove)
-        return (this.updateModel)()
+        return this.updateModel()
       }
     })
   },
@@ -64,16 +64,16 @@ export default SingleView.extend({
     const index = $target.data('index')
     const value = $target.val()
     this.array.splice(index, 1, value)
-    return (this.updateModel)()
+    return this.updateModel()
   },
 
   removeChild (event) {
-    (event.preventDefault)()
+    event.preventDefault()
     const $target = $(event.currentTarget)
     const index = $target.data('index')
     this.array.splice(index, 1)
     this.$(`#input${this.data.modelAttribute}${index}`).remove()
-    return (this.updateModel)()
+    return this.updateModel()
   },
 
   addChild (event) {
@@ -86,7 +86,7 @@ export default SingleView.extend({
     })
     )
     this.$(`#input${this.data.modelAttribute}${index} input`).focus()
-    return (this.updateModel)()
+    return this.updateModel()
   },
 
   updateModel () {

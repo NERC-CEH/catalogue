@@ -7,8 +7,6 @@ import template from '../templates/MapAttribute.tpl'
 
 export default ObjectInputView.extend({
 
-  template,
-
   defaultLegend: {
     style: {
       colour: '#000000'

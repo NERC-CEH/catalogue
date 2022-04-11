@@ -5,8 +5,6 @@ import $ from 'jquery'
 
 export default ObjectInputView.extend({
 
-  template,
-
   initialize (options) {
     this.template = _.template(template)
     return ObjectInputView.prototype.initialize.apply(this)
