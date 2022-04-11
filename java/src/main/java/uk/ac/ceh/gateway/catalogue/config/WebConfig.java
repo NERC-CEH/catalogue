@@ -23,7 +23,7 @@ import uk.ac.ceh.gateway.catalogue.converters.Object2TemplatedMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.TransparentProxyMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.WmsFeatureInfo2XmlMessageConverter;
 import uk.ac.ceh.gateway.catalogue.datacite.DataciteResponse;
-import uk.ac.ceh.gateway.catalogue.datalabs.DatalabsDocument;
+import uk.ac.ceh.gateway.catalogue.model.CodeDocument;
 import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.document.writing.MessageConverterWritingService;
 import uk.ac.ceh.gateway.catalogue.ef.Activity;
@@ -74,7 +74,7 @@ public class WebConfig implements WebMvcConfigurer {
         val cehModelApplication = new Object2TemplatedMessageConverter<>(CehModelApplication.class, freemarkerConfiguration);
         val citation = new Object2TemplatedMessageConverter<>(Citation.class, freemarkerConfiguration);
         val datacite = new Object2TemplatedMessageConverter<>(DataciteResponse.class, freemarkerConfiguration);
-        val datalabs = new Object2TemplatedMessageConverter<>(DatalabsDocument.class, freemarkerConfiguration);
+        val code = new Object2TemplatedMessageConverter<>(CodeDocument.class, freemarkerConfiguration);
         val dataset = new Object2TemplatedMessageConverter<>(Dataset.class, freemarkerConfiguration);
         val dataType = new Object2TemplatedMessageConverter<>(DataType.class, freemarkerConfiguration);
         val elter = new Object2TemplatedMessageConverter<>(ElterDocument.class, freemarkerConfiguration);
@@ -121,7 +121,7 @@ public class WebConfig implements WebMvcConfigurer {
             cehModel,
             cehModelApplication,
             citation,
-            datalabs,
+            code,
             dataset,
             dataType,
             elter,

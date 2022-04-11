@@ -45,12 +45,22 @@ define [
 ) -> EditorView.extend
 
   initialize: ->
-    @model.set 'type', 'datalab' unless @model.has 'type'
+    @model.set 'type', 'notebook' unless @model.has 'type'
 
     @sections = [
       label: 'Basic Info'
       title: 'Basic Info'
       views: [
+          new SelectView
+            model: @model
+            modelAttribute: 'type'
+            label: 'Record type'
+            options: [
+              {value: 'notebook', label: 'Notebook'},
+              {value: 'datalabProject', label: 'Datalab project'},
+              {value: 'codeSnippet', label: 'Code snippet'}
+            ]
+
           new InputView
             model: @model
             modelAttribute: 'title'

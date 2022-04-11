@@ -1,4 +1,4 @@
-                            package uk.ac.ceh.gateway.catalogue.datalabs;
+package uk.ac.ceh.gateway.catalogue.model;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -23,9 +23,9 @@ import java.util.List;
 @ToString(callSuper=true)
 @Accessors(chain=true)
 @ConvertUsing({
-    @Template(called="html/datalabs/datalabs-document.ftlh", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
+    @Template(called="html/code/code-document.ftlh", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
 })
-public class DatalabsDocument extends AbstractMetadataDocument {
+public class CodeDocument extends AbstractMetadataDocument {
     private String assetType, version, masterUrl, primaryLanguage, secondaryLanguage;
     private List<String> packages, inputs, outputs;
     private List<ResponsibleParty> responsibleParties;

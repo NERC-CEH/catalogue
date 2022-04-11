@@ -35,7 +35,7 @@ public class CatalogueServiceConfig {
                 .documentType(GEMINI_TYPE)
                 .documentType(CEH_MODEL_TYPE)
                 .documentType(CEH_MODEL_APPLICATION_TYPE)
-                .documentType(DATALABS_TYPE)
+                .documentType(CODE_TYPE)
                 .documentType(UKEMS_TYPE)
                 .vocabularies(getCatalogueVocabularies(vocabularies, defaultCatalogueKey))
                 .fileUpload(false)
