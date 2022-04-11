@@ -48,7 +48,7 @@
     </div>
     <div class="panel-footer">
         <div class="buttons">
-            <% if (moving) { %>
+            <% if (datastore === 'dropbox' && moving) { %>
                 <button class="cancel btn btn-success">
                     <i class="btn-icon fas fa-ban"></i>
                     <span>Cancel</span>
@@ -76,7 +76,7 @@
                     <i class="btn-icon fas fa-level-down-alt"></i>
                     <span>Move to Datastore</span>
                 </button>
-            <% } else if (action === 'accept') { %>
+            <% } else if (datastore === 'dropbox' && action === 'accept') { %>
                 <button class="delete btn btn-danger">
                     <i class="btn-icon fas fa-trash"></i>
                     <span>Delete</span>
@@ -85,7 +85,7 @@
                     <i class="btn-icon fas fa-check"></i>
                     <span>Accept</span>
                 </button>
-            <% } else if (action === 'ignore') { %>
+            <% } else if (datastore === 'dropbox' && action === 'ignore') { %>
                 <button class="ignore btn btn-danger">
                     <i class="btn-icon fas fa-times"></i>
                     <span>Ignore</span>
