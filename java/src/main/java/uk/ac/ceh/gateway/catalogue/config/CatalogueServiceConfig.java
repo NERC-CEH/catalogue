@@ -290,6 +290,7 @@ public class CatalogueServiceConfig {
                 .logo("elter.png")
                 .facetKey("elterDeimsSite")
                 .documentType(ELTER_TYPE)
+                .documentType(CODE_TYPE)
                 .documentType(LINKED_ELTER_TYPE)
                 .vocabularies(getCatalogueVocabularies(vocabularies, defaultCatalogueKey))
                 .fileUpload(false)

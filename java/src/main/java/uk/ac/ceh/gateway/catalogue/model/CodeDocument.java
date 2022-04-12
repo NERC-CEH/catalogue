@@ -15,6 +15,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.InspireTheme;
 import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
+import uk.ac.ceh.gateway.catalogue.gemini.RelatedRecord;
 
 import java.util.List;
 
@@ -35,6 +36,8 @@ public class CodeDocument extends AbstractMetadataDocument {
     private List<BoundingBox> boundingBoxes;
     private List<TimePeriod> temporalExtents;
     private List<Review> review;
+    private List<RelatedRecord> relatedRecords;
+
 
     @Data
     public static class Review {

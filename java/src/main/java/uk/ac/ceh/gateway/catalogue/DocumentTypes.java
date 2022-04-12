@@ -24,7 +24,7 @@ public class DocumentTypes {
 
     public static final String CODE = "code-document";
     public static DocumentType CODE_TYPE = DocumentType.builder()
-        .title("DataLabs document")
+        .title("Code/notebook")
         .type(CODE)
         .build();
 

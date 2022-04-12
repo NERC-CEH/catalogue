@@ -11,14 +11,29 @@
     >
 </#if>
 
+<#assign
+  rel_memberOf = jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#memberOf")
+  rel_hasMember = jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#memberOf")
+  rel_related = jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#relatedTo") + jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#relatedTo")
+  relationships = rel_memberOf + rel_hasMember + rel_related
+> 
+
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
 
-  <div id="metadata">
+  <div class="codeDocument">
     <#include "_admin.ftlh">
 
     <div class="section section-grey">
       <div class="container">
-        <h1>${title}</h1>
+        <h1>
+          <#if type?? && type?has_content>
+            <small>${codes.lookup('metadata.resourceType', type)!''}</small><br>
+          </#if>
+          ${title}
+          <#if (metadata.state == 'draft' || metadata.state == 'pending') >
+            <small class="text-danger"><b>${codes.lookup('publication.state', metadata.state)?upper_case!''}</b></small>
+          </#if>
+        </h1>
         <#if description?? && description?has_content>
           <div><@linebreaks description /></div>
         </#if>
@@ -56,9 +71,18 @@
             <#if version?? && version?has_content>
               <@displaySimple "Version" version />
             </#if>
+
             <#if masterUrl?? && masterUrl?has_content>
-              <@displaySimple "Master URL" masterUrl />
+              <h3>Master url</h3>
+              <p>
+                <#if masterUrl?matches("^http.+")>
+                  <a href="${masterUrl} target="_blank" rel="noreferrer noopener">${masterUrl}</a>
+                <#else>
+                  ${masterUrl}
+                </#if>
+              </p>
             </#if>
+            
             <#if primaryLanguage?? && primaryLanguage?has_content>
               <@displaySimple "Primary language" primaryLanguage />
             </#if>
@@ -133,6 +157,23 @@
               </div>
             </#if>
 
+            <#if relationships?has_content>
+              <h3>Related record<#if relationships?size gt 1>s</#if></h3>
+              
+              <#if rel_memberOf?has_content>
+                <@displayRelations rel_memberOf "This notebook is used in" /> 
+              </#if>
+
+              <#if rel_hasMember?has_content>
+                <@displayRelations rel_hasMember "This project uses" /> 
+              </#if>
+
+              <#if rel_related?has_content>
+                <@displayRelations rel_related "Other related records" /> 
+              </#if>
+
+            </#if>
+
             <#if keywords?has_content>
             <h3>Keyword<#if keywords?size gt 1>s</#if></h3>
             <div class="keywords">
@@ -182,7 +223,7 @@
 
 <#macro displaySimple key value>
    <@displayNest key>
-      ${value}
+      <p>${value}</p>
    </@displayNest>
 </#macro>
 
@@ -197,6 +238,14 @@
         <div>${foo?no_esc}</div>
       </#list>
    </@displayNest>
+</#macro>
+
+<#macro displayRelations key label>
+  <dl class="dl-horizontal"><dt>${label}</dt><dd>
+  <#list key as item>
+      <a href=" ${item.href}">${item.title}</a>
+    <#sep><br></#sep>
+  </#list></dd></dl>
 </#macro>
 
 <#macro linebreaks value>

@@ -19,7 +19,7 @@ define [
   'cs!views/editor/TemporalExtentView'
   'cs!views/editor/ResourceConstraintView'
   'cs!views/editor/ReviewView'
-
+  'cs!views/editor/RelatedRecordView'
 
 ], (
   EditorView
@@ -42,6 +42,7 @@ define [
   TemporalExtentView
   ResourceConstraintView
   ReviewView
+  RelatedRecordView
 ) -> EditorView.extend
 
   initialize: ->
@@ -57,7 +58,7 @@ define [
             label: 'Record type'
             options: [
               {value: 'notebook', label: 'Notebook'},
-              {value: 'datalabProject', label: 'Datalab project'},
+              {value: 'codeProject', label: 'Code project'},
               {value: 'codeSnippet', label: 'Code snippet'}
             ]
 
@@ -83,6 +84,10 @@ define [
               {value: 'RStudio project', label: 'RStudio project'},
               {value: 'RShiny app', label: 'RShiny app'}
             ]
+            helpText: """
+                      <p>(only relevant for notebooks)</p>
+                      """
+
 
           new InputView
             model: @model
@@ -102,26 +107,34 @@ define [
             model: @model
             modelAttribute: 'primaryLanguage'
             label: 'Primary language'
+            listAttribute: """
+                  <option value='Python' />
+                  <option value='R' />
+                  """
 
           new InputView
             model: @model
             modelAttribute: 'secondaryLanguage'
             label: 'Secondary language'
+            listAttribute: """
+                  <option value='Python' />
+                  <option value='R' />
+                  """
 
           new ParentStringView
             model: @model
             modelAttribute: 'inputs'
-            label: 'inputs'
+            label: 'Inputs'
 
           new ParentStringView
             model: @model
             modelAttribute: 'outputs'
-            label: 'outputs'
+            label: 'Outputs'
 
           new ParentStringView
             model: @model
             modelAttribute: 'packages'
-            label: 'packages'
+            label: 'Packages'
         ]
       ,
         label: 'Contacts'
@@ -275,6 +288,14 @@ define [
             modelAttribute: 'keywords'
             label: 'Keywords'
             ObjectInputView: KeywordView
+
+          new ParentView
+            model: @model
+            modelAttribute: 'relatedRecords'
+            label: 'Related records'
+            ObjectInputView: RelatedRecordView
+            multiline: true
+
       ]
     ]
 
