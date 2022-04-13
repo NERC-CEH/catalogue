@@ -71,37 +71,12 @@ define [
             model: @model
             modelAttribute: 'description'
             label: 'Description'
-            rows: 10
-
-          new SelectView
-            model: @model
-            modelAttribute: 'assetType'
-            label: 'Type'
-            options: [
-              {value: '', label: ''},
-              {value: 'Jupyter notebook', label: 'Jupyter notebook'},
-              {value: 'Zeppelin notebook', label: 'Zeppelin notebook'},
-              {value: 'RStudio project', label: 'RStudio project'},
-              {value: 'RShiny app', label: 'RShiny app'}
-            ]
-            helpText: """
-                      <p>(only relevant for notebooks)</p>
-                      """
-
+            rows: 5
 
           new InputView
             model: @model
             modelAttribute: 'masterUrl'
             label: 'Master URL'
-        ]
-      ,
-        label: 'Technical'
-        title: 'Technical'
-        views: [        
-          new InputView
-            model: @model
-            modelAttribute: 'version'
-            label: 'Version'
           
           new InputView
             model: @model
@@ -121,6 +96,39 @@ define [
                   <option value='R' />
                   """
 
+          new SelectView
+            model: @model
+            modelAttribute: 'assetType'
+            label: 'Type'
+            options: [
+              {value: '', label: ''},
+              {value: 'Jupyter notebook', label: 'Jupyter notebook'},
+              {value: 'Zeppelin notebook', label: 'Zeppelin notebook'},
+              {value: 'RStudio project', label: 'RStudio project'},
+              {value: 'RShiny app', label: 'RShiny app'}
+            ]
+            helpText: """
+                      <p>(only relevant for notebooks)</p>
+                      """
+
+          new InputView
+            model: @model
+            modelAttribute: 'version'
+            label: 'Version'
+
+          new SingleObjectView
+            model: @model
+            modelAttribute: 'referenceDate'
+            ModelType: MultipleDate
+            label: 'Dates'
+            ObjectInputView: DatasetReferenceDateView
+
+        ]
+      ,
+        label: 'Inputs & Outputs'
+        title: 'Inputs, outputs, packages and review'
+        views: [        
+
           new ParentStringView
             model: @model
             modelAttribute: 'inputs'
@@ -135,38 +143,19 @@ define [
             model: @model
             modelAttribute: 'packages'
             label: 'Packages'
-        ]
-      ,
-        label: 'Contacts'
-        title: 'Contacts'
-        views: [        
-
-          new PredefinedParentView
+          
+          new ParentView
             model: @model
-            ModelType: Contact
-            modelAttribute: 'responsibleParties'
-            label: 'Contacts'
-            ObjectInputView: ContactView
+            modelAttribute: 'review'
+            label: 'Review'
+            ObjectInputView: ReviewView
             multiline: true
-            predefined:
-              'UKCEH owner':
-                organisationName: 'UK Centre for Ecology & Hydrology'
-                role: 'owner'
-                email: 'enquiries@ceh.ac.uk'
-                organisationIdentifier: 'https://ror.org/00pggkr55'
-              'Oher owner':
-                role: 'owner'
+
         ]
       ,
-        label: 'Licensing'
-        title: 'Licensing'
+        label: 'Licensing & Contacts'
+        title: 'Licensing and contacts'
         views: [        
-          new SingleObjectView
-            model: @model
-            modelAttribute: 'referenceDate'
-            ModelType: MultipleDate
-            label: 'Dates'
-            ObjectInputView: DatasetReferenceDateView
 
           new PredefinedParentView
             model: @model
@@ -192,10 +181,25 @@ define [
                 uri: 'https://creativecommons.org/licenses/by-sa/4.0/'
                 code: 'license'
 
+          new PredefinedParentView
+            model: @model
+            ModelType: Contact
+            modelAttribute: 'responsibleParties'
+            label: 'Contacts'
+            ObjectInputView: ContactView
+            multiline: true
+            predefined:
+              'UKCEH owner':
+                organisationName: 'UK Centre for Ecology & Hydrology'
+                role: 'owner'
+                email: 'enquiries@ceh.ac.uk'
+                organisationIdentifier: 'https://ror.org/00pggkr55'
+              'Oher owner':
+                role: 'owner'
          ]
       ,
-        label: 'Extent'
-        title: 'Extent'
+        label: 'Classification'
+        title: 'Classification'
         views: [        
           new PredefinedParentView
             model: @model
@@ -258,24 +262,7 @@ define [
             ModelType: MultipleDate
             label: 'Temporal extent'
             ObjectInputView: TemporalExtentView
-         ]
-      ,
-        label: 'Review'
-        title: 'Review'
-        views: [        
 
-          new ParentView
-            model: @model
-            modelAttribute: 'review'
-            label: 'Review'
-            ObjectInputView: ReviewView
-            multiline: true
-
-         ]
-      ,
-        label: 'Categorisation'
-        title: 'Categorisation'
-        views: [        
           new ParentView
             model: @model
             ModelType: InspireTheme
