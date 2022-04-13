@@ -1,6 +1,6 @@
 import template from '../../templates/service-agreement/TextOnly.tpl'
 import _ from 'underscore'
-import { SingleView } from '../../index'
+import SingleView from '../../SingleView'
 
 export default SingleView.extend({
 
@@ -9,7 +9,7 @@ export default SingleView.extend({
   initialize (options) {
     this.template = _.template(template)
     SingleView.prototype.initialize.call(this, options)
-    return (this.render)()
+    return this.render()
   },
 
   render () {

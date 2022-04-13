@@ -1,25 +1,23 @@
 import _ from 'underscore'
 import Backbone from 'backbone'
-import { EditorView, InputView } from '../index'
-import {
-  AuthorView,
-  CategoryView,
-  EndUserLicenceView,
-  FileView, RightsHolderView,
-  SupportingDocView,
-  TextOnlyView
-} from '../views/service-agreement'
+import { InputView } from '../index'
 import {
   DescriptiveKeywordView,
   FundingView,
   ParentView,
   PredefinedParentView,
   SingleObjectView,
-  TextareaView
+  TextareaView,
+  AuthorView,
+  CategoryView,
+  EndUserLicenceView,
+  FileView, RightsHolderView,
+  SupportingDocView,
+  TextOnlyView
 } from '../views'
-import { Author, DescriptiveKeyword, Funding } from '../models'
-import { RightsHolder, SupportingDoc } from '../models/service-agreement'
+import { Author, DescriptiveKeyword, Funding, RightsHolder, SupportingDoc } from '../models'
 import { BoundingBox, BoundingBoxView } from '../geometryMap'
+import EditorView from '../EditorView'
 
 export default EditorView.extend({
 

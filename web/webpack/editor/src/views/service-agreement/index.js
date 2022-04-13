@@ -1,7 +1,0 @@
-export { default as AuthorView } from './AuthorView'
-export { default as CategoryView } from './CategoryView'
-export { default as EndUserLicenceView } from './EndUserLicenceView'
-export { default as FileView } from './FileView'
-export { default as RightsHolderView } from './RightsHolderView'
-export { default as SupportingDocView } from './SupportingDocView'
-export { default as TextOnlyView } from './TextOnlyView'

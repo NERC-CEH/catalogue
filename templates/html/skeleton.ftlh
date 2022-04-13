@@ -4,6 +4,7 @@
 
 <#assign defaultScripts>
   <script data-main="/static/scripts/main-out" src="/static/vendor/requirejs/require.js"></script>
+  <script src="/static/scripts/editor.bundle.js"></script>
 </#assign>
 
 <#macro master title catalogue="" rdf="" schemaorg="" canonical="" searching=false can_edit_restricted=false containerClass="container" scripts=defaultScripts>

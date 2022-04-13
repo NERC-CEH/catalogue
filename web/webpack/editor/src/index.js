@@ -22,10 +22,9 @@ import {
   SampleArchiveEditorView,
   OsdpMonitoringFacilityEditorView,
   OsdpMonitoringProgrammeEditorView,
-  OsdpMonitoringActivityEditorView, OsdpDatasetEditorView, CehModelEditorView
-  // , ServiceAgreementEditorView,
+  OsdpMonitoringActivityEditorView, OsdpDatasetEditorView, CehModelEditorView, ServiceAgreementEditorView, GeminiEditorView
 } from './editors'
-import GeminiEditorView from './editors/GeminiEditorView'
+import { ServiceAgreement } from './models'
 
 export { default as EditorView } from './EditorView'
 export { default as EditorMetadata } from './EditorMetadata'
@@ -33,8 +32,6 @@ export { default as InputView } from './InputView'
 export { default as SelectView } from './SelectView'
 export { default as SingleView } from './SingleView'
 
-// Some editors are commented out as they still use OpenLayers 2 which cannot be used with webpack
-// They will be added back in when Openlayers 2 is replaced with Leaflet
 const lookup = {
   GEMINI_DOCUMENT: {
     View: GeminiEditorView,
@@ -146,11 +143,11 @@ const lookup = {
     Model: EditorMetadata,
     mediaType: 'application/vnd.linked-elter+json'
   },
-  // 'service-agreement': {
-  //   View: ServiceAgreementEditorView,
-  //   Model: ServiceAgreement,
-  //   mediaType: 'application/json'
-  // },
+  'service-agreement': {
+    View: ServiceAgreementEditorView,
+    Model: ServiceAgreement,
+    mediaType: 'application/json'
+  },
   'ukems-document': {
     View: UkemsDocumentEditorView,
     Model: EditorMetadata,
@@ -163,33 +160,65 @@ const lookup = {
   }
 }
 
+if ($('.edit-control').length) { initEditor() }
+if ($('.service-agreement').length) { initServiceAgreement() }
+
+function initEditor () {
 // the create document dropdown
-const $editorCreate = $('#editorCreate')
+  const $editorCreate = $('#editorCreate')
 
-$('.edit-control').on('click', function (event) {
-  (event.preventDefault)()
+  $('.edit-control').on('click', function (event) {
+    (event.preventDefault)()
 
-  const title = $(event.target).data('documentType')
-  const documentType = lookup[title]
+    const title = $(event.target).data('documentType')
+    const documentType = lookup[title]
 
-  if ($editorCreate.length) {
-    return new documentType.View({
-      model: new documentType.Model(null, documentType, title),
-      el: '#search'
-    })
-  } else {
-    return $.ajax({
-      url: $(location).attr('href'),
-      dataType: 'json',
-      accepts: {
-        json: documentType.mediaType
-      },
-      success (data) {
-        return new documentType.View({
-          model: new documentType.Model(data, documentType, title),
-          el: '#metadata'
-        })
-      }
-    })
-  }
-})
+    if ($editorCreate.length) {
+      return new documentType.View({
+        model: new documentType.Model(null, documentType, title),
+        el: '#search'
+      })
+    } else {
+      return $.ajax({
+        url: $(location).attr('href'),
+        dataType: 'json',
+        accepts: {
+          json: documentType.mediaType
+        },
+        success (data) {
+          return new documentType.View({
+            model: new documentType.Model(data, documentType, title),
+            el: '#metadata'
+          })
+        }
+      })
+    }
+  })
+}
+
+function initServiceAgreement () {
+  const $gemini = $('#service-agreement-gemini')
+
+  $('.service-agreement').on('click', function (event) {
+    (event.preventDefault)()
+    const id = $(event.currentTarget).data('id')
+    const data = { eidcContactDetails: 'info@eidc.ac.uk' }
+    const options = { id }
+
+    if ($gemini.length) {
+      return $.ajax({
+        url: `/service-agreement/${id}`,
+        type: 'GET',
+        success () {
+          window.location.href = `/service-agreement/${id}`
+        },
+        error () {
+          return new ServiceAgreementEditorView({
+            el: '#metadata',
+            model: new ServiceAgreement(data, options)
+          })
+        }
+      })
+    }
+  })
+}
