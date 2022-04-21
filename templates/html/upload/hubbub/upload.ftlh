@@ -21,7 +21,7 @@
             <@loadMoreRow "data"/>
             <#if isAdmin && isInProgress>
                 <@row>
-                    <div class="col-md-3 col-md-offset-3">
+                    <div class="col-md-3">
                         <@moveAllDatastoreButton/>
                     </div>
                     <div class="col-md-3">
@@ -30,10 +30,13 @@
                     <div class="col-md-3">
                         <@hashDropboxButton/>
                     </div>
+                    <div class="col-md-3">
+                        <@registerDropboxButton/>
+                    </div>
                 </@row>
             <#elseif isAdmin && isOpen>
                 <@row>
-                    <div class="col-md-3 col-md-offset-3">
+                    <div class="col-md-3">
                         <@moveAllDatastoreButton/>
                     </div>
                     <div class="col-md-3">
@@ -42,14 +45,20 @@
                     <div class="col-md-3">
                         <@hashDropboxButton/>
                     </div>
+                    <div class="col-md-3">
+                        <@registerDropboxButton/>
+                    </div>
                 </@row>
             <#elseif isAdmin>
                 <@row>
-                    <div class="col-md-3 col-md-offset-6">
+                    <div class="col-md-3 col-md-offset-3">
                         <@moveAllDatastoreButton/>
                     </div>
                     <div class="col-md-3">
                         <@hashDropboxButton/>
+                    </div>
+                    <div class="col-md-3">
+                        <@registerDropboxButton/>
                     </div>
                 </@row>
             </#if>
@@ -201,11 +210,15 @@
 </#macro>
 
 <#macro hashDropboxButton>
-    <@button "Generate Dropbox checksums" "hash-dropbox" "microchip"/>
+    <@button "Generate Dropbox checksums" "move-all hash-dropbox" "microchip"/>
 </#macro>
 
 <#macro loadMoreButton storage>
     <@button "View More" "load ${storage}" "angle-double-down"/>
+</#macro>
+
+<#macro registerDropboxButton>
+    <@button "Register files" "move-all register-dropbox" "folder-open"/>
 </#macro>
 
 <#macro scheduleButton>

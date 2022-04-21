@@ -8,6 +8,7 @@ export default Backbone.View.extend({
   events: {
     'click .finish': 'finish',
     'click .hash-dropbox': 'hashDropbox',
+    'click .register-dropbox': 'registerDropbox',
     'click .load.datastore': 'loadDatastore',
     'click .load.data': 'loadDropbox',
     'click .load.metadata': 'loadMetadata',
@@ -214,6 +215,22 @@ export default Backbone.View.extend({
         that.dropbox.each(model => that.addOne(that.datastore, that.$datastore, model.copy('eidchub')))
         that.dropbox.reset()
         that.showNormal(event, currentClasses)
+      },
+      error () {
+        that.showInError(event)
+      }
+    })
+  },
+
+  registerDropbox (event) {
+    const that = this
+    const currentClasses = this.showInProgress(event)
+    return $.ajax({
+      url: `${this.model.url()}/register`,
+      type: 'POST',
+      success () {
+        that.showNormal(event, currentClasses)
+        that.reloadPage()
       },
       error () {
         that.showInError(event)
