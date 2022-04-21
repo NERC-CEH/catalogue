@@ -210,7 +210,7 @@
 </#macro>
 
 <#macro hashDropboxButton>
-    <@button "Generate Dropbox checksums" "move-all hash-dropbox" "microchip"/>
+    <@button "Generate Dropbox checksums" "data-action hash-dropbox" "microchip"/>
 </#macro>
 
 <#macro loadMoreButton storage>
@@ -218,7 +218,7 @@
 </#macro>
 
 <#macro registerDropboxButton>
-    <@button "Register files" "move-all register-dropbox" "folder-open"/>
+    <@button "Register files" "data-action register-dropbox" "folder-open"/>
 </#macro>
 
 <#macro scheduleButton>
