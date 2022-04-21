@@ -201,6 +201,16 @@ public class UploadController {
 
     @PreAuthorize("@permission.userCanUpload(#datasetId)")
     @ResponseStatus(NO_CONTENT)
+    @PostMapping("register")
+    public void register(
+        @ActiveUser CatalogueUser user,
+        @PathVariable("datasetId") String datasetId
+    ) {
+        uploadService.register(datasetId, user.getUsername());
+    }
+
+    @PreAuthorize("@permission.userCanUpload(#datasetId)")
+    @ResponseStatus(NO_CONTENT)
     @PostMapping("{datastore}/unregister")
     public void unregister(
         @ActiveUser CatalogueUser user,

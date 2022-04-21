@@ -534,6 +534,7 @@ describe('UploadView', function () {
       expect(callback).toHaveBeenCalled()
     })
   })
+
   describe('hash', function () {
     beforeEach(function () {
       jasmine.Ajax.install()
@@ -568,6 +569,47 @@ describe('UploadView', function () {
       expect(request.method).toBe('POST')
       expect(request.url).toBe(`/upload/${id}/hash`)
       expect(view.collectionSuccess).toHaveBeenCalledWith(jasmine.anything(), undefined, 'dropbox', 'dropbox', jasmine.anything())
+    })
+  })
+
+  describe('register', function () {
+    beforeEach(function () {
+      jasmine.Ajax.install()
+      $(document.body)
+        .html(`
+            <div class="document-upload">
+                <button class="register-dropbox"></button>
+            </div>
+        `)
+      model = new UploadModel({ id })
+      view = new UploadView({
+        el: '.document-upload',
+        model
+      })
+    })
+
+    afterEach(function () {
+      jasmine.Ajax.uninstall()
+    })
+
+    it('success', function () {
+      // given
+      spyOn(view, 'showInProgress')
+      spyOn(view, 'showNormal')
+      spyOn(view, 'reloadPage')
+
+      // when
+      view.$('.register-dropbox').trigger('click')
+
+      // then
+      const request = jasmine.Ajax.requests.mostRecent()
+      // noinspection JSCheckFunctionSignatures
+      request.respondWith(testResponses.success)
+      expect(request.method).toBe('POST')
+      expect(request.url).toBe(`/upload/${id}/register`)
+      expect(view.showInProgress).toHaveBeenCalled()
+      expect(view.showNormal).toHaveBeenCalled()
+      expect(view.reloadPage).toHaveBeenCalled()
     })
   })
 })

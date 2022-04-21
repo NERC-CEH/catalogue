@@ -488,6 +488,21 @@ class UploadControllerTest {
 
     @Test
     @SneakyThrows
+    void register() {
+        //given
+        givenUserCanUpload();
+
+        //when
+        mvc.perform(post("/upload/{datasetId}/register", datasetId)
+            .header("remote-user", UPLOADER_USERNAME)
+        ).andExpect(status().is2xxSuccessful());
+
+        //then
+        verify(uploadService).register(datasetId, UPLOADER_USERNAME);
+    }
+
+    @Test
+    @SneakyThrows
     void unregister() {
         //given
         givenUserCanUpload();

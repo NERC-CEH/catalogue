@@ -211,6 +211,18 @@ public class UploadService {
         }
     }
 
+    public void register(String datasetId, String user) {
+        val urlTemplate = format("%s/register/{datasetId}?username={user}", address);
+        restTemplate.exchange(
+            urlTemplate,
+            POST,
+            new HttpEntity<>(withBasicAuth(username, password)),
+            Void.class,
+            datasetId,
+            user
+        );
+    }
+
     private void register(String datasetId, String path, String user, long size) {
         val urlTemplate = format("%s/register/{datasetId}?path={path}&username={user}&size={size}", address);
         restTemplate.exchange(
