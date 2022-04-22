@@ -22,10 +22,10 @@ public class DocumentTypes {
         .type(DATA_TYPE)
         .build();
 
-    public static final String DATALABS = "datalabs-document";
-    public static DocumentType DATALABS_TYPE = DocumentType.builder()
-        .title("DataLabs Document")
-        .type(DATALABS)
+    public static final String CODE = "code-document";
+    public static DocumentType CODE_TYPE = DocumentType.builder()
+        .title("Code/notebook")
+        .type(CODE)
         .build();
 
     public static final String EF_DOCUMENT = "EF_DOCUMENT";

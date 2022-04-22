@@ -15,7 +15,7 @@ import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
-import uk.ac.ceh.gateway.catalogue.datalabs.DatalabsDocument;
+import uk.ac.ceh.gateway.catalogue.model.CodeDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
@@ -27,17 +27,17 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.DATALABS_JSON_VALUE;
+import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.CODE_JSON_VALUE;
 
 @WithMockCatalogueUser
 @ActiveProfiles("test")
-@DisplayName("DatalabsDocumentController")
+@DisplayName("CodeDocumentController")
 @Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
 @WebMvcTest(
-    controllers=DatalabsDocumentController.class,
+    controllers=CodeDocumentController.class,
     properties="spring.freemarker.template-loader-path=file:../templates"
 )
-class DatalabsDocumentControllerTest {
+class CodeDocumentControllerTest {
     @MockBean private DocumentRepository documentRepository;
     @MockBean(name="permission") private PermissionService permissionService;
     @Autowired private Configuration configuration;
@@ -51,8 +51,7 @@ class DatalabsDocumentControllerTest {
             {
                 "title": "Datalabs test",
                 "version": "1",
-                "masterUrl": "https://example.com/datalabs",
-                "owners": ["Abe", "Bee", "Cee"]
+                "masterUrl": "https://example.com/datalabs"
             }
             """;
 
@@ -85,21 +84,21 @@ class DatalabsDocumentControllerTest {
     }
 
     @Test
-    public void checkCanCreateDatalabsDocument() throws Exception {
+    public void checkCanCreateCodeDocument() throws Exception {
         //Given
         givenUserCanCreate();
         givenFreemarkerConfiguration();
         givenCatalogue();
 
-        DatalabsDocument document = new DatalabsDocument();
+        CodeDocument document = new CodeDocument();
         document.setUri("https://catalogue.ceh.ac.uk/id/123-test");
         document.setMetadata(MetadataInfo.builder().catalogue(catalogue).build());
         document.setTitle("Test");
-        String message = "new DataLabs document";
+        String message = "new code document";
 
         given(documentRepository.saveNew(
             any(CatalogueUser.class),
-            any(DatalabsDocument.class),
+            any(CodeDocument.class),
             eq(catalogue),
             eq(message)
         )).willReturn(document);
@@ -108,7 +107,7 @@ class DatalabsDocumentControllerTest {
         mvc.perform(post("/documents")
             .queryParam("catalogue", catalogue)
             .content(requestBody)
-            .contentType(DATALABS_JSON_VALUE)
+            .contentType(CODE_JSON_VALUE)
         )
             .andExpect(status().isCreated());
 
@@ -116,19 +115,19 @@ class DatalabsDocumentControllerTest {
     }
 
     @Test
-    public void checkCanEditDatalabsDocument() throws Exception {
+    public void checkCanEditCodeDocument() throws Exception {
         //Given
         givenUserCanEdit();
 
-        DatalabsDocument document = new DatalabsDocument();
+        CodeDocument document = new CodeDocument();
         document.setUri("https://catalogue.ceh.ac.uk/id/123-test");
         String message = "Edited document: test";
 
         given(documentRepository.read(id))
-            .willReturn(new DatalabsDocument().setMetadata(MetadataInfo.builder().build()));
+            .willReturn(new CodeDocument().setMetadata(MetadataInfo.builder().build()));
         given(documentRepository.save(
             any(CatalogueUser.class),
-            any(DatalabsDocument.class),
+            any(CodeDocument.class),
             eq(id),
             eq(message)
         )).willReturn(document);
@@ -136,7 +135,7 @@ class DatalabsDocumentControllerTest {
         //When
         mvc.perform(put("/documents/{id}", id)
             .content(requestBody)
-            .contentType(DATALABS_JSON_VALUE)
+            .contentType(CODE_JSON_VALUE)
         ).andExpect(status().isOk());
 
         //Then
