@@ -13,17 +13,19 @@ define [
     'mobilePlatforms':'http://vocabs.ceh.ac.uk/ri/mobilePlatforms'
     'controlledPlatforms':'http://vocabs.ceh.ac.uk/ri/controlledPlatforms'
     'fieldPlatforms':'http://vocabs.ceh.ac.uk/ri/fieldPlatforms'
-    'labs':'http://vocabs.ceh.ac.uk/ri/labs'
+    'labsAnalysis':'http://vocabs.ceh.ac.uk/ri/labsAnalysis'
+    'labsTest':'http://vocabs.ceh.ac.uk/ri/labsTest'
 
   classes:
     'instrumentedSites':'Environmental observatories'
     'surveys':'Environmental observatories'
     'wildlifeSchemes':'Environmental observatories'
     'discoveryCollections':'Environmental observatories'
-    'mobilePlatforms':'Environmental experiment platforms'
+    'mobilePlatforms':'Environmental observatories'
     'controlledPlatforms':'Environmental experiment platforms'
     'fieldPlatforms':'Environmental experiment platforms'
-    'labs':'Environmental analysis'
+    'labsAnalysis':'Environmental analysis'
+    'labsTest':'Environmental analysis'
   
   descriptions:
     'instrumentedSites':'Instrumented sites'
@@ -33,7 +35,8 @@ define [
     'mobilePlatforms':'Mobile observing platforms'
     'controlledPlatforms':'Controlled environment platforms'
     'fieldPlatforms':'Field research platforms'
-    'labs':'Analytical labs'
+    'labsAnalysis':'Analysis labs'
+    'labsTest':'Test labs'
 
   initialize: ->
     @on 'change:value', @updateLimitation
