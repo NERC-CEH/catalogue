@@ -210,7 +210,7 @@
 </#macro>
 
 <#macro hashDropboxButton>
-    <@button "Generate checksums" "data-action hash-dropbox" "microchip"/>
+    <@button "Generate checksums" "data-action hash-dropbox" "wave-square"/>
 </#macro>
 
 <#macro loadMoreButton storage>
@@ -218,7 +218,7 @@
 </#macro>
 
 <#macro registerDropboxButton>
-    <@button "Register files" "data-action register-dropbox" "folder-open"/>
+    <@button "Register files" "data-action register-dropbox" "folder-plus"/>
 </#macro>
 
 <#macro scheduleButton>
@@ -230,7 +230,7 @@
 </#macro>
 
 <#macro moveAllDatastoreButton>
-    <@button "Move files to Datastore" "data-action move-all" "level-down-alt"/>
+    <@button "Move files to datastore" "data-action move-all" "level-down-alt"/>
 </#macro>
 
 <#macro validateAllButton>
@@ -243,7 +243,7 @@
         href="/upload/${id}?format=csv"
         download="checksums_${id}.csv"
     >
-        <i class="btn-icon fas fa-file-download"></i>
+        <i class="btn-icon fas fa-file-code"></i>
         <span>Download Checksum Report</span>
     </a>
 </#macro>
