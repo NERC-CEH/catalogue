@@ -92,16 +92,19 @@ public class HubbubResponse {
         int currentPage;
         int lastPage;
         int pageSize;
+        int totalFiles;
 
         @JsonCreator
         public Meta(
             @JsonProperty("currentPage") int currentPage,
             @JsonProperty("lastPage") int lastPage,
-            @JsonProperty("pageSize") int pageSize
+            @JsonProperty("pageSize") int pageSize,
+            @JsonProperty("totalFiles") int totalFiles
         ) {
             this.currentPage = currentPage;
             this.lastPage = lastPage;
             this.pageSize = pageSize;
+            this.totalFiles = totalFiles;
         }
     }
 }
