@@ -1,6 +1,5 @@
 <div class="panel panel-file <%= classes %>">
     <div class="panel-heading">
-
         <% if (errorType === 'file') { %>
              <i class="file-icon fas fa-exclamation-circle"></i>
          <% } else { %>
