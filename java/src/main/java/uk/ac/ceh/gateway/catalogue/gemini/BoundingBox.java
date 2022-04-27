@@ -45,4 +45,13 @@ public class BoundingBox {
             .append("))")
             .toString();
     }
+
+    public String getBounds() {
+        return new StringBuilder()
+                .append("[[[")
+                .append(northBoundLatitude).append(", ").append(westBoundLongitude).append("], [")
+                .append(southBoundLatitude).append(", ").append(eastBoundLongitude)
+                .append("]]]")
+                .toString();
+    }
 }

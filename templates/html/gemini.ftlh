@@ -65,6 +65,7 @@
     <script data-main="/static/scripts/main-out" src="/static/vendor/requirejs/require.js"></script>
     <script src="/static/scripts/editor.bundle.js"></script>
     <script src="/static/scripts/catalogue.bundle.js"></script>
+    <script src="/static/scripts/studyarea.bundle.js"></script>
 </#assign>
 
 <@skeleton.master title=title catalogue=catalogue rdf="${uri}?format=ttl" schemaorg="${uri}?format=schema.org" canonical="${uri}" can_edit_restricted=permission.userCanEditRestrictedFields(metadata.catalogue) scripts=geminiScripts>

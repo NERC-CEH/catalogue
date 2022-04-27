@@ -64,16 +64,6 @@ export default ObjectInputView.extend({
     })
   },
 
-  getShapeType (layer) {
-    if (layer instanceof L.Marker) {
-      return 'marker'
-    }
-
-    if ((layer instanceof L.Polygon) && !(layer instanceof L.Rectangle)) {
-      return 'polygon'
-    }
-  },
-
   createToolbar () {
     if (this.drawButtons === true) {
       this.deleteButton = false

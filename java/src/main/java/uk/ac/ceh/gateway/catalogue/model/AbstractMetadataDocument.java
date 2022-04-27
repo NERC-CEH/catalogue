@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
+import lombok.NonNull;
 import lombok.experimental.Accessors;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
@@ -52,4 +53,5 @@ public abstract class AbstractMetadataDocument implements MetadataDocument {
         keywords.addAll(additionalKeywords);
         return this;
     }
+
 }

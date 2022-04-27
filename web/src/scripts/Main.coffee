@@ -3,7 +3,6 @@ define [
   'jquery'
   'backbone'
   'bootstrap'
-  'cs!views/StudyAreaView'
   'cs!models/MapViewerApp'
   'cs!views/MapViewerAppView'
   'cs!models/SearchApp'
@@ -12,7 +11,7 @@ define [
   'cs!routers/LayersRouter'
   'cs!routers/SearchRouter'
 ], (
-  _, $, Backbone, Bootstrap, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter, SearchRouter,ChartView
+  _, $, Backbone, Bootstrap, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter, SearchRouter,ChartView
 ) ->
 
   ###
@@ -33,7 +32,6 @@ define [
 
     do @initMapviewer if $('#mapviewer').length
     do @initSearch if $('#search').length
-    do @initStudyAreaMap if $('#studyarea-map').length
 
     $('.chart').each (i, e) -> new ChartView el: e
     do Backbone.history.start
@@ -57,13 +55,6 @@ define [
     router = new SearchRouter model: app, location: window.location
 
     @createMessageViewFor app
-
-  ###
-  Initialize the Study Area map
-  ###
-  initStudyAreaMap: ->
-    view = new StudyAreaView
-      el: '#studyarea-map'
 
   ###
   Create a message view. Which listens to the supplied app model for messages (errors, info)
