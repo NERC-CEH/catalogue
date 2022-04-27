@@ -35,9 +35,8 @@ export const File = Backbone.Model.extend({
     const size = this.has('bytes') ? Filesize(this.get('bytes')) : 0
     const date = this.get('lastValidated')
     const hash = this.has('hash') ? this.get('hash') : 'NO_HASH'
-    const estimate = sizeToTime(this.get('bytes'))
     const message = messages[status]
-    const moving = status === 'MOVING_FROM' || status === 'MOVING_TO' || (status === 'WRITING')
+    const moving = status === 'MOVING_FROM' || status === 'MOVING_TO' || status === 'WRITING'
     const validating = status === 'VALIDATING_HASH'
 
     return this.set({
@@ -45,7 +44,6 @@ export const File = Backbone.Model.extend({
       classes,
       date,
       errorType,
-      estimate,
       hash,
       message,
       moving,
@@ -59,7 +57,6 @@ export const File = Backbone.Model.extend({
     this.set({
       check: false,
       date: data.date,
-      estimate: sizeToTime(data.bytes),
       hash: data.hash,
       message: messages[data.status],
       moving: false,
@@ -197,48 +194,3 @@ const validTypes = new Set([
   'VALIDATING_HASH',
   'WRITING'
 ])
-
-// calculated using Hubbub on the SAN, 22/05/19, recalculate for better estimates
-const timeEstimate = {
-  1400000: '1s',
-  6300000: '2s',
-  10000000: '3s',
-  12000000: '4s',
-  24000000: '5s',
-  39000000: '6s',
-  50000000: '8s',
-  54000000: '9s',
-  69000000: '10s',
-  79000000: '20s',
-  170000000: '30s',
-  220000000: '40s',
-  250000000: '50s',
-  290000000: '1m',
-  320000000: '1m10s',
-  400000000: '1m20s',
-  470000000: '1m30s',
-  730000000: '2m',
-  800000000: '2m30s',
-  1300000000: '5m',
-  1600000000: '7m',
-  4300000000: '8m',
-  4700000000: '10m',
-  5000000000: '12m',
-  5300000000: '14m',
-  12000000000: '45m',
-  18000000000: '1h',
-  46000000000: '2h',
-  65000000000: '2h+'
-}
-
-const sizeToTime = function (size) {
-  let time
-  for (const key in timeEstimate) {
-    const value = timeEstimate[key]
-    if (size < key) {
-      time = value
-      break
-    }
-  }
-  return time
-}

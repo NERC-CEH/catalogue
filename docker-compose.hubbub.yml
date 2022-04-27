@@ -10,7 +10,7 @@ services:
     ports:
       - "5432:5432"
   hubbub:
-    image: registry.gitlab.ceh.ac.uk/eip/hubbub:7.6.0
+    image: registry.gitlab.ceh.ac.uk/eip/hubbub:7.7.0
     environment:
       DB_HOST: db
       DB_PASSWORD: *db_password

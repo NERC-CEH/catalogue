@@ -35,6 +35,7 @@
   "meta": {
     "currentPage": 1,
     "pageSize": 2,
-    "lastPage": 3
+    "lastPage": 3,
+    "totalFiles": 5
   }
 }

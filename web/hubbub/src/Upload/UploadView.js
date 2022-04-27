@@ -27,7 +27,7 @@ export default Backbone.View.extend({
           datasetId: this.model.get('id'),
           datastore: 'dropbox',
           path: filename,
-          status: 'WRITING',
+          status: 'NO_HASH',
           check: false
         })
         this.dropbox.add(model)
@@ -46,12 +46,18 @@ export default Backbone.View.extend({
     this.listenTo(this.datastore, 'reset', (collection) => this.addAll(collection, this.$datastore))
     this.listenTo(this.datastore, 'add', (model) => this.addOne(this.datastore, this.$datastore, model))
     this.listenTo(this.datastore, 'update', () => this.showEmptyStorage(this.datastore, this.$datastore, 'datastore'))
+    // this.listenTo(this.model, 'change:datastoreTotalFiles', this.renderDatastoreTotalFiles)
+    // this.listenTo(this.datastore, 'update', this.updateDatastoreTotalFiles)
+    // this.listenTo(this.datastore, 'reset', this.updateDatastoreTotalFiles)
 
     this.$dropbox = this.$('.data-files')
     this.dropbox = new FileCollection()
     this.listenTo(this.dropbox, 'reset', (collection) => this.addAll(collection, this.$dropbox))
     this.listenTo(this.dropbox, 'add', (model) => this.addOne(this.dropbox, this.$dropbox, model))
     this.listenTo(this.dropbox, 'update', () => this.showEmptyStorage(this.dropbox, this.$dropbox, 'data'))
+    // this.listenTo(this.model, 'change:dropboxTotalFiles', this.renderDropboxTotalFiles)
+    // this.listenTo(this.dropbox, 'update', this.updateDropboxTotalFiles)
+    // this.listenTo(this.dropbox, 'reset', this.updateDropboxTotalFiles)
 
     this.$metadata = this.$('.metadata-files')
     this.metadata = new FileCollection()
@@ -65,7 +71,8 @@ export default Backbone.View.extend({
       this.model.set({
         datastorePage: response.meta.currentPage,
         datastoreSize: response.meta.pageSize,
-        datastoreLastPage: response.meta.lastPage
+        datastoreLastPage: response.meta.lastPage,
+        datastoreTotalFiles: response.meta.totalFiles
       })
       this.datastore.reset(response.data)
     }
@@ -76,7 +83,8 @@ export default Backbone.View.extend({
       this.model.set({
         dropboxPage: response.meta.currentPage,
         dropboxSize: response.meta.pageSize,
-        dropboxLastPage: response.meta.lastPage
+        dropboxLastPage: response.meta.lastPage,
+        dropboxTotalFiles: response.meta.totalFiles
       })
       this.dropbox.reset(response.data)
     }
@@ -87,7 +95,8 @@ export default Backbone.View.extend({
       this.model.set({
         metadataPage: response.meta.currentPage,
         metadataSize: response.meta.pageSize,
-        metadataLastPage: response.meta.lastPage
+        metadataLastPage: response.meta.lastPage,
+        metadataTotalFiles: response.meta.totalFiles
       })
       this.metadata.reset(response.data)
     }
@@ -137,6 +146,34 @@ export default Backbone.View.extend({
 
   loadMetadata (event) {
     this.loadMore(event, 'metadata', 'supporting-documents', this.metadata)
+  },
+
+  renderDatastoreTotalFiles () {
+    const $totalFiles = this.$('.document-upload-section.datastore .total-files')
+    const totalFiles = this.model.get('datastoreTotalFiles')
+    console.log(`rendering datastore to ${totalFiles}`)
+    if (totalFiles > 0) {
+      $totalFiles.text(`${totalFiles} files`)
+    }
+  },
+
+  updateDatastoreTotalFiles () {
+    console.log(`updating datastore to ${this.datastore.length}`)
+    this.model.set('datastoreTotalFiles', this.datastore.length)
+  },
+
+  renderDropboxTotalFiles () {
+    const $totalFiles = this.$('.document-upload-section.dropbox .total-files')
+    const totalFiles = this.model.get('dropboxTotalFiles')
+    console.log(`rendering dropbox to ${totalFiles}`)
+    if (totalFiles > 0) {
+      $totalFiles.text(`${totalFiles} files`)
+    }
+  },
+
+  updateDropboxTotalFiles () {
+    console.log(`updating dropbox to ${this.dropbox.length}`)
+    this.model.set('dropboxTotalFiles', this.dropbox.length)
   },
 
   showEmptyStorage (collection, $container, title) {

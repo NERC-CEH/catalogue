@@ -26,7 +26,6 @@ describe('File model', function () {
     expect(file.get('classes')).toBe('panel-default is-collapsed')
     expect(file.get('date')).toBe('2022-03-05T06:23:57')
     expect(file.get('errorType')).toBe('valid')
-    expect(file.get('estimate')).toBe('1s')
     expect(file.get('hash')).toBe('28111a4e084f1a57c7a0f50bc9a35472')
     expect(file.get('message')).toBe(undefined)
     expect(file.get('moving')).toBe(false)

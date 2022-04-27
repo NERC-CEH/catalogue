@@ -14,6 +14,7 @@
         <#if resourceStatus == "Available" || resourceStatus == "Controlled">
           <#if offlineOrders?? || downloadOrder?? && ((downloadOrder.orderResources)?has_content || (downloadOrder.supportingDocumentsUrl)?has_content) || ((resourceType.value)?? && distributionFormats?? && distributionFormats?has_content) || mapViewable?? >
             <div class="onlineResourceLinks">
+            <p>By downloading, accessing or using this dataset, you agree to the terms of the relevant licence agreement(s)</p>
             <#if (downloadOrder.orderable)?? && downloadOrder.orderable>
               <#list downloadOrder.orderResources as onlineResource>
                 <#if onlineResource.url?starts_with("https://data-package.ceh.ac.uk/data/") && !onlineResource.url?ends_with(".zip") && (permission.userInGroup("Gast") || permission.userInGroup("CEH"))>
