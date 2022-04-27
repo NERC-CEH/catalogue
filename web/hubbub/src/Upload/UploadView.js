@@ -27,7 +27,7 @@ export default Backbone.View.extend({
           datasetId: this.model.get('id'),
           datastore: 'dropbox',
           path: filename,
-          status: 'WRITING',
+          status: 'NO_HASH',
           check: false
         })
         this.dropbox.add(model)
