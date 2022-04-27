@@ -1,4 +1,4 @@
-import { BoundingBoxView, BoundingBox } from '../src/geometryMap/index'
+import { BoundingBoxView, BoundingBox } from '../src/geometryMap'
 import template from '../src/geometryMap/Geometry.tpl'
 
 describe('Test BoundingBoxView', function () {
