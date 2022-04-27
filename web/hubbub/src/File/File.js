@@ -36,7 +36,7 @@ export const File = Backbone.Model.extend({
     const date = this.get('lastValidated')
     const hash = this.has('hash') ? this.get('hash') : 'NO_HASH'
     const message = messages[status]
-    const moving = status === 'MOVING_FROM' || status === 'MOVING_TO' || (status === 'WRITING')
+    const moving = status === 'MOVING_FROM' || status === 'MOVING_TO' || status === 'WRITING'
     const validating = status === 'VALIDATING_HASH'
 
     return this.set({

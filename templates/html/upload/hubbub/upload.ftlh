@@ -12,11 +12,11 @@
         <#if !hasDataTransfer>
             <@noDataTransfer/>
         <#elseif isScheduled>
-            <@documentUploadSection "Upload" "file-upload">
+            <@documentUploadSection "Upload" "" "file-upload">
                 <@dropZoneContainer/>
             </@documentUploadSection>
         </#if>
-        <@documentUploadSection "Data" "archive">
+        <@documentUploadSection "Data" "dropbox" "archive">
             <@loadingContainer "data"/>
             <@loadMoreRow "data"/>
             <#if isAdmin && isInProgress>
@@ -66,17 +66,17 @@
 
         <#if isAdmin>
             <#assign metadataTitle>Metadata <small>Supporting Documents</small></#assign>
-            <@documentUploadSection title=metadataTitle icon="copy" iconClass="far">
+            <@documentUploadSection title=metadataTitle name="metadata" icon="copy" iconClass="far">
                 <@loadingContainer "metadata"/>
                 <@loadMoreRow "metadata"/>
             </@documentUploadSection>
-            <@documentUploadSection "Datastore" "lock">
+            <@documentUploadSection "Datastore" "datastore" "lock">
                 <@loadingContainer "datastore"/>
                 <@loadMoreRow "datastore"/>
             </@documentUploadSection>
         </#if>
 
-        <@documentUploadSection "" "">
+        <@documentUploadSection "" "" "">
             <@row>
                 <#if isAdmin>
                     <div class="col-md-6 col-md-offset-6 file-actions">
@@ -131,11 +131,11 @@
     </div>
 </#macro>
 
-<#macro documentUploadSection title icon iconClass="fas">
-    <section class="document-upload-section">
+<#macro documentUploadSection title name icon iconClass="fas">
+    <section class="document-upload-section ${name}">
         <#if title?has_content && icon?has_content>
             <div class="page-header">
-                <h3><i class="btn-icon ${iconClass} fa-${icon}"></i> ${title}</h3>
+                <h3><i class="btn-icon ${iconClass} fa-${icon}"></i> ${title} <small class="total-files"></small></h3>
             </div>
         </#if>
         <#nested>
