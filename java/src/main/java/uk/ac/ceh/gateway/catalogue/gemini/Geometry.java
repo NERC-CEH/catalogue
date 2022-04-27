@@ -16,4 +16,8 @@ public class Geometry {
     private Geometry(@JsonProperty("geometry") String value) {
         this.geometryString = nullToEmpty(value);
     }
+
+    public String getBounds() {
+        return this.geometryString;
+    }
 }

@@ -1,4 +1,4 @@
-<#if boundingBoxes?? || temporalExtents?? >
+<#if boundingBoxes?? || temporalExtents?? || geometries?? >
   <div id="section-extent">
   <h2 id="extent">Where/When</h2>
     <dl>
@@ -12,6 +12,17 @@
             </#list>
           </div>
         </dd>
+      </#if>
+
+      <#if geometries?has_content>
+          <dt>Study area</dt>
+          <dd>
+              <div id="studyarea-map">
+                  <#list geometries as extent>
+                      <span content="${extent.bounds}" datatype="geoJson"/>
+                  </#list>
+              </div>
+          </dd>
       </#if>
 
       <#if temporalExtents?has_content>

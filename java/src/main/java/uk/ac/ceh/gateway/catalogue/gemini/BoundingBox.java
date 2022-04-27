@@ -49,8 +49,11 @@ public class BoundingBox {
     public String getBounds() {
         return new StringBuilder()
                 .append("[[[")
-                .append(northBoundLatitude).append(", ").append(westBoundLongitude).append("], [")
-                .append(southBoundLatitude).append(", ").append(eastBoundLongitude)
+                .append(westBoundLongitude).append(", ").append(southBoundLatitude).append("], [")
+                .append(westBoundLongitude).append(", ").append(northBoundLatitude).append("], [")
+                .append(eastBoundLongitude).append(", ").append(northBoundLatitude).append("], [")
+                .append(eastBoundLongitude).append(", ").append(southBoundLatitude).append("], [")
+                .append(westBoundLongitude).append(", ").append(southBoundLatitude)
                 .append("]]]")
                 .toString();
     }

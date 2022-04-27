@@ -242,14 +242,6 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             .collect(Collectors.toList());
     }
 
-    public @NonNull List<String> getGeoJson() {
-        return Optional.ofNullable(boundingBoxes)
-                .orElse(Collections.emptyList())
-                .stream()
-                .map(BoundingBox::getGeoJson)
-                .collect(Collectors.toList());
-    }
-
     public @NonNull List<String> getBounds() {
         return Optional.ofNullable(boundingBoxes)
                 .orElse(Collections.emptyList())

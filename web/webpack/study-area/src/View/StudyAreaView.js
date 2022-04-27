@@ -10,14 +10,20 @@ export default Backbone.View.extend({
   },
 
   createMap () {
-    let center = new L.LatLng(51.513, -0.09)
     this.overlay = L.featureGroup()
     const studyArea = JSON.parse(this.getStudyArea()[0])
 
-    const feature = { type: 'Feature', properties: {}, geometry: studyArea }
+    const feature = {
+      type: 'Feature',
+      properties: {},
+      geometry: {
+        type: 'Polygon',
+        coordinates: studyArea
+      }
+    }
     console.log(feature)
-    const rectangle = L.rectangle(studyArea)
-    center = rectangle.getBounds().getCenter()
+    const polygon = L.geoJson(feature)
+    const center = polygon.getBounds().getCenter()
     const map = new L.Map($('#studyarea-map')[0], { center: center, zoom: 4 })
 
     const baseMaps = {
@@ -31,7 +37,7 @@ export default Backbone.View.extend({
     }
 
     L.control.layers(baseMaps, {}, { position: 'topright', collapsed: false }).addTo(map)
-    rectangle.addTo(map)
+    polygon.addTo(map)
   },
 
   getStudyArea () {
