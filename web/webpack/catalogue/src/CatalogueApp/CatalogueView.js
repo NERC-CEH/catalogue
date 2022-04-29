@@ -1,4 +1,4 @@
-import { EditorView, SelectView } from '../../../editor/src'
+import { EditorView, SelectView } from '../../../editor/src/bootstrap'
 
 export default EditorView.extend({
 

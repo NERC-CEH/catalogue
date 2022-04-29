@@ -1,5 +1,5 @@
 const HtmlWebPackPlugin = require('html-webpack-plugin')
-
+const { ModuleFederationPlugin } = require('webpack').container
 module.exports = {
 
   entry: {
@@ -67,6 +67,13 @@ module.exports = {
   plugins: [
     new HtmlWebPackPlugin({
       filename: './index.html'
+    }),
+    new ModuleFederationPlugin({
+      shared: {
+        '@types/leaflet': { singleton: true, strictVersion: true, requiredVersion: '^0.7.7' },
+        leaflet: { singleton: true, strictVersion: true, requiredVersion: '^0.7.7' },
+        'leaflet-draw': { singleton: true, strictVersion: true, requiredVersion: '^1.0.4' }
+      }
     })
   ]
 }

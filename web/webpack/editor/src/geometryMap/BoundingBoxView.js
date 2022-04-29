@@ -37,7 +37,8 @@ export default ObjectInputView.extend({
     if (this.model.get('northBoundLatitude') && this.model.get('westBoundLongitude') &&
         this.model.get('southBoundLatitude') && this.model.get('eastBoundLongitude')) {
       this.shapeDrawn = true
-      this.rectangle = L.rectangle(this.model.getBoundingBox())
+      this.rectangle = L.rectangle([[[this.model.get('northBoundLatitude'), this.model.get('westBoundLongitude')],
+        [this.model.get('southBoundLatitude'), this.model.get('eastBoundLongitude')]]])
       this.drawnItems.addLayer(this.rectangle)
       this.rectangle.editing.enable()
       this.drawControl = this.deleteToolbar()
