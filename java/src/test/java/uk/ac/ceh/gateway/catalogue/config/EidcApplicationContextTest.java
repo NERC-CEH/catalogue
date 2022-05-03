@@ -18,7 +18,6 @@ import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.*;
-import uk.ac.ceh.gateway.catalogue.upload.hubbub.HubbubService;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadController;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadService;
 
@@ -56,7 +55,6 @@ class EidcApplicationContextTest {
     void hubbubUploadBeansPresent() {
         assertNotNull(applicationContext.getBean(UploadController.class));
         assertNotNull(applicationContext.getBean(UploadService.class));
-        assertNotNull(applicationContext.getBean(HubbubService.class));
         Assertions.assertThrows(NoSuchBeanDefinitionException.class, () ->
             applicationContext.getBean(uk.ac.ceh.gateway.catalogue.upload.simple.UploadController.class)
         );

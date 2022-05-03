@@ -27,7 +27,7 @@ import uk.ac.ceh.gateway.catalogue.converters.UkeofXml2EFDocumentMessageConverte
 import uk.ac.ceh.gateway.catalogue.converters.Xml2GeminiDocumentMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.Xml2WmsCapabilitiesMessageConverter;
 import uk.ac.ceh.gateway.catalogue.datacite.DataciteService;
-import uk.ac.ceh.gateway.catalogue.datalabs.DatalabsDocument;
+import uk.ac.ceh.gateway.catalogue.model.CodeDocument;
 import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.document.JacksonDocumentInfoMapper;
@@ -37,7 +37,7 @@ import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
 import uk.ac.ceh.gateway.catalogue.elter.ElterDocument;
 import uk.ac.ceh.gateway.catalogue.erammp.ErammpDatacube;
 import uk.ac.ceh.gateway.catalogue.erammp.ErammpModel;
-import uk.ac.ceh.gateway.catalogue.ri.RiRecord;
+import uk.ac.ceh.gateway.catalogue.infrastructure.InfrastructureRecord;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.imp.ImpDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.ClassMap;
@@ -146,11 +146,11 @@ public class ServicesConfig {
         return new HashMapDocumentTypeLookupService()
             .register(CEH_MODEL, CehModel.class)
             .register(CEH_MODEL_APPLICATION, CehModelApplication.class)
+            .register(CODE, CodeDocument.class)
             .register(DATA_TYPE, DataType.class)
-            .register(DATALABS, DatalabsDocument.class)
             .register(EF_DOCUMENT, BaseMonitoringType.class)
             .register(ERAMMP_DATACUBE, ErammpDatacube.class)
-            .register(RIRECORD, RiRecord.class)
+            .register(INFRASTRUCTURERECORD, InfrastructureRecord.class)
             .register(ELTER, ElterDocument.class)
             .register(ERAMMP_MODEL, ErammpModel.class)
             .register(GEMINI, GeminiDocument.class)

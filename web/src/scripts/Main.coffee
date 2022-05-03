@@ -33,9 +33,9 @@ define [
   'cs!views/NercModelEditorView'
   'cs!views/NercModelUseEditorView'
   'cs!views/ErammpDatacubeEditorView'
-  'cs!views/RiRecordEditorView'
+  'cs!views/InfrastructureRecordEditorView'
   'cs!views/UkemsDocumentEditorView'
-  'cs!views/DatalabsDocumentEditorView'
+  'cs!views/CodeDocumentEditorView'
   'cs!views/ClipboardCopyView'
   'cs!views/DataTypeEditorView'
   'cs!views/ElterEditorView'
@@ -46,8 +46,8 @@ define [
     _, $, Backbone, Bootstrap, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter, SearchRouter,
     EditorMetadata, GeminiEditorView, MonitoringEditorView, ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata, CehModelEditorView, CehModelApplicationEditorView,
     OsdpAgentEditorView,OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
-    OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, ErammpModelEditorView, NercModelEditorView, NercModelUseEditorView, ErammpDatacubeEditorView, RiRecordEditorView, UkemsDocumentEditorView,
-    DatalabsDocumentEditorView, ClipboardCopyView, DataTypeEditorView, ElterEditorView, ElterLinkedEditorView, ServiceAgreementEditorView, ServiceAgreement
+    OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, ErammpModelEditorView, NercModelEditorView, NercModelUseEditorView, ErammpDatacubeEditorView, InfrastructureRecordEditorView, UkemsDocumentEditorView,
+    CodeDocumentEditorView, ClipboardCopyView, DataTypeEditorView, ElterEditorView, ElterLinkedEditorView, ServiceAgreementEditorView, ServiceAgreement
 ) ->
 
   ###
@@ -166,10 +166,10 @@ define [
         View: ErammpDatacubeEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.erammp-datacube+json'
-      'rirecord':
-        View: RiRecordEditorView
+      'infrastructurerecord':
+        View: InfrastructureRecordEditorView
         Model: EditorMetadata
-        mediaType: 'application/vnd.rirecord+json'
+        mediaType: 'application/vnd.infrastructure+json'
       'data-type':
         View: DataTypeEditorView
         Model: EditorMetadata
@@ -190,10 +190,10 @@ define [
         View: UkemsDocumentEditorView
         Model: EditorMetadata
         mediaType: 'application/vnd.ukems-document+json'
-      'datalabs-document':
-        View: DatalabsDocumentEditorView
+      'code-document':
+        View: CodeDocumentEditorView
         Model: EditorMetadata
-        mediaType: 'application/vnd.datalabs-document+json'
+        mediaType: 'application/vnd.code-document+json'
 
     # the create document dropdown
     $editorCreate = $ '#editorCreate'

@@ -40,10 +40,6 @@
     <#if schemaorg?has_content>
       <link rel="alternate" type="application/vnd.schemaorg.ld+json" href="${schemaorg}"/>
     </#if>
-  <!-- HTML5 Respond.js IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-    <script type="text/javascript" src="/static/vendor/respond/respond.min.js"></script>
-    <![endif]-->
   </head>
   <body data-edit-restricted="${can_edit_restricted?then('','disabled')}">
     <div class="navbar navbar-default navbar-fixed-top" role="navigation">

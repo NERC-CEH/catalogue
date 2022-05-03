@@ -110,9 +110,9 @@ module.exports = function(grunt) {
           'src/css/style-osdp.css': 'src/less/style-osdp.less'
         }
       },
-      ri: {
+      infrastructure: {
         files: {
-          'src/css/style-ri.css': 'src/less/style-ri.less'
+          'src/css/style-infrastructure.css': 'src/less/style-infrastructure.less'
         }
       },
       sa: {
@@ -197,9 +197,9 @@ module.exports = function(grunt) {
           'src/css/style-osdp.css': 'src/css/style-osdp.css'
         }
       },
-      ri: {
+      infrastructure: {
         files: {
-          'src/css/style-ri.css': 'src/css/style-ri.css'
+          'src/css/style-infrastructure.css': 'src/css/style-infrastructure.css'
         }
       },
       sa: {
@@ -221,15 +221,6 @@ module.exports = function(grunt) {
           out: 'src/scripts/main-out.js',
           name: 'main',
           mainConfigFile: 'src/scripts/main.js'
-        }
-      },
-      upload: {
-        options: {
-          exclude: ['coffee-script'],
-          baseUrl: 'src/scripts',
-          out: 'src/scripts/upload-out.js',
-          name: 'upload',
-          mainConfigFile: 'src/scripts/upload.js'
         }
       }
     },
@@ -265,10 +256,6 @@ module.exports = function(grunt) {
       main: {
         src: 'src/scripts/main.js',
         dest: 'src/scripts/main-out.js'
-      },
-      upload: {
-        src: 'src/scripts/upload.js',
-        dest: 'src/scripts/upload-out.js'
       }
     },
     clean: {

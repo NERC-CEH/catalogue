@@ -22,10 +22,10 @@ public class DocumentTypes {
         .type(DATA_TYPE)
         .build();
 
-    public static final String DATALABS = "datalabs-document";
-    public static DocumentType DATALABS_TYPE = DocumentType.builder()
-        .title("DataLabs Document")
-        .type(DATALABS)
+    public static final String CODE = "code-document";
+    public static DocumentType CODE_TYPE = DocumentType.builder()
+        .title("Code/notebook")
+        .type(CODE)
         .build();
 
     public static final String EF_DOCUMENT = "EF_DOCUMENT";
@@ -48,10 +48,10 @@ public class DocumentTypes {
         .type(ERAMMP_MODEL)
         .build();
 
-    public static final String RIRECORD = "rirecord";
-        public static DocumentType RIRECORD_TYPE = DocumentType.builder()
-            .title("Research infrastructure")
-            .type(RIRECORD)
+    public static final String INFRASTRUCTURERECORD = "infrastructurerecord";
+        public static DocumentType INFRASTRUCTURERECORD_TYPE = DocumentType.builder()
+            .title("Infrastructure record")
+            .type(INFRASTRUCTURERECORD)
             .build();
     
     public static final String GEMINI = "GEMINI_DOCUMENT";

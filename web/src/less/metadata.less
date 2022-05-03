@@ -136,7 +136,8 @@
     margin-top: 3em;
   }
 
-  .supplement,.citation {
+  .supplement,
+  .citation {
     margin: 2em 0;
     overflow: hidden;
   }
@@ -145,7 +146,8 @@
     .signpostURL {
       display: block;
       margin: 1em 0;
-      overflow: hidden;text-overflow: ellipsis;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .divider {
@@ -285,7 +287,8 @@
   #adminPanel {
     margin: 1.75em auto -1.75em auto;
 
-    #adminToolbar {
+    #adminToolbar,
+    .adminToolbar {
       .btn-wide {
         min-width: 10em;
       }
@@ -611,6 +614,54 @@ dl.dl-horizontal {
       .key-name {
         font-size: 1.1em;
         font-weight: bold;
+      }
+    }
+  }
+}
+
+.codeDocument {
+  .adminToolbar {
+    z-index: 1000;
+    position: absolute;
+    top: 8rem;
+    left: min( calc(100vw - 20em) , 1120px );
+    width: fit-content;
+  }
+  .section {
+    padding: 1em 0 2em 0;
+    &-grey {
+      background-color: hsl(0, 0%, 95%);
+    }
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: auto 280px;
+    grid-template-areas:
+      "one one"
+      "two two"
+      "three three";
+
+    .grid--one {
+      grid-area: one;
+    }
+    .grid--two {
+      grid-area: two;
+    }
+    .grid--three {
+      grid-area: three;
+    }
+    @media screen and (min-width: 850px) {
+      --gridspacing: 1em;
+      grid-template-areas:
+        "one two"
+        "three two";
+      .grid--two {
+        > div {
+          border-left: 1px solid lightgray;
+          padding-left: var(--gridspacing);
+          margin-left: var(--gridspacing);
+        }
       }
     }
   }
