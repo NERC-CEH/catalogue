@@ -68,11 +68,12 @@
                     <i class="btn-icon fas fa-level-down-alt"></i>
                     <span>Move to datastore</span>
                 </button>
-            <% } else if (datastore === 'dropbox' && action === 'accept') { %>
+            <% } else if (datastore === 'dropbox') { %>
                 <button class="delete btn btn-danger">
                     <i class="btn-icon fas fa-trash"></i>
                     <span>Delete</span>
                 </button>
+            <% } else if (datastore === 'dropbox' && action === 'accept') { %>
                 <button class="accept btn btn-primary">
                     <i class="btn-icon fas fa-check"></i>
                     <span>Accept</span>
