@@ -88,7 +88,7 @@ export default Backbone.View.extend({
         'DELETE',
         () => {
           this.remove()
-          this.collection.remove(self.model)
+          this.collection.remove(this.model)
         }
       )
     } else {
@@ -98,10 +98,11 @@ export default Backbone.View.extend({
 
   ignore (event) {
     const currentClasses = this.showInProgress(event)
-    if (window.confirm(`Ignore file: ${this.model.get('path')}? File will be unregistered from system`)) {
+    if (window.confirm(`Ignore file: ${this.model.get('path')}? This file will be unregistered from the system`)) {
       this.request(
+        this,
         event,
-        `${this.url}/${this.model.get('datastore')}/ignore?path=${this.model.get('path')}`,
+        `${this.url}/${this.model.get('datastore')}/unregister?path=${encodeURIComponent(this.model.get('path'))}`,
         'POST',
         () => {
           this.remove()
