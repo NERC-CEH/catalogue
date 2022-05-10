@@ -14,17 +14,15 @@ export default Backbone.View.extend({
   initialize (options) {
     this.template = _.template(template)
     this.data = options
-    this.listenTo(this.model, 'remove', function () { return (this.remove)() })
-    this.listenTo(this.model, 'showhide', function () { return (this.showhide)() })
-    this.index = this.model.collection.indexOf(this.model);
-    (this.render)()
-    return new this.data.ObjectInputView(_.extend({}, this.data, {
+    this.listenTo(this.model, 'remove', function () { return this.remove() })
+    this.listenTo(this.model, 'showhide', function () { return this.showhide() })
+    this.index = this.model.collection.indexOf(this.model)
+    this.render()
+    const view = new this.data.ObjectInputView(_.extend({}, this.data, {
       el: this.$('.dataentry'),
       model: this.model,
       index: this.index
-    }
-    )
-    )
+    }))
   },
 
   render () {

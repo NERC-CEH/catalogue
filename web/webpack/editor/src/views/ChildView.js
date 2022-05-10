@@ -13,10 +13,10 @@ export default Backbone.View.extend({
   initialize (options) {
     this.childTemplate = _.template(childTemplate)
     this.data = options
-    this.listenTo(this.model, 'remove', function () { return this.remove() })
+    this.listenTo(this.model, 'remove', function () { this.remove() })
     this.index = this.model.collection.indexOf(this.model)
     this.render()
-    return new this.data.ObjectInputView(_.extend({}, this.data, {
+    const view = new this.data.ObjectInputView(_.extend({}, this.data, {
       el: this.$('.dataentry'),
       model: this.model,
       index: this.index
@@ -29,6 +29,6 @@ export default Backbone.View.extend({
   },
 
   delete () {
-    return this.model.collection.remove(this.model)
+    this.model.collection.remove(this.model)
   }
 })

@@ -75,5 +75,15 @@ module.exports = {
         'leaflet-draw': { singleton: true, strictVersion: true, requiredVersion: '^1.0.4' }
       }
     })
-  ]
+  ],
+  optimization: {
+    splitChunks: {
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]jquery[\\/]/,
+          name: 'vendor'
+        }
+      }
+    }
+  }
 }

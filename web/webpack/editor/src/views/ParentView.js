@@ -79,7 +79,7 @@ export default SingleView.extend({
       data = {}
       data[path.pop()] = oldData
     }
-    return this.model.set(data)
+    this.model.set(data)
   },
 
   updateCollection (model) {
@@ -91,7 +91,7 @@ export default SingleView.extend({
       _.chain(updated)
         .first(collectionLength)
         .each((update, index) => {
-          return this.collection
+          this.collection
             .at(index)
             .set(update)
         })
@@ -99,21 +99,21 @@ export default SingleView.extend({
       _.chain(updated)
         .rest(collectionLength)
         .each(update => {
-          return this.collection.add(update)
+          this.collection.add(update)
         }
         )
         // Remove models not in updated
-      return this.collection.remove(this.collection.rest(updated.length))
+      this.collection.remove(this.collection.rest(updated.length))
     }
   },
 
   show () {
     SingleView.prototype.show.apply(this)
-    return this.collection.trigger('visible')
+    this.collection.trigger('visible')
   },
 
   hide () {
     SingleView.prototype.hide.apply(this)
-    return this.collection.trigger('hidden')
+    this.collection.trigger('hidden')
   }
 })

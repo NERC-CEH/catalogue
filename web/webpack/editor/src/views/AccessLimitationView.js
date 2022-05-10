@@ -7,8 +7,8 @@ export default ObjectInputView.extend({
   initialize () {
     this.template = _.template(template)
     ObjectInputView.prototype.initialize.apply(this)
-    return this.listenTo(this.model, 'change:accessLimitation', function (model, value) {
-      return this.model.set('type', value.value)
+    this.listenTo(this.model, 'change:accessLimitation', function (model, value) {
+      this.model.set('type', value.value)
     })
   },
 

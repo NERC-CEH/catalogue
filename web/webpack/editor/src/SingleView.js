@@ -24,7 +24,6 @@ export default Backbone.View.extend({
 
   render () {
     this.$el.html(this.singleTemplate({ data: this.data }))
-    this.show()
     return this
   },
 
