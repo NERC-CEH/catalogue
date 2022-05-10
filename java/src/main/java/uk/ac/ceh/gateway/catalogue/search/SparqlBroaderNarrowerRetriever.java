@@ -32,7 +32,7 @@ public class SparqlBroaderNarrowerRetriever  implements BroaderNarrowerRetriever
 
     public SparqlBroaderNarrowerRetriever(
         @Qualifier("sparql") RestTemplate restTemplate,
-        @Value("${sparql.endpoint}") String sparqlEndpoint,
+        @Value("${ukceh.sparql.endpoint}") String sparqlEndpoint,
         List<KeywordVocabulary> keywordVocabularies
     ) {
         this.restTemplate = restTemplate;
@@ -91,7 +91,7 @@ public class SparqlBroaderNarrowerRetriever  implements BroaderNarrowerRetriever
             }
             """, graph, keyword.getUrl());
         val encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8);
-        val url = format("%s?query=%s&format=json-simple", sparqlEndpoint, encodedQuery);
+        val url = format("%s?query=%s&format=json", sparqlEndpoint, encodedQuery);
         log.debug("SPARQL url: {}", url);
         return URI.create(url);
     }

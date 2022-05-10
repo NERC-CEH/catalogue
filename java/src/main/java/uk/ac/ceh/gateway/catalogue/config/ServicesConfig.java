@@ -94,7 +94,7 @@ public class ServicesConfig {
         val supportedMediaTypes = Arrays.asList(
             MediaType.APPLICATION_JSON,
             new MediaType("application", "*+json"),
-            new MediaType("application", "*+json-simple")
+            new MediaType("application", "*+json")
         );
         messageConverter.setSupportedMediaTypes(supportedMediaTypes);
         val restTemplate = new RestTemplate();
@@ -204,7 +204,7 @@ public class ServicesConfig {
     @Bean
     public VocabularyService vocabularyService(
         @Qualifier("sparql") RestTemplate restTemplate,
-        @Value("${sparql.endpoint}") String sparqlEndpoint,
+        @Value("${ukceh.sparql.endpoint}") String sparqlEndpoint,
         @Value("${sparql.graph}") String sparqlGraph
     ) {
         return new SparqlVocabularyService(new SparqlVocabularyRetriever(restTemplate, sparqlEndpoint, sparqlGraph).retrieve());

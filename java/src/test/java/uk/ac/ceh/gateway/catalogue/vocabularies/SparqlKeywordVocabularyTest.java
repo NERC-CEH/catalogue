@@ -151,7 +151,7 @@ class SparqlKeywordVocabularyTest {
                         URLEncoder.encode("> {", UTF_8) +
                         URLEncoder.encode(where, UTF_8) +
                         URLEncoder.encode("}}", UTF_8) +
-                        "&format=json-simple");
+                        "&format=json");
     }
 
 }

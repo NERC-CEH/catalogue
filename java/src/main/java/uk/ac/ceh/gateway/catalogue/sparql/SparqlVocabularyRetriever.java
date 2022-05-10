@@ -31,7 +31,7 @@ public class SparqlVocabularyRetriever implements VocabularyRetriever {
             URLEncoder.encode("WHERE {GRAPH <", StandardCharsets.UTF_8) +
             URLEncoder.encode(graph, StandardCharsets.UTF_8) +
             URLEncoder.encode("> {?concept skos:broader ?topConcept .}}", StandardCharsets.UTF_8) +
-            "&format=json-simple"
+            "&format=json"
         );
         log.info("Creating {}", this);
     }
