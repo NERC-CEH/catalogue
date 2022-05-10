@@ -8,6 +8,7 @@ import org.springframework.cache.jcache.JCacheCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 import javax.cache.Caching;
 import javax.cache.configuration.MutableConfiguration;
