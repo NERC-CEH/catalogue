@@ -30,7 +30,8 @@ public class CacheConfig extends CachingConfigurerSupport {
 
         cacheManager.createCache("capabilities", new MutableConfiguration<>()
             .setExpiryPolicyFactory(AccessedExpiryPolicy.factoryOf(new Duration(TimeUnit.MINUTES, 30))));
-        cacheManager.createCache("crowd-user", new MutableConfiguration<>()
+        cacheManager.createCache("crowd-user", new MutableConfiguration<String, CatalogueUser>()
+            .setTypes(String.class, CatalogueUser.class)
             .setExpiryPolicyFactory(AccessedExpiryPolicy.factoryOf(new Duration(TimeUnit.MINUTES, 30))));
         cacheManager.createCache("crowd-user-groups", new MutableConfiguration<>()
             .setExpiryPolicyFactory(AccessedExpiryPolicy.factoryOf(new Duration(TimeUnit.MINUTES, 30))));
