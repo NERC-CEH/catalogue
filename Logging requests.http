@@ -1,0 +1,9 @@
+### Change logging level to INFO
+# Forward catalogue port to localhost:8081 from Kubernetes cluster
+POST http://localhost:8081/actuator/loggers/uk.ac.ceh.gateway.catalogue
+Content-Type: application/json
+remote-user: {{username}}
+
+{
+  "configuredLevel": "INFO"
+}
