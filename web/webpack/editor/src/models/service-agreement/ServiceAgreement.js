@@ -1,4 +1,4 @@
-import { EditorMetadata } from '../../bootstrap'
+import { EditorMetadata } from '../../index'
 import _ from 'underscore'
 
 export default EditorMetadata.extend({

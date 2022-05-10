@@ -1,5 +1,6 @@
-import EditorMetadata from './EditorMetadata'
 import $ from 'jquery'
+import 'bootstrap'
+import EditorMetadata from './EditorMetadata'
 import LinkEditorMetadata from './LinkEditorMetadata'
 import {
   CehModelApplicationEditorView,

@@ -18,8 +18,8 @@
           <dt>Study area</dt>
           <dd>
               <div id="studyarea-map">
-                  <#list geometries as extent>
-                      <span content="${extent.bounds}" datatype="geoJson"/>
+                  <#list geometries as geometry>
+                      <span content="${geometry.geometryString}" datatype="geoJson"/>
                   </#list>
               </div>
           </dd>

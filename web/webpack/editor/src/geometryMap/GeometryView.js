@@ -21,8 +21,8 @@ export default ObjectInputView.extend({
   createMap () {
     this.map = new L.Map(this.$('.map')[0], { center: new L.LatLng(51.513, -0.09), zoom: 4 })
     this.drawnItems = L.featureGroup()
-    if (this.model.get('geometry')) {
-      const parsedJson = JSON.parse(this.model.get('geometry'))
+    if (this.model.get('geometryString')) {
+      const parsedJson = JSON.parse(this.model.get('geometryString'))
       this.drawButtons = false
 
       this.geometry = L.geoJson(parsedJson)
@@ -47,7 +47,7 @@ export default ObjectInputView.extend({
     this.listenTo(this.map, L.Draw.Event.CREATED, function (event) {
       const layer = event.layer
       this.drawButtons = false
-      this.model.set('geometry', JSON.stringify(layer.toGeoJSON()))
+      this.model.set('geometryString', JSON.stringify(layer.toGeoJSON()))
       this.map.removeControl(this.drawControl)
       this.drawControl = this.createToolbar()
       this.map.addControl(this.drawControl)
@@ -56,7 +56,7 @@ export default ObjectInputView.extend({
     })
 
     this.listenTo(this.map, L.Draw.Event.DELETED, function () {
-      this.model.set('geometry', null)
+      this.model.set('geometryString', null)
       this.drawButtons = true
       this.map.removeControl(this.drawControl)
       this.drawControl = this.createToolbar()
