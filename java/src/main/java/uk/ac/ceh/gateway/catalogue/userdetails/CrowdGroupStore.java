@@ -15,7 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.components.userstore.UnknownUserException;
-import uk.ac.ceh.components.userstore.crowd.model.CrowdGroup;
+import uk.ac.ceh.gateway.catalogue.model.CatalogueGroup;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 import java.util.Collections;
@@ -67,7 +67,7 @@ public class CrowdGroupStore implements GroupStore<CatalogueUser> {
                 return StreamSupport.stream(node.spliterator(), false)
                     .map(groupNode -> {
                         val name = groupNode.get("name").asText();
-                        return new CrowdGroup(name);
+                        return new CatalogueGroup(name);
                     })
                     .collect(Collectors.toList());
             } else {
