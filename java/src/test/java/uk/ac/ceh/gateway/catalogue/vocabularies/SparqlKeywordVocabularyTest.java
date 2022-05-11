@@ -143,15 +143,15 @@ class SparqlKeywordVocabularyTest {
     @SuppressWarnings({"SameParameterValue"})
     URI getURI(String graph, String where){
         return URI.create(
-                SPARQL_ENDPOINT + "?query=" +
-                        URLEncoder.encode("PREFIX skos:<http://www.w3.org/2004/02/skos/core#> ", UTF_8) +
-                        URLEncoder.encode("SELECT ?uri ?label ", UTF_8) +
-                        URLEncoder.encode("WHERE {GRAPH <", UTF_8) +
-                        URLEncoder.encode(graph, UTF_8) +
-                        URLEncoder.encode("> {", UTF_8) +
-                        URLEncoder.encode(where, UTF_8) +
-                        URLEncoder.encode("}}", UTF_8) +
-                        "&format=json");
+            SPARQL_ENDPOINT + "?query=" +
+                URLEncoder.encode("PREFIX skos:<http://www.w3.org/2004/02/skos/core#> ", UTF_8) +
+                URLEncoder.encode("SELECT ?uri ?label ", UTF_8) +
+                URLEncoder.encode("WHERE {GRAPH <", UTF_8) +
+                URLEncoder.encode(graph, UTF_8) +
+                URLEncoder.encode("> {", UTF_8) +
+                URLEncoder.encode(where, UTF_8) +
+                URLEncoder.encode("}}", UTF_8)
+        );
     }
 
 }

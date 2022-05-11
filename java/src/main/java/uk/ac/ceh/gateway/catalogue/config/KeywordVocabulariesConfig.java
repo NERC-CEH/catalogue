@@ -29,7 +29,7 @@ public class KeywordVocabulariesConfig {
             restTemplate,
             solrClient,
             sparqlEndpoint,
-            "urn:x-evn-master:cehmd",
+            "<http://onto.nerc.ac.uk/CEHMD/>",
             "?uri skos:broader <http://onto.nerc.ac.uk/CEHMD/assist-topics> . ?uri skos:prefLabel ?label .",
             "assist-topics",
             "Topics",
@@ -90,7 +90,7 @@ public class KeywordVocabulariesConfig {
             restTemplate,
             solrClient,
             sparqlEndpoint,
-            "<http://vocabs.ceh.ac.uk/dukems>",
+            "<http://vocabs.ceh.ac.uk/dukems#>",
             where,
             "dukems-pollutant",
             "Pollutants",
@@ -111,7 +111,7 @@ public class KeywordVocabulariesConfig {
             restTemplate,
             solrClient,
             sparqlEndpoint,
-            "urn:x-evn-master:dukems",
+            "<http://vocabs.ceh.ac.uk/dukems#>",
             where,
             "dukems-sector",
             "Sectors",
@@ -128,10 +128,7 @@ public class KeywordVocabulariesConfig {
     ) {
         val catalogueIds = List.of("elter");
         // Filters out deprecated concepts
-        val where = "?uri skos:prefLabel ?label . FILTER NOT EXISTS { ?uri skos:broader <http://vocabs.lter-europe.net/EnvThes/1> }";
-      
-       // I think this should be  
-       // val where = "?uri skos:prefLabel ?label . FILTER ! EXISTS { ?uri <http://www.w3.org/2002/07/owl#deprecated> true}";
+        val where = "?uri skos:prefLabel ?label . FILTER NOT EXISTS { ?uri <http://www.w3.org/2002/07/owl#deprecated> true}";
         return new SparqlKeywordVocabulary(
             restTemplate,
             solrClient,
