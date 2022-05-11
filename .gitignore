@@ -35,3 +35,4 @@ javac-services*
 org.eclipse.*
 DevStartupController.java
 docker-compose.override.yml
+*.private.env.json

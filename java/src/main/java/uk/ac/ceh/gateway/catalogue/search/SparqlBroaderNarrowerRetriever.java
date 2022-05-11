@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import static java.lang.String.format;
+import static uk.ac.ceh.gateway.catalogue.vocabularies.SparqlKeywordVocabulary.*;
 
 @Slf4j
 @Profile("search:enhanced")
@@ -32,7 +33,7 @@ public class SparqlBroaderNarrowerRetriever  implements BroaderNarrowerRetriever
 
     public SparqlBroaderNarrowerRetriever(
         @Qualifier("sparql") RestTemplate restTemplate,
-        @Value("${sparql.endpoint}") String sparqlEndpoint,
+        @Value("${ukceh.sparql.endpoint}") String sparqlEndpoint,
         List<KeywordVocabulary> keywordVocabularies
     ) {
         this.restTemplate = restTemplate;
@@ -49,14 +50,15 @@ public class SparqlBroaderNarrowerRetriever  implements BroaderNarrowerRetriever
             JsonNode.class
         );
         val resultsNode = Optional.ofNullable(response.getBody())
-            .orElseThrow(() -> new SearchException("Cannot get response body"));
+            .orElseThrow(() -> new SearchException("Cannot get response body"))
+            .at(bindingsPointer);
 
         if (resultsNode.isArray()) {
             log.debug("Retrieved {} keywords", resultsNode.size());
             return StreamSupport.stream(resultsNode.spliterator(), false)
                 .map(node -> {
-                    val url = node.get("uri").asText();
-                    val label = node.get("label").asText();
+                    val url = node.at(uriPointer).asText();
+                    val label = node.at(labelPointer).asText();
                     val vocabId = keyword.getVocabId();
                     return new Keyword(label, vocabId, url);
                 })
@@ -91,7 +93,7 @@ public class SparqlBroaderNarrowerRetriever  implements BroaderNarrowerRetriever
             }
             """, graph, keyword.getUrl());
         val encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8);
-        val url = format("%s?query=%s&format=json-simple", sparqlEndpoint, encodedQuery);
+        val url = format("%s?query=%s", sparqlEndpoint, encodedQuery);
         log.debug("SPARQL url: {}", url);
         return URI.create(url);
     }

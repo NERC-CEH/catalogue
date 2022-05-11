@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.vocabularies;
 
+import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.SneakyThrows;
 import lombok.ToString;
@@ -35,6 +36,9 @@ public class SparqlKeywordVocabulary implements KeywordVocabulary {
     private final URI queryUrl;
 
     public static final String COLLECTION = "keywords";
+    public static final JsonPointer bindingsPointer = JsonPointer.compile("/results/bindings");
+    public static final JsonPointer uriPointer = JsonPointer.compile("/uri/value");
+    public static final JsonPointer labelPointer = JsonPointer.compile("/label/value");
 
     public SparqlKeywordVocabulary(
             RestTemplate restTemplate,
@@ -61,12 +65,11 @@ public class SparqlKeywordVocabulary implements KeywordVocabulary {
             sparqlEndpoint + "?query=" +
             URLEncoder.encode("PREFIX skos:<http://www.w3.org/2004/02/skos/core#> ", UTF_8) +
             URLEncoder.encode("SELECT ?uri ?label ", UTF_8) +
-            URLEncoder.encode("WHERE {GRAPH <", UTF_8) +
+            URLEncoder.encode("WHERE {GRAPH ", UTF_8) +
             URLEncoder.encode(graph, UTF_8) +
-            URLEncoder.encode("> {", UTF_8) +
+            URLEncoder.encode(" {", UTF_8) +
             URLEncoder.encode(where, UTF_8) +
-            URLEncoder.encode("}}", UTF_8) +
-            "&format=json-simple"
+            URLEncoder.encode("}}", UTF_8)
         );
     }
 
@@ -82,15 +85,16 @@ public class SparqlKeywordVocabulary implements KeywordVocabulary {
             );
             log.debug(response.toString());
             val vocabularyNode = Optional.ofNullable(response.getBody())
-                .orElseThrow(() -> new KeywordVocabularyException("Cannot get response body"));
+                .orElseThrow(() -> new KeywordVocabularyException("Cannot get response body"))
+                .at(bindingsPointer);
 
             if (vocabularyNode.isArray()) {
                 log.info("Retrieved {} terms", vocabularyNode.size());
                 solrClient.deleteByQuery(COLLECTION, "vocabId:" + vocabularyId);
                 StreamSupport.stream(vocabularyNode.spliterator(), false)
                     .map(node -> {
-                        val url = node.get("uri").asText();
-                        val label = node.get("label").asText();
+                        val url = node.at(uriPointer).asText();
+                        val label = node.at(labelPointer).asText();
                         return new Keyword(label, vocabularyId, url);
                     })
                     .forEach(keyword -> {
@@ -103,6 +107,7 @@ public class SparqlKeywordVocabulary implements KeywordVocabulary {
                 solrClient.commit(COLLECTION);
             }
         } catch (HttpStatusCodeException ex) {
+            log.error(format("Cannot retrieve %s from vocab server, error: %s %s", vocabularyId, ex.getRawStatusCode(), ex.getResponseBodyAsString()));
             throw new KeywordVocabularyException(
                 format("Cannot retrieve %s from vocab server, error: %s %s", vocabularyId, ex.getRawStatusCode(), ex.getResponseBodyAsString()),
                 ex
