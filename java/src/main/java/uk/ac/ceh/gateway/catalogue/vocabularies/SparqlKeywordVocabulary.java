@@ -65,9 +65,9 @@ public class SparqlKeywordVocabulary implements KeywordVocabulary {
             sparqlEndpoint + "?query=" +
             URLEncoder.encode("PREFIX skos:<http://www.w3.org/2004/02/skos/core#> ", UTF_8) +
             URLEncoder.encode("SELECT ?uri ?label ", UTF_8) +
-            URLEncoder.encode("WHERE {GRAPH <", UTF_8) +
+            URLEncoder.encode("WHERE {GRAPH ", UTF_8) +
             URLEncoder.encode(graph, UTF_8) +
-            URLEncoder.encode("> {", UTF_8) +
+            URLEncoder.encode(" {", UTF_8) +
             URLEncoder.encode(where, UTF_8) +
             URLEncoder.encode("}}", UTF_8)
         );
@@ -107,6 +107,7 @@ public class SparqlKeywordVocabulary implements KeywordVocabulary {
                 solrClient.commit(COLLECTION);
             }
         } catch (HttpStatusCodeException ex) {
+            log.error(format("Cannot retrieve %s from vocab server, error: %s %s", vocabularyId, ex.getRawStatusCode(), ex.getResponseBodyAsString()));
             throw new KeywordVocabularyException(
                 format("Cannot retrieve %s from vocab server, error: %s %s", vocabularyId, ex.getRawStatusCode(), ex.getResponseBodyAsString()),
                 ex

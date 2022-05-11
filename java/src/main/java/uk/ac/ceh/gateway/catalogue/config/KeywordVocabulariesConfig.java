@@ -214,7 +214,7 @@ public class KeywordVocabulariesConfig {
             solrClient,
             sparqlEndpoint,
             "<http://vocabs.ceh.ac.uk/ukscape/>",
-            "?uri skos:broader <http://vocabs.ceh.ac.uk/ukscape/3> .. ?uri skos:prefLabel ?label .",
+            "?uri skos:broader <http://vocabs.ceh.ac.uk/ukscape/3> . ?uri skos:prefLabel ?label .",
             "ukscape-science-challenge",
             "Science Challenges",
             catalogueIds
