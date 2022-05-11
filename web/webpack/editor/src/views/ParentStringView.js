@@ -25,17 +25,17 @@ export default SingleView.extend({
       this.parentTemplate = _.template(parentTemplate)
     }
     SingleView.prototype.initialize.call(this, options)
-    this.array = this.model.has(this.data.modelAttribute) ? _.clone(this.model.get(this.data.modelAttribute)) : [];
-    (this.render)()
+    this.array = this.model.has(this.data.modelAttribute) ? _.clone(this.model.get(this.data.modelAttribute)) : []
+    this.render()
 
-    return this.$('.existing').sortable({
+    this.$('.existing').sortable({
       start: (event, ui) => {
         this._oldPosition = ui.item.index()
       },
       update: (event, ui) => {
         const toMove = (this.array.splice(this._oldPosition, 1))[0]
         this.array.splice(ui.item.index(), 0, toMove)
-        return this.updateModel()
+        this.updateModel()
       }
     })
   },
@@ -45,16 +45,14 @@ export default SingleView.extend({
   },
 
   render () {
-    (this.renderParent)()
+    this.renderParent()
     _.each(this.array, (string, index) => {
       return this.$('.existing').append(this.childTemplate({
         data: _.extend({}, this.data, {
           index,
           value: string
-        }
-        )
-      })
-      )
+        })
+      }))
     })
     return this
   },
@@ -64,7 +62,7 @@ export default SingleView.extend({
     const index = $target.data('index')
     const value = $target.val()
     this.array.splice(index, 1, value)
-    return this.updateModel()
+    this.updateModel()
   },
 
   removeChild (event) {
@@ -73,7 +71,7 @@ export default SingleView.extend({
     const index = $target.data('index')
     this.array.splice(index, 1)
     this.$(`#input${this.data.modelAttribute}${index}`).remove()
-    return this.updateModel()
+    this.updateModel()
   },
 
   addChild (event) {
@@ -83,13 +81,12 @@ export default SingleView.extend({
     this.$('.existing').append(this.childTemplate({
       data: _.extend({}, this.data,
         { index })
-    })
-    )
+    }))
     this.$(`#input${this.data.modelAttribute}${index} input`).focus()
-    return this.updateModel()
+    this.updateModel()
   },
 
   updateModel () {
-    return this.model.set(this.data.modelAttribute, _.clone(this.array))
+    this.model.set(this.data.modelAttribute, _.clone(this.array))
   }
 })

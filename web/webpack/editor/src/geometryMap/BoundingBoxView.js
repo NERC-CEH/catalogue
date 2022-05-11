@@ -33,6 +33,7 @@ export default ObjectInputView.extend({
 
   createMap () {
     this.map = new L.Map(this.$('.map')[0], { center: new L.LatLng(51.513, -0.09), zoom: 4 })
+
     this.drawnItems = L.featureGroup()
     if (this.model.get('northBoundLatitude') && this.model.get('westBoundLongitude') &&
         this.model.get('southBoundLatitude') && this.model.get('eastBoundLongitude')) {
@@ -47,17 +48,21 @@ export default ObjectInputView.extend({
       this.shapeDrawn = false
     }
     this.drawnItems.addTo(this.map)
-    L.control.layers({
+
+    const baseMaps = {
       OSM: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 18,
         attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
-      }).addTo(this.map),
+      }),
       Google: L.tileLayer('http://www.google.cn/maps/vt?lyrs=s@189&gl=cn&x={x}&y={y}&z={z}', {
         attribution: 'google'
       })
-    }, { drawlayer: this.drawnItems }, { position: 'topright', collapsed: false }).addTo(this.map)
+    }
+
+    L.control.layers(baseMaps, { drawlayer: this.drawnItems }, { position: 'topright', collapsed: false }).addTo(this.map)
 
     this.map.addControl(this.drawControl)
+    baseMaps.OSM.addTo(this.map)
 
     this.listenTo(this.map, L.Draw.Event.CREATED, function (event) {
       if (this.shapeDrawn === false) {
@@ -137,11 +142,7 @@ export default ObjectInputView.extend({
   },
 
   render () {
-    const that = this
-    $(document).ready(function () {
-      ObjectInputView.prototype.render.apply(that)
-      that.createMap()
-      return that
-    })
+    ObjectInputView.prototype.render.apply(this)
+    return this
   }
 })

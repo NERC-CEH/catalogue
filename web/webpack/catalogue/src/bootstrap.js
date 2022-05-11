@@ -1,5 +1,5 @@
-import 'bootstrap'
 import $ from 'jquery'
+import 'bootstrap'
 import { Catalogue, CatalogueView } from './CatalogueApp'
 
 $('.catalogue-control').on('click', function (event) {

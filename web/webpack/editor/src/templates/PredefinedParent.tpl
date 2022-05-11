@@ -1,5 +1,5 @@
 <div class="dropdown">
-  <button class="editor-button dropdown-toggle" type="button" id="dropdown<%= data.modelAttribute %>Menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+  <button class="editor-button" data-bs-toggle="dropdown" type="button" id="dropdown<%= data.modelAttribute %>Menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
     Add
     <span class="caret"></span>
   </button>
