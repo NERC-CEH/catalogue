@@ -48,9 +48,9 @@ class SparqlBroaderNarrowerRetrieverTest {
         given(vocab2.getId()).willReturn("ef");
         given(vocab3.getId()).willReturn("encore");
 
-        given(vocab1.getGraph()).willReturn("urn:x-evn-master:CAST");
-        given(vocab2.getGraph()).willReturn("urn:x-evn-master:EF");
-        given(vocab3.getGraph()).willReturn("urn:x-evn-master:ENCORE");
+        given(vocab1.getGraph()).willReturn("<http://vocabs.ceh.ac.uk/CAST/>");
+        given(vocab2.getGraph()).willReturn("<http://vocabs.ceh.ac.uk/EF/>");
+        given(vocab3.getGraph()).willReturn("<http://vocabs.ceh.ac.uk/ENCORE/");
     }
 
     @BeforeEach
@@ -74,8 +74,8 @@ class SparqlBroaderNarrowerRetrieverTest {
             ),
             UTF_8
         );
-        val query = "?query=PREFIX+skos%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2004%2F02%2Fskos%2Fcore%23%3E%0ASELECT+%3Furi+%3Flabel%0AFROM+%3Curn%3Ax-evn-master%3ACAST%3E%0AWHERE+%7B%0A++++%7B%0A++++++++%3Furi+skos%3Abroader+%3Chttp%3A%2F%2Fonto.nerc.ac.uk%2FCAST%2F40%3E+%3B%0A++++++++++++skos%3AprefLabel+%3Flabel+.%0A++++%7D%0A++++UNION%0A++++%7B%0A++++++++%3Chttp%3A%2F%2Fonto.nerc.ac.uk%2FCAST%2F40%3E+skos%3Abroader+%3Furi+.%0A++++++++%3Furi+skos%3AprefLabel+%3Flabel+.%0A++++%7D%0A%7D%0A";
-        mockServer.expect(requestTo(sparqlEndpoint + query + "&format=json"))
+        val query = "?query=PREFIX+skos%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2004%2F02%2Fskos%2Fcore%23%3E%0ASELECT+%3Furi+%3Flabel%0AFROM+%3C%3Chttp%3A%2F%2Fvocabs.ceh.ac.uk%2FCAST%2F%3E%3E%0AWHERE+%7B%0A++++%7B%0A++++++++%3Furi+skos%3Abroader+%3Chttp%3A%2F%2Fonto.nerc.ac.uk%2FCAST%2F40%3E+%3B%0A++++++++++++skos%3AprefLabel+%3Flabel+.%0A++++%7D%0A++++UNION%0A++++%7B%0A++++++++%3Chttp%3A%2F%2Fonto.nerc.ac.uk%2FCAST%2F40%3E+skos%3Abroader+%3Furi+.%0A++++++++%3Furi+skos%3AprefLabel+%3Flabel+.%0A++++%7D%0A%7D%0A";
+        mockServer.expect(requestTo(sparqlEndpoint + query))
             .andExpect(method(HttpMethod.GET))
             .andRespond(withSuccess(response, MediaType.APPLICATION_JSON));
 

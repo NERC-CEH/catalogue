@@ -36,9 +36,9 @@ public class SparqlKeywordVocabulary implements KeywordVocabulary {
     private final URI queryUrl;
 
     public static final String COLLECTION = "keywords";
-    private final JsonPointer bindingsPointer = JsonPointer.compile("/results/bindings");
-    private final JsonPointer uriPointer = JsonPointer.compile("/uri/value");
-    private final JsonPointer labelPointer = JsonPointer.compile("/label/value");
+    public static final JsonPointer bindingsPointer = JsonPointer.compile("/results/bindings");
+    public static final JsonPointer uriPointer = JsonPointer.compile("/uri/value");
+    public static final JsonPointer labelPointer = JsonPointer.compile("/label/value");
 
     public SparqlKeywordVocabulary(
             RestTemplate restTemplate,

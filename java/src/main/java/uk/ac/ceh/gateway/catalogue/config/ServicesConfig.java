@@ -93,7 +93,6 @@ public class ServicesConfig {
         val messageConverter = new MappingJackson2HttpMessageConverter(objectMapper);
         val supportedMediaTypes = Arrays.asList(
             MediaType.APPLICATION_JSON,
-            new MediaType("application", "*+json"),
             new MediaType("application", "*+json")
         );
         messageConverter.setSupportedMediaTypes(supportedMediaTypes);
