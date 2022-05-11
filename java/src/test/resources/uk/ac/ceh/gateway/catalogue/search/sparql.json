@@ -1,4 +1,22 @@
-[
-  {"uri": "http://onto.nerc.ac.uk/CAST/1", "label": "determinands"},
-  {"uri": "http://onto.nerc.ac.uk/CAST/41","label": "dissolved cerium"}
-]
+{
+  "results": {
+    "bindings": [
+      {
+        "uri": {
+          "value": "http://onto.nerc.ac.uk/CAST/1"
+        },
+        "label": {
+          "value": "determinands"
+        }
+      },
+      {
+        "uri": {
+          "value": "http://onto.nerc.ac.uk/CAST/41"
+        },
+        "label": {
+          "value": "dissolved cerium"
+        }
+      }
+    ]
+  }
+}
