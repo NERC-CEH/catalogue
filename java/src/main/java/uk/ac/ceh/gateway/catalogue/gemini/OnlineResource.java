@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Value;
 
+import java.io.Serializable;
 import java.util.regex.Pattern;
 
 import static com.google.common.base.Strings.nullToEmpty;
@@ -13,7 +14,8 @@ import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.OTHER;
 import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAPABILITIES;
 
 @Value
-public class OnlineResource {
+public class OnlineResource implements Serializable {
+    static final long serialVersionUID = 42L;
     private static final Pattern GET_CAPABILITIES_URL_PATTERN = Pattern.compile("[?&]request=getcapabilities", CASE_INSENSITIVE);
     private static final Pattern WMS_SERVICE_URL_PATTERN = Pattern.compile("[?&]service=wms", CASE_INSENSITIVE);
     String url, name, description, function;
