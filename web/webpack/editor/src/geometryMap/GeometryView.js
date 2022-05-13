@@ -27,8 +27,13 @@ export default ObjectInputView.extend({
 
       this.geometry = L.geoJson(parsedJson)
       this.drawnItems.addLayer(this.geometry)
+      this.shapeDrawn = true
     } else {
       this.drawButtons = true
+      this.shapeDrawn = false
+    }
+    if (this.shapeDrawn === true) {
+      this.map.setView(this.geometry.getBounds().getCenter(), 4)
     }
     this.drawControl = this.createToolbar()
     this.drawnItems.addTo(this.map)

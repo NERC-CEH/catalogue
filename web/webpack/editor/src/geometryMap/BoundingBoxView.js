@@ -5,7 +5,6 @@ import 'leaflet-draw/dist/leaflet.draw-src.css'
 import L from 'leaflet'
 import 'leaflet-draw'
 import template from './BoundingBox.tpl'
-import $ from 'jquery'
 
 export default ObjectInputView.extend({
 
@@ -47,22 +46,25 @@ export default ObjectInputView.extend({
       this.drawControl = this.createToolbar()
       this.shapeDrawn = false
     }
+    if (this.shapeDrawn === true) {
+      this.map.setView(this.rectangle.getBounds().getCenter(), 4)
+    }
     this.drawnItems.addTo(this.map)
 
     const baseMaps = {
-      OSM: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      Map: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 18,
         attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
       }),
-      Google: L.tileLayer('http://www.google.cn/maps/vt?lyrs=s@189&gl=cn&x={x}&y={y}&z={z}', {
+      Satellite: L.tileLayer('http://www.google.cn/maps/vt?lyrs=s@189&gl=cn&x={x}&y={y}&z={z}', {
         attribution: 'google'
       })
     }
 
-    L.control.layers(baseMaps, { drawlayer: this.drawnItems }, { position: 'topright', collapsed: false }).addTo(this.map)
+    L.control.layers(baseMaps, { Drawlayer: this.drawnItems }, { position: 'topright', collapsed: false }).addTo(this.map)
 
     this.map.addControl(this.drawControl)
-    baseMaps.OSM.addTo(this.map)
+    baseMaps.Map.addTo(this.map)
 
     this.listenTo(this.map, L.Draw.Event.CREATED, function (event) {
       if (this.shapeDrawn === false) {
@@ -143,6 +145,7 @@ export default ObjectInputView.extend({
 
   render () {
     ObjectInputView.prototype.render.apply(this)
+    this.createMap()
     return this
   }
 })
