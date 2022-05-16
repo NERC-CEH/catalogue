@@ -70,9 +70,9 @@ module.exports = {
     }),
     new ModuleFederationPlugin({
       shared: {
-        '@types/leaflet': { singleton: true, strictVersion: true, requiredVersion: '^0.7.7' },
-        leaflet: { singleton: true, strictVersion: true, requiredVersion: '^0.7.7' },
-        'leaflet-draw': { singleton: true, strictVersion: true, requiredVersion: '^1.0.4' }
+        '@types/leaflet': { singleton: true, strictVersion: true, requiredVersion: '^0.7.7', eager: true },
+        leaflet: { singleton: true, strictVersion: true, requiredVersion: '^0.7.7', eager: true },
+        'leaflet-draw': { singleton: true, strictVersion: true, requiredVersion: '^1.0.4', eager: true }
       }
     })
   ],

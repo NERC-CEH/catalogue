@@ -15,13 +15,6 @@ describe('Test SingleView', () => {
     expect(view).toBeDefined()
   })
 
-  it('show should make el visible', () => {
-    // when
-    view.render() // show is called inside of render
-    // then
-    expect(view.$el.hasClass('visible')).toBeTrue()
-  })
-
   it('hide should make el invisible', () => {
     // when
     view.render()
