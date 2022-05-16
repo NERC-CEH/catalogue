@@ -1,53 +1,66 @@
-define [
-  'underscore'
-  'jquery'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'underscore',
+  'jquery',
   'backbone'
-], (_, $, Backbone) -> Backbone.View.extend
-  events:
-    "keyup  [name='term']": "handleTyping"
-    "change [name='term']": "handleTyping"
-    "paste  [name='term']": "handleTyping"
-    "input  [name='term']": "handleTyping"
+], function(_, $, Backbone) { return Backbone.View.extend({
+  events: {
+    "keyup  [name='term']": "handleTyping",
+    "change [name='term']": "handleTyping",
+    "paste  [name='term']": "handleTyping",
+    "input  [name='term']": "handleTyping",
     "submit":               "handleSubmit"
+  },
 
-  initialize: ->
-    # Create a method which waits until after input has completed before 
-    # actually setting the displayed term to the model
-    @updateTermOnModelWhenComplete = _.debounce @updateTermOnModel, 500
+  initialize() {
+    // Create a method which waits until after input has completed before 
+    // actually setting the displayed term to the model
+    this.updateTermOnModelWhenComplete = _.debounce(this.updateTermOnModel, 500);
 
-    @listenTo @model, 'change:term', @updateDisplayedTerm
+    return this.listenTo(this.model, 'change:term', this.updateDisplayedTerm);
+  },
 
-  ###
+  /*
   Event listener for changed input in the search term box. This will instantly
   clear the results (as these will now be dirty). After input has stopped, the
   term will be set on the model
-  ###
-  handleTyping: ->
-    if @getDisplayedTerm() isnt @model.get 'term'
-      do @model.clearResults
-      do @updateTermOnModelWhenComplete
+  */
+  handleTyping() {
+    if (this.getDisplayedTerm() !== this.model.get('term')) {
+      (this.model.clearResults)();
+      return (this.updateTermOnModelWhenComplete)();
+    }
+  },
 
-  ###
+  /*
   The search form has been submitted. We can update the search term right away
-  ###
-  handleSubmit:(e)->
-    do @updateTermOnModel
-    do e.preventDefault
+  */
+  handleSubmit(e){
+    (this.updateTermOnModel)();
+    return (e.preventDefault)();
+  },
 
-  ###
+  /*
   Reads the current term from the search box and sets it onto the model
-  ###
-  updateTermOnModel:-> @model.set 'term', @getDisplayedTerm()
+  */
+  updateTermOnModel() { return this.model.set('term', this.getDisplayedTerm()); },
 
-  ###
+  /*
   Obtains the current term from the search box
-  ###
-  getDisplayedTerm:-> @$("[name='term']").val()
+  */
+  getDisplayedTerm() { return this.$("[name='term']").val(); },
 
-  ###
+  /*
   Update the term box based upon the content in the model
-  ###
-  updateDisplayedTerm: -> 
-    term = @model.get 'term'
-    displayed = $("[name='term']").val()
-    $("[name='term']").val term if term isnt displayed
+  */
+  updateDisplayedTerm() { 
+    const term = this.model.get('term');
+    const displayed = $("[name='term']").val();
+    if (term !== displayed) { return $("[name='term']").val(term); }
+  }
+});
+ });

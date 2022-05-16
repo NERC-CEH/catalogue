@@ -1,104 +1,126 @@
-define [
-  'underscore'
-  'jquery'
-  'backbone'
-  'tpl!templates/SearchPage.tpl'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+define([
+  'underscore',
+  'jquery',
+  'backbone',
+  'tpl!templates/SearchPage.tpl',
   'isInViewport'
-], (_, $, Backbone, template) -> Backbone.View.extend
+], function(_, $, Backbone, template) { return Backbone.View.extend({
 
-  initialize: ->
-    do @readModelFromHTML
+  initialize() {
+    (this.readModelFromHTML)();
 
-    @listenTo @model, 'cleared:results', @clear
-    @listenTo @model, 'results-sync', @render
-    @listenTo @model, 'results-change:selected', @updateSelected
+    this.listenTo(this.model, 'cleared:results', this.clear);
+    this.listenTo(this.model, 'results-sync', this.render);
+    this.listenTo(this.model, 'results-change:selected', this.updateSelected);
 
-    do @findSelected # Find selected, after @updateSelected has been registered
-    do @padResults   # Change the padding of the results page
+    (this.findSelected)(); // Find selected, after @updateSelected has been registered
+    (this.padResults)();   // Change the padding of the results page
 
-    # Ensure @ refers to this in the findSelected method. This means that we
-    # can:
-    #   - Pass @findSelected directly to the jquery.on method
-    #   - Unbind @findSelected when the view is removed
-    _.bindAll this, 'findSelected', 'padResults'
-    $(window).on 'scroll', @findSelected
-    $(window).on 'resize', @padResults
+    // Ensure @ refers to this in the findSelected method. This means that we
+    // can:
+    //   - Pass @findSelected directly to the jquery.on method
+    //   - Unbind @findSelected when the view is removed
+    _.bindAll(this, 'findSelected', 'padResults');
+    $(window).on('scroll', this.findSelected);
+    return $(window).on('resize', this.padResults);
+  },
 
-  ###
+  /*
   Since we update the selected result based upon the scroll position, we need
   to be able to scroll all the way to select the last result. This method will
   ensure that the margin of the results view allows for such.
-  ###
-  padResults:->
-    if @$('.result').length
-      # Where the top result should start
-      topPosition = $('.navbar').height() + $('.search-form').height()
-      onScreen = @$('.result').last().nextAll().andSelf() # Elements to show
-      onScreenHeight = _.reduce onScreen,
-                                (height, e) -> height + $(e).outerHeight true,
-                                topPosition
+  */
+  padResults() {
+    if (this.$('.result').length) {
+      // Where the top result should start
+      const topPosition = $('.navbar').height() + $('.search-form').height();
+      const onScreen = this.$('.result').last().nextAll().andSelf(); // Elements to show
+      const onScreenHeight = _.reduce(onScreen,
+                                (height, e) => height + $(e).outerHeight(true),
+                                topPosition);
 
-      @$el.css marginBottom : $(window).height() - onScreenHeight
+      return this.$el.css({marginBottom : $(window).height() - onScreenHeight});
+    }
+  },
 
-  ###
+  /*
   A page of search results may already be loaded in to the html. We can read
   that html and populate the model. If there is no html this method SHOULD NOT
   trigger a change on the model.
-  ###
-  readModelFromHTML:->
-    @model.getResults().set
-      numFound: @$('#num-records').val()
-      results: _.map @$('.result'), (r) ->
-        identifier:  $(r).attr('id')
-        title:       $('.result__title', r).text()
-        description: $('.result__description', r).text()
-        locations:   $(r).attr('data-location').split '|'
+  */
+  readModelFromHTML() {
+    return this.model.getResults().set({
+      numFound: this.$('#num-records').val(),
+      results: _.map(this.$('.result'), r => ({
+        identifier:  $(r).attr('id'),
+        title:       $('.result__title', r).text(),
+        description: $('.result__description', r).text(),
+        locations:   $(r).attr('data-location').split('|')
+      }))
+    });
+  },
 
-  ###
+  /*
   Event listener for when the selected id has changed on the search page model.
   Highlight that search result, with the selected class
-  ###
-  updateSelected: ->
-    selected = @model.getResults().get 'selected'
-    @$('.result').removeClass 'selected'
-    @$("##{selected}").addClass 'selected'
+  */
+  updateSelected() {
+    const selected = this.model.getResults().get('selected');
+    this.$('.result').removeClass('selected');
+    return this.$(`#${selected}`).addClass('selected');
+  },
 
-  ###
+  /*
   The following method will identify the result at the top of the screen and
   set the selected property on the @model. If there are no results, do nothing
-  ###
-  findSelected: ->
-    if @$('.result').length
-      offset = @$('.result .result__description').offset().top
-      results = @$ ".result:in-viewport(#{offset})"
-      # if no result was detected, default to the last result
-      selected = if results.length then $(results[0]) else $('.result').last()
-      @model.getResults().set selected: selected.attr 'id'
+  */
+  findSelected() {
+    if (this.$('.result').length) {
+      const offset = this.$('.result .result__description').offset().top;
+      const results = this.$(`.result:in-viewport(${offset})`);
+      // if no result was detected, default to the last result
+      const selected = results.length ? $(results[0]) : $('.result').last();
+      return this.model.getResults().set({selected: selected.attr('id')});
+    }
+  },
 
-  ###
+  /*
   Clear the dom of any content
-  ###
-  clear: -> do @$el.empty
+  */
+  clear() { return (this.$el.empty)(); },
 
-  ###
+  /*
   Draw in the new content
-  ###
-  render: ->
-    @$el.html template @model.getResults().attributes
-    $relatedSearches = @$('.results__related_searches')
-    relatedSearches = @model.getResults().get('relatedSearches')
-    if relatedSearches?
-      if relatedSearches.length > 0
-        $relatedSearches.append('<h3>Related Searches</h3>')
+  */
+  render() {
+    this.$el.html(template(this.model.getResults().attributes));
+    const $relatedSearches = this.$('.results__related_searches');
+    const relatedSearches = this.model.getResults().get('relatedSearches');
+    if (relatedSearches != null) {
+      if (relatedSearches.length > 0) {
+        $relatedSearches.append('<h3>Related Searches</h3>');
+      }
 
-      relatedSearches.forEach((relatedSearch, index) ->
-        if index > 0
-          prefix = ', '
-        else
-          prefix = ''
-        $relatedSearches.append(
-          "#{prefix}<a href=\"#{relatedSearch.href}\">#{relatedSearch.title}</a>"
-        )
-      )
-    do @findSelected # Find the selected
-    do @padResults   # Pad the results pane
+      relatedSearches.forEach(function(relatedSearch, index) {
+        let prefix;
+        if (index > 0) {
+          prefix = ', ';
+        } else {
+          prefix = '';
+        }
+        return $relatedSearches.append(
+          `${prefix}<a href=\"${relatedSearch.href}\">${relatedSearch.title}</a>`
+        );
+      });
+    }
+    (this.findSelected)(); // Find the selected
+    return (this.padResults)();
+  }
+});
+ });   // Pad the results pane
