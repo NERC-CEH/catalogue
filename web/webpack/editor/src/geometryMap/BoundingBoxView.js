@@ -1,7 +1,7 @@
 import _ from 'underscore'
 import { ObjectInputView } from '../views'
-import 'leaflet/dist/leaflet.css'
 import 'leaflet-draw/dist/leaflet.draw-src.css'
+import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
 import 'leaflet-draw'
 import template from './BoundingBox.tpl'
@@ -135,6 +135,7 @@ export default ObjectInputView.extend({
       }
     })
   },
+
   viewMap () {
     if (this.map) {
       this.map.off()
@@ -145,7 +146,6 @@ export default ObjectInputView.extend({
 
   render () {
     ObjectInputView.prototype.render.apply(this)
-    this.createMap()
     return this
   }
 })

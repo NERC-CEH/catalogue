@@ -1,7 +1,7 @@
 import _ from 'underscore'
 import { ObjectInputView } from '../views'
-import 'leaflet/dist/leaflet.css'
 import 'leaflet-draw/dist/leaflet.draw-src.css'
+import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
 import 'leaflet-draw'
 import template from './Geometry.tpl'
@@ -39,11 +39,11 @@ export default ObjectInputView.extend({
     this.drawnItems.addTo(this.map)
 
     const baseMaps = {
-      OSM: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      Map: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 18,
         attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
       }),
-      Google: L.tileLayer('http://www.google.cn/maps/vt?lyrs=s@189&gl=cn&x={x}&y={y}&z={z}', {
+      Satellite: L.tileLayer('http://www.google.cn/maps/vt?lyrs=s@189&gl=cn&x={x}&y={y}&z={z}', {
         attribution: 'google'
       })
     }
@@ -51,7 +51,7 @@ export default ObjectInputView.extend({
     L.control.layers(baseMaps, { drawlayer: this.drawnItems }, { position: 'topright', collapsed: false }).addTo(this.map)
 
     this.map.addControl(this.drawControl)
-    baseMaps.OSM.addTo(this.map)
+    baseMaps.Map.addTo(this.map)
 
     this.listenTo(this.map, L.Draw.Event.CREATED, function (event) {
       const layer = event.layer
