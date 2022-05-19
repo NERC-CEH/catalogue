@@ -1,6 +1,6 @@
 import $ from 'jquery'
 import Backbone from 'backbone'
-import deparam from 'jquery-deparam'
+import deparam from 'deparam.js'
 
 export default Backbone.Router.extend({
   routes: {
