@@ -6,13 +6,15 @@ import { FacetsPanelView, SearchFormView, SearchPageView } from './views'
 export default Backbone.View.extend({
   el: '#search',
 
+  events: {},
+
   initialize (options) {
     this.appUrl = window.location.href.split('#')[0].split('?')[0]
 
     // Mutate the events hash so that is listens to clicks of urls which will
     // update the state of this web application
-    // this.events[`click a[href='${this.appUrl}']`] = 'defaultState' // something wrong here Cannot set properties of undefined (setting click a[href='http://localhost:8080/eidc/documents']')
-    // this.events[`click a[href^='${this.appUrl}?']`] = 'handleUrl'
+    this.events["click a[href='#{this.appUrl}']"] = 'defaultState'
+    this.events["click a[href='#{this.appUrl}?']"] = 'handleUrl'
 
     this.delegateEvents(this.events) // Register the mutated events object
 
@@ -24,6 +26,7 @@ export default Backbone.View.extend({
   models state
   */
   handleUrl (e) {
+    console.log('handle url')
     const query = $(e.currentTarget).attr('href').split('?')[1]
     this.model.setState(deparam(query, true))
     e.preventDefault()
@@ -34,6 +37,7 @@ export default Backbone.View.extend({
   the default state.
   */
   defaultState (e) {
+    console.log('default state')
     this.model.setState({})
     e.preventDefault()
   },
