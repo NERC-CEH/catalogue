@@ -1,6 +1,7 @@
 import _ from 'underscore'
 import Backbone from 'backbone'
 import SearchPage from './models/SearchPage'
+import $ from 'jquery'
 
 export default Backbone.Model.extend({
 
@@ -41,7 +42,7 @@ export default Backbone.Model.extend({
   createSearchPage () {
     this._proxyResultsEvents = evt => this.trigger(`results-${evt}`)
     this.results = new SearchPage()
-    return this.results.on('all', this._proxyResultsEvents)
+    this.results.on('all', this._proxyResultsEvents)
   },
 
   /*
@@ -68,7 +69,7 @@ export default Backbone.Model.extend({
     if (!_.chain(evt.changed).pick(...Array.from(this.searchFields || [])).isEmpty().value()) {
       this.clearResults() // Make sure that the results have been cleared
       this.createSearchPage() // Redefine a new search page
-      // this.results.fetch({ cache: false, traditional: true, data: this.getState() })
+      this.results.fetch({ cache: false, traditional: true, data: this.getState() })
     }
   },
 

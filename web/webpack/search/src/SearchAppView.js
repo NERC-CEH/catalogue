@@ -26,7 +26,6 @@ export default Backbone.View.extend({
   models state
   */
   handleUrl (e) {
-    console.log('handle url')
     const query = $(e.currentTarget).attr('href').split('?')[1]
     this.model.setState(deparam(query, true))
     e.preventDefault()
@@ -37,7 +36,6 @@ export default Backbone.View.extend({
   the default state.
   */
   defaultState (e) {
-    console.log('default state')
     this.model.setState({})
     e.preventDefault()
   },

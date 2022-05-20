@@ -1,4 +1,3 @@
-import _ from 'underscore'
 import $ from 'jquery'
 import Backbone from 'backbone'
 
@@ -12,10 +11,6 @@ export default Backbone.View.extend({
   },
 
   initialize () {
-    // Create a method which waits until after input has completed before
-    // actually setting the displayed term to the model
-    this.updateTermOnModelWhenComplete = _.debounce(this.updateTermOnModel, 500)
-
     this.listenTo(this.model, 'change:term', this.updateDisplayedTerm)
   },
 
@@ -27,7 +22,7 @@ export default Backbone.View.extend({
   handleTyping () {
     if (this.getDisplayedTerm() !== this.model.get('term')) {
       this.model.clearResults()
-      this.updateTermOnModelWhenComplete()
+      setTimeout(this.updateTermOnModel(), 500)
     }
   },
 

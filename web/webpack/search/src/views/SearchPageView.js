@@ -69,20 +69,6 @@ export default Backbone.View.extend({
   },
 
   /*
-  The following method will identify the result at the top of the screen and
-  set the selected property on the @model. If there are no results, do nothing
-  */
-  findSelected () {
-    if (this.$('.result').length) {
-      const offset = this.$('.result .result__description').offset().top
-      const results = this.$(`.result:in-viewport(${offset})`)
-      // if no result was detected, default to the last result
-      const selected = results.length ? $(results[0]) : $('.result').last()
-      this.model.getResults().set({ selected: selected.attr('id') })
-    }
-  },
-
-  /*
   Clear the dom of any content
   */
   clear () {
