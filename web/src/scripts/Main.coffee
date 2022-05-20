@@ -3,11 +3,51 @@ define [
   'jquery'
   'backbone'
   'bootstrap'
+  'cs!views/StudyAreaView'
   'cs!models/MapViewerApp'
   'cs!views/MapViewerAppView'
+  'cs!models/SearchApp'
+  'cs!views/SearchAppView'
+  'cs!views/MessageView'
   'cs!routers/LayersRouter'
+  'cs!routers/SearchRouter'
+  'cs!models/EditorMetadata'
+  'cs!views/GeminiEditorView'
+  'cs!views/MonitoringEditorView'
+  'cs!views/ChartView'
+  'cs!views/ModelEditorView'
+  'cs!views/LinkEditorView'
+  'cs!models/LinkEditorMetadata'
+  'cs!views/CehModelEditorView'
+  'cs!views/CehModelApplicationEditorView'
+  'cs!views/OsdpAgentEditorView'
+  'cs!views/OsdpDatasetEditorView'
+  'cs!views/OsdpModelEditorView'
+  'cs!views/OsdpSampleEditorView'
+  'cs!views/OsdpPublicationEditorView'
+  'cs!views/OsdpMonitoringActivityEditorView'
+  'cs!views/OsdpMonitoringProgrammeEditorView'
+  'cs!views/OsdpMonitoringFacilityEditorView'
+  'cs!views/SampleArchiveEditorView'
+  'cs!views/ErammpModelEditorView'
+  'cs!views/NercModelEditorView'
+  'cs!views/NercModelUseEditorView'
+  'cs!views/ErammpDatacubeEditorView'
+  'cs!views/InfrastructureRecordEditorView'
+  'cs!views/UkemsDocumentEditorView'
+  'cs!views/CodeDocumentEditorView'
+  'cs!views/ClipboardCopyView'
+  'cs!views/DataTypeEditorView'
+  'cs!views/ElterEditorView'
+  'cs!views/ElterLinkedEditorView'
+  'cs!views/ServiceAgreementEditorView'
+  'cs!models/service-agreement/ServiceAgreement'
 ], (
-  _, $, Backbone, Bootstrap, MapViewerApp, MapViewerAppView, LayersRouter,ChartView
+    _, $, Backbone, Bootstrap, StudyAreaView, MapViewerApp, MapViewerAppView, SearchApp, SearchAppView, MessageView, LayersRouter, SearchRouter,
+    EditorMetadata, GeminiEditorView, MonitoringEditorView, ChartView, ModelEditorView, LinkEditorView, LinkEditorMetadata, CehModelEditorView, CehModelApplicationEditorView,
+    OsdpAgentEditorView,OsdpDatasetEditorView, OsdpModelEditorView, OsdpSampleEditorView, OsdpPublicationEditorView, OsdpMonitoringActivityEditorView, OsdpMonitoringProgrammeEditorView,
+    OsdpMonitoringFacilityEditorView, SampleArchiveEditorView, ErammpModelEditorView, NercModelEditorView, NercModelUseEditorView, ErammpDatacubeEditorView, InfrastructureRecordEditorView, UkemsDocumentEditorView,
+    CodeDocumentEditorView, ClipboardCopyView, DataTypeEditorView, ElterEditorView, ElterLinkedEditorView, ServiceAgreementEditorView, ServiceAgreement
 ) ->
 
   ###
@@ -26,10 +66,165 @@ define [
     # Remove once templates fixed
     window._ = _
 
+    do @initClipboard if $('.clipboard-copy').length
+    do @initEditor if $('.edit-control').length
+    do @initGeometryMap if $('#geometry-map').length
     do @initMapviewer if $('#mapviewer').length
+    do @initSearch if $('#search').length
+    do @initServiceAgreement if $('.service-agreement').length
+    do @initStudyAreaMap if $('#studyarea-map').length
 
     $('.chart').each (i, e) -> new ChartView el: e
     do Backbone.history.start
+
+  ###
+  Initialize clipboard copy
+  ###
+  initClipboard: ->
+    view = new ClipboardCopyView
+      el: '.clipboard-copy'
+
+  ###
+  Initialize the editor
+  ###
+  initEditor: ->
+
+    lookup =
+      GEMINI_DOCUMENT:
+        View: GeminiEditorView
+        Model: EditorMetadata
+        mediaType: 'application/gemini+json'
+      EF_DOCUMENT:
+        View: MonitoringEditorView
+        Model: EditorMetadata
+        mediaType: 'application/monitoring+json'
+      IMP_DOCUMENT:
+        View: ModelEditorView
+        Model: EditorMetadata
+        mediaType: 'application/model+json'
+      CEH_MODEL:
+        View: CehModelEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.ceh.model+json'
+      CEH_MODEL_APPLICATION:
+        View: CehModelApplicationEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.ceh.model.application+json'
+      LINK_DOCUMENT:
+        View: LinkEditorView
+        Model: LinkEditorMetadata
+        mediaType: 'application/link+json'
+      'osdp-agent':
+        View: OsdpAgentEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.osdp.agent+json'
+      'osdp-dataset':
+        View: OsdpDatasetEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.osdp.dataset+json'
+      'osdp-model':
+        View: OsdpModelEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.osdp.model+json'
+      'osdp-sample':
+        View: OsdpSampleEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.osdp.sample+json'
+      'osdp-publication':
+        View: OsdpPublicationEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.osdp.publication+json'
+      'osdp-monitoring-activity':
+        View: OsdpMonitoringActivityEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.osdp.monitoring-activity+json'
+      'osdp-monitoring-programme':
+        View: OsdpMonitoringProgrammeEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.osdp.monitoring-programme+json'
+      'osdp-monitoring-facility':
+        View: OsdpMonitoringFacilityEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.osdp.monitoring-facility+json'
+      'sample-archive':
+        View: SampleArchiveEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.sample-archive+json'
+      'erammp-model':
+        View: ErammpModelEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.erammp-model+json'
+      'nerc-model':
+        View: NercModelEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.nerc-model+json'
+      'nerc-model-use':
+        View: NercModelUseEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.nerc-model-use+json'
+      'erammp-datacube':
+        View: ErammpDatacubeEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.erammp-datacube+json'
+      'infrastructurerecord':
+        View: InfrastructureRecordEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.infrastructure+json'
+      'data-type':
+        View: DataTypeEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.data-type+json'
+      'elter':
+        View: ElterEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.elter+json'
+      'linked-elter':
+        View: ElterLinkedEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.linked-elter+json'
+      'service-agreement':
+        View: ServiceAgreementEditorView
+        Model: ServiceAgreement
+        mediaType: 'application/json'
+      'ukems-document':
+        View: UkemsDocumentEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.ukems-document+json'
+      'code-document':
+        View: CodeDocumentEditorView
+        Model: EditorMetadata
+        mediaType: 'application/vnd.code-document+json'
+
+    # the create document dropdown
+    $editorCreate = $ '#editorCreate'
+
+    $('.edit-control').on 'click', (event) ->
+      do event.preventDefault
+
+      title = $(event.target).data('documentType')
+      documentType = lookup[title]
+
+      if $editorCreate.length
+        new documentType.View
+          model: new documentType.Model null, documentType, title
+          el: '#search'
+      else
+        $.ajax
+          url: $(location).attr('href')
+          dataType: 'json'
+          accepts:
+            json: documentType.mediaType
+          success: (data) ->
+            new documentType.View
+              model: new documentType.Model data, documentType, title
+              el: '#metadata'
+
+  ###
+  Initialize the geometry map
+  ###
+  initGeometryMap: ->
+    view = new StudyAreaView
+      el: '#geometry-map'
 
   ###
   Initialize the WMS map viewer
@@ -39,5 +234,53 @@ define [
     view   = new MapViewerAppView model: app
     router = new LayersRouter model: app
 
+    @createMessageViewFor app
+
+  ###
+  Initialize the search
+  ###
+  initSearch: ->
+    app    = new SearchApp()
+    view   = new SearchAppView model: app
+    router = new SearchRouter model: app, location: window.location
+
+    @createMessageViewFor app
+
+  ###
+  Initialize the Service Agreement editor
+  ###
+  initServiceAgreement: ->
+
+    $gemini = $('#service-agreement-gemini')
+
+    $('.service-agreement').on 'click', (event) ->
+
+      do event.preventDefault
+      id =  $(event.currentTarget).data("id")
+      data = eidcContactDetails: 'info@eidc.ac.uk'
+      options = id: id
+
+      if $gemini.length
+        $.ajax
+          url: "/service-agreement/#{id}"
+          type: 'GET'
+          success: ->
+            window.location.href = "/service-agreement/#{id}"
+          error: ->
+            new ServiceAgreementEditorView
+              el: '#metadata'
+              model: new ServiceAgreement(data, options)
+
+  ###
+  Initialize the Study Area map
+  ###
+  initStudyAreaMap: ->
+    view = new StudyAreaView
+      el: '#studyarea-map'
+
+  ###
+  Create a message view. Which listens to the supplied app model for messages (errors, info)
+  ###
+  createMessageViewFor: (app) -> new MessageView model: app
 
 

@@ -98,9 +98,6 @@ public class JenaLookupService {
         return links(uri, "PREFIX dc: <http://purl.org/dc/terms/> SELECT ?node ?title ?type ?rel WHERE { ?me ?rel ?node; dc:references ?node. ?node dc:title ?title; dc:type ?type; dc:type 'nercModels'}");
     }
 
-
-
-
     public List<Link> datasets(String uri) {
         return links(uri, "PREFIX dc: <http://purl.org/dc/terms/> SELECT ?node ?title ?type ?rel WHERE {{{?me ?rel ?node; dc:references ?node.}UNION{?node ?rel ?me; dc:references ?me.} ?node dc:title ?title; dc:type ?type; dc:type 'dataset'.}UNION{?me ?rel ?node; dc:references ?node. ?node dc:source _:n . _:n dc:title ?title; dc:type ?type; dc:type 'dataset'.}}");
     }

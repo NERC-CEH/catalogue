@@ -1,16 +1,16 @@
 import Backbone from 'backbone'
 import Filesize from 'filesize'
 
-export default Backbone.Model.extend({
+export const File = Backbone.Model.extend({
 
   initialize () {
-    let action, classes, date, storage
-    const path = this.get('path')
-    if (path.startsWith('/dropbox/')) {
+    let action, classes, storage
+    const datastore = this.get('datastore')
+    if (datastore === 'dropbox') {
       storage = 'dropbox'
-    } else if (path.startsWith('/supporting-documents/')) {
+    } else if (datastore === 'supporting-documents') {
       storage = 'metadata'
-    } else if (path.startsWith('/eidchub/')) {
+    } else if (datastore === 'eidchub') {
       storage = 'datastore'
     }
 
@@ -33,11 +33,10 @@ export default Backbone.Model.extend({
     }
 
     const size = this.has('bytes') ? Filesize(this.get('bytes')) : 0
-    if (this.has('time')) { date = simpleDate(this.get('time')) }
+    const date = this.get('lastValidated')
     const hash = this.has('hash') ? this.get('hash') : 'NO_HASH'
-    const estimate = sizeToTime(this.get('bytes'))
     const message = messages[status]
-    const moving = status.includes('MOVING') || (status === 'WRITING')
+    const moving = status === 'MOVING_FROM' || status === 'MOVING_TO' || status === 'WRITING'
     const validating = status === 'VALIDATING_HASH'
 
     return this.set({
@@ -45,7 +44,6 @@ export default Backbone.Model.extend({
       classes,
       date,
       errorType,
-      estimate,
       hash,
       message,
       moving,
@@ -58,23 +56,24 @@ export default Backbone.Model.extend({
   update (data) {
     this.set({
       check: false,
-      date: simpleDate(data.time),
-      estimate: sizeToTime(data.bytes),
+      date: data.date,
       hash: data.hash,
-      message: messages[status],
+      message: messages[data.status],
       moving: false,
+      path: data.path,
       size: Filesize(data.bytes),
       status: data.status
     })
-    return this.initialize()
+    this.initialize()
   },
 
-  copy (path) {
+  copy (datastore) {
     return new File({
       bytes: this.get('bytes'),
       check: true,
-      name: this.get('name'),
-      path: this.get('path').replace(/^\/(dropbox|eidchub|supporting-documents)\//, path),
+      dataset: this.get('datasetId'),
+      datastore,
+      path: this.get('path'),
       status: 'MOVING_TO'
     })
   }
@@ -161,6 +160,9 @@ Please VALIDATE to ensure the file has not been altered or corrupted\
   NO_HASH: {
     content: 'This file has not yet been validated or has failed to validate'
   },
+  REMOVED_ERROR: {
+    content: 'This file failed to be removed'
+  },
   REMOVED_UNKNOWN: {
     content: 'This file was previously deleted but has now been re-added'
   },
@@ -192,63 +194,3 @@ const validTypes = new Set([
   'VALIDATING_HASH',
   'WRITING'
 ])
-
-// calculated using Hubbub on the SAN, 22/05/19, recalculate for better estimates
-const timeEstimate = {
-  1400000: '1s',
-  6300000: '2s',
-  10000000: '3s',
-  12000000: '4s',
-  24000000: '5s',
-  39000000: '6s',
-  50000000: '8s',
-  54000000: '9s',
-  69000000: '10s',
-  79000000: '20s',
-  170000000: '30s',
-  220000000: '40s',
-  250000000: '50s',
-  290000000: '1m',
-  320000000: '1m10s',
-  400000000: '1m20s',
-  470000000: '1m30s',
-  730000000: '2m',
-  800000000: '2m30s',
-  1300000000: '5m',
-  1600000000: '7m',
-  4300000000: '8m',
-  4700000000: '10m',
-  5000000000: '12m',
-  5300000000: '14m',
-  12000000000: '45m',
-  18000000000: '1h',
-  46000000000: '2h',
-  65000000000: '2h+'
-}
-
-const simpleDate = function (time) {
-  const date = new Date(time)
-  const d = date.getDate()
-  const M = date.getMonth() + 1
-  const y = ('' + date.getFullYear()).slice(2)
-
-  let h = date.getHours()
-  if (h < 10) { h = `0${h}` }
-
-  let m = date.getMinutes()
-  if (m < 10) { m = `0${m}` }
-
-  return `${d}/${M}/${y} - ${h}:${m}`
-}
-
-const sizeToTime = function (size) {
-  let time
-  for (const key in timeEstimate) {
-    const value = timeEstimate[key]
-    if (size < key) {
-      time = value
-      break
-    }
-  }
-  return time
-}

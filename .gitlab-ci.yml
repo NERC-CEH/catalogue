@@ -35,7 +35,11 @@ test_webpack:
     - cd web/webpack
     - npm install -g npm
     - npm ci
-    - npm run test
+    - npm test
+  artifacts:
+    when: always
+    reports:
+      junit: web/webpack/TESTS-*.xml
 
 build_application:
   stage: build

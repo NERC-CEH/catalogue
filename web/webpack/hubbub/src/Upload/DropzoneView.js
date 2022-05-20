@@ -7,17 +7,9 @@ import template from './DropzoneFileRow.tpl'
 export default Backbone.View.extend({
 
   initialize (options) {
-    const {
-      el
-    } = options
-    const {
-      success
-    } = options
-    const {
-      url
-    } = options
-
-    return new Dropzone(el, this.dropzoneOptions(url, success))
+    const { el, success, url } = options
+    // eslint-disable-next-line no-new
+    new Dropzone(el, this.dropzoneOptions(url, success))
   },
 
   dropzoneOptions (url, success) {
@@ -25,11 +17,9 @@ export default Backbone.View.extend({
       timeout: -1,
       url,
       maxFilesize: 20 * 1000 * 1000,
-      autoQueue: true,
       previewTemplate: template,
       previewsContainer: '.dropzone-files',
       clickable: '.fileinput-button',
-      parallelUploads: 1,
       init () {
         this.on('addedfile', function (file) {
           const $file = $(file.previewElement)
@@ -49,7 +39,7 @@ export default Backbone.View.extend({
 
         this.on('success', success)
 
-        return this.on('error', function (file, error, xhr) {
+        this.on('error', function (file, error, xhr) {
           let message
           const $file = $(file.previewElement)
           $file.find('.file-status').text('Error')
@@ -61,7 +51,7 @@ export default Backbone.View.extend({
             500: 'Internal Server Error'
           }
           if (xhr) { message = errorMessages[xhr.status] || error.error }
-          return $file.find('.file-message').text(message)
+          $file.find('.file-message').text(message)
         })
       }
     }

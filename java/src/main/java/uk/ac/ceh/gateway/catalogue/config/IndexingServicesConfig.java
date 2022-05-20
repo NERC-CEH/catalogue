@@ -19,7 +19,8 @@ import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
 import uk.ac.ceh.gateway.catalogue.elter.ElterDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.ri.RiRecord;
+import uk.ac.ceh.gateway.catalogue.model.CodeDocument;
+import uk.ac.ceh.gateway.catalogue.infrastructure.InfrastructureRecord;
 import uk.ac.ceh.gateway.catalogue.indexing.ClassMap;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
@@ -36,7 +37,7 @@ import uk.ac.ceh.gateway.catalogue.model.LinkDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
-import uk.ac.ceh.gateway.catalogue.ri.RiRecord;
+import uk.ac.ceh.gateway.catalogue.infrastructure.InfrastructureRecord;
 import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
 import uk.ac.ceh.gateway.catalogue.sparql.VocabularyService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
@@ -83,7 +84,8 @@ public class IndexingServicesConfig {
         ClassMap<IndexGenerator<?, List<Statement>>> mappings = new PrioritisedClassMap<IndexGenerator<?, List<Statement>>>()
             .register(BaseMonitoringType.class, new JenaIndexBaseMonitoringTypeGenerator(documentGenerator))
             .register(GeminiDocument.class, new JenaIndexGeminiDocumentGenerator(documentGenerator, baseUri))
-            .register(RiRecord.class, new JenaIndexRiRecordGenerator(documentGenerator, baseUri))
+            .register(CodeDocument.class, new JenaIndexCodeDocumentGenerator(documentGenerator, baseUri))
+            .register(InfrastructureRecord.class, new JenaIndexInfrastructureRecordGenerator(documentGenerator, baseUri))
             .register(LinkDocument.class, new JenaIndexLinkDocumentGenerator(documentGenerator))
             .register(MetadataDocument.class, documentGenerator);
 
@@ -139,7 +141,7 @@ public class IndexingServicesConfig {
             .register(GeminiDocument.class, new SolrIndexGeminiDocumentGenerator(new ExtractTopicFromDocument(), metadataDocumentGenerator, codeLookupService))
             .register(ElterDocument.class, new SolrIndexElterDocumentGenerator(metadataDocumentGenerator))
             .register(SampleArchive.class, new SampleArchiveIndexGenerator(metadataDocumentGenerator))
-            .register(RiRecord.class, new RiRecordIndexGenerator(metadataDocumentGenerator))
+            .register(InfrastructureRecord.class, new InfrastructureRecordIndexGenerator(metadataDocumentGenerator))
             .register(LinkDocument.class, linkDocumentGenerator)
             .register(MetadataDocument.class, metadataDocumentGenerator);
 

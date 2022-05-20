@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class OnlineResourceTest {
+
     @Test
     public void wmsUrlReturnsGetCapabilitiesType() {
         //Given
@@ -18,7 +19,7 @@ public class OnlineResourceTest {
     }
 
     @Test
-    public void caseForGetCapabilitesDoesntMatter() {
+    public void caseForGetCapabilitiesDoesntMatter() {
         //Given
         OnlineResource resource = OnlineResource.builder().url("https://wms.com?request=getcapabilities&SERVICE=WMS").build();
 

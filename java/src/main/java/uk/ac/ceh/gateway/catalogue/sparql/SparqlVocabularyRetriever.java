@@ -18,6 +18,13 @@ import java.util.Arrays;
 @Slf4j
 @ToString
 public class SparqlVocabularyRetriever implements VocabularyRetriever {
+    /*
+    This was used to retrieve the Natural Capital vocabulary.
+    The Natural Capital vocabulary no longer exists on the new vocab server.
+    This class needs modifying to work with multiple graphs so that it
+    can be used in the SolrIndexMetadataDocumentGenerator in place of
+    getKeywordsFilteredByUrlFragment
+     */
     private final RestTemplate template;
     private final URI query;
 
@@ -31,7 +38,7 @@ public class SparqlVocabularyRetriever implements VocabularyRetriever {
             URLEncoder.encode("WHERE {GRAPH <", StandardCharsets.UTF_8) +
             URLEncoder.encode(graph, StandardCharsets.UTF_8) +
             URLEncoder.encode("> {?concept skos:broader ?topConcept .}}", StandardCharsets.UTF_8) +
-            "&format=json-simple"
+            "&format=json"
         );
         log.info("Creating {}", this);
     }

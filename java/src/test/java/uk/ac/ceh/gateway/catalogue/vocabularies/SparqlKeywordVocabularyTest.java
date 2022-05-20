@@ -38,7 +38,7 @@ class SparqlKeywordVocabularyTest {
     private MockRestServiceServer mockServer;
 
     private static final String SPARQL_ENDPOINT = "https://example.com";
-    private static final String GRAPH = "urn:x-evn-master:cehmd";
+    private static final String GRAPH = "<urn:x-evn-master:cehmd>";
     private static final String WHERE = "<http://onto.nerc.ac.uk/CEHMD/assist-research-themes> skos:hasTopConcept ?uri . ?uri skos:prefLabel ?label .";
     private static final String COLLECTION = "keywords";
     private static final String VOCABULARY_ID = "assist-topics";
@@ -143,15 +143,15 @@ class SparqlKeywordVocabularyTest {
     @SuppressWarnings({"SameParameterValue"})
     URI getURI(String graph, String where){
         return URI.create(
-                SPARQL_ENDPOINT + "?query=" +
-                        URLEncoder.encode("PREFIX skos:<http://www.w3.org/2004/02/skos/core#> ", UTF_8) +
-                        URLEncoder.encode("SELECT ?uri ?label ", UTF_8) +
-                        URLEncoder.encode("WHERE {GRAPH <", UTF_8) +
-                        URLEncoder.encode(graph, UTF_8) +
-                        URLEncoder.encode("> {", UTF_8) +
-                        URLEncoder.encode(where, UTF_8) +
-                        URLEncoder.encode("}}", UTF_8) +
-                        "&format=json-simple");
+            SPARQL_ENDPOINT + "?query=" +
+                URLEncoder.encode("PREFIX skos:<http://www.w3.org/2004/02/skos/core#> ", UTF_8) +
+                URLEncoder.encode("SELECT ?uri ?label ", UTF_8) +
+                URLEncoder.encode("WHERE {GRAPH ", UTF_8) +
+                URLEncoder.encode(graph, UTF_8) +
+                URLEncoder.encode(" {", UTF_8) +
+                URLEncoder.encode(where, UTF_8) +
+                URLEncoder.encode("}}", UTF_8)
+        );
     }
 
 }

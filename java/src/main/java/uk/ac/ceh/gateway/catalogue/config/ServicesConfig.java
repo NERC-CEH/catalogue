@@ -27,7 +27,6 @@ import uk.ac.ceh.gateway.catalogue.converters.UkeofXml2EFDocumentMessageConverte
 import uk.ac.ceh.gateway.catalogue.converters.Xml2GeminiDocumentMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.Xml2WmsCapabilitiesMessageConverter;
 import uk.ac.ceh.gateway.catalogue.datacite.DataciteService;
-import uk.ac.ceh.gateway.catalogue.datalabs.DatalabsDocument;
 import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.document.JacksonDocumentInfoMapper;
@@ -37,11 +36,11 @@ import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
 import uk.ac.ceh.gateway.catalogue.elter.ElterDocument;
 import uk.ac.ceh.gateway.catalogue.erammp.ErammpDatacube;
 import uk.ac.ceh.gateway.catalogue.erammp.ErammpModel;
-import uk.ac.ceh.gateway.catalogue.ri.RiRecord;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.imp.ImpDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.ClassMap;
 import uk.ac.ceh.gateway.catalogue.indexing.PrioritisedClassMap;
+import uk.ac.ceh.gateway.catalogue.infrastructure.InfrastructureRecord;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
@@ -57,8 +56,6 @@ import uk.ac.ceh.gateway.catalogue.repository.GitDocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.GitRepoWrapper;
 import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreement;
-import uk.ac.ceh.gateway.catalogue.sparql.SparqlVocabularyRetriever;
-import uk.ac.ceh.gateway.catalogue.sparql.SparqlVocabularyService;
 import uk.ac.ceh.gateway.catalogue.sparql.VocabularyService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.ukems.UkemsDocument;
@@ -93,8 +90,7 @@ public class ServicesConfig {
         val messageConverter = new MappingJackson2HttpMessageConverter(objectMapper);
         val supportedMediaTypes = Arrays.asList(
             MediaType.APPLICATION_JSON,
-            new MediaType("application", "*+json"),
-            new MediaType("application", "*+json-simple")
+            new MediaType("application", "*+json")
         );
         messageConverter.setSupportedMediaTypes(supportedMediaTypes);
         val restTemplate = new RestTemplate();
@@ -146,11 +142,11 @@ public class ServicesConfig {
         return new HashMapDocumentTypeLookupService()
             .register(CEH_MODEL, CehModel.class)
             .register(CEH_MODEL_APPLICATION, CehModelApplication.class)
+            .register(CODE, CodeDocument.class)
             .register(DATA_TYPE, DataType.class)
-            .register(DATALABS, DatalabsDocument.class)
             .register(EF_DOCUMENT, BaseMonitoringType.class)
             .register(ERAMMP_DATACUBE, ErammpDatacube.class)
-            .register(RIRECORD, RiRecord.class)
+            .register(INFRASTRUCTURERECORD, InfrastructureRecord.class)
             .register(ELTER, ElterDocument.class)
             .register(ERAMMP_MODEL, ErammpModel.class)
             .register(GEMINI, GeminiDocument.class)
@@ -202,12 +198,8 @@ public class ServicesConfig {
     }
 
     @Bean
-    public VocabularyService vocabularyService(
-        @Qualifier("sparql") RestTemplate restTemplate,
-        @Value("${sparql.endpoint}") String sparqlEndpoint,
-        @Value("${sparql.graph}") String sparqlGraph
-    ) {
-        return new SparqlVocabularyService(new SparqlVocabularyRetriever(restTemplate, sparqlEndpoint, sparqlGraph).retrieve());
+    public VocabularyService vocabularyService() {
+        return (broader, keyword) -> false;
     }
 
     @Bean

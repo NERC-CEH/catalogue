@@ -6,7 +6,9 @@ import DropzoneView from './DropzoneView'
 export default Backbone.View.extend({
 
   events: {
-    'click .finish': 'showFinish',
+    'click .finish': 'finish',
+    'click .hash-dropbox': 'hashDropbox',
+    'click .register-dropbox': 'registerDropbox',
     'click .load.datastore': 'loadDatastore',
     'click .load.data': 'loadDropbox',
     'click .load.metadata': 'loadMetadata',
@@ -18,20 +20,21 @@ export default Backbone.View.extend({
 
   initialize () {
     if (this.$('.dropzone-container').length) {
-      const dropzoneSuccess = file => {
+      const dropzoneSuccess = (file) => {
         const filename = file.name.toLowerCase().replaceAll(' ', '-')
         const model = new File({
           bytes: file.size,
-          name: filename,
-          path: `/dropbox/${this.model.get('id')}/${filename}`,
-          status: 'WRITING',
-          check: true
+          datasetId: this.model.get('id'),
+          datastore: 'dropbox',
+          path: filename,
+          status: 'NO_HASH',
+          check: false
         })
         this.dropbox.add(model)
-        return $(file.previewElement).remove()
+        $(file.previewElement).remove()
       }
-
-      const dropzoneView = new DropzoneView({
+      // eslint-disable-next-line no-new
+      new DropzoneView({
         el: '.dropzone-container',
         success: dropzoneSuccess,
         url: this.model.url()
@@ -40,30 +43,63 @@ export default Backbone.View.extend({
 
     this.$datastore = this.$('.datastore-files')
     this.datastore = new FileCollection()
-    this.listenTo(this.datastore, 'reset', function (collection) { return this.addAll(collection, this.$datastore) })
-    this.listenTo(this.datastore, 'add', function (model) { return this.addOne(this.datastore, this.$datastore, model) })
-    this.listenTo(this.datastore, 'update', function () { return this.showEmptyStorage(this.datastore, this.$datastore, 'datastore') })
+    this.listenTo(this.datastore, 'reset', (collection) => this.addAll(collection, this.$datastore))
+    this.listenTo(this.datastore, 'add', (model) => this.addOne(this.datastore, this.$datastore, model))
+    this.listenTo(this.datastore, 'update', () => this.showEmptyStorage(this.datastore, this.$datastore, 'datastore'))
+    // this.listenTo(this.model, 'change:datastoreTotalFiles', this.renderDatastoreTotalFiles)
+    // this.listenTo(this.datastore, 'update', this.updateDatastoreTotalFiles)
+    // this.listenTo(this.datastore, 'reset', this.updateDatastoreTotalFiles)
 
     this.$dropbox = this.$('.data-files')
     this.dropbox = new FileCollection()
-    this.listenTo(this.dropbox, 'reset', function (collection) { return this.addAll(collection, this.$dropbox) })
-    this.listenTo(this.dropbox, 'add', function (model) { return this.addOne(this.dropbox, this.$dropbox, model) })
-    this.listenTo(this.dropbox, 'update', function () { return this.showEmptyStorage(this.dropbox, this.$dropbox, 'data') })
+    this.listenTo(this.dropbox, 'reset', (collection) => this.addAll(collection, this.$dropbox))
+    this.listenTo(this.dropbox, 'add', (model) => this.addOne(this.dropbox, this.$dropbox, model))
+    this.listenTo(this.dropbox, 'update', () => this.showEmptyStorage(this.dropbox, this.$dropbox, 'data'))
+    // this.listenTo(this.model, 'change:dropboxTotalFiles', this.renderDropboxTotalFiles)
+    // this.listenTo(this.dropbox, 'update', this.updateDropboxTotalFiles)
+    // this.listenTo(this.dropbox, 'reset', this.updateDropboxTotalFiles)
 
     this.$metadata = this.$('.metadata-files')
     this.metadata = new FileCollection()
-    this.listenTo(this.metadata, 'reset', function (collection) { return this.addAll(collection, this.$metadata) })
-    this.listenTo(this.metadata, 'add', function (model) { return this.addOne(this.metadata, this.$metadata, model) })
-    this.listenTo(this.metadata, 'update', function () { return this.showEmptyStorage(this.metadata, this.$metadata, 'metadata') })
+    this.listenTo(this.metadata, 'reset', (collection) => this.addAll(collection, this.$metadata))
+    this.listenTo(this.metadata, 'add', (model) => this.addOne(this.metadata, this.$metadata, model))
+    this.listenTo(this.metadata, 'update', () => this.showEmptyStorage(this.metadata, this.$metadata, 'metadata'))
 
     const $datastoreData = $('#datastore-data')
-    if ($datastoreData.length) { this.datastore.reset(JSON.parse($datastoreData.text())) }
+    if ($datastoreData.length) {
+      const response = JSON.parse($datastoreData.text())
+      this.model.set({
+        datastorePage: response.meta.currentPage,
+        datastoreSize: response.meta.pageSize,
+        datastoreLastPage: response.meta.lastPage,
+        datastoreTotalFiles: response.meta.totalFiles
+      })
+      this.datastore.reset(response.data)
+    }
 
     const $dropboxData = $('#dropbox-data')
-    if ($dropboxData.length) { this.dropbox.reset(JSON.parse($dropboxData.text())) }
+    if ($dropboxData.length) {
+      const response = JSON.parse($dropboxData.text())
+      this.model.set({
+        dropboxPage: response.meta.currentPage,
+        dropboxSize: response.meta.pageSize,
+        dropboxLastPage: response.meta.lastPage,
+        dropboxTotalFiles: response.meta.totalFiles
+      })
+      this.dropbox.reset(response.data)
+    }
 
     const $metadataData = $('#metadata-data')
-    if ($metadataData.length) { return this.metadata.reset(JSON.parse($metadataData.text())) }
+    if ($metadataData.length) {
+      const response = JSON.parse($metadataData.text())
+      this.model.set({
+        metadataPage: response.meta.currentPage,
+        metadataSize: response.meta.pageSize,
+        metadataLastPage: response.meta.lastPage,
+        metadataTotalFiles: response.meta.totalFiles
+      })
+      this.metadata.reset(response.data)
+    }
   },
 
   addOne (collection, $container, model) {
@@ -83,23 +119,21 @@ export default Backbone.View.extend({
   },
 
   loadMore (event, name, path, collection) {
-    const currentClasses = this.showInProgress(event)
     const nextPage = this.model.get(`${name}Page`) + 1
     const size = this.model.get(`${name}Size`)
-    return $.ajax({
-      url: `${this.model.url()}/${path}?page=${nextPage}&size=${size}`,
-      success: data => {
-        this.showNormal(event, currentClasses)
-        collection.add(data)
-        if (data.length === size) {
-          this.model.set(`${name}Page`, nextPage)
-        }
-      },
-      error (err) {
-        this.showInError(event)
-        console.error('error', err)
-      }
-    })
+    const lastPage = this.model.get(`${name}LastPage`)
+    if (nextPage <= lastPage) {
+      const currentClasses = this.showInProgress(event)
+      return $.ajax({
+        url: `${this.model.url()}/${path}?page=${nextPage}&size=${size}`,
+        success: (response) => {
+          this.showNormal(event, currentClasses)
+          collection.add(response.data)
+          this.model.set(`${name}Page`, response.meta.currentPage)
+        },
+        error: () => this.showInError(event)
+      })
+    }
   },
 
   loadDatastore (event) {
@@ -114,22 +148,40 @@ export default Backbone.View.extend({
     this.loadMore(event, 'metadata', 'supporting-documents', this.metadata)
   },
 
+  renderDatastoreTotalFiles () {
+    const $totalFiles = this.$('.document-upload-section.datastore .total-files')
+    const totalFiles = this.model.get('datastoreTotalFiles')
+    console.log(`rendering datastore to ${totalFiles}`)
+    if (totalFiles > 0) {
+      $totalFiles.text(`${totalFiles} files`)
+    }
+  },
+
+  updateDatastoreTotalFiles () {
+    console.log(`updating datastore to ${this.datastore.length}`)
+    this.model.set('datastoreTotalFiles', this.datastore.length)
+  },
+
+  renderDropboxTotalFiles () {
+    const $totalFiles = this.$('.document-upload-section.dropbox .total-files')
+    const totalFiles = this.model.get('dropboxTotalFiles')
+    console.log(`rendering dropbox to ${totalFiles}`)
+    if (totalFiles > 0) {
+      $totalFiles.text(`${totalFiles} files`)
+    }
+  },
+
+  updateDropboxTotalFiles () {
+    console.log(`updating dropbox to ${this.dropbox.length}`)
+    this.model.set('dropboxTotalFiles', this.dropbox.length)
+  },
+
   showEmptyStorage (collection, $container, title) {
     if (collection.length === 0) {
       $container.append(`<h3 class="no-documents text-center">NO FILES IN ${title.toUpperCase()}</h3>`)
     } else {
       $container.find('.no-documents').remove()
     }
-  },
-
-  showModal (title, body, action, event) {
-    this.showInProgress(event)
-    $('#documentUploadModal')
-    $('.modal-title', $('#documentUploadModal')).html(title)
-    $('.modal-body', $('#documentUploadModal')).html(body)
-    $('.modal-accept', $('#documentUploadModal')).unbind('click')
-    $('.modal-accept', $('#documentUploadModal')).click(action.bind(this))
-    window.$('#documentUploadModal').modal('show')
   },
 
   showInProgress (event) {
@@ -155,115 +207,156 @@ export default Backbone.View.extend({
     $icon.attr('class', 'btn-icon fa fa-exclamation-triangle')
   },
 
-  showFinish (event) {
-    this.showModal(
-      'Have you finished uploading files?',
-      'You will no longer be able to add, remove or update files.',
-      function () { return this.finish(event) },
-      event
-    )
-  },
-
   finish (event) {
+    const that = this
     const currentClasses = this.showInProgress(event)
     return $.ajax({
       url: `${this.model.url()}/finish`,
       type: 'POST',
-      success: () => {
-        this.showNormal(event, currentClasses)
-        return window.location.assign(`/documents/${this.model.get('id')}`)
+      success () {
+        that.showNormal(event, currentClasses)
+        that.redirectToDocuments()
       },
-      error (err) {
-        this.showInError(event)
-        return console.error('error', err)
+      error () {
+        that.showInError(event)
+      }
+    })
+  },
+
+  redirectToDocuments () {
+    window.location.assign(`/documents/${this.model.get('id')}`)
+  },
+
+  hashDropbox (event) {
+    const that = this
+    const currentClasses = this.showInProgress(event)
+    return $.ajax({
+      url: `${this.model.url()}/hash`,
+      type: 'POST',
+      success () {
+        that.collectionSuccess(event, currentClasses, 'dropbox', 'dropbox', that.dropbox)
+      },
+      error () {
+        that.showInError(event)
       }
     })
   },
 
   moveAllDatastore (event) {
+    const that = this
+    const currentClasses = this.showInProgress(event)
+    $.ajax({
+      url: `${this.model.url()}/dropbox/move?to=eidchub`,
+      type: 'POST',
+      success () {
+        that.dropbox.each(model => that.addOne(that.datastore, that.$datastore, model.copy('eidchub')))
+        that.dropbox.reset()
+        that.showNormal(event, currentClasses)
+      },
+      error () {
+        that.showInError(event)
+      }
+    })
+  },
+
+  registerDropbox (event) {
+    const that = this
     const currentClasses = this.showInProgress(event)
     return $.ajax({
-      url: `${this.model.url()}/move-all-datastore`,
+      url: `${this.model.url()}/register`,
       type: 'POST',
-      success: () => {
-        this.dropbox.each(model => this.addOne(this.datastore, this.$datastore, model.copy('/eidchub/')))
-        this.dropbox.reset()
-        return this.showNormal(event, currentClasses)
+      success () {
+        that.showNormal(event, currentClasses)
+        that.reloadPage()
       },
-      error: err => {
-        this.showInError(event)
-        return console.error('error', err)
+      error () {
+        that.showInError(event)
       }
     })
   },
 
   reschedule (event) {
+    const that = this
     const currentClasses = this.showInProgress(event)
-    return $.ajax({
+    $.ajax({
       url: `${this.model.url()}/reschedule`,
       type: 'POST',
-      success: () => {
-        this.showNormal(event, currentClasses)
-        //        TODO: re-render based on changed state of model rather than reloading
-        return window.location.reload()
+      success () {
+        that.showNormal(event, currentClasses)
+        that.reloadPage()
       },
-      error: err => {
-        this.showInError(event)
-        return console.error('error', err)
+      error () {
+        that.showInError(event)
       }
     })
   },
 
+  reloadPage () {
+    window.location.reload()
+  },
+
   schedule (event) {
+    const that = this
     const currentClasses = this.showInProgress(event)
     return $.ajax({
       url: `${this.model.url()}/schedule`,
       type: 'POST',
-      success: () => {
-        this.showNormal(event, currentClasses)
-        //        TODO: re-render based on changed state of model rather than reloading
-        return window.location.reload()
+      success () {
+        that.showNormal(event, currentClasses)
+        that.reloadPage()
       },
-      error: err => {
-        this.showInError(event)
-        return console.error('error', err)
+      error () {
+        that.showInError(event)
       }
     })
   },
 
   validateAll (event) {
     const currentClasses = this.showInProgress(event)
-    return $.ajax({
-      url: `${this.model.url()}/validate`,
+    this.validate(event, 'dropbox', 'dropbox', this.dropbox, currentClasses)
+    this.validate(event, 'metadata', 'supporting-documents', this.metadata, currentClasses)
+    this.validate(event, 'datastore', 'eidchub', this.datastore, currentClasses)
+  },
+
+  validate (event, name, datastore, collection, currentClasses) {
+    $.ajax({
+      url: `${this.model.url()}/${datastore}/validate`,
       type: 'POST',
-      success: () => {
-        const showNormal = () => this.showNormal(event, currentClasses)
-        const datastore = () => this.getServerState('datastore', 'eidchub', this.datastore, showNormal)
-        const dropbox = () => this.getServerState('dropbox', 'dropbox', this.dropbox, datastore)
-        const metadata = () => this.getServerState('metadata', 'supporting-documents', this.metadata, dropbox)
-        return setTimeout(metadata, 7000)
-      },
-      error: err => {
-        this.showInError(event)
-        return console.error('error', err)
+      success: () => this.collectionSuccess(event, currentClasses, name, datastore, collection),
+      error: (xhr) => {
+        if (xhr.status !== 400) {
+          this.showInError(event)
+        }
       }
     })
   },
 
-  getServerState (name, path, collection, callback) {
+  collectionSuccess (event, currentClasses, name, datastore, collection) {
+    setTimeout(
+      () => this.getServerState(
+        name,
+        datastore,
+        collection,
+        () => this.showNormal(event, currentClasses)
+      ),
+      7000
+    )
+  },
+
+  getServerState (name, datastore, collection, callback) {
     const page = 1
     const collectionSize = collection.length
-    let size = this.model.get(`${name}Size`)
+    let size = (this.model.has(`${name}Size`)) ? this.model.get(`${name}Size`) : 20
     if (collectionSize > size) { size = collectionSize }
-    this.model.set({ [`${name}Page`]: page })
-    this.model.set({ [`${name}Size`]: size })
+    this.model.set(`${name}Page`, page)
+    this.model.set(`${name}Size`, size)
 
-    return $.ajax({
-      url: `${this.model.url()}/${path}?page=${page}&size=${size}`,
+    $.ajax({
+      url: `${this.model.url()}/${datastore}?page=${page}&size=${size}`,
       dataType: 'json',
-      success (data) {
-        collection.reset(data)
-        if (callback) { return callback() }
+      success (response) {
+        collection.reset(response.data)
+        if (callback) { callback() }
       }
     })
   }

@@ -23,7 +23,7 @@ import uk.ac.ceh.gateway.catalogue.converters.Object2TemplatedMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.TransparentProxyMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.WmsFeatureInfo2XmlMessageConverter;
 import uk.ac.ceh.gateway.catalogue.datacite.DataciteResponse;
-import uk.ac.ceh.gateway.catalogue.datalabs.DatalabsDocument;
+import uk.ac.ceh.gateway.catalogue.model.CodeDocument;
 import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.document.writing.MessageConverterWritingService;
 import uk.ac.ceh.gateway.catalogue.ef.Activity;
@@ -33,7 +33,7 @@ import uk.ac.ceh.gateway.catalogue.ef.Programme;
 import uk.ac.ceh.gateway.catalogue.elter.ElterDocument;
 import uk.ac.ceh.gateway.catalogue.erammp.ErammpDatacube;
 import uk.ac.ceh.gateway.catalogue.erammp.ErammpModel;
-import uk.ac.ceh.gateway.catalogue.ri.RiRecord;
+import uk.ac.ceh.gateway.catalogue.infrastructure.InfrastructureRecord;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.imp.CaseStudy;
 import uk.ac.ceh.gateway.catalogue.imp.Model;
@@ -74,13 +74,13 @@ public class WebConfig implements WebMvcConfigurer {
         val cehModelApplication = new Object2TemplatedMessageConverter<>(CehModelApplication.class, freemarkerConfiguration);
         val citation = new Object2TemplatedMessageConverter<>(Citation.class, freemarkerConfiguration);
         val datacite = new Object2TemplatedMessageConverter<>(DataciteResponse.class, freemarkerConfiguration);
-        val datalabs = new Object2TemplatedMessageConverter<>(DatalabsDocument.class, freemarkerConfiguration);
+        val code = new Object2TemplatedMessageConverter<>(CodeDocument.class, freemarkerConfiguration);
         val dataset = new Object2TemplatedMessageConverter<>(Dataset.class, freemarkerConfiguration);
         val dataType = new Object2TemplatedMessageConverter<>(DataType.class, freemarkerConfiguration);
         val elter = new Object2TemplatedMessageConverter<>(ElterDocument.class, freemarkerConfiguration);
         val erammpDatacube = new Object2TemplatedMessageConverter<>(ErammpDatacube.class, freemarkerConfiguration);
         val erammpModel = new Object2TemplatedMessageConverter<>(ErammpModel.class, freemarkerConfiguration);
-        val riRecord = new Object2TemplatedMessageConverter<>(RiRecord.class, freemarkerConfiguration);
+        val infrastructureRecord = new Object2TemplatedMessageConverter<>(InfrastructureRecord.class, freemarkerConfiguration);
         val errorResponse = new Object2TemplatedMessageConverter<>(ErrorResponse.class, freemarkerConfiguration);
         val facility = new Object2TemplatedMessageConverter<>(Facility.class, freemarkerConfiguration);
         val gemini = new Object2TemplatedMessageConverter<>(GeminiDocument.class, freemarkerConfiguration);
@@ -121,13 +121,13 @@ public class WebConfig implements WebMvcConfigurer {
             cehModel,
             cehModelApplication,
             citation,
-            datalabs,
+            code,
             dataset,
             dataType,
             elter,
             erammpDatacube,
             erammpModel,
-            riRecord,
+            infrastructureRecord,
             errorResponse,
             facility,
             history,

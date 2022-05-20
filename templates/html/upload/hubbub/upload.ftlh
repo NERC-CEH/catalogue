@@ -1,7 +1,8 @@
 <#import "../../skeleton.ftlh" as skeleton>
 
 <#assign uploadScripts>
-    <script src="/static/scripts/hubbub.bundle.js"></script>
+    <#--noinspection HtmlUnknownTarget-->
+    <script src="/static/scripts/hubbub-app.js"></script>
 </#assign>
 
 <@skeleton.master title="Data Transfer for: " + title scripts=uploadScripts catalogue=catalogues.defaultCatalogue()>
@@ -11,35 +12,53 @@
         <#if !hasDataTransfer>
             <@noDataTransfer/>
         <#elseif isScheduled>
-            <@documentUploadSection "Upload" "file-upload">
+            <@documentUploadSection "Upload" "" "file-upload">
                 <@dropZoneContainer/>
             </@documentUploadSection>
         </#if>
-        <@documentUploadSection "Data" "archive">
+        <@documentUploadSection "Data" "dropbox" "archive">
             <@loadingContainer "data"/>
             <@loadMoreRow "data"/>
             <#if isAdmin && isInProgress>
                 <@row>
-                    <div class="col-md-3 col-md-offset-6">
+                    <div class="col-md-3">
                         <@moveAllDatastoreButton/>
                     </div>
                     <div class="col-md-3">
                         <@rescheduleButton/>
                     </div>
+                    <div class="col-md-3">
+                        <@hashDropboxButton/>
+                    </div>
+                    <div class="col-md-3">
+                        <@registerDropboxButton/>
+                    </div>
                 </@row>
             <#elseif isAdmin && isOpen>
                 <@row>
-                    <div class="col-md-3 col-md-offset-6">
+                    <div class="col-md-3">
                         <@moveAllDatastoreButton/>
                     </div>
                     <div class="col-md-3">
                         <@scheduleButton/>
                     </div>
+                    <div class="col-md-3">
+                        <@hashDropboxButton/>
+                    </div>
+                    <div class="col-md-3">
+                        <@registerDropboxButton/>
+                    </div>
                 </@row>
             <#elseif isAdmin>
                 <@row>
-                    <div class="col-md-3 col-md-offset-9">
+                    <div class="col-md-3 col-md-offset-3">
                         <@moveAllDatastoreButton/>
+                    </div>
+                    <div class="col-md-3">
+                        <@hashDropboxButton/>
+                    </div>
+                    <div class="col-md-3">
+                        <@registerDropboxButton/>
                     </div>
                 </@row>
             </#if>
@@ -47,17 +66,17 @@
 
         <#if isAdmin>
             <#assign metadataTitle>Metadata <small>Supporting Documents</small></#assign>
-            <@documentUploadSection title=metadataTitle icon="copy" iconClass="far">
+            <@documentUploadSection title=metadataTitle name="metadata" icon="copy" iconClass="far">
                 <@loadingContainer "metadata"/>
                 <@loadMoreRow "metadata"/>
             </@documentUploadSection>
-            <@documentUploadSection "Datastore" "lock">
+            <@documentUploadSection "Datastore" "datastore" "lock">
                 <@loadingContainer "datastore"/>
                 <@loadMoreRow "datastore"/>
             </@documentUploadSection>
         </#if>
 
-        <@documentUploadSection "" "">
+        <@documentUploadSection "" "" "">
             <@row>
                 <#if isAdmin>
                     <div class="col-md-6 col-md-offset-6 file-actions">
@@ -81,7 +100,6 @@
     <#if metadata??>
         <@data "metadata" metadata/>
     </#if>
-    <@documentUploadModal/>
 </@skeleton.master>
 
 <#macro documentContainer>
@@ -113,11 +131,11 @@
     </div>
 </#macro>
 
-<#macro documentUploadSection title icon iconClass="fas">
-    <section class="document-upload-section">
+<#macro documentUploadSection title name icon iconClass="fas">
+    <section class="document-upload-section ${name}">
         <#if title?has_content && icon?has_content>
             <div class="page-header">
-                <h3><i class="btn-icon ${iconClass} fa-${icon}"></i> ${title}</h3>
+                <h3><i class="btn-icon ${iconClass} fa-${icon}"></i> ${title} <small class="total-files"></small></h3>
             </div>
         </#if>
         <#nested>
@@ -191,8 +209,16 @@
     <@button "Finish Uploading" "finish" "check" "primary"/>
 </#macro>
 
+<#macro hashDropboxButton>
+    <@button "Generate checksums" "data-action hash-dropbox" "wave-square"/>
+</#macro>
+
 <#macro loadMoreButton storage>
     <@button "View More" "load ${storage}" "angle-double-down"/>
+</#macro>
+
+<#macro registerDropboxButton>
+    <@button "Register files" "data-action register-dropbox" "folder-plus"/>
 </#macro>
 
 <#macro scheduleButton>
@@ -204,7 +230,7 @@
 </#macro>
 
 <#macro moveAllDatastoreButton>
-    <@button "Move All Datastore" "data-action move-all" "level-down-alt"/>
+    <@button "Move files to datastore" "data-action move-all" "level-down-alt"/>
 </#macro>
 
 <#macro validateAllButton>
@@ -217,37 +243,13 @@
         href="/upload/${id}?format=csv"
         download="checksums_${id}.csv"
     >
-        <i class="btn-icon fas fa-file-download"></i>
+        <i class="btn-icon fas fa-file-code"></i>
         <span>Download Checksum Report</span>
     </a>
 </#macro>
 
 <#macro data title files>
-    <#list files>
-        <script id="${title}-data" type="application/json">
-        [<#items as file>
-            {"bytes":${file.bytes?c},"hash":"${file.hash}","name":"${file.name}","path":"${file.path}","status":"${file.status}","time":${file.time?c}}<#sep>,</#sep>
-        </#items>]
-        </script>
-    </#list>
-</#macro>
-
-<#macro documentUploadModal>
-    <div class="modal fade" id="documentUploadModal" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    <h4 class="modal-title"></h4>
-                </div>
-                <div class="modal-body"></div>
-                <div class="modal-footer">
-                    <button class="btn btn-default modal-dismiss" data-dismiss="modal">NO</button>
-                    <button class="btn btn-danger modal-accept"  data-dismiss="modal">YES</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <script id="${title}-data" type="application/json">
+        ${files?no_esc}
+    </script>
 </#macro>

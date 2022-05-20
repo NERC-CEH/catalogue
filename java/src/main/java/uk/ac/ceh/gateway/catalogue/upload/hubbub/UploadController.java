@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.upload.hubbub;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -7,11 +8,11 @@ import lombok.val;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.multipart.MultipartFile;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
@@ -22,7 +23,6 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
 import java.util.Optional;
 
 import static java.lang.String.format;
@@ -34,7 +34,7 @@ import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.TEXT_CSV_VALUE;
 @Profile("upload:hubbub")
 @Slf4j
 @ToString(onlyExplicitlyIncluded = true)
-@RequestMapping("upload/{id}")
+@RequestMapping("upload/{datasetId}")
 public class UploadController {
     // These transition ids are specific to the CT & EIDCHELP Jira project
     static final String START_PROGRESS = "751";
@@ -51,6 +51,7 @@ public class UploadController {
     private final DocumentRepository documentRepository;
     private final JiraService jiraService;
     private final PermissionService permissionService;
+    private final ObjectMapper mapper;
     @ToString.Include
     private final String maxFileSize;
 
@@ -59,33 +60,35 @@ public class UploadController {
         DocumentRepository documentRepository,
         JiraService jiraService,
         PermissionService permissionService,
+        ObjectMapper mapper,
         @Value("${spring.servlet.multipart.max-file-size}") String maxFileSize
     ) {
         this.uploadService = uploadService;
         this.documentRepository = documentRepository;
         this.jiraService = jiraService;
         this.permissionService = permissionService;
+        this.mapper = mapper;
         this.maxFileSize = maxFileSize;
         log.info("Creating {}", this);
     }
 
     @SneakyThrows
-    @PreAuthorize("@permission.userCanUpload(#id)")
+    @PreAuthorize("@permission.userCanUpload(#datasetId)")
     @GetMapping
     public String getPage(
-            @PathVariable("id") String id,
-            Model model
+        @PathVariable("datasetId") String datasetId,
+        Model model
     ) {
-        log.info("Requesting upload page for {}", id);
-        model.addAttribute("id", id);
+        log.info("Requesting upload page for {}", datasetId);
+        model.addAttribute("id", datasetId);
 
-        val geminiDocument = (GeminiDocument) documentRepository.read(id);
+        val geminiDocument = (GeminiDocument) documentRepository.read(datasetId);
         model.addAttribute("title", geminiDocument.getTitle());
 
         val isAdmin = permissionService.userIsAdmin();
         model.addAttribute("isAdmin", isAdmin);
 
-        val possibleDataTransfer = jiraService.retrieveDataTransferIssue(id);
+        val possibleDataTransfer = jiraService.retrieveDataTransferIssue(datasetId);
         model.addAttribute("hasDataTransfer", possibleDataTransfer.isPresent());
         val dataTransfer = possibleDataTransfer.orElseGet(JiraIssue::new);
         model.addAttribute("isOpen", dataTransfer.isOpen());
@@ -94,188 +97,197 @@ public class UploadController {
         model.addAttribute("maxFileSize", maxFileSize);
 
         if (dataTransfer.isScheduled()) {
-            model.addAttribute(
-                DROPBOX,
-                uploadService.get(id, DROPBOX, 1, 20)
-            );
+            addHubbubResponse(model, DROPBOX, datasetId, DROPBOX);
             if (isAdmin) {
-                model.addAttribute(
-                    "datastore",
-                    uploadService.get(id, DATASTORE, 1, 20)
-                );
-                model.addAttribute(
-                    "metadata",
-                    uploadService.get(id, METADATA, 1, 20)
-                );
+                addHubbubResponse(model, "datastore", datasetId, DATASTORE);
+                addHubbubResponse(model, "metadata", datasetId, METADATA);
             }
         } else if (dataTransfer.isInProgress() || isAdmin) {
-            model.addAttribute(
-                "datastore",
-                uploadService.get(id, DATASTORE, 1, 20)
-            );
-            model.addAttribute(
-                DROPBOX,
-                uploadService.get(id, DROPBOX, 1, 20)
-            );
-            model.addAttribute(
-                "metadata",
-                uploadService.get(id, METADATA, 1, 20)
-            );
+            addHubbubResponse(model, DROPBOX, datasetId, DROPBOX);
+            addHubbubResponse(model, "datastore", datasetId, DATASTORE);
+            addHubbubResponse(model, "metadata", datasetId, METADATA);
         }
 
         log.debug("Model keys: {}", model.asMap().keySet());
         return "html/upload/hubbub/upload";
     }
 
+    @SneakyThrows
+    private void addHubbubResponse(Model model, String attribute, String datasetId, String datastore) {
+        try {
+            val response = uploadService.get(datasetId, datastore, 1, 20);
+            model.addAttribute(attribute, mapper.writeValueAsString(response));
+        } catch (RestClientException ex) {
+            log.debug("{}, {} not added to {}.\n{}", datasetId, datastore, attribute, ex.getMessage());
+        }
+    }
+
     @ResponseBody
-    @PreAuthorize("@permission.toAccess(#user, #id, 'VIEW')")
-    @GetMapping("{storage}")
-    public List<FileInfo> get(
+    @PreAuthorize("@permission.toAccess(#user, #datasetId, 'VIEW')")
+    @GetMapping("{datastore}")
+    public HubbubResponse get(
         @ActiveUser CatalogueUser user,
-        @PathVariable("id") String id,
-        @PathVariable("storage") String storage,
+        @PathVariable("datasetId") String datasetId,
+        @PathVariable("datastore") String datastore,
+        @RequestParam(value = "path", required = false) Optional<String> possiblePath,
         @RequestParam(value = "page", defaultValue = "1") int page,
         @RequestParam(value = "size", defaultValue = "20") int size
     ) {
-        return uploadService.get(id, storage, page, size);
-    }
-
-    @ResponseBody
-    @PreAuthorize("@permission.toAccess(#user, #id, 'VIEW')")
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public FileInfo get(
-        @ActiveUser CatalogueUser user,
-        @PathVariable("id") String id,
-        @RequestParam("path") String path
-    ) {
-        return uploadService.get(id, path);
+        if (possiblePath.isPresent()) {
+            return uploadService.get(datasetId, datastore, possiblePath.get());
+        } else {
+            return uploadService.get(datasetId, datastore, page, size);
+        }
     }
 
     @SneakyThrows
-    @PreAuthorize("@permission.toAccess(#user, #id, 'VIEW')")
+    @PreAuthorize("@permission.toAccess(#user, #datasetId, 'VIEW')")
     @GetMapping(produces = TEXT_CSV_VALUE)
     public void csv(
         @ActiveUser CatalogueUser user,
-        @PathVariable("id") String id,
+        @PathVariable("datasetId") String datasetId,
         HttpServletResponse response
     ) {
         response.setContentType(TEXT_CSV_VALUE);
-        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, format("attachment; filename=\"checksums_%s.csv\"", id));
-        uploadService.csv(response.getWriter(), id);
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, format("attachment; filename=\"checksums_%s.csv\"", datasetId));
+        uploadService.csv(response.getWriter(), datasetId);
     }
 
-    @PreAuthorize("@permission.userCanUpload(#id)")
+    @PreAuthorize("@permission.userCanUpload(#datasetId)")
     @ResponseStatus(NO_CONTENT)
     @PostMapping
     public void upload(
-            @PathVariable("id") String id,
-            @RequestParam("file") MultipartFile multipartFile
+        @ActiveUser CatalogueUser user,
+        @PathVariable("datasetId") String datasetId,
+        @RequestParam("file") MultipartFile multipartFile
     ) {
-        uploadService.upload(id, multipartFile);
+        uploadService.upload(datasetId, user.getUsername(), multipartFile);
     }
 
-    @PreAuthorize("@permission.userCanUpload(#id)")
+    @PreAuthorize("@permission.userCanUpload(#datasetId)")
     @ResponseStatus(NO_CONTENT)
-    @DeleteMapping
+    @DeleteMapping("{datastore}")
     public void delete(
-            @PathVariable("id") String id,
-            @RequestParam("path") String path
+        @ActiveUser CatalogueUser user,
+        @PathVariable("datasetId") String datasetId,
+        @PathVariable("datastore") String datastore,
+        @RequestParam("path") String path
     ) {
-        uploadService.delete(path);
+        uploadService.delete(datasetId, datastore, path, user.getUsername());
     }
 
     @SneakyThrows
-    @PreAuthorize("@permission.userCanUpload(#id)")
+    @PreAuthorize("@permission.userCanUpload(#datasetId)")
     @ResponseStatus(NO_CONTENT)
     @PostMapping("finish")
     public void finish(
-            @ActiveUser CatalogueUser user,
-            @PathVariable("id") String id
+        @ActiveUser CatalogueUser user,
+        @PathVariable("datasetId") String datasetId
     ) {
-        transitionIssueToStartProgress(user, id);
-        removeUploadPermission(user, id);
+        transitionIssueToStartProgress(user, datasetId);
+        removeUploadPermission(user, datasetId);
     }
 
-    @PreAuthorize("@permission.userCanUpload(#id)")
+    @SneakyThrows
+    @PreAuthorize("@permission.userCanUpload(#datasetId)")
+    @ResponseStatus(NO_CONTENT)
+    @PostMapping("hash")
+    public void hashDropbox(
+        @ActiveUser CatalogueUser user,
+        @PathVariable("datasetId") String datasetId
+    ) {
+        uploadService.hashDropbox(datasetId, user.getUsername());
+    }
+
+    @PreAuthorize("@permission.userCanUpload(#datasetId)")
+    @ResponseStatus(NO_CONTENT)
+    @PostMapping("register")
+    public void register(
+        @ActiveUser CatalogueUser user,
+        @PathVariable("datasetId") String datasetId
+    ) {
+        uploadService.register(datasetId, user.getUsername());
+    }
+
+    @PreAuthorize("@permission.userCanUpload(#datasetId)")
+    @ResponseStatus(NO_CONTENT)
+    @PostMapping("{datastore}/unregister")
+    public void unregister(
+        @ActiveUser CatalogueUser user,
+        @PathVariable("datasetId") String datasetId,
+        @PathVariable("datastore") String datastore,
+        @RequestParam("path") String path
+    ) {
+        uploadService.unregister(datasetId, datastore, path, user.getUsername());
+    }
+
+    @PreAuthorize("@permission.userCanUpload(#datasetId)")
     @ResponseStatus(NO_CONTENT)
     @PostMapping("schedule")
     public void schedule(
-            @ActiveUser CatalogueUser user,
-            @PathVariable("id") String id
+        @ActiveUser CatalogueUser user,
+        @PathVariable("datasetId") String datasetId
     ) {
-        transitionIssueToSchedule(user, id);
+        transitionIssueToSchedule(user, datasetId);
     }
 
-    @PreAuthorize("@permission.userCanUpload(#id)")
+    @PreAuthorize("@permission.userCanUpload(#datasetId)")
     @ResponseStatus(NO_CONTENT)
     @PostMapping("reschedule")
     public void reschedule(
-            @ActiveUser CatalogueUser user,
-            @PathVariable("id") String id
+        @ActiveUser CatalogueUser user,
+        @PathVariable("datasetId") String datasetId
     ) {
-        transitionIssueToScheduled(user, id);
+        transitionIssueToScheduled(user, datasetId);
     }
 
-    @PreAuthorize("@permission.userCanUpload(#id)")
+    @PreAuthorize("@permission.userCanUpload(#datasetId)")
     @ResponseStatus(NO_CONTENT)
-    @PostMapping("accept")
+    @PostMapping("{datastore}/accept")
     public void accept(
-            @PathVariable("id") String id,
-            @RequestParam("path") String path
+        @ActiveUser CatalogueUser user,
+        @PathVariable("datasetId") String datasetId,
+        @PathVariable("datastore") String datastore,
+        @RequestParam("path") String path
     ) {
-        uploadService.accept(path);
+        uploadService.accept(datasetId, datastore, path, user.getUsername());
     }
 
-    @PreAuthorize("@permission.userCanUpload(#id)")
+    @PreAuthorize("@permission.userCanUpload(#datasetId)")
     @ResponseStatus(NO_CONTENT)
-    @PostMapping("cancel")
+    @PostMapping("{datastore}/cancel")
     public void cancel(
-        @PathVariable("id") String id,
+        @ActiveUser CatalogueUser user,
+        @PathVariable("datasetId") String datasetId,
+        @PathVariable("datastore") String datastore,
         @RequestParam("path") String path
     ) {
-        uploadService.cancel(path);
+        uploadService.cancel(datasetId, datastore, path, user.getUsername());
     }
 
-    @PreAuthorize("@permission.userCanUpload(#id)")
+    @PreAuthorize("@permission.userCanUpload(#datasetId)")
     @ResponseStatus(NO_CONTENT)
-    @PostMapping("validate")
+    @PostMapping("{datastore}/validate")
     public void validate(
-            @PathVariable("id") String id,
-            @RequestParam(value = "path", required = false) Optional<String> possiblePath
+        @ActiveUser CatalogueUser user,
+        @PathVariable("datasetId") String datasetId,
+        @PathVariable("datastore") String datastore,
+        @RequestParam(value="path", required=false) Optional<String> possiblePath
     ) {
-        possiblePath.ifPresentOrElse(
-            uploadService::validate,
-            () -> uploadService.validate(id)
-        );
+        uploadService.validate(datasetId, datastore, possiblePath, user.getUsername());
     }
 
-    @PreAuthorize("@permission.userCanUpload(#id)")
+    @PreAuthorize("@permission.userCanUpload(#datasetId)")
     @ResponseStatus(NO_CONTENT)
-    @PostMapping("move-datastore")
-    public void moveDatastore(
-        @PathVariable("id") String id,
-        @RequestParam("path") String path
+    @PostMapping("{datastore}/move")
+    public void move(
+        @ActiveUser CatalogueUser user,
+        @PathVariable("datasetId") String datasetId,
+        @PathVariable("datastore") String datastore,
+        @RequestParam(value="path", required=false) Optional<String> possiblePath,
+        @RequestParam("to") String to
     ) {
-        uploadService.move(path, DATASTORE);
-    }
-
-    @PreAuthorize("@permission.userCanUpload(#id)")
-    @ResponseStatus(NO_CONTENT)
-    @PostMapping("move-metadata")
-    public void moveMetadata(
-            @PathVariable("id") String id,
-            @RequestParam("path") String path
-    ) {
-        uploadService.move(path, METADATA);
-    }
-
-    @PreAuthorize("@permission.userCanUpload(#id)")
-    @ResponseStatus(NO_CONTENT)
-    @PostMapping("move-all-datastore")
-    public void moveAllDatastore(
-            @PathVariable("id") String id
-    ) {
-        uploadService.moveAllToDataStore(id);
+        uploadService.move(datasetId, datastore, possiblePath, user.getUsername(), to);
     }
 
     private void transitionIssueToSchedule(CatalogueUser user, String guid) {
