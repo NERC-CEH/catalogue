@@ -45,8 +45,6 @@ COPY templates /opt/ceh-catalogue/templates
 COPY --from=build-web /app/src/css /opt/ceh-catalogue/static/css
 COPY web/src/img /opt/ceh-catalogue/static/img
 COPY --from=build-webpack web/webpack/dist/ /opt/ceh-catalogue/static/scripts/
-COPY --from=build-web /app/src/scripts/main-out.js /opt/ceh-catalogue/static/scripts/main-out.js
-COPY --from=build-web /app/src/scripts/upload-out.js /opt/ceh-catalogue/static/scripts/upload-out.js
 COPY --from=build-web /app/src/vendor/font-awesome-5/webfonts /opt/ceh-catalogue/static/vendor/font-awesome-5/webfonts
 COPY --from=build-web /app/src/vendor/requirejs/require.js /opt/ceh-catalogue/static/vendor/requirejs/require.js
 RUN chown spring:spring -R /app \
