@@ -1,3 +1,11 @@
+/* eslint-disable
+    no-mixed-spaces-and-tabs,
+    no-multi-str,
+    no-tabs,
+    no-undef,
+*/
+// TODO: This file was created by bulk-decaffeinate.
+// Fix any style issues and re-enable lint.
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -12,7 +20,7 @@ define([
   'cs!views/editor/ParentView',
   'cs!views/editor/ParentStringView',
   'cs!views/editor/PredefinedParentView',
-	'cs!views/editor/KeywordView',
+  'cs!views/editor/KeywordView',
   'cs!views/editor/ContactView',
   'cs!models/editor/Contact',
   'cs!models/editor/BoundingBox',
@@ -26,7 +34,7 @@ define([
   'cs!views/editor/ReviewView',
   'cs!views/editor/RelatedRecordView'
 
-], function(
+], function (
   EditorView,
   InputView,
   TextareaView,
@@ -48,31 +56,33 @@ define([
   ResourceConstraintView,
   ReviewView,
   RelatedRecordView
-) { return EditorView.extend({
+) {
+  return EditorView.extend({
 
-  initialize() {
-    if (!this.model.has('type')) { this.model.set('type', 'notebook'); }
+    initialize () {
+      if (!this.model.has('type')) { this.model.set('type', 'notebook') }
 
-    this.sections = [{
-      label: 'Basic Info',
-      title: 'Basic Info',
-      views: [
+      this.sections = [{
+        label: 'Basic Info',
+        title: 'Basic Info',
+        views: [
           new SelectView({
             model: this.model,
             modelAttribute: 'type',
             label: 'Record type',
             options: [
-              {value: 'notebook', label: 'Notebook'},
-              {value: 'codeProject', label: 'Code project'},
-              {value: 'codeSnippet', label: 'Code snippet'}
-            ]}),
+              { value: 'notebook', label: 'Notebook' },
+              { value: 'codeProject', label: 'Code project' },
+              { value: 'codeSnippet', label: 'Code snippet' }
+            ]
+          }),
 
           new InputView({
             model: this.model,
             modelAttribute: 'title',
             label: 'Title'
           }),
-          
+
           new TextareaView({
             model: this.model,
             modelAttribute: 'description',
@@ -85,7 +95,7 @@ define([
             modelAttribute: 'masterUrl',
             label: 'Master URL'
           }),
-          
+
           new InputView({
             model: this.model,
             modelAttribute: 'primaryLanguage',
@@ -111,15 +121,15 @@ define([
             modelAttribute: 'assetType',
             label: 'Type',
             options: [
-              {value: '', label: ''},
-              {value: 'Jupyter notebook', label: 'Jupyter notebook'},
-              {value: 'Zeppelin notebook', label: 'Zeppelin notebook'},
-              {value: 'RStudio project', label: 'RStudio project'},
-              {value: 'RShiny app', label: 'RShiny app'}
+              { value: '', label: '' },
+              { value: 'Jupyter notebook', label: 'Jupyter notebook' },
+              { value: 'Zeppelin notebook', label: 'Zeppelin notebook' },
+              { value: 'RStudio project', label: 'RStudio project' },
+              { value: 'RShiny app', label: 'RShiny app' }
             ],
-            helpText: `\
+            helpText: '\
 <p>(only relevant for notebooks)</p>\
-`
+'
           }),
 
           new InputView({
@@ -137,11 +147,11 @@ define([
           })
 
         ]
-    }
-      , {
+      },
+      {
         label: 'Inputs & Outputs',
         title: 'Inputs, outputs, packages and review',
-        views: [        
+        views: [
 
           new ParentStringView({
             model: this.model,
@@ -160,7 +170,7 @@ define([
             modelAttribute: 'packages',
             label: 'Packages'
           }),
-          
+
           new ParentView({
             model: this.model,
             modelAttribute: 'review',
@@ -170,11 +180,11 @@ define([
           })
 
         ]
-      }
-      , {
+      },
+      {
         label: 'Licensing & Contacts',
         title: 'Licensing and contacts',
-        views: [        
+        views: [
 
           new PredefinedParentView({
             model: this.model,
@@ -225,12 +235,12 @@ define([
               }
             }
           })
-         ]
-      }
-      , {
+        ]
+      },
+      {
         label: 'Classification',
         title: 'Classification',
-        views: [        
+        views: [
           new PredefinedParentView({
             model: this.model,
             modelAttribute: 'boundingBoxes',
@@ -239,7 +249,7 @@ define([
             ObjectInputView: BoundingBoxView,
             multiline: true,
             predefined: {
-              'England': {
+              England: {
                 northBoundLatitude: 55.812,
                 eastBoundLongitude: 1.768,
                 southBoundLatitude: 49.864,
@@ -326,11 +336,11 @@ define([
             multiline: true
           })
 
-      ]
+        ]
       }
-    ];
+      ]
 
-    return EditorView.prototype.initialize.apply(this);
-  }
-});
- });
+      return EditorView.prototype.initialize.apply(this)
+    }
+  })
+})
