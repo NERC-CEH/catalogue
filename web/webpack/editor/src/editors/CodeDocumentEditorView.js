@@ -4,7 +4,7 @@ import {
   DatasetReferenceDateView, InspireThemeView, KeywordView,
   ParentStringView,
   ParentView,
-  PredefinedParentView, RelatedRecordView, ResourceConstraintView,
+  PredefinedParentView, RelatedRecordView, ResourceConstraintView, ReviewView,
   SingleObjectView, TemporalExtentView,
   TextareaView
 } from '../views'
