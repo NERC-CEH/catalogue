@@ -2,13 +2,7 @@
 <#import "../blocks.ftlh" as blocks>
 <#import "../../functions.ftlh" as func>
 
-
-<#assign serviceAgreementScripts>
-    <script src="/static/scripts/editor.bundle.js"></script>
-    <script data-main="/static/scripts/main-out" src="/static/vendor/requirejs/require.js"></script>
-</#assign>
-
-<@skeleton.master title=title catalogue=catalogues.defaultCatalogue() scripts=serviceAgreementScripts>
+<@skeleton.master title=title catalogue=catalogues.defaultCatalogue()>
     <#if isHistorical()>
         <#assign mdclass="historical">
     <#else>

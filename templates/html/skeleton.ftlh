@@ -5,6 +5,9 @@
 <#assign defaultScripts>
   <script src="/static/scripts/editor.bundle.js"></script>
   <script src="/static/scripts/search.bundle.js"></script>
+  <script src="/static/scripts/catalogue.bundle.js"></script>
+  <script src="/static/scripts/studyarea.bundle.js"></script>
+  <script src="/static/scripts/vendor.bundle.js"></script>
 </#assign>
 
 <#macro master title catalogue="" rdf="" schemaorg="" canonical="" searching=false can_edit_restricted=false containerClass="container" scripts=defaultScripts>

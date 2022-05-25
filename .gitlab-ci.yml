@@ -21,25 +21,16 @@ test_java:
 
 test_web:
   stage: test
-  image: node:15.11.0-stretch
-  script:
-    - cd web
-    - npm ci
-    - ./node_modules/.bin/bower install --allow-root
-    - ./node_modules/.bin/grunt prep build    # test not actually run as are broken
-
-test_webpack:
-  stage: test
   image: ephesoft/headless_chrome:latest
   script:
-    - cd web/webpack
+    - cd web/
     - npm install -g npm
     - npm ci
     - npm test
   artifacts:
     when: always
     reports:
-      junit: web/webpack/TESTS-*.xml
+      junit: web/TESTS-*.xml
 
 build_application:
   stage: build

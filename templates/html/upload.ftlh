@@ -2,7 +2,6 @@
 
 <#assign uploadScripts>
   <script src="/static/scripts/editor-bundle.js"></script>
-  <script data-main="/static/scripts/main-out" src="/static/vendor/requirejs/require.js"></script>
 </#assign>
 
 <@skeleton.master title="Metadata File Upload" catalogue=catalogues.defaultCatalogue() scripts=uploadScripts>

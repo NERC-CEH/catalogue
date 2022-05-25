@@ -1,21 +1,7 @@
-# Build web (javascript & css)
-FROM node:15.11.0-stretch AS build-web
-WORKDIR /app
-COPY --chown=1000:1000 web/src/less src/less
-COPY --chown=1000:1000 web/src/scripts src/scripts
-COPY --chown=1000:1000 web/.bowerrc .
-COPY --chown=1000:1000 web/bower.json .
-COPY --chown=1000:1000 web/Gruntfile.js .
-COPY --chown=1000:1000 web/package.json .
-COPY --chown=1000:1000 web/package-lock.json .
-RUN npm install
-RUN node_modules/.bin/bower install --allow-root
-RUN node_modules/.bin/grunt
 
-
-# Build webpack app (javascript & css)
-FROM node:17.4.0 AS build-webpack
-WORKDIR web/webpack
+# Build webpack (javascript & css)
+FROM node:17.4.0 AS build-web
+WORKDIR web
 COPY . /
 RUN npm install && npm run build
 
@@ -42,11 +28,10 @@ COPY --from=build-java /app/build/libs/spring-boot-loader/ ./
 COPY --from=build-java /app/build/libs/snapshot-dependencies/ ./
 COPY --from=build-java /app/build/libs/application/ ./
 COPY templates /opt/ceh-catalogue/templates
-COPY --from=build-web /app/src/css /opt/ceh-catalogue/static/css
-COPY web/src/img /opt/ceh-catalogue/static/img
-COPY --from=build-webpack web/webpack/dist/ /opt/ceh-catalogue/static/scripts/
-COPY --from=build-web /app/src/vendor/font-awesome-5/webfonts /opt/ceh-catalogue/static/vendor/font-awesome-5/webfonts
-COPY --from=build-web /app/src/vendor/requirejs/require.js /opt/ceh-catalogue/static/vendor/requirejs/require.js
+COPY --from=build-web web/img /opt/ceh-catalogue/static/img
+COPY --from=build-web web/dist/ /opt/ceh-catalogue/static/scripts/
+COPY --from=build-web web/node_modules/@fortawesome/fontawesome-free/webfonts /opt/ceh-catalogue/static/node_modules/@fortawesome/fontawesome-free/webfonts
+COPY --from=build-web web/css /opt/ceh-catalogue/static/css
 RUN chown spring:spring -R /app \
  && chown spring:spring -R /opt/ceh-catalogue \
  && chown spring:spring -R /var/ceh-catalogue \
