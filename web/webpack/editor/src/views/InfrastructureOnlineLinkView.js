@@ -2,7 +2,7 @@ import template from '../templates/InfrastructureOnlineLink.tpl'
 import ObjectInputView from './ObjectInputView'
 import _ from 'underscore'
 
-ObjectInputView.extend({
+export default ObjectInputView.extend({
 
   render () {
     this.template = _.template(template)

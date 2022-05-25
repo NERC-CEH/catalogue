@@ -1,35 +1,23 @@
-/* eslint-disable
-    no-undef,
-*/
-// TODO: This file was created by bulk-decaffeinate.
-// Fix any style issues and re-enable lint.
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
-define([
-  'backbone'
-], function (Backbone) {
-  return Backbone.Model.extend({
+import Backbone from 'backbone'
 
-    defaults: {
-      value: ''
-    },
+export default Backbone.Model.extend({
 
-    uris: {
-      Biodiversity: 'http://vocab.ceh.ac.uk/ri#Biodiversity',
-      Pollution: 'http://vocab.ceh.ac.uk/ri#Pollution',
-      'Climate change resilience': 'http://vocab.ceh.ac.uk/ri#Resilience',
-      'Climate change mitigation': 'http://vocab.ceh.ac.uk/ri#Mitigation'
-    },
+  defaults: {
+    value: ''
+  },
 
-    initialize () {
-      return this.on('change:value', this.updateUri)
-    },
+  uris: {
+    Biodiversity: 'http://vocab.ceh.ac.uk/ri#Biodiversity',
+    Pollution: 'http://vocab.ceh.ac.uk/ri#Pollution',
+    'Climate change resilience': 'http://vocab.ceh.ac.uk/ri#Resilience',
+    'Climate change mitigation': 'http://vocab.ceh.ac.uk/ri#Mitigation'
+  },
 
-    updateUri (model, value) {
-      return this.set('uri', this.uris[value] ? this.uris[value] : '')
-    }
-  })
+  initialize () {
+    return this.on('change:value', this.updateUri)
+  },
+
+  updateUri (model, value) {
+    return this.set('uri', this.uris[value] ? this.uris[value] : '')
+  }
 })

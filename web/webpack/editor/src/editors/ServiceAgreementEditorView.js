@@ -480,21 +480,21 @@ export default EditorView.extend({
 
   attemptExit () {
     if (this.saveRequired) {
-      return this.$('#confirmExit').modal('show')
+      this.$('#confirmExit').modal('show')
     } else {
-      return (this.exit)()
+      this.exit()
     }
   },
 
   exit () {
     this.$('#confirmExit').modal('hide')
-    _.invoke(this.sections, 'remove');
-    (this.remove)()
+    _.invoke(this.sections, 'remove')
+    this.remove()
 
     if (Backbone.history.location.pathname === `/documents/${this.model.get('id')}`) {
       return Backbone.history.location.replace(`/service-agreement/${this.model.get('id')}`)
     } else {
-      return (Backbone.history.location.reload)()
+      return Backbone.history.location.reload()
     }
   }
 })

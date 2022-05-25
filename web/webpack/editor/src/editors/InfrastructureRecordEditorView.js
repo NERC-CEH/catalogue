@@ -1,6 +1,6 @@
 import { EditorView, InputView, SelectView } from '../index'
 import {
-  ContactView, KeywordView,
+  ContactView, InfrastructureCategoryView, InfrastructureChallengeView, InfrastructureOnlineLinkView, KeywordView,
   ParentStringView,
   ParentView,
   PredefinedParentView,
@@ -8,7 +8,7 @@ import {
   TextareaView,
   TextOnlyView
 } from '../views'
-import { Contact } from '../models'
+import { Contact, InfrastructureCategory, InfrastructureChallenge } from '../models'
 import { BoundingBox, BoundingBoxView } from '../geometryMap'
 
 export default EditorView.extend({
