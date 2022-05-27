@@ -8,7 +8,6 @@ import org.springframework.cache.jcache.JCacheCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.ogc.WmsCapabilities;
 
@@ -31,8 +30,8 @@ public class CacheConfig extends CachingConfigurerSupport {
         val provider = Caching.getCachingProvider();
         val cacheManager = provider.getCacheManager();
 
-        cacheManager.createCache("capabilities", new MutableConfiguration<OnlineResource, WmsCapabilities>()
-            .setTypes(OnlineResource.class, WmsCapabilities.class)
+        cacheManager.createCache("capabilities", new MutableConfiguration<String, WmsCapabilities>()
+            .setTypes(String.class, WmsCapabilities.class)
             .setExpiryPolicyFactory(AccessedExpiryPolicy.factoryOf(new Duration(TimeUnit.MINUTES, 30))));
         cacheManager.createCache("crowd-user", new MutableConfiguration<String, CatalogueUser>()
             .setTypes(String.class, CatalogueUser.class)
