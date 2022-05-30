@@ -1,6 +1,4 @@
 const HtmlWebPackPlugin = require('html-webpack-plugin')
-const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const { ModuleFederationPlugin } = require('webpack').container
 module.exports = {
 
@@ -32,11 +30,6 @@ module.exports = {
             options: { minimize: true }
           }
         ]
-      },
-      {
-        test: /\.(less|css)$/,
-        exclude: /node_modules/,
-        use: [MiniCssExtractPlugin.loader, 'css-loader', 'less-loader']
       },
       {
         test: /\.(sa|sc|c)ss$/,
@@ -82,13 +75,6 @@ module.exports = {
         leaflet: { singleton: true, strictVersion: true, requiredVersion: '^0.7.7', eager: true },
         'leaflet-draw': { singleton: true, strictVersion: true, requiredVersion: '^1.0.4', eager: true }
       }
-    }),
-    new MiniCssExtractPlugin()
-  ],
-  optimization: {
-    minimize: true,
-    minimizer: [
-      new CssMinimizerPlugin()
-    ]
-  }
+    })
+  ]
 }
