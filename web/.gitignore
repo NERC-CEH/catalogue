@@ -1,8 +1,8 @@
 # Ignore the built content
-src/vendor
-src/scripts/*-out.js
-src/css/*
-webpack/dist
+vendor
+scripts/*-out.js
+css/*
+dist/*
 
 # Ignore the node_modules
 node_modules
