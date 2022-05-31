@@ -289,9 +289,9 @@ describe('FileView', function () {
         expect(view.ignore).toHaveBeenCalled()
       })
 
-      xit('cancel', function () {
+      it('cancel', function () {
         // given
-        spyOn(window, 'location').and.returnValue(false)
+        spyOn(window, 'confirm').and.returnValue(false)
 
         // when
         view.ignore(this.event)
@@ -301,9 +301,9 @@ describe('FileView', function () {
         expect(view.showNormal).toHaveBeenCalled()
       })
 
-      xit('ok', function () {
+      it('ok', function () {
         // given
-        spyOn(window, 'location').and.returnValue(true)
+        spyOn(window, 'confirm').and.returnValue(true)
 
         // when
         view.ignore(this.event)
@@ -311,9 +311,9 @@ describe('FileView', function () {
         // then
         // noinspection JSCheckFunctionSignatures
         expect(view.request).toHaveBeenCalledWith(
-          view,
+          jasmine.anything(),
           this.event,
-          `/upload/${id}/eidchub/ignore?path=data.csv`,
+          `/upload/${id}/eidchub/unregister?path=data.csv`,
           'POST',
           jasmine.any(Function)
         )

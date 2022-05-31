@@ -53,6 +53,10 @@ public class DeimsSolrScheduledSiteService {
 
             solrClient.deleteByQuery(DEIMS, "*:*");
             for (DeimsSite site : sites) {
+                if (site.getIdentifier() == null || site.getIdentifier().isBlank()) {
+                    log.debug("Cannot add {} as identifier is missing", site.getTitle());
+                    continue;
+                }
                 solrClient.addBean(DEIMS, new DeimsSolrIndex(site));
                 log.debug("Added {}, {}", site.getIdentifier(), site.getTitle());
             }

@@ -10,7 +10,7 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.components.userstore.UnknownUserException;
-import uk.ac.ceh.components.userstore.crowd.model.CrowdGroup;
+import uk.ac.ceh.gateway.catalogue.model.CatalogueGroup;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -61,9 +61,9 @@ public class CrowdGroupStoreTest {
 
         //then
         assertThat(groups, contains(
-            new CrowdGroup("group-1"),
-            new CrowdGroup("group-2"),
-            new CrowdGroup("group-3")
+            new CatalogueGroup("group-1"),
+            new CatalogueGroup("group-2"),
+            new CatalogueGroup("group-3")
         ));
     }
 
@@ -97,7 +97,7 @@ public class CrowdGroupStoreTest {
     }
 
     @Test
-    void isGroupInExistanceNotImplemented() {
+    void isGroupInExistenceNotImplemented() {
         //when
         assertThrows(NotImplementedException.class, () ->
             groupStore.isGroupInExistance("test")

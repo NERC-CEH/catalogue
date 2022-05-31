@@ -69,6 +69,24 @@ public class DeimsSolrScheduledSiteServiceTest {
 
     @Test
     @SneakyThrows
+    public void avoidSitesWithoutIdentifier() {
+        //Given
+        val response = IOUtils.toString(getClass().getResource("missing-identifier.json"), StandardCharsets.UTF_8);
+        mockServer.expect(requestTo(ADDRESS))
+            .andExpect(method(HttpMethod.GET))
+            .andRespond(withSuccess(response, MediaType.APPLICATION_JSON));
+
+        //When
+        target.fetchDEIMSSitesAndAddToSolr();
+
+        //Then
+        mockServer.verify();
+        verify(solrClient, times(2)).addBean(eq("deims"), any(DeimsSolrIndex.class));
+        verify(solrClient).commit(COLLECTION);
+    }
+
+    @Test
+    @SneakyThrows
     public void ThrowDocumentIndexingException() {
 
         //Given
