@@ -5,13 +5,15 @@
 !java/lombok.config
 !schemas
 !templates
-!web/
-web/catalogue/test/
-web/clipboard/test/
-web/editor/test/
-web/geometryMap/test/
-web/hubbub/test/
-web/permission/test/
-web/simple-upload/test/
-web/study-area/test/
+!web
+!web/scripts
+!web/dist
+web/scripts/catalogue/test/
+web/scripts/clipboard/test/
+web/scripts/editor/test/
+web/scripts/geometryMap/test/
+web/scripts/hubbub/test/
+web/scripts/permission/test/
+web/scripts/simple-upload/test/
+web/scripts/study-area/test/
 

@@ -2,7 +2,7 @@
 vendor
 scripts/*-out.js
 css/*
-dist/*
+dist
 
 # Ignore the node_modules
 node_modules

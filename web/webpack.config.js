@@ -3,14 +3,13 @@ const { ModuleFederationPlugin } = require('webpack').container
 module.exports = {
 
   entry: {
-    catalogue: './catalogue/src/index.js',
-    clipboard: './clipboard/src/index.js',
-    editor: './editor/src/index.js',
-    hubbub: './hubbub/src/index.js',
-    permission: './permission/src/index.js',
-    search: './search/src/index.js',
-    simpleupload: './simple-upload/src/index.js',
-    studyarea: './study-area/src/index.js'
+    catalogue: './scripts/catalogue/src/index.js',
+    clipboard: './scripts/clipboard/src/index.js',
+    editor: './scripts/editor/src/index.js',
+    hubbub: './scripts/hubbub/src/index.js',
+    permission: './scripts/permission/src/index.js',
+    simpleupload: './scripts/simple-upload/src/index.js',
+    studyarea: './scripts/study-area/src/index.js'
   },
   mode: 'development',
   module: {
@@ -76,5 +75,15 @@ module.exports = {
         'leaflet-draw': { singleton: true, strictVersion: true, requiredVersion: '^1.0.4', eager: true }
       }
     })
-  ]
+  ],
+  optimization: {
+    splitChunks: {
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]jquery[\\/]/,
+          name: 'vendor'
+        }
+      }
+    }
+  }
 }
