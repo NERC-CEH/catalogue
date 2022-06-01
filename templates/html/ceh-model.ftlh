@@ -244,3 +244,11 @@
 
   </@b.metadataContainer>
 </@skeleton.master>
+
+<#--
+A url that repeats the url as the link text
+-->
+<#macro bareUrl value>
+    <a href="${value}">${value}</a>
+</#macro>
+
