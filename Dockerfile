@@ -1,8 +1,9 @@
 # Build webpack (javascript & css)
 FROM node:17.4.0 AS build-web
-WORKDIR web
-COPY . /
-RUN npm install && npm run build
+WORKDIR /web
+COPY web ./
+RUN npm ci
+RUN npm run build
 
 # Build Java
 FROM gradle:7.2-jdk16 AS build-java
@@ -27,11 +28,10 @@ COPY --from=build-java /app/build/libs/spring-boot-loader/ ./
 COPY --from=build-java /app/build/libs/snapshot-dependencies/ ./
 COPY --from=build-java /app/build/libs/application/ ./
 COPY templates /opt/ceh-catalogue/templates
-COPY --from=build-web web/img /opt/ceh-catalogue/static/img
-COPY --from=build-web web/dist /opt/ceh-catalogue/static/scripts
-COPY --from=build-web web/dist/search.bundle.js /opt/ceh-catalogue/static/scripts/search.bundle.js
+COPY --from=build-web /web/img /opt/ceh-catalogue/static/img
+COPY --from=build-web /web/dist /opt/ceh-catalogue/static/scripts
 COPY --from=build-web web/node_modules /opt/ceh-catalogue/static/node_modules
-COPY --from=build-web web/css /opt/ceh-catalogue/static/css
+COPY --from=build-web /web/css /opt/ceh-catalogue/static/css
 RUN chown spring:spring -R /app \
  && chown spring:spring -R /opt/ceh-catalogue \
  && chown spring:spring -R /var/ceh-catalogue \
