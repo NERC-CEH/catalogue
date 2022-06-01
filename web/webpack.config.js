@@ -8,6 +8,7 @@ module.exports = {
     editor: './scripts/editor/src/index.js',
     hubbub: './scripts/hubbub/src/index.js',
     permission: './scripts/permission/src/index.js',
+    search: './scripts/search/src/index.js',
     simpleupload: './scripts/simple-upload/src/index.js',
     studyarea: './scripts/study-area/src/index.js'
   },
