@@ -1,6 +1,7 @@
 import _ from 'underscore'
 import Backbone from 'backbone'
-import template from '../templates/ChildLarge.tpl'
+import childTemplate from '../templates/ChildLarge.tpl'
+import $ from 'jquery'
 
 export default Backbone.View.extend({
 
@@ -8,14 +9,14 @@ export default Backbone.View.extend({
 
   events: {
     'click button.remove': 'delete',
-    'click button.showhide': 'showhide'
+    'click button.showhide': 'showHide'
   },
 
   initialize (options) {
-    this.template = _.template(template)
+    this.childTemplate = _.template(childTemplate)
     this.data = options
-    this.listenTo(this.model, 'remove', function () { return this.remove() })
-    this.listenTo(this.model, 'showhide', function () { return this.showhide() })
+    this.listenTo(this.model, 'remove', function () { this.remove() })
+    this.listenTo(this.model, 'showhide', function () { this.showHide() })
     this.index = this.model.collection.indexOf(this.model)
     this.render()
     const view = new this.data.ObjectInputView(_.extend({}, this.data, {
@@ -26,23 +27,17 @@ export default Backbone.View.extend({
   },
 
   render () {
-    this.$el.html(this.template({ index: this.index, data: this.data }))
+    this.$el.html(this.childTemplate({ index: this.index, data: this.data }))
     return this
   },
 
   delete () {
-    return this.model.collection.remove(this.model)
+    this.model.collection.remove(this.model)
   },
 
-  showhide () {
-    if (this.$('.extended').hasClass('hidden')) {
-      this.$('.extended').removeClass('hidden')
-      this.$('.showhide span').removeClass('fa-chevron-down')
-      return this.$('.showhide span').addClass('fa-chevron-up')
-    } else {
-      this.$('.extended').addClass('hidden')
-      this.$('.showhide span').removeClass('fa-chevron-up')
-      return this.$('.showhide span').addClass('fa-chevron-down')
-    }
+  showHide () {
+    this.$('.extended').toggleClass('hidden')
+    this.$('.showhide span').toggleClass('fa-chevron-down')
+    this.$('.showhide span').toggleClass('fa-chevron-up')
   }
 })

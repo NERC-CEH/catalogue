@@ -1,4 +1,5 @@
 import _ from 'underscore'
+import $ from 'jquery'
 import { Positionable } from '../collections'
 import SingleView from '../SingleView'
 import ChildLargeView from './ChildLargeView'
@@ -11,7 +12,9 @@ export default SingleView.extend({
   },
 
   initialize (options) {
-    this.template = _.template(template)
+    if (typeof this.template === 'undefined') {
+      this.template = _.template(template)
+    }
     SingleView.prototype.initialize.call(this, options)
     this.collection = new Positionable([], { model: this.data.ModelType })
 
@@ -28,12 +31,12 @@ export default SingleView.extend({
     }
 
     if (!(this.data.disabled === 'disabled')) {
-      return this.$('.existing').sortable({
+      this.$('.existing').sortable({
         start: (event, ui) => {
           this._oldPosition = ui.item.index()
         },
         update: (event, ui) => {
-          return this.collection.position(this._oldPosition, ui.item.index())
+          this.collection.position(this._oldPosition, ui.item.index())
         }
       })
     }
@@ -45,19 +48,20 @@ export default SingleView.extend({
   },
 
   addOne (model) {
-    const view = new ChildLargeView(_.extend({}, this.data,
-      { model })
-    )
-    return this.$('.existing').append(view.el)
+    const view = new ChildLargeView(_.extend({}, this.data, { model }))
+    const that = this
+    $(document).ready(function () {
+      that.$('.existing').append(view.el)
+    })
   },
 
   addAll () {
     this.$('.existing').html('')
-    return this.collection.each(this.addOne, this)
+    this.collection.each(this.addOne, this)
   },
 
   add () {
-    return this.collection.add(new this.data.ModelType())
+    this.collection.add(new this.data.ModelType())
   },
 
   getModelData () {
@@ -79,7 +83,7 @@ export default SingleView.extend({
       data = {}
       data[path.pop()] = oldData
     }
-    return this.model.set(data)
+    this.model.set(data)
   },
 
   updateCollection (model) {
@@ -91,29 +95,28 @@ export default SingleView.extend({
       _.chain(updated)
         .first(collectionLength)
         .each((update, index) => {
-          return this.collection
+          this.collection
             .at(index)
             .set(update)
         })
-        // Add new models
+      // Add new models
       _.chain(updated)
         .rest(collectionLength)
         .each(update => {
-          return this.collection.add(update)
-        }
-        )
-        // Remove models not in updated
-      return this.collection.remove(this.collection.rest(updated.length))
+          this.collection.add(update)
+        })
+      // Remove models not in updated
+      this.collection.remove(this.collection.rest(updated.length))
     }
   },
 
   show () {
     SingleView.prototype.show.apply(this)
-    return this.collection.trigger('visible')
+    this.collection.trigger('visible')
   },
 
   hide () {
     SingleView.prototype.hide.apply(this)
-    return this.collection.trigger('hidden')
+    this.collection.trigger('hidden')
   }
 })

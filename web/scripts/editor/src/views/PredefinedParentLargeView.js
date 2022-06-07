@@ -11,18 +11,19 @@ export default ParentLargeView.extend({
   },
 
   render () {
+    this.predefinedTemplate = _.template(template)
+    this.dropdownTemplate = _.template(dropdownTemplate)
     ParentLargeView.prototype.render.apply(this)
-    this.$('button.add').replaceWith(template({ data: this.data }))
+    this.$('button.add').replaceWith(this.predefinedTemplate({ data: this.data }))
     this.$('button').prop(this.data.disabled, this.data.disabled)
-    const $dropdown = this.$('ul.dropdown-menu')
     _.chain(this.data.predefined)
       .keys()
-      .each(item => $dropdown.append(dropdownTemplate({ predefined: item })))
+      .each(item => this.$('ul.dropdown-menu').append(this.dropdownTemplate({ predefined: item })))
     return this
   },
 
   setPredefined (event) {
-    (event.preventDefault)()
+    event.preventDefault()
     const value = $(event.target).text()
     let selected = {}
 
@@ -30,6 +31,6 @@ export default ParentLargeView.extend({
       selected = this.data.predefined[value]
     }
 
-    return this.collection.add(selected)
+    this.collection.add(selected)
   }
 })

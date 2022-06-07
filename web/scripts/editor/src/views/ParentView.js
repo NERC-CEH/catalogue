@@ -99,14 +99,13 @@ export default SingleView.extend({
             .at(index)
             .set(update)
         })
-        // Add new models
+      // Add new models
       _.chain(updated)
         .rest(collectionLength)
         .each(update => {
           this.collection.add(update)
-        }
-        )
-        // Remove models not in updated
+        })
+      // Remove models not in updated
       this.collection.remove(this.collection.rest(updated.length))
     }
   },

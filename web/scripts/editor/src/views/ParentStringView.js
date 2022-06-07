@@ -75,7 +75,7 @@ export default SingleView.extend({
   },
 
   addChild (event) {
-    (event.preventDefault)()
+    event.preventDefault()
     this.array.push('')
     const index = this.array.length - 1
     this.$('.existing').append(this.childTemplate({
