@@ -7,7 +7,7 @@ module.exports = function (config) {
     frameworks: ['jasmine-ajax', 'jasmine', 'webpack'],
 
     files: [
-      './*/test/*.js'
+      './scripts/*/test/*.js'
     ],
 
     loggers: [
@@ -17,7 +17,7 @@ module.exports = function (config) {
     ],
 
     preprocessors: {
-      './*/test/*.js': ['webpack']
+      './scripts/*/test/*.js': ['webpack']
     },
 
     webpack: webpackConfig,
@@ -49,7 +49,7 @@ module.exports = function (config) {
       clearContext: true
     },
 
-    singleRun: true
+    singleRun: false
 
   })
 }

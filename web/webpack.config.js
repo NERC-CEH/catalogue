@@ -1,5 +1,5 @@
 const HtmlWebPackPlugin = require('html-webpack-plugin')
-const { ModuleFederationPlugin } = require('webpack').container
+const webpack = require('webpack')
 module.exports = {
 
   entry: {
@@ -69,12 +69,9 @@ module.exports = {
     new HtmlWebPackPlugin({
       filename: './index.html'
     }),
-    new ModuleFederationPlugin({
-      shared: {
-        '@types/leaflet': { singleton: true, strictVersion: true, requiredVersion: '^0.7.7', eager: true },
-        leaflet: { singleton: true, strictVersion: true, requiredVersion: '^0.7.7', eager: true },
-        'leaflet-draw': { singleton: true, strictVersion: true, requiredVersion: '^1.0.4', eager: true }
-      }
+    new webpack.ProvidePlugin({
+      $: 'jquery',
+      jQuery: 'jquery'
     })
   ]
 }
