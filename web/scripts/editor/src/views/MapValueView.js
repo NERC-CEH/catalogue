@@ -9,7 +9,7 @@ export default ObjectInputView.extend({
     this.template = _.template(template)
     ObjectInputView.prototype.initialize.call(this, options)
 
-    return new MapStyleSelectorView({
+    const view = new MapStyleSelectorView({
       el: this.$('.style-selector'),
       model: this.model.getRelated('style'),
       disabled: options.disabled

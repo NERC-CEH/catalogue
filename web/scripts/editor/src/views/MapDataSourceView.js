@@ -10,7 +10,7 @@ import $ from 'jquery'
 export default ObjectInputView.extend({
 
   events () {
-    return _.extend({}, ObjectInputView.prototype.events, {
+    _.extend({}, ObjectInputView.prototype.events, {
       'click .addReprojection': 'addReprojection',
       'click .addAttribute': 'addAttribute',
       'click [styleMode]': 'updateStyleMode'
@@ -36,7 +36,7 @@ export default ObjectInputView.extend({
 
     this.createList(this.reprojections, '.reprojections', this.newReprojection)
     this.createList(this.attributes, '.attributes', this.newAttribute)
-
+    // eslint-disable-next-line no-unused-vars
     const mapFeaturesView = new MapFeaturesView({
       el: this.$('.features'),
       model: this.model.getRelated('features')
@@ -47,21 +47,23 @@ export default ObjectInputView.extend({
     this.listenTo(this.model, 'change:type', this.handlerByteTypeVisibility)
 
     // Set the radio button to the byteType of the model
-    return (this.updateByteRadioButton)()
+    this.updateByteRadioButton()
   },
 
-  addReprojection () { return this.reprojections.add({}) },
-  addAttribute () { return this.attributes.add({}) },
+  addReprojection () { this.reprojections.add({}) },
+  addAttribute () { this.attributes.add({}) },
 
   newReprojection (model, i) {
-    return new MapReprojectionView({
+    // eslint-disable-next-line no-unused-vars
+    const mapReprojectionView = new MapReprojectionView({
       model,
       disabled: this.data.disabled
     })
   },
 
   newAttribute (model, i) {
-    return new ChildView({
+    // eslint-disable-next-line no-unused-vars
+    const childView = new ChildView({
       model,
       index: i,
       ObjectInputView: MapAttributeView,
@@ -69,7 +71,7 @@ export default ObjectInputView.extend({
     })
   },
 
-  updateStyleMode (e) { return this.setStyleMode($(e.target).attr('styleMode')) },
+  updateStyleMode (e) { this.setStyleMode($(e.target).attr('styleMode')) },
 
   setStyleMode (mode) {
     // Reset the state of all the styling buttons and update to the correct mode
@@ -81,22 +83,22 @@ export default ObjectInputView.extend({
 
     const attrBtn = this.$('.addAttribute').removeClass('disabled')
     if (mode === 'features') { attrBtn.addClass('disabled') }
-    return this.model.setStylingMode(mode)
+    this.model.setStylingMode(mode)
   },
 
-  handlerByteTypeVisibility (e) { return this.updateByteTypeVisibility(e.stylingMode, e.attributes.type) },
+  handlerByteTypeVisibility (e) { this.updateByteTypeVisibility(e.stylingMode, e.attributes.type) },
 
   /*
   Update the bytetype radio button to match the model
   */
   updateByteRadioButton () {
-    return $(this.$(`input[data-name='bytetype'][value='${this.model.attributes.bytetype}']`)[0]).attr('checked', 'checked')
+    $(this.$(`input[data-name='bytetype'][value='${this.model.attributes.bytetype}']`)[0]).attr('checked', 'checked')
   },
 
   /*
   Set the visibility of the byteType selector.  Only show it when the styling is 'attributes' and the type is 'RASTER'
   */
   updateByteTypeVisibility (stylingMode, type) {
-    if ((stylingMode.toLowerCase() === 'attributes') && (type.toLowerCase() === 'raster')) { return this.$('.byte-box').show() } else { return this.$('.byte-box').hide() }
+    if ((stylingMode.toLowerCase() === 'attributes') && (type.toLowerCase() === 'raster')) { this.$('.byte-box').show() } else { this.$('.byte-box').hide() }
   }
 })

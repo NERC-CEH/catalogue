@@ -1,7 +1,8 @@
 import Backbone from 'backbone'
 import { Positionable } from '../collections'
 
-export var NestedModel = Backbone.Model.extend({
+let NestedModel
+export default NestedModel = Backbone.Model.extend({
 
   /*
   Return a collection which is bound to an array attribute of the given model.
@@ -10,14 +11,9 @@ export var NestedModel = Backbone.Model.extend({
   in the models specified attribute.
   */
   getRelatedCollection (attr, model, collection) {
-    if (model == null) { model = NestedModel }
-    if (collection == null) { collection = Positionable }
-    collection = new Backbone.Collection(this.get(attr),
-      { model })
+    collection = new Positionable(this.get(attr), { model })
 
-    this.listenTo(collection, 'add remove change position', () => {
-      return this.set(attr, collection.toJSON())
-    })
+    this.listenTo(collection, 'add remove change position', () => { this.set(attr, collection.toJSON()) })
 
     return collection
   },
@@ -27,8 +23,7 @@ export var NestedModel = Backbone.Model.extend({
   the returned model will be automatically reflected on this models attribute.
   */
   getRelated (attr, model) {
-    if (model == null) { model = NestedModel }
-    model = new Backbone.Model(this.get(attr))
+    model = new NestedModel(this.get(attr))
     this.listenTo(model, 'change', () => this.set(attr, model.toJSON()))
     return model
   }

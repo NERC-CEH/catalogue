@@ -14,14 +14,14 @@ export default Backbone.View.extend({
     this.listenTo(this.model, 'remove', function () { return this.remove() })
     this.listenTo(this.model, 'change', function (model) {
       if (model.isValid()) {
-        return this.$('>.validation').hide()
+        this.$('>.validation').hide()
       } else {
         this.$('>.validation').show()
         $('div.warnings', this.$('>.validation')).html('')
-        return _.each(model.validationError, error => $('div.warnings', this.$('>.validation')).append($(`<p>${error.message}</p>`)))
+        _.each(model.validationError, error => $('div.warnings', this.$('>.validation')).append($(`<p>${error.message}</p>`)))
       }
     })
-    return this.render()
+    this.render()
   },
 
   render () {
@@ -52,7 +52,7 @@ export default Backbone.View.extend({
     const element = this.$(selector)
     const addView = function () {
       const newView = view.apply(this, arguments)
-      return element.append(newView.el)
+      return element.append(newView.el) // no element here for mapdata source iew
     }.bind(this)
 
     const resetView = () => {

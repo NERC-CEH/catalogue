@@ -1,4 +1,6 @@
 import $ from 'jquery'
+import 'bootstrap'
+import 'bootstrap-colorpicker'
 import EditorMetadata from './EditorMetadata'
 import LinkEditorMetadata from './LinkEditorMetadata'
 import {

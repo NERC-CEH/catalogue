@@ -1,5 +1,5 @@
 import _ from 'underscore'
-import { NestedModel } from './NestedModel'
+import NestedModel from './NestedModel'
 import MapAttribute from './MapAttribute'
 
 export default NestedModel.extend({
@@ -10,7 +10,7 @@ export default NestedModel.extend({
     bytetype: 'false',
     features: {
       style: {
-        colour: '#000000'
+        colour: '#000000' // should be got from this.model.getRelated('style')
       }
     }
   },
@@ -19,7 +19,7 @@ export default NestedModel.extend({
     NestedModel.prototype.initialize.apply(this, arguments)
 
     // Determine the current styling mode
-    return this.stylingMode = _.isEmpty(this.attributes.attributes) ? 'features' : 'attributes'
+    this.stylingMode = _.isEmpty(this.attributes.attributes) ? 'features' : 'attributes'
   },
 
   /*
@@ -33,7 +33,7 @@ export default NestedModel.extend({
   */
   setStylingMode (mode) {
     this.stylingMode = mode
-    return this.trigger('change', this, {})
+    this.trigger('change', this, {})
   },
 
   validate (attrs) {

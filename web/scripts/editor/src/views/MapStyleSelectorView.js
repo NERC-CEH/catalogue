@@ -2,7 +2,6 @@ import _ from 'underscore'
 import ObjectInputView from './ObjectInputView'
 import template from '../templates/MapStyleSelector.tpl'
 import $ from 'jquery'
-import 'bootstrap-colorpicker'
 
 export default ObjectInputView.extend({
 
@@ -28,12 +27,12 @@ export default ObjectInputView.extend({
     this.template = _.template(template)
     ObjectInputView.prototype.initialize.call(this, _.extend({}, options,
       { symbols: this.symbols })
-    );
+    )
 
-    (this.update)()
-
+    this.update()
+    $.noConflict()
     this.$('input').colorpicker({ format: 'hex' })
-    return this.listenTo(this.model, 'change:colour change:symbol', this.update)
+    this.listenTo(this.model, 'change:colour change:symbol', this.update)
   },
 
   update () {
@@ -48,16 +47,16 @@ export default ObjectInputView.extend({
       this.$('button').css({ backgroundColor: color })
     }
 
-    return this.$('.icon').css({ color })
+    this.$('.icon').css({ color })
   },
 
-  setColour () { return this.model.set('colour', this.$('input').val()) },
+  setColour () { this.model.set('colour', this.$('input').val()) },
 
   setSymbol (e) {
     if ($(e.target).data('symbol') !== 'blank') {
-      return this.model.set('symbol', $(e.target).data('symbol'))
+      this.model.set('symbol', $(e.target).data('symbol'))
     } else {
-      return this.model.unset('symbol')
+      this.model.unset('symbol')
     }
   }
 })
