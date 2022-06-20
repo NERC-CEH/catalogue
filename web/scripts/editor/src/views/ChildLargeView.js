@@ -1,7 +1,6 @@
 import _ from 'underscore'
 import Backbone from 'backbone'
 import childTemplate from '../templates/ChildLarge.tpl'
-import $ from 'jquery'
 
 export default Backbone.View.extend({
 

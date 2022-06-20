@@ -14,7 +14,7 @@ export default ObjectInputView.extend({
 
   initialize () {
     this.template = _.template(template)
-
+    ObjectInputView.prototype.initialize.apply(this)
     this.render()
     this.listenTo(this.model, 'change:westBoundLongitude', function (model, value) {
       return this.$('#boundingBoxWestBoundLongitude').val(value)

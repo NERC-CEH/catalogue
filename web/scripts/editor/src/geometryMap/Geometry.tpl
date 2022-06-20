@@ -11,3 +11,13 @@
         </div>
     </div>
 </div>
+<br>
+<div class="row">
+    <div class="col-sm-2 col-lg-2">
+        <label>Advanced: Edit Geometry Json</label>
+        <button class="editor-button-xs showhide" title="show/hide details"><span class="fas fa-chevron-down" aria-hidden="true"></span></button>
+        <textarea rows="20" data-name="geometryString" id="box" class="editor-input hidden" value="<%= data.geometryString %>" style="width: 500px; height: 250px;"><%= data.geometryString %></textarea>
+        <br>
+    </div>
+    <br>
+</div>

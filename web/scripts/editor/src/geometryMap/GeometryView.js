@@ -8,13 +8,28 @@ import template from './Geometry.tpl'
 export default ObjectInputView.extend({
 
   events: {
-    'click #update': 'viewMap'
+    'click #update': 'viewMap',
+    'click button.showhide': 'showHide',
+    'change #box': 'handleInput'
   },
 
   initialize () {
     L.Icon.Default.imagePath = 'https://unpkg.com/leaflet-draw@1.0.2/dist/images/' // fix for leaflet draw image bug
     this.template = _.template(template)
+    ObjectInputView.prototype.initialize.apply(this)
     this.render()
+    this.listenTo(this.model, 'change:geometryString', function (model, value) {
+      this.$('#geometryString').val(value)
+      this.render()
+      this.viewMap()
+    })
+
+    this.listenTo(this.model, 'showhide', function () { this.showHide() })
+  },
+
+  handleInput () {
+    this.model.set('geometryString', this.$('#box').val())
+    this.viewMap()
   },
 
   createMap () {
@@ -57,6 +72,7 @@ export default ObjectInputView.extend({
       const layer = event.layer
       this.drawButtons = false
       this.model.set('geometryString', JSON.stringify(layer.toGeoJSON()))
+      this.$('#geometryString').val(JSON.stringify(layer.toGeoJSON()))
       this.map.removeControl(this.drawControl)
       this.drawControl = this.createToolbar()
       this.map.addControl(this.drawControl)
@@ -66,10 +82,17 @@ export default ObjectInputView.extend({
 
     this.listenTo(this.map, L.Draw.Event.DELETED, function () {
       this.model.set('geometryString', null)
+      this.$('#geometryString').val(null)
       this.drawButtons = true
       this.map.removeControl(this.drawControl)
       this.drawControl = this.createToolbar()
       this.map.addControl(this.drawControl)
+    })
+
+    this.listenTo(this.map, L.Draw.Event.EDITMOVE, function (event) {
+      const layer = event.layer
+      this.model.set('geometryString', JSON.stringify(layer.toGeoJSON()))
+      this.$('#geometryString').val(JSON.stringify(layer.toGeoJSON()))
     })
   },
 
@@ -96,6 +119,14 @@ export default ObjectInputView.extend({
       }
     })
   },
+
+  showHide () {
+    this.$('.extended').toggleClass('hidden')
+    this.$('#box').toggleClass('hidden')
+    this.$('.showhide span').toggleClass('fa-chevron-down')
+    this.$('.showhide span').toggleClass('fa-chevron-up')
+  },
+
   viewMap () {
     if (this.map) {
       this.map.off()
