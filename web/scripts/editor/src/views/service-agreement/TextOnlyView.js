@@ -9,11 +9,12 @@ export default SingleView.extend({
   initialize (options) {
     this.template = _.template(template)
     SingleView.prototype.initialize.call(this, options)
-    return this.render()
+    this.render()
   },
 
   render () {
     SingleView.prototype.render.apply(this)
-    return this.$('.dataentry').append(this.template({ data: _.extend({}, this.data, { value: this.model.get }) }))
+    this.$('.dataentry').append(this.template({ data: _.extend({}, this.data, { value: this.model.get }) }))
+    return this
   }
 })

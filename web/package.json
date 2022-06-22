@@ -61,7 +61,7 @@
     "babel-watch": "^7.7.0",
     "backbone": "^1.4.0",
     "bootstrap": "^3.4.1",
-    "bootstrap-colorpicker": "^2.5.3",
+    "bootstrap-colorpicker": "^3.4.0",
     "bootstrap-less": "^3.3.8",
     "deparam": "^1.0.5",
     "deparam.js": "^3.0.5",
