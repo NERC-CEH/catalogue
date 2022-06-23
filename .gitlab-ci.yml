@@ -24,7 +24,7 @@ test_web:
   image: node:15.11.0-stretch
   script:
     - cd web
-    - npm ci
+    - npm ci --no-audit
     - ./node_modules/.bin/bower install --allow-root
     - ./node_modules/.bin/grunt prep build    # test not actually run as are broken
 
@@ -34,7 +34,7 @@ test_permissions:
   script:
     - cd web/permission
     - npm install -g npm
-    - npm ci
+    - npm ci --no-audit
     - npm run test
 
 test_catalogue:
@@ -43,7 +43,7 @@ test_catalogue:
   script:
     - cd web/catalogue
     - npm install -g npm
-    - npm ci
+    - npm ci --no-audit
     - npm run test
 
 test_simple_upload:
@@ -52,7 +52,7 @@ test_simple_upload:
   script:
     - cd web/simple-upload
     - npm install -g npm
-    - npm ci
+    - npm ci --no-audit
     - npm run test
 
 test_hubbub:
@@ -61,7 +61,7 @@ test_hubbub:
   script:
     - cd web/hubbub
     - npm install -g npm
-    - npm ci
+    - npm ci --no-audit
     - npm test
   artifacts:
     when: always

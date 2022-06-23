@@ -46,8 +46,8 @@ export default Backbone.View.extend({
     this.listenTo(this.datastore, 'reset', (collection) => this.addAll(collection, this.$datastore))
     this.listenTo(this.datastore, 'add', (model) => this.addOne(this.datastore, this.$datastore, model))
     this.listenTo(this.datastore, 'update', () => this.showEmptyStorage(this.datastore, this.$datastore, 'datastore'))
-    // this.listenTo(this.model, 'change:datastoreTotalFiles', this.renderDatastoreTotalFiles)
-    // this.listenTo(this.datastore, 'update', this.updateDatastoreTotalFiles)
+    this.listenTo(this.model, 'change:datastoreTotalFiles', () => this.renderTotalFiles('datastore'))
+    this.listenTo(this.datastore, 'update', () => this.updateTotalFiles('datastore'))
     // this.listenTo(this.datastore, 'reset', this.updateDatastoreTotalFiles)
 
     this.$dropbox = this.$('.data-files')
@@ -55,8 +55,8 @@ export default Backbone.View.extend({
     this.listenTo(this.dropbox, 'reset', (collection) => this.addAll(collection, this.$dropbox))
     this.listenTo(this.dropbox, 'add', (model) => this.addOne(this.dropbox, this.$dropbox, model))
     this.listenTo(this.dropbox, 'update', () => this.showEmptyStorage(this.dropbox, this.$dropbox, 'data'))
-    // this.listenTo(this.model, 'change:dropboxTotalFiles', this.renderDropboxTotalFiles)
-    // this.listenTo(this.dropbox, 'update', this.updateDropboxTotalFiles)
+    this.listenTo(this.model, 'change:dropboxTotalFiles', () => this.renderTotalFiles('dropbox'))
+    this.listenTo(this.dropbox, 'update', () => this.updateTotalFiles('dropbox'))
     // this.listenTo(this.dropbox, 'reset', this.updateDropboxTotalFiles)
 
     this.$metadata = this.$('.metadata-files')
@@ -148,32 +148,18 @@ export default Backbone.View.extend({
     this.loadMore(event, 'metadata', 'supporting-documents', this.metadata)
   },
 
-  renderDatastoreTotalFiles () {
-    const $totalFiles = this.$('.document-upload-section.datastore .total-files')
-    const totalFiles = this.model.get('datastoreTotalFiles')
-    console.log(`rendering datastore to ${totalFiles}`)
+  renderTotalFiles (datastore) {
+    const $totalFiles = this.$(`.document-upload-section.${datastore} .total-files`)
+    const totalFiles = this.model.get(`${datastore}TotalFiles`)
+    console.log(`rendering ${datastore} to ${totalFiles}`)
     if (totalFiles > 0) {
       $totalFiles.text(`${totalFiles} files`)
     }
   },
 
-  updateDatastoreTotalFiles () {
-    console.log(`updating datastore to ${this.datastore.length}`)
-    this.model.set('datastoreTotalFiles', this.datastore.length)
-  },
-
-  renderDropboxTotalFiles () {
-    const $totalFiles = this.$('.document-upload-section.dropbox .total-files')
-    const totalFiles = this.model.get('dropboxTotalFiles')
-    console.log(`rendering dropbox to ${totalFiles}`)
-    if (totalFiles > 0) {
-      $totalFiles.text(`${totalFiles} files`)
-    }
-  },
-
-  updateDropboxTotalFiles () {
-    console.log(`updating dropbox to ${this.dropbox.length}`)
-    this.model.set('dropboxTotalFiles', this.dropbox.length)
+  updateTotalFiles (datastore) {
+    console.log(`updating ${datastore} to ${this[datastore].length}`)
+    this.model.set(`${datastore}TotalFiles`, this[datastore].length)
   },
 
   showEmptyStorage (collection, $container, title) {
