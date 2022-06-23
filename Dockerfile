@@ -8,7 +8,7 @@ COPY --chown=1000:1000 web/bower.json .
 COPY --chown=1000:1000 web/Gruntfile.js .
 COPY --chown=1000:1000 web/package.json .
 COPY --chown=1000:1000 web/package-lock.json .
-RUN npm install
+RUN npm install --no-audit
 RUN node_modules/.bin/bower install --allow-root
 RUN node_modules/.bin/grunt
 
