@@ -153,7 +153,7 @@ export default Backbone.View.extend({
     const totalFiles = this.model.get(`${datastore}TotalFiles`)
     console.log(`rendering ${datastore} to ${totalFiles}`)
     if (totalFiles > 0) {
-      $totalFiles.text(`${totalFiles} files`)
+      $totalFiles.text(`${Number(totalFiles).toLocaleString()} files`)
     }
   },
 
