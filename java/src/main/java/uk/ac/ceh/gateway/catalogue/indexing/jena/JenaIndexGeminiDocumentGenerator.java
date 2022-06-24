@@ -60,14 +60,6 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
         
         toReturn.add(createStatement(me, IDENTIFIER, createPlainLiteral(me.getURI()))); //Add as an identifier of itself
         
-        // This isn't working.  I don't know why.
-        Optional.ofNullable(document.getType())
-            .ifPresent(type -> {
-                if (type.trim().equals("dataset") || type.trim().equals("nonGeographicDataset") ) {
-                    createStatement(me, RDF_TYPE, DCAT_DATASET_CLASS);
-                }
-            });
-
         Optional.ofNullable(document.getDatasetReferenceDate().getPublicationDate())
             .ifPresent(pd -> toReturn.add(
                 createStatement(me, DCT_ISSUED, createTypedLiteral(pd.toString(), TYPE_DATE)))
@@ -109,19 +101,22 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
                 ));
             });
 
-        //authors with orcids
+
+        //Authors without orcids
         Optional.ofNullable(document.getResponsibleParties())
             .orElse(Collections.emptyList())
             .stream()
             .filter(author -> !Strings.isNullOrEmpty(author.getIndividualName()))
-            //.filter(author -> author.getRole().equalsIgnoreCase("author"))
-            //.filter(author -> orcidPattern.matcher(author.getNameIdentifier()).matches())
+            .filter(author -> author.getRole().equalsIgnoreCase("author"))
+            .filter(author -> !orcidPattern.matcher(author.getNameIdentifier()).matches())
             .forEach(author -> {
                 log.debug(author.toString());
-                toReturn.add(createStatement(createProperty(author.getNameIdentifier()), RDF_TYPE , VCARD_INDIVIDUAL_CLASS));
-                toReturn.add(createStatement(createProperty(author.getNameIdentifier()), VCARD_NAME, createPlainLiteral(author.getIndividualName())));
-                toReturn.add(createStatement(createProperty(author.getNameIdentifier()), VCARD_ORGNAME, createPlainLiteral(author.getOrganisationName())));
+                Resource author_uri = generator.resource(document.getId() + "_author_" + "0");
+                //author_uri needs to be unique in this context, replace the 0 with a counter  (ie document.getId() + "_author_" + counter)
+                toReturn.add(createStatement(author_uri, RDF_TYPE, DCT_CREATOR_CLASS));
+                toReturn.add(createStatement(author_uri, VCARD_NAME, createPlainLiteral(author.getIndividualName())));
             });
+ 
 
         Optional.ofNullable(document.getOnlineResources())
             .orElse(Collections.emptyList())
@@ -130,8 +125,8 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
             .filter(onliner -> downloadPattern.matcher(onliner.getUrl()).matches())
             .forEach(onliner -> {
                 log.debug(onliner.toString());
-                Resource dist_uri = generator.resource(document.getId() + "_dist");
-                //dist_uri needs to be unique eg : document.getId() + "_dist" + counter
+                Resource dist_uri = generator.resource(document.getId() + "_dist_" + "0");
+                //dist_uri needs to be unique in this context, replace the 0 with a counter  (ie document.getId() + "_dist" + counter)
                 toReturn.add(createStatement(dist_uri, RDF_TYPE, DCAT_DISTRIBUTION_CLASS));
                 toReturn.add(createStatement(dist_uri, DCAT_ACCESSURL, createProperty(onliner.getUrl())));
                 toReturn.add(createStatement(me, DCAT_DISTRIBUTION, dist_uri));
