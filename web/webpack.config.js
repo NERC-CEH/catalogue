@@ -65,6 +65,17 @@ module.exports = {
   output: {
     filename: '[name].bundle.js'
   },
+
+  optimization: {
+    splitChunks: {
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]jquery[\\/]/,
+          name: 'vendor'
+        }
+      }
+    }
+  },
   plugins: [
     new HtmlWebPackPlugin({
       filename: './index.html'

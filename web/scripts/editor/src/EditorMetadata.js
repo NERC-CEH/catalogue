@@ -4,7 +4,7 @@ import Backbone from 'backbone'
 export default Backbone.Model.extend({
 
   url () {
-    return (this.urlRoot)()
+    return this.urlRoot()
   },
 
   urlRoot () {
@@ -30,9 +30,7 @@ export default Backbone.Model.extend({
         json: this.mediaType
       },
       contentType: this.mediaType
-    }
-    )
-    )
+    }))
   },
 
   validate (attrs) {

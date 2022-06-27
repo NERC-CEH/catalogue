@@ -24,9 +24,10 @@ export default Backbone.View.extend({
     this.saveRequired = false
     this.catalogue = $('html').data('catalogue')
 
+    const that = this
     this.listenTo(this.model, 'error', function (model, response) {
-      this.$('#editorAjax').toggleClass('visible')
-      window.$('#editorErrorMessage')
+      that.$('#editorAjax').toggleClass('visible')
+      that.$('#editorErrorMessage')
         .find('#editorErrorMessageResponse').text(`${response.status} ${response.statusText}`)
         .end()
         .find('#editorErrorMessageJson').text(JSON.stringify(model.toJSON()))
@@ -34,21 +35,21 @@ export default Backbone.View.extend({
         .modal('show')
     })
     this.listenTo(this.model, 'sync', function () {
-      this.$('#editorAjax').toggleClass('visible')
-      this.saveRequired = false
+      that.$('#editorAjax').toggleClass('visible')
+      that.saveRequired = false
     })
     this.listenTo(this.model, 'change save:required', function () {
-      this.saveRequired = true
+      that.saveRequired = true
     })
     this.listenTo(this.model, 'request', function () {
-      this.$('#editorAjax').toggleClass('visible')
+      that.$('#editorAjax').toggleClass('visible')
     })
     this.listenTo(this.model, 'invalid', function (model, errors) {
-      this.$('#editorValidationMessage .modal-body').html('')
+      that.$('#editorValidationMessage .modal-body').html('')
       _.each(errors, function (error) {
-        this.$('#editorValidationMessage .modal-body').append(this.$(`<p>${error}</p>`))
+        that.$('#editorValidationMessage .modal-body').append($(`<p>${error}</p>`))
       })
-      window.$('#editorValidationMessage').modal('show')
+      that.$('#editorValidationMessage').modal('show')
     })
 
     this.render()
@@ -61,11 +62,11 @@ export default Backbone.View.extend({
   },
 
   attemptDelete () {
-    window.$('#confirmDelete').modal('show')
+    this.$('#confirmDelete').modal('show')
   },
 
   delete () {
-    window.$('#confirmDelete').modal('hide')
+    this.$('#confirmDelete').modal('hide')
     this.model.destroy({
       success: () => {
         _.invoke(this.sections, 'remove')
@@ -81,14 +82,14 @@ export default Backbone.View.extend({
 
   attemptExit () {
     if (this.saveRequired) {
-      window.$('#confirmExit').modal('show')
+      this.$('#confirmExit').modal('show')
     } else {
       this.exit()
     }
   },
 
   exit () {
-    window.$('#confirmExit').modal('hide')
+    this.$('#confirmExit').modal('hide')
     _.invoke(this.sections, 'remove')
     this.remove()
 
@@ -125,18 +126,16 @@ export default Backbone.View.extend({
     if (this.currentStep < 1) { this.currentStep = 1 }
     if (this.currentStep > maxStep) { this.currentStep = maxStep }
 
-    const $back = this.$('#editorBack')
     if (this.currentStep === 1) {
-      $back.prop('disabled', true)
+      this.$('#editorBack').prop('disabled', true)
     } else {
-      $back.prop('disabled', false)
+      this.$('#editorBack').prop('disabled', false)
     }
 
-    const $next = this.$('#editorNext')
     if (this.currentStep === maxStep) {
-      $next.prop('disabled', true)
+      this.$('#editorNext').prop('disabled', true)
     } else {
-      $next.prop('disabled', false)
+      this.$('#editorNext').prop('disabled', false)
     }
 
     $nav.filter('.active').toggleClass('active')

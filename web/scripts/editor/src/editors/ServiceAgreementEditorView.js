@@ -479,15 +479,17 @@ export default EditorView.extend({
   },
 
   attemptExit () {
+    const that = this
     if (this.saveRequired) {
-      this.$('#confirmExit').modal('show')
+      that.$('#confirmExit').modal('show')
     } else {
-      this.exit()
+      that.exit()
     }
   },
 
   exit () {
-    this.$('#confirmExit').modal('hide')
+    const that = this
+    that.$('#confirmExit').modal('hide')
     _.invoke(this.sections, 'remove')
     this.remove()
 
