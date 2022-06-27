@@ -8,23 +8,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class ResourceIdentifierTest {
 
     @Test
-    public void getCehEidcCoupleResource() {
-        //Given
-        ResourceIdentifier identifier = ResourceIdentifier.builder()
-                                        .code("1230549234")
-                                        .codeSpace("CEH:EIDC:")
-                                        .build();
-        String expected = "CEH:EIDC:#1230549234";
-        
-        //When
-        String actual = identifier.getCoupledResource();
-        
-        //Then
-        assertThat("actual coupled resource string should equal expected", actual, equalTo(expected));
-        assertThat("internal CIG record should be true", identifier.isInternal(), equalTo(true));
-    }  
-    
-    @Test
     public void getDoiCoupleResource() {
         //Given
         ResourceIdentifier identifier = ResourceIdentifier.builder()
