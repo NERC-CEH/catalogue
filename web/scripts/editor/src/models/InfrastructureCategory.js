@@ -43,12 +43,12 @@ export default Backbone.Model.extend({
   },
 
   initialize () {
-    return this.on('change:value', this.updateLimitation)
+    this.on('change:value', this.updateLimitation)
   },
 
   updateLimitation (model, value) {
     this.set('uri', this.uris[value] ? this.uris[value] : null)
     this.set('infrastructureClass', this.classes[value] ? this.classes[value] : null)
-    return this.set('description', this.descriptions[value] ? this.descriptions[value] : null)
+    this.set('description', this.descriptions[value] ? this.descriptions[value] : null)
   }
 })

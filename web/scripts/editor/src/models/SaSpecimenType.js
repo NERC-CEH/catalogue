@@ -28,10 +28,10 @@ export default Backbone.Model.extend({
   },
 
   initialize () {
-    return this.on('change:value', this.updateUri)
+    this.on('change:value', this.updateUri)
   },
 
   updateUri (model, value) {
-    return this.set('uri', this.uris[value] ? this.uris[value] : '')
+    this.set('uri', this.uris[value] ? this.uris[value] : '')
   }
 })

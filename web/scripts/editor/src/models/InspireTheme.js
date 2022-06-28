@@ -44,10 +44,10 @@ export default Backbone.Model.extend({
   },
 
   initialize () {
-    return this.on('change:theme', this.updateUri)
+    this.on('change:theme', this.updateUri)
   },
 
   updateUri (model, theme) {
-    return this.set('uri', this.uris[theme] ? this.uris[theme] : '')
+    this.set('uri', this.uris[theme] ? this.uris[theme] : '')
   }
 })
