@@ -9,6 +9,7 @@ $('.catalogue-control').on('click', function (event) {
     $.getJSON('/catalogues', function (data) {
       $(document).ready(function () {
         model.options = data.map(val => ({ value: val.id, label: val.title }))
+        // eslint-disable-next-line no-unused-vars
         const view = new CatalogueView({
           el: '#metadata',
           model

@@ -5,8 +5,6 @@ export default Backbone.View.extend({
 
   tagName: 'li',
 
-  template,
-
   initialize () {
     this.template = _.template(template)
     this.listenTo(this.model, 'remove', this.remove)

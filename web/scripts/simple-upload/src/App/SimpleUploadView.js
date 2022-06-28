@@ -10,11 +10,13 @@ export default Backbone.View.extend({
 
     const messages = new Backbone.Collection()
 
+    // eslint-disable-next-line no-unused-vars
     const messageListView = new MessageListView({
       el: '#messages',
       messages
     })
 
+    // eslint-disable-next-line no-unused-vars
     const uploadView = new UploadView({
       el: '#simple-upload-dropzone',
       files,
@@ -22,6 +24,7 @@ export default Backbone.View.extend({
       url: options.url
     })
 
+    // eslint-disable-next-line no-unused-vars
     const fileListView = new FileListView({
       el: '#files',
       files,
