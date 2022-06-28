@@ -8,7 +8,7 @@ import $ from 'jquery'
 export default ObjectInputView.extend({
 
   events () {
-    _.extend({}, ObjectInputView.prototype.events, {
+    return _.extend({}, ObjectInputView.prototype.events, {
       'click .add' () { return (this.add)() },
 
       'click .predefined' (event) { return this.addPredefined(event) }
@@ -43,8 +43,7 @@ export default ObjectInputView.extend({
 
   addOne (model, keywordIndex) {
     this.data = _.omit(this.data, 'el')
-    // eslint-disable-next-line no-new
-    new ChildView(_.extend({}, this.data, {
+    return new ChildView(_.extend({}, this.data, {
       model,
       keywordIndex,
       ObjectInputView: KeywordVocabularyView
@@ -55,9 +54,10 @@ export default ObjectInputView.extend({
 
   addPredefined (event) {
     event.preventDefault()
+    const $target = this.$(event.target)
     this.keywords.add({
-      value: this.$(event.target).text(),
-      uri: this.$(event.target).attr('href')
+      value: $target.text(),
+      uri: $target.attr('href')
     })
   },
 
