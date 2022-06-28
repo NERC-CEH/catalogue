@@ -49,7 +49,7 @@ module.exports = function (config) {
       clearContext: true
     },
 
-    singleRun: false
+    singleRun: true
 
   })
 }
