@@ -21,7 +21,7 @@ export default ObjectInputView.extend({
           query = `/${catalogue}/documents?term=${request.term}`
         }
 
-        return $.getJSON(query, data => response(_.map(data.results, d => ({
+        $.getJSON(query, data => response(_.map(data.results, d => ({
           value: d.title,
           label: d.title,
           identifier: d.identifier,
@@ -30,7 +30,7 @@ export default ObjectInputView.extend({
       }
     })
 
-    return this.$('.autocomplete').on('autocompleteselect', (event, ui) => {
+    this.$('.autocomplete').on('autocompleteselect', (event, ui) => {
       this.model.set('identifier', ui.item.identifier)
       this.$('.identifier').val(ui.item.identifier)
       this.model.set('href', 'https://catalogue.ceh.ac.uk/id/' + ui.item.identifier)
@@ -38,7 +38,7 @@ export default ObjectInputView.extend({
       this.model.set('associationType', ui.item.type)
       this.$('.associationType').val(ui.item.type)
       this.model.set('title', ui.item.label)
-      return this.$('.title').val(ui.item.label)
+      this.$('.title').val(ui.item.label)
     })
   },
 

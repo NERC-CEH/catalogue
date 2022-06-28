@@ -13,6 +13,7 @@ export default ObjectInputViewForObjects.extend({
       this.data.unitOfMeasure = {}
     }
 
-    return ObjectInputViewForObjects.prototype.render.apply(this)
+    ObjectInputViewForObjects.prototype.render.apply(this)
+    return this
   }
 })

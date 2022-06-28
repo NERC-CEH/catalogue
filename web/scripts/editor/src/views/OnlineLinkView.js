@@ -6,6 +6,7 @@ export default ObjectInputView.extend({
 
   render () {
     this.template = _.template(template)
-    return ObjectInputView.prototype.render.apply(this)
+    ObjectInputView.prototype.render.apply(this)
+    return this
   }
 })

@@ -41,7 +41,7 @@ export default SingleView.extend({
   },
 
   renderParent () {
-    return this.$el.html(this.parentTemplate({ data: this.data }))
+    this.$el.html(this.parentTemplate({ data: this.data }))
   },
 
   render () {

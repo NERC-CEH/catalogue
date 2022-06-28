@@ -16,6 +16,6 @@ export default InputView.extend({
     const $target = $(event.target)
     const name = $target.data('name')
     const value = $target.prop('checked')
-    return this.model.set(name, value)
+    this.model.set(name, value)
   }
 })

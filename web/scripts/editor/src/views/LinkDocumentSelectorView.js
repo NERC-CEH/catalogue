@@ -8,16 +8,13 @@ import template from '../templates/LinkDocumentSelector.tpl'
 export default InputView.extend({
 
   events () {
-    return _.extend({}, InputView.prototype.events, {
-      'keyup #term' () { return this.searchOnceComplete() },
-      'change #term' () { return this.search() },
-      'change #catalogue' () { return this.search() },
-      'click button' () { return this.search() }
-    }
-    )
+    _.extend({}, InputView.prototype.events, {
+      'keyup #term' () { this.searchOnceComplete() },
+      'change #term' () { this.search() },
+      'change #catalogue' () { this.search() },
+      'click button' () { this.search() }
+    })
   },
-
-  template,
 
   optionTemplate: _.template('<option value="<%= id %>" <% if (id === data.catalogue) { %>selected<% } %>><%= title %></option>'),
 
@@ -37,18 +34,17 @@ export default InputView.extend({
 
     $.getJSON(`/catalogues?${params}`, catalogues => {
       this.catalogues = catalogues
-      return InputView.prototype.initialize.call(this, options)
+      InputView.prototype.initialize.call(this, options)
     })
 
     this.listenTo(this.results, 'selected', this.setSelected)
-    return this.listenTo(this.results, 'reset', this.addAll)
+    this.listenTo(this.results, 'reset', this.addAll)
   },
 
   render () {
     InputView.prototype.render.apply(this)
-    const $select = this.$('#catalogue')
     _.each(this.catalogues, catalogue => {
-      return $select.append(this.optionTemplate(_.extend({}, catalogue, { data: this.data })))
+      this.$('#catalogue').append(this.optionTemplate(_.extend({}, catalogue, { data: this.data })))
     })
     this.search()
     return this
@@ -65,22 +61,22 @@ export default InputView.extend({
       searchUrl = `/${this.data.catalogue}/documents?term=state:published AND view:public AND NOT documentType:LINK_DOCUMENT`
     }
 
-    return $.getJSON(searchUrl, data => {
-      return this.results.reset(data.results)
+    $.getJSON(searchUrl, data => {
+      this.results.reset(data.results)
     })
   },
 
   addOne (result) {
     const view = new LinkDocumentView({ model: result })
-    return this.$('#results').append(view.render().el)
+    this.$('#results').append(view.render().el)
   },
 
   addAll () {
     this.$('#results').html('')
-    return this.results.each(this.addOne, this)
+    this.results.each(this.addOne, this)
   },
 
   setSelected (identifier) {
-    return this.model.set(this.data.modelAttribute, identifier)
+    this.model.set(this.data.modelAttribute, identifier)
   }
 })

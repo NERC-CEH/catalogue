@@ -18,6 +18,7 @@ export default Backbone.View.extend({
     this.listenTo(this.model, 'showhide', function () { this.showHide() })
     this.index = this.model.collection.indexOf(this.model)
     this.render()
+    // eslint-disable-next-line no-unused-vars
     const view = new this.data.ObjectInputView(_.extend({}, this.data, {
       el: this.$('.dataentry'),
       model: this.model,

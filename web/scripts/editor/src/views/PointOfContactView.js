@@ -7,7 +7,7 @@ export default ObjectInputView.extend({
 
   initialize (options) {
     this.template = _.template(template)
-    return ObjectInputView.prototype.initialize.apply(this)
+    ObjectInputView.prototype.initialize.apply(this)
   },
 
   render () {
@@ -16,24 +16,23 @@ export default ObjectInputView.extend({
   },
 
   modify (event) {
-    const $target = $(event.target)
-    const name = $target.data('name')
-    const value = $target.val()
+    const name = $(event.target).data('name')
+    const value = $(event.target).val()
 
     if (_.contains(['deliveryPoint', 'city', 'administrativeArea', 'country', 'postalCode'], name)) {
       let address = _.clone(this.model.get('address'))
       if (value) {
         address[name] = value
-        return this.model.set('address', address)
+        this.model.set('address', address)
       } else {
         address = _.omit(address, name)
-        return this.model.set('address', address)
+        this.model.set('address', address)
       }
     } else {
       if (value) {
-        return this.model.set(name, value)
+        this.model.set(name, value)
       } else {
-        return this.model.unset(name)
+        this.model.unset(name)
       }
     }
   }

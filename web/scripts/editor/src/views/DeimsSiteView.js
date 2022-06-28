@@ -20,7 +20,7 @@ export default ObjectInputView.extend({
           query = `/vocabulary/deims?query=${request.term}`
         }
 
-        return $.getJSON(query, data => response(_.map(data, d => ({
+        $.getJSON(query, data => response(_.map(data, d => ({
           value: d.title,
           label: d.title,
           id: d.id,
@@ -29,13 +29,13 @@ export default ObjectInputView.extend({
       }
     })
 
-    return this.$('.autocomplete').on('autocompleteselect', (event, ui) => {
+    this.$('.autocomplete').on('autocompleteselect', (event, ui) => {
       this.model.set('id', ui.item.id)
       this.$('.id').val(ui.item.id)
       this.model.set('title', ui.item.label)
       this.$('.title').val(ui.item.label)
       this.model.set('url', ui.item.url)
-      return this.$('.url').val(ui.item.url)
+      this.$('.url').val(ui.item.url)
     })
   }
 })

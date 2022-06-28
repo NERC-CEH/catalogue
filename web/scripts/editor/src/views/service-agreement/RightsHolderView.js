@@ -11,6 +11,6 @@ export default ObjectInputView.extend({
 
   modify (event) {
     ObjectInputView.prototype.modify.call(this, event)
-    return this.model.set('role', 'rightsHolder')
+    this.model.set('role', 'rightsHolder')
   }
 })

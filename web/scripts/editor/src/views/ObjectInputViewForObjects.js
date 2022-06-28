@@ -17,14 +17,14 @@ export default ObjectInputView.extend({
 
   _setObject (objectName, attributeName, value) {
     if (!value) {
-      return this.model.unset(objectName)
+      this.model.unset(objectName)
     } else {
       if (!_.isUndefined(attributeName)) {
         const obj = _.extend({}, this.model.get(objectName))
         obj[attributeName] = value
-        return this.model.set(objectName, obj)
+        this.model.set(objectName, obj)
       } else {
-        return this.model.set(objectName, value)
+        this.model.set(objectName, value)
       }
     }
   }

@@ -9,14 +9,13 @@ export default ObjectInputView.extend({
   initialize (options) {
     this.template = _.template(template)
     this.options = options.options
-    return ObjectInputView.prototype.initialize.call(this, options)
+    ObjectInputView.prototype.initialize.call(this, options)
   },
 
   render () {
     ObjectInputView.prototype.render.apply(this)
-    const $list = this.$('datalist')
     this.options.forEach(option => {
-      return $list.append(this.optionTemplate(option))
+      return this.$('datalist').append(this.optionTemplate(option))
     })
     return this
   }

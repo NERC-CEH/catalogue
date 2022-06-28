@@ -14,8 +14,7 @@ export default ObjectInputView.extend({
       'click .addReprojection': 'addReprojection',
       'click .addAttribute': 'addAttribute',
       'click [styleMode]': 'updateStyleMode'
-    }
-    )
+    })
   },
 
   dataTypes: [

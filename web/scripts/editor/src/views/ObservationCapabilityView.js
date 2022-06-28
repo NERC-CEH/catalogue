@@ -18,6 +18,7 @@ export default ObjectInputViewForObjects.extend({
       this.data.procedureName = {}
     }
 
-    return ObjectInputViewForObjects.prototype.render.apply(this)
+    ObjectInputViewForObjects.prototype.render.apply(this)
+    return this
   }
 })

@@ -26,9 +26,9 @@ export default ObjectInputView.extend({
       }
     } else {
       if (value) {
-        return this.model.set(name, value)
+        this.model.set(name, value)
       } else {
-        return this.model.unset(name)
+        this.model.unset(name)
       }
     }
   }

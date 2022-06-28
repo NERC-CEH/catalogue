@@ -10,6 +10,7 @@ export default ObjectInputView.extend({
     ObjectInputView.prototype.render.apply(this)
     this.$('input').datepicker({ dateFormat: 'yy-mm-dd' })
 
+    // eslint-disable-next-line no-unused-vars
     const parent = new ParentStringView({
       el: this.$('#provenanceContributors'),
       model: this.model,

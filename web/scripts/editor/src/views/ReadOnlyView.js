@@ -11,14 +11,15 @@ export default SingleView.extend({
 
   initialize (options) {
     this.template = _.template(template)
-    SingleView.prototype.initialize.call(this, options);
-    (this.render)()
-    return this.listenTo(this.model, `change:${this.data.modelAttribute}`, this.render)
+    SingleView.prototype.initialize.call(this, options)
+    this.render()
+    this.listenTo(this.model, `change:${this.data.modelAttribute}`, this.render)
   },
 
   render () {
     SingleView.prototype.render.apply(this)
-    return this.$('.dataentry').append(this.template({ data: _.extend({}, this.data, { value: this.model.get(this.data.modelAttribute) }) }))
+    this.$('.dataentry').append(this.template({ data: _.extend({}, this.data, { value: this.model.get(this.data.modelAttribute) }) }))
+    return this
   },
 
   modify (event) {
@@ -27,9 +28,9 @@ export default SingleView.extend({
     const value = $target.val()
 
     if (!value) {
-      return this.model.unset(name)
+      this.model.unset(name)
     } else {
-      return this.model.set(name, value)
+      this.model.set(name, value)
     }
   }
 })

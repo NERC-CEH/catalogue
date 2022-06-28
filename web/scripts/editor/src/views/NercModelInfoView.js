@@ -5,8 +5,6 @@ import template from '../templates/NercModelInfo.tpl'
 
 export default ObjectInputView.extend({
 
-  template,
-
   initialize () {
     this.template = _.template(template)
     ObjectInputView.prototype.initialize.apply(this)
@@ -23,7 +21,7 @@ export default ObjectInputView.extend({
           query = `/${catalogue}/documents?term=documentType:nerc-model AND ${request.term}`
         }
 
-        return $.getJSON(query, data => response(_.map(data.results, d => ({
+        $.getJSON(query, data => response(_.map(data.results, d => ({
           value: d.title,
           label: d.title,
           identifier: d.identifier
@@ -31,9 +29,9 @@ export default ObjectInputView.extend({
       }
     })
 
-    return this.$('.autocomplete').on('autocompleteselect', (event, ui) => {
+    this.$('.autocomplete').on('autocompleteselect', (event, ui) => {
       this.model.set('id', ui.item.identifier)
-      return this.$('.identifier').val(ui.item.identifier)
+      this.$('.identifier').val(ui.item.identifier)
     })
   },
 

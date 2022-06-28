@@ -20,22 +20,22 @@ export default ObjectInputView.extend({
 
     if (hasUri || hasValue) {
       if (hasUri && (this.model.get('uri') === 'https://eidc.ceh.ac.uk/licences/OGL/plain')) {
-        return this.$('input.ogl').prop('checked', true)
+        this.$('input.ogl').prop('checked', true)
       } else {
         this.$('input.other').prop('checked', true)
         this.$resourceConstraint.removeClass('hidden')
         if (hasValue) {
-          return this.$('.value').val(this.model.get('value'))
+          this.$('.value').val(this.model.get('value'))
         }
       }
     } else {
-      return this.$('input.ogl').prop('checked', true).change()
+      this.$('input.ogl').prop('checked', true).change()
     }
   },
 
   setOgl () {
     this.$resourceConstraint.addClass('hidden')
-    return this.model.set({
+    this.model.set({
       value: 'This resource is available under the terms of the Open Government Licence',
       code: 'license',
       uri: 'https://eidc.ceh.ac.uk/licences/OGL/plain'
@@ -45,11 +45,11 @@ export default ObjectInputView.extend({
   setOther () {
     this.$resourceConstraint.removeClass('hidden')
     this.model.unset('uri')
-    return this.model.unset('value')
+    this.model.unset('value')
   },
 
   setValue (event) {
-    return this.model.set({
+    this.model.set({
       code: 'license',
       value: event.target.value
     })

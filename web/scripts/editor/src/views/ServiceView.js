@@ -16,7 +16,7 @@ export default SingleView.extend({
     this.render()
 
     this.listenTo(service, 'change', function (model) {
-      return this.updateMetadataModel(model.toJSON())
+      this.updateMetadataModel(model.toJSON())
     })
 
     const that = this
@@ -53,7 +53,7 @@ export default SingleView.extend({
       })
 
       _.invoke([serviceOperations, coupledResources, versions], 'show')
-      return that.$('.dataentry').append(typeView.el, serviceOperations.el, coupledResources.el, versions.el)
+      that.$('.dataentry').append(typeView.el, serviceOperations.el, coupledResources.el, versions.el)
     })
   }
 })

@@ -7,6 +7,7 @@ export default ObjectInputView.extend({
   render () {
     this.template = _.template(template)
     ObjectInputView.prototype.render.apply(this)
-    return this.$('select.function').val(this.model.get('function'))
+    this.$('select.function').val(this.model.get('function'))
+    return this
   }
 })

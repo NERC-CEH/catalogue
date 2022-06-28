@@ -29,9 +29,9 @@ export default ObjectInputView.extend({
       }
     })
 
-    return this.$('.autocomplete').on('autocompleteselect', (event, ui) => {
+    this.$('.autocomplete').on('autocompleteselect', (event, ui) => {
       this.model.set('id', ui.item.identifier)
-      return this.$('.identifier').val(ui.item.identifier)
+      this.$('.identifier').val(ui.item.identifier)
     })
   },
 

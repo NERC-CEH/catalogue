@@ -13,12 +13,12 @@ export default Backbone.View.extend({
   initialize () {
     this.template = _.template(template)
     this.listenTo(this.model, 'sync', this.remove)
-    return this.listenTo(this.model, 'change', this.render)
+    this.listenTo(this.model, 'change', this.render)
   },
 
   select () {
     const previous = this.model.get('toSearch')
-    return this.model.set('toSearch', !previous)
+    this.model.set('toSearch', !previous)
   },
 
   render () {

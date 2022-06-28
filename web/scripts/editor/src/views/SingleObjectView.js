@@ -16,6 +16,7 @@ export default SingleView.extend({
 
     const that = this
     $(document).ready(function () {
+      // eslint-disable-next-line no-unused-vars
       const view = new that.data.ObjectInputView(_.extend({}, that.data, {
         el: that.$('.dataentry'),
         model: inputModel

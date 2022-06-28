@@ -72,3 +72,5 @@ export { default as InfrastructureCategoryView } from './InfrastructureCategoryV
 export { default as InfrastructureChallengeView } from './InfrastructureChallengeView'
 export { default as InfrastructureOnlineLinkView } from './InfrastructureOnlineLinkView'
 export { default as ReviewView } from './ReviewView'
+export { default as OtherConstraintView } from './OtherConstraintView'
+export { default as ParentStringTextboxView } from './ParentStringTextboxView'

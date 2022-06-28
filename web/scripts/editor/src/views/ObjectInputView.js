@@ -57,7 +57,7 @@ export default Backbone.View.extend({
 
     const resetView = () => {
       element.empty()
-      return collection.each(addView, this)
+      collection.each(addView, this)
     }
 
     this.listenTo(collection, 'add', addView)

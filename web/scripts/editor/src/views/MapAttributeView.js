@@ -19,7 +19,7 @@ export default ObjectInputView.extend({
   ],
 
   events () {
-    return _.extend({}, ObjectInputView.prototype.events, {
+    _.extend({}, ObjectInputView.prototype.events, {
       'click .addValue': 'addValue',
       'click .addBucket': 'addBucket'
     }
@@ -36,11 +36,11 @@ export default ObjectInputView.extend({
     this.values = this.model.getRelatedCollection('values')
 
     this.createList(this.buckets, '.buckets', this.newBucket)
-    return this.createList(this.values, '.values', this.newValue)
+    this.createList(this.values, '.values', this.newValue)
   },
 
-  addValue () { return this.values.add(this.defaultLegend) },
-  addBucket () { return this.buckets.add(this.defaultLegend) },
+  addValue () { this.values.add(this.defaultLegend) },
+  addBucket () { this.buckets.add(this.defaultLegend) },
 
   newValue (m) {
     return new ChildView({

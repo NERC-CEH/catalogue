@@ -21,16 +21,16 @@ export default ObjectInputView.extend({
       let address = _.clone(this.model.get('address'))
       if (value) {
         address[name] = value
-        return this.model.set('address', address)
+        this.model.set('address', address)
       } else {
         address = _.omit(address, name)
-        return this.model.set('address', address)
+        this.model.set('address', address)
       }
     } else {
       if (value) {
-        return this.model.set(name, value)
+        this.model.set(name, value)
       } else {
-        return this.model.unset(name)
+        this.model.unset(name)
       }
     }
   }
