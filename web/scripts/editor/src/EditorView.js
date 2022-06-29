@@ -27,12 +27,10 @@ export default Backbone.View.extend({
     const that = this
     this.listenTo(this.model, 'error', function (model, response) {
       that.$('#editorAjax').toggleClass('visible')
-      that.$('#editorErrorMessage')
-        .find('#editorErrorMessageResponse').text(`${response.status} ${response.statusText}`)
-        .end()
-        .find('#editorErrorMessageJson').text(JSON.stringify(model.toJSON()))
-        .end()
-        .modal('show')
+
+      alert('There was a problem communicating with the server.' + '\n' + 'Server response:' + '\n' +
+          +`${response.status}` + '\n' + `${response.statusText}` + '\n' +
+          'Please save this record locally by copying the text below to a file.' + '\n' + JSON.stringify(model.toJSON()))
     })
     this.listenTo(this.model, 'sync', function () {
       that.$('#editorAjax').toggleClass('visible')
@@ -45,11 +43,11 @@ export default Backbone.View.extend({
       that.$('#editorAjax').toggleClass('visible')
     })
     this.listenTo(this.model, 'invalid', function (model, errors) {
-      that.$('#editorValidationMessage .modal-body').html('')
+      const errorString = ''
       _.each(errors, function (error) {
-        that.$('#editorValidationMessage .modal-body').append($(`<p>${error}</p>`))
+        errorString.concat(`<p>${error}</p>`)
       })
-      that.$('#editorValidationMessage').modal('show')
+      alert('Validation Errors' + '\n' + errorString)
     })
 
     this.render()
@@ -62,16 +60,18 @@ export default Backbone.View.extend({
   },
 
   attemptDelete () {
-    this.$('#confirmDelete').modal('show')
+    if (confirm('Are you sure you want to delete this record?')) {
+      this.delete()
+    }
   },
 
   delete () {
-    this.$('#confirmDelete').modal('hide')
     this.model.destroy({
       success: () => {
         _.invoke(this.sections, 'remove')
         this.remove()
         Backbone.history.location.replace(`/${this.catalogue}/documents`)
+        alert('Record deleted')
       }
     })
   },
@@ -82,14 +82,15 @@ export default Backbone.View.extend({
 
   attemptExit () {
     if (this.saveRequired) {
-      this.$('#confirmExit').modal('show')
+      if (confirm('There are unsaved changes to this record' + '\n' + 'Do you want to exit without saving?')) {
+        this.exit()
+      }
     } else {
       this.exit()
     }
   },
 
   exit () {
-    this.$('#confirmExit').modal('hide')
     _.invoke(this.sections, 'remove')
     this.remove()
 

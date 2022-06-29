@@ -63,9 +63,9 @@ export default Backbone.View.extend({
   Highlight that search result, with the selected class
   */
   updateSelected () {
-    const selected = this.model.getResults().get('selected')
     this.$('.result').removeClass('selected')
-    this.$(`#${selected}`).addClass('selected')
+    this.$(`#${this.model.getResults().get('selected')}`)
+      .addClass('selected')
   },
 
   /*
@@ -100,5 +100,6 @@ export default Backbone.View.extend({
       })
     }
     this.padResults()
+    return this
   } // Pad the results pane
 })

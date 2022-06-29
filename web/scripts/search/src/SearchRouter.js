@@ -16,7 +16,7 @@ export default Backbone.Router.extend({
       this.updateModel(options.location.search.substring(1), { silent: true })
     }
 
-    return this.model.on('change', () => this.updateRoute())
+    this.model.on('change', () => this.updateRoute())
   },
 
   /*
@@ -25,7 +25,7 @@ export default Backbone.Router.extend({
     */
   updateRoute () {
     const queryString = $.param(this.model.getState(), true)
-    return this.navigate(queryString, { replace: true })
+    this.navigate(queryString, { replace: true })
   },
 
   /*
@@ -33,6 +33,6 @@ export default Backbone.Router.extend({
     avoid unnessersary triggering of events
     */
   updateModel (state, options) {
-    if (state) { return this.model.setState(deparam(state, true), options) }
+    if (state) { this.model.setState(deparam(state, true), options) }
   }
 })

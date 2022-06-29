@@ -50,7 +50,7 @@ export default Backbone.View.extend({
   },
 
   dismissMessage (evt) {
-    ($(evt.target).parent('.alert').remove)()
+    $(evt.target).parent('.alert').remove()
     if (this.$el.children().length === 0) { this.$el.hide() }
   }
 })

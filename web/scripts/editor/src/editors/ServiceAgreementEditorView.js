@@ -481,15 +481,15 @@ export default EditorView.extend({
   attemptExit () {
     const that = this
     if (this.saveRequired) {
-      that.$('#confirmExit').modal('show')
+      if (confirm('There are unsaved changes to this record' + '\n' + 'Do you want to exit without saving?')) {
+        that.exit()
+      }
     } else {
       that.exit()
     }
   },
 
   exit () {
-    const that = this
-    that.$('#confirmExit').modal('hide')
     _.invoke(this.sections, 'remove')
     this.remove()
 

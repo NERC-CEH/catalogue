@@ -58,5 +58,6 @@ export default Backbone.View.extend({
       model: this.model,
       el: this.$('.facet-filter')
     })
+    return this
   }
 })

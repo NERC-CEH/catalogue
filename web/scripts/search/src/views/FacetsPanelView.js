@@ -18,10 +18,10 @@ export default Backbone.View.extend({
   results set.
   */
   render () {
-    return this.$el.html(this.panelTpl({
+    this.$el.html(this.panelTpl({
       facets: this.model.getResults().attributes.facets,
       template: this.resultsTpl
-    })
-    )
+    }))
+    return this
   }
 })
