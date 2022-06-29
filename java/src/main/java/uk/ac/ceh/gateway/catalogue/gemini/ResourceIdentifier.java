@@ -12,7 +12,7 @@ import lombok.Builder;
 @Value
 @JsonIgnoreProperties({"coupleResource", "internal"})
 public class ResourceIdentifier {
-    private final static String DOI_CODE_SPACE = "doi:";
+    private final static String CEH_CODE_SPACE = "CEH:EIDC:";
     private final String code, codeSpace, version;
     
     @Builder
@@ -28,12 +28,14 @@ public class ResourceIdentifier {
     
     @JsonIgnore
     public String getCoupledResource() {
-        if (DOI_CODE_SPACE.equals(codeSpace)) {
-            return format("https://doi.org/%s", code);
-        }
-        else {
+        if (CEH_CODE_SPACE.equals(codeSpace)) {
+            return format("%s#%s", codeSpace, code);
+        } else {
             return format("%s%s", codeSpace, code);
         }
     }
-   
+    
+    public boolean isInternal() {
+        return CEH_CODE_SPACE.equals(codeSpace);
+    }
 }
