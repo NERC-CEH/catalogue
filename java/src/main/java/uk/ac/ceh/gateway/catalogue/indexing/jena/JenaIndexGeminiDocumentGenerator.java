@@ -31,6 +31,7 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
     //added these for testing - they should be local counters
     private int authorCount = 0;
     private int onlineResourceCount = 0;
+    private int citationCount = 0;
 
     private static final Pattern downloadPattern = Pattern
         .compile(
@@ -42,8 +43,9 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
         .compile("^http[s]?:\\/\\/orcid\\.org\\/0000(-\\d{4}){2}-\\d{3}[\\dX]$")
         ;
     
+    //this pattern doesn't work. It looks correct to me!
     private static final Pattern doiPattern = Pattern
-        .compile("^^http[s]?:\\/\\/(dx\\.)?doi\\.org\\/10\\.\\d+\\/[\\d\\w]+")
+        .compile("^http[s]?:\\/\\/(dx\\.)?doi\\.org\\/10\\.\\d+\\/[\\d\\w]+")
         ;
     
     private static final Pattern rorPattern = Pattern
@@ -114,11 +116,11 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
             .filter(author -> orcidPattern.matcher(author.getNameIdentifier()).matches())
             .forEach(author -> {
                 log.debug(author.toString());
-                Resource author_uri = createProperty(author.getNameIdentifier());
-                toReturn.add(createStatement(me, DCT_CREATOR, author_uri));
-                toReturn.add(createStatement(author_uri, RDF_TYPE, VCARD_INDIVIDUAL_CLASS));
-                toReturn.add(createStatement(author_uri, VCARD_NAME, createPlainLiteral(author.getIndividualName())));
-                toReturn.add(createStatement(author_uri, VCARD_ORGNAME, createPlainLiteral(author.getOrganisationName())));
+                Resource author_node = createProperty(author.getNameIdentifier());
+                toReturn.add(createStatement(me, DCT_CREATOR, author_node));
+                toReturn.add(createStatement(author_node, RDF_TYPE, VCARD_INDIVIDUAL_CLASS));
+                toReturn.add(createStatement(author_node, VCARD_NAME, createPlainLiteral(author.getIndividualName())));
+                toReturn.add(createStatement(author_node, VCARD_ORGNAME, createPlainLiteral(author.getOrganisationName())));
             });
 
         //Authors without orcids
@@ -129,11 +131,11 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
             .filter(author -> !orcidPattern.matcher(author.getNameIdentifier()).matches())
             .forEach(author -> {
                 log.debug(author.toString());
-                Resource author_uri = generator.resource(document.getId() + "_author_" + authorCount);
-                toReturn.add(createStatement(me, DCT_CREATOR, author_uri));
-                toReturn.add(createStatement(author_uri, RDF_TYPE, VCARD_INDIVIDUAL_CLASS));
-                toReturn.add(createStatement(author_uri, VCARD_NAME, createPlainLiteral(author.getIndividualName())));
-                toReturn.add(createStatement(author_uri, VCARD_ORGNAME, createPlainLiteral(author.getOrganisationName())));
+                Resource author_node = generator.resource(document.getId() + "_author_" + authorCount);
+                toReturn.add(createStatement(me, DCT_CREATOR, author_node));
+                toReturn.add(createStatement(author_node, RDF_TYPE, VCARD_INDIVIDUAL_CLASS));
+                toReturn.add(createStatement(author_node, VCARD_NAME, createPlainLiteral(author.getIndividualName())));
+                toReturn.add(createStatement(author_node, VCARD_ORGNAME, createPlainLiteral(author.getOrganisationName())));
                 authorCount++;
             });
 
@@ -145,10 +147,10 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
             .filter(rp -> rorPattern.matcher(rp.getNameIdentifier()).matches())
             .forEach(rp -> {
                 log.debug(rp.toString());
-                Resource publisher_uri = createProperty(rp.getOrganisationIdentifier());
-                toReturn.add(createStatement(me, DCAT_PUBLISHER, publisher_uri));
-                toReturn.add(createStatement(publisher_uri, RDF_TYPE, FOAF_ORGANISATION_CLASS));
-                toReturn.add(createStatement(publisher_uri, VCARD_ORGNAME, createPlainLiteral(rp.getOrganisationName())));
+                Resource publisher_node = createProperty(rp.getOrganisationIdentifier());
+                toReturn.add(createStatement(me, DCAT_PUBLISHER, publisher_node));
+                toReturn.add(createStatement(publisher_node, RDF_TYPE, FOAF_ORGANISATION_CLASS));
+                toReturn.add(createStatement(publisher_node, VCARD_ORGNAME, createPlainLiteral(rp.getOrganisationName())));
             });
 
 
@@ -159,26 +161,30 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
             .filter(onliner -> downloadPattern.matcher(onliner.getUrl()).matches())
             .forEach(onliner -> {
                 log.debug(onliner.toString());
-                Resource dist_uri = generator.resource(document.getId() + "_dist_" + onlineResourceCount);
-                toReturn.add(createStatement(me, DCAT_DISTRIBUTION, dist_uri));
-                toReturn.add(createStatement(dist_uri, RDF_TYPE, DCAT_DISTRIBUTION_CLASS));
-                toReturn.add(createStatement(dist_uri, DCAT_ACCESSURL, createProperty(onliner.getUrl())));
-                //add licence info dist_uri <http://purl.org/dc/terms/licence> useConstraints.uri
-                //add accessrights dist_uri <http://purl.org/dc/terms/accessRights> accessLimitation.uri
-                //add format dist_uri <http://purl.org/dc/terms/format> distributionFormat.type - multiple formats are possible
+                Resource dist_node = generator.resource(document.getId() + "_dist_" + onlineResourceCount);
+                toReturn.add(createStatement(me, DCAT_DISTRIBUTION, dist_node));
+                toReturn.add(createStatement(dist_node, RDF_TYPE, DCAT_DISTRIBUTION_CLASS));
+                toReturn.add(createStatement(dist_node, DCAT_ACCESSURL, createProperty(onliner.getUrl())));
+                //add licence info dist_node <http://purl.org/dc/terms/licence> useConstraints.uri
+                //add accessrights dist_node <http://purl.org/dc/terms/accessRights> accessLimitation.uri
+                //add format dist_node <http://purl.org/dc/terms/format> distributionFormat.type - multiple formats are possible
                 onlineResourceCount++;
             });
- 
+
+        //Citations
         Optional.ofNullable(document.getSupplemental())
             .orElse(Collections.emptyList())
             .stream()
-            .filter(supp -> supp.getFunction().equalsIgnoreCase("isReferencedBy"))
-            .filter(supp -> doiPattern.matcher(supp.getUrl()).matches())
-            .forEach(supp -> {
-                log.debug(supp.toString());
-                toReturn.add(createStatement(me, PHTR_REFERENCE, createProperty(supp.getUrl())));
+            .filter(citation -> !Strings.isNullOrEmpty(citation.getUrl()))
+            .filter(citation -> doiPattern.matcher(citation.getUrl()).matches())
+            .forEach(citation -> {
+                log.debug(citation.toString());
+                Resource citation_node = generator.resource(document.getId() + "_citation_" + citationCount);
+                toReturn.add(createStatement(citation_node, RDF_TYPE, CITO_CITATION_CLASS));
+                toReturn.add(createStatement(citation_node, CITO_CITEDENTITY, me));
+                toReturn.add(createStatement(citation_node, CITO_CITINGENTITY, createProperty(citation.getUrl())));
+                citationCount++;
             });
-
 
         // NEED to add keywords as http://www.w3.org/ns/dcat#theme
         // me <http://www.w3.org/ns/dcat#theme> <uri>; rdfs:label "Literal"
