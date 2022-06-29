@@ -15,6 +15,7 @@
     resourceProviders = func.filter(responsibleParties, "role", "resourceProvider")
     otherContacts = custodians + publishers + depositors + originators + owners + resourceProviders + rightsHolders
     catalogue = catalogues.retrieve(metadata.catalogue)
+    isLinkedDoc = "false"
 
     rel_all=jena.allRelatedRecords(uri)
     rel_related=jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#relatedTo") + jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#relatedTo")
