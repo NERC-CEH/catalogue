@@ -21,6 +21,5 @@ public class ResourceIdentifierTest {
         
         //Then
         assertThat("actual coupled resource string should equal expected", actual, equalTo(expected));
-        assertThat("other identifier is not an internal identifier", identifier.isInternal(), equalTo(false));
     }
 }
