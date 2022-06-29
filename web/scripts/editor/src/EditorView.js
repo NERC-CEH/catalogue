@@ -1,4 +1,5 @@
 import $ from 'jquery'
+import Swal from 'sweetalert2'
 import _ from 'underscore'
 import Backbone from 'backbone'
 import template from './Editor.tpl'
@@ -28,9 +29,14 @@ export default Backbone.View.extend({
     this.listenTo(this.model, 'error', function (model, response) {
       that.$('#editorAjax').toggleClass('visible')
 
-      alert('There was a problem communicating with the server.' + '\n' + 'Server response:' + '\n' +
-          +`${response.status}` + '\n' + `${response.statusText}` + '\n' +
-          'Please save this record locally by copying the text below to a file.' + '\n' + JSON.stringify(model.toJSON()))
+      Swal.fire({
+        title: 'Server response: ' + `${response.status}` + '\n' + `${response.statusText}`,
+        text: 'There was a problem communicating with the server.!' + '\n' +
+            'Please save this record locally by copying the text below to a file.',
+        html: '<textarea readonly style="resize:none">' + JSON.stringify(model.toJSON()) + '</textarea>',
+        icon: 'error',
+        confirmButtonText: 'Close'
+      })
     })
     this.listenTo(this.model, 'sync', function () {
       that.$('#editorAjax').toggleClass('visible')
@@ -47,7 +53,13 @@ export default Backbone.View.extend({
       _.each(errors, function (error) {
         errorString.concat(`<p>${error}</p>`)
       })
-      alert('Validation Errors' + '\n' + errorString)
+
+      Swal.fire({
+        title: 'Validation Errors',
+        text: errorString,
+        icon: 'error',
+        confirmButtonText: 'Close'
+      })
     })
 
     this.render()
@@ -60,9 +72,18 @@ export default Backbone.View.extend({
   },
 
   attemptDelete () {
-    if (confirm('Are you sure you want to delete this record?')) {
-      this.delete()
-    }
+    Swal.fire({
+      title: 'Are you sure?',
+      confirmButtonText: 'Yes, delete this record',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.delete()
+      }
+    })
   },
 
   delete () {
@@ -71,22 +92,36 @@ export default Backbone.View.extend({
         _.invoke(this.sections, 'remove')
         this.remove()
         Backbone.history.location.replace(`/${this.catalogue}/documents`)
-        alert('Record deleted')
+        Swal.fire(
+          'Deleted!',
+          'Your file has been deleted.',
+          'success'
+        )
       }
     })
   },
 
   save () {
     this.model.save()
+    Swal.fire('Saved!', '', 'success')
   },
 
-  attemptExit () {
-    if (this.saveRequired) {
-      if (confirm('There are unsaved changes to this record' + '\n' + 'Do you want to exit without saving?')) {
-        this.exit()
-      }
-    } else {
+  attemptExit: function () {
+    if (this.saveRequired === false) {
       this.exit()
+    } else if (this.saveRequired === true) {
+      Swal.fire({
+        title: 'There are unsaved changes to this record',
+        text: 'Do you want to exit without saving?',
+        showCancelButton: true,
+        icon: 'warning',
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.exit()
+        }
+      })
     }
   },
 
