@@ -194,7 +194,7 @@ define [
                 role: 'owner'
                 email: 'enquiries@ceh.ac.uk'
                 organisationIdentifier: 'https://ror.org/00pggkr55'
-              'Oher owner':
+              'Other owner':
                 role: 'owner'
          ]
       ,
