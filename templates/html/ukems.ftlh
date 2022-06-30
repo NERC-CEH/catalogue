@@ -4,7 +4,9 @@
 
 <#assign
   catalogue = catalogues.retrieve(metadata.catalogue)
-/>
+  isLinkedDoc="false"
+  linkedClass=""
+>
 
 <#if supplemental?has_content>
   <#assign
