@@ -31,7 +31,6 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
     //added these for testing - they should be local counters
     private int authorCount = 0;
     private int onlineResourceCount = 0;
-    private int citationCount = 0;
 
     private static final Pattern downloadPattern = Pattern
         .compile(
@@ -43,9 +42,8 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
         .compile("^http[s]?:\\/\\/orcid\\.org\\/0000(-\\d{4}){2}-\\d{3}[\\dX]$")
         ;
     
-    //this pattern doesn't work. It looks correct to me!
     private static final Pattern doiPattern = Pattern
-        .compile("^http[s]?:\\/\\/(dx\\.)?doi\\.org\\/10\\.\\d+\\/[\\d\\w]+")
+        .compile("^http[s]?:\\/\\/(dx\\.)?doi\\.org\\/10\\.\\d+\\/\\S+")
         ;
     
     private static final Pattern rorPattern = Pattern
@@ -85,7 +83,6 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
                 toReturn.add(createStatement(me, IDENTIFIER, createPlainLiteral(r.getCoupledResource())))
             );
     
-
         Optional.ofNullable(document.getCoupledResources())
             .orElse(Collections.emptyList())
             .stream()
@@ -171,19 +168,15 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
                 onlineResourceCount++;
             });
 
-        //Citations
         Optional.ofNullable(document.getSupplemental())
             .orElse(Collections.emptyList())
             .stream()
             .filter(citation -> !Strings.isNullOrEmpty(citation.getUrl()))
+            .filter(citation -> citation.getFunction().equalsIgnoreCase("isReferencedBy"))
             .filter(citation -> doiPattern.matcher(citation.getUrl()).matches())
             .forEach(citation -> {
                 log.debug(citation.toString());
-                Resource citation_node = generator.resource(document.getId() + "_citation_" + citationCount);
-                toReturn.add(createStatement(citation_node, RDF_TYPE, CITO_CITATION_CLASS));
-                toReturn.add(createStatement(citation_node, CITO_CITEDENTITY, me));
-                toReturn.add(createStatement(citation_node, CITO_CITINGENTITY, createProperty(citation.getUrl())));
-                citationCount++;
+                toReturn.add(createStatement(me, CITO_CITEDBY, createProperty(citation.getUrl())));
             });
 
         // NEED to add keywords as http://www.w3.org/ns/dcat#theme

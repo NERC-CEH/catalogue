@@ -19,9 +19,7 @@ public class Ontology {
     public static final Property VCARD_ORGNAME  = ResourceFactory.createProperty("http://www.w3.org/2006/vcard/ns#organization-name");
     public static final Property VCARD_IDTEMP  = ResourceFactory.createProperty("http://www.w3.org/nonsense/ns#orcid");
     public static final Property FOAF_ORGANISATION_CLASS = ResourceFactory.createProperty("http://xmlns.com/foaf/spec/#Organization");
-    public static final Property CITO_CITATION_CLASS  = ResourceFactory.createProperty("http://purl.org/spar/cito/Citation");
-    public static final Property CITO_CITINGENTITY  = ResourceFactory.createProperty("http://purl.org/spar/cito/hasCitingEntity");
-    public static final Property CITO_CITEDENTITY  = ResourceFactory.createProperty("http://purl.org/spar/cito/hasCitedEntity");
+    public static final Property CITO_CITEDBY  = ResourceFactory.createProperty("http://purl.org/spar/cito/isCitedBy");
 
     public static final Property IDENTIFIER = ResourceFactory.createProperty("http://purl.org/dc/terms/identifier");
     public static final Property TITLE = ResourceFactory.createProperty("http://purl.org/dc/terms/title");
