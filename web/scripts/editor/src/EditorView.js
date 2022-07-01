@@ -10,7 +10,6 @@ export default Backbone.View.extend({
     'click #editorDelete': 'attemptDelete',
     'click #confirmDeleteYes': 'delete',
     'click #editorExit': 'attemptExit',
-    'click #exitWithoutSaving': 'exit',
     'click #editorSave': 'save',
     'click #editorBack': 'back',
     'click #editorNext': 'next',
@@ -30,10 +29,10 @@ export default Backbone.View.extend({
       that.$('#editorAjax').toggleClass('visible')
 
       Swal.fire({
-        title: 'Server response: ' + `${response.status}` + '\n' + `${response.statusText}`,
+        title: 'Server response: ' + '\n' + `${response.status}` + `${response.statusText}`,
         text: 'There was a problem communicating with the server.!' + '\n' +
             'Please save this record locally by copying the text below to a file.',
-        html: '<textarea readonly style="resize:none">' + JSON.stringify(model.toJSON()) + '</textarea>',
+        html: '<textarea readonly style="resize:none; height:auto;" rows="20">' + JSON.stringify(model.toJSON()) + '</textarea>',
         icon: 'error',
         confirmButtonText: 'Close'
       })
@@ -106,22 +105,26 @@ export default Backbone.View.extend({
     Swal.fire('Saved!', '', 'success')
   },
 
-  attemptExit: function () {
-    if (this.saveRequired === false) {
-      this.exit()
-    } else if (this.saveRequired === true) {
-      Swal.fire({
-        title: 'There are unsaved changes to this record',
-        text: 'Do you want to exit without saving?',
-        showCancelButton: true,
-        icon: 'warning',
-        confirmButtonText: 'Yes',
-        cancelButtonText: 'No'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          this.exit()
-        }
+  attemptExit () {
+    const that = this
+    if (this.saveRequired === true) {
+      return new Promise(function (resolve, reject) {
+        Swal.fire({
+          title: 'There are unsaved changes to this record',
+          confirmButtonText: 'Do you want to exit without saving?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            resolve()
+            that.exit()
+          }
+        })
       })
+    } else if (this.saveRequired === false) {
+      this.exit()
     }
   },
 
