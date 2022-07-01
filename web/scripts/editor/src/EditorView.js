@@ -106,26 +106,18 @@ export default Backbone.View.extend({
   },
 
   attemptExit () {
-    const that = this
-    if (this.saveRequired === true) {
-      return new Promise(function (resolve, reject) {
-        Swal.fire({
-          title: 'There are unsaved changes to this record',
-          confirmButtonText: 'Do you want to exit without saving?',
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33'
-        }).then((result) => {
-          if (result.isConfirmed) {
-            resolve()
-            that.exit()
-          }
-        })
-      })
-    } else if (this.saveRequired === false) {
-      this.exit()
-    }
+    Swal.fire({
+      title: 'Do you want to exit without saving?',
+      confirmButtonText: 'Yes?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.exit()
+      }
+    })
   },
 
   exit () {
