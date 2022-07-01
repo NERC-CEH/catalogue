@@ -51,19 +51,6 @@ describe('Test EditorView', () => {
     expect(view.attemptDelete).toHaveBeenCalled()
   })
 
-  it('delete should be called', () => {
-    // given
-    spyOn(view, 'delete')
-    view.initialize()
-    view.delegateEvents()
-
-    // when
-    view.$('#confirmDeleteYes').trigger('click')
-
-    // then
-    expect(view.delete).toHaveBeenCalled()
-  })
-
   it('attemptExit should be called', () => {
     // given
     spyOn(view, 'attemptExit')
@@ -75,19 +62,6 @@ describe('Test EditorView', () => {
 
     // then
     expect(view.attemptExit).toHaveBeenCalled()
-  })
-
-  it('exit should be called', () => {
-    // given
-    spyOn(view, 'exit')
-    view.initialize()
-    view.delegateEvents()
-
-    // when
-    view.$('#exitWithoutSaving').trigger('click')
-
-    // then
-    expect(view.exit).toHaveBeenCalled()
   })
 
   it('save should be called', () => {
