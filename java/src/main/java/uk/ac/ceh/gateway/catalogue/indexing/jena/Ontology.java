@@ -12,12 +12,14 @@ public class Ontology {
     public static final Property DCAT_DISTRIBUTION = ResourceFactory.createProperty("http://www.w3.org/ns/dcat#distribution");
     public static final Property DCAT_ACCESSURL = ResourceFactory.createProperty("http://www.w3.org/ns/dcat#accessURL");
     public static final Property DCT_ISSUED  = ResourceFactory.createProperty("http://purl.org/dc/terms/issued");
-
-    public static final Property DCT_CREATOR_CLASS  = ResourceFactory.createProperty("http://purl.org/dc/terms/creator");
+    public static final Property DCAT_PUBLISHER = ResourceFactory.createProperty("http://purl.org/dc/terms/publisher");
+    public static final Property DCT_CREATOR  = ResourceFactory.createProperty("http://purl.org/dc/terms/creator");
     public static final Property VCARD_INDIVIDUAL_CLASS  = ResourceFactory.createProperty("http://www.w3.org/2006/vcard/ns#Individual");
     public static final Property VCARD_NAME  = ResourceFactory.createProperty("http://www.w3.org/2006/vcard/ns#n");
     public static final Property VCARD_ORGNAME  = ResourceFactory.createProperty("http://www.w3.org/2006/vcard/ns#organization-name");
-    public static final Property PHTR_REFERENCE  = ResourceFactory.createProperty("http://www.w3.org/nonsense/ns#referencedBy");
+    public static final Property VCARD_IDTEMP  = ResourceFactory.createProperty("http://www.w3.org/nonsense/ns#orcid");
+    public static final Property FOAF_ORGANISATION_CLASS = ResourceFactory.createProperty("http://xmlns.com/foaf/spec/#Organization");
+    public static final Property CITO_CITEDBY  = ResourceFactory.createProperty("http://purl.org/spar/cito/isCitedBy");
 
     public static final Property IDENTIFIER = ResourceFactory.createProperty("http://purl.org/dc/terms/identifier");
     public static final Property TITLE = ResourceFactory.createProperty("http://purl.org/dc/terms/title");
