@@ -91,6 +91,11 @@ module.exports = function (grunt) {
           'css/style-sa.css': 'less/style-sa.less'
         }
       },
+      ukeof: {
+        files: {
+          'src/css/style-ukeof.css': 'src/less/style-ukeof.less'
+        }
+      },
       ukscape: {
         files: {
           'css/style-ukscape.css': 'less/style-ukscape.less'
@@ -176,6 +181,11 @@ module.exports = function (grunt) {
       sa: {
         files: {
           'css/style-sa.css': 'css/style-sa.css'
+        }
+      },
+      ukeof: {
+        files: {
+          'src/css/style-ukeof.css': 'src/css/style-ukeof.css'
         }
       },
       ukscape: {

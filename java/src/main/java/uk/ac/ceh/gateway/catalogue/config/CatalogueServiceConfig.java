@@ -128,7 +128,7 @@ public class CatalogueServiceConfig {
                 .vocabularies(getCatalogueVocabularies(vocabularies, defaultCatalogueKey))
                 .fileUpload(false)
                 .build(),
-            
+
             Catalogue.builder()
                 .id("infrastructure")
                 .title("UKCEH Science Infrastructure Catalogue")
@@ -326,6 +326,26 @@ public class CatalogueServiceConfig {
                 .documentType(LINK_TYPE)
                 .vocabularies(getCatalogueVocabularies(vocabularies, defaultCatalogueKey))
                 .fileUpload(true)
+                .build()
+        );
+    }
+
+    @Bean
+    @Profile("server:ukeof")
+    public CatalogueService ukeofCatalogue(List<KeywordVocabulary> vocabularies) {
+        String defaultCatalogueKey = "ukeof";
+
+        return new InMemoryCatalogueService(
+            defaultCatalogueKey,
+
+            Catalogue.builder()
+                .id(defaultCatalogueKey)
+                .title("UK Environmental Observation Framework")
+                .url("https://www.ukeof.org.uk/")
+                .contactUrl("https://www.ukeof.org.uk/contact")
+                .logo("ukeof.png")
+                .vocabularies(getCatalogueVocabularies(vocabularies, defaultCatalogueKey))
+                .fileUpload(false)
                 .build()
         );
     }

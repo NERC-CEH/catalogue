@@ -25,7 +25,7 @@ test_web:
   script:
     - cd web/
     - npm install -g npm
-    - npm ci
+    - npm ci --no-audit
     - npm test
   artifacts:
     when: always

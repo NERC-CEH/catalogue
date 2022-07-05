@@ -2,7 +2,7 @@
 FROM node:17.4.0 AS build-web
 WORKDIR /web
 COPY web ./
-RUN npm ci
+RUN npm ci --no-audit
 RUN npm run build
 
 # Build Java
