@@ -57,6 +57,7 @@ public class DataciteServiceTest {
                 "https://example.com/doi",
                 doiPrefix,
                 "Test publisher",
+                "Test legacy publisher",
                 "username",
                 "password",
                 "datacite/datacite.ftlx",
@@ -81,7 +82,7 @@ public class DataciteServiceTest {
         document.setMetadata(metadata);
 
         //When
-        boolean dataciteUpdatable = service.isDatacitable(document);
+        boolean dataciteUpdatable = service.isDatacitable(document, false);
 
         //Then
         assertTrue(dataciteUpdatable);
@@ -102,7 +103,7 @@ public class DataciteServiceTest {
         document.setMetadata(metadata);
 
         //When
-        boolean dataciteUpdatable = service.isDatacitable(document);
+        boolean dataciteUpdatable = service.isDatacitable(document, false);
 
         //Then
         assertFalse(dataciteUpdatable);
@@ -123,10 +124,73 @@ public class DataciteServiceTest {
         document.setMetadata(metadata);
 
         //When
-        boolean dataciteUpdatable = service.isDatacitable(document);
+        boolean dataciteUpdatable = service.isDatacitable(document, false);
 
         //Then
         assertTrue(dataciteUpdatable);
+        verifyNoInteractions(identifierService);
+    }
+
+    @Test
+    public void checkThatIsDatacitableIfPublisherIsLegacy() {
+        //Given
+        ResponsibleParty author = ResponsibleParty.builder().role("author").build();
+        ResponsibleParty publisher = ResponsibleParty.builder().role("publisher").organisationName("Test legacy publisher").build();
+        MetadataInfo metadata = MetadataInfo.builder().state("published").build();
+        metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
+        GeminiDocument document = new GeminiDocument();
+        document.setResponsibleParties(Arrays.asList(author, publisher));
+        document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.now()).build());
+        document.setTitle("Title");
+        document.setMetadata(metadata);
+
+        //When
+        boolean dataciteUpdatable = service.isDatacitable(document, true);
+
+        //Then
+        assertTrue(dataciteUpdatable);
+        verifyNoInteractions(identifierService);
+    }
+
+    @Test
+    public void checkThatIsDatacitableIfPublisherIsNormal() {
+        //Given
+        ResponsibleParty author = ResponsibleParty.builder().role("author").build();
+        ResponsibleParty publisher = ResponsibleParty.builder().role("publisher").organisationName("Test publisher").build();
+        MetadataInfo metadata = MetadataInfo.builder().state("published").build();
+        metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
+        GeminiDocument document = new GeminiDocument();
+        document.setResponsibleParties(Arrays.asList(author, publisher));
+        document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.now()).build());
+        document.setTitle("Title");
+        document.setMetadata(metadata);
+
+        //When
+        boolean dataciteUpdatable = service.isDatacitable(document, true);
+
+        //Then
+        assertTrue(dataciteUpdatable);
+        verifyNoInteractions(identifierService);
+    }
+
+    @Test
+    public void checkThatIsNotDatacitableIfPublisherIsLegacy() {
+        //Given
+        ResponsibleParty author = ResponsibleParty.builder().role("author").build();
+        ResponsibleParty publisher = ResponsibleParty.builder().role("publisher").organisationName("Test legacy publisher").build();
+        MetadataInfo metadata = MetadataInfo.builder().state("published").build();
+        metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
+        GeminiDocument document = new GeminiDocument();
+        document.setResponsibleParties(Arrays.asList(author, publisher));
+        document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.now()).build());
+        document.setTitle("Title");
+        document.setMetadata(metadata);
+
+        //When
+        boolean dataciteUpdatable = service.isDatacitable(document, false);
+
+        //Then
+        assertFalse(dataciteUpdatable);
         verifyNoInteractions(identifierService);
     }
 
@@ -137,7 +201,7 @@ public class DataciteServiceTest {
         document.setMetadata(MetadataInfo.builder().build());
 
         //When
-        boolean dataciteUpdatable = service.isDatacitable(document);
+        boolean dataciteUpdatable = service.isDatacitable(document, false);
 
         //Then
         assertFalse(dataciteUpdatable);

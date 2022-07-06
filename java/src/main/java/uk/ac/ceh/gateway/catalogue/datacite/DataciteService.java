@@ -46,6 +46,7 @@ public class DataciteService {
     private final String api;
     private final String prefix;
     private final String publisher;
+    private final String legacyPublisher;
     private final String username;
     private final String password;
     private final String templateLocation;
@@ -57,6 +58,7 @@ public class DataciteService {
             @Value("${doi.api}") String api,
             @Value("${doi.prefix}") String prefix,
             @Value("${doi.publisher}") String publisher,
+            @Value("${doi.legacyPublisher}") String legacyPublisher,
             @Value("${doi.username}") String username,
             @Value("${doi.password}") String password,
             @Value("${doi.templateLocation}") String templateLocation,
@@ -67,6 +69,7 @@ public class DataciteService {
         this.api = api;
         this.prefix = prefix;
         this.publisher = publisher;
+        this.legacyPublisher = legacyPublisher;
         this.username = username;
         this.password = password;
         this.templateLocation = templateLocation;
@@ -155,7 +158,7 @@ public class DataciteService {
      * @param document to submit a metadata datacite request of
      */
     public void updateDoiMetadata(GeminiDocument document) {
-        if(isDatacitable(document)) {
+        if(isDatacitable(document, true)) {
             try {
                 val doi = generateDoiString(document);
                 val headers = withBasicAuth(username, password);
@@ -194,7 +197,8 @@ public class DataciteService {
      * @param document to test if ready for data citation
      * @return true if this GeminiDocument can be submitted to datacite
      */
-    public boolean isDatacitable(GeminiDocument document) {
+
+    public boolean isDatacitable(GeminiDocument document, boolean canBeLegacy) {
         boolean isPubliclyViewable = Optional.ofNullable(document.getMetadata())
                 .map(m -> m.isPubliclyViewable(Permission.VIEW))
                 .orElse(false);
@@ -203,11 +207,21 @@ public class DataciteService {
                 .orElse(Collections.emptyList())
                 .stream()
                 .anyMatch((p) -> "author".equals(p.getRole()));
-        boolean hasCorrectPublisher = Optional.ofNullable(document.getResponsibleParties())
+        boolean hasCorrectPublisher;
+        if(canBeLegacy){
+            hasCorrectPublisher = Optional.ofNullable(document.getResponsibleParties())
                 .orElse(Collections.emptyList())
                 .stream()
                 .filter((p) -> "publisher".equals(p.getRole()))
-                .anyMatch((p) -> publisher.equals(p.getOrganisationName()));
+                .anyMatch((p) -> publisher.equals(p.getOrganisationName()) || legacyPublisher.equals(p.getOrganisationName()));
+        }else{
+            hasCorrectPublisher = Optional.ofNullable(document.getResponsibleParties())
+                    .orElse(Collections.emptyList())
+                    .stream()
+                    .filter((p) -> "publisher".equals(p.getRole()))
+                    .anyMatch((p) -> publisher.equals(p.getOrganisationName()));
+        }
+
         boolean hasPublicationYear = Optional.ofNullable(document.getDatasetReferenceDate())
                 .map(DatasetReferenceDate::getPublicationDate)
                 .map((d) -> !d.isAfter(LocalDate.now()))
@@ -226,7 +240,7 @@ public class DataciteService {
      * @return true if the GeminiDocument has already been submitted for a doi
      */
     public boolean isDatacited(GeminiDocument document) {
-        return isDatacitable(document) && getDoi(document).isPresent();
+        return isDatacitable(document, false) && getDoi(document).isPresent();
     }
 
     /**
@@ -235,7 +249,7 @@ public class DataciteService {
      * @return true if the GeminiDocument can be submitted for a doi
      */
     public boolean isDataciteMintable(GeminiDocument document) {
-        return isDatacitable(document) && getDoi(document).isEmpty();
+        return isDatacitable(document, false) && getDoi(document).isEmpty();
     }
 
     private Optional<String> getDoi(GeminiDocument document) {
