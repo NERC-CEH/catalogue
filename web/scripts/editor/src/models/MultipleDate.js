@@ -16,22 +16,14 @@ export default Backbone.Model.extend({
       end: 'End'
     }
 
-    const dateRegExp = new RegExp(`
-^
-\\d{4}
--
-\\d{2}
--
-\\d{2}
-$
-`)
+    const dateRegExp = '^(19[0-9]{2}|2[0-9]{3})-(0[1-9]|1[012])-([123]0|[012][1-9]|31)$'
     const errors = []
 
     _.chain(attrs)
       .keys()
       .each(function (key) {
         const dateString = attrs[key]
-        if (!(dateString.match(dateRegExp))) {
+        if (!dateString.match(dateRegExp)) {
           errors.push({
             message:
               `${labels[key]} is wrong. The date format is supposed to be yyyy-mm-dd`

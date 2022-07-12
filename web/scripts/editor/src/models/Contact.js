@@ -8,18 +8,10 @@ export default Backbone.Model.extend({
   },
 
   validate (attrs) {
-    const emailRegEx = new RegExp(`
-^[a-zA-Z0-9.!#$%&'*+\\/=?^_\`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$
-`)
-    const urlRegEx = new RegExp(`
-^(?:(?:(?:https?|ftp):)?\\/\\/)(?:\\S+(?::\\S*)?@)?(?:(?!(?:10|127)(?:\\.\\d{1,3}){3})(?!(?:169\\.254|192\\.168)(?:\\.\\d{1,3}){2})(?!172\\.(?:1[6-9]|2\\d|3[0-1])(?:\\.\\d{1,3}){2})(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z¡-￿0-9]-*)*[a-z¡-￿0-9]+)(?:\\.(?:[a-z¡-￿0-9]-*)*[a-z¡-￿0-9]+)*(?:\\.(?:[a-z¡-￿]{2,})).?)(?::\\d{2,5})?(?:[/?#]\\S*)?$
-`)
-    const orcidRegEx = new RegExp(`
-^https?:\\/\\/orcid.org\\/(\\d{4}-){3}\\d{3}[\\dX]$
-`)
-    const rorRegEx = new RegExp(`
-^https?:\\/\\/ror.org\\/\\w{8,10}$
-`)
+    const emailRegEx = '[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?'
+    const urlRegEx = '[(http(s)?):\\/\\/(www\\.)?a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)'
+    const orcidRegEx = '^https?:\\/\\/orcid.org\\/(\\d{4}-){3}\\d{3}[\\dX]$'
+    const rorRegEx = '^https?:\\/\\/ror.org\\/\\w{8,10}$'
 
     const errors = []
 
@@ -39,36 +31,28 @@ export default Backbone.Model.extend({
       nameIdentifier
     } = attrs
 
-    const isValidEmail = address => emailRegEx.test(address)
-
-    const isValidnameIdentifier = id => urlRegEx.test(id)
-
-    const isValidORCID = id => orcidRegEx.test(id)
-
-    const isValidROR = id => rorRegEx.test(id)
-
-    if (email && !isValidEmail(email)) {
+    if (email && !email.match(emailRegEx)) {
       errors.push({
         message:
           'That email address is wrong'
       })
     }
 
-    if (nameIdentifier && !isValidORCID(nameIdentifier)) {
+    if (nameIdentifier && !nameIdentifier.match(orcidRegEx)) {
       errors.push({
         message:
           "If that's supposed to be an ORCiD, it's not quite right!"
       })
     }
 
-    if (nameIdentifier && !isValidnameIdentifier(nameIdentifier)) {
+    if (nameIdentifier && !nameIdentifier.match(urlRegEx)) {
       errors.push({
         message:
           'Are you using the <i>fully-qualified</i> name identifier. For example, ORCiDs should be entered as https://orcid.org/0000-1234-5678-999X <b>not</b> 0000-1234-5678-999X'
       })
     }
 
-    if (organisationIdentifier && !isValidROR(organisationIdentifier)) {
+    if (organisationIdentifier && !organisationIdentifier.match(rorRegEx)) {
       errors.push({
         message:
           "If that's supposed to be an ROR, it's not quite right!"
@@ -82,15 +66,9 @@ export default Backbone.Model.extend({
     if (_.isEmpty(errors)) {
       // return nothing from Backbone.Model.validate
       // because returning something signals a validation error.
-      return
+      return null
     } else {
       return errors
-    }
-
-    if (_.isEmpty(warnings)) {
-      return
-    } else {
-      return warnings
     }
   },
 
