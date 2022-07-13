@@ -174,7 +174,7 @@ public class KeywordVocabulariesConfig {
             solrClient,
             sparqlEndpoint,
             "<http://vocabs.ceh.ac.uk/ukscape/>",
-            "?uri skos:broader <http://vocabs.ceh.ac.uk/ukscape/research-project/> . ?uri skos:prefLabel ?label .",
+            "?uri skos:broader <http://vocabs.ceh.ac.uk/ukscape/research-project> . ?uri skos:prefLabel ?label .",
             "ukscape-research-project",
             "Research Projects",
             catalogueIds
