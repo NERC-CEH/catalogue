@@ -58,7 +58,7 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
                 .ifPresent(document::setCitation);
 
         document.setDataciteMintable(dataciteService.isDataciteMintable(document));
-        document.setDatacitable(dataciteService.isDatacitable(document));
+        document.setDatacitable(dataciteService.isDatacitable(document, true));
 
     }
 

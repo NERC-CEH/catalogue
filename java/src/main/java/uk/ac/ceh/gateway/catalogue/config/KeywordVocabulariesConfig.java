@@ -174,7 +174,7 @@ public class KeywordVocabulariesConfig {
             solrClient,
             sparqlEndpoint,
             "<http://vocabs.ceh.ac.uk/ukscape/>",
-            "?uri skos:broader <http://vocabs.ceh.ac.uk/ukscape/1> . ?uri skos:prefLabel ?label .",
+            "?uri skos:broader <http://vocabs.ceh.ac.uk/ukscape/research-project> . ?uri skos:prefLabel ?label .",
             "ukscape-research-project",
             "Research Projects",
             catalogueIds
@@ -194,7 +194,7 @@ public class KeywordVocabulariesConfig {
             solrClient,
             sparqlEndpoint,
             "<http://vocabs.ceh.ac.uk/ukscape/>",
-            "?uri skos:broader <http://vocabs.ceh.ac.uk/ukscape/2> . ?uri skos:prefLabel ?label .",
+            "?uri skos:broader <http://vocabs.ceh.ac.uk/ukscape/research-theme> . ?uri skos:prefLabel ?label .",
             "ukscape-research-theme",
             "Research Themes",
             catalogueIds
@@ -214,7 +214,7 @@ public class KeywordVocabulariesConfig {
             solrClient,
             sparqlEndpoint,
             "<http://vocabs.ceh.ac.uk/ukscape/>",
-            "?uri skos:broader <http://vocabs.ceh.ac.uk/ukscape/3> . ?uri skos:prefLabel ?label .",
+            "?uri skos:broader <http://vocabs.ceh.ac.uk/ukscape/science-challenge> . ?uri skos:prefLabel ?label .",
             "ukscape-science-challenge",
             "Science Challenges",
             catalogueIds
@@ -234,7 +234,7 @@ public class KeywordVocabulariesConfig {
             solrClient,
             sparqlEndpoint,
             "<http://vocabs.ceh.ac.uk/ukscape/>",
-            "?uri skos:broader <http://vocabs.ceh.ac.uk/ukscape/4> . ?uri skos:prefLabel ?label .",
+            "?uri skos:broader <http://vocabs.ceh.ac.uk/ukscape/service> . ?uri skos:prefLabel ?label .",
             "ukscape-service",
             "Services",
             catalogueIds

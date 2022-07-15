@@ -53,10 +53,10 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
     @SuppressWarnings("unused")
     public static final String SA_TAXON_URL = "http://vocabs.ceh.ac.uk/esb/taxon";
 
-    private static final String UKSCAPE_RESEARCH_PROJECT_URL = "http://onto.nerc.ac.uk/CEHMD/ukscape/research-project";
-    private static final String UKSCAPE_RESEARCH_THEME_URL = "http://onto.nerc.ac.uk/CEHMD/ukscape/research-theme";
-    private static final String UKSCAPE_SCIENCE_CHALLENGE_URL = "http://onto.nerc.ac.uk/CEHMD/ukscape/science-challenge";
-    private static final String UKSCAPE_SERVICE_URL = "http://onto.nerc.ac.uk/CEHMD/ukscape/service";
+    private static final String UKSCAPE_RESEARCH_PROJECT_URL = "http://vocabs.ceh.ac.uk/ukscape/research-project";
+    private static final String UKSCAPE_RESEARCH_THEME_URL = "http://vocabs.ceh.ac.uk/ukscape/research-theme";
+    private static final String UKSCAPE_SCIENCE_CHALLENGE_URL = "http://vocabs.ceh.ac.uk/ukscape/science-challenge";
+    private static final String UKSCAPE_SERVICE_URL = "http://vocabs.ceh.ac.uk/ukscape/service";
 
     private final CodeLookupService codeLookupService;
     private final DocumentIdentifierService identifierService;
