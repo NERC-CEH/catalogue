@@ -9,7 +9,7 @@ export default ObjectInputView.extend({
 
   events () {
     return _.extend({}, ObjectInputView.prototype.events, {
-      'click .add' () { return (this.add)() },
+      'click .add' () { return this.add() },
 
       'click .predefined' (event) { return this.addPredefined(event) }
     })
@@ -31,8 +31,6 @@ export default ObjectInputView.extend({
 
     this.keywords = this.model.getRelatedCollection('keywords')
     this.createList(this.keywords, '.keywords', this.addOne)
-
-    this.$('input.date').datepicker({ dateFormat: 'yy-mm-dd' })
   },
 
   render () {

@@ -5,16 +5,16 @@
   <div class="col-sm-11">
     <select data-name="type" class="editor-input type" id="descriptiveKeyword<%= data.index %>type">
       <option value="" selected >- Select Type -</option>
-      <option value="Catalogue topic">Catalogue topic</button>
+      <option value="Catalogue topic">Catalogue topic</option>
       <option value="dataCentre">Data Centre</option>
-      <option value="discipline">Discipline</button>
+      <option value="discipline">Discipline</option>
       <option value="instrument">Instrument</option>
-      <option value="place">Place</button>
+      <option value="place">Place</option>
       <option value="project">Project</option>
-      <option value="stratum">Stratum</button>
+      <option value="stratum">Stratum</option>
       <option value="taxon">Taxon</option>
-      <option value="temporal">Temporal</button>
-      <option value="theme">Theme</button>
+      <option value="temporal">Temporal</option>
+      <option value="theme">Theme</option>
     </select>
   </div>
 </div>
