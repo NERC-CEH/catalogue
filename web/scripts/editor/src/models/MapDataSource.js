@@ -10,7 +10,7 @@ export default NestedModel.extend({
     bytetype: 'false',
     features: {
       style: {
-        colour: '#000000' // should be got from this.model.getRelated('style')
+        colour: '#000000'
       }
     }
   },
