@@ -31,7 +31,18 @@ export default ObjectInputView.extend({
   },
 
   createMap () {
+    const baseMaps = {
+      Map: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+      }),
+      Satellite: L.tileLayer('http://www.google.cn/maps/vt?lyrs=s@189&gl=cn&x={x}&y={y}&z={z}', {
+        attribution: 'google'
+      })
+    }
+
     this.map = new L.Map(this.$('.map')[0], { center: new L.LatLng(51.513, -0.09), zoom: 4 })
+    this.map.addLayer(baseMaps.Map)
 
     this.drawnItems = L.featureGroup()
     if (this.model.get('northBoundLatitude') && this.model.get('westBoundLongitude') &&
@@ -50,16 +61,6 @@ export default ObjectInputView.extend({
       this.map.setView(this.rectangle.getBounds().getCenter(), 4)
     }
     this.drawnItems.addTo(this.map)
-
-    const baseMaps = {
-      Map: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 18,
-        attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
-      }),
-      Satellite: L.tileLayer('http://www.google.cn/maps/vt?lyrs=s@189&gl=cn&x={x}&y={y}&z={z}', {
-        attribution: 'google'
-      })
-    }
 
     L.control.layers(baseMaps, { Drawlayer: this.drawnItems }, { position: 'topright', collapsed: false }).addTo(this.map)
 
