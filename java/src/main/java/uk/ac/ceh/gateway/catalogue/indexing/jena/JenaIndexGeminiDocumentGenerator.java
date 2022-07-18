@@ -69,6 +69,11 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
                 createStatement(me, DCT_ISSUED, createTypedLiteral(pd.toString(), TYPE_DATE)))
             );
 
+        Optional.ofNullable(document.getResourceStatus())
+            .ifPresent(status -> toReturn.add(
+                createStatement(me, ADMD_STATUS, createPlainLiteral(status)))
+            );
+
         Optional.ofNullable(document.getBoundingBoxes())
             .orElse(Collections.emptyList())
             .forEach(b ->
@@ -149,7 +154,6 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
                 toReturn.add(createStatement(publisher_node, RDF_TYPE, FOAF_ORGANISATION_CLASS));
                 toReturn.add(createStatement(publisher_node, VCARD_ORGNAME, createPlainLiteral(rp.getOrganisationName())));
             });
-
 
         Optional.ofNullable(document.getOnlineResources())
             .orElse(Collections.emptyList())

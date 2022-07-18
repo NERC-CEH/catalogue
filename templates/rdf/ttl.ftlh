@@ -25,10 +25,14 @@
   <#if description?has_content>
   dct:description "${description}" ;
   </#if>
-  <#if boundingBoxes?has_content && boundingBoxes?has_content>
+  <#if boundingBoxes?has_content>
     <#list boundingBoxes as extent>
        dct:spatial "${extent.wkt}"^^geo:wktLiteral ;
     </#list>
+  </#if>
+
+  <#if resourceStatus?has_content>
+    <http://www.admd.net/status> ${resourceStatus} ;
   </#if>
 
   <#if temporalExtents?has_content>

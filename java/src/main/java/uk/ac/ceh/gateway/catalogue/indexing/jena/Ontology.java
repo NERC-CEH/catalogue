@@ -49,7 +49,9 @@ public class Ontology {
     public static final Property TEMPORAL_END = ResourceFactory.createProperty("http://def.seegrid.csiro.au/isotc211/iso19108/2002/temporal#end");
 
     public static final Property HAS_GEOMETRY = ResourceFactory.createProperty("http://www.opengis.net/ont/geosparql#hasGeometry");
-    
+
+    public static final Property ADMD_STATUS = ResourceFactory.createProperty("http://www.admd.net/status");
+
     public static final RDFDatatype WKT_LITERAL = new BaseDatatype("http://www.opengis.net/ont/geosparql#wktLiteral");
     public static final RDFDatatype TYPE_DATE = new BaseDatatype("http://www.w3.org/2001/XMLSchema#date");
 }
