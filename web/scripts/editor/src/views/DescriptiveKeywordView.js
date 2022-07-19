@@ -4,6 +4,7 @@ import ChildView from './ChildView'
 import KeywordVocabularyView from './KeywordVocabularyView'
 import template from '../templates/DescriptiveKeyword.tpl'
 import $ from 'jquery'
+import 'jquery-ui/themes/base/all.css'
 
 export default ObjectInputView.extend({
 
