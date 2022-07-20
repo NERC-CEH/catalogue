@@ -18,6 +18,7 @@ export default Backbone.View.extend({
   },
 
   initialize () {
+    this.saveRequired = false
     if (typeof this.template === 'undefined') {
       this.template = _.template(template)
     }
@@ -39,7 +40,7 @@ export default Backbone.View.extend({
     })
     this.listenTo(this.model, 'sync', function () {
       that.$('#editorAjax').toggleClass('visible')
-      // that.saveRequired = true
+      that.saveRequired = false
     })
     this.listenTo(this.model, 'change', function () {
       that.saveRequired = true
