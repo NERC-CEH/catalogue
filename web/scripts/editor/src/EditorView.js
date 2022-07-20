@@ -10,6 +10,7 @@ export default Backbone.View.extend({
     'click #editorDelete': 'attemptDelete',
     'click #confirmDeleteYes': 'delete',
     'click #editorExit': 'attemptExit',
+    'click #exitWithoutSaving': 'exit',
     'click #editorSave': 'save',
     'click #editorBack': 'back',
     'click #editorNext': 'next',
@@ -21,7 +22,6 @@ export default Backbone.View.extend({
       this.template = _.template(template)
     }
     this.currentStep = 1
-    this.saveRequired = false
     this.catalogue = $('html').data('catalogue')
 
     const that = this
@@ -39,9 +39,9 @@ export default Backbone.View.extend({
     })
     this.listenTo(this.model, 'sync', function () {
       that.$('#editorAjax').toggleClass('visible')
-      that.saveRequired = false
+      // that.saveRequired = true
     })
-    this.listenTo(this.model, 'change save:required', function () {
+    this.listenTo(this.model, 'change', function () {
       that.saveRequired = true
     })
     this.listenTo(this.model, 'request', function () {
@@ -103,21 +103,26 @@ export default Backbone.View.extend({
   save () {
     this.model.save()
     Swal.fire('Saved!', '', 'success')
+    this.saveRequired = false
   },
 
-  attemptExit () {
-    Swal.fire({
-      title: 'Do you want to exit without saving?',
-      confirmButtonText: 'Yes?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33'
-    }).then((result) => {
-      if (result.isConfirmed) {
+  exitPopup () {
+    if (confirm('Press a button!') === true) {
+      alert('You pressed OK!')
+    } else {
+      alert('You canceled!')
+    }
+  },
+
+  attemptExit (event) {
+    event.preventDefault()
+    if (this.saveRequired) {
+      if (confirm('Press a button!') === true) {
         this.exit()
       }
-    })
+    } else if (this.saveRequired === false) {
+      this.exit()
+    }
   },
 
   exit () {
