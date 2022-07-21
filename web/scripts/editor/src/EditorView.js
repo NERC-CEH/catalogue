@@ -10,7 +10,6 @@ export default Backbone.View.extend({
     'click #editorDelete': 'attemptDelete',
     'click #confirmDeleteYes': 'delete',
     'click #editorExit': 'attemptExit',
-    'click #exitWithoutSaving': 'exit',
     'click #editorSave': 'save',
     'click #editorBack': 'back',
     'click #editorNext': 'next',
@@ -19,6 +18,8 @@ export default Backbone.View.extend({
 
   initialize () {
     this.saveRequired = false
+    console.log('initialize save required')
+    console.log(this.saveRequired)
     if (typeof this.template === 'undefined') {
       this.template = _.template(template)
     }
@@ -42,9 +43,13 @@ export default Backbone.View.extend({
       that.$('#editorAjax').toggleClass('visible')
       that.saveRequired = true
     })
+
     this.listenTo(this.model, 'change', function () {
+      console.log('change')
       that.saveRequired = true
+      console.log(that.saveRequired)
     })
+
     this.listenTo(this.model, 'request', function () {
       that.$('#editorAjax').toggleClass('visible')
     })
@@ -105,6 +110,8 @@ export default Backbone.View.extend({
     this.model.save()
     Swal.fire('Saved!', '', 'success')
     this.saveRequired = false
+    console.log('save saverequired')
+    console.log(this.saveRequired)
   },
 
   exitPopup () {
@@ -122,21 +129,17 @@ export default Backbone.View.extend({
   },
 
   attemptExit (event) {
-    event.preventDefault()
-
-    const that = this
-    return new Promise(function (resolve) {
-      if (that.saveRequired) {
-        resolve(that.exitPopup())
-      } else {
-        that.saveRequired = false
-        resolve()
-      }
-    }).then(function (value) {
-      if (that.saveRequired === false) {
-        that.exit()
-      }
-    })
+    event.stopImmediatePropagation()
+    console.log(event)
+    console.log('save required in attempt exit')
+    console.log(this.saveRequired)
+    if (this.saveRequired === true) {
+      console.log('popup')
+      this.exitPopup()
+    } else {
+      console.log('exit')
+      this.exit()
+    }
   },
 
   exit () {
@@ -201,7 +204,6 @@ export default Backbone.View.extend({
   },
 
   render () {
-    this.saveRequired = false
     this.$el.html(this.template(this.model.attributes))
     this.sections.forEach(section => {
       section.views.forEach(view => {
