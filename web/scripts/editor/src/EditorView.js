@@ -108,32 +108,33 @@ export default Backbone.View.extend({
   },
 
   exitPopup () {
-    if (confirm('Press a button!') === true) {
-      alert('You pressed OK!')
-    } else {
-      alert('You canceled!')
-    }
+    const that = this
+    Swal.fire({
+      title: 'There are unsaved changes.',
+      showCancelButton: true,
+      icon: 'warning',
+      confirmButtonText: 'Exit without saving'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        that.exit()
+      }
+    })
   },
 
   attemptExit (event) {
     event.preventDefault()
 
     const that = this
-    return new Promise(function (myResolve, myReject) {
+    return new Promise(function (resolve) {
       if (that.saveRequired) {
-        if (confirm('Press a button!') === true) {
-          console.log('if')
-          myResolve(that.exit())
-        }
+        resolve(that.exitPopup())
       } else {
-        console.log('else')
         that.newSession = false
         that.saveRequired = false
-        myResolve()
+        resolve()
       }
     }).then(function (value) {
       if (that.saveRequired === false && that.newSession === true) {
-        console.log('else if')
         that.exit()
       }
     })
