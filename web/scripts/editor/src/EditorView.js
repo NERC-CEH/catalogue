@@ -129,12 +129,11 @@ export default Backbone.View.extend({
       if (that.saveRequired) {
         resolve(that.exitPopup())
       } else {
-        that.newSession = false
         that.saveRequired = false
         resolve()
       }
     }).then(function (value) {
-      if (that.saveRequired === false && that.newSession === true) {
+      if (that.saveRequired === false) {
         that.exit()
       }
     })
