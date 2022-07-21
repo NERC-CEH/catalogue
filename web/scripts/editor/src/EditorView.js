@@ -40,7 +40,7 @@ export default Backbone.View.extend({
     })
     this.listenTo(this.model, 'sync', function () {
       that.$('#editorAjax').toggleClass('visible')
-      that.saveRequired = false
+      that.saveRequired = true
     })
     this.listenTo(this.model, 'change', function () {
       that.saveRequired = true
@@ -117,13 +117,26 @@ export default Backbone.View.extend({
 
   attemptExit (event) {
     event.preventDefault()
-    if (this.saveRequired) {
-      if (confirm('Press a button!') === true) {
-        this.exit()
+
+    const that = this
+    return new Promise(function (myResolve, myReject) {
+      if (that.saveRequired) {
+        if (confirm('Press a button!') === true) {
+          console.log('if')
+          myResolve(that.exit())
+        }
+      } else {
+        console.log('else')
+        that.newSession = false
+        that.saveRequired = false
+        myResolve()
       }
-    } else if (this.saveRequired === false) {
-      this.exit()
-    }
+    }).then(function (value) {
+      if (that.saveRequired === false && that.newSession === true) {
+        console.log('else if')
+        that.exit()
+      }
+    })
   },
 
   exit () {
@@ -188,6 +201,7 @@ export default Backbone.View.extend({
   },
 
   render () {
+    this.saveRequired = false
     this.$el.html(this.template(this.model.attributes))
     this.sections.forEach(section => {
       section.views.forEach(view => {
