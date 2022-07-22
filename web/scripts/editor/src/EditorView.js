@@ -18,8 +18,6 @@ export default Backbone.View.extend({
 
   initialize () {
     this.saveRequired = false
-    console.log('initialize save required')
-    console.log(this.saveRequired)
     if (typeof this.template === 'undefined') {
       this.template = _.template(template)
     }
@@ -45,9 +43,7 @@ export default Backbone.View.extend({
     })
 
     this.listenTo(this.model, 'change', function () {
-      console.log('change')
       that.saveRequired = true
-      console.log(that.saveRequired)
     })
 
     this.listenTo(this.model, 'request', function () {
@@ -110,11 +106,9 @@ export default Backbone.View.extend({
     this.model.save()
     Swal.fire('Saved!', '', 'success')
     this.saveRequired = false
-    console.log('save saverequired')
-    console.log(this.saveRequired)
   },
 
-  exitPopup () {
+  confirmExit () {
     const that = this
     Swal.fire({
       title: 'There are unsaved changes.',
@@ -128,16 +122,10 @@ export default Backbone.View.extend({
     })
   },
 
-  attemptExit (event) {
-    event.stopImmediatePropagation()
-    console.log(event)
-    console.log('save required in attempt exit')
-    console.log(this.saveRequired)
+  attemptExit () {
     if (this.saveRequired === true) {
-      console.log('popup')
-      this.exitPopup()
+      this.confirmExit()
     } else {
-      console.log('exit')
       this.exit()
     }
   },

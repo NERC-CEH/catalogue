@@ -2,8 +2,7 @@
 <#setting url_escaping_charset='ISO-8859-1'>
 <#setting date_format = 'yyyy-MM-dd'>
 
-<#assign defaultScripts>
-  <script src="/static/scripts/editor.bundle.js"></script>
+<#assign defaultScripts> <#-- editor.bundle.js bundle is not required as it is included via catalogue.bundle.js -->
   <script src="/static/scripts/search.bundle.js"></script>
   <script src="/static/scripts/catalogue.bundle.js"></script>
   <script src="/static/scripts/studyarea.bundle.js"></script>
