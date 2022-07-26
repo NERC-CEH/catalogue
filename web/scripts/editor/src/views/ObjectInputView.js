@@ -40,8 +40,8 @@ export default Backbone.View.extend({
       this.model.set(name, value)
     }
 
-    return false
-  }, // disable bubbling
+    return false // disable bubbling
+  },
 
   /*
   Defines a sortable list view which is bound to a positionable collection.
@@ -50,10 +50,11 @@ export default Backbone.View.extend({
   */
   createList (collection, selector, view) {
     const element = this.$(selector)
+    const that = this
     const addView = function () {
-      const newView = view.apply(this, arguments)
-      return element.append(newView.el) // no element here for mapdata source iew
-    }.bind(this)
+      const newView = view.apply(that, arguments)
+      return element.append(newView.el)
+    }
 
     const resetView = () => {
       element.empty()

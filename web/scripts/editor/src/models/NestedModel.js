@@ -1,8 +1,7 @@
 import Backbone from 'backbone'
 import { Positionable } from '../collections'
 
-let NestedModel
-export default NestedModel = Backbone.Model.extend({
+export const NestedModel = Backbone.Model.extend({
 
   /*
   Return a collection which is bound to an array attribute of the given model.

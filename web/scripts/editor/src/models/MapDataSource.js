@@ -1,5 +1,5 @@
 import _ from 'underscore'
-import NestedModel from './NestedModel'
+import { NestedModel } from './NestedModel'
 import MapAttribute from './MapAttribute'
 
 export default NestedModel.extend({
@@ -40,7 +40,9 @@ export default NestedModel.extend({
     const errors = []
 
     // Validate all of the min and max values of any defined buckets
-    const numRegex = /^-?(?:\d+(?:\.\d+)?|\.\d+)$/
+    // eslint-disable-next-line prefer-regex-literals
+    const numRegex = new RegExp('^-?(?:\\d+(?:\\.\\d+)?|\\.\\d+)$')
+
     if (!_.isEmpty(attrs.attributes)) {
       if (_.chain(attrs.attributes)
         .pluck('buckets')

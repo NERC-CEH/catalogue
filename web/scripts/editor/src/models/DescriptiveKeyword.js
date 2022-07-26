@@ -1,4 +1,4 @@
-import NestedModel from './NestedModel'
+import { NestedModel } from './NestedModel'
 export default NestedModel.extend({
 
   defaults: {

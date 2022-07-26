@@ -22,8 +22,7 @@ export default ObjectInputView.extend({
     _.extend({}, ObjectInputView.prototype.events, {
       'click .addValue': 'addValue',
       'click .addBucket': 'addBucket'
-    }
-    )
+    })
   },
 
   initialize (options) {
@@ -34,7 +33,6 @@ export default ObjectInputView.extend({
 
     this.buckets = this.model.getRelatedCollection('buckets')
     this.values = this.model.getRelatedCollection('values')
-
     this.createList(this.buckets, '.buckets', this.newBucket)
     this.createList(this.values, '.values', this.newValue)
   },
@@ -43,6 +41,7 @@ export default ObjectInputView.extend({
   addBucket () { this.buckets.add(this.defaultLegend) },
 
   newValue (m) {
+    // eslint-disable-next-line no-unused-vars
     return new ChildView({
       model: m,
       ObjectInputView: MapValueView,
@@ -51,6 +50,7 @@ export default ObjectInputView.extend({
   },
 
   newBucket (m) {
+    // eslint-disable-next-line no-unused-vars
     return new ChildView({
       model: m,
       ObjectInputView: MapBucketView,

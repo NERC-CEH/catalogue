@@ -2,6 +2,7 @@ import ObjectInputView from './ObjectInputView'
 import MapStyleSelectorView from './MapStyleSelectorView'
 import template from '../templates/MapValue.tpl'
 import _ from 'underscore'
+import { NestedModel } from '../models'
 
 export default ObjectInputView.extend({
 
@@ -9,9 +10,12 @@ export default ObjectInputView.extend({
     this.template = _.template(template)
     ObjectInputView.prototype.initialize.call(this, options)
 
+    const model = new NestedModel(this.model.attributes)
+    const that = this
+    // eslint-disable-next-line no-unused-vars
     const view = new MapStyleSelectorView({
-      el: this.$('.style-selector'),
-      model: this.model.getRelated('style'),
+      el: that.$('.style-selector'),
+      model: model.getRelated('style'),
       disabled: options.disabled
     })
   }

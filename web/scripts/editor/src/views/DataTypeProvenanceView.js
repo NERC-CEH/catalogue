@@ -39,8 +39,8 @@ export default ObjectInputView.extend({
 
       // eslint-disable-next-line no-unused-vars
       const parent = new ParentStringView({
-        el: this.$('#provenanceContributors'),
-        model: this.model,
+        el: that.$('#provenanceContributors'),
+        model: that.model,
         modelAttribute: 'contributors',
         label: 'Contributors'
       })
