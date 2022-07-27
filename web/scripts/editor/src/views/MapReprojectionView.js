@@ -6,6 +6,7 @@ export default ObjectInputView.extend({
 
   initialize () {
     this.template = _.template(template)
+    ObjectInputView.prototype.initialize.apply(this)
   },
 
   events: _.extend({}, ObjectInputView.prototype.events,

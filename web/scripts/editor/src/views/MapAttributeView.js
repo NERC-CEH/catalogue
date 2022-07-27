@@ -7,6 +7,13 @@ import template from '../templates/MapAttribute.tpl'
 
 export default ObjectInputView.extend({
 
+  events: function () {
+    return _.extend({}, ObjectInputView.prototype.events, {
+      'click .addValue': 'addValue',
+      'click .addBucket': 'addBucket'
+    })
+  },
+
   defaultLegend: {
     style: {
       colour: '#000000'
@@ -17,13 +24,6 @@ export default ObjectInputView.extend({
     { name: 'Text', value: 'TEXT' },
     { name: 'Number', value: 'NUMBER' }
   ],
-
-  events () {
-    _.extend({}, ObjectInputView.prototype.events, {
-      'click .addValue': 'addValue',
-      'click .addBucket': 'addBucket'
-    })
-  },
 
   initialize (options) {
     this.template = _.template(template)

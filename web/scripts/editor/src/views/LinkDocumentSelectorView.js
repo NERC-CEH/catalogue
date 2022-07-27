@@ -7,8 +7,8 @@ import template from '../templates/LinkDocumentSelector.tpl'
 
 export default InputView.extend({
 
-  events () {
-    _.extend({}, InputView.prototype.events, {
+  events: function () {
+    return _.extend({}, InputView.prototype.events, {
       'keyup #term' () { this.searchOnceComplete() },
       'change #term' () { this.search() },
       'change #catalogue' () { this.search() },

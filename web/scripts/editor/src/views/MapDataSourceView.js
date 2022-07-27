@@ -9,8 +9,8 @@ import $ from 'jquery'
 
 export default ObjectInputView.extend({
 
-  events () {
-    _.extend({}, ObjectInputView.prototype.events, {
+  events: function () {
+    return _.extend({}, ObjectInputView.prototype.events, {
       'click .addReprojection': 'addReprojection',
       'click .addAttribute': 'addAttribute',
       'click [styleMode]': 'updateStyleMode'
@@ -49,8 +49,13 @@ export default ObjectInputView.extend({
     this.updateByteRadioButton()
   },
 
-  addReprojection () { this.reprojections.add({}) },
-  addAttribute () { this.attributes.add({}) },
+  addReprojection () {
+    this.reprojections.add({})
+  },
+
+  addAttribute () {
+    this.attributes.add({})
+  },
 
   newReprojection (model, i) {
     // eslint-disable-next-line no-unused-vars
@@ -70,7 +75,9 @@ export default ObjectInputView.extend({
     })
   },
 
-  updateStyleMode (e) { this.setStyleMode($(e.target).attr('styleMode')) },
+  updateStyleMode (e) {
+    this.setStyleMode($(e.target).attr('styleMode'))
+  },
 
   setStyleMode (mode) {
     // Reset the state of all the styling buttons and update to the correct mode
@@ -91,7 +98,7 @@ export default ObjectInputView.extend({
   Update the bytetype radio button to match the model
   */
   updateByteRadioButton () {
-    $(this.$(`input[data-name='bytetype'][value='${this.model.attributes.bytetype}']`)[0]).attr('checked', 'checked')
+    $(this.$('input[data-name=\'bytetype\'][value=\'#{this.model.attributes.bytetype}\']')[0]).attr('checked', 'checked')
   },
 
   /*

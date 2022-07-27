@@ -8,7 +8,7 @@ import 'jquery-ui/themes/base/all.css'
 
 export default ObjectInputView.extend({
 
-  events () {
+  events: function () {
     return _.extend({}, ObjectInputView.prototype.events, {
       'click .add' () { return this.add() },
 
