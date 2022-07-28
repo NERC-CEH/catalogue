@@ -4,8 +4,13 @@ import ObjectInputView from './ObjectInputView'
 
 export default ObjectInputView.extend({
 
-  render () {
+  initialize () {
     this.template = _.template(template)
+
+    ObjectInputView.prototype.initialize.apply(this)
+  },
+
+  render () {
     ObjectInputView.prototype.render.apply(this)
     return this
   }
