@@ -30,10 +30,15 @@ export default ObjectInputView.extend({
       { symbols: this.symbols })
     )
 
-    this.update()
-    $.noConflict()
-    this.$('input').colorpicker({ format: 'hex' })
+    const that = this
     this.listenTo(this.model, 'change:colour change:symbol', this.update)
+    this.update()
+
+    $(document).ready(function () {
+      that.$('#picker').change(function () {
+        that.model.set('colour', that.$('#picker').val())
+      })
+    })
   },
 
   update () {
@@ -49,9 +54,12 @@ export default ObjectInputView.extend({
     }
 
     this.$('.icon').css({ color })
+    this.$('#picker').val(color)
   },
 
-  setColour () { this.model.set('colour', this.$('input').val()) },
+  setColour () {
+    this.model.set('colour', this.$('input').val())
+  },
 
   setSymbol (e) {
     if ($(e.target).data('symbol') !== 'blank') {

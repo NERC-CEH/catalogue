@@ -13,3 +13,6 @@
     </ul>
   </div>
 </div>
+<div class="input-group">
+ <input type="color" id="picker" style="background-color: white;float: right;width: 150px;">
+</div>
