@@ -3,14 +3,9 @@ import template from '../templates/OnlineLink.tpl'
 import ObjectInputView from './ObjectInputView'
 
 export default ObjectInputView.extend({
-
-  initialize () {
-    this.template = _.template(template)
-
-    ObjectInputView.prototype.initialize.apply(this)
-  },
-
   render () {
+    console.log('online link view')
+    this.template = _.template(template)
     ObjectInputView.prototype.render.apply(this)
     return this
   }
