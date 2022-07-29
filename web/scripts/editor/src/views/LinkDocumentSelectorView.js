@@ -80,7 +80,6 @@ export default InputView.extend({
   },
 
   setSelected (identifier) {
-    z
     this.model.set(this.data.modelAttribute, identifier)
   }
 })
