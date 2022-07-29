@@ -35,7 +35,7 @@ export default InputView.extend({
 
     $.getJSON(`/catalogues?${params}`, catalogues => {
       this.catalogues = catalogues
-      // InputView.prototype.initialize.call(this, options)
+      InputView.prototype.initialize.call(this, options)
     })
 
     this.listenTo(this.results, 'selected', this.setSelected)
