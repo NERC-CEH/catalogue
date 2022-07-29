@@ -7,7 +7,6 @@ export default Backbone.View.extend({
   className: 'component',
 
   initialize (options) {
-    this.singleTemplate = _.template(template)
     this.data = options
     if (!this.data.ModelType) {
       this.data.ModelType = Backbone.Model
@@ -23,9 +22,7 @@ export default Backbone.View.extend({
   },
 
   render () {
-    if (typeof this.singleTemplate === 'undefined') {
-      this.singleTemplate = _.template(template)
-    }
+    this.singleTemplate = _.template(template)
     this.$el.html(this.singleTemplate({ data: this.data }))
     return this
   },
