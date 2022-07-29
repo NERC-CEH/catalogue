@@ -4,6 +4,7 @@ import Backbone from 'backbone'
 import InputView from '../InputView'
 import LinkDocumentView from './LinkDocumentView'
 import template from '../templates/LinkDocumentSelector.tpl'
+import ChildView from './ChildView'
 
 export default InputView.extend({
 
@@ -68,7 +69,10 @@ export default InputView.extend({
 
   addOne (result) {
     const view = new LinkDocumentView({ model: result })
-    this.$('#results').append(view.render().el)
+    const that = this
+    $(document).ready(function () {
+      that.$('#results').append(view.render().el)
+    })
   },
 
   addAll () {
@@ -77,6 +81,7 @@ export default InputView.extend({
   },
 
   setSelected (identifier) {
+    z
     this.model.set(this.data.modelAttribute, identifier)
   }
 })

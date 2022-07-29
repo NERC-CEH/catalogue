@@ -23,9 +23,6 @@ export default Backbone.View.extend({
   },
 
   render () {
-    if (typeof this.singleTemplate === 'undefined') {
-      this.singleTemplate = _.template(template)
-    }
     this.$el.html(this.singleTemplate({ data: this.data }))
     return this
   },
