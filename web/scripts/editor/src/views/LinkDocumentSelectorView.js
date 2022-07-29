@@ -20,6 +20,7 @@ export default InputView.extend({
 
   initialize (options) {
     this.template = _.template(template)
+    InputView.prototype.initialize.call(this, options)
     let params
     if (this.model.isNew()) {
       params = `catalogue=${Backbone.history.location.pathname.split('/')[1]}`
@@ -34,7 +35,7 @@ export default InputView.extend({
 
     $.getJSON(`/catalogues?${params}`, catalogues => {
       this.catalogues = catalogues
-      InputView.prototype.initialize.call(this, options)
+      // InputView.prototype.initialize.call(this, options)
     })
 
     this.listenTo(this.results, 'selected', this.setSelected)
