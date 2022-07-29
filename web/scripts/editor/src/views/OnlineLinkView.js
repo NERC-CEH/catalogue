@@ -1,5 +1,5 @@
 import _ from 'underscore'
-import template from '../templates/ObservationCapability.tpl'
+import template from '../templates/OnlineLink.tpl'
 import ObjectInputView from './ObjectInputView'
 
 export default ObjectInputView.extend({

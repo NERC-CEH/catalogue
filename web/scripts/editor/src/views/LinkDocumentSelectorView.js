@@ -4,7 +4,6 @@ import Backbone from 'backbone'
 import InputView from '../InputView'
 import LinkDocumentView from './LinkDocumentView'
 import template from '../templates/LinkDocumentSelector.tpl'
-import ChildView from './ChildView'
 
 export default InputView.extend({
 
