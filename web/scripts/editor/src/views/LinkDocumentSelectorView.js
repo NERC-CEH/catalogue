@@ -81,6 +81,8 @@ export default InputView.extend({
   },
 
   setSelected (identifier) {
+    console.log('identifier')
+    console.log(identifier)
     this.model.set(this.data.modelAttribute, identifier)
   }
 })
