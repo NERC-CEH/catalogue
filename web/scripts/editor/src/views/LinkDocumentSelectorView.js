@@ -4,15 +4,16 @@ import Backbone from 'backbone'
 import InputView from '../InputView'
 import LinkDocumentView from './LinkDocumentView'
 import template from '../templates/LinkDocumentSelector.tpl'
+import ObjectInputView from './ObjectInputView'
 
 export default InputView.extend({
 
   events: function () {
     return _.extend({}, InputView.prototype.events, {
-      'keyup #term' () { this.searchOnceComplete() },
-      'change #term' () { this.search() },
-      'change #catalogue' () { this.search() },
-      'click button' () { this.search() }
+      'keyup #term': 'searchOnceComplete',
+      'change #term': 'search',
+      'change #catalogue': 'search',
+      'click button': 'search'
     })
   },
 
