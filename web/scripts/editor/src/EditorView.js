@@ -37,12 +37,12 @@ export default Backbone.View.extend({
         confirmButtonText: 'Close'
       })
     })
+
     this.listenTo(this.model, 'sync', function () {
       that.$('#editorAjax').toggleClass('visible')
-      that.saveRequired = true
+      that.saveRequired = false
     })
-
-    this.listenTo(this.model, 'change', function () {
+    this.listenTo(this.model, 'change save:required', function () {
       that.saveRequired = true
     })
 
