@@ -1,11 +1,11 @@
 import _ from 'underscore'
 import ObjectInputView from './ObjectInputView'
 import MapReprojectionView from './MapReprojectionView'
-import ChildView from './ChildView'
 import MapFeaturesView from './MapFeaturesView'
 import MapAttributeView from './MapAttributeView'
 import template from '../templates/MapDataSource.tpl'
 import $ from 'jquery'
+import ChildView from './ChildView'
 
 export default ObjectInputView.extend({
 
@@ -84,11 +84,15 @@ export default ObjectInputView.extend({
     this.$('button[stylemode]').removeClass('btn-success').removeClass('active')
     this.$(`button[stylemode='${mode}']`).addClass('btn-success active')
     this.$('.styling-box').hide()
-    this.$(`.styling-box.${mode}`).show()
+    if (mode === 'features') {
+      this.$('.styling-box.features').show()
+      this.$('.addAttribute').addClass('disabled')
+    }
+    if (mode === 'attributes') {
+      this.$('.styling-box.attributes').show()
+      this.$('.addAttribute').removeClass('disabled')
+    }
     this.updateByteTypeVisibility(mode, this.model.get('type'))
-
-    const attrBtn = this.$('.addAttribute').removeClass('disabled')
-    if (mode === 'features') { attrBtn.addClass('disabled') }
     this.model.setStylingMode(mode)
   },
 

@@ -53,7 +53,7 @@ export default Backbone.View.extend({
     const that = this
     const addView = function () {
       const newView = view.apply(that, arguments)
-      return element.append(newView.el)
+      element.append(newView.el)
     }
 
     const resetView = () => {
