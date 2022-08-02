@@ -192,7 +192,7 @@ Postgres database needs the schema creating.
 
 ### Javascript development
 
-1. Run `npm run test-server` to recompile `hubbub-app.js` on code changes and run tests.
+1. Run `npm run test-server` to recompile `hubbub.budnle.js` on code changes and run tests.
    1. `npm run watch` if you just want the code to recompile on changes
 2. You will need access to the EIDCHELP Jira project to run the app.
 3. The [Busy Buzy Bumblebees](http://localhost:8080/upload/c88921ba-f871-44c3-9339-51c5bee4024a) upload page has a [Jira issue](https://jira.ceh.ac.uk/browse/EIDCHELP-52451) in the EIDCHELP project
