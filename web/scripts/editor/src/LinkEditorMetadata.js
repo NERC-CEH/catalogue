@@ -3,7 +3,7 @@ import EditorMetadata from './EditorMetadata'
 export default EditorMetadata.extend({
 
   validate (attrs) {
-    return this
+    return null
   }
 
 })
