@@ -104,8 +104,6 @@ export default Backbone.View.extend({
 
   save () {
     this.model.save()
-    console.log('this.model.save')
-    console.log(this.model)
     Swal.fire('Saved!', '', 'success')
     this.saveRequired = false
   },
