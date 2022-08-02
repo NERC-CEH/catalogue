@@ -20,7 +20,6 @@ export default InputView.extend({
 
   initialize (options) {
     this.template = _.template(template)
-    InputView.prototype.initialize.call(this)
     let params
     if (this.model.isNew()) {
       params = `catalogue=${Backbone.history.location.pathname.split('/')[1]}`
