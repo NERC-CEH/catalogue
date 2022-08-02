@@ -9,7 +9,7 @@ export default InputView.extend({
 
   events: function () {
     return _.extend({}, InputView.prototype.events, {
-      'keyup #term': 'searchOnceComplete',
+      'keyup #term': 'search',
       'change #term': 'search',
       'change #catalogue': 'search',
       'click button': 'search'
@@ -20,7 +20,7 @@ export default InputView.extend({
 
   initialize (options) {
     this.template = _.template(template)
-    InputView.prototype.initialize.call(this, options)
+    InputView.prototype.initialize.call(this)
     let params
     if (this.model.isNew()) {
       params = `catalogue=${Backbone.history.location.pathname.split('/')[1]}`
@@ -30,7 +30,7 @@ export default InputView.extend({
 
     options.catalogue = 'eidc'
 
-    this.searchOnceComplete = _.debounce(this.search, 500)
+    // this.searchOnceComplete = _.debounce(this.search, 500)
     this.results = new Backbone.Collection()
 
     $.getJSON(`/catalogues?${params}`, catalogues => {
@@ -56,7 +56,7 @@ export default InputView.extend({
     this.data.catalogue = this.$('#catalogue').val()
     this.data.term = this.$('#term').val()
 
-    if (this.data.term.length > 0) {
+    if (this.data.term.length > 0 && this.data.catalogue) {
       searchUrl = `/${this.data.catalogue}/documents?term=state:published AND view:public AND NOT documentType:LINK_DOCUMENT AND ${this.data.term}`
     } else {
       searchUrl = `/${this.data.catalogue}/documents?term=state:published AND view:public AND NOT documentType:LINK_DOCUMENT`
