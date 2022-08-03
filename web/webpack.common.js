@@ -12,7 +12,6 @@ module.exports = {
     simpleupload: './scripts/simple-upload/src/index.js',
     studyarea: './scripts/study-area/src/index.js'
   },
-  mode: 'production',
   module: {
     rules: [
       {
