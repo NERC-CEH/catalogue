@@ -8,8 +8,10 @@ import template from './BoundingBox.tpl'
 
 export default ObjectInputView.extend({
 
-  events: {
-    'click #update': 'viewMap'
+  events: function () {
+    return _.extend({}, ObjectInputView.prototype.events, {
+      'click #update' () { return this.viewMap() }
+    })
   },
 
   initialize () {
@@ -28,6 +30,7 @@ export default ObjectInputView.extend({
     this.listenTo(this.model, 'change:northBoundLatitude', function (model, value) {
       return this.$('#boundingBoxNorthBoundLatitude').val(value)
     })
+    this.listenTo(this.model.collection, 'visible', this.viewMap)
   },
 
   createMap () {

@@ -60,8 +60,10 @@ export default Backbone.Model.extend({
     _.chain(attrs)
       .keys()
       .each(function (key) {
-        if (!isStringANumber(attrs[key])) {
-          return errors.push({ message: `${labels[key]} needs to be a number` })
+        if (labels[key]) {
+          if (!isStringANumber(attrs[key])) {
+            return errors.push({ message: `${labels[key]} needs to be a number` })
+          }
         }
       })
 
