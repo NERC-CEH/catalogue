@@ -75,7 +75,7 @@ COPY --from=build-java /app/build/libs/application/ ./
 COPY templates /opt/ceh-catalogue/templates
 COPY --from=build-web /app/src/css /opt/ceh-catalogue/static/css
 COPY web/src/img /opt/ceh-catalogue/static/img
-COPY web/src/datepickerImages /opt/ceh-catalogue/static/css/images
+COPY web/src/date-picker-images /opt/ceh-catalogue/static/css/images
 COPY --from=build-permissions web/permission/dist/permission-app.js /opt/ceh-catalogue/static/scripts/permission-app.js
 COPY --from=build-catalogue web/catalogue/dist/catalogue-app.js /opt/ceh-catalogue/static/scripts/catalogue-app.js
 COPY --from=build-catalogue web/catalogue/dist/9e7d2efc7b95d476f73e.gif /opt/ceh-catalogue/static/scripts/9e7d2efc7b95d476f73e.gif
