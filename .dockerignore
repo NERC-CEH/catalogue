@@ -6,7 +6,7 @@
 !schemas
 !templates
 !web/src/img
-!web/src/datePickerImages
+!web/src/date-picker-images
 !web/src/less
 !web/src/scripts
 !web/.bowerrc
