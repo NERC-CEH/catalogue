@@ -15,7 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
-import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
@@ -52,9 +52,9 @@ public class UploadController {
         try {
             log.info("Getting upload page for {}", id);
             model.addAttribute("id", id);
-            val geminiDocument = (GeminiDocument) documentRepository.read(id);
-            model.addAttribute("title", geminiDocument.getTitle());
-            model.addAttribute("catalogueKey", geminiDocument.getMetadata().getCatalogue());
+            val metadataDocument = (AbstractMetadataDocument) documentRepository.read(id);
+            model.addAttribute("title", metadataDocument.getTitle());
+            model.addAttribute("catalogueKey", metadataDocument.getMetadata().getCatalogue());
             val files = storageService.filenames(id);
             model.addAttribute("files", files);
         } catch (StorageServiceException ex) {
