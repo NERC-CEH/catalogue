@@ -1,54 +1,9 @@
-# Build web (javascript & css)
-FROM node:15.11.0-stretch AS build-web
-WORKDIR /app
-COPY --chown=1000:1000 web/src/less src/less
-COPY --chown=1000:1000 web/src/scripts src/scripts
-COPY --chown=1000:1000 web/.bowerrc .
-COPY --chown=1000:1000 web/bower.json .
-COPY --chown=1000:1000 web/Gruntfile.js .
-COPY --chown=1000:1000 web/package.json .
-COPY --chown=1000:1000 web/package-lock.json .
-RUN npm install --no-audit
-RUN node_modules/.bin/bower install --allow-root
-RUN node_modules/.bin/grunt
-
-
-# Build Permission app (javascript & css)
-FROM node:17.4.0 AS build-permissions
-WORKDIR web/permission
-COPY --chown=1000:1000 web/permission/package.json .
-COPY --chown=1000:1000 web/permission/package-lock.json .
-COPY --chown=1000:1000 web/permission/webpack.config.js .
-COPY --chown=1000:1000 web/permission/src src/
-RUN npm install && npm run build
-
-# Build Catalogue app (javascript & css)
-FROM node:17.4.0 AS build-catalogue
-WORKDIR web/catalogue
-COPY --chown=1000:1000 web/catalogue/package.json .
-COPY --chown=1000:1000 web/catalogue/package-lock.json .
-COPY --chown=1000:1000 web/catalogue/webpack.config.js .
-COPY --chown=1000:1000 web/catalogue/src src/
-RUN npm install && npm run build
-
-# Build simple upload app (javascript & css)
-FROM node:17.4.0 AS build-simple-upload
-WORKDIR web/simple-upload
-COPY --chown=1000:1000 web/simple-upload/package.json .
-COPY --chown=1000:1000 web/simple-upload/package-lock.json .
-COPY --chown=1000:1000 web/simple-upload/webpack.config.js .
-COPY --chown=1000:1000 web/simple-upload/src src/
-RUN npm install && npm run build
-
-# Build hubbub app (javascript & css)
-FROM node:17.4.0 AS build-hubbub
-WORKDIR web/hubbub
-COPY --chown=1000:1000 web/hubbub/package.json .
-COPY --chown=1000:1000 web/hubbub/package-lock.json .
-COPY --chown=1000:1000 web/hubbub/webpack.config.js .
-COPY --chown=1000:1000 web/hubbub/src src/
-RUN npm install
-RUN npm run build-prod
+# Build webpack (javascript & css)
+FROM node:17.4.0 AS build-web
+WORKDIR /web
+COPY web ./
+RUN npm ci --no-audit
+RUN npm run build
 
 # Build Java
 FROM gradle:7.2-jdk16 AS build-java
@@ -73,17 +28,10 @@ COPY --from=build-java /app/build/libs/spring-boot-loader/ ./
 COPY --from=build-java /app/build/libs/snapshot-dependencies/ ./
 COPY --from=build-java /app/build/libs/application/ ./
 COPY templates /opt/ceh-catalogue/templates
-COPY --from=build-web /app/src/css /opt/ceh-catalogue/static/css
-COPY web/src/img /opt/ceh-catalogue/static/img
-COPY web/src/date-picker-images /opt/ceh-catalogue/static/css/images
-COPY --from=build-permissions web/permission/dist/permission-app.js /opt/ceh-catalogue/static/scripts/permission-app.js
-COPY --from=build-catalogue web/catalogue/dist/catalogue-app.js /opt/ceh-catalogue/static/scripts/catalogue-app.js
-COPY --from=build-catalogue web/catalogue/dist/9e7d2efc7b95d476f73e.gif /opt/ceh-catalogue/static/scripts/9e7d2efc7b95d476f73e.gif
-COPY --from=build-simple-upload web/simple-upload/dist/simple-upload-app.js /opt/ceh-catalogue/static/scripts/simple-upload-app.js
-COPY --from=build-hubbub web/hubbub/dist/hubbub-app.js /opt/ceh-catalogue/static/scripts/hubbub-app.js
-COPY --from=build-web /app/src/scripts/main-out.js /opt/ceh-catalogue/static/scripts/main-out.js
-COPY --from=build-web /app/src/vendor/font-awesome-5/webfonts /opt/ceh-catalogue/static/vendor/font-awesome-5/webfonts
-COPY --from=build-web /app/src/vendor/requirejs/require.js /opt/ceh-catalogue/static/vendor/requirejs/require.js
+COPY --from=build-web /web/img /opt/ceh-catalogue/static/img
+COPY --from=build-web /web/dist /opt/ceh-catalogue/static/scripts
+COPY --from=build-web web/node_modules /opt/ceh-catalogue/static/node_modules
+COPY --from=build-web /web/css /opt/ceh-catalogue/static/css
 RUN chown spring:spring -R /app \
  && chown spring:spring -R /opt/ceh-catalogue \
  && chown spring:spring -R /var/ceh-catalogue \

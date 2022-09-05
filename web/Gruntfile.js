@@ -1,123 +1,94 @@
-module.exports = function(grunt) {
-  grunt.loadNpmTasks('grunt-concurrent');
-  grunt.loadNpmTasks('grunt-combine-harvester');
-  grunt.loadNpmTasks('grunt-contrib-requirejs');
-  grunt.loadNpmTasks('grunt-contrib-jasmine');
-  grunt.loadNpmTasks('grunt-contrib-coffee');
-  grunt.loadNpmTasks('grunt-contrib-clean');
-  grunt.loadNpmTasks('grunt-contrib-copy');
-  grunt.loadNpmTasks('grunt-contrib-less');
-  grunt.loadNpmTasks('grunt-contrib-cssmin');
-  grunt.loadNpmTasks('grunt-contrib-watch');
+module.exports = function (grunt) {
+  grunt.loadNpmTasks('grunt-concurrent')
+  grunt.loadNpmTasks('grunt-contrib-clean')
+  grunt.loadNpmTasks('grunt-contrib-less')
+  grunt.loadNpmTasks('grunt-contrib-cssmin')
+  grunt.loadNpmTasks('grunt-contrib-watch')
 
   grunt.initConfig({
-    bowerDirectory: require('bower').config.directory,
-    jasmine: {
-      test: {
-        options: {
-          specs: 'test-compiled/**/*.spec.js',
-          template: require('grunt-template-jasmine-requirejs'),
-          templateOptions: {
-            requireConfigFile: 'src/scripts/main.js',
-            requireConfig: {
-              baseUrl: 'src/scripts'
-            }
-          }
-        }
-      }
-    },
-    coffee: {
-      test: {
-        expand: true,
-        cwd: 'test',
-        src: ['**/*.coffee'],
-        dest: 'test-compiled',
-        ext: '.spec.js'
-      }
-    },
     less: {
       options: {
         compress: false,
-        paths: ['less', '<%= bowerDirectory %>/bootstrap/less']
+        paths: ['css']
       },
       assist: {
         files: {
-          'src/css/style-assist.css': 'src/less/style-assist.less'
+          'css/style-assist.css': 'less/style-assist.less'
         }
       },
       ceh: {
         files: {
-          'src/css/style-ceh.css': 'src/less/style-ceh.less'
+          'css/style-ceh.css': 'less/style-ceh.less'
         }
       },
       cmp: {
         files: {
-          'src/css/style-cmp.css': 'src/less/style-cmp.less'
+          'css/style-cmp.css': 'less/style-cmp.less'
         }
       },
       datalabs: {
         files: {
-          'src/css/style-datalabs.css': 'src/less/style-datalabs.less'
+          'css/style-datalabs.css': 'less/style-datalabs.less'
         }
       },
       edge: {
         files: {
-          'src/css/style-edge.css': 'src/less/style-edge.less'
+          'css/style-edge.css': 'less/style-edge.less'
         }
       },
       eidc: {
         files: {
-          'src/css/style-eidc.css': 'src/less/style-eidc.less'
+          'css/style-eidc.css': 'less/style-eidc.less'
         }
       },
       elter: {
         files: {
-          'src/css/style-elter.css': 'src/less/style-elter.less'
+          'css/style-elter.css': 'less/style-elter.less'
         }
       },
       erammp: {
         files: {
-          'src/css/style-erammp.css': 'src/less/style-erammp.less'
+          'css/style-erammp.css': 'less/style-erammp.less'
         }
       },
       inlicensed: {
         files: {
-          'src/css/style-inlicensed.css': 'src/less/style-inlicensed.less'
+          'css/style-inlicensed.css': 'less/style-inlicensed.less'
         }
       },
       inms: {
         files: {
-          'src/css/style-inms.css': 'src/less/style-inms.less'
+          'css/style-inms.css': 'less/style-inms.less'
         }
       },
       nc: {
         files: {
-          'src/css/style-nc.css': 'src/less/style-nc.less'
+          'css/style-nc.css': 'less/style-nc.less'
         }
       },
       nm: {
         files: {
-          'src/css/style-nm.css': 'src/less/style-nm.less'
+          'css/style-nm.css': 'less/style-nm.less'
         }
       },
       m: {
         files: {
-          'src/css/style-m.css': 'src/less/style-m.less'
+          'css/style-m.css': 'less/style-m.less'
         }
       },
       osdp: {
         files: {
-          'src/css/style-osdp.css': 'src/less/style-osdp.less'
+          'css/style-osdp.css': 'less/style-osdp.less'
         }
       },
       infrastructure: {
         files: {
-          'src/css/style-infrastructure.css': 'src/less/style-infrastructure.less'
+          'css/style-infrastructure.css': 'less/style-infrastructure.less'
         }
       },
       sa: {
         files: {
-          'src/css/style-sa.css': 'src/less/style-sa.less'
+          'css/style-sa.css': 'less/style-sa.less'
         }
       },
       ukeof: {
@@ -127,89 +98,89 @@ module.exports = function(grunt) {
       },
       ukscape: {
         files: {
-          'src/css/style-ukscape.css': 'src/less/style-ukscape.less'
+          'css/style-ukscape.css': 'less/style-ukscape.less'
         }
       }
     },
     cssmin: {
       assist: {
         files: {
-          'src/css/style-assist.css': 'src/css/style-assist.css'
+          'css/style-assist.css': 'css/style-assist.css'
         }
       },
       ceh: {
         files: {
-          'src/css/style-ceh.css': 'src/css/style-ceh.css'
+          'css/style-ceh.css': 'css/style-ceh.css'
         }
       },
       cmp: {
         files: {
-          'src/css/style-cmp.css': 'src/css/style-cmp.css'
+          'css/style-cmp.css': 'css/style-cmp.css'
         }
       },
       datalabs: {
         files: {
-          'src/css/style-datalabs.css': 'src/css/style-datalabs.css'
+          'css/style-datalabs.css': 'css/style-datalabs.css'
         }
       },
       edge: {
         files: {
-          'src/css/style-edge.css': 'src/css/style-edge.css'
+          'css/style-edge.css': 'css/style-edge.css'
         }
       },
       eidc: {
         files: {
-          'src/css/style-eidc.css': 'src/css/style-eidc.css'
+          'css/style-eidc.css': 'css/style-eidc.css'
         }
       },
       elter: {
         files: {
-          'src/css/style-elter.css': 'src/css/style-elter.css'
+          'css/style-elter.css': 'css/style-elter.css'
         }
       },
       erammp: {
         files: {
-          'src/css/style-erammp.css': 'src/css/style-erammp.css'
+          'css/style-erammp.css': 'css/style-erammp.css'
         }
       },
       inlicensed: {
         files: {
-          'src/css/style-inlicensed.css': 'src/css/style-inlicensed.css'
+          'css/style-inlicensed.css': 'css/style-inlicensed.css'
         }
       },
       inms: {
         files: {
-          'src/css/style-inms.css': 'src/css/style-inms.css'
+          'css/style-inms.css': 'css/style-inms.css'
         }
       },
       nc: {
         files: {
-          'src/css/style-nc.css': 'src/css/style-nc.css'
+          'css/style-nc.css': 'css/style-nc.css'
         }
       },
       nm: {
         files: {
-          'src/css/style-nm.css': 'src/css/style-nm.css'
+          'css/style-nm.css': 'css/style-nm.css'
         }
       },
       m: {
         files: {
-          'src/css/style-m.css': 'src/css/style-m.css'
+          'css/style-m.css': 'css/style-m.css'
         }
       },
       osdp: {
         files: {
-          'src/css/style-osdp.css': 'src/css/style-osdp.css'
+          'css/style-osdp.css': 'css/style-osdp.css'
         }
       },
       infrastructure: {
         files: {
-          'src/css/style-infrastructure.css': 'src/css/style-infrastructure.css'
+          'css/style-infrastructure.css': 'css/style-infrastructure.css'
         }
       },
       sa: {
         files: {
-          'src/css/style-sa.css': 'src/css/style-sa.css'
+          'css/style-sa.css': 'css/style-sa.css'
         }
       },
       ukeof: {
@@ -219,63 +190,30 @@ module.exports = function(grunt) {
       },
       ukscape: {
         files: {
-          'src/css/style-ukscape.css': 'src/css/style-ukscape.css'
-        }
-      }
-    },
-    requirejs: {
-      main: {
-        options: {
-          exclude: ['coffee-script'],
-          baseUrl: 'src/scripts',
-          out: 'src/scripts/main-out.js',
-          name: 'main',
-          mainConfigFile: 'src/scripts/main.js'
-        }
-      }
-    },
-    combine_harvester: {
-      openlayers: {
-        options: {
-          root: 'src/vendor/openlayers/lib/'
-        },
-        files: {
-          'src/vendor/OpenLayers-custom.js': ['src/vendor/openlayers/lib/OpenLayers/Map.js', 'src/vendor/openlayers/lib/OpenLayers/Rule.js', 'src/vendor/openlayers/lib/OpenLayers/Marker.js', 'src/vendor/openlayers/lib/OpenLayers/Kinetic.js', 'src/vendor/openlayers/lib/OpenLayers/Projection.js', 'src/vendor/openlayers/lib/OpenLayers/Layer/OSM.js', 'src/vendor/openlayers/lib/OpenLayers/Layer/WMS.js', 'src/vendor/openlayers/lib/OpenLayers/Control/ModifyFeature.js', 'src/vendor/openlayers/lib/OpenLayers/Control/TouchNavigation.js', 'src/vendor/openlayers/lib/OpenLayers/Control/Navigation.js', 'src/vendor/openlayers/lib/OpenLayers/Control/SelectFeature.js','src/vendor/openlayers/lib/OpenLayers/Control/Zoom.js', 'src/vendor/openlayers/lib/OpenLayers/Control/Attribution.js', 'src/vendor/openlayers/lib/OpenLayers/Control/DrawFeature.js', 'src/vendor/openlayers/lib/OpenLayers/Control/TransformFeature.js', 'src/vendor/openlayers/lib/OpenLayers/Handler/RegularPolygon.js', 'src/vendor/openlayers/lib/OpenLayers/Handler/Polygon.js', 'src/vendor/openlayers/lib/OpenLayers/Layer/TMS.js', 'src/vendor/openlayers/lib/OpenLayers/Layer/Vector.js', 'src/vendor/openlayers/lib/OpenLayers/Layer/Markers.js', 'src/vendor/openlayers/lib/OpenLayers/Filter/Function.js', 'src/vendor/openlayers/lib/OpenLayers/Renderer/SVG.js', 'src/vendor/openlayers/lib/OpenLayers/Renderer/VML.js', 'src/vendor/openlayers/lib/OpenLayers/Renderer/Canvas.js', 'src/vendor/openlayers/lib/OpenLayers/Protocol/HTTP.js', 'src/vendor/openlayers/lib/OpenLayers/Strategy/Fixed.js', 'src/vendor/openlayers/lib/OpenLayers/TileManager.js', 'src/vendor/openlayers/lib/OpenLayers/Format/WKT.js', 'src/vendor/ol-loadingPanel/index.js']
+          'css/style-ukscape.css': 'css/style-ukscape.css'
         }
       }
     },
     watch: {
       less: {
-        files: 'src/less/*',
+        files: 'less/*',
         tasks: ['less']
-      },
-      main: {
-        files: 'src/scripts/main.js',
-        tasks: ['copy:main']
       }
     },
     concurrent: {
       watch: {
-        tasks: ['watch:less', 'watch:main'],
+        tasks: ['watch:less'],
         options: {
           logConcurrentOutput: true
         }
       }
     },
-    copy: {
-      main: {
-        src: 'src/scripts/main.js',
-        dest: 'src/scripts/main-out.js'
-      }
-    },
     clean: {
       test: ['test-compiled'],
-      prep: ['src/css']
+      prep: ['css']
     }
-  });
-  grunt.registerTask('prep', ['clean', 'combine_harvester:openlayers']);
-  grunt.registerTask('test', ['clean:test', 'coffee', 'jasmine']);
-  grunt.registerTask('develop', ['less', 'copy', 'concurrent:watch']);
-  grunt.registerTask('build', ['clean', 'less', 'cssmin', 'requirejs']);
-  grunt.registerTask('default', ['prep', 'build']);
-};
+  })
+  grunt.registerTask('develop', ['less', 'concurrent:watch'])
+  grunt.registerTask('build', ['clean', 'less', 'cssmin'])
+  grunt.registerTask('default', ['prep', 'build'])
+}

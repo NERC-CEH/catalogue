@@ -23,17 +23,16 @@ services:
       #- ./templates:/opt/ceh-catalogue/templates
       # Uncomment to work on styling (LESS) & javascript in Docker container
       #- ./web/src:/opt/ceh-catalogue/static
-      # Uncomment to work on permission app
-      #- .web/permission/dist:/opt/ceh-catalogue/permission/dist
-      # Uncomment to work with Hubbub javascript app
-      # Run 'npm run watch' to have code recompiled while working
-      #- ./web/hubbub/dist/hubbub-app.js:/opt/ceh-catalogue/static/hubbub-app.js
+      # Uncomment to work on webpack
+      # Run 'npm run watch' and connect to the catalogue docker service to have code recompiled while working
+      # To connect to the docker service you can use the services tab in IntelliJ
+      #- ./web/dist:/opt/ceh-catalogue/static/scripts
     environment:
       - documents.baseUri=http://localhost:8080
       - doi.api=https://api.test.datacite.org/dois
       - hubbub.url=http://hubbub:8080/v7
       - spring.freemarker.cache=false
-      - spring.profiles.active=development,upload:simple,server:eidc,search:basic
+      - spring.profiles.active=development,upload:simple,server:eidc,search:basic,service-agreement
     env_file:
       - secrets.env
   solr:

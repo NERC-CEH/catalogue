@@ -5,7 +5,6 @@
   <div class="panel-body">
     <p class="panel-title">Use this service</p>
     <div class="distribution-service">
-      <p><a href="${mapViewerUrl}"><i class="fas fa-location-arrow text-info"></i> Open in map viewer</a></p>
       <#if mapservices??>
       <#list mapservices as wms>
         <p><i class="fas fa-link"></i> URL: <span class="wmsurl">${wms.url}</span></p>

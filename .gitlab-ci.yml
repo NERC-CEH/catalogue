@@ -21,52 +21,16 @@ test_java:
 
 test_web:
   stage: test
-  image: node:15.11.0-stretch
-  script:
-    - cd web
-    - npm ci --no-audit
-    - ./node_modules/.bin/bower install --allow-root
-    - ./node_modules/.bin/grunt prep build    # test not actually run as are broken
-
-test_permissions:
-  stage: test
   image: ephesoft/headless_chrome:latest
   script:
-    - cd web/permission
-    - npm install -g npm
-    - npm ci --no-audit
-    - npm run test
-
-test_catalogue:
-  stage: test
-  image: ephesoft/headless_chrome:latest
-  script:
-    - cd web/catalogue
-    - npm install -g npm
-    - npm ci --no-audit
-    - npm run test
-
-test_simple_upload:
-  stage: test
-  image: ephesoft/headless_chrome:latest
-  script:
-    - cd web/simple-upload
-    - npm install -g npm
-    - npm ci --no-audit
-    - npm run test
-
-test_hubbub:
-  stage: test
-  image: ephesoft/headless_chrome:latest
-  script:
-    - cd web/hubbub
+    - cd web/
     - npm install -g npm
     - npm ci --no-audit
     - npm test
   artifacts:
     when: always
     reports:
-      junit: web/hubbub/TESTS-*.xml
+      junit: web/TESTS-*.xml
 
 build_application:
   stage: build
