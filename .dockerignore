@@ -8,6 +8,8 @@
 !web
 !web/scripts
 !web/dist
+!web/Gruntfile.js
+web/css
 web/scripts/catalogue/test/
 web/scripts/clipboard/test/
 web/scripts/editor/test/

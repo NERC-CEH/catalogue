@@ -1,7 +1,7 @@
 # Ignore the built content
 vendor
 scripts/*-out.js
-css/*
+css
 dist
 
 # Ignore the node_modules
