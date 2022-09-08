@@ -1,6 +1,6 @@
 // This is the stylesheet for the mapviewer. Hopefully we can add the majority
 // of this to the general stylesheet for ceh applications
-@import (inline) "../node_modules/jquery-ui/themes/base/all.css";
+@import "../node_modules/jquery-ui/themes/base/all.css";
 @layerControlWidth: 250px;
 
 #mapviewer {
@@ -9,6 +9,31 @@
   bottom:   0;
   left:     0;
   right:    0;
+
+  .openlayers {
+    position: absolute;
+    top:      0;
+    left:     0;
+    right:    0;
+    bottom:   0;
+
+    font-size: smaller;
+    .olControlAttribution {
+      right: 10px;
+      bottom: 10px;
+    }
+    div.olControlZoom {
+      top: 7px;
+      left: @layerControlWidth + 10px;
+    }
+    .olControlLoadingPanel {
+      background-image: url(../img/ajax-loader.gif);
+      width: 128px;
+      height: 15px;
+      top: 7px;
+      left: @layerControlWidth + 50px;
+    }
+  }
 
   .layers {
     position:         absolute;

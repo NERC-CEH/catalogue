@@ -4,6 +4,8 @@ WORKDIR /web
 COPY web ./
 RUN npm ci --no-audit
 RUN npm run build
+RUN npm install -g grunt-cli
+RUN node_modules/.bin/grunt
 
 # Build Java
 FROM gradle:7.2-jdk16 AS build-java
