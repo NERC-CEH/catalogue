@@ -8,7 +8,7 @@ import {
   PredefinedParentView, SupplementalView,
   TextareaView
 } from '../views'
-import { Contact, Funding, Supplemental } from '../models'
+import { Contact, Funding } from '../models'
 
 export default EditorView.extend({
 
@@ -199,7 +199,6 @@ export default EditorView.extend({
         new ParentView({
           model: this.model,
           modelAttribute: 'references',
-          ModelType: Supplemental,
           multiline: true,
           label: 'References',
           ObjectInputView: SupplementalView,

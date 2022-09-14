@@ -7,7 +7,7 @@ import {
   PredefinedParentView,
   SupplementalView, TextareaView
 } from '../views'
-import { Contact, DataTypeSchema, Funding, Supplemental } from '../models'
+import { Contact, DataTypeSchema, Funding } from '../models'
 import EditorView from '../EditorView'
 import InputView from '../InputView'
 import BoundingBox from '../geometryMap/BoundingBox'
@@ -380,7 +380,6 @@ export default EditorView.extend({
         new ParentView({
           model: this.model,
           modelAttribute: 'references',
-          ModelType: Supplemental,
           multiline: true,
           label: 'References',
           ObjectInputView: SupplementalView,

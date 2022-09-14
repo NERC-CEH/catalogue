@@ -19,7 +19,6 @@ import {
   ResourceMaintenanceView,
   ResourceTypeView, ServiceView,
   SingleObjectView, SpatialReferenceSystemView, SpatialRepresentationTypeView, SpatialResolutionView,
-
   SupplementalEIDCView,
   TemporalExtentView,
   TextareaView,
@@ -31,7 +30,7 @@ import {
   DescriptiveKeyword, DistributionFormat, Funding,
   InspireTheme, MapDataSource,
   MultipleDate, OnlineResource,
-  ResourceType, Service, SpatialResolution, Supplemental,
+  ResourceType, Service, SpatialResolution,
   TopicCategory
 } from '../models'
 import $ from 'jquery'
@@ -616,7 +615,6 @@ export default EditorView.extend({
         new ParentView({
           model: this.model,
           modelAttribute: 'supplemental',
-          ModelType: Supplemental,
           multiline: true,
           label: 'Additional information',
           ObjectInputView: SupplementalEIDCView,
