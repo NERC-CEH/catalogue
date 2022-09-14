@@ -9,7 +9,7 @@ import {
   SupplementalView, TemporalExtentView,
   TextareaView
 } from '../views'
-import { DistributionFormat, MultipleDate, SpatialResolution, Supplemental } from '../models'
+import { DistributionFormat, MultipleDate, SpatialResolution } from '../models'
 
 export default EditorView.extend({
 
@@ -145,7 +145,6 @@ export default EditorView.extend({
         new ParentView({
           model: this.model,
           modelAttribute: 'supplemental',
-          ModelType: Supplemental,
           multiline: true,
           label: 'Additional information',
           ObjectInputView: SupplementalView,

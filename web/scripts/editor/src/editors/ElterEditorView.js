@@ -29,7 +29,7 @@ import {
   InspireTheme, MapDataSource,
   MultipleDate,
   OnlineResource,
-  ResourceType, Service, SpatialResolution, Supplemental,
+  ResourceType, Service, SpatialResolution,
   TopicCategory
 } from '../models'
 import EditorView from '../EditorView'
@@ -622,7 +622,6 @@ export default EditorView.extend({
         new ParentView({
           model: this.model,
           modelAttribute: 'supplemental',
-          ModelType: Supplemental,
           multiline: true,
           label: 'Additional information',
           ObjectInputView: SupplementalView,
