@@ -240,7 +240,7 @@ public class CatalogueServiceConfig {
             Catalogue.builder()
                 .id("sa")
                 .title("UK Environmental Specimen Bank")
-                .url("https://www.ceh.ac.uk/")
+                .url("https://uk-scape.ceh.ac.uk/our-science/projects/UK-vESB")
                 .contactUrl("https://www.ceh.ac.uk/contact-us")
                 .logo("ukceh.png")
                 .facetKey("saPhysicalState")
