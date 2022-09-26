@@ -13,7 +13,7 @@
     owners = func.filter(responsibleParties, "role", "owner")
     originators = func.filter(responsibleParties, "role", "originator")
     resourceProviders = func.filter(responsibleParties, "role", "resourceProvider")
-    otherContacts = custodians + publishers + depositors + originators + owners + resourceProviders + rightsHolders
+    otherContacts = custodians + publishers + depositors + originators + owners + resourceProviders 
     catalogue = catalogues.retrieve(metadata.catalogue)
 
     rel_all=jena.allRelatedRecords(uri)

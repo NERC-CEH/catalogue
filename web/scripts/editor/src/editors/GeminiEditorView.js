@@ -5,7 +5,7 @@ import {
   CheckboxView,
   ContactView,
   DatasetReferenceDateView,
-  DescriptiveKeywordView,
+  DescriptiveKeywordView,KeywordVocabularyView,
   DistributionFormatView, FundingView,
   InspireThemeView, MapDataSourceView,
   OnlineResourceView,
@@ -254,7 +254,7 @@ export default EditorView.extend({
 <p>Multiple topic categories are allowed - please include all that are pertinent.  For example, "Estimates of topsoil invertebrates" = Biota AND Environment AND Geoscientific Information.</p>\
 `
         }),
-
+       
         new PredefinedParentView({
           model: this.model,
           ModelType: DescriptiveKeyword,
@@ -709,6 +709,18 @@ This is only needed if you configure 'Stylying=Classification' for your GeoTiff.
 <p>Paths should be specified relative to the base of the datastore. e.g. <strong>5b3fcf9f-19d4-4ad3-a8bb-0a5ea02c857e/my_shapefile</strong></p>\
 `,
           disabled
+        })
+      ]
+    },
+    {
+      label: 'BETA',
+      title: 'BETA',
+      views: [
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'parameters',
+          label: 'Parameters',
+          ObjectInputView: KeywordVocabularyView,
         })
       ]
     }

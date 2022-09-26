@@ -44,10 +44,6 @@
             <#if (downloadOrder.supportingDocumentsUrl)?has_content>
               <div class="information"><a href="${downloadOrder.supportingDocumentsUrl}" title="Supporting information important for the re-use of this dataset"><i class="fas fa-file text-info"></i> Supporting documentation</a></div>
             </#if>
-
-            <#if mapViewable>
-              <div class="preview"><a href="${mapViewerUrl}"><i class="fas fa-eye text-info"></i> Preview</a></div>
-            </#if>
       
             </div>
             <div class="divider"></div>

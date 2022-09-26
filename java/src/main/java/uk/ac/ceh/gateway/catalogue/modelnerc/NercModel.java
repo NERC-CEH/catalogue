@@ -53,11 +53,12 @@ public class NercModel extends AbstractMetadataDocument implements WellKnownText
         organisations,
         keyInputVariables,
         keyOutputVariables;
-
+    
     private List<OnlineLink> onlineResources;
     private List<Supplemental> references;
     private List<ResponsibleParty> responsibleParties;
     private List<QA> qa;
+    private List<AdditionalInfo> additionalInfo;
     private List<ModelResolution> resolution;
 
     @Data
@@ -66,6 +67,12 @@ public class NercModel extends AbstractMetadataDocument implements WellKnownText
             category,
             notes,
             date;
+    }
+    @Data
+    public static class AdditionalInfo {
+        private String
+            key,
+            value;
     }
     @Data
     public static class ModelResolution {

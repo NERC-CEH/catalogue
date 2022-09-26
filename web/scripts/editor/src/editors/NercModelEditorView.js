@@ -2,6 +2,7 @@ import {
   ContactView,
   DataTypeSchemaSimpleView, FundingView, KeywordVocabularyView,
   ModelQAView,
+  AdditionalInfoView,
   ModelResolutionView, OnlineLinkView,
   ParentView,
   PredefinedParentView,
@@ -116,6 +117,15 @@ export default EditorView.extend({
           helpText: `
 <p>Keywords help with model discovery</p>
 `
+        }),
+
+
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'additionalInfo',
+          multiline: true,
+          label: 'Additional info',
+          ObjectInputView: AdditionalInfoView
         }),
 
         new PredefinedParentView({
