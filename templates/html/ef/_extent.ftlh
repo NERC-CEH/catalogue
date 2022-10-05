@@ -1,21 +1,24 @@
 <div id="section-extent">
 <h2 id="extent">Where/When</h2>
-  <#if boundingBoxes?has_content || geometry?has_content>
-    <div id="studyarea-map">
-      <#list boundingBoxes as extent>
-        <span content="${extent.wkt}" datatype="geo:wktLiteral"/>
-      </#list>
-      <#if geometry??>
-        <span content="${geometry.value}" datatype="geo:wktLiteral"/>
-      </#if>
-      <#if uses??>
-        <#list uses as facility>
-          <#list jena.wkt(facility.href) as wkt>
-            <span content="${wkt}" datatype="geo:wktLiteral" href="${facility.href}"/>
-          </#list>
-        </#list>
-      </#if>
-    </div>
+  <#if boundingBoxes?has_content>
+      <dt>Study area</dt>
+      <dd>
+          <div id="studyarea-map">
+              <#list boundingBoxes as extent>
+                  <span content="${extent.bounds}" datatype="geoJson"/>
+              </#list>
+          </div>
+      </dd>
+  </#if>
+  <#if geometries?has_content>
+      <dt>Study area</dt>
+      <dd>
+          <div id="studyarea-map">
+              <#list geometries as geometry>
+                  <span content="${geometry.geometryString}" datatype="geoJson"/>
+              </#list>
+          </div>
+      </dd>
   </#if>
   <#if lifespan?has_content>
     <p>&nbsp;</p>

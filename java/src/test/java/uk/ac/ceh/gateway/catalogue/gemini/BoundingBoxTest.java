@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 public class BoundingBoxTest {
   
     @Test
-    public void checkWkt() {
+    public void checkGeoJson() {
         //Given
         BoundingBox boundingBox = BoundingBox.builder()
             .westBoundLongitude("-1.3425")
@@ -21,7 +21,7 @@ public class BoundingBoxTest {
         String actual = boundingBox.getGeoJson();
         
         //Then
-        assertThat("WKT Created", actual,
+        assertThat("GeoJson Created", actual,
             equalTo("POLYGON((-1.3425 56.1234, -1.3425 57.0021, 2.3492 57.0021, 2.3492 56.1234, -1.3425 56.1234))"));
     }
     

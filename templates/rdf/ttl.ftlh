@@ -27,7 +27,7 @@
   </#if>
   <#if boundingBoxes?has_content && boundingBoxes?has_content>
     <#list boundingBoxes as extent>
-       dct:spatial "${extent.wkt}"^^geo:wktLiteral ;
+      <span content="${extent.bounds}" datatype="geoJson"/>
     </#list>
   </#if>
   <#if temporalExtents?has_content>
