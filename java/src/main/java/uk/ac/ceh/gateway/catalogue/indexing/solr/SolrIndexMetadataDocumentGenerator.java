@@ -129,8 +129,8 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
     }
 
     private List<String> getLocations(MetadataDocument document) {
-        if (document instanceof WellKnownText) {
-            return ((WellKnownText) document).getWKTs();
+        if (document instanceof GeoJson) {
+            return ((GeoJson) document).getGeoJson();
         } else {
             return Collections.emptyList();
         }

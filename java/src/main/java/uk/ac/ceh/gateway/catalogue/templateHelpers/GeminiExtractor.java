@@ -65,9 +65,9 @@ public class GeminiExtractor {
             List<BoundingBox> clone = new ArrayList<>(document.getBoundingBoxes());
             if (!clone.isEmpty()) {
                 WKTReader reader = new WKTReader();
-                Geometry geo = reader.read(clone.remove(0).getWkt());
+                Geometry geo = reader.read(clone.remove(0).getGeoJson());
                 for (BoundingBox bbox : clone) {
-                    geo = geo.union(reader.read(bbox.getWkt()));
+                    geo = geo.union(reader.read(bbox.getGeoJson()));
                 }
                 return geo.getEnvelopeInternal();
             } else {

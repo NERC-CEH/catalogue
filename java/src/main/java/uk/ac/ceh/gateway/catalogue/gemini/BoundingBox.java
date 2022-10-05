@@ -34,7 +34,7 @@ public class BoundingBox {
         this.extentUri = nullToEmpty(extentUri);
     }
 
-    public String getWkt() {
+    public String getGeoJson() {
         return new StringBuilder()
                 .append("POLYGON((")
                 .append(westBoundLongitude).append(" ").append(southBoundLatitude).append(", ")

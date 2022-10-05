@@ -18,7 +18,7 @@ public class BoundingBoxTest {
             .build();
         
         //When
-        String actual = boundingBox.getWkt();
+        String actual = boundingBox.getGeoJson();
         
         //Then
         assertThat("WKT Created", actual,

@@ -69,18 +69,7 @@
     <#if keywords?? && keywords?has_content>
       <@key "Additional keyword${(keywords?size > 1)?then('s', '')}"><@tags keywords/></@key>
     </#if>
-
-    <#if boundingBoxes?? && boundingBoxes?has_content>
-      <@key "Geographic coverage${(boundingBoxes?size > 1)?then('s', '')}" >
-        <div id="section-extent">
-          <div id="studyarea-map">
-          <#list boundingBoxes as extent>
-              <span content="${extent.wkt}" datatype="geo:wktLiteral"/>
-          </#list>
-          </div>
-        </div>
-      </@key>
-    </#if>
+    <#include "../document/_extent.ftlh">
 
     <#if temporalExtent??>
       <@key "Temporal coverage">

@@ -9,7 +9,7 @@ import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.citation.Citation;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
-import uk.ac.ceh.gateway.catalogue.indexing.solr.WellKnownText;
+import uk.ac.ceh.gateway.catalogue.indexing.solr.GeoJson;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.Link;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
@@ -34,7 +34,7 @@ import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAP
         @Template(called = "rdf/ttl.ftlh", whenRequestedAs = RDF_TTL_VALUE),
         @Template(called = "schema.org/schema.org.ftlh", whenRequestedAs = RDF_SCHEMAORG_VALUE)
 })
-public class GeminiDocument extends AbstractMetadataDocument implements WellKnownText {
+public class GeminiDocument extends AbstractMetadataDocument implements GeoJson {
     private static final Set<String> ALLOWED_CITATION_FUNCTIONS = Set.of("isReferencedBy", "isSupplementTo");
     private static final String TOPIC_PROJECT_URL = "http://onto.nerc.ac.uk/CEHMD/";
     private static final Pattern WMS_ONLINE_RESOURCE = Pattern
@@ -235,11 +235,11 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     }
 
     @Override
-    public @NonNull List<String> getWKTs() {
+    public @NonNull List<String> getGeoJson() {
         return Optional.ofNullable(boundingBoxes)
                 .orElse(Collections.emptyList())
                 .stream()
-                .map(BoundingBox::getWkt)
+                .map(BoundingBox::getGeoJson)
                 .collect(Collectors.toList());
     }
 

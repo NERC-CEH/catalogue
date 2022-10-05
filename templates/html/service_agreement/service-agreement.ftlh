@@ -201,7 +201,7 @@
                     <@displayData "Description" description/> 
                     <@displayData "Lineage" lineage/>
                     <@displayKeywords/>
-                    <@displayArea/>
+                    <#include "../document/_extent.ftlh">
                 </div>
             </#if>
 
@@ -353,21 +353,6 @@
                         </#if>
                     </span>
                 </#list>
-            </div>
-        </div>
-    </#if>
-</#macro>
-
-<#macro displayArea>
-    <#if areaOfStudy??>
-        <div class="keyvalue">
-            <div class="key">Area of study</div>
-            <div class="key">
-                <div id="studyarea-map">
-                    <#list areaOfStudy as extent>
-                        <span content="${extent.wkt}" datatype="geo:wktLiteral"/>
-                    </#list>
-                </div>
             </div>
         </div>
     </#if>

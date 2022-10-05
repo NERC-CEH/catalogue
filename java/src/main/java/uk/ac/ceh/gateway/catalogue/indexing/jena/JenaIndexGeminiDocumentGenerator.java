@@ -41,7 +41,7 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
         Optional.ofNullable(document.getBoundingBoxes())
             .orElse(Collections.emptyList())
             .forEach(b ->
-                toReturn.add(createStatement(me, HAS_GEOMETRY, createTypedLiteral(b.getWkt(), WKT_LITERAL)))
+                toReturn.add(createStatement(me, HAS_GEOMETRY, createTypedLiteral(b.getGeoJson(), WKT_LITERAL)))
             );
 
         Optional.ofNullable(document.getResourceIdentifiers())

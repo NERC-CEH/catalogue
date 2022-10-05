@@ -7,7 +7,7 @@ import lombok.experimental.Accessors;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
-import uk.ac.ceh.gateway.catalogue.indexing.solr.WellKnownText;
+import uk.ac.ceh.gateway.catalogue.indexing.solr.GeoJson;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -42,7 +42,7 @@ import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.EF_INSPIRE_XML_VAL
     @Template(called="html/ef.ftlh", whenRequestedAs=MediaType.TEXT_HTML_VALUE),
     @Template(called="xml/emf.ftlx",   whenRequestedAs=EF_INSPIRE_XML_VALUE)
 })
-public class Facility extends BaseMonitoringType implements WellKnownText {
+public class Facility extends BaseMonitoringType implements GeoJson {
 
     private List<Link>
         legalBackground = new ArrayList<>(),
@@ -71,8 +71,8 @@ public class Facility extends BaseMonitoringType implements WellKnownText {
     private Geometry geometry;
 
     @Override
-    public List<String> getWKTs() {
-        List<String> toReturn = super.getWKTs();
+    public List<String> getGeoJson() {
+        List<String> toReturn = super.getGeoJson();
         if (geometry != null) {
             toReturn.add(geometry.getValue());
         }

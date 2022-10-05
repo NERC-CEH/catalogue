@@ -115,15 +115,7 @@
     <section>
       <h2>Spatio-Temporal Information</h2>
 
-      <#if boundingBoxes?has_content>
-        <@m.key "Spatial extent">
-          <div id="studyarea-map">
-            <#list boundingBoxes as extent>
-              <span content="${extent.wkt}" datatype="geo:wktLiteral"/>
-            </#list>
-          </div>
-        </@m.key>
-      </#if>
+      <#include "document/_extent.ftlh">
 
       <#if spatialDomain?? && spatialDomain?has_content>
         <@m.key "Spatial domain" "Is the model only applicable to certain areas?">${spatialDomain}</@m.key>

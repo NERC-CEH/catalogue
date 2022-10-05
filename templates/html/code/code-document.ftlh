@@ -126,36 +126,7 @@
 
 
 
-            <#if boundingBoxes?has_content>
-              <div>
-                <h3>Spatial extent</h3>
-                  <div id="studyarea-map">
-                    <#list boundingBoxes as extent>
-                      <span content="${extent.wkt}" datatype="geo:wktLiteral"/>
-                    </#list>
-                  </div>
-              </div>
-            </#if>
-
-            <#if temporalExtents?has_content>
-              <div>
-              <h3>Temporal extent</h3>
-                <#list temporalExtents as extent>
-                    <#if extent.begin?has_content>
-                      <span class="extentBegin">${extent.begin?date}</span>
-                    <#else>
-                      &hellip;
-                    </#if>
-                    &nbsp;&nbsp;&nbsp;to&nbsp;&nbsp;&nbsp;
-                    <#if extent.end?has_content>
-                      <span class="extentEnd">${extent.end?date}</span>
-                    <#else>
-                      &hellip;
-                    </#if>
-                    <#sep><br>&nbsp;&nbsp;&nbsp;&nbsp;and <br></#sep>
-                </#list>
-              </div>
-            </#if>
+            <#include "../document/_extent.ftlh">
 
             <#if relationships?has_content>
               <h3>Related record<#if relationships?size gt 1>s</#if></h3>

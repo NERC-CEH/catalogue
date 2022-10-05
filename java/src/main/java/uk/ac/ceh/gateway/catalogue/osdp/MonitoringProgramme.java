@@ -7,7 +7,7 @@ import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.TimePeriod;
-import uk.ac.ceh.gateway.catalogue.indexing.solr.WellKnownText;
+import uk.ac.ceh.gateway.catalogue.indexing.solr.GeoJson;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 
 import java.util.ArrayList;
@@ -18,15 +18,15 @@ import java.util.List;
 @ConvertUsing({
     @Template(called="html/osdp/monitoringProgramme.ftlh", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
 })
-public class MonitoringProgramme extends AbstractMetadataDocument implements WellKnownText {
+public class MonitoringProgramme extends AbstractMetadataDocument implements GeoJson {
     private TimePeriod temporalExtent;
     private BoundingBox boundingBox;
 
     @Override
-    public List<String> getWKTs() {
+    public List<String> getGeoJson() {
         List<String> toReturn = new ArrayList<>();
         if (boundingBox != null) {
-            toReturn.add(boundingBox.getWkt());
+            toReturn.add(boundingBox.getGeoJson());
         }
         return toReturn;
     }

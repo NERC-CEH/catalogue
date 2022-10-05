@@ -10,7 +10,7 @@ import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
-import uk.ac.ceh.gateway.catalogue.indexing.solr.WellKnownText;
+import uk.ac.ceh.gateway.catalogue.indexing.solr.GeoJson;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.OnlineLink;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 @ConvertUsing({
   @Template(called="html/erammp/erammp_model.ftlh", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
 })
-public class ErammpModel extends AbstractMetadataDocument implements WellKnownText {
+public class ErammpModel extends AbstractMetadataDocument implements GeoJson {
   private String modelApproach, version, ipr, spatialResolution, runtimeTotal, runtimeWales, runtimeOptimisation, calibrationEffort, futureRun, integrationExperience, integrationHistory;
   private List<Keyword> keywords;
   private List<BoundingBox> boundingBoxes;
@@ -39,11 +39,11 @@ public class ErammpModel extends AbstractMetadataDocument implements WellKnownTe
   private boolean spatiallyExplicit, calibratedForWales;
 
   @Override
-  public @NonNull List<String> getWKTs() {
+  public @NonNull List<String> getGeoJson() {
     return Optional.ofNullable(boundingBoxes)
         .orElse(Collections.emptyList())
         .stream()
-        .map(BoundingBox::getWkt)
+        .map(BoundingBox::getGeoJson)
         .collect(Collectors.toList());
   }
 }

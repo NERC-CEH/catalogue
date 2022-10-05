@@ -5,7 +5,7 @@ import lombok.NonNull;
 
 import java.util.List;
 
-public interface WellKnownText {
+public interface GeoJson {
     @NonNull @JsonIgnore
-    List<String> getWKTs();
+    List<String> getGeoJson();
 }

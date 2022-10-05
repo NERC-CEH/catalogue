@@ -11,7 +11,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
-import uk.ac.ceh.gateway.catalogue.indexing.solr.WellKnownText;
+import uk.ac.ceh.gateway.catalogue.indexing.solr.GeoJson;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.OnlineLink;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
@@ -23,7 +23,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 @ConvertUsing({
     @Template(called="html/ceh-model.ftlh", whenRequestedAs=MediaType.TEXT_HTML_VALUE)
 })
-public class CehModel extends AbstractMetadataDocument implements WellKnownText {
+public class CehModel extends AbstractMetadataDocument implements GeoJson {
     private String
         primaryPurpose,
         seniorResponsibleOfficer,
@@ -110,11 +110,11 @@ public class CehModel extends AbstractMetadataDocument implements WellKnownText 
     }
 
     @Override
-    public List<String> getWKTs() {
+    public List<String> getGeoJson() {
         return Optional.ofNullable(boundingBoxes)
             .orElse(Collections.emptyList())
             .stream()
-            .map(BoundingBox::getWkt)
+            .map(BoundingBox::getGeoJson)
             .collect(Collectors.toList());
     }
 }

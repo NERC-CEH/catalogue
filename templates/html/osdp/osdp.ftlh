@@ -178,17 +178,7 @@ Temporal Extent
   </#if>
 </#macro>
 
-<#macro boundingBox boundingBox>
-  <div id="studyarea-map">
-      <span content="${boundingBox.wkt}" datatype="geo:wktLiteral"/>
-  </div>
-</#macro>
-
-<#macro geometry geometry>
-  <div id="geometry-map">
-      <span content="${geometry}" datatype="geo:wktLiteral"/>
-  </div>
-</#macro>
+<#include "../document/_extent.ftlh">
 
 <#--
 ObservationCapability

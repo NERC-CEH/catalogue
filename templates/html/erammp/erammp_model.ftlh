@@ -28,15 +28,7 @@
             </@simplerow>
         </#if>
 
-        <#if boundingBoxes?? && boundingBoxes?has_content>
-          <@simplerow "Coverage">
-            <div id="studyarea-map">
-              <#list boundingBoxes as extent>
-              <span content="${extent.wkt}" datatype="geo:wktLiteral"/>
-              </#list>
-            </div>
-          </@simplerow>
-        </#if>
+        <#include "../document/_extent.ftlh">
 
         <#if contacts?? && contacts?has_content>
           <@simplerow "Contact${(contacts?size > 1)?then('s', '')}">

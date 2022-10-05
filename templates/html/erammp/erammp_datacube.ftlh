@@ -65,13 +65,7 @@
                   </#if>
               </div>
               <div class="col-md-3 col-sm-12">
-              <#if boundingBoxes?? && boundingBoxes?has_content>
-                <div id="studyarea-map" title="Spatial coverage of the data">
-                <#list boundingBoxes as extent>
-                  <span  content="${extent.wkt}" datatype="geo:wktLiteral"/>
-                </#list>
-                </div>
-              </#if>
+              <#include "../document/_extent.ftlh">
               </div>
             </div>
          </div>

@@ -99,14 +99,7 @@
               <@displaykey "Scale">
                 <#if infrastructureScale??>${infrastructureScale}</#if>
               </@displaykey>
-              
-              <#if boundingBoxes?? && boundingBoxes?has_content >
-                  <div id="studyarea-map">
-                  <#list boundingBoxes as extent>
-                    <span content="${extent.wkt}" datatype="geo:wktLiteral"/>
-                  </#list>
-                </div>
-              </#if>
+              <#include "../document/_extent.ftlh">
             </#if>
 
             <@displaykey "Last updated">${metadataDateTime?datetime.iso?datetime?string['dd MMMM yyyy  HH:mm']}</@displaykey>

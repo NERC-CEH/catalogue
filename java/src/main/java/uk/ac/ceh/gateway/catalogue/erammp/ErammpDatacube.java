@@ -11,7 +11,7 @@ import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
 import uk.ac.ceh.gateway.catalogue.gemini.SpatialReferenceSystem;
-import uk.ac.ceh.gateway.catalogue.indexing.solr.WellKnownText;
+import uk.ac.ceh.gateway.catalogue.indexing.solr.GeoJson;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.DataTypeSchema;
 import uk.ac.ceh.gateway.catalogue.model.OnlineLink;
@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 @ConvertUsing({
   @Template(called="html/erammp/erammp_datacube.ftlh", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
 })
-public class ErammpDatacube extends AbstractMetadataDocument implements WellKnownText{
+public class ErammpDatacube extends AbstractMetadataDocument implements GeoJson {
   private String version, dataFormat, spatialResolution, spatialRepresentationType, condition;
   private List<BoundingBox> boundingBoxes;
   private List<DataLocation> dataLocations;
@@ -42,11 +42,11 @@ public class ErammpDatacube extends AbstractMetadataDocument implements WellKnow
 
 
   @Override
-  public @NonNull List<String> getWKTs() {
+  public @NonNull List<String> getGeoJson() {
     return Optional.ofNullable(boundingBoxes)
         .orElse(Collections.emptyList())
         .stream()
-        .map(BoundingBox::getWkt)
+        .map(BoundingBox::getGeoJson)
         .collect(Collectors.toList());
   }
 }
