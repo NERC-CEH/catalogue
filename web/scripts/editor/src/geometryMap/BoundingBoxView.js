@@ -51,17 +51,17 @@ export default ObjectInputView.extend({
     if (this.model.get('northBoundLatitude') && this.model.get('westBoundLongitude') &&
         this.model.get('southBoundLatitude') && this.model.get('eastBoundLongitude')) {
       this.shapeDrawn = true
-      this.rectangle = L.rectangle([[[this.model.get('northBoundLatitude'), this.model.get('westBoundLongitude')],
+      this.boundingBox = L.rectangle([[[this.model.get('northBoundLatitude'), this.model.get('westBoundLongitude')],
         [this.model.get('southBoundLatitude'), this.model.get('eastBoundLongitude')]]])
-      this.drawnItems.addLayer(this.rectangle)
-      this.rectangle.editing.enable()
+      this.drawnItems.addLayer(this.boundingBox)
+      this.boundingBox.editing.enable()
       this.drawControl = this.deleteToolbar()
     } else {
       this.drawControl = this.createToolbar()
       this.shapeDrawn = false
     }
     if (this.shapeDrawn === true) {
-      this.map.setView(this.rectangle.getBounds().getCenter(), 4)
+      this.map.fitBounds(this.boundingBox.getBounds())
     }
     this.drawnItems.addTo(this.map)
 
@@ -72,9 +72,9 @@ export default ObjectInputView.extend({
 
     this.listenTo(this.map, L.Draw.Event.CREATED, function (event) {
       if (this.shapeDrawn === false) {
-        this.rectangle = event.layer
-        this.rectangle.editing.enable()
-        this.drawnItems.addLayer(this.rectangle)
+        this.boundingBox = event.layer
+        this.boundingBox.editing.enable()
+        this.drawnItems.addLayer(this.boundingBox)
         this.shapeDrawn = true
         this.map.removeControl(this.drawControl)
         this.drawControl = this.deleteToolbar()
@@ -150,6 +150,9 @@ export default ObjectInputView.extend({
 
   render () {
     ObjectInputView.prototype.render.apply(this)
+    if (this.shapeDrawn === true) {
+      this.viewMap()
+    }
     return this
   }
 })

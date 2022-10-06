@@ -12,13 +12,9 @@ export default Backbone.View.extend({
   },
 
   createMap () {
-    this.overlay = L.featureGroup()
-
     const studyArea = JSON.parse(this.getStudyArea()[0])
-    const polygon = L.geoJson(studyArea)
-    const center = polygon.getBounds().getCenter()
-    const map = new L.Map($('#studyarea-map')[0], { center: center, zoom: 4 })
-
+    const boundingBox = L.geoJson(studyArea)
+    const map = new L.Map($('#studyarea-map')[0], { center: boundingBox.getBounds().getCenter() })
     const baseMaps = {
       Map: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 18,
@@ -30,7 +26,8 @@ export default Backbone.View.extend({
     }
 
     L.control.layers(baseMaps, {}, { position: 'topright', collapsed: false }).addTo(map)
-    polygon.addTo(map)
+    boundingBox.addTo(map)
+    map.fitBounds(boundingBox.getBounds())
   },
 
   getStudyArea () {
