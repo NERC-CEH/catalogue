@@ -153,7 +153,7 @@
             <@m.key "Spatial extent">
               <div id="studyarea-map">
                 <#list boundingBoxes as extent>
-                  <span content="${extent.wkt}" datatype="geo:wktLiteral"/>
+                  <span content="${extent.geometryString}" datatype="geoJson"/>
                 </#list>
               </div>
             </@m.key>

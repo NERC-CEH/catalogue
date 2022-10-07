@@ -3,11 +3,13 @@ package uk.ac.ceh.gateway.catalogue.gemini;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import static com.google.common.base.Strings.nullToEmpty;
-import java.math.BigDecimal;
-import lombok.Value;
 import lombok.Builder;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
+
+import java.math.BigDecimal;
+
+import static com.google.common.base.Strings.nullToEmpty;
 
 @Value
 @Slf4j
@@ -35,6 +37,19 @@ public class BoundingBox {
     }
 
     public String getWkt() {
+        return new StringBuilder()
+                .append("POLYGON((")
+                .append(westBoundLongitude).append(" ").append(southBoundLatitude).append(", ")
+                .append(westBoundLongitude).append(" ").append(northBoundLatitude).append(", ")
+                .append(eastBoundLongitude).append(" ").append(northBoundLatitude).append(", ")
+                .append(eastBoundLongitude).append(" ").append(southBoundLatitude).append(", ")
+                .append(westBoundLongitude).append(" ").append(southBoundLatitude)
+                .append("))")
+                .toString();
+    }
+
+
+    public String getGeoJson() {
         return new StringBuilder()
                 .append("POLYGON((")
                 .append(westBoundLongitude).append(" ").append(southBoundLatitude).append(", ")

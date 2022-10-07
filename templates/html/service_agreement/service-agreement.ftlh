@@ -364,8 +364,8 @@
             <div class="key">Area of study</div>
             <div class="key">
                 <div id="studyarea-map">
-                    <#list areaOfStudy as extent>
-                        <span content="${extent.wkt}" datatype="geo:wktLiteral"/>
+                    <#list areaOfStudy as geometry>
+                        <span content="${geometry.geometryString}" datatype="geoJson"/>
                     </#list>
                 </div>
             </div>

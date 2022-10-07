@@ -10,10 +10,11 @@ import org.hibernate.validator.constraints.Range;
 import uk.ac.ceh.gateway.catalogue.ef.adapters.AnyXMLHandler;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
-import uk.ac.ceh.gateway.catalogue.indexing.solr.WellKnownText;
+import uk.ac.ceh.gateway.catalogue.indexing.solr.GeoJson;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Relationship;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.*;
@@ -63,7 +64,7 @@ import java.util.stream.Collectors;
     @JsonSubTypes.Type(value = Facility.class, name = "facility")
 })
 @XmlSeeAlso({Activity.class, Programme.class, Network.class, Facility.class})
-public class BaseMonitoringType implements MetadataDocument, WellKnownText {
+public class BaseMonitoringType implements MetadataDocument, GeoJson {
 
     private Set<Relationship> relationships;
 
@@ -163,13 +164,6 @@ public class BaseMonitoringType implements MetadataDocument, WellKnownText {
                 .collect(Collectors.toList())
         );
         return this;
-    }
-
-    @Override
-    public List<String> getWKTs() {
-        return boundingBoxes.stream()
-            .map(BoundingBox::getWkt)
-            .collect(Collectors.toList());
     }
 
     @Data

@@ -3,10 +3,10 @@
   <#if boundingBoxes?has_content || geometry?has_content>
     <div id="studyarea-map">
       <#list boundingBoxes as extent>
-        <span content="${extent.wkt}" datatype="geo:wktLiteral"/>
+        <span content="${extent.geometryString}" datatype="geoJson"/>
       </#list>
       <#if geometry??>
-        <span content="${geometry.value}" datatype="geo:wktLiteral"/>
+        <span content="${geometry.geometryString}" datatype="geoJson"/>
       </#if>
       <#if uses??>
         <#list uses as facility>

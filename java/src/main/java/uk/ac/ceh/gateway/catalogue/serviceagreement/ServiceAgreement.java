@@ -3,9 +3,11 @@ package uk.ac.ceh.gateway.catalogue.serviceagreement;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 import uk.ac.ceh.gateway.catalogue.gemini.*;
+import uk.ac.ceh.gateway.catalogue.indexing.solr.GeoJson;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 
@@ -20,7 +22,7 @@ import java.util.stream.Collectors;
 @ToString(callSuper = true)
 @Accessors(chain = true)
 
-public class ServiceAgreement extends AbstractMetadataDocument {
+public class ServiceAgreement extends AbstractMetadataDocument implements GeoJson {
 
     private String depositReference, depositorName, depositorContactDetails, eidcName, eidcContactDetails, otherPoliciesOrLegislation, fileNumber, transferMethod, fileNamingConvention, policyExceptions, availability, useConstraints, supersededData, otherInfo, description, lineage;
 
@@ -55,6 +57,15 @@ public class ServiceAgreement extends AbstractMetadataDocument {
                 .orElse(Collections.emptyList())
                 .stream()
                 .flatMap(dk -> dk.getKeywords().stream())
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public @NonNull List<String> getGeoJson() {
+        return Optional.ofNullable(areaOfStudy)
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(BoundingBox::getGeoJson)
                 .collect(Collectors.toList());
     }
 }

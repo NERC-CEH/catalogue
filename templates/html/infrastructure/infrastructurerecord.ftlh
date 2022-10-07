@@ -103,7 +103,7 @@
               <#if boundingBoxes?? && boundingBoxes?has_content >
                   <div id="studyarea-map">
                   <#list boundingBoxes as extent>
-                    <span content="${extent.wkt}" datatype="geo:wktLiteral"/>
+                    <span content="${extent.geometryString}" datatype="geoJson"/>
                   </#list>
                 </div>
               </#if>
