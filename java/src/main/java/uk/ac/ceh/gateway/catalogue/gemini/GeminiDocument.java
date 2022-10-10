@@ -48,7 +48,6 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private List<String> alternateTitles, spatialRepresentationTypes, datasetLanguages,
             securityConstraints;
     private List<Keyword> topicCategories;
-    private List<Geometry> geometries;
     private List<DistributionInfo> distributionFormats;
     private List<DescriptiveKeywords> descriptiveKeywords;
     private List<InspireTheme> inspireThemes;
@@ -250,16 +249,6 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
                 .map(BoundingBox::getBounds)
                 .collect(Collectors.toList());
     }
-
-    public @NonNull List<String> getGeometryString() {
-        return Optional.ofNullable(geometries)
-                .orElse(Collections.emptyList())
-                .stream()
-                .map(Geometry::getGeometryString)
-                .collect(Collectors.toList());
-    }
-
-
     public long getIncomingCitationCount() {
         return Optional.ofNullable(supplemental)
                 .orElse(Collections.emptyList())
