@@ -226,7 +226,7 @@
           </#if>
         </div>
 
-        <#if (references?? && references?has_content) || (websites?? && websites?has_content)>
+        <#if (references?? && references?has_content) || (websites?? && websites?has_content) || (additionalInfo?? && additionalInfo?has_content)>
         <div>
           <h2>Supplemental information</h2>
 
@@ -253,6 +253,15 @@
           </#if>
         </div>
         </#if>
+
+        <#if additionalInfo?? && additionalInfo?has_content>
+           <#list additionalInfo as ai>
+              <@m.key ai.key>
+                ${ai.value}
+              </@m.key>
+           </#list>        
+        </#if>
+
 
         <@m.additionalMetadata />
       </div>
