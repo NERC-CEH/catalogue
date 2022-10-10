@@ -240,7 +240,7 @@ public class DataciteService {
      * @return true if the GeminiDocument has already been submitted for a doi
      */
     public boolean isDatacited(GeminiDocument document) {
-        return isDatacitable(document, false) && getDoi(document).isPresent();
+        return isDatacitable(document, true) && getDoi(document).isPresent();
     }
 
     /**
