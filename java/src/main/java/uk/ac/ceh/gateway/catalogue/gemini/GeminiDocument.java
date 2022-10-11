@@ -251,16 +251,6 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
                 .map(BoundingBox::getBounds)
                 .collect(Collectors.toList());
     }
-
-    public @NonNull List<String> getGeometryString() {
-        return Optional.ofNullable(geometries)
-                .orElse(Collections.emptyList())
-                .stream()
-                .map(Geometry::getGeometryString)
-                .collect(Collectors.toList());
-    }
-
-
     public long getIncomingCitationCount() {
         return Optional.ofNullable(supplemental)
                 .orElse(Collections.emptyList())

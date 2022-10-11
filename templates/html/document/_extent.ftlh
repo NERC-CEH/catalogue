@@ -14,17 +14,6 @@
         </dd>
       </#if>
 
-      <#if geometries?has_content>
-          <dt>Study area</dt>
-          <dd>
-              <div id="studyarea-map">
-                  <#list geometries as geometry>
-                      <span content="${geometry.geometryString}" datatype="geoJson"/>
-                  </#list>
-              </div>
-          </dd>
-      </#if>
-
       <#if temporalExtents?has_content>
         <dt>Temporal extent</dt>
         <dd id="section-temporalExtents">
