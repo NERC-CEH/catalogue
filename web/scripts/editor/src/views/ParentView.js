@@ -4,6 +4,7 @@ import ChildView from './ChildView'
 import template from '../templates/Parent.tpl'
 import { Positionable } from '../collections'
 import $ from 'jquery'
+import 'jquery-sortablejs';
 
 export default SingleView.extend({
 
@@ -29,17 +30,6 @@ export default SingleView.extend({
     if (this.data.multiline) {
       this.$el.addClass('multiline')
     }
-
-    if (!(this.data.disabled === 'disabled')) {
-      this.$('.existing').sortable({
-        start: (event, ui) => {
-          this._oldPosition = ui.item.index()
-        },
-        update: (event, ui) => {
-          this.collection.position(this._oldPosition, ui.item.index())
-        }
-      })
-    }
   },
 
   render () {
@@ -52,6 +42,17 @@ export default SingleView.extend({
     const that = this
     $(document).ready(function () {
       that.$('.existing').append(view.el)
+      if (that.data.disabled !== 'disabled') {
+        that.$('.existing').sortable({
+          animation: 150,
+          start: (event, ui) => {
+            that._oldPosition = ui.item.index()
+          },
+          update: (event, ui) => {
+            that.collection.position(that._oldPosition, ui.item.index())
+          }
+        })
+      }
     })
   },
 

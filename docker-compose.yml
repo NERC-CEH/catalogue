@@ -24,8 +24,9 @@ services:
       # Uncomment to work on styling (LESS) & javascript in Docker container
       #- ./web/src:/opt/ceh-catalogue/static
       # Uncomment to work on webpack
-      # Run 'npm run watch' and connect to the catalogue docker service to have code recompiled while working
-      # To connect to the docker service you can use the services tab in IntelliJ
+      # Run 'npm run watch' and connect to the catalogue docker service to have code recompiled while developing
+      # To connect to the docker service, add your user to the docker group
+      # Then use the services tab in IntelliJ
       #- ./web/dist:/opt/ceh-catalogue/static/scripts
     environment:
       - documents.baseUri=http://localhost:8080
