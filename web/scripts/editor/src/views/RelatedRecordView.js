@@ -2,7 +2,6 @@ import _ from 'underscore'
 import $ from 'jquery'
 import ObjectInputView from './ObjectInputView'
 import template from '../templates/RelatedRecord.tpl'
-import 'jquery-ui/themes/base/all.css'
 
 export default ObjectInputView.extend({
 
