@@ -1,7 +1,7 @@
 import Backbone from 'backbone'
 export default Backbone.Collection.extend({
   /*
-    Moves an existing element in the the collection from position index
+    Moves an existing element in the collection from position index
     to newPosition. Any "position" listeners of this instance will be
     notified with the arguments:
       model - the model which moved
@@ -12,6 +12,6 @@ export default Backbone.Collection.extend({
   position (index, newPosition) {
     const toMove = (this.models.splice(index, 1))[0]
     this.models.splice(newPosition, 0, toMove)
-    return this.trigger('position', toMove, this, newPosition, index)
+    this.trigger('position', toMove, this, newPosition, index)
   }
 })
