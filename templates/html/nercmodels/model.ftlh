@@ -251,6 +251,15 @@
               </#list>
             </@m.key>
           </#if>
+
+          <#if additionalInfo?? && additionalInfo?has_content>
+            <#list additionalInfo as ai>
+                <@m.key ai.key>
+                  ${ai.value}
+                </@m.key>
+            </#list>
+           </#if>     
+
         </div>
         </#if>
 

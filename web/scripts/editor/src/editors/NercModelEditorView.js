@@ -6,7 +6,7 @@ import {
   ModelResolutionView, OnlineLinkView,
   ParentView,
   PredefinedParentView,
-  SupplementalView, TextareaView
+  SupplementalView, TextareaView, TextOnlyView
 } from '../views'
 import { Contact, DataTypeSchema, Funding } from '../models'
 import EditorView from '../EditorView'
@@ -495,12 +495,10 @@ export default EditorView.extend({
       label: 'Additional info',
       title: 'Additional info',
       views: [
-
         new ParentView({
           model: this.model,
           modelAttribute: 'additionalInfo',
           multiline: true,
-          //label: 'Additional info',
           ObjectInputView: AdditionalInfoView
         })
       ]
