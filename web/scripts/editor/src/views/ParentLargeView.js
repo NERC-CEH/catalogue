@@ -1,5 +1,4 @@
 import _ from 'underscore'
-import $ from 'jquery'
 import { Positionable } from '../collections'
 import SingleView from '../SingleView'
 import ChildLargeView from './ChildLargeView'
@@ -49,10 +48,7 @@ export default SingleView.extend({
 
   addOne (model) {
     const view = new ChildLargeView(_.extend({}, this.data, { model }))
-    const that = this
-    $(document).ready(function () {
-      that.$('.existing').append(view.el)
-    })
+    this.$('.existing').append(view.el)
   },
 
   addAll () {

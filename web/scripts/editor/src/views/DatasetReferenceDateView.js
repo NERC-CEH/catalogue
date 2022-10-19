@@ -5,8 +5,6 @@ import 'air-datepicker'
 import 'air-datepicker/dist/js/i18n/datepicker.en.js'
 import 'air-datepicker/dist/css/datepicker.min.css'
 import Moment from 'moment'
-import $ from 'jquery'
-
 export default ObjectInputView.extend({
 
   render () {
@@ -14,49 +12,46 @@ export default ObjectInputView.extend({
     ObjectInputView.prototype.render.apply(this)
     // eslint-disable-next-line no-unused-vars
 
-    const that = this
-    $(document).ready(function () {
-      that.$('#input-creationDate').datepicker({
-        language: 'en',
-        dateFormat: 'yyyy-mm-dd',
-        position: 'top left',
-        onSelect: function (formattedDate, date, inst) {
-          that.model.set('creationDate', Moment(date).format('YYYY-MM-DD'))
-          that.$('#input-creationDate').value = that.model.set('creationDate', Moment(date).format('YYYY-MM-DD'))
-        }
-      })
-
-      that.$('#input-publicationDate').datepicker(
-        {
-          language: 'en',
-          dateFormat: 'yyyy-mm-dd',
-          position: 'top left',
-          onSelect: function (formattedDate, date, inst) {
-            that.model.set('publicationDate', Moment(date).format('YYYY-MM-DD'))
-            that.$('#input-publicationDate').value = that.model.set('publicationDate', Moment(date).format('YYYY-MM-DD'))
-          }
-        })
-
-      that.$('#input-releasedDate').datepicker({
-        language: 'en',
-        dateFormat: 'yyyy-mm-dd',
-        position: 'top left',
-        onSelect: function (formattedDate, date, inst) {
-          that.model.set('releasedDate', Moment(date).format('YYYY-MM-DD'))
-          that.$('#input-releasedDate').value = that.model.set('releasedDate', Moment(date).format('YYYY-MM-DD'))
-        }
-      })
-
-      that.$('#input-supersededDate').datepicker({
-        language: 'en',
-        dateFormat: 'yyyy-mm-dd',
-        position: 'top left',
-        onSelect: function (formattedDate, date, inst) {
-          that.model.set('supersededDate', Moment(date).format('YYYY-MM-DD'))
-          that.$('#input-supersededDate').value = that.model.set('supersededDate', Moment(date).format('YYYY-MM-DD'))
-        }
-      })
-      return this
+    this.$('#input-creationDate').datepicker({
+      language: 'en',
+      dateFormat: 'yyyy-mm-dd',
+      position: 'top left',
+      onSelect: function (formattedDate, date, inst) {
+        this.model.set('creationDate', Moment(date).format('YYYY-MM-DD'))
+        this.$('#input-creationDate').value = this.model.set('creationDate', Moment(date).format('YYYY-MM-DD'))
+      }
     })
+
+    this.$('#input-publicationDate').datepicker(
+      {
+        language: 'en',
+        dateFormat: 'yyyy-mm-dd',
+        position: 'top left',
+        onSelect: function (formattedDate, date, inst) {
+          this.model.set('publicationDate', Moment(date).format('YYYY-MM-DD'))
+          this.$('#input-publicationDate').value = this.model.set('publicationDate', Moment(date).format('YYYY-MM-DD'))
+        }
+      })
+
+    this.$('#input-releasedDate').datepicker({
+      language: 'en',
+      dateFormat: 'yyyy-mm-dd',
+      position: 'top left',
+      onSelect: function (formattedDate, date, inst) {
+        this.model.set('releasedDate', Moment(date).format('YYYY-MM-DD'))
+        this.$('#input-releasedDate').value = this.model.set('releasedDate', Moment(date).format('YYYY-MM-DD'))
+      }
+    })
+
+    this.$('#input-supersededDate').datepicker({
+      language: 'en',
+      dateFormat: 'yyyy-mm-dd',
+      position: 'top left',
+      onSelect: function (formattedDate, date, inst) {
+        this.model.set('supersededDate', Moment(date).format('YYYY-MM-DD'))
+        this.$('#input-supersededDate').value = this.model.set('supersededDate', Moment(date).format('YYYY-MM-DD'))
+      }
+    })
+    return this
   }
 })

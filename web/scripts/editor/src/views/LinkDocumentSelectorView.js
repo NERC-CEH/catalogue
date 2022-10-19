@@ -69,10 +69,7 @@ export default InputView.extend({
 
   addOne (result) {
     const view = new LinkDocumentView({ model: result })
-    const that = this
-    $(document).ready(function () {
-      that.$('#results').append(view.render().el)
-    })
+    this.$('#results').append(view.render().el)
   },
 
   addAll () {

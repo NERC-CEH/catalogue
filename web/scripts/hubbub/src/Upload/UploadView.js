@@ -103,17 +103,14 @@ export default Backbone.View.extend({
   },
 
   addOne (collection, $container, model) {
-    const that = this
-    $(document).ready(function () {
-      const view = new FileView({
-        collection,
-        datastore: that.datastore,
-        metadata: that.metadata,
-        model,
-        url: that.model.url()
-      })
-      $container.append(view.render().el)
+    const view = new FileView({
+      collection,
+      datastore: this.datastore,
+      metadata: this.metadata,
+      model,
+      url: this.model.url()
     })
+    $container.append(view.render().el)
   },
 
   addAll (collection, $container) {

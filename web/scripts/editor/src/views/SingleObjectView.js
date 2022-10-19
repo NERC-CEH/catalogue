@@ -1,7 +1,5 @@
 import _ from 'underscore'
 import SingleView from '../SingleView'
-import $ from 'jquery'
-
 export default SingleView.extend({
 
   initialize (options) {
@@ -14,13 +12,9 @@ export default SingleView.extend({
       inputModel.set(model.get(this.data.modelAttribute))
     })
 
-    const that = this
-    $(document).ready(function () {
-      // eslint-disable-next-line no-unused-vars
-      const view = new that.data.ObjectInputView(_.extend({}, that.data, {
-        el: that.$('.dataentry'),
-        model: inputModel
-      }))
-    })
+    new this.data.ObjectInputView(_.extend({}, this.data, {
+      el: this.$('.dataentry'),
+      model: inputModel
+    }))
   }
 })

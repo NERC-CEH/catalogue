@@ -2,10 +2,8 @@
 <#setting url_escaping_charset='ISO-8859-1'>
 <#setting date_format = 'yyyy-MM-dd'>
 
-<#assign defaultScripts> <#-- editor.bundle.js bundle is not required as it is included via catalogue.bundle.js -->
-  <script src="/static/scripts/search.bundle.js"></script>
-  <script src="/static/scripts/catalogue.bundle.js"></script>
-  <script src="/static/scripts/studyarea.bundle.js"></script>
+<#assign defaultScripts>
+  <script src="/static/scripts/main.bundle.js"></script>
 </#assign>
 
 <#macro master title catalogue="" rdf="" schemaorg="" canonical="" searching=false can_edit_restricted=false containerClass="container" scripts=defaultScripts>

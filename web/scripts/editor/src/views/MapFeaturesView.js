@@ -11,7 +11,7 @@ export default ObjectInputView.extend({
 
     // eslint-disable-next-line no-unused-vars
     const model = this.model.getRelated('style')
-    const view = new MapStyleSelectorView({
+    new MapStyleSelectorView({
       el: this.$('.style-selector'),
       model: this.model.getRelated('style')
     })

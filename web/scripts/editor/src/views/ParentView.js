@@ -3,8 +3,7 @@ import SingleView from '../SingleView'
 import ChildView from './ChildView'
 import template from '../templates/Parent.tpl'
 import { Positionable } from '../collections'
-import $ from 'jquery'
-import 'jquery-sortablejs';
+import 'jquery-ui/ui/widgets/sortable'
 
 export default SingleView.extend({
 
@@ -39,21 +38,18 @@ export default SingleView.extend({
 
   addOne (model) {
     const view = new ChildView(_.extend({}, this.data, { model }))
-    const that = this
-    $(document).ready(function () {
-      that.$('.existing').append(view.el)
-      if (that.data.disabled !== 'disabled') {
-        that.$('.existing').sortable({
-          animation: 150,
-          start: (event, ui) => {
-            that._oldPosition = ui.item.index()
-          },
-          update: (event, ui) => {
-            that.collection.position(that._oldPosition, ui.item.index())
-          }
-        })
-      }
-    })
+    this.$('.existing').append(view.el)
+    if (this.data.disabled !== 'disabled') {
+      this.$('.existing').sortable({
+        animation: 150,
+        start: (event, ui) => {
+          this._oldPosition = ui.item.index()
+        },
+        update: (event, ui) => {
+          this.collection.position(this._oldPosition, ui.item.index())
+        }
+      })
+    }
   },
 
   addAll () {

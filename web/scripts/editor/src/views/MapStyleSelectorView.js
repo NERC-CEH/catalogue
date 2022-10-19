@@ -30,14 +30,11 @@ export default ObjectInputView.extend({
       { symbols: this.symbols })
     )
 
-    const that = this
     this.listenTo(this.model, 'change:colour change:symbol', this.update)
     this.update()
 
-    $(document).ready(function () {
-      that.$('#picker').change(function () {
-        that.model.set('colour', that.$('#picker').val())
-      })
+    this.$('#picker').change(function () {
+      this.model.set('colour', this.$('#picker').val())
     })
   },
 

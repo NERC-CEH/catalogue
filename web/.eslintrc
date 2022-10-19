@@ -1,0 +1,9 @@
+{
+  "parser": "@babel/eslint-parser",
+  "extends": ["standard"],
+  "rules": {"no-new": 0,
+    "no-undef": 0,
+    "prefer-regex-literals": 0,
+    "quotes": 0
+  }
+}
