@@ -30,13 +30,13 @@
 
         <#if description??>
           <div class="description">
+            <div class="description-text">
+              <@linebreaks description/>
+            </div>
             <div class="browseimage">
               <#if images?? && images?has_content>
                 <img src="${images?first.url}" alt="${images?first.name}"/>
               </#if>
-            </div>
-            <div class="description-text">
-              <@linebreaks description/>
             </div>
           </div>
         </#if>
@@ -114,45 +114,52 @@
           </div>
           <div class="col2">
 
-            <div class="owners">
-              <div><span class="fas fa-user"></span> Owner/Contacts</div>
-              <div>
+
+            <@displaykey "Contact">
                 <#if owners?? >
                   <#list owners as owner>
                     <div class="contact">
-                      <#if owner.individualName?has_content>
-                        <div>${owner.individualName}</div>
-                      </#if>
-                      <#if owner.organisationName?? && owner.organisationName?has_content>
-                        <div>${owner.organisationName}</div>
-                      </#if>
-                      <#if owner.address?? && owner.address?has_content>
-                        <#if owner.address.city?has_content>
-                          <div>${owner.address.city}</div>
+                      <div>
+                        <#if owner.individualName?has_content>
+                          <span class="fas fa-user"></span>
+                        <#else>
+                          <span class="fas fa-building"></span>
                         </#if>
-                      </#if>
-                      <#if owner.email?? && owner.email?has_content>
-                        <div><a href="mailto:${owner.email}"><span class="fas fa-xs fa-envelope"></span> ${owner.email}</a></div>
-                      </#if>
+                      </div>
+                      <div>
+                        <#if owner.individualName?has_content>
+                          <span>${owner.individualName}</span>
+                        </#if>
+                        <#if owner.organisationName?? && owner.organisationName?has_content>
+                          <span>${owner.organisationName}</span>
+                        </#if>
+                        <#if owner.address?? && owner.address?has_content>
+                          <#if owner.address.city?has_content>
+                            <span>${owner.address.city}</span>
+                          </#if>
+                        </#if>
+                        <#if owner.email?? && owner.email?has_content>
+                          <span><a href="mailto:${owner.email}"><span class="fas fa-xs fa-envelope"></span> ${owner.email}</a></span>
+                        </#if>
+                      </div>
                     </div>
                   </#list>
                 <#else>
-                  <p class="text-danger">NO OWNER IDENTIFIED</p>  
+                  <p class="text-danger">NO CONTACT IDENTIFIED</p>  
                 </#if>
-              </div>
-            </div>
+            </@displaykey>
 
-              <#if weblinks?? && weblinks?has_content >
-                <#assign linkLabel = "Link">
-                <#if weblinks?size gte 2>
-                  <#assign linkLabel = "Links">
-                </#if>
-                  <@displaykey linkLabel>
-                    <#list weblinks as link>
-                    <@displayLink link />
-                    </#list>
-                  </@displaykey>
+            <#if weblinks?? && weblinks?has_content >
+              <#assign linkLabel = "Link">
+              <#if weblinks?size gte 2>
+                <#assign linkLabel = "Links">
               </#if>
+                <@displaykey linkLabel>
+                  <#list weblinks as link>
+                  <@displayLink link />
+                  </#list>
+                </@displaykey>
+            </#if>
 
           </div>
       </div>

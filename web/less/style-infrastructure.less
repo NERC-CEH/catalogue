@@ -51,6 +51,10 @@ body {
   }
 }
 
+#pageTitle {
+  margin: 2em 0;
+}
+
 #adminToolbar {
   margin: 1.5em 0;
 }
@@ -77,7 +81,7 @@ body {
   }
   display: grid;
   grid-template-columns: auto 300px;
-  gap: 1em 2em;
+  gap: 0 2em;
   grid-template-areas:
     "col2 col2"
     "col1 col1";
@@ -85,47 +89,31 @@ body {
 
 .description {
   display: grid;
-  gap: 2em;
-  grid-template-columns: auto 300px;
-  grid-template-areas:
-    "browseimage browseimage"
-    "desctext desctext";
+  grid-template-columns: auto fit-content(450px);
   .browseimage {
-    grid-area: browseimage;
-    justify-self: center;
+    display: none;
     img {
+      padding: 1em;
       max-width: 100%;
       max-height: 200px;
     }
   }
   .description-text {
-    grid-area: desctext;
     line-height: @line-height;
   }
 
   @media only screen and (min-width: 640px) {
-    grid-template-areas: "desctext browseimage";
-  }
-}
-
-.owners {
-  --_ownercolor: lightgray;
-  border: 1px solid var(--_ownercolor);
-  margin-top: 2em;
-  > div {
-    padding: 0.6em;
-    &:first-of-type {
-      background-color: var(--_ownercolor);
-      font-weight: bolder;
+    .browseimage {
+      display: block;
     }
   }
-  .owner {
-    margin-bottom: 1em;
-    .contact {
-      margin: 1em 0.5em;
-      &:not(:last-of-type) {
-        margin-bottom: 2em;
-      }
+}
+.contact {
+  display: grid;
+  grid-template-columns: 30px auto;margin-bottom:3em;
+  div {
+    > span {
+      display: block;
     }
   }
 }
@@ -139,9 +127,10 @@ body {
 .key-value {
   margin: 2em 0;
   line-height: @line-height;
-  div {
+  > div {
     &:first-of-type {
       font-weight: bolder;
+      font-size: 1.125em;
     }
   }
 }
@@ -150,6 +139,10 @@ body {
 @media only screen and (min-width: 1020px) {
   .metadata-grid {
     grid-template-areas: "col1 col2";
+    .col2 {
+      border-left: 1px solid lightgray;
+      padding-left: 2em;
+    }
   }
 }
 

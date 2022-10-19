@@ -6,6 +6,13 @@
 @border_radius: 0.5em;
 
 #metadata {
+  .section {
+    padding: 2em 0;
+    &-grey {
+      background-color: hsl(0, 0%, 95%);
+    }
+  }
+
   #section-title {
     margin-top: 3em;
     padding: 1em 0;
@@ -624,14 +631,8 @@ dl.dl-horizontal {
     z-index: 1000;
     position: absolute;
     top: 8rem;
-    left: min( calc(100vw - 20em) , 1120px );
+    left: min(calc(100vw - 20em), 1120px);
     width: fit-content;
-  }
-  .section {
-    padding: 1em 0 2em 0;
-    &-grey {
-      background-color: hsl(0, 0%, 95%);
-    }
   }
 
   .grid {

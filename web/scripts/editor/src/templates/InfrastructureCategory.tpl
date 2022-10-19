@@ -15,6 +15,13 @@
     <option value="labsAnalysis">Analysis labs</option>
     <option value="labsTest">Test labs</option>
   </optgroup>
+  <optgroup label="Digital infrastructure">
+    <option value="data">Environmental data and information</option>
+    <option value="models">Environmental models</option>
+    <option value="analytics">Data analystics, method and approaches</option>
+    <option value="software">Software infrastructure</option>
+    <option value="digitalPlatforms">Digital computing platforms</option>
+  </optgroup>
 </select>
 
 

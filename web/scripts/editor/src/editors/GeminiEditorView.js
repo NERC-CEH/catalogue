@@ -711,18 +711,6 @@ This is only needed if you configure 'Stylying=Classification' for your GeoTiff.
           disabled
         })
       ]
-    },
-    {
-      label: 'BETA',
-      title: 'BETA',
-      views: [
-        new ParentView({
-          model: this.model,
-          modelAttribute: 'parameters',
-          label: 'Parameters',
-          ObjectInputView: KeywordVocabularyView,
-        })
-      ]
     }
     ]
 

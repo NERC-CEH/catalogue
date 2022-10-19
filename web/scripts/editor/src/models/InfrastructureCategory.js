@@ -15,7 +15,12 @@ export default Backbone.Model.extend({
     controlledPlatforms: 'http://vocabs.ceh.ac.uk/ri/controlledPlatforms',
     fieldPlatforms: 'http://vocabs.ceh.ac.uk/ri/fieldPlatforms',
     labsAnalysis: 'http://vocabs.ceh.ac.uk/ri/labsAnalysis',
-    labsTest: 'http://vocabs.ceh.ac.uk/ri/labsTest'
+    labsTest: 'http://vocabs.ceh.ac.uk/ri/labsTest',
+    data: 'http://vocabs.ceh.ac.uk/ri/data',
+    models: 'http://vocabs.ceh.ac.uk/ri/model',
+    analytics: 'http://vocabs.ceh.ac.uk/ri/analytics',
+    software: 'http://vocabs.ceh.ac.uk/ri/software',
+    digitalPlatforms: 'http://vocabs.ceh.ac.uk/ri/digitalPlatform'
   },
 
   classes: {
@@ -27,7 +32,12 @@ export default Backbone.Model.extend({
     controlledPlatforms: 'Environmental experiment platforms',
     fieldPlatforms: 'Environmental experiment platforms',
     labsAnalysis: 'Environmental analysis',
-    labsTest: 'Environmental analysis'
+    labsTest: 'Environmental analysis',
+    data: 'Digital infrastructure',
+    models: 'Digital infrastructure',
+    analytics: 'Digital infrastructure',
+    software: 'Digital infrastructure',
+    digitalPlatforms: 'Digital infrastructure'
   },
 
   descriptions: {
@@ -39,7 +49,12 @@ export default Backbone.Model.extend({
     controlledPlatforms: 'Controlled environment platforms',
     fieldPlatforms: 'Field research platforms',
     labsAnalysis: 'Analysis labs',
-    labsTest: 'Test labs'
+    labsTest: 'Test labs',
+    data: 'Environmental data and information',
+    models: 'Environmental models',
+    analytics: 'Data analystics, method and approaches',
+    software: 'Software infrastructure',
+    digitalPlatforms: 'Digital computing platforms'
   },
 
   initialize () {
