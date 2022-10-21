@@ -1,4 +1,4 @@
-import $ from 'jquery'
+
 import { UploadView, UploadModel } from './Upload'
 
 export default function init () {

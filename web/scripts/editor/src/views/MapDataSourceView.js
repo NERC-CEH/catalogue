@@ -4,7 +4,7 @@ import MapReprojectionView from './MapReprojectionView'
 import MapFeaturesView from './MapFeaturesView'
 import MapAttributeView from './MapAttributeView'
 import template from '../templates/MapDataSource.tpl'
-import $ from 'jquery'
+
 import ChildView from './ChildView'
 
 export default ObjectInputView.extend({

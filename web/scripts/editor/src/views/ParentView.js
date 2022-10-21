@@ -38,18 +38,21 @@ export default SingleView.extend({
 
   addOne (model) {
     const view = new ChildView(_.extend({}, this.data, { model }))
-    this.$('.existing').append(view.el)
-    if (this.data.disabled !== 'disabled') {
-      this.$('.existing').sortable({
-        animation: 150,
-        start: (event, ui) => {
-          this._oldPosition = ui.item.index()
-        },
-        update: (event, ui) => {
-          this.collection.position(this._oldPosition, ui.item.index())
-        }
-      })
-    }
+    const that = this
+    $(document).ready(function () {
+      that.$('.existing').append(view.el)
+      if (that.data.disabled !== 'disabled') {
+        that.$('.existing').sortable({
+          animation: 150,
+          start: (event, ui) => {
+            that._oldPosition = ui.item.index()
+          },
+          update: (event, ui) => {
+            that.collection.position(that._oldPosition, ui.item.index())
+          }
+        })
+      }
+    })
   },
 
   addAll () {

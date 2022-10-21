@@ -1,4 +1,4 @@
-import $ from 'jquery'
+
 import Backbone from 'backbone'
 import { File, FileCollection, FileView } from '../File'
 import DropzoneView from './DropzoneView'
@@ -110,7 +110,9 @@ export default Backbone.View.extend({
       model,
       url: this.model.url()
     })
-    $container.append(view.render().el)
+    $(document).ready(function () {
+      $container.append(view.render().el)
+    })
   },
 
   addAll (collection, $container) {

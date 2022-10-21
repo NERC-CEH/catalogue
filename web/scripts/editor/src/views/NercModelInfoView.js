@@ -1,5 +1,5 @@
 import _ from 'underscore'
-import $ from 'jquery'
+
 import ObjectInputView from './ObjectInputView'
 import template from '../templates/NercModelInfo.tpl'
 

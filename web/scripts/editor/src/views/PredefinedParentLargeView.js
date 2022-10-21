@@ -2,7 +2,7 @@ import _ from 'underscore'
 import ParentLargeView from './ParentLargeView'
 import template from '../templates/PredefinedParent.tpl'
 import dropdownTemplate from '../templates/PredefinedParentDropdown.tpl'
-import $ from 'jquery'
+import 'jquery-ui'
 
 export default ParentLargeView.extend({
 

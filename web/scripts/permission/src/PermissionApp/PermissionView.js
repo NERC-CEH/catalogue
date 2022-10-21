@@ -1,7 +1,6 @@
 import Backbone from 'backbone'
 import _ from 'underscore'
 import template from './Permissions.tpl'
-import $ from 'jquery'
 
 import { IdentityPermission, IdentityPermissionView } from '../IdentityPermission'
 

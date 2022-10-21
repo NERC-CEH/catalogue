@@ -12,31 +12,34 @@ export default ObjectInputView.extend({
     this.template = _.template(template)
     ObjectInputView.prototype.render.apply(this)
 
-    this.$('#input-creationDate').datepicker({
-      language: 'en',
-      dateFormat: 'yyyy-mm-dd',
-      position: 'top left',
-      onSelect: function (formattedDate, date, inst) {
-        this.model.set('creationDate', Moment(date).format('YYYY-MM-DD'))
-        this.$('#input-creationDate').value = this.model.set('creationDate', Moment(date).format('YYYY-MM-DD'))
-      }
-    })
+    const that = this
+    $(document).ready(function () {
+      that.$('#input-creationDate').datepicker({
+        language: 'en',
+        dateFormat: 'yyyy-mm-dd',
+        position: 'top left',
+        onSelect: function (formattedDate, date, inst) {
+          that.model.set('creationDate', Moment(date).format('YYYY-MM-DD'))
+          that.$('#input-creationDate').value = that.model.set('creationDate', Moment(date).format('YYYY-MM-DD'))
+        }
+      })
 
-    this.$('#input-modificationDate').datepicker({
-      language: 'en',
-      dateFormat: 'yyyy-mm-dd',
-      position: 'top left',
-      onSelect: function (formattedDate, date, inst) {
-        this.model.set('modificationDate', Moment(date).format('YYYY-MM-DD'))
-        this.$('#input-modificationDate').value = that.model.set('creationDate', Moment(date).format('YYYY-MM-DD'))
-      }
-    })
+      that.$('#input-modificationDate').datepicker({
+        language: 'en',
+        dateFormat: 'yyyy-mm-dd',
+        position: 'top left',
+        onSelect: function (formattedDate, date, inst) {
+          that.model.set('modificationDate', Moment(date).format('YYYY-MM-DD'))
+          that.$('#input-modificationDate').value = that.model.set('creationDate', Moment(date).format('YYYY-MM-DD'))
+        }
+      })
 
-    new ParentStringView({
-      el: this.$('#provenanceContributors'),
-      model: this.model,
-      modelAttribute: 'contributors',
-      label: 'Contributors'
+      new ParentStringView({
+        el: that.$('#provenanceContributors'),
+        model: that.model,
+        modelAttribute: 'contributors',
+        label: 'Contributors'
+      })
     })
     return this
   }

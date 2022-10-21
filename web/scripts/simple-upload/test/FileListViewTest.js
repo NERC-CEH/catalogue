@@ -1,4 +1,4 @@
-import $ from 'jquery'
+
 import Backbone from 'backbone'
 import { FileListView, FileCollection } from '../src/File'
 

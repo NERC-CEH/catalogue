@@ -1,6 +1,6 @@
 import _ from 'underscore'
 import ObjectInputView from './ObjectInputView'
-import $ from 'jquery'
+
 import template from '../templates/Contact.tpl'
 
 export default ObjectInputView.extend({

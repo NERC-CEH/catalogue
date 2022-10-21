@@ -1,4 +1,3 @@
-import $ from 'jquery'
 import _ from 'underscore'
 import Backbone from 'backbone'
 import { ClipboardCopyView } from './clipboard/src/ClipboardCopy'
@@ -252,34 +251,32 @@ function initEditor () {
   // the create document dropdown
   const $editorCreate = $('#editorCreate')
 
-  $(document).ready(function () {
-    $('.edit-control').on('click', function (event) {
-      event.preventDefault()
+  $('.edit-control').on('click', function (event) {
+    event.preventDefault()
 
-      const title = $(event.target).data('documentType')
-      const documentType = lookup[title]
+    const title = $(event.target).data('documentType')
+    const documentType = lookup[title]
 
-      if ($editorCreate.length) {
-        return new documentType.View({
-          model: new documentType.Model(null, documentType, title),
-          el: '#search'
-        })
-      } else {
-        $.ajax({
-          url: $(location).attr('href'),
-          dataType: 'json',
-          accepts: {
-            json: documentType.mediaType
-          },
-          success (data) {
-            new documentType.View({
-              model: new documentType.Model(data, documentType, title),
-              el: '#metadata'
-            })
-          }
-        })
-      }
-    })
+    if ($editorCreate.length) {
+      return new documentType.View({
+        model: new documentType.Model(null, documentType, title),
+        el: '#search'
+      })
+    } else {
+      $.ajax({
+        url: $(location).attr('href'),
+        dataType: 'json',
+        accepts: {
+          json: documentType.mediaType
+        },
+        success (data) {
+          new documentType.View({
+            model: new documentType.Model(data, documentType, title),
+            el: '#metadata'
+          })
+        }
+      })
+    }
   })
 }
 

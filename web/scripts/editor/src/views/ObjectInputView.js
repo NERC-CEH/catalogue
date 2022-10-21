@@ -1,7 +1,7 @@
 import _ from 'underscore'
-import $ from 'jquery'
 import Backbone from 'backbone'
 import validationTemplate from '../templates/Validation.tpl'
+import 'jquery-ui/ui/widgets/sortable'
 
 export default Backbone.View.extend({
 
@@ -11,7 +11,7 @@ export default Backbone.View.extend({
 
   initialize (options) {
     this.data = options
-    this.listenTo(this.model, 'remove', function () { return this.remove() })
+    this.listenTo(this.model, 'remove', function () { this.remove() })
     this.listenTo(this.model, 'change', function (model) {
       if (model.isValid()) {
         this.$('>.validation').hide()
@@ -39,8 +39,6 @@ export default Backbone.View.extend({
     } else {
       this.model.set(name, value)
     }
-
-    return false // disable bubbling
   },
 
   /*
@@ -65,7 +63,7 @@ export default Backbone.View.extend({
     this.listenTo(collection, 'reset', resetView)
 
     let pos = null
-    if (!(this.data.disabled === 'disabled')) {
+    if (this.data.disabled !== 'disabled') {
       element.sortable({
         start: (event, ui) => {
           pos = ui.item.index()

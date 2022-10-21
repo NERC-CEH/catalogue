@@ -33,7 +33,7 @@ import {
   ResourceType, Service, SpatialResolution,
   TopicCategory
 } from '../models'
-import $ from 'jquery'
+
 import BoundingBox from '../geometryMap/BoundingBox'
 import BoundingBoxView from '../geometryMap/BoundingBoxView'
 

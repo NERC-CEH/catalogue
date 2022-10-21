@@ -1,5 +1,5 @@
 import _ from 'underscore'
-import $ from 'jquery'
+
 import Backbone from 'backbone'
 import InputView from '../InputView'
 import LinkDocumentView from './LinkDocumentView'
@@ -69,7 +69,10 @@ export default InputView.extend({
 
   addOne (result) {
     const view = new LinkDocumentView({ model: result })
-    this.$('#results').append(view.render().el)
+    const that = this
+    $(document).ready(function () {
+      that.$('#results').append(view.render().el)
+    })
   },
 
   addAll () {

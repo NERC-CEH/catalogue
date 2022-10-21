@@ -1,7 +1,7 @@
 import Backbone from 'backbone'
 import Dropzone from 'dropzone'
 import filesize from 'filesize'
-import $ from 'jquery'
+
 import template from './DropzoneFileRow.tpl'
 
 export default Backbone.View.extend({

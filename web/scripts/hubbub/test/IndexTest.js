@@ -1,4 +1,3 @@
-import $ from 'jquery'
 
 import init from '../src/index'
 

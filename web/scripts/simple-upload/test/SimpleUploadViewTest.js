@@ -1,5 +1,4 @@
 import { SimpleUploadView } from '../src/App'
-import $ from 'jquery'
 
 describe('Test SimpleUploadView', function () {
   const template =

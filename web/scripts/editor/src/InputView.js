@@ -1,5 +1,5 @@
 import _ from 'underscore'
-import $ from 'jquery'
+
 import SingleView from './SingleView'
 import template from './Input.tpl'
 

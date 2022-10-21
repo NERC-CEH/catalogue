@@ -12,9 +12,12 @@ export default SingleView.extend({
       inputModel.set(model.get(this.data.modelAttribute))
     })
 
-    new this.data.ObjectInputView(_.extend({}, this.data, {
-      el: this.$('.dataentry'),
-      model: inputModel
-    }))
+    const that = this
+    $(document).ready(function () {
+      new that.data.ObjectInputView(_.extend({}, that.data, {
+        el: that.$('.dataentry'),
+        model: inputModel
+      }))
+    })
   }
 })
