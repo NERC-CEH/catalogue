@@ -33,7 +33,6 @@ import {
   ResourceType, Service, SpatialResolution,
   TopicCategory
 } from '../models'
-
 import BoundingBox from '../geometryMap/BoundingBox'
 import BoundingBoxView from '../geometryMap/BoundingBoxView'
 

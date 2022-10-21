@@ -1,5 +1,4 @@
 import _ from 'underscore'
-
 import ObjectInputView from './ObjectInputView'
 import template from '../templates/NercModelInfo.tpl'
 

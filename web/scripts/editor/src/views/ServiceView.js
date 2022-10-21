@@ -6,6 +6,7 @@ import ParentView from './ParentView'
 import ServiceOperationView from './ServiceOperationView'
 import ParentStringView from './ParentStringView'
 import CoupledResourceView from './CoupledResourceView'
+
 export default SingleView.extend({
 
   initialize (options) {

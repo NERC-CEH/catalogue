@@ -1,4 +1,3 @@
-
 import Backbone from 'backbone'
 import { MessageView } from '../src/Message'
 describe('Test MessageView', function () {

@@ -1,5 +1,4 @@
 import _ from 'underscore'
-
 import SingleView from './SingleView'
 import template from './Input.tpl'
 

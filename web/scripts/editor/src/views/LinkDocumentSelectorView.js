@@ -1,5 +1,4 @@
 import _ from 'underscore'
-
 import Backbone from 'backbone'
 import InputView from '../InputView'
 import LinkDocumentView from './LinkDocumentView'

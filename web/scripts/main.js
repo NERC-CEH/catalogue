@@ -1,5 +1,6 @@
 import _ from 'underscore'
 import Backbone from 'backbone'
+import 'bootstrap'
 import { ClipboardCopyView } from './clipboard/src/ClipboardCopy'
 import {
   CehModelApplicationEditorView,
@@ -309,7 +310,7 @@ function initServiceAgreement () {
 }
 
 function initGeometryMap () {
-  new StudyAreaView({ el: '#geometry-map' })
+  new StudyAreaView({ el: '#studyarea-map' })
 }
 
 function initPermission () {

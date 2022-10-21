@@ -59,9 +59,6 @@ module.exports = {
   output: {
     filename: '[name].bundle.js'
   },
-  optimization: {
-    usedExports: false
-  },
   plugins: [
     new HtmlWebPackPlugin({
       filename: './index.html'

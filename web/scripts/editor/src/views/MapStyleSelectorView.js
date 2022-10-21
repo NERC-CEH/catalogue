@@ -1,7 +1,6 @@
 import _ from 'underscore'
 import ObjectInputView from './ObjectInputView'
 import template from '../templates/MapStyleSelector.tpl'
-
 import 'bootstrap-colorpicker'
 
 export default ObjectInputView.extend({

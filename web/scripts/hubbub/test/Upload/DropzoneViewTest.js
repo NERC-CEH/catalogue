@@ -1,4 +1,3 @@
-
 import { DropzoneView } from '../../src/Upload'
 
 describe('DropzoneView', function () {

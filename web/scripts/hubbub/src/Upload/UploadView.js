@@ -1,4 +1,3 @@
-
 import Backbone from 'backbone'
 import { File, FileCollection, FileView } from '../File'
 import DropzoneView from './DropzoneView'

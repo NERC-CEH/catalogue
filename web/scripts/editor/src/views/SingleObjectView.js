@@ -1,5 +1,6 @@
 import _ from 'underscore'
 import SingleView from '../SingleView'
+
 export default SingleView.extend({
 
   initialize (options) {

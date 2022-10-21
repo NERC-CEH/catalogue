@@ -1,4 +1,3 @@
-
 import Backbone from 'backbone'
 import { FileView } from '../src/File'
 

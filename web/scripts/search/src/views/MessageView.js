@@ -1,5 +1,4 @@
 import _ from 'underscore'
-
 import Backbone from 'backbone'
 import template from '../templates/Message.tpl'
 

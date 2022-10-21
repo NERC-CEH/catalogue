@@ -1,4 +1,3 @@
-
 import Backbone from 'backbone'
 import deparam from 'deparam.js'
 import { FacetsPanelView, SearchFormView, SearchPageView } from './views'

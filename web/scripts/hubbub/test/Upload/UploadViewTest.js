@@ -1,4 +1,3 @@
-
 import { UploadModel, UploadView } from '../../src/Upload'
 import FileCollection from '../../src/File/FileCollection'
 
