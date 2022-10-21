@@ -37,6 +37,7 @@ import SearchRouter from './search/src/SearchRouter'
 import { SimpleUploadView } from './simple-upload/src/App'
 import { MessageView } from './search/src/views'
 import { ServiceAgreement } from './editor/src/models'
+import { UploadModel, UploadView } from "./hubbub/src/Upload"
 
 /* This is the initializer method for the entire front end. Here we can
 set up the different applications and initialize any javascript code which
@@ -86,6 +87,10 @@ if ($('#search').length) {
 
 if ($('#simple-upload').length) {
   initSimpleUpload()
+}
+
+if ($('#document-upload').length) {
+  initHubbub()
 }
 
 if ($('#studyarea-map').length) {
@@ -333,6 +338,14 @@ function initSimpleUpload () {
   new SimpleUploadView({
     el: '#simple-upload',
     url
+  })
+}
+
+function initHubbub () {
+  const id = $('#document-upload').data('guid')
+  new UploadView({
+    el: '.document-upload',
+    model: new UploadModel({ id })
   })
 }
 
