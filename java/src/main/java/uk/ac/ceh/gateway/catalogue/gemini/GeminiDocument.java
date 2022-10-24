@@ -39,7 +39,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private static final String TOPIC_PROJECT_URL = "http://onto.nerc.ac.uk/CEHMD/";
     private static final Pattern WMS_ONLINE_RESOURCE = Pattern
             .compile(
-                    "^https://.*/maps/([0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}).*",
+                    "^https://.*/maps/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}).*",
                     CASE_INSENSITIVE
             );
     private String otherCitationDetails, lineage, reasonChanged,
@@ -47,7 +47,8 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private Number version;
     private List<String> alternateTitles, spatialRepresentationTypes, datasetLanguages,
             securityConstraints;
-    private List<Keyword> topicCategories;
+    private List<Keyword> topicCategories, parameters;
+    private List<Geometry> geometries;
     private List<DistributionInfo> distributionFormats;
     private List<DescriptiveKeywords> descriptiveKeywords;
     private List<InspireTheme> inspireThemes;
@@ -75,6 +76,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private Keyword resourceType;
     private AccessLimitation accessLimitation;
     private boolean notGEMINI;
+
 
     public void populateFromServiceAgreement(ServiceAgreement serviceAgreement) {
         this.setTitle(serviceAgreement.getTitle());

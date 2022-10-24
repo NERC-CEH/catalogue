@@ -4,6 +4,7 @@ import {
   ContactView, DataInfoView,
   FundingView,
   KeywordVocabularyView, NercModelInfoView, OnlineLinkView,
+  AdditionalInfoView,
   ParentView,
   PredefinedParentView, SupplementalView,
   TextareaView
@@ -210,6 +211,20 @@ export default EditorView.extend({
 `
         })
 
+      ]
+    },
+    {
+      label: 'Additional info',
+      title: 'Additional info',
+      views: [
+
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'additionalInfo',
+          multiline: true,
+          //label: 'Additional info',
+          ObjectInputView: AdditionalInfoView
+        })
       ]
     }
     ]

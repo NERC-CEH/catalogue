@@ -55,6 +55,7 @@ html {
   overflow-y: scroll;
   min-height: 100%;
   position: relative;
+  scroll-padding-top: @navbar-height * 1.5;
 }
 
 body {
@@ -63,7 +64,9 @@ body {
 }
 
 .navbar {
-  .navbar-brand {margin: 0 0 0 .35em}
+  .navbar-brand {
+    margin: 0 0 0 0.35em;
+  }
   border-bottom-width: @navbar-border-width;
   a {
     font-weight: bolder;
@@ -76,7 +79,7 @@ body {
 
 #editorCreate {
   .dropdown-menu {
-    margin-top: -1.7em ;
+    margin-top: -1.7em;
   }
 }
 
@@ -211,8 +214,8 @@ h1#document-title {
   .navbar-left,
   .navbar-right {
     float: none !important;
+    padding: 0 1em;
   }
-
   .navbar-toggle {
     display: block;
   }

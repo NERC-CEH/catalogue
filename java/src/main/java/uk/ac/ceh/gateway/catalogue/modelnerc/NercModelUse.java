@@ -40,6 +40,8 @@ public class NercModelUse extends AbstractMetadataDocument {
     private List<DataInfo>
         inputData,
         outputData;
+     
+    private List<AdditionalInfo> additionalInfo;
 
     @JsonIgnore
     @Override
@@ -73,6 +75,13 @@ public class NercModelUse extends AbstractMetadataDocument {
             calibrationConditions;
     }
 
+    @Data
+    public static class AdditionalInfo {
+        private String
+            key,
+            value;
+    }
+    
     @Data
     public static class DataInfo {
         private String

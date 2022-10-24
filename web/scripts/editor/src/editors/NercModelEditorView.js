@@ -2,6 +2,7 @@ import {
   ContactView,
   DataTypeSchemaSimpleView, FundingView, KeywordVocabularyView,
   ModelQAView,
+  AdditionalInfoView,
   ModelResolutionView, OnlineLinkView,
   ParentView,
   PredefinedParentView,
@@ -489,7 +490,21 @@ export default EditorView.extend({
           }
         })
       ]
+    },
+    {
+      label: 'Additional info',
+      title: 'Additional info',
+      views: [
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'additionalInfo',
+          multiline: true,
+          ObjectInputView: AdditionalInfoView
+        })
+      ]
     }
+
+
     ]
 
     return EditorView.prototype.initialize.apply(this)

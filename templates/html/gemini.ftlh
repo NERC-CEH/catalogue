@@ -13,7 +13,7 @@
     owners = func.filter(responsibleParties, "role", "owner")
     originators = func.filter(responsibleParties, "role", "originator")
     resourceProviders = func.filter(responsibleParties, "role", "resourceProvider")
-    otherContacts = custodians + publishers + depositors + originators + owners + resourceProviders + rightsHolders
+    otherContacts = custodians + publishers + depositors + originators + owners + resourceProviders 
     catalogue = catalogues.retrieve(metadata.catalogue)
 
     rel_all=jena.allRelatedRecords(uri)
@@ -62,71 +62,67 @@
 </#macro>
 
 <@skeleton.master title=title catalogue=catalogue rdf="${uri}?format=ttl" schemaorg="${uri}?format=schema.org" canonical="${uri}" can_edit_restricted=permission.userCanEditRestrictedFields(metadata.catalogue)>
+  <#if resourceType?has_content && resourceType.value !=''>
+  <#assign recordType = func.recordTypeOrResourceType()>
 
   <div id="metadata" class="${metadata.state?lower_case} ${linkedClass}">
-    <div class="container" role="main">
-      <#if resourceType?has_content && resourceType.value !=''>
-        <#assign recordType = func.recordTypeOrResourceType()>
+
+    <div class="section section-grey">
+      <div class="container">
         <#include "document/_admin.ftlh">
-        <div id="section-Top">
-            <#include "document/_title.ftlh">
-        </div>
+        <#if title?? && title?has_content>
+           <#include "document/_title.ftlh">
+        </#if>    
 
         <#if rel_supersedes?has_content && rel_supersedes?size gt 0>
             <#include "document/_latestVersion.ftlh">
         </#if>
 
-        <#if permission.userCanEditRestrictedFields(metadata.catalogue) && metadata.catalogue == "eidc">
-            <#include "document/_metadataqualityAlert.ftlh">
-        </#if>
+        <#if description??>
+          <div class="description">
+            <div class="description-text">
+              <@blocks.linebreaks description!"" />
 
-        <div id="document-description" class="clearfix">
-            <#include "document/_browseGraphic.ftlh">
-            <@blocks.linebreaks description!"" />
-        </div>
-
-        <#if resourceType.value != 'aggregate' && resourceType.value != 'collection'>
-          <#include "document/_dates.ftlh">
-
-          <div class="row">
-            <div class="col-sm-4 col-sm-push-8 panel-right">
-
-                <#if isLinkedDoc="true"> 
-                  <#include "document/_linked.ftlh">
-                <#else>
-                    <#include "document/_uploadData.ftlh">
-                    <#include "document/_metrics.ftlh">
-
-                    <#if resourceStatus??>
-                      <#if resourceStatus == 'Restricted'>
-                        <#include "document/_distribution_restricted.ftlh">
-                      <#else>
-                        <#if resourceType.value == 'signpost'>
-                          <#include "document/_distribution_signpost.ftlh">
-                        <#elseif resourceType.value == 'service' && mapViewable>
-                          <#include "document/_distribution_service.ftlh">
-                        <#elseif resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'application'>
-                          <#include "document/_distribution_dataset.ftlh">
-                        </#if>
-                      </#if>
-                    <#elseif metadata.catalogue != "eidc" &&  resourceType.value == 'signpost'>
-                      <#include "document/_distribution_signpost.ftlh">
+              <#if resourceType.value != 'aggregate' && resourceType.value != 'collection'>
+                <#if datasetReferenceDate??>
+                  <div>
+                    <#if datasetReferenceDate.publicationDate??>
+                      Publication date: ${datasetReferenceDate.publicationDate}
                     </#if>
-
-                    <#if resourceType.value == 'thirdPartyDataset'>
-                      <#include "document/_third_party.ftlh">
-                    </#if>
+                  </div>
                 </#if>
-            </div>
+              </#if>
 
-            <div class="col-sm-8 col-sm-pull-4">
+            </div>
+            <div class="browseimage">
+              <#include "document/_browseGraphic.ftlh">
+            </div>
+          </div>
+        </#if>
+      </div>
+    </div>
+
+    <#if permission.userCanEditRestrictedFields(metadata.catalogue) && metadata.catalogue == "eidc">
+      <div class="section"><div class="container">
+        <#include "document/_metadataqualityAlert.ftlh">
+      </div></div>
+    </#if>
+
+    <#if resourceType.value == 'aggregate' || resourceType.value == 'collection'>
+      <div class="section">
+        <div class="container">
+          <#include "document/_aggregate.ftlh">
+        </div>
+      </div>         
+    <#else>
+      <div class="section">
+        <div class="container">
+          <div class="metadata-grid">
+            <div class="col1"> 
+              <#include "document/_formats.ftlh">
               <#include "document/_extent.ftlh">
               <#include "document/_dataquality.ftlh">
-
-              <#-- to be replaced with related records -->
-                <#include "document/_related.ftlh">
-              <#-- END OF to be replaced -->
-
+              <#include "document/_related.ftlh">
               <#include "document/_citation_list.ftlh">
               <#include "document/_supplemental.ftlh">
               <#include "document/_contacts.ftlh">
@@ -139,32 +135,62 @@
                   <#if resourceType?has_content && resourceType.value !='nonGeographicDataset'>
                     <#include "document/_spatial.ftlh">
                   </#if>
-                   <#if metadataDateTime?has_content>
+                    <#if metadataDateTime?has_content>
                     <dt>Last updated</dt><dd>${metadataDateTime?datetime.iso?datetime?string['dd MMMM yyyy  HH:mm']}</dd>
-                   </#if>
+                    </#if>
                 </dl>
               </#if>
-
             </div>
+            <div class="col2">
+
+              <#if isLinkedDoc="true"> 
+                <#include "document/_linked.ftlh">
+              <#else>
+                  <#include "document/_uploadData.ftlh">
+                  <#include "document/_metrics.ftlh">
+
+                  <#if resourceStatus??>
+                    <#if resourceStatus == 'Restricted'>
+                      <#include "document/_distribution_restricted.ftlh">
+                    <#else>
+                      <#if resourceType.value == 'signpost'>
+                        <#include "document/_distribution_signpost.ftlh">
+                      <#elseif resourceType.value == 'service' && mapViewable>
+                        <#include "document/_distribution_service.ftlh">
+                      <#elseif resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'application'>
+                        <#include "document/_distribution_dataset.ftlh">
+                      </#if>
+                    </#if>
+                  <#elseif metadata.catalogue != "eidc" &&  resourceType.value == 'signpost'>
+                    <#include "document/_distribution_signpost.ftlh">
+                  </#if>
+
+                  <#if resourceType.value == 'thirdPartyDataset'>
+                    <#include "document/_third_party.ftlh">
+                  </#if>
+              </#if>           
+
           </div>
-
-          <#if permission.userCanEditRestrictedFields(metadata.catalogue) && metadata.catalogue == "eidc">
-            <#include "document/_metadataqualityReport.ftlh">
-          </#if>
-
-        <#else>
-          <#include "document/_aggregate.ftlh">
-        </#if>
-
-      <#else>
-        <div class="alert alert-danger" id="missingResourceType">
-          <p class="clearfix"><i class="fas fa-exclamation-triangle"></i> <b>WARNING: </b> resource type is missing from this record
-          <a class="edit-control" data-document-type="${metadata.documentType}">Edit</a></p>
         </div>
-      </#if>
+      </div>
+    </#if>
 
-    </div>
+
+  
+    <#if permission.userCanEditRestrictedFields(metadata.catalogue) && metadata.catalogue == "eidc">
+    <div class="section"><div class="container">
+      <#include "document/_metadataqualityReport.ftlh">
+    </div></div>
+    </#if>
+
   </div>
+
+  <#else>
+    <div class="alert alert-danger" id="missingResourceType">
+      <p class="clearfix"><i class="fas fa-exclamation-triangle"></i> <b>WARNING: </b> resource type is missing from this record
+      <a class="edit-control" data-document-type="${metadata.documentType}">Edit</a></p>
+    </div>
+  </#if>
 
   <div>
 	  <#include "document/_footer.ftlh">

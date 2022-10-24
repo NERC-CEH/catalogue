@@ -49,6 +49,7 @@ export { default as ModelApplicationModelView } from './ModelApplicationModelVie
 export { default as LinkView } from './LinkView'
 export { default as ShortContactView } from './ShortContactView'
 export { default as RelationshipView } from './RelationshipView'
+export { default as AdditionalInfoView } from './AdditionalInfoView'
 export { default as ModelQAView } from './ModelQAView'
 export { default as ModelResolutionView } from './ModelResolutionView'
 export { default as NercModelInfoView } from './NercModelInfoView'

@@ -5,7 +5,51 @@
 @quality_error: rgb(255, 102, 102);
 @border_radius: 0.5em;
 
+.metadata-grid {
+  .col1 {
+    grid-area: col1;
+  }
+  .col2 {
+    grid-area: col2;
+  }
+  display: grid;
+  grid-template-columns: auto 300px;
+  gap: 0 2em;
+  grid-template-areas:
+    "col2 col2"
+    "col1 col1";
+}
+
 #metadata {
+  .section {
+    padding: 2em 0;
+    &-grey {
+      background-color: hsl(0, 0%, 95%);
+    }
+  }
+
+  .description {
+    display: grid;
+    grid-template-columns: auto fit-content(450px);
+    .browseimage {
+      display: none;
+      img {
+        padding: 1em;
+        max-width: 100%;
+        max-height: 200px;
+      }
+    }
+    .description-text {
+      line-height: @line-height-base;
+    }
+
+    @media only screen and (min-width: 640px) {
+      .browseimage {
+        display: block;
+      }
+    }
+  }
+
   #section-title {
     margin-top: 3em;
     padding: 1em 0;
@@ -104,6 +148,14 @@
       .ogl-logo {
         margin-top: 0.3em;
         .pull-right;
+      }
+    }
+
+    .onlineResourceLinks {
+      margin: 2em 0;
+      a {
+        display: block;
+        margin: 0.5em 1.5em;
       }
     }
   }
@@ -624,14 +676,8 @@ dl.dl-horizontal {
     z-index: 1000;
     position: absolute;
     top: 8rem;
-    left: min( calc(100vw - 20em) , 1120px );
+    left: min(calc(100vw - 20em), 1120px);
     width: fit-content;
-  }
-  .section {
-    padding: 1em 0 2em 0;
-    &-grey {
-      background-color: hsl(0, 0%, 95%);
-    }
   }
 
   .grid {
@@ -663,6 +709,17 @@ dl.dl-horizontal {
           margin-left: var(--gridspacing);
         }
       }
+    }
+  }
+}
+
+//MEDIA
+@media only screen and (min-width: 1020px) {
+  .metadata-grid {
+    grid-template-areas: "col1 col2";
+    .col2 {
+      border-left: 1px solid lightgray;
+      padding-left: 2em;
     }
   }
 }

@@ -9,7 +9,7 @@ export default Backbone.Model.extend({
   uris: {
     Biodiversity: 'http://vocab.ceh.ac.uk/ri#Biodiversity',
     Pollution: 'http://vocab.ceh.ac.uk/ri#Pollution',
-    'Climate change resilience': 'http://vocab.ceh.ac.uk/ri#Resilience',
+    'Climate change adaptation': 'http://vocab.ceh.ac.uk/ri#Resilience',
     'Climate change mitigation': 'http://vocab.ceh.ac.uk/ri#Mitigation'
   },
 

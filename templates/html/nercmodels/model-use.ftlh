@@ -78,6 +78,15 @@
             </div>
           </#if>
 
+
+        <#if additionalInfo?? && additionalInfo?has_content>
+           <#list additionalInfo as ai>
+              <@m.key ai.key>
+                ${ai.value}
+              </@m.key>
+           </#list>        
+        </#if>
+
           <#if (references?? && references?has_content) ||  (onlineResources?? && onlineResources?has_content)>
           <div class="links">
             <h2>References and online resources</h2>
