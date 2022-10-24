@@ -1,6 +1,6 @@
 <#if citation?has_content>
-  <div id="section-citation">
-    <p><strong>You must cite: </strong>
+  <div>
+    <p><strong>CITE AS: </strong>
     <span id="citation-text">
       ${citation.authors?join('; ')} (${citation.year?string["0000"]}). ${citation.title}. ${citation.publisher}. <a href="${citation.url}">${citation.url}</a>
     </span></p>
@@ -9,5 +9,4 @@
       <a href="${citation.ris}" target="_blank" rel="noopener noreferrer" class="btn btn-default">RIS</a>
     </div>
   </div>
-  <p>&nbsp;</p>
 </#if>

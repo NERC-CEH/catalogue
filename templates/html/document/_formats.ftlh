@@ -1,18 +1,12 @@
 <#if distributionFormats?has_content>
-	<#assign formats="" >
-	<#if distributionFormats?size = 1>
-		<#list distributionFormats as format>
-			<#assign formats=formats + format.name>
-		</#list>
-		<#assign formats="Format of the data: " + formats>
-	<#else>
-		<#list distributionFormats as format>
-			<#assign formats=formats + format.name + ", ">
-		</#list>
-		<#assign formats="This data is available as " + formats?remove_ending(", ")?replace(",(?!.+,)", " or ", "r")>
-	</#if>
-
 	<div class="dataFormats" id="section-formats">
-		<p>${formats}</p>
+		<h2>
+			Format<#if distributionFormats?size gt 1>s</#if>
+		</h2>
+		<p>
+		<#list distributionFormats as format>
+			${format.name}<#sep><br></#sep>
+		</#list>
+		</p>
 	</div>
 </#if>

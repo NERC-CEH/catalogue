@@ -16,7 +16,6 @@
           </#if>
         <#if licence.uri?has_content></a></#if>
       </p>
-      <div class="divider"></div>
     </#if>
   </#list>
 </#if>

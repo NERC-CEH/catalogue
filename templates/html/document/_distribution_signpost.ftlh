@@ -1,6 +1,6 @@
 <div class="panel panel-default hidden-print" id="document-distribution">
   <div class="panel-body">
-    <p class="panel-title">Get the data</p>
+    <h2>Get the data</h2>
     <div class="distribution-signpost">
         <#include "_signpost.ftlh">
     </div>

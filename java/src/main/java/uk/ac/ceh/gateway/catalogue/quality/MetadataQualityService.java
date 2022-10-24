@@ -31,8 +31,7 @@ public class MetadataQualityService {
         "application",
         "dataset",
         "nonGeographicDataset",
-        "service",
-        "signpost"
+        "service"
     );
     private final Set<String> allowedEmails = ImmutableSet.of(
         "enquiries@ceh.ac.uk",
