@@ -6,7 +6,7 @@ import {
   ModelResolutionView, OnlineLinkView,
   ParentView,
   PredefinedParentView,
-  SupplementalView, TextareaView, TextOnlyView
+  SupplementalView, TextareaView
 } from '../views'
 import { Contact, DataTypeSchema, Funding } from '../models'
 import EditorView from '../EditorView'

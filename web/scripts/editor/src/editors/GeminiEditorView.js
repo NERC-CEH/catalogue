@@ -5,7 +5,7 @@ import {
   CheckboxView,
   ContactView,
   DatasetReferenceDateView,
-  DescriptiveKeywordView,KeywordVocabularyView,
+  DescriptiveKeywordView,
   DistributionFormatView, FundingView,
   InspireThemeView, MapDataSourceView,
   OnlineResourceView,
