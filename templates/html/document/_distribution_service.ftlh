@@ -1,8 +1,7 @@
 <#if onlineResources?? >
   <#assign mapservices = func.filterRegex(onlineResources, "url", "https://catalogue.ceh.ac.uk/maps/")>
 </#if>
-<div class="panel panel-default hidden-print" id="document-distribution">
-  <div class="panel-body">
+<div  id="document-distribution">
     <h2>Use this service</h2>
     <div class="distribution-service">
       <#if mapservices??>
@@ -12,6 +11,5 @@
       </#if>
       <#include "_licence.ftlh">
       <#include "_otherUseConstraints.ftlh">
-    </div>
   </div>
 </div>

@@ -82,21 +82,21 @@
           <div class="description">
             <div class="description-text">
               <@blocks.linebreaks description!"" />
+
+              <#if resourceType.value != 'aggregate' && resourceType.value != 'collection'>
+                <#if datasetReferenceDate??>
+                  <div>
+                    <#if datasetReferenceDate.publicationDate??>
+                      Publication date: ${datasetReferenceDate.publicationDate}
+                    </#if>
+                  </div>
+                </#if>
+              </#if>
+
             </div>
             <div class="browseimage">
               <#include "document/_browseGraphic.ftlh">
             </div>
-
-            <#if resourceType.value != 'aggregate' && resourceType.value != 'collection'>
-              <#if datasetReferenceDate??>
-                <div>
-                  <#if datasetReferenceDate.publicationDate??>
-                    Publication date: ${datasetReferenceDate.publicationDate}
-                  </#if>
-                </div>
-              </#if>
-            </#if>
-
           </div>
         </#if>
       </div>
