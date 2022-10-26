@@ -1,7 +1,6 @@
 import _ from 'underscore'
 import ObjectInputView from './ObjectInputView'
 import template from '../templates/MapStyleSelector.tpl'
-import $ from 'jquery'
 import 'bootstrap-colorpicker'
 
 export default ObjectInputView.extend({
@@ -30,10 +29,10 @@ export default ObjectInputView.extend({
       { symbols: this.symbols })
     )
 
-    const that = this
     this.listenTo(this.model, 'change:colour change:symbol', this.update)
     this.update()
 
+    const that = this
     $(document).ready(function () {
       that.$('#picker').change(function () {
         that.model.set('colour', that.$('#picker').val())

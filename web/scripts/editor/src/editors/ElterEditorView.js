@@ -1,4 +1,3 @@
-import $ from 'jquery'
 import {
   AccessLimitationView,
   CheckboxView,

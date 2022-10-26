@@ -6,17 +6,14 @@ import 'air-datepicker'
 import 'air-datepicker/dist/js/i18n/datepicker.en.js'
 import 'air-datepicker/dist/css/datepicker.min.css'
 import Moment from 'moment'
-import $ from 'jquery'
-
 export default ObjectInputView.extend({
 
   render () {
     this.template = _.template(template)
     ObjectInputView.prototype.render.apply(this)
+
     const that = this
     $(document).ready(function () {
-      // eslint-disable-next-line no-unused-vars
-
       that.$('#input-creationDate').datepicker({
         language: 'en',
         dateFormat: 'yyyy-mm-dd',
@@ -37,14 +34,13 @@ export default ObjectInputView.extend({
         }
       })
 
-      // eslint-disable-next-line no-unused-vars
-      const parent = new ParentStringView({
+      new ParentStringView({
         el: that.$('#provenanceContributors'),
         model: that.model,
         modelAttribute: 'contributors',
         label: 'Contributors'
       })
-      return this
     })
+    return this
   }
 })

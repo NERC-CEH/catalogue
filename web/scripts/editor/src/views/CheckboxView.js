@@ -1,7 +1,6 @@
 import InputView from '../InputView'
 import template from '../templates/Checkbox.tpl'
 import _ from 'underscore'
-import $ from 'jquery'
 
 export default InputView.extend({
 

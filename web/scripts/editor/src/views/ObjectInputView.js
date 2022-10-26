@@ -1,7 +1,7 @@
 import _ from 'underscore'
-import $ from 'jquery'
 import Backbone from 'backbone'
 import validationTemplate from '../templates/Validation.tpl'
+import 'jquery-ui/ui/widgets/sortable'
 
 export default Backbone.View.extend({
 
@@ -11,7 +11,7 @@ export default Backbone.View.extend({
 
   initialize (options) {
     this.data = options
-    this.listenTo(this.model, 'remove', function () { return this.remove() })
+    this.listenTo(this.model, 'remove', function () { this.remove() })
     this.listenTo(this.model, 'change', function (model) {
       if (model.isValid()) {
         this.$('>.validation').hide()
@@ -39,14 +39,13 @@ export default Backbone.View.extend({
     } else {
       this.model.set(name, value)
     }
-
     return false // disable bubbling
   },
 
   /*
   Defines a sortable list view which is bound to a positionable collection.
   The supplied `view` callback function is required to generate a constructed
-  child view element which will be renederd on to the list
+  child view element which will be rendered on to the list
   */
   createList (collection, selector, view) {
     const element = this.$(selector)
@@ -65,7 +64,7 @@ export default Backbone.View.extend({
     this.listenTo(collection, 'reset', resetView)
 
     let pos = null
-    if (!(this.data.disabled === 'disabled')) {
+    if (this.data.disabled !== 'disabled') {
       element.sortable({
         start: (event, ui) => {
           pos = ui.item.index()

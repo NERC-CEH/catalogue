@@ -55,15 +55,9 @@ export default Backbone.Model.extend({
     if (_.isEmpty(errors)) {
       // return nothing from Backbone.Model.validate
       // because returning something signals a validation error.
-      return
+
     } else {
       return errors
-    }
-
-    if (_.isEmpty(warnings)) {
-      return
-    } else {
-      return warnings
     }
   },
 

@@ -1,4 +1,3 @@
-import $ from 'jquery'
 import { DropzoneView } from '../../src/Upload'
 
 describe('DropzoneView', function () {

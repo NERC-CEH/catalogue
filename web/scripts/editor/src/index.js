@@ -1,4 +1,3 @@
-import('./bootstrap.js')
 export { default as EditorView } from './EditorView'
 export { default as EditorMetadata } from './EditorMetadata'
 export { default as InputView } from './InputView'

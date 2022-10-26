@@ -3,7 +3,7 @@ import ParentView from './ParentView'
 import template from '../templates/PredefinedParent.tpl'
 import dropdownTemplate from '../templates/PredefinedParentDropdown.tpl'
 import $ from 'jquery'
-
+import 'jquery-ui'
 export default ParentView.extend({
 
   events: {

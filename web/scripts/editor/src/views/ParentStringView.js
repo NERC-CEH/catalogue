@@ -3,7 +3,6 @@ import SingleView from '../SingleView'
 import parentTemplate from '../templates/Parent.tpl'
 import childTemplate from '../templates/MultiString.tpl'
 import template from '../templates/ChildLarge.tpl'
-import $ from 'jquery'
 import 'jquery-ui/ui/widgets/sortable'
 
 export default SingleView.extend({

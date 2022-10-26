@@ -1,4 +1,3 @@
-import $ from 'jquery'
 import Backbone from 'backbone'
 import { FileCollection, FileListView, UploadView } from '../File'
 import { MessageListView } from '../Message'

@@ -222,7 +222,7 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'additionalInfo',
           multiline: true,
-          //label: 'Additional info',
+          // label: 'Additional info',
           ObjectInputView: AdditionalInfoView
         })
       ]

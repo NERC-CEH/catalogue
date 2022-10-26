@@ -1,5 +1,4 @@
 import _ from 'underscore'
-import $ from 'jquery'
 import Backbone from 'backbone'
 import InputView from '../InputView'
 import LinkDocumentView from './LinkDocumentView'

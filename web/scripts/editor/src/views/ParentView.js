@@ -3,8 +3,7 @@ import SingleView from '../SingleView'
 import ChildView from './ChildView'
 import template from '../templates/Parent.tpl'
 import { Positionable } from '../collections'
-import $ from 'jquery'
-import 'jquery-sortablejs';
+import 'jquery-ui/ui/widgets/sortable'
 
 export default SingleView.extend({
 

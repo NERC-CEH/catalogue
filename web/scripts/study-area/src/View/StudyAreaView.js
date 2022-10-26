@@ -3,7 +3,7 @@ import _ from 'underscore'
 import 'leaflet-draw/dist/leaflet.draw-src.css'
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
-import $ from 'jquery'
+
 export default Backbone.View.extend({
 
   initialize () {

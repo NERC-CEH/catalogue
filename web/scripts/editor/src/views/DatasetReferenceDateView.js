@@ -5,14 +5,11 @@ import 'air-datepicker'
 import 'air-datepicker/dist/js/i18n/datepicker.en.js'
 import 'air-datepicker/dist/css/datepicker.min.css'
 import Moment from 'moment'
-import $ from 'jquery'
-
 export default ObjectInputView.extend({
 
   render () {
     this.template = _.template(template)
     ObjectInputView.prototype.render.apply(this)
-    // eslint-disable-next-line no-unused-vars
 
     const that = this
     $(document).ready(function () {
@@ -53,10 +50,10 @@ export default ObjectInputView.extend({
         position: 'top left',
         onSelect: function (formattedDate, date, inst) {
           that.model.set('supersededDate', Moment(date).format('YYYY-MM-DD'))
-          that.$('#input-supersededDate').value = that.model.set('supersededDate', Moment(date).format('YYYY-MM-DD'))
+          that.$('#input-supersededDate').value = this.model.set('supersededDate', Moment(date).format('YYYY-MM-DD'))
         }
       })
-      return this
     })
+    return this
   }
 })
