@@ -1,4 +1,5 @@
 import Backbone from 'backbone'
+import 'jquery-ui/ui/widgets/sortable'
 export default Backbone.Collection.extend({
   /*
     Moves an existing element in the collection from position index

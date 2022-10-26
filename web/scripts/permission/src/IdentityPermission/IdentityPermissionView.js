@@ -1,7 +1,6 @@
 import Backbone from 'backbone'
 import template from './IdentityPermission.tpl'
 import _ from 'underscore'
-import $ from 'jquery'
 
 export default Backbone.View.extend({
   tagName: 'tr',

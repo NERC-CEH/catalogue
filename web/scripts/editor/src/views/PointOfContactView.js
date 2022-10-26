@@ -1,7 +1,6 @@
 import _ from 'underscore'
 import ObjectInputView from './ObjectInputView'
 import template from '../templates/PointOfContact.tpl'
-import $ from 'jquery'
 
 export default ObjectInputView.extend({
 

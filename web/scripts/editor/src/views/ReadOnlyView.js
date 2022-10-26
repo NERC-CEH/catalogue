@@ -1,7 +1,6 @@
 import _ from 'underscore'
 import SingleView from '../SingleView'
 import template from '../templates/ReadOnly.tpl'
-import $ from 'jquery'
 
 export default SingleView.extend({
 

@@ -1,6 +1,5 @@
 import _ from 'underscore'
 import ObjectInputView from './ObjectInputView'
-import $ from 'jquery'
 
 export default ObjectInputView.extend({
 

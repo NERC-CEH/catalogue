@@ -1,4 +1,3 @@
-import $ from 'jquery'
 import Swal from 'sweetalert2'
 import _ from 'underscore'
 import Backbone from 'backbone'

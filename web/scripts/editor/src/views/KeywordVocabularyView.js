@@ -1,5 +1,4 @@
 import _ from 'underscore'
-import $ from 'jquery'
 import Backbone from 'backbone'
 import ObjectInputView from './ObjectInputView'
 import template from '../templates/KeywordVocabulary.tpl'

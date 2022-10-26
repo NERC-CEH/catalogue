@@ -33,7 +33,6 @@ import {
   ResourceType, Service, SpatialResolution,
   TopicCategory
 } from '../models'
-import $ from 'jquery'
 import BoundingBox from '../geometryMap/BoundingBox'
 import BoundingBoxView from '../geometryMap/BoundingBoxView'
 
@@ -254,7 +253,7 @@ export default EditorView.extend({
 <p>Multiple topic categories are allowed - please include all that are pertinent.  For example, "Estimates of topsoil invertebrates" = Biota AND Environment AND Geoscientific Information.</p>\
 `
         }),
-       
+
         new PredefinedParentView({
           model: this.model,
           ModelType: DescriptiveKeyword,

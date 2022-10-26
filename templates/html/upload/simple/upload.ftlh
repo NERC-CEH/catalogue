@@ -1,10 +1,6 @@
 <#import "../../skeleton.ftlh" as skeleton>
 
-<#assign uploadScripts>
-  <script src="/static/scripts/simpleupload.bundle.js"></script>
-</#assign>
-
-<@skeleton.master title=title catalogue=catalogues.retrieve(catalogueKey) scripts=uploadScripts>
+<@skeleton.master title=title catalogue=catalogues.retrieve(catalogueKey)>
 <div class="container" id="simple-upload">
   <h1>${title}</h1>
   <a href="/documents/${id}">Return to metadata</a>

@@ -1,9 +1,7 @@
-import $ from 'jquery'
-import 'jquery-ui/ui/widgets/tooltip'
 import Backbone from 'backbone'
 import _ from 'underscore'
 import template from './ClipboardCopy.tpl'
-
+import 'jquery-ui/ui/widgets/tooltip'
 // #
 // # Add a <span class="clipboard-copy" data-selector="{my-selector}"></span>
 // # to any element to copy to clipboard.

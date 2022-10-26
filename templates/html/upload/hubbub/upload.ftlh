@@ -1,10 +1,5 @@
 <#import "../../skeleton.ftlh" as skeleton>
 
-<#assign uploadScripts>
-    <#--noinspection HtmlUnknownTarget-->
-    <script src="/static/scripts/hubbub.bundle.js"></script>
-</#assign>
-
 <@skeleton.master title="Data Transfer for: " + title scripts=uploadScripts catalogue=catalogues.defaultCatalogue()>
     <@documentContainer>
         <@titleHeading/>

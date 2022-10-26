@@ -6,7 +6,6 @@ import ParentView from './ParentView'
 import ServiceOperationView from './ServiceOperationView'
 import ParentStringView from './ParentStringView'
 import CoupledResourceView from './CoupledResourceView'
-import $ from 'jquery'
 
 export default SingleView.extend({
 
@@ -51,7 +50,6 @@ export default SingleView.extend({
         label: 'Versions',
         disabled: options.disabled
       })
-
       _.invoke([serviceOperations, coupledResources, versions], 'show')
       that.$('.dataentry').append(typeView.el, serviceOperations.el, coupledResources.el, versions.el)
     })

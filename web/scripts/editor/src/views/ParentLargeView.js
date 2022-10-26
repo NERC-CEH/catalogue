@@ -1,9 +1,9 @@
 import _ from 'underscore'
-import $ from 'jquery'
 import { Positionable } from '../collections'
 import SingleView from '../SingleView'
 import ChildLargeView from './ChildLargeView'
 import template from '../templates/Parent.tpl'
+import 'jquery-ui/ui/widgets/sortable'
 
 export default SingleView.extend({
 

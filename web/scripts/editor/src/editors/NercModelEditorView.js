@@ -504,7 +504,6 @@ export default EditorView.extend({
       ]
     }
 
-
     ]
 
     return EditorView.prototype.initialize.apply(this)

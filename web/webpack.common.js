@@ -1,16 +1,11 @@
 const HtmlWebPackPlugin = require('html-webpack-plugin')
 const webpack = require('webpack')
+const ESLintPlugin = require('eslint-webpack-plugin')
+
 module.exports = {
 
   entry: {
-    catalogue: './scripts/catalogue/src/index.js',
-    clipboard: './scripts/clipboard/src/index.js',
-    editor: './scripts/editor/src/index.js',
-    hubbub: './scripts/hubbub/src/index.js',
-    permission: './scripts/permission/src/index.js',
-    search: './scripts/search/src/index.js',
-    simpleupload: './scripts/simple-upload/src/index.js',
-    studyarea: './scripts/study-area/src/index.js'
+    main: './scripts/main.js'
   },
   module: {
     rules: [
@@ -64,17 +59,6 @@ module.exports = {
   output: {
     filename: '[name].bundle.js'
   },
-
-  optimization: {
-    splitChunks: {
-      cacheGroups: {
-        vendor: {
-          test: /[\\/]node_modules[\\/]jquery[\\/]/,
-          name: 'vendor'
-        }
-      }
-    }
-  },
   plugins: [
     new HtmlWebPackPlugin({
       filename: './index.html'
@@ -82,6 +66,7 @@ module.exports = {
     new webpack.ProvidePlugin({
       $: 'jquery',
       jQuery: 'jquery'
-    })
+    }),
+    new ESLintPlugin()
   ]
 }

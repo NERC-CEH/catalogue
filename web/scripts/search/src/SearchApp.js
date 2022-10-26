@@ -1,7 +1,6 @@
 import _ from 'underscore'
 import Backbone from 'backbone'
 import SearchPage from './models/SearchPage'
-import $ from 'jquery'
 
 export default Backbone.Model.extend({
 

@@ -166,7 +166,7 @@ services:
   web:
     volumes:
       - ./templates:/opt/ceh-catalogue/templates
-      - ./web/hubbub/dist/hubbub.bundle.js:/opt/ceh-catalogue/static/scripts/hubbub.bundle.js
+      - ./web/scripts/dist/main.bundle.js:/opt/ceh-catalogue/static/scripts/main.bundle.js
     environment:
       - spring.profiles.active=development,upload:hubbub,server:eidc,search:basic
       - jira.username=<your username>
