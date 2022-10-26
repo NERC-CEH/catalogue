@@ -30,7 +30,7 @@ import { EditorMetadata } from './editor/src'
 import LinkEditorMetadata from './editor/src/LinkEditorMetadata'
 import { Catalogue, CatalogueView } from './catalogue/src/CatalogueApp'
 import { StudyAreaView } from './study-area/src/View'
-import { PermissionApp, PermissionAppView } from './permission/src/PermissionApp'
+import { PermissionApp, PermissionAppView, PermissionRouter } from './permission/src/PermissionApp'
 import SearchApp from './search/src/SearchApp'
 import SearchAppView from './search/src/SearchAppView'
 import SearchRouter from './search/src/SearchRouter'
@@ -320,8 +320,8 @@ function initGeometryMap () {
 
 function initPermission () {
   const app = new PermissionApp()
-  app.loadPermission($('#metadata').data('id'))
   new PermissionAppView({ model: app })
+  new PermissionRouter({ model: app })
 
   return createMessageViewFor(app)
 }
