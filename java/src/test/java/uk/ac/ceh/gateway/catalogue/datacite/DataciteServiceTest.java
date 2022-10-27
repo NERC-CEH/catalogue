@@ -235,6 +235,33 @@ public class DataciteServiceTest {
         verify(identifierService).generateUri(ID);
     }
 
+    @Test
+    @SneakyThrows
+    public void updatesDoiMetadataLegacy() {
+        //Given
+        val document = getGeminiDocumentWithLegacyPublisher();
+        when(identifierService.generateUri(ID)).thenReturn("https://catalogue.ceh.ac.uk/id/" + ID);
+        val encoded = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("encoded.txt")), StandardCharsets.UTF_8);
+
+        // TODO: in future could look at the xml content sent to Datacite
+        mockServer
+                .expect(requestTo("https://example.com/doi/10.8268/d4bdc836-5b89-44c5-aca2-2880a5d5a5be"))
+                .andExpect(method(HttpMethod.PUT))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.valueOf("application/vnd.api+json")))
+                .andExpect(jsonPath("$.data.id").value(doiPrefix + "/" + ID))
+                .andExpect(jsonPath("$.data.attributes.doi").value(doiPrefix + "/" + ID))
+                .andExpect(jsonPath("$.data.attributes.url").value("https://catalogue.ceh.ac.uk/id/" + ID))
+                .andExpect(jsonPath("$.data.attributes.xml").value(encoded))
+                .andRespond(withSuccess());
+
+        //When
+        service.updateDoiMetadata(document);
+
+        //Then
+        mockServer.verify();
+        verify(identifierService).generateUri(ID);
+    }
+
 
     @Test
     @SneakyThrows
@@ -265,6 +292,22 @@ public class DataciteServiceTest {
     private GeminiDocument getGeminiDocument(){
         val author = ResponsibleParty.builder().role("author").build();
         val publisher = ResponsibleParty.builder().role("publisher").organisationName("Test publisher").build();
+        val metadata = MetadataInfo.builder().state("published").build();
+        metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
+        val document = new GeminiDocument();
+        document.setDescription("This is the description");
+        document.setResponsibleParties(Arrays.asList(author, publisher));
+        document.setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.of(2010, Month.MARCH, 2)).build());
+        document.setTitle("Title");
+        document.setMetadata(metadata);
+        document.setId(ID);
+
+        return document;
+    }
+
+    private GeminiDocument getGeminiDocumentWithLegacyPublisher(){
+        val author = ResponsibleParty.builder().role("author").build();
+        val publisher = ResponsibleParty.builder().role("publisher").organisationName("Test legacy publisher").build();
         val metadata = MetadataInfo.builder().state("published").build();
         metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
         val document = new GeminiDocument();
