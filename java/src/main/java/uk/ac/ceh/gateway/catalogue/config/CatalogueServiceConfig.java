@@ -288,6 +288,7 @@ public class CatalogueServiceConfig {
                 .url("https://www.lter-europe.net/")
                 .contactUrl("https://www.lter-europe.net/lter-europe/about/contacts")
                 .logo("elter.png")
+                .facetKey("dataLevel")
                 .facetKey("elterDeimsSite")
                 .facetKey("resourceType")
                 .documentType(ELTER_TYPE)

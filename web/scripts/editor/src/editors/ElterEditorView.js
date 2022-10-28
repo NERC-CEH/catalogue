@@ -35,12 +35,11 @@ import EditorView from '../EditorView'
 import InputView from '../InputView'
 import BoundingBoxView from '../geometryMap/BoundingBoxView'
 import BoundingBox from '../geometryMap/BoundingBox'
+import SelectView from '../SelectView'
 
 export default EditorView.extend({
 
   initialize () {
-    const disabled = $($('body')[0]).data('edit-restricted')
-
     this.sections = [{
       label: 'General',
       title: '',
@@ -48,7 +47,7 @@ export default EditorView.extend({
         new ReadOnlyView({
           model: this.model,
           modelAttribute: 'id',
-          label: 'File identifier'
+          label: 'Record identifier'
         }),
 
         new SingleObjectView({
@@ -103,6 +102,19 @@ export default EditorView.extend({
 `
         }),
 
+        new SelectView({
+          model: this.model,
+          modelAttribute: 'dataLevel',
+          label: 'Data level',
+          options: [
+            { value: '', label: '' },
+            { value: 'Level 0', label: 'Level 0: Input data from eLTER sites or third parties.  Data are not subject to eLTER quality control and harmonization' },
+            { value: 'Level 1', label: 'Level 1: Data from single sites or site groups. Structure is harmonized and data is quality controlled' },
+            { value: 'Level 2', label: 'Level 2: Harmonized data products for a range of sites' },
+            { value: 'Level 3', label: 'Level 3: Derived data products. For example, the result of modelling/interpolation or other analytical process' }
+          ]
+        }),
+
         new SingleObjectView({
           model: this.model,
           modelAttribute: 'accessLimitation',
@@ -151,12 +163,7 @@ export default EditorView.extend({
           modelAttribute: 'responsibleParties',
           label: 'Contacts',
           ObjectInputView: ContactView,
-          multiline: true,
-          helpText: `\
-<p>The names of authors should be in the format <code>Surname, First Initial. Second Initial.</code> For example <i>Brown, A.B.</i></p>
-<p>Role and organisation name are mandatory.</p>
-<p>The preferred identifier for individuals is an ORCiD.  You must enter the identifier as a <i>fully qualified</i> ID (e.g.  <b>https://orcid.org/1234-5678-0123-987X</b> rather than <b>1234-5678-0123-987X</b>).</p>\
-`
+          multiline: true
         })
       ]
     },
@@ -169,11 +176,7 @@ export default EditorView.extend({
           ModelType: TopicCategory,
           modelAttribute: 'topicCategories',
           label: 'Topic categories',
-          ObjectInputView: TopicCategoryView,
-          helpText: `\
-<p>Please note these are very broad themes and should not be confused with EIDC science topics.</p>
-<p>Multiple topic categories are allowed - please include all that are pertinent.  For example, "Estimates of topsoil invertebrates" = Biota AND Environment AND Geoscientific Information.</p>\
-`
+          ObjectInputView: TopicCategoryView
         }),
 
         new PredefinedParentView({
@@ -201,7 +204,7 @@ export default EditorView.extend({
           label: 'INSPIRE theme',
           ObjectInputView: InspireThemeView,
           helpText: `\
-<p>If the resource falls within the scope of an INSPIRE theme it must be declared here.</p>
+<p>If the resource falls within the scope of an INSPIRE theme it should be declared here.</p>
 <p>Conformity is the degree to which the <i class='text-red'>data</i> conforms to the relevant INSPIRE data specification.</p>\
 `
         }),
@@ -220,44 +223,13 @@ export default EditorView.extend({
       label: 'Distribution',
       title: 'Distribution ,licensing and constraints',
       views: [
-        new PredefinedParentView({
+        new ParentView({
           model: this.model,
           modelAttribute: 'onlineResources',
           ModelType: OnlineResource,
           label: 'Online availability',
           ObjectInputView: OnlineResourceView,
-          multiline: true,
-          predefined: {
-            'Data package': {
-              url: 'https://data-package.ceh.ac.uk/data/{fileIdentifier}',
-              name: 'Download the data',
-              description: 'Download a copy of this data',
-              function: 'download'
-            },
-            'Order manager data': {
-              url: 'https://order-eidc.ceh.ac.uk/resources/{ORDER_REF}}/order',
-              name: 'Download the data',
-              description: 'Download a copy of this data',
-              function: 'order'
-            },
-            'Direct access data': {
-              url: 'https://catalogue.ceh.ac.uk/datastore/eidchub/{fileIdentifier}',
-              name: 'Download the data',
-              description: 'Download a copy of this data',
-              function: 'download'
-            },
-            'Supporting documents': {
-              url: 'https://data-package.ceh.ac.uk/sd/{fileIdentifier}.zip',
-              name: 'Supporting information',
-              description: 'Supporting information available to assist in re-use of this dataset',
-              function: 'information'
-            }
-          },
-          helpText: `\
-<p>Include addresses of web services used to access the data and supporting information.</p>
-<p>Other links such as project websites or papers should <b>NOT</b> be included here. You can add them to "Additional information"</p>\
-`,
-          disabled
+          multiline: true
         }),
 
         new PredefinedParentView({
@@ -294,19 +266,12 @@ export default EditorView.extend({
 `
         }),
 
-        new PredefinedParentView({
+        new ParentView({
           model: this.model,
           modelAttribute: 'useConstraints',
           label: 'Use constraints',
           ObjectInputView: ResourceConstraintView,
           multiline: true,
-          predefined: {
-            'Licence - OGL': {
-              value: 'This resource is available under the terms of the Open Government Licence',
-              uri: 'https://eidc.ceh.ac.uk/licences/OGL/plain',
-              code: 'license'
-            }
-          },
           helpText: `\
 <p>Describe any restrictions and legal prerequisites placed on the <strong>use</strong> of a data resource once it has been accessed. For example:</p>
 <ul class="list-unstyled">
@@ -331,8 +296,7 @@ export default EditorView.extend({
           ObjectInputView: ResourceIdentifierView,
           helpText: `
 <p>A unique string or number used to identify the data resource. The codespace identifies the context in which the code is unique.</p>
-`,
-          disabled
+`
         }),
 
         new ParentView({
@@ -377,7 +341,7 @@ export default EditorView.extend({
               westBoundLongitude: 22.357,
               extentName: 'Bulgaria'
             },
-            'Czech Republic': {
+            Czechia: {
               northBoundLatitude: 51.055,
               eastBoundLongitude: 18.859,
               southBoundLatitude: 48.552,
@@ -544,18 +508,6 @@ export default EditorView.extend({
           label: 'Spatial reference systems',
           ObjectInputView: SpatialReferenceSystemView,
           predefined: {
-            'British National Grid (EPSG::27700)': {
-              code: 'http://www.opengis.net/def/crs/EPSG/0/27700',
-              title: 'OSGB 1936 / British National Grid'
-            },
-            'GB place names': {
-              code: 'https://data.ordnancesurvey.co.uk/datasets/opennames',
-              title: 'GB place names'
-            },
-            'GB postcodes': {
-              code: 'https://data.ordnancesurvey.co.uk/datasets/os-linked-data',
-              title: 'GB postcodes'
-            },
             'Lat/long (WGS84) (EPSG::4326)': {
               code: 'http://www.opengis.net/def/crs/EPSG/0/4326',
               title: 'WGS 84'
@@ -632,53 +584,18 @@ export default EditorView.extend({
 `
         }),
 
-        new PredefinedParentView({
+        new ParentView({
           model: this.model,
           modelAttribute: 'funding',
           ModelType: Funding,
           multiline: true,
           label: 'Funding',
           ObjectInputView: FundingView,
-          predefined: {
-            BBSRC: {
-              funderName: 'Biotechnology and Biological Sciences Research Council',
-              funderIdentifier: 'https://ror.org/00cwqg982'
-            },
-            Defra: {
-              funderName: 'Department for Environment Food and Rural Affairs',
-              funderIdentifier: 'https://ror.org/00tnppw48'
-            },
-            EPSRC: {
-              funderName: 'Engineering and Physical Sciences Research Council',
-              funderIdentifier: 'https://ror.org/0439y7842'
-            },
-            ESRC: {
-              funderName: 'Economic and Social Research Council',
-              funderIdentifier: 'https://ror.org/03n0ht308'
-            },
-            'Innovate UK': {
-              funderName: 'Innovate UK',
-              funderIdentifier: 'https://ror.org/05ar5fy68'
-            },
-            MRC: {
-              funderName: 'Medical Research Council',
-              funderIdentifier: 'https://ror.org/03x94j517'
-            },
-            NERC: {
-              funderName: 'Natural Environment Research Council',
-              funderIdentifier: 'https://ror.org/02b5d8509'
-            },
-            STFC: {
-              funderName: 'Science and Technology Facilities Council',
-              funderIdentifier: 'https://ror.org/057g20z61'
-            }
-          },
           helpText: `\
 <p>Include here details of any grants or awards that were used to generate this resource.</p>
 <p>If you include funding information, the Funding body is MANDATORY, other fields are useful but optional.</p>
 <p>Award URL is either the unique identifier for the award or sa link to the funder's  grant page (if it exists). It is <b>NOT</b> a link to a project website.</p>\
-`,
-          disabled
+`
         })
       ]
     },
@@ -690,8 +607,7 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'service',
           ModelType: Service,
-          label: 'Service',
-          disabled
+          label: 'Service'
         }),
 
         new ParentView({
@@ -713,8 +629,7 @@ export default EditorView.extend({
 <p>The 'Byte?' option that appears for raster (GeoTiff) datasets is used to indicate whether the GeoTiff is a 'byte' or 'non-byte' datatype.
 This is only needed if you configure 'Stylying=Classification' for your GeoTiff.</p>
 <p>Paths should be specified relative to the base of the datastore. e.g. <strong>5b3fcf9f-19d4-4ad3-a8bb-0a5ea02c857e/my_shapefile</strong></p>\
-`,
-          disabled
+`
         })
       ]
     }

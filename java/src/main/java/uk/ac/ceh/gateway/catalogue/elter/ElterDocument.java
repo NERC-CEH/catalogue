@@ -36,10 +36,8 @@ import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAP
 public class ElterDocument extends AbstractMetadataDocument implements WellKnownText {
     private static final Set<String> ALLOWED_CITATION_FUNCTIONS = Set.of("isReferencedBy", "isSupplementTo");
     private static final String TOPIC_PROJECT_URL = "http://onto.nerc.ac.uk/CEHMD/";
-    private String otherCitationDetails, lineage, reasonChanged,
-            metadataStandardName, metadataStandardVersion;
-    private List<String> alternateTitles, spatialRepresentationTypes, datasetLanguages,
-            securityConstraints;
+    private String otherCitationDetails, lineage, reasonChanged, metadataStandardName, metadataStandardVersion, dataLevel;
+    private List<String> alternateTitles, spatialRepresentationTypes, datasetLanguages, securityConstraints;
     private List<Keyword> topicCategories;
     private List<DistributionInfo> distributionFormats;
     private List<DescriptiveKeywords> descriptiveKeywords;

@@ -33,6 +33,7 @@
     <fieldType name="pdouble" class="solr.DoublePointField" docValues="true"/>
     <fieldType name="pdoubles" class="solr.DoublePointField" docValues="true" multiValued="true"/>
     <fieldType name="pfloat" class="solr.FloatPointField" docValues="true"/>
+    <fieldType name="pinteger" class="solr.IntPointField" docValues="true"/>
     <fieldType name="plong" class="solr.LongPointField" docValues="true"/>
     <fieldType name="plongs" class="solr.LongPointField" docValues="true" multiValued="true"/>
     <fieldType name="random" class="solr.RandomSortField"/>
@@ -127,6 +128,7 @@
     <field name="ukscapeScienceChallenge" type="keywords"/>
     <field name="ukscapeService" type="keywords"/>
     <field name="version" type="pfloat" default="1"/>
+    <field name="dataLevel" type="keywords" multiValued="false"/>
     <field name="view" type="keywords"/>
 
     <field name="infrastructureCategory" type="keywords" multiValued="false"/>
