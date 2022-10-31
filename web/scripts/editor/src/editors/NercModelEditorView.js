@@ -93,7 +93,8 @@ export default EditorView.extend({
             },
             CEDA: {
               role: 'pointOfContact',
-              organisationName: 'Centre for Environmental Data Analysis'
+              organisationName: 'Centre for Environmental Data Analysis',
+              organisationIdentifier: 'https://ror.org/04j4kad11'
             },
             NOC: {
               role: 'pointOfContact',
@@ -499,6 +500,7 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'additionalInfo',
           multiline: true,
+          label: 'Information not recorded elsewhere',
           ObjectInputView: AdditionalInfoView
         })
       ]

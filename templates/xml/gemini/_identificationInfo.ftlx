@@ -107,13 +107,7 @@
 								<#if responsibleParty.country?has_content>
 								<gmd:country><gco:CharacterString>${responsibleParty.country}</gco:CharacterString></gmd:country>
 								</#if>
-								<gmd:electronicMailAddress><gco:CharacterString>
-									<#if responsibleParty.email?has_content>
-										${responsibleParty.email}
-									<#else>
-										enquiries@ceh.ac.uk
-									</#if>
-								</gco:CharacterString></gmd:electronicMailAddress>
+								<gmd:electronicMailAddress><gco:CharacterString>enquiries@ceh.ac.uk</gco:CharacterString></gmd:electronicMailAddress>
 							</gmd:CI_Address>
 						</gmd:address>
 					</gmd:CI_Contact>

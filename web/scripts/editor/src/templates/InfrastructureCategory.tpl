@@ -11,7 +11,7 @@
     <option value="controlledPlatforms">Controlled environment platforms</option>
     <option value="fieldPlatforms">Field research platforms</option>
   </optgroup>
-  <optgroup label="Environmental analysis">
+  <optgroup label="Analytical facilities">
     <option value="labsAnalysis">Analysis labs</option>
     <option value="labsTest">Test labs</option>
   </optgroup>

@@ -5,7 +5,7 @@
       <p>View as
         <span><a href="${uri}?format=json">json</a></span>
         <#if resourceType??>
-          <span><a href="${uri}?format=datacite">Datacite xml</a></span>
+          <span><a href="${uri}/datacite">Datacite xml</a></span>
           <span><a href="${uri}.xml?format=gemini">ISO 19115 (XML)</a></span>
           <span><a href="${uri}?format=ttl">RDF (Turtle)</a></span>
         </#if>

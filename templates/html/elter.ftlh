@@ -72,11 +72,11 @@
 
                   <#if resourceType.value != 'aggregate' && resourceType.value != 'collection'>
                     <#if datasetReferenceDate??>
-                      <div>
                         <#if datasetReferenceDate.publicationDate??>
+                          <div class="publicationDate">
                           Publication date: ${datasetReferenceDate.publicationDate}
-                        </#if>
-                      </div>
+                        </div>
+                      </#if>
                     </#if>
                   </#if>
 
