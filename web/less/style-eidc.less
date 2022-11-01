@@ -166,33 +166,27 @@ h1#document-title {
   }
 
   .section {
-    margin-top: 3em;
-
-    .section-content {
-      margin-left: 4em;
-    }
-  }
-
-  .section-schema {
-    .table-schema {
-      .table-condensed;
-    }
-  }
-
-  .section-provenance {
-    display: table;
-
-    div {
-      display: table-row;
-
-      span:first-child {
-        font-weight: bold;
-        text-align: right;
+    &--schema {
+      .table-schema {
+        .table-condensed;
       }
+    }
 
-      span {
-        display: table-cell;
-        padding: 0.35em 1em;
+    &--provenance {
+      display: table;
+
+      div {
+        display: table-row;
+
+        span:first-child {
+          font-weight: bold;
+          text-align: right;
+        }
+
+        span {
+          display: table-cell;
+          padding: 0.35em 1em;
+        }
       }
     }
   }
