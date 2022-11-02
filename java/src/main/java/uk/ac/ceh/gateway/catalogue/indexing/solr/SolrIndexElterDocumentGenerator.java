@@ -42,6 +42,7 @@ public class SolrIndexElterDocumentGenerator implements IndexGenerator<ElterDocu
                 .setGrant(grab(document.getFunding(), Funding::getAwardNumber))
                 .setIncomingCitationCount(document.getIncomingCitationCount())
                 .setIndividual(grab(document.getResponsibleParties(), ResponsibleParty::getIndividualName))
+                .setDataLevel(document.getDataLevel())
                 .setLineage(document.getLineage())
                 .setOrcid(grab(document.getResponsibleParties(), ResponsibleParty::getNameIdentifier))
                 .setOrganisation(grab(document.getResponsibleParties(), ResponsibleParty::getOrganisationName))

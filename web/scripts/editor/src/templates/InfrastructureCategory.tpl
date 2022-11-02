@@ -11,11 +11,11 @@
     <option value="controlledPlatforms">Controlled environment platforms</option>
     <option value="fieldPlatforms">Field research platforms</option>
   </optgroup>
-  <optgroup label="Environmental analysis">
+  <optgroup label="Analytical facilities">
     <option value="labsAnalysis">Analysis labs</option>
     <option value="labsTest">Test labs</option>
   </optgroup>
-  <optgroup label="Digital infrastructure">
+  <optgroup label="Digital infrastructures">
     <option value="data">Environmental data and information</option>
     <option value="models">Environmental models</option>
     <option value="analytics">Data analystics, method and approaches</option>

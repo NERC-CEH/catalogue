@@ -31,13 +31,13 @@ export default Backbone.Model.extend({
     mobilePlatforms: 'Environmental observatories',
     controlledPlatforms: 'Environmental experiment platforms',
     fieldPlatforms: 'Environmental experiment platforms',
-    labsAnalysis: 'Environmental analysis',
-    labsTest: 'Environmental analysis',
-    data: 'Digital infrastructure',
-    models: 'Digital infrastructure',
-    analytics: 'Digital infrastructure',
-    software: 'Digital infrastructure',
-    digitalPlatforms: 'Digital infrastructure'
+    labsAnalysis: 'Analytical facilities',
+    labsTest: 'Analytical facilities',
+    data: 'Digital infrastructures',
+    models: 'Digital infrastructures',
+    analytics: 'Digital infrastructures',
+    software: 'Digital infrastructures',
+    digitalPlatforms: 'Digital infrastructures'
   },
 
   descriptions: {

@@ -39,6 +39,7 @@ public class SolrIndex {
     private @Field List<String> keyword;
     private @Field String licence;
     private @Field String lineage;
+    private @Field String dataLevel;
     private @Field List<String> locations;
     private @Field List<String> modelType;
     private @Field List<String> ncAssets;

@@ -69,7 +69,8 @@ export default EditorView.extend({
             },
             CEDA: {
               organisationName: 'Centre for Environmental Data Analysis',
-              role: 'pointOfContact'
+              role: 'pointOfContact',
+              organisationIdentifier: 'https://ror.org/04j4kad11'
             },
             NOC: {
               organisationName: 'National Oceanography Centre',
@@ -181,8 +182,8 @@ export default EditorView.extend({
       ]
     },
     {
-      label: 'References & links',
-      title: 'References',
+      label: 'Additional info',
+      title: 'Additional info',
       views: [
 
         new ParentView({
@@ -209,20 +210,13 @@ export default EditorView.extend({
 <p>When linking to published articles, please use DOIs whenever possible.</p>
 <p><small class='text-danger'><i class='fas fa-exclamation-triangle'> </i> NOTE: Some websites may be maintained for a limited period and may therefore soon become unavailable.</small></p>\
 `
-        })
-
-      ]
-    },
-    {
-      label: 'Additional info',
-      title: 'Additional info',
-      views: [
+        }),
 
         new ParentView({
           model: this.model,
           modelAttribute: 'additionalInfo',
           multiline: true,
-          // label: 'Additional info',
+          label: 'Information not recorded elsewhere',
           ObjectInputView: AdditionalInfoView
         })
       ]

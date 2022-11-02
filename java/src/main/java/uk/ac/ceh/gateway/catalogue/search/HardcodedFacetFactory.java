@@ -123,7 +123,12 @@ public class HardcodedFacetFactory implements FacetFactory {
                 .displayName("Record type")
                 .hierarchical(false)
                 .build();
-            case "resourceType" -> Facet.builder()
+            case "dataLevel" -> Facet.builder()
+                .fieldName("dataLevel")
+                .displayName("Data level")
+                .hierarchical(false)
+                .build();
+           case "resourceType" -> Facet.builder()
                 .fieldName("resourceType")
                 .displayName("Resource type")
                 .hierarchical(false)
