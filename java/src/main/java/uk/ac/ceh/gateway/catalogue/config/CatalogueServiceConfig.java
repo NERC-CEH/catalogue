@@ -285,7 +285,7 @@ public class CatalogueServiceConfig {
             Catalogue.builder()
                 .id(defaultCatalogueKey)
                 .title("eLTER Digital Asset Register")
-                .url("https://www.lter-europe.net/")
+                .url("https://catalogue.lter-europe.net/elter/documents")
                 .contactUrl("https://www.lter-europe.net/lter-europe/about/contacts")
                 .logo("elter.png")
                 .facetKey("dataLevel")
