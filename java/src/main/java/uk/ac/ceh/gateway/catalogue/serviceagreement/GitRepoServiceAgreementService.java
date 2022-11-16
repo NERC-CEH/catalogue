@@ -166,7 +166,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
                 throw new ServiceAgreementException("Unable to comment on Jira issue");
             }
             updateState(user, id, serviceAgreement, PENDING_PUBLICATION);
-            removePermissions(user, id, serviceAgreement);
+            removeEditPermissions(user, id, serviceAgreement);
         } else {
             val message = format(
                     "Cannot submit ServiceAgreement %s as state is %s",
@@ -297,13 +297,11 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         updateMetadata(user, id, metadataInfo.withState(state));
     }
 
-    private void removePermissions(CatalogueUser user, String id, ServiceAgreement serviceAgreement) {
+    private void removeEditPermissions(CatalogueUser user, String id, ServiceAgreement serviceAgreement) {
         val metadataInfo = serviceAgreement.getMetadata();
         val email = serviceAgreement.getDepositorContactDetails();
         metadataInfo.removePermission(EDIT, email);
-        metadataInfo.removePermission(VIEW, email);
         metadataInfo.removePermission(EDIT, user.getUsername());
-        metadataInfo.removePermission(VIEW, user.getUsername());
         updateMetadata(user, id, metadataInfo);
     }
 }
