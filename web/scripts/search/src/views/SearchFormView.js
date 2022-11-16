@@ -1,5 +1,5 @@
-
 import Backbone from 'backbone'
+import _ from 'underscore'
 
 export default Backbone.View.extend({
   events: {
@@ -22,7 +22,7 @@ export default Backbone.View.extend({
   handleTyping () {
     if (this.getDisplayedTerm() !== this.model.get('term')) {
       this.model.clearResults()
-      setTimeout(this.updateTermOnModel(), 500)
+      _.debounce(this.updateTermOnModel(), 500)
     }
   },
 
@@ -53,9 +53,9 @@ export default Backbone.View.extend({
   */
   updateDisplayedTerm () {
     const term = this.model.get('term')
-    const displayed = $("[name='term']").val()
+    const displayed = $("[name='term']")
     if (term !== displayed) {
-      $("[name='term']").val(term)
+      $("[name='term']")
     }
   }
 })
