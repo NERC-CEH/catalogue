@@ -13,7 +13,7 @@
     grid-area: col2;
   }
   display: grid;
-  grid-template-columns: auto 300px;
+  grid-template-columns: auto 360px;
   gap: 0 2em;
   grid-template-areas:
     "col2 col2"
@@ -53,8 +53,8 @@
   #section-title {
     margin-top: 3em;
     padding: 1em 0;
-    border-bottom: 1px solid @light-gray-border;
-    margin-bottom: 1em;
+    /*border-bottom: 1px solid @light-gray-border;
+    margin-bottom: 1em;*/
 
     h1 {
       margin-top: 0;
@@ -72,10 +72,10 @@
   }
   .publicationDate {
     margin-top: 1.6em;
-    font-weight: bolder;
   }
 
-  #latestVersion {
+  .latestVersion {
+    margin-bottom: 1em;
     .otherVersions {
       margin-left: 0.6em;
       color: @link-color;
@@ -373,7 +373,7 @@
   // displayed to the user at the top of the metadata page with
   // id = 'not-current'
   #resourceStatus {
-    margin: 1em 0;
+    margin: 2em 0 1em 0;
 
     a {
       color: #00b;
@@ -383,14 +383,27 @@
         text-decoration: none;
       }
     }
+  }
 
-    p {
-      margin-left: 1.5em;
+  .alort {
+    display: flex;
+    padding: 0 1em;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: center;
+    margin: 2em 0 1em 0;
+
+    &-Superseded {
+      border: 0 solid @gray;
+      border-width: 2px 0;
     }
 
-    i.fa-info-circle {
-      margin-left: -1.5em;
-      padding-right: 0.25em;
+    > div {
+      padding: 1em;
+    }
+    p {
+      margin: 0.35em 0;
     }
   }
 
@@ -662,7 +675,9 @@ dl.dl-horizontal {
   .key-value {
     padding: 1.5em 0;
     border-top: 1px solid lightgray;
-    &:first-of-type {border:none;}
+    &:first-of-type {
+      border: none;
+    }
 
     .key {
       .key-name {

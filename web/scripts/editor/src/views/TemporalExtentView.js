@@ -41,7 +41,6 @@ export default ObjectInputView.extend({
 
     that.$('.input-end').datepicker({
       language: 'en',
-      minDate: beginStartDate,
       dateFormat: 'yyyy-mm-dd',
       startDate: endStartDate,
       position: 'top left',

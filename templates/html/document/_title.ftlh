@@ -3,7 +3,7 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-body">
-          <button type="button" class="close" data-dismiss="modal" aria-label="CLose"><i aria-hidden="true" class="fas fa-times"></i></button>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i aria-hidden="true" class="fas fa-times"></i></button>
           <p><strong>Cite this dataset as</strong></p>
           <p id="citation-text">
             ${citation.authors?join('; ')} (${citation.year?string["0000"]}). <b>${citation.title}</b>. ${citation.publisher}.  (${codes.lookup('datacite.resourceTypeGeneral',citation.resourceTypeGeneral)}). ${citation.url}
@@ -22,15 +22,21 @@
 </#if>
 
 <div id="section-title" class="clearfix">
-<#if citation?has_content>
-  <div class="authorList">
-    <#if citation.authors?size gte 8>
-      ${citation.authors?first} <em>et al</em>
-    <#else>
-      ${citation.authors?join('; ')}
-    </#if>
-  </div>
-</#if>
+  <#if citation?has_content>
+    <div class="authorList">
+      <#if citation.authors?size gte 8>
+        ${citation.authors?first} <em>et al</em>
+      <#else>
+        ${citation.authors?join('; ')}
+      </#if>
+    </div>
+  </#if>
+
+  <#if resourceType?? && resourceType.value == 'signpost' >
+    <#include "_signpost_message.ftlh">
+  <#elseif resourceType?? && resourceType.value == 'signpostNerc' >
+    <span class="recordType recordType--signpostNerc">NERC signpost record</span>
+  </#if>
 
   <h1 id="document-title">
     <#if (metadata.state == 'draft' || metadata.state == 'pending') >
@@ -60,11 +66,4 @@
     <#include "_status.ftlh">
   </#if>
   
-  <#if resourceType?? && resourceType.value == 'signpost' >
-    <div id="signpost" class="alert alert-warning" role="alert">
-      <i class="fas fa-info-circle"></i>
-      <#include "_signpost.ftlh">
-    </div>
-  </#if>
-
 </div>

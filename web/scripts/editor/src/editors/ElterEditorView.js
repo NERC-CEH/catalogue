@@ -1,6 +1,5 @@
 import {
   AccessLimitationView,
-  CheckboxView,
   ContactView,
   DatasetReferenceDateView,
   DeimsSiteView,
@@ -75,19 +74,14 @@ export default EditorView.extend({
           label: 'Title',
           helpText: `\
 <p>Provide a title that best describes that data resource. Include references to the subject, spatial and temporal aspects of the data resource.</p>
-<p>Only the leading letter and proper nouns of the title should be capitalised.  If it's necessary to include acronyms in the title, then include both the acronym (in parentheses) and the phrase/word from which it was formed. Acronyms should not include full-stops between each letter.</p>
-<p>If there are multiple titles or translations of titles (e.g. in Welsh), these should be added as alternative titles.</p>\
+<p>Only the leading letter and proper nouns of the title should be capitalised.  If it's necessary to include acronyms in the title, then include both the acronym (in parentheses) and the phrase/word from which it was formed. Acronyms should not include full-stops between each letter.</p>\
 `
         }),
 
         new ParentStringView({
           model: this.model,
           modelAttribute: 'alternateTitles',
-          label: 'Alternative titles',
-          helpText: `\
-<p>Alternative titles allow you to add multiple titles and non-English translations of titles (e.g. Welsh).</p>
-<p>Only the leading letter and proper nouns of titles should be capitalised. If the title includes acronyms, include both the acronym (in parentheses) and its definition. Acronyms should not include full-stops between each letter.</p>\
-`
+          label: 'Alternative titles'
         }),
 
         new TextareaView({
@@ -98,7 +92,7 @@ export default EditorView.extend({
           helpText: `\
 <p>The description should describe the data resource in question, NOT the project/activity which produced it.</p>
 <p>The description is an 'executive summary' that allows the reader to determine the relevance and usefulness of the resource.  The text should be concise but should contain sufficient detail to allow the reader to ascertain rapidly the scope and limitations of the resource.</p>
-<p>Write in plain English; in other words, write complete sentences rather than fragments.  It is recommended that the abstract is organised using the "What, Where, When, How, Why, Who" structure.</p>\
+<p>Write in plain language; in other words, write complete sentences rather than fragments.  It is recommended that the abstract is organised using the "What, Where, When, How, Why, Who" structure.</p>\
 `
         }),
 
@@ -113,6 +107,22 @@ export default EditorView.extend({
             { value: 'Level 2', label: 'Level 2: Harmonized data products for a range of sites' },
             { value: 'Level 3', label: 'Level 3: Derived data products. For example, the result of modelling/interpolation or other analytical process' }
           ]
+        }),
+
+        new SelectView({
+          model: this.model,
+          modelAttribute: 'metadataLanguage',
+          label: 'Metadata language',
+          options: [
+            { value: '', label: '' },
+            { value: 'en', label: 'English' },
+            { value: 'de', label: 'Deutsch (German)' },
+            { value: 'fr', label: 'Français (French)' },
+            { value: 'it', label: 'Italiano (Italian))' }
+          ],
+          helpText: `\
+<p>Default is English</p>\
+`
         }),
 
         new SingleObjectView({
@@ -207,15 +217,6 @@ export default EditorView.extend({
 <p>If the resource falls within the scope of an INSPIRE theme it should be declared here.</p>
 <p>Conformity is the degree to which the <i class='text-red'>data</i> conforms to the relevant INSPIRE data specification.</p>\
 `
-        }),
-
-        new CheckboxView({
-          model: this.model,
-          modelAttribute: 'notGEMINI',
-          label: 'Exclude from GEMINI obligations',
-          helpText: `
-<p>Tick this box to exclude this resource from GEMINI/INSPIRE obligations.</p><p <b class='text-red'><span class='fas fa-exclamation-triangle'>&nbsp;</span> WARNING.  This should only be ticked if the data DOES NOT relate to an area where an EU Member State exercises jurisdictional rights</b>.</p>
-`
         })
       ]
     },
@@ -261,19 +262,32 @@ export default EditorView.extend({
             }
           },
           helpText: `\
+<p><b>Name</b> is the human-readable file type</p>
 <p><b>Type</b> is the machine-readable media type.  If you do not know it, leave it blank.</p>
 <p><b>Version</b> is mandatory; if it's not applicable, enter '<i>unknown</i>'</p>\
 `
         }),
 
-        new ParentView({
+        new PredefinedParentView({
           model: this.model,
           modelAttribute: 'useConstraints',
           label: 'Use constraints',
           ObjectInputView: ResourceConstraintView,
           multiline: true,
+          predefined: {
+            'Licence - CC BY non-commercial': {
+              value: 'Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)',
+              uri: 'https://creativecommons.org/licenses/by-nc/4.0/',
+              code: 'license'
+            },
+            'Licence - CC BY share alike': {
+              value: 'Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)',
+              uri: 'https://creativecommons.org/licenses/by-sa/4.0/',
+              code: 'license'
+            }
+          },
           helpText: `\
-<p>Describe any restrictions and legal prerequisites placed on the <strong>use</strong> of a data resource once it has been accessed. For example:</p>
+        <p>Describe any restrictions and legal prerequisites placed on the <strong>use</strong> of a data resource once it has been accessed. For example:</p>
 <ul class="list-unstyled">
   <li>"Licence conditions apply"</li>
   <li>"If you reuse this data you must cite …"</li>
@@ -593,8 +607,8 @@ export default EditorView.extend({
           ObjectInputView: FundingView,
           helpText: `\
 <p>Include here details of any grants or awards that were used to generate this resource.</p>
-<p>If you include funding information, the Funding body is MANDATORY, other fields are useful but optional.</p>
-<p>Award URL is either the unique identifier for the award or sa link to the funder's  grant page (if it exists). It is <b>NOT</b> a link to a project website.</p>\
+<p>If you include funding information, the funding body is MANDATORY, other fields are useful but optional.</p>
+<p>Award URL is either the unique identifier (e.g doi) of the award or a link to the funder's website page for the award (if it exists).</p>\
 `
         })
       ]

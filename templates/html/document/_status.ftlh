@@ -1,24 +1,29 @@
 <#import "../blocks.ftlh" as b>
 
 <#if resourceStatus == "Superseded" || resourceStatus == "Withdrawn" || resourceStatus == "Embargoed" || resourceStatus == "In-progress">
-    <div id="resourceStatus" class="alert alert-${resourceStatus}" role="alert">
+    <div id="resourceStatus" class="alort alort-${resourceStatus}" role="alert">
         <#if resourceStatus == "Superseded" || resourceStatus == "Withdrawn">
-            <p>
-            <i class="fas fa-info-circle fa-lg"></i> <b>THIS ${recordType?upper_case} HAS BEEN ${resourceStatus?upper_case}.</b>
-                <#assign superseded=jena.superseded(uri) />
-                <#if superseded?has_content>
-                    The latest version is <a href="${superseded?first.href}">${superseded?first.title}</a>
+            <div>
+                <i class="fas fa-info-circle fa-2x"></i>
+            </div>
+            <div>
+                <p>
+                <b>THIS ${recordType?upper_case} HAS BEEN ${resourceStatus?upper_case}.</b>
+                    <#assign superseded=jena.superseded(uri) />
+                    <#if superseded?has_content>
+                        The latest version is <a href="${superseded?first.href}">${superseded?first.title}</a>
+                    </#if>
+                </p>
+                <#if reasonChanged??>
+                    <p><@b.linebreaks reasonChanged/></p>
                 </#if>
-            </p>
-            <#if reasonChanged??>
-                <p><@b.linebreaks reasonChanged/></p>
-            </#if>
-            <#if catalogue.id == "ukscape">
-                <#assign supersededContact="UK-SCAPE Programme Office">
-            <#else>
-                <#assign supersededContact=catalogue.id?upper_case>
-            </#if>
-            <p>If you need access to this archived version, please <a href="${catalogue.contactUrl}" target="_blank" rel="noopener noreferrer">contact the ${supersededContact}</a></p>
+                <#if catalogue.id == "ukscape">
+                    <#assign supersededContact="UK-SCAPE Programme Office">
+                <#else>
+                    <#assign supersededContact=catalogue.id?upper_case>
+                </#if>
+                <p>If you need access to this archived version, please <a href="${catalogue.contactUrl}" target="_blank" rel="noopener noreferrer">contact the ${supersededContact}</a></p>
+            </div>
         <#elseif resourceStatus == "Embargoed">
         <p>
             <b>This ${recordType} is embargoed</b>

@@ -164,7 +164,7 @@ export default EditorView.extend({
           helpText: `\
 <p>Include here details of any grants or awards that were used to generate this resource.</p>
 <p>If you include funding information, the Funding body is MANDATORY, other fields are useful but optional.</p>
-<p>Award URL is either the unique identifier for the award or sa link to the funder's  grant page (if it exists). It is <b>NOT</b> a link to a project website.</p>\
+<p>Award URL is either the unique identifier for the award or a link to the funder's  grant page (if it exists). It is <b>NOT</b> a link to a project website.</p>\
 `
         })
       ]

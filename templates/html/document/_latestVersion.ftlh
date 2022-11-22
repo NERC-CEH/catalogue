@@ -1,4 +1,4 @@
-<div id="latestVersion" class="text-right">
+<div class="text-right latestVersion">
   <b>This is the most recent version of this ${recordType}</b>
   <span class="dropdown otherVersions">
     <span class="dropdown-toggle" id="dropdownVersions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">

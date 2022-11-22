@@ -20,11 +20,12 @@
 
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
 
-  <div class="codeDocument">
-    <#include "_admin.ftlh">
+  <div id="metadata" class="metadata metadata-codeDocument ${metadata.state?lower_case}">
+    
 
     <div class="section section-grey">
       <div class="container">
+        <#include "_admin.ftlh">
         <h1>
           <#if type?? && type?has_content>
             <small>${codes.lookup('metadata.resourceType', type)!''}</small><br>

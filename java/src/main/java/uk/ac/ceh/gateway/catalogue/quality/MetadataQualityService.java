@@ -31,7 +31,9 @@ public class MetadataQualityService {
         "application",
         "dataset",
         "nonGeographicDataset",
-        "service"
+        "service",
+        "signpost",
+        "signpostNerc"
     );
     private final Set<String> allowedEmails = ImmutableSet.of(
         "enquiries@ceh.ac.uk",
@@ -77,6 +79,7 @@ public class MetadataQualityService {
                 checkService(parsedDoc).ifPresent(checks::addAll);
                 checkNonGeographicDatasets(parsedDoc).ifPresent(checks::addAll);
                 checkSignpost(parsedDoc).ifPresent(checks::addAll);
+                checkSignpostNerc(parsedDoc).ifPresent(checks::addAll);
                 checkPublicationDate(parsedDoc, parsedMeta).ifPresent(checks::add);
                 checkTemporalExtents(parsedDoc).ifPresent(checks::addAll);
                 checkDownloadAndOrderLinks(parsedDoc).ifPresent(checks::addAll);
@@ -141,7 +144,7 @@ public class MetadataQualityService {
 
 
     private Optional<List<MetadataCheck>> checkTemporalExtents(DocumentContext parsedDoc) {
-        if ( !notRequiredResourceTypes(parsedDoc, "application")) {
+        if ( !notRequiredResourceTypes(parsedDoc, "application", "signpost", "signpostNerc")) {
             return Optional.empty();
         }
         val toReturn = new ArrayList<MetadataCheck>();
@@ -380,6 +383,28 @@ public class MetadataQualityService {
         }
     }
 
+    Optional<List<MetadataCheck>> checkSignpostNerc(DocumentContext parsed) {
+        if (notRequiredResourceTypes(parsed, "signpostNerc")) {
+            return Optional.empty();
+        }
+        val toReturn = new ArrayList<MetadataCheck>();
+        checkDistributor(parsed).ifPresent(toReturn::addAll);
+        checkPointOfContact(parsed).ifPresent(toReturn::addAll);
+
+       val size = parsed.read(
+            "$.onlineResources[*][?(@.function in ['information', 'search'])].function",
+            List.class
+        ).size();
+        if (size < 1) {
+            toReturn.add(new MetadataCheck("Search/information link is missing", ERROR));
+        }
+        if (toReturn.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(toReturn);
+        }
+    }
+
     Optional<List<MetadataCheck>> checkDistributor(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
         val distributors = parsed.read(
@@ -529,7 +554,6 @@ public class MetadataQualityService {
         }
     }
 
-
     private boolean fieldNotEqual(Map<String, String> map, String key, String value) {
         return !map.containsKey(key)
             || map.get(key) == null
@@ -550,6 +574,7 @@ public class MetadataQualityService {
             return Optional.empty();
         }
     }
+
 
     Optional<MetadataCheck> checkSpatialResolutions(DocumentContext parsed) {
         val spatialResolutions = parsed.read(
