@@ -133,6 +133,25 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         }
     }
 
+    private void removeEditPermissions(CatalogueUser user, String id, ServiceAgreement serviceAgreement) {
+        val metadataInfo = serviceAgreement.getMetadata();
+        val possibleEmail = Optional.ofNullable(serviceAgreement.getDepositorContactDetails());
+        if (possibleEmail.isPresent()) {
+            val email = possibleEmail.get();
+            metadataInfo.removePermission(EDIT, email);
+            metadataInfo.removePermission(EDIT, user.getUsername());
+            metadataInfo.removePermission(UPLOAD, email);
+            metadataInfo.removePermission(UPLOAD, user.getUsername());
+            updateMetadata(user, id, metadataInfo);
+        } else {
+            val message = format(
+                    "No depositor contact details present, cannot remove permissions for Service Agreement: %s",
+                    serviceAgreement.getId()
+            );
+            throw new ServiceAgreementException(message);
+        }
+    }
+
     private MetadataInfo createMetadataInfoWithDefaultPermissions(CatalogueUser user, String catalogue) {
         val metadataInfo = MetadataInfo.builder()
                 .rawType(MediaType.APPLICATION_JSON_VALUE)
@@ -295,15 +314,5 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     private void updateState(CatalogueUser user, String id, ServiceAgreement serviceAgreement, String state) {
         val metadataInfo = serviceAgreement.getMetadata();
         updateMetadata(user, id, metadataInfo.withState(state));
-    }
-
-    private void removeEditPermissions(CatalogueUser user, String id, ServiceAgreement serviceAgreement) {
-        val metadataInfo = serviceAgreement.getMetadata();
-        val email = serviceAgreement.getDepositorContactDetails();
-        metadataInfo.removePermission(EDIT, email);
-        metadataInfo.removePermission(EDIT, user.getUsername());
-        metadataInfo.removePermission(UPLOAD, email);
-        metadataInfo.removePermission(UPLOAD, user.getUsername());
-        updateMetadata(user, id, metadataInfo);
     }
 }

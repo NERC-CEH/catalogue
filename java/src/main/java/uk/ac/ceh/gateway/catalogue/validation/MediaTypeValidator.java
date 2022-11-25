@@ -10,7 +10,7 @@ import java.io.InputStream;
 import static org.apache.commons.io.output.NullOutputStream.NULL_OUTPUT_STREAM;
 
 /**
- * This is an example of a validator. This will should be removed
+ * This is an example of a validator. This should be removed
  */
 public class MediaTypeValidator extends AbstractDocumentValidator {
 
