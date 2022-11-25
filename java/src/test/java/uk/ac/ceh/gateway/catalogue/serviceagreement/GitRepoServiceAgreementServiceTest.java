@@ -76,6 +76,7 @@ public class GitRepoServiceAgreementServiceTest {
         serviceAgreement = new ServiceAgreement();
         serviceAgreement.setId(ID);
         serviceAgreement.setTitle("Test");
+        serviceAgreement.setDepositorContactDetails("test@test.com");
     }
 
     @Test
