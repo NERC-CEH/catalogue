@@ -143,6 +143,7 @@ public class ServicesConfig {
             .register(CEH_MODEL, CehModel.class)
             .register(CEH_MODEL_APPLICATION, CehModelApplication.class)
             .register(CODE, CodeDocument.class)
+            .register(PROV, ProvDocument.class)
             .register(DATA_TYPE, DataType.class)
             .register(EF_DOCUMENT, BaseMonitoringType.class)
             .register(ERAMMP_DATACUBE, ErammpDatacube.class)

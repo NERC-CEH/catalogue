@@ -28,6 +28,12 @@ public class DocumentTypes {
         .type(CODE)
         .build();
 
+    public static final String PROV = "prov-document";
+    public static DocumentType PROV_TYPE = DocumentType.builder()
+        .title("Provenance")
+        .type(PROV)
+        .build();
+
     public static final String EF_DOCUMENT = "EF_DOCUMENT";
 
     public static final String ELTER = "elter";

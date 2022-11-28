@@ -15,7 +15,7 @@
   <div id="metadata" class="metadata infrastructure-metadata">
     <div class="section section-grey">
       <div class="container">
-        <#include "_admin.ftlh">
+        <#include "../_adminBasic.ftlh">
 
         <#if title?? && title?has_content>
           <div id="pageTitle">

@@ -5,7 +5,7 @@
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
     <div id="metadata" class="metadata erammp-metadata">
       <div class="container">
-        <#include "_admin.ftlh">
+        <#include "../_adminBasic.ftlh">
 
         <#if title?? && title?has_content>
           <div id="pageTitle">

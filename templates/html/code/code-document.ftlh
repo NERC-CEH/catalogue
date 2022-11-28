@@ -25,7 +25,7 @@
 
     <div class="section section-grey">
       <div class="container">
-        <#include "_admin.ftlh">
+        <#include "../_adminBasic.ftlh">d
         <h1>
           <#if type?? && type?has_content>
             <small>${codes.lookup('metadata.resourceType', type)!''}</small><br>

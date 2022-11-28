@@ -4,7 +4,7 @@ import 'bootstrap'
 import { ClipboardCopyView } from './clipboard/src/ClipboardCopy'
 import {
   CehModelApplicationEditorView,
-  CehModelEditorView, CodeDocumentEditorView,
+  CehModelEditorView, CodeDocumentEditorView, ProvDocumentEditorView,
   DataTypeEditorView,
   ElterEditorView,
   ElterLinkedEditorView,
@@ -246,6 +246,11 @@ function initEditor () {
       View: CodeDocumentEditorView,
       Model: EditorMetadata,
       mediaType: 'application/vnd.code-document+json'
+    },
+    'prov-document': {
+      View: ProvDocumentEditorView,
+      Model: EditorMetadata,
+      mediaType: 'application/vnd.prov-document+json'
     },
     infrastructurerecord: {
       View: InfrastructureRecordEditorView,
