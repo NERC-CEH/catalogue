@@ -34,6 +34,7 @@ public class CrowdPermissionService implements PermissionService {
     private final DataRepository<CatalogueUser> repo;
     private final DocumentInfoMapper<MetadataInfo> documentInfoMapper;
     private final GroupStore<CatalogueUser> groupStore;
+    public static final String FOLDER = "service-agreements/";
 
     public CrowdPermissionService(
             @NonNull DataRepository<CatalogueUser> repo,
@@ -139,6 +140,11 @@ public class CrowdPermissionService implements PermissionService {
     }
 
     @Override
+    public boolean userCanEditServiceAgreement(@NonNull String file) {
+        return this.userCanEdit(FOLDER + file);
+    }
+
+    @Override
     public boolean userCanDelete(@NonNull String file) {
         try {
             CatalogueUser user = getCurrentUser();
@@ -149,6 +155,11 @@ public class CrowdPermissionService implements PermissionService {
             String message = format("No document found for: %s", file);
             throw new PermissionDeniedException(message, ex);
         }
+    }
+
+    @Override
+    public boolean userCanDeleteServiceAgreement(@NonNull String file) {
+        return this.userCanDelete(FOLDER + file);
     }
 
     @Override
@@ -172,6 +183,11 @@ public class CrowdPermissionService implements PermissionService {
             String message = format("No document found for: %s", file);
             throw new PermissionDeniedException(message, ex);
         }
+    }
+
+    @Override
+    public boolean userCanViewServiceAgreement(@NonNull String file) {
+        return this.userCanView(FOLDER + file);
     }
 
     @Override
