@@ -17,7 +17,7 @@
                 <h1>EIDC Deposit Agreement for ${title!"NOT PROVIDED"}</h1>
             </div>
 
-            <#if permission.userCanEdit(id)>
+            <#if permission.userCanEditServiceAgreement(id)>
             <div class="text-right">
                 <div class="row hidden-print adminPanel" role="toolbar">
                     <#if !isHistorical()>
@@ -42,7 +42,7 @@
             </div>
             </#if>
                 
-            <#if permission.userCanEdit(id) && !isHistorical()>
+            <#if permission.userCanEditServiceAgreement(id) && !isHistorical()>
                 <#include "_serviceAgreementQualityReport.ftlh">
             </#if>
 
