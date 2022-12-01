@@ -34,7 +34,7 @@ public class CrowdPermissionService implements PermissionService {
     private final DataRepository<CatalogueUser> repo;
     private final DocumentInfoMapper<MetadataInfo> documentInfoMapper;
     private final GroupStore<CatalogueUser> groupStore;
-    public static final String FOLDER = "service-agreements/";
+    public static final String FOLDER = "service-agreement/";
 
     public CrowdPermissionService(
             @NonNull DataRepository<CatalogueUser> repo,

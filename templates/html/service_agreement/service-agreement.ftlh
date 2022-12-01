@@ -27,7 +27,7 @@
                                 <a href="${link.href}" class="btn btn-default">${link.title}</a>
                             <#else>
                                 <form action="${link.href}" method="post">
-                                    <input type="submit" value="${link.title}" class="btn btn-default">
+                                    <input type="submit" class="btn btn-default" value="${link.title}">
                                 </form>
                             </#if>
                         </#list>
