@@ -108,6 +108,8 @@ Now you can make changes to the front end without restarting docker and rebuildi
 Webpack is mostly configured in `webpack.common.js` which is inherited by `webpack.dev.js` for development work and
 `webpack.prod.js` for the production configuration.
 
+#### Note - there are many uses of Jquery's $(document).ready() function in the frontend. Do not just remove them as they are there to prevent timing issues unless of course you can find a better alternative.
+
 ### Test JavaScipt using Karma
 
       npm run test
@@ -119,8 +121,6 @@ The Karma tests are configured in `karma.conf.js`.
 ### Java
 Java files will be built automatically when `docker-compose up -d --build` is ran.
 Java unit tests can be ran through intelij.
-
-
 
 ### Developing LESS
 In the web directory run
