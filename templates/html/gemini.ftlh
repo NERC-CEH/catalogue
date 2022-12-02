@@ -13,7 +13,7 @@
     owners = func.filter(responsibleParties, "role", "owner")
     originators = func.filter(responsibleParties, "role", "originator")
     resourceProviders = func.filter(responsibleParties, "role", "resourceProvider")
-    otherContacts = custodians + publishers + depositors + originators + owners + resourceProviders 
+    otherContacts = custodians + publishers + depositors + originators + owners + resourceProviders
     catalogue = catalogues.retrieve(metadata.catalogue)
 
     rel_all=jena.allRelatedRecords(uri)
@@ -72,7 +72,7 @@
         <#include "document/_admin.ftlh">
         <#if title?? && title?has_content>
            <#include "document/_title.ftlh">
-        </#if>    
+        </#if>
 
         <#if rel_supersedes?has_content && rel_supersedes?size gt 0>
             <#include "document/_latestVersion.ftlh">
@@ -113,12 +113,12 @@
         <div class="container">
           <#include "document/_aggregate.ftlh">
         </div>
-      </div>         
+      </div>
     <#else>
       <div class="section">
         <div class="container">
           <div class="metadata-grid">
-            <div class="col1"> 
+            <div class="col1">
               <#include "document/_formats.ftlh">
               <#include "document/_extent.ftlh">
               <#include "document/_dataquality.ftlh">
@@ -143,7 +143,7 @@
             </div>
             <div class="col2">
 
-              <#if isLinkedDoc="true"> 
+              <#if isLinkedDoc="true">
                 <#include "document/_linked.ftlh">
               <#else>
                   <#include "document/_uploadData.ftlh">
@@ -168,7 +168,7 @@
                   <#if resourceType.value == 'thirdPartyDataset'>
                     <#include "document/_third_party.ftlh">
                   </#if>
-              </#if>           
+              </#if>
 
           </div>
         </div>
@@ -176,11 +176,13 @@
     </#if>
 
 
-  
+
     <#if permission.userCanEditRestrictedFields(metadata.catalogue) && metadata.catalogue == "eidc">
-    <div class="section"><div class="container">
-      <#include "document/_metadataqualityReport.ftlh">
-    </div></div>
+        <div class="section">
+            <div class="container">
+                <#include "document/_metadataqualityReport.ftlh">
+            </div>
+        </div>
     </#if>
 
   </div>
@@ -193,19 +195,11 @@
   </#if>
 
   <div>
-	  <#include "document/_footer.ftlh">
-	</div>
+      <#include "document/_footer.ftlh">
+  </div>
 
   <script type="application/ld+json">
 	  <#include "../schema.org/schema.org.ftlh">
   </script>
-  <@eidcJiraIssueCollector catalogue/>
 
 </@skeleton.master>
-
-<#macro eidcJiraIssueCollector catalogue>
-  <#if catalogue?has_content && catalogue.id == "eidc">
-    <script type="text/javascript" src="https://jira.ceh.ac.uk/s/d41d8cd98f00b204e9800998ecf8427e-CDN/-8wgtt1/813004/fe1f443e9c2ab11853ac2c907ebc1d28/2.2.4.7/_/download/batch/com.atlassian.plugins.jquery:jquery/com.atlassian.plugins.jquery:jquery.js?collectorId=1977b77c"></script>
-    <script type="text/javascript" src="https://jira.ceh.ac.uk/s/743f218046d73ea8e8033c2a0fad57f5-T/-8wgtt1/813004/fe1f443e9c2ab11853ac2c907ebc1d28/4.0.4/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?locale=en-UK&collectorId=1977b77c"></script>
-  </#if>
-</#macro>
