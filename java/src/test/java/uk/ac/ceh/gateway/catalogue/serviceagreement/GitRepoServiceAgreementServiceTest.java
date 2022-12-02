@@ -39,7 +39,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @ExtendWith(MockitoExtension.class)
 public class GitRepoServiceAgreementServiceTest {
 
-    private static final String FOLDER = "service-agreements/";
+    private static final String FOLDER = "service-agreement/";
     private static final String ID = "7c60707c-80ee-4d67-bac2-3c9a93e61557";
     private static final String VERSION = "version";
     private static final String BASE_URI = "https://catalogue.ceh.ac.uk";
@@ -173,7 +173,7 @@ public class GitRepoServiceAgreementServiceTest {
         val dataOngoingCommit = mock(DataOngoingCommit.class);
 
         given(repo.submitData(
-            eq("service-agreements/" + ID + ".raw"),
+            eq("service-agreement/" + ID + ".raw"),
             any(DataWriter.class)
         ))
             .willReturn(dataOngoingCommit);

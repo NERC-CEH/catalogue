@@ -17,17 +17,19 @@
                 <h1>EIDC Deposit Agreement for ${title!"NOT PROVIDED"}</h1>
             </div>
 
-            <#if permission.userCanEdit(id)>
+            <#if permission.userCanEditServiceAgreement(id)>
             <div class="text-right">
                 <div class="row hidden-print adminPanel" role="toolbar">
                     <#if !isHistorical()>
+                        <#if getState() != "pending publication" && getState() != "published">
                         <button type="button" class="btn btn-default edit-control" data-document-type="service-agreement">Edit</button>
+                        </#if>
                         <#list getModelLinks() as link>
                             <#if link.rel == 'history'>
                                 <a href="${link.href}" class="btn btn-default">${link.title}</a>
                             <#else>
                                 <form action="${link.href}" method="post">
-                                    <input type="submit" value="${link.title}" class="btn btn-default">
+                                    <input type="submit" class="btn btn-default" value="${link.title}">
                                 </form>
                             </#if>
                         </#list>
@@ -42,7 +44,7 @@
             </div>
             </#if>
                 
-            <#if permission.userCanEdit(id) && !isHistorical()>
+            <#if permission.userCanEditServiceAgreement(id) && !isHistorical()>
                 <#include "_serviceAgreementQualityReport.ftlh">
             </#if>
 
