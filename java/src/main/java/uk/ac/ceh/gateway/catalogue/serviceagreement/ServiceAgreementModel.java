@@ -44,6 +44,8 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
 
     private List<BoundingBox> areaOfStudy;
 
+    private String state;
+
     /*
     FLAGS
     */
@@ -80,6 +82,7 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
         this.lineage = serviceAgreement.getLineage();
         this.areaOfStudy = serviceAgreement.getAreaOfStudy();
         this.historical = serviceAgreement.isHistorical();
+        this.state = serviceAgreement.getState();
     }
 
     @SuppressWarnings("unused")

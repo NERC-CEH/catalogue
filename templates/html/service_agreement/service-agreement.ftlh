@@ -21,7 +21,9 @@
             <div class="text-right">
                 <div class="row hidden-print adminPanel" role="toolbar">
                     <#if !isHistorical()>
+                        <#if getState() != "pending publication" && getState() != "published">
                         <button type="button" class="btn btn-default edit-control" data-document-type="service-agreement">Edit</button>
+                        </#if>
                         <#list getModelLinks() as link>
                             <#if link.rel == 'history'>
                                 <a href="${link.href}" class="btn btn-default">${link.title}</a>
