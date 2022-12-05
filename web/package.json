@@ -1,6 +1,5 @@
 {
   "name": "web",
-  "main": "index.js",
   "private": "true",
   "scripts": {
     "build": "webpack --config webpack.prod.js",
@@ -27,7 +26,7 @@
     "rules": {}
   },
   "keywords": [],
-  "author": "",
+  "author": "UKCEH Environmental Data Science Group",
   "license": "ISC",
   "devDependencies": {
     "@babel/eslint-parser": "^7.19.1",

@@ -35,13 +35,12 @@ export default Backbone.Model.extend({
 
   validate (attrs) {
     const errors = []
-    if ((attrs != null ? attrs.title : undefined) == null) {
+    if (attrs.title == null) {
       errors.push('A title is mandatory')
     }
 
     if (_.isEmpty(errors)) {
       // return nothing from Backbone.Model.validate because returning something signals a validation error.
-
     } else {
       return errors
     }
