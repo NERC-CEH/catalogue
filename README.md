@@ -108,7 +108,7 @@ Now you can make changes to the front end without restarting docker and rebuildi
 Webpack is mostly configured in `webpack.common.js` which is inherited by `webpack.dev.js` for development work and
 `webpack.prod.js` for the production configuration.
 
-#### Note - there are many uses of Jquery's $(document).ready() function in the frontend. Do not just remove them as they are there to prevent timing issues unless of course you can find a better alternative.
+#### Note - there are many uses of Jquery's $(document).ready() function in the editor module of the frontend. Do not just remove them as they are there to prevent timing issues with views of existing documents in the editor. Unless of course you can find a better alternative.
 
 ### Test JavaScipt using Karma
 
