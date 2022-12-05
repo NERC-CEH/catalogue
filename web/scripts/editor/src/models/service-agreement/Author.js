@@ -26,9 +26,9 @@ export default Backbone.Model.extend({
       nameIdentifier
     } = attrs
 
-    const isValidEmail = address => emailRegEx.test(address)
+    const isValidEmail = address => address.match(emailRegEx)
 
-    const isValidORCID = id => orcidRegEx.test(id)
+    const isValidORCID = id => id.match(orcidRegEx)
 
     if (email && !isValidEmail(email)) {
       errors.push({
