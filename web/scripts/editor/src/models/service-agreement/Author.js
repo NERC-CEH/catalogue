@@ -8,12 +8,8 @@ export default Backbone.Model.extend({
   },
 
   validate (attrs) {
-    const emailRegEx = new RegExp(`
-^[a-zA-Z0-9.!#$%&'*+\\/=?^_\`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$
-`)
-    const orcidRegEx = new RegExp(`
-^https?:\\/\\/orcid.org\\/(\\d{4}-){3}\\d{3}[\\dX]$
-`)
+    const emailRegEx = '[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?'
+    const orcidRegEx = '^https?:\\/\\/orcid.org\\/(\\d{4}-){3}\\d{3}[\\dX]$'
 
     const errors = []
 
@@ -30,9 +26,9 @@ export default Backbone.Model.extend({
       nameIdentifier
     } = attrs
 
-    const isValidEmail = address => emailRegEx.test(address)
+    const isValidEmail = address => address.match(emailRegEx)
 
-    const isValidORCID = id => orcidRegEx.test(id)
+    const isValidORCID = id => id.match(orcidRegEx)
 
     if (email && !isValidEmail(email)) {
       errors.push({

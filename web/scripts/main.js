@@ -65,10 +65,6 @@ if ($('.edit-control').length) {
   initEditor()
 }
 
-if ($('.edit-control').length) {
-  initEditor()
-}
-
 if ($('.service-agreement').length) {
   initServiceAgreement()
 }
