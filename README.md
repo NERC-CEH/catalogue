@@ -120,7 +120,7 @@ The Karma tests are configured in `karma.conf.js`.
 
 ### Java
 Java files will be built automatically when `docker-compose up -d --build` is ran.
-Java unit tests can be ran through intelij.
+Java unit tests can be run through IntelliJ.
 
 ### Developing LESS
 In the web directory run
