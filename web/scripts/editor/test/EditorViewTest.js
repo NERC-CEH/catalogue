@@ -1,13 +1,16 @@
 import { EditorView } from '../src'
 import Backbone from 'backbone'
 
-describe('Test EditorView', () => {
+describe('EditorView', () => {
   let view = null
   let model = null
 
   beforeEach(() => {
-    const options = ({ value: 'value', label: 'title' }, { value: 'value2', label: 'title2' },
-    { value: 'value3', label: 'title3' })
+    const options = (
+      { value: 'value', label: 'title' },
+      { value: 'value2', label: 'title2' },
+      { value: 'value3', label: 'title3' }
+    )
 
     model = new Backbone.Model({
       options: options
