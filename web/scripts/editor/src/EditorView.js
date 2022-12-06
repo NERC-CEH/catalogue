@@ -28,10 +28,9 @@ export default Backbone.View.extend({
       that.$('#editorAjax').toggleClass('visible')
 
       Swal.fire({
-        title: 'Server response: ' + '\n' + `${response.status}` + `${response.statusText}`,
-        text: 'There was a problem communicating with the server.!' + '\n' +
-            'Please save this record locally by copying the text below to a file.',
-        html: '<textarea readonly style="resize:none; height:auto;" rows="20">' + JSON.stringify(model.toJSON()) + '</textarea>',
+        title: `Server response: ${response.status} ${response.statusText}`,
+        text: `There was a problem communicating with the server! \n Please save this record locally by copying the text below to a file.`,
+        html: `<textarea readonly style="resize:none; height:auto;" rows="20">${JSON.stringify(model.toJSON())}</textarea>`,
         icon: 'error',
         confirmButtonText: 'Close'
       })
@@ -49,14 +48,13 @@ export default Backbone.View.extend({
       that.$('#editorAjax').toggleClass('visible')
     })
     this.listenTo(this.model, 'invalid', function (model, errors) {
-      const errorString = ''
+      let errorString = ''
       _.each(errors, function (error) {
-        errorString.concat(`<p>${error}</p>`)
+        errorString = errorString.concat(`<p>${error}</p>`)
       })
-
       Swal.fire({
         title: 'Validation Errors',
-        text: errorString,
+        html: errorString,
         icon: 'error',
         confirmButtonText: 'Close'
       })
@@ -92,19 +90,23 @@ export default Backbone.View.extend({
         _.invoke(this.sections, 'remove')
         this.remove()
         Backbone.history.location.replace(`/${this.catalogue}/documents`)
-        Swal.fire(
-          'Deleted!',
-          'Your file has been deleted.',
-          'success'
-        )
+        Swal.fire({
+          title: 'Deleted!',
+          html: 'Your file has been deleted.',
+          icon: 'success'
+        })
       }
     })
   },
 
   save () {
-    this.model.save()
-    Swal.fire('Saved!', '', 'success')
-    this.saveRequired = false
+    if (this.model.save()) {
+      Swal.fire({
+        title: 'Saved!',
+        icon: 'success'
+      })
+      this.saveRequired = false
+    }
   },
 
   confirmExit () {

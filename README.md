@@ -63,8 +63,6 @@ hubbub.password=
 
 ## Getting started
 
-**NOTE:** This section is currently out-of-date and needs updating.
-
 The catalogue requires a few tools:
 
 - Java (OpenJDK)
@@ -84,44 +82,60 @@ the EIDC catalogue is then available on:
 
     http://localhost:8080/eidc/documents
 
-### Developing Javascript & LESS
+### Intellij set-up
 
-    ./gradlew :web:grunt_concurrent
+Make sure that you have the Lombok plugin installed, if not you can download it from `settings -> Plugins -> marketplace` and search for Lombok. 
+Check that annotation processing is enabled in `settings -> Build, Execution, Deployment -> compiler -> Annotation processors`.
 
-will run a process that watches the javascript and less directories and recompiles the files on any changes.
 
-### Developing just Javascript
+### Developing Javascript with Webpack
 
-    ./gradlew
-    ./gradlew :web:grunt_copy
+You can change code while the catalogue is still running using the following commands in a separate terminal or via your IDE:
 
-Probably need to do first command in one terminal and after it has run do the second.  I used this as I couldn't get ./gradlew :web:grunt_concurrent working.
+    cd web
+    npm run watch
+
+The watch will detect any changes to the Javascript code and automatically compile.
+Uncomment the following line in your `docker-compose.override.yaml`:
+   
+    -./web/dist:/opt/ceh-catalogue/static/scripts
+
+Instructions on making a `docker-compose.override.yml` are in `docker-compose.yml`.
+Start up the catalogue with `docker-compose up --build` then connect to the docker service using the services tab in 
+IntelliJ. You might need to add your user to the docker user group before connecting to the service. 
+Now you can make changes to the front end without restarting docker and rebuilding the backend.
+
+Webpack is mostly configured in `webpack.common.js` which is inherited by `webpack.dev.js` for development work and
+`webpack.prod.js` for the production configuration.
+
+#### Note - there are many uses of Jquery's $(document).ready() function in the editor module of the frontend. Do not just remove them as they are there to prevent timing issues with views of existing documents in the editor. Unless of course you can find a better alternative.
+
+### Test JavaScipt using Karma
+
+      npm run test
+
+Karma tests are found in each module in web/scripts if you need to edit or add new tests. 
+For example the tests for the editor module are in `web/scripts/editor/test`.
+The Karma tests are configured in `karma.conf.js`.
 
 ### Java
+Java files will be built automatically when `docker-compose up -d --build` is ran.
+Java unit tests can be run through IntelliJ.
 
-    ./gradlew web
+### Developing LESS
+In the web directory run
 
-will rebuild the minimum required steps in order to re-build the project and restart apache
+    npm install -g grunt-cli
+    node_modules/.bin/grunt
 
-to have this continuously watch for changes in the java code (not including tests)
+will run a process that watches the less directories and recompiles the files on any changes.
 
-    ./gradlew -t web
+## Adding new document types to the catalogue
 
-You may need to increase your watches see the answer [here](https://askubuntu.com/questions/770374/user-limit-of-inotify-watches-reached-on-ubuntu-16-04) for more details on this
-
-If using System.out.println('foo'), you can grep it out like this:
-    
-    docker logs catalogue_web_1 > stdout.log 2>stderr.log && cat stdout.log | grep foo
-
-Run single tests:
-    
-    ./gradlew -Dtest.single=JiraService --info test -t
-
---info spits out the error message and -t is watching for file changes and will re-run then
-
-Can use package names and * in the name
-
-[More info](https://stackoverflow.com/questions/22505533/how-to-run-only-one-test-class-on-gradle) about single file tests
+If you need to add a new document type to the catalogue like  GeminiDocument.java or ElterDocument.java
+extend your new class with AbstractMetadataDocument.java and configure it in the following classes:
+CatalogueMediaTypes.java, CatalogueServiceConfig.java, ServicesConfig.java and WebConfig.java. 
+For an example of how to do this Look at how the GeminiDocuments or ElterDocuments are configured in each of these classes.
 
 ## Multiple Catalogues
 
@@ -190,7 +204,7 @@ Postgres database needs the schema creating.
 3. Import the `migration/status.csv` file into the database
 4. Back in the Catalogue project import `fixtures/upload/file.csv`
 
-### Javascript development
+### Hubbub Javascript development
 
 1. Run `npm run test-server` to recompile `hubbub.budnle.js` on code changes and run tests.
    1. `npm run watch` if you just want the code to recompile on changes
@@ -201,10 +215,14 @@ Postgres database needs the schema creating.
 
 ## Map Viewer
 
+### TO DO - The Map Viewer was removed during the Catalogue upgrade, create a new one using Leaflet .
+### The following notes are left over from the old map viewer which may come in use which is why I have left them in.
+
+
 All requests for maps go through our catalogue api as TMS coordinates
 (i.e. z, x, y). When a map request comes in, the catalogue api transforms
 the z, x, y coordinates into a wms GetMap request in the EPSG:3857 projection
-system. This is the projection system which is used by Google Maps style web 
+system. This is the projection system which is used by Google Maps style web
 mapping applications.
 
 The Catalogue api will gracefully handle certain upstream mapping failures. These failures will be represented as images so that they can be displayed by the normal mapping application.

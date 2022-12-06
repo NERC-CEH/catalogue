@@ -100,7 +100,7 @@ class ServiceAgreementControllerTest {
     @SneakyThrows
     void getServiceAgreement() {
         // given
-        givenUserCanView();
+        givenUserCanViewServiceAgreement();
         givenServiceAgreement();
         givenServiceAgreementModel();
 
@@ -129,7 +129,7 @@ class ServiceAgreementControllerTest {
     @SneakyThrows
     void noAccessToServiceAgreements() {
         // given
-        givenUserCanNotView();
+        givenUserCanNotViewServiceAgreement();
         givenDefaultCatalogue();
 
         // when
@@ -219,7 +219,7 @@ class ServiceAgreementControllerTest {
     @WithMockCatalogueUser
     void updateServiceAgreement() {
         // given
-        givenUserCanEdit();
+        givenUserCanEditServiceAgreement();
         givenMetadataRecordExists();
         givenUpdateServiceAgreement();
         givenServiceAgreementModel();
@@ -252,7 +252,7 @@ class ServiceAgreementControllerTest {
     @WithMockCatalogueUser
     void userCannotUpdateServiceAgreement() {
         // given
-        givenUserCanNotEdit();
+        givenUserCanNotEditServiceAgreement();
         givenDefaultCatalogue();
 
         // when
@@ -271,7 +271,7 @@ class ServiceAgreementControllerTest {
     @WithMockCatalogueUser
     void deleteServiceAgreement() {
         // given
-        givenUserCanDelete();
+        givenUserCanDeleteServiceAgreement();
 
         // when
         mvc.perform(delete("/service-agreement/{id}", ID))
@@ -282,7 +282,7 @@ class ServiceAgreementControllerTest {
     @SneakyThrows
     void userCannotDeleteServiceAgreement() {
         //given
-        givenUserCanNotDelete();
+        givenUserCanNotDeleteServiceAgreement();
         givenDefaultCatalogue();
 
 
@@ -296,7 +296,7 @@ class ServiceAgreementControllerTest {
     @WithMockCatalogueUser
     void userCannotPublishServiceAgreementAsRecordDoesNotExist() {
         //given
-        givenUserCanEdit();
+        givenUserCanEditServiceAgreement();
         givenMedataRecordDoesNotExist();
 
         //When
@@ -313,7 +313,7 @@ class ServiceAgreementControllerTest {
     @WithMockCatalogueUser
     void submitServiceAgreement() {
         //Given
-        givenUserCanEdit();
+        givenUserCanEditServiceAgreement();
         givenMetadataRecordExists();
 
         //When
@@ -327,7 +327,7 @@ class ServiceAgreementControllerTest {
     @WithMockCatalogueUser
     void userCannotSubmitServiceAgreementAsUserCanNotEdit() {
         //given
-        givenUserCanNotEdit();
+        givenUserCanNotEditServiceAgreement();
         givenMetadataRecordExists();
         givenDefaultCatalogue();
 
@@ -344,7 +344,7 @@ class ServiceAgreementControllerTest {
     @WithMockCatalogueUser
     void publishServiceAgreement() {
         //Given
-        givenUserCanEdit();
+        givenUserCanEditServiceAgreement();
         givenMetadataRecordExists();
 
         //When
@@ -358,7 +358,7 @@ class ServiceAgreementControllerTest {
     @WithMockCatalogueUser
     void userCannotPublishServiceAgreementAsUserCanNotEdit() {
         //given
-        givenUserCanNotEdit();
+        givenUserCanNotEditServiceAgreement();
         givenMetadataRecordExists();
         givenDefaultCatalogue();
 
@@ -375,7 +375,7 @@ class ServiceAgreementControllerTest {
     @WithMockCatalogueUser
     void giveDepositorEditPermission() {
         //Given
-        givenUserCanEdit();
+        givenUserCanEditServiceAgreement();
         givenMetadataRecordExists();
 
         //When
@@ -389,7 +389,7 @@ class ServiceAgreementControllerTest {
     @WithMockCatalogueUser
     void userCannotGiveDepositorEditPermissionAsUserCanNotEdit() {
         //given
-        givenUserCanNotEdit();
+        givenUserCanNotEditServiceAgreement();
         givenMetadataRecordExists();
         givenDefaultCatalogue();
 
@@ -406,7 +406,7 @@ class ServiceAgreementControllerTest {
     @SneakyThrows
     void getHistory() {
         // given
-        givenUserCanEdit();
+        givenUserCanEditServiceAgreement();
         givenMetadataRecordExists();
         givenHistory();
 
@@ -434,7 +434,7 @@ class ServiceAgreementControllerTest {
     @SneakyThrows
     void getPreviousServiceAgreement() {
         // given
-        givenUserCanEdit();
+        givenUserCanEditServiceAgreement();
         givenMetadataRecordExists();
         givenPreviousServiceAgreement();
         givenServiceAgreementModel();
@@ -495,13 +495,13 @@ class ServiceAgreementControllerTest {
             .willReturn(true);
     }
 
-    private void givenUserCanView() {
-        given(permissionService.userCanView(ID))
+    private void givenUserCanViewServiceAgreement() {
+        given(permissionService.userCanViewServiceAgreement(ID))
                 .willReturn(true);
     }
 
-    private void givenUserCanNotView() {
-        given(permissionService.userCanView(ID))
+    private void givenUserCanNotViewServiceAgreement() {
+        given(permissionService.userCanViewServiceAgreement(ID))
             .willReturn(false);
     }
 
@@ -512,16 +512,26 @@ class ServiceAgreementControllerTest {
 
     private void givenUserCanNotEdit() {
         given(permissionService.userCanEdit(ID))
-            .willReturn(false);
+                .willReturn(false);
     }
 
-    private void givenUserCanDelete() {
-        given(permissionService.userCanDelete(ID))
+    private void givenUserCanEditServiceAgreement() {
+        given(permissionService.userCanEditServiceAgreement(ID))
+                .willReturn(true);
+    }
+
+    private void givenUserCanNotEditServiceAgreement() {
+        given(permissionService.userCanEditServiceAgreement(ID))
+                .willReturn(false);
+    }
+
+    private void givenUserCanDeleteServiceAgreement() {
+        given(permissionService.userCanDeleteServiceAgreement(ID))
             .willReturn(true);
     }
 
-    private void givenUserCanNotDelete() {
-        given(permissionService.userCanDelete(ID))
+    private void givenUserCanNotDeleteServiceAgreement() {
+        given(permissionService.userCanDeleteServiceAgreement(ID))
             .willReturn(false);
     }
 

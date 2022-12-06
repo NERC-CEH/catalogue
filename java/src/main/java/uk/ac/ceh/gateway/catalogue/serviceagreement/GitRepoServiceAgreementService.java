@@ -36,7 +36,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     private final DocumentRepository documentRepository;
     private final JiraService jiraService;
     private final String PUBLISHED = "published";
-    public static final String FOLDER = "service-agreements/";
+    public static final String FOLDER = "service-agreement/";
     private static final String DRAFT = "draft";
     private static final String PENDING_PUBLICATION = "pending publication";
 
@@ -142,14 +142,11 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
             metadataInfo.removePermission(EDIT, user.getUsername());
             metadataInfo.removePermission(UPLOAD, email);
             metadataInfo.removePermission(UPLOAD, user.getUsername());
-            updateMetadata(user, id, metadataInfo);
         } else {
-            val message = format(
-                    "No depositor contact details present, cannot remove permissions for Service Agreement: %s",
-                    serviceAgreement.getId()
-            );
-            throw new ServiceAgreementException(message);
+            metadataInfo.removePermission(EDIT, user.getUsername());
+            metadataInfo.removePermission(UPLOAD, user.getUsername());
         }
+        updateMetadata(user, id, metadataInfo);
     }
 
     private MetadataInfo createMetadataInfoWithDefaultPermissions(CatalogueUser user, String catalogue) {
@@ -184,8 +181,8 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
             } catch (RestClientResponseException ex) {
                 throw new ServiceAgreementException("Unable to comment on Jira issue");
             }
-            updateState(user, id, serviceAgreement, PENDING_PUBLICATION);
             removeEditPermissions(user, id, serviceAgreement);
+            updateState(user, id, serviceAgreement, PENDING_PUBLICATION);
         } else {
             val message = format(
                     "Cannot submit ServiceAgreement %s as state is %s",
@@ -212,7 +209,6 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
                     "populated from service agreement"
             );
             log.info("Publishing Service Agreement: {}", id);
-
             try {
                 Optional.ofNullable(serviceAgreement.getDepositReference())
                         .ifPresent(depositReference ->

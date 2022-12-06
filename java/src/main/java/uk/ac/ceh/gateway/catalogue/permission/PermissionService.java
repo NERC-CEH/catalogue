@@ -18,15 +18,21 @@ public interface PermissionService {
 
     boolean userCanEdit(@NonNull String file);
 
+    boolean userCanEditServiceAgreement(@NonNull String file);
+
     boolean userCanUpload(@NonNull String file);
 
     boolean userCanDelete(@NonNull String file);
+
+    boolean userCanDeleteServiceAgreement(@NonNull String file);
 
     boolean userCanEditRestrictedFields(@NonNull String catalogue);
 
     boolean userCanViewOrIsInGroup(@NonNull String file, @NonNull String group);
 
     boolean userCanView(@NonNull String file);
+
+    boolean userCanViewServiceAgreement(@NonNull String file);
 
     boolean userCanCreate(@NonNull String catalogue);
 

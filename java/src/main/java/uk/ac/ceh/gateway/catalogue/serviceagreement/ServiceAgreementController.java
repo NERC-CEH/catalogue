@@ -56,7 +56,7 @@ public class ServiceAgreementController {
         }
     }
 
-    @PreAuthorize("@permission.userCanEdit(#id)")
+    @PreAuthorize("@permission.userCanEditServiceAgreement(#id)")
     @PutMapping("{id}")
     public ServiceAgreementModel update(
         @ActiveUser CatalogueUser user,
@@ -76,7 +76,7 @@ public class ServiceAgreementController {
         }
     }
 
-    @PreAuthorize("@permission.userCanView(#id)")
+    @PreAuthorize("@permission.userCanViewServiceAgreement(#id)")
     @GetMapping("{id}")
     public ServiceAgreementModel get(
         @PathVariable("id") String id
@@ -86,7 +86,7 @@ public class ServiceAgreementController {
         return serviceAgreementModelAssembler.toModel(serviceAgreement);
     }
 
-    @PreAuthorize("@permission.userCanDelete(#id)")
+    @PreAuthorize("@permission.userCanDeleteServiceAgreement(#id)")
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(
@@ -106,7 +106,7 @@ public class ServiceAgreementController {
         return search.query(query);
     }
 
-    @PreAuthorize("@permission.userCanEdit(#id)")
+    @PreAuthorize("@permission.userCanEditServiceAgreement(#id)")
     @PostMapping("{id}/submit")
     public RedirectView submitServiceAgreement(@ActiveUser CatalogueUser user,
                                                @PathVariable("id") String id
@@ -116,7 +116,7 @@ public class ServiceAgreementController {
         return new RedirectView("/service-agreement/" + id);
     }
 
-    @PreAuthorize("@permission.userCanEdit(#id)")
+    @PreAuthorize("@permission.userCanEditServiceAgreement(#id)")
     @PostMapping("{id}/publish")
     public RedirectView publishServiceAgreement(@ActiveUser CatalogueUser user,
                                                @PathVariable("id") String id
@@ -130,7 +130,7 @@ public class ServiceAgreementController {
         }
     }
 
-    @PreAuthorize("@permission.userCanEdit(#id)")
+    @PreAuthorize("@permission.userCanEditServiceAgreement(#id)")
     @PostMapping("{id}/add-editor")
     public RedirectView giveDepositorEditPermission(@ActiveUser CatalogueUser user,
                                                 @PathVariable("id") String id
@@ -144,7 +144,7 @@ public class ServiceAgreementController {
         }
     }
 
-    @PreAuthorize("@permission.userCanEdit(#id)")
+    @PreAuthorize("@permission.userCanEditServiceAgreement(#id)")
     @GetMapping("{id}/history")
     public History getHistory(@PathVariable("id") String id) {
         if (serviceAgreementService.metadataRecordExists(id)) {
@@ -157,7 +157,7 @@ public class ServiceAgreementController {
         }
     }
 
-    @PreAuthorize("@permission.userCanEdit(#id)")
+    @PreAuthorize("@permission.userCanEditServiceAgreement(#id)")
     @GetMapping("{id}/version/{version}")
     public ServiceAgreementModel getPreviousVersion(
         @PathVariable("id") String id,
