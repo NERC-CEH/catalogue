@@ -188,7 +188,7 @@
   </div>
 
   <#else>
-    <div class="alert alert-danger" id="missingResourceType">
+    <div class="alert alert-danger missingResourceType" id="metadata">
       <p class="clearfix"><i class="fas fa-exclamation-triangle"></i> <b>WARNING: </b> resource type is missing from this record
       <a class="edit-control" data-document-type="${metadata.documentType}">Edit</a></p>
     </div>
