@@ -74,9 +74,9 @@ public class GeminiDocumentTest {
     public void testGetIncomingCitationCount() {
         // Given
         GeminiDocument document = new GeminiDocument();
-        Citation incomingCitations = Citation.builder().name("foo").build();
+        Supplemental incomingCitations = Supplemental.builder().name("foo").build();
         List<Supplemental> incomingCitations = new ArrayList<>();
-        incomingCitations.add(incomingCitation);
+        incomingCitations.add(incomingCitations);
         document.setSupplemental(incomingCitations);
         long expected = 1;
 

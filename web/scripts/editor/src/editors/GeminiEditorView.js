@@ -618,19 +618,6 @@ export default EditorView.extend({
           ObjectInputView: IncomingCitationView
         }),
 
-        new ParentView({
-          model: this.model,
-          modelAttribute: 'supplemental',
-          multiline: true,
-          label: 'Additional information',
-          ObjectInputView: SupplementalEIDCView,
-          helpText: `\
-<p>You can add information not documented elsewhere here. This includes links to related papers, grey literature or websites.  For example, project websites or papers/reports that provide relevant supporting information <strong>but which do not cite</strong> this resource</p>
-<p>When linking to published articles, please use DOIs whenever possible.</p>
-<p><small class='text-danger'><i class='fas fa-exclamation-triangle'> </i> NOTE: Some websites may be maintained for a limited period and may therefore soon become unavailable.</small></p>\
-`
-        }),
-
         new PredefinedParentView({
           model: this.model,
           modelAttribute: 'funding',
@@ -678,6 +665,19 @@ export default EditorView.extend({
 <p>Award URL is either the unique identifier for the award or sa link to the funder's  grant page (if it exists). It is <b>NOT</b> a link to a project website.</p>\
 `,
           disabled
+        }),
+
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'supplemental',
+          multiline: true,
+          label: 'Additional information',
+          ObjectInputView: SupplementalEIDCView,
+          helpText: `\
+<p>You can add information not documented elsewhere here. This includes links to related papers, grey literature or websites.  For example, project websites or papers/reports that provide relevant supporting information <strong>but which do not cite</strong> this resource</p>
+<p>When linking to published articles, please use DOIs whenever possible.</p>
+<p><small class='text-danger'><i class='fas fa-exclamation-triangle'> </i> NOTE: Some websites may be maintained for a limited period and may therefore soon become unavailable.</small></p>\
+`
         })
       ]
     },
