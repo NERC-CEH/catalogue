@@ -70,30 +70,17 @@ public class GeminiDocumentTest {
 
     }
 
-    @Test
+ @Test
     public void testGetIncomingCitationCount() {
         // Given
         GeminiDocument document = new GeminiDocument();
-        Supplemental incomingCitations = Supplemental.builder().name("foo").build();
-        List<Supplemental> incomingCitations = new ArrayList<>();
-        incomingCitations.add(incomingCitations);
-        document.setSupplemental(incomingCitations);
-        long expected = 1;
-
-        // When
-        long output = document.getIncomingCitationCount();
-
-        // Then
-        assertThat(output, is(expected));
-    }
-
-    @Test
-    public void testGetIncomingCitationCount_NoCitations() {
-        // Given
-        GeminiDocument document = new GeminiDocument();
-        List<Supplemental> incomingCitations = new ArrayList<>();
-        document.setSupplemental(incomingCitations);
-        long expected = 0;
+        IncomingCitations cite1 = Supplemental.builder().name("foo").build();
+        IncomingCitations cite2 = Supplemental.builder().name("bar").build();
+        List<Supplemental> citations = new ArrayList<>();
+        citations.add(cite1);
+        citations.add(cite2);
+        document.setIncomingCitations(citations);
+        long expected = 2;
 
         // When
         long output = document.getIncomingCitationCount();
