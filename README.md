@@ -110,7 +110,7 @@ Webpack is mostly configured in `webpack.common.js` which is inherited by `webpa
 
 #### Note - there are many uses of Jquery's $(document).ready() function in the editor module of the frontend. Do not just remove them as they are there to prevent timing issues with views of existing documents in the editor. Unless of course you can find a better alternative.
 
-### Test JavaScipt using Karma
+### Test JavaScript using Karma
 
       npm run test
 
@@ -119,8 +119,24 @@ For example the tests for the editor module are in `web/scripts/editor/test`.
 The Karma tests are configured in `karma.conf.js`.
 
 ### Java
-Java files will be built automatically when `docker-compose up -d --build` is ran.
+Java files will be built automatically when `docker-compose up -d --build` is run.
 Java unit tests can be run through IntelliJ.
+
+### Spring profiles
+Spring Profiles provide a way to segregate parts of your application configuration and make it only available in certain environments. 
+Any @Component or @Configuration can be marked with @Profile to limit when it is loaded.
+The active profiles are configured in `docker-compose.yaml`
+The catalogue contains the following Spring profiles:
+##### development
+The development profile runs code that is only available when developing such as the `DevelopmentUserStoreConfig.java` which makes testing code locally easier as it allows the user access to more user permissions.
+##### upload:simple/hubbub
+Allows the user to upload their documents using `FileSystemStorageService.java` when `upload:simple` is active or the Hubbub API which `UploadService.java` interfaces with when `upload:hubbub` is active.
+##### server:eidc/elter/datalabs/ukeof/inms
+The server profile e.g. `server:eidc` decides which catalogue you will use and which documents that you will use with it. For example the EIDC catalogue will use Gemini documents and `server:elter` aka the Elter catalogue will use Elter documents.
+##### search:basic/enhanced
+Select which algorithm Solr uses to search for documents.
+##### service-agreement
+Allows the user to create online service agreements for datasets. 
 
 ### Developing LESS
 In the web directory run
@@ -159,7 +175,7 @@ another catalogue using the Link document type.
 
 ## Remote-User
 
-The catalogue is designed to sit behind a **Security Proxy** (
+The catalogue is designed to sit behind a **Security Proxy** 
 see [RequestHeaderAuthenticationFilter](http://docs.spring.io/autorepo/docs/spring-security/3.2.0.RELEASE/apidocs/org/springframework/security/web/authentication/preauth/RequestHeaderAuthenticationFilter.html) which acts as the authentication source for the application. Therefore, the catalogue will respond to the `Remote-User` header and handle requests as the specified user.
 
 To simplify development, the `DevelopmentUserStoreConfig` is applied by default. This creates some dummy users in various different groups which you can masquerade as. The simplest way to do this is use a browser extension which applies the `Remote-User` header. I recommend **ModHeader for Chrome**.
@@ -247,4 +263,4 @@ The upstream service returned some content, but it was not in the format which w
 ### Invalid Resource
 ![Invalid Resource](java/src/main/resources/proxy-invalid-resource.png)
 
-The wms get capabilities returned a malformed reference to either a GetLegend or GetMap url. This can happen if you are using a buggy web map server or an corrupt external get capabilities.
+The wms get capabilities returned a malformed reference to either a GetLegend or GetMap url. This can happen if you are using a buggy web map server or a corrupt external get capabilities.
