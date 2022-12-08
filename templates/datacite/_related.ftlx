@@ -7,12 +7,8 @@
 <#if doc.relatedRecords?has_content>
   <#assign rel_supersedes = func.filter(doc.relatedRecords, "rel", "https://vocabs.ceh.ac.uk/eidc#supersedes")>
 </#if>
-<#if doc.supplemental?has_content>
-  <#assign referencedBy = func.filter(doc.supplemental, "function", "isReferencedBy")>
-  <#assign supplementTo = func.filter(doc.supplemental, "function", "IsSupplementTo")>
-</#if>
 
-<#if supplementTo?has_content || infoResources?has_content || referencedBy?has_content || rel_supersededBy?has_content || rel_supersedes?has_content>
+<#if incomingCitations?has_content || infoResources?has_content || referencedBy?has_content || rel_supersededBy?has_content || rel_supersedes?has_content>
   <relatedIdentifiers>
     
     <#if infoResources?has_content>
@@ -33,8 +29,8 @@
       </#list> 
     </#if>
 
-    <#if referencedBy?has_content>
-      <#list referencedBy as link>
+    <#if incomingCitations?has_content>
+      <#list incomingCitations as link>
         <#if link.url?matches("^http(|s)://(|dx.)doi.org/10.\\d{2,9}/.+$")>
           <#assign idtype="DOI", uri=link.url?replace("http://dx.doi.org/","")?replace("http://doi.org/","")?replace("https://doi.org/","")>
         <#else>
@@ -44,16 +40,5 @@
       </#list>
     </#if>
 
-    <#if supplementTo?has_content>
-      <#list supplementTo as link>
-        <#if link.url?matches("^http(|s)://(|dx.)doi.org/10.\\d{2,9}/.+$")>
-          <#assign idtype="DOI", uri=link.url?replace("http://dx.doi.org/","")?replace("http://doi.org/","")?replace("https://doi.org/","")>
-        <#else>
-          <#assign idtype="URL", uri=link.url>
-        </#if>
-        <relatedIdentifier relatedIdentifierType="${idtype}" relationType="IsSupplementTo" resourceTypeGeneral="Text">${uri}</relatedIdentifier>
-      </#list>
-    </#if>
-    
   </relatedIdentifiers>
 </#if>

@@ -34,14 +34,6 @@
     otherConstraints =  func.filter(useConstraints, "code", "license", true)
   >
 </#if>
-<#if supplemental?has_content>
-  <#assign
-    referencedBy = func.filter(supplemental, "function", "isReferencedBy")
-    supplementTo = func.filter(supplemental, "function", "isSupplementTo")
-    citations = func.filter(supplemental, "function", "isSupplementTo") + func.filter(supplemental, "function", "isReferencedBy")
-    supOther = func.filter(supplemental, "function", "") + func.filter(supplemental, "function", "website") + func.filter(supplemental, "function", "relatedArticle") + func.filter(supplemental, "function", "relatedDataset")
-  >
-</#if>
 
 <#assign isLinkedDoc="false" linkedClass="" >
 <#if rel_source?has_content && rel_source?size gt 0>

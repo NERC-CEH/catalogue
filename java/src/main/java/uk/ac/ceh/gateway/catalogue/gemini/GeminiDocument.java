@@ -60,7 +60,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private List<OnlineResource> onlineResources;
     private Set<Link> incomingRelationships;
     private List<SpatialReferenceSystem> spatialReferenceSystems;
-    private List<Supplemental> supplemental;
+    private List<Supplemental> incomingCitations, supplemental;
     private List<RelatedRecord> relatedRecords;
     @JsonIgnore
     private Citation citation;
@@ -252,10 +252,10 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
                 .collect(Collectors.toList());
     }
     public long getIncomingCitationCount() {
-        return Optional.ofNullable(supplemental)
+        return Optional.ofNullable(incomingCitations)
                 .orElse(Collections.emptyList())
                 .stream()
-                .filter(s -> ALLOWED_CITATION_FUNCTIONS.contains(s.getFunction()))
+                //.filter(s -> ALLOWED_CITATION_FUNCTIONS.contains(s.getFunction()))
                 .count();
     }
 

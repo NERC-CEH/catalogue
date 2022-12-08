@@ -1,10 +1,10 @@
 <#import "../../functions.ftlh" as func>
 
-<#if supOther?has_content>
+<#if supplemental?has_content>
   <div id="section-supplemental">
     <h2>Supplemental information</h2>
 
-    <#list supOther as supplement>
+    <#list supplemental as supplement>
       <@func.displaySupplemental supplement true/>
     </#list>
 

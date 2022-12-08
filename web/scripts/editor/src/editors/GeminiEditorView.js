@@ -19,14 +19,13 @@ import {
   ResourceMaintenanceView,
   ResourceTypeView, ServiceView,
   SingleObjectView, SpatialReferenceSystemView, SpatialRepresentationTypeView, SpatialResolutionView,
-  SupplementalEIDCView,
+  SupplementalEIDCView, IncomingCitationView,
   TemporalExtentView,
   TextareaView,
   TopicCategoryView
 } from '../views'
 import {
-  AccessLimitation,
-  Contact,
+  AccessLimitation, Contact,
   DescriptiveKeyword, DistributionFormat, Funding,
   InspireTheme, MapDataSource,
   MultipleDate, OnlineResource,
@@ -613,13 +612,20 @@ export default EditorView.extend({
       views: [
         new ParentView({
           model: this.model,
+          modelAttribute: 'incomingCitations',
+          multiline: true,
+          label: 'Citations',
+          ObjectInputView: IncomingCitationView
+        }),
+
+        new ParentView({
+          model: this.model,
           modelAttribute: 'supplemental',
           multiline: true,
           label: 'Additional information',
           ObjectInputView: SupplementalEIDCView,
           helpText: `\
-<p>You can add information not documented elsewhere here. This includes links to related papers, grey literature or websites.  For example:</p>
-<ul><li>papers that cite this resource</li><li>papers/reports that provide relevant supporting information but which do not cite this resource</li><li>project websites</li></ul>
+<p>You can add information not documented elsewhere here. This includes links to related papers, grey literature or websites.  For example, project websites or papers/reports that provide relevant supporting information <strong>but which do not cite</strong> this resource</p>
 <p>When linking to published articles, please use DOIs whenever possible.</p>
 <p><small class='text-danger'><i class='fas fa-exclamation-triangle'> </i> NOTE: Some websites may be maintained for a limited period and may therefore soon become unavailable.</small></p>\
 `

@@ -74,15 +74,11 @@ public class GeminiDocumentTest {
     public void testGetIncomingCitationCount() {
         // Given
         GeminiDocument document = new GeminiDocument();
-        Supplemental supplemental = Supplemental.builder().name("foo").function("other").build();
-        Supplemental isReferencedBy = Supplemental.builder().name("foo").function("isReferencedBy").build();
-        Supplemental isSupplementTo = Supplemental.builder().name("foo").function("isSupplementTo").build();
-        List<Supplemental> supplementals = new ArrayList<>();
-        supplementals.add(supplemental);
-        supplementals.add(isReferencedBy);
-        supplementals.add(isSupplementTo);
-        document.setSupplemental(supplementals);
-        long expected = 2;
+        Citation incomingCitations = Citation.builder().name("foo").build();
+        List<Supplemental> incomingCitations = new ArrayList<>();
+        incomingCitations.add(incomingCitation);
+        document.setCitation(incomingCitations);
+        long expected = 1;
 
         // When
         long output = document.getIncomingCitationCount();
@@ -92,26 +88,11 @@ public class GeminiDocumentTest {
     }
 
     @Test
-    public void testGetIncomingCitationCount_ShouldBeEmpty() {
+    public void testGetIncomingCitationCount_NoCitations() {
         // Given
         GeminiDocument document = new GeminiDocument();
-        Supplemental supplemental = Supplemental.builder().name("foo").function("other").build();
-        document.setSupplemental(List.of(supplemental));
-        long expected = 0;
-
-        // When
-        long output = document.getIncomingCitationCount();
-
-        // Then
-        assertThat(output, is(expected));
-    }
-
-    @Test
-    public void testGetIncomingCitationCount_NoSupplemental() {
-        // Given
-        GeminiDocument document = new GeminiDocument();
-        List<Supplemental> supplementals = new ArrayList<>();
-        document.setSupplemental(supplementals);
+        List<Supplemental> incomingCitations = new ArrayList<>();
+        document.setCitation(incomingCitations);
         long expected = 0;
 
         // When

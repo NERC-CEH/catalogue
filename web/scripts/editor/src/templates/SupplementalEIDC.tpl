@@ -4,17 +4,11 @@
   </div>
   <div class="col-sm-10">
     <select data-name="function" class="editor-input function" id="supplemental<%= data.index %>Function">
-    <option value="" selected>-- Choose one --</option>
-    <optgroup label="Citation">
-      <option value="isReferencedBy">REFERENCED IN. The data is referenced/cited in this article.</option>
-      <option value="isSupplementTo">SUPPLEMENT TO. The data underlies the findings in this article.</option>
-    </optgroup>
-    <optgroup label="Other">
+      <option value="" selected>-- Choose one --</option>
       <option value="relatedArticle">RELATED ARTICLE. An article (or grey literature) which is relevant but which DOESN'T cite this resource</option>
       <option value="relatedDataset">RELATED DATASET. A dataset which is related but which is NOT hosted by EIDC)</option>
       <option value="website">RELATED WEBSITE. (e.g. project website)</option>
       <option value="">Miscellaneous</option>
-    </optgroup>
     </select>
   </div>
 </div>
