@@ -77,7 +77,7 @@ public class GeminiDocumentTest {
         Citation incomingCitations = Citation.builder().name("foo").build();
         List<Supplemental> incomingCitations = new ArrayList<>();
         incomingCitations.add(incomingCitation);
-        document.setCitation(incomingCitations);
+        document.setSupplemental(incomingCitations);
         long expected = 1;
 
         // When
@@ -92,7 +92,7 @@ public class GeminiDocumentTest {
         // Given
         GeminiDocument document = new GeminiDocument();
         List<Supplemental> incomingCitations = new ArrayList<>();
-        document.setCitation(incomingCitations);
+        document.setSupplemental(incomingCitations);
         long expected = 0;
 
         // When
