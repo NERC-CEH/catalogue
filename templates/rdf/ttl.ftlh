@@ -30,11 +30,18 @@
        dct:spatial "${extent.wkt}"^^geo:wktLiteral ;
     </#list>
   </#if>
+
   <#if temporalExtents?has_content>
+    dcterms:temporal
     <#list temporalExtents as extent>
-       dct:temporal "${(extent.begin?date)!''}/${(extent.end?date)!''}"^^dct:PeriodOfTime ;
+      [a dcterms:PeriodOfTime ;
+        dcat:startDate ${(extent.begin?date)!''}^^xsd:date ;
+        dcat:endDate   ${(extent.end?date)!''}^^xsd:date ;
+      ]<#sep>,</#sep>
     </#list>
+    ;
   </#if>
+
 
   <#--Points of contact-->
   <#if pointsOfContact?has_content>

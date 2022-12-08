@@ -25,6 +25,8 @@ public class JenaIndexProvDocumentGenerator implements IndexGenerator<ProvDocume
     private final JenaIndexMetadataDocumentGenerator generator;
     private final String baseUri;
 
+     private int xxxCount = 0;
+
     public JenaIndexProvDocumentGenerator(JenaIndexMetadataDocumentGenerator generator, String baseUri) {
         this.generator = generator;
         this.baseUri = baseUri;
@@ -37,19 +39,25 @@ public class JenaIndexProvDocumentGenerator implements IndexGenerator<ProvDocume
 
         Resource me = generator.resource(document.getId());
         toReturn.add(createStatement(me, IDENTIFIER, createPlainLiteral(me.getURI()))); //Add as an identifier of itself
+        toReturn.add(createStatement(me, TYPE, PROV_CLASS_COLLECTION));
 
-        Optional.ofNullable(document.getRelatedRecords())
+        Optional.ofNullable(document.getProvenanceLinks())
             .orElse(Collections.emptyList())
             .stream()
-            .filter(rr -> !Strings.isNullOrEmpty(rr.getRel()))
-            .filter(rr -> !Strings.isNullOrEmpty(rr.getIdentifier()))
-            .forEach(rr -> {
-                log.debug(rr.toString());
+            .filter(assoc -> !Strings.isNullOrEmpty(assoc.getRel()))
+            .filter(assoc -> !Strings.isNullOrEmpty(assoc.getIdentifierFrom()))
+            .filter(assoc -> !Strings.isNullOrEmpty(assoc.getIdentifierTo()))
+            .forEach(assoc -> {
+                log.debug(assoc.toString());
+                Resource xxx_node = generator.resource(document.getId() + "_xxx_" + xxxCount);
+                toReturn.add(createStatement(me, PROV_HADMEMBER, xxx_node));
+                toReturn.add(createStatement(xxx_node, TYPE, PROV_CLASS_ENTITY));
                 toReturn.add(createStatement(
-                    me,
-                    createProperty(rr.getRel()),
-                    createProperty(baseUri + "/id/" + rr.getIdentifier())
+                    createProperty(baseUri + "/id/" + assoc.getIdentifierFrom()),
+                    createProperty(assoc.getRel()),
+                    createProperty(baseUri + "/id/" + assoc.getIdentifierTo())
                 ));
+                xxxCount++;
             });
 
         return toReturn;

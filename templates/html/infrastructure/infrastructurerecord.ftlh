@@ -1,5 +1,6 @@
 <#import "../skeleton.ftlh" as skeleton>
 <#import "../../functions.ftlh" as func>
+<#import "../blocks.ftlh" as blocks>
 
 <#assign rel_all=jena.allRelatedRecords(uri) >
 
@@ -31,7 +32,7 @@
         <#if description??>
           <div class="description">
             <div class="description-text">
-              <@linebreaks description/>
+              <@blocks.linebreaksAndLinks description/>
             </div>
             <div class="browseimage">
               <#if images?? && images?has_content>
@@ -50,15 +51,15 @@
           <div class="col1">
 
             <#if infrastructureCategory??><@displaykey "Category">${infrastructureCategory.description}</@displaykey></#if>
-            <#if capabilities??><@displaykey "Capabilities"><@linebreaks capabilities/></@displaykey></#if>
-            <#if lifecycle??><@displaykey "Lifecycle"><@linebreaks lifecycle/></@displaykey></#if>
-            <#if uniqueness??><@displaykey "Uniqueness"><@linebreaks uniqueness/></@displaykey></#if>
-            <#if partners??><@displaykey "Partners"><@linebreaks partners/></@displaykey></#if>
-            <#if access??><@displaykey "Access"><@linebreaks access/></@displaykey></#if>
-            <#if locationText??><@displaykey "Location"><@linebreaks locationText/></@displaykey></#if>
-            <#if userCosts??><@displaykey "User costs"><@linebreaks userCosts/></@displaykey></#if>
-            <#if fundingSources??><@displaykey "Funding sources"><@linebreaks fundingSources/></@displaykey></#if>
-            <#if userCosts??><@displaykey "User costs"><@linebreaks userCosts/></@displaykey></#if>
+            <#if capabilities??><@displaykey "Capabilities"><@blocks.linebreaksAndLinks capabilities/></@displaykey></#if>
+            <#if lifecycle??><@displaykey "Lifecycle"><@blocks.linebreaksAndLinks lifecycle/></@displaykey></#if>
+            <#if uniqueness??><@displaykey "Uniqueness"><@blocks.linebreaksAndLinks uniqueness/></@displaykey></#if>
+            <#if partners??><@displaykey "Partners"><@blocks.linebreaksAndLinks partners/></@displaykey></#if>
+            <#if access??><@displaykey "Access"><@blocks.linebreaksAndLinks access/></@displaykey></#if>
+            <#if locationText??><@displaykey "Location"><@blocks.linebreaksAndLinks locationText/></@displaykey></#if>
+            <#if userCosts??><@displaykey "User costs"><@blocks.linebreaksAndLinks userCosts/></@displaykey></#if>
+            <#if fundingSources??><@displaykey "Funding sources"><@blocks.linebreaksAndLinks fundingSources/></@displaykey></#if>
+            <#if userCosts??><@displaykey "User costs"><@blocks.linebreaksAndLinks userCosts/></@displaykey></#if>
 
             <#if users?? >
                 <@displaykey "Users">
@@ -175,14 +176,6 @@
     <div>${label}</div>
     <div><#nested></div>
   </div>
-</#macro>
-
-<#macro linebreaks value>
-  <#if value?has_content>
-    <#list value?split("\n") as line>
-        ${line}<#sep><br>
-    </#list>
-  </#if>
 </#macro>
 
 <#macro displayLink link>

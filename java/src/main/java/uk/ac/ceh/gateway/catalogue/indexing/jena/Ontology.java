@@ -6,6 +6,22 @@ import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.ResourceFactory;
 
 public class Ontology {
+
+    public static final Property RDF_TYPE = ResourceFactory.createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
+    public static final Property DCAT_CLASS_DATASET = ResourceFactory.createProperty("http://www.w3.org/ns/dcat#Dataset");
+    public static final Property DCAT_CLASS_DISTRIBUTION = ResourceFactory.createProperty("http://www.w3.org/ns/dcat#Distribution");
+    public static final Property DCAT_DISTRIBUTION = ResourceFactory.createProperty("http://www.w3.org/ns/dcat#distribution");
+    public static final Property DCAT_ACCESSURL = ResourceFactory.createProperty("http://www.w3.org/ns/dcat#accessURL");
+    public static final Property DCT_ISSUED  = ResourceFactory.createProperty("http://purl.org/dc/terms/issued");
+    public static final Property DCAT_PUBLISHER = ResourceFactory.createProperty("http://purl.org/dc/terms/publisher");
+    public static final Property DCT_CREATOR  = ResourceFactory.createProperty("http://purl.org/dc/terms/creator");
+    public static final Property VCARD_CLASS_INDIVIDUAL  = ResourceFactory.createProperty("http://www.w3.org/2006/vcard/ns#Individual");
+    public static final Property VCARD_NAME  = ResourceFactory.createProperty("http://www.w3.org/2006/vcard/ns#n");
+    public static final Property VCARD_ORGNAME  = ResourceFactory.createProperty("http://www.w3.org/2006/vcard/ns#organization-name");
+    public static final Property VCARD_IDTEMP  = ResourceFactory.createProperty("http://www.w3.org/nonsense/ns#orcid");
+    public static final Property FOAF_CLASS_ORGANISATION = ResourceFactory.createProperty("http://xmlns.com/foaf/spec/#Organization");
+    public static final Property CITO_CITEDBY  = ResourceFactory.createProperty("http://purl.org/spar/cito/isCitedBy");
+
     public static final Property IDENTIFIER = ResourceFactory.createProperty("http://purl.org/dc/terms/identifier");
     public static final Property TITLE = ResourceFactory.createProperty("http://purl.org/dc/terms/title");
     public static final Property TYPE = ResourceFactory.createProperty("http://purl.org/dc/terms/type");
@@ -29,10 +45,21 @@ public class Ontology {
     public static final Property CONTAINS = ResourceFactory.createProperty("http://purl.org/voc/ef#contains");
     public static final Property TRIGGERS = ResourceFactory.createProperty("http://purl.org/voc/ef#triggers");
 
+    public static final Property ADMD_STATUS = ResourceFactory.createProperty("http://www.admd.net/status");
+
+    public static final Property PROV_CLASS_ENTITY = ResourceFactory.createProperty("https://www.w3.org/TR/prov-o/#ENTITY");
+    public static final Property PROV_CLASS_ACTIVITY = ResourceFactory.createProperty("https://www.w3.org/TR/prov-o/#ACTIVITY");
+    public static final Property PROV_CLASS_COLLECTION = ResourceFactory.createProperty("https://www.w3.org/TR/prov-o/#Collection");
+    public static final Property PROV_HADMEMBER = ResourceFactory.createProperty("https://www.w3.org/TR/prov-o/#hadMember");
+    public static final Property PROV_WASDERIVEDFROM = ResourceFactory.createProperty("https://www.w3.org/TR/prov-o/#wasDerivedFrom");
+    public static final Property PROV_WASGENERATEDBY = ResourceFactory.createProperty("https://www.w3.org/TR/prov-o/#wasGeneratedBy");
+    public static final Property PROV_USED = ResourceFactory.createProperty("https://www.w3.org/TR/prov-o/#used");
+
     public static final Property LINKING_TIME = ResourceFactory.createProperty("http://purl.org/voc/ef#linkingTime");
     public static final Property TEMPORAL_BEGIN = ResourceFactory.createProperty("http://def.seegrid.csiro.au/isotc211/iso19108/2002/temporal#begin");
     public static final Property TEMPORAL_END = ResourceFactory.createProperty("http://def.seegrid.csiro.au/isotc211/iso19108/2002/temporal#end");
-
     public static final Property HAS_GEOMETRY = ResourceFactory.createProperty("http://www.opengis.net/ont/geosparql#hasGeometry");
+    
     public static final RDFDatatype WKT_LITERAL = new BaseDatatype("http://www.opengis.net/ont/geosparql#wktLiteral");
+    public static final RDFDatatype TYPE_DATE = new BaseDatatype("http://www.w3.org/2001/XMLSchema#date");
 }

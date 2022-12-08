@@ -63,16 +63,18 @@
 
 <@skeleton.master title=title catalogue=catalogue rdf="${uri}?format=ttl" schemaorg="${uri}?format=schema.org" canonical="${uri}" can_edit_restricted=permission.userCanEditRestrictedFields(metadata.catalogue)>
   <#if !resourceType?has_content || resourceType.value ==''>
-    
-    <div class="alert alert-danger" id="missingResourceType">
-      <p class="clearfix"><i class="fas fa-exclamation-triangle"></i> <b>WARNING: </b> resource type is missing from this record
-      <a class="edit-control" data-document-type="${metadata.documentType}">Edit</a></p>
-    </div>
+     <div id="metadata">
+      <div class="section">
+        <div class="container missingResourceType">
+          <p><i class="fas fa-exclamation-triangle"></i> <b>WARNING: </b> 'resource type' is missing from this record</p>
+          <p><a class="btn btn-default btn-wide edit-control" data-document-type="${metadata.documentType}">Edit</a></p>
+        </div>
+      </div>
+     </div>
   
   <#else>
 
     <#assign recordType = func.recordTypeOrResourceType()>
-
     <div id="metadata" class="metadata metadata-eidc ${metadata.state?lower_case} ${resourceType.value} ${linkedClass}">
 
       <div class="section section-grey">

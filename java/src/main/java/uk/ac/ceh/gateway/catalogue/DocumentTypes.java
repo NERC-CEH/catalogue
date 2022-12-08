@@ -34,6 +34,12 @@ public class DocumentTypes {
         .type(PROV)
         .build();
 
+    public static final String METHOD = "method-document";
+    public static DocumentType METHOD_TYPE = DocumentType.builder()
+        .title("Method")
+        .type(METHOD)
+        .build();
+
     public static final String EF_DOCUMENT = "EF_DOCUMENT";
 
     public static final String ELTER = "elter";

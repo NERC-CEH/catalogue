@@ -73,102 +73,103 @@
     <div id="metadata" class="metadata metadata-elter ${resourceType.value} ${metadata.state?lower_case}">
 
       <div class="section section-grey">
-            <div class="container">
-              <#include "document/_admin.ftlh">
-              <#if title?? && title?has_content>
-                <#include "document/_title.ftlh">
-              </#if>    
+        <div class="container">
+          <#include "document/_admin.ftlh">
+          <#if title?? && title?has_content>
+            <#include "document/_title.ftlh">
+          </#if>    
 
-              <#if description??>
-                <div class="description">
-                  <div class="description-text">
-                    <@blocks.linebreaksAndLinks description!"" />
+          <#if description??>
+            <div class="description">
+              <div class="description-text">
+                <@blocks.linebreaksAndLinks description!"" />
 
-                    <#if resourceType.value != 'aggregate' && resourceType.value != 'collection'>
-                      <#if datasetReferenceDate??>
-                          <#if datasetReferenceDate.publicationDate??>
-                            <div class="publicationDate">
-                            Publication date: ${datasetReferenceDate.publicationDate}
-                          </div>
+                <#if resourceType.value != 'aggregate' && resourceType.value != 'collection'>
+                  <#if datasetReferenceDate??>
+                      <#if datasetReferenceDate.publicationDate??>
+                        <div class="publicationDate">
+                        Publication date: ${datasetReferenceDate.publicationDate}
+                      </div>
+                    </#if>
+                  </#if>
+                </#if>
+
+              </div>
+              <div class="browseimage">
+                <#include "document/_browseGraphic.ftlh">
+              </div>
+            </div>
+          </#if>
+        </div>
+      </div>
+      
+      <#if resourceType.value == 'aggregate' || resourceType.value == 'collection'>
+        <div class="section">
+          <div class="container">
+            <#include "document/_aggregate.ftlh">
+          </div>
+        </div>
+      <#else>
+        <div class="section">
+          <div class="container">
+            <div class="metadata-grid">
+              <div class="col1"> 
+                <#include "document/_deims.ftlh">
+                <#include "document/_formats.ftlh">
+                <#include "document/_dataquality.ftlh">
+                <#include "document/_extent.ftlh">
+                <#include "document/_related.ftlh">
+                <#include "document/_citation_list.ftlh">
+                <#include "document/_supplemental.ftlh">
+                <#include "document/_contacts.ftlh">
+
+                <#if topicCategories?? || descriptiveKeywords?? ||  inspireTheme?? || funding?? || spatialRepresentationTypes?? || spatialReferenceSystems??>
+                  <h2>Additional metadata</h2>
+                  <dl id="otherInfo" class="dl-horizontal">
+                    <#include "document/_tags.ftlh">
+                    <#include "document/_funding.ftlh">
+                    <#if resourceType?has_content && resourceType.value !='nonGeographicDataset'>
+                      <#include "document/_spatial.ftlh">
+                    </#if>
+                      <#if metadataDateTime?has_content>
+                      <dt>Last updated</dt><dd>${metadataDateTime?datetime.iso?datetime?string['dd MMMM yyyy  HH:mm']}</dd>
+                      </#if>
+                  </dl>
+                </#if>
+              </div>
+              <div class="col2">
+
+                <#if isLinkedDoc="true"> 
+                  <#include "document/_linked.ftlh">
+                <#else>
+                    <#include "document/_uploadData.ftlh">
+                    <#include "document/_metrics.ftlh">
+
+
+                    <#if resourceType.value == 'signpost'>
+                      <#include "document/_distribution_signpost.ftlh">
+                    <#elseif resourceType.value == 'thirdPartyDataset'>
+                      <#include "document/_third_party.ftlh">
+                    <#else>
+                      <#if resourceStatus??>
+                        <#if resourceStatus == 'Restricted'>
+                          <#include "document/_distribution_restricted.ftlh">
+                        <#else>
+                          <#if resourceType.value == 'service'>
+                            <#include "document/_distribution_service.ftlh">
+                          <#elseif resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'application'>
+                            <#include "document/_distribution_dataset.ftlh">
+                          </#if>
                         </#if>
                       </#if>
                     </#if>
 
-                  </div>
-                  <div class="browseimage">
-                    <#include "document/_browseGraphic.ftlh">
-                  </div>
-                </div>
-              </#if>
+                </#if>           
+
             </div>
           </div>
-          <#if resourceType.value == 'aggregate' || resourceType.value == 'collection'>
-            <div class="section">
-              <div class="container">
-                <#include "document/_aggregate.ftlh">
-              </div>
-            </div>
-          <#else>
-            <div class="section">
-              <div class="container">
-                <div class="metadata-grid">
-                  <div class="col1"> 
-                    <#include "document/_deims.ftlh">
-                    <#include "document/_formats.ftlh">
-                    <#include "document/_dataquality.ftlh">
-                    <#include "document/_extent.ftlh">
-                    <#include "document/_related.ftlh">
-                    <#include "document/_citation_list.ftlh">
-                    <#include "document/_supplemental.ftlh">
-                    <#include "document/_contacts.ftlh">
-
-                    <#if topicCategories?? || descriptiveKeywords?? ||  inspireTheme?? || funding?? || spatialRepresentationTypes?? || spatialReferenceSystems??>
-                      <h2>Additional metadata</h2>
-                      <dl id="otherInfo" class="dl-horizontal">
-                        <#include "document/_tags.ftlh">
-                        <#include "document/_funding.ftlh">
-                        <#if resourceType?has_content && resourceType.value !='nonGeographicDataset'>
-                          <#include "document/_spatial.ftlh">
-                        </#if>
-                          <#if metadataDateTime?has_content>
-                          <dt>Last updated</dt><dd>${metadataDateTime?datetime.iso?datetime?string['dd MMMM yyyy  HH:mm']}</dd>
-                          </#if>
-                      </dl>
-                    </#if>
-                  </div>
-                  <div class="col2">
-
-                    <#if isLinkedDoc="true"> 
-                      <#include "document/_linked.ftlh">
-                    <#else>
-                        <#include "document/_uploadData.ftlh">
-                        <#include "document/_metrics.ftlh">
-
-
-                        <#if resourceType.value == 'signpost'>
-                          <#include "document/_distribution_signpost.ftlh">
-                        <#elseif resourceType.value == 'thirdPartyDataset'>
-                          <#include "document/_third_party.ftlh">
-                        <#else>
-                          <#if resourceStatus??>
-                            <#if resourceStatus == 'Restricted'>
-                              <#include "document/_distribution_restricted.ftlh">
-                            <#else>
-                              <#if resourceType.value == 'service'>
-                                <#include "document/_distribution_service.ftlh">
-                              <#elseif resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'application'>
-                                <#include "document/_distribution_dataset.ftlh">
-                              </#if>
-                            </#if>
-                          </#if>
-                        </#if>
-
-                    </#if>           
-
-                </div>
-              </div>
-            </div>
-          </#if>
+        </div>
+      </#if>
 
     </div>
 

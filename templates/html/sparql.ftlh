@@ -8,6 +8,8 @@
             <#if query??>
               ${query}
             <#else>
+              PREFIX prov: <http://www.w3.org/ns/prov#>
+
               SELECT ?s ?p ?o
               WHERE { ?s ?p ?o }
               LIMIT 10

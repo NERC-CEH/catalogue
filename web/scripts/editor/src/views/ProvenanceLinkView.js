@@ -1,6 +1,6 @@
 import _ from 'underscore'
 import ObjectInputView from './ObjectInputView'
-import template from '../templates/Association.tpl'
+import template from '../templates/ProvenanceLink.tpl'
 
 export default ObjectInputView.extend({
 

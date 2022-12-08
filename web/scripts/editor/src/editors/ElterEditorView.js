@@ -57,17 +57,6 @@ export default EditorView.extend({
           ObjectInputView: ResourceTypeView
         }),
 
-        new ParentView({
-          model: this.model,
-          modelAttribute: 'deimsSites',
-          label: 'DEIMS sites',
-          ObjectInputView: DeimsSiteView,
-          multiline: true,
-          helpText: `
-<p>DEIMS sites that have contributed to the dataset.</p>
-`
-        }),
-
         new InputView({
           model: this.model,
           modelAttribute: 'title',
@@ -185,7 +174,7 @@ export default EditorView.extend({
           model: this.model,
           ModelType: TopicCategory,
           modelAttribute: 'topicCategories',
-          label: 'Topic categories',
+          label: 'ISO topic categories',
           ObjectInputView: TopicCategoryView
         }),
 
@@ -221,6 +210,37 @@ export default EditorView.extend({
       ]
     },
     {
+      label: 'ID & links',
+      title: 'Identifiers and links to related resources',
+      views: [
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'resourceIdentifiers',
+          label: 'Resource identifiers',
+          ObjectInputView: ResourceIdentifierView,
+          helpText: `
+<p>A unique string or number used to identify the data resource. The codespace identifies the context in which the code is unique.</p>
+`
+        }),
+
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'deimsSites',
+          label: 'DEIMS sites',
+          ObjectInputView: DeimsSiteView,
+          multiline: true
+        }),
+
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'relatedRecords',
+          label: 'Related records',
+          ObjectInputView: RelatedRecordView,
+          multiline: true
+        })
+      ]
+    },
+    {
       label: 'Distribution',
       title: 'Distribution ,licensing and constraints',
       views: [
@@ -228,7 +248,7 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'onlineResources',
           ModelType: OnlineResource,
-          label: 'Online availability',
+          label: 'Online access',
           ObjectInputView: OnlineResourceView,
           multiline: true
         }),
@@ -271,7 +291,7 @@ export default EditorView.extend({
         new PredefinedParentView({
           model: this.model,
           modelAttribute: 'useConstraints',
-          label: 'Use constraints',
+          label: 'Licensing/use constraints',
           ObjectInputView: ResourceConstraintView,
           multiline: true,
           predefined: {
@@ -296,29 +316,6 @@ export default EditorView.extend({
 <p>Where possible include a link to a document describing the terms and conditions.</p>
 <p>You MUST enter something even if there are no constraints. In the rare case that there are none, enter "no conditions apply".</p>\
 `
-        })
-      ]
-    },
-    {
-      label: 'ID & relationships',
-      title: 'Identifiers and links to related resources',
-      views: [
-        new ParentView({
-          model: this.model,
-          modelAttribute: 'resourceIdentifiers',
-          label: 'Resource identifiers',
-          ObjectInputView: ResourceIdentifierView,
-          helpText: `
-<p>A unique string or number used to identify the data resource. The codespace identifies the context in which the code is unique.</p>
-`
-        }),
-
-        new ParentView({
-          model: this.model,
-          modelAttribute: 'relatedRecords',
-          label: 'Related records',
-          ObjectInputView: RelatedRecordView,
-          multiline: true
         })
       ]
     },

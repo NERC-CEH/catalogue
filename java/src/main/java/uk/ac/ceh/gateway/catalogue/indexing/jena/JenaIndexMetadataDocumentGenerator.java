@@ -47,10 +47,15 @@ public class JenaIndexMetadataDocumentGenerator implements IndexGenerator<Metada
                         createStatement(me, TITLE, createPlainLiteral(t)))
                     );
 
-            Optional.ofNullable(emptyToNull(document.getType()))
-                    .ifPresent(t -> toReturn.add(
-                        createStatement(me, TYPE, createPlainLiteral(t)))
-                    );
+            Optional.ofNullable(document.getType())
+                .ifPresent(type -> {
+                    if (type.trim().equals("dataset") || type.trim().equals("nonGeographicDataset") ) {
+                        toReturn.add(createStatement(me, RDF_TYPE, DCAT_CLASS_DATASET));
+                    }
+                    else {
+                        toReturn.add(createStatement(me, TYPE, createPlainLiteral(type)));
+                    }
+                });
 
             Optional.ofNullable(document.getRelationships())
                 .ifPresent(relationships -> {

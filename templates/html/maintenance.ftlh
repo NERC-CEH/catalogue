@@ -39,7 +39,7 @@
       <dt>Has Links?</dt><dd>${linked?string("Yes", "No")}
         <form method="POST" action="/maintenance/links/reindex">
           <input type="submit" value="Rebuild">
-          <a href="/maintenance/sparql">Sparql tester</a>
+          <a href="/maintenance/sparql">SPARQL</a>
         </form>
       </dd>
       <dt>Has Validation?</dt><dd>${validated?string("Yes", "No")}

@@ -19,11 +19,14 @@ a dcat:Dataset, dcmitype:Dataset ;
 <#if resourceIdentifiers??>
   dct:identifier 
     <#list resourceIdentifiers as id>
-    <#if id.coupledResource?starts_with("http")>
-      <${id.coupledResource}>
-    <#else>
-      "${id.coupledResource}"
-    </#if><#sep>,
+      <#if id.codeSpace?starts_with("doi:")>
+        <https://doi.org/${id.code}>
+      <#elseif id.code?starts_with("http")>
+        <${id.coupledResource}>
+      <#else>
+        "${id.code}"
+      </#if>
+      <#sep>,</#sep>
     </#list>
     ;
 </#if>
@@ -37,7 +40,7 @@ dct:type <http://purl.org/dc/dcmitype/Dataset> ;
  
  dcat:landingPage <${uri}><#if datacitable?string=="true" && citation?has_content>, <${citation.url}></#if>;
 
-<#if datacitable?string=='true' && citation?has_content>
+<#if citation?has_content>
     dct:bibliographicCitation "${citation.authors?join(' ,')} (${citation.year?string("0")}). ${citation.title}. ${citation.publisher}. ${citation.url}" ;
 </#if>
 

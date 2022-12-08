@@ -19,20 +19,8 @@
   </div>
    <div class="col-sm-9">
     <select data-name="rel" id="relationship<%= data.index %>Rel" class="editor-input rel">
-      <optgroup class="optiongroup">
-        <option value='https://onto.lter-europe.org#relatedTo'>RELATED TO</option>
-      </optgroup>
-      <optgroup label="EIDC relationships" class="optiongroup-eidc">
-        <option value='https://vocabs.ceh.ac.uk/eidc#generates'>GENERATES&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(e.g. code or model generates a dataset)</option>
-        <option value='https://vocabs.ceh.ac.uk/eidc#memberOf'>MEMBER OF&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(e.g. a dataset is a member of a data collection)</option>
-        <option value='https://vocabs.ceh.ac.uk/eidc#supersedes'>SUPERSEDES</option>
-        <option value='https://vocabs.ceh.ac.uk/eidc#uses'>USES&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(e.g. a service uses a dataset)</option>
-      </optgroup>
-      <optgroup label="eLTER relationships" class="optiongroup-elter">
-        <option value='https://onto.lter-europe.org#generates'>GENERATES&nbsp;&nbsp;&nbsp;&nbsp;(e.g. code or model generates a dataset)</option>
-        <option value='https://onto.lter-europe.org#inputTo'>INPUT TO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(e.g. dataset is input to code or model)</option>
-        <option value='https://onto.lter-europe.org#uses'>USES&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(e.g. a service uses a dataset)</option>
-      </optgroup>
+      <option value='generates'>GENERATES&nbsp;&nbsp;&nbsp;&nbsp;(a method generates a dataset)</option>
+      <option value='wasUsedBy'>USED BY&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(a dataset is used by a method)</option>
     </select>
   </div>
 </div>

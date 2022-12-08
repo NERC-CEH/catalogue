@@ -293,6 +293,7 @@ public class CatalogueServiceConfig {
                 .facetKey("resourceType")
                 .documentType(ELTER_TYPE)
                 .documentType(CODE_TYPE)
+                .documentType(METHOD_TYPE)
                 .documentType(PROV_TYPE)
                 .documentType(LINKED_ELTER_TYPE)
                 .vocabularies(getCatalogueVocabularies(vocabularies, defaultCatalogueKey))

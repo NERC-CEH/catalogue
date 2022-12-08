@@ -25,6 +25,7 @@ import uk.ac.ceh.gateway.catalogue.converters.WmsFeatureInfo2XmlMessageConverter
 import uk.ac.ceh.gateway.catalogue.datacite.DataciteResponse;
 import uk.ac.ceh.gateway.catalogue.model.CodeDocument;
 import uk.ac.ceh.gateway.catalogue.model.ProvDocument;
+import uk.ac.ceh.gateway.catalogue.model.MethodDocument;
 import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.document.writing.MessageConverterWritingService;
 import uk.ac.ceh.gateway.catalogue.ef.Activity;
@@ -77,6 +78,7 @@ public class WebConfig implements WebMvcConfigurer {
         val datacite = new Object2TemplatedMessageConverter<>(DataciteResponse.class, freemarkerConfiguration);
         val code = new Object2TemplatedMessageConverter<>(CodeDocument.class, freemarkerConfiguration);
         val prov = new Object2TemplatedMessageConverter<>(ProvDocument.class, freemarkerConfiguration);
+        val method = new Object2TemplatedMessageConverter<>(MethodDocument.class, freemarkerConfiguration);
         val dataset = new Object2TemplatedMessageConverter<>(Dataset.class, freemarkerConfiguration);
         val dataType = new Object2TemplatedMessageConverter<>(DataType.class, freemarkerConfiguration);
         val elter = new Object2TemplatedMessageConverter<>(ElterDocument.class, freemarkerConfiguration);
@@ -125,6 +127,7 @@ public class WebConfig implements WebMvcConfigurer {
             citation,
             code,
             prov,
+            method,
             dataset,
             dataType,
             elter,

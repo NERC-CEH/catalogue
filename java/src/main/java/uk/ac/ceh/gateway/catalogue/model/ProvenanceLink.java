@@ -6,12 +6,12 @@ import lombok.NonNull;
 import lombok.Value;
 
 @Value
-public class Association {
+public class ProvenanceLink {
     @NonNull String rel, identifierFrom, identifierTo;
     String description, hrefFrom, hrefTo, titleFrom, titleTo, associationType;
 
     @JsonCreator
-    public Association(
+    public ProvenanceLink(
         @JsonProperty("identifierFrom") String identifierFrom,
         @JsonProperty("hrefFrom") String hrefFrom,
         @JsonProperty("titleFrom") String titleFrom,

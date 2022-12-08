@@ -60,12 +60,9 @@ public class BoundingBox {
 
     public String getBounds() {
         return new StringBuilder()
-                .append("{\"type\": \"Feature\","+
-                        "      \"properties\": {}," +
-                        "      \"geometry\": {" +
-                        "        \"type\": \"Polygon\"," +
-                        "        \"coordinates\": " + getCoordinates() +
-                        "      }}")
+                .append("{'type':'Feature','properties':{},'geometry':{'type':'Polygon','coordinates':" +
+                        getCoordinates() +
+                        "}}")
                 .toString();
     }
 }

@@ -23,6 +23,7 @@ public class CatalogueMediaTypes {
     public static final String DATA_TYPE_JSON_VALUE = "application/vnd.data-type+json";
     public static final String CODE_JSON_VALUE = "application/vnd.code-document+json";
     public static final String PROV_JSON_VALUE = "application/vnd.prov-document+json";
+    public static final String METHOD_JSON_VALUE = "application/vnd.method-document+json";
 
     public static final String EF_INSPIRE_XML_SHORT = "efinspire";
     public static final String EF_INSPIRE_XML_VALUE = "application/vnd.ukeof.inspire+xml";

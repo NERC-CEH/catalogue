@@ -4,7 +4,7 @@ import 'bootstrap'
 import { ClipboardCopyView } from './clipboard/src/ClipboardCopy'
 import {
   CehModelApplicationEditorView,
-  CehModelEditorView, CodeDocumentEditorView, ProvDocumentEditorView,
+  CehModelEditorView, CodeDocumentEditorView, ProvDocumentEditorView, MethodDocumentEditorView,
   DataTypeEditorView,
   ElterEditorView,
   ElterLinkedEditorView,
@@ -248,6 +248,11 @@ function initEditor () {
       Model: EditorMetadata,
       mediaType: 'application/vnd.prov-document+json'
     },
+    'method-document': {
+      View: MethodDocumentEditorView,
+      Model: EditorMetadata,
+      mediaType: 'application/vnd.method-document+json'
+    },
     infrastructurerecord: {
       View: InfrastructureRecordEditorView,
       Model: EditorMetadata,
@@ -277,7 +282,6 @@ function initEditor () {
           json: documentType.mediaType
         },
         success (data) {
-          $('#metadata').removeClass('alert alert-danger missingResourceType')
           new documentType.View({
             model: new documentType.Model(data, documentType, title),
             el: '#metadata'

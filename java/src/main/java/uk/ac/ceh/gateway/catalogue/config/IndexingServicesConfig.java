@@ -21,6 +21,7 @@ import uk.ac.ceh.gateway.catalogue.elter.ElterDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CodeDocument;
 import uk.ac.ceh.gateway.catalogue.model.ProvDocument;
+import uk.ac.ceh.gateway.catalogue.model.MethodDocument;
 import uk.ac.ceh.gateway.catalogue.infrastructure.InfrastructureRecord;
 import uk.ac.ceh.gateway.catalogue.indexing.ClassMap;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
@@ -86,7 +87,7 @@ public class IndexingServicesConfig {
             .register(BaseMonitoringType.class, new JenaIndexBaseMonitoringTypeGenerator(documentGenerator))
             .register(GeminiDocument.class, new JenaIndexGeminiDocumentGenerator(documentGenerator, baseUri))
             .register(CodeDocument.class, new JenaIndexCodeDocumentGenerator(documentGenerator, baseUri))
-            .register(ProvDocument.class, new JenaIndexCodeDocumentGenerator(documentGenerator, baseUri))
+            .register(ProvDocument.class, new JenaIndexProvDocumentGenerator(documentGenerator, baseUri))
             .register(InfrastructureRecord.class, new JenaIndexInfrastructureRecordGenerator(documentGenerator, baseUri))
             .register(LinkDocument.class, new JenaIndexLinkDocumentGenerator(documentGenerator))
             .register(MetadataDocument.class, documentGenerator);

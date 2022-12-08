@@ -1,13 +1,6 @@
 <#import "../skeleton.ftlh" as skeleton>
 <#import "../blocks.ftlh" as b>
 
-<#assign
-  rel_memberOf = jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#memberOf")
-  rel_hasMember = jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#memberOf")
-  rel_related = jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#relatedTo") + jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#relatedTo")
-  relationships = rel_memberOf + rel_hasMember + rel_related
-> 
-
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
 
   <div id="metadata" class="metadata metadata-provDocument ${metadata.state?lower_case}">
@@ -29,27 +22,17 @@
 
     <div class="section">
       <div class="container">
-           
-          <#if relationships?has_content>
-            <h3>Related record<#if relationships?size gt 1>s</#if></h3>
-            
-            <#if rel_memberOf?has_content>
-              <@displayRelations rel_memberOf "This notebook is used in" /> 
-            </#if>
 
-            <#if rel_hasMember?has_content>
-              <@displayRelations rel_hasMember "This project uses" /> 
-            </#if>
+        <#if associations?has_content>
+          <div class="associations">
+            <#list associations as f>
+              <div class="association"><a href="${f.hrefFrom}">${f.titleFrom}</a> - ${f.rel} - <a href="${f.hrefTo}">${f.titleTo}</a></div>
+              <#sep><div class="sep"><span class="fa-solid fa-arrow-down-long fa-2x"></span></div></#sep>
+            </#list>
+          </div>
+        </#if>
 
-            <#if rel_related?has_content>
-              <@displayRelations rel_related "Other related records" /> 
-            </#if>
-
-          </#if>
-          
-
-          
-            Last updated: ${metadataDateTime?datetime.iso?datetime?string['dd MMMM yyyy  HH:mm']}
+        <p>Last updated: ${metadataDateTime?datetime.iso?datetime?string['dd MMMM yyyy  HH:mm']}</p>
       </div>
 
     </div>
@@ -58,4 +41,3 @@
 
 
 </@skeleton.master>
-
