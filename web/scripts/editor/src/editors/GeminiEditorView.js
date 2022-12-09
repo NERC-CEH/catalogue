@@ -28,7 +28,7 @@ import {
   AccessLimitation, Contact,
   DescriptiveKeyword, DistributionFormat, Funding,
   InspireTheme, MapDataSource,
-  MultipleDate, OnlineResource,
+  MultipleDate, OnlineResource, Supplemental,
   ResourceType, Service, SpatialResolution,
   TopicCategory
 } from '../models'
@@ -613,6 +613,7 @@ export default EditorView.extend({
         new ParentView({
           model: this.model,
           modelAttribute: 'incomingCitations',
+          ModelType: Supplemental,
           multiline: true,
           label: 'Citations',
           ObjectInputView: IncomingCitationView
@@ -670,6 +671,7 @@ export default EditorView.extend({
         new ParentView({
           model: this.model,
           modelAttribute: 'supplemental',
+          ModelType: Supplemental,
           multiline: true,
           label: 'Additional information',
           ObjectInputView: SupplementalEIDCView,
