@@ -64,7 +64,7 @@ public class KeywordVocabulariesConfig {
             SolrClient solrClient,
             @Value("${ukceh.sparql.endpoint}") String sparqlEndpoint
     ) {
-        val catalogueIds = Arrays.asList("assist", "eidc", "elter", "nm");
+        val catalogueIds = Arrays.asList("assist", "eidc", "elter", "nm", "pimfe");
         return new SparqlKeywordVocabulary(
                 restTemplate,
                 solrClient,
@@ -126,7 +126,7 @@ public class KeywordVocabulariesConfig {
         SolrClient solrClient,
         @Value("${elter.sparql.endpoint}") String sparqlEndpoint
     ) {
-        val catalogueIds = List.of("elter");
+        val catalogueIds = List.of("elter", "pimfe");
         // Filters out deprecated concepts
         val where = "?uri skos:prefLabel ?label . FILTER NOT EXISTS { ?uri <http://www.w3.org/2002/07/owl#deprecated> true}";
         return new SparqlKeywordVocabulary(

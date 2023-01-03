@@ -1,8 +1,9 @@
 {
   "name": "web",
+  "description": "UKCEH Metadata Catalogue",
   "private": "true",
   "scripts": {
-    "build": "webpack --config webpack.prod.js",
+    "build": "webpack --config=webpack.prod.js",
     "watch": "webpack --config=webpack.dev.js --watch",
     "test": "karma start --single-run",
     "test-server": "concurrently 'webpack --watch' 'karma start'",
@@ -27,7 +28,7 @@
   },
   "keywords": [],
   "author": "UKCEH Environmental Data Science Group",
-  "license": "ISC",
+  "license": "GPL-2.0-or-later",
   "devDependencies": {
     "@babel/eslint-parser": "^7.19.1",
     "chrome-remote-interface": "^0.31.2",
