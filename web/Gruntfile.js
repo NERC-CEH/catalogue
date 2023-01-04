@@ -179,7 +179,7 @@ module.exports = function (grunt) {
       },
       pimfe: {
         files: {
-          'css/style-pimfe.css': 'less/style-pimfe.css'
+          'css/style-pimfe.css': 'css/style-pimfe.css'
         }
       },
       infrastructure: {
