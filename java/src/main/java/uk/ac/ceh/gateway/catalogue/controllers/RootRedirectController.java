@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.web.servlet.ModelAndView;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 
 import static java.lang.String.format;
@@ -19,9 +19,9 @@ public class RootRedirectController {
     }
 
     @GetMapping
-    public RedirectView redirectRootToDefaultCatalogue() {
+    public ModelAndView redirectRootToDefaultCatalogue() {
         val catalogueId = catalogueService.defaultCatalogue().getId();
-        val url = format("/%s/documents", catalogueId);
-        return new RedirectView(url);
+        val url = format("redirect:/%s/documents", catalogueId);
+        return new ModelAndView(url);
     }
 }

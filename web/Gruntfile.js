@@ -80,6 +80,11 @@ module.exports = function (grunt) {
           'css/style-osdp.css': 'less/style-osdp.less'
         }
       },
+      pimfe: {
+        files: {
+          'css/style-pimfe.css': 'less/style-pimfe.less'
+        }
+      },
       infrastructure: {
         files: {
           'css/style-infrastructure.css': 'less/style-infrastructure.less'
@@ -170,6 +175,11 @@ module.exports = function (grunt) {
       osdp: {
         files: {
           'css/style-osdp.css': 'css/style-osdp.css'
+        }
+      },
+      pimfe: {
+        files: {
+          'css/style-pimfe.css': 'css/style-pimfe.css'
         }
       },
       infrastructure: {
