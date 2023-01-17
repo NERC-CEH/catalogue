@@ -334,6 +334,31 @@ public class CatalogueServiceConfig {
     }
 
     @Bean
+    @Profile("server:pimfe")
+    public CatalogueService pimfeCatalogue(List<KeywordVocabulary> vocabularies) {
+        String defaultCatalogueKey = "pimfe";
+
+        return new InMemoryCatalogueService(
+            defaultCatalogueKey,
+
+            Catalogue.builder()
+                .id(defaultCatalogueKey)
+                .title("pIMFe Digital Asset Register")
+                .url("")
+                .contactUrl("")
+                .logo("ukceh.png")
+                .facetKey("resourceType")
+                .documentType(GEMINI_TYPE)
+                .documentType(CODE_TYPE)
+                .documentType(NERC_MODEL_TYPE)
+                .documentType(NERC_MODEL_USE_TYPE)
+                .vocabularies(getCatalogueVocabularies(vocabularies, defaultCatalogueKey))
+                .fileUpload(false)
+                .build()
+        );
+    }
+
+    @Bean
     @Profile("server:ukeof")
     public CatalogueService ukeofCatalogue(List<KeywordVocabulary> vocabularies) {
         String defaultCatalogueKey = "ukeof";

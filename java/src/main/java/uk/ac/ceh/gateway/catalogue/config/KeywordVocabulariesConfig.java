@@ -11,7 +11,6 @@ import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.gateway.catalogue.vocabularies.KeywordVocabulary;
 import uk.ac.ceh.gateway.catalogue.vocabularies.SparqlKeywordVocabulary;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -64,7 +63,7 @@ public class KeywordVocabulariesConfig {
             SolrClient solrClient,
             @Value("${ukceh.sparql.endpoint}") String sparqlEndpoint
     ) {
-        val catalogueIds = Arrays.asList("assist", "eidc", "elter", "nm");
+        val catalogueIds = List.of("assist", "eidc", "elter", "nm");
         return new SparqlKeywordVocabulary(
                 restTemplate,
                 solrClient,
@@ -157,6 +156,46 @@ public class KeywordVocabulariesConfig {
             "?uri skos:prefLabel ?label .",
             "inms",
             "INMS",
+            catalogueIds
+        );
+    }
+
+    @Profile("server:pimfe")
+    @Bean
+    public KeywordVocabulary pimfeCastVocabulary(
+        @Qualifier("sparql") RestTemplate restTemplate,
+        SolrClient solrClient,
+        @Value("${ukceh.sparql.endpoint}") String sparqlEndpoint
+    ) {
+        val catalogueIds = List.of("pimfe");
+        return new SparqlKeywordVocabulary(
+            restTemplate,
+            solrClient,
+            sparqlEndpoint,
+            "<http://onto.nerc.ac.uk/CAST/>",
+            "?uri skos:prefLabel ?label .",
+            "cast",
+            "CAST",
+            catalogueIds
+        );
+    }
+
+    @Profile("server:pimfe")
+    @Bean
+    public KeywordVocabulary pimfeResearchThemeVocabulary(
+        @Qualifier("sparql") RestTemplate restTemplate,
+        SolrClient solrClient,
+        @Value("${ukceh.sparql.endpoint}") String sparqlEndpoint
+    ) {
+        val catalogueIds = List.of("pimfe");
+        return new SparqlKeywordVocabulary(
+            restTemplate,
+            solrClient,
+            sparqlEndpoint,
+            "<http://vocabs.ceh.ac.uk/ukscape/>",
+            "?uri skos:broader <http://vocabs.ceh.ac.uk/ukscape/research-theme> . ?uri skos:prefLabel ?label .",
+            "ukscape-research-theme",
+            "Research Themes",
             catalogueIds
         );
     }
