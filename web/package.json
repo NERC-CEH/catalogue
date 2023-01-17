@@ -96,7 +96,7 @@
     "less": "^3.13.0",
     "moment": "^2.29.4",
     "npm": "^8.5.5",
-    "resolve-url-loader": "3.1.4",
+    "resolve-url-loader": "3.1.5",
     "sass": "1.32.11",
     "sass-loader": "^13.0.0",
     "save": "^2.5.0",
