@@ -97,7 +97,8 @@ class JenaIndexGeminiDocumentGeneratorTest {
             "b5fbe026-d706-4ee3-8f7b-4f62e663b4b9",
             "https://example.com/id/b5fbe026-d706-4ee3-8f7b-4f62e663b4b9",
             "Title",
-            "Dataset"
+            "Dataset",
+            "Description of relationship"
         ))
     );
     given(service.generateUri(id)).willReturn(uri);
@@ -120,7 +121,8 @@ class JenaIndexGeminiDocumentGeneratorTest {
             "b5fbe026-d706-4ee3-8f7b-4f62e663b4b9",
             "https://example.com/id/b5fbe026-d706-4ee3-8f7b-4f62e663b4b9",
             "Title",
-            "Dataset"
+            "Dataset",
+            "Description of relationship"
             ))
     );
     given(service.generateUri(id)).willReturn(uri);
