@@ -1,6 +1,6 @@
 <select data-name="value" class="editor-input" id="input-resourceType">
   <option value="" selected>- Select Resource Type -</option>
-  <optgroup label="EIDC resource types" class="optiongroup-eidc">
+  <optgroup label="EIDC resource types" class="optiongroup optiongroup-eidc">
     <option value="dataset">Dataset</option>
     <option value="nonGeographicDataset">Dataset (non-geographic)</option>
     <option value="aggregate">Data collection (aggregate)</option>
@@ -8,19 +8,19 @@
     <option value="signpostNerc">NERC signpost</option>
     <option value="service">Web service</option>
   </optgroup>
-  <optgroup label="INMS resource types" class="optiongroup-inms">
+  <optgroup label="INMS resource types" class="optiongroup optiongroup-inms">
     <option value="dataset">Dataset</option>
     <option value="thirdPartyDataset">Third-party dataset</option>
     <option value="nonGeographicDataset">Dataset (non-geographic)</option>
     <option value="aggregate">Data collection (aggregate)</option>
     <option value="service">Map (web service)</option>
   </optgroup>
-  <optgroup label="ASSIST resource types" class="optiongroup-assist">
+  <optgroup label="ASSIST resource types" class="optiongroup optiongroup-assist">
     <option value="dataset">Dataset</option>
     <option value="thirdPartyDataset">Third-party dataset</option>
     <option value="aggregate">Data collection (aggregate)</option>
   </optgroup>
-  <optgroup label="eLTER resource types" class="optiongroup-elter">
+  <optgroup label="eLTER resource types" class="optiongroup optiongroup-elter">
     <option value="dataset">Dataset</option>
     <option value="nonGeographicDataset">Dataset (non-geographic)</option>
     <option value="aggregate">Data collection (aggregate)</option>
@@ -28,7 +28,7 @@
     <option value="signpost">Signpost</option>
     <option value="service">Web service</option>
   </optgroup>
-  <optgroup label="All ISO 19115 resource types" class="optiongroup-iso19115">
+  <optgroup label="All ISO 19115 resource types" class="optiongroup optiongroup-iso19115">
     <option value="aggregate">Aggregate</option>
     <option value="application">Application</option>
     <option value="attribute">Attribute</option>

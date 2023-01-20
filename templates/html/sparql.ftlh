@@ -1,6 +1,6 @@
 <#import "skeleton.ftlh" as skeleton>
 <@skeleton.master title="Sparql Tester" catalogue=catalogues.defaultCatalogue()>
-    <div class="container-fluid">
+    <div class="container">
       <form method="POST" action="/maintenance/sparql">
         <div class="form-group">
           <label for="query">SPARQL Query</label>
@@ -8,9 +8,11 @@
             <#if query??>
               ${query}
             <#else>
+              PREFIX dcterms:	<http://purl.org/dc/terms/>
+              PREFIX dcat: <http://www.w3.org/ns/dcat#>
               PREFIX prov: <http://www.w3.org/ns/prov#>
 
-              SELECT ?s ?p ?o
+              SELECT *
               WHERE { ?s ?p ?o }
               LIMIT 10
             </#if>
