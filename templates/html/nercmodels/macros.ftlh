@@ -29,13 +29,21 @@
   </#if>
 </#macro>
 
-<#macro commaList values>
-  <#list values>
-    <#items as value>
-      ${value}<sep>, </sep>
-    </#items>
-  </#list>
+<#macro parameters paramlist>
+  <div class="parameterList">
+    <#list paramlist>
+      <#items as value>
+        <#if value.title?? && value.title?has_content>
+          ${value.title}
+        <#elseif value.name?? && value.name?has_content>
+          ${value.name}
+        </#if>
+        <sep><br></sep>
+      </#items>
+    </#list>
+  </div>
 </#macro>
+
 
 <#--
 CEH dataInfo table
