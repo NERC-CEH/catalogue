@@ -9,6 +9,8 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import uk.ac.ceh.gateway.catalogue.model.Supplemental; 
+
 public class GeminiDocumentTest {
     private final String id = "c43818fc-61fb-455b-9714-072355597229";
 
