@@ -241,23 +241,6 @@
           </div>
           <div class="col2">
            
-            <#if responsibleParties?? && responsibleParties?has_content>
-              <div>
-                <h2>Contacts</h2>
-                  <#list responsibleParties as responsibleParty>
-                    <dt>${responsibleParty.roleDisplayName}</dt>
-                    <dd>
-                      <div class="responsibleParty">
-                        <@m.displayContact responsibleParty, true />
-                      </div>
-                    </dd>
-                    </#list>
-                  </div>
-                <#else>
-                  <p class="text-danger">There are no contacts listed for this model</p>
-                </#if>
-          
-
             <#if (code?? && code?has_content) || (documents?? && documents?has_content)>
               <div class="accessLinks">
                 <#if code?? && code?has_content>
@@ -295,6 +278,23 @@
                 </#if>
               </div>
             </#if>
+
+            <#if responsibleParties?? && responsibleParties?has_content>
+              <div>
+                <h2>Contacts</h2>
+                  <#list responsibleParties as responsibleParty>
+                    <dt>${responsibleParty.roleDisplayName}</dt>
+                    <dd>
+                      <div class="responsibleParty">
+                        <@m.displayContact responsibleParty, true />
+                      </div>
+                    </dd>
+                    </#list>
+                  </div>
+                <#else>
+                  <p class="text-danger">There are no contacts listed for this model</p>
+                </#if>
+          
 
           </div>
         </div>
