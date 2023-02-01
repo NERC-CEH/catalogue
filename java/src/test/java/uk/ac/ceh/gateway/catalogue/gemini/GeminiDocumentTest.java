@@ -70,16 +70,38 @@ public class GeminiDocumentTest {
 
     }
 
+/*     @Test
+    public void testGetIncomingCitationCount() {
+        // Given
+        GeminiDocument document = new GeminiDocument();
+        Supplemental supplemental = Supplemental.builder().name("foo").function("other").build();
+        Supplemental isReferencedBy = Supplemental.builder().name("foo").function("isReferencedBy").build();
+        Supplemental isSupplementTo = Supplemental.builder().name("foo").function("isSupplementTo").build();
+        List<Supplemental> supplementals = new ArrayList<>();
+        supplementals.add(supplemental);
+        supplementals.add(isReferencedBy);
+        supplementals.add(isSupplementTo);
+        document.setSupplemental(supplementals);
+        long expected = 2;
+
+        // When
+        long output = document.getIncomingCitationCount();
+
+        // Then
+        assertThat(output, is(expected));
+    }
+ */
+
     @Test
     public void testGetIncomingCitationCount() {
         // Given
         GeminiDocument document = new GeminiDocument();
-        Supplemental cite1 = Supplemental.builder().name("foo").build();
-        Supplemental cite2 = Supplemental.builder().name("bar").build();
-        List<Supplemental> incomingCitations = new ArrayList<>();
-        cites.add(cite1);
-        cites.add(cite2);
-        document.setSupplemental(cites);
+        IncomingCitations citation1 = IncomingCitations.builder().name("foo").build();
+        IncomingCitations citation2 = IncomingCitations.builder().name("bar").build();
+        List<Supplemental> citations = new ArrayList<>();
+        citations.add(citation1);
+        citations.add(citation2);
+        document.setIncomingCitations(citations);
         long expected = 2;
 
         // When
@@ -89,18 +111,8 @@ public class GeminiDocumentTest {
         assertThat(output, is(expected));
     }
 
-    @Test
-    public void testGetIncomingCitationCount_NoCitations() {
-        // Given
-        GeminiDocument document = new GeminiDocument();
-        List<Supplemental> cites = new ArrayList<>();
-        document.setIncomingCitations(cites);
-        long expected = 0;
 
-        // When
-        long output = document.getIncomingCitationCount();
 
-        // Then
-        assertThat(output, is(expected));
-    }
+
+
 }

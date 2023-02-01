@@ -256,7 +256,6 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
         return Optional.ofNullable(incomingCitations)
                 .orElse(Collections.emptyList())
                 .stream()
-                //.filter(s -> ALLOWED_CITATION_FUNCTIONS.contains(s.getFunction()))
                 .count();
     }
 
