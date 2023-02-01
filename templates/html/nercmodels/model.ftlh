@@ -252,47 +252,47 @@
                       </div>
                     </dd>
                     </#list>
+                  </div>
                 <#else>
                   <p class="text-danger">There are no contacts listed for this model</p>
-              </div>
-            </#if>
+                </#if>
           
 
-            <#if code?? && code?has_content>
-              <div>
-                <#list code as link>
-                  <#if link.url?? && link.url?has_content>
-                    <@m.urlAccess link "code">
-                      <span class="fas fa-code fa-lg"></span> 
-                      <span>
-                      <#if link.name?? && link.name?has_content>
-                        ${link.name}
-                      <#else>
-                        Access the code
-                      </#if>
-                      </span>
-                    </@m.urlAccess>
-                  </#if>
-                </#list>
-              </div>
-            </#if>
+            <#if (code?? && code?has_content) || (documents?? && documents?has_content)>
+              <div class="accessLinks">
+                <#if code?? && code?has_content>
+                  <#list code as link>
+                    <#if link.url?? && link.url?has_content>
+                      <@m.urlAccess link "code">
+                        <div><i class="fas fa-code fa-lg"></i></div> 
+                        <div>
+                        <#if link.name?? && link.name?has_content>
+                          ${link.name}
+                        <#else>
+                          Access the code
+                        </#if>
+                        </div>
+                      </@m.urlAccess>
+                    </#if>
+                  </#list>
+                </#if>
 
-            <#if documents?? && documents?has_content>
-              <div>
-                <#list documents as link>
-                  <#if link.url?? && link.url?has_content>
-                    <@m.urlAccess link "documentation">
-                      <span class="fas fa-book fa-lg"></span>
-                      <span>
-                      <#if link.name?? && link.name?has_content>
-                        ${link.name}
-                      <#else>
-                        Access documentation
-                      </#if>
-                      </span>
-                    </@m.urlAccess>
-                  </#if>
-                </#list>
+                <#if documents?? && documents?has_content>
+                  <#list documents as link>
+                    <#if link.url?? && link.url?has_content>
+                      <@m.urlAccess link "documentation">
+                        <div><i class="fas fa-book fa-lg"></i></div>
+                        <div>
+                        <#if link.name?? && link.name?has_content>
+                          ${link.name}
+                        <#else>
+                          Access documentation
+                        </#if>
+                        </div>
+                      </@m.urlAccess>
+                    </#if>
+                  </#list>
+                </#if>
               </div>
             </#if>
 

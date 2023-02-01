@@ -85,7 +85,7 @@ public class NercModelUse extends AbstractMetadataDocument {
     @Data
     public static class DataInfo {
         private String
-            variableName,
+            name,
             units,
             fileFormat,
             url;

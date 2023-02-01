@@ -75,7 +75,7 @@ body {
       background-color: @navbar-default-link-hover-color;
       width: 0;
       height: @linethickness;
-      margin: @linethickness 0 -(@linethickness) 0;
+      margin: @linethickness 0 - (@linethickness) 0;
     }
 
     &:hover {
@@ -115,7 +115,7 @@ a.navbar-brand {
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
-  margin: 0 0 0 .35em;
+  margin: 0 0 0 0.35em;
 
   img {
     display: none;
@@ -166,6 +166,33 @@ a.navbar-brand {
     }
   }
 
+  .accessLinks {
+    a {
+      border-radius: 1000px;
+      margin: 0.65em 0;
+      display: flex;
+      gap: 0.5em;
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      align-items: center;
+      &:hover, &:focus {
+        outline: 1px solid @nerc-lightgreen;
+        text-decoration: none;
+        div:first-child {
+          background-color: @nerc-darkgreen;
+          color: white;
+        }
+      }
+      div:first-child {
+        border-radius: 1000px;
+        height: 40px;
+        width: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    }
+  }
   .table--qa {
     margin: 1em 3em;
 
@@ -178,7 +205,6 @@ a.navbar-brand {
       }
 
       tbody {
-
         td,
         th {
           border-color: #ddd !important;
@@ -187,7 +213,7 @@ a.navbar-brand {
     }
 
     @media only screen and (max-width: 760px),
-    (min-device-width: 768px) and (max-device-width: 1024px) {
+      (min-device-width: 768px) and (max-device-width: 1024px) {
       // On small screens, force qa table to not display as a table
       @head-width: 100px;
 
@@ -264,7 +290,7 @@ a.navbar-brand {
     .container {
       .key-value {
         grid-template-columns: 13em auto;
-        gap:1em;
+        gap: 1em;
       }
 
       .key {
