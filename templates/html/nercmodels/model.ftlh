@@ -58,6 +58,7 @@
           <div class="col1">
           
             <div>
+              <h2 class="hideLarge">Fundamental information</h2>
               <#if purpose?? && purpose?has_content>
                 <@m.key "Purpose">
                   <@b.linebreaks purpose />

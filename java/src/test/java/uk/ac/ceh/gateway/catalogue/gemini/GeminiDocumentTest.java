@@ -96,8 +96,8 @@ public class GeminiDocumentTest {
     public void testGetIncomingCitationCount() {
         // Given
         GeminiDocument document = new GeminiDocument();
-        IncomingCitations citation1 = IncomingCitations.builder().name("foo").build();
-        IncomingCitations citation2 = IncomingCitations.builder().name("bar").build();
+        Supplemental citation1 = Supplemental.builder().description("foo").build();
+        Supplemental citation2 = Supplemental.builder().description("bar").build();
         List<Supplemental> citations = new ArrayList<>();
         citations.add(citation1);
         citations.add(citation2);
@@ -110,9 +110,5 @@ public class GeminiDocumentTest {
         // Then
         assertThat(output, is(expected));
     }
-
-
-
-
 
 }
