@@ -107,10 +107,6 @@ CEH dataInfo table
 
 <!-- contacts -->
 <#macro displayContact contact showPostal=false>
-    <#if contact.address??>
-        <#local address=concatAddress(contact.address)>
-    </#if>
-
     <#if contact.individualName?has_content>
       <div class="individualName">
           ${contact.individualName}
