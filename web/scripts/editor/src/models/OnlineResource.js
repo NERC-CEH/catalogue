@@ -14,7 +14,7 @@ export default Backbone.Model.extend({
     if (!isValidUrl(attrs.url)) {
       errors.push({
         message:
-          "That url isn't right."//
+          "That url isn't right."
       })
     }
 
