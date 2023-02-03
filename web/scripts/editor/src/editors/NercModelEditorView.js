@@ -263,7 +263,16 @@ export default EditorView.extend({
           helpText: `
 <p>Memory required to run code (if known)</p>
 `
+        }),
+
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'additionalTechnicalInfo',
+          multiline: true,
+          label: 'Technical details not recorded elsewhere',
+          ObjectInputView: AdditionalInfoView
         })
+
       ]
     },
     {
@@ -395,15 +404,15 @@ export default EditorView.extend({
       ]
     },
     {
-      label: 'Input variables',
-      title: 'Input variables',
+      label: 'Input parameters',
+      title: 'Input parameters',
       views: [
         new PredefinedParentView({
           model: this.model,
           ModelType: DataTypeSchema,
-          modelAttribute: 'inputVariables',
+          modelAttribute: 'inputParameters',
           multiline: true,
-          label: 'Input variables',
+          label: 'Input parameters',
           ObjectInputView: DataTypeSchemaSimpleView,
           predefined: {
             'Boolean (true/false)': {
@@ -444,15 +453,15 @@ export default EditorView.extend({
       ]
     },
     {
-      label: 'Output variables',
-      title: 'Output variables',
+      label: 'Output parameters',
+      title: 'Output parameters',
       views: [
         new PredefinedParentView({
           model: this.model,
           ModelType: DataTypeSchema,
-          modelAttribute: 'outputVariables',
+          modelAttribute: 'outputParameters',
           multiline: true,
-          label: 'Output variables',
+          label: 'Output parameters',
           ObjectInputView: DataTypeSchemaSimpleView,
           predefined: {
             'Boolean (true/false)': {
@@ -500,7 +509,7 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'additionalInfo',
           multiline: true,
-          label: 'Information not recorded elsewhere',
+          label: 'Any other information not recorded elsewhere',
           ObjectInputView: AdditionalInfoView
         })
       ]
