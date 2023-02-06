@@ -9,6 +9,8 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import uk.ac.ceh.gateway.catalogue.model.Supplemental; 
+
 public class GeminiDocumentTest {
     private final String id = "c43818fc-61fb-455b-9714-072355597229";
 
@@ -74,14 +76,12 @@ public class GeminiDocumentTest {
     public void testGetIncomingCitationCount() {
         // Given
         GeminiDocument document = new GeminiDocument();
-        Supplemental supplemental = Supplemental.builder().name("foo").function("other").build();
-        Supplemental isReferencedBy = Supplemental.builder().name("foo").function("isReferencedBy").build();
-        Supplemental isSupplementTo = Supplemental.builder().name("foo").function("isSupplementTo").build();
-        List<Supplemental> supplementals = new ArrayList<>();
-        supplementals.add(supplemental);
-        supplementals.add(isReferencedBy);
-        supplementals.add(isSupplementTo);
-        document.setSupplemental(supplementals);
+        Supplemental citation1 = Supplemental.builder().description("foo").build();
+        Supplemental citation2 = Supplemental.builder().description("bar").build();
+        List<Supplemental> citations = new ArrayList<>();
+        citations.add(citation1);
+        citations.add(citation2);
+        document.setIncomingCitations(citations);
         long expected = 2;
 
         // When
@@ -91,33 +91,4 @@ public class GeminiDocumentTest {
         assertThat(output, is(expected));
     }
 
-    @Test
-    public void testGetIncomingCitationCount_ShouldBeEmpty() {
-        // Given
-        GeminiDocument document = new GeminiDocument();
-        Supplemental supplemental = Supplemental.builder().name("foo").function("other").build();
-        document.setSupplemental(List.of(supplemental));
-        long expected = 0;
-
-        // When
-        long output = document.getIncomingCitationCount();
-
-        // Then
-        assertThat(output, is(expected));
-    }
-
-    @Test
-    public void testGetIncomingCitationCount_NoSupplemental() {
-        // Given
-        GeminiDocument document = new GeminiDocument();
-        List<Supplemental> supplementals = new ArrayList<>();
-        document.setSupplemental(supplementals);
-        long expected = 0;
-
-        // When
-        long output = document.getIncomingCitationCount();
-
-        // Then
-        assertThat(output, is(expected));
-    }
 }

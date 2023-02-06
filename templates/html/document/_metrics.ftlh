@@ -1,4 +1,4 @@
-<#if supplemental?has_content && catalogue.id=="eidc">
+<#if incomingCitations?has_content && catalogue.id=="eidc">
   <#if incomingCitationCount gt 0 >
     <div id="document-metrics">
       <h2><a href="#section-citations">

@@ -17,7 +17,7 @@ import uk.ac.ceh.gateway.catalogue.model.OnlineLink;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.model.DataTypeSchema;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
-import uk.ac.ceh.gateway.catalogue.gemini.Supplemental;
+import uk.ac.ceh.gateway.catalogue.model.Supplemental;
 import uk.ac.ceh.gateway.catalogue.gemini.Funding;
 
 @Data
