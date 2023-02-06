@@ -72,28 +72,6 @@ public class GeminiDocumentTest {
 
     }
 
-/*     @Test
-    public void testGetIncomingCitationCount() {
-        // Given
-        GeminiDocument document = new GeminiDocument();
-        Supplemental supplemental = Supplemental.builder().name("foo").function("other").build();
-        Supplemental isReferencedBy = Supplemental.builder().name("foo").function("isReferencedBy").build();
-        Supplemental isSupplementTo = Supplemental.builder().name("foo").function("isSupplementTo").build();
-        List<Supplemental> supplementals = new ArrayList<>();
-        supplementals.add(supplemental);
-        supplementals.add(isReferencedBy);
-        supplementals.add(isSupplementTo);
-        document.setSupplemental(supplementals);
-        long expected = 2;
-
-        // When
-        long output = document.getIncomingCitationCount();
-
-        // Then
-        assertThat(output, is(expected));
-    }
- */
-
     @Test
     public void testGetIncomingCitationCount() {
         // Given
