@@ -46,19 +46,17 @@ public class NercModel extends AbstractMetadataDocument implements WellKnownText
     private List<Funding> funding;
 
     private List<DataTypeSchema>
-        inputVariables,
-        outputVariables;
+        inputParameters,
+        outputParameters;
 
     private List<String>
-        organisations,
-        keyInputVariables,
-        keyOutputVariables;
+        organisations;
     
     private List<OnlineLink> onlineResources;
     private List<Supplemental> references;
     private List<ResponsibleParty> responsibleParties;
     private List<QA> qa;
-    private List<AdditionalInfo> additionalInfo;
+    private List<AdditionalInfo> additionalInfo, additionalTechnicalInfo;
     private List<ModelResolution> resolution;
 
     @Data

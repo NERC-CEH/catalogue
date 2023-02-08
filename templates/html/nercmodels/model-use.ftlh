@@ -102,6 +102,21 @@
               </div>
             </#if>
 
+            <#if inputData?? && inputData?has_content>
+                <@m.key "Input data">
+                  <#list inputData as d>
+                    ${d.name}<#sep>,</#sep>
+                  </#list>
+                 </@m.key>
+            </#if>
+            <#if outputData?? && outputData?has_content>
+                <@m.key "Output data">
+                  <#list outputData as d>
+                    ${d.name}<#sep>,</#sep>
+                  </#list>
+                 </@m.key>
+            </#if>
+
             <#if additionalInfo?? && additionalInfo?has_content>
               <#list additionalInfo as ai>
                   <@m.key ai.key>
