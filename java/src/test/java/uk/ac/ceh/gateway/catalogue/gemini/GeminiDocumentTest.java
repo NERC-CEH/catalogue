@@ -9,6 +9,8 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import uk.ac.ceh.gateway.catalogue.model.Supplemental; 
+
 public class GeminiDocumentTest {
     private final String id = "c43818fc-61fb-455b-9714-072355597229";
 
@@ -70,15 +72,15 @@ public class GeminiDocumentTest {
 
     }
 
- @Test
+    @Test
     public void testGetIncomingCitationCount() {
         // Given
         GeminiDocument document = new GeminiDocument();
-        Supplemental cite1 = Supplemental.builder().name("foo").build();
-        Supplemental cite2 = Supplemental.builder().name("bar").build();
+        Supplemental citation1 = Supplemental.builder().description("foo").build();
+        Supplemental citation2 = Supplemental.builder().description("bar").build();
         List<Supplemental> citations = new ArrayList<>();
-        citations.add(cite1);
-        citations.add(cite2);
+        citations.add(citation1);
+        citations.add(citation2);
         document.setIncomingCitations(citations);
         long expected = 2;
 
@@ -88,4 +90,5 @@ public class GeminiDocumentTest {
         // Then
         assertThat(output, is(expected));
     }
+
 }
