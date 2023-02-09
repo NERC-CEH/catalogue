@@ -12,6 +12,7 @@ import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.indexing.solr.WellKnownText;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.Link;
+import uk.ac.ceh.gateway.catalogue.model.Supplemental;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreement;
 
@@ -60,7 +61,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private List<OnlineResource> onlineResources;
     private Set<Link> incomingRelationships;
     private List<SpatialReferenceSystem> spatialReferenceSystems;
-    private List<Supplemental> supplemental;
+    private List<Supplemental> incomingCitations, supplemental;
     private List<RelatedRecord> relatedRecords;
     @JsonIgnore
     private Citation citation;
@@ -252,10 +253,9 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
                 .collect(Collectors.toList());
     }
     public long getIncomingCitationCount() {
-        return Optional.ofNullable(supplemental)
+        return Optional.ofNullable(incomingCitations)
                 .orElse(Collections.emptyList())
                 .stream()
-                .filter(s -> ALLOWED_CITATION_FUNCTIONS.contains(s.getFunction()))
                 .count();
     }
 
