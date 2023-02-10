@@ -262,6 +262,23 @@ Replace \n with line breaks
     </#if>
 </#macro>
 
+<#--
+Replace \n with line breaks and replace plain text http links with actionable ones
+-->
+<#macro linebreaksAndLinks value>
+  <#if value?has_content>
+    <#list value?split("\n") as line>
+      <#list line?split("\\s",'r') as word>
+        <#if word?matches("http(s?)://[-a-zA-Z0-9@:%_+.~#?&/=]+",'r')>
+          <a href="${word}" target="_blank" rel="noopener noreferrer">${word}</a>
+        <#else>
+          ${word}
+        </#if>
+      </#list>
+      <#sep><br></#sep>
+    </#list>
+  </#if>
+</#macro>
 
 <#--
 Admin toolbar

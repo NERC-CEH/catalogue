@@ -8,19 +8,7 @@
   <#assign rel_supersedes = func.filter(doc.relatedRecords, "rel", "https://vocabs.ceh.ac.uk/eidc#supersedes")>
 </#if>
 
-<#assign 
-  newReferences = []
-  oldReferences = []>
-  <#if doc.supplemental?has_content>
-    <#assign oldReferences = func.filter(doc.supplemental, "function", "isReferencedBy") + func.filter(doc.supplemental, "function", "IsSupplementTo")>
-  </#if>
-  <#if doc.incomingCitations?has_content>
-    <#assign newReferences = doc.incomingCitations>
-  </#if>
-<#assign allReferences = oldReferences + newReferences>
-
-
-<#if allReferences?has_content || infoResources?has_content || rel_supersededBy?has_content || rel_supersedes?has_content>
+<#if doc.incomingCitations?has_content || infoResources?has_content || rel_supersededBy?has_content || rel_supersedes?has_content>
   <relatedIdentifiers>
     
     <#if infoResources?has_content>
@@ -41,8 +29,8 @@
       </#list> 
     </#if>
 
-    <#if allReferences?has_content>
-      <#list allReferences as link>
+    <#if doc.incomingCitations?has_content>
+      <#list doc.incomingCitations as link>
         <#if link.url?matches("^http(|s)://(|dx.)doi.org/10.\\d{2,9}/.+$")>
           <#assign idtype="DOI", uri=link.url?replace("http://dx.doi.org/","")?replace("http://doi.org/","")?replace("https://doi.org/","")>
         <#else>
@@ -51,17 +39,6 @@
         <relatedIdentifier relatedIdentifierType="${idtype}" relationType="IsReferencedBy" resourceTypeGeneral="Text">${uri}</relatedIdentifier>
       </#list>
     </#if>
-
-    <#if supplementTo?has_content>
-      <#list supplementTo as link>
-        <#if link.url?matches("^http(|s)://(|dx.)doi.org/10.\\d{2,9}/.+$")>
-          <#assign idtype="DOI", uri=link.url?replace("http://dx.doi.org/","")?replace("http://doi.org/","")?replace("https://doi.org/","")>
-        <#else>
-          <#assign idtype="URL", uri=link.url>
-        </#if>
-        <relatedIdentifier relatedIdentifierType="${idtype}" relationType="IsSupplementTo" resourceTypeGeneral="Text">${uri}</relatedIdentifier>
-      </#list>
-    </#if>
-    
+  
   </relatedIdentifiers>
 </#if>

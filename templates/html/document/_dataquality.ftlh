@@ -5,7 +5,7 @@
       <p>This dataset has a data level of ${dataLevel}</p>
     </#if>
     <#if lineage??>
-      <p><@blocks.linebreaks lineage!"" /></p>
+      <p><@blocks.linebreaksAndLinks lineage!"" /></p>
     </#if>
   </div>
 </#if>
