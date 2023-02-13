@@ -60,7 +60,7 @@ class NercWafControllerTest {
             "dataset",
             "nonGeographicDataset",
             "service",
-            "signpost"
+            "nercSignpost"
         );
         given(listing.getPublicDocuments(eq("1234"), eq(GeminiDocument.class), eq(resourceTypes)))
             .willReturn(List.of("a", "b", "c"));

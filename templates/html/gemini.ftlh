@@ -145,8 +145,8 @@
                     <#if resourceStatus == 'Restricted'>
                       <#include "document/_distribution_restricted.ftlh">
                     <#else>
-                      <#if resourceType.value == 'signpost'>
-                        <#include "document/_distribution_signpost.ftlh">
+                      <#if resourceType.value == 'nercSignpost'>
+                        <#include "document/_distribution_nercSignpost.ftlh">
                       <#elseif resourceType.value == 'service' && mapViewable>
                         <#include "document/_distribution_service.ftlh">
                       <#elseif resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'application'>

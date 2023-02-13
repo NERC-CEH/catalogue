@@ -74,7 +74,7 @@
     margin-top: 1.6em;
     font-weight: bolder;
   }
-  
+
   #latestVersion {
     margin-bottom: 1.5em;
     .otherVersions {
@@ -249,18 +249,19 @@
     }
   }
 
-  #signpost {
-    .signpostURL {
-      display: block;
-      margin: 0.25em 0 0 1.35em;
-    }
+  .notice {
+    padding: 1em;
+    margin: 1em 0;
+    font-weight: bolder;
+    &-signpost {
+      display: grid;
+      grid-template-columns: 50px auto;
+      gap: 1em;
+      background-color: rgb(206, 219, 235);
 
-    .licenceText {
-      display: none;
-    }
-
-    .licenceText {
-      display: none;
+      .licenceText {
+        display: none;
+      }
     }
   }
 

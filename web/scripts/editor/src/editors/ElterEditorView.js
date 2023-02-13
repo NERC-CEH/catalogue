@@ -179,18 +179,13 @@ export default EditorView.extend({
           ObjectInputView: TopicCategoryView
         }),
 
-        new PredefinedParentView({
+        new ParentView({
           model: this.model,
           ModelType: DescriptiveKeyword,
           modelAttribute: 'descriptiveKeywords',
           label: 'Keywords',
           ObjectInputView: DescriptiveKeywordView,
           multiline: true,
-          predefined: {
-            'Catalogue topic': {
-              type: 'Catalogue topic'
-            }
-          },
           helpText: `\
 <p>Keywords (preferably taken from a controlled vocabulary) categorising and describing the data resource.</p>
 <p>Good quality keywords help to improve the efficiency of search, making it easier to find relevant records.</p>\
@@ -282,6 +277,16 @@ export default EditorView.extend({
 <p>Where possible include a link to a document describing the terms and conditions.</p>
 <p>You MUST enter something even if there are no constraints. In the rare case that there are none, enter "no conditions apply".</p>\
 `
+        }),
+
+        new ParentView({
+          model: this.model,
+          ModelType: Contact,
+          modelAttribute: 'distributorContacts',
+          label: 'Distributor contact',
+          ObjectInputView: ContactView,
+          multiline: true,
+          helpText: `<p>The organisation responsible for distributing the data</p>`
         })
       ]
     },

@@ -46,7 +46,7 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
     private List<SpatialResolution> spatialResolutions;
     private List<Funding> funding;
     private List<BoundingBox> boundingBoxes;
-    private List<ResponsibleParty> responsibleParties;
+    private List<ResponsibleParty> responsibleParties, distributorContacts;
     private List<TimePeriod> temporalExtents;
     private List<OnlineResource> onlineResources;
     private Set<Link> incomingRelationships;

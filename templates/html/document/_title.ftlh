@@ -59,11 +59,14 @@
   <#if resourceStatus??>
     <#include "_status.ftlh">
   </#if>
-  
-  <#if resourceType?? && resourceType.value == 'signpost' >
-    <div id="signpost" class="alert alert-warning" role="alert">
-      <i class="fas fa-info-circle"></i>
-      <#include "_signpost.ftlh">
+
+  <#if resourceType?? && (resourceType.value == 'nercSignpost' || resourceType.value == 'signpost')>
+    <div class="notice notice-signpost" role="alert">
+      <div><i class="fas fa-info-circle fa-2x"></i></div>
+      <div>
+        <#if resourceType.value == 'signpost' ><#include "_signpost.ftlh"></#if>
+        <#if resourceType.value == 'nercSignpost'><#include "_nercSignpost.ftlh"></#if>
+      </div>
     </div>
   </#if>
 

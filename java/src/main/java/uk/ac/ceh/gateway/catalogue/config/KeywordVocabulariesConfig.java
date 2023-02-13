@@ -140,6 +140,28 @@ public class KeywordVocabulariesConfig {
         );
     }
 
+    @Profile("server:elter")
+    @Bean
+    public KeywordVocabulary elterCLVocabulary(
+        @Qualifier("sparql") RestTemplate restTemplate,
+        SolrClient solrClient,
+        @Value("${elter.sparql.endpoint}") String sparqlEndpoint
+    ) {
+        val catalogueIds = List.of("elter");
+        // Filters out deprecated concepts
+        val where = "?uri skos:prefLabel ?label . FILTER NOT EXISTS { ?uri <http://www.w3.org/2002/07/owl#deprecated> true}";
+        return new SparqlKeywordVocabulary(
+            restTemplate,
+            solrClient,
+            sparqlEndpoint,
+            "<http://vocabs.lter-europe.net/elter_cl/>",
+            where,
+            "elterCL",
+            "elterCL",
+            catalogueIds
+        );
+    }
+
     @Profile("server:inms")
     @Bean
     public KeywordVocabulary inmsVocabulary(

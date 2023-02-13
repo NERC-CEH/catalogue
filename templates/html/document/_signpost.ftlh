@@ -1,27 +1,20 @@
 <#if onlineResources??>
-    <#assign signpostURLs = func.filter(onlineResources, "function", "information")  + func.filter(onlineResources, "function", "search")>
+    <#assign signpostURLs = func.filter(onlineResources, "function", "browseGraphic", true)>
 </#if>
+
 <#if distributorContacts??>
     <#assign signpostDistributor = func.filter(distributorContacts, "role", "distributor")>
+    <#assign distributorName = signpostDistributor?first.organisationName >
+<#else>
+    <#assign distributorName = "a third party" >
 </#if>
 
-<#if  metadata.catalogue != "eidc">
-    <#include "_licence.ftlh">
-</#if>
+<div>This record describes data managed by ${distributorName}</div>
 
-<b>
-    This record describes <#if metadata.catalogue == "eidc">NERC-funded </#if>data managed by 
-    <#if signpostDistributor?has_content>
-        ${signpostDistributor?first.organisationName}
-    <#else>
-        a third party
-    </#if>
-</b>
-
-<#if  metadata.catalogue != "eidc">
-    <#include "_licence.ftlh">
-</#if>
+<#include "_licence.ftlh">
 
 <#if signpostURLs?has_content>
-    <span class="signpostURL">To access the data visit <a href="${signpostURLs?first.url}">${signpostURLs?first.url}</a></span>
+    <div class="signpostURL">
+        To access the data visit <a href="${signpostURLs?first.url}">${signpostURLs?first.url}</a>
+    </div>
 </#if>
