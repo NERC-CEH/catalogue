@@ -34,6 +34,16 @@ export default ObjectInputView.extend({
           }
         })
 
+      that.$('#input-unavailableDate').datepicker({
+        language: 'en',
+        dateFormat: 'yyyy-mm-dd',
+        position: 'top left',
+        onSelect: function (formattedDate, date, inst) {
+          that.model.set('unavailableDate', Moment(date).format('YYYY-MM-DD'))
+          that.$('#input-unavailableDate').value = that.model.set('unavailableDate', Moment(date).format('YYYY-MM-DD'))
+        }
+      })
+
       that.$('#input-releasedDate').datepicker({
         language: 'en',
         dateFormat: 'yyyy-mm-dd',
