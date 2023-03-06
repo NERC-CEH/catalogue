@@ -1,12 +1,13 @@
 package uk.ac.ceh.gateway.catalogue.imports;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.io.IOException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +41,11 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import uk.ac.ceh.gateway.catalogue.TimeConstants;
+import uk.ac.ceh.gateway.catalogue.elter.ElterDocument;
+import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
 @Profile("elter")
 @Slf4j
@@ -68,7 +73,7 @@ public class SITESImportService implements CatalogueImportService {
             }
 
     // methods start here
-    public List<String> getRemoteRecordList() {
+    public List<String> getRemoteRecordList() throws IOException {
         String SITESSitemapURL = "https://meta.fieldsites.se/sitemap.xml";
         String SITESRecordExpression = "/urlset/url/loc";
         List<String> results = new ArrayList<String>();
@@ -84,81 +89,125 @@ public class SITESImportService implements CatalogueImportService {
                 results.add(recordList.item(i).getTextContent());
             }
         } catch (SAXException | IOException ex) {
-            log.error("Error retrieving sitemap - aborting...");
-            // need to actually abort somehow
+            // generic exceptions
+            throw new IOException();
         } catch (XPathExpressionException ex) {
-            log.error("This should never happen: the XPathExpression is fixed and valid.");
+            log.error("This should never happen; the XPathExpression is fixed and valid.");
         }
         return results;
     }
 
-    // can we use a generic or something here? along the lines of
-    // public AbstractMetadataDocument getFullRemoteRecord(String recordID)
-    public JsonNode getFullRemoteRecord(String recordID) throws RestClientResponseException, IOException, JsonProcessingException {
+    public JsonNode getFullRemoteRecord(String recordID) throws IOException {
         log.info("GET record {}", recordID);
-        // get record HTML as String
-        // in the SITES sitemap, recordID is the URL to the record
-        HttpHeaders headers = new HttpHeaders();
-        ResponseEntity<String> response = restTemplate.exchange(
-                recordID,
-                HttpMethod.GET,
-                new HttpEntity<>(headers),
-                String.class
-                );
-        String recordAsString = response.getBody();
 
-        // extract ld+json string from HTML
-        //
-        // Yes, this isn't a stable way to retrieve the content of a tag...
-        // but the XML isn't well-formed so until they fix it this will have to do
-        BufferedReader reader = new BufferedReader(new StringReader(recordAsString));
-        StringBuilder builder = new StringBuilder();
-        String line = null;
-        boolean started = false;
+        // lazy exception handling for now
+        try {
+            // get record HTML as String
+            // in the SITES sitemap, recordID is the URL to the record
+            HttpHeaders headers = new HttpHeaders();
+            ResponseEntity<String> response = restTemplate.exchange(
+                    recordID,
+                    HttpMethod.GET,
+                    new HttpEntity<>(headers),
+                    String.class
+                    );
+            String recordAsString = response.getBody();
 
-        while((line=reader.readLine()) != null){
-            if(line.contains("<script type=\"application/ld+json\">")){
-                started = true;
-                continue;
-            }
-            if(started){
-                if(line.contains("</script>")){
-                    break;
+            // extract ld+json string from HTML
+            //
+            // Yes, this isn't a stable way to retrieve the content of a tag...
+            // but the XML isn't well-formed so until they fix it this will have to do
+            BufferedReader reader = new BufferedReader(new StringReader(recordAsString));
+            StringBuilder builder = new StringBuilder();
+            String line = null;
+            boolean started = false;
+
+            while((line=reader.readLine()) != null){
+                if(line.contains("<script type=\"application/ld+json\">")){
+                    started = true;
+                    continue;
                 }
-                builder.append(line);
+                if(started){
+                    if(line.contains("</script>")){
+                        break;
+                    }
+                    builder.append(line);
+                }
             }
+            String recordJSONString = builder.toString();
+
+            // parse ld+json string and return
+            return objectMapper.readTree(recordJSONString);
+        } catch (RestClientResponseException | IOException ex) {
+            // generic exceptions
+            throw new IOException();
         }
-        String recordJSONString = builder.toString();
-
-        // parse ld+json string and return
-        return objectMapper.readTree(recordJSONString);
     }
 
-    // dummy
-    public String createRecord(String recordID){
-        return "hello";
+    public String createRecord(String recordID, JsonNode parsedRecord, CatalogueUser importUser) throws DocumentRepositoryException {
+        ElterDocument newRecord = new ElterDocument();
+
+        newRecord.setTitle(parsedRecord.get("name").asText());
+        newRecord.setDescription(parsedRecord.get("description").asText());
+        newRecord.setType("signpost");
+        // import metadata
+        newRecord.setImportID(parsedRecord.get("identifier").asText());
+        newRecord.setImportLastModified(ZonedDateTime.now(ZoneId.of("UTC")));
+        // save document
+        MetadataDocument savedDocument = documentRepository.saveNew(
+                importUser,
+                newRecord,
+                "elter",
+                "Create new record " + recordID
+                );
+        // success
+        log.info("Successfully imported record {}", recordID);
+        return savedDocument.getId();
     }
 
-    // dummy
-    public String updateRecord(String recordID){
-        return "hello";
-    }
+    //public void updateRecord(String recordID, JsonNode parsedRecord, CatalogueUser importUser){}
+
+    //public void processRecord(String recordID){}
 
     @Scheduled(initialDelay = TimeConstants.ONE_MINUTE, fixedDelay = TimeConstants.SEVEN_DAYS)
-    public void runImport() throws RestClientResponseException, IOException, JsonProcessingException {
+    public void runImport(){
+        // prep
         log.info("Running SITES metadata import...");
+        CatalogueUser importUser = new CatalogueUser().setUsername("SITES metadata import").setEmail("info@fieldsites.se");
+        List<String> remoteRecordList = null;
+
         // get sitemap
-        List<String> remoteRecordList = getRemoteRecordList();
+        try {
+            remoteRecordList = getRemoteRecordList();
+        } catch (IOException ex) {
+            log.error("Error retrieving sitemap; aborting import");
+            return;
+        }
+
         // do only 3 records while testing
         for (int i=0; i<3; i++){
             // get record
             String recordID = remoteRecordList.get(i);
-            JsonNode parsedRecord = getFullRemoteRecord(recordID);
+            JsonNode parsedRecord = null;
+            try {
+                parsedRecord = getFullRemoteRecord(recordID);
+            } catch (IOException ex) {
+                log.error("Error retrieving record {}; skipping", recordID);
+                continue;
+            }
 
-            // log some info to console as proof-of-concept
-            log.info(parsedRecord.get("@type").asText());
-            log.info(parsedRecord.get("identifier").asText());
-            log.info(parsedRecord.get("description").asText());
+            if (parsedRecord.get("@type").asText().equals("Dataset")){
+                try {
+                    String newID = createRecord(recordID, parsedRecord, importUser);
+                    log.info("New document ID is {}", newID);
+                } catch (DocumentRepositoryException ex) {
+                    log.error("Error saving record {}; aborting import", recordID);
+                    return;
+                }
+            }
+            else {
+                log.info("Skipping record {} as it is not of type \"Dataset\"",recordID);
+            }
         }
     }
 }

@@ -1,41 +1,32 @@
 package uk.ac.ceh.gateway.catalogue.imports;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import java.io.IOException;
 import java.util.List;
 
-import org.springframework.web.client.RestClientResponseException;
+import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
 public interface CatalogueImportService {
-    // list of record IDs/locations
-    List<String> getRemoteRecordList();
+    // TODO: generic/new exceptions instead of IOExceptions everywhere?
+    // TODO: generic return types? e.g. using AbstractMetadataDocuments for compatibility
 
-    // list of record IDs/locations
-    //List<String> getLocalRecordList();
+    // returns list of record IDs/URLs
+    List<String> getRemoteRecordList() throws IOException;
 
-    // I think these aren't needed with the SITES import
-    // or List<String> getLocalRecordsToUpdate(); ??
-    //List<String> getNewRecords(List<???> localRecordList, List<???> remoteRecordList);
-    // could be merged into getNewRecords?
-    //List<AbstractMetadataDocument> getLocalRecordsToUpdate(List<???> localRecordList, List<???> remoteRecordList);
+    // returns record as a parsed JsonNode
+    JsonNode getFullRemoteRecord(String recordID) throws IOException;
 
-    // TODO: generic return type
-    // remote work
-    JsonNode getFullRemoteRecord(String recordID) throws RestClientResponseException, IOException, JsonProcessingException;
+    // returns local ID of new record
+    String createRecord(String recordID, JsonNode parsedRecord, CatalogueUser importUser) throws DocumentRepositoryException;
 
-    // TODO: generic return type
-    // local record
-    //ElterDocument getLocalRecord(String recordID);
+    //void updateRecord(String recordID, JsonNode parsedRecord, CatalogueUser importUser) throws DocumentRepositoryException;
 
-    // will this just end up calling the controller?
-    String createRecord(String recordID);
-
-    // will this just end up calling the controller?
-    String updateRecord(String recordID);
+    // calls other record processing methods
+    //void processRecord(String recordID);
 
     // calls all the other methods, the one to schedule
-    // possible to require the @Scheduled annotation?
-    void runImport() throws RestClientResponseException, IOException, JsonProcessingException;
+    // TODO: possible to require the @Scheduled annotation?
+    void runImport();
 }

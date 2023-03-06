@@ -17,6 +17,7 @@ import uk.ac.ceh.gateway.catalogue.citation.Citation;
 import uk.ac.ceh.gateway.catalogue.model.Link;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -69,6 +70,8 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
     private boolean linkedDocument;
     private String linkedDocumentUri;
     private String linkedDocumentType;
+    private String importID;
+    private ZonedDateTime importLastModified;
 
 
     @Override
