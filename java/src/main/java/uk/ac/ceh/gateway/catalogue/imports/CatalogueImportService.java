@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
@@ -15,16 +16,20 @@ public interface CatalogueImportService {
     // returns list of record IDs/URLs
     List<String> getRemoteRecordList() throws IOException;
 
+    // returns mapping of remote record IDs to local record IDs
+    Map<String, String> getLocalRecordMapping() throws IOException;
+
     // returns record as a parsed JsonNode
-    JsonNode getFullRemoteRecord(String recordID) throws IOException;
+    JsonNode getFullRemoteRecord(String remoteRecordID) throws IOException;
 
     // returns local ID of new record
-    String createRecord(String recordID, JsonNode parsedRecord, CatalogueUser importUser) throws DocumentRepositoryException;
+    String createRecord(String remoteRecordID, JsonNode parsedRecord, CatalogueUser user) throws DocumentRepositoryException;
 
-    //void updateRecord(String recordID, JsonNode parsedRecord, CatalogueUser importUser) throws DocumentRepositoryException;
+    // update a local record
+    void updateRecord(String localRecordID, String remoteRecordID, JsonNode parsedRecord, CatalogueUser user) throws DocumentRepositoryException;
 
     // calls other record processing methods
-    //void processRecord(String recordID);
+    //void processRecord(String remoteRecordID);
 
     // calls all the other methods, the one to schedule
     // TODO: possible to require the @Scheduled annotation?

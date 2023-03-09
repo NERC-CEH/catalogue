@@ -38,6 +38,7 @@ public class SolrIndexElterDocumentGenerator implements IndexGenerator<ElterDocu
                 .setAuthorRor(grab(document.getAuthors(), ResponsibleParty::getOrganisationIdentifier))
                 .setElterDeimsSite(grab(document.getDeimsSites(), DeimsSolrIndex::getTitle))
                 .setElterDeimsUri(grab(document.getDeimsSites(), DeimsSolrIndex::getUrl))
+                .setImportID(document.getImportID())
                 .setFunder(grab(document.getFunding(), Funding::getFunderName))
                 .setGrant(grab(document.getFunding(), Funding::getAwardNumber))
                 .setIncomingCitationCount(document.getIncomingCitationCount())
