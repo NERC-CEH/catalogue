@@ -1,15 +1,20 @@
-<#import "../../functions.ftlh" as func>
+<#assign isEidc = "false">
+<#if publishers?first.organisationName?matches("(.+?)?Environmental Information Data Centre(.+?)?", "i")>
+  <#assign isEidc = "true">
+</#if>
 
-<div class="alert alert-info alert--linked" role="alert">
-  <p><i class="fas fa-info-circle"></i> 
-  These data are held and managed by the Environmental Information Data Centre, hosted at UKCEH.</p>
-
+<div class="alert--linked" role="alert">
+  <#if isEidc = "true">
+  <div class="alert--linked-eidc">
+    <img class="img-responsive" src="/static/img/logo/eidc.png">
+    <div>These data are held and managed by the Environmental Information Data Centre</div>
+  </div>
+  </#if>
   <#if masterDocument?? & masterDocument?has_content>
-    <p>For more details and to access the data, go to
+    <div>For more details and to access the data, go to
     <#list masterDocument as item>
       <a href="${item.code}">${item.code}</a><#sep> or </#sep>
     </#list>
-    </p>
+    </div>
   </#if>
-
 </div>

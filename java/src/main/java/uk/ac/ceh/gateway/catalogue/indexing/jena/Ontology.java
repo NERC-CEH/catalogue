@@ -8,6 +8,7 @@ import org.apache.jena.rdf.model.ResourceFactory;
 public class Ontology {
     public static final Property IDENTIFIER = ResourceFactory.createProperty("http://purl.org/dc/terms/identifier");
     public static final Property TITLE = ResourceFactory.createProperty("http://purl.org/dc/terms/title");
+    public static final Property STATUS = ResourceFactory.createProperty("http://purl.org/dc/terms/status");
     public static final Property TYPE = ResourceFactory.createProperty("http://purl.org/dc/terms/type");
     public static final Property IS_PART_OF = ResourceFactory.createProperty("http://purl.org/dc/terms/isPartOf");
     public static final Property REPLACES = ResourceFactory.createProperty("http://purl.org/dc/terms/replaces");

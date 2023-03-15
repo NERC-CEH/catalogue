@@ -17,10 +17,13 @@
 				<#else>
 					<#assign type=child.associationType icon="" >
 				</#if>
-				<a href="${child.href}" class="cardlist--item">
+				<a href="${child.href}" class="cardlist--item <#if child.status != "Available">${child.status}</#if>">
 					<div class="cardlist--item--icon"><i class="${icon}"></i></div>
 					<div>
-						<div class="cardlist--item--type">${type}</div>
+						<div class="cardlist--item--type">
+							${type}
+							<#if child.status != "Available">(${child.status})</#if>
+						</div>
 						<div class="cardlist--item--title">${child.title}</div>
 					</div>
 				</a>

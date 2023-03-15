@@ -107,6 +107,13 @@
         </div>
       </div>
     <#else>
+      <#if isLinkedDoc="true">
+       <div class="section">
+        <div class="container">
+          <#include "document/_linked.ftlh">
+         </div>
+        </div>
+      </#if>
       <div class="section">
         <div class="container">
           <div class="metadata-grid">
@@ -135,23 +142,17 @@
             </div>
             <div class="col2">
 
-              <#if isLinkedDoc="true">
-                <#include "document/_linked.ftlh">
-              <#else>
+              <#if isLinkedDoc!="true">
                   <#include "document/_uploadData.ftlh">
                   <#include "document/_metrics.ftlh">
 
                   <#if resourceStatus??>
-                    <#if resourceStatus == 'Restricted'>
-                      <#include "document/_distribution_restricted.ftlh">
-                    <#else>
-                      <#if resourceType.value == 'nercSignpost'>
-                        <#include "document/_distribution_nercSignpost.ftlh">
-                      <#elseif resourceType.value == 'service' && mapViewable>
-                        <#include "document/_distribution_service.ftlh">
-                      <#elseif resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'application'>
-                        <#include "document/_distribution_dataset.ftlh">
-                      </#if>
+                    <#if resourceType.value == 'nercSignpost'>
+                      <#include "document/_distribution_nercSignpost.ftlh">
+                    <#elseif resourceType.value == 'service' && mapViewable>
+                      <#include "document/_distribution_service.ftlh">
+                    <#elseif resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'application'>
+                      <#include "document/_distribution_dataset.ftlh">
                     </#if>
                   <#elseif metadata.catalogue != "eidc" &&  resourceType.value == 'signpost'>
                     <#include "document/_distribution_signpost.ftlh">

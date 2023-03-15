@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static com.google.common.base.Strings.emptyToNull;
 import static org.apache.jena.rdf.model.ResourceFactory.*;
 import static uk.ac.ceh.gateway.catalogue.indexing.jena.Ontology.*;
 
@@ -52,6 +53,10 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
                 toReturn.add(createStatement(me, IDENTIFIER, createPlainLiteral(r.getCoupledResource())))
             );
 
+        Optional.ofNullable(emptyToNull(document.getResourceStatus()))
+                .ifPresent(t -> toReturn.add(
+                    createStatement(me, STATUS, createPlainLiteral(t)))
+                );
 
         Optional.ofNullable(document.getCoupledResources())
             .orElse(Collections.emptyList())
