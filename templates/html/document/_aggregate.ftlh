@@ -7,7 +7,7 @@
 			<div class="cardlist">
 			<#items as child>
 				<#if child.associationType = 'dataset' ||  child.associationType = 'nonGeographicDataset' ||  child.associationType = 'signpost'>
-					<#assign type="Dataset" icon="fas fa-table" >
+					<#assign type="Dataset" icon="fas fa-file-contract" >
 				<#elseif child.associationType = "series" || child.associationType = "collection" || child.associationType = "aggregate">
 					<#assign type="Data collection" icon="far fa-clone" >
 				<#elseif child.associationType = "application">
@@ -17,14 +17,14 @@
 				<#else>
 					<#assign type=child.associationType icon="" >
 				</#if>
-				<a href="${child.href}" class="cardlist--item <#if child.status != "Available">${child.status}</#if>">
-					<div class="cardlist--item--icon"><i class="${icon}"></i></div>
+				<a href="${child.href}" class="cardlist--item <#if child.status != 'Available' && child.status != 'Unknown'>cardlist--item__${child.status?lower_case}</#if>">
+					<div class="icon"><i class="${icon}"></i></div>
 					<div>
-						<div class="cardlist--item--type">
-							${type}
-							<#if child.status != "Available">(${child.status})</#if>
+						<div class="type">
+							${type} 
+							<#if child.status != "Available" && child.status != "Unknown"><span class="status">${child.status}</span></#if>
 						</div>
-						<div class="cardlist--item--title">${child.title}</div>
+						<div class="title">${child.title}</div>
 					</div>
 				</a>
 			</#items>
@@ -39,10 +39,10 @@
 		<div class="cardlist">
 			<#list rel_memberOf?sort_by("title") as item>
 				<a href="${item.href}" class="cardlist--item">
-					<div class="cardlist--item--icon"><i class="far fa-clone"></i></div>
+					<div class="icon"><i class="far fa-clone"></i></div>
 					<div>
-						<div class="cardlist--item--type">Data collection</div>
-						<div class="cardlist--item--title">${item.title}</div>
+						<div class="type">Data collection</div>
+						<div class="title">${item.title}</div>
 					</div>
 				</a>
 			</#list>

@@ -1,5 +1,5 @@
 <select data-name="value" class="editor-input" id="input-accessLimitation" <%= data.disabled%>>
-	<option value=""> -- Choose an option -- </option>
+	<option value="unknown"> -- Choose an option -- </option>
 	<optgroup label="Available">
 		<option value="no limitations to public access">FREELY AVAILABLE and there is NO NEED TO LOG IN to access it (no limitations)</option>
 		<option value="Registration is required to access this data">FREELY AVAILABLE - but USERS MUST LOG IN to access it</option>

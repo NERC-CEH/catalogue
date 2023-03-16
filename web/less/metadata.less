@@ -28,7 +28,7 @@
   .section {
     padding: 2em 0;
     &-grey {
-      background-color: hsl(0, 0%, 95%);
+      background-color: hsl(0, 0%, 95%); border:1px solid #ccc; border-width:1px 0;
     }
   }
 
@@ -274,14 +274,15 @@
     .btn {
       margin: 1.2em 0;
       color: white;
-    
+
       &:active {
         transform: translate(2px, 2px);
       }
       span:first-child {
         margin-right: 0.35em;
       }
-      &-download { font-weight: bold;
+      &-download {
+        font-weight: bold;
         background-color: @brand-success;
         &:hover,
         &:focus {
@@ -344,13 +345,20 @@
       border-radius: 1rem;
       color: @brand-success;
 
-      &--icon,
-      &--type,
-      &--title {
+      .icon,
+      .type,
+      .title {
         margin: 0.75em;
       }
 
-      &--icon i {
+      .status {
+        font-weight: bold;
+        text-transform: uppercase;
+        font-size: 0.9em;
+        margin-left: 0.5em;
+      }
+
+      .icon i {
         background-color: @brand-success;
         border-radius: 50%;
         border: 2px solid white;
@@ -363,7 +371,7 @@
         text-align: center;
       }
 
-      &--type {
+      .type {
         font-weight: 300;
         color: gray;
       }
@@ -375,6 +383,19 @@
       }
       &:hover .cardlist--item--type {
         color: white;
+      }
+
+      &__superseded,
+      &__withdrawn,
+      &__in-progress {
+        color: gray;
+        background-color: #eee;
+        border: 1px solid gray;
+        .icon i {
+          background-color: gray;
+        }&:hover {
+          background-color: #ddd;
+        }
       }
     }
   }

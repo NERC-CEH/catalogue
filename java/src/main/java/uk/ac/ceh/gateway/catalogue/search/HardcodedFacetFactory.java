@@ -188,6 +188,11 @@ public class HardcodedFacetFactory implements FacetFactory {
                 .displayName("Availability")
                 .hierarchical(false)
                 .build();
+            case "elterProjectName" -> Facet.builder()
+                .fieldName("elterProjectName")
+                .displayName("Project")
+                .hierarchical(false)
+                .build();
             case "topic" -> Facet.builder()
                 .fieldName("topic")
                 .displayName("Topic")

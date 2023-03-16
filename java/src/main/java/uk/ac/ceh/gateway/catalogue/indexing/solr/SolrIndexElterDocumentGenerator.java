@@ -4,6 +4,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.gateway.catalogue.deims.DeimsSolrIndex;
 import uk.ac.ceh.gateway.catalogue.elter.ElterDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.Funding;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.model.Supplemental;
@@ -38,9 +39,7 @@ public class SolrIndexElterDocumentGenerator implements IndexGenerator<ElterDocu
                 .setAuthorRor(grab(document.getAuthors(), ResponsibleParty::getOrganisationIdentifier))
                 .setElterDeimsSite(grab(document.getDeimsSites(), DeimsSolrIndex::getTitle))
                 .setElterDeimsUri(grab(document.getDeimsSites(), DeimsSolrIndex::getUrl))
-                .setFunder(grab(document.getFunding(), Funding::getFunderName))
-                .setGrant(grab(document.getFunding(), Funding::getAwardNumber))
-                .setIncomingCitationCount(document.getIncomingCitationCount())
+                .setElterProjectName(grab(document.getElterProject(), Keyword::getValue))
                 .setIndividual(grab(document.getResponsibleParties(), ResponsibleParty::getIndividualName))
                 .setDataLevel(document.getDataLevel())
                 .setLineage(document.getLineage())

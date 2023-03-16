@@ -56,7 +56,7 @@
     </div>
   </#if>
 
-  <#if resourceStatus?? && resourceStatus != "Available" && resourceStatus != "Controlled" >
+  <#if resourceStatus?? && resourceStatus?has_content && resourceStatus != "Available" && resourceStatus != "Controlled"  && resourceStatus != "Unknown"  >
     <#assign notificationIcon = "fa-info-circle ">
     <#if resourceStatus == "Restricted" >
       <#assign notificationIcon = "fa-triangle-exclamation ">

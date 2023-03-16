@@ -8,6 +8,7 @@ import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Property;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.model.Link;
+import uk.ac.ceh.gateway.catalogue.model.RelatedDocument;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,7 +80,6 @@ public class JenaLookupService {
         return links(uri, "PREFIX dc: <http://purl.org/dc/terms/> SELECT ?node ?title ?type ?rel WHERE { ?me ?rel ?node; dc:references ?node. ?node dc:title ?title; dc:type ?type; dc:type 'model'}");
     }
 
-
     /**
      * NERC Modeluse linked to this NERC model
      * @param uri of model
@@ -102,20 +102,20 @@ public class JenaLookupService {
         return links(uri, "PREFIX dc: <http://purl.org/dc/terms/> SELECT ?node ?title ?type ?rel WHERE {{{?me ?rel ?node; dc:references ?node.}UNION{?node ?rel ?me; dc:references ?me.} ?node dc:title ?title; dc:type ?type; dc:type 'dataset'.}UNION{?me ?rel ?node; dc:references ?node. ?node dc:source _:n . _:n dc:title ?title; dc:type ?type; dc:type 'dataset'.}}");
     }
 
-    public List<Link> relationships(String uri, String relation) {
+    public List<RelatedDocument> relationships(String uri, String relation) {
         String sparql = "PREFIX dc: <http://purl.org/dc/terms/> SELECT ?node ?title ?type ?status ?rel WHERE {?me ?rel ?node; ?relation ?node . ?node dc:title ?title; dc:type ?type. OPTIONAL {?node <http://purl.org/dc/terms/status> ?status;}} ORDER BY ?status ?title";
         ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
         pss.setIri("me", uri);
         pss.setIri("relation", relation);
-        return links(pss);
+        return related(pss);
     }
 
-    public List<Link> inverseRelationships(String uri, String relation) {
+    public List<RelatedDocument> inverseRelationships(String uri, String relation) {
         String sparql = "PREFIX dc: <http://purl.org/dc/terms/> SELECT ?node ?title ?type ?status ?rel WHERE {?node ?rel ?me; ?relation ?me . ?node dc:title ?title; dc:type ?type. OPTIONAL {?node <http://purl.org/dc/terms/status> ?status;}} ORDER BY ?status ?title";
         ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
         pss.setIri("me", uri);
         pss.setIri("relation", relation);
-        return links(pss);
+        return related(pss);
     }
 
     public List<Link> allRelatedRecords(String uri) {
@@ -173,6 +173,25 @@ public class JenaLookupService {
                     .href(s.getResource("node").getURI())
                     .associationType(s.getLiteral("type").getString())
                     .rel(s.getResource("rel").getURI())
+                    .build()
+            ));
+        } finally {
+            jenaTdb.end();
+        }
+        return toReturn;
+    }
+
+    private List<RelatedDocument> related(ParameterizedSparqlString pss) {
+        List<RelatedDocument> toReturn = new ArrayList<>();
+        jenaTdb.begin(ReadWrite.READ);
+        try (QueryExecution qexec = QueryExecutionFactory.create(pss.asQuery(), jenaTdb)) {
+            qexec.execSelect().forEachRemaining(s -> toReturn.add(
+                RelatedDocument.builder()
+                    .title(s.getLiteral("title").getString())
+                    .href(s.getResource("node").getURI())
+                    .associationType(s.getLiteral("type").getString())
+                    .rel(s.getResource("rel").getURI())
+                    .status(s.getLiteral("status").getString()) 
                     .build()
             ));
         } finally {

@@ -84,9 +84,10 @@
     <field name="documentType" type="keywords" multiValued="false"/>
     <field name="elterDeimsSite" type="keywords"/>
     <field name="elterDeimsUri" type="keywords"/>
+    <field name="elterProjectName" type="keywords"/>
+    <field name="grant" type="keywords"/>
     <field name="funder" type="keywords"/>
     <field name="rightsHolder" type="keywords"/>
-    <field name="grant" type="text_general"/>
     <field name="identifier" type="keywords" required="true" multiValued="false"/>
     <field name="impCaMMPIssues" type="keywords"/>
     <field name="impDataType" type="keywords"/>

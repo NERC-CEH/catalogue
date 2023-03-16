@@ -39,7 +39,7 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
     private static final String TOPIC_PROJECT_URL = "http://onto.nerc.ac.uk/CEHMD/";
     private String otherCitationDetails, lineage, reasonChanged, metadataStandardName, metadataStandardVersion, dataLevel;
     private List<String> alternateTitles, spatialRepresentationTypes, datasetLanguages, securityConstraints;
-    private List<Keyword> topicCategories;
+    private List<Keyword> topicCategories, elterProject;
     private List<DistributionInfo> distributionFormats;
     private List<DescriptiveKeywords> descriptiveKeywords;
     private List<InspireTheme> inspireThemes;
@@ -65,7 +65,6 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
     private MapDataDefinition mapDataDefinition;
     private Keyword resourceType;
     private AccessLimitation accessLimitation;
-    private boolean notGEMINI;
     private List<DeimsSolrIndex> deimsSites;
     private boolean linkedDocument;
     private String linkedDocumentUri;
@@ -82,7 +81,7 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
     public String getResourceStatus() {
         return Optional.ofNullable(accessLimitation)
                 .map(AccessLimitation::getCode)
-                .orElse(null);
+                .orElse("Unknown");
     }
 
     @Override
@@ -135,42 +134,6 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
         return toReturn;
     }
 
-    /**
-     * Return a link to the map viewer for this Gemini record if it can be
-     * rendered in the map viewer
-     *
-     * @return The link to the map viewer if it is viewable else null
-     */
-    public String getMapViewerUrl() {
-        if (isMapViewable()) {
-            return "/maps#layers/" + getId();
-        }
-        return null;
-    }
-
-    /**
-     * Decide if this gemini document has a map viewing capability. That is at
-     * least one wms is registered to this gemini document
-     *
-     * @return true if a wms exists in the online resources
-     */
-    public boolean isMapViewable() {
-        return Optional.ofNullable(onlineResources)
-                .orElse(Collections.emptyList())
-                .stream()
-                .anyMatch((o) -> WMS_GET_CAPABILITIES == o.getType());
-    }
-
-    public List<String> getTopics() {
-        return Optional.ofNullable(descriptiveKeywords)
-                .orElse(Collections.emptyList())
-                .stream()
-                .flatMap(dk -> dk.getKeywords().stream())
-                .filter(k -> k.getUri().startsWith(TOPIC_PROJECT_URL))
-                .map(Keyword::getUri)
-                .collect(Collectors.toList());
-    }
-
     public List<String> getCoupledResources() {
         return Optional.ofNullable(service)
                 .map(Service::getCoupledResources)
@@ -207,6 +170,10 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
                 .orElse(Collections.emptyList());
     }
 
+    public List<Keyword> getElterProject() {
+        return elterProject;
+    }
+    
     public List<Supplemental> getSupplemental() {
         return Optional.ofNullable(supplemental)
                 .orElse(Collections.emptyList());
