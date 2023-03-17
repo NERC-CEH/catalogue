@@ -9,6 +9,7 @@ import org.apache.jena.tdb.TDBFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.ac.ceh.gateway.catalogue.model.Link;
+import uk.ac.ceh.gateway.catalogue.model.RelatedDocument;
 
 import java.util.Arrays;
 import java.util.List;
@@ -42,7 +43,7 @@ public class JenaLookupServiceTest {
         triples.add(createResource("http://dataset1"), TYPE, "dataset");
 
         //When
-        List<Link> actual = service.relationships("http://monitoringActivity", OSDP_PRODUCES.toString());
+        List<RelatedDocument> actual = service.relationships("http://monitoringActivity", OSDP_PRODUCES.toString());
 
         //Then
         assertThat("Should be 1 Link", actual.size(), equalTo(1));
@@ -58,7 +59,7 @@ public class JenaLookupServiceTest {
         triples.add(createResource("http://monitoringActivity"), TYPE, "dataset");
 
         //When
-        List<Link> actual = service.inverseRelationships("http://dataset1", OSDP_PRODUCES.toString());
+        List<RelatedDocument> actual = service.inverseRelationships("http://dataset1", OSDP_PRODUCES.toString());
 
         //Then
         assertThat("Should be 1 Link", actual.size(), equalTo(1));
