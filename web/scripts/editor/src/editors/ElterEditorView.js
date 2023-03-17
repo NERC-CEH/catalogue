@@ -1,6 +1,5 @@
 import {
   AccessLimitationView,
-  CheckboxView,
   ContactView,
   DatasetReferenceDateView,
   DeimsSiteView,

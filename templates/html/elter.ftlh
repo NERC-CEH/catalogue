@@ -17,16 +17,16 @@
     catalogue = catalogues.retrieve(metadata.catalogue)
     isLinkedDoc = "false"
 
-    rel_all=jena.allRelatedRecords(uri)
-    rel_related=jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#relatedTo") + jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#relatedTo")
-    rel_generates = jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#generates")
-    rel_uses = jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#uses")
-    rel_memberOf = jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#memberOf")
-    rel_generatedBy= jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#generates")
-    rel_supersededBy = jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#supersedes")
-    rel_usedBy = jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#uses")
-    rel_hasMember = jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#memberOf")
-    rel_supersedes = jena.supersedes(uri)
+    rel_all=""
+    rel_related=""
+    rel_generates = ""
+    rel_uses =""
+    rel_memberOf = ""
+    rel_generatedBy= ""
+    rel_usedBy = ""
+    rel_hasMember = ""
+    rel_supersededBy = ""
+    rel_supersedes = ""
 />
 <#if useConstraints?has_content>
   <#assign

@@ -1,4 +1,4 @@
-<#if rel_hasMember??>
+<#if rel_hasMember?has_content && rel_hasMember?size gt 0 >
 	<div id="section-children">
 		<h2>
 		This ${recordType} contains <#if rel_hasMember?size gt 1>these<#else>this</#if> resource<#if rel_hasMember?size gt 1>s</#if></h2>
