@@ -62,11 +62,6 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
                 toReturn.add(createStatement(me, EIDCUSES, createResource(r)))
             );
 
-        Optional.ofNullable(emptyToNull(document.getResourceStatus()))
-                .ifPresent(t -> toReturn.add(
-                    createStatement(me, STATUS, createPlainLiteral(t)))
-                );
-
         Optional.ofNullable(document.getRelatedRecords())
             .orElse(Collections.emptyList())
             .stream()
