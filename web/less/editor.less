@@ -151,7 +151,7 @@
     display: inline-block;
   }
 
-  .resourcetypes {
+  .optgroup {
     &-assist,
     &-eidc,
     &-elter,
@@ -170,6 +170,19 @@
   .keyword-add {
     display: inline-block;
     .pull-left;
+  }
+
+  .vocabularyPicker {
+    display: flex;
+    gap: 0.25em 1.25em;
+    flex-wrap: wrap;
+    .vocab {
+      label {
+        span {
+          font-weight: normal;
+        }
+      }
+    }
   }
 
   .dropdown-menu.predefined {

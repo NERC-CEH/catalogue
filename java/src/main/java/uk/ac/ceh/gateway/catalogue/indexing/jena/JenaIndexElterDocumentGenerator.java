@@ -5,7 +5,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
-import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.elter.ElterDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
 
 import java.util.Collections;
@@ -17,23 +17,22 @@ import static org.apache.jena.rdf.model.ResourceFactory.*;
 import static uk.ac.ceh.gateway.catalogue.indexing.jena.Ontology.*;
 
 /**
- * The following class extracts semantic details from a GeminiDocument and
- * returns these as Jena Statements (triples)
+ * Extracts semantic details as triples from an ElterDocument
  */
 @Slf4j
 @ToString
-public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDocument, List<Statement>> {
+public class JenaIndexElterDocumentGenerator implements IndexGenerator<ElterDocument, List<Statement>> {
     private final JenaIndexMetadataDocumentGenerator generator;
     private final String baseUri;
 
-    public JenaIndexGeminiDocumentGenerator(JenaIndexMetadataDocumentGenerator generator, String baseUri) {
+    public JenaIndexElterDocumentGenerator(JenaIndexMetadataDocumentGenerator generator, String baseUri) {
         this.generator = generator;
         this.baseUri = baseUri;
         log.info("Creating {}", this);
     }
 
     @Override
-    public List<Statement> generateIndex(GeminiDocument document) {
+    public List<Statement> generateIndex(ElterDocument document) {
         List<Statement> toReturn = generator.generateIndex(document);
 
         Resource me = generator.resource(document.getId());
@@ -53,6 +52,10 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
                 toReturn.add(createStatement(me, IDENTIFIER, createPlainLiteral(r.getCoupledResource())))
             );
 
+        Optional.ofNullable(emptyToNull(document.getResourceStatus()))
+                .ifPresent(t -> toReturn.add(
+                    createStatement(me, STATUS, createPlainLiteral(t)))
+                );
 
         Optional.ofNullable(document.getCoupledResources())
             .orElse(Collections.emptyList())
@@ -61,11 +64,6 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
             .forEach(r ->
                 toReturn.add(createStatement(me, EIDCUSES, createResource(r)))
             );
-
-        Optional.ofNullable(emptyToNull(document.getResourceStatus()))
-                .ifPresent(t -> toReturn.add(
-                    createStatement(me, STATUS, createPlainLiteral(t)))
-                );
 
         Optional.ofNullable(document.getRelatedRecords())
             .orElse(Collections.emptyList())

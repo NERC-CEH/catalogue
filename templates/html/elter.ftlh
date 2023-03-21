@@ -68,7 +68,7 @@
             <#if description??>
               <div class="description">
                 <div class="description-text">
-                  <@blocks.linebreaks description!"" />
+                  <@blocks.linebreaksAndLinks description!"" />
 
                   <#if resourceType.value != 'aggregate' && resourceType.value != 'collection'>
                     <#if datasetReferenceDate??>
@@ -99,16 +99,16 @@
             <div class="container">
               <div class="metadata-grid">
                 <div class="col1"> 
-                   <#include "document/_deims.ftlh">
+                  <#include "document/_elterSpecific.ftlh">
                   <#include "document/_formats.ftlh">
                   <#include "document/_dataquality.ftlh">
                   <#include "document/_extent.ftlh">
-                   <#include "document/_related.ftlh">
+                  <#include "document/_related.ftlh">
                   <#include "document/_citation_list.ftlh">
                   <#include "document/_supplemental.ftlh">
                   <#include "document/_contacts.ftlh">
 
-                  <#if topicCategories?? || descriptiveKeywords?? ||  inspireTheme?? || funding?? || spatialRepresentationTypes?? || spatialReferenceSystems??>
+                  <#if topicCategories?? || descriptiveKeywords?? || keywords?? ||  inspireTheme?? || funding?? || spatialRepresentationTypes?? || spatialReferenceSystems??>
                     <h2>Additional metadata</h2>
                     <dl id="otherInfo" class="dl-horizontal">
                       <#include "document/_tags.ftlh">

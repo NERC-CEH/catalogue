@@ -39,14 +39,13 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
     private static final String TOPIC_PROJECT_URL = "http://onto.nerc.ac.uk/CEHMD/";
     private String otherCitationDetails, lineage, reasonChanged, metadataStandardName, metadataStandardVersion, dataLevel;
     private List<String> alternateTitles, spatialRepresentationTypes, datasetLanguages, securityConstraints;
-    private List<Keyword> topicCategories;
+    private List<Keyword> topicCategories, elterProject;
     private List<DistributionInfo> distributionFormats;
-    private List<DescriptiveKeywords> descriptiveKeywords;
     private List<InspireTheme> inspireThemes;
     private List<SpatialResolution> spatialResolutions;
     private List<Funding> funding;
     private List<BoundingBox> boundingBoxes;
-    private List<ResponsibleParty> responsibleParties;
+    private List<ResponsibleParty> responsibleParties, distributorContacts;
     private List<TimePeriod> temporalExtents;
     private List<OnlineResource> onlineResources;
     private Set<Link> incomingRelationships;
@@ -65,7 +64,6 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
     private MapDataDefinition mapDataDefinition;
     private Keyword resourceType;
     private AccessLimitation accessLimitation;
-    private boolean notGEMINI;
     private List<DeimsSolrIndex> deimsSites;
     private boolean linkedDocument;
     private String linkedDocumentUri;
@@ -82,37 +80,13 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
     public String getResourceStatus() {
         return Optional.ofNullable(accessLimitation)
                 .map(AccessLimitation::getCode)
-                .orElse(null);
+                .orElse("Unknown");
     }
 
     @Override
     public ElterDocument setType(String type) {
         super.setType(type);
         this.resourceType = Keyword.builder().value(type).build();
-        return this;
-    }
-
-    @Override
-    @JsonIgnore
-    public List<Keyword> getAllKeywords() {
-        return Optional.ofNullable(descriptiveKeywords)
-                .orElse(Collections.emptyList())
-                .stream()
-                .flatMap(dk -> dk.getKeywords().stream())
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public ElterDocument addAdditionalKeywords(List<Keyword> additionalKeywords) {
-        descriptiveKeywords = Optional.ofNullable(descriptiveKeywords)
-                .orElse(new ArrayList<>());
-
-        descriptiveKeywords.add(
-                DescriptiveKeywords
-                        .builder()
-                        .keywords(additionalKeywords)
-                        .build()
-        );
         return this;
     }
 
@@ -161,16 +135,6 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
                 .anyMatch((o) -> WMS_GET_CAPABILITIES == o.getType());
     }
 
-    public List<String> getTopics() {
-        return Optional.ofNullable(descriptiveKeywords)
-                .orElse(Collections.emptyList())
-                .stream()
-                .flatMap(dk -> dk.getKeywords().stream())
-                .filter(k -> k.getUri().startsWith(TOPIC_PROJECT_URL))
-                .map(Keyword::getUri)
-                .collect(Collectors.toList());
-    }
-
     public List<String> getCoupledResources() {
         return Optional.ofNullable(service)
                 .map(Service::getCoupledResources)
@@ -179,6 +143,10 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
                 .map(Service.CoupledResource::getIdentifier)
                 .filter(cr -> !cr.isEmpty())
                 .collect(Collectors.toList());
+    }
+
+    public List<Keyword> getElterProject() {
+        return elterProject;
     }
 
     public List<ResponsibleParty> getResponsibleParties() {

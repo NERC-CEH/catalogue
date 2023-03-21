@@ -56,14 +56,24 @@
     </div>
   </#if>
 
-  <#if resourceStatus??>
-    <#include "_status.ftlh">
+  <#if resourceStatus?? && resourceStatus?has_content && resourceStatus != "Available" && resourceStatus != "Controlled"  && resourceStatus != "Unknown"  >
+    <#assign notificationIcon = "fa-info-circle ">
+    <#if resourceStatus == "Restricted" >
+      <#assign notificationIcon = "fa-triangle-exclamation ">
+    </#if>
+    <div class="notification notification--${resourceStatus}" role="alert">
+      <div class="notification_icon"><i class="fas ${notificationIcon} fa-2x"></i></div>
+      <div><#include "_status.ftlh"></div>
+    </div>
   </#if>
-  
-  <#if resourceType?? && resourceType.value == 'signpost' >
-    <div id="signpost" class="alert alert-warning" role="alert">
-      <i class="fas fa-info-circle"></i>
-      <#include "_signpost.ftlh">
+
+  <#if resourceType?? && (resourceType.value == 'nercSignpost' || resourceType.value == 'signpost')>
+    <div class="notice notice-signpost" role="alert">
+      <div><i class="fas fa-info-circle fa-2x"></i></div>
+      <div>
+        <#if resourceType.value == 'signpost' ><#include "_signpost.ftlh"></#if>
+        <#if resourceType.value == 'nercSignpost'><#include "_nercSignpost.ftlh"></#if>
+      </div>
     </div>
   </#if>
 
