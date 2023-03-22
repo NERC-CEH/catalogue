@@ -146,7 +146,7 @@
                   <#include "document/_uploadData.ftlh">
                   <#include "document/_metrics.ftlh">
 
-                  <#if resourceStatus??>
+                  <#if resourceStatus?? && resourceStatus != "Unknown">
                     <#if resourceType.value == 'nercSignpost'>
                       <#include "document/_distribution_nercSignpost.ftlh">
                     <#elseif resourceType.value == 'service' && mapViewable>

@@ -2,14 +2,13 @@ package uk.ac.ceh.gateway.catalogue.gemini;
 
 import lombok.val;
 import org.junit.jupiter.api.Test;
+import uk.ac.ceh.gateway.catalogue.model.Supplemental;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-
-import uk.ac.ceh.gateway.catalogue.model.Supplemental; 
 
 public class GeminiDocumentTest {
     private final String id = "c43818fc-61fb-455b-9714-072355597229";
@@ -73,7 +72,7 @@ public class GeminiDocumentTest {
     }
 
     @Test
-    public void testGetIncomingCitationCount() {
+    public void getIncomingCitationCount() {
         // Given
         GeminiDocument document = new GeminiDocument();
         Supplemental citation1 = Supplemental.builder().description("foo").build();
@@ -89,6 +88,31 @@ public class GeminiDocumentTest {
 
         // Then
         assertThat(output, is(expected));
+    }
+
+    @Test
+    public void unknownResourceStatus() {
+        //given
+        val document = new GeminiDocument();
+
+        //when
+        val actual = document.getResourceStatus();
+
+        //then
+        assertThat(actual, equalTo("Unknown"));
+    }
+
+    @Test
+    public void accessLimitationAndResourceStatus() {
+        //given
+        val document = new GeminiDocument();
+        document.setAccessLimitation(AccessLimitation.builder().build());
+
+        //when
+        val actual = document.getResourceStatus();
+
+        //then
+        assertThat(actual, equalTo("Unknown"));
     }
 
 }

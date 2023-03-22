@@ -59,7 +59,7 @@
             <#include "document/_admin.ftlh">
             <#if title?? && title?has_content>
               <#include "document/_title.ftlh">
-            </#if>    
+            </#if>
 
             <#if rel_supersedes?has_content && rel_supersedes?size gt 0>
                 <#include "document/_latestVersion.ftlh">
@@ -98,7 +98,7 @@
           <div class="section">
             <div class="container">
               <div class="metadata-grid">
-                <div class="col1"> 
+                <div class="col1">
                   <#include "document/_elterSpecific.ftlh">
                   <#include "document/_formats.ftlh">
                   <#include "document/_dataquality.ftlh">
@@ -124,13 +124,13 @@
                 </div>
                 <div class="col2">
 
-                  <#if isLinkedDoc="true"> 
+                  <#if isLinkedDoc="true">
                     <#include "document/_linked.ftlh">
                   <#else>
                       <#include "document/_uploadData.ftlh">
                       <#include "document/_metrics.ftlh">
 
-                      <#if resourceStatus??>
+                      <#if resourceStatus?? && resourceStatus != "Unknown">
                         <#if resourceStatus == 'Restricted'>
                           <#include "document/_distribution_restricted.ftlh">
                         <#else>
@@ -149,7 +149,7 @@
                       <#if resourceType.value == 'thirdPartyDataset'>
                         <#include "document/_third_party.ftlh">
                       </#if>
-                  </#if>           
+                  </#if>
 
               </div>
             </div>
