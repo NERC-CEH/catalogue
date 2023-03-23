@@ -3,7 +3,7 @@
 <#compress>
 
 <#if resourceType.value??>
-  <#if resourceType.value == "signpost">
+  <#if resourceType.value == "nercSignpost">
     <#assign recordType="dataset">
   <#else> 
     <#assign recordType=resourceType.value>

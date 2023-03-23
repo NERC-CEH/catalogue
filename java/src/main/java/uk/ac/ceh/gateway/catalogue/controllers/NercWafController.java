@@ -40,7 +40,7 @@ public class NercWafController {
         "dataset",
         "nonGeographicDataset",
         "service",
-        "signpost"
+        "nercSignpost"
     );
 
     public NercWafController(

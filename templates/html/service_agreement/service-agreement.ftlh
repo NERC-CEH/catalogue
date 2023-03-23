@@ -150,8 +150,20 @@
                         <div class="value">
                             <#list supportingDocs as doc>
                                 <div class="supportingDoc">
-                                    <div class="supportingDoc__name"><i>${doc.filename}</i></div> 
-                                    <div class="supportingDoc__content"><@blocks.linebreaks doc.content /></div>
+                                    <div class="supportingDoc__name">
+                                        <#if doc.filename?? >
+                                            <i>${doc.filename}</i>
+                                        <#else>
+                                           <span class="alert alert--error">missing</span>
+                                        </#if>                                       
+                                    </div> 
+                                    <div class="supportingDoc__content">
+                                        <#if doc.content?? >
+                                            <@blocks.linebreaks doc.content />
+                                        <#else>
+                                           <span class="alert alert--error">missing</span>
+                                        </#if>
+                                    </div>
                                 </div>
                             </#list>
                         </div>

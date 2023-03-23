@@ -54,7 +54,7 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'resourceType',
           ModelType: ResourceType,
-          label: 'Resource Type',
+          label: 'Resource type',
           ObjectInputView: ResourceTypeView
         }),
 

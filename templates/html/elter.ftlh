@@ -59,7 +59,7 @@
             <#include "document/_admin.ftlh">
             <#if title?? && title?has_content>
               <#include "document/_title.ftlh">
-            </#if>    
+            </#if>
 
             <#if rel_supersedes?has_content && rel_supersedes?size gt 0>
                 <#include "document/_latestVersion.ftlh">
@@ -68,7 +68,7 @@
             <#if description??>
               <div class="description">
                 <div class="description-text">
-                  <@blocks.linebreaks description!"" />
+                  <@blocks.linebreaksAndLinks description!"" />
 
                   <#if resourceType.value != 'aggregate' && resourceType.value != 'collection'>
                     <#if datasetReferenceDate??>
@@ -98,17 +98,17 @@
           <div class="section">
             <div class="container">
               <div class="metadata-grid">
-                <div class="col1"> 
-                   <#include "document/_deims.ftlh">
+                <div class="col1">
+                  <#include "document/_elterSpecific.ftlh">
                   <#include "document/_formats.ftlh">
                   <#include "document/_dataquality.ftlh">
                   <#include "document/_extent.ftlh">
-                   <#include "document/_related.ftlh">
+                  <#include "document/_related.ftlh">
                   <#include "document/_citation_list.ftlh">
                   <#include "document/_supplemental.ftlh">
                   <#include "document/_contacts.ftlh">
 
-                  <#if topicCategories?? || descriptiveKeywords?? ||  inspireTheme?? || funding?? || spatialRepresentationTypes?? || spatialReferenceSystems??>
+                  <#if topicCategories?? || descriptiveKeywords?? || keywords?? ||  inspireTheme?? || funding?? || spatialRepresentationTypes?? || spatialReferenceSystems??>
                     <h2>Additional metadata</h2>
                     <dl id="otherInfo" class="dl-horizontal">
                       <#include "document/_tags.ftlh">
@@ -124,32 +124,24 @@
                 </div>
                 <div class="col2">
 
-                  <#if isLinkedDoc="true"> 
+                  <#if isLinkedDoc="true">
                     <#include "document/_linked.ftlh">
                   <#else>
                       <#include "document/_uploadData.ftlh">
                       <#include "document/_metrics.ftlh">
 
-                      <#if resourceStatus??>
-                        <#if resourceStatus == 'Restricted'>
-                          <#include "document/_distribution_restricted.ftlh">
-                        <#else>
-                          <#if resourceType.value == 'signpost'>
-                            <#include "document/_distribution_signpost.ftlh">
-                          <#elseif resourceType.value == 'service' && mapViewable>
-                            <#include "document/_distribution_service.ftlh">
-                          <#elseif resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'application'>
-                            <#include "document/_distribution_dataset.ftlh">
-                          </#if>
+
+                      <#if resourceStatus?? && resourceStatus != "Unknown">
+                        <#if resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'application'>
+                          <#include "document/_distribution_dataset.ftlh">
+                        <#elseif resourceType.value == 'service' && mapViewable>
+                          <#include "document/_distribution_service.ftlh">
+                        <#elseif resourceType.value == 'signpost'>
+                          <#include "document/_distribution_signpost.ftlh">
                         </#if>
-                      <#elseif metadata.catalogue != "eidc" &&  resourceType.value == 'signpost'>
-                        <#include "document/_distribution_signpost.ftlh">
                       </#if>
 
-                      <#if resourceType.value == 'thirdPartyDataset'>
-                        <#include "document/_third_party.ftlh">
-                      </#if>
-                  </#if>           
+                  </#if>
 
               </div>
             </div>

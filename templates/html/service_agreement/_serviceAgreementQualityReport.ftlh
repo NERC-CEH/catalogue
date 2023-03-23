@@ -16,27 +16,30 @@
     <#if errors?? && errors?has_content>
         <div>This service agreement is incomplete and cannot be submitted until all errors are cleared</div>
     </#if>
-    <div id="section-serviceAgreementQuality" class="clearfix hidden-print">
-        <div class="panel">
-            <div>
-                <ul class="list-group">
-                    <#if errors?? && errors?has_content>
-                        <#list errors as error>
-                            <li class="list-group-item alert alert--error">${error.test}</li>
-                        </#list>       
-                    </#if>
-                    <#if warnings?? && warnings?has_content>
-                        <#list warnings as warning>
-                            <li class="list-group-item alert alert--warning">${warning.test}</li>
-                        </#list>
-                    </#if>
-                    <#if infos?? && infos?has_content>
-                        <#list infos as info>
-                            <li class="list-group-item alert alert--info">${info.test}</li>
-                        </#list>
-                    </#if>
-                </ul>
-            </div>
-        </div>
+    <div id="section-serviceAgreementQuality" class="clearfix hidden-print qualityReport">
+        <#if errors?? && errors?has_content>
+            <#list errors as error>
+                <div class="qualityItem qualityItem--error">
+                    <div class="fa-solid fa-triangle-exclamation"> </div>
+                    <div>${error.test}</div>
+                </div>
+            </#list>       
+        </#if>
+        <#if warnings?? && warnings?has_content>
+            <#list warnings as warning>
+                <div class="qualityItem qualityItem--warning">
+                    <div class="fa-solid fa-circle-exclamation"> </div>
+                    <div>${warning.test}</div>
+                </div>
+            </#list>
+        </#if>
+        <#if infos?? && infos?has_content>
+            <#list infos as info>
+                <div class="qualityItem qualityItem--info">
+                    <div class="fa-solid fa-info"> </div>
+                    <div>${info.test}</div>
+                </div>
+            </#list>
+        </#if>
     </div>
 </#if>

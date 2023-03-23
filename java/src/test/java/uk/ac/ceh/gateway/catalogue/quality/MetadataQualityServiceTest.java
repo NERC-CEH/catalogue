@@ -164,10 +164,10 @@ public class MetadataQualityServiceTest {
     //@Test
     public void checkSignpostHasCorrectOnlineResource() {
         //given
-        val parsed = JsonPath.parse(getClass().getResourceAsStream("signpostRight.json"), this.config);
+        val parsed = JsonPath.parse(getClass().getResourceAsStream("nercSignpostRight.json"), this.config);
 
         //when
-        val actual = this.service.checkSignpost(parsed).isPresent();
+        val actual = this.service.checkNercSignpost(parsed).isPresent();
 
         //then
         assertFalse(actual);
@@ -176,10 +176,10 @@ public class MetadataQualityServiceTest {
     @Test
     public void checkSignpostHasIncorrectOnlineResource() {
         //given
-        val parsed = JsonPath.parse(getClass().getResourceAsStream("signpostWrong.json"), this.config);
+        val parsed = JsonPath.parse(getClass().getResourceAsStream("nercSignpostWrong.json"), this.config);
 
         //when
-        val actual = this.service.checkSignpost(parsed).isPresent();
+        val actual = this.service.checkNercSignpost(parsed).isPresent();
 
         //then
         assertTrue(actual);
@@ -188,10 +188,10 @@ public class MetadataQualityServiceTest {
     @Test
     public void checkSignpostHasMissingOnlineResource() {
         //given
-        val parsed = JsonPath.parse(getClass().getResourceAsStream("signpostMissing.json"), this.config);
+        val parsed = JsonPath.parse(getClass().getResourceAsStream("nercSignpostMissing.json"), this.config);
 
         //when
-        val actual = this.service.checkSignpost(parsed).isPresent();
+        val actual = this.service.checkNercSignpost(parsed).isPresent();
 
         //then
         assertTrue(actual);
@@ -200,10 +200,10 @@ public class MetadataQualityServiceTest {
     @Test
     public void checkSignpostNotCorrectResourceType() {
         //given
-        val parsed = JsonPath.parse(getClass().getResourceAsStream("signpostNotResourceType.json"), this.config);
+        val parsed = JsonPath.parse(getClass().getResourceAsStream("nercSignpostNotResourceType.json"), this.config);
 
         //when
-        val actual = this.service.checkSignpost(parsed).isPresent();
+        val actual = this.service.checkNercSignpost(parsed).isPresent();
 
         //then
         assertFalse(actual);
