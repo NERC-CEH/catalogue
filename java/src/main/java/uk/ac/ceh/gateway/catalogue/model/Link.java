@@ -2,13 +2,14 @@ package uk.ac.ceh.gateway.catalogue.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Value;
 import lombok.Builder;
+import lombok.Value;
+
 import static com.google.common.base.Strings.nullToEmpty;
 
 @Value
 public class Link {
-    private final String title, href, rel, associationType;
+    String title, href, rel, associationType;
 
     @Builder
     @JsonCreator

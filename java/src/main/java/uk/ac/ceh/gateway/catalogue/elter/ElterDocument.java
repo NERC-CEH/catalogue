@@ -6,20 +6,19 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import lombok.val;
 import org.springframework.http.MediaType;
+import uk.ac.ceh.gateway.catalogue.citation.Citation;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.deims.DeimsSolrIndex;
 import uk.ac.ceh.gateway.catalogue.gemini.*;
 import uk.ac.ceh.gateway.catalogue.indexing.solr.WellKnownText;
-import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
-import uk.ac.ceh.gateway.catalogue.citation.Citation;
-import uk.ac.ceh.gateway.catalogue.model.Link;
-import uk.ac.ceh.gateway.catalogue.model.Supplemental;
-import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
+import uk.ac.ceh.gateway.catalogue.model.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.*;
 import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAPABILITIES;
@@ -71,6 +70,21 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
     private String linkedDocumentUri;
     private String linkedDocumentType;
 
+    @Override
+    public Set<Relationship> getRelationships() {
+        val relations = Optional.ofNullable(super.getRelationships())
+            .orElse(Collections.emptySet());
+        val related = Optional.ofNullable(relatedRecords)
+            .orElse(Collections.emptyList())
+            .stream()
+            .map(RelatedRecord::toRelationship)
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .collect(Collectors.toSet());
+        return Stream.of(relations, related)
+            .flatMap(Collection::stream)
+            .collect(Collectors.toSet());
+    }
 
     @Override
     public String getType() {
@@ -166,8 +180,8 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
                 .orElse(Collections.emptyList())
                 .stream()
                 .flatMap(dk -> dk.getKeywords().stream())
-                .filter(k -> k.getUri().startsWith(TOPIC_PROJECT_URL))
                 .map(Keyword::getUri)
+                .filter(uri -> uri.startsWith(TOPIC_PROJECT_URL))
                 .collect(Collectors.toList());
     }
 

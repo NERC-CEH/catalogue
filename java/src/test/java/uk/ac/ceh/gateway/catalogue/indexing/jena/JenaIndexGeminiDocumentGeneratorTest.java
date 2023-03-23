@@ -87,29 +87,6 @@ class JenaIndexGeminiDocumentGeneratorTest {
   }
 
   @Test
-  void relatedRecordStatementAdded() {
-    //given
-    val document = new GeminiDocument();
-    document.setId(id);
-    document.setRelatedRecords(
-        List.of(new RelatedRecord(
-            EIDCUSES.getURI(),
-            "b5fbe026-d706-4ee3-8f7b-4f62e663b4b9",
-            "https://example.com/id/b5fbe026-d706-4ee3-8f7b-4f62e663b4b9",
-            "Title",
-            "Dataset"
-        ))
-    );
-    given(service.generateUri(id)).willReturn(uri);
-
-    //when
-    val statements = generator.generateIndex(document);
-
-    //when
-    assertThat(statements, containsInAnyOrder(identifierStatement, uriStatement, relatedStatement));
-  }
-
-  @Test
   void missingRelatedRecordRelNoStatementAdded() {
     //given
     val document = new GeminiDocument();

@@ -1,18 +1,64 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
+import com.google.common.collect.Sets;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.jupiter.api.Test;
+import uk.ac.ceh.gateway.catalogue.elter.ElterDocument;
+import uk.ac.ceh.gateway.catalogue.model.Relationship;
+import uk.ac.ceh.gateway.catalogue.model.Supplemental;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import uk.ac.ceh.gateway.catalogue.model.Supplemental; 
-
+@Slf4j
 public class GeminiDocumentTest {
     private final String id = "c43818fc-61fb-455b-9714-072355597229";
+    private final String rel1 = "https://example.com/rel/1";
+    private final String doc1 = "https://example.com/doc/1";
+    private final String doc2 = "https://example.com/doc/2";
+    private final String doc3 = "https://example.com/doc/3";
+
+    @Test
+    void relationshipsFromRelatedRecordsNonePopulated() {
+        // given
+        val expected = Sets.newHashSet();
+        val document = new ElterDocument();
+
+        // when
+        val actual = document.getRelationships();
+
+        // then
+        assertThat(actual, equalTo(expected));
+    }
+
+    @Test
+    void relationshipsFromBoth() {
+        // given
+        val expected = Sets.newHashSet(
+            new Relationship(rel1, doc1),
+            new Relationship(rel1, doc2),
+            new Relationship(rel1, doc3)
+        );
+        val document = new ElterDocument();
+        document.setRelatedRecords(List.of(
+            new RelatedRecord(rel1, "1", doc1, "", "")
+        ));
+        document.setRelationships(Set.of(
+            new Relationship(rel1, doc2),
+            new Relationship(rel1, doc3)
+        ));
+
+        // when
+        val actual = document.getRelationships();
+
+        // then
+        assertThat(actual, equalTo(expected));
+    }
 
     @Test
     public void noMapViewerUrlIfGetCapabilitiesOnlineResourceDoesNotExists() {

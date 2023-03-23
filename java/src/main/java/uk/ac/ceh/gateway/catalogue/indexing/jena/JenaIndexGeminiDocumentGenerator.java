@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.indexing.jena;
 
-import com.google.common.base.Strings;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.jena.rdf.model.Resource;
@@ -60,20 +59,6 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
             .forEach(r ->
                 toReturn.add(createStatement(me, EIDCUSES, createResource(r)))
             );
-
-        Optional.ofNullable(document.getRelatedRecords())
-            .orElse(Collections.emptyList())
-            .stream()
-            .filter(rr -> !Strings.isNullOrEmpty(rr.getRel()))
-            .filter(rr -> !Strings.isNullOrEmpty(rr.getIdentifier()))
-            .forEach(rr -> {
-                log.debug(rr.toString());
-                toReturn.add(createStatement(
-                    me,
-                    createProperty(rr.getRel()),
-                    createProperty(baseUri + "/id/" + rr.getIdentifier())
-                ));
-            });
 
         return toReturn;
     }
