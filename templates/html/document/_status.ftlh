@@ -19,14 +19,14 @@
     <p>If you need access to this archived version, please <a href="${catalogue.contactUrl}" target="_blank" rel="noopener noreferrer">contact the ${supersededContact}</a></p>
 <#elseif resourceStatus == "Restricted">
     <span>ACCESS TO THIS ${recordType?upper_case} IS RESTRICTED</span>
-    <br>${accessLimitation.description} Please <a href="${catalogue.contactUrl}" target="_blank" rel="noopener noreferrer">contact the ${supersededContact}</a>
+    <br>${accessLimitation.description} If you need access, please <a href="${catalogue.contactUrl}" target="_blank" rel="noopener noreferrer">contact the ${supersededContact}</a>
 <#elseif resourceStatus == "Embargoed">
     <p>
         <strong>This ${recordType} is under embargo</strong>
         <#if datasetReferenceDate?? && datasetReferenceDate.releasedDate?has_content>
             and will be made available by ${datasetReferenceDate.releasedDate?date?string["d MMMM yyyy"]} at the latest
         </#if>
-        &nbsp;<a href="https://www.eidc.ac.uk/help/faq/embargos" target="_blank" rel="noopener noreferrer" title="more information about embargoes"><i class="fas fa-question-circle text-info"></i></a>
+        &nbsp;<a href="https://www.eidc.ac.uk/help/faq/embargos" target="_blank" rel="noopener noreferrer" title="more information about embargoes"> <small> Find out more &raquo;</small></a>
     </p>
 <#elseif resourceStatus == "In-progress">
     <p>

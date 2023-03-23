@@ -6,7 +6,7 @@
 </#if>
 
 <div>
-    This record describes NERC-funded managed by 
+    This record describes NERC-funded data managed by 
     <#if signpostDistributor?has_content>
         ${signpostDistributor?first.organisationName}
     <#else>

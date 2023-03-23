@@ -5,7 +5,7 @@
     <option value="nonGeographicDataset">Dataset (non-geographic)</option>
     <option value="aggregate">Data collection (aggregation)</option>
     <option value="application">Model code (application)</option>
-    <option value="signpost">Signpost</option>
+    <option value="nercSignpost">NERC signpost</option>
     <option value="service">Web service</option>
   </optgroup>
   <optgroup label="INMS resource types" class="optgroup optgroup-inms">

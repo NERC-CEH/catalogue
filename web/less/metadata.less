@@ -258,31 +258,37 @@
   }
 
   .notification {
+    --notification-color: @gray-light;
     display: grid;
     grid-template-columns: 50px auto;
-    border: 2px solid @gray-light;
+    border: 2px solid var(--notification-color);
     gap: 1em;
     padding: 1em;
     margin: 1.6em 0 1em 0;
-    box-shadow: 8px 8px 8px @gray-lighter;
     background-color: white;
     border-radius: 6px;
     align-items: center;
+    small {
+      font-size: 80%;
+      text-decoration: underline;
+      text-decoration-style: dotted;
+    }
+    span {
+      color: red;
+      font-weight: bolder;
+    }
     &_icon {
       text-align: center;
-      color: var(--quality-info);
+      color: var(--notification-color);
     }
     p:last-of-type {
       margin-bottom: 0;
     }
     &--Restricted {
-      span {
-        color: red;
-        font-weight: bolder;
-      }
-      .notification_icon {
-        color: red;
-      }
+      --notification-color: red;
+    }
+    &--Restricted {
+      --notification-color: blue;
     }
   }
 

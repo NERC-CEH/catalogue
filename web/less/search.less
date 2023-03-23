@@ -87,6 +87,22 @@
         }
         .facet {
           margin-bottom: 2em;
+          max-height: 600px;
+          overflow-y: auto;
+          scrollbar-width: 0.25em;
+      
+          &::-webkit-scrollbar {
+            width: 0.25em;
+          }
+
+          &::-webkit-scrollbar-track {
+            box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+          }
+
+          &::-webkit-scrollbar-thumb {
+            background-color: darkgrey;
+            outline: 1px solid slategrey;
+          }
         }
       }
       /* For webkit browsers only*/

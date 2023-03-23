@@ -130,25 +130,17 @@
                       <#include "document/_uploadData.ftlh">
                       <#include "document/_metrics.ftlh">
 
+
                       <#if resourceStatus?? && resourceStatus != "Unknown">
-                        <#if resourceStatus == 'Restricted'>
-                          <#include "document/_distribution_restricted.ftlh">
-                        <#else>
-                          <#if resourceType.value == 'signpost'>
-                            <#include "document/_distribution_signpost.ftlh">
-                          <#elseif resourceType.value == 'service' && mapViewable>
-                            <#include "document/_distribution_service.ftlh">
-                          <#elseif resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'application'>
-                            <#include "document/_distribution_dataset.ftlh">
-                          </#if>
+                        <#if resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'application'>
+                          <#include "document/_distribution_dataset.ftlh">
+                        <#elseif resourceType.value == 'service' && mapViewable>
+                          <#include "document/_distribution_service.ftlh">
+                        <#elseif resourceType.value == 'signpost'>
+                          <#include "document/_distribution_signpost.ftlh">
                         </#if>
-                      <#elseif metadata.catalogue != "eidc" &&  resourceType.value == 'signpost'>
-                        <#include "document/_distribution_signpost.ftlh">
                       </#if>
 
-                      <#if resourceType.value == 'thirdPartyDataset'>
-                        <#include "document/_third_party.ftlh">
-                      </#if>
                   </#if>
 
               </div>
