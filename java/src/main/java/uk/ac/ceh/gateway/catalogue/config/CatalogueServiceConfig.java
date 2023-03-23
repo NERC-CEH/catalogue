@@ -290,6 +290,7 @@ public class CatalogueServiceConfig {
                 .logo("elter.png")
                 .facetKey("dataLevel")
                 .facetKey("elterDeimsSite")
+                .facetKey("elterProjectName")
                 .facetKey("resourceType")
                 .documentType(ELTER_TYPE)
                 .documentType(CODE_TYPE)

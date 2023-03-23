@@ -51,6 +51,11 @@
 @filter-body-link-colour: hsl(0, 0%, 100%);
 @filter-border: none;
 
+/* CSS custom properties */
+:root {
+  --eidc-blue: @eidc-blue;
+}
+
 html {
   overflow-y: scroll;
   min-height: 100%;
@@ -102,10 +107,6 @@ body {
 
 .text-red {
   color: #ee0000;
-}
-
-h1#document-title {
-  color: @link-hover-color;
 }
 
 .panel-right {
@@ -193,8 +194,8 @@ h1#document-title {
 }
 
 #editor {
-  .resourcetypes-eidc,
-  .resourcetypes-iso19115 {
+  .optgroup-eidc,
+  .optgroup-iso19115 {
     display: initial;
   }
 }

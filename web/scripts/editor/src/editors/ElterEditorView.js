@@ -1,35 +1,33 @@
 import {
   AccessLimitationView,
-  CheckboxView,
   ContactView,
   DatasetReferenceDateView,
   DeimsSiteView,
-  DescriptiveKeywordView, DistributionFormatView,
+  DistributionFormatView,
   FundingView,
   InspireThemeView,
-  MapDataSourceView, OnlineResourceView,
+  OnlineResourceView,
   ParentStringView,
   ParentView,
   PredefinedParentView,
   ReadOnlyView,
   RelatedRecordView, ResourceConstraintView, ResourceIdentifierView,
   ResourceTypeView,
-  ServiceView,
   SingleObjectView, SpatialReferenceSystemView, SpatialRepresentationTypeView, SpatialResolutionView,
   SupplementalView,
   TemporalExtentView,
-  TextareaView,
-  TopicCategoryView
+  TextareaView, TextOnlyView,
+  TopicCategoryView, ElterProjectView, KeywordVocabularyView
 } from '../views'
 import {
   AccessLimitation,
   Contact,
-  DescriptiveKeyword, DistributionFormat, Funding,
-  InspireTheme, MapDataSource,
+  DistributionFormat, Funding,
+  InspireTheme,
   MultipleDate,
   OnlineResource,
-  ResourceType, Service, SpatialResolution,
-  TopicCategory
+  ResourceType, SpatialResolution,
+  TopicCategory, ElterProject
 } from '../models'
 import EditorView from '../EditorView'
 import InputView from '../InputView'
@@ -56,17 +54,6 @@ export default EditorView.extend({
           ModelType: ResourceType,
           label: 'Resource Type',
           ObjectInputView: ResourceTypeView
-        }),
-
-        new ParentView({
-          model: this.model,
-          modelAttribute: 'deimsSites',
-          label: 'DEIMS sites',
-          ObjectInputView: DeimsSiteView,
-          multiline: true,
-          helpText: `
-<p>DEIMS sites that have contributed to the dataset.</p>
-`
         }),
 
         new InputView({
@@ -119,7 +106,7 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'accessLimitation',
           ModelType: AccessLimitation,
-          label: 'Resource status',
+          label: 'Status',
           ObjectInputView: AccessLimitationView,
           helpText: `\
 <p>Access status of resource.  For example, is the resource embargoed or are restrictions imposed for reasons of confidentiality or security.</p>
@@ -154,47 +141,44 @@ export default EditorView.extend({
       ]
     },
     {
-      label: 'Authors & contacts',
-      title: 'Authors and other contacts',
-      views: [
-        new PredefinedParentView({
-          model: this.model,
-          ModelType: Contact,
-          modelAttribute: 'responsibleParties',
-          label: 'Contacts',
-          ObjectInputView: ContactView,
-          multiline: true
-        })
-      ]
-    },
-    {
-      label: 'Classification',
-      title: 'Categories and keywords',
+      label: 'Classify',
+      title: 'Categories,tags and keywords',
       views: [
         new ParentView({
           model: this.model,
-          ModelType: TopicCategory,
-          modelAttribute: 'topicCategories',
-          label: 'Topic categories',
-          ObjectInputView: TopicCategoryView
+          ModelType: ElterProject,
+          modelAttribute: 'elterProject',
+          label: 'eLTER project',
+          ObjectInputView: ElterProjectView
         }),
 
-        new PredefinedParentView({
+        new ParentView({
           model: this.model,
-          ModelType: DescriptiveKeyword,
-          modelAttribute: 'descriptiveKeywords',
-          label: 'Keywords',
-          ObjectInputView: DescriptiveKeywordView,
+          modelAttribute: 'deimsSites',
+          label: 'DEIMS sites',
+          ObjectInputView: DeimsSiteView,
           multiline: true,
-          predefined: {
-            'Catalogue topic': {
-              type: 'Catalogue topic'
-            }
-          },
+          helpText: `<p>DEIMS sites that have contributed to the dataset.</p>`
+        }),
+
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'keywords',
+          label: 'Keywords',
+          ObjectInputView: KeywordVocabularyView,
+          multiline: true,
           helpText: `\
 <p>Keywords (preferably taken from a controlled vocabulary) categorising and describing the data resource.</p>
 <p>Good quality keywords help to improve the efficiency of search, making it easier to find relevant records.</p>\
 `
+        }),
+
+        new ParentView({
+          model: this.model,
+          ModelType: TopicCategory,
+          modelAttribute: 'topicCategories',
+          label: 'ISO topic categories',
+          ObjectInputView: TopicCategoryView
         }),
 
         new ParentView({
@@ -207,15 +191,20 @@ export default EditorView.extend({
 <p>If the resource falls within the scope of an INSPIRE theme it should be declared here.</p>
 <p>Conformity is the degree to which the <i class='text-red'>data</i> conforms to the relevant INSPIRE data specification.</p>\
 `
-        }),
-
-        new CheckboxView({
+        })
+      ]
+    },
+    {
+      label: 'Contacts',
+      title: 'Authors and other contacts',
+      views: [
+        new PredefinedParentView({
           model: this.model,
-          modelAttribute: 'notGEMINI',
-          label: 'Exclude from GEMINI obligations',
-          helpText: `
-<p>Tick this box to exclude this resource from GEMINI/INSPIRE obligations.</p><p <b class='text-red'><span class='fas fa-exclamation-triangle'>&nbsp;</span> WARNING.  This should only be ticked if the data DOES NOT relate to an area where an EU Member State exercises jurisdictional rights</b>.</p>
-`
+          ModelType: Contact,
+          modelAttribute: 'responsibleParties',
+          label: 'Contacts',
+          ObjectInputView: ContactView,
+          multiline: true
         })
       ]
     },
@@ -282,6 +271,16 @@ export default EditorView.extend({
 <p>Where possible include a link to a document describing the terms and conditions.</p>
 <p>You MUST enter something even if there are no constraints. In the rare case that there are none, enter "no conditions apply".</p>\
 `
+        }),
+
+        new ParentView({
+          model: this.model,
+          ModelType: Contact,
+          modelAttribute: 'distributorContacts',
+          label: 'Distributor contact',
+          ObjectInputView: ContactView,
+          multiline: true,
+          helpText: `<p>The organisation responsible for distributing the data</p>`
         })
       ]
     },
@@ -567,9 +566,15 @@ export default EditorView.extend({
       ]
     },
     {
-      label: 'Supplemental',
-      title: 'Additional information and funding',
+      label: 'Additional information',
+      title: 'Additional information',
       views: [
+        new TextOnlyView({
+          model: this.model,
+          label: 'Purpose',
+          text: `<p>Information not recorded elsewhere</p>`
+        }),
+
         new ParentView({
           model: this.model,
           modelAttribute: 'supplemental',
@@ -595,40 +600,6 @@ export default EditorView.extend({
 <p>Include here details of any grants or awards that were used to generate this resource.</p>
 <p>If you include funding information, the Funding body is MANDATORY, other fields are useful but optional.</p>
 <p>Award URL is either the unique identifier for the award or sa link to the funder's  grant page (if it exists). It is <b>NOT</b> a link to a project website.</p>\
-`
-        })
-      ]
-    },
-    {
-      label: 'Web service',
-      title: 'Web service details',
-      views: [
-        new ServiceView({
-          model: this.model,
-          modelAttribute: 'service',
-          ModelType: Service,
-          label: 'Service'
-        }),
-
-        new ParentView({
-          model: this.model,
-          modelAttribute: 'mapDataDefinition.data',
-          ModelType: MapDataSource,
-          multiline: true,
-          label: 'Web map service',
-          ObjectInputView: MapDataSourceView,
-          helpText: `\
-<p>Link this metadata record to an ingested geospatial file and create a WMS (<strong>https://catalogue.ceh.ac.uk/maps/{METADATA_ID}?request=getCapabilities&service=WMS</strong>). The supported formats are:</p>
-<ul>
-  <li>Shapefiles - Vector (ignore the .shp extension when specifying the path) </li>
-  <li>GeoTiff - Raster</li>
-</ul>
-<p>To maximise performance, it is generally best to provide reprojected variants of data sources in common EPSG codes.</p>
-<p>Vector datasets should be spatially indexed (using <a href="http://mapserver.org/utilities/shptree.html">shptree</a>)</p>
-<p>Raster datasets should be provided with <a href="http://www.gdal.org/gdaladdo.html">overviews</a>. GeoTiff supports internal overviews.</p>
-<p>The 'Byte?' option that appears for raster (GeoTiff) datasets is used to indicate whether the GeoTiff is a 'byte' or 'non-byte' datatype.
-This is only needed if you configure 'Stylying=Classification' for your GeoTiff.</p>
-<p>Paths should be specified relative to the base of the datastore. e.g. <strong>5b3fcf9f-19d4-4ad3-a8bb-0a5ea02c857e/my_shapefile</strong></p>\
 `
         })
       ]

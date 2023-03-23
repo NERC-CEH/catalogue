@@ -1,5 +1,5 @@
 <div id="section-metadataQuality" class="clearfix hidden-print">
-    <h2>Metadata quality</h2>
+    <h2>Metadata quality report</h2>
     <#if problems?? && problems?has_content>
         <#assign errors = func.filter(problems, "severity", "ERROR")>
         <#assign warnings = func.filter(problems, "severity", "WARNING")>

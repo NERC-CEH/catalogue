@@ -10,7 +10,9 @@
       <h2>Get the data</h2>
       <div class="distribution-dataset">
 
-        <#include "_status.ftlh">
+        <div class="statusMessage">
+          <#include "_status.ftlh">
+        </div>
 
         <#if resourceStatus == "Available" || resourceStatus == "Controlled" || resourceStatus == "Embargoed">
           <p class="licencePreamble">By accessing or using this dataset, you agree to the terms of the relevant licence agreement(s). You will ensure that this dataset is cited in any publication that describes research in which the data have been used.</p>

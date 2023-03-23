@@ -191,7 +191,7 @@ export default EditorView.extend({
         new ParentView({
           model: this.model,
           ModelType: SupportingDoc,
-          label: 'Supporting documnents',
+          label: 'Supporting documents',
           modelAttribute: 'supportingDocs',
           ObjectInputView: SupportingDocView,
           multiline: true
