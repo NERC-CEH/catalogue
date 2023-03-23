@@ -80,6 +80,7 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
     public String getResourceStatus() {
         return Optional.ofNullable(accessLimitation)
                 .map(AccessLimitation::getCode)
+                .filter(code -> !code.isEmpty())
                 .orElse("Unknown");
     }
 
@@ -146,7 +147,8 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
     }
 
     public List<Keyword> getElterProject() {
-        return elterProject;
+        return Optional.ofNullable(elterProject)
+            .orElse(Collections.emptyList());
     }
 
     public List<ResponsibleParty> getResponsibleParties() {
