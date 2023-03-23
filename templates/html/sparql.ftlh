@@ -18,6 +18,6 @@
       </form>
 
       <#if error??><div class="alert alert-danger">${error}</div></#if>
-      <#if result??><code><pre>${result}</pre></code></#if>
+      <#if result??><pre>${result}</pre></#if>
     </div>
 </@skeleton.master>

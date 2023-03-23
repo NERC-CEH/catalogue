@@ -32,7 +32,7 @@ public class DocumentTypes {
 
     public static final String ELTER = "elter";
     public static DocumentType ELTER_TYPE = DocumentType.builder()
-        .title("eLTER dataset")
+        .title("eLTER data")
         .type(ELTER)
         .build();
 

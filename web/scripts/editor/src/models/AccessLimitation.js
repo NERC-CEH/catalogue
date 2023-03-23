@@ -3,7 +3,8 @@ import Backbone from 'backbone'
 export default Backbone.Model.extend({
 
   defaults: {
-    value: null
+    value: 'unknown',
+    code: 'Unknown'
   },
 
   uris: {
@@ -26,6 +27,7 @@ export default Backbone.Model.extend({
     embargoed: 'Embargoed',
     'in-progress': 'In-progress',
     superseded: 'Superseded',
+    unknown: 'Unknown',
     withdrawn: 'Withdrawn',
     'To access this data, a licence needs to be negotiated with the provider and there may be a cost': 'Controlled',
     'public access limited according to Article 13(1)(a) of the INSPIRE Directive': 'Restricted',

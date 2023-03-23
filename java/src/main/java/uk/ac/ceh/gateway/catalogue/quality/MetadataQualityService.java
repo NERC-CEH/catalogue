@@ -76,7 +76,7 @@ public class MetadataQualityService {
                 checkSpatialDataset(parsedDoc).ifPresent(checks::addAll);
                 checkService(parsedDoc).ifPresent(checks::addAll);
                 checkNonGeographicDatasets(parsedDoc).ifPresent(checks::addAll);
-                checkSignpost(parsedDoc).ifPresent(checks::addAll);
+                checkNercSignpost(parsedDoc).ifPresent(checks::addAll);
                 checkPublicationDate(parsedDoc, parsedMeta).ifPresent(checks::add);
                 checkTemporalExtents(parsedDoc).ifPresent(checks::addAll);
                 checkDownloadAndOrderLinks(parsedDoc).ifPresent(checks::addAll);
@@ -351,8 +351,8 @@ public class MetadataQualityService {
         }
     }
 
-    Optional<List<MetadataCheck>> checkSignpost(DocumentContext parsed) {
-        if (notRequiredResourceTypes(parsed, "signpost")) {
+    Optional<List<MetadataCheck>> checkNercSignpost(DocumentContext parsed) {
+        if (notRequiredResourceTypes(parsed, "nercSignpost")) {
             return Optional.empty();
         }
         val toReturn = new ArrayList<MetadataCheck>();

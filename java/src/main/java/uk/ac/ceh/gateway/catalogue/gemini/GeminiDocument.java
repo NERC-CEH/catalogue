@@ -98,7 +98,8 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     public String getResourceStatus() {
         return Optional.ofNullable(accessLimitation)
                 .map(AccessLimitation::getCode)
-                .orElse(null);
+                .filter(code -> !code.isEmpty())
+                .orElse("Unknown");
     }
 
     @Override

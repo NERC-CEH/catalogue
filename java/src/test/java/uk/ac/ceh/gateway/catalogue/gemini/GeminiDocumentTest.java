@@ -119,7 +119,7 @@ public class GeminiDocumentTest {
     }
 
     @Test
-    public void testGetIncomingCitationCount() {
+    public void getIncomingCitationCount() {
         // Given
         GeminiDocument document = new GeminiDocument();
         Supplemental citation1 = Supplemental.builder().description("foo").build();
@@ -135,6 +135,31 @@ public class GeminiDocumentTest {
 
         // Then
         assertThat(output, is(expected));
+    }
+
+    @Test
+    public void unknownResourceStatus() {
+        //given
+        val document = new GeminiDocument();
+
+        //when
+        val actual = document.getResourceStatus();
+
+        //then
+        assertThat(actual, equalTo("Unknown"));
+    }
+
+    @Test
+    public void accessLimitationAndResourceStatus() {
+        //given
+        val document = new GeminiDocument();
+        document.setAccessLimitation(AccessLimitation.builder().build());
+
+        //when
+        val actual = document.getResourceStatus();
+
+        //then
+        assertThat(actual, equalTo("Unknown"));
     }
 
 }
