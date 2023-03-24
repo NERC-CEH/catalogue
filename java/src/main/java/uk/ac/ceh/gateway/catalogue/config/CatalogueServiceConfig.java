@@ -352,7 +352,7 @@ public class CatalogueServiceConfig {
                 .documentType(NERC_MODEL_TYPE)
                 .documentType(NERC_MODEL_USE_TYPE)
                 .vocabularies(getCatalogueVocabularies(vocabularies, defaultCatalogueKey))
-                .fileUpload(false)
+                .fileUpload(true)
                 .build()
         );
     }
