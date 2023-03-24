@@ -23,7 +23,7 @@
 <${uri}>
   dct:title "${title}" ;
   <#if description?has_content>
-  dct:description "${description}" ;
+  dct:description "${description?replace("\n", " ")}" ;
   </#if>
   <#if boundingBoxes?has_content && boundingBoxes?has_content>
     <#list boundingBoxes as extent>
