@@ -2,8 +2,12 @@ package uk.ac.ceh.gateway.catalogue.gemini;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.base.Strings;
 import lombok.NonNull;
 import lombok.Value;
+import uk.ac.ceh.gateway.catalogue.model.Relationship;
+
+import java.util.Optional;
 
 @Value
 public class RelatedRecord {
@@ -23,5 +27,13 @@ public class RelatedRecord {
         this.href = href;
         this.title = title;
         this.associationType = associationType;
+    }
+
+    public Optional<Relationship> toRelationship() {
+        if (Strings.isNullOrEmpty(rel) || Strings.isNullOrEmpty(href)) {
+            return Optional.empty();
+        } else {
+            return Optional.of(new Relationship(rel, href));
+        }
     }
 }
