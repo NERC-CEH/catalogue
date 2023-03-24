@@ -11,6 +11,6 @@ dct:spatial "POLYGON((-1.091 31.109, -1.091 59.456, 2.574 59.456, 2.574 31.109, 
 dct:language "eng" ;
 a dcat:Dataset, dcmitype:Dataset ;
 dcat:CatalogRecord <https://example.com/M3tADATA_ID> ;
-dct:type <http://purl.org/dc/dcmitype/Dataset> ;
+dct:type dcmitype:Dataset ;
 dcat:landingPage <https://example.com/M3tADATA_ID>;
 .
