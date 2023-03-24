@@ -171,7 +171,7 @@ class DocumentControllerTest {
         log.debug(doc.toString());
         doc.setId(id);
         doc.setTitle("Test title");
-        doc.setDescription("Some description");
+        doc.setDescription("This is a multiline description.\n\nContinued on another line.");
         doc.setUri("https://example.com/" + id);
         doc.setMetadataDate(LocalDateTime.of(2021, 5, 12, 9, 30, 23));
         doc.setMetadata(MetadataInfo.builder()
