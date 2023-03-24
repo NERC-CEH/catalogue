@@ -24,10 +24,10 @@
 
   <a href="${withoutBbox}" class="btn btn-primary btn-xs">
     Spatial Filter 
-    <span class="fas fa-times"></span>
+    <span class="fa-solid fa-xmark"></span>
   </a>
 <#else>
   <button id="drawing-toggle" type="button" class="btn btn-default btn-xs" aria-label="Draw a boundary in which to search">
-    <span class="fas fa-pencil-alt"></span> 
+    <span class="fa-solid fa-pencil-alt"></span> 
   </button>
 </#if>

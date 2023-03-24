@@ -6,7 +6,7 @@
     <div class="input-group">
       <input data-name='epsgCode' class="editor-input" value="<%= data.epsgCode %>"  <%= data.disabled%>>
       <span class="input-group-btn">
-        <button class="btn btn-default btn-sm addReprojection" type="button"  <%= data.disabled%>><span class="fas fa-plus" aria-hidden="true"></span></button>
+        <button class="btn btn-default btn-sm addReprojection" type="button"  <%= data.disabled%>><span class="fa-solid fa-plus" aria-hidden="true"></span></button>
       </span>
     </div>
   </div>
@@ -41,7 +41,7 @@
       <button type="button" class="btn btn-sm btn-default" styleMode="features"  <%= data.disabled%>>Simple</button>
       <button type="button" class="btn btn-sm btn-default" styleMode="attributes"  <%= data.disabled%>>Classification</button>
     </div>
-    <button class="editor-button-xs addAttribute" type="button"  <%= data.disabled%>>Define Attribute <span class="fas fa-plus" aria-hidden="true"></span></button>
+    <button class="editor-button-xs addAttribute" type="button"  <%= data.disabled%>>Define Attribute <span class="fa-solid fa-plus" aria-hidden="true"></span></button>
   </div>
 
   <div class="col-sm-3 col-lg-3">

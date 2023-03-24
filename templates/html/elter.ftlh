@@ -69,7 +69,6 @@
               <div class="description">
                 <div class="description-text">
                   <@blocks.linebreaksAndLinks description!"" />
-
                   <#if resourceType.value != 'aggregate' && resourceType.value != 'collection'>
                     <#if datasetReferenceDate??>
                         <#if datasetReferenceDate.publicationDate??>

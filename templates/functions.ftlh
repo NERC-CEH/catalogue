@@ -124,11 +124,11 @@
     </#if>
 
     <#if contact.phone?? && contact.phone?has_content>
-        <div class="contactPhone"><i class="fas fa-phone"></i>&nbsp;${contact.phone}</div>
+        <div class="contactPhone"><i class="fa-solid fa-phone"></i>&nbsp;${contact.phone}</div>
     </#if>
 
     <#if showEmail && contact.email?has_content >
-        <a href="mailto:${contact.email}"><i class="far fa-envelope contactEmail"></i>&nbsp;${contact.email}</a>
+        <a href="mailto:${contact.email}"><i class="fa-regular fa-envelope contactEmail"></i>&nbsp;${contact.email}</a>
     </#if>
 
 </#macro>

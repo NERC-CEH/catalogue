@@ -30,7 +30,7 @@
                 <#else>
                   <#assign onlineResourceUrl = onlineResource.url>                    
                 </#if>
-                <a href="${onlineResourceUrl}"><i class="fas fa-download text-info"></i>
+                <a href="${onlineResourceUrl}" class="btn btn-download"><span class="fa-solid fa-angles-down"></span>
                   <#if onlineResource.name?has_content>
                     ${onlineResource.name}
                   <#else>
@@ -42,12 +42,12 @@
 
             <#if offlineOrders?? && offlineOrders?has_content >
                 <#list offlineOrders as offlineOrder>
-                  <a href="${offlineOrder.url}"><i class="fas fa-file-signature"></i> <#if offlineOrder.description?has_content>${offlineOrder.description}<#elseif offlineOrder.name?has_content>${offlineOrder.name}<#else>Order data</#if></a>
+                  <a  class="btn btn-download" href="${offlineOrder.url}"><span class="fa-solid fa-file-signature"></span> <#if offlineOrder.description?has_content>${offlineOrder.description}<#elseif offlineOrder.name?has_content>${offlineOrder.name}<#else>Order data</#if></a>
                 </#list>
             </#if>
 
             <#if (downloadOrder.supportingDocumentsUrl)?has_content>
-              <a href="${downloadOrder.supportingDocumentsUrl}" title="Supporting information important for the re-use of this dataset"><i class="fas fa-file text-info"></i> Supporting documentation</a>
+              <a href="${downloadOrder.supportingDocumentsUrl}" title="Supporting information important for the re-use of this dataset" class="btn btn-supporting"><span class="fa-solid fa-angles-down"></span> Supporting documentation</a>
             </#if>
       
             </div>

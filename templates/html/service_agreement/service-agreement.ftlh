@@ -117,7 +117,7 @@
 
             <div class="section section--1">
                 <h2>Data identification and citation</h2>
-                <p><strong class="text-red"><i class="fas fa-exclamation-triangle" ></i> PLEASE NOTE: ONCE A DOI HAS BEEN ISSUED, THE INFORMATION PROVIDED IN THIS SECTION CANNOT BE CHANGED</strong><br>&nbsp;</p>
+                <p><strong class="text-red"><i class="fa-solid fa-triangle-exclamation" ></i> PLEASE NOTE: ONCE A DOI HAS BEEN ISSUED, THE INFORMATION PROVIDED IN THIS SECTION CANNOT BE CHANGED</strong><br>&nbsp;</p>
                 <h4><strong>Title of data resource:</strong> ${title}</h4>
 
                 <div class="authors">

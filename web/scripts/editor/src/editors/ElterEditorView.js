@@ -585,7 +585,7 @@ export default EditorView.extend({
 <p>You can add information not documented elsewhere here. This includes links to related papers, grey literature or websites.  For example:</p>
 <ul><li>papers that cite this resource</li><li>papers/reports that provide relevant supporting information but which do not cite this resource</li><li>project websites</li></ul>
 <p>When linking to published articles, please use DOIs whenever possible.</p>
-<p><small class='text-danger'><i class='fas fa-exclamation-triangle'> </i> NOTE: Some websites may be maintained for a limited period and may therefore soon become unavailable.</small></p>\
+<p><small class='text-danger'><i class='fa-solid fa-exclamation-triangle'> </i> NOTE: Some websites may be maintained for a limited period and may therefore soon become unavailable.</small></p>\
 `
         }),
 

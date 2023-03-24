@@ -34,8 +34,8 @@
 </div>
 
 <hr/>
-<h4>Values <button class="editor-button-xs addValue"  <%= data.disabled%>>Add <span class="fas fa-plus"></span></button></h4>
+<h4>Values <button class="editor-button-xs addValue"  <%= data.disabled%>>Add <span class="fa-solid fa-plus"></span></button></h4>
 <div class="values"></div>
 <hr/>
-<h4>Buckets <button class="editor-button-xs addBucket"  <%= data.disabled%>>Add <span class="fas fa-plus"></span></button></h4>
+<h4>Buckets <button class="editor-button-xs addBucket"  <%= data.disabled%>>Add <span class="fa-solid fa-plus"></span></button></h4>
 <div class="buckets"></div>
