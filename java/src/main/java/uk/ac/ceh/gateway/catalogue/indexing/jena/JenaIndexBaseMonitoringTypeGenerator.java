@@ -14,7 +14,6 @@ import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.apache.jena.rdf.model.ResourceFactory.*;
 import static uk.ac.ceh.gateway.catalogue.indexing.jena.Ontology.*;
@@ -38,12 +37,10 @@ public class JenaIndexBaseMonitoringTypeGenerator implements IndexGenerator<Base
         List<Statement> links = generator.generateIndex(baseMonitoringType);
         if(baseMonitoringType.getId() != null) {
             Resource me = generator.resource(baseMonitoringType.getId());
-            if (baseMonitoringType instanceof Activity) {
-                Activity activity = (Activity)baseMonitoringType;
+            if (baseMonitoringType instanceof Activity activity) {
                 createRelationships(links, me, activity.getSetUpFor(), SET_UP_FOR);
                 createRelationships(links, me, activity.getUses(),     USES);
-            } else if (baseMonitoringType instanceof Facility) {
-                Facility facility = (Facility)baseMonitoringType;
+            } else if (baseMonitoringType instanceof Facility facility) {
                 createRelationships(links, me, facility.getInvolvedIn(),   INVOLVED_IN);
                 createRelationships(links, me, facility.getSupersedes(),   SUPERSEDES);
                 createRelationships(links, me, facility.getSupersededBy(), SUPERSEDED_BY);
@@ -51,19 +48,15 @@ public class JenaIndexBaseMonitoringTypeGenerator implements IndexGenerator<Base
                 createRelationships(links, me, facility.getBroaderThan(),  BROADER);
                 createRelationships(links, me, facility.getBelongsTo(),    BELONGS_TO);
                 createRelationships(links, me, facility.getRelatedTo(),    RELATED_TO);
-                Optional.ofNullable(facility.getGeometry()).map(Geometry::getValue).ifPresent(w -> {
-                    links.add(createStatement(me, HAS_GEOMETRY, createTypedLiteral(w, WKT_LITERAL)));
-                });
-            } else if (baseMonitoringType instanceof Network) {
-                Network network = (Network)baseMonitoringType;
+                Optional.ofNullable(facility.getGeometry()).map(Geometry::getValue).ifPresent(w -> links.add(createStatement(me, HAS_GEOMETRY, createTypedLiteral(w, WKT_LITERAL))));
+            } else if (baseMonitoringType instanceof Network network) {
                 createRelationships(links, me, network.getInvolvedIn(),   INVOLVED_IN);
                 createRelationships(links, me, network.getSupersedes(),   SUPERSEDES);
                 createRelationships(links, me, network.getSupersededBy(), SUPERSEDED_BY);
                 createRelationships(links, me, network.getNarrowerThan(), NARROWER);
                 createRelationships(links, me, network.getBroaderThan(),  BROADER);
                 createRelationships(links, me, network.getContains(),     CONTAINS);
-            } else if (baseMonitoringType instanceof Programme) {
-                Programme programme = (Programme)baseMonitoringType;
+            } else if (baseMonitoringType instanceof Programme programme) {
                 createRelationships(links, me, programme.getTriggers(),     TRIGGERS);
                 createRelationships(links, me, programme.getSupersedes(),   SUPERSEDES);
                 createRelationships(links, me, programme.getSupersededBy(), SUPERSEDED_BY);
@@ -74,9 +67,7 @@ public class JenaIndexBaseMonitoringTypeGenerator implements IndexGenerator<Base
                     .orElse(Collections.emptyList())
                     .stream()
                     .map(BoundingBox::getWkt)
-                    .forEach( w -> {
-                        links.add(createStatement(me, HAS_GEOMETRY, createTypedLiteral(w, WKT_LITERAL)));
-                    });
+                    .forEach( w -> links.add(createStatement(me, HAS_GEOMETRY, createTypedLiteral(w, WKT_LITERAL))));
         }
         return links;
     }
@@ -87,8 +78,8 @@ public class JenaIndexBaseMonitoringTypeGenerator implements IndexGenerator<Base
                 .stream()
                 .filter(Objects::nonNull)
                 .map( l -> linkStatements(id, property, l))
-                .flatMap(l -> l.stream())
-                .collect(Collectors.toList()));
+                .flatMap(Collection::stream)
+                .toList());
     }
 
     /**
@@ -133,8 +124,7 @@ public class JenaIndexBaseMonitoringTypeGenerator implements IndexGenerator<Base
      * @return if this should be considered a timed link
      */
     private boolean isTimedLink(Link link) {
-        if(link instanceof TimedLink) {
-            TimedLink timed = (TimedLink)link;
+        if(link instanceof TimedLink timed) {
             return timed.getLinkingTime() != null && (
                     timed.getLinkingTime().getStart() != null ||
                     timed.getLinkingTime().getEnd() != null
