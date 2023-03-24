@@ -3,7 +3,7 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-body">
-          <button type="button" class="close" data-dismiss="modal" aria-label="CLose"><i aria-hidden="true" class="fas fa-times"></i></button>
+          <button type="button" class="close" data-dismiss="modal" aria-label="CLose"><i aria-hidden="true" class="fa-solid fa-xmark"></i></button>
           <p><strong>Cite this dataset as</strong></p>
           <p id="citation-text">
             ${citation.authors?join('; ')} (${citation.year?string["0000"]}). <b>${citation.title}</b>. ${citation.publisher}.  (${codes.lookup('datacite.resourceTypeGeneral',citation.resourceTypeGeneral)}). ${citation.url}
@@ -37,7 +37,7 @@
       <small class="text-danger"><b>${codes.lookup('publication.state', metadata.state)?upper_case!''}</b></small>
     </#if>
      <#if isLinkedDoc="true"> 
-        <i class="fas fa-link" title="linked document"></i>
+        <i class="fa-solid fa-link" title="linked document"></i>
       </#if>
     ${title}
     <#if alternateTitles?? && alternateTitles?has_content>
@@ -52,12 +52,12 @@
   <#if citation?has_content>
     <div class="doi">
       <a href="${citation.url}">${citation.url}</a>
-      <a class="pull-right" href="#" data-toggle="modal" data-target="#citationModal"><small><i class="fas fa-quote-left fa-xs"></i> <i class="fas fa-quote-right fa-xs"></i></small> Cite this ${recordType?lower_case!''}</a>
+      <a class="pull-right" href="#" data-toggle="modal" data-target="#citationModal"><small><i class="fa-solid fa-quote-left fa-xs"></i> <i class="fa-solid fa-quote-right fa-xs"></i></small> Cite this ${recordType?lower_case!''}</a>
     </div>
   </#if>
 
   <#if resourceStatus?? && resourceStatus?has_content && resourceStatus != "Available" && resourceStatus != "Controlled"  && resourceStatus != "Unknown"  >
-    <#assign notificationIcon = "fa-info-circle ">
+    <#assign notificationIcon = "fa-circle-info">
     <#if resourceStatus == "Restricted" >
       <#assign notificationIcon = "fa-triangle-exclamation ">
     </#if>
@@ -69,7 +69,7 @@
 
   <#if resourceType?? && (resourceType.value == 'nercSignpost' || resourceType.value == 'signpost')>
     <div class="notice notice-signpost" role="alert">
-      <div><i class="fas fa-info-circle fa-2x"></i></div>
+      <div><i class="fa-solid fa-circle-infofa-2x"></i></div>
       <div>
         <#if resourceType.value == 'signpost' ><#include "_signpost.ftlh"></#if>
         <#if resourceType.value == 'nercSignpost'><#include "_nercSignpost.ftlh"></#if>

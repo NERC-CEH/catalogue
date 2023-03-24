@@ -121,9 +121,9 @@
                     <div class="contact">
                       <div>
                         <#if owner.individualName?has_content>
-                          <span class="fas fa-user"></span>
+                          <span class="fa-solid fa-user"></span>
                         <#else>
-                          <span class="fas fa-building"></span>
+                          <span class="fa-solid fa-building"></span>
                         </#if>
                       </div>
                       <div>
@@ -139,7 +139,7 @@
                           </#if>
                         </#if>
                         <#if owner.email?? && owner.email?has_content>
-                          <span><a href="mailto:${owner.email}"><span class="fas fa-xs fa-envelope"></span> ${owner.email}</a></span>
+                          <span><a href="mailto:${owner.email}"><span class="fa-solid fa-xs fa-envelope"></span> ${owner.email}</a></span>
                         </#if>
                       </div>
                     </div>
@@ -184,5 +184,5 @@
   <#else>
     <#local linkDisplay = link.url>
   </#if>
-  <p><a href="${link.url}" target="_blank" rel="noopener noreferrer">${linkDisplay} <i class="fas fa-external-link-alt fa-xs"></i></a></p>
+  <p><a href="${link.url}" target="_blank" rel="noopener noreferrer">${linkDisplay} <i class="fa-solid fa-up-right-from-square fa-xs"></i></a></p>
 </#macro>

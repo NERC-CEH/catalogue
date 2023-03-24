@@ -59,8 +59,10 @@
   #section-title {
     margin-top: 3em;
     padding: 1em 0;
-    border-bottom: 1px solid @gray-light;
-    margin-bottom: 1em;
+    &:not(:has(.notification)) {
+      border-bottom: 1px solid @gray-light;
+      margin-bottom: 1em;
+    }
 
     h1 {
       margin-top: 0;
@@ -305,30 +307,34 @@
       background: @gray-light;
       margin: 1.2em 0;
     }
+    .onlineResourceLinks {
+      margin: 2em 0;
+      .btn {
+        margin: 0.8em 0;
+        color: white;
 
-    .btn {
-      margin: 1.2em 0;
-      color: white;
-
-      &:active {
-        transform: translate(2px, 2px);
-      }
-      span:first-child {
-        margin-right: 0.35em;
-      }
-      &-download {
-        font-weight: bold;
-        background-color: @brand-success;
-        &:hover,
-        &:focus {
-          background-color: lighten(@brand-success, 15%);
+        &:active {
+          transform: translate(2px, 2px);
         }
-      }
-      &-supporting {
-        background-color: lighten(@brand-success, 15%);
-        &:hover,
-        &:focus {
-          background-color: lighten(@brand-success, 30%);
+        span:first-child {
+          margin-right: 0.35em;
+        }
+        &-download {
+          .btn-block;
+          font-weight: bold;
+          background-color: @brand-success;
+          &:hover,
+          &:focus {
+            background-color: lighten(@brand-success, 15%);
+          }
+        }
+        &-supporting {
+          .btn-block;
+          background-color: lighten(@brand-success, 15%);
+          &:hover,
+          &:focus {
+            background-color: lighten(@brand-success, 30%);
+          }
         }
       }
     }

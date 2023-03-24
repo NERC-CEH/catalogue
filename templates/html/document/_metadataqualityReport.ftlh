@@ -9,7 +9,7 @@
             <#if errors?? && errors?has_content>
                 <div class="panel-heading MDquality_error">
                     <div class="row">
-                        <div class="col-sm-3 col-xs-12"> <i class="fas fa-exclamation-triangle" > </i> ERRORS<br></div>
+                        <div class="col-sm-3 col-xs-12"> <i class="fa-solid fa-triangle-exclamation" > </i> ERRORS<br></div>
                         <div class="col-sm-9 hidden-xs"><small>These should always be fixed</small></div>
                     </div>
                 </div>
@@ -22,7 +22,7 @@
             <#if warnings?? && warnings?has_content>
                 <div class="panel-heading MDquality_warning">
                     <div class="row">
-                        <div class="col-sm-3 col-xs-12"><i class="fas fa-exclamation" > </i> WARNINGS</div>
+                        <div class="col-sm-3 col-xs-12"><i class="fa-solid fa-exclamation" > </i> WARNINGS</div>
                         <div class="col-sm-9 hidden-xs"><small>These are usually problems but in some circumstances they <i><b><u>MAY</u></b></i> be acceptable - please check carefully</small></div>
                     </div>
                 </div>
@@ -35,7 +35,7 @@
             <#if infos?? && infos?has_content>
                 <div class="panel-heading MDquality_info">
                     <div class="row">
-                        <div class="col-sm-3 col-xs-12"><i class="fas fa-info-circle" > </i> OTHER ISSUES</div>
+                        <div class="col-sm-3 col-xs-12"><i class="fa-solid fa-circle-info"> </i> OTHER ISSUES</div>
                         <div class="col-sm-9 hidden-xs"><small>For absolute best practice, these issues should be addressed</small></div>
                     </div>
                 </div>
@@ -49,6 +49,6 @@
 
 
     <#else>
-        <p class="text-success"><i class="fas fa-check-circle"></i> No metadata issues found</p>
+        <p class="text-success"><i class="fa-solid fa-circle-check"></i> No metadata issues found</p>
     </#if>
 </div>

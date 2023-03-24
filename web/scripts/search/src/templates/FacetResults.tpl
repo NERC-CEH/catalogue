@@ -12,7 +12,7 @@
 
       <% if(facet.active) { %>
         <a href="<%=facet.url%>" title="<%=facet.name%> (<%=facet.count%>)">
-          <span class="fas fa-times"></span>
+          <span class="fa-solid fa-times"></span>
         </a>
       <% } %>
 

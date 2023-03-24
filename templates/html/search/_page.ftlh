@@ -25,7 +25,7 @@
     <div class="result__tags">
       <div class="recordType">
       <#if result.documentType?? && result.documentType == "LINK_DOCUMENT" >
-        <i class="fas fa-link"></i> Linked
+        <i class="fa-solid fa-link"></i> Linked
       </#if>
       ${result.recordType!""}
       </div>

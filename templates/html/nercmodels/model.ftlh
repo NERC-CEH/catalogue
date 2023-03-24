@@ -248,7 +248,7 @@
                   <#list code as link>
                     <#if link.url?? && link.url?has_content>
                       <@m.urlAccess link "code">
-                        <div><i class="fas fa-code fa-lg"></i></div> 
+                        <div><i class="fa-solid fa-code fa-lg"></i></div> 
                         <div>
                         <#if link.name?? && link.name?has_content>
                           ${link.name}
@@ -265,7 +265,7 @@
                   <#list documents as link>
                     <#if link.url?? && link.url?has_content>
                       <@m.urlAccess link "documentation">
-                        <div><i class="fas fa-book fa-lg"></i></div>
+                        <div><i class="fa-solid fa-book fa-lg"></i></div>
                         <div>
                         <#if link.name?? && link.name?has_content>
                           ${link.name}

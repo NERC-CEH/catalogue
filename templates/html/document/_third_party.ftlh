@@ -18,7 +18,7 @@
                     <#assign distributor = " <a href='mailto:" + dataDistributors?first.email + "' title='" + dataDistributors?first.email + "'>" + distributor + "</a>" >
                 </#if>
             </#if>
-            <p class="panel-title"> <i class="fas fa-info-circle"> </i> This is a dataset managed by ${distributor}</p>
+            <p class="panel-title"> <i class="fa-solid fa-circle-info"> </i> This is a dataset managed by ${distributor}</p>
 
             <#if distributionURLs?has_content>
                 <div class="signpostURL">To access the data visit <a href="${distributionURLs?first.url}">${distributionURLs?first.url}</a></div>

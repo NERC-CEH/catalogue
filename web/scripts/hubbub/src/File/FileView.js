@@ -153,7 +153,7 @@ export default Backbone.View.extend({
     $el.attr('disabled', true)
     const $icon = $el.find('i')
     const current = $icon.attr('class')
-    $icon.attr('class', 'btn-icon fas fa-sync fa-spin')
+    $icon.attr('class', 'btn-icon fa-solid fa-sync fa-spin')
     return current
   },
 

@@ -16,10 +16,10 @@
                   <span class="sr-only">Toggle Dropdown</span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-right">
-                  <li><a href="/documents/${id}/permission" ><i class="fas fa-users"></i> Permissions</a></li>
-                  <li><a href="/documents/${id}/publication" ><i class="fas fa-eye"></i> Publication status</a></li>
+                  <li><a href="/documents/${id}/permission" ><i class="fa-solid fa-users"></i> Permissions</a></li>
+                  <li><a href="/documents/${id}/publication" ><i class="fa-solid fa-eye"></i> Publication status</a></li>
                   <li role="separator" class="divider"></li>
-                  <li><a href="/documents/${id}/catalogue" class="catalogue-control"><i class="fas fa-sign-out-alt"></i> Move to a different catalogue</a></li>
+                  <li><a href="/documents/${id}/catalogue" class="catalogue-control"><i class="fa-solid fa-right-from-bracket"></i> Move to a different catalogue</a></li>
                 </ul>
               </div>
             </div>
@@ -79,7 +79,7 @@
                     <#if schemaItem.constraints.maximum?has_content>Maximum : ${schemaItem.constraints.maximum}<br></#if>
                     <#if schemaItem.constraints.minLength?has_content>Minimum length : ${schemaItem.constraints.minLength}<br></#if>
                     <#if schemaItem.constraints.maxLength?has_content>Maximum length : ${schemaItem.constraints.maxLength}<br></#if>
-                    <#if schemaItem.constraints.unique=true><small class="far fa-check-circle text-success"></small> Is unique</#if>
+                    <#if schemaItem.constraints.unique=true><small class="fa-regular fa-circle-check text-success"></small> Is unique</#if>
                   </span>
                 <#else>
                   <span class="nodata" />

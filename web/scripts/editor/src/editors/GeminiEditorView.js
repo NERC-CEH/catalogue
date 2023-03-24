@@ -288,7 +288,7 @@ export default EditorView.extend({
           modelAttribute: 'notGEMINI',
           label: 'Exclude from GEMINI obligations',
           helpText: `
-<p>Tick this box to exclude this resource from GEMINI/INSPIRE obligations.</p><p <b class='text-red'><span class='fas fa-exclamation-triangle'>&nbsp;</span> WARNING.  This should only be ticked if the data DOES NOT relate to an area where an EU Member State exercises jurisdictional rights</b>.</p>
+<p>Tick this box to exclude this resource from GEMINI/INSPIRE obligations.</p><p <b class='text-red'><span class='fa-solid fa-exclamation-triangle'>&nbsp;</span> WARNING.  This should only be ticked if the data DOES NOT relate to an area where an EU Member State exercises jurisdictional rights</b>.</p>
 `
         })
       ]
@@ -630,7 +630,7 @@ export default EditorView.extend({
           helpText: `\
 <p>You can add information not documented elsewhere here. This includes links to related papers, grey literature or websites.  For example, project websites or papers/reports that provide relevant supporting information <strong>but which do not cite</strong> this resource</p>
 <p>When linking to published articles, please use DOIs whenever possible.</p>
-<p><small class='text-danger'><i class='fas fa-exclamation-triangle'> </i> NOTE: Some websites may be maintained for a limited period and may therefore soon become unavailable.</small></p>\
+<p><small class='text-danger'><i class='fa-solid fa-exclamation-triangle'> </i> NOTE: Some websites may be maintained for a limited period and may therefore soon become unavailable.</small></p>\
 `
         }),
 

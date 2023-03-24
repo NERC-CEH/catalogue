@@ -19,7 +19,7 @@
 
         <#if condition?? && condition?has_content && condition=="obsolete">
             <div class="alert alert-danger">
-              <b><i class="fas fa-exclamation-triangle"></i> PLEASE DO NOT USE THIS DATA - it is obsolete.</b>
+              <b><i class="fa-solid fa-triangle-exclamation"></i> PLEASE DO NOT USE THIS DATA - it is obsolete.</b>
             </div>
         </#if>
 
