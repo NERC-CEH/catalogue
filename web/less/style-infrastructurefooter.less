@@ -42,13 +42,21 @@
         display: flex;
         gap: 1em;
         a.social {
+          --size: 52px;
           color: black;
           text-decoration: none;
-          i {
-            background-color: white;
-            padding: 1em 0.35em;
-            border-radius: 1000px;
-            min-width: 45px;
+          background-color: white;
+          border-radius: 100%;
+          height: var(--size);
+          width: var(--size);
+          display: grid;
+          justify-content: center;
+          align-items: center;
+          &:hover,
+          &:focus {
+            background-color: transparent;
+            color: #fff;
+            outline: 3px solid white;
           }
         }
       }
