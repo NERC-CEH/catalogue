@@ -1,17 +1,11 @@
 <#compress>
 <#import "../functions.ftlh" as func>
 
-<#if type=='dataset' || type=='nonGeographicDataset'>
-  <#assign docType = "Dataset">
-<#elseif type=='application'>
-  <#assign docType = "SoftwareSourceCode">
-</#if>
-
 <#if onlineResources?has_content>
   <#assign supDoc = func.filterRegex(func.filter(onlineResources, "function", "information"), "url", "https://data-package.ceh.ac.uk/sd/")>
 </#if>
 
-<#if docType?has_content>
+<#if type=='dataset' || type=='nonGeographicDataset' || type=='application'>
 {
 
   "title": "${title}",
