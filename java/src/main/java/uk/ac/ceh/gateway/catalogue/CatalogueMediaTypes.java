@@ -60,6 +60,10 @@ public class CatalogueMediaTypes {
     public static final String RDF_SCHEMAORG_VALUE = "application/vnd.schemaorg.ld+json";
     public static final MediaType RDF_SCHEMAORG_JSON = parseMediaType(RDF_SCHEMAORG_VALUE);
 
+    public static final String CEDA_YAML_SHORT = "ceda";
+    public static final String CEDA_YAML_VALUE = "application/ceda+json";
+    public static final MediaType CEDA_YAML_JSON = parseMediaType(CEDA_YAML_VALUE);
+
     public static final String RDF_TTL_SHORT = "ttl";
     public static final String RDF_TTL_VALUE = "text/turtle";
     public static final MediaType RDF_TTL = parseMediaType(RDF_TTL_VALUE);
