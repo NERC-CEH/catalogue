@@ -56,6 +56,10 @@
   "url":"${uri}",
   </#if>
 
+<#if parameters?? && parameters?has_content>
+  "variableMeasured": [<#list parameters as param>"${param.value}"<#sep>,</#list>],
+</#if>
+
   <#if descriptiveKeywords?has_content>
     <#assign kwlist = [] >
     <#list descriptiveKeywords as descriptiveKeyword>

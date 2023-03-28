@@ -20,20 +20,26 @@
   </titles>
   <publisher>NERC EDS Environmental Information Data Centre</publisher>
   <publicationYear><#if doc.datasetReferenceDate.publicationDate??>${doc.datasetReferenceDate.publicationDate.year?c}</#if></publicationYear>
+  
+  <#assign subjectList = []>
   <#if doc.descriptiveKeywords?has_content>
-  <subjects>
     <#list doc.descriptiveKeywords as descriptiveKeyword>
-    <#list descriptiveKeyword.keywords as keyword>
-    <#if keyword.value?has_content>
-      <#if keyword.uri?has_content>
-      <subject valueURI="${keyword.uri}">${keyword.value}</subject>
-      <#else>
-      <subject>${keyword.value}</subject>
+      <#assign subjectList = subjectList + descriptiveKeyword.keywords>
+    </#list>
+  </#if>
+  <#if doc.parameters?has_content>
+    <#assign subjectList = subjectList + doc.parameters>
+  </#if>
+  <#if subjectList?has_content>
+    <#list subjectList as subject>
+      <#if subject.value?has_content>
+        <#if subject.uri?has_content>
+        <subject valueURI="${subject.uri}">${subject.value}</subject>
+        <#else>
+        <subject>${subject.value}</subject>
+        </#if>
       </#if>
-    </#if>
     </#list>
-    </#list>
-  </subjects>
   </#if>
 
   <#if (pocs?? && pocs?has_content) || (rightsHolders?? && rightsHolders?has_content) || (custodians?? && custodians?has_content) >

@@ -6,6 +6,7 @@ import {
   ContactView,
   DatasetReferenceDateView,
   DescriptiveKeywordView,
+  KeywordVocabularyView,
   DistributionFormatView, FundingView,
   InspireThemeView, MapDataSourceView,
   OnlineResourceView,
@@ -239,7 +240,7 @@ export default EditorView.extend({
     },
     {
       label: 'Classification',
-      title: 'Categories and keywords',
+      title: 'Categories, keywords and parameters',
       views: [
         new ParentView({
           model: this.model,
@@ -253,22 +254,12 @@ export default EditorView.extend({
 `
         }),
 
-        new PredefinedParentView({
+        new ParentView({
           model: this.model,
-          ModelType: DescriptiveKeyword,
-          modelAttribute: 'descriptiveKeywords',
-          label: 'Keywords',
-          ObjectInputView: DescriptiveKeywordView,
-          multiline: true,
-          predefined: {
-            'Catalogue topic': {
-              type: 'Catalogue topic'
-            }
-          },
-          helpText: `\
-<p>Keywords (preferably taken from a controlled vocabulary) categorising and describing the data resource.</p>
-<p>Good quality keywords help to improve the efficiency of search, making it easier to find relevant records.</p>\
-`
+          modelAttribute: 'parameters',
+          label: 'Parameters measured',
+          ObjectInputView: KeywordVocabularyView,
+          multiline: true
         }),
 
         new ParentView({
@@ -280,6 +271,23 @@ export default EditorView.extend({
           helpText: `\
 <p>If the resource falls within the scope of an INSPIRE theme it must be declared here.</p>
 <p>Conformity is the degree to which the <i class='text-red'>data</i> conforms to the relevant INSPIRE data specification.</p>\
+`
+        }),
+        new PredefinedParentView({
+          model: this.model,
+          ModelType: DescriptiveKeyword,
+          modelAttribute: 'descriptiveKeywords',
+          label: 'Other keywords',
+          ObjectInputView: DescriptiveKeywordView,
+          multiline: true,
+          predefined: {
+            'Catalogue topic': {
+              type: 'Catalogue topic'
+            }
+          },
+          helpText: `\
+<p>Keywords (preferably taken from a controlled vocabulary) categorising and describing the data resource.</p>
+<p>Good quality keywords help to improve the efficiency of search, making it easier to find relevant records.</p>\
 `
         }),
 

@@ -55,15 +55,20 @@ dct:type dcmitype:Dataset ;
 </#if>
 
 <#-- Keywords -->
-<#if descriptiveKeywords?has_content>
-  dcat:keyword
-  <#list descriptiveKeywords as descriptiveKeyword>
-  <#list descriptiveKeyword.keywords as keyword>
-    <#if keyword.value?has_content>
-      "${keyword.value}"<#sep>,
-    </#if>
-  </#list><#sep>,
-  </#list> ;
+<#if allKeywords?has_content>
+cat:keyword
+  <#list allKeywords as keyword>
+    <#if keyword.uri?has_content>
+      <#if keyword.value?has_content>
+        <${keyword.uri}>, "${keyword.value}"<#t>
+      <#else>
+        "${keyword.uri}"<#t>
+      </#if>
+    <#else>
+      "${keyword.value}"<#t>
+    </#if><#sep>,</#sep><#t>
+  </#list>
+;
 </#if>
 
 <#--Distribution-->
