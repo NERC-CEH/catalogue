@@ -135,6 +135,9 @@
                   <li>
                     <a href="/upload/${id}">Manage data</a>
                   </li>
+                  <li>
+                    <a href="${uri}?format=ceda">CEDA Archive yaml file</a>
+                  </li>
                 </#if>
                 <#list orders>
                   <#items as testLink>
