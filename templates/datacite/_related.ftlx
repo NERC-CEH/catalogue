@@ -1,17 +1,23 @@
 <#if doc.onlineResources?has_content>
   <#assign infoResources = func.filterRegex(func.filter(doc.onlineResources, "function", "information"), "url", "https://data-package.ceh.ac.uk/sd/")>
 </#if>
-<#if doc.incomingRelationships?has_content>
+<#if doc.incomingRelationships?has_content && doc.incomingRelationships?size gt 0>
   <#assign rel_supersededBy = func.filter(doc.incomingRelationships, "rel", "https://vocabs.ceh.ac.uk/eidc#supersedes")>
 </#if>
-<#if doc.relatedRecords?has_content>
+<#if doc.relatedRecords?size gt 0 && doc.relatedRecords?has_content>
   <#assign rel_supersedes = func.filter(doc.relatedRecords, "rel", "https://vocabs.ceh.ac.uk/eidc#supersedes")>
 </#if>
 
+<#if doc.relatedRecords?size gt 0 && doc.relatedRecords?has_content>
+  <#list doc.relatedRecords as item>
+    ${item}
+   </#list>
+</#if>
+<#--
 <#if doc.incomingCitations?has_content || infoResources?has_content || rel_supersededBy?has_content || rel_supersedes?has_content>
   <relatedIdentifiers>
     
-    <#if infoResources?has_content>
+    <#if infoResources?has_content && infoResources?size gt 0>
       <#list infoResources as infoResource>
         <relatedIdentifier relatedIdentifierType="URL" relationType="IsDescribedBy" resourceTypeGeneral="Text">${infoResource.url}</relatedIdentifier>
       </#list>
@@ -29,7 +35,7 @@
       </#list> 
     </#if>
 
-    <#if doc.incomingCitations?has_content>
+    <#if doc.incomingCitations?has_content  && doc.incomingCitations?size gt 0>
       <#list doc.incomingCitations as link>
         <#if link.url?matches("^http(|s)://(|dx.)doi.org/10.\\d{2,9}/.+$")>
           <#assign idtype="DOI", uri=link.url?replace("http://dx.doi.org/","")?replace("http://doi.org/","")?replace("https://doi.org/","")>
@@ -42,3 +48,4 @@
   
   </relatedIdentifiers>
 </#if>
+-->
