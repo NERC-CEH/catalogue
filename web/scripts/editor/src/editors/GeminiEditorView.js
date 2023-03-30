@@ -239,8 +239,8 @@ export default EditorView.extend({
       ]
     },
     {
-      label: 'Classification',
-      title: 'Categories, keywords and parameters',
+      label: 'Keywords/Tags',
+      title: 'Keywords & tags ',
       views: [
         new ParentView({
           model: this.model,
