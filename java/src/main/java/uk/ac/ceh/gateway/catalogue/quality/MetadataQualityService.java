@@ -73,7 +73,6 @@ public class MetadataQualityService {
                 val checks = new ArrayList<MetadataCheck>();
                 checkBasics(parsedDoc).ifPresent(checks::addAll);
                 checkPublishedData(parsedDoc).ifPresent(checks::addAll);
-                //checkRelatedRecords(parsedDoc).ifPresent(checks::add);
                 checkSpatialDataset(parsedDoc).ifPresent(checks::addAll);
                 checkService(parsedDoc).ifPresent(checks::addAll);
                 checkNonGeographicDatasets(parsedDoc).ifPresent(checks::addAll);
