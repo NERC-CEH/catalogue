@@ -16,8 +16,8 @@
   </#if>
 </#macro>
 
-<#if parameters?has_content>
-  <@keywordList parameters "Parameters" true/>
+<#if dataAttributes?has_content>
+  <@keywordList dataAttributes "Data attributes" true/>
 </#if>
 
 <#if topicCategories?has_content>

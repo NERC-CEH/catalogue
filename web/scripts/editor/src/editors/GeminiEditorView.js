@@ -256,8 +256,8 @@ export default EditorView.extend({
 
         new ParentView({
           model: this.model,
-          modelAttribute: 'parameters',
-          label: 'Parameters measured',
+          modelAttribute: 'dataAttributes',
+          label: 'Data attributes',
           ObjectInputView: KeywordVocabularyView,
           multiline: true
         }),
