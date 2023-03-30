@@ -69,6 +69,10 @@ public class JenaIndexMetadataDocumentGenerator implements IndexGenerator<Metada
     }
 
     public Resource resource(String id) {
-        return createResource(documentIdentifierService.generateUri(id));
+        if (id.startsWith("http")) {
+            return createResource(id);
+        } else {
+            return createResource(documentIdentifierService.generateUri(id));
+        }
     }
 }

@@ -17,6 +17,9 @@ import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
@@ -24,6 +27,30 @@ public class JenaIndexMetadataDocumentGeneratorTest {
   @InjectMocks private JenaIndexMetadataDocumentGenerator generator;
   @Mock private DocumentIdentifierService service;
 
+  @Test
+  void generateResourceFromId() {
+    //given
+    val id = "123-456-789";
+    given(service.generateUri(id)).willReturn("https://example.com/123-456-789");
+
+    //when
+    generator.resource(id);
+
+    //then
+    verify(service).generateUri(id);
+  }
+
+  @Test
+  void generateResourceFromUri() {
+    //given
+    val uri = "https://example.som/123-456-789";
+
+    //when
+    generator.resource(uri);
+
+    //then
+    verifyNoInteractions(service);
+  }
   @Test
   void emptyIdentifierDoesNotGetIndexed() {
     //Given
