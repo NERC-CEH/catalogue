@@ -7,7 +7,7 @@ export default Backbone.View.extend({
   className: 'row',
 
   events: {
-    'click button.remove': 'delete'
+    'click button.editor-button-remove': 'delete'
   },
 
   initialize (options) {

@@ -1,4 +1,5 @@
-<#if descriptiveKeywords??>
+<#assign all_keywords = []>
+<#if descriptiveKeywords?? || dataAttributes??>
 
   <#function controlledKeywords hash regex match=true>
       <#local result = []>
@@ -16,12 +17,17 @@
       <#return result>
   </#function>
 
-  <#assign all_keywords = []>
-  <#list descriptiveKeywords as descriptiveKeyword>
-    <#list descriptiveKeyword.keywords as keyword>
-      <#assign all_keywords = all_keywords + [keyword]>
+  <#if descriptiveKeywords??>
+    <#list descriptiveKeywords as descriptiveKeyword>
+      <#list descriptiveKeyword.keywords as keyword>
+        <#assign all_keywords = all_keywords + [keyword]>
+      </#list>
     </#list>
-  </#list>
+  </#if>
+
+  <#if dataAttributes??>
+    <#assign all_keywords = all_keywords + dataAttributes>
+  </#if>
 
   <#assign 
     keywords_withURIs = controlledKeywords(all_keywords, "^http(s?)://.+")
@@ -41,44 +47,45 @@
     otherControlled_keywords = controlledKeywords(controlledKeywords(controlledKeywords(controlledKeywords(keywords_withURIs, wikidata, false), gemet, false), geonames, false), nercvocabs, false)
   >
 
-<#macro returnKeywordsXML keywordList vocabName='' vocabdate='2000-01-01'>
-   <#if keywordList?has_content>
-    <gmd:descriptiveKeywords>
-      <gmd:MD_Keywords>
-        <#list keywordList as item>
-        <gmd:keyword>
-          <#if item.uri?has_content>
-            <gmx:Anchor xlink:href="${item.uri}">${item.value}</gmx:Anchor>
-          <#else>
-            <gco:CharacterString>${item.value}</gco:CharacterString>
+  <#macro returnKeywordsXML keywordList vocabName='' vocabdate='2000-01-01'>
+    <#if keywordList?has_content>
+      <gmd:descriptiveKeywords>
+        <gmd:MD_Keywords>
+          <#list keywordList as item>
+          <gmd:keyword>
+            <#if item.uri?has_content>
+              <gmx:Anchor xlink:href="${item.uri}">${item.value}</gmx:Anchor>
+            <#else>
+              <gco:CharacterString>${item.value}</gco:CharacterString>
+            </#if>
+          </gmd:keyword>
+          </#list>
+          <#if vocabName?has_content>
+          <gmd:thesaurusName>
+            <gmd:CI_Citation>
+              <gmd:title><gco:CharacterString>${vocabName}</gco:CharacterString></gmd:title>
+              <gmd:date>
+                <gmd:CI_Date>
+                  <gmd:date><gco:Date>${vocabdate}</gco:Date></gmd:date>
+                  <gmd:dateType>
+                    <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="creation">creation</gmd:CI_DateTypeCode>
+                  </gmd:dateType>
+                </gmd:CI_Date>
+              </gmd:date>
+            </gmd:CI_Citation>
+          </gmd:thesaurusName>
           </#if>
-        </gmd:keyword>
-        </#list>
-        <#if vocabName?has_content>
-        <gmd:thesaurusName>
-          <gmd:CI_Citation>
-            <gmd:title><gco:CharacterString>${vocabName}</gco:CharacterString></gmd:title>
-            <gmd:date>
-              <gmd:CI_Date>
-                <gmd:date><gco:Date>${vocabdate}</gco:Date></gmd:date>
-                <gmd:dateType>
-                  <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="creation">creation</gmd:CI_DateTypeCode>
-                </gmd:dateType>
-              </gmd:CI_Date>
-            </gmd:date>
-          </gmd:CI_Citation>
-        </gmd:thesaurusName>
-        </#if>
-      </gmd:MD_Keywords>
-    </gmd:descriptiveKeywords>
+        </gmd:MD_Keywords>
+      </gmd:descriptiveKeywords>
+    </#if>
+  </#macro>
+
+  <#if all_keywords?has_content>
+    <#assign allOtherKeywords = otherControlled_keywords + keywords_withoutURIs>
+    <@returnKeywordsXML wikidata_keywords 'Wikidata' '2012-10-29'/>
+    <@returnKeywordsXML gemet_keywords 'GEMET - Concepts, version 4.1.3' '2019-01-28'/>
+    <@returnKeywordsXML geonames_keywords 'GeoNames' '2006-01-01' />
+    <@returnKeywordsXML nerc_keywords 'NERC Vocabulary Server version 2.0' '2016-08-01' />
+    <@returnKeywordsXML allOtherKeywords />
   </#if>
-</#macro>
-
-  <#assign allOtherKeywords = otherControlled_keywords + keywords_withoutURIs>
-  <@returnKeywordsXML wikidata_keywords 'Wikidata' '2012-10-29'/>
-  <@returnKeywordsXML gemet_keywords 'GEMET - Concepts, version 4.1.3' '2019-01-28'/>
-  <@returnKeywordsXML geonames_keywords 'GeoNames' '2006-01-01' />
-  <@returnKeywordsXML nerc_keywords 'NERC Vocabulary Server version 2.0' '2016-08-01' />
-  <@returnKeywordsXML allOtherKeywords />
-
 </#if>

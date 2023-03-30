@@ -1,13 +1,35 @@
+<#macro keywordList list listTitle="Keywords" commaseparated=false>
+  <dt>${listTitle}</dt>
+  <dd class="autolist">
+    <#list list as item>
+      <@displayLinkedKeyword item.value item.uri/>
+      <#sep><#if commaseparated=true>,<#else><br></#if></#sep>
+    </#list>
+</#macro>
+
+<#macro displayLinkedKeyword value="" uri="">
+  <#if uri?has_content>
+    <abbr title="${uri}">${value?trim}</abbr>
+    <a href="${uri}" target="_blank" rel="noopener noreferrer" class="externalVocabularyLink"><sup class="fa-solid fa-xs fa-arrow-up-right-from-square"></sup></a>
+  <#else>
+    ${value?trim}
+  </#if>
+</#macro>
+
+<#if dataAttributes?has_content>
+  <@keywordList dataAttributes "Data attributes" true/>
+</#if>
+
 <#if topicCategories?has_content>
-<dt>Topic categories</dt>
-<dd>
-  <#list topicCategories as topic>
-    <#if topic.uri?has_content>
-      <a href="${topic.uri}" target="_blank" rel="noopener noreferrer">${codes.lookup('topicCategory', topic.value, 'name')!topic.value}</a> <#if topic_has_next>, </#if>
-    <#else>
-      <span>${codes.lookup('topicCategory', topic.value, 'name')!topic.value}</span><#if topic_has_next>, </#if>
-    </#if>
-    
+  <@keywordList topicCategories "Topic categories"/>
+</#if>
+
+<#if inspireThemes??>
+  <dt>INSPIRE theme<#if inspireThemes?size gt 1>s</#if></dt>
+  <dd >
+  <#list inspireThemes?sort_by("theme") as inspireTheme>
+    <@displayLinkedKeyword inspireTheme.theme inspireTheme.uri/>
+    <#sep><br></#sep>
   </#list>
 </dd>
 </#if>
@@ -25,32 +47,8 @@
       <#assign allKeywords = allKeywords + [keyword]>
   </#list>
 </#if>
+
 <#if allKeywords?has_content>
-<dt>Keywords</dt>
-<dd class="keywords">
-  <#list allKeywords?sort_by("value") as keyword>
-    <span>
-    <#if keyword.uri?has_content>
-      <abbr title="${keyword.uri}">${keyword.value?trim}</abbr><a href="${keyword.uri}" target="_blank" rel="noopener noreferrer"><sup class="fa-solid fa-sm fa-arrow-up-right-from-square"></sup></a><#if keyword_has_next>,&nbsp;</#if>
-    <#else>
-      ${keyword.value?trim}<#if keyword_has_next>,&nbsp;</#if>
-    </#if>
-    </span>
-  </#list>
-</dd>
+  <@keywordList allKeywords "Other keywords" true/>
 </#if>
 
-<#if inspireThemes??>
-  <dt>INSPIRE Theme</dt>
-  <dd >
-  <#list inspireThemes?sort_by("theme") as inspireTheme>
-    <span>
-    <#if inspireTheme.uri?has_content>
-      <a href="${inspireTheme.uri}" target="_blank" rel="noopener noreferrer">${inspireTheme.theme?trim}</a><#if inspireTheme_has_next><br></#if>
-    <#else>
-      ${inspireTheme.theme?trim}<#if inspireTheme_has_next><br></#if>
-    </#if>
-    </span>
-  </#list>
-</dd>
-</#if>  

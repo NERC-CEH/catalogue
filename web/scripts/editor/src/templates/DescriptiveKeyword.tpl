@@ -4,7 +4,7 @@
   </div>
   <div class="col-sm-11">
     <select data-name="type" class="editor-input type" id="descriptiveKeyword<%= data.index %>type">
-      <option value="" selected >- Select Type -</option>
+      <option value="" selected >- Select Type (optional) -</option>
       <optgroup label="Keyword type" class="optgroup optgroup-eidc">
         <option value="Catalogue topic">Catalogue topic</option>
         <option value="dataCentre">Data Centre</option>
