@@ -22,6 +22,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
@@ -71,7 +72,7 @@ public class SITESImportService implements CatalogueImportService {
     private final RestTemplate restTemplate;
     private final String sitemapUrl;
     private final SolrClient solrClient;
-    private final XPath xPath;
+    private final XPathExpression xPath;
 
     // constructor
     public SITESImportService(
@@ -79,7 +80,7 @@ public class SITESImportService implements CatalogueImportService {
             @Qualifier("normal") RestTemplate restTemplate,
             SolrClient solrClient,
             @Value("${sites.import.url}") String sitemapUrl
-            ) throws ParserConfigurationException {
+            ) throws ParserConfigurationException, XPathExpressionException {
         log.info("Creating");
         this.documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         this.documentRepository = documentRepository;
@@ -87,56 +88,45 @@ public class SITESImportService implements CatalogueImportService {
         this.restTemplate = restTemplate;
         this.sitemapUrl = sitemapUrl;
         this.solrClient = solrClient;
-        this.xPath = XPathFactory.newInstance().newXPath();
+        this.xPath = XPathFactory.newInstance().newXPath().compile("/urlset/url/loc");
             }
 
     // methods start here
-    public List<String> getRemoteRecordList() throws IOException {
-        String sitesRecordExpression = "/urlset/url/loc";
-        List<String> results = new ArrayList<>();
-
+    @SneakyThrows
+    private List<String> getRemoteRecordList() {
         log.info("GET SITES sitemap at {}", sitemapUrl);
 
-        try {
-            XPathExpression sitesRecordXPath = xPath.compile(sitesRecordExpression);
-            Document xmlSitemap = documentBuilder.parse(sitemapUrl);
-            NodeList recordList = (NodeList) sitesRecordXPath.evaluate(xmlSitemap, XPathConstants.NODESET);
-            int numRecords = recordList.getLength();
-            for (int i=0; i<numRecords; i++){
-                results.add(recordList.item(i).getTextContent());
-            }
-        } catch (SAXException | IOException ex) {
-            // generic exceptions
-            throw new IOException();
-        } catch (XPathExpressionException ex) {
-            log.error("This should never happen; the XPathExpression is fixed and valid.");
+        // prep
+        List<String> results = new ArrayList<>();
+
+        Document xmlSitemap = documentBuilder.parse(sitemapUrl);
+        NodeList recordList = (NodeList) xPath.evaluate(xmlSitemap, XPathConstants.NODESET);
+        int numRecords = recordList.getLength();
+        for (int i=0; i<numRecords; i++){
+            results.add(recordList.item(i).getTextContent());
         }
         return results;
     }
 
-    public Map<String, String> getLocalRecordMapping() throws IOException {
-        // form and make SOLR query
-        SolrDocumentList resultList = null;
-        Map<String, String> resultMapping = new HashMap<>(5000);
-
+    @SneakyThrows
+    private Map<String, String> getLocalRecordMapping() throws IOException {
         log.info("GET locally imported records");
 
-        try {
-            SolrQuery query = new SolrQuery();
-            query.setParam(CommonParams.Q, "importId:https\\://hdl.handle.net/11676.1/*");
-            query.setParam(CommonParams.FL, "importId,identifier");
-            // Ugh, there doesn't seem to be a way to return all results. To avoid
-            // dealing with pagination just abort if 10000000 results are returned,
-            // since we won't have checked all the records.
-            //
-            // At time of writing there are 881 records in the sitemap, so this
-            // should basically never happen before the heat death of the universe.
-            query.setRows(10000000);
-            resultList = solrClient.query("documents", query, POST).getResults();
-        } catch (IOException | SolrServerException | BaseHttpSolrClient.RemoteSolrException ex) {
-            // generic exceptions
-            throw new IOException();
-        }
+        // prep
+        Map<String, String> resultMapping = new HashMap<>(5000);
+
+        // form and make SOLR query
+        SolrQuery query = new SolrQuery();
+        query.setParam(CommonParams.Q, "importId:https\\://hdl.handle.net/11676.1/*");
+        query.setParam(CommonParams.FL, "importId,identifier");
+        // Ugh, there doesn't seem to be a way to return all results. To avoid
+        // dealing with pagination just abort if 10000000 results are returned,
+        // since we won't have checked all the records.
+        //
+        // At time of writing there are 881 records in the sitemap, so this
+        // should basically never happen before the heat death of the universe.
+        query.setRows(10000000);
+        SolrDocumentList resultList = solrClient.query("documents", query, POST).getResults();
 
         // raise warning and abort, as promised above
         if (resultList.getNumFound() >= 10000000L){
@@ -155,54 +145,50 @@ public class SITESImportService implements CatalogueImportService {
         return resultMapping;
     }
 
-    public JsonNode getFullRemoteRecord(String remoteRecordId) throws IOException {
+    @SneakyThrows
+    private JsonNode getFullRemoteRecord(String remoteRecordId) {
         log.info("GET record {}", remoteRecordId);
 
-        // lazy exception handling for now
-        try {
-            // get record HTML as String
-            // in the SITES sitemap, remoteRecordId is the URL to the record
-            HttpHeaders headers = new HttpHeaders();
-            ResponseEntity<String> response = restTemplate.exchange(
-                    remoteRecordId,
-                    HttpMethod.GET,
-                    new HttpEntity<>(headers),
-                    String.class
-                    );
-            String recordAsString = response.getBody();
+        // get record HTML as String
+        // in the SITES sitemap, remoteRecordId is the URL to the record
+        HttpHeaders headers = new HttpHeaders();
+        ResponseEntity<String> response = restTemplate.exchange(
+                remoteRecordId,
+                HttpMethod.GET,
+                new HttpEntity<>(headers),
+                String.class
+                );
+        String recordAsString = response.getBody();
 
-            // extract ld+json string from HTML
-            //
-            // Yes, this isn't a stable way to retrieve the content of a tag...
-            // but the XML isn't well-formed so until they fix it this will have to do
-            BufferedReader reader = new BufferedReader(new StringReader(recordAsString));
-            StringBuilder builder = new StringBuilder();
-            String line = null;
-            boolean started = false;
+        // extract ld+json string from HTML
+        //
+        // Yes, this isn't a stable way to retrieve the content of a tag...
+        // but the XML isn't well-formed so until they fix it this will have to do
+        BufferedReader reader = new BufferedReader(new StringReader(recordAsString));
+        StringBuilder builder = new StringBuilder();
+        String line = null;
+        boolean started = false;
 
-            while((line=reader.readLine()) != null){
-                if(line.contains("<script type=\"application/ld+json\">")){
-                    started = true;
-                    continue;
-                }
-                if(started){
-                    if(line.contains("</script>")){
-                        break;
-                    }
-                    builder.append(line);
-                }
+        while((line=reader.readLine()) != null){
+            if(line.contains("<script type=\"application/ld+json\">")){
+                started = true;
+                continue;
             }
-            String recordJSONString = builder.toString();
-
-            // parse ld+json string and return
-            return objectMapper.readTree(recordJSONString);
-        } catch (RestClientResponseException | IOException ex) {
-            // generic exceptions
-            throw new IOException();
+            if(started){
+                if(line.contains("</script>")){
+                    break;
+                }
+                builder.append(line);
+            }
         }
+        String recordJSONString = builder.toString();
+
+        // parse ld+json string and return
+        return objectMapper.readTree(recordJSONString);
     }
 
-    public String createRecord(String remoteRecordId, JsonNode parsedRecord, CatalogueUser user) throws DocumentRepositoryException {
+    @SneakyThrows
+    private String createRecord(String remoteRecordId, JsonNode parsedRecord, CatalogueUser user) {
         // prep
         ElterDocument newRecord = new ElterDocument();
 
@@ -227,7 +213,8 @@ public class SITESImportService implements CatalogueImportService {
         return savedDocument.getId();
     }
 
-    public void updateRecord(String localRecordId, String remoteRecordId, JsonNode parsedRecord, CatalogueUser user) throws DocumentRepositoryException {
+    @SneakyThrows
+    private void updateRecord(String localRecordId, String remoteRecordId, JsonNode parsedRecord, CatalogueUser user) {
         // prep
         ElterDocument newDocument = new ElterDocument();
 
@@ -258,16 +245,10 @@ public class SITESImportService implements CatalogueImportService {
         // prep
         log.info("Running SITES metadata import...");
         CatalogueUser importUser = new CatalogueUser().setUsername("SITES metadata import").setEmail("info@fieldsites.se");
-        List<String> remoteRecordList = null;
         Map<String, String> localRecordList = null;
 
         // get remote records
-        try {
-            remoteRecordList = getRemoteRecordList();
-        } catch (IOException ex) {
-            log.error("Error retrieving remote records; aborting import");
-            return;
-        }
+        List<String> remoteRecordList = getRemoteRecordList();
 
         // get local records
         try {
@@ -282,27 +263,16 @@ public class SITESImportService implements CatalogueImportService {
         for (int i=0; i<3; i++){
             // get record
             String recordUrl = remoteRecordList.get(i);
-            JsonNode parsedRecord = null;
-            try {
-                parsedRecord = getFullRemoteRecord(recordUrl);
-            } catch (IOException ex) {
-                log.error("Error retrieving record {}; skipping", recordUrl);
-                continue;
-            }
+            JsonNode parsedRecord = getFullRemoteRecord(recordUrl);
 
             if (parsedRecord.get("@type").asText().equals("Dataset")){
-                try {
-                    String remoteRecordId = parsedRecord.get("identifier").asText();
-                    if (localRecordList.containsKey(remoteRecordId)) {
-                        updateRecord(localRecordList.get(remoteRecordId), remoteRecordId,  parsedRecord, importUser);
-                    }
-                    else {
-                        String newId = createRecord(remoteRecordId, parsedRecord, importUser);
-                        log.info("New document ID is {}", newId);
-                    }
-                } catch (DocumentRepositoryException ex) {
-                    log.error("Error saving record {}; aborting import", recordUrl);
-                    return;
+                String remoteRecordId = parsedRecord.get("identifier").asText();
+                if (localRecordList.containsKey(remoteRecordId)) {
+                    updateRecord(localRecordList.get(remoteRecordId), remoteRecordId,  parsedRecord, importUser);
+                }
+                else {
+                    String newId = createRecord(remoteRecordId, parsedRecord, importUser);
+                    log.info("New document ID is {}", newId);
                 }
             }
             else {
