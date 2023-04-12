@@ -35,6 +35,7 @@ import org.apache.solr.common.params.CommonParams;
 import static org.apache.solr.client.solrj.SolrRequest.METHOD.POST;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -68,6 +69,7 @@ public class SITESImportService implements CatalogueImportService {
     private final DocumentRepository documentRepository;
     private final ObjectMapper objectMapper;
     private final RestTemplate restTemplate;
+    private final String sitemapUrl;
     private final SolrClient solrClient;
     private final XPath xPath;
 
@@ -75,28 +77,29 @@ public class SITESImportService implements CatalogueImportService {
     public SITESImportService(
             DocumentRepository documentRepository,
             @Qualifier("normal") RestTemplate restTemplate,
-            SolrClient solrClient
+            SolrClient solrClient,
+            @Value("${sites.import.url}") String sitemapUrl
             ) throws ParserConfigurationException {
         log.info("Creating");
         this.documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         this.documentRepository = documentRepository;
+        this.objectMapper = new ObjectMapper();
         this.restTemplate = restTemplate;
+        this.sitemapUrl = sitemapUrl;
         this.solrClient = solrClient;
         this.xPath = XPathFactory.newInstance().newXPath();
-        this.objectMapper = new ObjectMapper();
             }
 
     // methods start here
     public List<String> getRemoteRecordList() throws IOException {
-        String sitesSitemapUrl = "https://meta.fieldsites.se/sitemap.xml";
         String sitesRecordExpression = "/urlset/url/loc";
         List<String> results = new ArrayList<>();
 
-        log.info("GET SITES sitemap at {}", sitesSitemapUrl);
+        log.info("GET SITES sitemap at {}", sitemapUrl);
 
         try {
             XPathExpression sitesRecordXPath = xPath.compile(sitesRecordExpression);
-            Document xmlSitemap = documentBuilder.parse(sitesSitemapUrl);
+            Document xmlSitemap = documentBuilder.parse(sitemapUrl);
             NodeList recordList = (NodeList) sitesRecordXPath.evaluate(xmlSitemap, XPathConstants.NODESET);
             int numRecords = recordList.getLength();
             for (int i=0; i<numRecords; i++){
