@@ -88,16 +88,16 @@ public class SITESImportService implements CatalogueImportService {
 
     // methods start here
     public List<String> getRemoteRecordList() throws IOException {
-        String SITESSitemapURL = "https://meta.fieldsites.se/sitemap.xml";
-        String SITESRecordExpression = "/urlset/url/loc";
-        List<String> results = new ArrayList<String>();
+        String sitesSitemapUrl = "https://meta.fieldsites.se/sitemap.xml";
+        String sitesRecordExpression = "/urlset/url/loc";
+        List<String> results = new ArrayList<>();
 
-        log.info("GET SITES sitemap at {}", SITESSitemapURL);
+        log.info("GET SITES sitemap at {}", sitesSitemapUrl);
 
         try {
-            XPathExpression SITESRecordXPath = xPath.compile(SITESRecordExpression);
-            Document xmlSitemap = documentBuilder.parse(SITESSitemapURL);
-            NodeList recordList = (NodeList) SITESRecordXPath.evaluate(xmlSitemap, XPathConstants.NODESET);
+            XPathExpression sitesRecordXPath = xPath.compile(sitesRecordExpression);
+            Document xmlSitemap = documentBuilder.parse(sitesSitemapUrl);
+            NodeList recordList = (NodeList) sitesRecordXPath.evaluate(xmlSitemap, XPathConstants.NODESET);
             int numRecords = recordList.getLength();
             for (int i=0; i<numRecords; i++){
                 results.add(recordList.item(i).getTextContent());
@@ -114,14 +114,14 @@ public class SITESImportService implements CatalogueImportService {
     public Map<String, String> getLocalRecordMapping() throws IOException {
         // form and make SOLR query
         SolrDocumentList resultList = null;
-        Map<String, String> resultMapping = new HashMap<String, String>(5000);
+        Map<String, String> resultMapping = new HashMap<>(5000);
 
         log.info("GET locally imported records");
 
         try {
             SolrQuery query = new SolrQuery();
-            query.setParam(CommonParams.Q, "importID:https\\://hdl.handle.net/11676.1/*");
-            query.setParam(CommonParams.FL, "importID,identifier");
+            query.setParam(CommonParams.Q, "importId:https\\://hdl.handle.net/11676.1/*");
+            query.setParam(CommonParams.FL, "importId,identifier");
             // Ugh, there doesn't seem to be a way to return all results. To avoid
             // dealing with pagination just abort if 10000000 results are returned,
             // since we won't have checked all the records.
@@ -144,7 +144,7 @@ public class SITESImportService implements CatalogueImportService {
         // populate mapping
         for (SolrDocument document : resultList){
             resultMapping.put(
-                    (String) document.getFieldValue("importID"),
+                    (String) document.getFieldValue("importId"),
                     (String) document.getFieldValue("identifier")
                     );
         }
@@ -152,16 +152,16 @@ public class SITESImportService implements CatalogueImportService {
         return resultMapping;
     }
 
-    public JsonNode getFullRemoteRecord(String remoteRecordID) throws IOException {
-        log.info("GET record {}", remoteRecordID);
+    public JsonNode getFullRemoteRecord(String remoteRecordId) throws IOException {
+        log.info("GET record {}", remoteRecordId);
 
         // lazy exception handling for now
         try {
             // get record HTML as String
-            // in the SITES sitemap, remoteRecordID is the URL to the record
+            // in the SITES sitemap, remoteRecordId is the URL to the record
             HttpHeaders headers = new HttpHeaders();
             ResponseEntity<String> response = restTemplate.exchange(
-                    remoteRecordID,
+                    remoteRecordId,
                     HttpMethod.GET,
                     new HttpEntity<>(headers),
                     String.class
@@ -199,7 +199,7 @@ public class SITESImportService implements CatalogueImportService {
         }
     }
 
-    public String createRecord(String remoteRecordID, JsonNode parsedRecord, CatalogueUser user) throws DocumentRepositoryException {
+    public String createRecord(String remoteRecordId, JsonNode parsedRecord, CatalogueUser user) throws DocumentRepositoryException {
         // prep
         ElterDocument newRecord = new ElterDocument();
 
@@ -208,7 +208,7 @@ public class SITESImportService implements CatalogueImportService {
         newRecord.setDescription(parsedRecord.get("description").asText());
         newRecord.setType("signpost");
         // import metadata
-        newRecord.setImportID(parsedRecord.get("identifier").asText());
+        newRecord.setImportId(parsedRecord.get("identifier").asText());
         newRecord.setImportLastModified(ZonedDateTime.now(ZoneId.of("UTC")));
 
         // save document
@@ -216,15 +216,15 @@ public class SITESImportService implements CatalogueImportService {
                 user,
                 newRecord,
                 "elter",
-                "Create new record " + remoteRecordID
+                "Create new record " + remoteRecordId
                 );
 
         // success
-        log.info("Successfully imported record {}", remoteRecordID);
+        log.info("Successfully imported record {}", remoteRecordId);
         return savedDocument.getId();
     }
 
-    public void updateRecord(String localRecordID, String remoteRecordID, JsonNode parsedRecord, CatalogueUser user) throws DocumentRepositoryException {
+    public void updateRecord(String localRecordId, String remoteRecordId, JsonNode parsedRecord, CatalogueUser user) throws DocumentRepositoryException {
         // prep
         ElterDocument newDocument = new ElterDocument();
 
@@ -233,22 +233,22 @@ public class SITESImportService implements CatalogueImportService {
         newDocument.setDescription(parsedRecord.get("description").asText());
         newDocument.setType("signpost");
         // import metadata
-        newDocument.setImportID(parsedRecord.get("identifier").asText());
+        newDocument.setImportId(parsedRecord.get("identifier").asText());
         newDocument.setImportLastModified(ZonedDateTime.now(ZoneId.of("UTC")));
 
         // save back
-        newDocument.setMetadata(documentRepository.read(localRecordID).getMetadata());
+        newDocument.setMetadata(documentRepository.read(localRecordId).getMetadata());
         documentRepository.save(
                 user,
                 newDocument,
-                localRecordID,
-                "Updated record " + remoteRecordID
+                localRecordId,
+                "Updated record " + remoteRecordId
                 );
         // success
-        log.info("Successfully updated record {}", remoteRecordID);
+        log.info("Successfully updated record {}", remoteRecordId);
     }
 
-    //public void processRecord(String remoteRecordID){}
+    //public void processRecord(String remoteRecordId){}
 
     @Scheduled(initialDelay = TimeConstants.ONE_MINUTE, fixedDelay = TimeConstants.SEVEN_DAYS)
     public void runImport(){
@@ -278,32 +278,32 @@ public class SITESImportService implements CatalogueImportService {
         // do only 3 records while testing
         for (int i=0; i<3; i++){
             // get record
-            String recordURL = remoteRecordList.get(i);
+            String recordUrl = remoteRecordList.get(i);
             JsonNode parsedRecord = null;
             try {
-                parsedRecord = getFullRemoteRecord(recordURL);
+                parsedRecord = getFullRemoteRecord(recordUrl);
             } catch (IOException ex) {
-                log.error("Error retrieving record {}; skipping", recordURL);
+                log.error("Error retrieving record {}; skipping", recordUrl);
                 continue;
             }
 
             if (parsedRecord.get("@type").asText().equals("Dataset")){
                 try {
-                    String remoteRecordID = parsedRecord.get("identifier").asText();
-                    if (localRecordList.containsKey(remoteRecordID)) {
-                        updateRecord(localRecordList.get(remoteRecordID), remoteRecordID,  parsedRecord, importUser);
+                    String remoteRecordId = parsedRecord.get("identifier").asText();
+                    if (localRecordList.containsKey(remoteRecordId)) {
+                        updateRecord(localRecordList.get(remoteRecordId), remoteRecordId,  parsedRecord, importUser);
                     }
                     else {
-                        String newID = createRecord(remoteRecordID, parsedRecord, importUser);
-                        log.info("New document ID is {}", newID);
+                        String newId = createRecord(remoteRecordId, parsedRecord, importUser);
+                        log.info("New document ID is {}", newId);
                     }
                 } catch (DocumentRepositoryException ex) {
-                    log.error("Error saving record {}; aborting import", recordURL);
+                    log.error("Error saving record {}; aborting import", recordUrl);
                     return;
                 }
             }
             else {
-                log.info("Skipping record {} as it is not of type \"Dataset\"", recordURL);
+                log.info("Skipping record {} as it is not of type \"Dataset\"", recordUrl);
             }
         }
     }

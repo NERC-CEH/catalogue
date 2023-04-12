@@ -70,7 +70,7 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
     private boolean linkedDocument;
     private String linkedDocumentUri;
     private String linkedDocumentType;
-    private String importID;
+    private String importId;
     private ZonedDateTime importLastModified;
 
 
