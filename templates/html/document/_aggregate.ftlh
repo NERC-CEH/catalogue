@@ -50,7 +50,7 @@
 			<#assign relatedDatasets = func.filter(supplemental, "function", "relatedDataset")>
 			<#if relatedDatasets?has_content && relatedDatasets?size gt 0 >
 				<#list relatedDatasets as item>
-					<@card item.url 'fa-solid fa-chart-column' 'Dataset (external)' item.name true/>
+					<@card item.url 'fa-solid fa-square-up-right' 'Dataset (external)' item.name true/>
 				</#list>
 			</#if>
 
