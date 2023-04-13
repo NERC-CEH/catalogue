@@ -6,6 +6,7 @@ import {
   ContactView,
   DatasetReferenceDateView,
   DescriptiveKeywordView,
+  KeywordVocabularyView,
   DistributionFormatView, FundingView,
   InspireThemeView, MapDataSourceView,
   OnlineResourceView,
@@ -19,17 +20,16 @@ import {
   ResourceMaintenanceView,
   ResourceTypeView, ServiceView,
   SingleObjectView, SpatialReferenceSystemView, SpatialRepresentationTypeView, SpatialResolutionView,
-  SupplementalEIDCView,
+  AdditionalLinksView, IncomingCitationView,
   TemporalExtentView,
   TextareaView,
   TopicCategoryView
 } from '../views'
 import {
-  AccessLimitation,
-  Contact,
+  AccessLimitation, Contact,
   DescriptiveKeyword, DistributionFormat, Funding,
   InspireTheme, MapDataSource,
-  MultipleDate, OnlineResource,
+  MultipleDate, OnlineResource, Supplemental,
   ResourceType, Service, SpatialResolution,
   TopicCategory
 } from '../models'
@@ -55,7 +55,7 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'resourceType',
           ModelType: ResourceType,
-          label: 'Resource Type',
+          label: 'Resource type',
           ObjectInputView: ResourceTypeView
         }),
 
@@ -239,8 +239,8 @@ export default EditorView.extend({
       ]
     },
     {
-      label: 'Classification',
-      title: 'Categories and keywords',
+      label: 'Keywords/Tags',
+      title: 'Keywords & tags ',
       views: [
         new ParentView({
           model: this.model,
@@ -254,22 +254,12 @@ export default EditorView.extend({
 `
         }),
 
-        new PredefinedParentView({
+        new ParentView({
           model: this.model,
-          ModelType: DescriptiveKeyword,
-          modelAttribute: 'descriptiveKeywords',
-          label: 'Keywords',
-          ObjectInputView: DescriptiveKeywordView,
-          multiline: true,
-          predefined: {
-            'Catalogue topic': {
-              type: 'Catalogue topic'
-            }
-          },
-          helpText: `\
-<p>Keywords (preferably taken from a controlled vocabulary) categorising and describing the data resource.</p>
-<p>Good quality keywords help to improve the efficiency of search, making it easier to find relevant records.</p>\
-`
+          modelAttribute: 'dataAttributes',
+          label: 'Data attributes',
+          ObjectInputView: KeywordVocabularyView,
+          multiline: true
         }),
 
         new ParentView({
@@ -283,13 +273,30 @@ export default EditorView.extend({
 <p>Conformity is the degree to which the <i class='text-red'>data</i> conforms to the relevant INSPIRE data specification.</p>\
 `
         }),
+        new PredefinedParentView({
+          model: this.model,
+          ModelType: DescriptiveKeyword,
+          modelAttribute: 'descriptiveKeywords',
+          label: 'Other keywords',
+          ObjectInputView: DescriptiveKeywordView,
+          multiline: true,
+          predefined: {
+            'Catalogue topic': {
+              type: 'Catalogue topic'
+            }
+          },
+          helpText: `\
+<p>Keywords (preferably taken from a controlled vocabulary) categorising and describing the data resource.</p>
+<p>Good quality keywords help to improve the efficiency of search, making it easier to find relevant records.</p>\
+`
+        }),
 
         new CheckboxView({
           model: this.model,
           modelAttribute: 'notGEMINI',
           label: 'Exclude from GEMINI obligations',
           helpText: `
-<p>Tick this box to exclude this resource from GEMINI/INSPIRE obligations.</p><p <b class='text-red'><span class='fas fa-exclamation-triangle'>&nbsp;</span> WARNING.  This should only be ticked if the data DOES NOT relate to an area where an EU Member State exercises jurisdictional rights</b>.</p>
+<p>Tick this box to exclude this resource from GEMINI/INSPIRE obligations.</p><p <b class='text-red'><span class='fa-solid fa-exclamation-triangle'>&nbsp;</span> WARNING.  This should only be ticked if the data DOES NOT relate to an area where an EU Member State exercises jurisdictional rights</b>.</p>
 `
         })
       ]
@@ -569,6 +576,7 @@ export default EditorView.extend({
     <p>This is an indication of the level of spatial detail/accuracy.</p><p>For gridded data, distance is the area of the ground (in metres) represented in each pixel. For point data, it is the degree of confidence in the point's location (e.g. for a point expressed as a six-figure grid reference, SN666781, the resolution would be 100m)</p>
     `
         })
+
       ]
     },
     {
@@ -613,15 +621,24 @@ export default EditorView.extend({
       views: [
         new ParentView({
           model: this.model,
-          modelAttribute: 'supplemental',
+          modelAttribute: 'incomingCitations',
+          ModelType: Supplemental,
           multiline: true,
-          label: 'Additional information',
-          ObjectInputView: SupplementalEIDCView,
+          label: 'Citations',
+          ObjectInputView: IncomingCitationView
+        }),
+
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'supplemental',
+          ModelType: Supplemental,
+          multiline: true,
+          label: 'Additional links',
+          ObjectInputView: AdditionalLinksView,
           helpText: `\
-<p>You can add information not documented elsewhere here. This includes links to related papers, grey literature or websites.  For example:</p>
-<ul><li>papers that cite this resource</li><li>papers/reports that provide relevant supporting information but which do not cite this resource</li><li>project websites</li></ul>
+<p>You can add information not documented elsewhere here. This includes links to related papers, grey literature or websites.  For example, project websites or papers/reports that provide relevant supporting information <strong>but which do not cite</strong> this resource</p>
 <p>When linking to published articles, please use DOIs whenever possible.</p>
-<p><small class='text-danger'><i class='fas fa-exclamation-triangle'> </i> NOTE: Some websites may be maintained for a limited period and may therefore soon become unavailable.</small></p>\
+<p><small class='text-danger'><i class='fa-solid fa-exclamation-triangle'> </i> NOTE: Some websites may be maintained for a limited period and may therefore soon become unavailable.</small></p>\
 `
         }),
 
@@ -670,8 +687,7 @@ export default EditorView.extend({
 <p>Include here details of any grants or awards that were used to generate this resource.</p>
 <p>If you include funding information, the Funding body is MANDATORY, other fields are useful but optional.</p>
 <p>Award URL is either the unique identifier for the award or sa link to the funder's  grant page (if it exists). It is <b>NOT</b> a link to a project website.</p>\
-`,
-          disabled
+`
         })
       ]
     },

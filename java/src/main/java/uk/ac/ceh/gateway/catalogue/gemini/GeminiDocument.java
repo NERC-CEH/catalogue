@@ -10,14 +10,13 @@ import uk.ac.ceh.gateway.catalogue.citation.Citation;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.indexing.solr.WellKnownText;
-import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
-import uk.ac.ceh.gateway.catalogue.model.Link;
-import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
+import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreement;
 
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.regex.Pattern.CASE_INSENSITIVE;
 import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.*;
@@ -32,7 +31,8 @@ import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAP
         @Template(called = "html/gemini.ftlh", whenRequestedAs = MediaType.TEXT_HTML_VALUE),
         @Template(called = "xml/gemini.ftlx", whenRequestedAs = GEMINI_XML_VALUE),
         @Template(called = "rdf/ttl.ftlh", whenRequestedAs = RDF_TTL_VALUE),
-        @Template(called = "schema.org/schema.org.ftlh", whenRequestedAs = RDF_SCHEMAORG_VALUE)
+        @Template(called = "schema.org/schema.org.ftlh", whenRequestedAs = RDF_SCHEMAORG_VALUE),
+        @Template(called = "ceda/ceda.ftlh", whenRequestedAs = CEDA_YAML_VALUE)
 })
 public class GeminiDocument extends AbstractMetadataDocument implements WellKnownText {
     private static final Set<String> ALLOWED_CITATION_FUNCTIONS = Set.of("isReferencedBy", "isSupplementTo");
@@ -47,7 +47,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private Number version;
     private List<String> alternateTitles, spatialRepresentationTypes, datasetLanguages,
             securityConstraints;
-    private List<Keyword> topicCategories, parameters;
+    private List<Keyword> topicCategories, dataAttributes;
     private List<Geometry> geometries;
     private List<DistributionInfo> distributionFormats;
     private List<DescriptiveKeywords> descriptiveKeywords;
@@ -60,7 +60,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private List<OnlineResource> onlineResources;
     private Set<Link> incomingRelationships;
     private List<SpatialReferenceSystem> spatialReferenceSystems;
-    private List<Supplemental> supplemental;
+    private List<Supplemental> incomingCitations, supplemental;
     private List<RelatedRecord> relatedRecords;
     @JsonIgnore
     private Citation citation;
@@ -99,7 +99,8 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     public String getResourceStatus() {
         return Optional.ofNullable(accessLimitation)
                 .map(AccessLimitation::getCode)
-                .orElse(null);
+                .filter(code -> !code.isEmpty())
+                .orElse("Unknown");
     }
 
     @Override
@@ -252,11 +253,25 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
                 .collect(Collectors.toList());
     }
     public long getIncomingCitationCount() {
-        return Optional.ofNullable(supplemental)
-                .orElse(Collections.emptyList())
-                .stream()
-                .filter(s -> ALLOWED_CITATION_FUNCTIONS.contains(s.getFunction()))
-                .count();
+        return Optional.ofNullable(incomingCitations)
+            .orElse(Collections.emptyList())
+            .size();
+    }
+
+    @Override
+    public Set<Relationship> getRelationships() {
+        val relations = Optional.ofNullable(super.getRelationships())
+            .orElse(Collections.emptySet());
+        val related = Optional.ofNullable(relatedRecords)
+            .orElse(Collections.emptyList())
+            .stream()
+            .map(RelatedRecord::toRelationship)
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .collect(Collectors.toSet());
+        return Stream.of(relations, related)
+            .flatMap(Collection::stream)
+            .collect(Collectors.toSet());
     }
 
 }

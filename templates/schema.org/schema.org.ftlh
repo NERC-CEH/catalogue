@@ -56,6 +56,10 @@
   "url":"${uri}",
   </#if>
 
+<#if dataAttributes?? && dataAttributes?has_content>
+  "variableMeasured": [<#list dataAttributes as da>"${da.value}"<#sep>,</#list>],
+</#if>
+
   <#if descriptiveKeywords?has_content>
     <#assign kwlist = [] >
     <#list descriptiveKeywords as descriptiveKeyword>

@@ -114,7 +114,7 @@
 <#macro returnToDocument>
     <div class="return">
         <a href="/documents/${id}">
-            <i class="btn-icon fas fa-arrow-left"></i>
+            <i class="btn-icon fa-solid fa-arrow-left"></i>
             <span>RETURN TO DOCUMENT: ${id}</span>
         </a>
     </div>
@@ -238,7 +238,7 @@
         href="/upload/${id}?format=csv"
         download="checksums_${id}.csv"
     >
-        <i class="btn-icon fas fa-file-code"></i>
+        <i class="btn-icon fa-regular fa-file-code"></i>
         <span>Download Checksum Report</span>
     </a>
 </#macro>

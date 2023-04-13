@@ -25,6 +25,7 @@ public class SolrIndex {
     private @Field List<String> elterDeimsSite;
     private @Field List<String> elterDeimsUri;
     private @Field String importId;
+    private @Field List<String> elterProjectName;
     private @Field List<String> funder;
     private @Field List<String> grant;
     private @Field String identifier;

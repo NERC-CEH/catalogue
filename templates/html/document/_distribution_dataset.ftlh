@@ -10,7 +10,9 @@
       <h2>Get the data</h2>
       <div class="distribution-dataset">
 
-        <#include "_status.ftlh">
+        <div class="statusMessage">
+          <#include "_status.ftlh">
+        </div>
 
         <#if resourceStatus == "Available" || resourceStatus == "Controlled" || resourceStatus == "Embargoed">
           <p class="licencePreamble">By accessing or using this dataset, you agree to the terms of the relevant licence agreement(s). You will ensure that this dataset is cited in any publication that describes research in which the data have been used.</p>
@@ -28,7 +30,7 @@
                 <#else>
                   <#assign onlineResourceUrl = onlineResource.url>                    
                 </#if>
-                <a href="${onlineResourceUrl}"><i class="fas fa-download text-info"></i>
+                <a href="${onlineResourceUrl}" class="btn btn-download"><span class="fa-solid fa-angles-down"></span>
                   <#if onlineResource.name?has_content>
                     ${onlineResource.name}
                   <#else>
@@ -40,12 +42,12 @@
 
             <#if offlineOrders?? && offlineOrders?has_content >
                 <#list offlineOrders as offlineOrder>
-                  <a href="${offlineOrder.url}"><i class="fas fa-file-signature"></i> <#if offlineOrder.description?has_content>${offlineOrder.description}<#elseif offlineOrder.name?has_content>${offlineOrder.name}<#else>Order data</#if></a>
+                  <a  class="btn btn-download" href="${offlineOrder.url}"><span class="fa-solid fa-file-signature"></span> <#if offlineOrder.description?has_content>${offlineOrder.description}<#elseif offlineOrder.name?has_content>${offlineOrder.name}<#else>Order data</#if></a>
                 </#list>
             </#if>
 
             <#if (downloadOrder.supportingDocumentsUrl)?has_content>
-              <a href="${downloadOrder.supportingDocumentsUrl}" title="Supporting information important for the re-use of this dataset"><i class="fas fa-file text-info"></i> Supporting documentation</a>
+              <a href="${downloadOrder.supportingDocumentsUrl}" title="Supporting information important for the re-use of this dataset" class="btn btn-supporting"><span class="fa-solid fa-angles-down"></span> Supporting documentation</a>
             </#if>
       
             </div>

@@ -4,7 +4,7 @@ import _ from 'underscore'
 
 export default Backbone.View.extend({
 
-  className: 'col-sm-3',
+  className: 'vocab',
 
   events: {
     'change input': 'select'

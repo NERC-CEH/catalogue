@@ -85,6 +85,7 @@
     <field name="elterDeimsSite" type="keywords"/>
     <field name="elterDeimsUri" type="keywords"/>
     <field name="importId" type="string"/>
+    <field name="elterProjectName" type="keywords"/>
     <field name="funder" type="keywords"/>
     <field name="rightsHolder" type="keywords"/>
     <field name="grant" type="text_general"/>

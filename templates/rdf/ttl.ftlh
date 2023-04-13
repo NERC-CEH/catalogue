@@ -23,7 +23,7 @@
 <${uri}>
   dct:title "${title}" ;
   <#if description?has_content>
-  dct:description "${description}" ;
+  dct:description "${description?replace("\n", " ")}" ;
   </#if>
   <#if boundingBoxes?has_content && boundingBoxes?has_content>
     <#list boundingBoxes as extent>
@@ -82,24 +82,30 @@
   ;
   </#if>
 
-  <#-- Subjects -->
+  <#-- Keywords -->
+  <#assign allKeywords = []>
   <#if descriptiveKeywords?has_content>
-  dct:subject
     <#list descriptiveKeywords as descriptiveKeyword>
-    <#list descriptiveKeyword.keywords as keyword>
+        <#assign allKeywords = allKeywords + descriptiveKeyword.keywords >
+    </#list>
+  </#if>
+
+  <#if allKeywords?has_content>
+  dct:subject
+    <#list allKeywords as keyword>
       <#if keyword.uri?has_content>
         <#if keyword.value?has_content>
-          <${keyword.uri}>, "${keyword.value}"<#sep>,
+          <${keyword.uri}>, "${keyword.value}"<#t>
         <#else>
-          "${keyword.uri}"<#sep>,
+          "${keyword.uri}"<#t>
         </#if>
       <#else>
-        "${keyword.value}"<#sep>,
-      </#if>
-    </#list><#sep>,
+        "${keyword.value}"<#t>
+      </#if><#sep>,</#sep><#t>
     </#list>
   ;
   </#if>
+
 
   <#if type=='dataset' || type=='nonGeographicDataset'>
     <#include "turtle/_dataset.ftlh">

@@ -17,7 +17,7 @@ a dcat:Dataset, dcmitype:Dataset ;
 </#if>
 
 <#if resourceIdentifiers??>
-  dct:identifier 
+  dct:identifier
     <#list resourceIdentifiers as id>
     <#if id.coupledResource?starts_with("http")>
       <${id.coupledResource}>
@@ -27,14 +27,14 @@ a dcat:Dataset, dcmitype:Dataset ;
     </#list>
     ;
 </#if>
-  
+
 dcat:CatalogRecord <${uri}> ;
-dct:type <http://purl.org/dc/dcmitype/Dataset> ;
+dct:type dcmitype:Dataset ;
 
 <#if datasetReferenceDate?? && datasetReferenceDate.publicationDate?has_content>
   dct:available "${datasetReferenceDate.publicationDate}" ;
 </#if>
- 
+
  dcat:landingPage <${uri}><#if datacitable?string=="true" && citation?has_content>, <${citation.url}></#if>;
 
 <#if datacitable?string=='true' && citation?has_content>
@@ -43,7 +43,7 @@ dct:type <http://purl.org/dc/dcmitype/Dataset> ;
 
 <#-- Themes-->
 <#if themelist?has_content>
-  dcat:theme 
+  dcat:theme
   <#list themelist as themes>
     <#list themes.keywords as theme>
       <#if theme.uri?has_content>
@@ -55,15 +55,20 @@ dct:type <http://purl.org/dc/dcmitype/Dataset> ;
 </#if>
 
 <#-- Keywords -->
-<#if descriptiveKeywords?has_content>
-  dcat:keyword 
-  <#list descriptiveKeywords as descriptiveKeyword>
-  <#list descriptiveKeyword.keywords as keyword>
-    <#if keyword.value?has_content>
-      "${keyword.value}"<#sep>,
-    </#if>
-  </#list><#sep>,
-  </#list> ;
+<#if allKeywords?has_content>
+cat:keyword
+  <#list allKeywords as keyword>
+    <#if keyword.uri?has_content>
+      <#if keyword.value?has_content>
+        <${keyword.uri}>, "${keyword.value}"<#t>
+      <#else>
+        "${keyword.uri}"<#t>
+      </#if>
+    <#else>
+      "${keyword.value}"<#t>
+    </#if><#sep>,</#sep><#t>
+  </#list>
+;
 </#if>
 
 <#--Distribution-->

@@ -1,0 +1,30 @@
+{
+    "title": "Example CEDA 'YAML' Document",
+    "description": "Document for use by CEDA ingestion scripts - they call it yaml but it's json",
+    "authors": [
+      {
+        "firstname": "D",
+        "surname": "AuthorOne"
+      },
+      {
+        "firstname": "F",
+        "surname": "AuthorTwo"
+      }
+    ],
+    "bbox": {
+      "north": "11",
+      "south": "0",
+      "east": "2",
+      "west": "-2"
+    },
+    "time_range": {
+      "start": "2021-01-01",
+      "end": "2023-12-31"
+    },
+    "lineage": "lineage statement",
+    "docs": [
+      {
+        "title": "Supporting documentation",
+        "url": "https://catalogue-staging.ceh.ac.uk/documents/e938479f-998a-4114-af9f-b162cfe81394"
+      }
+    ]}

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
-import lombok.NonNull;
 import lombok.experimental.Accessors;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
@@ -21,7 +20,7 @@ import java.util.Set;
 @Data
 @Accessors(chain = true)
 public abstract class AbstractMetadataDocument implements MetadataDocument {
-    private String id, uri, type, title, description; 
+    private String id, uri, type, title, description;
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime metadataDate;
@@ -30,7 +29,7 @@ public abstract class AbstractMetadataDocument implements MetadataDocument {
     private MetadataInfo metadata;
     private Set<Relationship> relationships;
     private List<Keyword> keywords;
-    
+
     @Override
     @JsonIgnore
     public String getMetadataDateTime() {

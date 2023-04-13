@@ -6,7 +6,7 @@
     <div class="distribution-service">
       <#if mapservices??>
       <#list mapservices as wms>
-        <p><i class="fas fa-link"></i> URL: <span class="wmsurl">${wms.url}</span></p>
+        <p><i class="fa-solid fa-link"></i> URL: <span class="wmsurl">${wms.url}</span></p>
       </#list>
       </#if>
       <#include "_licence.ftlh">

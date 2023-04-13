@@ -1,9 +1,9 @@
 <div class="row">
   <div class="col-sm-2 col-lg-2">
-    <label for="dataInfo<%= data.index %>VariableName">Variable name</label>
+    <label for="dataInfo<%= data.index %>Name">Parameter name</label>
   </div>
   <div class="col-sm-10 col-lg-10">
-    <input data-name="variableName" id="dataInfo<%= data.index %>VariableName" class="editor-input" value="<%= data.variableName %>">
+    <input data-name="name" id="dataInfo<%= data.index %>Name" class="editor-input" value="<%= data.name %>">
   </div>
 </div>
 <div class="row">

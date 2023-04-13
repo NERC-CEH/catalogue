@@ -48,20 +48,20 @@
           <ul class="dropdown-menu dropdown-menu-right">
             <li>
               <a href="/documents/${id}/permission">
-                <i class="fas fa-users"></i>
+                <i class="fa-solid fa-users"></i>
                 Permissions
               </a>
             </li>
             <li>
               <a href="/documents/${id}/publication">
-                <i class="fas fa-eye"></i>
+                <i class="fa-solid fa-eye"></i>
                 Publication status
               </a>
             </li>
             <#if isEidcWithResourceType && isServiceAgreement>
               <li class="service-agreement" data-id="${id}" id="service-agreement-gemini">
                 <a href="/service-agreement/${id}">
-                  <i class="fas fa-file"></i>
+                  <i class="fa-solid fa-file"></i>
                   Service agreement
                 </a>
               </li>
@@ -71,7 +71,7 @@
               <a href="/documents/${id}/catalogue"
                 class="catalogue-control"
               >
-                <i class="fas fa-sign-out-alt"></i>
+                <i class="fa-solid fa-right-from-bracket"></i>
                 Move to a different catalogue
               </a>
             </li>
@@ -88,7 +88,7 @@
               <div class="btn-group btn-group-sm" role="group">
                 <button type="button" class="btn btn-default btn-wide dropdown-toggle" data-toggle="dropdown">
                   <#if !datacitable>
-                    <i class='fas fa-exclamation-triangle text-red'></i>
+                    <i class='fa-solid fa-triangle-exclamation text-red'></i>
                   </#if>
                   DOI <span class="caret"></span>
                 </button>
@@ -96,7 +96,7 @@
                   <#if dataciteMintable>
                     <li>
                       <div class="msg text-success">
-                        <i class="fas fa-check text-success"></i>
+                        <i class="fa-solid fa-check text-success"></i>
                         There is enough information<br>to assign a DOI to this resource
                       </div>
                     </li>
@@ -109,7 +109,7 @@
                   <#elseif !datacitable>
                     <li>
                       <div class="msg text-red">
-                        <i class="fas fa-exclamation"></i>
+                        <i class="fa-solid fa-exclamation"></i>
                         Conditions for assigning a <br>DOI have not been met
                       </div>
                     </li>
@@ -134,6 +134,9 @@
                 <#if isSimpleUpload || isEidcWithResourceType>
                   <li>
                     <a href="/upload/${id}">Manage data</a>
+                  </li>
+                  <li>
+                    <a href="${uri}?format=ceda">CEDA Archive yaml file</a>
                   </li>
                 </#if>
                 <#list orders>

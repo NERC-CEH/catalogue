@@ -8,6 +8,7 @@ import lombok.val;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -24,8 +25,6 @@ import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadService;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @Slf4j
@@ -95,8 +94,7 @@ class EidcApplicationContextTest {
         gemini.setTitle("Test");
         gemini.setType("dataset");
         val outputStream = new ByteArrayOutputStream();
-        val expected = "{\"type\":\"dataset\",\"title\":\"Test\",\"resourceType\":{\"value\":\"dataset\"},\"notGEMINI\":false,\"incomingCitationCount\":0}";
-
+        val expected = "{\"type\":\"dataset\",\"title\":\"Test\",\"resourceType\":{\"value\":\"dataset\"},\"notGEMINI\":false,\"resourceStatus\":\"Unknown\",\"incomingCitationCount\":0}";
         //when
         val documentWritingService = applicationContext.getBean(DocumentWritingService.class);
         assertNotNull(documentWritingService);
@@ -105,6 +103,6 @@ class EidcApplicationContextTest {
 
         //then
         val actual = outputStream.toString(StandardCharsets.UTF_8);
-        assertThat(actual, equalTo(expected));
+        JSONAssert.assertEquals(expected, actual, true);
     }
 }

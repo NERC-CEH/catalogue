@@ -262,6 +262,25 @@ Replace \n with line breaks
     </#if>
 </#macro>
 
+<#--
+Replace \n with line breaks and replace plain text http links with actionable ones
+-->
+<#macro linebreaksAndLinks value>
+  <#if value?has_content>
+    <#list value?split("\n") as line>
+      <#list line?split("\\s",'r') as word>
+        <#if word?matches("[\\(\\[]?http(s?)://[-a-zA-Z0-9@:%_+.~#?&/=]+[\\]\\)]?",'r')>
+          <#assign link = word?replace('^\\(', '', 'ri')?replace('\\)$', '', 'ri')>
+          <#assign link = word?replace('^\\[', '', 'ri')?replace('\\]$', '', 'ri')>
+          <a href="${link}" target="_blank" rel="noopener noreferrer">${word}</a>
+        <#else>
+          ${word}
+        </#if>
+      </#list>
+      <#sep><br></#sep>
+    </#list>
+  </#if>
+</#macro>
 
 <#--
 Admin toolbar
@@ -278,10 +297,10 @@ Admin toolbar
               <span class="sr-only">Toggle Dropdown</span>
             </button>
             <ul class="dropdown-menu dropdown-menu-right">
-              <li><a href="/documents/${id}/permission"><i class="fas fa-users"></i> Permissions</a></li>
-              <li><a href="/documents/${id}/publication"><i class="fas fa-eye"></i> Publication status</a></li>
+              <li><a href="/documents/${id}/permission"><i class="fa-solid fa-users"></i> Permissions</a></li>
+              <li><a href="/documents/${id}/publication"><i class="fa-solid fa-eye"></i> Publication status</a></li>
               <li role="separator" class="divider"></li>
-              <li><a href="/documents/${id}/catalogue" class="catalogue-control"><i class="fas fa-sign-out-alt"></i> Move to a different catalogue</a></li>
+              <li><a href="/documents/${id}/catalogue" class="catalogue-control"><i class="fa-solid fa-right-from-bracket"></i> Move to a different catalogue</a></li>
             </ul>
             </#if>
           </div>

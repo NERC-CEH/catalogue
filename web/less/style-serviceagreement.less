@@ -60,32 +60,36 @@
     }
   }
 
-  .alert {
-    &::before {
-      font-family: "Font Awesome 5 Free";
-      font-weight: 700;
-      margin-right: 8px;
-    }
-    &--error {
-      color: red;
-      &::before {
-        content: "\f071";
+  .qualityReport {
+    display: flex;
+    flex-direction: column;
+    margin: 2em 0;
+    gap: 0.5em;
+    .qualityItem {
+      background-color:var(--bgcolour);
+      font-weight:bolder;
+      border-bottom:1px solid white;
+      padding: 0.5em;
+      display: grid;
+      grid-template-columns: 50px auto;
+      div:first-of-type {
+        justify-self: center;
       }
-    }
-    &--warning {
-      color: orange;
-      &::before {
-        content: "\f12a";
+      &--error {
+        --bgcolour: hsla(0, 100%, 50%, .15);
+        >div:first-of-type {color:red;}
       }
-    }
-    &--info {
-      color: blue;
-      &::before {
-        content: "\f129";
+      &--warning {
+        --bgcolour: hsla(39, 100%, 50%, .15);
+        >div:first-of-type {color:orange;}
+      }
+      &--info {
+        --bgcolour: hsla(240, 100%, 50%, .15);
+        >div:first-of-type {color:blue;}
       }
     }
   }
-  
+
   .supportingDoc {
     display: grid;
     grid-template-columns: 250px auto;

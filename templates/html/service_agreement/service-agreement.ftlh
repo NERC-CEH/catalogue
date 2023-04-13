@@ -117,7 +117,7 @@
 
             <div class="section section--1">
                 <h2>Data identification and citation</h2>
-                <p><strong class="text-red"><i class="fas fa-exclamation-triangle" ></i> PLEASE NOTE: ONCE A DOI HAS BEEN ISSUED, THE INFORMATION PROVIDED IN THIS SECTION CANNOT BE CHANGED</strong><br>&nbsp;</p>
+                <p><strong class="text-red"><i class="fa-solid fa-triangle-exclamation" ></i> PLEASE NOTE: ONCE A DOI HAS BEEN ISSUED, THE INFORMATION PROVIDED IN THIS SECTION CANNOT BE CHANGED</strong><br>&nbsp;</p>
                 <h4><strong>Title of data resource:</strong> ${title}</h4>
 
                 <div class="authors">
@@ -150,8 +150,20 @@
                         <div class="value">
                             <#list supportingDocs as doc>
                                 <div class="supportingDoc">
-                                    <div class="supportingDoc__name"><i>${doc.filename}</i></div> 
-                                    <div class="supportingDoc__content"><@blocks.linebreaks doc.content /></div>
+                                    <div class="supportingDoc__name">
+                                        <#if doc.filename?? >
+                                            <i>${doc.filename}</i>
+                                        <#else>
+                                           <span class="alert alert--error">missing</span>
+                                        </#if>                                       
+                                    </div> 
+                                    <div class="supportingDoc__content">
+                                        <#if doc.content?? >
+                                            <@blocks.linebreaks doc.content />
+                                        <#else>
+                                           <span class="alert alert--error">missing</span>
+                                        </#if>
+                                    </div>
                                 </div>
                             </#list>
                         </div>

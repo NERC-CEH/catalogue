@@ -1,5 +1,6 @@
 <#import "../skeleton.ftlh" as skeleton>
 <#import "../../functions.ftlh" as func>
+<#import "../blocks.ftlh" as b>
 
 <#assign rel_all=jena.allRelatedRecords(uri) >
 
@@ -9,7 +10,6 @@
     images = func.filter(onlineResources, "function", "image")
 >
 </#if>
-
 
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
   <div id="metadata" class="metadata infrastructure-metadata">
@@ -31,7 +31,7 @@
         <#if description??>
           <div class="description">
             <div class="description-text">
-              <@linebreaks description/>
+              <@b.linebreaksAndLinks description/>
             </div>
             <div class="browseimage">
               <#if images?? && images?has_content>
@@ -50,15 +50,15 @@
           <div class="col1">
 
             <#if infrastructureCategory??><@displaykey "Category">${infrastructureCategory.description}</@displaykey></#if>
-            <#if capabilities??><@displaykey "Capabilities"><@linebreaks capabilities/></@displaykey></#if>
-            <#if lifecycle??><@displaykey "Lifecycle"><@linebreaks lifecycle/></@displaykey></#if>
-            <#if uniqueness??><@displaykey "Uniqueness"><@linebreaks uniqueness/></@displaykey></#if>
-            <#if partners??><@displaykey "Partners"><@linebreaks partners/></@displaykey></#if>
-            <#if access??><@displaykey "Access"><@linebreaks access/></@displaykey></#if>
-            <#if locationText??><@displaykey "Location"><@linebreaks locationText/></@displaykey></#if>
-            <#if userCosts??><@displaykey "User costs"><@linebreaks userCosts/></@displaykey></#if>
-            <#if fundingSources??><@displaykey "Funding sources"><@linebreaks fundingSources/></@displaykey></#if>
-            <#if userCosts??><@displaykey "User costs"><@linebreaks userCosts/></@displaykey></#if>
+            <#if capabilities??><@displaykey "Capabilities"><@b.linebreaksAndLinks capabilities/></@displaykey></#if>
+            <#if lifecycle??><@displaykey "Lifecycle"><@b.linebreaksAndLinks lifecycle/></@displaykey></#if>
+            <#if uniqueness??><@displaykey "Uniqueness"><@b.linebreaksAndLinks uniqueness/></@displaykey></#if>
+            <#if partners??><@displaykey "Partners"><@b.linebreaksAndLinks partners/></@displaykey></#if>
+            <#if access??><@displaykey "Access"><@b.linebreaksAndLinks access/></@displaykey></#if>
+            <#if locationText??><@displaykey "Location"><@b.linebreaksAndLinks locationText/></@displaykey></#if>
+            <#if userCosts??><@displaykey "User costs"><@b.linebreaksAndLinks userCosts/></@displaykey></#if>
+            <#if fundingSources??><@displaykey "Funding sources"><@b.linebreaksAndLinks fundingSources/></@displaykey></#if>
+            <#if userCosts??><@displaykey "User costs"><@b.linebreaksAndLinks userCosts/></@displaykey></#if>
 
             <#if users?? >
                 <@displaykey "Users">
@@ -121,9 +121,9 @@
                     <div class="contact">
                       <div>
                         <#if owner.individualName?has_content>
-                          <span class="fas fa-user"></span>
+                          <span class="fa-solid fa-user"></span>
                         <#else>
-                          <span class="fas fa-building"></span>
+                          <span class="fa-solid fa-building"></span>
                         </#if>
                       </div>
                       <div>
@@ -139,7 +139,7 @@
                           </#if>
                         </#if>
                         <#if owner.email?? && owner.email?has_content>
-                          <span><a href="mailto:${owner.email}"><span class="fas fa-xs fa-envelope"></span> ${owner.email}</a></span>
+                          <span><a href="mailto:${owner.email}"><span class="fa-solid fa-xs fa-envelope"></span> ${owner.email}</a></span>
                         </#if>
                       </div>
                     </div>
@@ -170,19 +170,12 @@
   <#include "_footer.ftlh">
 </@skeleton.master>
 
+<#--macros -->
 <#macro displaykey label>
   <div class="key-value">
     <div>${label}</div>
     <div><#nested></div>
   </div>
-</#macro>
-
-<#macro linebreaks value>
-  <#if value?has_content>
-    <#list value?split("\n") as line>
-        ${line}<#sep><br>
-    </#list>
-  </#if>
 </#macro>
 
 <#macro displayLink link>
@@ -191,5 +184,5 @@
   <#else>
     <#local linkDisplay = link.url>
   </#if>
-  <p><a href="${link.url}" target="_blank" rel="noopener noreferrer">${linkDisplay} <i class="fas fa-external-link-alt fa-xs"></i></a></p>
+  <p><a href="${link.url}" target="_blank" rel="noopener noreferrer">${linkDisplay} <i class="fa-solid fa-up-right-from-square fa-xs"></i></a></p>
 </#macro>

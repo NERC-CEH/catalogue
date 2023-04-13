@@ -11,7 +11,7 @@ import uk.ac.ceh.gateway.catalogue.model.Relationship;
 import uk.ac.ceh.gateway.catalogue.model.OnlineLink;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.gemini.Funding;
-import uk.ac.ceh.gateway.catalogue.gemini.Supplemental;
+import uk.ac.ceh.gateway.catalogue.model.Supplemental;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -85,7 +85,7 @@ public class NercModelUse extends AbstractMetadataDocument {
     @Data
     public static class DataInfo {
         private String
-            variableName,
+            name,
             units,
             fileFormat,
             url;

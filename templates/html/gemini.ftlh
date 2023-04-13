@@ -34,14 +34,6 @@
     otherConstraints =  func.filter(useConstraints, "code", "license", true)
   >
 </#if>
-<#if supplemental?has_content>
-  <#assign
-    referencedBy = func.filter(supplemental, "function", "isReferencedBy")
-    supplementTo = func.filter(supplemental, "function", "isSupplementTo")
-    citations = func.filter(supplemental, "function", "isSupplementTo") + func.filter(supplemental, "function", "isReferencedBy")
-    supOther = func.filter(supplemental, "function", "") + func.filter(supplemental, "function", "website") + func.filter(supplemental, "function", "relatedArticle") + func.filter(supplemental, "function", "relatedDataset")
-  >
-</#if>
 
 <#assign isLinkedDoc="false" linkedClass="" >
 <#if rel_source?has_content && rel_source?size gt 0>
@@ -81,7 +73,7 @@
         <#if description??>
           <div class="description">
             <div class="description-text">
-              <@blocks.linebreaks description!"" />
+              <@blocks.linebreaksAndLinks description!"" />
 
               <#if resourceType.value != 'aggregate' && resourceType.value != 'collection'>
                 <#if datasetReferenceDate??>
@@ -115,6 +107,13 @@
         </div>
       </div>
     <#else>
+      <#if isLinkedDoc="true">
+       <div class="section">
+        <div class="container">
+          <#include "document/_linked.ftlh">
+         </div>
+        </div>
+      </#if>
       <div class="section">
         <div class="container">
           <div class="metadata-grid">
@@ -143,26 +142,18 @@
             </div>
             <div class="col2">
 
-              <#if isLinkedDoc="true">
-                <#include "document/_linked.ftlh">
-              <#else>
+              <#if isLinkedDoc!="true">
                   <#include "document/_uploadData.ftlh">
                   <#include "document/_metrics.ftlh">
-
-                  <#if resourceStatus??>
-                    <#if resourceStatus == 'Restricted'>
-                      <#include "document/_distribution_restricted.ftlh">
-                    <#else>
-                      <#if resourceType.value == 'signpost'>
-                        <#include "document/_distribution_signpost.ftlh">
-                      <#elseif resourceType.value == 'service' && mapViewable>
-                        <#include "document/_distribution_service.ftlh">
-                      <#elseif resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'application'>
-                        <#include "document/_distribution_dataset.ftlh">
-                      </#if>
+                 
+                  <#if resourceStatus?? && resourceStatus != "Unknown">
+                    <#if resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'application'>
+                      <#include "document/_distribution_dataset.ftlh">
+                    <#elseif resourceType.value == 'service' && mapViewable>
+                      <#include "document/_distribution_service.ftlh">
+                    <#elseif resourceType.value == 'nercSignpost' || resourceType.value == 'signpost'>
+                      <#include "document/_distribution_signpost.ftlh">
                     </#if>
-                  <#elseif metadata.catalogue != "eidc" &&  resourceType.value == 'signpost'>
-                    <#include "document/_distribution_signpost.ftlh">
                   </#if>
 
                   <#if resourceType.value == 'thirdPartyDataset'>
@@ -189,7 +180,7 @@
 
   <#else>
     <div class="alert alert-danger missingResourceType" id="metadata">
-      <p class="clearfix"><i class="fas fa-exclamation-triangle"></i> <b>WARNING: </b> resource type is missing from this record
+      <p class="clearfix"><i class="fa-solid fa-triangle-exclamation"></i> <b>WARNING: </b> resource type is missing from this record
       <a class="edit-control" data-document-type="${metadata.documentType}">Edit</a></p>
     </div>
   </#if>

@@ -59,22 +59,25 @@ body {
 .navbar {
   border-bottom-width: @navbar-border-width;
   box-shadow: 0 0 0 (@navbar-border-width)/2 @nerc-darkgreen;
+
   &-toggle {
     background-color: black;
     color: white;
   }
+
   a {
     font-weight: bolder;
 
     &::after {
-      @linethickness:2px;
+      @linethickness: 2px;
       content: " ";
       display: block;
       background-color: @navbar-default-link-hover-color;
       width: 0;
       height: @linethickness;
-      margin: @linethickness 0 -(@linethickness) 0;
+      margin: @linethickness 0 - (@linethickness) 0;
     }
+
     &:hover {
       &::after {
         width: 100%;
@@ -83,7 +86,12 @@ body {
   }
 }
 
-.models{&--modelinfo {margin-bottom: 2em;}}
+.models {
+  &--modelinfo {
+    margin-bottom: 2em;
+  }
+}
+
 .filters-panel {
   .header {
     h3 {
@@ -91,6 +99,7 @@ body {
     }
   }
 }
+
 .adminToolbar {
   margin-top: 1em;
 }
@@ -106,21 +115,29 @@ a.navbar-brand {
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
-margin: 0 0 0 .35em;
+  margin: 0 0 0 0.35em;
+
   img {
     display: none;
   }
 }
+
 .description {
   margin-bottom: 2em;
 }
 
 .key-value {
-  border-top: none;
-  margin-bottom: 2em;
+  display: grid;
+  margin: 1.1em 0;
 
   .key {
     font-weight: bold;
+  }
+}
+
+.references {
+  .reference {
+    margin: 1em 0 1.6em 0;
   }
 }
 
@@ -128,6 +145,7 @@ margin: 0 0 0 .35em;
   #adminPanel {
     padding: 1em 0.5em;
   }
+
   p.text-danger {
     font-weight: bolder;
     color: red;
@@ -140,6 +158,7 @@ margin: 0 0 0 .35em;
       border-color: lightgray;
       border-radius: 6px;
     }
+
     &-documentation {
       color: black;
       border-color: lightgray;
@@ -147,12 +166,36 @@ margin: 0 0 0 .35em;
     }
   }
 
-  .key-value {
-    display: grid;
+  .accessLinks {
+    a {
+      border-radius: 1000px;
+      margin: 0.65em 0;
+      display: flex;
+      gap: 0.5em;
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      align-items: center;
+      &:hover, &:focus {
+        outline: 1px solid @nerc-lightgreen;
+        text-decoration: none;
+        div:first-child {
+          background-color: @nerc-darkgreen;
+          color: white;
+        }
+      }
+      div:first-child {
+        border-radius: 1000px;
+        height: 40px;
+        width: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    }
   }
-
   .table--qa {
     margin: 1em 3em;
+
     table {
       thead {
         th {
@@ -160,6 +203,7 @@ margin: 0 0 0 .35em;
           border-width: 0;
         }
       }
+
       tbody {
         td,
         th {
@@ -167,6 +211,7 @@ margin: 0 0 0 .35em;
         }
       }
     }
+
     @media only screen and (max-width: 760px),
       (min-device-width: 768px) and (max-device-width: 1024px) {
       // On small screens, force qa table to not display as a table
@@ -198,6 +243,7 @@ margin: 0 0 0 .35em;
         position: relative;
         margin-left: @head-width*1.2;
         padding: 0.4em !important;
+
         &:before {
           position: absolute;
           padding: 0.4em 0.6em;
@@ -209,12 +255,15 @@ margin: 0 0 0 .35em;
           font-weight: bolder;
           white-space: nowrap;
         }
+
         &:nth-of-type(1):before {
           content: "Category";
         }
+
         &:nth-of-type(2):before {
           content: "Date";
         }
+
         &:nth-of-type(3):before {
           content: "Notes";
         }
@@ -226,6 +275,7 @@ margin: 0 0 0 .35em;
 .links {
   display: grid;
   gap: 1.6em;
+
   &--link {
     &--url {
       font-weight: bolder;
@@ -237,13 +287,13 @@ margin: 0 0 0 .35em;
 //media query for screens wider than 600px
 @media only screen and (min-width: 600px) {
   .nerc-model {
+    .hideLarge {display:none}
     .container {
       .key-value {
         grid-template-columns: 13em auto;
+        gap: 1em;
       }
-      .key-value > div {
-        padding: 0 1em;
-      }
+
       .key {
         text-align: right;
       }

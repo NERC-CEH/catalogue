@@ -3,7 +3,7 @@
     <a href="/upload/${id}">
       <div class="panel-body text-center">
         <p>
-            <i class="fas fa-arrow-circle-up fa-2x"></i>
+            <i class="fa-solid fa-arrow-circle-up fa-2x"></i>
             <span>UPLOAD DATA</span>
         </p>
       </div>

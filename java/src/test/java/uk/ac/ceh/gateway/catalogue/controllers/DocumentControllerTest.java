@@ -171,7 +171,7 @@ class DocumentControllerTest {
         log.debug(doc.toString());
         doc.setId(id);
         doc.setTitle("Test title");
-        doc.setDescription("Some description");
+        doc.setDescription("This is a multiline description.\n\nContinued on another line.");
         doc.setUri("https://example.com/" + id);
         doc.setMetadataDate(LocalDateTime.of(2021, 5, 12, 9, 30, 23));
         doc.setMetadata(MetadataInfo.builder()
@@ -267,6 +267,7 @@ class DocumentControllerTest {
             Arguments.of(gemini, APPLICATION_JSON, JSON, "gemini.json"),
             Arguments.of(gemini, GEMINI_XML, GEMINI_XML_SHORT,  "gemini.xml"),
             Arguments.of(gemini, RDF_SCHEMAORG_JSON, RDF_SCHEMAORG_SHORT, "gemini-schema-org.json"),
+            Arguments.of(gemini, CEDA_YAML_JSON, CEDA_YAML_SHORT, "gemini-ceda-yaml.json"),
             Arguments.of(gemini, RDF_TTL, RDF_TTL_SHORT, "gemini.ttl"),
             Arguments.of(caseStudy, TEXT_HTML, HTML, null),
             Arguments.of(caseStudy, APPLICATION_JSON, JSON, null),

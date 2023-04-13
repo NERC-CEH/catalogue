@@ -76,7 +76,7 @@ public class MetadataQualityService {
                 checkSpatialDataset(parsedDoc).ifPresent(checks::addAll);
                 checkService(parsedDoc).ifPresent(checks::addAll);
                 checkNonGeographicDatasets(parsedDoc).ifPresent(checks::addAll);
-                checkSignpost(parsedDoc).ifPresent(checks::addAll);
+                checkNercSignpost(parsedDoc).ifPresent(checks::addAll);
                 checkPublicationDate(parsedDoc, parsedMeta).ifPresent(checks::add);
                 checkTemporalExtents(parsedDoc).ifPresent(checks::addAll);
                 checkDownloadAndOrderLinks(parsedDoc).ifPresent(checks::addAll);
@@ -139,7 +139,6 @@ public class MetadataQualityService {
         }
     }
 
-
     private Optional<List<MetadataCheck>> checkTemporalExtents(DocumentContext parsedDoc) {
         if ( !notRequiredResourceTypes(parsedDoc, "application")) {
             return Optional.empty();
@@ -160,7 +159,6 @@ public class MetadataQualityService {
         }
     }
 
-
     private boolean beginAndEndBothEmpty(Map<String, String> map) {
         return fieldIsMissing(map, "begin") && fieldIsMissing(map, "end");
     }
@@ -168,7 +166,6 @@ public class MetadataQualityService {
     private boolean isCorrectResourceType(DocumentContext parsed) {
         return validResourceTypes.contains(parsed.read("$.resourceType.value", String.class));
     }
-
 
     Optional<List<MetadataCheck>> checkAddress(List<Map<String, String>> addresses, String element) {
         val toReturn = new ArrayList<MetadataCheck>();
@@ -339,6 +336,7 @@ public class MetadataQualityService {
         checkKeywords(parsed).ifPresent(toReturn::add);
         checkTopicCategories(parsed).ifPresent(toReturn::add);
         checkDataFormat(parsed).ifPresent(toReturn::add);
+        checkRelatedRecords(parsed).ifPresent(toReturn::add);
         checkPointOfContact(parsed).ifPresent(toReturn::addAll);
         checkCustodian(parsed).ifPresent(toReturn::addAll);
         checkPublisher(parsed).ifPresent(toReturn::addAll);
@@ -351,8 +349,8 @@ public class MetadataQualityService {
         }
     }
 
-    Optional<List<MetadataCheck>> checkSignpost(DocumentContext parsed) {
-        if (notRequiredResourceTypes(parsed, "signpost")) {
+    Optional<List<MetadataCheck>> checkNercSignpost(DocumentContext parsed) {
+        if (notRequiredResourceTypes(parsed, "nercSignpost")) {
             return Optional.empty();
         }
         val toReturn = new ArrayList<MetadataCheck>();
@@ -432,7 +430,6 @@ public class MetadataQualityService {
         }
     }
 
-
     Optional<List<MetadataCheck>> checkPublisher(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
         val publishers = parsed.read(
@@ -493,7 +490,6 @@ public class MetadataQualityService {
         }
     }
 
-
     Optional<List<MetadataCheck>> checkPointOfContact(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
         val pocs = parsed.read(
@@ -527,13 +523,6 @@ public class MetadataQualityService {
         } else {
             return Optional.of(toReturn);
         }
-    }
-
-
-    private boolean fieldNotEqual(Map<String, String> map, String key, String value) {
-        return !map.containsKey(key)
-            || map.get(key) == null
-            || !map.get(key).equals(value);
     }
 
     Optional<MetadataCheck> checkInspireThemes(DocumentContext parsed) {
@@ -594,6 +583,21 @@ public class MetadataQualityService {
         }
         if (dataFormats.stream().anyMatch(format -> fieldIsMissing(format, "version"))) {
             return Optional.of(new MetadataCheck("Format version is empty", ERROR));
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    Optional<MetadataCheck> checkRelatedRecords(DocumentContext parsed) {
+        val relatedRecords = parsed.read(
+            "$.relatedRecords[*]",
+            typeRefStringString
+        );
+        if (relatedRecords.stream().anyMatch(relatedRecord -> fieldIsMissing(relatedRecord, "rel"))) {
+            return Optional.of(new MetadataCheck("Related record is incomplete", ERROR));
+        }
+        if (relatedRecords.stream().anyMatch(relatedRecord -> fieldIsMissing(relatedRecord, "href"))) {
+            return Optional.of(new MetadataCheck("Related record is incomplete", ERROR));
         } else {
             return Optional.empty();
         }
@@ -678,6 +682,12 @@ public class MetadataQualityService {
             || !map.containsKey(key)
             || map.get(key) == null
             || map.get(key).isEmpty();
+    }
+
+    private boolean fieldNotEqual(Map<String, String> map, String key, String value) {
+        return !map.containsKey(key)
+            || map.get(key) == null
+            || !map.get(key).equals(value);
     }
 
     Optional<List<MetadataCheck>> checkDownloadAndOrderLinks(DocumentContext parsed) {

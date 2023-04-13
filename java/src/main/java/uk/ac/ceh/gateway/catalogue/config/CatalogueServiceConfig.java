@@ -290,6 +290,7 @@ public class CatalogueServiceConfig {
                 .logo("elter.png")
                 .facetKey("dataLevel")
                 .facetKey("elterDeimsSite")
+                .facetKey("elterProjectName")
                 .facetKey("resourceType")
                 .documentType(ELTER_TYPE)
                 .documentType(CODE_TYPE)
@@ -351,7 +352,7 @@ public class CatalogueServiceConfig {
                 .documentType(NERC_MODEL_TYPE)
                 .documentType(NERC_MODEL_USE_TYPE)
                 .vocabularies(getCatalogueVocabularies(vocabularies, defaultCatalogueKey))
-                .fileUpload(false)
+                .fileUpload(true)
                 .build()
         );
     }

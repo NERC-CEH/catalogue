@@ -2,7 +2,7 @@
 
 <div class="panel-body">
     <span class="text-red">
-        <i class="fas fa-exclamation triangle"></i>
+        <i class="fa-solid fa-triangle-exclamation"></i>
         <b>ACCESS TO THIS ${recordType?upper_case} IS RESTRICTED</b>
     </span>
      <br>${accessLimitation.description}

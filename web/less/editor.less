@@ -33,6 +33,16 @@
     color: #000;
   }
 
+  .editor-remove {
+    display: grid;
+    grid-template-columns: auto 50px;
+    gap: 0.6em;
+    > div {
+      margin: 0 !important;
+      padding: 0.2em 0.6em;
+    }
+  }
+
   .ui-sortable {
     .row {
       .provenance {
@@ -61,6 +71,12 @@
     .btn-default;
     .btn-xs;
     .pull-right;
+  }
+
+  .editor-button-remove {
+    .btn;
+    .btn-default;
+    .btn-xs;
   }
 
   .editor-help {
@@ -108,6 +124,12 @@
     .dataentry {
       label {
         font-size: 12px;
+        a {
+          margin-left: 0.5em;
+          &:hover {
+            text-decoration: none;
+          }
+        }
       }
 
       &.child {
@@ -151,7 +173,7 @@
     display: inline-block;
   }
 
-  .resourcetypes {
+  .optgroup {
     &-assist,
     &-eidc,
     &-elter,
@@ -160,16 +182,26 @@
     }
   }
 
-  .keywords {
-    margin-top: 1em;
-    .dataentry {
-      margin-bottom: 1.5em;
-    }
-  }
-
   .keyword-add {
     display: inline-block;
     .pull-left;
+  }
+  .keywords {
+    .uri:disabled {
+      font-style: italic;
+    }
+  }
+  .vocabularyPicker {
+    display: flex;
+    gap: 0.25em 1.25em;
+    flex-wrap: wrap;
+    .vocab {
+      label {
+        span {
+          font-weight: normal;
+        }
+      }
+    }
   }
 
   .dropdown-menu.predefined {

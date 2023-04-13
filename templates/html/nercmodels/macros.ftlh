@@ -29,13 +29,21 @@
   </#if>
 </#macro>
 
-<#macro commaList values>
-  <#list values>
-    <#items as value>
-      ${value}<sep>, </sep>
-    </#items>
-  </#list>
+<#macro parameters paramlist>
+  <div class="parameterList">
+    <#list paramlist>
+      <#items as value>
+        <#if value.title?? && value.title?has_content>
+          ${value.title}
+        <#elseif value.name?? && value.name?has_content>
+          ${value.name}
+        </#if>
+        <sep><br></sep>
+      </#items>
+    </#list>
+  </div>
 </#macro>
+
 
 <#--
 CEH dataInfo table
@@ -99,10 +107,6 @@ CEH dataInfo table
 
 <!-- contacts -->
 <#macro displayContact contact showPostal=false>
-    <#if contact.address??>
-        <#local address=concatAddress(contact.address)>
-    </#if>
-
     <#if contact.individualName?has_content>
       <div class="individualName">
           ${contact.individualName}
@@ -150,11 +154,11 @@ CEH dataInfo table
     </#if>
 
     <#if contact.phone?? && contact.phone?has_content>
-        <div class="contactPhone"><i class="fas fa-phone"></i> ${contact.phone}</div>
+        <div class="contactPhone"><i class="fa-solid fa-phone"></i> ${contact.phone}</div>
     </#if>
 
     <#if contact.email?has_content>
-      <a href="mailto:${contact.email}"><i class="far fa-envelope contactEmail"></i> ${contact.email}</a>
+      <a href="mailto:${contact.email}"><i class="fa-regular fa-envelope contactEmail"></i> ${contact.email}</a>
     </#if>
 
 </#macro>

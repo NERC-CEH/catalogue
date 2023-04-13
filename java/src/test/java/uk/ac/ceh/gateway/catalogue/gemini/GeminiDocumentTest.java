@@ -1,16 +1,64 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
+import com.google.common.collect.Sets;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.jupiter.api.Test;
+import uk.ac.ceh.gateway.catalogue.elter.ElterDocument;
+import uk.ac.ceh.gateway.catalogue.model.Relationship;
+import uk.ac.ceh.gateway.catalogue.model.Supplemental;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+@Slf4j
 public class GeminiDocumentTest {
     private final String id = "c43818fc-61fb-455b-9714-072355597229";
+    private final String rel1 = "https://example.com/rel/1";
+    private final String doc1 = "https://example.com/doc/1";
+    private final String doc2 = "https://example.com/doc/2";
+    private final String doc3 = "https://example.com/doc/3";
+
+    @Test
+    void relationshipsFromRelatedRecordsNonePopulated() {
+        // given
+        val expected = Sets.newHashSet();
+        val document = new ElterDocument();
+
+        // when
+        val actual = document.getRelationships();
+
+        // then
+        assertThat(actual, equalTo(expected));
+    }
+
+    @Test
+    void relationshipsFromBoth() {
+        // given
+        val expected = Sets.newHashSet(
+            new Relationship(rel1, doc1),
+            new Relationship(rel1, doc2),
+            new Relationship(rel1, doc3)
+        );
+        val document = new ElterDocument();
+        document.setRelatedRecords(List.of(
+            new RelatedRecord(rel1, "1", doc1, "", "")
+        ));
+        document.setRelationships(Set.of(
+            new Relationship(rel1, doc2),
+            new Relationship(rel1, doc3)
+        ));
+
+        // when
+        val actual = document.getRelationships();
+
+        // then
+        assertThat(actual, equalTo(expected));
+    }
 
     @Test
     public void noMapViewerUrlIfGetCapabilitiesOnlineResourceDoesNotExists() {
@@ -71,17 +119,15 @@ public class GeminiDocumentTest {
     }
 
     @Test
-    public void testGetIncomingCitationCount() {
+    public void getIncomingCitationCount() {
         // Given
         GeminiDocument document = new GeminiDocument();
-        Supplemental supplemental = Supplemental.builder().name("foo").function("other").build();
-        Supplemental isReferencedBy = Supplemental.builder().name("foo").function("isReferencedBy").build();
-        Supplemental isSupplementTo = Supplemental.builder().name("foo").function("isSupplementTo").build();
-        List<Supplemental> supplementals = new ArrayList<>();
-        supplementals.add(supplemental);
-        supplementals.add(isReferencedBy);
-        supplementals.add(isSupplementTo);
-        document.setSupplemental(supplementals);
+        Supplemental citation1 = Supplemental.builder().description("foo").build();
+        Supplemental citation2 = Supplemental.builder().description("bar").build();
+        List<Supplemental> citations = new ArrayList<>();
+        citations.add(citation1);
+        citations.add(citation2);
+        document.setIncomingCitations(citations);
         long expected = 2;
 
         // When
@@ -92,32 +138,28 @@ public class GeminiDocumentTest {
     }
 
     @Test
-    public void testGetIncomingCitationCount_ShouldBeEmpty() {
-        // Given
-        GeminiDocument document = new GeminiDocument();
-        Supplemental supplemental = Supplemental.builder().name("foo").function("other").build();
-        document.setSupplemental(List.of(supplemental));
-        long expected = 0;
+    public void unknownResourceStatus() {
+        //given
+        val document = new GeminiDocument();
 
-        // When
-        long output = document.getIncomingCitationCount();
+        //when
+        val actual = document.getResourceStatus();
 
-        // Then
-        assertThat(output, is(expected));
+        //then
+        assertThat(actual, equalTo("Unknown"));
     }
 
     @Test
-    public void testGetIncomingCitationCount_NoSupplemental() {
-        // Given
-        GeminiDocument document = new GeminiDocument();
-        List<Supplemental> supplementals = new ArrayList<>();
-        document.setSupplemental(supplementals);
-        long expected = 0;
+    public void accessLimitationAndResourceStatus() {
+        //given
+        val document = new GeminiDocument();
+        document.setAccessLimitation(AccessLimitation.builder().build());
 
-        // When
-        long output = document.getIncomingCitationCount();
+        //when
+        val actual = document.getResourceStatus();
 
-        // Then
-        assertThat(output, is(expected));
+        //then
+        assertThat(actual, equalTo("Unknown"));
     }
+
 }

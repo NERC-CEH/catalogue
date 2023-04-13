@@ -6,20 +6,20 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import lombok.val;
 import org.springframework.http.MediaType;
+import uk.ac.ceh.gateway.catalogue.citation.Citation;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.deims.DeimsSolrIndex;
 import uk.ac.ceh.gateway.catalogue.gemini.*;
 import uk.ac.ceh.gateway.catalogue.indexing.solr.WellKnownText;
-import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
-import uk.ac.ceh.gateway.catalogue.citation.Citation;
-import uk.ac.ceh.gateway.catalogue.model.Link;
-import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
+import uk.ac.ceh.gateway.catalogue.model.*;
 
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.*;
 import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAPABILITIES;
@@ -39,14 +39,13 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
     private static final String TOPIC_PROJECT_URL = "http://onto.nerc.ac.uk/CEHMD/";
     private String otherCitationDetails, lineage, reasonChanged, metadataStandardName, metadataStandardVersion, dataLevel;
     private List<String> alternateTitles, spatialRepresentationTypes, datasetLanguages, securityConstraints;
-    private List<Keyword> topicCategories;
+    private List<Keyword> topicCategories, elterProject;
     private List<DistributionInfo> distributionFormats;
-    private List<DescriptiveKeywords> descriptiveKeywords;
     private List<InspireTheme> inspireThemes;
     private List<SpatialResolution> spatialResolutions;
     private List<Funding> funding;
     private List<BoundingBox> boundingBoxes;
-    private List<ResponsibleParty> responsibleParties;
+    private List<ResponsibleParty> responsibleParties, distributorContacts;
     private List<TimePeriod> temporalExtents;
     private List<OnlineResource> onlineResources;
     private Set<Link> incomingRelationships;
@@ -65,7 +64,6 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
     private MapDataDefinition mapDataDefinition;
     private Keyword resourceType;
     private AccessLimitation accessLimitation;
-    private boolean notGEMINI;
     private List<DeimsSolrIndex> deimsSites;
     private boolean linkedDocument;
     private String linkedDocumentUri;
@@ -73,6 +71,21 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
     private String importId;
     private ZonedDateTime importLastModified;
 
+    @Override
+    public Set<Relationship> getRelationships() {
+        val relations = Optional.ofNullable(super.getRelationships())
+            .orElse(Collections.emptySet());
+        val related = Optional.ofNullable(relatedRecords)
+            .orElse(Collections.emptyList())
+            .stream()
+            .map(RelatedRecord::toRelationship)
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .collect(Collectors.toSet());
+        return Stream.of(relations, related)
+            .flatMap(Collection::stream)
+            .collect(Collectors.toSet());
+    }
 
     @Override
     public String getType() {
@@ -84,37 +97,14 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
     public String getResourceStatus() {
         return Optional.ofNullable(accessLimitation)
                 .map(AccessLimitation::getCode)
-                .orElse(null);
+                .filter(code -> !code.isEmpty())
+                .orElse("Unknown");
     }
 
     @Override
     public ElterDocument setType(String type) {
         super.setType(type);
         this.resourceType = Keyword.builder().value(type).build();
-        return this;
-    }
-
-    @Override
-    @JsonIgnore
-    public List<Keyword> getAllKeywords() {
-        return Optional.ofNullable(descriptiveKeywords)
-                .orElse(Collections.emptyList())
-                .stream()
-                .flatMap(dk -> dk.getKeywords().stream())
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public ElterDocument addAdditionalKeywords(List<Keyword> additionalKeywords) {
-        descriptiveKeywords = Optional.ofNullable(descriptiveKeywords)
-                .orElse(new ArrayList<>());
-
-        descriptiveKeywords.add(
-                DescriptiveKeywords
-                        .builder()
-                        .keywords(additionalKeywords)
-                        .build()
-        );
         return this;
     }
 
@@ -163,16 +153,6 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
                 .anyMatch((o) -> WMS_GET_CAPABILITIES == o.getType());
     }
 
-    public List<String> getTopics() {
-        return Optional.ofNullable(descriptiveKeywords)
-                .orElse(Collections.emptyList())
-                .stream()
-                .flatMap(dk -> dk.getKeywords().stream())
-                .filter(k -> k.getUri().startsWith(TOPIC_PROJECT_URL))
-                .map(Keyword::getUri)
-                .collect(Collectors.toList());
-    }
-
     public List<String> getCoupledResources() {
         return Optional.ofNullable(service)
                 .map(Service::getCoupledResources)
@@ -181,6 +161,11 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
                 .map(Service.CoupledResource::getIdentifier)
                 .filter(cr -> !cr.isEmpty())
                 .collect(Collectors.toList());
+    }
+
+    public List<Keyword> getElterProject() {
+        return Optional.ofNullable(elterProject)
+            .orElse(Collections.emptyList());
     }
 
     public List<ResponsibleParty> getResponsibleParties() {
