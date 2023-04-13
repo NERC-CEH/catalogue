@@ -8,7 +8,7 @@
 			<div class="card-icon">
 				<span class="fa-stack fa-2x">
 					<i class="fa-solid fa-square fa-stack-2x"></i>
-					<i class="${icon} fa-stack-1x fa-inverse"></i>
+					<i class="fa-solid ${icon} fa-stack-1x fa-inverse"></i>
 				</span>
 			</div>
 			<div>
@@ -34,11 +34,11 @@
 				<#if item.associationType = 'dataset' ||  item.associationType = 'nonGeographicDataset' ||  item.associationType = 'signpost'>
 					<#assign type="Dataset" icon="fa-solid fa-chart-column" >
 				<#elseif item.associationType = "series" || item.associationType = "collection" || item.associationType = "aggregate">
-					<#assign type="Data collection" icon="fa-regular fa-stack" >
+					<#assign type="Data collection" icon="fa-layer-group" >
 				<#elseif item.associationType = "application">
-					<#assign type="Model code" icon="fa-solid fa-terminal" >
+					<#assign type="Model code" icon="fa-terminal" >
 				<#elseif item.associationType = "service">
-					<#assign type="Web service" icon="fa-solid fa-location-arrow" >
+					<#assign type="Web service" icon="fa-location-arrow" >
 				<#else>
 					<#assign type=item.associationType icon="" >
 				</#if>
@@ -50,7 +50,7 @@
 			<#assign relatedDatasets = func.filter(supplemental, "function", "relatedDataset")>
 			<#if relatedDatasets?has_content && relatedDatasets?size gt 0 >
 				<#list relatedDatasets as item>
-					<@card item.url 'fa-solid fa-square-up-right' 'Dataset (external)' item.name true/>
+					<@card item.url 'fa-square-up-right' 'Dataset (external)' item.name true/>
 				</#list>
 			</#if>
 
@@ -63,7 +63,7 @@
 	<h2>This ${recordType} is included in the following collection<#if rel_memberOf?size gt 1>s</#if></h2>
 	<div class="cards">
 		<#list rel_memberOf?sort_by("title") as item>
-			<@card item.href 'fa-regular fa-clone' 'Data collection' item.title/>
+			<@card item.href 'fa-layer-group' 'Data collection' item.title/>
 			
 		</#list>
 	</div>
