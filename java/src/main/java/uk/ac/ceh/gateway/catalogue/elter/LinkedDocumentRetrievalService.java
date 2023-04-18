@@ -113,6 +113,8 @@ public class LinkedDocumentRetrievalService {
                     .creationDate(LocalDate.parse(jsonRecordAttributes.get("created").asText().substring(0,10)))
                     .build()
                     );
+            // import ID - should equal input doi but can't be too careful
+            document.setImportId(jsonRecordAttributes.get("doi").asText());
             // fixed stuff
             document.setAccessLimitation(
                     AccessLimitation.builder()
