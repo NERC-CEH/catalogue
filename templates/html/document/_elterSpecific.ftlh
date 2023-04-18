@@ -1,4 +1,4 @@
-<#if deimsSites??>
+<#if deimsSites?? && deimsSites?size gt 0>
   <div>
     <h2>DEIMS sites</h2>
     <#list deimsSites as site>
@@ -6,7 +6,7 @@
     </#list>
   </div>
 </#if>
-<#if elterProject??>
+<#if elterProject?? && elterProject?size gt 0>
   <div>
     <h2>eLTER projects</h2>
     <#list elterProject as project>
