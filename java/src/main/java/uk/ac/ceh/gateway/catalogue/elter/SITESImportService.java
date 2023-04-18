@@ -377,10 +377,7 @@ public class SITESImportService implements CatalogueImportService {
         }
 
         // ready to import
-        // do only 3 records while testing
-        for (int i=0; i<3; i++){
-            // get record
-            String recordUrl = remoteRecordList.get(i);
+        for (String recordUrl : remoteRecordList){
             JsonNode parsedRecord = getFullRemoteRecord(recordUrl);
 
             if (parsedRecord.get("@type").asText().equals("Dataset")){
