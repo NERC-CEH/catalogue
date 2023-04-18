@@ -29,7 +29,8 @@ public class LinkedDocumentRetrievalServiceTest {
         val restTemplate = new RestTemplate();
         mockServer = MockRestServiceServer.bindTo(restTemplate).build();
         linkedDocumentRetrievalService = new LinkedDocumentRetrievalService(
-                restTemplate
+                restTemplate,
+                "http://foo.invalid"
         );
         success = IOUtils.toByteArray(getClass().getResource("example-eidc-record-response.json"));
     }
