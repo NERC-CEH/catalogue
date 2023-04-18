@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -50,8 +51,13 @@ import org.w3c.dom.NodeList;
 
 import uk.ac.ceh.gateway.catalogue.TimeConstants;
 import uk.ac.ceh.gateway.catalogue.elter.ElterDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.AccessLimitation;
+import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
+import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
+import uk.ac.ceh.gateway.catalogue.gemini.TimePeriod;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
 @Profile("elter")
@@ -186,10 +192,65 @@ public class SITESImportService implements CatalogueImportService {
         // prep
         ElterDocument newRecord = new ElterDocument();
 
-        // set all the fields
+        // set fields from remote document
         newRecord.setTitle(parsedRecord.get("name").asText());
         newRecord.setDescription(parsedRecord.get("description").asText());
+        // online resources
+        ArrayList<OnlineResource> linkList = new ArrayList<>();
+        linkList.add(
+                OnlineResource.builder()
+                .url(parsedRecord.get("url").asText())
+                .name("View record")
+                .description("View record at this link")
+                .function("download")
+                .build()
+                );
+        newRecord.setOnlineResources(linkList);
+        // temporal extents
+        ArrayList<TimePeriod> extentList = new ArrayList<>();
+        String times = parsedRecord.get("temporalCoverage").asText();
+        int split = times.indexOf("/");
+        String beginTime = times.substring(0,10);
+        String endTime = times.substring(split+1,split+11);
+        extentList.add(
+                TimePeriod.builder()
+                .begin(beginTime)
+                .end(endTime)
+                .build()
+                );
+        // date published
+        LocalDate published = LocalDate.parse(parsedRecord.get("datePublished").asText().substring(0,10));
+        newRecord.setDatasetReferenceDate(
+                DatasetReferenceDate.builder()
+                .publicationDate(published)
+                .build()
+                );
+        // contacts
+        ArrayList<ResponsibleParty> contactList = new ArrayList<>();
+        ResponsibleParty publisher = ResponsibleParty.builder()
+                .organisationName("SITES data portal")
+                .role("publisher")
+                .email("info@fieldsites.se")
+                .build();
+        ResponsibleParty provider = ResponsibleParty.builder()
+                .organisationName(parsedRecord.get("provider").get("name").asText())
+                .role("resourceProvider")
+                .email("info@fieldsites.se")
+                .build();
+        contactList.add(publisher);
+        contactList.add(provider);
+        newRecord.setResponsibleParties(contactList);
+
+        // fixed stuff
         newRecord.setType("signpost");
+        newRecord.setDataLevel("Level 0");
+        newRecord.setAccessLimitation(
+                AccessLimitation.builder()
+                .value("no limitations to public access")
+                .code("Available")
+                .uri("http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/noLimitations")
+                .build()
+                );
         // import metadata
         newRecord.setImportId(parsedRecord.get("identifier").asText());
         newRecord.setImportLastModified(ZonedDateTime.now(ZoneId.of("UTC")));
@@ -210,21 +271,76 @@ public class SITESImportService implements CatalogueImportService {
     @SneakyThrows
     private void updateRecord(String localRecordId, String remoteRecordId, JsonNode parsedRecord, CatalogueUser user) {
         // prep
-        ElterDocument newDocument = new ElterDocument();
+        ElterDocument updatedRecord = new ElterDocument();
 
-        // set all the fields
-        newDocument.setTitle(parsedRecord.get("name").asText());
-        newDocument.setDescription(parsedRecord.get("description").asText());
-        newDocument.setType("signpost");
+        // set fields from remote document
+        updatedRecord.setTitle(parsedRecord.get("name").asText());
+        updatedRecord.setDescription(parsedRecord.get("description").asText());
+        // online resources
+        ArrayList<OnlineResource> linkList = new ArrayList<>();
+        linkList.add(
+                OnlineResource.builder()
+                .url(parsedRecord.get("url").asText())
+                .name("View record")
+                .description("View record at this link")
+                .function("download")
+                .build()
+                );
+        updatedRecord.setOnlineResources(linkList);
+        // temporal extents
+        ArrayList<TimePeriod> extentList = new ArrayList<>();
+        String times = parsedRecord.get("temporalCoverage").asText();
+        int split = times.indexOf("/");
+        String beginTime = times.substring(0,10);
+        String endTime = times.substring(split+1,split+11);
+        extentList.add(
+                TimePeriod.builder()
+                .begin(beginTime)
+                .end(endTime)
+                .build()
+                );
+        // date published
+        LocalDate published = LocalDate.parse(parsedRecord.get("datePublished").asText().substring(0,10));
+        updatedRecord.setDatasetReferenceDate(
+                DatasetReferenceDate.builder()
+                .publicationDate(published)
+                .build()
+                );
+        // contacts
+        ArrayList<ResponsibleParty> contactList = new ArrayList<>();
+        ResponsibleParty publisher = ResponsibleParty.builder()
+                .organisationName("SITES data portal")
+                .role("publisher")
+                .email("info@fieldsites.se")
+                .build();
+        ResponsibleParty provider = ResponsibleParty.builder()
+                .organisationName(parsedRecord.get("provider").get("name").asText())
+                .role("resourceProvider")
+                .email("info@fieldsites.se")
+                .build();
+        contactList.add(publisher);
+        contactList.add(provider);
+        updatedRecord.setResponsibleParties(contactList);
+
+        // fixed stuff
+        updatedRecord.setType("signpost");
+        updatedRecord.setDataLevel("Level 0");
+        updatedRecord.setAccessLimitation(
+                AccessLimitation.builder()
+                .value("no limitations to public access")
+                .code("Available")
+                .uri("http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/noLimitations")
+                .build()
+                );
         // import metadata
-        newDocument.setImportId(parsedRecord.get("identifier").asText());
-        newDocument.setImportLastModified(ZonedDateTime.now(ZoneId.of("UTC")));
+        updatedRecord.setImportId(parsedRecord.get("identifier").asText());
+        updatedRecord.setImportLastModified(ZonedDateTime.now(ZoneId.of("UTC")));
 
         // save back
-        newDocument.setMetadata(documentRepository.read(localRecordId).getMetadata());
+        updatedRecord.setMetadata(documentRepository.read(localRecordId).getMetadata());
         documentRepository.save(
                 user,
-                newDocument,
+                updatedRecord,
                 localRecordId,
                 "Updated record " + remoteRecordId
                 );
