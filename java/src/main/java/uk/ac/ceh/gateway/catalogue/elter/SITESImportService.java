@@ -58,6 +58,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.TimePeriod;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
+import uk.ac.ceh.gateway.catalogue.publication.PublicationService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
 @Profile("elter")
@@ -69,14 +70,16 @@ public class SITESImportService implements CatalogueImportService {
     private final DocumentBuilder documentBuilder;
     private final DocumentRepository documentRepository;
     private final ObjectMapper objectMapper;
+    private final PublicationService publicationService;
     private final RestTemplate restTemplate;
-    private final String sitemapUrl;
     private final SolrClient solrClient;
+    private final String sitemapUrl;
     private final XPathExpression xPath;
 
     // constructor
     public SITESImportService(
             DocumentRepository documentRepository,
+            PublicationService publicationService,
             @Qualifier("normal") RestTemplate restTemplate,
             SolrClient solrClient,
             @Value("${sites.import.url}") String sitemapUrl
@@ -85,6 +88,7 @@ public class SITESImportService implements CatalogueImportService {
         this.documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         this.documentRepository = documentRepository;
         this.objectMapper = new ObjectMapper();
+        this.publicationService = publicationService;
         this.restTemplate = restTemplate;
         this.sitemapUrl = sitemapUrl;
         this.solrClient = solrClient;
@@ -262,6 +266,10 @@ public class SITESImportService implements CatalogueImportService {
                 "elter",
                 "Create new record " + remoteRecordId
                 );
+
+        // publish new record
+        publicationService.transition(user, savedDocument.getId(), "ykhm7b");
+        publicationService.transition(user, savedDocument.getId(), "re4vkb");
 
         // success
         log.info("Successfully imported record {}", remoteRecordId);
