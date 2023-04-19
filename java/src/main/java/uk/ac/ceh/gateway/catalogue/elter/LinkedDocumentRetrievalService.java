@@ -78,7 +78,7 @@ public class LinkedDocumentRetrievalService {
             // description
             JsonNode jsonDescriptions = jsonRecordAttributes.get("descriptions").path(0);
             if (! jsonDescriptions.isMissingNode()){
-                document.setDescription(jsonDescriptions.get("title").asText());
+                document.setDescription(jsonDescriptions.get("description").asText());
             }
             // authors
             JsonNode jsonCreators = jsonRecordAttributes.get("creators").path(0);
