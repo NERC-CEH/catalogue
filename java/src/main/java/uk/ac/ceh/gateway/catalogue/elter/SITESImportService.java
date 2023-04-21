@@ -90,7 +90,7 @@ public class SITESImportService implements CatalogueImportService {
     // methods start here
     @SneakyThrows
     private List<String> getRemoteRecordList() {
-        log.info("GET SITES sitemap at {}", sitemapUrl);
+        log.debug("GET SITES sitemap at {}", sitemapUrl);
 
         // prep
         List<String> results = new ArrayList<>();
@@ -106,7 +106,7 @@ public class SITESImportService implements CatalogueImportService {
 
     @SneakyThrows
     private Map<String, String> getLocalRecordMapping() throws IOException {
-        log.info("GET locally imported records");
+        log.debug("GET locally imported records");
 
         // prep
         Map<String, String> resultMapping = new HashMap<>(5000);
@@ -144,7 +144,7 @@ public class SITESImportService implements CatalogueImportService {
 
     @SneakyThrows
     private JsonNode getFullRemoteRecord(String remoteRecordId) {
-        log.info("GET record {}", remoteRecordId);
+        log.debug("GET record {}", remoteRecordId);
 
         // get record HTML as String
         // in the SITES sitemap, remoteRecordId is the URL to the record
@@ -203,7 +203,7 @@ public class SITESImportService implements CatalogueImportService {
         publicationService.transition(user, savedDocument.getId(), "re4vkb");
 
         // success
-        log.info("Successfully imported record {}", remoteRecordId);
+        log.debug("Successfully imported record {}", remoteRecordId);
         return savedDocument.getId();
     }
 
@@ -223,7 +223,7 @@ public class SITESImportService implements CatalogueImportService {
                 );
 
         // success
-        log.info("Successfully updated record {}", remoteRecordId);
+        log.debug("Successfully updated record {}", remoteRecordId);
     }
 
     @Scheduled(initialDelay = TimeConstants.ONE_MINUTE, fixedDelay = TimeConstants.SEVEN_DAYS)
@@ -232,9 +232,14 @@ public class SITESImportService implements CatalogueImportService {
         log.info("Running SITES metadata import...");
         CatalogueUser importUser = new CatalogueUser().setUsername("SITES metadata import").setEmail("info@fieldsites.se");
         Map<String, String> localRecordList = null;
+        int totalRecords = 0;
+        int newRecords = 0;
+        int updatedRecords = 0;
+        int skippedRecords = 0;
 
         // get remote records
         List<String> remoteRecordList = getRemoteRecordList();
+        totalRecords = remoteRecordList.size();
 
         // get local records
         try {
@@ -252,15 +257,28 @@ public class SITESImportService implements CatalogueImportService {
                 String remoteRecordId = parsedRecord.get("identifier").asText();
                 if (localRecordList.containsKey(remoteRecordId)) {
                     updateRecord(localRecordList.get(remoteRecordId), remoteRecordId,  parsedRecord, importUser);
+                    updatedRecords++;
                 }
                 else {
                     String newId = createRecord(remoteRecordId, parsedRecord, importUser);
-                    log.info("New document ID is {}", newId);
+                    log.debug("New document ID is {}", newId);
+                    newRecords++;
                 }
             }
             else {
-                log.info("Skipping record {} as it is not of type \"Dataset\"", recordUrl);
+                log.debug("Skipping record {} as it is not of type \"Dataset\"", recordUrl);
+                skippedRecords++;
             }
         }
+
+        // finished, log summary
+        log.info("Finished SITES metadata import!");
+        log.info("{} created + {} updated + {} skipped = {} total ({} records in sitemap)",
+                newRecords,
+                updatedRecords,
+                skippedRecords,
+                newRecords + updatedRecords + skippedRecords,
+                totalRecords
+                );
     }
 }
