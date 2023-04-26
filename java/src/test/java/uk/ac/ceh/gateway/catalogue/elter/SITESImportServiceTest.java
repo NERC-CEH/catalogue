@@ -1,5 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.elter;
 
+import java.util.HashMap;
+
 import lombok.SneakyThrows;
 import lombok.val;
 
@@ -7,6 +9,7 @@ import org.apache.commons.io.IOUtils;
 
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.SolrParams;
 
@@ -49,7 +52,7 @@ public class SITESImportServiceTest {
     private SITESImportService sitesImportService;
     private MockRestServiceServer mockServer;
     private String testSitemapUrl;
-    private byte[] datasetHtml;
+    private byte[] testRecordHtml;
 
     private static final String SOLR_COLLECTION = "documents";
     private static final String CATALOGUE = "elter";
@@ -67,16 +70,16 @@ public class SITESImportServiceTest {
     @Test
     @SneakyThrows
     public void importNewRecord() {
-        // setup
         val restTemplate = new RestTemplate();
         val queryResponse = mock(QueryResponse.class);
         mockServer = MockRestServiceServer.bindTo(restTemplate).build();
-        datasetHtml = IOUtils.toByteArray(getClass().getResource("sites-dataset.html"));
-        testSitemapUrl = getClass().getResource("sites-sitemap-with-dataset.xml").toString();
 
         CatalogueUser expectedUser = new CatalogueUser()
             .setUsername("SITES metadata import")
             .setEmail("info@fieldsites.se");
+        // setup
+        testRecordHtml = IOUtils.toByteArray(getClass().getResource("sites-dataset.html"));
+        testSitemapUrl = getClass().getResource("sites-sitemap-with-dataset.xml").toString();
 
         sitesImportService = new SITESImportService(
                 documentRepository,
@@ -103,7 +106,7 @@ public class SITESImportServiceTest {
         mockServer
             .expect(requestTo(equalTo("https://meta.fieldsites.se/objects/P8rtv97XQIOXtgQEiEjwokOt")))
             .andExpect(method(HttpMethod.GET))
-            .andRespond(withSuccess(datasetHtml, MediaType.TEXT_HTML));
+            .andRespond(withSuccess(testRecordHtml, MediaType.TEXT_HTML));
 
         // when
         sitesImportService.runImport();
@@ -141,6 +144,96 @@ public class SITESImportServiceTest {
         assertEquals(
                 "Level 0",
                 createdDocument.getDataLevel()
+                );
+    }
+
+    @Test
+    @SneakyThrows
+    public void updateExistingRecord() {
+        val restTemplate = new RestTemplate();
+        val queryResponse = mock(QueryResponse.class);
+        mockServer = MockRestServiceServer.bindTo(restTemplate).build();
+
+        CatalogueUser expectedUser = new CatalogueUser()
+            .setUsername("SITES metadata import")
+            .setEmail("info@fieldsites.se");
+        // setup
+        testRecordHtml = IOUtils.toByteArray(getClass().getResource("sites-dataset.html"));
+        testSitemapUrl = getClass().getResource("sites-sitemap-with-dataset.xml").toString();
+
+        sitesImportService = new SITESImportService(
+                documentRepository,
+                publicationService,
+                restTemplate,
+                solrClient,
+                testSitemapUrl
+                );
+
+        HashMap solrFieldMapping = new HashMap<String, String>();
+        solrFieldMapping.put("importId", "https://hdl.handle.net/11676.1/P8rtv97XQIOXtgQEiEjwokOt");
+        solrFieldMapping.put("identifier", RECORD_ID);
+
+        SolrDocumentList mockResults = new SolrDocumentList();
+        mockResults.add(new SolrDocument(solrFieldMapping));
+
+        // given
+        given(solrClient.query(eq(SOLR_COLLECTION), any(SolrParams.class), eq(POST)))
+            .willReturn(queryResponse);
+        given(queryResponse.getResults())
+            .willReturn(mockResults);
+
+        given(documentRepository.save(
+                    any(CatalogueUser.class),
+                    any(ElterDocument.class),
+                    any(String.class),
+                    any(String.class)
+                    ))
+            .willReturn(new ElterDocument().setId(RECORD_ID));
+
+        given(documentRepository.read(any(String.class)))
+            .willReturn(new ElterDocument().setId(RECORD_ID));
+
+
+        mockServer
+            .expect(requestTo(equalTo("https://meta.fieldsites.se/objects/P8rtv97XQIOXtgQEiEjwokOt")))
+            .andExpect(method(HttpMethod.GET))
+            .andRespond(withSuccess(testRecordHtml, MediaType.TEXT_HTML));
+
+        // when
+        sitesImportService.runImport();
+
+        // then
+        mockServer.verify();
+        verify(documentRepository).read(RECORD_ID);
+        ArgumentCaptor<ElterDocument> argument = ArgumentCaptor.forClass(ElterDocument.class);
+        verify(documentRepository).save(eq(expectedUser), argument.capture(), eq(RECORD_ID), eq("Updated record https://hdl.handle.net/11676.1/P8rtv97XQIOXtgQEiEjwokOt"));
+
+        // NOTE: the html resource has been sanitised by converting
+        // "ö" and "–" characters to "o" and "-" respectively.
+        // assertions would fail otherwise due to garbled characters.
+        // 
+        // these characters seem to be correctly handled in real use
+        // so we just sidestep them for testing.
+        ElterDocument updatedDocument = argument.getValue();
+        assertEquals(
+                "Starling reproduction from Grimso, Centroid of Research Area, 1981-2022",
+                updatedDocument.getTitle()
+                );
+        assertEquals(
+                "Inventory on starling (Sturnus vulgaris) reproduction. Nest boxes are surveyed annually, distributed in six sub areas (with 25 nest boxes each) within the research area. Boxes are checked for laid eggs and hatched fledglings.\nGrimso Wildlife Research Station (2023). Starling reproduction from Grimso, Centroid of Research Area, 1981-2022 [Data set]. Swedish Infrastructure for Ecosystem Science (SITES). https://hdl.handle.net/11676.1/P8rtv97XQIOXtgQEiEjwokOt",
+                updatedDocument.getDescription()
+                );
+        assertEquals(
+                "https://hdl.handle.net/11676.1/P8rtv97XQIOXtgQEiEjwokOt",
+                updatedDocument.getImportId()
+                );
+        assertEquals(
+                "signpost",
+                updatedDocument.getType()
+                );
+        assertEquals(
+                "Level 0",
+                updatedDocument.getDataLevel()
                 );
     }
 }
