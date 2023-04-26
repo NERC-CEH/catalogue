@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.imports;
+package uk.ac.ceh.gateway.catalogue.elter;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -48,6 +48,7 @@ import org.w3c.dom.NodeList;
 
 import uk.ac.ceh.gateway.catalogue.TimeConstants;
 import uk.ac.ceh.gateway.catalogue.elter.ElterDocument;
+import uk.ac.ceh.gateway.catalogue.imports.CatalogueImportService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.publication.PublicationService;
