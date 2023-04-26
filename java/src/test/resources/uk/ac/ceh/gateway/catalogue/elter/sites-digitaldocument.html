@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link rel="stylesheet" href="https://static.icos-cp.eu/css/bootstrap/5.2.1/sites-bootstrap.css">
+	<link rel="stylesheet" href="https://static.icos-cp.eu/constant/fontawesome/5.15.3/css/fontawesome.min.css">
+	<link rel="stylesheet" href="https://static.icos-cp.eu/constant/fontawesome/5.15.3/css/solid.min.css">
+
+	<link rel="icon" type="image/x-icon" href="//static.icos-cp.eu/images/sites-favicon.ico">
+	<link rel="stylesheet" href="//static.icos-cp.eu/css/fonts/source-sans-pro.css">
+
+	<style>
+	body {
+		font-family: "SourceSansPro", sans-serif;
+		font-size: 16px;
+	}
+
+	a,
+	.btn-link {
+		color: #3C8CA5;
+	}
+
+	a:hover,
+	a:focus,
+	a:active {
+		color: #2F7F98;
+	}
+
+	h2:not(:first-child) {
+		margin-top: 2rem;
+	}
+
+	.btn-primary,
+	.btn-primary.disabled,
+	.btn-primary:disabled {
+		background-color: #55A5BE;
+		border-color: #3C8CA5;
+	}
+
+	.btn-primary:hover,
+	.btn-primary:focus,
+	.btn-primary.focus,
+	.btn-primary:active {
+		background: #3C8CA5;
+		border-color: #2F7F98;
+	}
+
+	.btn-primary .badge {
+		color: #55A5BE;
+	}
+
+	.header {
+		position: relative;
+		width: 1400px;
+		max-width: 100%;
+		height: 175px;
+		margin: 0 auto;
+		background: url(https://static.icos-cp.eu/images/sites-header-background.jpg) #61AB43 no-repeat center top;
+		border-top: 22px solid #818185;
+	}
+
+	.logo {
+		display: inline-block;
+		background: white;
+		width: 144px;
+		height: 108px;
+		margin-top: -22px;
+		position: relative;
+		margin-left: 10%;
+		max-width: 30%;
+	}
+
+	.logo img {
+		width: 90%;
+		height: auto;
+		position: absolute;
+		bottom: 13px;
+		left: 7px;
+	}
+
+	.menu {
+		position: absolute;
+		bottom: 0;
+		width: 100%;
+		max-width: 1400px;
+		margin: 0 auto;
+	}
+
+	.menu-content ul {
+		padding: 0 1rem;
+	}
+
+	.menu a {
+		color: #fff;
+		font-size: 1.125em;
+		cursor: pointer;
+	}
+
+	.menu-content {
+		display: flex;
+		justify-content: space-between;
+		width: 100%;
+	}
+
+	.menu-content-right {
+		display: flex;
+	}
+
+	.menu-content-right .account {
+		display: none;
+	}
+
+	.menu-content-right .badge {
+		vertical-align: 1px;
+	}
+
+	.page,
+	.footer {
+		margin: 0 auto;
+		max-width: 1400px;
+	}
+
+	.footer {
+		padding: 20px 5px 5px;
+		max-width: 780px;
+		font-size: 13px;
+		color: #7a7a7a;
+		line-height: 1.3;
+		text-align: center;
+	}
+</style>
+
+
+	<script>
+	
+window.addEventListener("load", function(){
+
+	const menuButton = document.getElementById("menu-button");
+
+	if (menuButton !== null) {
+		menuButton.addEventListener('click', function() {
+			document.getElementById('cp-main-menu').classList.toggle('open');
+		});
+	}
+
+	var menuGroups = document.getElementsByClassName("open_menu");
+
+	for(var idx = 0; idx < menuGroups.length; idx++){
+		var elem = menuGroups[idx];
+
+		elem.addEventListener("click", function(event){
+			this.parentElement.parentElement.classList.toggle('open');
+		});
+	}
+
+	function ajaxGet(url, action){
+		var xhr = new XMLHttpRequest();
+		xhr.open("GET", url);
+		xhr.send(null);
+
+		xhr.onreadystatechange = function () {
+			if (xhr.readyState === 4 && xhr.status === 200) {
+				action(xhr);
+			}
+		};
+	}
+
+	ajaxGet('/whoami', function(xhr){
+		var response = JSON.parse(xhr.response);
+
+		if (response.email) {
+			const email = response.email;
+
+			fetch(`https://auth.fieldsites.se/db/users/${email}?keys=${encodeURIComponent('{cart:1}')}`, { credentials: 'include' })
+				.then(response => response.json())
+				.then(data => {
+
+					const cartLinks = document.querySelectorAll('.cart-link');
+					cartLinks.forEach(link => {
+						link.querySelector('.items-number').innerText = data.cart._items.length;
+						link.addEventListener('click', function () {
+							window.location = 'https://data.fieldsites.se/portal#{"route":"cart"}';
+						});
+						link.style.display = 'block';
+					});
+
+					const accountLinks = document.querySelectorAll('.account-link');
+					accountLinks.forEach(link => {
+						link.addEventListener('click', function(){
+							window.location = 'https://auth.fieldsites.se/';
+						});
+						link.style.display = 'block';
+					});
+
+					const addButton = document.getElementById("meta-add-to-cart-button");
+					const removeButton = document.getElementById("meta-remove-from-cart-button");
+
+					if (addButton) {
+						const objId = addButton.dataset.id;
+						if (data.cart._items.some(i => i._id === objId)) {
+							removeButton.classList.remove('d-none');
+						} else {
+							addButton.classList.remove('d-none');
+						}
+
+						removeButton.addEventListener("click", () => {
+							addButton.classList.remove('d-none');
+							removeButton.classList.add('d-none');
+							const items = data.cart._items.filter(i => i._id != objId)
+							data.cart._items = items;
+							updateProfile(email, data);
+							cartLinks.forEach(link => {
+								link.querySelector('.items-number').innerText = data.cart._items.length;
+							});
+						});
+
+						addButton.addEventListener("click", () => {
+							addButton.classList.add('d-none');
+							removeButton.classList.remove('d-none');
+							data.cart._items.push({"_id": objId})
+							updateProfile(email, data);
+							cartLinks.forEach(link => {
+								link.querySelector('.items-number').innerText = data.cart._items.length;
+							});
+						});
+
+						if (window.location.hash == "#add-to-cart") {
+							history.replaceState(null, "", window.location.href.split('#')[0]);
+							addButton.classList.add('d-none');
+							removeButton.classList.remove('d-none');
+							data.cart._items.push({"_id": objId})
+							updateProfile(email, data);
+							cartLinks.forEach(link => {
+								link.querySelector('.items-number').innerText = data.cart._items.length;
+							});
+						}
+					}
+				});
+
+		} else {
+			const loginLinks = document.querySelectorAll('.login-link');
+			loginLinks.forEach(link => {
+				link.addEventListener('click', () => loginAndRedirect(window.location.href));
+				link.style.display = 'block';
+			});
+
+			const addButton = document.getElementById("meta-add-to-cart-button");
+			if (addButton) {
+				addButton.addEventListener("click", () => loginAndRedirect(window.location.href + "#add-to-cart"));
+				addButton.classList.remove('d-none');
+			}
+		}
+	});
+
+	const updateProfile = (email, data) => {
+		fetch(`https://auth.fieldsites.se/db/users/${email}`, {
+			credentials: 'include',
+			method: 'PATCH',
+			mode: 'cors',
+			headers: new Headers({
+				'Content-Type': 'application/json'
+			}),
+			body: JSON.stringify(data)
+		});
+	};
+
+	const loginAndRedirect = (url) => {
+		window.location = 'https://auth.fieldsites.se/login/?targetUrl=' + encodeURIComponent(url);
+	}
+
+});
+
+	</script>
+
+	
+	
+	<script type="application/ld+json">
+		{
+  "@context": "https://schema.org",
+  "@id": "https://meta.fieldsites.se/objects/S9logSK2mHJJtXqboteABtTD",
+  "@type": "DigitalDocument",
+  "acquireLicensePage": "https://meta.fieldsites.se/ontologies/sites/sitesLicence",
+  "alternateName": "SITES_STA_GRI_Starling-reproduction-description.pdf",
+  "contributor": null,
+  "creator": null,
+  "datePublished": "2023-04-18",
+  "description": "Inventory on starling (Sturnus vulgaris) reproduction. Nest boxes are surveyed annually, distributed in six sub areas (with 25 nest boxes each) within the research area. Boxes are checked for laid eggs and hatched fledglings.",
+  "identifier": "https://hdl.handle.net/11676.1/S9logSK2mHJJtXqboteABtTD",
+  "inLanguage": {
+    "@type": "Language",
+    "name": "English"
+  },
+  "isBasedOn": null,
+  "isPartOf": null,
+  "keywords": null,
+  "license": "Some(https://creativecommons.org/licenses/by/4.0)",
+  "name": "Description of Starling reproduction at Grimsö Wildlife Research Area",
+  "provider": {
+    "@type": "Organization",
+    "@id": "https://meta.fieldsites.se/resources/stations/Grimso",
+    "name": "Grimsö Wildlife Research Station",
+    "email": "data@fieldsites.se"
+  },
+  "publisher": {
+    "@id": "data.fieldsites.se",
+    "@type": "Organization",
+    "logo": "https://static.icos-cp.eu/images/sites-logo.png",
+    "name": "SITES data portal",
+    "url": "https://data.fieldsites.se"
+  },
+  "url": "https://meta.fieldsites.se/objects/S9logSK2mHJJtXqboteABtTD"
+}
+	</script>
+
+	<style>
+	.col-md-12 > label::after {
+		content: ":";
+	}
+	.col-md-12 > label{
+		margin-bottom: 5px;
+		vertical-align: top;
+	}
+	iframe {
+		border:solid 1px #ddd;
+		width:100%;
+		height:400px;
+	}
+	.link-box-title::before {
+		font-family: "Font Awesome 5 Free";
+		content: "\f105";
+		font-weight: 900;
+		margin: 0 0.3rem;
+		color: white;
+	}
+	table.instrument-deployment {
+		margin-bottom: 0px;
+	}
+	table.instrument-deployment td {
+		vertical-align: middle;
+		border-bottom-width: 0px;
+	}
+</style>
+
+
+
+	<title>SITES_STA_GRI_Starling-reproduction-description.pdf | SITES</title>
+
+</head>
+
+<body>
+	<header class="header">
+		<a href="https://www.fieldsites.se">
+			<div class="logo">
+				<img src="https://static.icos-cp.eu/images/sites-logo.jpg">
+			</div>
+		</a>
+		<nav class="menu navbar navbar-expand-sm navbar-dark">
+			<div class="menu-content">
+				<ul class="navbar-nav nav mt-auto">
+					<li class="nav-item"><a class="nav-link" href="//data.fieldsites.se">Data catalogue</a></li>
+				</ul>
+				<ul class="menu-content-right navbar-nav nav">
+					<li class="nav-item account cart-link">
+						<a class="nav-link"><i class="fas fa-shopping-cart"></i> Cart
+							<span class="badge rounded-pill bg-light text-secondary">
+								<span class="items-number">0</span>
+								<span class="visually-hidden">items in cart</span>
+							</span>
+						</a>
+					</li>
+					<li class="nav-item account account-link">
+						<a class="nav-link"><i class="fas fa-user"></i> My Account</a>
+					</li>
+					<li class="nav-item account login-link">
+						<a class="nav-link"><i class="fas fa-sign-out-alt"></i> Log in</a>
+					</li>
+				</ul>
+			</div>
+		</nav>
+	</header>
+
+	<div class="page sites-page pt-4">
+		<div class="container-fluid">
+			
+	
+	
+		
+
+<div class="row">
+	<h1 class="col-md-8">Description of Starling reproduction at Grimsö Wildlife Research Area</h1>
+	<div class="col-auto ms-md-auto py-2">
+	<a class="btn btn-secondary" href="https://data.fieldsites.se/objects/S9logSK2mHJJtXqboteABtTD">Download</a>
+</div>
+</div>
+<div class="d-sm-flex justify-content-between align-items-start border-bottom mb-4 pb-2 gap-3">
+	
+		<div class="fs-3 text-muted">Document</div>
+	
+</div>
+
+
+	
+	
+	<div class="row py-2 gy-4">
+		
+
+
+
+
+
+
+
+		
+
+
+		<div class="col-md-12">
+	
+		
+	
+</div>
+
+		<div class="col-md-8">
+			<div class="row gy-2">
+				
+
+				
+					<div class="col-md-3"><label class="fw-bold">PID</label></div>
+<div class="col-md-9 text-break">
+	
+			<span>11676.1/S9logSK2mHJJtXqboteABtTD (<a href=https://hdl.handle.net/11676.1/S9logSK2mHJJtXqboteABtTD>link</a>)</span>
+		
+</div>
+
+
+				
+				
+					<div class="col-md-3"><label class="fw-bold">File name</label></div>
+<div class="col-md-9 text-break" style="white-space: pre-line">SITES_STA_GRI_Starling-reproduction-description.pdf</div>
+
+				
+				
+				
+				
+				
+					
+						<div class="col-md-3"><label class="fw-bold">Description</label></div>
+<div class="col-md-9 text-break" style="white-space: pre-line">Inventory on starling (Sturnus vulgaris) reproduction. Nest boxes are surveyed annually, distributed in six sub areas (with 25 nest boxes each) within the research area. Boxes are checked for laid eggs and hatched fledglings.</div>
+
+					
+					
+		
+	
+					
+						<div class="col-md-3"><label class="fw-bold">Licence</label></div>
+<div class="col-md-9 text-break">
+	<a href=https://data.fieldsites.se/licence>SITES CCBY4 Data Licence</a>
+</div>
+
+					
+				
+				
+	<div class="col-md-3"><label class="fw-bold">Citation</label></div>
+<div class="col-md-9 text-break"> (2023). Description of Starling reproduction at Grimsö Wildlife Research Area. Swedish Infrastructure for Ecosystem Science (SITES). https://hdl.handle.net/11676.1/S9logSK2mHJJtXqboteABtTD</div>
+
+
+
+	
+	<div class="col-md-3"><label class="fw-bold"></label></div>
+<div class="col-md-9 text-break">
+		<details>
+			<summary class="d-inline-block">
+				<span class="btn-link" style="cursor:pointer; color: var(--bs-link-color);">BibTex</span>
+			</summary>
+			<div class="card bg-light">
+				<div class="card-body">
+					<pre class="user-select-all w-100 m-0">@misc{https://hdl.handle.net/11676.1/S9logSK2mHJJtXqboteABtTD,
+  author={},
+  title={Description of Starling reproduction at Grimsö Wildlife Research Area},
+  year={2023},
+  url={https://hdl.handle.net/11676.1/S9logSK2mHJJtXqboteABtTD},
+  publisher={Grimsö Wildlife Research Station},
+  copyright={https://meta.fieldsites.se/ontologies/sites/sitesLicence},
+  pid={11676.1/S9logSK2mHJJtXqboteABtTD}
+}</pre>
+				</div>
+			</div>
+		</details>
+	</div>
+
+
+
+
+	
+	<div class="col-md-3"><label class="fw-bold"></label></div>
+<div class="col-md-9 text-break">
+		<details>
+			<summary class="d-inline-block">
+				<span class="btn-link" style="cursor:pointer; color: var(--bs-link-color);">RIS</span>
+			</summary>
+			<div class="card bg-light">
+				<div class="card-body">
+					<pre class="user-select-all w-100 m-0">TY - DATA
+T1 - Description of Starling reproduction at Grimsö Wildlife Research Area
+ID - 11676.1/S9logSK2mHJJtXqboteABtTD
+PY - 2023
+UR - https://hdl.handle.net/11676.1/S9logSK2mHJJtXqboteABtTD
+PB - Grimsö Wildlife Research Station
+ER - </pre>
+				</div>
+			</div>
+		</details>
+	</div>
+
+
+
+
+
+
+				
+					<div class="col-md-3"><label class="fw-bold">File size</label></div>
+<div class="col-md-9 text-break" style="white-space: pre-line">6 MB (6593655 bytes)</div>
+
+				
+				<div class="col-md-3"><label class="fw-bold">SHA-256 hashsum (hex)</label></div>
+<div class="col-md-9 text-break" style="white-space: pre-line">4bd9688122b6987249b57a9ba2d78006d4c3657e2121af38f0355b4978f4c719</div>
+
+				<div class="col-md-3"><label class="fw-bold">SHA-256 hashsum (base64)</label></div>
+<div class="col-md-9 text-break" style="white-space: pre-line">S9logSK2mHJJtXqboteABtTDZX4hIa848DVbSXj0xxk</div>
+
+
+				<h2 class="fs-3 mt-5">Submission</h2>
+				<div class="col-md-3"><label class="fw-bold">Submitted by</label></div>
+<div class="col-md-9 text-break">
+					<a href=/resources/stations/Grimso>
+	<span>Grimsö Wildlife Research Station</span>
+</a>
+
+				</div>
+
+				
+					<div class="col-md-3"><label class="fw-bold">Publication time (UTC+1)</label></div>
+<div class="col-md-9 text-break" style="white-space: pre-line">2023-04-18 12:55:10</div>
+
+				
+				<div class="col-md-3"><label class="fw-bold">Submission started (UTC+1)</label></div>
+<div class="col-md-9 text-break" style="white-space: pre-line">2023-04-18 12:55:05</div>
+
+
+				<h2 class="fs-3 mt-5">Statistics</h2>
+				<div class="col-md-3"><label class="fw-bold">Downloads</label></div>
+<div class="col-md-9 text-break">
+					1
+				</div>
+
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="row">
+				<div class="col-md-12 mb-3">
+	<div class="card bg-light">
+		
+		<div class="card-body">
+			
+				<div class="row gy-2">
+					<div class="col-md-3"><label class="fw-bold">Metadata</label></div>
+<div class="col-md-9 text-break">
+						<a href=./S9logSK2mHJJtXqboteABtTD/SITES_STA_GRI_Starling-reproduction-description.pdf.json>
+	JSON
+</a>
+
+
+ •
+						<a href=./S9logSK2mHJJtXqboteABtTD/SITES_STA_GRI_Starling-reproduction-description.pdf.xml>
+	RDF/XML
+</a>
+
+
+ •
+						<a href=./S9logSK2mHJJtXqboteABtTD/SITES_STA_GRI_Starling-reproduction-description.pdf.ttl>
+	RDF/Turtle
+</a>
+
+
+
+					</div>
+
+				</div>
+			
+		</div>
+	</div>
+</div>
+
+			</div>
+		</div>
+	</div>
+
+
+		</div>
+	</div>
+
+	<div class="footer">
+		<p>SITES (Swedish Infrastructure for Ecosystem Science) is a national research infrastructure for terrestrial and limnological field research that will help to strengthen Swedish research based on measurements and experiments carried out in the field.</p>
+		<p><a href="https://www.fieldsites.se/en-GB/about/about-sites-32652196">About SITES</a> • <a href="mailto:info@fieldsites.se">info@fieldsites.se</a></p>
+	</div>
+
+	
+
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

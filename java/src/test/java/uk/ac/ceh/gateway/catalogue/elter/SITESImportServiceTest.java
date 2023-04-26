@@ -42,6 +42,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
@@ -235,5 +236,47 @@ public class SITESImportServiceTest {
                 "Level 0",
                 updatedDocument.getDataLevel()
                 );
+    }
+
+    @Test
+    @SneakyThrows
+    public void skipInvalidRecord() {
+        val restTemplate = new RestTemplate();
+        val queryResponse = mock(QueryResponse.class);
+        mockServer = MockRestServiceServer.bindTo(restTemplate).build();
+
+        CatalogueUser expectedUser = new CatalogueUser()
+            .setUsername("SITES metadata import")
+            .setEmail("info@fieldsites.se");
+        // setup
+        testRecordHtml = IOUtils.toByteArray(getClass().getResource("sites-digitaldocument.html"));
+        testSitemapUrl = getClass().getResource("sites-sitemap-with-digitaldocument.xml").toString();
+
+        sitesImportService = new SITESImportService(
+                documentRepository,
+                publicationService,
+                restTemplate,
+                solrClient,
+                testSitemapUrl
+                );
+
+        // given
+        given(solrClient.query(eq(SOLR_COLLECTION), any(SolrParams.class), eq(POST)))
+            .willReturn(queryResponse);
+        given(queryResponse.getResults())
+            .willReturn(new SolrDocumentList());
+
+        mockServer
+            .expect(requestTo(equalTo("https://meta.fieldsites.se/objects/S9logSK2mHJJtXqboteABtTD")))
+            .andExpect(method(HttpMethod.GET))
+            .andRespond(withSuccess(testRecordHtml, MediaType.TEXT_HTML));
+
+        // when
+        sitesImportService.runImport();
+
+        // then
+        mockServer.verify();
+        verifyNoInteractions(documentRepository);
+        verifyNoInteractions(publicationService);
     }
 }
