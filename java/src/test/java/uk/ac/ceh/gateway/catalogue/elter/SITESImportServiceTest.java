@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.elter;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import lombok.SneakyThrows;
 import lombok.val;
@@ -26,7 +27,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
-import uk.ac.ceh.gateway.catalogue.elter.ElterDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.publication.PublicationService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
@@ -170,7 +170,7 @@ public class SITESImportServiceTest {
                 testSitemapUrl
                 );
 
-        HashMap solrFieldMapping = new HashMap<String, String>();
+        Map<String, Object> solrFieldMapping = new HashMap<>();
         solrFieldMapping.put("importId", "https://hdl.handle.net/11676.1/P8rtv97XQIOXtgQEiEjwokOt");
         solrFieldMapping.put("identifier", RECORD_ID);
 
