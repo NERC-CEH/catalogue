@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 
-@Profile("elter")
+@Profile("server:elter")
 @Controller
 @Slf4j
 @ToString

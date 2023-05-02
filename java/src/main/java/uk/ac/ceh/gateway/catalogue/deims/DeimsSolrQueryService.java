@@ -16,7 +16,7 @@ import java.util.List;
 
 import static org.apache.solr.client.solrj.SolrRequest.METHOD.POST;
 
-@Profile("elter")
+@Profile("server:elter")
 @Slf4j
 @ToString
 @Service

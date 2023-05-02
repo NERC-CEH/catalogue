@@ -16,7 +16,7 @@ import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 
 import java.io.IOException;
 
-@Profile("elter")
+@Profile("server:elter")
 @Slf4j
 @ToString(onlyExplicitlyIncluded = true)
 @Service

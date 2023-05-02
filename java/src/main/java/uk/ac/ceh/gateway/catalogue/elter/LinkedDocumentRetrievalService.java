@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
-@Profile("elter")
+@Profile("server:elter")
 @Slf4j
 @Service
 @ToString
