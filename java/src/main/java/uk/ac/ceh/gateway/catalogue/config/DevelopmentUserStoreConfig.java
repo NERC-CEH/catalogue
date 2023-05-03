@@ -180,6 +180,16 @@ public class DevelopmentUserStoreConfig {
     }
 
     @Bean
+    public CatalogueUser sitesMetadataImport() throws UsernameAlreadyTakenException {
+        val user = new CatalogueUser()
+            .setUsername("SITES metadata import")
+            .setEmail("info@fieldsites.se");
+        addUserToGroup(user, ELTER_EDITOR, ELTER_PUBLISHER);
+        userStore().addUser(user, "password");
+        return user;
+    }
+
+    @Bean
     public CatalogueUser erammpEditor() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser()
             .setUsername("erammp-editor")
