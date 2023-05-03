@@ -29,7 +29,6 @@ public class IdController {
     private RedirectView redirect(String path, HttpServletRequest request) {
         UriComponentsBuilder url = ServletUriComponentsBuilder
             .fromRequest(request)
-            .scheme("https")
             .replacePath("documents/{path}");
         val redirectView = new RedirectView(url.buildAndExpand(path).toUriString());
         redirectView.setStatusCode(HttpStatus.SEE_OTHER);
