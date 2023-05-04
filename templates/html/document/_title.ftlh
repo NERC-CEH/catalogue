@@ -69,7 +69,7 @@
 
   <#if resourceType?? && (resourceType.value == 'nercSignpost' || resourceType.value == 'signpost')>
     <div class="notice notice-signpost" role="alert">
-      <div><i class="fa-solid fa-circle-infofa-2x"></i></div>
+      <div><i class="fa-solid fa-circle-info fa-2x"></i></div>
       <div>
         <#if resourceType.value == 'signpost' ><#include "_signpost.ftlh"></#if>
         <#if resourceType.value == 'nercSignpost'><#include "_nercSignpost.ftlh"></#if>

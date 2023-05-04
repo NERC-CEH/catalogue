@@ -63,34 +63,36 @@
         right: 0;
         overflow-y: auto;
         overflow-x: hidden;
+        scrollbar-gutter: stable;
         scrollbar-width: thin /* Firefox only*/;
-
-        // Style the facet panel
         padding-left: 1em;
-        ul {
-          padding-left: 0;
-          margin-left: 20px;
-
-          li {
-            list-style: none;
-            padding-bottom: 3px;
-            .facet-count {
-              margin-left: 0.5em;
-              color: lighten(@filter-body-link-colour, 10%);
-            }
-
-            a {
-              color: @filter-body-link-colour;
-              white-space: nowrap;
-            }
-          }
-        }
         .facet {
-          margin-bottom: 2em;
+          margin-bottom: 1em;
           max-height: 600px;
           overflow-y: auto;
+          overflow-x: hidden;
           scrollbar-width: 0.25em;
-      
+          h3 {
+            font-weight: 600;
+            margin-bottom: 0.25em;
+          }
+          ul {
+            padding:0;
+            margin:1px;
+            li {
+              list-style: none;
+              .facet-count {
+                margin-left: 0.5em;
+                color: lighten(@filter-body-link-colour, 10%);
+              }
+
+              a {
+                color: @filter-body-link-colour;
+                white-space: nowrap;
+              }
+            }
+          }
+
           &::-webkit-scrollbar {
             width: 0.25em;
           }

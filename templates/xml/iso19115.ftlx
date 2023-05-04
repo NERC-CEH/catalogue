@@ -29,7 +29,7 @@
   </#if>
   <gmd:contact>
     <gmd:CI_ResponsibleParty>
-      <gmd:organisationName><gco:CharacterString>Environmental Information Data Centre</gco:CharacterString></gmd:organisationName>
+      <gmd:organisationName><gco:CharacterString>UK Centre for Ecology &amp; Hydrology</gco:CharacterString></gmd:organisationName>
       <gmd:contactInfo>
         <gmd:CI_Contact>
           <gmd:address>
@@ -38,7 +38,7 @@
               <gmd:city><gco:CharacterString>Lancaster</gco:CharacterString></gmd:city>
               <gmd:postalCode><gco:CharacterString>LA1 4AP</gco:CharacterString></gmd:postalCode>
               <gmd:country><gco:CharacterString>UK</gco:CharacterString></gmd:country>
-              <gmd:electronicMailAddress><gco:CharacterString>info@eidc.ac.uk</gco:CharacterString></gmd:electronicMailAddress>
+              <gmd:electronicMailAddress><gco:CharacterString>enquiries@ceh.ac.uk</gco:CharacterString></gmd:electronicMailAddress>
             </gmd:CI_Address>
           </gmd:address>
         </gmd:CI_Contact>
@@ -52,7 +52,7 @@
     <gco:DateTime>${metadataDateTime}</gco:DateTime>
   </gmd:dateStamp>
   <gmd:metadataStandardName>
-      <gmx:Anchor xlink:href="http://vocab.nerc.ac.uk/collection/MD1/current/ELTER/">UK ELTER</gmx:Anchor>
+    <gco:CharacterString>ISO 19915</gco:CharacterString>
   </gmd:metadataStandardName>
   <gmd:metadataStandardVersion>
       <gco:CharacterString>2.3</gco:CharacterString>
@@ -79,10 +79,10 @@
     </#list>
   </#if>
   <#--identificationInfo -->
-  <#include "gemini/_identificationInfo.ftlx">
+  <#include "iso19115/_identificationInfo.ftlx">
   <#--distributionInfo -->
-  <#include "gemini/_distributionInfo.ftlx">
+  <#include "iso19115/_distributionInfo.ftlx">
   <#--dataQualityInfo-->
-  <#include "gemini/_dataQualityInfo.ftlx">
+  <#include "iso19115/_dataQualityInfo.ftlx">
 </gmd:MD_Metadata>
 </#compress>
