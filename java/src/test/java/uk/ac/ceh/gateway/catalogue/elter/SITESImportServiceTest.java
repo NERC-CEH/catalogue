@@ -1,6 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.elter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import lombok.SneakyThrows;
@@ -27,6 +29,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
+import uk.ac.ceh.gateway.catalogue.deims.DeimsSolrIndex;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.publication.PublicationService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
@@ -55,7 +58,6 @@ public class SITESImportServiceTest {
     private String testSitemapUrl;
     private byte[] testRecordHtml;
 
-    private static final String SOLR_COLLECTION = "documents";
     private static final String CATALOGUE = "elter";
     private static final String RECORD_ID = "00000000-0000-0000-0000-000000000000";
 
@@ -82,6 +84,14 @@ public class SITESImportServiceTest {
         testRecordHtml = IOUtils.toByteArray(getClass().getResource("sites-dataset.html"));
         testSitemapUrl = getClass().getResource("sites-sitemap-with-dataset.xml").toString();
 
+        List<DeimsSolrIndex> dummyDeimsSiteList = new ArrayList<>();
+        DeimsSolrIndex dummyDeimsSite = new DeimsSolrIndex();
+        dummyDeimsSite.setTitle("Fake title");
+        dummyDeimsSite.setId("Fake id");
+        dummyDeimsSite.setUrl("Fake url");
+
+        dummyDeimsSiteList.add(dummyDeimsSite);
+
         sitesImportService = new SITESImportService(
                 documentRepository,
                 publicationService,
@@ -91,10 +101,12 @@ public class SITESImportServiceTest {
                 );
 
         // given
-        given(solrClient.query(eq(SOLR_COLLECTION), any(SolrParams.class), eq(POST)))
+        given(solrClient.query(any(String.class), any(SolrParams.class), eq(POST)))
             .willReturn(queryResponse);
         given(queryResponse.getResults())
             .willReturn(new SolrDocumentList());
+        given(queryResponse.getBeans(DeimsSolrIndex.class))
+            .willReturn(dummyDeimsSiteList);
 
         given(documentRepository.saveNew(
                     any(CatalogueUser.class),
@@ -162,6 +174,14 @@ public class SITESImportServiceTest {
         testRecordHtml = IOUtils.toByteArray(getClass().getResource("sites-dataset.html"));
         testSitemapUrl = getClass().getResource("sites-sitemap-with-dataset.xml").toString();
 
+        List<DeimsSolrIndex> dummyDeimsSiteList = new ArrayList<>();
+        DeimsSolrIndex dummyDeimsSite = new DeimsSolrIndex();
+        dummyDeimsSite.setTitle("Fake title");
+        dummyDeimsSite.setId("Fake id");
+        dummyDeimsSite.setUrl("Fake url");
+
+        dummyDeimsSiteList.add(dummyDeimsSite);
+
         sitesImportService = new SITESImportService(
                 documentRepository,
                 publicationService,
@@ -178,10 +198,12 @@ public class SITESImportServiceTest {
         mockResults.add(new SolrDocument(solrFieldMapping));
 
         // given
-        given(solrClient.query(eq(SOLR_COLLECTION), any(SolrParams.class), eq(POST)))
+        given(solrClient.query(any(String.class), any(SolrParams.class), eq(POST)))
             .willReturn(queryResponse);
         given(queryResponse.getResults())
             .willReturn(mockResults);
+        given(queryResponse.getBeans(DeimsSolrIndex.class))
+            .willReturn(dummyDeimsSiteList);
 
         given(documentRepository.save(
                     any(CatalogueUser.class),
@@ -252,6 +274,14 @@ public class SITESImportServiceTest {
         testRecordHtml = IOUtils.toByteArray(getClass().getResource("sites-digitaldocument.html"));
         testSitemapUrl = getClass().getResource("sites-sitemap-with-digitaldocument.xml").toString();
 
+        List<DeimsSolrIndex> dummyDeimsSiteList = new ArrayList<>();
+        DeimsSolrIndex dummyDeimsSite = new DeimsSolrIndex();
+        dummyDeimsSite.setTitle("Fake title");
+        dummyDeimsSite.setId("Fake id");
+        dummyDeimsSite.setUrl("Fake url");
+
+        dummyDeimsSiteList.add(dummyDeimsSite);
+
         sitesImportService = new SITESImportService(
                 documentRepository,
                 publicationService,
@@ -261,10 +291,12 @@ public class SITESImportServiceTest {
                 );
 
         // given
-        given(solrClient.query(eq(SOLR_COLLECTION), any(SolrParams.class), eq(POST)))
+        given(solrClient.query(any(String.class), any(SolrParams.class), eq(POST)))
             .willReturn(queryResponse);
         given(queryResponse.getResults())
             .willReturn(new SolrDocumentList());
+        given(queryResponse.getBeans(DeimsSolrIndex.class))
+            .willReturn(dummyDeimsSiteList);
 
         mockServer
             .expect(requestTo(equalTo("https://meta.fieldsites.se/objects/S9logSK2mHJJtXqboteABtTD")))

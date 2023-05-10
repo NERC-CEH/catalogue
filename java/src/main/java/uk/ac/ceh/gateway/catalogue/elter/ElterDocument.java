@@ -2,7 +2,6 @@ package uk.ac.ceh.gateway.catalogue.elter;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -17,8 +16,6 @@ import uk.ac.ceh.gateway.catalogue.gemini.*;
 import uk.ac.ceh.gateway.catalogue.indexing.solr.WellKnownText;
 import uk.ac.ceh.gateway.catalogue.model.*;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -73,75 +70,6 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
     private String linkedDocumentType;
     private String importId;
     private ZonedDateTime importLastModified;
-
-    public void importSitesJson(JsonNode jsonDocument){
-        // originally this was going to be a constructor but it caused issues
-        // where things required whatever constructor lombok generated. I'm
-        // sure there's a trivial fix but I don't think it really matters so
-        // we'll just do this instead, which works.
-
-        // fields from JSON / import metadata
-        this.setTitle(jsonDocument.get("name").asText());
-        this.setDescription(jsonDocument.get("description").asText());
-        this.setImportId(jsonDocument.get("identifier").asText());
-        this.setImportLastModified(ZonedDateTime.now(ZoneId.of("UTC")));
-        // online resources
-        ArrayList<OnlineResource> linkList = new ArrayList<>();
-        linkList.add(
-                OnlineResource.builder()
-                .url(jsonDocument.get("url").asText())
-                .name("View record")
-                .description("View record at this link")
-                .function("download")
-                .build()
-                );
-        this.setOnlineResources(linkList);
-        // temporal extents
-        ArrayList<TimePeriod> extentList = new ArrayList<>();
-        String times = jsonDocument.get("temporalCoverage").asText();
-        int split = times.indexOf("/");
-        String beginTime = times.substring(0,10);
-        String endTime = times.substring(split+1,split+11);
-        extentList.add(
-                TimePeriod.builder()
-                .begin(beginTime)
-                .end(endTime)
-                .build()
-                );
-        // date published
-        LocalDate published = LocalDate.parse(jsonDocument.get("datePublished").asText().substring(0,10));
-        this.setDatasetReferenceDate(
-                DatasetReferenceDate.builder()
-                .publicationDate(published)
-                .build()
-                );
-        // contacts
-        ArrayList<ResponsibleParty> contactList = new ArrayList<>();
-        ResponsibleParty publisher = ResponsibleParty.builder()
-                .organisationName("SITES data portal")
-                .role("publisher")
-                .email("info@fieldsites.se")
-                .build();
-        ResponsibleParty provider = ResponsibleParty.builder()
-                .organisationName(jsonDocument.get("provider").get("name").asText())
-                .role("resourceProvider")
-                .email("info@fieldsites.se")
-                .build();
-        contactList.add(publisher);
-        contactList.add(provider);
-        this.setResponsibleParties(contactList);
-
-        // fixed fields
-        this.setAccessLimitation(
-                AccessLimitation.builder()
-                .value("no limitations to public access")
-                .code("Available")
-                .uri("http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/noLimitations")
-                .build()
-                );
-        this.setType("signpost");
-        this.setDataLevel("Level 0");
-    }
 
     @Override
     public Set<Relationship> getRelationships() {
