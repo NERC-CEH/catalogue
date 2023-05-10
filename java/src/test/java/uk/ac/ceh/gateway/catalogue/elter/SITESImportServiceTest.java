@@ -16,6 +16,7 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.SolrParams;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -57,40 +58,43 @@ public class SITESImportServiceTest {
     private MockRestServiceServer mockServer;
     private String testSitemapUrl;
     private byte[] testRecordHtml;
+    private RestTemplate restTemplate;
+    private QueryResponse queryResponse;
+    private CatalogueUser expectedUser;
+    private List<DeimsSolrIndex> dummyDeimsSiteList;
+    private DeimsSolrIndex dummyDeimsSite;
 
     private static final String CATALOGUE = "elter";
     private static final String RECORD_ID = "00000000-0000-0000-0000-000000000000";
 
-    @Mock
-    private DocumentRepository documentRepository;
+    @Mock private DocumentRepository documentRepository;
+    @Mock private PublicationService publicationService;
+    @Mock private SolrClient solrClient;
 
-    @Mock
-    private PublicationService publicationService;
+    @BeforeEach
+    void setup() {
+        restTemplate = new RestTemplate();
+        queryResponse = mock(QueryResponse.class);
+        mockServer = MockRestServiceServer.bindTo(restTemplate).build();
 
-    @Mock
-    private SolrClient solrClient;
+        expectedUser = new CatalogueUser()
+            .setUsername("SITES metadata import")
+            .setEmail("info@fieldsites.se");
+
+        dummyDeimsSiteList = new ArrayList<>();
+        dummyDeimsSite = new DeimsSolrIndex();
+        dummyDeimsSite.setTitle("Fake title");
+        dummyDeimsSite.setId("Fake id");
+        dummyDeimsSite.setUrl("Fake url");
+        dummyDeimsSiteList.add(dummyDeimsSite);
+    }
 
     @Test
     @SneakyThrows
     public void importNewRecord() {
-        val restTemplate = new RestTemplate();
-        val queryResponse = mock(QueryResponse.class);
-        mockServer = MockRestServiceServer.bindTo(restTemplate).build();
-
-        CatalogueUser expectedUser = new CatalogueUser()
-            .setUsername("SITES metadata import")
-            .setEmail("info@fieldsites.se");
         // setup
         testRecordHtml = IOUtils.toByteArray(getClass().getResource("sites-dataset.html"));
         testSitemapUrl = getClass().getResource("sites-sitemap-with-dataset.xml").toString();
-
-        List<DeimsSolrIndex> dummyDeimsSiteList = new ArrayList<>();
-        DeimsSolrIndex dummyDeimsSite = new DeimsSolrIndex();
-        dummyDeimsSite.setTitle("Fake title");
-        dummyDeimsSite.setId("Fake id");
-        dummyDeimsSite.setUrl("Fake url");
-
-        dummyDeimsSiteList.add(dummyDeimsSite);
 
         sitesImportService = new SITESImportService(
                 documentRepository,
@@ -163,24 +167,9 @@ public class SITESImportServiceTest {
     @Test
     @SneakyThrows
     public void updateExistingRecord() {
-        val restTemplate = new RestTemplate();
-        val queryResponse = mock(QueryResponse.class);
-        mockServer = MockRestServiceServer.bindTo(restTemplate).build();
-
-        CatalogueUser expectedUser = new CatalogueUser()
-            .setUsername("SITES metadata import")
-            .setEmail("info@fieldsites.se");
         // setup
         testRecordHtml = IOUtils.toByteArray(getClass().getResource("sites-dataset.html"));
         testSitemapUrl = getClass().getResource("sites-sitemap-with-dataset.xml").toString();
-
-        List<DeimsSolrIndex> dummyDeimsSiteList = new ArrayList<>();
-        DeimsSolrIndex dummyDeimsSite = new DeimsSolrIndex();
-        dummyDeimsSite.setTitle("Fake title");
-        dummyDeimsSite.setId("Fake id");
-        dummyDeimsSite.setUrl("Fake url");
-
-        dummyDeimsSiteList.add(dummyDeimsSite);
 
         sitesImportService = new SITESImportService(
                 documentRepository,
@@ -263,24 +252,9 @@ public class SITESImportServiceTest {
     @Test
     @SneakyThrows
     public void skipInvalidRecord() {
-        val restTemplate = new RestTemplate();
-        val queryResponse = mock(QueryResponse.class);
-        mockServer = MockRestServiceServer.bindTo(restTemplate).build();
-
-        CatalogueUser expectedUser = new CatalogueUser()
-            .setUsername("SITES metadata import")
-            .setEmail("info@fieldsites.se");
         // setup
         testRecordHtml = IOUtils.toByteArray(getClass().getResource("sites-digitaldocument.html"));
         testSitemapUrl = getClass().getResource("sites-sitemap-with-digitaldocument.xml").toString();
-
-        List<DeimsSolrIndex> dummyDeimsSiteList = new ArrayList<>();
-        DeimsSolrIndex dummyDeimsSite = new DeimsSolrIndex();
-        dummyDeimsSite.setTitle("Fake title");
-        dummyDeimsSite.setId("Fake id");
-        dummyDeimsSite.setUrl("Fake url");
-
-        dummyDeimsSiteList.add(dummyDeimsSite);
 
         sitesImportService = new SITESImportService(
                 documentRepository,
