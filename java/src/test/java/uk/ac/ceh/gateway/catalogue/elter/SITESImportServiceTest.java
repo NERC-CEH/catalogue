@@ -1,6 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.elter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import lombok.SneakyThrows;
@@ -14,6 +16,7 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.SolrParams;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,6 +30,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
+import uk.ac.ceh.gateway.catalogue.deims.DeimsSolrIndex;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.publication.PublicationService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
@@ -54,30 +58,40 @@ public class SITESImportServiceTest {
     private MockRestServiceServer mockServer;
     private String testSitemapUrl;
     private byte[] testRecordHtml;
+    private RestTemplate restTemplate;
+    private QueryResponse queryResponse;
+    private CatalogueUser expectedUser;
+    private List<DeimsSolrIndex> dummyDeimsSiteList;
+    private DeimsSolrIndex dummyDeimsSite;
 
-    private static final String SOLR_COLLECTION = "documents";
     private static final String CATALOGUE = "elter";
     private static final String RECORD_ID = "00000000-0000-0000-0000-000000000000";
 
-    @Mock
-    private DocumentRepository documentRepository;
+    @Mock private DocumentRepository documentRepository;
+    @Mock private PublicationService publicationService;
+    @Mock private SolrClient solrClient;
 
-    @Mock
-    private PublicationService publicationService;
+    @BeforeEach
+    void setup() {
+        restTemplate = new RestTemplate();
+        queryResponse = mock(QueryResponse.class);
+        mockServer = MockRestServiceServer.bindTo(restTemplate).build();
 
-    @Mock
-    private SolrClient solrClient;
+        expectedUser = new CatalogueUser()
+            .setUsername("SITES metadata import")
+            .setEmail("info@fieldsites.se");
+
+        dummyDeimsSiteList = new ArrayList<>();
+        dummyDeimsSite = new DeimsSolrIndex();
+        dummyDeimsSite.setTitle("Fake title");
+        dummyDeimsSite.setId("Fake id");
+        dummyDeimsSite.setUrl("Fake url");
+        dummyDeimsSiteList.add(dummyDeimsSite);
+    }
 
     @Test
     @SneakyThrows
     public void importNewRecord() {
-        val restTemplate = new RestTemplate();
-        val queryResponse = mock(QueryResponse.class);
-        mockServer = MockRestServiceServer.bindTo(restTemplate).build();
-
-        CatalogueUser expectedUser = new CatalogueUser()
-            .setUsername("SITES metadata import")
-            .setEmail("info@fieldsites.se");
         // setup
         testRecordHtml = IOUtils.toByteArray(getClass().getResource("sites-dataset.html"));
         testSitemapUrl = getClass().getResource("sites-sitemap-with-dataset.xml").toString();
@@ -91,10 +105,12 @@ public class SITESImportServiceTest {
                 );
 
         // given
-        given(solrClient.query(eq(SOLR_COLLECTION), any(SolrParams.class), eq(POST)))
+        given(solrClient.query(any(String.class), any(SolrParams.class), eq(POST)))
             .willReturn(queryResponse);
         given(queryResponse.getResults())
             .willReturn(new SolrDocumentList());
+        given(queryResponse.getBeans(DeimsSolrIndex.class))
+            .willReturn(dummyDeimsSiteList);
 
         given(documentRepository.saveNew(
                     any(CatalogueUser.class),
@@ -151,13 +167,6 @@ public class SITESImportServiceTest {
     @Test
     @SneakyThrows
     public void updateExistingRecord() {
-        val restTemplate = new RestTemplate();
-        val queryResponse = mock(QueryResponse.class);
-        mockServer = MockRestServiceServer.bindTo(restTemplate).build();
-
-        CatalogueUser expectedUser = new CatalogueUser()
-            .setUsername("SITES metadata import")
-            .setEmail("info@fieldsites.se");
         // setup
         testRecordHtml = IOUtils.toByteArray(getClass().getResource("sites-dataset.html"));
         testSitemapUrl = getClass().getResource("sites-sitemap-with-dataset.xml").toString();
@@ -178,10 +187,12 @@ public class SITESImportServiceTest {
         mockResults.add(new SolrDocument(solrFieldMapping));
 
         // given
-        given(solrClient.query(eq(SOLR_COLLECTION), any(SolrParams.class), eq(POST)))
+        given(solrClient.query(any(String.class), any(SolrParams.class), eq(POST)))
             .willReturn(queryResponse);
         given(queryResponse.getResults())
             .willReturn(mockResults);
+        given(queryResponse.getBeans(DeimsSolrIndex.class))
+            .willReturn(dummyDeimsSiteList);
 
         given(documentRepository.save(
                     any(CatalogueUser.class),
@@ -241,13 +252,6 @@ public class SITESImportServiceTest {
     @Test
     @SneakyThrows
     public void skipInvalidRecord() {
-        val restTemplate = new RestTemplate();
-        val queryResponse = mock(QueryResponse.class);
-        mockServer = MockRestServiceServer.bindTo(restTemplate).build();
-
-        CatalogueUser expectedUser = new CatalogueUser()
-            .setUsername("SITES metadata import")
-            .setEmail("info@fieldsites.se");
         // setup
         testRecordHtml = IOUtils.toByteArray(getClass().getResource("sites-digitaldocument.html"));
         testSitemapUrl = getClass().getResource("sites-sitemap-with-digitaldocument.xml").toString();
@@ -261,10 +265,12 @@ public class SITESImportServiceTest {
                 );
 
         // given
-        given(solrClient.query(eq(SOLR_COLLECTION), any(SolrParams.class), eq(POST)))
+        given(solrClient.query(any(String.class), any(SolrParams.class), eq(POST)))
             .willReturn(queryResponse);
         given(queryResponse.getResults())
             .willReturn(new SolrDocumentList());
+        given(queryResponse.getBeans(DeimsSolrIndex.class))
+            .willReturn(dummyDeimsSiteList);
 
         mockServer
             .expect(requestTo(equalTo("https://meta.fieldsites.se/objects/S9logSK2mHJJtXqboteABtTD")))
