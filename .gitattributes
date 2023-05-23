@@ -1,7 +1,0 @@
-* text=lf
-
-# The shell files are going to be run on the ubuntu box
-*.sh text eol=lf
-
-# Don't screw up the certs
-*.pem text eol=lf
