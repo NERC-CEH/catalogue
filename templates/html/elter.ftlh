@@ -51,7 +51,7 @@
 </#macro>
 
 <@skeleton.master title=title catalogue=catalogue rdf="${uri}?format=ttl" schemaorg="${uri}?format=schema.org" canonical="${uri}" can_edit_restricted=permission.userCanEditRestrictedFields(metadata.catalogue)>
-
+<#if resourceType?has_content && resourceType.value !=''>
   <div id="metadata" class="${metadata.state?lower_case}">
 
     <div class="section section-grey">
@@ -148,6 +148,12 @@
         </#if>
 
   </div>
+<#else>
+  <div class="alert alert-danger missingResourceType" id="metadata">
+    <p class="clearfix"><i class="fa-solid fa-triangle-exclamation"></i> <b>WARNING: </b> resource type is missing from this record
+    <a class="btn btn-default btn-sm edit-control" data-document-type="${metadata.documentType}">Edit</a></p>
+  </div>
+</#if>
 
   <div id="footer">
 	 <#include "document/_footer.ftlh">

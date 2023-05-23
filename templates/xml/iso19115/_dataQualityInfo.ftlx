@@ -76,7 +76,7 @@
 		<#if lineage?has_content>
 		<gmd:lineage>
 			<gmd:LI_Lineage>
-				<gmd:statement><gco:CharacterString>${lineage}</gco:CharacterString></gmd:statement>
+				<gmd:statement><gco:CharacterString>${lineage?replace("\n", " ")}</gco:CharacterString></gmd:statement>
 			</gmd:LI_Lineage>
 		</gmd:lineage>
 		</#if>

@@ -79,10 +79,10 @@
     </#list>
   </#if>
   <#--identificationInfo -->
-  <#include "gemini/_identificationInfo.ftlx">
+  <#include "iso19115/_identificationInfo.ftlx">
   <#--distributionInfo -->
-  <#include "gemini/_distributionInfo.ftlx">
+  <#include "iso19115/_distributionInfo.ftlx">
   <#--dataQualityInfo-->
-  <#include "gemini/_dataQualityInfo.ftlx">
+  <#include "iso19115/_dataQualityInfo.ftlx">
 </gmd:MD_Metadata>
 </#compress>

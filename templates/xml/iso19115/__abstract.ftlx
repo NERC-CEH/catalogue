@@ -1,9 +1,8 @@
 <#assign statusMsg = "" abstract = "">
 
 <#if description?? && description?has_content >
-    <#assign abstract = description >
+    <#assign abstract = description?replace("\n", " ") >
 </#if>
-
 
 <#if resourceStatus?? && resourceStatus?has_content >
     <#if resourceStatus == "Withdrawn" || resourceStatus == "Superseded" >

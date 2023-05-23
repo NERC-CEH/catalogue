@@ -30,7 +30,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 
-@Profile("elter")
+@Profile("server:elter")
 @Slf4j
 @Service
 @ToString

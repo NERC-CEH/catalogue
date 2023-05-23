@@ -16,8 +16,7 @@ import {
   SingleObjectView, SpatialReferenceSystemView, SpatialRepresentationTypeView, SpatialResolutionView,
   SupplementalView,
   TemporalExtentView,
-  TextareaView, TextOnlyView,
-  TopicCategoryView, ElterProjectView, KeywordVocabularyView
+  TextareaView, TopicCategoryView, ElterProjectView, KeywordVocabularyView
 } from '../views'
 import {
   AccessLimitation,
@@ -83,9 +82,7 @@ export default EditorView.extend({
           label: 'Description',
           rows: 12,
           helpText: `\
-<p>The description should describe the data resource in question, NOT the project/activity which produced it.</p>
-<p>The description is an 'executive summary' that allows the reader to determine the relevance and usefulness of the resource.  The text should be concise but should contain sufficient detail to allow the reader to ascertain rapidly the scope and limitations of the resource.</p>
-<p>Write in plain English; in other words, write complete sentences rather than fragments.  It is recommended that the abstract is organised using the "What, Where, When, How, Why, Who" structure.</p>\
+<p>The description is a summary that allows the reader to determine the relevance and usefulness of the resource.  The text should be concise but should contain sufficient detail to allow the reader to ascertain rapidly the scope and limitations of the resource.</p>
 `
         }),
 
@@ -569,12 +566,6 @@ export default EditorView.extend({
       label: 'Additional information',
       title: 'Additional information',
       views: [
-        new TextOnlyView({
-          model: this.model,
-          label: 'Purpose',
-          text: `<p>Information not recorded elsewhere</p>`
-        }),
-
         new ParentView({
           model: this.model,
           modelAttribute: 'supplemental',
@@ -585,7 +576,7 @@ export default EditorView.extend({
 <p>You can add information not documented elsewhere here. This includes links to related papers, grey literature or websites.  For example:</p>
 <ul><li>papers that cite this resource</li><li>papers/reports that provide relevant supporting information but which do not cite this resource</li><li>project websites</li></ul>
 <p>When linking to published articles, please use DOIs whenever possible.</p>
-<p><small class='text-danger'><i class='fa-solid fa-exclamation-triangle'> </i> NOTE: Some websites may be maintained for a limited period and may therefore soon become unavailable.</small></p>\
+<p><small class='text-danger'><i class='fa-solid fa-exclamation-triangle'> </i> NOTE: Web links may be maintained for a limited period and may become unavailable.</small></p>\
 `
         }),
 

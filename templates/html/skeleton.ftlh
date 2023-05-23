@@ -63,15 +63,13 @@
               <li class="navbar-title">
                 <a href="${catalogue.url}">${catalogue.title}</a>
               </li>
-              <#if catalogue.id == "assist">
-                <#include "menus/assist.ftlh">
-              <#elseif catalogue.id == 'eidc'>
-                <#include "menus/eidc.ftlh">
-              <#elseif catalogue.id == "erammp">
-                <#include "menus/erammp.ftlh">
+
+              <#if catalogue.id == "assist" || catalogue.id == 'eidc'|| catalogue.id == 'elter' || catalogue.id == "erammp">
+                <#include "menus/${catalogue.id }.ftlh">
               <#else>
                 <li class="<#if searching>active</#if>"><a href="/${catalogue.id}/documents">Search</a></li>
               </#if>
+
             </#if>
           </ul>
           <ul class="nav navbar-nav navbar-right">

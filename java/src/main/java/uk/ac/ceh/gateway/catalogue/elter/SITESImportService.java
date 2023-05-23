@@ -63,7 +63,7 @@ import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.publication.PublicationService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
-@Profile("elter")
+@Profile("server:elter")
 @Slf4j
 @Service
 @ToString

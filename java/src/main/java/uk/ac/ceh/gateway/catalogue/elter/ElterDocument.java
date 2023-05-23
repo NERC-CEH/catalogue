@@ -30,7 +30,7 @@ import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAP
 @Accessors(chain = true)
 @ConvertUsing({
         @Template(called = "html/elter.ftlh", whenRequestedAs = MediaType.TEXT_HTML_VALUE),
-        @Template(called = "xml/elter.ftlx", whenRequestedAs = GEMINI_XML_VALUE),
+        @Template(called = "xml/iso19115.ftlx", whenRequestedAs = GEMINI_XML_VALUE),
         @Template(called = "rdf/ttl.ftlh", whenRequestedAs = RDF_TTL_VALUE),
         @Template(called = "schema.org/schema.org.ftlh", whenRequestedAs = RDF_SCHEMAORG_VALUE)
 })
