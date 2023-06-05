@@ -69,12 +69,18 @@ public class LinkedDocumentRetrievalService {
             // create document from Datacite response
             ElterDocument document = new ElterDocument();
             // ensure title is set to something
-            JsonNode jsonTitles = jsonRecordAttributes.get("titles").path(0);
-            if (jsonTitles.isMissingNode()){
+            JsonNode jsonTitles = jsonRecordAttributes.get("titles");
+            int numTitles = jsonTitles.size();
+            if (numTitles == 0){
                 document.setTitle("TITLE MISSING");
             }
             else {
-                document.setTitle(jsonTitles.get("title").asText());
+                document.setTitle(jsonTitles.get(0).get("title").asText());
+                ArrayList<String> alternativeTitles = new ArrayList<>();
+                for (int i = 1; i < numTitles; i++){
+                    alternativeTitles.add(jsonTitles.get(i).get("title").asText());
+                }
+                document.setAlternateTitles(alternativeTitles);
             }
             // description
             StringBuilder descriptionBuilder = new StringBuilder();
@@ -93,7 +99,6 @@ public class LinkedDocumentRetrievalService {
                 descriptionBuilder.append(node.get("description").asText().strip());
             }
             document.setDescription(descriptionBuilder.toString());
-
             // authors
             JsonNode jsonCreators = jsonRecordAttributes.get("creators").path(0);
             if (! jsonCreators.isMissingNode()){
