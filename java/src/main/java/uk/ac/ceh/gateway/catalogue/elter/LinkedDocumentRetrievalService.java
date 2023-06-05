@@ -6,8 +6,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.regex.Pattern;
+import java.util.Iterator;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import lombok.SneakyThrows;
 import lombok.ToString;
@@ -76,10 +77,23 @@ public class LinkedDocumentRetrievalService {
                 document.setTitle(jsonTitles.get("title").asText());
             }
             // description
-            JsonNode jsonDescriptions = jsonRecordAttributes.get("descriptions").path(0);
-            if (! jsonDescriptions.isMissingNode()){
-                document.setDescription(jsonDescriptions.get("description").asText());
+            StringBuilder descriptionBuilder = new StringBuilder();
+            for (Iterator<JsonNode> iter = jsonRecordAttributes.get("descriptions").iterator(); iter.hasNext(); ) {
+                JsonNode node = iter.next();
+                if (descriptionBuilder.length() > 0){
+                    descriptionBuilder.append("\n\n");
+                }
+                JsonNode descriptionTypeNode = node.get("descriptionType");
+                if (descriptionTypeNode != null) {
+                    String descriptionType = descriptionTypeNode.asText();
+                    if (! descriptionType.equals("Other")) {
+                        descriptionBuilder.append(descriptionType + ": ");
+                    }
+                }
+                descriptionBuilder.append(node.get("description").asText().strip());
             }
+            document.setDescription(descriptionBuilder.toString());
+
             // authors
             JsonNode jsonCreators = jsonRecordAttributes.get("creators").path(0);
             if (! jsonCreators.isMissingNode()){
