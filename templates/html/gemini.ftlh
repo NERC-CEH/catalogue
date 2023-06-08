@@ -114,6 +114,7 @@
       </div>
     </div>
 
+
     <#if permission.userCanEditRestrictedFields(metadata.catalogue) && metadata.catalogue == "eidc">
       <div class="section"><div class="container">
         <#include "document/_metadataqualityAlert.ftlh">
@@ -202,7 +203,7 @@
       <a class="edit-control" data-document-type="${metadata.documentType}">Edit</a></p>
     </div>
   </#if>
- 
+  
   <#include "document/_footer.ftlh">
 
   <script type="application/ld+json">

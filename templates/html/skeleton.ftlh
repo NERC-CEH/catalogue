@@ -9,12 +9,14 @@
 <#assign catalogueid="">
 
 <#macro master title catalogue="" rdf="" schemaorg="" canonical="" searching=false can_edit_restricted=false containerClass="container" scripts=defaultScripts>
+<#assign catalogueid="">
 <#if catalogue?has_content>
   <#assign catalogueid= catalogue.id >
 </#if>
+
 <#compress>
 <!DOCTYPE html>
-<html lang="en-GB" data-catalogue="${catalogueid}">
+<html lang="en-GB" data-catalogue=${catalogueid}>
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
