@@ -41,7 +41,7 @@
       <link rel="alternate" type="application/vnd.schemaorg.ld+json" href="${schemaorg}"/>
     </#if>
   </head>
-  <body data-edit-restricted="${can_edit_restricted?then('','disabled')}">
+  <body data-pageview="" data-edit-restricted="${can_edit_restricted?then('','disabled')}">
     <div class="navbar navbar-default navbar-fixed-top" role="navigation">
       <div class="${containerClass}">
         <div class="navbar-header">

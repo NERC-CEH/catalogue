@@ -107,7 +107,7 @@
   </#if>
 
 
-  <#if type=='dataset' || type=='nonGeographicDataset'>
+  <#if type=='dataset' || type=='nonGeographicDataset' || type=='signpost'>
     <#include "turtle/_dataset.ftlh">
   <#elseif type=='aggregate'|| type=='collection'|| type=='series'>
     <#include "turtle/_aggregation.ftlh">

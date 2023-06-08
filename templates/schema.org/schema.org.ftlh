@@ -14,7 +14,7 @@
   >
 </#if>
 
-<#if type=='dataset' || type=='nonGeographicDataset'>
+<#if type=='dataset' || type=='nonGeographicDataset' || type=='signpost'>
   <#assign docType = "Dataset">
 <#elseif type=='aggregate' || type=='series'>
   <#assign docType = "Series">
