@@ -99,6 +99,22 @@
     font-weight: bolder;
   }
 
+  .alternativeViews {
+    .dropdown-toggle {
+      padding: 0.6em 1em;
+
+      cursor: pointer;
+    }
+    &:hover, &:selected {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+    &.open {
+     .dropdown-toggle {
+        box-shadow: none;
+      }
+    }
+  }
+
   .alert--linked {
     margin: -1em 1em 1em 1em;
     display: grid;
@@ -766,7 +782,6 @@
     }
   }
 }
-
 
 dl.dl-horizontal {
   &--compact {

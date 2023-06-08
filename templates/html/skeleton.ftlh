@@ -6,10 +6,15 @@
   <script src="/static/scripts/main.bundle.js"></script>
 </#assign>
 
+<#assign catalogueid="">
+
 <#macro master title catalogue="" rdf="" schemaorg="" canonical="" searching=false can_edit_restricted=false containerClass="container" scripts=defaultScripts>
+<#if catalogue?has_content>
+  <#assign catalogueid= catalogue.id >
+</#if>
 <#compress>
 <!DOCTYPE html>
-<html lang="en-GB" <#if catalogue?has_content>data-catalogue=${catalogue.id}</#if>>
+<html lang="en-GB" data-catalogue="${catalogueid}">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -41,7 +46,7 @@
       <link rel="alternate" type="application/vnd.schemaorg.ld+json" href="${schemaorg}"/>
     </#if>
   </head>
-  <body data-pageview="" data-edit-restricted="${can_edit_restricted?then('','disabled')}">
+  <body data-edit-restricted="${can_edit_restricted?then('','disabled')}">
     <div class="navbar navbar-default navbar-fixed-top" role="navigation">
       <div class="${containerClass}">
         <div class="navbar-header">

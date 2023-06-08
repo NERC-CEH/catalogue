@@ -93,7 +93,7 @@
         </#if>
 
         <#if resourceType.value != 'aggregate' && resourceType.value != 'collection'>
-          <div class="pull-right btn-group">
+          <div class="pull-right btn-group alternativeViews">
             <span aria-expanded="false" aria-haspopup="true" data-toggle="dropdown" class="dropdown-toggle " type="button">
                 View record as <span class="caret"></span>
             </span>
