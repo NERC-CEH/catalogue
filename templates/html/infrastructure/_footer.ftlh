@@ -5,7 +5,7 @@
         <div class="footergrid">
             <div class="logo">
                 <a href="https://www.ceh.ac.uk/" aria-label="Go to Home page">
-                <img src="https://www.ceh.ac.uk/sites/default/files/images/theme/ukceh_logo_long_720x170_white.png" />
+                <img src="/static/img/ukceh_logo_mono.png" />
                 </a><br>&copy; UK Centre for Ecology &amp; Hydrology
             </div>
             <div class="socials">

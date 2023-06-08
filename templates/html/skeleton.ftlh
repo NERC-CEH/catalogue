@@ -52,9 +52,9 @@
             <span class="icon-bar"></span>
           </button>
           <#if catalogue?has_content>
-            <a href="${catalogue.url}" class="navbar-brand"><img src="/static/img/logo/${catalogue.logo}" alt="${catalogue.title}"/></a>
+            <a href="${catalogue.url}" class="navbar-brand"><img src="/static/img/cataloguelogo/${catalogue.logo}" alt="${catalogue.title}"/></a>
           <#else>
-            <a href="" class="navbar-brand"><img src="/static/img/logo/ukceh.png" alt="UKCEH"/></a>
+            <a href="" class="navbar-brand"><img src="/static/img/cataloguelogo/ukceh.png" alt="UKCEH"/></a>
           </#if>
         </div>
         <div class="navbar-collapse collapse">
