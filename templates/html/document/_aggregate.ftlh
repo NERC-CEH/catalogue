@@ -1,32 +1,59 @@
+<#macro card address icon type title external=false>
+	<#if address?has_content && address?matches("^http(|s)://.+")>
+		<#assign target="">
+		<#if external=true>	
+			<#assign target="target='_blank' rel='noopener noreferrer'">
+		</#if>
+		<a href="${address}" class="card" ${target}>
+			<div class="card-icon">
+				<span class="fa-stack fa-2x">
+					<i class="fa-solid fa-square fa-stack-2x"></i>
+					<i class="fa-solid ${icon} fa-stack-1x fa-inverse"></i>
+				</span>
+			</div>
+			<div>
+				<div class="card-type">${type}</div>
+				<div class="card-title">${title}</div>
+			</div>
+		</a>
+	</#if>
+</#macro>
+
+<#assign 
+	relatedDatasets = func.filter(supplemental, "function", "relatedDataset")
+	otherSupplemental = func.filter(supplemental, "function", "relatedDataset", true)
+	>
 <#if rel_hasMember?has_content && rel_hasMember?size gt 0 >
-	<div id="section-children">
+	<div id="section-itemren">
 		<h2>
 		This ${recordType} contains <#if rel_hasMember?size gt 1>these<#else>this</#if> resource<#if rel_hasMember?size gt 1>s</#if></h2>
 
 		<#list rel_hasMember?sort_by("title")>
-			<div class="cardlist">
-			<#items as child>
-				<#if child.associationType = 'dataset' ||  child.associationType = 'nonGeographicDataset' ||  child.associationType = 'signpost'>
-					<#assign type="Dataset" icon="fa-solid fa-file-contract" >
-				<#elseif child.associationType = "series" || child.associationType = "collection" || child.associationType = "aggregate">
-					<#assign type="Data collection" icon="fa-regular fa-clone" >
-				<#elseif child.associationType = "application">
-					<#assign type="Model code" icon="fa-solid fa-terminal" >
-				<#elseif child.associationType = "service">
-					<#assign type="Web service" icon="fa-solid fa-location-arrow" >
+			<div class="cards">
+			<#items as item>
+				<#if item.associationType = 'dataset' ||  item.associationType = 'nonGeographicDataset' ||  item.associationType = 'signpost'>
+					<#assign type="Dataset" icon="fa-solid fa-chart-column" >
+				<#elseif item.associationType = "series" || item.associationType = "collection" || item.associationType = "aggregate">
+					<#assign type="Data collection" icon="fa-layer-group" >
+				<#elseif item.associationType = "application">
+					<#assign type="Model code" icon="fa-terminal" >
+				<#elseif item.associationType = "service">
+					<#assign type="Web service" icon="fa-location-arrow" >
 				<#else>
-					<#assign type=child.associationType icon="" >
+					<#assign type=item.associationType icon="" >
 				</#if>
-				<a href="${child.href}" class="cardlist--item">
-					<div class="icon"><i class="${icon}"></i></div>
-					<div>
-						<div class="type">
-							${type} 
-						</div>
-						<div class="title">${child.title}</div>
-					</div>
-				</a>
+
+				<@card item.href icon type item.title/>
+				
 			</#items>
+
+			<#assign relatedDatasets = func.filter(supplemental, "function", "relatedDataset")>
+			<#if relatedDatasets?has_content && relatedDatasets?size gt 0 >
+				<#list relatedDatasets as item>
+					<@card item.url 'fa-square-up-right' 'Dataset (external)' item.name true/>
+				</#list>
+			</#if>
+
 			</div>
 		</#list>
 	</div>
@@ -34,19 +61,23 @@
 
 <#if rel_memberOf?has_content && rel_memberOf?size gt 0 >
 	<h2>This ${recordType} is included in the following collection<#if rel_memberOf?size gt 1>s</#if></h2>
-	<div id="parents">
-		<div class="cardlist">
-			<#list rel_memberOf?sort_by("title") as item>
-				<a href="${item.href}" class="cardlist--item">
-					<div class="icon"><i class="fa-regular fa-clone"></i></div>
-					<div>
-						<div class="type">Data collection</div>
-						<div class="title">${item.title}</div>
-					</div>
-				</a>
-			</#list>
-		</div>
+	<div class="cards">
+		<#list rel_memberOf?sort_by("title") as item>
+			<@card item.href 'fa-layer-group' 'Data collection' item.title/>
+			
+		</#list>
 	</div>
 </#if>
 
-<#include "_supplemental.ftlh">
+
+<#if otherSupplemental?has_content && otherSupplemental?size gt 0>
+  <div id="section-supplemental">
+    <h2>Supplemental information</h2>
+
+    <#list otherSupplemental as supplement>
+      <@func.displaySupplemental supplement true/>
+    </#list>
+
+  </div>
+</#if>
+
