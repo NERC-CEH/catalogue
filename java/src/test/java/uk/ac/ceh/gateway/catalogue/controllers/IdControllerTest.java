@@ -37,7 +37,7 @@ class IdControllerTest {
             get("/id/{id}.xml", id)
         )
             .andExpect(status().is3xxRedirection())
-            .andExpect(header().string("location", "https://localhost/documents/" + id +".xml"));
+            .andExpect(header().string("location", "http://localhost/documents/" + id +".xml"));
     }
 
     @Test
@@ -50,6 +50,6 @@ class IdControllerTest {
             .queryParam("query", "string")
         )
             .andExpect(status().is3xxRedirection())
-            .andExpect(header().string("location", "https://localhost/documents/" + id + "?query=string"));
+            .andExpect(header().string("location", "http://localhost/documents/" + id + "?query=string"));
     }
 }

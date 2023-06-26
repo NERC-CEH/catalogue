@@ -4,20 +4,22 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.BufferedReader;
-import java.io.StringReader;
 import java.io.IOException;
+import java.io.StringReader;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import static java.util.Map.entry;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import lombok.SneakyThrows;
@@ -26,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.CommonParams;
@@ -47,14 +50,20 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import uk.ac.ceh.gateway.catalogue.TimeConstants;
+import uk.ac.ceh.gateway.catalogue.deims.DeimsSolrIndex;
 import uk.ac.ceh.gateway.catalogue.elter.ElterDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.AccessLimitation;
+import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
+import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
+import uk.ac.ceh.gateway.catalogue.gemini.TimePeriod;
 import uk.ac.ceh.gateway.catalogue.imports.CatalogueImportService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.publication.PublicationService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
-@Profile("elter")
+@Profile({"server:elter", "imports"})
 @Slf4j
 @Service
 @ToString
@@ -62,6 +71,7 @@ public class SITESImportService implements CatalogueImportService {
     // constructor prep
     private final DocumentBuilder documentBuilder;
     private final DocumentRepository documentRepository;
+    private final Map<String, List<DeimsSolrIndex>> stationToDeimsIndex;
     private final ObjectMapper objectMapper;
     private final PublicationService publicationService;
     private final RestTemplate restTemplate;
@@ -69,15 +79,30 @@ public class SITESImportService implements CatalogueImportService {
     private final String sitemapUrl;
     private final XPathExpression xPath;
 
+    private final Map<String, String> stationToDeimsId = Map.ofEntries(
+            entry("https://meta.fieldsites.se/resources/stations/abisko", "64679f32-fb3e-4937-b1f7-dc25e327c7af"),
+            entry("https://meta.fieldsites.se/resources/stations/Asa", "13b28889-ed32-495a-9bb6-a0886099e6d9"),
+            entry("https://meta.fieldsites.se/resources/stations/bolmen", "e17d8c56-bf35-411d-a76b-061b6c7a9f0c"),
+            entry("https://meta.fieldsites.se/resources/stations/Erken", "2c560a19-85bb-4e3b-b41f-9f1d06c6e0d6"),
+            entry("https://meta.fieldsites.se/resources/stations/Grimso", "ba81bcc6-8916-47f3-a54a-5ac8ebe1c455"),
+            entry("https://meta.fieldsites.se/resources/stations/Lonnstorp", "d733f936-b0b6-4bc1-9ab5-6cdb4081763a"),
+            entry("https://meta.fieldsites.se/resources/stations/Robacksdalen", "7e2e2f68-989c-4e0a-8443-315ea48aac7f"),
+            entry("https://meta.fieldsites.se/resources/stations/Skogaryd", "13f080f9-4831-4807-91da-bbfecb09a4f2"),
+            entry("https://meta.fieldsites.se/resources/stations/Svartberget", "c0705d0f-92c1-4964-a345-38c0be3113e1"),
+            entry("https://meta.fieldsites.se/resources/stations/Tarfala", "332a99af-8c02-4ce8-8f2b-70d17aaacf0a")
+            );
+
     // constructor
+    @SneakyThrows
     public SITESImportService(
             DocumentRepository documentRepository,
             PublicationService publicationService,
             @Qualifier("normal") RestTemplate restTemplate,
             SolrClient solrClient,
             @Value("${sites.import.url}") String sitemapUrl
-            ) throws ParserConfigurationException, XPathExpressionException {
+            ) {
         log.info("Creating");
+
         this.documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         this.documentRepository = documentRepository;
         this.objectMapper = new ObjectMapper();
@@ -85,8 +110,9 @@ public class SITESImportService implements CatalogueImportService {
         this.restTemplate = restTemplate;
         this.sitemapUrl = sitemapUrl;
         this.solrClient = solrClient;
+        this.stationToDeimsIndex = new HashMap<>();
         this.xPath = XPathFactory.newInstance().newXPath().compile("/urlset/url/loc");
-            }
+        }
 
     // methods start here
     @SneakyThrows
@@ -144,6 +170,15 @@ public class SITESImportService implements CatalogueImportService {
     }
 
     @SneakyThrows
+    private List<DeimsSolrIndex> getDeimsSite(String id){
+        SolrQuery query = new SolrQuery();
+        query.setQuery(id);
+        query.setParam(CommonParams.DF, "id");
+        QueryResponse response = solrClient.query("deims", query, POST);
+        return response.getBeans(DeimsSolrIndex.class);
+    }
+
+    @SneakyThrows
     private JsonNode getFullRemoteRecord(String remoteRecordId) {
         log.debug("GET record {}", remoteRecordId);
 
@@ -186,10 +221,80 @@ public class SITESImportService implements CatalogueImportService {
     }
 
     @SneakyThrows
+    private ElterDocument createDocumentFromJson(JsonNode inputJson) {
+        ElterDocument newDocument = new ElterDocument();
+        // fields from JSON / import metadata
+        newDocument.setTitle(inputJson.get("name").asText());
+        newDocument.setDescription(inputJson.get("description").asText());
+        newDocument.setImportId(inputJson.get("identifier").asText());
+        newDocument.setImportLastModified(ZonedDateTime.now(ZoneId.of("UTC")));
+        // online resources
+        ArrayList<OnlineResource> linkList = new ArrayList<>();
+        linkList.add(
+                OnlineResource.builder()
+                .url(inputJson.get("url").asText())
+                .name("View record")
+                .description("View record at this link")
+                .function("download")
+                .build()
+                );
+        newDocument.setOnlineResources(linkList);
+        // temporal extents
+        ArrayList<TimePeriod> extentList = new ArrayList<>();
+        String times = inputJson.get("temporalCoverage").asText();
+        int split = times.indexOf("/");
+        String beginTime = times.substring(0,10);
+        String endTime = times.substring(split+1,split+11);
+        extentList.add(
+                TimePeriod.builder()
+                .begin(beginTime)
+                .end(endTime)
+                .build()
+                );
+        newDocument.setTemporalExtents(extentList);
+        // date published
+        LocalDate published = LocalDate.parse(inputJson.get("datePublished").asText().substring(0,10));
+        newDocument.setDatasetReferenceDate(
+                DatasetReferenceDate.builder()
+                .publicationDate(published)
+                .build()
+                );
+        // contacts
+        ArrayList<ResponsibleParty> contactList = new ArrayList<>();
+        ResponsibleParty publisher = ResponsibleParty.builder()
+                .organisationName("SITES data portal")
+                .role("publisher")
+                .email("info@fieldsites.se")
+                .build();
+        ResponsibleParty provider = ResponsibleParty.builder()
+                .organisationName(inputJson.get("provider").get("name").asText())
+                .role("resourceProvider")
+                .email("info@fieldsites.se")
+                .build();
+        contactList.add(publisher);
+        contactList.add(provider);
+        newDocument.setResponsibleParties(contactList);
+        // deims site
+        newDocument.setDeimsSites(stationToDeimsIndex.get(inputJson.get("creator").get("@id").asText()));
+
+        // fixed fields
+        newDocument.setAccessLimitation(
+                AccessLimitation.builder()
+                .value("no limitations to public access")
+                .code("Available")
+                .uri("http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/noLimitations")
+                .build()
+                );
+        newDocument.setType("signpost");
+        newDocument.setDataLevel("Level 0");
+
+        return newDocument;
+    }
+
+    @SneakyThrows
     private String createRecord(String remoteRecordId, JsonNode parsedRecord, CatalogueUser user) {
         // create from JSON
-        ElterDocument newRecord = new ElterDocument();
-        newRecord.importSitesJson(parsedRecord);
+        ElterDocument newRecord = createDocumentFromJson(parsedRecord);
 
         // save document
         MetadataDocument savedDocument = documentRepository.saveNew(
@@ -211,8 +316,7 @@ public class SITESImportService implements CatalogueImportService {
     @SneakyThrows
     private void updateRecord(String localRecordId, String remoteRecordId, JsonNode parsedRecord, CatalogueUser user) {
         // create from JSON
-        ElterDocument updatedRecord = new ElterDocument();
-        updatedRecord.importSitesJson(parsedRecord);
+        ElterDocument updatedRecord = createDocumentFromJson(parsedRecord);
 
         // save back
         updatedRecord.setMetadata(documentRepository.read(localRecordId).getMetadata());
@@ -248,6 +352,14 @@ public class SITESImportService implements CatalogueImportService {
         } catch (IOException ex) {
             log.error("Error retrieving locally imported records; aborting import");
             return;
+        }
+
+        // get SITES DEIMS sites from SOLR
+        for (String id : stationToDeimsId.keySet()){
+            stationToDeimsIndex.put(
+                    id,
+                    getDeimsSite(stationToDeimsId.get(id))
+                    );
         }
 
         // ready to import

@@ -19,7 +19,7 @@ import uk.ac.ceh.gateway.catalogue.elter.LinkedDocumentRetrievalService;
 import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.ELTER_JSON_VALUE;
 import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.LINKED_ELTER_JSON_VALUE;
 
-@Profile("elter")
+@Profile("server:elter")
 @Slf4j
 @ToString(callSuper = true)
 @Controller

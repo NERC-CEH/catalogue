@@ -4,10 +4,12 @@
     <div class="pull-left hidden-xs">
       <p>View as
         <span><a href="${uri}?format=json">json</a></span>
-        <#if resourceType??>
-          <span><a href="${uri}/datacite.xml">Datacite xml</a></span>
-          <span><a href="${uri}.xml?format=gemini">ISO 19115 (XML)</a></span>
-          <span><a href="${uri}?format=ttl">RDF (Turtle)</a></span>
+          <#if resourceType??>
+            <#if catalogue.id == "eidc" && citation??>
+              <span><a href="${uri}/datacite.xml">Datacite xml</a></span>
+            </#if>
+            <span><a href="${uri}.xml?format=gemini">ISO 19115 (XML)</a></span>
+            <span><a href="${uri}?format=ttl">RDF (Turtle)</a></span>
         </#if>
       </p>
     </div>

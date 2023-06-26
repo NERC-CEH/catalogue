@@ -17,7 +17,7 @@
 							<gco:Date>${datasetReferenceDate.publicationDate}</gco:Date>
 						</gmd:date>
 						<gmd:dateType>
-						<CI_DateTypeCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</CI_DateTypeCode>
+						<gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</gmd:CI_DateTypeCode>
 						</gmd:dateType>
 					</gmd:CI_Date>
 				</gmd:date>
@@ -29,7 +29,7 @@
 							<gco:Date>${datasetReferenceDate.creationDate}</gco:Date>
 						</gmd:date>
 						<gmd:dateType>
-							<CI_DateTypeCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="creation">creation</CI_DateTypeCode>
+							<gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="creation">creation</gmd:CI_DateTypeCode>
 						</gmd:dateType>
 					</gmd:CI_Date>
 				</gmd:date>
@@ -41,7 +41,7 @@
 							<gco:Date>${datasetReferenceDate.revisionDate}</gco:Date>
 						</gmd:date>
 						<gmd:dateType>
-							<CI_DateTypeCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="revision">revision</CI_DateTypeCode>
+							<gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="revision">revision</gmd:CI_DateTypeCode>
 						</gmd:dateType>
 					</gmd:CI_Date>
 				</gmd:date>
@@ -182,10 +182,10 @@
 		</#if>
 		<#if type != 'service'>
 		<gmd:language>
-		<LanguageCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://www.loc.gov/standards/iso639-2/php/code_list.php" codeListValue="eng">English</LanguageCode>
+			<gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/php/code_list.php" codeListValue="eng">English</gmd:LanguageCode>
 		</gmd:language>
 		<gmd:characterSet>
-		<MD_CharacterSetCode xmlns="http://www.isotc211.org/2005/gmd" codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8">utf8</MD_CharacterSetCode>
+			<gmd:MD_CharacterSetCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8">utf8</gmd:MD_CharacterSetCode>
 		</gmd:characterSet>	
 		</#if>
 		<#if topicCategories??>

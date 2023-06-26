@@ -27,9 +27,6 @@ Development profiles
 * `develop`
 * `test`
 
-## eLTER
-* `elter`
-
 ## Service Agreements
 Enables Online Service Agreements functionality
 * `service-agreement`
@@ -40,3 +37,6 @@ Dataset upload functionality
 Choice of:
 * `upload:hubbub` Upload managed through EIDC Hubbub server
 * `upload:simple` Upload to directory
+
+## Imports
+* `imports` Enable import of records from external services (e.g. SITES metadata catalogue, in combination with `server:elter`)

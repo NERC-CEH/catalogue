@@ -6,8 +6,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.regex.Pattern;
+import java.util.Iterator;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import lombok.SneakyThrows;
 import lombok.ToString;
@@ -30,7 +31,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 
-@Profile("elter")
+@Profile("server:elter")
 @Slf4j
 @Service
 @ToString
@@ -68,18 +69,36 @@ public class LinkedDocumentRetrievalService {
             // create document from Datacite response
             ElterDocument document = new ElterDocument();
             // ensure title is set to something
-            JsonNode jsonTitles = jsonRecordAttributes.get("titles").path(0);
-            if (jsonTitles.isMissingNode()){
+            JsonNode jsonTitles = jsonRecordAttributes.get("titles");
+            int numTitles = jsonTitles.size();
+            if (numTitles == 0){
                 document.setTitle("TITLE MISSING");
             }
             else {
-                document.setTitle(jsonTitles.get("title").asText());
+                document.setTitle(jsonTitles.get(0).get("title").asText());
+                ArrayList<String> alternativeTitles = new ArrayList<>();
+                for (int i = 1; i < numTitles; i++){
+                    alternativeTitles.add(jsonTitles.get(i).get("title").asText());
+                }
+                document.setAlternateTitles(alternativeTitles);
             }
             // description
-            JsonNode jsonDescriptions = jsonRecordAttributes.get("descriptions").path(0);
-            if (! jsonDescriptions.isMissingNode()){
-                document.setDescription(jsonDescriptions.get("description").asText());
+            StringBuilder descriptionBuilder = new StringBuilder();
+            for (Iterator<JsonNode> iter = jsonRecordAttributes.get("descriptions").iterator(); iter.hasNext(); ) {
+                JsonNode node = iter.next();
+                if (descriptionBuilder.length() > 0){
+                    descriptionBuilder.append("\n\n");
+                }
+                JsonNode descriptionTypeNode = node.get("descriptionType");
+                if (descriptionTypeNode != null) {
+                    String descriptionType = descriptionTypeNode.asText();
+                    if (! descriptionType.equals("Other")) {
+                        descriptionBuilder.append(descriptionType + ": ");
+                    }
+                }
+                descriptionBuilder.append(node.get("description").asText().strip());
             }
+            document.setDescription(descriptionBuilder.toString());
             // authors
             JsonNode jsonCreators = jsonRecordAttributes.get("creators").path(0);
             if (! jsonCreators.isMissingNode()){

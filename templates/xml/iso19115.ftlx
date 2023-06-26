@@ -11,7 +11,7 @@
 </#if>
 
 <?xml version="1.0" encoding="UTF-8"?>
-<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gsr="http://www.isotc211.org/2005/gsr" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gss="http://www.isotc211.org/2005/gss" xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:srv="http://www.isotc211.org/2005/srv"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.isotc211.org/2005/gmd http://inspire.ec.europa.eu/draft-schemas/inspire-md-schemas/apiso-inspire/apiso-inspire.xsd">
+<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gsr="http://www.isotc211.org/2005/gsr" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gss="http://www.isotc211.org/2005/gss" xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:srv="http://www.isotc211.org/2005/srv"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.isotc211.org/2005/gmx https://schemas.isotc211.org/schemas/19139/-/gmx/1.0/gmx.xsd http://www.isotc211.org/2005/srv http://inspire.ec.europa.eu/draft-schemas/inspire-md-schemas/srv/1.0/srv.xsd">
   <gmd:fileIdentifier><gco:CharacterString>${id}</gco:CharacterString></gmd:fileIdentifier>
   <gmd:language>
     <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/php/code_list.php" codeListValue="eng">English</gmd:LanguageCode>
@@ -29,7 +29,7 @@
   </#if>
   <gmd:contact>
     <gmd:CI_ResponsibleParty>
-      <gmd:organisationName><gco:CharacterString>Environmental Information Data Centre</gco:CharacterString></gmd:organisationName>
+      <gmd:organisationName><gco:CharacterString>UK Centre for Ecology &amp; Hydrology</gco:CharacterString></gmd:organisationName>
       <gmd:contactInfo>
         <gmd:CI_Contact>
           <gmd:address>
@@ -38,7 +38,7 @@
               <gmd:city><gco:CharacterString>Lancaster</gco:CharacterString></gmd:city>
               <gmd:postalCode><gco:CharacterString>LA1 4AP</gco:CharacterString></gmd:postalCode>
               <gmd:country><gco:CharacterString>UK</gco:CharacterString></gmd:country>
-              <gmd:electronicMailAddress><gco:CharacterString>info@eidc.ac.uk</gco:CharacterString></gmd:electronicMailAddress>
+              <gmd:electronicMailAddress><gco:CharacterString>enquiries@ceh.ac.uk</gco:CharacterString></gmd:electronicMailAddress>
             </gmd:CI_Address>
           </gmd:address>
         </gmd:CI_Contact>
@@ -52,7 +52,7 @@
     <gco:DateTime>${metadataDateTime}</gco:DateTime>
   </gmd:dateStamp>
   <gmd:metadataStandardName>
-      <gmx:Anchor xlink:href="http://vocab.nerc.ac.uk/collection/MD1/current/ELTER/">UK ELTER</gmx:Anchor>
+    <gco:CharacterString>ISO 19915</gco:CharacterString>
   </gmd:metadataStandardName>
   <gmd:metadataStandardVersion>
       <gco:CharacterString>2.3</gco:CharacterString>
@@ -79,10 +79,10 @@
     </#list>
   </#if>
   <#--identificationInfo -->
-  <#include "document/_identificationInfo.ftlx">
+  <#include "iso19115/_identificationInfo.ftlx">
   <#--distributionInfo -->
-  <#include "document/_distributionInfo.ftlx">
+  <#include "iso19115/_distributionInfo.ftlx">
   <#--dataQualityInfo-->
-  <#include "document/_dataQualityInfo.ftlx">
+  <#include "iso19115/_dataQualityInfo.ftlx">
 </gmd:MD_Metadata>
 </#compress>
