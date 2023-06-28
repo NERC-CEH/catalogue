@@ -42,8 +42,10 @@ build_application:
   services:
     - name: docker:20.10.5-dind
       alias: docker
-  script:
+  before_script:
+    - set -euo pipefail
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  script:
     - docker build --target prod -t $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA .
     - docker build --target datalabs -t $CI_REGISTRY_IMAGE/app:$CI_COMMIT_REF_NAME-datalabs .
     - docker tag $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/app:$CI_COMMIT_REF_NAME
