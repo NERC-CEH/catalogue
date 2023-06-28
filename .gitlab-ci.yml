@@ -10,6 +10,10 @@ stages:
   - build
   - deploy
 
+default:
+  before_script:
+    - set -euo pipefail
+
 test_java:
   stage: test
   image: gradle:7.2.0-jdk16
@@ -38,9 +42,8 @@ build_application:
   services:
     - name: docker:20.10.5-dind
       alias: docker
-  before_script:
-    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
   script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
     - docker build --target prod -t $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA .
     - docker build --target datalabs -t $CI_REGISTRY_IMAGE/app:$CI_COMMIT_REF_NAME-datalabs .
     - docker tag $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/app:$CI_COMMIT_REF_NAME
@@ -77,4 +80,3 @@ deploy_production:
     name: production
     url:  https://catalogue.ceh.ac.uk/eidc/documents
   when: manual
-
