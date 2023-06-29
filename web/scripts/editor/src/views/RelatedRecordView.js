@@ -32,8 +32,8 @@ export default ObjectInputView.extend({
     this.$('.autocomplete').on('autocompleteselect', (event, ui) => {
       this.model.set('identifier', ui.item.identifier)
       this.$('.identifier').val(ui.item.identifier)
-      this.model.set('href', 'https://catalogue.ceh.ac.uk/id/' + ui.item.identifier)
-      this.$('.href').val('https://catalogue.ceh.ac.uk/id/' + ui.item.identifier)
+      this.model.set('href', `${window.location.origin}/id/${ui.item.identifier}`)
+      this.$('.href').val(`${window.location.origin}/id/${ui.item.identifier}`)
       this.model.set('associationType', ui.item.type)
       this.$('.associationType').val(ui.item.type)
       this.model.set('title', ui.item.label)
