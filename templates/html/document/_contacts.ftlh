@@ -33,7 +33,7 @@
       <#if authors?size gt authorMaxSize >
         <p>
             <small>
-                <a href=".responsiblePartyCollapse" class="moreAuthors collapsed" data-toggle="collapse" aria-controls="responsiblePartyCollapse" area-expanded="false">
+                <a href=".responsiblePartyCollapse" class="moreAuthors collapsed" data-toggle="collapse" aria-controls="responsiblePartyCollapse" area-expanded="false" role="button">
                   <span>${moreAuthors} more authors. </span>Show
                 </a>
             </small>

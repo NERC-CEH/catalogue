@@ -250,7 +250,7 @@ export default EditorView.extend({
           ObjectInputView: TopicCategoryView,
           helpText: `\
 <p>Please note these are very broad themes and should not be confused with EIDC science topics.</p>
-<p>Multiple topic categories are allowed - please include all that are pertinent.  For example, "Estimates of topsoil invertebrates" = Biota AND Environment AND Geoscientific Information.</p>\
+<p>Multiple topic categories are allowed - please include all that are pertinent.  For example, "<i>Estimates of topsoil invertebrates</i>" = Biota <strong>and</strong> Environment <strong>and</strong> Geoscientific Information.</p>\
 `
         }),
 
@@ -408,7 +408,7 @@ export default EditorView.extend({
           model: this.model,
           ModelType: Contact,
           modelAttribute: 'distributorContacts',
-          label: 'Distributor contact',
+          label: 'Distributor contact<small>The organisation responsible for distributing the data resource</small>',
           ObjectInputView: ContactView,
           multiline: true,
           predefined: {
@@ -425,10 +425,7 @@ export default EditorView.extend({
             'Other distributor': {
               role: 'distributor'
             }
-          },
-          helpText: `
-<p>The organisation responsible for distributing the data resource</p>
-`
+          }
         })
       ]
     },
@@ -453,6 +450,9 @@ export default EditorView.extend({
           label: 'Related records',
           ObjectInputView: RelatedRecordView,
           multiline: true,
+          helpText: `
+<p>This is to link related datasets,etc which are in <i>this</i> catalogue. Externally hosted datasets can be linked using <strong>Supplemental</strong> &gt; <strong>Additional links</strong> &gt; <strong>Related dataset</strong></p>
+`,
           disabled
         })
       ]
@@ -465,7 +465,7 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'boundingBoxes',
           ModelType: BoundingBox,
-          label: 'Spatial extent',
+          label: 'Spatial extent<small>A bounding box representing the limits of the data resource&#39;s study area</small>',
           ObjectInputView: BoundingBoxView,
           multiline: true,
           predefined: {
@@ -524,7 +524,6 @@ export default EditorView.extend({
             }
           },
           helpText: `\
-    <p>A bounding box representing the limits of the data resource's study area.</p>
     <p>If you do not wish to reveal the exact location publicly (for example, if locations are sensitive) it is recommended that you generalise the location.</p>\
     `
         }),
@@ -586,10 +585,9 @@ export default EditorView.extend({
         new TextareaView({
           model: this.model,
           modelAttribute: 'lineage',
-          label: 'Lineage',
+          label: 'Lineage<small>Information about the source data used in the construction of this data resource</small>',
           rows: 15,
           helpText: `\
-<p>Information about the source data used in the construction of this data resource.</p>
 <p>Quality assessments and enhancement processes applied to the data resource can also be noted and summarised here.</p>\
 `
         }),
@@ -597,11 +595,8 @@ export default EditorView.extend({
         new TextareaView({
           model: this.model,
           modelAttribute: 'reasonChanged',
-          label: 'Reason for change',
-          rows: 7,
-          helpText: `
-<p>If this record is being retracted, the reasons for withdrawal or replacement should be explained here.</p>
-`
+          label: 'Reason for change<small>If this record is being retracted, the reasons for withdrawal or replacement should be explained</small>',
+          rows: 7
         }),
 
         new ParentView({
@@ -624,7 +619,7 @@ export default EditorView.extend({
           modelAttribute: 'incomingCitations',
           ModelType: Supplemental,
           multiline: true,
-          label: 'Citations',
+          label: 'Citations <small>Publications in which these data are cited</small>',
           ObjectInputView: IncomingCitationView
         }),
 
