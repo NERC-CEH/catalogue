@@ -52,7 +52,7 @@
 
 <@skeleton.master title=title catalogue=catalogue rdf="${uri}?format=ttl" schemaorg="${uri}?format=schema.org" canonical="${uri}" can_edit_restricted=permission.userCanEditRestrictedFields(metadata.catalogue)>
 <#if resourceType?has_content && resourceType.value !=''>
-  <#assign recordType = func.recordTypeOrResourceType()>
+<#assign recordType = func.recordTypeOrResourceType()>
   <div id="metadata" class="${metadata.state?lower_case}">
 
     <div class="section section-grey">
