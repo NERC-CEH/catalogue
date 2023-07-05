@@ -6,7 +6,8 @@ export default Backbone.Model.extend({
   },
 
   uris: {
-    'TA-RA project': 'https://elter-ri.eu/transnational-remote-access-ta-ra'
+    'TA-RA project': 'http://vocabs.lter-europe.net/elter_cl/10684',
+    'e-shape': ''
   },
 
   initialize () {

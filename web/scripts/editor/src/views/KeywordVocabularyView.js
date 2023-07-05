@@ -7,6 +7,10 @@ import 'jquery-ui/ui/widgets/autocomplete'
 
 export default ObjectInputView.extend({
 
+  events: {
+    'click .btn-freetext': 'allowFreetext'
+  },
+
   initialize () {
     this.template = _.template(template)
     ObjectInputView.prototype.initialize.apply(this)
@@ -23,8 +27,11 @@ export default ObjectInputView.extend({
     const kwvalue = this.model.get('value')
     if (kwurl != null && kwvalue != null) {
       this.$('.keywordPicker').addClass('hidden')
+      this.$('.uri').removeClass('hidden')
+      this.$('.value').removeClass('hidden')
       this.$('.uri').attr('disabled', true)
       this.$('.value').attr('disabled', true)
+      this.$('.btn-freetext').addClass('hidden')
     } else if (kwvalue != null) {
       this.$('.keywordPicker').addClass('hidden')
     }
@@ -54,8 +61,11 @@ export default ObjectInputView.extend({
       this.model.set('uri', ui.item.url)
       this.$('.uri').val(ui.item.url)
       this.$('.keywordPicker').addClass('hidden')
+      this.$('.uri').removeClass('hidden')
+      this.$('.value').removeClass('hidden')
       this.$('.uri').attr('disabled', true)
       this.$('.value').attr('disabled', true)
+      this.$('.btn-freetext').addClass('hidden')
     })
   },
 
@@ -67,5 +77,12 @@ export default ObjectInputView.extend({
     vocabulary.set({ toSearch: true })
     const view = new KeywordCheckboxView({ model: vocabulary })
     this.$vocabularies.append(view.render().el)
+  },
+
+  allowFreetext () {
+    this.$('.keywordPicker').addClass('hidden')
+    this.$('.uri').removeClass('hidden')
+    this.$('.value').removeClass('hidden')
   }
+
 })

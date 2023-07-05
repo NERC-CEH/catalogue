@@ -18,7 +18,7 @@
   }
   display: grid;
   grid-template-columns: auto fit-content(360px);
-  gap: 0 2em;
+  gap: 2em 0;
   grid-template-areas:
     "col2 col2"
     "col1 col1";
@@ -105,11 +105,12 @@
 
       cursor: pointer;
     }
-    &:hover, &:selected {
+    &:hover,
+    &:selected {
       background-color: rgba(0, 0, 0, 0.05);
     }
     &.open {
-     .dropdown-toggle {
+      .dropdown-toggle {
         box-shadow: none;
       }
     }
@@ -442,7 +443,9 @@
     }
   }
 
-  .toggleList {text-align: right;}
+  .toggleList {
+    text-align: right;
+  }
 
   .panel-right {
     .panel-title {
@@ -699,12 +702,13 @@
       grid-area: signpost-url;
     }
   }
+
   #section-title {
     .signpost-logo {
       display: none;
     }
     .signpost-logo img {
-      max-width: 160px;
+      max-width: 140px;
     }
     .signpost-content {
       display: grid;
@@ -714,43 +718,7 @@
         "signpost-text signpost-text"
         "signpost-url signpost-url";
     }
-  }
-  .distribution-signpost {
-    .signpost-logo {
-      img {
-        max-width: 120px;
-      }
-    }
-    .signpost-content {
-      display: grid;
-      gap: 1em;
-      grid-template-columns: auto fit-content(200px);
-      grid-template-areas:
-        "signpost-text signpost-logo"
-        "signpost-url signpost-logo";
-    }
-  }
-
-  @media only screen and (min-width: 1020px) {
-    .distribution-signpost {
-      .signpost-logo img {
-        max-width: 360px;
-      }
-      .signpost-logo {
-        align-self: center;
-        justify-self: center;
-      }
-      .signpost-content {
-        grid-template-areas:
-          "signpost-logo signpost-logo"
-          "signpost-text signpost-text"
-          "signpost-url signpost-url";
-      }
-    }
-  }
-
-  @media only screen and (min-width: 420px) {
-    #section-title {
+    @media only screen and (min-width: 420px) {
       .signpost-content {
         grid-template-areas:
           "signpost-text signpost-logo"
@@ -758,6 +726,37 @@
       }
       .signpost-logo {
         display: block;
+      }
+    }
+  }
+
+  .distribution-signpost {
+    .signpost-logo {
+      img {
+        max-width: 140px;
+      }
+    }
+    .signpost-content {
+      display: grid;
+      gap: 1em;
+      grid-template-columns: auto fit-content(200px);
+      grid-template-areas:
+        "signpost-logo signpost-logo"
+        "signpost-text signpost-text"
+        "signpost-url signpost-url";
+      .signpost-logo {
+        justify-self: center;
+      }
+    }
+
+    @media only screen and (max-width: 1020px) and (min-width: 420px) {
+      .signpost-content {
+        grid-template-areas:
+          "signpost-text signpost-logo"
+          "signpost-url signpost-logo";
+        .signpost-logo {
+          justify-self: right;
+        }
       }
     }
   }
@@ -890,6 +889,7 @@ dl.dl-horizontal {
 //MEDIA
 @media only screen and (min-width: 1020px) {
   .metadata-grid {
+    gap: 0 2em;
     grid-template-areas: "col1 col2";
     .col2:has(*) {
       border-left: 1px solid lightgray;
