@@ -23,7 +23,7 @@ import static uk.ac.ceh.gateway.catalogue.model.MetadataInfo.READONLY_GROUP;
 
  */
 @Configuration
-@Profile({"development", "test"})
+@Profile("development")
 public class DevelopmentUserStoreConfig {
     // Usernames used in tests
     public static final String ADMIN = "admin";
