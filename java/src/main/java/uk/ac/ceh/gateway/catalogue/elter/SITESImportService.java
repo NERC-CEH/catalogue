@@ -63,7 +63,7 @@ import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.publication.PublicationService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
-@Profile({"server:elter", "imports"})
+@Profile("server:elter & imports")
 @Slf4j
 @Service
 @ToString
@@ -262,15 +262,15 @@ public class SITESImportService implements CatalogueImportService {
         // contacts
         ArrayList<ResponsibleParty> contactList = new ArrayList<>();
         ResponsibleParty publisher = ResponsibleParty.builder()
-                .organisationName("SITES data portal")
-                .role("publisher")
-                .email("info@fieldsites.se")
-                .build();
+            .organisationName("SITES data portal")
+            .role("publisher")
+            .email("info@fieldsites.se")
+            .build();
         ResponsibleParty provider = ResponsibleParty.builder()
-                .organisationName(inputJson.get("provider").get("name").asText())
-                .role("resourceProvider")
-                .email("info@fieldsites.se")
-                .build();
+            .organisationName(inputJson.get("provider").get("name").asText())
+            .role("resourceProvider")
+            .email("info@fieldsites.se")
+            .build();
         contactList.add(publisher);
         contactList.add(provider);
         newDocument.setResponsibleParties(contactList);
