@@ -226,8 +226,21 @@ public class SITESImportService implements CatalogueImportService {
         // fields from JSON / import metadata
         newDocument.setTitle(inputJson.get("name").asText());
         newDocument.setDescription(inputJson.get("description").asText());
-        newDocument.setImportId(inputJson.get("identifier").asText());
         newDocument.setImportLastModified(ZonedDateTime.now(ZoneId.of("UTC")));
+        // some records have a list of identifiers, others just a string.
+        // so we can't rely on the type of JsonNode of the identifier.
+        JsonNode inputIdentifier = inputJson.get("identifier");
+        if(inputIdentifier.isTextual()){
+            newDocument.setImportId(inputIdentifier.asText());
+        } else if(inputIdentifier.isArray()){
+            for(int i=0; i < inputIdentifier.size(); i++){
+                String testId = inputIdentifier.get(i).asText();
+                if(testId.startsWith("https://hdl.handle.net/11676.1/")){
+                    newDocument.setImportId(testId);
+                    break;
+                }
+            }
+        }
         // online resources
         ArrayList<OnlineResource> linkList = new ArrayList<>();
         linkList.add(
@@ -292,10 +305,7 @@ public class SITESImportService implements CatalogueImportService {
     }
 
     @SneakyThrows
-    private String createRecord(String remoteRecordId, JsonNode parsedRecord, CatalogueUser user) {
-        // create from JSON
-        ElterDocument newRecord = createDocumentFromJson(parsedRecord);
-
+    private String createRecord(String remoteRecordId, ElterDocument newRecord, CatalogueUser user) {
         // save document
         MetadataDocument savedDocument = documentRepository.saveNew(
                 user,
@@ -314,9 +324,8 @@ public class SITESImportService implements CatalogueImportService {
     }
 
     @SneakyThrows
-    private void updateRecord(String localRecordId, String remoteRecordId, JsonNode parsedRecord, CatalogueUser user) {
-        // create from JSON
-        ElterDocument updatedRecord = createDocumentFromJson(parsedRecord);
+    private void updateRecord(String localRecordId, ElterDocument updatedRecord, CatalogueUser user) {
+        String remoteRecordId = updatedRecord.getImportId();
 
         // save back
         updatedRecord.setMetadata(documentRepository.read(localRecordId).getMetadata());
@@ -364,16 +373,17 @@ public class SITESImportService implements CatalogueImportService {
 
         // ready to import
         for (String recordUrl : remoteRecordList){
-            JsonNode parsedRecord = getFullRemoteRecord(recordUrl);
+            JsonNode recordAsJson = getFullRemoteRecord(recordUrl);
 
-            if (parsedRecord.get("@type").asText().equals("Dataset")){
-                String remoteRecordId = parsedRecord.get("identifier").asText();
+            if (recordAsJson.get("@type").asText().equals("Dataset")){
+                ElterDocument remoteRecord = createDocumentFromJson(recordAsJson);
+                String remoteRecordId = remoteRecord.getImportId();
                 if (localRecordList.containsKey(remoteRecordId)) {
-                    updateRecord(localRecordList.get(remoteRecordId), remoteRecordId,  parsedRecord, importUser);
+                    updateRecord(localRecordList.get(remoteRecordId), remoteRecord, importUser);
                     updatedRecords++;
                 }
                 else {
-                    String newId = createRecord(remoteRecordId, parsedRecord, importUser);
+                    String newId = createRecord(remoteRecordId, remoteRecord, importUser);
                     log.debug("New document ID is {}", newId);
                     newRecords++;
                 }

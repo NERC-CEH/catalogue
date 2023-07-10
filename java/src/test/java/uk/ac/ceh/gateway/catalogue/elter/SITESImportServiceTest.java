@@ -138,7 +138,7 @@ public class SITESImportServiceTest {
         // NOTE: the html resource has been sanitised by converting
         // "ö" and "–" characters to "o" and "-" respectively.
         // assertions would fail otherwise due to garbled characters.
-        // 
+        //
         // these characters seem to be correctly handled in real use
         // so we just sidestep them for testing.
         ElterDocument createdDocument = argument.getValue();
@@ -152,6 +152,81 @@ public class SITESImportServiceTest {
                 );
         assertEquals(
                 "https://hdl.handle.net/11676.1/P8rtv97XQIOXtgQEiEjwokOt",
+                createdDocument.getImportId()
+                );
+        assertEquals(
+                "signpost",
+                createdDocument.getType()
+                );
+        assertEquals(
+                "Level 0",
+                createdDocument.getDataLevel()
+                );
+    }
+
+    @Test
+    @SneakyThrows
+    public void importNewRecordWithMultipleIdentifiers() {
+        // setup
+        testRecordHtml = IOUtils.toByteArray(getClass().getResource("sites-dataset-multiple-identifiers.html"));
+        testSitemapUrl = getClass().getResource("sites-sitemap-with-dataset-multiple-identifiers.xml").toString();
+
+        sitesImportService = new SITESImportService(
+                documentRepository,
+                publicationService,
+                restTemplate,
+                solrClient,
+                testSitemapUrl
+                );
+
+        // given
+        given(solrClient.query(any(String.class), any(SolrParams.class), eq(POST)))
+            .willReturn(queryResponse);
+        given(queryResponse.getResults())
+            .willReturn(new SolrDocumentList());
+        given(queryResponse.getBeans(DeimsSolrIndex.class))
+            .willReturn(dummyDeimsSiteList);
+
+        given(documentRepository.saveNew(
+                    any(CatalogueUser.class),
+                    any(ElterDocument.class),
+                    any(String.class),
+                    any(String.class)
+                    ))
+            .willReturn(new ElterDocument().setId(RECORD_ID));
+
+        mockServer
+            .expect(requestTo(equalTo("https://meta.fieldsites.se/objects/Rxf5jiOsPo1MV__pjHWzkQtC")))
+            .andExpect(method(HttpMethod.GET))
+            .andRespond(withSuccess(testRecordHtml, MediaType.TEXT_HTML));
+
+        // when
+        sitesImportService.runImport();
+
+        // then
+        mockServer.verify();
+        ArgumentCaptor<ElterDocument> argument = ArgumentCaptor.forClass(ElterDocument.class);
+        verify(documentRepository).saveNew(eq(expectedUser), argument.capture(), eq(CATALOGUE), eq("Create new record https://hdl.handle.net/11676.1/Rxf5jiOsPo1MV__pjHWzkQtC"));
+        verify(publicationService).transition(expectedUser, RECORD_ID, "ykhm7b");
+        verify(publicationService).transition(expectedUser, RECORD_ID, "re4vkb");
+
+        // NOTE: the html resource has been sanitised by converting
+        // "ä" and "–" characters to "a" and "-" respectively.
+        // assertions would fail otherwise due to garbled characters.
+        //
+        // these characters seem to be correctly handled in real use
+        // so we just sidestep them for testing.
+        ElterDocument createdDocument = argument.getValue();
+        assertEquals(
+                "Glacier data - surface mass balance from Storglaciaren, 1946-2020",
+                createdDocument.getTitle()
+                );
+        assertEquals(
+                "World Glacier Monitoring Service (WGMS), 2020. Fluctuations of Glaciers Database. https://doi.org/10.5904/WGMS-FOG-2020-08",
+                createdDocument.getDescription()
+                );
+        assertEquals(
+                "https://hdl.handle.net/11676.1/Rxf5jiOsPo1MV__pjHWzkQtC",
                 createdDocument.getImportId()
                 );
         assertEquals(
@@ -223,7 +298,7 @@ public class SITESImportServiceTest {
         // NOTE: the html resource has been sanitised by converting
         // "ö" and "–" characters to "o" and "-" respectively.
         // assertions would fail otherwise due to garbled characters.
-        // 
+        //
         // these characters seem to be correctly handled in real use
         // so we just sidestep them for testing.
         ElterDocument updatedDocument = argument.getValue();
