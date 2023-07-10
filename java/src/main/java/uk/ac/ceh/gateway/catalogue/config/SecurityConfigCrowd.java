@@ -18,7 +18,7 @@ import java.util.Collections;
 
 @Slf4j
 @Configuration
-@Profile({"development", "auth:crowd"})
+@Profile({"development", "auth:crowd", "test"})
 public class SecurityConfigCrowd {
 
     @Bean

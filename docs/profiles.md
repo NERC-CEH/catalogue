@@ -23,8 +23,9 @@ Choice of:
 * `server:pimfe`
 * `server:ukeof`
 
-## Development
+## Development and testing
 * `development` for local development, including setting up test users
+* `test` to indicate we are running tests - not needed manually
 
 ## Cache
 * `cache` enables ehcache components, for caching user details and other communications with Crowd
