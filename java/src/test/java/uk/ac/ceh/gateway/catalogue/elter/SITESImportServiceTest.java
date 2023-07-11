@@ -309,9 +309,37 @@ public class SITESImportServiceTest {
 
     @Test
     @SneakyThrows
-    public void skipInvalidRecord() {
+    public void skipDigitalDocumentRecord() {
         // setup
         testRecordHtml = IOUtils.toByteArray(getClass().getResource("sites-digitaldocument.html"));
+
+        // given
+        given(solrClient.query(any(String.class), any(SolrParams.class), eq(POST)))
+            .willReturn(queryResponse);
+        given(queryResponse.getResults())
+            .willReturn(new SolrDocumentList());
+        given(queryResponse.getBeans(DeimsSolrIndex.class))
+            .willReturn(dummyDeimsSiteList);
+
+        mockServer
+            .expect(requestTo(equalTo("https://meta.fieldsites.se/objects/P8rtv97XQIOXtgQEiEjwokOt")))
+            .andExpect(method(HttpMethod.GET))
+            .andRespond(withSuccess(testRecordHtml, MediaType.TEXT_HTML));
+
+        // when
+        sitesImportService.runImport();
+
+        // then
+        mockServer.verify();
+        verifyNoInteractions(documentRepository);
+        verifyNoInteractions(publicationService);
+    }
+
+    @Test
+    @SneakyThrows
+    public void skipInvalidRecord() {
+        // setup
+        testRecordHtml = IOUtils.toByteArray(getClass().getResource("sites-invalid-dataset.html"));
 
         // given
         given(solrClient.query(any(String.class), any(SolrParams.class), eq(POST)))

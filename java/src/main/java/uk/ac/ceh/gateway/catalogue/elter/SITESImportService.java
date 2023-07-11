@@ -229,7 +229,9 @@ public class SITESImportService implements CatalogueImportService {
         newDocument.setImportLastModified(ZonedDateTime.now(ZoneId.of("UTC")));
         // some records have a list of identifiers, others just a string.
         // so we can't rely on the type of JsonNode of the identifier.
-        JsonNode inputIdentifier = inputJson.get("identifier");
+        // by using .path a missingNode will be returned and the conditionals can proceed
+        // therefore if the identifier is not a string or array the identifier will be null
+        JsonNode inputIdentifier = inputJson.path("identifier");
         if(inputIdentifier.isTextual()){
             newDocument.setImportId(inputIdentifier.asText());
         } else if(inputIdentifier.isArray()){
@@ -378,6 +380,11 @@ public class SITESImportService implements CatalogueImportService {
             if (recordAsJson.get("@type").asText().equals("Dataset")){
                 ElterDocument remoteRecord = createDocumentFromJson(recordAsJson);
                 String remoteRecordId = remoteRecord.getImportId();
+                if (remoteRecordId == null || !remoteRecordId.startsWith("https://hdl.handle.net/11676.1/")){
+                    log.debug("Skipping record {} as no handle.net ID detected", recordUrl);
+                    skippedRecords++;
+                    continue;
+                }
                 if (localRecordList.containsKey(remoteRecordId)) {
                     updateRecord(localRecordList.get(remoteRecordId), remoteRecord, importUser);
                     updatedRecords++;
