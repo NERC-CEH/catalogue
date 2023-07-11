@@ -89,13 +89,6 @@ public class SITESImportServiceTest {
         dummyDeimsSiteList.add(dummyDeimsSite);
 
         testSitemapUrl = getClass().getResource("sites-sitemap.xml").toString();
-    }
-
-    @Test
-    @SneakyThrows
-    public void importNewRecord() {
-        // setup
-        testRecordHtml = IOUtils.toByteArray(getClass().getResource("sites-dataset.html"));
 
         sitesImportService = new SITESImportService(
                 documentRepository,
@@ -104,6 +97,13 @@ public class SITESImportServiceTest {
                 solrClient,
                 testSitemapUrl
                 );
+    }
+
+    @Test
+    @SneakyThrows
+    public void importNewRecord() {
+        // setup
+        testRecordHtml = IOUtils.toByteArray(getClass().getResource("sites-dataset.html"));
 
         // given
         given(solrClient.query(any(String.class), any(SolrParams.class), eq(POST)))
@@ -171,14 +171,6 @@ public class SITESImportServiceTest {
         // setup
         testRecordHtml = IOUtils.toByteArray(getClass().getResource("sites-dataset-multiple-identifiers.html"));
 
-        sitesImportService = new SITESImportService(
-                documentRepository,
-                publicationService,
-                restTemplate,
-                solrClient,
-                testSitemapUrl
-                );
-
         // given
         given(solrClient.query(any(String.class), any(SolrParams.class), eq(POST)))
             .willReturn(queryResponse);
@@ -244,14 +236,6 @@ public class SITESImportServiceTest {
     public void updateExistingRecord() {
         // setup
         testRecordHtml = IOUtils.toByteArray(getClass().getResource("sites-dataset.html"));
-
-        sitesImportService = new SITESImportService(
-                documentRepository,
-                publicationService,
-                restTemplate,
-                solrClient,
-                testSitemapUrl
-                );
 
         Map<String, Object> solrFieldMapping = new HashMap<>();
         solrFieldMapping.put("importId", "https://hdl.handle.net/11676.1/P8rtv97XQIOXtgQEiEjwokOt");
@@ -328,14 +312,6 @@ public class SITESImportServiceTest {
     public void skipInvalidRecord() {
         // setup
         testRecordHtml = IOUtils.toByteArray(getClass().getResource("sites-digitaldocument.html"));
-
-        sitesImportService = new SITESImportService(
-                documentRepository,
-                publicationService,
-                restTemplate,
-                solrClient,
-                testSitemapUrl
-                );
 
         // given
         given(solrClient.query(any(String.class), any(SolrParams.class), eq(POST)))
