@@ -87,6 +87,8 @@ public class SITESImportServiceTest {
         dummyDeimsSite.setId("Fake id");
         dummyDeimsSite.setUrl("Fake url");
         dummyDeimsSiteList.add(dummyDeimsSite);
+
+        testSitemapUrl = getClass().getResource("sites-sitemap.xml").toString();
     }
 
     @Test
@@ -94,7 +96,6 @@ public class SITESImportServiceTest {
     public void importNewRecord() {
         // setup
         testRecordHtml = IOUtils.toByteArray(getClass().getResource("sites-dataset.html"));
-        testSitemapUrl = getClass().getResource("sites-sitemap-with-dataset.xml").toString();
 
         sitesImportService = new SITESImportService(
                 documentRepository,
@@ -169,7 +170,6 @@ public class SITESImportServiceTest {
     public void importNewRecordWithMultipleIdentifiers() {
         // setup
         testRecordHtml = IOUtils.toByteArray(getClass().getResource("sites-dataset-multiple-identifiers.html"));
-        testSitemapUrl = getClass().getResource("sites-sitemap-with-dataset-multiple-identifiers.xml").toString();
 
         sitesImportService = new SITESImportService(
                 documentRepository,
@@ -196,7 +196,7 @@ public class SITESImportServiceTest {
             .willReturn(new ElterDocument().setId(RECORD_ID));
 
         mockServer
-            .expect(requestTo(equalTo("https://meta.fieldsites.se/objects/Rxf5jiOsPo1MV__pjHWzkQtC")))
+            .expect(requestTo(equalTo("https://meta.fieldsites.se/objects/P8rtv97XQIOXtgQEiEjwokOt")))
             .andExpect(method(HttpMethod.GET))
             .andRespond(withSuccess(testRecordHtml, MediaType.TEXT_HTML));
 
@@ -244,7 +244,6 @@ public class SITESImportServiceTest {
     public void updateExistingRecord() {
         // setup
         testRecordHtml = IOUtils.toByteArray(getClass().getResource("sites-dataset.html"));
-        testSitemapUrl = getClass().getResource("sites-sitemap-with-dataset.xml").toString();
 
         sitesImportService = new SITESImportService(
                 documentRepository,
@@ -329,7 +328,6 @@ public class SITESImportServiceTest {
     public void skipInvalidRecord() {
         // setup
         testRecordHtml = IOUtils.toByteArray(getClass().getResource("sites-digitaldocument.html"));
-        testSitemapUrl = getClass().getResource("sites-sitemap-with-digitaldocument.xml").toString();
 
         sitesImportService = new SITESImportService(
                 documentRepository,
@@ -348,7 +346,7 @@ public class SITESImportServiceTest {
             .willReturn(dummyDeimsSiteList);
 
         mockServer
-            .expect(requestTo(equalTo("https://meta.fieldsites.se/objects/S9logSK2mHJJtXqboteABtTD")))
+            .expect(requestTo(equalTo("https://meta.fieldsites.se/objects/P8rtv97XQIOXtgQEiEjwokOt")))
             .andExpect(method(HttpMethod.GET))
             .andRespond(withSuccess(testRecordHtml, MediaType.TEXT_HTML));
 
