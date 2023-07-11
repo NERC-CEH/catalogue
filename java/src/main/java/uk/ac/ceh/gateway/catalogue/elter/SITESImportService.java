@@ -236,8 +236,8 @@ public class SITESImportService implements CatalogueImportService {
         if(inputIdentifier.isTextual()){
             newDocument.setImportId(inputIdentifier.asText());
         } else if(inputIdentifier.isArray()){
-            for(int i=0; i < inputIdentifier.size(); i++){
-                String testId = inputIdentifier.get(i).asText();
+            for (JsonNode node : inputIdentifier){
+                String testId = node.asText();
                 if(testId.startsWith("https://hdl.handle.net/11676.1/")){
                     newDocument.setImportId(testId);
                     break;
