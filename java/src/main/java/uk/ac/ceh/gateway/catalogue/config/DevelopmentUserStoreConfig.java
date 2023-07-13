@@ -190,6 +190,16 @@ public class DevelopmentUserStoreConfig {
     }
 
     @Bean
+    public CatalogueUser b2shareMetadataImport() throws UsernameAlreadyTakenException {
+        val user = new CatalogueUser()
+            .setUsername("B2SHARE metadata import")
+            .setEmail("info@eudat.eu");
+        addUserToGroup(user, ELTER_EDITOR, ELTER_PUBLISHER);
+        userStore().addUser(user, "password");
+        return user;
+    }
+
+    @Bean
     public CatalogueUser erammpEditor() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser()
             .setUsername("erammp-editor")
