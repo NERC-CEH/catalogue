@@ -50,7 +50,7 @@ public class B2shareImportService implements CatalogueImportService {
     private final Pattern p;
     private final PublicationService publicationService;
     private final SolrClient solrClient;
-    private final String B2shareApiRoot;
+    private final String b2shareRecordsUrl;
     private final String dataciteApiRoot;
 
     // constructor
@@ -59,7 +59,7 @@ public class B2shareImportService implements CatalogueImportService {
             DocumentRepository documentRepository,
             PublicationService publicationService,
             SolrClient solrClient,
-            @Value("${b2share.api}") String B2shareApiRoot,
+            @Value("${b2share.api}") String b2shareRecordsUrl,
             @Value("${doi.api}") String dataciteApiRoot
             ) {
         log.info("Creating");
@@ -69,22 +69,21 @@ public class B2shareImportService implements CatalogueImportService {
         this.p = Pattern.compile("10\\.\\S+/\\S+");
         this.publicationService = publicationService;
         this.solrClient = solrClient;
-        this.B2shareApiRoot = B2shareApiRoot;
+        this.b2shareRecordsUrl = b2shareRecordsUrl;
         this.dataciteApiRoot = dataciteApiRoot;
         }
 
     // methods start here
     @SneakyThrows
     private List<String> getRemoteRecordList() {
-        log.debug("GET B2SHARE records at {}", B2shareApiRoot);
+        log.debug("GET B2SHARE records at {}", b2shareRecordsUrl);
 
         // prep
         List<String> results = new ArrayList<>();
-        String B2shareRecordsUrl = B2shareApiRoot + "/?q=community:d952913c-451e-4b5c-817e-d578dc8a4469&size=5";
 
-        JsonNode B2shareRecords = objectMapper.readTree(new URL(B2shareRecordsUrl));
+        JsonNode b2shareRecords = objectMapper.readTree(new URL(b2shareRecordsUrl));
 
-        for (JsonNode node : B2shareRecords.path("hits").path("hits")){
+        for (JsonNode node : b2shareRecords.path("hits").path("hits")){
             String doi = node.path("metadata").path("DOI").asText();
             if (!doi.equals("")){
                 results.add(doi);
