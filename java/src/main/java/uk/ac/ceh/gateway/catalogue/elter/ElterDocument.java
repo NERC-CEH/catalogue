@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.elter;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -16,6 +17,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.*;
 import uk.ac.ceh.gateway.catalogue.indexing.solr.WellKnownText;
 import uk.ac.ceh.gateway.catalogue.model.*;
 
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -70,6 +72,88 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
     private String linkedDocumentType;
     private String importId;
     private ZonedDateTime importLastModified;
+
+    public void importDataciteJson(JsonNode inputJson){
+        // create document from Datacite API JSON
+
+        // don't currently need other parts of the response
+        inputJson = inputJson.get("data").get("attributes");
+
+        // ensure title is set to something
+        JsonNode jsonTitles = inputJson.get("titles");
+        int numTitles = jsonTitles.size();
+        if (numTitles == 0){
+            this.setTitle("TITLE MISSING");
+        }
+        else {
+            this.setTitle(jsonTitles.get(0).get("title").asText());
+            ArrayList<String> alternativeTitles = new ArrayList<>();
+            for (int i = 1; i < numTitles; i++){
+                alternativeTitles.add(jsonTitles.get(i).get("title").asText());
+            }
+            this.setAlternateTitles(alternativeTitles);
+        }
+        // description
+        StringBuilder descriptionBuilder = new StringBuilder();
+        for (Iterator<JsonNode> iter = inputJson.get("descriptions").iterator(); iter.hasNext(); ) {
+            JsonNode node = iter.next();
+            if (descriptionBuilder.length() > 0){
+                descriptionBuilder.append("\n\n");
+            }
+            JsonNode descriptionTypeNode = node.get("descriptionType");
+            if (descriptionTypeNode != null) {
+                String descriptionType = descriptionTypeNode.asText();
+                if (! descriptionType.equals("Other")) {
+                    descriptionBuilder.append(descriptionType + ": ");
+                }
+            }
+            descriptionBuilder.append(node.get("description").asText().strip());
+        }
+        this.setDescription(descriptionBuilder.toString());
+        // authors
+        JsonNode jsonCreators = inputJson.get("creators").path(0);
+        if (! jsonCreators.isMissingNode()){
+            ResponsibleParty documentCreators = ResponsibleParty.builder()
+                    .individualName(jsonCreators.get("name").asText())
+                    .organisationName("Unknown")
+                    .role("author")
+                    .build();
+            ArrayList<ResponsibleParty> list1 = new ArrayList<>();
+            list1.add(documentCreators);
+            this.setResponsibleParties(list1);
+        }
+        // onlineresources
+        ArrayList<OnlineResource> list2 = new ArrayList<>();
+        list2.add(
+                OnlineResource.builder()
+                .url(inputJson.get("url").asText())
+                .name("View record")
+                .description("View record at this link")
+                .function("information")
+                .build()
+                );
+        this.setOnlineResources(list2);
+        // reference dates
+        // the timestamp parsing is extremely dubious but we need working code NOW for the Frankfurt meeting.
+        // TBF using LocalDate is totally broken anyway so it all needs redoing at some point.
+        this.setDatasetReferenceDate(
+                DatasetReferenceDate.builder()
+                .creationDate(LocalDate.parse(inputJson.get("created").asText().substring(0,10)))
+                .publicationDate(LocalDate.parse(inputJson.get("published").asText().substring(0,4) + "-01-01"))
+                .creationDate(LocalDate.parse(inputJson.get("created").asText().substring(0,10)))
+                .build()
+                );
+        // fixed stuff
+        this.setAccessLimitation(
+                AccessLimitation.builder()
+                .value("no limitations to public access")
+                .code("Available")
+                .uri("http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/noLimitations")
+                .build()
+                );
+        this.setDataLevel("Level 0");
+        this.setType("signpost");
+    }
 
     @Override
     public Set<Relationship> getRelationships() {
