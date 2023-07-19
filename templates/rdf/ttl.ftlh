@@ -44,7 +44,7 @@
       <#if poc.individualName?has_content>
         a vcard:Individual ;
         vcard:n "${poc.individualName}" ;
-        <#if poc.nameIdentifier?has_content && poc.nameIdentifier?starts_with("http")> vcard:hasUID <${poc.nameIdentifier}"> ;</#if>
+        <#if poc.nameIdentifier?has_content && poc.nameIdentifier?starts_with("http")> vcard:hasUID <${poc.nameIdentifier}> ;</#if>
         <#if poc.organisationName?has_content>vcard:organization-name "${poc.organisationName}" ;</#if>
       <#else>
         a vcard:Organization ;
