@@ -63,7 +63,7 @@ import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.publication.PublicationService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
-@Profile({"server:elter", "imports"})
+@Profile("server:elter & imports")
 @Slf4j
 @Service
 @ToString
@@ -226,8 +226,24 @@ public class SITESImportService implements CatalogueImportService {
         // fields from JSON / import metadata
         newDocument.setTitle(inputJson.get("name").asText());
         newDocument.setDescription(inputJson.get("description").asText());
-        newDocument.setImportId(inputJson.get("identifier").asText());
         newDocument.setImportLastModified(ZonedDateTime.now(ZoneId.of("UTC")));
+        // Some records have a list of identifiers, others just a string.
+        //
+        // By using .path a missingNode will be returned if "identifier" is absent
+        // and the conditionals can proceed. Therefore if the identifier is not a
+        // string or array the identifier will be null.
+        JsonNode inputIdentifier = inputJson.path("identifier");
+        if(inputIdentifier.isTextual()){
+            newDocument.setImportId(inputIdentifier.asText());
+        } else if(inputIdentifier.isArray()){
+            for (JsonNode node : inputIdentifier){
+                String testId = node.asText();
+                if(testId.startsWith("https://hdl.handle.net/11676.1/")){
+                    newDocument.setImportId(testId);
+                    break;
+                }
+            }
+        }
         // online resources
         ArrayList<OnlineResource> linkList = new ArrayList<>();
         linkList.add(
@@ -262,15 +278,15 @@ public class SITESImportService implements CatalogueImportService {
         // contacts
         ArrayList<ResponsibleParty> contactList = new ArrayList<>();
         ResponsibleParty publisher = ResponsibleParty.builder()
-                .organisationName("SITES data portal")
-                .role("publisher")
-                .email("info@fieldsites.se")
-                .build();
+            .organisationName("SITES data portal")
+            .role("publisher")
+            .email("info@fieldsites.se")
+            .build();
         ResponsibleParty provider = ResponsibleParty.builder()
-                .organisationName(inputJson.get("provider").get("name").asText())
-                .role("resourceProvider")
-                .email("info@fieldsites.se")
-                .build();
+            .organisationName(inputJson.get("provider").get("name").asText())
+            .role("resourceProvider")
+            .email("info@fieldsites.se")
+            .build();
         contactList.add(publisher);
         contactList.add(provider);
         newDocument.setResponsibleParties(contactList);
@@ -292,10 +308,7 @@ public class SITESImportService implements CatalogueImportService {
     }
 
     @SneakyThrows
-    private String createRecord(String remoteRecordId, JsonNode parsedRecord, CatalogueUser user) {
-        // create from JSON
-        ElterDocument newRecord = createDocumentFromJson(parsedRecord);
-
+    private String createRecord(String remoteRecordId, ElterDocument newRecord, CatalogueUser user) {
         // save document
         MetadataDocument savedDocument = documentRepository.saveNew(
                 user,
@@ -314,9 +327,8 @@ public class SITESImportService implements CatalogueImportService {
     }
 
     @SneakyThrows
-    private void updateRecord(String localRecordId, String remoteRecordId, JsonNode parsedRecord, CatalogueUser user) {
-        // create from JSON
-        ElterDocument updatedRecord = createDocumentFromJson(parsedRecord);
+    private void updateRecord(String localRecordId, ElterDocument updatedRecord, CatalogueUser user) {
+        String remoteRecordId = updatedRecord.getImportId();
 
         // save back
         updatedRecord.setMetadata(documentRepository.read(localRecordId).getMetadata());
@@ -364,16 +376,23 @@ public class SITESImportService implements CatalogueImportService {
 
         // ready to import
         for (String recordUrl : remoteRecordList){
-            JsonNode parsedRecord = getFullRemoteRecord(recordUrl);
+            JsonNode recordAsJson = getFullRemoteRecord(recordUrl);
 
-            if (parsedRecord.get("@type").asText().equals("Dataset")){
-                String remoteRecordId = parsedRecord.get("identifier").asText();
+            if (recordAsJson.get("@type").asText().equals("Dataset")){
+                ElterDocument remoteRecord = createDocumentFromJson(recordAsJson);
+                String remoteRecordId = remoteRecord.getImportId();
+                // remoteRecordId may be null or an "invalid" string
+                if (remoteRecordId == null || !remoteRecordId.startsWith("https://hdl.handle.net/11676.1/")){
+                    log.debug("Skipping record {} as no handle.net ID detected", recordUrl);
+                    skippedRecords++;
+                    continue;
+                }
                 if (localRecordList.containsKey(remoteRecordId)) {
-                    updateRecord(localRecordList.get(remoteRecordId), remoteRecordId,  parsedRecord, importUser);
+                    updateRecord(localRecordList.get(remoteRecordId), remoteRecord, importUser);
                     updatedRecords++;
                 }
                 else {
-                    String newId = createRecord(remoteRecordId, parsedRecord, importUser);
+                    String newId = createRecord(remoteRecordId, remoteRecord, importUser);
                     log.debug("New document ID is {}", newId);
                     newRecords++;
                 }

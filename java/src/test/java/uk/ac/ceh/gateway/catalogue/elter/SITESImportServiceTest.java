@@ -87,14 +87,8 @@ public class SITESImportServiceTest {
         dummyDeimsSite.setId("Fake id");
         dummyDeimsSite.setUrl("Fake url");
         dummyDeimsSiteList.add(dummyDeimsSite);
-    }
 
-    @Test
-    @SneakyThrows
-    public void importNewRecord() {
-        // setup
-        testRecordHtml = IOUtils.toByteArray(getClass().getResource("sites-dataset.html"));
-        testSitemapUrl = getClass().getResource("sites-sitemap-with-dataset.xml").toString();
+        testSitemapUrl = getClass().getResource("sites-sitemap.xml").toString();
 
         sitesImportService = new SITESImportService(
                 documentRepository,
@@ -103,6 +97,13 @@ public class SITESImportServiceTest {
                 solrClient,
                 testSitemapUrl
                 );
+    }
+
+    @Test
+    @SneakyThrows
+    public void importNewRecord() {
+        // setup
+        testRecordHtml = IOUtils.toByteArray(getClass().getResource("sites-dataset.html"));
 
         // given
         given(solrClient.query(any(String.class), any(SolrParams.class), eq(POST)))
@@ -138,7 +139,7 @@ public class SITESImportServiceTest {
         // NOTE: the html resource has been sanitised by converting
         // "ö" and "–" characters to "o" and "-" respectively.
         // assertions would fail otherwise due to garbled characters.
-        // 
+        //
         // these characters seem to be correctly handled in real use
         // so we just sidestep them for testing.
         ElterDocument createdDocument = argument.getValue();
@@ -166,18 +167,75 @@ public class SITESImportServiceTest {
 
     @Test
     @SneakyThrows
+    public void importNewRecordWithMultipleIdentifiers() {
+        // setup
+        testRecordHtml = IOUtils.toByteArray(getClass().getResource("sites-dataset-multiple-identifiers.html"));
+
+        // given
+        given(solrClient.query(any(String.class), any(SolrParams.class), eq(POST)))
+            .willReturn(queryResponse);
+        given(queryResponse.getResults())
+            .willReturn(new SolrDocumentList());
+        given(queryResponse.getBeans(DeimsSolrIndex.class))
+            .willReturn(dummyDeimsSiteList);
+
+        given(documentRepository.saveNew(
+                    any(CatalogueUser.class),
+                    any(ElterDocument.class),
+                    any(String.class),
+                    any(String.class)
+                    ))
+            .willReturn(new ElterDocument().setId(RECORD_ID));
+
+        mockServer
+            .expect(requestTo(equalTo("https://meta.fieldsites.se/objects/P8rtv97XQIOXtgQEiEjwokOt")))
+            .andExpect(method(HttpMethod.GET))
+            .andRespond(withSuccess(testRecordHtml, MediaType.TEXT_HTML));
+
+        // when
+        sitesImportService.runImport();
+
+        // then
+        mockServer.verify();
+        ArgumentCaptor<ElterDocument> argument = ArgumentCaptor.forClass(ElterDocument.class);
+        verify(documentRepository).saveNew(eq(expectedUser), argument.capture(), eq(CATALOGUE), eq("Create new record https://hdl.handle.net/11676.1/Rxf5jiOsPo1MV__pjHWzkQtC"));
+        verify(publicationService).transition(expectedUser, RECORD_ID, "ykhm7b");
+        verify(publicationService).transition(expectedUser, RECORD_ID, "re4vkb");
+
+        // NOTE: the html resource has been sanitised by converting
+        // "ä" and "–" characters to "a" and "-" respectively.
+        // assertions would fail otherwise due to garbled characters.
+        //
+        // these characters seem to be correctly handled in real use
+        // so we just sidestep them for testing.
+        ElterDocument createdDocument = argument.getValue();
+        assertEquals(
+                "Glacier data - surface mass balance from Storglaciaren, 1946-2020",
+                createdDocument.getTitle()
+                );
+        assertEquals(
+                "World Glacier Monitoring Service (WGMS), 2020. Fluctuations of Glaciers Database. https://doi.org/10.5904/WGMS-FOG-2020-08",
+                createdDocument.getDescription()
+                );
+        assertEquals(
+                "https://hdl.handle.net/11676.1/Rxf5jiOsPo1MV__pjHWzkQtC",
+                createdDocument.getImportId()
+                );
+        assertEquals(
+                "signpost",
+                createdDocument.getType()
+                );
+        assertEquals(
+                "Level 0",
+                createdDocument.getDataLevel()
+                );
+    }
+
+    @Test
+    @SneakyThrows
     public void updateExistingRecord() {
         // setup
         testRecordHtml = IOUtils.toByteArray(getClass().getResource("sites-dataset.html"));
-        testSitemapUrl = getClass().getResource("sites-sitemap-with-dataset.xml").toString();
-
-        sitesImportService = new SITESImportService(
-                documentRepository,
-                publicationService,
-                restTemplate,
-                solrClient,
-                testSitemapUrl
-                );
 
         Map<String, Object> solrFieldMapping = new HashMap<>();
         solrFieldMapping.put("importId", "https://hdl.handle.net/11676.1/P8rtv97XQIOXtgQEiEjwokOt");
@@ -223,7 +281,7 @@ public class SITESImportServiceTest {
         // NOTE: the html resource has been sanitised by converting
         // "ö" and "–" characters to "o" and "-" respectively.
         // assertions would fail otherwise due to garbled characters.
-        // 
+        //
         // these characters seem to be correctly handled in real use
         // so we just sidestep them for testing.
         ElterDocument updatedDocument = argument.getValue();
@@ -251,18 +309,9 @@ public class SITESImportServiceTest {
 
     @Test
     @SneakyThrows
-    public void skipInvalidRecord() {
+    public void skipDigitalDocumentRecord() {
         // setup
         testRecordHtml = IOUtils.toByteArray(getClass().getResource("sites-digitaldocument.html"));
-        testSitemapUrl = getClass().getResource("sites-sitemap-with-digitaldocument.xml").toString();
-
-        sitesImportService = new SITESImportService(
-                documentRepository,
-                publicationService,
-                restTemplate,
-                solrClient,
-                testSitemapUrl
-                );
 
         // given
         given(solrClient.query(any(String.class), any(SolrParams.class), eq(POST)))
@@ -273,7 +322,35 @@ public class SITESImportServiceTest {
             .willReturn(dummyDeimsSiteList);
 
         mockServer
-            .expect(requestTo(equalTo("https://meta.fieldsites.se/objects/S9logSK2mHJJtXqboteABtTD")))
+            .expect(requestTo(equalTo("https://meta.fieldsites.se/objects/P8rtv97XQIOXtgQEiEjwokOt")))
+            .andExpect(method(HttpMethod.GET))
+            .andRespond(withSuccess(testRecordHtml, MediaType.TEXT_HTML));
+
+        // when
+        sitesImportService.runImport();
+
+        // then
+        mockServer.verify();
+        verifyNoInteractions(documentRepository);
+        verifyNoInteractions(publicationService);
+    }
+
+    @Test
+    @SneakyThrows
+    public void skipInvalidRecord() {
+        // setup
+        testRecordHtml = IOUtils.toByteArray(getClass().getResource("sites-invalid-dataset.html"));
+
+        // given
+        given(solrClient.query(any(String.class), any(SolrParams.class), eq(POST)))
+            .willReturn(queryResponse);
+        given(queryResponse.getResults())
+            .willReturn(new SolrDocumentList());
+        given(queryResponse.getBeans(DeimsSolrIndex.class))
+            .willReturn(dummyDeimsSiteList);
+
+        mockServer
+            .expect(requestTo(equalTo("https://meta.fieldsites.se/objects/P8rtv97XQIOXtgQEiEjwokOt")))
             .andExpect(method(HttpMethod.GET))
             .andRespond(withSuccess(testRecordHtml, MediaType.TEXT_HTML));
 

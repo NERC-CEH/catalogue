@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link rel="stylesheet" href="https://static.icos-cp.eu/css/bootstrap/5.2.1/sites-bootstrap.css">
+	<link rel="stylesheet" href="https://static.icos-cp.eu/constant/fontawesome/5.15.3/css/fontawesome.min.css">
+	<link rel="stylesheet" href="https://static.icos-cp.eu/constant/fontawesome/5.15.3/css/solid.min.css">
+
+	<link rel="icon" type="image/x-icon" href="//static.icos-cp.eu/images/sites-favicon.ico">
+	<link rel="stylesheet" href="//static.icos-cp.eu/css/fonts/source-sans-pro.css">
+
+	<style>
+	body {
+		font-family: "SourceSansPro", sans-serif;
+		font-size: 16px;
+	}
+
+	a,
+	.btn-link {
+		color: #3C8CA5;
+	}
+
+	a:hover,
+	a:focus,
+	a:active {
+		color: #2F7F98;
+	}
+
+	h2:not(:first-child) {
+		margin-top: 2rem;
+	}
+
+	.btn-primary,
+	.btn-primary.disabled,
+	.btn-primary:disabled {
+		background-color: #55A5BE;
+		border-color: #3C8CA5;
+	}
+
+	.btn-primary:hover,
+	.btn-primary:focus,
+	.btn-primary.focus,
+	.btn-primary:active {
+		background: #3C8CA5;
+		border-color: #2F7F98;
+	}
+
+	.btn-primary .badge {
+		color: #55A5BE;
+	}
+
+	.header {
+		position: relative;
+		width: 1400px;
+		max-width: 100%;
+		height: 175px;
+		margin: 0 auto;
+		background: url(https://static.icos-cp.eu/images/sites-header-background.jpg) #61AB43 no-repeat center top;
+		border-top: 22px solid #818185;
+	}
+
+	.logo {
+		display: inline-block;
+		background: white;
+		width: 144px;
+		height: 108px;
+		margin-top: -22px;
+		position: relative;
+		margin-left: 10%;
+		max-width: 30%;
+	}
+
+	.logo img {
+		width: 90%;
+		height: auto;
+		position: absolute;
+		bottom: 13px;
+		left: 7px;
+	}
+
+	.menu {
+		position: absolute;
+		bottom: 0;
+		width: 100%;
+		max-width: 1400px;
+		margin: 0 auto;
+	}
+
+	.menu-content ul {
+		padding: 0 1rem;
+	}
+
+	.menu a {
+		color: #fff;
+		font-size: 1.125em;
+		cursor: pointer;
+	}
+
+	.menu-content {
+		display: flex;
+		justify-content: space-between;
+		width: 100%;
+	}
+
+	.menu-content-right {
+		display: flex;
+	}
+
+	.menu-content-right .account {
+		display: none;
+	}
+
+	.menu-content-right .badge {
+		vertical-align: 1px;
+	}
+
+	.page,
+	.footer {
+		margin: 0 auto;
+		max-width: 1400px;
+	}
+
+	.footer {
+		padding: 20px 5px 5px;
+		max-width: 780px;
+		font-size: 13px;
+		color: #7a7a7a;
+		line-height: 1.3;
+		text-align: center;
+	}
+</style>
+
+
+	<script>
+		
+window.addEventListener("load", function(){
+
+	const menuButton = document.getElementById("menu-button");
+
+	if (menuButton !== null) {
+		menuButton.addEventListener('click', function() {
+			document.getElementById('cp-main-menu').classList.toggle('open');
+		});
+	}
+
+	var menuGroups = document.getElementsByClassName("open_menu");
+
+	for(var idx = 0; idx < menuGroups.length; idx++){
+		var elem = menuGroups[idx];
+
+		elem.addEventListener("click", function(event){
+			this.parentElement.parentElement.classList.toggle('open');
+		});
+	}
+
+	function ajaxGet(url, action){
+		var xhr = new XMLHttpRequest();
+		xhr.open("GET", url);
+		xhr.send(null);
+
+		xhr.onreadystatechange = function () {
+			if (xhr.readyState === 4 && xhr.status === 200) {
+				action(xhr);
+			}
+		};
+	}
+
+	ajaxGet('/whoami', function(xhr){
+		var response = JSON.parse(xhr.response);
+
+		if (response.email) {
+			const email = response.email;
+
+			fetch(`https://auth.fieldsites.se/db/users/${email}?keys=${encodeURIComponent('{cart:1}')}`, { credentials: 'include' })
+				.then(response => response.json())
+				.then(data => {
+
+					const cartLinks = document.querySelectorAll('.cart-link');
+					cartLinks.forEach(link => {
+						link.querySelector('.items-number').innerText = data.cart._items.length;
+						link.addEventListener('click', function () {
+							window.location = 'https://data.fieldsites.se/portal#{"route":"cart"}';
+						});
+						link.style.display = 'block';
+					});
+
+					const accountLinks = document.querySelectorAll('.account-link');
+					accountLinks.forEach(link => {
+						link.addEventListener('click', function(){
+							window.location = 'https://auth.fieldsites.se/';
+						});
+						link.style.display = 'block';
+					});
+
+					const addButton = document.getElementById("meta-add-to-cart-button");
+					const removeButton = document.getElementById("meta-remove-from-cart-button");
+
+					if (addButton) {
+						const objId = addButton.dataset.id;
+						if (data.cart._items.some(i => i._id === objId)) {
+							removeButton.classList.remove('d-none');
+						} else {
+							addButton.classList.remove('d-none');
+						}
+
+						removeButton.addEventListener("click", () => {
+							addButton.classList.remove('d-none');
+							removeButton.classList.add('d-none');
+							const items = data.cart._items.filter(i => i._id != objId)
+							data.cart._items = items;
+							updateProfile(email, data);
+							cartLinks.forEach(link => {
+								link.querySelector('.items-number').innerText = data.cart._items.length;
+							});
+						});
+
+						addButton.addEventListener("click", () => {
+							addButton.classList.add('d-none');
+							removeButton.classList.remove('d-none');
+							data.cart._items.push({"_id": objId})
+							updateProfile(email, data);
+							cartLinks.forEach(link => {
+								link.querySelector('.items-number').innerText = data.cart._items.length;
+							});
+						});
+
+						if (window.location.hash == "#add-to-cart") {
+							history.replaceState(null, "", window.location.href.split('#')[0]);
+							addButton.classList.add('d-none');
+							removeButton.classList.remove('d-none');
+							data.cart._items.push({"_id": objId})
+							updateProfile(email, data);
+							cartLinks.forEach(link => {
+								link.querySelector('.items-number').innerText = data.cart._items.length;
+							});
+						}
+					}
+				});
+
+		} else {
+			const loginLinks = document.querySelectorAll('.login-link');
+			loginLinks.forEach(link => {
+				link.addEventListener('click', () => loginAndRedirect(window.location.href));
+				link.style.display = 'block';
+			});
+
+			const addButton = document.getElementById("meta-add-to-cart-button");
+			if (addButton) {
+				addButton.addEventListener("click", () => loginAndRedirect(window.location.href + "#add-to-cart"));
+				addButton.classList.remove('d-none');
+			}
+		}
+	});
+
+	const updateProfile = (email, data) => {
+		fetch(`https://auth.fieldsites.se/db/users/${email}`, {
+			credentials: 'include',
+			method: 'PATCH',
+			mode: 'cors',
+			headers: new Headers({
+				'Content-Type': 'application/json'
+			}),
+			body: JSON.stringify(data)
+		});
+	};
+
+	const loginAndRedirect = (url) => {
+		window.location = 'https://auth.fieldsites.se/login/?targetUrl=' + encodeURIComponent(url);
+	}
+
+});
+
+	</script>
+
+	
+	
+	<script type="application/ld+json">
+		{
+  "@context": "https://schema.org",
+  "@id": "https://meta.fieldsites.se/objects/Rxf5jiOsPo1MV__pjHWzkQtC",
+  "@type": "Dataset",
+  "acquireLicensePage": "https://meta.fieldsites.se/ontologies/sites/sitesLicence",
+  "alternateName": "SITES_GL-MB_TRS_SGL_1946-2020_L2_annual.csv",
+  "contributor": null,
+  "creator": {
+    "name": "Tarfala Research Station",
+    "email": "data@fieldsites.se",
+    "@type": "Organization",
+    "parentOrganization": "Stockholm University",
+    "@id": "https://meta.fieldsites.se/resources/stations/Tarfala"
+  },
+  "dateModified": "2020-12-02T07:36:04.034Z",
+  "datePublished": "2020-12-02",
+  "description": "World Glacier Monitoring Service (WGMS), 2020. Fluctuations of Glaciers Database. https://doi.org/10.5904/WGMS-FOG-2020-08",
+  "distribution": {
+    "contentSize": "3824 B",
+    "contentUrl": "https://data.fieldsites.se/licence_accept?ids=%5B%22Rxf5jiOsPo1MV__pjHWzkQtCT7XLFT2BevdK9XgPaM0%22%5D",
+    "encodingFormat": "text/csv",
+    "sha256": "4717f98e23ac3e8d4c57ffe98c75b3910b424fb5cb153d817af74af5780f68cd"
+  },
+  "identifier": ["https://doi.org/10.5904/wgms-fog-2020-08", "https://hdl.handle.net/11676.1/Rxf5jiOsPo1MV__pjHWzkQtC"],
+  "inLanguage": {
+    "@type": "Language",
+    "name": "English"
+  },
+  "includedInDataCatalog": {
+    "@type": "DataCatalog",
+    "name": "data.fieldsites.se"
+  },
+  "isBasedOn": {
+    "@type": "CreativeWork",
+    "name": "Previous version",
+    "url": "https://meta.fieldsites.se/objects/RoBm6p_SJYP3pFUT6e6pEJcj"
+  },
+  "isPartOf": null,
+  "keywords": ["Glacier mass balance/ice sheet mass balance", "Glaciers"],
+  "license": "Some(https://creativecommons.org/licenses/by/4.0)",
+  "name": "Glacier data - surface mass balance from Storglaciaren, 1946-2020",
+  "producer": null,
+  "provider": {
+    "@type": "Organization",
+    "@id": "https://meta.fieldsites.se/resources/stations/Tarfala",
+    "name": "Tarfala Research Station",
+    "email": "data@fieldsites.se"
+  },
+  "publisher": {
+    "@id": "data.fieldsites.se",
+    "@type": "Organization",
+    "logo": "https://static.icos-cp.eu/images/sites-logo.png",
+    "name": "SITES data portal",
+    "url": "https://data.fieldsites.se"
+  },
+  "spatialCoverage": {
+    "@type": "Place",
+    "containedInPlace": {
+      "@type": "Country",
+      "identifier": "SE",
+      "name": "Sweden"
+    },
+    "geo": {
+      "@type": "GeoShape",
+      "polygon": "67.9068 18.5765 67.9042 18.598 67.9025 18.604 67.9011 18.6035 67.8995 18.5955 67.8985 18.5661 67.8978 18.5645 67.9001 18.5573 67.9002 18.554 67.8995 18.5494 67.8975 18.5452 67.8973 18.5401 67.8999 18.5331 67.9031 18.5336 67.904 18.5393 67.9055 18.5404 67.9053 18.5353 67.9066 18.5313 67.9124 18.5329 67.9147 18.5386 67.9139 18.5428 67.9061 18.56"
+    },
+    "name": "Storglaciaren"
+  },
+  "temporalCoverage": "1945-12-31T23:00:00Z/2020-12-31T23:00:00Z",
+  "url": "https://meta.fieldsites.se/objects/Rxf5jiOsPo1MV__pjHWzkQtC",
+  "variableMeasured": [{
+    "@type": "PropertyValue",
+    "description": "Winter surface mass balance",
+    "name": "MB_W",
+    "unitText": "m"
+  }, {
+    "@type": "PropertyValue",
+    "description": "Summer surface mass balance",
+    "name": "MB_S",
+    "unitText": "m"
+  }, {
+    "@type": "PropertyValue",
+    "description": "Net surface mass balance",
+    "name": "MB_N",
+    "unitText": "m"
+  }, {
+    "@type": "PropertyValue",
+    "description": "Year",
+    "name": "TIMESTAMP",
+    "unitText": null
+  }]
+}
+	</script>
+
+	<style>
+	.col-md-12 > label::after {
+		content: ":";
+	}
+	.col-md-12 > label{
+		margin-bottom: 5px;
+		vertical-align: top;
+	}
+	iframe {
+		border:solid 1px #ddd;
+		width:100%;
+		height:400px;
+	}
+	.link-box-title::before {
+		font-family: "Font Awesome 5 Free";
+		content: "\f105";
+		font-weight: 900;
+		margin: 0 0.3rem;
+		color: white;
+	}
+	table.instrument-deployment {
+		margin-bottom: 0px;
+	}
+	table.instrument-deployment td {
+		vertical-align: middle;
+		border-bottom-width: 0px;
+	}
+</style>
+
+
+
+	<title>SITES_GL-MB_TRS_SGL_1946-2020_L2_annual.csv | SITES</title>
+
+</head>
+
+<body>
+	<header class="header">
+		<a href="https://www.fieldsites.se">
+			<div class="logo">
+				<img src="https://static.icos-cp.eu/images/sites-logo.jpg">
+			</div>
+		</a>
+		<nav class="menu navbar navbar-expand-sm navbar-dark">
+			<div class="menu-content">
+				<ul class="navbar-nav nav mt-auto">
+					<li class="nav-item"><a class="nav-link" href="//data.fieldsites.se">Data catalogue</a></li>
+				</ul>
+				<ul class="menu-content-right navbar-nav nav">
+					<li class="nav-item account cart-link">
+						<a class="nav-link"><i class="fas fa-shopping-cart"></i> Cart
+							<span class="badge rounded-pill bg-light text-secondary">
+								<span class="items-number">0</span>
+								<span class="visually-hidden">items in cart</span>
+							</span>
+						</a>
+					</li>
+					<li class="nav-item account account-link">
+						<a class="nav-link"><i class="fas fa-user"></i> My Account</a>
+					</li>
+					<li class="nav-item account login-link">
+						<a class="nav-link"><i class="fas fa-sign-out-alt"></i> Log in</a>
+					</li>
+				</ul>
+			</div>
+		</nav>
+	</header>
+
+	<div class="page sites-page pt-4">
+		<div class="container-fluid">
+			
+	
+	<nav aria-label="breadcrumb">
+		<ol class="breadcrumb bg-light p-2">
+			
+				<li class="breadcrumb-item"><a href="https://www.fieldsites.se">Home</a></li>
+			
+				<li class="breadcrumb-item"><a href="//data.fieldsites.se/portal">Data catalogue</a></li>
+			
+		</ol>
+	</nav>
+
+
+	
+		
+
+<div class="row">
+	<h1 class="col-md-8">Glacier data - surface mass balance from Storglaciaren</h1>
+	<div class="col-auto ms-md-auto py-2"><div class="d-flex gap-1 flex-shrink-0">
+	
+		<button id="meta-add-to-cart-button" class="btn btn-primary d-none" data-id="https://meta.fieldsites.se/objects/Rxf5jiOsPo1MV__pjHWzkQtC">Add to cart</button>
+		<button id="meta-remove-from-cart-button" class="btn btn-outline-secondary d-none" data-id="https://meta.fieldsites.se/objects/Rxf5jiOsPo1MV__pjHWzkQtC">Remove from cart</button>
+		<a class="btn btn-primary" href="https://data.fieldsites.se/objects/Rxf5jiOsPo1MV__pjHWzkQtC">Download</a>
+	
+</div>
+
+</div>
+</div>
+<div class="d-sm-flex justify-content-between align-items-start  mb-4 pb-2 gap-3">
+	
+		<div class="fs-3 text-muted"> 1946-2020</div>
+	
+</div>
+
+
+	<ul class="nav nav-tabs">
+		<li class="nav-item">
+			<a class="nav-link active" aria-current="page">Metadata</a>
+		</li>
+		<li class="nav-item">
+			
+	
+		<a class="nav-link" href="https://data.fieldsites.se/portal/#%7B%22route%22:%22preview%22,%22preview%22:%5B%22Rxf5jiOsPo1MV__pjHWzkQtC%22%5D%7D">Preview</a>
+	
+
+		</li>
+	</ul>
+
+	
+	
+	<div class="row py-3 gy-4">
+		
+
+
+
+
+
+
+
+		
+
+
+		
+
+		<div class="col-md-8">
+			<div class="row gy-2">
+			
+	<div class="col-md-3"><label class="fw-bold">DOI</label></div>
+<div class="col-md-9 text-break">
+		<span>
+			10.5904/wgms-fog-2020-08 (<a href=https://doi.org/10.5904/wgms-fog-2020-08>target</a>,
+			<a target="_blank" href=https://commons.datacite.org/doi.org/10.5904/wgms-fog-2020-08>metadata</a>)
+		</span>
+	</div>
+
+
+
+			
+				<div class="col-md-3"><label class="fw-bold">PID</label></div>
+<div class="col-md-9 text-break">
+	
+			<span>11676.1/Rxf5jiOsPo1MV__pjHWzkQtC (<a href=https://hdl.handle.net/11676.1/Rxf5jiOsPo1MV__pjHWzkQtC>link</a>)</span>
+		
+</div>
+
+
+			
+			
+			
+			
+	<div class="col-md-3"><label class="fw-bold">Data affiliation</label></div>
+<div class="col-md-9 text-break">
+		<a href=/resources/projects/station>Station base programme</a>
+
+
+
+	</div>
+
+
+			
+			
+			
+	<div class="col-md-3"><label class="fw-bold">Citation</label></div>
+<div class="col-md-9 text-break">World Glacier Monitoring Service (WGMS), 2020. Fluctuations of Glaciers Database. https://doi.org/10.5904/WGMS-FOG-2020-08</div>
+
+
+
+	
+	<div class="col-md-3"><label class="fw-bold"></label></div>
+<div class="col-md-9 text-break">
+		<details>
+			<summary class="d-inline-block">
+				<span class="btn-link" style="cursor:pointer; color: var(--bs-link-color);">BibTex</span>
+			</summary>
+			<div class="card bg-light">
+				<div class="card-body">
+					<pre class="user-select-all w-100 m-0">@misc{https://doi.org/10.5904/wgms-fog-2020-08,
+  doi = {10.5904/WGMS-FOG-2020-08},
+  url = {https://wgms.ch/data_databaseversions/},
+  author = {{World Glacier Monitoring Service (WGMS)}},
+  language = {en},
+  title = {Fluctuations of Glaciers Database},
+  publisher = {World Glacier Monitoring Service (WGMS)},
+  year = {2020}
+}</pre>
+				</div>
+			</div>
+		</details>
+	</div>
+
+
+
+
+	
+	<div class="col-md-3"><label class="fw-bold"></label></div>
+<div class="col-md-9 text-break">
+		<details>
+			<summary class="d-inline-block">
+				<span class="btn-link" style="cursor:pointer; color: var(--bs-link-color);">RIS</span>
+			</summary>
+			<div class="card bg-light">
+				<div class="card-body">
+					<pre class="user-select-all w-100 m-0">TY  - DATA
+T1  - Fluctuations of Glaciers Database
+AU  - World Glacier Monitoring Service (WGMS)
+DO  - 10.5904/WGMS-FOG-2020-08
+UR  - https://wgms.ch/data_databaseversions/
+AB  - Internationally collected, standardized dataset on changes in glaciers (length, area, volume, mass), based on in-situ and remotely sensed observations, as well as on reconstructions.
+PY  - 2020
+PB  - World Glacier Monitoring Service (WGMS)
+LA  - en
+ER  -</pre>
+				</div>
+			</div>
+		</details>
+	</div>
+
+
+
+
+
+
+			
+				<div class="col-md-3"><label class="fw-bold">Previous version</label></div>
+<div class="col-md-9 text-break">
+		<a href=/objects/RoBm6p_SJYP3pFUT6e6pEJcj>View previous version</a>
+	
+</div>
+
+			
+			<div class="col-md-3"><label class="fw-bold">File name</label></div>
+<div class="col-md-9 text-break" style="white-space: pre-line">SITES_GL-MB_TRS_SGL_1946-2020_L2_annual.csv</div>
+
+			
+			
+				<div class="col-md-3"><label class="fw-bold">File size</label></div>
+<div class="col-md-9 text-break" style="white-space: pre-line">4 KB (3824 bytes)</div>
+
+			
+			
+				<div class="col-md-3"><label class="fw-bold">Number of data rows</label></div>
+<div class="col-md-9 text-break" style="white-space: pre-line">75</div>
+
+			
+			
+	<div class="col-md-3"><label class="fw-bold">Data type</label></div>
+<div class="col-md-9 text-break">
+		<a href=/resources/objspecs/glacier-surface-mass-balance>Glacier data - surface mass balance</a>
+
+
+
+	</div>
+
+
+			<div class="col-md-3"><label class="fw-bold">Data level</label></div>
+<div class="col-md-9 text-break" style="white-space: pre-line">2</div>
+
+
+			
+
+			
+				
+			<div class="col-md-3"><label class="fw-bold">Documentation</label></div>
+<div class="col-md-9 text-break">
+				<span>
+					
+						
+						<a href=/objects/3V58eiR-458buVn47vItdepP>Tarfala Background Information based on MAPS and GIS Data</a>
+					
+				</span>
+		</div>
+
+	
+
+			
+
+			
+				<div class="col-md-3"><label class="fw-bold">Licence</label></div>
+<div class="col-md-9 text-break">
+	<a href=https://data.fieldsites.se/licence>SITES CCBY4 Data Licence</a>
+</div>
+
+			
+
+			
+				<h2 class="fs-3 mt-5">Acquisition</h2>
+				
+					<div class="col-md-3"><label class="fw-bold">Location</label></div>
+<div class="col-md-9 text-break" style="white-space: pre-line">Storglaciaren</div>
+
+				
+				
+	<div class="col-md-3"><label class="fw-bold">Station</label></div>
+<div class="col-md-9 text-break">
+		<a href=/resources/stations/Tarfala>
+	<span>Tarfala Research Station</span>
+</a>
+
+	</div>
+
+
+				
+					
+						
+	<div class="col-md-3"><label class="fw-bold">Responsible organization</label></div>
+<div class="col-md-9 text-break">
+		<a href=/resources/organizations/stockholm-university>
+	<span>Stockholm University</span>
+</a>
+
+	</div>
+
+
+					
+				
+				
+					
+	<div class="col-md-3"><label class="fw-bold">Ecosystem</label></div>
+<div class="col-md-9 text-break">
+		<a href=/resources/ecosystems/glacier-snow>Glaciers and perpetual snow</a>
+
+
+
+	</div>
+
+
+				
+				
+					<div class="col-md-3"><label class="fw-bold">Start time (UTC+1)</label></div>
+<div class="col-md-9 text-break" style="white-space: pre-line">1946-01-01 00:00:00</div>
+
+					<div class="col-md-3"><label class="fw-bold">Stop time (UTC+1)</label></div>
+<div class="col-md-9 text-break" style="white-space: pre-line">2021-01-01 00:00:00</div>
+
+				
+				
+				
+			
+
+			
+
+			<br>
+
+			
+				<h2 class="fs-3 mt-5">Previewable variables</h2>
+				<div class="col-md-12 overflow-auto">
+				<table class="table">
+					<thead>
+						<tr>
+							<th>Name</th>
+							<th>Value type</th>
+							<th>Unit</th>
+							
+							<th>Preview</th>
+							
+						</tr>
+					</thead>
+					<tbody>
+						
+							<tr>
+								<td>MB_W</td>
+								<td>Winter surface mass balance</td>
+								<td>m</td>
+								
+								<td>
+									
+										<a href=https://data.fieldsites.se/portal/#%7B%22route%22:%22preview%22,%22preview%22:%5B%22Rxf5jiOsPo1MV__pjHWzkQtC%22%5D,%22yAxis%22:%22MB_W%22%7D>Preview</a>
+									
+								</td>
+								
+									
+								
+							</tr>
+						
+							<tr>
+								<td>MB_S</td>
+								<td>Summer surface mass balance</td>
+								<td>m</td>
+								
+								<td>
+									
+										<a href=https://data.fieldsites.se/portal/#%7B%22route%22:%22preview%22,%22preview%22:%5B%22Rxf5jiOsPo1MV__pjHWzkQtC%22%5D,%22yAxis%22:%22MB_S%22%7D>Preview</a>
+									
+								</td>
+								
+									
+								
+							</tr>
+						
+							<tr>
+								<td>MB_N</td>
+								<td>Net surface mass balance</td>
+								<td>m</td>
+								
+								<td>
+									
+										<a href=https://data.fieldsites.se/portal/#%7B%22route%22:%22preview%22,%22preview%22:%5B%22Rxf5jiOsPo1MV__pjHWzkQtC%22%5D,%22yAxis%22:%22MB_N%22%7D>Preview</a>
+									
+								</td>
+								
+									
+								
+							</tr>
+						
+							<tr>
+								<td>TIMESTAMP</td>
+								<td>Year</td>
+								<td></td>
+								
+								<td>
+									
+								</td>
+								
+									
+								
+							</tr>
+						
+					</tbody>
+				</table>
+				</div>
+			
+			</div>
+
+			<div class="row gy-2">
+				<h2 class="fs-3 mt-5">Statistics</h2>
+				<div class="col-md-3"><label class="fw-bold">Downloads</label></div>
+<div class="col-md-9 text-break">
+					40
+				</div>
+
+				
+					<div class="col-md-3"><label class="fw-bold">Previews</label></div>
+<div class="col-md-9 text-break">
+						49
+					</div>
+
+				
+			</div>
+
+			<div class="row gy-2">
+				<h2 class="fs-3 mt-5">Submission</h2>
+				
+	<div class="col-md-3"><label class="fw-bold">Submitted by</label></div>
+<div class="col-md-9 text-break">
+		<a href=/resources/stations/Tarfala>
+	<span>Tarfala Research Station</span>
+</a>
+
+	</div>
+
+
+				
+					<div class="col-md-3"><label class="fw-bold">Publication time (UTC+1)</label></div>
+<div class="col-md-9 text-break" style="white-space: pre-line">2020-12-02 08:36:05</div>
+
+				
+				<div class="col-md-3"><label class="fw-bold">Submission started (UTC+1)</label></div>
+<div class="col-md-9 text-break" style="white-space: pre-line">2020-12-02 08:36:04</div>
+
+			</div>
+
+			<div class="row gy-2">
+				<h2 class="fs-3 mt-5">Technical information</h2>
+				
+	<div class="col-md-3"><label class="fw-bold">Format</label></div>
+<div class="col-md-9 text-break">
+		<a href=/ontologies/sites/delimitedHeaderCsv>Character delimited header csv</a>
+
+
+
+	</div>
+
+
+				
+	<div class="col-md-3"><label class="fw-bold">Encoding</label></div>
+<div class="col-md-9 text-break">
+		<a href=http://meta.icos-cp.eu/ontologies/cpmeta/plainFileEncoding>plain file</a>
+
+
+
+	</div>
+
+
+				<div class="col-md-3"><label class="fw-bold">SHA-256 hashsum (hex)</label></div>
+<div class="col-md-9 text-break" style="white-space: pre-line">4717f98e23ac3e8d4c57ffe98c75b3910b424fb5cb153d817af74af5780f68cd</div>
+
+				<div class="col-md-3"><label class="fw-bold">SHA-256 hashsum (base64)</label></div>
+<div class="col-md-9 text-break" style="white-space: pre-line">Rxf5jiOsPo1MV//pjHWzkQtCT7XLFT2BevdK9XgPaM0</div>
+
+			</div>
+		</div>
+
+		<div class="col-md-4">
+			<div class="col-md-12 mb-3">
+	<div class="card bg-light">
+		
+				<div class="card-img-top">
+					
+					<iframe src="/station/?icon=&dobj=/objects/Rxf5jiOsPo1MV__pjHWzkQtC"></iframe>
+					
+				</div>
+			
+		<div class="card-body">
+			
+				<div class="row gy-2">
+					
+					
+					
+						
+							<div class="col-md-3"><label class="fw-bold">Location</label></div>
+<div class="col-md-9 text-break" style="white-space: pre-line">Storglaciaren</div>
+
+						
+						
+	<div class="col-md-3"><label class="fw-bold">Station</label></div>
+<div class="col-md-9 text-break">
+		<a href=/resources/stations/Tarfala>
+	<span>Tarfala Research Station</span>
+</a>
+
+	</div>
+
+
+					
+				</div>
+			
+		</div>
+	</div>
+</div>
+
+
+			<div class="row">
+				<div class="col-md-12 mb-3">
+	<div class="card bg-light">
+		
+		<div class="card-body">
+			
+					<div class="row gy-2">
+						<div class="col-md-3"><label class="fw-bold">Metadata</label></div>
+<div class="col-md-9 text-break">
+							<a href=./Rxf5jiOsPo1MV__pjHWzkQtC/SITES_GL-MB_TRS_SGL_1946-2020_L2_annual.csv.json>
+	JSON
+</a>
+
+
+
+ •
+							<a href=./Rxf5jiOsPo1MV__pjHWzkQtC/SITES_GL-MB_TRS_SGL_1946-2020_L2_annual.csv.xml>
+	RDF/XML
+</a>
+
+
+
+ •
+							<a href=./Rxf5jiOsPo1MV__pjHWzkQtC/SITES_GL-MB_TRS_SGL_1946-2020_L2_annual.csv.ttl>
+	RDF/Turtle
+</a>
+
+
+
+ •
+							<a href=./Rxf5jiOsPo1MV__pjHWzkQtC/SITES_GL-MB_TRS_SGL_1946-2020_L2_annual.csv.iso.xml>
+	XML (ISO 19115-3:2016)
+</a>
+
+
+
+
+						</div>
+
+						
+							<div class="col-md-3"><label class="fw-bold">Keywords</label></div>
+<div class="col-md-9 text-break">
+								
+	<span class="badge rounded-pill bg-secondary text-light">Glacier mass balance/ice sheet mass balance</span>
+
+	<span class="badge rounded-pill bg-secondary text-light">Glaciers</span>
+
+							</div>
+
+						
+					</div>
+				
+		</div>
+	</div>
+</div>
+
+			</div>
+
+		</div>
+	</div>
+
+
+
+
+		</div>
+	</div>
+
+	<div class="footer">
+		<p>SITES (Swedish Infrastructure for Ecosystem Science) is a national research infrastructure for terrestrial and limnological field research that will help to strengthen Swedish research based on measurements and experiments carried out in the field.</p>
+		<p><a href="https://www.fieldsites.se/en-GB/about/about-sites-32652196">About SITES</a> • <a href="mailto:info@fieldsites.se">info@fieldsites.se</a></p>
+	</div>
+
+	
+
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
