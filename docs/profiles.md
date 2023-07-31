@@ -20,12 +20,15 @@ Choice of:
 * `server:eidc`
 * `server:elter`
 * `server:inms`
+* `server:pimfe`
+* `server:ukeof`
 
-## Develop & Testing
-Development profiles
+## Development and testing
+* `development` for local development, including setting up test users
+* `test` to indicate we are running tests - not needed manually
 
-* `develop`
-* `test`
+## Cache
+* `cache` enables ehcache components, for caching user details and other communications with Crowd
 
 ## Service Agreements
 Enables Online Service Agreements functionality
@@ -40,3 +43,10 @@ Choice of:
 
 ## Imports
 * `imports` Enable import of records from external services (e.g. SITES metadata catalogue, in combination with `server:elter`)
+
+## Search
+Configures how search works
+
+Choice of:
+* `search:basic` for standard text search
+* `search:enhanced` for extra semantic search capabilities, e.g. related keywords
