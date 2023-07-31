@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link rel="stylesheet" href="https://static.icos-cp.eu/css/bootstrap/5.2.1/sites-bootstrap.css">
+	<link rel="stylesheet" href="https://static.icos-cp.eu/constant/fontawesome/5.15.3/css/fontawesome.min.css">
+	<link rel="stylesheet" href="https://static.icos-cp.eu/constant/fontawesome/5.15.3/css/solid.min.css">
+
+	<link rel="icon" type="image/x-icon" href="//static.icos-cp.eu/images/sites-favicon.ico">
+	<link rel="stylesheet" href="//static.icos-cp.eu/css/fonts/source-sans-pro.css">
+
+	<style>
+	body {
+		font-family: "SourceSansPro", sans-serif;
+		font-size: 16px;
+	}
+
+	a,
+	.btn-link {
+		color: #3C8CA5;
+	}
+
+	a:hover,
+	a:focus,
+	a:active {
+		color: #2F7F98;
+	}
+
+	h2:not(:first-child) {
+		margin-top: 2rem;
+	}
+
+	.btn-primary,
+	.btn-primary.disabled,
+	.btn-primary:disabled {
+		background-color: #55A5BE;
+		border-color: #3C8CA5;
+	}
+
+	.btn-primary:hover,
+	.btn-primary:focus,
+	.btn-primary.focus,
+	.btn-primary:active {
+		background: #3C8CA5;
+		border-color: #2F7F98;
+	}
+
+	.btn-primary .badge {
+		color: #55A5BE;
+	}
+
+	.header {
+		position: relative;
+		width: 1400px;
+		max-width: 100%;
+		height: 175px;
+		margin: 0 auto;
+		background: url(https://static.icos-cp.eu/images/sites-header-background.jpg) #61AB43 no-repeat center top;
+		border-top: 22px solid #818185;
+	}
+
+	.logo {
+		display: inline-block;
+		background: white;
+		width: 144px;
+		height: 108px;
+		margin-top: -22px;
+		position: relative;
+		margin-left: 10%;
+		max-width: 30%;
+	}
+
+	.logo img {
+		width: 90%;
+		height: auto;
+		position: absolute;
+		bottom: 13px;
+		left: 7px;
+	}
+
+	.menu {
+		position: absolute;
+		bottom: 0;
+		width: 100%;
+		max-width: 1400px;
+		margin: 0 auto;
+	}
+
+	.menu-content ul {
+		padding: 0 1rem;
+	}
+
+	.menu a {
+		color: #fff;
+		font-size: 1.125em;
+		cursor: pointer;
+	}
+
+	.menu-content {
+		display: flex;
+		justify-content: space-between;
+		width: 100%;
+	}
+
+	.menu-content-right {
+		display: flex;
+	}
+
+	.menu-content-right .account {
+		display: none;
+	}
+
+	.menu-content-right .badge {
+		vertical-align: 1px;
+	}
+
+	.page,
+	.footer {
+		margin: 0 auto;
+		max-width: 1400px;
+	}
+
+	.footer {
+		padding: 20px 5px 5px;
+		max-width: 780px;
+		font-size: 13px;
+		color: #7a7a7a;
+		line-height: 1.3;
+		text-align: center;
+	}
+</style>
+
+
+	<script>
+	
+window.addEventListener("load", function(){
+
+	const menuButton = document.getElementById("menu-button");
+
+	if (menuButton !== null) {
+		menuButton.addEventListener('click', function() {
+			document.getElementById('cp-main-menu').classList.toggle('open');
+		});
+	}
+
+	var menuGroups = document.getElementsByClassName("open_menu");
+
+	for(var idx = 0; idx < menuGroups.length; idx++){
+		var elem = menuGroups[idx];
+
+		elem.addEventListener("click", function(event){
+			this.parentElement.parentElement.classList.toggle('open');
+		});
+	}
+
+	function ajaxGet(url, action){
+		var xhr = new XMLHttpRequest();
+		xhr.open("GET", url);
+		xhr.send(null);
+
+		xhr.onreadystatechange = function () {
+			if (xhr.readyState === 4 && xhr.status === 200) {
+				action(xhr);
+			}
+		};
+	}
+
+	ajaxGet('/whoami', function(xhr){
+		var response = JSON.parse(xhr.response);
+
+		if (response.email) {
+			const email = response.email;
+
+			fetch(`https://auth.fieldsites.se/db/users/${email}?keys=${encodeURIComponent('{cart:1}')}`, { credentials: 'include' })
+				.then(response => response.json())
+				.then(data => {
+
+					const cartLinks = document.querySelectorAll('.cart-link');
+					cartLinks.forEach(link => {
+						link.querySelector('.items-number').innerText = data.cart._items.length;
+						link.addEventListener('click', function () {
+							window.location = 'https://data.fieldsites.se/portal#{"route":"cart"}';
+						});
+						link.style.display = 'block';
+					});
+
+					const accountLinks = document.querySelectorAll('.account-link');
+					accountLinks.forEach(link => {
+						link.addEventListener('click', function(){
+							window.location = 'https://auth.fieldsites.se/';
+						});
+						link.style.display = 'block';
+					});
+
+					const addButton = document.getElementById("meta-add-to-cart-button");
+					const removeButton = document.getElementById("meta-remove-from-cart-button");
+
+					if (addButton) {
+						const objId = addButton.dataset.id;
+						if (data.cart._items.some(i => i._id === objId)) {
+							removeButton.classList.remove('d-none');
+						} else {
+							addButton.classList.remove('d-none');
+						}
+
+						removeButton.addEventListener("click", () => {
+							addButton.classList.remove('d-none');
+							removeButton.classList.add('d-none');
+							const items = data.cart._items.filter(i => i._id != objId)
+							data.cart._items = items;
+							updateProfile(email, data);
+							cartLinks.forEach(link => {
+								link.querySelector('.items-number').innerText = data.cart._items.length;
+							});
+						});
+
+						addButton.addEventListener("click", () => {
+							addButton.classList.add('d-none');
+							removeButton.classList.remove('d-none');
+							data.cart._items.push({"_id": objId})
+							updateProfile(email, data);
+							cartLinks.forEach(link => {
+								link.querySelector('.items-number').innerText = data.cart._items.length;
+							});
+						});
+
+						if (window.location.hash == "#add-to-cart") {
+							history.replaceState(null, "", window.location.href.split('#')[0]);
+							addButton.classList.add('d-none');
+							removeButton.classList.remove('d-none');
+							data.cart._items.push({"_id": objId})
+							updateProfile(email, data);
+							cartLinks.forEach(link => {
+								link.querySelector('.items-number').innerText = data.cart._items.length;
+							});
+						}
+					}
+				});
+
+		} else {
+			const loginLinks = document.querySelectorAll('.login-link');
+			loginLinks.forEach(link => {
+				link.addEventListener('click', () => loginAndRedirect(window.location.href));
+				link.style.display = 'block';
+			});
+
+			const addButton = document.getElementById("meta-add-to-cart-button");
+			if (addButton) {
+				addButton.addEventListener("click", () => loginAndRedirect(window.location.href + "#add-to-cart"));
+				addButton.classList.remove('d-none');
+			}
+		}
+	});
+
+	const updateProfile = (email, data) => {
+		fetch(`https://auth.fieldsites.se/db/users/${email}`, {
+			credentials: 'include',
+			method: 'PATCH',
+			mode: 'cors',
+			headers: new Headers({
+				'Content-Type': 'application/json'
+			}),
+			body: JSON.stringify(data)
+		});
+	};
+
+	const loginAndRedirect = (url) => {
+		window.location = 'https://auth.fieldsites.se/login/?targetUrl=' + encodeURIComponent(url);
+	}
+
+});
+
+	</script>
+
+	
+	
+	<script type="application/ld+json">
+		{
+  "@context": "https://schema.org",
+  "@id": "https://meta.fieldsites.se/objects/P8rtv97XQIOXtgQEiEjwokOt",
+  "@type": "Dataset",
+  "acquireLicensePage": "https://meta.fieldsites.se/ontologies/sites/sitesLicence",
+  "alternateName": "SITES_STA_GRI_GRI_1981-2022_L2_Annual.csv",
+  "contributor": null,
+  "creator": {
+    "name": "Grimso Wildlife Research Station",
+    "email": "data@fieldsites.se",
+    "@type": "Organization",
+    "parentOrganization": "Swedish University of Agricultural Sciences",
+    "@id": "https://meta.fieldsites.se/resources/stations/Grimso"
+  },
+  "dateModified": "2023-04-18T11:57:20.679451Z",
+  "datePublished": "2023-04-18",
+  "description": "Inventory on starling (Sturnus vulgaris) reproduction. Nest boxes are surveyed annually, distributed in six sub areas (with 25 nest boxes each) within the research area. Boxes are checked for laid eggs and hatched fledglings.\nGrimso Wildlife Research Station (2023). Starling reproduction from Grimso, Centroid of Research Area, 1981-2022 [Data set]. Swedish Infrastructure for Ecosystem Science (SITES). https://hdl.handle.net/11676.1/P8rtv97XQIOXtgQEiEjwokOt",
+  "distribution": {
+    "contentSize": "2509 B",
+    "contentUrl": "https://data.fieldsites.se/licence_accept?ids=%5B%22P8rtv97XQIOXtgQEiEjwokOt8NpgsFQ_SXB4ckVyopQ%22%5D",
+    "encodingFormat": "text/csv",
+    "sha256": "3fcaedbfded7408397b604048848f0a243adf0da60b0543f497078724572a294"
+  },
+  "identifier": [
+    "None of these are valid SITES handle.net identifiers, so this record should be skipped.",
+    "While we don't formalise it in tests the SITESImportService can also handle:",
+    "    - the identifier being missing",
+    "    - the identifier being something other than a JSON string or array"
+  ],
+  "inLanguage": {
+    "@type": "Language",
+    "name": "English"
+  },
+  "includedInDataCatalog": {
+    "@type": "DataCatalog",
+    "name": "data.fieldsites.se"
+  },
+  "isBasedOn": {
+    "@type": "CreativeWork",
+    "name": "Previous version",
+    "url": "https://meta.fieldsites.se/objects/7aWrw_vNxjqQzSqJOiF-R-bW"
+  },
+  "isPartOf": null,
+  "keywords": "Population Dynamics",
+  "license": "Some(https://creativecommons.org/licenses/by/4.0)",
+  "name": "Starling reproduction from Grimso, Centroid of Research Area, 1981-2022",
+  "producer": null,
+  "provider": {
+    "@type": "Organization",
+    "@id": "https://meta.fieldsites.se/resources/stations/Grimso",
+    "name": "Grimso Wildlife Research Station",
+    "email": "data@fieldsites.se"
+  },
+  "publisher": {
+    "@id": "data.fieldsites.se",
+    "@type": "Organization",
+    "logo": "https://static.icos-cp.eu/images/sites-logo.png",
+    "name": "SITES data portal",
+    "url": "https://data.fieldsites.se"
+  },
+  "spatialCoverage": [{
+    "@type": "Place",
+    "containedInPlace": {
+      "@type": "Country",
+      "identifier": "SE",
+      "name": "Sweden"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 59.674552,
+      "longitude": 15.450185
+    },
+    "name": "Grimso, Centroid of Research Area"
+  }, {
+    "@type": "Place",
+    "containedInPlace": {
+      "@type": "Country",
+      "identifier": "SE",
+      "name": "Sweden"
+    },
+    "geo": {
+      "@type": "GeoShape",
+      "polygon": "59.770292 15.431615 59.762278 15.442989 59.761662 15.446589 59.759799 15.451154 59.757749 15.470033 59.748312 15.486805 59.748343 15.487306 59.747503 15.488444 59.745594 15.488855 59.743635 15.490696 59.743117 15.490711 59.743162 15.491363 59.74266 15.49171 59.742027 15.493124 59.741101 15.492719 59.740689 15.492211 59.740095 15.494934 59.738833 15.496463 59.738133 15.496435 59.736862 15.495662 59.73619 15.495863 59.735787 15.496418 59.735457 15.497382 59.735266 15.499586 59.735103 15.500074 59.734838 15.500482 59.734122 15.50061 59.734556 15.502471 59.734315 15.50454 59.734419 15.50535 59.734954 15.506318 59.735078 15.506925 59.717312 15.545056 59.702126 15.549225 59.702786 15.551747 59.702425 15.551361 59.702268 15.550657 59.70154 15.551043 59.701278 15.550721 59.701001 15.551371 59.700804 15.551276 59.700445 15.5517 59.700052 15.551573 59.699214 15.550381 59.699328 15.549991 59.699131 15.549701 59.69913 15.549021 59.700404 15.547391 59.701174 15.547644 59.701435 15.547254 59.701762 15.547251 59.701843 15.546602 59.70163 15.546572 59.701629 15.546183 59.702478 15.544654 59.702493 15.54407 59.703227 15.542833 59.703603 15.542636 59.703597 15.541997 59.704056 15.539878 59.70557 15.535557 59.707645 15.533337 59.708613 15.534398 59.709038 15.533909 59.708906 15.533456 59.709248 15.532708 59.709148 15.531898 59.709344 15.531702 59.710118 15.533803 59.710969 15.533407 59.710902 15.532889 59.711326 15.532237 59.711323 15.530746 59.711552 15.530323 59.711139 15.528901 59.711956 15.528051 59.711758 15.527437 59.710893 15.528449 59.710306 15.529685 59.710124 15.528715 59.709927 15.528425 59.709387 15.528786 59.708878 15.528044 59.696654 15.531061 59.69623 15.532231 59.696299 15.53385 59.696021 15.534111 59.695219 15.533826 59.694941 15.534023 59.69426 15.537397 59.693049 15.537763 59.691972 15.539424 59.691235 15.539268 59.690479 15.538205 59.690182 15.528944 59.686538 15.532569 59.676861 15.524619 59.66555 15.52617 59.652619 15.512691 59.642064 15.51537 59.641247 15.516218 59.633529 15.520908 59.626617 15.527077 59.624964 15.527704 59.623706 15.528878 59.623166 15.529077 59.622544 15.528801 59.622086 15.529247 59.620372 15.528203 59.620297 15.527355 59.620149 15.527195 59.619708 15.52736 59.618675 15.526916 59.617197 15.524699 59.615089 15.51932 59.614922 15.517544 59.614428 15.516255 59.614295 15.515449 59.614049 15.515321 59.612773 15.515817 59.612496 15.516466 59.612234 15.516468 59.612004 15.516309 59.611872 15.515437 59.610609 15.514576 59.610377 15.513382 59.610291 15.511444 59.609845 15.509833 59.609336 15.508965 59.609285 15.508416 59.608808 15.507516 59.608494 15.506291 59.608558 15.505579 59.60903 15.504347 59.609011 15.503055 59.608829 15.502475 59.609138 15.50118 59.609675 15.500044 59.609608 15.499237 59.609033 15.498435 59.608771 15.49834 59.608444 15.498634 59.60828 15.498409 59.608146 15.497377 59.607652 15.496283 59.607749 15.495797 59.607487 15.495412 59.607219 15.493056 59.607282 15.491957 59.607084 15.491248 59.606542 15.490768 59.605871 15.490613 59.606539 15.489282 59.607226 15.489147 59.608146 15.483904 59.60809 15.480964 59.608249 15.479218 59.60888 15.477143 59.608227 15.476963 59.606425 15.47821 59.60578 15.478122 59.605205 15.477628 59.603563 15.475416 59.603188 15.474419 59.602665 15.471835 59.601257 15.470011 59.599618 15.466605 59.59872 15.465864 59.597188 15.466242 59.596881 15.464398 59.5962 15.46213 59.593372 15.438532 59.594002 15.437043 59.595083 15.435766 59.595521 15.434831 59.595987 15.432905 59.596536 15.431519 59.597245 15.428412 59.597002 15.428005 59.596422 15.425694 59.595021 15.42479 59.594383 15.423656 59.59419 15.421382 59.594027 15.421217 59.593895 15.420183 59.593004 15.41773 59.592762 15.414844 59.591903 15.41254 59.591544 15.410939 59.591452 15.405203 59.592285 15.40131 59.592486 15.39967 59.592475 15.397955 59.592055 15.394838 59.592139 15.393361 59.592552 15.391726 59.594383 15.38673 59.596898 15.386685 59.61825 15.383168 59.635005 15.38231 59.635658 15.381882 59.644993 15.372352 59.659251 15.361683 59.676167 15.348121 59.686506 15.341017 59.690064 15.337567 59.691161 15.337746 59.69147 15.337062 59.691799 15.337543 59.692011 15.337313 59.692444 15.337777 59.692782 15.337627 59.693222 15.336973 59.693285 15.336356 59.693102 15.335679 59.692808 15.335845 59.692344 15.335514 59.692822 15.335067 59.692728 15.334669 59.693163 15.33422 59.693246 15.334737 59.694017 15.335083 59.694549 15.337213 59.694829 15.337728 59.696811 15.337862 59.696759 15.337215 59.696497 15.337218 59.696474 15.337007 59.696822 15.336372 59.696819 15.335627 59.696066 15.335605 59.695821 15.335997 59.695657 15.335805 59.695199 15.336006 59.694756 15.335688 59.694506 15.334525 59.694603 15.334135 59.695453 15.333637 59.695435 15.333152 59.695222 15.333155 59.695158 15.333544 59.694683 15.333551 59.694776 15.331995 59.69448 15.331837 59.698923 15.324355 59.699061 15.324519 59.699504 15.32429 59.700815 15.322287 59.701553 15.321641 59.702217 15.320615 59.702641 15.320382 59.702833 15.319148 59.703355 15.318524 59.703124 15.317977 59.703171 15.317555 59.70401 15.31687 59.708438 15.353812 59.709524 15.353174 59.709806 15.352037 59.710125 15.353053 59.711469 15.352524 59.711251 15.355359 59.712566 15.355395 59.71293 15.355715 59.715317 15.358416 59.71585 15.35993 59.7165 15.360909 59.717097 15.362812 59.717628 15.365473 59.717447 15.366832 59.717369 15.369412 59.717451 15.373521 59.762186 15.371579 59.75391 15.381624 59.754796 15.396378 59.755717 15.396366 59.755679 15.397584 59.754576 15.397728 59.754229 15.398332 59.75382 15.398418 59.753183 15.397776 59.753185 15.398385 59.753598 15.399637 59.754111 15.399834 59.754851 15.40092 59.755669 15.400951 59.757371 15.401904 59.757413 15.402349 59.755619 15.404399 59.7556 15.404886 59.757568 15.40608 59.758187 15.407614 59.758741 15.408297 59.759501 15.408037 59.760012 15.409012 59.759933 15.409865 59.760961 15.411232 59.769521 15.419775"
+    },
+    "name": "Grimso Research Area"
+  }],
+  "temporalCoverage": "1980-12-31T23:00:00Z/2022-12-31T23:00:00Z",
+  "url": "https://meta.fieldsites.se/objects/P8rtv97XQIOXtgQEiEjwokOt",
+  "variableMeasured": [{
+    "@type": "PropertyValue",
+    "description": "Year",
+    "name": "TIMESTAMP",
+    "unitText": null
+  }, {
+    "@type": "PropertyValue",
+    "description": "Count",
+    "name": "CT_boxes-with-eggs",
+    "unitText": null
+  }, {
+    "@type": "PropertyValue",
+    "description": "Count",
+    "name": "CT_boxes-with-fledglings",
+    "unitText": null
+  }, {
+    "@type": "PropertyValue",
+    "description": "Count",
+    "name": "CT_eggs",
+    "unitText": null
+  }, {
+    "@type": "PropertyValue",
+    "description": "Count",
+    "name": "CT_fledglings",
+    "unitText": null
+  }, {
+    "@type": "PropertyValue",
+    "description": "Sample size",
+    "name": "N_boxes",
+    "unitText": null
+  }]
+}
+	</script>
+
+	<style>
+	.col-md-12 > label::after {
+		content: ":";
+	}
+	.col-md-12 > label{
+		margin-bottom: 5px;
+		vertical-align: top;
+	}
+	iframe {
+		border:solid 1px #ddd;
+		width:100%;
+		height:400px;
+	}
+	.link-box-title::before {
+		font-family: "Font Awesome 5 Free";
+		content: "\f105";
+		font-weight: 900;
+		margin: 0 0.3rem;
+		color: white;
+	}
+	table.instrument-deployment {
+		margin-bottom: 0px;
+	}
+	table.instrument-deployment td {
+		vertical-align: middle;
+		border-bottom-width: 0px;
+	}
+</style>
+
+
+
+	<title>SITES_STA_GRI_GRI_1981-2022_L2_Annual.csv | SITES</title>
+
+</head>
+
+<body>
+	<header class="header">
+		<a href="https://www.fieldsites.se">
+			<div class="logo">
+				<img src="https://static.icos-cp.eu/images/sites-logo.jpg">
+			</div>
+		</a>
+		<nav class="menu navbar navbar-expand-sm navbar-dark">
+			<div class="menu-content">
+				<ul class="navbar-nav nav mt-auto">
+					<li class="nav-item"><a class="nav-link" href="//data.fieldsites.se">Data catalogue</a></li>
+				</ul>
+				<ul class="menu-content-right navbar-nav nav">
+					<li class="nav-item account cart-link">
+						<a class="nav-link"><i class="fas fa-shopping-cart"></i> Cart
+							<span class="badge rounded-pill bg-light text-secondary">
+								<span class="items-number">0</span>
+								<span class="visually-hidden">items in cart</span>
+							</span>
+						</a>
+					</li>
+					<li class="nav-item account account-link">
+						<a class="nav-link"><i class="fas fa-user"></i> My Account</a>
+					</li>
+					<li class="nav-item account login-link">
+						<a class="nav-link"><i class="fas fa-sign-out-alt"></i> Log in</a>
+					</li>
+				</ul>
+			</div>
+		</nav>
+	</header>
+
+	<div class="page sites-page pt-4">
+		<div class="container-fluid">
+			
+	
+	<nav aria-label="breadcrumb">
+		<ol class="breadcrumb bg-light p-2">
+			
+				<li class="breadcrumb-item"><a href="https://www.fieldsites.se">Home</a></li>
+			
+				<li class="breadcrumb-item"><a href="//data.fieldsites.se/portal">Data catalogue</a></li>
+			
+		</ol>
+	</nav>
+
+
+	
+		
+
+<div class="row">
+	<h1 class="col-md-8">Starling reproduction from Grimsö, Centroid of Research Area</h1>
+	<div class="col-auto ms-md-auto py-2"><div class="d-flex gap-1 flex-shrink-0">
+	
+		<button id="meta-add-to-cart-button" class="btn btn-primary d-none" data-id="https://meta.fieldsites.se/objects/P8rtv97XQIOXtgQEiEjwokOt">Add to cart</button>
+		<button id="meta-remove-from-cart-button" class="btn btn-outline-secondary d-none" data-id="https://meta.fieldsites.se/objects/P8rtv97XQIOXtgQEiEjwokOt">Remove from cart</button>
+		<a class="btn btn-primary" href="https://data.fieldsites.se/objects/P8rtv97XQIOXtgQEiEjwokOt">Download</a>
+	
+</div>
+
+</div>
+</div>
+<div class="d-sm-flex justify-content-between align-items-start  mb-4 pb-2 gap-3">
+	
+		<div class="fs-3 text-muted"> 1981–2022</div>
+	
+</div>
+
+
+	<ul class="nav nav-tabs">
+		<li class="nav-item">
+			<a class="nav-link active" aria-current="page">Metadata</a>
+		</li>
+		<li class="nav-item">
+			
+	
+		<a class="nav-link" href="https://data.fieldsites.se/portal/#%7B%22route%22:%22preview%22,%22preview%22:%5B%22P8rtv97XQIOXtgQEiEjwokOt%22%5D%7D">Preview</a>
+	
+
+		</li>
+	</ul>
+
+	
+	
+	<div class="row py-3 gy-4">
+		
+
+
+
+
+
+
+
+		
+
+
+		
+
+		<div class="col-md-8">
+			<div class="row gy-2">
+			
+
+			
+				<div class="col-md-3"><label class="fw-bold">PID</label></div>
+<div class="col-md-9 text-break">
+	
+			<span>11676.1/P8rtv97XQIOXtgQEiEjwokOt (<a href=https://hdl.handle.net/11676.1/P8rtv97XQIOXtgQEiEjwokOt>link</a>)</span>
+		
+</div>
+
+
+			
+			
+				<div class="col-md-3"><label class="fw-bold">Description</label></div>
+<div class="col-md-9 text-break" style="white-space: pre-line">Inventory on starling (Sturnus vulgaris) reproduction. Nest boxes are surveyed annually, distributed in six sub areas (with 25 nest boxes each) within the research area. Boxes are checked for laid eggs and hatched fledglings.</div>
+
+			
+			
+			
+	<div class="col-md-3"><label class="fw-bold">Data affiliation</label></div>
+<div class="col-md-9 text-break">
+		<a href=/resources/projects/station>Station base programme</a>
+
+
+
+	</div>
+
+
+			
+			
+			
+	<div class="col-md-3"><label class="fw-bold">Citation</label></div>
+<div class="col-md-9 text-break">Grimsö Wildlife Research Station (2023). Starling reproduction from Grimsö, Centroid of Research Area, 1981–2022 [Data set]. Swedish Infrastructure for Ecosystem Science (SITES). https://hdl.handle.net/11676.1/P8rtv97XQIOXtgQEiEjwokOt</div>
+
+
+
+	
+	<div class="col-md-3"><label class="fw-bold"></label></div>
+<div class="col-md-9 text-break">
+		<details>
+			<summary class="d-inline-block">
+				<span class="btn-link" style="cursor:pointer; color: var(--bs-link-color);">BibTex</span>
+			</summary>
+			<div class="card bg-light">
+				<div class="card-body">
+					<pre class="user-select-all w-100 m-0">@misc{https://hdl.handle.net/11676.1/P8rtv97XQIOXtgQEiEjwokOt,
+  title={Starling reproduction from Grimsö, Centroid of Research Area, 1981–2022},
+  year={2023},
+  url={https://hdl.handle.net/11676.1/P8rtv97XQIOXtgQEiEjwokOt},
+  publisher={Grimsö Wildlife Research Station},
+  copyright={https://meta.fieldsites.se/ontologies/sites/sitesLicence},
+  pid={11676.1/P8rtv97XQIOXtgQEiEjwokOt}
+}</pre>
+				</div>
+			</div>
+		</details>
+	</div>
+
+
+
+
+	
+	<div class="col-md-3"><label class="fw-bold"></label></div>
+<div class="col-md-9 text-break">
+		<details>
+			<summary class="d-inline-block">
+				<span class="btn-link" style="cursor:pointer; color: var(--bs-link-color);">RIS</span>
+			</summary>
+			<div class="card bg-light">
+				<div class="card-body">
+					<pre class="user-select-all w-100 m-0">TY - DATA
+T1 - Starling reproduction from Grimsö, Centroid of Research Area, 1981–2022
+ID - 11676.1/P8rtv97XQIOXtgQEiEjwokOt
+PY - 2023
+UR - https://hdl.handle.net/11676.1/P8rtv97XQIOXtgQEiEjwokOt
+PB - Grimsö Wildlife Research Station
+ER - </pre>
+				</div>
+			</div>
+		</details>
+	</div>
+
+
+
+
+
+
+			
+				<div class="col-md-3"><label class="fw-bold">Previous version</label></div>
+<div class="col-md-9 text-break">
+		<a href=/objects/7aWrw_vNxjqQzSqJOiF-R-bW>View previous version</a>
+	
+</div>
+
+			
+			<div class="col-md-3"><label class="fw-bold">File name</label></div>
+<div class="col-md-9 text-break" style="white-space: pre-line">SITES_STA_GRI_GRI_1981-2022_L2_Annual.csv</div>
+
+			
+			
+				<div class="col-md-3"><label class="fw-bold">File size</label></div>
+<div class="col-md-9 text-break" style="white-space: pre-line">2 KB (2509 bytes)</div>
+
+			
+			
+				<div class="col-md-3"><label class="fw-bold">Number of data rows</label></div>
+<div class="col-md-9 text-break" style="white-space: pre-line">42</div>
+
+			
+			
+	<div class="col-md-3"><label class="fw-bold">Data type</label></div>
+<div class="col-md-9 text-break">
+		<a href=/resources/objspecs/starling-reproduction>Starling reproduction</a>
+
+
+
+	</div>
+
+
+			<div class="col-md-3"><label class="fw-bold">Data level</label></div>
+<div class="col-md-9 text-break" style="white-space: pre-line">2</div>
+
+
+			
+			<div class="col-md-3"><label class="fw-bold">Documentation</label></div>
+<div class="col-md-9 text-break">
+				<span>
+					
+						
+						<a href=/objects/S9logSK2mHJJtXqboteABtTD>Description of Starling reproduction at Grimsö Wildlife Research Area</a>
+					
+				</span>
+		</div>
+
+	
+
+			
+				
+			<div class="col-md-3"><label class="fw-bold">Documentation</label></div>
+<div class="col-md-9 text-break">
+				<span>
+					
+						
+						<a href=/objects/fM5kAxg_KJYyI4AZvuHDh_SM>Grimsö Background Information based on MAPS and GIS Data</a>
+					
+				</span>
+		</div>
+
+	
+
+			
+
+			
+				<div class="col-md-3"><label class="fw-bold">Licence</label></div>
+<div class="col-md-9 text-break">
+	<a href=https://data.fieldsites.se/licence>SITES CCBY4 Data Licence</a>
+</div>
+
+			
+
+			
+				<h2 class="fs-3 mt-5">Acquisition</h2>
+				
+					<div class="col-md-3"><label class="fw-bold">Location</label></div>
+<div class="col-md-9 text-break" style="white-space: pre-line">Grimsö Research Area</div>
+
+				
+				
+	<div class="col-md-3"><label class="fw-bold">Station</label></div>
+<div class="col-md-9 text-break">
+		<a href=/resources/stations/Grimso>
+	<span>Grimsö Wildlife Research Station</span>
+</a>
+
+	</div>
+
+
+				
+					
+						
+	<div class="col-md-3"><label class="fw-bold">Responsible organization</label></div>
+<div class="col-md-9 text-break">
+		<a href=/resources/organizations/slu>
+	<span>Swedish University of Agricultural Sciences</span>
+</a>
+
+	</div>
+
+
+					
+				
+				
+					
+	<div class="col-md-3"><label class="fw-bold">Ecosystem</label></div>
+<div class="col-md-9 text-break">
+		<a href=/resources/ecosystems/coniferousForest>Coniferous forest</a>
+
+
+
+	</div>
+
+
+				
+				
+					<div class="col-md-3"><label class="fw-bold">Start time (UTC+1)</label></div>
+<div class="col-md-9 text-break" style="white-space: pre-line">1981-01-01 00:00:00</div>
+
+					<div class="col-md-3"><label class="fw-bold">Stop time (UTC+1)</label></div>
+<div class="col-md-9 text-break" style="white-space: pre-line">2023-01-01 00:00:00</div>
+
+				
+				
+				
+			
+
+			
+
+			<br>
+
+			
+				<h2 class="fs-3 mt-5">Previewable variables</h2>
+				<div class="col-md-12">
+				<table class="table">
+					<thead>
+						<tr>
+							<th>Name</th>
+							<th>Value type</th>
+							<th>Unit</th>
+							
+							<th>Preview</th>
+							
+						</tr>
+					</thead>
+					<tbody>
+						
+							<tr>
+								<td>TIMESTAMP</td>
+								<td>Year</td>
+								<td></td>
+								
+								<td>
+									
+								</td>
+								
+									
+								
+							</tr>
+						
+							<tr>
+								<td>CT_boxes-with-eggs</td>
+								<td>Count</td>
+								<td></td>
+								
+								<td>
+									
+								</td>
+								
+									
+								
+							</tr>
+						
+							<tr>
+								<td>CT_boxes-with-fledglings</td>
+								<td>Count</td>
+								<td></td>
+								
+								<td>
+									
+								</td>
+								
+									
+								
+							</tr>
+						
+							<tr>
+								<td>CT_eggs</td>
+								<td>Count</td>
+								<td></td>
+								
+								<td>
+									
+								</td>
+								
+									
+								
+							</tr>
+						
+							<tr>
+								<td>CT_fledglings</td>
+								<td>Count</td>
+								<td></td>
+								
+								<td>
+									
+								</td>
+								
+									
+								
+							</tr>
+						
+							<tr>
+								<td>N_boxes</td>
+								<td>Sample size</td>
+								<td></td>
+								
+								<td>
+									
+								</td>
+								
+									
+								
+							</tr>
+						
+					</tbody>
+				</table>
+				</div>
+			
+			</div>
+
+			<div class="row gy-2">
+				<h2 class="fs-3 mt-5">Statistics</h2>
+				<div class="col-md-3"><label class="fw-bold">Downloads</label></div>
+<div class="col-md-9 text-break">
+					0
+				</div>
+
+				
+					<div class="col-md-3"><label class="fw-bold">Previews</label></div>
+<div class="col-md-9 text-break">
+						11
+					</div>
+
+				
+			</div>
+
+			<div class="row gy-2">
+				<h2 class="fs-3 mt-5">Submission</h2>
+				
+	<div class="col-md-3"><label class="fw-bold">Submitted by</label></div>
+<div class="col-md-9 text-break">
+		<a href=/resources/stations/Grimso>
+	<span>Grimsö Wildlife Research Station</span>
+</a>
+
+	</div>
+
+
+				
+					<div class="col-md-3"><label class="fw-bold">Publication time (UTC+1)</label></div>
+<div class="col-md-9 text-break" style="white-space: pre-line">2023-04-18 12:57:22</div>
+
+				
+				<div class="col-md-3"><label class="fw-bold">Submission started (UTC+1)</label></div>
+<div class="col-md-9 text-break" style="white-space: pre-line">2023-04-18 12:57:20</div>
+
+			</div>
+
+			<div class="row gy-2">
+				<h2 class="fs-3 mt-5">Technical information</h2>
+				
+	<div class="col-md-3"><label class="fw-bold">Format</label></div>
+<div class="col-md-9 text-break">
+		<a href=/ontologies/sites/delimitedHeaderCsv>Character delimited header csv</a>
+
+
+
+	</div>
+
+
+				
+	<div class="col-md-3"><label class="fw-bold">Encoding</label></div>
+<div class="col-md-9 text-break">
+		<a href=http://meta.icos-cp.eu/ontologies/cpmeta/plainFileEncoding>plain file</a>
+
+
+
+	</div>
+
+
+				<div class="col-md-3"><label class="fw-bold">SHA-256 hashsum (hex)</label></div>
+<div class="col-md-9 text-break" style="white-space: pre-line">3fcaedbfded7408397b604048848f0a243adf0da60b0543f497078724572a294</div>
+
+				<div class="col-md-3"><label class="fw-bold">SHA-256 hashsum (base64)</label></div>
+<div class="col-md-9 text-break" style="white-space: pre-line">P8rtv97XQIOXtgQEiEjwokOt8NpgsFQ/SXB4ckVyopQ</div>
+
+			</div>
+		</div>
+
+		<div class="col-md-4">
+			<div class="col-md-12 mb-3">
+	<div class="card bg-light">
+		
+				<div class="card-img-top">
+					
+					<iframe src="/station/?icon=&dobj=/objects/P8rtv97XQIOXtgQEiEjwokOt"></iframe>
+					
+				</div>
+			
+		<div class="card-body">
+			
+				<div class="row gy-2">
+					
+						
+							<div class="col-md-3"><label class="fw-bold">Sampling point</label></div>
+<div class="col-md-9 text-break" style="white-space: pre-line">Grimsö, Centroid of Research Area</div>
+
+						
+						<div class="col-md-3"><label class="fw-bold">Coordinates</label></div>
+<div class="col-md-9 text-break" style="white-space: pre-line">Lat: 59.674552, Lon: 15.450185</div>
+
+					
+					
+					
+						
+							<div class="col-md-3"><label class="fw-bold">Location</label></div>
+<div class="col-md-9 text-break" style="white-space: pre-line">Grimsö Research Area</div>
+
+						
+						
+	<div class="col-md-3"><label class="fw-bold">Station</label></div>
+<div class="col-md-9 text-break">
+		<a href=/resources/stations/Grimso>
+	<span>Grimsö Wildlife Research Station</span>
+</a>
+
+	</div>
+
+
+					
+				</div>
+			
+		</div>
+	</div>
+</div>
+
+
+			<div class="row">
+				<div class="col-md-12 mb-3">
+	<div class="card bg-light">
+		
+		<div class="card-body">
+			
+					<div class="row gy-2">
+						<div class="col-md-3"><label class="fw-bold">Metadata</label></div>
+<div class="col-md-9 text-break">
+							<a href=./P8rtv97XQIOXtgQEiEjwokOt/SITES_STA_GRI_GRI_1981-2022_L2_Annual.csv.json>
+	JSON
+</a>
+
+
+
+ •
+							<a href=./P8rtv97XQIOXtgQEiEjwokOt/SITES_STA_GRI_GRI_1981-2022_L2_Annual.csv.xml>
+	RDF/XML
+</a>
+
+
+
+ •
+							<a href=./P8rtv97XQIOXtgQEiEjwokOt/SITES_STA_GRI_GRI_1981-2022_L2_Annual.csv.ttl>
+	RDF/Turtle
+</a>
+
+
+
+ •
+							<a href=./P8rtv97XQIOXtgQEiEjwokOt/SITES_STA_GRI_GRI_1981-2022_L2_Annual.csv.iso.xml>
+	XML (ISO 19115-3:2016)
+</a>
+
+
+
+
+						</div>
+
+						
+							<div class="col-md-3"><label class="fw-bold">Keywords</label></div>
+<div class="col-md-9 text-break">
+								
+	<span class="badge rounded-pill bg-secondary text-light">Population Dynamics</span>
+
+							</div>
+
+						
+					</div>
+				
+		</div>
+	</div>
+</div>
+
+			</div>
+
+		</div>
+	</div>
+
+
+
+
+		</div>
+	</div>
+
+	<div class="footer">
+		<p>SITES (Swedish Infrastructure for Ecosystem Science) is a national research infrastructure for terrestrial and limnological field research that will help to strengthen Swedish research based on measurements and experiments carried out in the field.</p>
+		<p><a href="https://www.fieldsites.se/en-GB/about/about-sites-32652196">About SITES</a> • <a href="mailto:info@fieldsites.se">info@fieldsites.se</a></p>
+	</div>
+
+	
+
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

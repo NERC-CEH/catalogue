@@ -1,29 +1,23 @@
-<#--Access limitations -->
-<#if accessLimitation?? && accessLimitation.code=="Restricted">
+<#if accessLimitation??>
 	<gmd:resourceConstraints>
 		<gmd:MD_LegalConstraints>
 			<gmd:accessConstraints>
 				<gmd:MD_RestrictionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions">otherRestrictions</gmd:MD_RestrictionCode>
 			</gmd:accessConstraints>
 			<gmd:otherConstraints>
-				<gmx:Anchor xlink:href="${accessLimitation.uri}">${accessLimitation.value}</gmx:Anchor>
-			</gmd:otherConstraints>
-		</gmd:MD_LegalConstraints>
-	</gmd:resourceConstraints>
-<#else>
-	<gmd:resourceConstraints>
-		<gmd:MD_LegalConstraints>
-			<gmd:accessConstraints>
-				<gmd:MD_RestrictionCode
-			codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions">otherRestrictions</gmd:MD_RestrictionCode>
-			</gmd:accessConstraints>
-			<gmd:otherConstraints>
-				<gmx:Anchor xlink:href="http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/noLimitations">no limitations</gmx:Anchor>
+				<#if accessLimitation.code=="Restricted">
+					<gmx:Anchor xlink:href="${accessLimitation.uri}">${accessLimitation.value}</gmx:Anchor>
+				<#elseif accessLimitation.code=="Available" || accessLimitation.code=="Controlled">
+					<gmx:Anchor xlink:href="http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/noLimitations">no limitations</gmx:Anchor>
+				<#else>
+					<gco:CharacterString>${accessLimitation.code}</gco:CharacterString>
+				</#if>
 			</gmd:otherConstraints>
 		</gmd:MD_LegalConstraints>
 	</gmd:resourceConstraints>
 </#if>
 <#--END Access limitations -->
+
 
 <#--Use limitations -->
 <#if useConstraints?? || citation??>
