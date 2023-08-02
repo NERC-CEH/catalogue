@@ -119,10 +119,9 @@
         "updated": "2018-01-11T13:50:07.974669+00:00"
       }
     ], 
-    "total": 1004
+    "total": 1
   }, 
   "links": {
-    "next": "https://b2share.eudat.eu/api/records/?page=2&sort=bestmatch&q=community%3Ad952913c-451e-4b5c-817e-d578dc8a4469&size=1", 
     "self": "https://b2share.eudat.eu/api/records/?page=1&sort=bestmatch&q=community%3Ad952913c-451e-4b5c-817e-d578dc8a4469&size=1"
   }
 }

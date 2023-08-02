@@ -47,9 +47,8 @@ public class B2shareImportServiceTest {
     private QueryResponse queryResponse;
     private CatalogueUser expectedUser;
 
-    String b2shareResponse = getClass().getResource("b2share-valid-api-response.json").toString();
-    String invalidB2shareResponse = getClass().getResource("b2share-invalid-api-response.json").toString();
-    String dataciteTestUrl = b2shareResponse.substring(0,b2shareResponse.lastIndexOf("/"));
+    String b2shareResponseUrl = getClass().getResource("b2share-valid-api-response.json").toString();
+    String invalidB2shareResponseUrl = getClass().getResource("b2share-invalid-api-response.json").toString();
 
     private static final String CATALOGUE = "elter";
     private static final String RECORD_ID = "00000000-0000-0000-0000-000000000000";
@@ -75,8 +74,7 @@ public class B2shareImportServiceTest {
                 documentRepository,
                 publicationService,
                 solrClient,
-                b2shareResponse,
-                dataciteTestUrl
+                b2shareResponseUrl
                 );
 
         // given
@@ -135,8 +133,7 @@ public class B2shareImportServiceTest {
                 documentRepository,
                 publicationService,
                 solrClient,
-                b2shareResponse,
-                dataciteTestUrl
+                b2shareResponseUrl
                 );
 
         Map<String, Object> solrFieldMapping = new HashMap<>();
@@ -205,8 +202,7 @@ public class B2shareImportServiceTest {
                 documentRepository,
                 publicationService,
                 solrClient,
-                invalidB2shareResponse,
-                dataciteTestUrl
+                invalidB2shareResponseUrl
                 );
 
         // given
