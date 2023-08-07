@@ -79,7 +79,9 @@
           "DOI": "https://doi.org/10.23728/b2share.b56cd875765a403599859177fced08ae", 
           "community": "d952913c-451e-4b5c-817e-d578dc8a4469", 
           "community_specific": {
-            "27193e5b-97e6-4f6f-8e87-3694589bcebe": {}
+            "27193e5b-97e6-4f6f-8e87-3694589bcebe": {
+              "metadata_url": "https://deims.org/3e97f1ff-c3ad-4d19-91f9-5ee3485878cd"
+            }
           }, 
           "contact_email": "h.bogena@fz-juelich.de", 
           "creators": [

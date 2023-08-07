@@ -367,10 +367,6 @@ public class B2shareImportService implements CatalogueImportService {
                 "Create new record " + remoteRecordId
                 );
 
-        // publish new record
-        publicationService.transition(user, savedDocument.getId(), "ykhm7b");
-        publicationService.transition(user, savedDocument.getId(), "re4vkb");
-
         // success
         log.debug("Successfully imported record {}", remoteRecordId);
         return savedDocument.getId();
@@ -400,6 +396,7 @@ public class B2shareImportService implements CatalogueImportService {
         Map<String, String> localRecordList = null;
         int blacklistedRecords = 0;
         int newRecords = 0;
+        int publishedRecords = 0;
         int skippedRecords = 0;
         int totalRecords = 0;
         int updatedRecords = 0;
@@ -449,6 +446,15 @@ public class B2shareImportService implements CatalogueImportService {
                     String newId = createRecord(normalisedDoi, recordDocument, importUser);
                     log.debug("New document ID is {}", newId);
                     newRecords++;
+
+                    // publish new record IF it has a DEIMS site linked to it
+                    List<DeimsSolrIndex> deimsSites = recordDocument.getDeimsSites();
+                    if (deimsSites != null && deimsSites.size() > 0) {
+                        publicationService.transition(importUser, newId, "ykhm7b");
+                        publicationService.transition(importUser, newId, "re4vkb");
+                        log.debug("Successfully detected DEIMS ID and published record {}", recordDocument.getId());
+                        publishedRecords++;
+                    }
                 }
             }
             b2shareRecordsUrl = b2shareRecords.path("links").path("next").asText();
@@ -457,8 +463,9 @@ public class B2shareImportService implements CatalogueImportService {
 
         // finished, log summary
         log.info("Finished B2SHARE metadata import!");
-        log.info("{} created + {} updated + {} skipped = {} total ({} records in B2SHARE)",
+        log.info("{} created ({} published) + {} updated + {} skipped = {} total ({} records in B2SHARE)",
                 newRecords,
+                publishedRecords,
                 updatedRecords,
                 skippedRecords,
                 newRecords + updatedRecords + skippedRecords,

@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.elter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import uk.ac.ceh.gateway.catalogue.deims.DeimsSolrIndex;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.publication.PublicationService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
@@ -46,6 +48,8 @@ public class B2shareImportServiceTest {
     private String testB2shareResponse;
     private QueryResponse queryResponse;
     private CatalogueUser expectedUser;
+    private List<DeimsSolrIndex> dummyDeimsSiteList;
+    private DeimsSolrIndex dummyDeimsSite;
 
     String b2shareResponseUrl = getClass().getResource("b2share-valid-api-response.json").toString();
     String invalidB2shareResponseUrl = getClass().getResource("b2share-invalid-api-response.json").toString();
@@ -59,6 +63,13 @@ public class B2shareImportServiceTest {
 
     @BeforeEach
     void setup() {
+        dummyDeimsSiteList = new ArrayList<>();
+        dummyDeimsSite = new DeimsSolrIndex();
+        dummyDeimsSite.setTitle("Fake title");
+        dummyDeimsSite.setId("Fake id");
+        dummyDeimsSite.setUrl("Fake url");
+        dummyDeimsSiteList.add(dummyDeimsSite);
+
         queryResponse = mock(QueryResponse.class);
 
         expectedUser = new CatalogueUser()
@@ -82,6 +93,8 @@ public class B2shareImportServiceTest {
             .willReturn(queryResponse);
         given(queryResponse.getResults())
             .willReturn(new SolrDocumentList());
+        given(queryResponse.getBeans(DeimsSolrIndex.class))
+            .willReturn(dummyDeimsSiteList);
 
         given(documentRepository.saveNew(
                     any(CatalogueUser.class),
