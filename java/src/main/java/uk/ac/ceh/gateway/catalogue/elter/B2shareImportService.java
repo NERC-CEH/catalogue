@@ -418,7 +418,7 @@ public class B2shareImportService implements CatalogueImportService {
             for (JsonNode record : b2shareRecords.path("hits").path("hits")){
                 // process each record on page
                 // normalise DOI to actual DOI, i.e. "10.xxx.../xxxx"
-                String originalDoi = record.get("metadata").get("DOI").asText();
+                String originalDoi = record.path("metadata").path("DOI").asText();
                 Matcher doiCheck = doiNormalise.matcher(originalDoi);
                 if (!doiCheck.find()) {
                     log.debug("No DOI detected in record {}", originalDoi);
