@@ -5,8 +5,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.CommonParams;
@@ -31,13 +36,17 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import uk.ac.ceh.gateway.catalogue.TimeConstants;
+import uk.ac.ceh.gateway.catalogue.deims.DeimsSolrIndex;
 import uk.ac.ceh.gateway.catalogue.elter.ElterDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.AccessLimitation;
+import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
+import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.imports.CatalogueImportService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
+import uk.ac.ceh.gateway.catalogue.model.Supplemental;
 import uk.ac.ceh.gateway.catalogue.publication.PublicationService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
@@ -47,13 +56,25 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 @ToString
 public class B2shareImportService implements CatalogueImportService {
     // constructor prep
+    private final DateTimeFormatter dateParser;
     private final DocumentRepository documentRepository;
     private final ObjectMapper objectMapper;
-    private final Pattern p;
+    private final Pattern deimsIdNormalise;
+    private final Pattern doiNormalise;
     private final PublicationService publicationService;
     private final SolrClient solrClient;
     private String b2shareRecordsUrl;
 
+    // fixed fields
+    private static final AccessLimitation openAccess = AccessLimitation.builder()
+        .value("no limitations to public access")
+        .code("Available")
+        .uri("http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/noLimitations")
+        .build();
+    private static final AccessLimitation controlledAccess = AccessLimitation.builder()
+        .value("To access this data, a licence needs to be negotiated with the provider and there may be a cost")
+        .code("Controlled")
+        .build();
     private static final List<String> blacklistedDois = List.of(
             "10.23728/b2share.09454896da99494f931be25e279658ef",
             "10.23728/b2share.16b4760bb98642fc97730e32bac39e63",
@@ -121,12 +142,21 @@ public class B2shareImportService implements CatalogueImportService {
             ) {
         log.info("Creating");
 
+        this.b2shareRecordsUrl = b2shareRecordsUrl;
+        this.dateParser = new DateTimeFormatterBuilder()
+            // order matters! put patterns containing others first
+            .appendPattern("[y-M-d'T'H:m:s.nXXX]")
+            .appendPattern("[y-M-d'T'H:m:s.nxxx]")
+            .appendPattern("[y-M-d]")
+            .appendPattern("[d.M.yyyy]")
+            .appendPattern("[d/M/yyyy]")
+            .toFormatter();
         this.documentRepository = documentRepository;
         this.objectMapper = new ObjectMapper();
-        this.p = Pattern.compile("10\\.\\S+/\\S+");
+        this.deimsIdNormalise = Pattern.compile("\\p{XDigit}{8}-\\p{XDigit}{4}-\\p{XDigit}{4}-\\p{XDigit}{4}-\\p{XDigit}{12}");
+        this.doiNormalise = Pattern.compile("10\\.\\S+/\\S+");
         this.publicationService = publicationService;
         this.solrClient = solrClient;
-        this.b2shareRecordsUrl = b2shareRecordsUrl;
         }
 
     // methods start here
@@ -169,6 +199,15 @@ public class B2shareImportService implements CatalogueImportService {
     }
 
     @SneakyThrows
+    private List<DeimsSolrIndex> getDeimsSite(String id){
+        SolrQuery query = new SolrQuery();
+        query.setQuery(id);
+        query.setParam(CommonParams.DF, "id");
+        QueryResponse response = solrClient.query("deims", query, POST);
+        return response.getBeans(DeimsSolrIndex.class);
+    }
+
+    @SneakyThrows
     private ElterDocument createDocumentFromJson(JsonNode inputJson) {
         // create document from B2SHARE API JSON
         ElterDocument newDocument = new ElterDocument();
@@ -183,7 +222,7 @@ public class B2shareImportService implements CatalogueImportService {
         }
         else {
             newDocument.setTitle(jsonTitles.get(0).get("title").asText());
-            ArrayList<String> alternativeTitles = new ArrayList<>();
+            List<String> alternativeTitles = new ArrayList<>();
             for (int i = 1; i < numTitles; i++){
                 alternativeTitles.add(jsonTitles.get(i).get("title").asText());
             }
@@ -206,7 +245,7 @@ public class B2shareImportService implements CatalogueImportService {
         }
         newDocument.setDescription(descriptionBuilder.toString());
         // authors and contact_email (separate field)
-        ArrayList<ResponsibleParty> contactList = new ArrayList<>();
+        List<ResponsibleParty> contactList = new ArrayList<>();
         // creators
         JsonNode creators = metadataJson.path("creators");
         if (! creators.isMissingNode()) {
@@ -214,6 +253,7 @@ public class B2shareImportService implements CatalogueImportService {
                 ResponsibleParty creator = ResponsibleParty.builder()
                         .individualName(creatorNode.get("creator_name").asText())
                         .role("author")
+                        .organisationName("Unknown")
                         .build();
                 contactList.add(creator);
             }
@@ -229,27 +269,88 @@ public class B2shareImportService implements CatalogueImportService {
         }
         newDocument.setResponsibleParties(contactList);
         // onlineresources
-        ArrayList<OnlineResource> resources = new ArrayList<>();
+        List<OnlineResource> resources = new ArrayList<>();
         resources.add(
                 OnlineResource.builder()
-                .url(inputJson.get("links").get("self").asText())
+                .url("https://b2share.eudat.eu/records/" + inputJson.get("id").asText())
                 .name("View record")
                 .description("View record at this link")
                 .function("information")
                 .build()
                 );
         newDocument.setOnlineResources(resources);
-        // metadata
+        // reference dates
+        LocalDate created = null;
+        LocalDate published = null;
+        String createdTimestamp = inputJson.get("created").asText();
+        String publishedTimestamp = metadataJson.path("publication_date").asText();
+        try {
+            created = LocalDate.parse(createdTimestamp, dateParser);
+        } catch (DateTimeParseException e) {
+            log.debug("invalid created date {}", createdTimestamp);
+        }
+        try {
+            if (!publishedTimestamp.equals("")) {
+                published = LocalDate.parse(publishedTimestamp, dateParser);
+            }
+        } catch (DateTimeParseException e) {
+            log.debug("invalid publication_date date {}", publishedTimestamp);
+        }
+        newDocument.setDatasetReferenceDate(
+                DatasetReferenceDate.builder()
+                .creationDate(created)
+                .publicationDate(published)
+                .build()
+                );
+        // supplemental / DOI link
+        String recordDoi = metadataJson.get("DOI").asText();
+        List<Supplemental> supplemental = new ArrayList<>();
+        supplemental.add(
+                Supplemental.builder()
+                .name(recordDoi)
+                .description("Resolve record DOI at doi.org")
+                .url(recordDoi)
+                .build()
+                );
+        newDocument.setSupplemental(supplemental);
+        // access
+        boolean isOpenAccess = metadataJson.get("open_access").booleanValue();
+        if (isOpenAccess) {
+            newDocument.setAccessLimitation(openAccess);
+        } else {
+            newDocument.setAccessLimitation(controlledAccess);
+        }
+        // deims site
+        String metadataUrl = metadataJson
+            .path("community_specific")
+            .path("27193e5b-97e6-4f6f-8e87-3694589bcebe")
+            .path("metadata_url")
+            .asText()
+            .toLowerCase();
+        Matcher deimsCheck = deimsIdNormalise.matcher(metadataUrl);
+        if (deimsCheck.find()) {
+            String normalisedDeimsId = deimsCheck.group(0);
+            newDocument.setDeimsSites(getDeimsSite(normalisedDeimsId));
+        }
+        // disciplines and keywords
+        List<Keyword> keywords = new ArrayList<>();
+        for (JsonNode node : metadataJson.path("keywords")) {
+            Keyword keyword = Keyword.builder()
+                .value(node.get("keyword").asText())
+                .build();
+            keywords.add(keyword);
+        }
+        for (JsonNode node : metadataJson.path("disciplines")) {
+            Keyword keyword = Keyword.builder()
+                .value(node.get("discipline_name").asText())
+                .build();
+            keywords.add(keyword);
+        }
+        newDocument.setKeywords(keywords);
+        // import metadata
         newDocument.setImportLastModified(ZonedDateTime.now(ZoneId.of("UTC")));
 
         // fixed fields
-        newDocument.setAccessLimitation(
-                AccessLimitation.builder()
-                .value("no limitations to public access")
-                .code("Available")
-                .uri("http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/noLimitations")
-                .build()
-                );
         newDocument.setType("signpost");
         newDocument.setDataLevel("Level 0");
 
@@ -321,7 +422,7 @@ public class B2shareImportService implements CatalogueImportService {
                 // process each record on page
                 // normalise DOI to actual DOI, i.e. "10.xxx.../xxxx"
                 String originalDoi = record.get("metadata").get("DOI").asText();
-                Matcher doiCheck = p.matcher(originalDoi);
+                Matcher doiCheck = doiNormalise.matcher(originalDoi);
                 if (!doiCheck.find()) {
                     log.debug("No DOI detected in record {}", originalDoi);
                     skippedRecords++;
