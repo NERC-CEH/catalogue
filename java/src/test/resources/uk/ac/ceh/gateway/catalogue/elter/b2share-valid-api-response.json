@@ -1,0 +1,129 @@
+{
+  "aggregations": {
+    "type": {
+      "buckets": [], 
+      "doc_count_error_upper_bound": 0, 
+      "sum_other_doc_count": 0
+    }
+  }, 
+  "hits": {
+    "hits": [
+      {
+        "created": "2017-03-16T11:35:23.358952+00:00", 
+        "files": [
+          {
+            "bucket": "91b00ebf-6f03-4ace-8498-f70e52492aee", 
+            "checksum": "md5:16f2cc7e68d7851bd68c2b9f6fab6ced", 
+            "ePIC_PID": "http://hdl.handle.net/11304/be3f5ea7-4c9c-4e98-85a0-e498523a1df7", 
+            "key": "D_AirTemperature_2m_LTER_EU_DE_013_15-03-2017.csv", 
+            "size": 25782444, 
+            "version_id": "62b4afdd-efee-4cd3-95af-48db2aa8165f"
+          }, 
+          {
+            "bucket": "91b00ebf-6f03-4ace-8498-f70e52492aee", 
+            "checksum": "md5:e221eec47dc4ed0b68ef508ff3435e98", 
+            "ePIC_PID": "http://hdl.handle.net/11304/7f204427-d634-436f-a175-065cdeae1d11", 
+            "key": "D_Precip11_LTER_EU_DE_013_15-03-2017.csv", 
+            "size": 20423694, 
+            "version_id": "53318bf5-9fa2-45d0-8cbd-48cb3273f5ee"
+          }, 
+          {
+            "bucket": "91b00ebf-6f03-4ace-8498-f70e52492aee", 
+            "checksum": "md5:1bfcda02ec3a819b9334e7915fca05ff", 
+            "ePIC_PID": "http://hdl.handle.net/11304/c17618b8-7901-4633-8f1f-8adf9b570c1f", 
+            "key": "D_Precip13_LTER_EU_DE_013_15-03-2017.csv", 
+            "size": 20472456, 
+            "version_id": "0a0e5090-947c-4100-a794-ea59640395c7"
+          }, 
+          {
+            "bucket": "91b00ebf-6f03-4ace-8498-f70e52492aee", 
+            "checksum": "md5:3d4164f4ffc838bf9d2dd2cf39860bb0", 
+            "ePIC_PID": "http://hdl.handle.net/11304/dd0412f2-f45d-4f1d-808e-1a1145a8ee26", 
+            "key": "D_Precip5_LTER_EU_DE_013_15-03-2017.csv", 
+            "size": 10351327, 
+            "version_id": "c132ccbf-f411-4ad3-ba72-fbdc6871b5ce"
+          }, 
+          {
+            "bucket": "91b00ebf-6f03-4ace-8498-f70e52492aee", 
+            "checksum": "md5:be3344fa62dd6c6c7f33e1684964dfad", 
+            "ePIC_PID": "http://hdl.handle.net/11304/2d808cf1-d629-497a-9999-a9ce212deb06", 
+            "key": "D_Precip7_LTER_EU_DE_013_15-03-2017.csv", 
+            "size": 9544325, 
+            "version_id": "8a0ae46b-eed3-4a60-82c6-6151761e17d2"
+          }, 
+          {
+            "bucket": "91b00ebf-6f03-4ace-8498-f70e52492aee", 
+            "checksum": "md5:6831fc601ecf5ba40053fea5515992d1", 
+            "ePIC_PID": "http://hdl.handle.net/11304/9f3998ae-f922-4406-89b0-86906a4478db", 
+            "key": "D_Precip9_LTER_EU_DE_013_15-03-2017.csv", 
+            "size": 9543481, 
+            "version_id": "41f59617-2578-4a4c-ac92-c913fb5e2a06"
+          }, 
+          {
+            "bucket": "91b00ebf-6f03-4ace-8498-f70e52492aee", 
+            "checksum": "md5:b2950a788edf39847d7175fea33520a2", 
+            "ePIC_PID": "http://hdl.handle.net/11304/ee24cf51-6997-4978-815b-f4aadf022d66", 
+            "key": "eLTER_T3.4_VA_DataReporting_v1.2_eifel.xls", 
+            "size": 189952, 
+            "version_id": "85091b50-3033-4c66-af0f-5321ca6f4f64"
+          }
+        ], 
+        "id": "b56cd875765a403599859177fced08ae", 
+        "links": {
+          "files": "https://b2share.eudat.eu/api/files/91b00ebf-6f03-4ace-8498-f70e52492aee", 
+          "self": "https://b2share.eudat.eu/api/records/b56cd875765a403599859177fced08ae", 
+          "versions": "https://b2share.eudat.eu/api/records/1af0379d227744b1bdc2bc89b477b781/versions"
+        }, 
+        "metadata": {
+          "$schema": "https://b2share.eudat.eu/api/communities/d952913c-451e-4b5c-817e-d578dc8a4469/schemas/0#/json_schema", 
+          "DOI": "https://doi.org/10.23728/b2share.b56cd875765a403599859177fced08ae", 
+          "community": "d952913c-451e-4b5c-817e-d578dc8a4469", 
+          "community_specific": {
+            "27193e5b-97e6-4f6f-8e87-3694589bcebe": {
+              "metadata_url": "https://deims.org/3e97f1ff-c3ad-4d19-91f9-5ee3485878cd"
+            }
+          }, 
+          "contact_email": "h.bogena@fz-juelich.de", 
+          "creators": [
+            {
+              "creator_name": "Heye Bogena"
+            }
+          ], 
+          "descriptions": [
+            {
+              "description": "10 minute interval temperature and precipitation in \u00b0C and mm from different sensors of a meteorological station.Sensor names are temperature at 2m, Precipitation_Cum10min_OttNRTtotal, Precipitation_Cum10min_OttRTNRT, Precipitation_Cum10min_OttNRT, Precipitation_Cum10min_Ecotech, Precipitation_Cum10min_RainCap", 
+              "description_type": "Other"
+            }
+          ], 
+          "disciplines": [
+            {
+              "discipline_name": "3.3.2 \u2192 Earth sciences \u2192 Environmental science"
+            }
+          ], 
+          "ePIC_PID": "http://hdl.handle.net/11304/545c3088-61be-4def-bdb3-d3e0f7330268", 
+          "keywords": [
+            {
+              "keyword": "Meteorology"
+            }
+          ], 
+          "open_access": true, 
+          "owners": [
+            636
+          ], 
+          "publication_date": "2017-03-16", 
+          "publication_state": "published", 
+          "titles": [
+            {
+              "title": "TERENO W\u00fcstebach meteorological data"
+            }
+          ]
+        }, 
+        "updated": "2018-01-11T13:50:07.974669+00:00"
+      }
+    ], 
+    "total": 1
+  }, 
+  "links": {
+    "self": "https://b2share.eudat.eu/api/records/?page=1&sort=bestmatch&q=community%3Ad952913c-451e-4b5c-817e-d578dc8a4469&size=1"
+  }
+}
