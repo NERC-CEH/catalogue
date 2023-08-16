@@ -71,7 +71,7 @@ public class ServiceAgreementController {
                 serviceAgreement
             );
             return serviceAgreementModelAssembler.toModel(newlyUpdated);
-        }else{
+        } else {
             throw new ResourceNotFoundException("Metadata record does not exist");
         }
     }
