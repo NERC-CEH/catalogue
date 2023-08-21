@@ -4,9 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.net.URL;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,11 +22,6 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
-
-import uk.ac.ceh.gateway.catalogue.gemini.AccessLimitation;
-import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
-import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
-import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 
 @Profile("server:elter")
 @Slf4j
@@ -64,87 +56,12 @@ public class LinkedDocumentRetrievalService {
             // call Datacite
             String dataciteRecordUrl = dataciteApiRoot + "/" + inputDoi;
             log.info("GET {}", dataciteRecordUrl);
-            JsonNode jsonRecordAttributes = objectMapper.readTree(new URL(dataciteRecordUrl)).get("data").get("attributes");
+            JsonNode dataciteJson = objectMapper.readTree(new URL(dataciteRecordUrl));
 
-            // create document from Datacite response
+            // create and return ElterDocument
             ElterDocument document = new ElterDocument();
-            // ensure title is set to something
-            JsonNode jsonTitles = jsonRecordAttributes.get("titles");
-            int numTitles = jsonTitles.size();
-            if (numTitles == 0){
-                document.setTitle("TITLE MISSING");
-            }
-            else {
-                document.setTitle(jsonTitles.get(0).get("title").asText());
-                ArrayList<String> alternativeTitles = new ArrayList<>();
-                for (int i = 1; i < numTitles; i++){
-                    alternativeTitles.add(jsonTitles.get(i).get("title").asText());
-                }
-                document.setAlternateTitles(alternativeTitles);
-            }
-            // description
-            StringBuilder descriptionBuilder = new StringBuilder();
-            for (Iterator<JsonNode> iter = jsonRecordAttributes.get("descriptions").iterator(); iter.hasNext(); ) {
-                JsonNode node = iter.next();
-                if (descriptionBuilder.length() > 0){
-                    descriptionBuilder.append("\n\n");
-                }
-                JsonNode descriptionTypeNode = node.get("descriptionType");
-                if (descriptionTypeNode != null) {
-                    String descriptionType = descriptionTypeNode.asText();
-                    if (! descriptionType.equals("Other")) {
-                        descriptionBuilder.append(descriptionType + ": ");
-                    }
-                }
-                descriptionBuilder.append(node.get("description").asText().strip());
-            }
-            document.setDescription(descriptionBuilder.toString());
-            // authors
-            JsonNode jsonCreators = jsonRecordAttributes.get("creators").path(0);
-            if (! jsonCreators.isMissingNode()){
-                ResponsibleParty documentCreators = ResponsibleParty.builder()
-                        .individualName(jsonCreators.get("name").asText())
-                        .organisationName("Unknown")
-                        .role("author")
-                        .build();
-                ArrayList<ResponsibleParty> list1 = new ArrayList<>();
-                list1.add(documentCreators);
-                document.setResponsibleParties(list1);
-            }
-            // onlineresources
-            ArrayList<OnlineResource> list2 = new ArrayList<>();
-            list2.add(
-                    OnlineResource.builder()
-                    .url(jsonRecordAttributes.get("url").asText())
-                    .name("View record")
-                    .description("View record at this link")
-                    .function("information")
-                    .build()
-                    );
-            document.setOnlineResources(list2);
-            // reference dates
-            // the timestamp parsing is extremely dubious but we need working code NOW for the Frankfurt meeting.
-            // TBF using LocalDate is totally broken anyway so it all needs redoing at some point.
-            document.setDatasetReferenceDate(
-                    DatasetReferenceDate.builder()
-                    .creationDate(LocalDate.parse(jsonRecordAttributes.get("created").asText().substring(0,10)))
-                    .publicationDate(LocalDate.parse(jsonRecordAttributes.get("published").asText().substring(0,4) + "-01-01"))
-                    .creationDate(LocalDate.parse(jsonRecordAttributes.get("created").asText().substring(0,10)))
-                    .build()
-                    );
-            // import ID - should equal input doi but can't be too careful
-            document.setImportId(jsonRecordAttributes.get("doi").asText());
-            // fixed stuff
-            document.setAccessLimitation(
-                    AccessLimitation.builder()
-                    .value("no limitations to public access")
-                    .code("Available")
-                    .uri("http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/noLimitations")
-                    .build()
-                    );
-            document.setDataLevel("Level 0");
-            document.setType("signpost");
-
+            document.importDataciteJson(dataciteJson);
+            document.setImportId(inputDoi);
             return document;
         }
         else {
