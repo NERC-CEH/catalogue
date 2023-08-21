@@ -256,14 +256,6 @@ export default EditorView.extend({
 
         new ParentView({
           model: this.model,
-          modelAttribute: 'dataAttributes',
-          label: 'Data attributes',
-          ObjectInputView: KeywordVocabularyView,
-          multiline: true
-        }),
-
-        new ParentView({
-          model: this.model,
           ModelType: InspireTheme,
           modelAttribute: 'inspireThemes',
           label: 'INSPIRE theme',
@@ -719,6 +711,19 @@ This is only needed if you configure 'Stylying=Classification' for your GeoTiff.
 <p>Paths should be specified relative to the base of the datastore. e.g. <strong>5b3fcf9f-19d4-4ad3-a8bb-0a5ea02c857e/my_shapefile</strong></p>\
 `,
           disabled
+        })
+      ]
+    },
+    {
+      label: 'beta',
+      title: 'Experimental',
+      views: [
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'observedProperties',
+          label: 'Observed properties',
+          ObjectInputView: KeywordVocabularyView,
+          multiline: true
         })
       ]
     }

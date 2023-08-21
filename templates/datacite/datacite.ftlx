@@ -27,8 +27,8 @@
       <#assign subjectList = subjectList + descriptiveKeyword.keywords>
     </#list>
   </#if>
-  <#if doc.dataAttributes?has_content>
-    <#assign subjectList = subjectList + doc.dataAttributes>
+  <#if doc.observedProperties?has_content>
+    <#assign subjectList = subjectList + doc.observedProperties>
   </#if>
   <#if subjectList?has_content>
     <#list subjectList as subject>
