@@ -1,6 +1,6 @@
 <div class="row keywordPicker">
     <div class="col-sm-6 col-xs-12">
-      <input class="form-control autocomplete" placeholder="Start typing to search for keywords in controlled vocabularies">
+      <input class="form-control editor-input autocomplete" placeholder="Start typing to search for keywords in controlled vocabularies">
     </div>
     <div class="col-sm-6 col-xs-12 vocabularyPicker"></div>
 </div>

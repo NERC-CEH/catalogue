@@ -1,6 +1,6 @@
 <#macro keywordList list listTitle="Keywords" commaseparated=false>
   <dt>${listTitle}</dt>
-  <dd class="autolist">
+  <dd>
     <#list list as item>
       <@displayLinkedKeyword item.value item.uri/>
       <#sep><#if commaseparated=true>,<#else><br></#if></#sep>
@@ -16,8 +16,8 @@
   </#if>
 </#macro>
 
-<#if dataAttributes?has_content>
-  <@keywordList dataAttributes "Data attributes" true/>
+<#if observedProperties?has_content>
+  <@keywordList observedProperties "Observed properties" true/>
 </#if>
 
 <#if topicCategories?has_content>

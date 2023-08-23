@@ -6,10 +6,17 @@
   <script src="/static/scripts/main.bundle.js"></script>
 </#assign>
 
+<#assign catalogueid="">
+
 <#macro master title catalogue="" rdf="" schemaorg="" canonical="" searching=false can_edit_restricted=false containerClass="container" scripts=defaultScripts>
+<#assign catalogueid="">
+<#if catalogue?has_content>
+  <#assign catalogueid= catalogue.id >
+</#if>
+
 <#compress>
 <!DOCTYPE html>
-<html lang="en-GB" <#if catalogue?has_content>data-catalogue=${catalogue.id}</#if>>
+<html lang="en-GB" data-catalogue=${catalogueid}>
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -52,9 +59,9 @@
             <span class="icon-bar"></span>
           </button>
           <#if catalogue?has_content>
-            <a href="${catalogue.url}" class="navbar-brand"><img src="/static/img/logo/${catalogue.logo}" alt="${catalogue.title}"/></a>
+            <a href="${catalogue.url}" class="navbar-brand"><img src="/static/img/cataloguelogo/${catalogue.logo}" alt="${catalogue.title}"/></a>
           <#else>
-            <a href="" class="navbar-brand"><img src="/static/img/logo/ukceh.png" alt="UKCEH"/></a>
+            <a href="" class="navbar-brand"><img src="/static/img/cataloguelogo/ukceh.png" alt="UKCEH"/></a>
           </#if>
         </div>
         <div class="navbar-collapse collapse">

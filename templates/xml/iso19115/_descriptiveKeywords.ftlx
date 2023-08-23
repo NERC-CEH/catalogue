@@ -1,5 +1,5 @@
 <#assign all_keywords = []>
-<#if descriptiveKeywords?? || dataAttributes??>
+<#if descriptiveKeywords?? || observeableProperties??>
 
   <#function controlledKeywords hash regex match=true>
       <#local result = []>
@@ -25,8 +25,8 @@
     </#list>
   </#if>
 
-  <#if dataAttributes??>
-    <#assign all_keywords = all_keywords + dataAttributes>
+  <#if observedProperties??>
+    <#assign all_keywords = all_keywords + observedProperties>
   </#if>
 
   <#assign 

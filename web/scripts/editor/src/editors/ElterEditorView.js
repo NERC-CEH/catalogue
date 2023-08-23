@@ -16,7 +16,7 @@ import {
   SingleObjectView, SpatialReferenceSystemView, SpatialRepresentationTypeView, SpatialResolutionView,
   SupplementalView,
   TemporalExtentView,
-  TextareaView, TopicCategoryView, ElterProjectView, KeywordVocabularyView
+  TextareaView, TopicCategoryView, ElterProjectView, KeywordVocabularyView, ServiceView, MapDataSourceView
 } from '../views'
 import {
   AccessLimitation,
@@ -25,7 +25,7 @@ import {
   InspireTheme,
   MultipleDate,
   OnlineResource,
-  ResourceType, SpatialResolution,
+  ResourceType, SpatialResolution, Service, MapDataSource,
   TopicCategory, ElterProject
 } from '../models'
 import EditorView from '../EditorView'
@@ -558,6 +558,40 @@ export default EditorView.extend({
           rows: 7,
           helpText: `
 <p>If this record is being retracted, the reasons for withdrawal or replacement should be explained here.</p>
+`
+        })
+      ]
+    },
+    {
+      label: 'Web service',
+      title: 'Web service details',
+      views: [
+        new ServiceView({
+          model: this.model,
+          modelAttribute: 'service',
+          ModelType: Service,
+          label: 'Service'
+        }),
+
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'mapDataDefinition.data',
+          ModelType: MapDataSource,
+          multiline: true,
+          label: 'Web map service',
+          ObjectInputView: MapDataSourceView,
+          helpText: `\
+<p>Link this metadata record to an ingested geospatial file and create a WMS (<strong>https://catalogue.ceh.ac.uk/maps/{METADATA_ID}?request=getCapabilities&service=WMS</strong>). The supported formats are:</p>
+<ul>
+  <li>Shapefiles - Vector (ignore the .shp extension when specifying the path) </li>
+  <li>GeoTiff - Raster</li>
+</ul>
+<p>To maximise performance, it is generally best to provide reprojected variants of data sources in common EPSG codes.</p>
+<p>Vector datasets should be spatially indexed (using <a href="http://mapserver.org/utilities/shptree.html">shptree</a>)</p>
+<p>Raster datasets should be provided with <a href="http://www.gdal.org/gdaladdo.html">overviews</a>. GeoTiff supports internal overviews.</p>
+<p>The 'Byte?' option that appears for raster (GeoTiff) datasets is used to indicate whether the GeoTiff is a 'byte' or 'non-byte' datatype.
+This is only needed if you configure 'Styling=Classification' for your GeoTiff.</p>
+<p>Paths should be specified relative to the base of the datastore. e.g. <strong>5b3fcf9f-19d4-4ad3-a8bb-0a5ea02c857e/my_shapefile</strong></p>\
 `
         })
       ]

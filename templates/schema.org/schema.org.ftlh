@@ -14,7 +14,7 @@
   >
 </#if>
 
-<#if type=='dataset' || type=='nonGeographicDataset'>
+<#if type=='dataset' || type=='nonGeographicDataset' || type=='signpost'>
   <#assign docType = "Dataset">
 <#elseif type=='aggregate' || type=='series'>
   <#assign docType = "Series">
@@ -56,8 +56,8 @@
   "url":"${uri}",
   </#if>
 
-<#if dataAttributes?? && dataAttributes?has_content>
-  "variableMeasured": [<#list dataAttributes as da>"${da.value}"<#sep>,</#list>],
+<#if observedProperties?? && observedProperties?has_content>
+  "variableMeasured": [<#list observedProperties as op>"${op.value}"<#sep>,</#list>],
 </#if>
 
   <#if descriptiveKeywords?has_content>

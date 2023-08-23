@@ -9,12 +9,29 @@
     <#assign distributorName = "a third party" >
 </#if>
 
-<div>This record describes data managed by ${distributorName}</div>
-
-<#include "_licence.ftlh">
-
-<#if signpostURLs?has_content>
-    <div class="signpostURL">
-        To access the data visit <a href="${signpostURLs?first.url}">${signpostURLs?first.url}</a>
-    </div>
+<#-- If data came from SITES -->
+<#if signpostURLs?has_content && signpostURLs?first.url?matches(".+fieldsites.se\\/.+", "i")> 
+    <#assign logosrc ="/static/img/elter/sites_logo.png" >
+    <#assign logoalt ="SITES logo" >
+    <#assign distributorName = "the Swedish Infrastructure for Ecosystem Science (SITES)" >
 </#if>
+
+
+<div class="signpost-content">
+    <#if logosrc?has_content>
+        <div class="signpost-logo"><img src="${logosrc}" alt="${logoalt}"></div>
+    </#if>
+
+    <div class="signpost-text">This record describes data managed by ${distributorName}</div>
+
+    <#if signpostURLs?has_content>
+        <div class="signpost-url">
+            To access the data visit <a href="${signpostURLs?first.url}">${signpostURLs?first.url}</a>
+        </div>
+    </#if>
+    
+    <div class="signpost-licence">
+        <#include "_licence.ftlh">
+     </div>
+</div>
+

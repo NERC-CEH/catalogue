@@ -19,7 +19,7 @@
     <p>If you need access to this archived version, please <a href="${catalogue.contactUrl}" target="_blank" rel="noopener noreferrer">contact the ${supersededContact}</a></p>
 <#elseif resourceStatus == "Restricted">
     <span>ACCESS TO THIS ${recordType?upper_case} IS RESTRICTED</span>
-    <br>${accessLimitation.description} If you need access, please <a href="${catalogue.contactUrl}" target="_blank" rel="noopener noreferrer">contact the ${supersededContact}</a>
+    <br>${accessLimitation.description} If you need access, please <a href="${catalogue.contactUrl}" target="_blank" rel="noopener noreferrer">contact ${supersededContact}</a>
 <#elseif resourceStatus == "Embargoed">
     <p>
         <strong>This ${recordType} is under embargo</strong>

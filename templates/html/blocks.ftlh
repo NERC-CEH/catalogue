@@ -4,7 +4,7 @@ type from a code list. Also display a label if this document is currently in
 draft or is pending publication
 -->
 <#macro title title type>
-  <div class="visible-print-block text-center"><img src="/static/img/CEHlogoSmall.png"></div>
+  <div class="visible-print-block text-center"><img src="/static/img/cataloguelogo/ukceh.png"></div>
 
   <#if title?has_content>
     <h1 id="document-title">

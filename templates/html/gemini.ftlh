@@ -91,8 +91,29 @@
             </div>
           </div>
         </#if>
+
+        <#if resourceType.value != 'aggregate' && resourceType.value != 'collection'>
+          <div class="pull-right btn-group alternativeViews">
+            <span aria-expanded="false" aria-haspopup="true" data-toggle="dropdown" class="dropdown-toggle " type="button">
+                View record as <span class="caret"></span>
+            </span>
+            <ul class="dropdown-menu dropdown-menu-right">
+              <li><a href="${uri}?format=json">json</a></li>
+              <#if resourceType?? && (resourceType.value == 'dataset' || resourceType.value == 'application' || resourceType.value == 'service' )>
+                <#if citation??>
+                  <li><a href="${uri}/datacite.xml">Datacite xml</a></li>
+                </#if>
+                <li><a href="${uri}.xml?format=gemini">ISO 19115 (XML)</a></li>
+                <li><a href="${uri}?format=schema.org">schema.org (json-LD)</a></li>
+                <li><a href="${uri}?format=ttl">RDF (Turtle)</a></li>
+              </#if>
+            </ul>
+          </div>
+        </#if>
+
       </div>
     </div>
+
 
     <#if permission.userCanEditRestrictedFields(metadata.catalogue) && metadata.catalogue == "eidc">
       <div class="section"><div class="container">
@@ -166,8 +187,6 @@
       </div>
     </#if>
 
-
-
     <#if permission.userCanEditRestrictedFields(metadata.catalogue) && metadata.catalogue == "eidc">
         <div class="section">
             <div class="container">
@@ -184,10 +203,8 @@
       <a class="edit-control" data-document-type="${metadata.documentType}">Edit</a></p>
     </div>
   </#if>
-
-  <div>
-      <#include "document/_footer.ftlh">
-  </div>
+  
+  <#include "document/_footer.ftlh">
 
   <script type="application/ld+json">
 	  <#include "../schema.org/schema.org.ftlh">

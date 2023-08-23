@@ -6,7 +6,7 @@
 <div class="alert--linked" role="alert">
   <#if isEidc = "true">
   <div class="alert--linked-eidc">
-    <img class="img-responsive" src="/static/img/logo/eidc.png">
+    <img class="img-responsive" src="/static/img/cataloguelogo/eidc.png">
     <div>These data are held and managed by the Environmental Information Data Centre</div>
   </div>
   </#if>

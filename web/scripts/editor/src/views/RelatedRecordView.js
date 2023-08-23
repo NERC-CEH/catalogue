@@ -29,6 +29,12 @@ export default ObjectInputView.extend({
       }
     })
 
+    const relId = this.model.get('identifier')
+    if (relId != null) {
+      this.$('.relationshipSearch').addClass("hidden")
+      this.$('.relationshipRecord').removeClass("hidden")
+    }
+
     this.$('.autocomplete').on('autocompleteselect', (event, ui) => {
       this.model.set('identifier', ui.item.identifier)
       this.$('.identifier').val(ui.item.identifier)
@@ -38,6 +44,8 @@ export default ObjectInputView.extend({
       this.$('.associationType').val(ui.item.type)
       this.model.set('title', ui.item.label)
       this.$('.title').val(ui.item.label)
+      this.$('.relationshipSearch').addClass("hidden")
+      this.$('.relationshipRecord').removeClass("hidden")
     })
   },
 
