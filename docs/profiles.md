@@ -42,7 +42,7 @@ Choice of:
 * `upload:simple` Upload to directory
 
 ## Imports
-* `imports` Enable import of records from external services (e.g. SITES metadata catalogue, in combination with `server:elter`)
+* `imports` Enable import of records from external services (see [imports documentation](imports.md))
 
 ## Search
 Configures how search works
