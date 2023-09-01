@@ -1,4 +1,4 @@
-<div class="footer footer-ri hidden-print clearfix">
+<div class="footer-ri">
     <div class="footer-curve"></div>
     <div class="footer-content">
     <div class="container">
@@ -35,6 +35,5 @@
                 <a href="https://www.ceh.ac.uk/accessibility-statement">Accessibility</a>
             </div>
         </div>
-    </div>
     </div>
 </div>

@@ -3,6 +3,10 @@
 <#import "../blocks.ftlh" as b>
 <#import "macros.ftlh" as m>
 
+<#assign footerContent>
+  <#include "_footer.ftlh">
+</#assign>
+
 <#if onlineResources?? && onlineResources?has_content>
   <#assign
     images = func.filter(onlineResources, "function", "browseGraphic")
@@ -11,10 +15,10 @@
     documents = func.filter(onlineResources, "function", "documentation")
   >
 </#if>
-<@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
+<@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) footer=footerContent>
 
 
- <div id="metadata" class="nerc-model nerc-modelcode">
+ <div id="metadata" class="nerc-model nerc-modelcode" >
     <div class="section section-grey">
       <div class="container">
         
@@ -303,6 +307,4 @@
     </div>
   
   </div>
-  <#include "_footer.ftlh">
-
 </@skeleton.master>

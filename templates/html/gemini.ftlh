@@ -2,6 +2,20 @@
 <#import "skeleton.ftlh" as skeleton>
 <#import "../functions.ftlh" as func>
 
+<#macro getLabel val array>
+  <#list array as item>
+    <#if item['value']==val>
+      ${item['label']}
+      <#break/>
+    </#if>
+  </#list>
+</#macro>
+
+<#assign footerContent>
+  <#include "document/_footer.ftlh">
+</#assign>
+
+<#-- INITIALISE DOCUMENT DATA-->
 <#assign
     authors = func.filter(responsibleParties, "role", "author")
     pocs = func.filter(responsibleParties, "role", "pointOfContact")
@@ -15,6 +29,8 @@
     resourceProviders = func.filter(responsibleParties, "role", "resourceProvider")
     otherContacts = custodians + publishers + depositors + originators + owners + resourceProviders
     catalogue = catalogues.retrieve(metadata.catalogue)
+    isLinkedDoc="false"
+    linkedClass=""
 
     rel_all=jena.allRelatedRecords(uri)
     rel_related=jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#relatedTo") + jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#relatedTo")
@@ -27,7 +43,9 @@
     rel_hasMember = jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#memberOf")
     rel_supersedes = jena.supersedes(uri)
     rel_source = jena.relationships(uri, "http://purl.org/dc/terms/source")
+
 >
+
 <#if useConstraints?has_content>
   <#assign
     licences = func.filter(useConstraints, "code", "license")
@@ -35,7 +53,6 @@
   >
 </#if>
 
-<#assign isLinkedDoc="false" linkedClass="" >
 <#if rel_source?has_content && rel_source?size gt 0>
   <#assign isLinkedDoc="true" linkedClass="linked" >
 </#if>
@@ -43,17 +60,54 @@
 <#if isLinkedDoc="true" && resourceIdentifiers?has_content>
   <#assign masterDocument = func.filterRegex(resourceIdentifiers, "code", "https://catalogue.ceh.ac.uk/id/")>
 </#if>
+<#-- END DOCUMENT DATA-->
 
-<#macro getLabel val array>
-  <#list array as item>
-    <#if item['value']==val>
-      ${item['label']}
-      <#break/>
-    </#if>
-  </#list>
-</#macro>
+<#-- METADATA QUALITY INFO-->
+  <#assign
+      MD_checks = metadataQuality.check(id)
+      problems = MD_checks.getProblems()
+      errors = func.filter(problems, "severity", "ERROR")
+      warnings = func.filter(problems, "severity", "WARNING")
+      infos = func.filter(problems, "severity", "INFO")
+      problemCount=0
+      alertclass=""
+      alerticon=""
+  >
+  <#if infos?size gte 1 ><#assign alertclass="info" alerticon="fa-circle-info" problemCount=problemCount+infos?size></#if>
+  <#if warnings?size gte 1 ><#assign alertclass="warning" alerticon="fa-circle-exclamation" problemCount=problemCount+warnings?size></#if>
+  <#if errors?size gte 1 ><#assign alertclass="error" alerticon="fa-exclamation-triangle" problemCount=problemCount+errors?size></#if>
+<#-- END METADATA QUALITY -->
 
-<@skeleton.master title=title catalogue=catalogue rdf="${uri}?format=ttl" schemaorg="${uri}?format=schema.org" canonical="${uri}" can_edit_restricted=permission.userCanEditRestrictedFields(metadata.catalogue)>
+
+<#-- WHICH SECTIONS TO DISPLAY -->
+  <#assign
+    displayDataDownload = 0 
+    displayProvenance = 0
+    displayCorrespondence = 0
+    displayAuthors = 0
+    displayAdditional = 0
+    displayMetadataQuality = 0
+    displayCitations = 0
+    displaySupplemental = 0
+  >
+
+  <#if topicCategories?? || descriptiveKeywords?? ||  inspireTheme?? || funding?? || spatialRepresentationTypes?? || spatialReferenceSystems?? ||boundingBoxes?? || temporalExtents?? || geometries?? >
+    <#assign displayAdditional = 1 >
+  </#if>
+  <#if pocs?size gt 0 >
+     <#assign displayCorrespondence = 1 >
+  </#if>
+  <#if authors?size gt 0 || otherContacts?has_content || rightsHolders?has_content>
+     <#assign displayAuthors = 1 >
+  </#if>
+   
+  <#if permission.userCanEditRestrictedFields(metadata.catalogue) && metadata.catalogue == "eidc">
+     <#assign displayMetadataQuality = 1 >
+  </#if>
+<#-- END SECTIONS -->
+
+
+<@skeleton.master title=title catalogue=catalogue rdf="${uri}?format=ttl" schemaorg="${uri}?format=schema.org" canonical="${uri}" can_edit_restricted=permission.userCanEditRestrictedFields(metadata.catalogue) footer=footerContent>
   <#if resourceType?has_content && resourceType.value !=''>
   <#assign recordType = func.recordTypeOrResourceType()>
 
@@ -114,13 +168,6 @@
       </div>
     </div>
 
-
-    <#if permission.userCanEditRestrictedFields(metadata.catalogue) && metadata.catalogue == "eidc">
-      <div class="section"><div class="container">
-        <#include "document/_metadataqualityAlert.ftlh">
-      </div></div>
-    </#if>
-
     <#if resourceType.value == 'aggregate' || resourceType.value == 'collection'>
       <div class="section">
         <div class="container">
@@ -139,33 +186,10 @@
         <div class="container">
           <div class="metadata-grid">
             <div class="col1">
-              <#include "document/_formats.ftlh">
-              <#include "document/_extent.ftlh">
-              <#include "document/_dataquality.ftlh">
-              <#include "document/_related.ftlh">
-              <#include "document/_citation_list.ftlh">
-              <#include "document/_supplemental.ftlh">
-              <#include "document/_contacts.ftlh">
-
-              <#if topicCategories?? || descriptiveKeywords?? ||  inspireTheme?? || funding?? || spatialRepresentationTypes?? || spatialReferenceSystems??>
-                <h2>Additional metadata</h2>
-                <dl id="otherInfo" class="dl-horizontal">
-                  <#include "document/_tags.ftlh">
-                  <#include "document/_funding.ftlh">
-                  <#if resourceType?has_content && resourceType.value !='nonGeographicDataset'>
-                    <#include "document/_spatial.ftlh">
-                  </#if>
-                    <#if metadataDateTime?has_content>
-                    <dt>Last updated</dt><dd>${metadataDateTime?datetime.iso?datetime?string['dd MMMM yyyy  HH:mm']}</dd>
-                    </#if>
-                </dl>
-              </#if>
-            </div>
-            <div class="col2">
 
               <#if isLinkedDoc!="true">
                   <#include "document/_uploadData.ftlh">
-                  <#include "document/_metrics.ftlh">
+                  <#--include "document/_metrics.ftlh"-->
                  
                   <#if resourceStatus?? && resourceStatus != "Unknown">
                     <#if resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'application'>
@@ -182,17 +206,41 @@
                   </#if>
               </#if>
 
+              <#include "document/_formats.ftlh">
+              <#include "document/_dataquality.ftlh">
+              <#include "document/_related.ftlh">
+              <#include "document/_citation_list.ftlh">
+              <#include "document/_supplemental.ftlh">
+              <#include "document/_contacts.ftlh">
+              
+              <#if displayAdditional = 1>
+                <div>
+                  <h2>Additional metadata  <a name="additional"></a></h2>
+                  <dl id="otherInfo" class="dl-horizontal">
+                    <#include "document/_tags.ftlh">
+                    <#include "document/_extent.ftlh">
+                    <#include "document/_funding.ftlh">
+                    <#if resourceType?has_content && resourceType.value !='nonGeographicDataset'>
+                      <#include "document/_spatial.ftlh">
+                    </#if>
+                      <#if metadataDateTime?has_content>
+                      <dt>Metadata last updated</dt><dd>${metadataDateTime?datetime.iso?datetime?string['dd MMMM yyyy  HH:mm']}</dd>
+                      </#if>
+                  </dl>
+                </div>
+              </#if>
+
+               <#if displayMetadataQuality = 1>
+                  <#include "document/_metadataqualityReport.ftlh">
+               </#if>
+            </div>
+            <div class="col2">
+              <#if isLinkedDoc!="true">
+                <#include "document/_metadataMenu.ftlh">
+              </#if>
           </div>
         </div>
       </div>
-    </#if>
-
-    <#if permission.userCanEditRestrictedFields(metadata.catalogue) && metadata.catalogue == "eidc">
-        <div class="section">
-            <div class="container">
-                <#include "document/_metadataqualityReport.ftlh">
-            </div>
-        </div>
     </#if>
 
   </div>
@@ -204,8 +252,6 @@
     </div>
   </#if>
   
-  <#include "document/_footer.ftlh">
-
   <script type="application/ld+json">
 	  <#include "../schema.org/schema.org.ftlh">
   </script>

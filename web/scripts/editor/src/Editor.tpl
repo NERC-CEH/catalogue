@@ -1,6 +1,7 @@
 <ol id="editorNav" class="breadcrumb"></ol>
 
 <div id="editor" class="container-fluid" role="form"></div>
+
 <div class="navbar navbar-default navbar-fixed-bottom">
   <div class="container-fluid">
     <div class="navbar-left">

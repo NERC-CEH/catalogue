@@ -11,7 +11,11 @@
 >
 </#if>
 
-<@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
+<#assign footerContent>
+  <#include "_footer.ftlh">
+</#assign>
+
+<@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) footer=footerContent>
   <div id="metadata" class="metadata infrastructure-metadata">
     <div class="section section-grey">
       <div class="container">
@@ -50,17 +54,32 @@
           <div class="col1">
 
             <#if infrastructureCategory??><@displaykey "Category">${infrastructureCategory.description}</@displaykey></#if>
-            <#if capabilities??><@displaykey "Capabilities"><@b.linebreaksAndLinks capabilities/></@displaykey></#if>
-            <#if lifecycle??><@displaykey "Lifecycle"><@b.linebreaksAndLinks lifecycle/></@displaykey></#if>
-            <#if uniqueness??><@displaykey "Uniqueness"><@b.linebreaksAndLinks uniqueness/></@displaykey></#if>
-            <#if partners??><@displaykey "Partners"><@b.linebreaksAndLinks partners/></@displaykey></#if>
-            <#if access??><@displaykey "Access"><@b.linebreaksAndLinks access/></@displaykey></#if>
-            <#if locationText??><@displaykey "Location"><@b.linebreaksAndLinks locationText/></@displaykey></#if>
-            <#if userCosts??><@displaykey "User costs"><@b.linebreaksAndLinks userCosts/></@displaykey></#if>
-            <#if fundingSources??><@displaykey "Funding sources"><@b.linebreaksAndLinks fundingSources/></@displaykey></#if>
-            <#if userCosts??><@displaykey "User costs"><@b.linebreaksAndLinks userCosts/></@displaykey></#if>
-
+            <#if capabilities??>
+              <#assign showCapabilities =1>
+              <@displaykey "Capabilities"><@b.linebreaksAndLinks capabilities/></@displaykey>
+            </#if>
+            <#if lifecycle??>
+              <#assign showLifecycle =1>
+              <@displaykey "Lifecycle"><@b.linebreaksAndLinks lifecycle/></@displaykey>
+            </#if>
+            <#if uniqueness??>
+              <#assign showUniqueness =1>
+              <@displaykey "Uniqueness"><@b.linebreaksAndLinks uniqueness/></@displaykey>
+            </#if>
+            <#if partners??>
+               <#assign showPartners =1>
+               <@displaykey "Partners"><@b.linebreaksAndLinks partners/></@displaykey>
+            </#if>
+            <#if access??>
+              <#assign showAccess =1>
+              <@displaykey "Access"><@b.linebreaksAndLinks access/></@displaykey>
+            </#if>
+            <#if locationText??>
+              <#assign showLocation =1>
+              <@displaykey "Location"><@b.linebreaksAndLinks locationText/></@displaykey>
+            </#if>
             <#if users?? >
+              <#assign showUsers =1>
                 <@displaykey "Users">
                   <dl>
                     <#list users as user>
@@ -69,9 +88,17 @@
                   </dl>
                 </@displaykey>
             </#if>
+            <#if userCosts??>
+              <#assign showCosts =1>
+              <@displaykey "User costs"><@b.linebreaksAndLinks userCosts/></@displaykey>
+            </#if>
+            <#if fundingSources??>
+              <#assign showFunding =1>
+              <@displaykey "Funding sources"><@b.linebreaksAndLinks fundingSources/></@displaykey>
+            </#if>
 
-            <#if rel_all?has_content && rel_all?size gt 0 >
-            
+            <#if rel_all?has_content && rel_all?size gt 0 >  
+              <#assign showRelated =1>          
                 <@displaykey "Related">
                   <dl>
                   <#list rel_all as item>
@@ -84,6 +111,7 @@
             </#if>
 
             <#if keywords?? >
+              <#assign showKeywords =1>          
               <#assign keywordLabel = "Keyword">
               <#if keywords?size gte 2>
                 <#assign keywordLabel = "Keywords">
@@ -108,12 +136,6 @@
                 </div>
               </#if>
             </#if>
-
-            <@displaykey "Last updated">${metadataDateTime?datetime.iso?datetime?string['dd MMMM yyyy  HH:mm']}</@displaykey>
-
-          </div>
-          <div class="col2">
-
 
             <@displaykey "Contact">
                 <#if owners?? >
@@ -161,18 +183,24 @@
                 </@displaykey>
             </#if>
 
+            <@displaykey "Last updated">${metadataDateTime?datetime.iso?datetime?string['dd MMMM yyyy  HH:mm']}</@displaykey>
+
+          </div>
+          <div class="col2">
+          <#include "_menu.ftlh">
+
           </div>
       </div>
     </div>
   
   </div>
 
-  <#include "_footer.ftlh">
 </@skeleton.master>
 
 <#--macros -->
 <#macro displaykey label>
   <div class="key-value">
+    <a name="${label}"></a>
     <div>${label}</div>
     <div><#nested></div>
   </div>

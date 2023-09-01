@@ -1,173 +1,111 @@
-#search {
-  @search-form-height: 52px;
-  @filters-columns: 4;
-  @results-columns: @grid-columns - @filters-columns;
+html:has(.search) {
+  overflow-y: hidden;
+}
 
-  .make-row();
-  .container-fixed();
-  padding: 0; // Remove the padding when in small screen mode
-
-  //Hide the filters panel in small screen mode
-  .filters-panel {
-    height: 0; // WARNING: We would usually just set display:none to
-    overflow: hidden; // hide the panel. This causes OpenLayers to fail to load
+.search {
+  height: calc(100vh - var(--header-height) / 1.25);
+  display: flex;
+  > div {
+    overflow-y: scroll;
+    overflow-x: hidden;
   }
+  .filters-panel {
+    margin-bottom: calc(var(--header-height) * -1);
+    flex: 0 0 450px;
+    display: none;
+    background-color: var(--filter-body-background);
+    border-right: var(--filter-border);
 
-  @media (min-width: @screen-md-min) {
-    .filters-panel {
-      .make-md-column(@filters-columns);
-      height: auto; // Re allow height
-      position: fixed;
-      padding: 0;
-      top: @navbar-height + @navbar-border-width;
-      bottom: 0;
-      left: 0;
-      background-color: @filter-body-background; // @panel-bg;
-      border-right: @filter-border;
-    }
-    h3 {
-      font-size: 1.2em;
-      color: @filter-body-colour;
-    }
     .header {
-      height: @filter-heading-height;
       width: 100%;
-      background-color: @filter-heading-background; //;@panel-default-heading-bg;
+      background-color: var(--filter-heading-background);
       padding: 15px;
 
       h3 {
         display: inline;
         margin: 0px;
         font-size: 1.3em;
-        color: @filter-heading-color; //@header-text;
+        color: var(--filter-heading-colour);
         cursor: pointer;
         &:hover {
           text-decoration: underline;
         }
       }
     }
+  }
 
-    &.facets-mode {
-      #drawing-toggle {
-        display: none;
-      }
-      .map-heading {
-        position: absolute;
-        bottom: 0;
-      }
-      .facet-filter {
-        position: absolute;
-        top: @filter-heading-height;
-        bottom: @filter-heading-height;
-        left: 0;
-        right: 0;
-        overflow-y: auto;
-        overflow-x: hidden;
-        scrollbar-gutter: stable;
-        scrollbar-width: thin /* Firefox only*/;
-        padding-left: 1em;
-        .facet {
-          margin-bottom: 1em;
-          max-height: 600px;
-          overflow-y: auto;
-          overflow-x: hidden;
-          scrollbar-width: 0.25em;
-          h3 {
-            font-weight: 600;
-            margin-bottom: 0.25em;
-          }
-          ul {
-            padding:0;
-            margin:1px;
-            li {
-              list-style: none;
-              .facet-count {
-                margin-left: 0.5em;
-                color: lighten(@filter-body-link-colour, 10%);
-              }
+  &.facets-mode {
+    #drawing-toggle {
+      display: none;
+    }
+    .map-heading {
+      bottom: 0;
+    }
+    .facet-filter {
+      padding-left: 1em;
+      .facet {
+        margin-bottom: 1em;
+        max-height: 600px;
 
-              a {
-                color: @filter-body-link-colour;
-                white-space: nowrap;
-              }
+        h3 {
+          font-weight: 600;
+          margin-bottom: 0.25em;
+        }
+        ul {
+          padding: 0;
+          margin: 1px;
+          li {
+            list-style: none;
+            .facet-count {
+              margin-left: 0.5em;
+              color: color-mix(
+                in oklab,
+                var(--filter-body-link-colour),
+                white 10%
+              );
+            }
+
+            a {
+              color: var(--filter-body-link-colour);
+              white-space: nowrap;
             }
           }
-
-          &::-webkit-scrollbar {
-            width: 0.25em;
-          }
-
-          &::-webkit-scrollbar-track {
-            box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-          }
-
-          &::-webkit-scrollbar-thumb {
-            background-color: darkgrey;
-            outline: 1px solid slategrey;
-          }
-        }
-      }
-      /* For webkit browsers only*/
-      .facet-filter::-webkit-scrollbar {
-        width: 8px;
-      }
-
-      .facet-filter::-webkit-scrollbar-track {
-        background: @brand-success;
-      }
-
-      .facet-filter::-webkit-scrollbar-thumb {
-        background-color: white;
-        border-radius: 20px;
-        border: 1px solid @brand-success;
-      }
-    }
-
-    &.map-mode {
-      @selected-color: @brand-success;
-      .facet-filter {
-        display: none;
-      }
-      .map-heading {
-        margin-top: @filter-heading-gap;
-        height: @filter-heading-height;
-      }
-
-      .result.selected {
-        border-left: 8px solid @selected-color;
-        background-color: lighten(@selected-color, 50%);
-      }
-
-      .map-filter {
-        position: absolute;
-        top: @filter-heading-height * 2 + @filter-heading-gap;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        div.olControlZoom {
-          left: 2px;
-          top: 5px;
         }
       }
     }
   }
 
-  // Keep the search box onscreen at all times
-  form.search-form {
-    .make-md-column-offset(@filters-columns);
-    position: fixed;
-    top: @navbar-height + (@navbar-border-width * 2);
-    left: 0;
-    right: 0;
-    padding: 8px;
-    height: @search-form-height;
-    background-color: @body-bg;
-  }
+  &.map-mode {
+    --_selected-colour: var(--brand-success);
+    .facet-filter {
+      display: none;
+    }
+    .map-heading {
+      margin-top: var(--filter-heading-gap);
+      height: var(--filter-heading-height);
+    }
 
-  .results {
-    margin-top: @search-form-height;
-    .make-md-column(@results-columns);
-    .make-md-column-offset(@filters-columns);
+    .result.selected {
+      border-left: 8px solid var(--_selected-colour);
+      background-color: color-mix(in oklab, var(--_selected-colour), white 50%);
+    }
+
+    .map-filter {
+      div.olControlZoom {
+        left: 2px;
+        top: 5px;
+      }
+    }
+  }
+  .results-panel {
+    padding: 1em;
+    flex: 1 1 auto;
+    form {
+      background-color: white;
+      padding: 1em 0;
+      position: sticky;
+      top: -1em;
+    }
     .results__list {
       display: grid;
       margin: 2em;
@@ -175,10 +113,10 @@
       .result {
         padding: 1.3em;
         background-color: rgba(0, 0, 0, 0.03);
-        color: @text-color;
+        color: var(--text-colour);
         &:hover {
           background-color: rgba(0, 0, 0, 0.06);
-          outline: 2px solid @link-hover-color;
+          outline: 2px solid var(--link-hover-colour);
           text-decoration: none;
         }
         &__tags {
@@ -209,7 +147,7 @@
         }
         &__citationCount {
           text-align: right;
-          color: @gray;
+          color: var(--gray);
           font-size: 1.1rem;
           margin-top: -2px;
         }
@@ -219,7 +157,7 @@
         }
         &--draft {
           border-left: darkred 10px solid;
-          background-color: lighten(@gray-light, 30%);
+          background-color: var(--gray-light);
           background-image: repeating-linear-gradient(
             315deg,
             transparent,
@@ -255,5 +193,37 @@
         }
       }
     }
+  }
+
+  //SCROLLBARS
+  .filters-panel,
+  .results-panel,
+  .facet-filter .facet {
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-gutter: stable;
+    scrollbar-width: thin; // Firefox only;
+
+    &::-webkit-scrollbar {
+      width: 0.5em;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: var(--brand-success);
+      box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    }
+
+    &::-webkit-scrollbar-thumb {
+      border-radius: 20px;
+      border: 1px solid var(--brand-success);
+      background-color: lightgray;
+      outline: 1px solid lightgray;
+    }
+  }
+}
+
+@media only screen and (min-width: 1100px) {
+  .filters-panel {
+    display: block !important;
   }
 }

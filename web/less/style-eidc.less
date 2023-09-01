@@ -12,69 +12,93 @@
 @import "documents-upload";
 @import "upload-simple";
 
+@import "style-serviceagreement";
+
 @fa-font-path: "../node_modules/@fortawesome/fontawesome-free/webfonts";
 
-@eidc-blue: hsl(195, 45%, 36%);
-@brand-success: @eidc-blue;
-@gray-lighter: @eidc-blue;
-@header-text: #fff;
-@link-hover-color: #e75f22;
-@panel-default-text: @header-text;
-@footer-height: 3.25em;
-
-@navbar-height: 90px;
-@navbar-default-bg: white;
-@navbar-margin-bottom: @line-height-computed;
-@navbar-default-border: @eidc-blue;
-@navbar-border-width: 8px;
-@navbar-border-radius: 0;
-@navbar-default-color: @gray-light;
-@navbar-default-border: @eidc-blue;
-@navbar-default-link-color: @eidc-blue;
-@navbar-default-link-hover-color: @link-hover-color;
-@navbar-default-link-hover-bg: darken(@navbar-default-bg, 5%);
-@navbar-default-link-active-color: @navbar-default-link-hover-color;
-@navbar-default-link-active-bg: darken(@navbar-default-bg, 5%);
-@navbar-default-link-disabled-color: #444;
-@navbar-default-link-disabled-bg: transparent;
-@navbar-default-brand-color: @navbar-default-link-color;
-@navbar-default-brand-hover-color: #fff;
-@navbar-default-brand-hover-bg: transparent;
-@navbar-default-toggle-hover-bg: #333;
-@navbar-default-toggle-icon-bar-bg: #fff;
-@navbar-default-toggle-border-color: #333;
-
-@filter-heading-background: darken(@eidc-blue, 5%);
-@filter-heading-color: hsl(0, 0%, 100%);
-@filter-body-background: @eidc-blue;
-@filter-body-colour: hsl(0, 0%, 100%);
-@filter-body-link-colour: hsl(0, 0%, 100%);
-@filter-border: none;
-
-/* CSS custom properties */
+//@footer-height: 3.25em;
 :root {
-  --eidc-blue: @eidc-blue;
+  --eidc-blue: hsl(195, 45%, 36%);
+  --eidc-orange: hsl(19, 80%, 52%);
+  --brand-success: var(--eidc-blue);
+  --gray-lighter: var(--eidc-blue);
+  --link-hover-colour: var(--eidc-orange);
+  --panel-default-text: var(--header-text);
+
+  --filter-heading-background: color-mix(in oklab, var(--eidc-blue), black 5%);
+  --filter-heading-colour: hsl(0, 0%, 100%);
+  --filter-body-background: var(--eidc-blue);
+  --filter-body-colour: hsl(0, 0%, 100%);
+  --filter-body-link-colour: hsl(0, 0%, 100%);
+  --filter-border: none;
+
+  --header-height: 90px;
+  --header-border-width: 8px;
+  --header-background-colour: white;
+  
+  --navbar-margin-bottom: var(--line-height);
+  --navbar-default-border: var(--eidc-blue);
+  --navbar-border-radius: 0;
+  --navbar-default-color: var(--gray-light);
+  --navbar-default-border: var(--eidc-blue);
+  --navbar-default-link-color: var(--eidc-blue);
+  --navbar-default-link-hover-color: var(--link-hover-colour);
+  --navbar-default-link-hover-bg: color-mix(
+    in oklab,
+    var(--navbar-default-bg),
+    black 5%
+  );
+  --navbar-default-link-active-color: var(--navbar-default-link-hover-color);
+  --navbar-default-link-active-bg: color-mix(
+    in oklab,
+    var(--navbar-default-bg),
+    black 5%
+  );
+  --navbar-default-link-disabled-color: #444;
+  --navbar-default-link-disabled-bg: transparent;
+  --navbar-default-brand-color: var(--navbar-default-link-color);
+  --navbar-default-brand-hover-color: #fff;
+  --navbar-default-brand-hover-bg: transparent;
+  --navbar-default-toggle-hover-bg: #333;
+  --navbar-default-toggle-icon-bar-bg: #fff;
+  --navbar-default-toggle-border-color: #333;
 }
 
 html {
+  scroll-behavior: smooth;
   overflow-y: scroll;
   min-height: 100%;
   position: relative;
-  scroll-padding-top: @navbar-height * 1.5;
-}
-
-body {
-  margin-top: @navbar-height + (@navbar-border-width*2);
-  margin-bottom: @footer-height;
 }
 
 .navbar {
   .navbar-brand {
     margin: 0 0 0 0.35em;
   }
-  border-bottom-width: @navbar-border-width;
-  a {
-    font-weight: bolder;
+  border-bottom-width: var(--navbar-border-width);
+  ul.nav {
+    a {
+      font-weight: bolder;
+      position: relative;
+      &::after {
+        content: "";
+        position: absolute;
+        height: 3px;
+        width: 100%;
+        left: 0;
+        bottom: 2.6rem;
+        background: var(--link-hover-colour);
+        scale: 0 1;
+        transition: scale 250ms;
+      }
+      &:hover,
+      &:focus {
+        ::after {
+          scale: 1 1;
+          transition: scale 250ms;
+        }
+      }
+    }
   }
   &-toggle {
     background-color: black;
@@ -129,12 +153,12 @@ body {
       i {
         margin-right: 0.35em;
         font-size: 1.85em;
-        color: @eidc-blue;
+        color: var(--eidc-blue);
       }
 
       span {
         font-size: 1.85em;
-        color: @eidc-blue;
+        color: var(--eidc-blue);
       }
     }
   }
@@ -143,13 +167,13 @@ body {
 #document-upload-panel {
   a {
     &:hover {
-      color: @header-text;
+      color: var(--header-text);
       text-decoration: none;
     }
 
     div {
       &:hover {
-        background-color: @eidc-blue;
+        background-color: var(--eidc-blue);
       }
     }
   }
@@ -200,17 +224,9 @@ body {
   }
 }
 
-/*Change menu collapse breakpoint */
+/*Change menu collapse breakpoint 
 @media (max-width: 1200px) {
-  .navbar-header {
-    float: none;
-  }
 
-  .navbar-left,
-  .navbar-right {
-    float: none !important;
-    padding: 0 1em;
-  }
   .navbar-toggle {
     display: block;
   }
@@ -222,7 +238,7 @@ body {
 
   .navbar-fixed-top {
     top: 0;
-    border-width: 0 0 @navbar-border-width 0;
+    border-width: 0 0 var(--navbar-border-width) 0;
   }
 
   .navbar-collapse.collapse {
@@ -246,7 +262,7 @@ body {
   .collapse.in {
     display: block !important;
   }
-}
+}*/
 
 a#atlwdg-trigger {
   font-size: 1.5rem;
@@ -259,4 +275,3 @@ a#atlwdg-trigger {
   }
 }
 
-@import "style-serviceagreement";

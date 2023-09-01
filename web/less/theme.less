@@ -1,18 +1,95 @@
 /*!
- *
- * Copyright 2014 Centre for Ecology & Hydrology, Application Development Team
+ * Copyright 2023 UK Centre for Ecology & Hydrology, Environmental Data Science
  * Licensed under the GNU Public License v2.0
  * http://www.gnu.org/licenses/
- *
- * This theme was built using the Themestrap Bootstrap Theme Kit.
- * https://github.com/divshot/themestrap
  */
 
-//@import url(https://fonts.googleapis.com/css?family=Open+Sans:300,400,700);
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap");
 @import "node_modules/bootstrap/less/bootstrap.less";
+@import "customProperties.less";
 @import "variables.less";
-// Add CSS Customizations to your theme here.
+
+html {
+  scroll-behavior: smooth;
+  overflow-y: scroll;
+  min-height: 100%;
+  scroll-padding-top: calc(var(--header-height) * 1.5);
+  position: relative;
+}
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin: 0;
+}
+
+// Navigation
+header {
+  background-color: var(--header-background-colour);
+  height: var(--header-height);
+  border-bottom: var(--header-border-colour) solid var(--header-border-width);
+  position: sticky;
+  top: 0;
+  z-index: 1002;
+  > div {
+    overflow: hidden;
+    height: 100%;
+    padding: 0 1em;
+    justify-content: space-between;
+    display: flex;
+    gap: 1em;
+    flex-wrap: nowrap;
+    align-items: center;
+  }
+  ul {
+    list-style: none;
+    display: flex;
+    gap: 1em;
+  }
+  .navigationBar {
+    justify-content: space-between;
+    display: flex;
+    gap: 1em;
+    flex-wrap: nowrap;
+    align-items: center;
+    flex: 1 0 auto;
+
+    .navigation-left {
+      flex: 1 0 auto;
+      a {
+        color:var(--navbar-default-link-color);
+        text-decoration: none;
+        &::after {
+          content: " ";
+          background-color: var(--navbar-default-link-hover-color);
+          position: absolute;
+          bottom: -1rem;
+          left: 0;
+          height: 3px;
+          scale: 0 1;
+        }
+        &:hover {
+          &::after {
+            scale: 1 1;
+            transition: scale 250ms;
+          }
+        }
+      }
+    }
+  }
+  .navigation-toggle {
+    background-color: var(--header-background-colour);
+    border: none;
+    color: var(--header-background-colour);
+    > span {
+      filter: invert(100%);
+    }
+  }
+  .navbar-brand {
+    border-right: 2px solid white;
+    padding: 0;
+  }
+}
 
 h1,
 h2,
@@ -21,48 +98,12 @@ h4,
 h5,
 h6 {
   a {
-    color: @brand-success;
+    color: var(--brand-success);
     &:hover,
     &:focus {
-      color: @link-hover-color;
+      color: var(--link-hover-colour);
       text-decoration: none;
     }
-  }
-}
-
-.jumbotron {
-  padding: 1.5em;
-  h2 {
-    font-size: 2.5em;
-  }
-  p {
-    font-weight: bold;
-    font-size: 1.3em;
-  }
-  a:link,
-  a:visited {
-    color: #ff0;
-  }
-  a.btn:link,
-  a.btn:visited {
-    font-size: 0.9em;
-    color: #fff;
-  }
-}
-
-.navbar-brand {
-  margin: calc((@navbar-height - 50px) / 2) 0; //50px is the height of the UKCEH logo
-  border-right: 2px solid transparent;
-  height: 100%;
-  padding: 0;
-}
-
-li.navbar-title {
-  div {
-    padding: @navbar-padding-vertical @navbar-padding-horizontal;
-  }
-  a {
-    color: white;
   }
 }
 
@@ -72,19 +113,7 @@ i.fa-brands {
   font-style: normal;
 }
 
-.results-linked {
-  .result {
-    border: 1px solid lightgray;
-    padding: 0.4em;
-    margin: 0.5em 0;
-    .result--title {
-      font-weight: bolder;
-    }
-  }
-}
-
-@media (min-width: 768px) {
-  .navbar-brand {
-    border-color: white;
-  }
+footer {
+  background-color: #666;
+  margin-top: auto;
 }

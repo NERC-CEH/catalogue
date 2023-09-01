@@ -2,6 +2,21 @@
 <#import "skeleton.ftlh" as skeleton>
 <#import "../functions.ftlh" as func>
 
+<#macro getLabel val array>
+  <#list array as item>
+    <#if item['value']==val>
+      ${item['label']}
+      <#break/>
+    </#if>
+  </#list>
+</#macro>
+
+<#assign footerContent>
+  <#include "document/_footer.ftlh">
+</#assign>
+
+
+<#-- INITIALISE DOCUMENT DATA-->
 <#assign
     authors = func.filter(responsibleParties, "role", "author")
     pocs = func.filter(responsibleParties, "role", "pointOfContact")
@@ -40,17 +55,37 @@
   websites = func.filter(supplemental, "function", "website")
   supOther = func.filter(supplemental, "function", "") + func.filter(supplemental, "function", "relatedArticle") + func.filter(supplemental, "function", "relatedDataset")>
 </#if>
+<#-- END DOCUMENT DATA-->
 
-<#macro getLabel val array>
-  <#list array as item>
-    <#if item['value']==val>
-      ${item['label']}
-      <#break/>
-    </#if>
-  </#list>
-</#macro>
 
-<@skeleton.master title=title catalogue=catalogue rdf="${uri}?format=ttl" schemaorg="${uri}?format=schema.org" canonical="${uri}" can_edit_restricted=permission.userCanEditRestrictedFields(metadata.catalogue)>
+<#-- WHICH SECTIONS TO DISPLAY -->
+  <#assign
+    displayDataDownload = 0 
+    displayProvenance = 0
+    displayCorrespondence = 0
+    displayAuthors = 0
+    displayAdditional = 0
+    displayMetadataQuality = 0
+  >
+
+  <#if topicCategories?? || descriptiveKeywords?? ||  inspireTheme?? || funding?? || spatialRepresentationTypes?? || spatialReferenceSystems??>
+     <#assign displayAdditional = 1 >
+  </#if>
+  <#if pocs?size gt 0 >
+     <#assign displayCorrespondence = 1 >
+  </#if>
+  <#if authors?size gt 0 || otherContacts?has_content || rightsHolders?has_content>
+     <#assign displayAuthors = 1 >
+  </#if>
+   
+  <#if permission.userCanEditRestrictedFields(metadata.catalogue) && metadata.catalogue == "eidc">
+     <#assign displayMetadataQuality = 1 >
+  </#if>
+<#-- END SECTIONS -->
+
+
+
+<@skeleton.master title=title catalogue=catalogue rdf="${uri}?format=ttl" schemaorg="${uri}?format=schema.org" canonical="${uri}" can_edit_restricted=permission.userCanEditRestrictedFields(metadata.catalogue) footer=footerContent>
 <#if resourceType?has_content && resourceType.value !=''>
 <#assign recordType = func.recordTypeOrResourceType()>
   <div id="metadata" class="${metadata.state?lower_case}">
@@ -99,30 +134,6 @@
             <div class="container">
               <div class="metadata-grid">
                 <div class="col1">
-                  <#include "document/_elterSpecific.ftlh">
-                  <#include "document/_formats.ftlh">
-                  <#include "document/_dataquality.ftlh">
-                  <#include "document/_extent.ftlh">
-                  <#include "document/_related.ftlh">
-                  <#include "document/_citation_list.ftlh">
-                  <#include "document/_supplemental.ftlh">
-                  <#include "document/_contacts.ftlh">
-
-                  <#if topicCategories?? || descriptiveKeywords?? || keywords?? ||  inspireTheme?? || funding?? || spatialRepresentationTypes?? || spatialReferenceSystems??>
-                    <h2>Additional metadata</h2>
-                    <dl id="otherInfo" class="dl-horizontal">
-                      <#include "document/_tags.ftlh">
-                      <#include "document/_funding.ftlh">
-                      <#if resourceType?has_content && resourceType.value !='nonGeographicDataset'>
-                        <#include "document/_spatial.ftlh">
-                      </#if>
-                        <#if metadataDateTime?has_content>
-                        <dt>Last updated</dt><dd>${metadataDateTime?datetime.iso?datetime?string['dd MMMM yyyy  HH:mm']}</dd>
-                        </#if>
-                    </dl>
-                  </#if>
-                </div>
-                <div class="col2">
 
                   <#if isLinkedDoc="true">
                     <#include "document/_linked.ftlh">
@@ -143,6 +154,34 @@
 
                   </#if>
 
+                  <#include "document/_elterSpecific.ftlh">
+                  <#include "document/_formats.ftlh">
+                  <#include "document/_dataquality.ftlh">
+                  <#include "document/_extent.ftlh">
+                  <a name="related"></a><#include "document/_related.ftlh">
+                  <a name="citations"></a><#include "document/_citation_list.ftlh">
+                  <a name="supplemental"></a><#include "document/_supplemental.ftlh">
+                  <#include "document/_contacts.ftlh">
+
+                  <#if displayAdditional = 1>
+                    <a name="additional"></a>
+                    <h2>Additional metadata</h2>
+                    <dl id="otherInfo" class="dl-horizontal">
+                      <#include "document/_tags.ftlh">
+                      <#include "document/_funding.ftlh">
+                      <#if resourceType?has_content && resourceType.value !='nonGeographicDataset'>
+                        <#include "document/_spatial.ftlh">
+                      </#if>
+                        <#if metadataDateTime?has_content>
+                        <dt>Last updated</dt><dd>${metadataDateTime?datetime.iso?datetime?string['dd MMMM yyyy  HH:mm']}</dd>
+                        </#if>
+                    </dl>
+                  </#if>
+                </div>
+                <div class="col2">
+                  <#if isLinkedDoc!="true">
+                    <#include "document/_metadataMenu.ftlh">
+                  </#if>
               </div>
             </div>
           </div>
@@ -155,10 +194,6 @@
     <a class="btn btn-default btn-sm edit-control" data-document-type="${metadata.documentType}">Edit</a></p>
   </div>
 </#if>
-
-  <div id="footer">
-	 <#include "document/_footer.ftlh">
-	</div>
 
   <script type="application/ld+json">
 	  <#include "../schema.org/schema.org.ftlh">

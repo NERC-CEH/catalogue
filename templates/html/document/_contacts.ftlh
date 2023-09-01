@@ -1,3 +1,4 @@
+<a name="contacts"></a>
 <#if pocs?size gt 0 >
   <div id="document-pointOfContact">
   <h2 id="pointOfContact">Correspondence/contact details</h2>

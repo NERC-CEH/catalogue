@@ -10,80 +10,26 @@
 
 @fa-font-path: "../node_modules/@fortawesome/fontawesome-free/webfonts";
 
-//colours
-@ukri-blue: hsla(241, 37%, 28%, 1);
-@nerc-blue: @ukri-blue;
-@nerc-lightgreen: hsla(106, 48%, 53%, 1);
-@nerc-darkgreen: hsla(120, 37%, 38%, 1);
-@nerc-hightlight: hsla(341, 59%, 50%, 1);
+:root {
+  --header-border-width: 12px;
+  --header-background-colour: white;
+  --header-text: var(--gray-dark);
 
-@link-hover-color: @nerc-blue;
+  --ukri-blue: hsla(241, 37%, 28%, 1);
+  --nerc-blue: var(var(--ukri-blue));
+  --nerc-lightgreen: hsla(106, 48%, 53%, 1);
+  --nerc-darkgreen: hsla(120, 37%, 38%, 1);
+  --nerc-hightlight: hsla(341, 59%, 50%, 1);
 
-@navbar-height: 68px;
-@navbar-default-bg: white;
-@navbar-margin-bottom: @line-height-computed;
-@navbar-default-border: @nerc-darkgreen;
-@navbar-border-width: 12px;
-@navbar-border-radius: 0;
-@navbar-default-color: @gray-light;
-@navbar-default-border: @nerc-blue;
-@navbar-default-link-color: @nerc-blue;
-@navbar-default-link-hover-color: @nerc-blue;
-@navbar-default-link-hover-bg: darken(@navbar-default-bg, 5%);
-@navbar-default-link-active-color: @navbar-default-link-hover-color;
-@navbar-default-link-active-bg: darken(@navbar-default-bg, 5%);
-@navbar-default-link-disabled-color: #444;
-@navbar-default-link-disabled-bg: transparent;
-@navbar-default-brand-color: @navbar-default-link-color;
-@navbar-default-brand-hover-color: #fff;
-@navbar-default-brand-hover-bg: transparent;
-@navbar-default-toggle-hover-bg: #333;
-@navbar-default-toggle-icon-bar-bg: #fff;
-@navbar-default-toggle-border-color: #333;
+  --link-hover-colour: var(--nerc-blue);
 
-@footer-height: 3.25em;
-@header-text: @gray-dark;
-@panel-default-heading-bg: @nerc-lightgreen;
+  --panel-default-heading-bg: var(--nerc-lightgreen);
+}
 
 html {
   overflow-y: scroll;
   min-height: 100%;
   position: relative;
-}
-
-body {
-  margin-top: @navbar-height + (@navbar-border-width*2);
-  margin-bottom: @footer-height;
-}
-
-.navbar {
-  border-bottom-width: @navbar-border-width;
-  box-shadow: 0 0 0 (@navbar-border-width)/2 @nerc-darkgreen;
-
-  &-toggle {
-    background-color: black;
-    color: white;
-  }
-
-  a {
-    font-weight: bolder;
-
-    &::after {
-      @linethickness: 2px;
-      content: " ";
-      display: block;
-      background-color: @navbar-default-link-hover-color;
-      width: 0;
-      height: @linethickness;
-      margin: @linethickness 0 - (@linethickness) 0;
-    }
-
-    &:hover {
-      &::after {
-        width: 100%;
-      }
-    }
-  }
 }
 
 .models {
@@ -104,12 +50,8 @@ body {
   margin-top: 1em;
 }
 
-.navbar-fixed-bottom {
-  background-color: #eee;
-}
-
 a.navbar-brand {
-  min-height: @navbar-height;
+  min-height: var(--header-height);
   min-width: 280px;
   background-image: url("https://eidc.ceh.ac.uk/images/nerc_small.png");
   background-position: center;
@@ -153,7 +95,7 @@ a.navbar-brand {
 
   .btn {
     &-code {
-      background-color: lighten(@nerc-blue, 60%);
+      background-color: color-mix(in oklab, var(--nerc-blue), white 60%);
       color: black;
       border-color: lightgray;
       border-radius: 6px;
@@ -175,11 +117,12 @@ a.navbar-brand {
       flex-wrap: nowrap;
       justify-content: flex-start;
       align-items: center;
-      &:hover, &:focus {
-        outline: 1px solid @nerc-lightgreen;
+      &:hover,
+      &:focus {
+        outline: 1px solid var(--nerc-lightgreen);
         text-decoration: none;
         div:first-child {
-          background-color: @nerc-darkgreen;
+          background-color: var(--nerc-darkgreen);
           color: white;
         }
       }
@@ -215,7 +158,7 @@ a.navbar-brand {
     @media only screen and (max-width: 760px),
       (min-device-width: 768px) and (max-device-width: 1024px) {
       // On small screens, force qa table to not display as a table
-      @head-width: 100px;
+      --head-width: 100px;
 
       table,
       thead,
@@ -241,7 +184,7 @@ a.navbar-brand {
       td {
         border: none;
         position: relative;
-        margin-left: @head-width*1.2;
+        margin-left: calc(var(--head-width)*1.2);
         padding: 0.4em !important;
 
         &:before {
@@ -249,9 +192,9 @@ a.navbar-brand {
           padding: 0.4em 0.6em;
           top: 0;
           left: 3em;
-          margin-left: -(@head-width*1.5);
+          margin-left: calc(var(--head-width)*-1.5);
           text-align: right;
-          width: @head-width;
+          width: var(--head-width);
           font-weight: bolder;
           white-space: nowrap;
         }
@@ -287,7 +230,9 @@ a.navbar-brand {
 //media query for screens wider than 600px
 @media only screen and (min-width: 600px) {
   .nerc-model {
-    .hideLarge {display:none}
+    .hideLarge {
+      display: none;
+    }
     .container {
       .key-value {
         grid-template-columns: 13em auto;

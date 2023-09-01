@@ -114,7 +114,7 @@ public class CatalogueServiceConfig {
 
             Catalogue.builder()
                 .id(defaultCatalogueKey)
-                .title("EIDC")
+                .title("")
                 .url("https://www.eidc.ac.uk")
                 .contactUrl("https://www.eidc.ac.uk/contact")
                 .logo("eidc.png")

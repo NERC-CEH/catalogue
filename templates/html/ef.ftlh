@@ -2,7 +2,11 @@
 <#import "ef/blocks.ftlh" as ef_blocks>
 <#import "skeleton.ftlh" as skeleton>
 
-<@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
+<#assign footerContent>
+  <#include "ef/_footer.ftlh">
+</#assign>
+
+<@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) footer=footerContent>
   <div id="metadata" class="container">
 
     <@blocks.title title type />
@@ -16,8 +20,5 @@
     <#include "ef/_identifiers.ftlh">
     <@ef_blocks.links "Online Resources" onlineResources/>
 
-  </div>
-  <div id="footer">
-    <#include "ef/_footer.ftlh">
   </div>
 </@skeleton.master>

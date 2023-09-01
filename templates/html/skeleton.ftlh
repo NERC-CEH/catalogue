@@ -8,7 +8,7 @@
 
 <#assign catalogueid="">
 
-<#macro master title catalogue="" rdf="" schemaorg="" canonical="" searching=false can_edit_restricted=false containerClass="container" scripts=defaultScripts>
+<#macro master title catalogue="" rdf="" schemaorg="" canonical="" searching=false can_edit_restricted=false containerClass="container" scripts=defaultScripts footer="">
 <#assign catalogueid="">
 <#if catalogue?has_content>
   <#assign catalogueid= catalogue.id >
@@ -49,23 +49,18 @@
     </#if>
   </head>
   <body data-edit-restricted="${can_edit_restricted?then('','disabled')}">
-    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <header>
       <div class="${containerClass}">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <#if catalogue?has_content>
+       <div class="siteLogo">
+        <#if catalogue?has_content>
             <a href="${catalogue.url}" class="navbar-brand"><img src="/static/img/cataloguelogo/${catalogue.logo}" alt="${catalogue.title}"/></a>
           <#else>
-            <a href="" class="navbar-brand"><img src="/static/img/cataloguelogo/ukceh.png" alt="UKCEH"/></a>
+            <img src="/static/img/cataloguelogo/ukceh.png" alt="UKCEH"/>
           </#if>
         </div>
-        <div class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
+       
+        <div class="navigationBar" id="navigationBar" role="navigation">
+          <ul class="navigation-left">
             <#if catalogue?has_content>
               <li class="navbar-title">
                 <a href="${catalogue.url}">${catalogue.title}</a>
@@ -79,7 +74,7 @@
 
             </#if>
           </ul>
-          <ul class="nav navbar-nav navbar-right">
+          <ul class="navigation-right">
             <#if searching && catalogue?has_content && permission.userCanCreate(catalogue.id)>
               <li>
                 <div id="editorCreate" class="dropdown">
@@ -102,14 +97,40 @@
             <li id="sso-user"></li>
           </ul>
         </div>
+        
+        <a href="javascript:void(0);" class="navigation-toggle" onclick="collapseNavigation()">
+          <span class="fa-solid fa-bars fa-xl"></span>
+        </a>
+        
+        <button type="button" class="navigation-toggle">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="fa-solid fa-bars fa-xl"></span>
+        </button>        
       </div>
-    </div>
-    <#--
-      #nested wrapped in div to protect scripts from div's that might not be closed properly
-    -->
-    <div>
-      <#nested>
-    </div>
+    </header>
+    
+    <main>
+      <div>
+        <#--#nested wrapped in div to protect scripts from div's that might not be closed properly-->
+        <#nested>
+      </div>
+    </main>
+
+    <footer>
+      ${footer}
+    </footer>
+
+    <script>
+    function collapseNavigation() {
+      var nav = document.getElementById("navigationBar");
+      if (nav.className === "navigationBar") {
+        nav.className += " collapsed";
+      } else {
+        nav.className = "navigationBar";
+      }
+    }
+    </script>
+
     <#if catalogue?has_content && catalogue.id == "eidc">
       <script type="text/javascript" src="https://jira.ceh.ac.uk/s/d41d8cd98f00b204e9800998ecf8427e-CDN/-8wgtt1/813004/fe1f443e9c2ab11853ac2c907ebc1d28/2.2.4.7/_/download/batch/com.atlassian.plugins.jquery:jquery/com.atlassian.plugins.jquery:jquery.js?collectorId=1977b77c"></script>
       <script type="text/javascript" src="https://jira.ceh.ac.uk/s/743f218046d73ea8e8033c2a0fad57f5-T/-8wgtt1/813004/fe1f443e9c2ab11853ac2c907ebc1d28/4.0.4/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?locale=en-UK&collectorId=1977b77c"></script>

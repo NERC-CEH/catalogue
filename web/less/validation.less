@@ -1,8 +1,8 @@
 span.badge {
-  &-VALID          { background-color: @brand-success; }
-  &-WARNING        { background-color: @brand-warning; }
-  &-ERROR          { background-color: lighten(@brand-danger, 10%); }
-  &-FAILED_TO_READ { background-color: @brand-danger; }
+  &-VALID          { background-color: var(--brand-success); }
+  &-WARNING        { background-color: var(--brand-warning); }
+  &-ERROR          { background-color: color-mix(in oklab, var(--brand-danger), white 10%); }
+  &-FAILED_TO_READ { background-color: var(--brand-danger); }
 }
 
 .validation-results { height: 300px; overflow-y: auto;}

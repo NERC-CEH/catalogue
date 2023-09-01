@@ -194,6 +194,7 @@ export default Backbone.View.extend({
 
   render () {
     this.$el.html(this.template(this.model.attributes))
+    this.$('footer').toggleClass('hidden')
     this.sections.forEach(section => {
       section.views.forEach(view => {
         this.$('#editor').append(view.render().el)

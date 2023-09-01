@@ -1,6 +1,8 @@
 <#if incomingCitations?has_content>
+  <#assign displayCitations = 1>
+
   <div id="section-citations">
-    <h2>Citations</h2>
+    <h2>Citations <a name="citations"></a></h2>
 
     <#list incomingCitations as ic>
       <div class="citation">
