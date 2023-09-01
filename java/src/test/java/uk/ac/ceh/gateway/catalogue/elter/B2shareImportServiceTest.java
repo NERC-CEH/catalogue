@@ -25,7 +25,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import uk.ac.ceh.gateway.catalogue.deims.DeimsSolrIndex;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.publication.PublicationService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
 import static org.apache.solr.client.solrj.SolrRequest.METHOD.POST;
@@ -58,7 +57,6 @@ public class B2shareImportServiceTest {
     private static final String RECORD_ID = "00000000-0000-0000-0000-000000000000";
 
     @Mock private DocumentRepository documentRepository;
-    @Mock private PublicationService publicationService;
     @Mock private SolrClient solrClient;
 
     @BeforeEach
@@ -83,7 +81,6 @@ public class B2shareImportServiceTest {
         // setup
         b2shareImportService = new B2shareImportService(
                 documentRepository,
-                publicationService,
                 solrClient,
                 b2shareResponseUrl
                 );
@@ -111,8 +108,6 @@ public class B2shareImportServiceTest {
         // check interactions
         ArgumentCaptor<ElterDocument> argument = ArgumentCaptor.forClass(ElterDocument.class);
         verify(documentRepository).saveNew(eq(expectedUser), argument.capture(), eq(CATALOGUE), eq("Create new record 10.23728/b2share.b56cd875765a403599859177fced08ae"));
-        verify(publicationService).transition(expectedUser, RECORD_ID, "ykhm7b");
-        verify(publicationService).transition(expectedUser, RECORD_ID, "re4vkb");
 
         // check created document
         ElterDocument createdDocument = argument.getValue();
@@ -144,7 +139,6 @@ public class B2shareImportServiceTest {
         // setup
         b2shareImportService = new B2shareImportService(
                 documentRepository,
-                publicationService,
                 solrClient,
                 b2shareResponseUrl
                 );
@@ -181,7 +175,6 @@ public class B2shareImportServiceTest {
         verify(documentRepository).read(RECORD_ID);
         ArgumentCaptor<ElterDocument> argument = ArgumentCaptor.forClass(ElterDocument.class);
         verify(documentRepository).save(eq(expectedUser), argument.capture(), eq(RECORD_ID), eq("Updated record 10.23728/b2share.b56cd875765a403599859177fced08ae"));
-        verifyNoInteractions(publicationService);
 
         // check created document
         ElterDocument updatedDocument = argument.getValue();
@@ -213,7 +206,6 @@ public class B2shareImportServiceTest {
         // setup
         b2shareImportService = new B2shareImportService(
                 documentRepository,
-                publicationService,
                 solrClient,
                 invalidB2shareResponseUrl
                 );
@@ -229,7 +221,6 @@ public class B2shareImportServiceTest {
 
         // then
         verifyNoInteractions(documentRepository);
-        verifyNoInteractions(publicationService);
     }
 
     @Test
@@ -238,7 +229,6 @@ public class B2shareImportServiceTest {
         // setup
         b2shareImportService = new B2shareImportService(
                 documentRepository,
-                publicationService,
                 solrClient,
                 invalidB2shareResponseUrl
                 );
@@ -255,6 +245,5 @@ public class B2shareImportServiceTest {
 
         // then
         verifyNoInteractions(documentRepository);
-        verifyNoInteractions(publicationService);
     }
 }
