@@ -63,7 +63,7 @@ public class B2shareImportService implements CatalogueImportService {
     private final Pattern doiNormalise;
     private final PublicationService publicationService;
     private final SolrClient solrClient;
-    private String b2shareRecordsUrl;
+    private final String b2shareRecordsFirstPageUrl;
 
     // fixed fields
     private static final AccessLimitation openAccess = AccessLimitation.builder()
@@ -138,11 +138,11 @@ public class B2shareImportService implements CatalogueImportService {
             DocumentRepository documentRepository,
             PublicationService publicationService,
             SolrClient solrClient,
-            @Value("${b2share.api}") String b2shareRecordsUrl
+            @Value("${b2share.api}") String b2shareRecordsFirstPageUrl
             ) {
         log.info("Creating");
 
-        this.b2shareRecordsUrl = b2shareRecordsUrl;
+        this.b2shareRecordsFirstPageUrl = b2shareRecordsFirstPageUrl;
         this.dateParser = new DateTimeFormatterBuilder()
             // order matters! put patterns containing others first
             .appendPattern("[y-M-d'T'H:m:s.nXXX]")
@@ -410,12 +410,13 @@ public class B2shareImportService implements CatalogueImportService {
         }
 
         // ready to import
-        JsonNode b2shareRecords = null;
-        while (! b2shareRecordsUrl.equals("")) {
+        JsonNode b2shareRecordsPage = null;
+        String b2shareRecordsnextPageUrl = b2shareRecordsFirstPageUrl;
+        while (! b2shareRecordsnextPageUrl.equals("")) {
             // get next page of records
-            b2shareRecords = objectMapper.readTree(new URL(b2shareRecordsUrl));
+            b2shareRecordsPage = objectMapper.readTree(new URL(b2shareRecordsnextPageUrl));
 
-            for (JsonNode record : b2shareRecords.path("hits").path("hits")){
+            for (JsonNode record : b2shareRecordsPage.path("hits").path("hits")){
                 // process each record on page
                 // normalise DOI to actual DOI, i.e. "10.xxx.../xxxx"
                 String originalDoi = record.path("metadata").path("DOI").asText();
@@ -457,9 +458,9 @@ public class B2shareImportService implements CatalogueImportService {
                     }
                 }
             }
-            b2shareRecordsUrl = b2shareRecords.path("links").path("next").asText();
+            b2shareRecordsnextPageUrl = b2shareRecordsPage.path("links").path("next").asText();
         }
-        totalRecords = b2shareRecords.get("hits").get("total").asInt();
+        totalRecords = b2shareRecordsPage.get("hits").get("total").asInt();
 
         // finished, log summary
         log.info("Finished B2SHARE metadata import!");
