@@ -231,4 +231,30 @@ public class B2shareImportServiceTest {
         verifyNoInteractions(documentRepository);
         verifyNoInteractions(publicationService);
     }
+
+    @Test
+    @SneakyThrows
+    public void checkMultipleInvocations() {
+        // setup
+        b2shareImportService = new B2shareImportService(
+                documentRepository,
+                publicationService,
+                solrClient,
+                invalidB2shareResponseUrl
+                );
+
+        // given
+        given(solrClient.query(any(String.class), any(SolrParams.class), eq(POST)))
+            .willReturn(queryResponse);
+        given(queryResponse.getResults())
+            .willReturn(new SolrDocumentList());
+
+        // when
+        b2shareImportService.runImport();
+        b2shareImportService.runImport();
+
+        // then
+        verifyNoInteractions(documentRepository);
+        verifyNoInteractions(publicationService);
+    }
 }
