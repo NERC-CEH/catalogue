@@ -5,6 +5,7 @@
       <@displayLinkedKeyword item.value item.uri/>
       <#sep><#if commaseparated=true>,<#else><br></#if></#sep>
     </#list>
+  </dd>
 </#macro>
 
 <#macro displayLinkedKeyword value="" uri="">

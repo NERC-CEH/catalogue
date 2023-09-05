@@ -18,6 +18,7 @@ import {
   ResourceConstraintView,
   ResourceIdentifierView,
   ResourceMaintenanceView,
+  ConformityView,
   ResourceTypeView, ServiceView,
   SingleObjectView, SpatialReferenceSystemView, SpatialRepresentationTypeView, SpatialResolutionView,
   AdditionalLinksView, IncomingCitationView,
@@ -333,8 +334,7 @@ export default EditorView.extend({
           helpText: `\
 <p>Include addresses of web services used to access the data and supporting information.</p>
 <p>Other links such as project websites or papers should <b>NOT</b> be included here. You can add them to "Additional information"</p>\
-`,
-          disabled
+`
         }),
 
         new PredefinedParentView({
@@ -579,8 +579,8 @@ export default EditorView.extend({
           modelAttribute: 'lineage',
           label: 'Lineage<small>Information about the source data used in the construction of this data resource</small>',
           rows: 15,
-          helpText: `\
-<p>Quality assessments and enhancement processes applied to the data resource can also be noted and summarised here.</p>\
+          helpText: `
+Quality assessments and enhancement processes applied to the data resource can also be noted and summarised here.
 `
         }),
 
@@ -593,11 +593,21 @@ export default EditorView.extend({
 
         new ParentView({
           model: this.model,
+          modelAttribute: 'conformity',
+          label: 'Conformity',
+          ObjectInputView: ConformityView,
+          helpText: `
+Help text here
+`
+        }),
+
+        new ParentView({
+          model: this.model,
           modelAttribute: 'resourceMaintenance',
           label: 'Resource maintenance',
           ObjectInputView: ResourceMaintenanceView,
           helpText: `
-<p>This states how often the updated data resource is made available to the user.  For the vast majority of EIDC data, this value will be "not planned".</p>
+This states how often the updated data resource is made available to the user.  For the vast majority of EIDC data, this value will be "not planned".
 `
         })
       ]
