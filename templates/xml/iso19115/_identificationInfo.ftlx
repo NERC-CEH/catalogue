@@ -144,6 +144,7 @@
     </#if>
 		<#include "_INSPIREkeywords.ftlx">
 		<#include "_descriptiveKeywords.ftlx">
+		<#include "_keywords.ftlx">
 		<#include "_resourceConstraints.ftlx">
 		<#if spatialRepresentationTypes?has_content>
 			<#list spatialRepresentationTypes as spatialRepresentationType>
