@@ -1,3 +1,4 @@
+import $ from 'jquery'
 import { SimpleUploadView } from '../src/App'
 
 describe('Test SimpleUploadView', function () {

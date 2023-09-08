@@ -1,7 +1,6 @@
 import _ from 'underscore'
 import Backbone from 'backbone'
 import 'bootstrap'
-import { ClipboardCopyView } from './clipboard/src/ClipboardCopy'
 import {
   CehModelApplicationEditorView,
   CehModelEditorView, CodeDocumentEditorView,
@@ -42,11 +41,6 @@ import { UploadModel, UploadView } from "./hubbub/src/Upload"
 /* This is the initializer method for the entire front end. Here we can
 set up the different applications and initialize any javascript code which
  we like globally. */
-// shim
-// http://stackoverflow.com/a/646643
-
-// if (String.prototype.startsWith == null) { String.prototype.startsWith = function (s) { return this.slice(0, s.length) === s } }
-// if (String.prototype.endsWith == null) { String.prototype.endsWith = function (s) { return (s === '') || (this.slice(-s.length) === s) } }
 
 // Fix for underscore not being global
 // Some templates use underscore
@@ -55,10 +49,6 @@ window._ = _
 
 if ($('.catalogue-control').length) {
   initCatalogue()
-}
-
-if ($('.clipboard-copy').length) {
-  initClipboard()
 }
 
 if ($('.edit-control').length) {
@@ -110,10 +100,6 @@ function initCatalogue () {
       })
     })
   })
-}
-
-function initClipboard () {
-  new ClipboardCopyView({ el: '.clipboard-copy' })
 }
 
 function initEditor () {

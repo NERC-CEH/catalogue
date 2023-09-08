@@ -1,6 +1,3 @@
-<head>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.2/dist/leaflet.draw-src.css" />
-</head>
 <div class="row">
     <div class="col-sm-2 col-lg-2">
         <label for="boundingBox<%= data.index %>WestBoundLongitude">West Bounding Longitude</label>

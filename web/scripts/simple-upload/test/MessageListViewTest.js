@@ -1,3 +1,4 @@
+import $ from 'jquery'
 import Backbone from 'backbone'
 import { MessageListView } from '../src/Message'
 describe('Test MessageListView', function () {

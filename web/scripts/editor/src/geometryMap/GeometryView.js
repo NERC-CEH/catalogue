@@ -1,7 +1,5 @@
 import _ from 'underscore'
 import { ObjectInputView } from '../views'
-import 'leaflet-draw/dist/leaflet.draw-src.css'
-import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
 import 'leaflet-draw'
 import template from './Geometry.tpl'
@@ -14,7 +12,8 @@ export default ObjectInputView.extend({
   },
 
   initialize () {
-    L.Icon.Default.imagePath = 'https://unpkg.com/leaflet-draw@1.0.2/dist/images/' // fix for leaflet draw image bug
+    // TODO: check if this is still needed
+    // L.Icon.Default.imagePath = 'https://unpkg.com/leaflet-draw@1.0.2/dist/images/' // fix for leaflet draw image bug
     this.template = _.template(template)
     ObjectInputView.prototype.initialize.apply(this)
     this.render()

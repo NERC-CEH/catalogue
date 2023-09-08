@@ -3,8 +3,6 @@ import template from '../templates/DataTypeProvenance.tpl'
 import ParentStringView from './ParentStringView'
 import _ from 'underscore'
 import 'air-datepicker'
-import 'air-datepicker/dist/js/i18n/datepicker.en.js'
-import 'air-datepicker/dist/css/datepicker.min.css'
 import Moment from 'moment'
 export default ObjectInputView.extend({
 

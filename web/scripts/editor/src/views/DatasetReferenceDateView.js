@@ -2,8 +2,6 @@ import ObjectInputView from './ObjectInputView'
 import template from '../templates/DatasetReferenceDate.tpl'
 import _ from 'underscore'
 import 'air-datepicker'
-import 'air-datepicker/dist/js/i18n/datepicker.en.js'
-import 'air-datepicker/dist/css/datepicker.min.css'
 import Moment from 'moment'
 export default ObjectInputView.extend({
 

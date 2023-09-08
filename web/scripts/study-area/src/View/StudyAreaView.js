@@ -1,13 +1,12 @@
 import Backbone from 'backbone'
 import _ from 'underscore'
-import 'leaflet-draw/dist/leaflet.draw-src.css'
-import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
 
 export default Backbone.View.extend({
 
   initialize () {
-    L.Icon.Default.imagePath = 'https://unpkg.com/leaflet-draw@1.0.2/dist/images/' // fix for leaflet draw marker bug
+    // TODO: check if this is still needed
+    // L.Icon.Default.imagePath = 'https://unpkg.com/leaflet-draw@1.0.2/dist/images/' // fix for leaflet draw marker bug
     this.render()
   },
 

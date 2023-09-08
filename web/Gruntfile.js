@@ -1,10 +1,55 @@
 module.exports = function (grunt) {
-  grunt.loadNpmTasks('grunt-concurrent')
-  grunt.loadNpmTasks('grunt-contrib-less')
-  grunt.loadNpmTasks('grunt-contrib-cssmin')
-  grunt.loadNpmTasks('grunt-contrib-watch')
-
   grunt.initConfig({
+    babel: {
+      options: {
+        sourceMap: true,
+        presets: ['@babel/preset-env']
+      },
+      dist: {
+        files: {
+          'dist/main.bundle.js': 'scripts/main.js'
+        }
+      }
+    },
+    browserify: {
+      build: {
+        src: [
+          'scripts/main.js'
+        ],
+        dest: 'dist/main.bundle.js',
+        options: {
+          transform: [
+            'brfs',
+            ['babelify', { 'presets': ['@babel/preset-env'] }]
+          ]
+        }
+      }
+    },
+    uglify: {
+      build: {
+        files: {'dist/main.bundle.js': 'dist/main.bundle.js'}
+      }
+    },
+    karma: {
+      unit: {
+        options: {
+          frameworks: ['browserify', 'jasmine'],
+          files: [
+            'scripts/simple-upload/test/*.js'
+          ],
+          preprocessors: {
+            'scripts/simple-upload/test/*.js': ['browserify']
+          },
+          browserify: {
+            transform: [
+              'jstify',
+              ['babelify', { 'presets': ['@babel/preset-env'] }]
+            ]
+          },
+          singleRun: true
+        }
+      }
+    },
     less: {
       options: {
         compress: false,
@@ -218,7 +263,15 @@ module.exports = function (grunt) {
       }
     }
   })
+  grunt.loadNpmTasks('grunt-babel')
+  grunt.loadNpmTasks('grunt-browserify')
+  grunt.loadNpmTasks('grunt-concurrent')
+  grunt.loadNpmTasks('grunt-contrib-less')
+  grunt.loadNpmTasks('grunt-contrib-cssmin')
+  grunt.loadNpmTasks('grunt-contrib-uglify')
+  grunt.loadNpmTasks('grunt-contrib-watch')
+  grunt.loadNpmTasks('grunt-karma')
   grunt.registerTask('develop', ['less', 'concurrent:watch'])
-  grunt.registerTask('build', ['less', 'cssmin'])
+  grunt.registerTask('build', ['browserify', 'uglify', 'less', 'cssmin'])
   grunt.registerTask('default', ['build'])
 }
