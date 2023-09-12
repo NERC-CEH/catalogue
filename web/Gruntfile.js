@@ -1,251 +1,35 @@
 module.exports = function (grunt) {
   grunt.initConfig({
-    babel: {
-      options: {
-        sourceMap: true,
-        presets: ['@babel/preset-env']
-      },
-      dist: {
-        files: {
-          'dist/main.bundle.js': 'scripts/main.js'
-        }
-      }
-    },
-    browserify: {
-      build: {
-        src: [
-          'scripts/main.js'
-        ],
-        dest: 'dist/main.bundle.js',
-        options: {
-          transform: [
-            'brfs',
-            ['babelify', { 'presets': ['@babel/preset-env'] }]
-          ]
-        }
-      }
-    },
-    uglify: {
-      build: {
-        files: {'dist/main.bundle.js': 'dist/main.bundle.js'}
-      }
-    },
-    karma: {
-      unit: {
-        options: {
-          frameworks: ['browserify', 'jasmine'],
-          files: [
-            'scripts/simple-upload/test/*.js'
-          ],
-          preprocessors: {
-            'scripts/simple-upload/test/*.js': ['browserify']
-          },
-          browserify: {
-            transform: [
-              'jstify',
-              ['babelify', { 'presets': ['@babel/preset-env'] }]
-            ]
-          },
-          singleRun: true
-        }
-      }
+    clean: {
+      build: ['css/*']
     },
     less: {
       options: {
-        compress: false,
-        paths: ['css']
+        compress: true,
+        sourceMap: true
       },
-      assist: {
-        files: {
-          'css/style-assist.css': 'less/style-assist.less'
-        }
-      },
-      ceh: {
-        files: {
-          'css/style-ceh.css': 'less/style-ceh.less'
-        }
-      },
-      cmp: {
-        files: {
-          'css/style-cmp.css': 'less/style-cmp.less'
-        }
-      },
-      datalabs: {
-        files: {
-          'css/style-datalabs.css': 'less/style-datalabs.less'
-        }
-      },
-      edge: {
-        files: {
-          'css/style-edge.css': 'less/style-edge.less'
-        }
-      },
-      eidc: {
-        files: {
-          'css/style-eidc.css': 'less/style-eidc.less'
-        }
-      },
-      elter: {
-        files: {
-          'css/style-elter.css': 'less/style-elter.less'
-        }
-      },
-      erammp: {
-        files: {
-          'css/style-erammp.css': 'less/style-erammp.less'
-        }
-      },
-      inlicensed: {
-        files: {
-          'css/style-inlicensed.css': 'less/style-inlicensed.less'
-        }
-      },
-      inms: {
-        files: {
-          'css/style-inms.css': 'less/style-inms.less'
-        }
-      },
-      nc: {
-        files: {
-          'css/style-nc.css': 'less/style-nc.less'
-        }
-      },
-      nm: {
-        files: {
-          'css/style-nm.css': 'less/style-nm.less'
-        }
-      },
-      m: {
-        files: {
-          'css/style-m.css': 'less/style-m.less'
-        }
-      },
-      osdp: {
-        files: {
-          'css/style-osdp.css': 'less/style-osdp.less'
-        }
-      },
-      pimfe: {
-        files: {
-          'css/style-pimfe.css': 'less/style-pimfe.less'
-        }
-      },
-      infrastructure: {
-        files: {
-          'css/style-infrastructure.css': 'less/style-infrastructure.less'
-        }
-      },
-      sa: {
-        files: {
-          'css/style-sa.css': 'less/style-sa.less'
-        }
-      },
-      ukeof: {
-        files: {
-          'css/style-ukeof.css': 'less/style-ukeof.less'
-        }
-      },
-      ukscape: {
-        files: {
-          'css/style-ukscape.css': 'less/style-ukscape.less'
-        }
-      }
-    },
-    cssmin: {
-      assist: {
-        files: {
-          'css/style-assist.css': 'css/style-assist.css'
-        }
-      },
-      ceh: {
-        files: {
-          'css/style-ceh.css': 'css/style-ceh.css'
-        }
-      },
-      cmp: {
-        files: {
-          'css/style-cmp.css': 'css/style-cmp.css'
-        }
-      },
-      datalabs: {
-        files: {
-          'css/style-datalabs.css': 'css/style-datalabs.css'
-        }
-      },
-      edge: {
-        files: {
-          'css/style-edge.css': 'css/style-edge.css'
-        }
-      },
-      eidc: {
-        files: {
-          'css/style-eidc.css': 'css/style-eidc.css'
-        }
-      },
-      elter: {
-        files: {
-          'css/style-elter.css': 'css/style-elter.css'
-        }
-      },
-      erammp: {
-        files: {
-          'css/style-erammp.css': 'css/style-erammp.css'
-        }
-      },
-      inlicensed: {
-        files: {
-          'css/style-inlicensed.css': 'css/style-inlicensed.css'
-        }
-      },
-      inms: {
-        files: {
-          'css/style-inms.css': 'css/style-inms.css'
-        }
-      },
-      nc: {
-        files: {
-          'css/style-nc.css': 'css/style-nc.css'
-        }
-      },
-      nm: {
-        files: {
-          'css/style-nm.css': 'css/style-nm.css'
-        }
-      },
-      m: {
-        files: {
-          'css/style-m.css': 'css/style-m.css'
-        }
-      },
-      osdp: {
-        files: {
-          'css/style-osdp.css': 'css/style-osdp.css'
-        }
-      },
-      pimfe: {
-        files: {
-          'css/style-pimfe.css': 'css/style-pimfe.css'
-        }
-      },
-      infrastructure: {
-        files: {
-          'css/style-infrastructure.css': 'css/style-infrastructure.css'
-        }
-      },
-      sa: {
-        files: {
-          'css/style-sa.css': 'css/style-sa.css'
-        }
-      },
-      ukeof: {
-        files: {
-          'css/style-ukeof.css': 'css/style-ukeof.css'
-        }
-      },
-      ukscape: {
-        files: {
-          'css/style-ukscape.css': 'css/style-ukscape.css'
-        }
+      build: {
+        files: [
+          { src: 'less/style-assist.less', dest: 'css/style-assist.css' },
+          { src: 'less/style-ceh.less', dest: 'css/style-ceh.css' },
+          { src: 'less/style-cmp.less', dest: 'css/style-cmp.css' },
+          { src: 'less/style-datalabs.less', dest: 'css/style-datalabs.css' },
+          { src: 'less/style-edge.less', dest: 'css/style-edge.css' },
+          { src: 'less/style-eidc.less', dest: 'css/style-eidc.css' },
+          { src: 'less/style-elter.less', dest: 'css/style-elter.css' },
+          { src: 'less/style-erammp.less', dest: 'css/style-erammp.css' },
+          { src: 'less/style-inlicensed.less', dest: 'css/style-inlicensed.css' },
+          { src: 'less/style-inms.less', dest: 'css/style-inms.css' },
+          { src: 'less/style-nc.less', dest: 'css/style-nc.css' },
+          { src: 'less/style-nm.less', dest: 'css/style-nm.css' },
+          { src: 'less/style-m.less', dest: 'css/style-m.css' },
+          { src: 'less/style-osdp.less', dest: 'css/style-osdp.css' },
+          { src: 'less/style-pimfe.less', dest: 'css/style-pimfe.css' },
+          { src: 'less/style-infrastructure.less', dest: 'css/style-infrastructure.css' },
+          { src: 'less/style-sa.less', dest: 'css/style-sa.css' },
+          { src: 'less/style-ukeof.less', dest: 'css/style-ukeof.css' },
+          { src: 'less/style-ukscape.less', dest: 'css/style-ukscape.css' }
+        ]
       }
     },
     watch: {
@@ -263,15 +47,11 @@ module.exports = function (grunt) {
       }
     }
   })
-  grunt.loadNpmTasks('grunt-babel')
-  grunt.loadNpmTasks('grunt-browserify')
   grunt.loadNpmTasks('grunt-concurrent')
+  grunt.loadNpmTasks('grunt-contrib-clean')
   grunt.loadNpmTasks('grunt-contrib-less')
-  grunt.loadNpmTasks('grunt-contrib-cssmin')
-  grunt.loadNpmTasks('grunt-contrib-uglify')
   grunt.loadNpmTasks('grunt-contrib-watch')
-  grunt.loadNpmTasks('grunt-karma')
-  grunt.registerTask('develop', ['less', 'concurrent:watch'])
-  grunt.registerTask('build', ['browserify', 'uglify', 'less', 'cssmin'])
+  grunt.registerTask('develop', ['less', 'concurrent'])
+  grunt.registerTask('build', ['clean', 'less'])
   grunt.registerTask('default', ['build'])
 }
