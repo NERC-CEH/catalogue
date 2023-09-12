@@ -6,16 +6,16 @@
 !schemas
 !templates
 !web
-!web/scripts
+!web/src
 !web/dist
 !web/Gruntfile.js
 web/css
-web/scripts/catalogue/test/
-web/scripts/clipboard/test/
-web/scripts/editor/test/
-web/scripts/geometryMap/test/
-web/scripts/hubbub/test/
-web/scripts/permission/test/
-web/scripts/simple-upload/test/
-web/scripts/study-area/test/
+web/src/catalogue/test/
+web/src/clipboard/test/
+web/src/editor/test/
+web/src/geometryMap/test/
+web/src/hubbub/test/
+web/src/permission/test/
+web/src/simple-upload/test/
+web/src/study-area/test/
 

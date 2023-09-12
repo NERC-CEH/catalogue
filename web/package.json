@@ -5,16 +5,12 @@
   "author": "UKCEH Environmental Data Science Group",
   "license": "GPL-2.0-or-later",
   "private": "true",
-  "browser": {
-    "./dist/main.bundle.js": "./scripts/main.js"
-  },
   "scripts": {
     "build-css": "grunt build",
     "build-dev": "webpack --mode development",
     "build-prod": "webpack --mode production",
     "test": "grunt karma",
     "test-server": "concurrently 'webpack --watch' 'karma start'",
-    "test-watch": "karma start",
     "lint": "eslint ."
   },
   "babel": {
@@ -35,24 +31,13 @@
     "parserOptions": {
       "ecmaVersion": "latest",
       "sourceType": "module"
-    },
-    "rules": {
-      "no-new": 0,
-      "no-undef": 0,
-      "prefer-regex-literals": 0,
-      "quotes": 0
     }
   },
   "devDependencies": {
     "@babel/core": "^7.22.15",
     "@babel/eslint-parser": "^7.22.15",
     "@babel/preset-env": "^7.22.15",
-    "babel-helpers": "^6.24.1",
     "babel-loader": "^8.2.3",
-    "babel-register": "^6.26.0",
-    "babelify": "^10.0.0",
-    "brfs": "^2.0.2",
-    "css-loader": "^6.8.1",
     "eslint": "^8.48.0",
     "eslint-config-standard": "^17.1.0",
     "eslint-webpack-plugin": "^3.2.0",
@@ -64,7 +49,6 @@
     "grunt-contrib-watch": "^1.1.0",
     "html-loader": "^4.2.0",
     "karma": "^6.4.2",
-    "karma-browserify": "^8.1.0",
     "karma-babel-preprocessor": "^8.0.2",
     "karma-chrome-launcher": "^3.2.0",
     "karma-html2js-preprocessor": "^1.1.0",
@@ -76,9 +60,7 @@
     "karma-webpack": "^5.0.0",
     "puppeteer": "^21.1.1",
     "resolve-url-loader": "^5.0.0",
-    "style-loader": "^3.3.3",
-    "webpack": "^5.88.2",
-    "webpack-cli": "^5.1.4"
+    "webpack": "^5.88.2"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.4.2",

@@ -16,6 +16,7 @@ export default SingleView.extend({
 
     const that = this
     $(document).ready(function () {
+      /* eslint no-new: "off" */
       new that.data.ObjectInputView(_.extend({}, that.data, {
         el: that.$('.dataentry'),
         model: inputModel

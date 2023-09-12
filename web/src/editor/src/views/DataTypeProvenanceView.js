@@ -33,6 +33,7 @@ export default ObjectInputView.extend({
         }
       })
 
+      /* eslint no-new: "off" */
       new ParentStringView({
         el: that.$('#provenanceContributors'),
         model: that.model,

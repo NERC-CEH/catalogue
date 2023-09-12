@@ -30,7 +30,7 @@ export default Backbone.View.extend({
 
       Swal.fire({
         title: `Server response: ${response.status} ${response.statusText}`,
-        text: `There was a problem communicating with the server! \n Please save this record locally by copying the text below to a file.`,
+        text: 'There was a problem communicating with the server! \n Please save this record locally by copying the text below to a file.',
         html: `<textarea readonly style="resize:none; height:auto;" rows="20">${JSON.stringify(model.toJSON())}</textarea>`,
         icon: 'error',
         confirmButtonText: 'Close'

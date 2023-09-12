@@ -7,7 +7,7 @@ module.exports = function (config) {
     frameworks: ['jasmine-ajax', 'jasmine', 'webpack'],
 
     files: [
-      './scripts/*/test/*.js'
+      'src/*/test/*.js'
     ],
 
     loggers: [

@@ -1,8 +1,6 @@
-const path = require('path')
-
 module.exports = {
   entry: {
-    main: './scripts/main.js'
+    main: './scripts/index.js'
   },
   module: {
     rules: [
@@ -14,11 +12,10 @@ module.exports = {
         }
       },
       {
-        test: /\.(html|tpl)$/,
+        test: /\.tpl$/,
         use: [
           {
-            loader: 'html-loader',
-            options: { minimize: true }
+            loader: 'html-loader'
           }
         ]
       }

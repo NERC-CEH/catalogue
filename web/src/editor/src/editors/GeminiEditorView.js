@@ -516,9 +516,8 @@ export default EditorView.extend({
               westBoundLongitude: -180.00
             }
           },
-          helpText: `\
-    <p>If you do not wish to reveal the exact location publicly (for example, if locations are sensitive) it is recommended that you generalise the location.</p>\
-    `
+          helpText: `<p>If you do not wish to reveal the exact location publicly (for example, if locations are sensitive)
+            it is recommended that you generalise the location.</p>`
         }),
         new PredefinedParentView({
           model: this.model,
@@ -580,9 +579,7 @@ export default EditorView.extend({
           modelAttribute: 'lineage',
           label: 'Lineage<small>Information about the source data used in the construction of this data resource</small>',
           rows: 15,
-          helpText: `\
-<p>Quality assessments and enhancement processes applied to the data resource can also be noted and summarised here.</p>\
-`
+          helpText: '<p>Quality assessments and enhancement processes applied to the data resource can also be noted and summarised here.</p>'
         }),
 
         new TextareaView({

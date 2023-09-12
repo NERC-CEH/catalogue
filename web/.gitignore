@@ -1,6 +1,6 @@
 # Ignore the built content
 vendor
-scripts/*-out.js
+src/*-out.js
 css
 dist
 
