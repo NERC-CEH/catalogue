@@ -17,7 +17,7 @@ export default ObjectInputView.extend({
         language: 'en',
         dateFormat: 'yyyy-mm-dd',
         position: 'top left',
-        onSelect: function (formattedDate, date, inst) {
+        onSelect: function (formattedDate, date) {
           that.model.set('creationDate', Moment(date).format('YYYY-MM-DD'))
           that.$('#input-creationDate').value = that.model.set('creationDate', Moment(date).format('YYYY-MM-DD'))
         }
@@ -27,7 +27,7 @@ export default ObjectInputView.extend({
         language: 'en',
         dateFormat: 'yyyy-mm-dd',
         position: 'top left',
-        onSelect: function (formattedDate, date, inst) {
+        onSelect: function (formattedDate, date) {
           that.model.set('modificationDate', Moment(date).format('YYYY-MM-DD'))
           that.$('#input-modificationDate').value = that.model.set('creationDate', Moment(date).format('YYYY-MM-DD'))
         }

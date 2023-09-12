@@ -14,7 +14,7 @@ export default Backbone.View.extend({
     return this
   },
 
-  selected (event) {
+  selected () {
     this.model.trigger('selected', this.model.get('identifier'))
   }
 })

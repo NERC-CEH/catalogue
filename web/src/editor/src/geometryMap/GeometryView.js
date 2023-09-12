@@ -96,11 +96,7 @@ export default ObjectInputView.extend({
   },
 
   createToolbar () {
-    if (this.drawButtons === true) {
-      this.deleteButton = false
-    } else {
-      this.deleteButton = true
-    }
+    this.deleteButton = this.drawButtons !== true;
     return new L.Control.Draw({
       position: 'topleft',
       edit: {
