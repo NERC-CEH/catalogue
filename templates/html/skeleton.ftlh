@@ -51,62 +51,34 @@
   <body data-edit-restricted="${can_edit_restricted?then('','disabled')}">
     <header>
       <div class="${containerClass}">
-       <div class="siteLogo">
-        <#if catalogue?has_content>
-            <a href="${catalogue.url}" class="navbar-brand"><img src="/static/img/cataloguelogo/${catalogue.logo}" alt="${catalogue.title}"/></a>
-          <#else>
-            <img src="/static/img/cataloguelogo/ukceh.png" alt="UKCEH"/>
-          </#if>
-        </div>
-       
-        <div class="navigationBar" id="navigationBar" role="navigation">
-          <ul class="navigation-left">
+        <div class="header-content">
+          <div class="siteLogo">
             <#if catalogue?has_content>
-              <li class="navbar-title">
-                <a href="${catalogue.url}">${catalogue.title}</a>
-              </li>
-
-              <#if catalogue.id == "assist" || catalogue.id == 'eidc'|| catalogue.id == 'elter' || catalogue.id == "erammp">
-                <#include "menus/${catalogue.id }.ftlh">
-              <#else>
-                <li class="<#if searching>active</#if>"><a href="/${catalogue.id}/documents">Search</a></li>
-              </#if>
-
+              <a href="${catalogue.url}"><img src="/static/img/cataloguelogo/${catalogue.logo}" alt="${catalogue.title}"/></a>
+            <#else>
+              <img src="/static/img/cataloguelogo/ukceh.png" alt="UKCEH"/>
             </#if>
-          </ul>
-          <ul class="navigation-right">
-            <#if searching && catalogue?has_content && permission.userCanCreate(catalogue.id)>
-              <li>
-                <div id="editorCreate" class="dropdown">
-                  <button class="btn btn-default navbar-btn dropdown-toggle" type="button" id="createMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                    Create
-                    <span class="caret"></span>
-                  </button>
-                  <ul class="dropdown-menu" aria-labelledby="createMenu">
-                    <#list catalogue.documentTypes as docType>
-                      <li><a class="edit-control" data-document-type="${docType.type}" href="#">${docType.title}</a></li>
-                    </#list>
-                    <#if catalogue.fileUpload>
-                      <li role="separator" class="divider"></li>
-                      <li><a href="/documents/upload">File Upload</a></li>
-                    </#if>
-                  </ul>
-                </div>
-              </li>
-            </#if>
-            <li id="sso-user"></li>
-          </ul>
+          </div>
+          <input type="checkbox" id="nav-check" />
+          <label for="nav-check" class="navigation-toggle">
+            <span></span>
+          </label>
+          <nav role="navigation">
+            <ul class="navigation-left">
+              <li><a href="#">EIDC</a></li>
+              <li><a href="#">Find data</a></li>
+              <li><a href="#">Deposit data</a></li>
+              <li><a href="#">Support</a></li>
+              <li><a href="#">About</a></li>
+              <li><a href="#">Contact us</a></li>
+              <li><a href="#">Help</a></li>
+            </ul>
+
+            <ul class="navigation-right">
+              <li><a href="#">LOGIN</a></li>
+            </ul>
+          </nav>
         </div>
-        
-        <a href="javascript:void(0);" class="navigation-toggle" onclick="collapseNavigation()">
-          <span class="fa-solid fa-bars fa-xl"></span>
-        </a>
-        
-        <button type="button" class="navigation-toggle">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="fa-solid fa-bars fa-xl"></span>
-        </button>        
-      </div>
     </header>
     
     <main>
@@ -119,17 +91,6 @@
     <footer>
       ${footer}
     </footer>
-
-    <script>
-    function collapseNavigation() {
-      var nav = document.getElementById("navigationBar");
-      if (nav.className === "navigationBar") {
-        nav.className += " collapsed";
-      } else {
-        nav.className = "navigationBar";
-      }
-    }
-    </script>
 
     <#if catalogue?has_content && catalogue.id == "eidc">
       <script type="text/javascript" src="https://jira.ceh.ac.uk/s/d41d8cd98f00b204e9800998ecf8427e-CDN/-8wgtt1/813004/fe1f443e9c2ab11853ac2c907ebc1d28/2.2.4.7/_/download/batch/com.atlassian.plugins.jquery:jquery/com.atlassian.plugins.jquery:jquery.js?collectorId=1977b77c"></script>

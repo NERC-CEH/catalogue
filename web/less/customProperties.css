@@ -1,5 +1,3 @@
-// I had to write this in a LESS file so it would compile properly but it is plain CSS
-
 :root {
   --gray-dark: hsl(0, 0%, 20%);
   --gray-darker: hsl(0, 0%, 13%);
@@ -11,7 +9,6 @@
   --brand-info: hsl(194, 66%, 61%);
   --brand-warning: hsl(35, 84%, 62%);
   --brand-danger: hsl(2, 64%, 58%);
-
   --body-background-colour: #fff;
   --text-colour: var(--gray-dark);
   --link-colour: #22f;
@@ -20,17 +17,14 @@
   --font-family-monospace: monospace;
   --font-family-base: var(--font-family-sans-serif);
   --line-height: 1.6;
-
   --header-height: 76px;
   --header-border-width: 1px;
   --header-border-colour: black;
   --header-background-colour: #353438;
   --header-text: #ffffff;
-
   --navbar-link-colour: var(--link-colour);
   --navbar-link-hover-colour: var(--link-hover-colour);
   --navbar-link-font-weight: 700;
-
   --filter-heading-gap: 3px;
   --filter-heading-background: #5cb85c;
   --filter-heading-colour: hsl(0, 0%, 0%);
