@@ -37,8 +37,11 @@ header {
     align-items: center;
     flex-wrap: nowrap;
     justify-content: space-between;
-    gap: 1em 2em;
-
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
     a {
       text-decoration: none;
       color: var(--navbar-link-colour);
@@ -47,8 +50,8 @@ header {
       flex: 1 0 80%;
       display: flex;
       justify-content: space-between;
-      ul {
-        list-style: none;
+
+      .navigation-left {
         display: flex;
         flex-direction: row;
         gap: 0.25em;
@@ -58,34 +61,37 @@ header {
             display: block;
             padding: 1em;
             font-weight: var(--navbar-link-font-weight);
-            &:hover {
+            color: var(--navbar-link-color);
+            text-decoration: none;
+            position: relative;
+            &::before {
+              content: "";
+              background-color: var(--navbar-link-hover-colour);
+              position: absolute;
+              bottom: 0;
+              left: 0;
+              height: 3px;
+              width: 100%;
+              scale: 0 1;
+            }
+            &:hover,
+            &:focus {
               color: var(--navbar-link-colour);
+              &::before {
+                scale: 1 1;
+                transition: scale 150ms;
+              }
             }
           }
         }
       }
-      .navigation-left {
-        a {
-          color: var(--navbar-link-color);
-          text-decoration: none;
-          position: relative;
-          padding: 1em 0.5em;
-          &::before {
-            content: "";
-            background-color: var(--navbar-link-hover-colour);
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            height: 3px;
-            width: 100%;
-            scale: 0 1;
-          }
-
-          &:hover::before,
-          &:focus::before {
-            scale: 1 1;
-            transition: scale 150ms;
-          }
+      .navigation-right {
+        display: flex;
+        align-items: center;
+        margin: 0 1em;
+        > div {
+          flex-shrink: 0;
+          margin: 0.5em 1em;
         }
       }
     }
@@ -142,10 +148,10 @@ header {
         background-color: var(--header-background-colour);
         border-top: 1px solid rgba(255, 255, 255, 0.2);
         opacity: 0;
-        //visibility: hidden;
+        visibility: hidden;
         flex-direction: column;
         box-shadow: 0px 5px 15px gray;
-        ul {
+        .navigation-left {
           flex-direction: column;
           li {
             display: block;
@@ -154,6 +160,11 @@ header {
               padding: 0.5em 1em;
             }
           }
+        }
+        .navigation-right {
+          flex-direction: column;
+          align-items: flex-end;
+          margin: 1em 0;
         }
       }
     }

@@ -65,18 +65,31 @@
           </label>
           <nav role="navigation">
             <ul class="navigation-left">
-              <li><a href="#">EIDC</a></li>
-              <li><a href="#">Find data</a></li>
-              <li><a href="#">Deposit data</a></li>
-              <li><a href="#">Support</a></li>
-              <li><a href="#">About</a></li>
-              <li><a href="#">Contact us</a></li>
-              <li><a href="#">Help</a></li>
+             <#if catalogue.id == "assist" || catalogue.id == 'eidc'|| catalogue.id == 'elter' || catalogue.id == "erammp">
+                <#include "menus/${catalogue.id }.ftlh">
+              <#else>
+                <li class="<#if searching>active</#if>"><a href="/${catalogue.id}/documents">Search</a></li>
+              </#if>
             </ul>
-
-            <ul class="navigation-right">
-              <li><a href="#">LOGIN</a></li>
-            </ul>
+            <div class="navigation-right">
+              <#if searching && catalogue?has_content && permission.userCanCreate(catalogue.id)>
+                <div id="editorCreate" class="dropdown">
+                  <button class="btn btn-default navbar-btn dropdown-toggle" type="button" id="createMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    Create
+                    <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="createMenu">
+                    <#list catalogue.documentTypes as docType>
+                      <li><a class="edit-control" data-document-type="${docType.type}" href="#">${docType.title}</a></li>
+                    </#list>
+                    <#if catalogue.fileUpload>
+                      <li role="separator" class="divider"></li>
+                      <li><a href="/documents/upload">File Upload</a></li>
+                    </#if>
+                </div>
+              </#if>
+              <div id="sso-user"></div>
+            </div>
           </nav>
         </div>
     </header>
