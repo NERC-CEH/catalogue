@@ -8,10 +8,7 @@ module.exports = {
         test: /\.js$/,
         exclude: /node_modules/,
         use: {
-          loader: 'babel-loader',
-          options: [
-            ['@babel/preset-env', { targets: 'default' }]
-          ]
+          loader: 'babel-loader'
         }
       },
       {
