@@ -1,8 +1,8 @@
 <div class="row">
-  <div class="col-sm-1 col-lg-1">
+  <div class="col-sm-1">
     <label class="control-label">EPSG:</label>
   </div>
-  <div class="col-sm-2 col-lg-2">
+  <div class="col-sm-2">
     <div class="input-group">
       <input data-name='epsgCode' class="editor-input" value="<%= data.epsgCode %>"  <%= data.disabled%>>
       <span class="input-group-btn">
@@ -10,10 +10,10 @@
       </span>
     </div>
   </div>
-  <div class="col-sm-1 col-lg-1">
+  <div class="col-sm-1">
     <label class="control-label">Path</label>
   </div>
-  <div class="col-sm-8 col-lg-8">
+  <div class="col-sm-8">
     <input data-name='path' class="editor-input" value="<%= data.path %>"  <%= data.disabled%>>
   </div>
 </div>
@@ -21,11 +21,11 @@
 <div class="reprojections"></div>
 
 <div class="row">
-  <div class="col-sm-1 col-lg-1">
+  <div class="col-sm-1">
     <label class="control-label">Type</label>
   </div>
 
-  <div class="col-sm-2 col-lg-2">
+  <div class="col-sm-2">
     <select data-name='type' class="editor-input"  <%= data.disabled%>>
     <% _.each(data.types, function(d) {%>
     <option value="<%=d.value%>" <%= _.isString(data.type) && d.value===data.type.toUpperCase() ? 'selected="selected"': '' %>><%=d.name%></option>
@@ -33,7 +33,7 @@
     </select>
   </div>
 
-  <div class="col-sm-1 col-lg-1">
+  <div class="col-sm-1">
     <label class="control-label">Styling</label>
   </div>
   <div class="col-sm-5 col-lg-5">
@@ -53,7 +53,7 @@
         <div class="col-sm-5 col-lg-5">
           <input data-name="bytetype" type="radio" name="bytetype" value="true"  <%= data.disabled%>> Yes
         </div>
-        <div class="col-sm-4 col-lg-4">
+        <div class="col-sm-4">
           <input data-name="bytetype" type="radio" name="bytetype" value="false"  <%= data.disabled%>> No
         </div>
       </div>

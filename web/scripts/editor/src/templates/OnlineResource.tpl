@@ -24,7 +24,7 @@
   <div class="col-sm-2">
     <label for="onlineResource<%= data.index %>Description">Description</label>
   </div>
-  <div class="col-sm-10 col-lg-10">
+  <div class="col-sm-10">
     <textarea rows="3" data-name="description" id="onlineResource<%= data.index %>Description" class="editor-textarea" <%= data.disabled%>><%= data.description %></textarea>
   </div>
 </div>

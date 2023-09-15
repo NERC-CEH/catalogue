@@ -1,8 +1,8 @@
 <div class="row">
-  <div class="col-sm-1 col-lg-1">
+  <div class="col-sm-1">
     <label class="control-label">EPSG:</label>
   </div>
-  <div class="col-sm-2 col-lg-2">
+  <div class="col-sm-2">
     <div class="input-group"> 
       <input data-name='epsgCode' class="editor-input" value="<%= data.epsgCode %>"  <%= data.disabled%>>
       <span class="input-group-btn">
@@ -10,10 +10,10 @@
       </span>
     </div>
   </div>
-  <div class="col-sm-1 col-lg-1">
+  <div class="col-sm-1">
     <label class="control-label">Path</label>
   </div>
-  <div class="col-sm-8 col-lg-8">
+  <div class="col-sm-8 >
     <input data-name='path' class="editor-input" value="<%= data.path %>"  <%= data.disabled%>>
   </div>
 </div>
