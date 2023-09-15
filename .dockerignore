@@ -5,17 +5,15 @@
 !java/lombok.config
 !schemas
 !templates
-!web
-!web/src
+!web/css
 !web/dist
+!web/img
+!web/less
+!web/src
 !web/Gruntfile.js
-web/css
-web/src/catalogue/test/
-web/src/clipboard/test/
-web/src/editor/test/
-web/src/geometryMap/test/
-web/src/hubbub/test/
-web/src/permission/test/
-web/src/simple-upload/test/
-web/src/study-area/test/
+!web/karma.conf.js
+!web/package.json
+!web/package-lock.json
+!web/webpack.js
+
 

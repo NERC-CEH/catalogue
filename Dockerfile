@@ -1,11 +1,11 @@
 # Build webpack (javascript & css)
-FROM node:17.4.0 AS build-web
+FROM node:18.17.1-alpine3.18 AS build-web
 WORKDIR /web
 COPY web ./
+RUN npm install -g npm
 RUN npm ci --no-audit
-RUN npm run build
-RUN npm install -g grunt-cli
-RUN node_modules/.bin/grunt
+RUN npm run build-css
+RUN npm run build-prod
 
 # Build Java
 FROM gradle:8.2-jdk17-alpine AS build-java
@@ -32,7 +32,6 @@ COPY --from=build-java /app/build/libs/application/ ./
 COPY templates /opt/ceh-catalogue/templates
 COPY --from=build-web /web/img /opt/ceh-catalogue/static/img
 COPY --from=build-web /web/dist /opt/ceh-catalogue/static/scripts
-COPY --from=build-web web/node_modules /opt/ceh-catalogue/static/node_modules
 COPY --from=build-web /web/css /opt/ceh-catalogue/static/css
 RUN chown spring:spring -R /app \
  && chown spring:spring -R /opt/ceh-catalogue \
