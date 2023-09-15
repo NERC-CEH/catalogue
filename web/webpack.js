@@ -1,6 +1,6 @@
 module.exports = {
   entry: {
-    main: './scripts/index.js'
+    main: './src/index.js'
   },
   module: {
     rules: [
@@ -8,16 +8,18 @@ module.exports = {
         test: /\.js$/,
         exclude: /node_modules/,
         use: {
-          loader: 'babel-loader'
+          loader: 'babel-loader',
+          options: [
+            ['@babel/preset-env', { targets: 'default' }]
+          ]
         }
       },
       {
         test: /\.tpl$/,
-        use: [
-          {
-            loader: 'html-loader'
-          }
-        ]
+        exclude: /node_modules/,
+        use: {
+          loader: 'html-loader'
+        }
       }
     ]
   },

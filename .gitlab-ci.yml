@@ -36,6 +36,15 @@ test_web:
     reports:
       junit: web/TESTS-*.xml
 
+test_application:
+  stage: test
+  image: docker:20.10.5
+  services:
+    - name: docker:20.10.5-dind
+      alias: docker
+  script:
+    - docker build --target prod -t $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA .
+
 build_application:
   stage: build
   image: docker:20.10.5
