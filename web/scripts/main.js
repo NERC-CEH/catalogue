@@ -260,6 +260,8 @@ function initEditor () {
     const documentType = lookup[title]
 
     if ($editorCreate.length) {
+      $('#search').removeClass('search')
+      $('#search').addClass('editor')
       new documentType.View({
         model: new documentType.Model(null, documentType, title),
         el: '#search'
@@ -273,6 +275,7 @@ function initEditor () {
         },
         success (data) {
           $('#metadata').removeClass('alert alert-danger missingResourceType')
+          $('#metadata').addClass('editor')
           new documentType.View({
             model: new documentType.Model(data, documentType, title),
             el: '#metadata'

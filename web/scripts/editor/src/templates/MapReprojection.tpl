@@ -13,7 +13,7 @@
   <div class="col-sm-1">
     <label class="control-label">Path</label>
   </div>
-  <div class="col-sm-8 >
+  <div class="col-sm-8">
     <input data-name='path' class="editor-input" value="<%= data.path %>"  <%= data.disabled%>>
   </div>
 </div>
