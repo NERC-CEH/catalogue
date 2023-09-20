@@ -1,6 +1,5 @@
 import ObjectInputView from './ObjectInputView'
 import template from '../templates/SaSpecimenType'
-import _ from 'underscore'
 
 export default ObjectInputView.extend({
   initialize () {

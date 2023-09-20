@@ -1,7 +1,6 @@
 import ObjectInputView from './ObjectInputView'
 import MapStyleSelectorView from './MapStyleSelectorView'
 import template from '../templates/MapValue'
-import _ from 'underscore'
 import { MapDataSource } from '../models'
 
 export default ObjectInputView.extend({

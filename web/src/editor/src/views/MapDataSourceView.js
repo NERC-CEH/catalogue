@@ -58,7 +58,7 @@ export default ObjectInputView.extend({
     this.attributes.add({})
   },
 
-  newReprojection (model, i) {
+  newReprojection (model) {
     // eslint-disable-next-line no-unused-vars
     return new MapReprojectionView({
       model,

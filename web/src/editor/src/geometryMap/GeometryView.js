@@ -1,4 +1,3 @@
-import _ from 'underscore'
 import { ObjectInputView } from '../views'
 import L from 'leaflet'
 import 'leaflet-draw'
@@ -96,7 +95,7 @@ export default ObjectInputView.extend({
   },
 
   createToolbar () {
-    this.deleteButton = this.drawButtons !== true;
+    this.deleteButton = this.drawButtons !== true
     return new L.Control.Draw({
       position: 'topleft',
       edit: {
