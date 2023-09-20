@@ -1,7 +1,7 @@
 import _ from 'underscore'
 import $ from 'jquery'
 import SingleView from './SingleView'
-import template from './Input.tpl'
+import template from './inputTemplate'
 
 export default SingleView.extend({
 
@@ -11,9 +11,7 @@ export default SingleView.extend({
 
   initialize (options) {
     SingleView.prototype.initialize.call(this, options)
-    if (typeof this.template === 'undefined') {
-      this.template = _.template(template)
-    }
+    this.template = template
     this.render()
     this.listenTo(this.model, `change:${this.data.modelAttribute}`, this.render)
   },

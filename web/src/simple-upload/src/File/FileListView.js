@@ -1,7 +1,11 @@
 import _ from 'underscore'
 import Backbone from 'backbone'
 import FileView from './FileView'
-import template from './Files.tpl'
+
+const template = _.template(`
+<button class='select-all'>Select All</button>
+<button class='delete-selected'>Delete Selected</button>
+`)
 
 export default Backbone.View.extend({
 
@@ -53,7 +57,7 @@ export default Backbone.View.extend({
   },
 
   render () {
-    this.$tools.html(_.template(template))
+    this.$el.html(template())
     return this
   }
 })

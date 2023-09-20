@@ -1,5 +1,4 @@
-import _ from 'underscore'
-import template from '../templates/OtherConstraint.tpl'
+import template from '../templates/OtherConstraint'
 import ObjectInputView from './ObjectInputView'
 
-export default ObjectInputView.extend({ template: _.template(template) })
+export default ObjectInputView.extend({ template })

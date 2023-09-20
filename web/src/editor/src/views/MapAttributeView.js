@@ -3,7 +3,7 @@ import ObjectInputView from './ObjectInputView'
 import ChildView from './ChildView'
 import MapValueView from './MapValueView'
 import MapBucketView from './MapBucketView'
-import template from '../templates/MapAttribute.tpl'
+import template from '../templates/MapAttribute'
 
 export default ObjectInputView.extend({
 
@@ -26,7 +26,7 @@ export default ObjectInputView.extend({
   ],
 
   initialize (options) {
-    this.template = _.template(template)
+    this.template = template
     ObjectInputView.prototype.initialize.call(this, _.extend({}, options,
       { types: this.dataTypes })
     )

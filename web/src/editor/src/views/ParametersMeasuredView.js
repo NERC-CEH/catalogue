@@ -1,10 +1,11 @@
-import _ from 'underscore'
-import template from '../templates/ParametersMeasured.tpl'
+import template from '../templates/ParametersMeasured'
 import ObjectInputViewForObjects from './ObjectInputViewForObjects'
 
 export default ObjectInputViewForObjects.extend({
+  initialize () {
+    this.template = template
+  },
   render () {
-    this.template = _.template(template)
     if (!Array.from(this.data).includes('name')) {
       this.data.name = {}
     }

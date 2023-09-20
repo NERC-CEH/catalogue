@@ -3,7 +3,7 @@ import $ from 'jquery'
 import Backbone from 'backbone'
 import InputView from '../InputView'
 import LinkDocumentView from './LinkDocumentView'
-import template from '../templates/LinkDocumentSelector.tpl'
+import template from '../templates/LinkDocumentSelector'
 
 export default InputView.extend({
 
@@ -19,7 +19,7 @@ export default InputView.extend({
   optionTemplate: _.template('<option value="<%= id %>" <% if (id === data.catalogue) { %>selected<% } %>><%= title %></option>'),
 
   initialize (options) {
-    this.template = _.template(template)
+    this.template = template
     this.data = options
     let params
     if (this.model.isNew()) {

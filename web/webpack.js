@@ -10,13 +10,6 @@ module.exports = {
         use: {
           loader: 'babel-loader'
         }
-      },
-      {
-        test: /\.tpl$/,
-        exclude: /node_modules/,
-        use: {
-          loader: 'html-loader'
-        }
       }
     ]
   },

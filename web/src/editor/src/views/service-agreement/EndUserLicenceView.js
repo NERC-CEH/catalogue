@@ -1,6 +1,5 @@
 import { ObjectInputView } from '../index'
-import template from '../../templates/service-agreement/EndUserLicence.tpl'
-import _ from 'underscore'
+import template from '../../templates/service-agreement/endUserLicence'
 
 export default ObjectInputView.extend({
 
@@ -12,7 +11,7 @@ export default ObjectInputView.extend({
   },
 
   initialize (options) {
-    this.template = _.template(template)
+    this.template = template
     ObjectInputView.prototype.initialize.call(this, options)
     this.$resourceConstraint = this.$('.resourceConstraint')
     const hasUri = this.model.has('uri')

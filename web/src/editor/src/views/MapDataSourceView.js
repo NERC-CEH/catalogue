@@ -4,7 +4,7 @@ import ObjectInputView from './ObjectInputView'
 import MapReprojectionView from './MapReprojectionView'
 import MapFeaturesView from './MapFeaturesView'
 import MapAttributeView from './MapAttributeView'
-import template from '../templates/MapDataSource.tpl'
+import template from '../templates/MapDataSource'
 
 import ChildView from './ChildView'
 
@@ -26,7 +26,7 @@ export default ObjectInputView.extend({
   ],
 
   initialize (options) {
-    this.template = _.template(template)
+    this.template = template
     ObjectInputView.prototype.initialize.call(this, _.extend({}, options,
       { types: this.dataTypes })
     )

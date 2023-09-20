@@ -1,5 +1,4 @@
 import InputView from '../InputView'
-import _ from 'underscore'
-import template from '../templates/Textarea.tpl'
+import template from '../templates/textarea'
 
-export default InputView.extend({ template: _.template(template) })
+export default InputView.extend({ template })

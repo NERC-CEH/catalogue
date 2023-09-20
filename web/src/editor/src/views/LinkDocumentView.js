@@ -1,6 +1,5 @@
 import Backbone from 'backbone'
-import template from '../templates/LinkDocument.tpl'
-import _ from 'underscore'
+import template from '../templates/LinkDocument'
 
 export default Backbone.View.extend({
 
@@ -9,7 +8,7 @@ export default Backbone.View.extend({
   },
 
   render () {
-    this.template = _.template(template)
+    this.template = template
     this.$el.html(this.template(this.model.attributes))
     return this
   },

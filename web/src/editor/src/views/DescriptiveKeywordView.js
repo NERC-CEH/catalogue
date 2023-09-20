@@ -3,7 +3,7 @@ import $ from 'jquery'
 import ObjectInputView from './ObjectInputView'
 import ChildView from './ChildView'
 import KeywordVocabularyView from './KeywordVocabularyView'
-import template from '../templates/DescriptiveKeyword.tpl'
+import template from '../templates/DescriptiveKeyword'
 
 export default ObjectInputView.extend({
 
@@ -16,7 +16,7 @@ export default ObjectInputView.extend({
   },
 
   initialize (options) {
-    this.template = _.template(template)
+    this.template = template
     ObjectInputView.prototype.initialize.call(this, options)
     this.render()
     const keywordType = this.model.get('type')

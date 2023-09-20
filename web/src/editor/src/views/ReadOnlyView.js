@@ -1,7 +1,7 @@
 import _ from 'underscore'
 import $ from 'jquery'
 import SingleView from '../SingleView'
-import template from '../templates/ReadOnly.tpl'
+import template from '../templates/ReadOnly'
 
 export default SingleView.extend({
 
@@ -10,7 +10,7 @@ export default SingleView.extend({
   },
 
   initialize (options) {
-    this.template = _.template(template)
+    this.template = template
     SingleView.prototype.initialize.call(this, options)
     this.render()
     this.listenTo(this.model, `change:${this.data.modelAttribute}`, this.render)

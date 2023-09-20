@@ -1,11 +1,10 @@
 import { ObjectInputView } from '../index'
-import template from '../../templates/service-agreement/Author.tpl'
-import _ from 'underscore'
+import template from '../../templates/service-agreement/author'
 
 export default ObjectInputView.extend({
 
   initialize () {
-    this.template = _.template(template)
+    this.template = template
     ObjectInputView.prototype.initialize.call(this)
   },
 

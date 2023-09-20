@@ -1,12 +1,13 @@
 import Backbone from 'backbone'
 import _ from 'underscore'
-import template from './Message.tpl'
+
+const template = _.template('<span class="<%= type %>"><%= message %></span>')
 export default Backbone.View.extend({
 
   tagName: 'li',
 
   initialize () {
-    this.template = _.template(template)
+    this.template = template
     this.listenTo(this.model, 'remove', this.remove)
   },
 

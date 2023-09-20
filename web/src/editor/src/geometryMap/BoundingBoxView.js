@@ -2,7 +2,7 @@ import _ from 'underscore'
 import { ObjectInputView } from '../views'
 import L from 'leaflet'
 import 'leaflet-draw'
-import template from './BoundingBox.tpl'
+import template from './boundingBoxTemplate'
 
 export default ObjectInputView.extend({
 
@@ -13,7 +13,7 @@ export default ObjectInputView.extend({
   },
 
   initialize () {
-    this.template = _.template(template)
+    this.template = template
     ObjectInputView.prototype.initialize.apply(this)
     this.render()
     this.listenTo(this.model, 'change:westBoundLongitude', function (model, value) {

@@ -1,5 +1,5 @@
 import { BoundingBoxView, BoundingBox } from '../src/geometryMap'
-import template from '../src/geometryMap/Geometry.tpl'
+import template from '../src/geometryMap/geometryTemplate'
 
 describe('Test BoundingBoxView', function () {
   let model = null

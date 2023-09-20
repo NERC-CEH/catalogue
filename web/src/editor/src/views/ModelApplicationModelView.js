@@ -1,11 +1,13 @@
 import ObjectInputView from './ObjectInputView'
-import template from '../templates/ModelApplicationModel.tpl'
-import _ from 'underscore'
+import template from '../templates/ModelApplicationModel'
 
 export default ObjectInputView.extend({
 
+  initialize () {
+    this.template = template
+  },
+
   render () {
-    this.template = _.template(template)
     ObjectInputView.prototype.render.apply(this)
     this.$('select').val(this.model.get('applicationScale'))
     return this

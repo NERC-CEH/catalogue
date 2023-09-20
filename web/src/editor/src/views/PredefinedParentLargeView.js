@@ -1,8 +1,8 @@
 import _ from 'underscore'
 import $ from 'jquery'
 import ParentLargeView from './ParentLargeView'
-import template from '../templates/PredefinedParent.tpl'
-import dropdownTemplate from '../templates/PredefinedParentDropdown.tpl'
+import template from '../templates/PredefinedParent'
+import dropdownTemplate from '../templates/PredefinedParentDropdown'
 import 'jquery-ui'
 
 export default ParentLargeView.extend({
@@ -12,8 +12,8 @@ export default ParentLargeView.extend({
   },
 
   render () {
-    this.predefinedTemplate = _.template(template)
-    this.dropdownTemplate = _.template(dropdownTemplate)
+    this.predefinedTemplate = template
+    this.dropdownTemplate = dropdownTemplate
     ParentLargeView.prototype.render.apply(this)
     this.$('button.add').replaceWith(this.predefinedTemplate({ data: this.data }))
     this.$('button').prop(this.data.disabled, this.data.disabled)

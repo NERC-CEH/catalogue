@@ -1,12 +1,12 @@
 import _ from 'underscore'
 import $ from 'jquery'
 import Backbone from 'backbone'
-import template from '../templates/SearchPage.tpl'
+import template from '../templates/searchPage'
 
 export default Backbone.View.extend({
 
   initialize () {
-    this.template = _.template(template)
+    this.template = template
     this.readModelFromHTML()
 
     this.listenTo(this.model, 'cleared:results', this.clear)

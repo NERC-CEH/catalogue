@@ -1,6 +1,11 @@
-import Backbone from 'backbone'
-import template from './File.tpl'
 import _ from 'underscore'
+import Backbone from 'backbone'
+
+const template = _.template(`
+<label><%= name %>
+  <input type="checkbox" <% if (toDelete) { %> checked <% } %>/>
+</label>
+`)
 
 export default Backbone.View.extend({
 
@@ -11,7 +16,7 @@ export default Backbone.View.extend({
   },
 
   initialize () {
-    this.template = _.template(template)
+    this.template = template
     this.listenTo(this.model, 'sync', this.remove)
     this.listenTo(this.model, 'change', this.render)
   },

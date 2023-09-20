@@ -1,5 +1,4 @@
-import _ from 'underscore'
 import ObjectInputView from './ObjectInputView'
-import template from '../templates/ProjectUsage.tpl'
+import template from '../templates/ProjectUsage'
 
-export default ObjectInputView.extend({ template: _.template(template) })
+export default ObjectInputView.extend({ template })

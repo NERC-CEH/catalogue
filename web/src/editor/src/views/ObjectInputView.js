@@ -1,7 +1,7 @@
 import _ from 'underscore'
 import $ from 'jquery'
 import Backbone from 'backbone'
-import validationTemplate from '../templates/Validation.tpl'
+import validationTemplate from '../templates/validation'
 import 'jquery-ui/ui/widgets/sortable'
 
 export default Backbone.View.extend({
@@ -27,7 +27,7 @@ export default Backbone.View.extend({
 
   render () {
     this.$el.html(this.template({ data: _.extend({}, this.data, this.model.attributes) }))
-    this.$el.append(_.template(validationTemplate))
+    this.$el.append(validationTemplate())
     return this
   },
 

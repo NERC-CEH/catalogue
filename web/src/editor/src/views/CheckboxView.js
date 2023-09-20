@@ -1,12 +1,14 @@
-import _ from 'underscore'
 import $ from 'jquery'
 import InputView from '../InputView'
-import template from '../templates/Checkbox.tpl'
+import template from '../templates/Checkbox'
 
 export default InputView.extend({
 
+  initialize () {
+    this.template = template
+  },
+
   render () {
-    this.template = _.template(template)
     InputView.prototype.render.apply(this)
     this.$('[type="checkbox"]').prop('checked', this.model.get(this.data.modelAttribute))
     return this

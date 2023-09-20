@@ -1,7 +1,13 @@
 import _ from 'underscore'
 import $ from 'jquery'
 import Backbone from 'backbone'
-import template from '../templates/Message.tpl'
+
+const template = _.template(`
+<div class="alert alert-<%=type%>" role="alert">
+  <span class="fa-solid fa-times"></span>
+  <span><%=message%></span>
+</div>
+`)
 
 export default Backbone.View.extend({
   el: '#message-panel',
@@ -13,7 +19,7 @@ export default Backbone.View.extend({
   },
 
   initialize () {
-    this.template = _.template(template)
+    this.template = template
     this.listenTo(this.model, 'error', this.appendError)
     this.listenTo(this.model, 'info', this.appendInfo)
   },

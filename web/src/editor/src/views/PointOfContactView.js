@@ -1,12 +1,12 @@
 import _ from 'underscore'
 import $ from 'jquery'
 import ObjectInputView from './ObjectInputView'
-import template from '../templates/PointOfContact.tpl'
+import template from '../templates/PointOfContact'
 
 export default ObjectInputView.extend({
 
-  initialize (options) {
-    this.template = _.template(template)
+  initialize () {
+    this.template = template
     ObjectInputView.prototype.initialize.apply(this)
   },
 

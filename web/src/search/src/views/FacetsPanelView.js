@@ -1,13 +1,10 @@
 import Backbone from 'backbone'
-import panelTpl from '../templates/FacetsPanel.tpl'
-import resultsTpl from '../templates/FacetResults.tpl'
-import _ from 'underscore'
+import panelTpl from '../templates/facetsPanelTemplate'
+import resultsTpl from '../templates/facetResultsTemplate'
 
 export default Backbone.View.extend({
 
   initialize () {
-    this.panelTpl = _.template(panelTpl)
-    this.resultsTpl = _.template(resultsTpl)
     this.listenTo(this.model, 'results-sync', this.render)
   },
 
@@ -18,9 +15,9 @@ export default Backbone.View.extend({
   results set.
   */
   render () {
-    this.$el.html(this.panelTpl({
+    this.$el.html(panelTpl({
       facets: this.model.getResults().attributes.facets,
-      template: this.resultsTpl
+      template: resultsTpl()
     }))
     return this
   }

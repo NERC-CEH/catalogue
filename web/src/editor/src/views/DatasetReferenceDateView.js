@@ -1,13 +1,15 @@
-import _ from 'underscore'
 import $ from 'jquery'
 import ObjectInputView from './ObjectInputView'
-import template from '../templates/DatasetReferenceDate.tpl'
+import template from '../templates/DatasetReferenceDate'
 import 'air-datepicker'
 import Moment from 'moment'
 export default ObjectInputView.extend({
 
+  initialize () {
+    this.template = template
+  },
+
   render () {
-    this.template = _.template(template)
     ObjectInputView.prototype.render.apply(this)
 
     const that = this
@@ -16,7 +18,7 @@ export default ObjectInputView.extend({
         language: 'en',
         dateFormat: 'yyyy-mm-dd',
         position: 'top left',
-        onSelect: function (formattedDate, date, inst) {
+        onSelect: function (formattedDate, date) {
           that.model.set('creationDate', Moment(date).format('YYYY-MM-DD'))
           that.$('#input-creationDate').value = that.model.set('creationDate', Moment(date).format('YYYY-MM-DD'))
         }
@@ -27,7 +29,7 @@ export default ObjectInputView.extend({
           language: 'en',
           dateFormat: 'yyyy-mm-dd',
           position: 'top left',
-          onSelect: function (formattedDate, date, inst) {
+          onSelect: function (formattedDate, date) {
             that.model.set('publicationDate', Moment(date).format('YYYY-MM-DD'))
             that.$('#input-publicationDate').value = that.model.set('publicationDate', Moment(date).format('YYYY-MM-DD'))
           }
@@ -37,7 +39,7 @@ export default ObjectInputView.extend({
         language: 'en',
         dateFormat: 'yyyy-mm-dd',
         position: 'top left',
-        onSelect: function (formattedDate, date, inst) {
+        onSelect: function (formattedDate, date) {
           that.model.set('unavailableDate', Moment(date).format('YYYY-MM-DD'))
           that.$('#input-unavailableDate').value = that.model.set('unavailableDate', Moment(date).format('YYYY-MM-DD'))
         }
@@ -47,7 +49,7 @@ export default ObjectInputView.extend({
         language: 'en',
         dateFormat: 'yyyy-mm-dd',
         position: 'top left',
-        onSelect: function (formattedDate, date, inst) {
+        onSelect: function (formattedDate, date) {
           that.model.set('releasedDate', Moment(date).format('YYYY-MM-DD'))
           that.$('#input-releasedDate').value = that.model.set('releasedDate', Moment(date).format('YYYY-MM-DD'))
         }
@@ -57,7 +59,7 @@ export default ObjectInputView.extend({
         language: 'en',
         dateFormat: 'yyyy-mm-dd',
         position: 'top left',
-        onSelect: function (formattedDate, date, inst) {
+        onSelect: function (formattedDate, date) {
           that.model.set('supersededDate', Moment(date).format('YYYY-MM-DD'))
           that.$('#input-supersededDate').value = this.model.set('supersededDate', Moment(date).format('YYYY-MM-DD'))
         }

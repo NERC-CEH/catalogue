@@ -1,9 +1,9 @@
 import _ from 'underscore'
 import $ from 'jquery'
 import SingleView from '../SingleView'
-import parentTemplate from '../templates/Parent.tpl'
-import childTemplate from '../templates/MultiString.tpl'
-import template from '../templates/ChildLarge.tpl'
+import parentTemplate from '../templates/Parent'
+import childTemplate from '../templates/MultiString'
+import template from '../templates/ChildLarge'
 import 'jquery-ui/ui/widgets/sortable'
 
 export default SingleView.extend({
@@ -16,13 +16,13 @@ export default SingleView.extend({
 
   initialize (options) {
     if (typeof this.template === 'undefined') {
-      this.template = _.template(template)
+      this.template = template
     }
     if (typeof this.childTemplate === 'undefined') {
-      this.childTemplate = _.template(childTemplate)
+      this.childTemplate = childTemplate
     }
     if (typeof this.parentTemplate === 'undefined') {
-      this.parentTemplate = _.template(parentTemplate)
+      this.parentTemplate = parentTemplate
     }
     SingleView.prototype.initialize.call(this, options)
     this.array = this.model.has(this.data.modelAttribute) ? _.clone(this.model.get(this.data.modelAttribute)) : []

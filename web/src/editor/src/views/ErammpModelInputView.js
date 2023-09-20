@@ -1,5 +1,4 @@
 import ObjectInputView from './ObjectInputView'
-import template from '../templates/ErammpModelInput.tpl'
-import _ from 'underscore'
+import template from '../templates/ErammpModelInput'
 
-export default ObjectInputView.extend({ template: _.template(template) })
+export default ObjectInputView.extend({ template })

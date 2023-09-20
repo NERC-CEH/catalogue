@@ -1,6 +1,5 @@
 import Backbone from 'backbone'
-import template from '../templates/KeywordCheckbox.tpl'
-import _ from 'underscore'
+import template from '../templates/KeywordCheckbox'
 
 export default Backbone.View.extend({
 
@@ -11,7 +10,7 @@ export default Backbone.View.extend({
   },
 
   initialize () {
-    this.template = _.template(template)
+    this.template = template
     this.listenTo(this.model, 'sync', this.remove)
     this.listenTo(this.model, 'change', this.render)
   },

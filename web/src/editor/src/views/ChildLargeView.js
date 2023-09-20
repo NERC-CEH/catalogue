@@ -1,6 +1,6 @@
 import _ from 'underscore'
 import Backbone from 'backbone'
-import childTemplate from '../templates/ChildLarge.tpl'
+import childTemplate from '../templates/ChildLarge'
 
 export default Backbone.View.extend({
 
@@ -12,7 +12,7 @@ export default Backbone.View.extend({
   },
 
   initialize (options) {
-    this.childTemplate = _.template(childTemplate)
+    this.childTemplate = childTemplate
     this.data = options
     this.listenTo(this.model, 'remove', function () { this.remove() })
     this.listenTo(this.model, 'showhide', function () { this.showHide() })

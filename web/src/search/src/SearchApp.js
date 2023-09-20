@@ -28,11 +28,11 @@ export default Backbone.Model.extend({
   },
 
   /*
-  Define a new search page which proxies its events through the this model.
+  Define a new search page which proxies its events through the model.
   This means that views (and other models) can listen to the events of this
   model rather than having to manually keep track of the current search page.
   Events from old search pages will be suppressed, only the current events will
-  propergate out.
+  propagate out.
 
   To bind to a search prefix the event listener with 'results-'. E.g.
       results-change:selected

@@ -1,13 +1,13 @@
 import ObjectInputView from './ObjectInputView'
 import MapStyleSelectorView from './MapStyleSelectorView'
-import template from '../templates/MapValue.tpl'
+import template from '../templates/MapValue'
 import _ from 'underscore'
 import { MapDataSource } from '../models'
 
 export default ObjectInputView.extend({
 
   initialize (options) {
-    this.template = _.template(template)
+    this.template = template
     ObjectInputView.prototype.initialize.call(this, options)
 
     this.model = new MapDataSource(this.model.attributes)

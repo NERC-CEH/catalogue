@@ -3,7 +3,7 @@
   from the catalogue api.
 
   IMPORTANT: If you change the structure of this, please update the corresponding
-  javascript template /web/src/scripts/templates/SearchPage.tpl
+  javascript template /web/src/scripts/templates/searchPage.js
 -->
 <div class="results__header">
   <span id="num-records">${numFound}</span> records found

@@ -1,5 +1,5 @@
 import { Permission, PermissionApp, PermissionAppView } from '../src/PermissionApp'
-import template from '../src/PermissionApp/Permissions.tpl'
+import template from '../src/PermissionApp/PermissionsTemplate'
 
 describe('Test PermissionAppView', () => {
   it('View should be defined', () => {

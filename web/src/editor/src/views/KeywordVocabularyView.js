@@ -2,14 +2,14 @@ import _ from 'underscore'
 import $ from 'jquery'
 import Backbone from 'backbone'
 import ObjectInputView from './ObjectInputView'
-import template from '../templates/KeywordVocabulary.tpl'
+import template from '../templates/KeywordVocabulary'
 import KeywordCheckboxView from './KeywordCheckboxView'
 import 'jquery-ui/ui/widgets/autocomplete'
 
 export default ObjectInputView.extend({
 
   initialize () {
-    this.template = _.template(template)
+    this.template = template
     ObjectInputView.prototype.initialize.apply(this)
     this.vocabularies = new Backbone.Collection()
     const catalogue = $('html').data('catalogue')

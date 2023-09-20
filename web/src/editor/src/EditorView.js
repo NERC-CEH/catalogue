@@ -2,7 +2,7 @@ import Swal from 'sweetalert2'
 import _ from 'underscore'
 import $ from 'jquery'
 import Backbone from 'backbone'
-import template from './Editor.tpl'
+import template from './editorTemplate'
 
 export default Backbone.View.extend({
 
@@ -18,9 +18,7 @@ export default Backbone.View.extend({
 
   initialize () {
     this.saveRequired = false
-    if (typeof this.template === 'undefined') {
-      this.template = _.template(template)
-    }
+    this.template = template
     this.currentStep = 1
     this.catalogue = $('html').data('catalogue')
 

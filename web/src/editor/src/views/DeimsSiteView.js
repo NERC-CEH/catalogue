@@ -1,12 +1,12 @@
 import _ from 'underscore'
 import $ from 'jquery'
 import ObjectInputView from './ObjectInputView'
-import template from '../templates/DeimsSite.tpl'
+import template from '../templates/DeimsSite'
 
 export default ObjectInputView.extend({
 
   initialize () {
-    this.template = _.template(template)
+    this.template = template
     ObjectInputView.prototype.initialize.apply(this)
 
     this.$('.autocomplete').autocomplete({

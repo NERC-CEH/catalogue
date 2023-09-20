@@ -1,14 +1,16 @@
-import _ from 'underscore'
 import $ from 'jquery'
 import ObjectInputView from './ObjectInputView'
-import template from '../templates/DataTypeProvenance.tpl'
+import template from '../templates/DataTypeProvenance'
 import ParentStringView from './ParentStringView'
 import 'air-datepicker'
 import Moment from 'moment'
 export default ObjectInputView.extend({
 
+  initialize () {
+    this.template = template
+  },
+
   render () {
-    this.template = _.template(template)
     ObjectInputView.prototype.render.apply(this)
 
     const that = this

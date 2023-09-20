@@ -1,7 +1,6 @@
-import _ from 'underscore'
 import $ from 'jquery'
 import Backbone from 'backbone'
-import template from './FileRow.tpl'
+import template from './template'
 
 export default Backbone.View.extend({
 
@@ -17,7 +16,7 @@ export default Backbone.View.extend({
   },
 
   initialize (options) {
-    this.template = _.template(template)
+    this.template = template
     this.url = options.url
     this.datastore = options.datastore
     this.metadata = options.metadata

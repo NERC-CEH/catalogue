@@ -1,7 +1,15 @@
 import _ from 'underscore'
 import $ from 'jquery'
 import Backbone from 'backbone'
-import template from './IdentityPermission.tpl'
+
+const template = _.template(`
+<td><%= identity %></td>
+<td><input data-permission="canView" type="checkbox" <% if(canView) { %>checked<% } %>></td>
+<td><input data-permission="canEdit" type="checkbox" <% if(canEdit) { %>checked<% } %>></td>
+<td><input data-permission="canDelete" type="checkbox" <% if(canDelete) { %>checked<% } %>></td>
+<td><input data-permission="canUpload" type="checkbox" <% if(canUpload) { %>checked<% } %>></td>
+<td><button class="editor-button-xs"><i class="fa-solid fa-times"></i></button></td>
+`)
 
 export default Backbone.View.extend({
   tagName: 'tr',
@@ -9,10 +17,6 @@ export default Backbone.View.extend({
   events: {
     'click button': 'removePermission',
     'click [type="checkbox"]': 'update'
-  },
-
-  initialize () {
-    this.template = _.template(template)
   },
 
   removePermission () {
@@ -25,7 +29,7 @@ export default Backbone.View.extend({
   },
 
   render () {
-    this.$el.html(this.template(this.model.attributes))
+    this.$el.html(template(this.model.attributes))
     return this
   }
 })

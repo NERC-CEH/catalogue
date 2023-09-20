@@ -2,7 +2,7 @@ import _ from 'underscore'
 import { ObjectInputView } from '../views'
 import L from 'leaflet'
 import 'leaflet-draw'
-import template from './Geometry.tpl'
+import template from './geometryTemplate'
 export default ObjectInputView.extend({
 
   events: {
@@ -14,7 +14,7 @@ export default ObjectInputView.extend({
   initialize () {
     // TODO: check if this is still needed
     // L.Icon.Default.imagePath = 'https://unpkg.com/leaflet-draw@1.0.2/dist/images/' // fix for leaflet draw image bug
-    this.template = _.template(template)
+    this.template = template
     ObjectInputView.prototype.initialize.apply(this)
     this.render()
     this.listenTo(this.model, 'change:geometryString', function (model, value) {

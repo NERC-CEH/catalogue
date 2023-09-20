@@ -1,10 +1,9 @@
 import ObjectInputView from './ObjectInputView'
-import template from '../templates/SupplementalEIDC.tpl'
-import _ from 'underscore'
+import template from '../templates/supplementalEIDC'
 export default ObjectInputView.extend({
 
   render () {
-    this.template = _.template(template)
+    this.template = template
     ObjectInputView.prototype.render.apply(this)
     this.$('select.function').val(this.model.get('function'))
     return this

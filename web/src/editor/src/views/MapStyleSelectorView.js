@@ -1,7 +1,7 @@
 import _ from 'underscore'
 import $ from 'jquery'
 import ObjectInputView from './ObjectInputView'
-import template from '../templates/MapStyleSelector.tpl'
+import template from '../templates/MapStyleSelector'
 import 'bootstrap-colorpicker'
 
 export default ObjectInputView.extend({
@@ -25,7 +25,7 @@ export default ObjectInputView.extend({
   },
 
   initialize (options) {
-    this.template = _.template(template)
+    this.template = template
     ObjectInputView.prototype.initialize.call(this, _.extend({}, options,
       { symbols: this.symbols })
     )

@@ -2,12 +2,12 @@ import _ from 'underscore'
 import $ from 'jquery'
 import ObjectInputView from './ObjectInputView'
 
-import template from '../templates/Contact.tpl'
+import template from '../templates/Contact'
 
 export default ObjectInputView.extend({
 
   render () {
-    this.template = _.template(template)
+    this.template = template
     ObjectInputView.prototype.render.apply(this)
     this.$('select.role').val(this.model.get('role'))
     return this

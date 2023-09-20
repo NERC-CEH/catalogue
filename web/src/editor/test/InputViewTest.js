@@ -1,5 +1,5 @@
 import { InputView, EditorMetadata } from '../src'
-import template from '../src/Input.tpl'
+import template from '../src/inputTemplate'
 
 describe('Test InputView', function () {
   let model = null

@@ -1,6 +1,6 @@
 import Backbone from 'backbone'
 import _ from 'underscore'
-import template from './Permissions.tpl'
+import template from './PermissionsTemplate'
 import { IdentityPermission, IdentityPermissionView } from '../IdentityPermission'
 
 export default Backbone.View.extend({
@@ -12,7 +12,7 @@ export default Backbone.View.extend({
   },
 
   initialize () {
-    this.template = _.template(template)
+    this.template = template
     this.listenTo(this.model, 'sync', this.reload)
     this.listenTo(this.model, 'permission:add', this.addAll)
     this.listenTo(this.model, 'permission:remove', this.addAll)

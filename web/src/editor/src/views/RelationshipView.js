@@ -1,5 +1,5 @@
 import _ from 'underscore'
-import template from '../templates/Relationship.tpl'
+import template from '../templates/Relationship'
 import ObjectInputView from './ObjectInputView'
 
 export default ObjectInputView.extend({
@@ -7,7 +7,7 @@ export default ObjectInputView.extend({
   optionTemplate: _.template('<option value="<%= value %>"><%= label %></option>'),
 
   initialize (options) {
-    this.template = _.template(template)
+    this.template = template
     this.options = options.options
     ObjectInputView.prototype.initialize.call(this, options)
   },

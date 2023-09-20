@@ -2,7 +2,7 @@ import _ from 'underscore'
 import $ from 'jquery'
 import SingleView from '../SingleView'
 import ChildView from './ChildView'
-import template from '../templates/Parent.tpl'
+import template from '../templates/Parent'
 import { Positionable } from '../collections'
 import 'jquery-ui/ui/widgets/sortable'
 
@@ -14,7 +14,7 @@ export default SingleView.extend({
 
   initialize (options) {
     if (typeof this.template === 'undefined') {
-      this.template = _.template(template)
+      this.template = template
     }
     SingleView.prototype.initialize.call(this, options)
     this.collection = new Positionable([], { model: this.data.ModelType })

@@ -1,6 +1,5 @@
 import Backbone from 'backbone'
-import _ from 'underscore'
-import template from './Single.tpl'
+import template from './singleTemplate'
 
 export default Backbone.View.extend({
 
@@ -22,8 +21,7 @@ export default Backbone.View.extend({
   },
 
   render () {
-    this.singleTemplate = _.template(template)
-    this.$el.html(this.singleTemplate({ data: this.data }))
+    this.$el.html(template({ data: this.data }))
     return this
   },
 

@@ -3,7 +3,7 @@ import $ from 'jquery'
 import { Positionable } from '../collections'
 import SingleView from '../SingleView'
 import ChildLargeView from './ChildLargeView'
-import template from '../templates/Parent.tpl'
+import template from '../templates/Parent'
 import 'jquery-ui/ui/widgets/sortable'
 
 export default SingleView.extend({
@@ -13,9 +13,7 @@ export default SingleView.extend({
   },
 
   initialize (options) {
-    if (typeof this.template === 'undefined') {
-      this.template = _.template(template)
-    }
+    this.template = template
     SingleView.prototype.initialize.call(this, options)
     this.collection = new Positionable([], { model: this.data.ModelType })
 

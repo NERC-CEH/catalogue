@@ -1,5 +1,4 @@
 import ObjectInputView from './ObjectInputView'
-import template from '../templates/Link.tpl'
-import _ from 'underscore'
+import template from '../templates/Link'
 
-export default ObjectInputView.extend({ template: _.template(template) })
+export default ObjectInputView.extend({ template })
