@@ -33,6 +33,7 @@ COPY templates /opt/ceh-catalogue/templates
 COPY --from=build-web /web/img /opt/ceh-catalogue/static/img
 COPY --from=build-web /web/dist /opt/ceh-catalogue/static/scripts
 COPY --from=build-web /web/css /opt/ceh-catalogue/static/css
+COPY --from=build-web /web/node_modules/@fortawesome/fontawesome-free/webfonts /opt/ceh-catalogue/static/fonts
 RUN chown spring:spring -R /app \
  && chown spring:spring -R /opt/ceh-catalogue \
  && chown spring:spring -R /var/ceh-catalogue \

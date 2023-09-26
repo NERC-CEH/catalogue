@@ -2,8 +2,6 @@ import _ from 'underscore'
 import Backbone from 'backbone'
 import MessageView from './MessageView'
 
-const template = _.template('<button className="clear-all">Clear</button>')
-
 export default Backbone.View.extend({
 
   events: {
@@ -11,7 +9,6 @@ export default Backbone.View.extend({
   },
 
   initialize (options) {
-    this.template = template
     this.messages = options.messages
     this.$tools = this.$('#messages-tools')
     this.$messageList = this.$('#messages-list')
@@ -29,7 +26,7 @@ export default Backbone.View.extend({
   },
 
   render () {
-    this.$tools.html(_.template(template))
+    this.$tools.html('<button class="clear-all">Clear</button>')
     return this
   }
 })

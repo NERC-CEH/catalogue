@@ -2,11 +2,6 @@ import _ from 'underscore'
 import Backbone from 'backbone'
 import FileView from './FileView'
 
-const template = _.template(`
-<button class='select-all'>Select All</button>
-<button class='delete-selected'>Delete Selected</button>
-`)
-
 export default Backbone.View.extend({
 
   events: {
@@ -57,7 +52,9 @@ export default Backbone.View.extend({
   },
 
   render () {
-    this.$el.html(template())
+    this.$el.html(`<button class='select-all'>Select All</button>
+                <button class='delete-selected'>Delete Selected</button>
+    `)
     return this
   }
 })
