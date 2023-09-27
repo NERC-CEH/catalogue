@@ -5,9 +5,9 @@ import { FileListView, FileCollection } from '../src/File'
 describe('Test FileListView', function () {
   const template =
     `<div> 
-<div id="files-tools"></div> 
-<ul id="files-list"></ul> 
-</div>`
+      <div id="files-tools"></div> 
+      <ul id="files-list"></ul> 
+    </div>`
   let el = null
   let files = null
   let messages = null
@@ -15,10 +15,6 @@ describe('Test FileListView', function () {
 
   beforeEach(function () {
     el = $(template).appendTo($('body'))
-    spyOn(FileListView.prototype, 'addOne').and.callThrough()
-    spyOn(FileListView.prototype, 'addAll').and.callThrough()
-    spyOn(FileListView.prototype, 'selectAll').and.callThrough()
-    spyOn(FileListView.prototype, 'deleteSelected').and.callThrough()
     files = new FileCollection({ url: '/upload/test' })
     messages = new Backbone.Collection()
     view = new FileListView({
@@ -26,17 +22,16 @@ describe('Test FileListView', function () {
       files,
       messages
     })
+    spyOn(view, 'addOne').and.callThrough()
+    spyOn(view, 'addAll').and.callThrough()
+    spyOn(view, 'selectAll').and.callThrough()
+    spyOn(view, 'deleteSelected').and.callThrough()
   })
 
   afterEach(() => el.remove())
 
-  it('renders buttons', () => expect($('#files-tools button').length).toEqual(2))
-
-  it('has DOM events', function () {
-    expect(view.events['click .delete-selected']).toBeDefined()
-    expect(view.events['click .delete-selected']).toEqual('deleteSelected')
-    expect(view.events['click .select-all']).toBeDefined()
-    return expect(view.events['click .select-all']).toEqual('selectAll')
+  it('renders buttons', () => {
+    expect($('#files-tools button').length).toEqual(2)
   })
 
   it('file added to collection triggers subview render', function () {

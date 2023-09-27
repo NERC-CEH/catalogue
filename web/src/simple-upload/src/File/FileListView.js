@@ -14,12 +14,14 @@ export default Backbone.View.extend({
     this.messages = options.messages
 
     this.$fileList = this.$('#files-list')
-    this.$tools = this.$('#files-tools')
+
+    this.$('#files-tools').html(`
+        <button class='select-all'>Select All</button>
+        <button class='delete-selected'>Delete Selected</button>
+    `)
 
     this.listenTo(this.files, 'add', this.addOne)
     this.listenTo(this.files, 'reset', this.addAll)
-
-    this.render()
   },
 
   addOne (file) {
@@ -49,12 +51,5 @@ export default Backbone.View.extend({
 
   selectAll () {
     this.files.invoke('set', 'toDelete', true)
-  },
-
-  render () {
-    this.$el.html(`<button class='select-all'>Select All</button>
-                <button class='delete-selected'>Delete Selected</button>
-    `)
-    return this
   }
 })
