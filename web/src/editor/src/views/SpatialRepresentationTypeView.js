@@ -1,13 +1,14 @@
 import _ from 'underscore'
 import ParentStringView from './ParentStringView'
 import childTemplate from '../templates/SpatialRepresentationType'
-import template from '../templates/ObservationCapability'
 
 export default ParentStringView.extend({
-  initialize () {
-    this.template = template
+
+  initialize (options) {
     this.childTemplate = childTemplate
+    ParentStringView.prototype.initialize.call(this, options)
   },
+
   render () {
     ParentStringView.prototype.render.apply(this)
     _.each(this.array, (string, index) => {
