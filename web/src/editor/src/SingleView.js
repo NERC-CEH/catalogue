@@ -1,5 +1,5 @@
 import Backbone from 'backbone'
-import singleTemplate from './singleTemplate'
+import template from './singleTemplate'
 
 export default Backbone.View.extend({
 
@@ -21,7 +21,7 @@ export default Backbone.View.extend({
   },
 
   render () {
-    this.$el.html(singleTemplate({ data: this.data }))
+    this.$el.html(template({ data: this.data }))
     return this
   },
 

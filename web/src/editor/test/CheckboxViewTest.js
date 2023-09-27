@@ -22,6 +22,6 @@ describe('Test CheckboxView', function () {
 
   it('renders', () => {
     view.render()
-    expect(view.$('input').toBeDefined())
+    expect(view.$('input')).toBeDefined()
   })
 })

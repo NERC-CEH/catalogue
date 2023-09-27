@@ -22,7 +22,6 @@ describe('Test FileListView', function () {
       files,
       messages
     })
-    spyOn(view, 'addOne').and.callThrough()
     spyOn(view, 'addAll').and.callThrough()
     spyOn(view, 'selectAll').and.callThrough()
     spyOn(view, 'deleteSelected').and.callThrough()
@@ -35,6 +34,11 @@ describe('Test FileListView', function () {
   })
 
   it('file added to collection triggers subview render', function () {
+    // given
+    spyOn(view, 'addOne')
+    // view.initialize()
+    // view.delegateEvents()
+
     // when
     files.add({ name: 'test.csv', urlEncodedName: 'test.csv' })
 

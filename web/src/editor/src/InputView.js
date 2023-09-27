@@ -1,7 +1,11 @@
 import _ from 'underscore'
 import $ from 'jquery'
 import SingleView from './SingleView'
-import template from './inputTemplate'
+
+const template = _.template(`
+<input  list="<%= data.modelAttribute %>List" data-name="<%= data.modelAttribute %>" type="<%= data.typeAttribute %>" placeholder="<%= data.placeholderAttribute %>" class="editor-input" id="input-<%= data.modelAttribute %>" value="<%= data.value %>" <%= data.disabled%>>
+<datalist id="<%= data.modelAttribute %>List"><%= data.listAttribute%></datalist>
+`)
 
 export default SingleView.extend({
 
@@ -11,14 +15,13 @@ export default SingleView.extend({
 
   initialize (options) {
     SingleView.prototype.initialize.call(this, options)
-    this.template = template
-    this.render()
     this.listenTo(this.model, `change:${this.data.modelAttribute}`, this.render)
+    this.render()
   },
 
   render () {
     SingleView.prototype.render.apply(this)
-    this.$('.dataentry').append(this.template({ data: _.extend({}, this.data, { value: this.model.get(this.data.modelAttribute) }) }))
+    this.$('.dataentry').append(template({ data: _.extend({}, this.data, { value: this.model.get(this.data.modelAttribute) }) }))
     if (this.data.readonly) {
       this.$(':input').prop('readonly', true)
     }

@@ -1,12 +1,11 @@
 import { InputView, EditorMetadata } from '../src'
-import template from '../src/inputTemplate'
 
 describe('Test InputView', function () {
   let model = null
   let view = null
 
   beforeEach(function () {
-    model = new EditorMetadata({ title: 'some text', template })
+    model = new EditorMetadata({ title: 'some text' })
     view = new InputView({ model })
   })
 
