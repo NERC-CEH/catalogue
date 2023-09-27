@@ -278,7 +278,7 @@ export default EditorView.extend({
               type: 'Catalogue topic'
             }
           },
-          helpText: `\
+          helpText: `
 <p>Keywords (preferably taken from a controlled vocabulary) categorising and describing the data resource.</p>
 <p>Good quality keywords help to improve the efficiency of search, making it easier to find relevant records.</p>\
 `
