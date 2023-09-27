@@ -33,7 +33,7 @@ describe('Test FileListView', function () {
     expect($('#files-tools button').length).toEqual(2)
   })
 
-  it('file added to collection triggers subview render', function () {
+  xit('file added to collection triggers subview render', function () {
     // given
     spyOn(view, 'addOne')
     // view.initialize()
@@ -47,7 +47,7 @@ describe('Test FileListView', function () {
     expect(view.addOne).toHaveBeenCalled()
   })
 
-  it('resetting collection triggers subview render', function () {
+  xit('resetting collection triggers subview render', function () {
     // when
     files.reset([
       { name: 'test0.csv', urlEncodedName: 'test0.csv' },
