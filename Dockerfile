@@ -34,8 +34,7 @@ COPY --chown=spring:spring --from=build-web /web/img /opt/ceh-catalogue/static/i
 COPY --chown=spring:spring --from=build-web /web/dist /opt/ceh-catalogue/static/scripts
 COPY --chown=spring:spring --from=build-web /web/css /opt/ceh-catalogue/static/css
 COPY --chown=spring:spring --from=build-web /web/node_modules/@fortawesome/fontawesome-free/webfonts /opt/ceh-catalogue/static/fonts
-RUN chown spring:spring -R /var/ceh-catalogue
- && chown spring:spring -R /var/upload
+RUN chown spring:spring -R /var/ceh-catalogue && chown spring:spring -R /var/upload
 VOLUME ["/var/ceh-catalogue/datastore", "/var/ceh-catalogue/dropbox", "/var/ceh-catalogue/mapfiles", "/var/upload/datastore"]
 EXPOSE 8080 8081
 USER spring
