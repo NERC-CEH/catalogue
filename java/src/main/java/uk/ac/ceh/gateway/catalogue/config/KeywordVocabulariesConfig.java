@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.gateway.catalogue.vocabularies.KeywordVocabulary;
 import uk.ac.ceh.gateway.catalogue.vocabularies.SparqlKeywordVocabulary;
+import uk.ac.ceh.gateway.catalogue.vocabularies.HttpKeywordVocabulary;
 
 import java.util.List;
 
@@ -158,6 +159,25 @@ public class KeywordVocabulariesConfig {
             where,
             "elterCL",
             "elterCL",
+            catalogueIds
+        );
+    }
+
+    @Profile("server:eidc")
+    @Bean
+    public KeywordVocabulary gemetVocabulary(
+        SolrClient solrClient,
+        @Value("${gemet.themeurl}") String gemetThemeUrl
+    ) {
+        val catalogueIds = List.of("eidc");
+        return new HttpKeywordVocabulary(
+            "gemetThemes",
+            "GEMET Themes",
+            gemetThemeUrl,
+            "",
+            "/uri",
+            "/preferredLabel/string",
+            solrClient,
             catalogueIds
         );
     }
