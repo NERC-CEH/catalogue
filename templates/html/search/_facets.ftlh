@@ -1,9 +1,9 @@
 <#--
-  The following freemarker macro matches the javascript template 
-    /web/src/scripts/templates/FacetResults.tpl
+  The following freemarker macro matches the javascript template
+    /web/src/scripts/templates/facetResultsTemplate.js
 
   Where as the rest of the template matches up with
-    /web/src/scripts/templates/FacetsPanel.tpl
+    /web/src/scripts/templates/facetsPanelTemplate.js
 -->
 <#macro facetResults results>
   <ul>
@@ -23,7 +23,7 @@
       </#if>
     </#list>
   </ul>
-</#macro> 
+</#macro>
 
 <#list facets as facet>
   <#if facet.results?size gt 0>

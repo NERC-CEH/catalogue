@@ -1,11 +1,11 @@
 # Build webpack (javascript & css)
-FROM node:17.4.0 AS build-web
+FROM node:18.17.1-alpine3.18 AS build-web
 WORKDIR /web
 COPY web ./
+RUN npm install -g npm
 RUN npm ci --no-audit
-RUN npm run build
-RUN npm install -g grunt-cli
-RUN node_modules/.bin/grunt
+RUN npm run build-css
+RUN npm run build-prod
 
 # Build Java
 FROM gradle:8.2-jdk17-alpine AS build-java
@@ -32,9 +32,9 @@ COPY --chown=spring:spring --from=build-java /app/build/libs/application/ ./
 COPY --chown=spring:spring templates /opt/ceh-catalogue/templates
 COPY --chown=spring:spring --from=build-web /web/img /opt/ceh-catalogue/static/img
 COPY --chown=spring:spring --from=build-web /web/dist /opt/ceh-catalogue/static/scripts
-COPY --chown=spring:spring --from=build-web web/node_modules /opt/ceh-catalogue/static/node_modules
 COPY --chown=spring:spring --from=build-web /web/css /opt/ceh-catalogue/static/css
-RUN chown spring:spring -R /var/ceh-catalogue \
+COPY --chown=spring:spring --from=build-web /web/node_modules/@fortawesome/fontawesome-free/webfonts /opt/ceh-catalogue/static/fonts
+RUN chown spring:spring -R /var/ceh-catalogue
  && chown spring:spring -R /var/upload
 VOLUME ["/var/ceh-catalogue/datastore", "/var/ceh-catalogue/dropbox", "/var/ceh-catalogue/mapfiles", "/var/upload/datastore"]
 EXPOSE 8080 8081

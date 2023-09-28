@@ -1,2 +1,0 @@
-<input  list="<%= data.modelAttribute %>List" data-name="<%= data.modelAttribute %>" type="<%= data.typeAttribute %>" placeholder="<%= data.placeholderAttribute %>" class="editor-input" id="input-<%= data.modelAttribute %>" value="<%= data.value %>" <%= data.disabled%>>
-<datalist id="<%= data.modelAttribute %>List"><%= data.listAttribute%></datalist>

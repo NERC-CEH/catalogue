@@ -1,1 +1,0 @@
-<span class="<%= type %>"><%= message %></span>
