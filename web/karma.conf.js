@@ -1,5 +1,4 @@
 process.env.CHROME_BIN = require('puppeteer').executablePath()
-const webpackConfig = require('./webpack.common.js')
 
 module.exports = function (config) {
   config.set({
@@ -7,46 +6,28 @@ module.exports = function (config) {
     frameworks: ['jasmine-ajax', 'jasmine', 'webpack'],
 
     files: [
-      './scripts/*/test/*.js'
-    ],
-
-    loggers: [
-      {
-        type: 'console'
-      }
+      'src/*/test/*.js'
     ],
 
     preprocessors: {
-      './scripts/*/test/*.js': ['webpack']
+      'src/*/test/*.js': ['webpack']
     },
 
-    webpack: webpackConfig,
+    webpack: require('./webpack.js'),
 
     reporters: ['progress', 'junit'],
 
     colors: true,
 
-    logLevel: config.LOG_INFO,
-
     autoWatch: true,
 
+    browsers: ['ChromeHeadless_CI'],
+
     customLaunchers: {
-      ChromeHeadless_no_sandbox: {
-        base: 'Chrome',
-        flags: [
-          '--no-sandbox',
-          '--disable-setuid-sandbox',
-          '--headless',
-          '--disable-gpu',
-          '--remote-debugging-port=9222'
-        ]
+      ChromeHeadless_CI: {
+        base: 'ChromeHeadless',
+        flags: ['--no-sandbox']
       }
-    },
-
-    browsers: ['ChromeHeadless_no_sandbox'],
-
-    client: {
-      clearContext: true
     },
 
     singleRun: true

@@ -25,7 +25,7 @@ test_java:
 
 test_web:
   stage: test
-  image: ephesoft/headless_chrome:latest
+  image: registry.gitlab.ceh.ac.uk/eip/headless_chrome:0.1
   script:
     - cd web/
     - npm install -g npm
@@ -35,6 +35,15 @@ test_web:
     when: always
     reports:
       junit: web/TESTS-*.xml
+
+test_application:
+  stage: test
+  image: docker:20.10.5
+  services:
+    - name: docker:20.10.5-dind
+      alias: docker
+  script:
+    - docker build --target prod -t $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA .
 
 build_application:
   stage: build
