@@ -47,7 +47,6 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.model.Supplemental;
-import uk.ac.ceh.gateway.catalogue.publication.PublicationService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
 @Profile("server:elter & imports")
@@ -61,9 +60,8 @@ public class B2shareImportService implements CatalogueImportService {
     private final ObjectMapper objectMapper;
     private final Pattern deimsIdNormalise;
     private final Pattern doiNormalise;
-    private final PublicationService publicationService;
     private final SolrClient solrClient;
-    private String b2shareRecordsUrl;
+    private final String b2shareRecordsFirstPageUrl;
 
     // fixed fields
     private static final AccessLimitation openAccess = AccessLimitation.builder()
@@ -136,13 +134,12 @@ public class B2shareImportService implements CatalogueImportService {
     @SneakyThrows
     public B2shareImportService(
             DocumentRepository documentRepository,
-            PublicationService publicationService,
             SolrClient solrClient,
-            @Value("${b2share.api}") String b2shareRecordsUrl
+            @Value("${b2share.api}") String b2shareRecordsFirstPageUrl
             ) {
         log.info("Creating");
 
-        this.b2shareRecordsUrl = b2shareRecordsUrl;
+        this.b2shareRecordsFirstPageUrl = b2shareRecordsFirstPageUrl;
         this.dateParser = new DateTimeFormatterBuilder()
             // order matters! put patterns containing others first
             .appendPattern("[y-M-d'T'H:m:s.nXXX]")
@@ -155,7 +152,6 @@ public class B2shareImportService implements CatalogueImportService {
         this.objectMapper = new ObjectMapper();
         this.deimsIdNormalise = Pattern.compile("\\p{XDigit}{8}-\\p{XDigit}{4}-\\p{XDigit}{4}-\\p{XDigit}{4}-\\p{XDigit}{12}");
         this.doiNormalise = Pattern.compile("10\\.\\S+/\\S+");
-        this.publicationService = publicationService;
         this.solrClient = solrClient;
         }
 
@@ -396,7 +392,6 @@ public class B2shareImportService implements CatalogueImportService {
         Map<String, String> localRecordList = null;
         int blacklistedRecords = 0;
         int newRecords = 0;
-        int publishedRecords = 0;
         int skippedRecords = 0;
         int totalRecords = 0;
         int updatedRecords = 0;
@@ -410,12 +405,13 @@ public class B2shareImportService implements CatalogueImportService {
         }
 
         // ready to import
-        JsonNode b2shareRecords = null;
-        while (! b2shareRecordsUrl.equals("")) {
+        JsonNode b2shareRecordsPage = null;
+        String b2shareRecordsnextPageUrl = b2shareRecordsFirstPageUrl;
+        while (! b2shareRecordsnextPageUrl.equals("")) {
             // get next page of records
-            b2shareRecords = objectMapper.readTree(new URL(b2shareRecordsUrl));
+            b2shareRecordsPage = objectMapper.readTree(new URL(b2shareRecordsnextPageUrl));
 
-            for (JsonNode record : b2shareRecords.path("hits").path("hits")){
+            for (JsonNode record : b2shareRecordsPage.path("hits").path("hits")){
                 // process each record on page
                 // normalise DOI to actual DOI, i.e. "10.xxx.../xxxx"
                 String originalDoi = record.path("metadata").path("DOI").asText();
@@ -446,26 +442,16 @@ public class B2shareImportService implements CatalogueImportService {
                     String newId = createRecord(normalisedDoi, recordDocument, importUser);
                     log.debug("New document ID is {}", newId);
                     newRecords++;
-
-                    // publish new record IF it has a DEIMS site linked to it
-                    List<DeimsSolrIndex> deimsSites = recordDocument.getDeimsSites();
-                    if (deimsSites != null && deimsSites.size() > 0) {
-                        publicationService.transition(importUser, newId, "ykhm7b");
-                        publicationService.transition(importUser, newId, "re4vkb");
-                        log.debug("Successfully detected DEIMS ID and published record {}", recordDocument.getId());
-                        publishedRecords++;
-                    }
                 }
             }
-            b2shareRecordsUrl = b2shareRecords.path("links").path("next").asText();
+            b2shareRecordsnextPageUrl = b2shareRecordsPage.path("links").path("next").asText();
         }
-        totalRecords = b2shareRecords.get("hits").get("total").asInt();
+        totalRecords = b2shareRecordsPage.get("hits").get("total").asInt();
 
         // finished, log summary
         log.info("Finished B2SHARE metadata import!");
-        log.info("{} created ({} published) + {} updated + {} skipped = {} total ({} records in B2SHARE)",
+        log.info("{} created + {} updated + {} skipped = {} total ({} records in B2SHARE)",
                 newRecords,
-                publishedRecords,
                 updatedRecords,
                 skippedRecords,
                 newRecords + updatedRecords + skippedRecords,

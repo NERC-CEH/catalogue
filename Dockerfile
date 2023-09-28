@@ -24,20 +24,17 @@ RUN apk --no-cache add curl
 RUN addgroup -g 1001 -S spring && adduser -u 1001 -S spring -G spring
 RUN mkdir -p /var/ceh-catalogue/datastore /var/ceh-catalogue/dropbox /var/ceh-catalogue/mapfiles /var/ceh-catalogue/tdb /var/upload/datastore
 WORKDIR /app
-COPY schemas /opt/ceh-catalogue/schemas
-COPY  --from=build-java /app/build/libs/dependencies/ ./
-COPY --from=build-java /app/build/libs/spring-boot-loader/ ./
-COPY --from=build-java /app/build/libs/snapshot-dependencies/ ./
-COPY --from=build-java /app/build/libs/application/ ./
-COPY templates /opt/ceh-catalogue/templates
-COPY --from=build-web /web/img /opt/ceh-catalogue/static/img
-COPY --from=build-web /web/dist /opt/ceh-catalogue/static/scripts
-COPY --from=build-web /web/css /opt/ceh-catalogue/static/css
-COPY --from=build-web /web/node_modules/@fortawesome/fontawesome-free/webfonts /opt/ceh-catalogue/static/fonts
-RUN chown spring:spring -R /app \
- && chown spring:spring -R /opt/ceh-catalogue \
- && chown spring:spring -R /var/ceh-catalogue \
- && chown spring:spring -R /var/upload
+COPY --chown=spring:spring schemas /opt/ceh-catalogue/schemas
+COPY --chown=spring:spring --from=build-java /app/build/libs/dependencies/ ./
+COPY --chown=spring:spring --from=build-java /app/build/libs/spring-boot-loader/ ./
+COPY --chown=spring:spring --from=build-java /app/build/libs/snapshot-dependencies/ ./
+COPY --chown=spring:spring --from=build-java /app/build/libs/application/ ./
+COPY --chown=spring:spring templates /opt/ceh-catalogue/templates
+COPY --chown=spring:spring --from=build-web /web/img /opt/ceh-catalogue/static/img
+COPY --chown=spring:spring --from=build-web /web/dist /opt/ceh-catalogue/static/scripts
+COPY --chown=spring:spring --from=build-web /web/css /opt/ceh-catalogue/static/css
+COPY --chown=spring:spring --from=build-web /web/node_modules/@fortawesome/fontawesome-free/webfonts /opt/ceh-catalogue/static/fonts
+RUN chown spring:spring -R /var/ceh-catalogue && chown spring:spring -R /var/upload
 VOLUME ["/var/ceh-catalogue/datastore", "/var/ceh-catalogue/dropbox", "/var/ceh-catalogue/mapfiles", "/var/upload/datastore"]
 EXPOSE 8080 8081
 USER spring
