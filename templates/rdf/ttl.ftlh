@@ -1,4 +1,58 @@
 <#import "../functions.ftlh" as func>
+
+<#macro contactList contacts prefix="c">
+  <#if contacts?has_content>
+    <#list contacts as contact>
+      <#assign contactIdentifier="_:" + prefix + contact?counter>
+      
+      <#if contact.individualName?has_content>
+        <#if contact.nameIdentifier?has_content && contact.nameIdentifier?matches("^http(|s)://orcid.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$")>
+          <#assign contactIdentifier= "\l" + contact.nameIdentifier + "\g">
+        </#if>
+      <#else>
+        <#if contact.organisationIdentifier?has_content && contact.organisationIdentifier?matches("^http(|s)://ror.org/[0-9a-z]+$")>
+          <#assign contactIdentifier="\l" + contact.organisationIdentifier+ "\g">
+        </#if>
+      </#if>
+      
+      ${contactIdentifier?no_esc}<#sep>,</#sep>
+    </#list>
+  </#if>
+</#macro>
+
+<#macro contactDetail contacts prefix="c">
+  <#if contacts?has_content>
+    <#list contacts as contact>
+      <#assign contactIdentifier="_:" + prefix + contact?counter>
+
+      <#if contact.individualName?has_content>
+        <#assign contactType="vcard:Individual">
+        <#assign contactName=contact.individualName>
+        <#if contact.organisationName?has_content>
+          <#assign orgName=contact.organisationName>
+        </#if>
+        <#if contact.nameIdentifier?has_content && contact.nameIdentifier?matches("^http(|s)://orcid.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$")>
+          <#assign contactIdentifier="\l" + contact.nameIdentifier + "\g">
+        </#if>
+      <#elseif contact.organisationName?has_content >
+        <#assign contactType="vcard:Organization">
+        <#assign contactName=contact.organisationName>
+        <#assign orgName="">
+        <#if contact.organisationIdentifier?has_content && contact.organisationIdentifier?matches("^http(|s)://ror.org/[0-9a-z]+$")>
+          <#assign contactIdentifier="\l" + contact.organisationIdentifier+ "\g">
+        </#if>
+      </#if>
+    
+      ${contactIdentifier?no_esc} a ${contactType} ;
+	    vcard:fn "${contactName}" ;
+      <#if orgName?has_content>vcard:organization-name "${orgName}" ;</#if>
+      <#if contact.email?has_content>vcard:hasEmail "${contact.email}" ;</#if>
+      .
+    </#list>
+  </#if>
+</#macro>
+
+
 <#compress>
 <#setting date_format = 'yyyy-MM-dd'>
 <#if useConstraints?has_content>
@@ -20,6 +74,7 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix vcard: <http://www.w3.org/2006/vcard/ns#> .
 
+
 <${uri}>
   dct:title "${title}" ;
   <#if description?has_content>
@@ -36,40 +91,14 @@
     </#list>
   </#if>
 
-  <#--Points of contact-->
+  <#--Points of contact2-->
   <#if pointsOfContact?has_content>
-    dcat:contactPoint
-    <#list pointsOfContact as poc>
-      [
-      <#if poc.individualName?has_content>
-        a vcard:Individual ;
-        vcard:n "${poc.individualName}" ;
-        <#if poc.nameIdentifier?has_content && poc.nameIdentifier?starts_with("http")> vcard:hasUID <${poc.nameIdentifier}> ;</#if>
-        <#if poc.organisationName?has_content>vcard:organization-name "${poc.organisationName}" ;</#if>
-      <#else>
-        a vcard:Organization ;
-        vcard:fn "${poc.organisationName}" ;
-        <#if poc.organisationIdentifier?has_content && poc.organisationIdentifier?starts_with("http")> vcard:hasUID <${poc.organisationIdentifier}"> ;</#if>
-      </#if>
-      <#if poc.email?has_content>vcard:hasEmail "${poc.email}" ;</#if>
-      ]<#sep>,
-    </#list>
-   ;
+    dcat:contactPoint <@contactList pointsOfContact "c" />  ;
   </#if>
 
   <#--Publisher-->
   <#if publishers?has_content>
-  dct:publisher
-  <#list publishers as publisher>
-    [
-    a vcard:Organization ;
-    vcard:fn "${publisher.organisationName}" ;
-    <#if publisher.email?has_content>vcard:hasEmail "${publisher.email}" ;</#if>
-    <#if publisher.organisationIdentifier?has_content && publisher.organisationIdentifier?starts_with("http")> vcard:hasUID <${publisher.organisationIdentifier}> ;
-    </#if>
-    ]<#sep>,
-  </#list>
-   ;
+    dct:publisher  <@contactList publishers "pub" /> ;
   </#if>
 
   dct:language "eng" ;
@@ -118,4 +147,14 @@
   <#else>
   </#if>
 .
+
+
+<#if pointsOfContact?has_content>
+  <@contactDetail pointsOfContact "c" />
+</#if>
+<#if publishers?has_content>
+  <@contactDetail publishers "pub" />
+</#if>
+<@contactDetail authors "a" />
+
 </#compress>

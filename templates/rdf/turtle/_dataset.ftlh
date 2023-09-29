@@ -56,7 +56,7 @@ dct:type dcmitype:Dataset ;
 
 <#-- Keywords -->
 <#if allKeywords?has_content>
-cat:keyword
+dcat:keyword
   <#list allKeywords as keyword>
     <#if keyword.uri?has_content>
       <#if keyword.value?has_content>
@@ -95,9 +95,7 @@ dcat:Distribution [
 
 <#--Authors-->
 <#if authors?has_content>
-dcat:contributor
-<#include "_authors.ftlh">
-;
+  dcat:contributor <@contactList authors "a" /> ;
 </#if>
 
 <#assign rel_memberOf = jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#memberOf")>
