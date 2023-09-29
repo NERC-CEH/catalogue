@@ -3,7 +3,7 @@
 <#setting date_format = 'yyyy-MM-dd'>
 
 <#assign defaultScripts>
-  <script src="/static/scripts/main.bundle.js"></script>
+  <script src="/static/scripts/main.js"></script>
 </#assign>
 
 <#assign catalogueid="">
