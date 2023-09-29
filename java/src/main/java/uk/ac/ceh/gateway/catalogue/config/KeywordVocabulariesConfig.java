@@ -167,13 +167,15 @@ public class KeywordVocabulariesConfig {
     @Bean
     public KeywordVocabulary gemetVocabulary(
         SolrClient solrClient,
+        @Value("${gemet.concepturl}") String gemetConceptUrl,
         @Value("${gemet.themeurl}") String gemetThemeUrl
     ) {
         val catalogueIds = List.of("eidc");
+        val gemetUrls = List.of(gemetConceptUrl, gemetThemeUrl);
         return new HttpKeywordVocabulary(
-            "gemetThemes",
-            "GEMET Themes",
-            gemetThemeUrl,
+            "gemet",
+            "GEMET",
+            gemetUrls,
             "",
             "/uri",
             "/preferredLabel/string",
