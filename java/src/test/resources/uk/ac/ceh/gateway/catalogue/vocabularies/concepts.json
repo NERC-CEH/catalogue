@@ -1,0 +1,122 @@
+[
+  {
+    "definition": {
+      "string": "Site that cannot be used for any purpose, being contaminated by pollutants, not necessarily radioactive.",
+      "language": "en"
+    },
+    "preferredLabel": {
+      "string": "abandoned industrial site",
+      "language": "en"
+    },
+    "uri": "http://www.eionet.europa.eu/gemet/concept/7",
+    "thesaurus": "http://www.eionet.europa.eu/gemet/concept/"
+  },
+  {
+    "definition": {
+      "string": "A vehicle that has been discarded in the environment, urban or otherwise, often found wrecked, destroyed, damaged or with a major component part stolen or missing.",
+      "language": "en"
+    },
+    "preferredLabel": {
+      "string": "abandoned vehicle",
+      "language": "en"
+    },
+    "uri": "http://www.eionet.europa.eu/gemet/concept/8",
+    "thesaurus": "http://www.eionet.europa.eu/gemet/concept/"
+  },
+  {
+    "definition": {
+      "string": "The non-living components of the environment (rocks, minerals, soil, water and climate).",
+      "language": "en"
+    },
+    "preferredLabel": {
+      "string": "abiotic environment",
+      "language": "en"
+    },
+    "uri": "http://www.eionet.europa.eu/gemet/concept/10193",
+    "thesaurus": "http://www.eionet.europa.eu/gemet/concept/"
+  },
+  {
+    "definition": {
+      "string": "Physical, chemical and other non-living environmental factors. They are essential for living plants and animals of an ecosystem, providing the essential elements and nutrients that are necessary for growth. The abiotic elements also include the climatic and pedologic components of the ecosystem.",
+      "language": "en"
+    },
+    "preferredLabel": {
+      "string": "abiotic factor",
+      "language": "en"
+    },
+    "uri": "http://www.eionet.europa.eu/gemet/concept/11",
+    "thesaurus": "http://www.eionet.europa.eu/gemet/concept/"
+  },
+  {
+    "definition": {
+      "string": "all living biomass above the soil including stem, stump, branches, bark, seeds and foliage",
+      "language": "en"
+    },
+    "preferredLabel": {
+      "string": "above-ground biomass",
+      "language": "en"
+    },
+    "uri": "http://www.eionet.europa.eu/gemet/concept/15041",
+    "thesaurus": "http://www.eionet.europa.eu/gemet/concept/"
+  },
+  {
+    "definition": {
+      "string": "oven-dry weight of net annual increment (s.b) of a tree, stand or forest plus oven-dry weight of annual growth of branches, twigs, foliage, top and stump",
+      "language": "en"
+    },
+    "preferredLabel": {
+      "string": "above-ground biomass growth",
+      "language": "en"
+    },
+    "uri": "http://www.eionet.europa.eu/gemet/concept/15042",
+    "thesaurus": "http://www.eionet.europa.eu/gemet/concept/"
+  },
+  {
+    "definition": {
+      "string": "all living matter above-ground excluding trees with trees defined as generally five cm or greater diameter at breast height (4.3 feet above ground)",
+      "language": "en"
+    },
+    "preferredLabel": {
+      "string": "above-ground non-tree biomass",
+      "language": "en"
+    },
+    "uri": "http://www.eionet.europa.eu/gemet/concept/15043",
+    "thesaurus": "http://www.eionet.europa.eu/gemet/concept/"
+  },
+  {
+    "definition": {
+      "string": "all living matter composed of trees defined as generally five cm or greater diameter at breast height (4.3 feet above ground)",
+      "language": "en"
+    },
+    "preferredLabel": {
+      "string": "above-ground tree biomass",
+      "language": "en"
+    },
+    "uri": "http://www.eionet.europa.eu/gemet/concept/15044",
+    "thesaurus": "http://www.eionet.europa.eu/gemet/concept/"
+  },
+  {
+    "definition": {
+      "string": "The taking in of fluids or other substances by cells or tissues.",
+      "language": "en"
+    },
+    "preferredLabel": {
+      "string": "absorption (exposure)",
+      "language": "en"
+    },
+    "uri": "http://www.eionet.europa.eu/gemet/concept/13",
+    "thesaurus": "http://www.eionet.europa.eu/gemet/concept/"
+  },
+  {
+    "definition": {
+      "string": "The measurement of the amount of any chemical substance that can be safely consumed by a human being in a day. Calculations are usually based on the maximum level of a substance that can be fed to animals without producing any harmful effects. This is divided by a \"safety factor\" to allow for the differences between animals and humans and to take account of the variation in human diets.",
+      "language": "en"
+    },
+    "preferredLabel": {
+      "string": "acceptable daily intake",
+      "language": "en"
+    },
+    "uri": "http://www.eionet.europa.eu/gemet/concept/91",
+    "thesaurus": "http://www.eionet.europa.eu/gemet/concept/"
+  }
+]

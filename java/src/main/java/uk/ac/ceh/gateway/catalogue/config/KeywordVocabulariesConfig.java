@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.gateway.catalogue.vocabularies.KeywordVocabulary;
 import uk.ac.ceh.gateway.catalogue.vocabularies.SparqlKeywordVocabulary;
+import uk.ac.ceh.gateway.catalogue.vocabularies.HttpKeywordVocabulary;
 
 import java.util.List;
 
@@ -158,6 +159,37 @@ public class KeywordVocabulariesConfig {
             where,
             "elterCL",
             "elterCL",
+            catalogueIds
+        );
+    }
+
+    @Profile("server:eidc")
+    @Bean
+    public KeywordVocabulary gemetVocabulary(
+        SolrClient solrClient,
+        @Value("${gemet.concepturl}") String gemetConceptUrl,
+        @Value("${gemet.themeurl}") String gemetThemeUrl
+    ) {
+        /* GEMET is the GEneral Multilingual Environmental Thesaurus
+         *
+         * This vocabulary was implemented using the documentation located at
+         * https://www.eionet.europa.eu/gemet/en/webservices/
+         *
+         * Its purpose is to harvest the GEMET Themes and Concepts only,
+         * so NOT groups and supergroups.
+         *
+         * See EMC-6 in Jira for details.
+         */
+        val catalogueIds = List.of("eidc");
+        val gemetUrls = List.of(gemetConceptUrl, gemetThemeUrl);
+        return new HttpKeywordVocabulary(
+            "gemet",
+            "GEMET",
+            gemetUrls,
+            "",
+            "/uri",
+            "/preferredLabel/string",
+            solrClient,
             catalogueIds
         );
     }
