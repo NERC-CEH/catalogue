@@ -43,11 +43,17 @@
         </#if>
       </#if>
     
-      ${contactIdentifier?no_esc} a ${contactType} ;
-	    vcard:fn "${contactName}" ;
-      <#if orgName?has_content>vcard:organization-name "${orgName}" ;</#if>
-      <#if contact.email?has_content>vcard:hasEmail "${contact.email}" ;</#if>
-      .
+      <#--
+      UKCEH and EIDC organisations are defined at the catalogue level so don't need to be included here
+      Only return data for organisations other than UKCEH or EIDC
+      -->
+      <#if !contactIdentifier?matches("^\lhttp(|s)://ror.org/04xw4m193\g$") && !contactIdentifier?matches("^\lhttp(|s)://ror.org/00pggkr55\g$")>
+        ${contactIdentifier?no_esc} a ${contactType} ;
+        vcard:fn "${contactName}" ;
+        <#if orgName?has_content>vcard:organization-name "${orgName}" ;</#if>
+        <#if contact.email?has_content>vcard:hasEmail "${contact.email}" ;</#if>
+        .
+      </#if>
     </#list>
   </#if>
 </#macro>
@@ -73,7 +79,6 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix vcard: <http://www.w3.org/2006/vcard/ns#> .
-
 
 <${uri}>
   dct:title "${title}" ;
