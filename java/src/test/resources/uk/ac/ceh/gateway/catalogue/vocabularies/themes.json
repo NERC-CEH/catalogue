@@ -1,0 +1,82 @@
+[
+  {
+    "preferredLabel": {
+      "string": "administration",
+      "language": "en"
+    },
+    "uri": "http://www.eionet.europa.eu/gemet/theme/1",
+    "thesaurus": "http://www.eionet.europa.eu/gemet/theme/"
+  },
+  {
+    "preferredLabel": {
+      "string": "agriculture",
+      "language": "en"
+    },
+    "uri": "http://www.eionet.europa.eu/gemet/theme/2",
+    "thesaurus": "http://www.eionet.europa.eu/gemet/theme/"
+  },
+  {
+    "preferredLabel": {
+      "string": "air",
+      "language": "en"
+    },
+    "uri": "http://www.eionet.europa.eu/gemet/theme/3",
+    "thesaurus": "http://www.eionet.europa.eu/gemet/theme/"
+  },
+  {
+    "preferredLabel": {
+      "string": "animal husbandry",
+      "language": "en"
+    },
+    "uri": "http://www.eionet.europa.eu/gemet/theme/18",
+    "thesaurus": "http://www.eionet.europa.eu/gemet/theme/"
+  },
+  {
+    "preferredLabel": {
+      "string": "biology",
+      "language": "en"
+    },
+    "uri": "http://www.eionet.europa.eu/gemet/theme/4",
+    "thesaurus": "http://www.eionet.europa.eu/gemet/theme/"
+  },
+  {
+    "preferredLabel": {
+      "string": "building",
+      "language": "en"
+    },
+    "uri": "http://www.eionet.europa.eu/gemet/theme/5",
+    "thesaurus": "http://www.eionet.europa.eu/gemet/theme/"
+  },
+  {
+    "preferredLabel": {
+      "string": "chemistry",
+      "language": "en"
+    },
+    "uri": "http://www.eionet.europa.eu/gemet/theme/6",
+    "thesaurus": "http://www.eionet.europa.eu/gemet/theme/"
+  },
+  {
+    "preferredLabel": {
+      "string": "climate",
+      "language": "en"
+    },
+    "uri": "http://www.eionet.europa.eu/gemet/theme/7",
+    "thesaurus": "http://www.eionet.europa.eu/gemet/theme/"
+  },
+  {
+    "preferredLabel": {
+      "string": "disasters, accidents, risk",
+      "language": "en"
+    },
+    "uri": "http://www.eionet.europa.eu/gemet/theme/32",
+    "thesaurus": "http://www.eionet.europa.eu/gemet/theme/"
+  },
+  {
+    "preferredLabel": {
+      "string": "economics",
+      "language": "en"
+    },
+    "uri": "http://www.eionet.europa.eu/gemet/theme/9",
+    "thesaurus": "http://www.eionet.europa.eu/gemet/theme/"
+  }
+]
