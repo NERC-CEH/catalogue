@@ -17,7 +17,7 @@ export default Backbone.View.extend({
   render () {
     this.$el.html(panelTpl({
       facets: this.model.getResults().attributes.facets,
-      template: resultsTpl()
+      template: resultsTpl
     }))
     return this
   }
