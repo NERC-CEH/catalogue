@@ -47,11 +47,10 @@ public class DcatController {
         if (catalogueService.retrieve(catalogue) == null) {
             throw new ResourceNotFoundException(catalogue + " is not a catalogue");
         }
-        List<String> ids = listingService.getPublicDocumentsOfCatalogue(catalogue)
+        List<String> records = listingService.getPublicDocumentsOfCatalogue(catalogue)
             .stream()
-            .map(id -> id)
             .collect(Collectors.toList());
-        return new ModelAndView("rdf/catalogue.ttl", "ids", ids);
+        return new ModelAndView("rdf/catalogue.ttl", "records", records);
     }
 
 }

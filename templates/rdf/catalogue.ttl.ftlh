@@ -8,7 +8,7 @@
 <https://catalogue.ceh.ac.uk/${catalogue}/documents/> a dcat:Catalog ;
     dct:title "${catalogue} digital asset register"@en ;
     foaf:homepage <https://catalogue.ceh.ac.uk/${catalogue}/documents> ;
-    dcat:dataset <#list ids as url>${catalogue}:${url} <#sep>,</#sep></#list> ;
+    dcat:record <#list ids as url>${catalogue}:${url} <#sep>,</#sep></#list> ;
 .
 
 <#if catalogue=="eidc" >
