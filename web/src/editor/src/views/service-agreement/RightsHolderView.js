@@ -3,9 +3,9 @@ import template from '../../templates/service-agreement/rightsHolder'
 
 export default ObjectInputView.extend({
 
-  initialize () {
+  initialize (options) {
     this.template = template
-    ObjectInputView.prototype.initialize.call(this)
+    ObjectInputView.prototype.initialize.call(this, options)
   },
 
   modify (event) {
