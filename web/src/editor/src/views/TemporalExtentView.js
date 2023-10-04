@@ -1,53 +1,32 @@
+/* eslint no-new: "off" */
+import _ from 'underscore'
 import ObjectInputView from './ObjectInputView'
 import template from '../templates/temporalExtent'
-import 'air-datepicker'
-import Moment from 'moment'
+import AirDatepicker from 'air-datepicker'
+import localeEn from 'air-datepicker/locale/en'
 
-// difference must be in parent view vs single view
+const datepickerOptions = {
+  dateFormat: 'yyyy-MM-dd',
+  locale: localeEn,
+  position: 'top left'
+}
+
 export default ObjectInputView.extend({
-  initialize () {
+
+  initialize (options) {
+    // TODO: work out why these date pickers don't appear
     this.template = template
-  },
-  render () {
-    ObjectInputView.prototype.render.apply(this)
+    ObjectInputView.prototype.initialize.call(this, options)
     const that = this
-
-    let beginStartDate
-    let endStartDate
-    if (that.model.get('begin')) {
-      beginStartDate = new Date(that.model.get('begin'))
-    } else {
-      beginStartDate = new Date()
-    }
-
-    if (that.model.get('end')) {
-      endStartDate = new Date(that.model.get('end'))
-    } else {
-      endStartDate = beginStartDate
-    }
-
-    that.$('.input-begin').datepicker({
-      language: 'en',
-      dateFormat: 'yyyy-mm-dd',
-      startDate: beginStartDate,
-      position: 'top left',
-      onSelect: function (formattedDate, date) {
-        that.model.set('begin', Moment(date).format('YYYY-MM-DD'))
-        that.$('#input-begin').value = that.model.set('begin', Moment(date).format('YYYY-MM-DD'))
+    new AirDatepicker('.input-begin', _.extend({}, datepickerOptions, {
+      onSelect ({ formattedDate }) {
+        that.model.set('begin', formattedDate)
       }
-    })
-
-    that.$('.input-end').datepicker({
-      language: 'en',
-      minDate: beginStartDate,
-      dateFormat: 'yyyy-mm-dd',
-      startDate: endStartDate,
-      position: 'top left',
-      onSelect: function (formattedDate, date) {
-        that.model.set('end', Moment(date).format('YYYY-MM-DD'))
-        that.$('#input-end').value = that.model.set('end', Moment(date).format('YYYY-MM-DD'))
+    }))
+    new AirDatepicker('.input-end', _.extend({}, datepickerOptions, {
+      onSelect ({ formattedDate }) {
+        that.model.set('end', formattedDate)
       }
-    })
-    return this
+    }))
   }
 })

@@ -27,7 +27,9 @@
     "extends": [
       "standard"
     ],
-    "ignorePatterns": ["dist/*"],
+    "ignorePatterns": [
+      "dist/*"
+    ],
     "parser": "@babel/eslint-parser",
     "parserOptions": {
       "ecmaVersion": "latest",
@@ -78,7 +80,6 @@
     "jquery-ui": "^1.13.1",
     "leaflet": "^1.9.4",
     "leaflet-draw": "^1.0.4",
-    "moment": "^2.29.4",
     "sweetalert2": "^11.7.27",
     "underscore": "^1.13.6"
   }

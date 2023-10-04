@@ -1,48 +1,37 @@
-import $ from 'jquery'
+/* eslint no-new: "off" */
+import _ from 'underscore'
 import ObjectInputView from './ObjectInputView'
 import template from '../templates/DataTypeProvenance'
 import ParentStringView from './ParentStringView'
-import 'air-datepicker'
-import Moment from 'moment'
+import AirDatepicker from 'air-datepicker'
+import localeEn from 'air-datepicker/locale/en'
+
+const datepickerOptions = {
+  dateFormat: 'yyyy-MM-dd',
+  locale: localeEn,
+  position: 'top left'
+}
 export default ObjectInputView.extend({
 
-  initialize () {
+  initialize (options) {
     this.template = template
-  },
-
-  render () {
-    ObjectInputView.prototype.render.apply(this)
-
+    ObjectInputView.prototype.initialize.call(this, options)
     const that = this
-    $(document).ready(function () {
-      that.$('#input-creationDate').datepicker({
-        language: 'en',
-        dateFormat: 'yyyy-mm-dd',
-        position: 'top left',
-        onSelect: function (formattedDate, date) {
-          that.model.set('creationDate', Moment(date).format('YYYY-MM-DD'))
-          that.$('#input-creationDate').value = that.model.set('creationDate', Moment(date).format('YYYY-MM-DD'))
-        }
-      })
-
-      that.$('#input-modificationDate').datepicker({
-        language: 'en',
-        dateFormat: 'yyyy-mm-dd',
-        position: 'top left',
-        onSelect: function (formattedDate, date) {
-          that.model.set('modificationDate', Moment(date).format('YYYY-MM-DD'))
-          that.$('#input-modificationDate').value = that.model.set('creationDate', Moment(date).format('YYYY-MM-DD'))
-        }
-      })
-
-      /* eslint no-new: "off" */
-      new ParentStringView({
-        el: that.$('#provenanceContributors'),
-        model: that.model,
-        modelAttribute: 'contributors',
-        label: 'Contributors'
-      })
+    new AirDatepicker('#input-creationDate', _.extend({}, datepickerOptions, {
+      onSelect ({ formattedDate }) {
+        that.model.set('creationDate', formattedDate)
+      }
+    }))
+    new AirDatepicker('#input-modificationDate', _.extend({}, datepickerOptions, {
+      onSelect ({ formattedDate }) {
+        that.model.set('modificationDate', formattedDate)
+      }
+    }))
+    new ParentStringView({
+      el: this.$('#provenanceContributors'),
+      model: that.model,
+      modelAttribute: 'contributors',
+      label: 'Contributors'
     })
-    return this
   }
 })

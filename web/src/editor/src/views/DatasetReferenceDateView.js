@@ -1,70 +1,46 @@
-import $ from 'jquery'
+/* eslint no-new: "off" */
+import _ from 'underscore'
+import AirDatepicker from 'air-datepicker'
+import localeEn from 'air-datepicker/locale/en'
 import ObjectInputView from './ObjectInputView'
 import template from '../templates/DatasetReferenceDate'
-import 'air-datepicker'
-import Moment from 'moment'
+
+const datepickerOptions = {
+  dateFormat: 'yyyy-MM-dd',
+  locale: localeEn,
+  position: 'top left'
+}
+
 export default ObjectInputView.extend({
 
-  initialize () {
+  initialize (options) {
     this.template = template
-  },
-
-  render () {
-    ObjectInputView.prototype.render.apply(this)
-
+    ObjectInputView.prototype.initialize.call(this, options)
     const that = this
-    $(document).ready(function () {
-      that.$('#input-creationDate').datepicker({
-        language: 'en',
-        dateFormat: 'yyyy-mm-dd',
-        position: 'top left',
-        onSelect: function (formattedDate, date) {
-          that.model.set('creationDate', Moment(date).format('YYYY-MM-DD'))
-          that.$('#input-creationDate').value = that.model.set('creationDate', Moment(date).format('YYYY-MM-DD'))
-        }
-      })
-
-      that.$('#input-publicationDate').datepicker(
-        {
-          language: 'en',
-          dateFormat: 'yyyy-mm-dd',
-          position: 'top left',
-          onSelect: function (formattedDate, date) {
-            that.model.set('publicationDate', Moment(date).format('YYYY-MM-DD'))
-            that.$('#input-publicationDate').value = that.model.set('publicationDate', Moment(date).format('YYYY-MM-DD'))
-          }
-        })
-
-      that.$('#input-unavailableDate').datepicker({
-        language: 'en',
-        dateFormat: 'yyyy-mm-dd',
-        position: 'top left',
-        onSelect: function (formattedDate, date) {
-          that.model.set('unavailableDate', Moment(date).format('YYYY-MM-DD'))
-          that.$('#input-unavailableDate').value = that.model.set('unavailableDate', Moment(date).format('YYYY-MM-DD'))
-        }
-      })
-
-      that.$('#input-releasedDate').datepicker({
-        language: 'en',
-        dateFormat: 'yyyy-mm-dd',
-        position: 'top left',
-        onSelect: function (formattedDate, date) {
-          that.model.set('releasedDate', Moment(date).format('YYYY-MM-DD'))
-          that.$('#input-releasedDate').value = that.model.set('releasedDate', Moment(date).format('YYYY-MM-DD'))
-        }
-      })
-
-      that.$('#input-supersededDate').datepicker({
-        language: 'en',
-        dateFormat: 'yyyy-mm-dd',
-        position: 'top left',
-        onSelect: function (formattedDate, date) {
-          that.model.set('supersededDate', Moment(date).format('YYYY-MM-DD'))
-          that.$('#input-supersededDate').value = this.model.set('supersededDate', Moment(date).format('YYYY-MM-DD'))
-        }
-      })
-    })
-    return this
+    new AirDatepicker('#input-creationDate', _.extend({}, datepickerOptions, {
+      onSelect ({ formattedDate }) {
+        that.model.set('creationDate', formattedDate)
+      }
+    }))
+    new AirDatepicker('#input-publicationDate', _.extend({}, datepickerOptions, {
+      onSelect ({ formattedDate }) {
+        that.model.set('publicationDate', formattedDate)
+      }
+    }))
+    new AirDatepicker('#input-unavailableDate', _.extend({}, datepickerOptions, {
+      onSelect ({ formattedDate }) {
+        that.model.set('unavailableDate', formattedDate)
+      }
+    }))
+    new AirDatepicker('#input-releasedDate', _.extend({}, datepickerOptions, {
+      onSelect ({ formattedDate }) {
+        that.model.set('releasedDate', formattedDate)
+      }
+    }))
+    new AirDatepicker('#input-supersededDate', _.extend({}, datepickerOptions, {
+      onSelect ({ formattedDate }) {
+        that.model.set('supersededDate', formattedDate)
+      }
+    }))
   }
 })
