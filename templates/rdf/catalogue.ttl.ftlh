@@ -6,7 +6,7 @@
 @prefix ${catalogue}: <https://catalogue.ceh.ac.uk/id/> .
 
 <https://catalogue.ceh.ac.uk/${catalogue}/documents/> a dcat:Catalog ;
-    dct:title "${catalogue} digital asset register"@en ;
+    dct:title "${title} digital asset register"@en ;
     foaf:homepage <https://catalogue.ceh.ac.uk/${catalogue}/documents> ;
     dcat:record <#list records as record>${catalogue}:${record} <#sep>,</#sep></#list> ;
 .
