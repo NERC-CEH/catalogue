@@ -15,13 +15,16 @@ export default SingleView.extend({
 
   initialize (options) {
     SingleView.prototype.initialize.call(this, options)
+    if (this.template === undefined) {
+      this.template = template
+    }
     this.listenTo(this.model, `change:${this.data.modelAttribute}`, this.render)
     this.render()
   },
 
   render () {
     SingleView.prototype.render.apply(this)
-    this.$('.dataentry').append(template({ data: _.extend({}, this.data, { value: this.model.get(this.data.modelAttribute) }) }))
+    this.$('.dataentry').append(this.template({ data: _.extend({}, this.data, { value: this.model.get(this.data.modelAttribute) }) }))
     if (this.data.readonly) {
       this.$(':input').prop('readonly', true)
     }
