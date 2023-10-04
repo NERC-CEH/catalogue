@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 @ToString
 @Controller
 public class DcatController {
+    //
     private final CatalogueService catalogueService;
     private final DocumentIdentifierService identifierService;
     private final MetadataListingService listingService;
