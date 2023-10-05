@@ -64,25 +64,39 @@ public class FusekiExportService implements CatalogueExportService {
     @Override
     @SneakyThrows
     public void runExport() {
-        String bigTtl = getBigTtl(getModel());
+        List<String> ids = getRequiredIds();
+        String bigTtl = getBigTtl(getCatalogueModel(ids));
+        List<String> toAppend = getRecords(ids);
+        log.info("bigTtl");
         log.info(bigTtl);
+        log.info("toAppend");
+        log.info(toAppend.toString());
     }
 
-    private Map<String, Object> getModel(){
+    private Map<String, Object> getCatalogueModel(List<String> ids){
         Map<String, Object> model = new HashMap<String, Object>();
-        model.put("records", getRecords());
+//        model.put("records", getRecords());
+        model.put("records", ids);
         model.put("catalogue", CATALOGUE_ID);
         model.put("title", catalogue.getTitle());
         return model;
     }
 
-    private List<String> getRecords(){
-            List<String> ids = listing.getPublicDocumentsOfCatalogue(CATALOGUE_ID);
-            return ids.stream()
-                    .map(this::getMetadataDocument)
-                    .filter(this::isRequired)
-                    .map(this::docToString)
-                    .collect(Collectors.toList());
+    private List<String> getRequiredIds(){
+        List<String> ids = listing.getPublicDocumentsOfCatalogue(CATALOGUE_ID);
+        return ids.stream()
+                .map(this::getMetadataDocument)
+                .filter(this::isRequired)
+                .map(d -> d.getId())
+                .collect(Collectors.toList());
+    }
+
+    private List<String> getRecords(List<String> ids){
+//        List<String> ids = listing.getPublicDocumentsOfCatalogue(CATALOGUE_ID);
+        return ids.stream()
+                .map(this::getMetadataDocument)
+                .map(this::docToString)
+                .collect(Collectors.toList());
     }
 
     @SneakyThrows
@@ -95,11 +109,18 @@ public class FusekiExportService implements CatalogueExportService {
         return Arrays.stream(requiredTypes).anyMatch(doc.getType()::equals);
     }
 
+//    @SneakyThrows
+//    private String docToString(MetadataDocument doc){
+//        ByteArrayOutputStream out = new ByteArrayOutputStream();
+//        documentWritingService.write(doc, RDF_TTL, out);
+//        return out.toString(StandardCharsets.UTF_8);
+//    }
+
     @SneakyThrows
-    private String docToString(MetadataDocument doc){
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        documentWritingService.write(doc, RDF_TTL, out);
-        return out.toString(StandardCharsets.UTF_8);
+    public String docToString(MetadataDocument model){
+        val freemarkerTemplate = configuration.getTemplate("rdf/ttlUnprefixed.ftlh");
+        String processedTemplate = FreeMarkerTemplateUtils.processTemplateIntoString(freemarkerTemplate, model);
+        return processedTemplate;
     }
 
     @SneakyThrows
