@@ -33,6 +33,7 @@ services:
       - hubbub.url=http://hubbub:8080/v7
       - spring.freemarker.cache=false
       - spring.profiles.active=development,upload:simple,server:eidc,search:basic,service-agreement
+      - fusekiUrl=https://eidc-fuseki.staging.ceh.ac.uk
     env_file:
       - secrets.env
   solr:
