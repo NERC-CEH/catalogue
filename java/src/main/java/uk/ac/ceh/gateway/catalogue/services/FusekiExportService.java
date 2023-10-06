@@ -6,6 +6,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -22,14 +23,11 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
 @Profile({"server:eidc","server:elter"})
 @Slf4j
 @Service
 @ToString
 public class FusekiExportService implements CatalogueExportService {
-    private static final String CATALOGUE_ID = "eidc";
-
     private final CatalogueService catalogueService;
     private final DocumentRepository documentRepository;
     private final DataRepository<CatalogueUser> repo;
@@ -37,6 +35,7 @@ public class FusekiExportService implements CatalogueExportService {
     private final Configuration configuration;
     private final Catalogue catalogue;
     private final RestTemplate restTemplate;
+    private final String baseUri;
 
     public FusekiExportService(
             CatalogueService catalogueService,
@@ -44,14 +43,16 @@ public class FusekiExportService implements CatalogueExportService {
             DataRepository<CatalogueUser> repo,
             MetadataListingService listing,
             Configuration configuration,
-            @Qualifier("normal") RestTemplate restTemplate) {
+            @Qualifier("normal") RestTemplate restTemplate,
+            @Value("${documents.baseUri}") String baseUri) {
         this.catalogueService = catalogueService;
         this.documentRepository = documentRepository;
         this.repo = repo;
         this.listing = listing;
         this.configuration = configuration;
         this.restTemplate = restTemplate;
-        catalogue = catalogueService.retrieve(CATALOGUE_ID);
+        catalogue = catalogueService.defaultCatalogue();
+        this.baseUri = baseUri;
     }
 
     //    @Scheduled(cron = "0 0 3 * *")
@@ -72,7 +73,7 @@ public class FusekiExportService implements CatalogueExportService {
     }
 
     private List<String> getRequiredIds(){
-        List<String> ids = listing.getPublicDocumentsOfCatalogue(CATALOGUE_ID);
+        List<String> ids = listing.getPublicDocumentsOfCatalogue(catalogue.getId());
         return ids.stream()
                 .map(this::getMetadataDocument)
                 .filter(this::isRequired)
@@ -89,8 +90,9 @@ public class FusekiExportService implements CatalogueExportService {
     private Map<String, Object> getCatalogueModel(List<String> ids){
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("records", ids);
-        model.put("catalogue", CATALOGUE_ID);
+        model.put("catalogue", catalogue.getId());
         model.put("title", catalogue.getTitle());
+        model.put("baseUri", baseUri);
         return model;
     }
 
