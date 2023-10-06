@@ -1,4 +1,3 @@
-<#compress>
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
@@ -9,7 +8,6 @@
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix geo: <http://www.opengis.net/ont/geosparql#> .
 @prefix vcard: <http://www.w3.org/2006/vcard/ns#> .
-<#if catalogue?has_content>
-    @prefix ${catalogue}: <https://catalogue.ceh.ac.uk/id/> .
-</#if>
-</#compress>
+
+@prefix : <https://catalogue.ceh.ac.uk/id/> .
+@base <https://catalogue.ceh.ac.uk/> .
