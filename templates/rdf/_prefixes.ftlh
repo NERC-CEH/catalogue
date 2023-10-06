@@ -8,5 +8,5 @@
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix geo: <http://www.opengis.net/ont/geosparql#> .
 @prefix vcard: <http://www.w3.org/2006/vcard/ns#> .
-@prefix : <${baseUri}/id/> .
-@base <${baseUri}/> .
+@prefix : <${uri}/id/> .
+@base <${uri}/> .

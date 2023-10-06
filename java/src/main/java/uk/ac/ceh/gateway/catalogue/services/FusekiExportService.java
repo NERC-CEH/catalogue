@@ -92,7 +92,7 @@ public class FusekiExportService implements CatalogueExportService {
         model.put("records", ids);
         model.put("catalogue", catalogue.getId());
         model.put("title", catalogue.getTitle());
-        model.put("baseUri", baseUri);
+        model.put("uri", baseUri);
         return model;
     }
 
