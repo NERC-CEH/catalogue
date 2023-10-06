@@ -5,10 +5,12 @@ import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
+import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
@@ -21,7 +23,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 
-@Profile("server:eidc")
+@Profile({"server:eidc","server:elter"})
 @Slf4j
 @Service
 @ToString
@@ -34,17 +36,21 @@ public class FusekiExportService implements CatalogueExportService {
     private final MetadataListingService listing;
     private final Configuration configuration;
     private final Catalogue catalogue;
+    private final RestTemplate restTemplate;
 
     public FusekiExportService(
             CatalogueService catalogueService,
             DocumentRepository documentRepository,
             DataRepository<CatalogueUser> repo,
-            MetadataListingService listing, Configuration configuration) {
+            MetadataListingService listing,
+            Configuration configuration,
+            @Qualifier("normal") RestTemplate restTemplate) {
         this.catalogueService = catalogueService;
         this.documentRepository = documentRepository;
         this.repo = repo;
         this.listing = listing;
         this.configuration = configuration;
+        this.restTemplate = restTemplate;
         catalogue = catalogueService.retrieve(CATALOGUE_ID);
     }
 
@@ -54,11 +60,15 @@ public class FusekiExportService implements CatalogueExportService {
     @Override
     @SneakyThrows
     public void runExport() {
+        String bigTtl = getBigTtl();
+        log.info(bigTtl);
+    }
+
+    private String getBigTtl() {
         List<String> ids = getRequiredIds();
         String catalogueTtl = getCatalogueTtl(getCatalogueModel(ids));
         List<String> recordsTtl = getRecordsTtl(ids);
-        String bigTtl = catalogueTtl.concat(String.join("\n", recordsTtl));
-        log.info(bigTtl);
+        return catalogueTtl.concat(String.join("\n", recordsTtl));
     }
 
     private List<String> getRequiredIds(){
