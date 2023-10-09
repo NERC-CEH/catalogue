@@ -75,8 +75,7 @@ public class FusekiExportService implements CatalogueExportService {
     @Override
     @SneakyThrows
     public void runExport() {
-        String bigTtl = getBigTtl();
-//        post(bigTtl);
+        post(getBigTtl());
         log.info("Posted public metadata documents as ttl to {}", fusekiUrl);
     }
 
@@ -136,15 +135,12 @@ public class FusekiExportService implements CatalogueExportService {
     }
 
     private void post(String data){
-        String username = "username";
-        String password = "password";
 
-        RestTemplate restTemplate = new RestTemplate();
         String graphName = baseUri; //this is from the first line after the prefixes in the big.ttl - which we've set to be baseUri that is injected into the template earlier in this code
-        String serverUrl = "https://eidc-fuseki.staging.ceh.ac.uk?graph=" + graphName;
+        String serverUrl = new StringBuilder().append(fusekiUrl).append("?graph=").append(graphName).toString();
 
         try {
-            HttpHeaders headers = createHeaders(username, password);
+            HttpHeaders headers = createHeaders(fusekiUsername, fusekiPassword);
             headers.add(HttpHeaders.CONTENT_TYPE, "text/turtle");
 
             HttpEntity<String> request = new HttpEntity<>(data, headers);
@@ -172,6 +168,5 @@ public class FusekiExportService implements CatalogueExportService {
             String authHeader = "Basic " + new String(encodedAuth);
             set("Authorization", authHeader);
         }};
-
     }
 }
