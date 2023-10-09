@@ -18,7 +18,6 @@ import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
-import uk.ac.ceh.gateway.catalogue.elter.ElterDocument;
 import uk.ac.ceh.gateway.catalogue.exports.CatalogueExportService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
@@ -70,7 +69,7 @@ public class FusekiExportService implements CatalogueExportService {
     @SneakyThrows
     public void runExport() {
         String bigTtl = getBigTtl();
-//        log.info(bigTtl);
+        log.info(bigTtl);
 //        post(bigTtl);
     }
 
@@ -102,7 +101,7 @@ public class FusekiExportService implements CatalogueExportService {
         model.put("records", ids);
         model.put("catalogue", catalogue.getId());
         model.put("title", catalogue.getTitle());
-        model.put("uri", baseUri);
+        model.put("baseUri", baseUri);
         return model;
     }
 
