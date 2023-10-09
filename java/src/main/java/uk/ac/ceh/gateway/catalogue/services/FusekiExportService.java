@@ -41,6 +41,8 @@ public class FusekiExportService implements CatalogueExportService {
     private final RestTemplate restTemplate;
     private final String baseUri;
     private final String fusekiUrl;
+    private final String fusekiUsername;
+    private final String fusekiPassword;
 
     public FusekiExportService(
             CatalogueService catalogueService,
@@ -50,16 +52,21 @@ public class FusekiExportService implements CatalogueExportService {
             Configuration configuration,
             @Qualifier("normal") RestTemplate restTemplate,
             @Value("${documents.baseUri}") String baseUri,
-            @Value("${fuseki.url}") String fusekiUrl) {
+            @Value("${fuseki.url}/ds") String fusekiUrl,
+            @Value("${fuseki.username}") String fusekiUsername,
+            @Value("${fuseki.password}") String fusekiPassword
+    ) {
         this.catalogueService = catalogueService;
         this.documentRepository = documentRepository;
         this.repo = repo;
         this.listing = listing;
         this.configuration = configuration;
         this.restTemplate = restTemplate;
-        catalogue = catalogueService.defaultCatalogue();
+        this.catalogue = catalogueService.defaultCatalogue();
         this.baseUri = baseUri;
         this.fusekiUrl = fusekiUrl;
+        this.fusekiUsername = fusekiUsername;
+        this.fusekiPassword = fusekiPassword;
     }
 
     //    @Scheduled(cron = "0 0 3 * *")
@@ -69,8 +76,8 @@ public class FusekiExportService implements CatalogueExportService {
     @SneakyThrows
     public void runExport() {
         String bigTtl = getBigTtl();
-        log.info(bigTtl);
 //        post(bigTtl);
+        log.info("Posted public metadata documents as ttl to {}", fusekiUrl);
     }
 
 
@@ -128,8 +135,7 @@ public class FusekiExportService implements CatalogueExportService {
         return FreeMarkerTemplateUtils.processTemplateIntoString(freemarkerTemplate, model);
     }
 
-    // This is so close - gives a 200 status code, but as yet I've not seen data end up in the server
-    private void postBigTtl(String data){
+    private void post(String data){
         String username = "username";
         String password = "password";
 

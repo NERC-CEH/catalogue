@@ -10,11 +10,11 @@ import java.nio.charset.Charset;
 public class Poster {
     public Poster(){}
     public void doPost() {
-        System.out.println("hello world");
+        System.out.println("About to post big ttl");
         RestTemplate restTemplate = new RestTemplate();
-        String serverUrl = "https://eidc-fuseki.staging.ceh.ac.uk?graph=coopers_graph";
+        String serverUrl = "https://eidc-fuseki.staging.ceh.ac.uk/ds?graph=http://example.com/coopers_graph/";
 
-        String username = "username";
+        String username = "user";
         String password = "password";
         HttpHeaders headers = createHeaders(username, password);
         headers.add(HttpHeaders.CONTENT_TYPE, "text/turtle");
@@ -46,7 +46,7 @@ public class Poster {
                 "@prefix geo: <http://www.opengis.net/ont/geosparql#> .\n" +
                 "@prefix vcard: <http://www.w3.org/2006/vcard/ns#> .\n" +
                 "@prefix eidc: <https://catalogue.ceh.ac.uk/id/> .\n" +
-                "<coopers_graph> a dcat:Catalog ;\n" +
+                "<http://example.com/coopers_graph/> a dcat:Catalog ;\n" +
                 "    dct:title \"EIDC digital asset register\"@en ;\n" +
                 "    foaf:homepage <https://catalogue.ceh.ac.uk/eidc/documents> ;\n" +
                 "    dcat:resource eidc:mapserver-raster-byte ,eidc:ff55462e-38a4-4f30-b562-f82ff263d9c3 ,eidc:abcdef12-3456-1234-0987-6876abcd1234 ,eidc:1e7d5e08-9e24-471b-ae37-49b477f695e3 ,eidc:c88921ba-f871-44c3-9339-51c5bee4024a ,eidc:2d023ce9-6dbe-4b4f-a0cd-34768e1455ae ,eidc:mapserver-all-features ,eidc:mapserver-raster ,eidc:bb2d7874-7bf4-44de-aa43-348bd684a2fe ,eidc:mapserver-shapefile ,eidc:mapserver-file-gdb ,eidc:mapserver-multiple-projections ,eidc:986d3df3-d9bf-42eb-8e18-850b8d54f37b  ;\n" +

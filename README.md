@@ -59,6 +59,7 @@ crowd.password=
 plone.password=
 doi.password=
 hubbub.password=
+fuseki.password=
 ```
 
 ## Getting started
