@@ -54,7 +54,7 @@ public class FusekiExportService implements CatalogueExportService {
             @Value("${documents.baseUri}") String baseUri,
             @Value("${fuseki.url}/ds") String fusekiUrl,
             @Value("${fuseki.username}") String fusekiUsername,
-            @Value("${fuseki.password}") String fusekiPassword
+            @Value("#{systemEnvironment['FUSEKI_PASSWORD']}") String fusekiPassword
     ) {
         this.catalogueService = catalogueService;
         this.documentRepository = documentRepository;
