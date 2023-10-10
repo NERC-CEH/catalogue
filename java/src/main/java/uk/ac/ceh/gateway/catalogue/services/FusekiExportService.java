@@ -27,7 +27,7 @@ import java.nio.charset.Charset;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Profile({"server:eidc","server:elter"})
+@Profile("exports")
 @Slf4j
 @Service
 @ToString
@@ -54,7 +54,7 @@ public class FusekiExportService implements CatalogueExportService {
             @Value("${documents.baseUri}") String baseUri,
             @Value("${fuseki.url}/ds") String fusekiUrl,
             @Value("${fuseki.username}") String fusekiUsername,
-            @Value("#{systemEnvironment['FUSEKI_PASSWORD']}") String fusekiPassword
+            @Value("${fuseki.password}") String fusekiPassword
     ) {
         this.catalogueService = catalogueService;
         this.documentRepository = documentRepository;
