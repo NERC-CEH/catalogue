@@ -27,6 +27,8 @@ import java.nio.charset.Charset;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static uk.ac.ceh.gateway.catalogue.util.Headers.withBasicAuth;
+
 @Profile("exports")
 @Slf4j
 @Service
@@ -135,12 +137,11 @@ public class FusekiExportService implements CatalogueExportService {
     }
 
     private void post(String data){
-
         String graphName = baseUri; //this is from the first line after the prefixes in the big.ttl - which we've set to be baseUri that is injected into the template earlier in this code
         String serverUrl = new StringBuilder().append(fusekiUrl).append("?graph=").append(graphName).toString();
 
         try {
-            HttpHeaders headers = createHeaders(fusekiUsername, fusekiPassword);
+            HttpHeaders headers = withBasicAuth(fusekiUsername, fusekiPassword);
             headers.add(HttpHeaders.CONTENT_TYPE, "text/turtle");
 
             HttpEntity<String> request = new HttpEntity<>(data, headers);
@@ -157,16 +158,5 @@ public class FusekiExportService implements CatalogueExportService {
             );
             throw ex;
         }
-
-    }
-
-    private HttpHeaders createHeaders (String username, String password){
-        return new HttpHeaders() {{
-            String auth = username + ":" + password;
-            byte[] encodedAuth = Base64.encodeBase64(
-                    auth.getBytes(Charset.forName("US-ASCII")));
-            String authHeader = "Basic " + new String(encodedAuth);
-            set("Authorization", authHeader);
-        }};
     }
 }
