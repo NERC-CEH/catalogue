@@ -5,7 +5,6 @@ import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
@@ -16,6 +15,7 @@ import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.components.datastore.DataRepository;
+import uk.ac.ceh.gateway.catalogue.TimeConstants;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.exports.CatalogueExportService;
@@ -23,7 +23,6 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
-import java.nio.charset.Charset;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -58,6 +57,8 @@ public class FusekiExportService implements CatalogueExportService {
             @Value("${fuseki.username}") String fusekiUsername,
             @Value("${fuseki.password}") String fusekiPassword
     ) {
+        log.info("Creating");
+
         this.catalogueService = catalogueService;
         this.documentRepository = documentRepository;
         this.repo = repo;
@@ -71,22 +72,21 @@ public class FusekiExportService implements CatalogueExportService {
         this.fusekiPassword = fusekiPassword;
     }
 
-    //    @Scheduled(cron = "0 0 3 * *")
-    //    @Scheduled(cron = "*/1 * * * *")
-    @Scheduled(initialDelay = 5000, fixedDelay = 3600000)
-    @Override
+    @Scheduled(initialDelay = TimeConstants.ONE_MINUTE, fixedDelay = TimeConstants.ONE_DAY)
     @SneakyThrows
     public void runExport() {
         post(getBigTtl());
         log.info("Posted public metadata documents as ttl to {}", fusekiUrl);
     }
 
-
     private String getBigTtl() {
         List<String> ids = getRequiredIds();
-        String catalogueTtl = getCatalogueTtl(getCatalogueModel(ids));
+        String catalogueTtl = generateCatalogueTtl(getCatalogueModel(ids));
         List<String> recordsTtl = getRecordsTtl(ids);
-        return catalogueTtl.concat(String.join("\n", recordsTtl));
+
+        String bigTtl = catalogueTtl.concat(String.join("\n", recordsTtl));
+        log.debug("Big turtle to send: ", bigTtl);
+        return bigTtl;
     }
 
     private List<String> getRequiredIds(){
@@ -99,7 +99,7 @@ public class FusekiExportService implements CatalogueExportService {
     }
 
     @SneakyThrows
-    public String getCatalogueTtl(Map<String, Object> model){
+    public String generateCatalogueTtl(Map<String, Object> model){
         val freemarkerTemplate = configuration.getTemplate("rdf/catalogue.ttl.ftlh");
         return FreeMarkerTemplateUtils.processTemplateIntoString(freemarkerTemplate, model);
     }
