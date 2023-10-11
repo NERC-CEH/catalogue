@@ -14,12 +14,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
-import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.TimeConstants;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.exports.CatalogueExportService;
-import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
@@ -33,24 +31,23 @@ import static uk.ac.ceh.gateway.catalogue.util.Headers.withBasicAuth;
 @Service
 @ToString
 public class FusekiExportService implements CatalogueExportService {
-    private final CatalogueService catalogueService;
-    private final DocumentRepository documentRepository;
-    private final DataRepository<CatalogueUser> repo;
-    private final MetadataListingService listing;
     private final Configuration configuration;
-    private final Catalogue catalogue;
+    private final DocumentRepository documentRepository;
+    private final MetadataListingService listing;
     private final RestTemplate restTemplate;
     private final String baseUri;
     private final String fusekiUrl;
     private final String fusekiUsername;
     private final String fusekiPassword;
 
+    private final String catalogueId;
+    private final String catalogueTitle;
+
     public FusekiExportService(
             CatalogueService catalogueService,
-            DocumentRepository documentRepository,
-            DataRepository<CatalogueUser> repo,
-            MetadataListingService listing,
             Configuration configuration,
+            DocumentRepository documentRepository,
+            MetadataListingService listing,
             @Qualifier("normal") RestTemplate restTemplate,
             @Value("${documents.baseUri}") String baseUri,
             @Value("${fuseki.url}/ds") String fusekiUrl,
@@ -59,17 +56,18 @@ public class FusekiExportService implements CatalogueExportService {
     ) {
         log.info("Creating");
 
-        this.catalogueService = catalogueService;
-        this.documentRepository = documentRepository;
-        this.repo = repo;
-        this.listing = listing;
         this.configuration = configuration;
+        this.documentRepository = documentRepository;
+        this.listing = listing;
         this.restTemplate = restTemplate;
-        this.catalogue = catalogueService.defaultCatalogue();
         this.baseUri = baseUri;
         this.fusekiUrl = fusekiUrl;
         this.fusekiUsername = fusekiUsername;
         this.fusekiPassword = fusekiPassword;
+
+        Catalogue defaultCatalogue = catalogueService.defaultCatalogue();
+        this.catalogueId = defaultCatalogue.getId();
+        this.catalogueTitle = defaultCatalogue.getTitle();
     }
 
     @Scheduled(initialDelay = TimeConstants.ONE_MINUTE, fixedDelay = TimeConstants.ONE_DAY)
@@ -90,7 +88,7 @@ public class FusekiExportService implements CatalogueExportService {
     }
 
     private List<String> getRequiredIds(){
-        List<String> ids = listing.getPublicDocumentsOfCatalogue(catalogue.getId());
+        List<String> ids = listing.getPublicDocumentsOfCatalogue(catalogueId);
         return ids.stream()
                 .map(this::getMetadataDocument)
                 .filter(this::isRequired)
@@ -105,10 +103,10 @@ public class FusekiExportService implements CatalogueExportService {
     }
 
     private Map<String, Object> getCatalogueModel(List<String> ids){
-        Map<String, Object> model = new HashMap<String, Object>();
+        Map<String, Object> model = new HashMap<>();
         model.put("records", ids);
-        model.put("catalogue", catalogue.getId());
-        model.put("title", catalogue.getTitle());
+        model.put("catalogue", catalogueId);
+        model.put("title", catalogueTitle);
         model.put("baseUri", baseUri);
         return model;
     }
