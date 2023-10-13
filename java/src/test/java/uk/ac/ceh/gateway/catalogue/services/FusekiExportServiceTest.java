@@ -87,7 +87,7 @@ public class FusekiExportServiceTest {
         // given
         mockServer
                 .expect(requestTo(equalTo(FUSEKI_URL + "?graph=" + BASE_URI)))
-                .andExpect(method(HttpMethod.POST))
+                .andExpect(method(HttpMethod.PUT))
                 .andExpect(header(HttpHeaders.CONTENT_TYPE, "text/turtle"))
                 .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic dXNlcm5hbWU6cGFzc3dvcmQ="))
                 .andRespond(withSuccess());
