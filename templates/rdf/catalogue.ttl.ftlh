@@ -5,7 +5,7 @@
 <https://catalogue.ceh.ac.uk/${catalogue}/documents/> a dcat:Catalog ;
     dct:title "${title} digital asset register"@en ;
     foaf:homepage <https://catalogue.ceh.ac.uk/${catalogue}/documents> ;
-    dcat:resource <#list records as record>:${record} <#sep>,</#sep></#list> ;
+    <#if records?has_content>dcat:resource <#list records as record>:${record} <#sep>,</#sep></#list> ;</#if>
 .
 
 <#if catalogue=="eidc" >

@@ -83,17 +83,23 @@ public class FusekiExportService implements CatalogueExportService {
         List<String> recordsTtl = getRecordsTtl(ids);
 
         String bigTtl = catalogueTtl.concat(String.join("\n", recordsTtl));
-        log.debug("Big turtle to send: ", bigTtl);
+        log.debug("Big turtle to send: {}", bigTtl);
         return bigTtl;
     }
 
     private List<String> getRequiredIds(){
-        List<String> ids = listing.getPublicDocumentsOfCatalogue(catalogueId);
-        return ids.stream()
-                .map(this::getMetadataDocument)
-                .filter(this::isRequired)
-                .map(MetadataDocument::getId)
-                .collect(Collectors.toList());
+        try {
+            List<String> ids = listing.getPublicDocumentsOfCatalogue(catalogueId);
+
+            return ids.stream()
+                    .map(this::getMetadataDocument)
+                    .filter(this::isRequired)
+                    .map(MetadataDocument::getId)
+                    .collect(Collectors.toList());
+        } catch(NullPointerException e) {
+            // no git commits
+            return new ArrayList<>();
+        }
     }
 
     @SneakyThrows
