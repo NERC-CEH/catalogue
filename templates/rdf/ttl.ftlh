@@ -1,8 +1,9 @@
 <#compress>
 <#include "_macros.ftlh">
+
 <#include "_prefixes.ftlh">
-@prefix : <${uri}/> .
-@base <${uri}/> .
+@base <${uri?replace(id,"")?replace("id/","")}> .
+@prefix : <${uri?replace(id,"")}> .
 
 <#include "_body.ftlh">
 </#compress>

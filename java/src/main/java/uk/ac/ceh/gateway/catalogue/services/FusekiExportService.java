@@ -83,17 +83,23 @@ public class FusekiExportService implements CatalogueExportService {
         List<String> recordsTtl = getRecordsTtl(ids);
 
         String bigTtl = catalogueTtl.concat(String.join("\n", recordsTtl));
-        log.debug("Big turtle to send: ", bigTtl);
+        log.debug("Big turtle to send: {}", bigTtl);
         return bigTtl;
     }
 
     private List<String> getRequiredIds(){
-        List<String> ids = listing.getPublicDocumentsOfCatalogue(catalogueId);
-        return ids.stream()
-                .map(this::getMetadataDocument)
-                .filter(this::isRequired)
-                .map(MetadataDocument::getId)
-                .collect(Collectors.toList());
+        try {
+            List<String> ids = listing.getPublicDocumentsOfCatalogue(catalogueId);
+
+            return ids.stream()
+                    .map(this::getMetadataDocument)
+                    .filter(this::isRequired)
+                    .map(MetadataDocument::getId)
+                    .collect(Collectors.toList());
+        } catch(NullPointerException e) {
+            // no git commits
+            return new ArrayList<>();
+        }
     }
 
     @SneakyThrows
@@ -139,13 +145,11 @@ public class FusekiExportService implements CatalogueExportService {
         String serverUrl = new StringBuilder().append(fusekiUrl).append("?graph=").append(graphName).toString();
 
         try {
+            // PUT the data - this works if there's no graph and if there's an existing graph, in which case it's updated
             HttpHeaders headers = withBasicAuth(fusekiUsername, fusekiPassword);
             headers.add(HttpHeaders.CONTENT_TYPE, "text/turtle");
-
             HttpEntity<String> request = new HttpEntity<>(data, headers);
-            ResponseEntity<String> response = restTemplate.postForEntity(serverUrl, request, String.class);
-            log.info("Status code: {}", response.getStatusCode());
-            log.info("Response {}", response);
+            restTemplate.put(serverUrl, request);
         } catch (RestClientResponseException ex) {
             log.error(
                     "Error communicating with supplied URL: (statusCode={}, status={}, headers={}, body={})",
