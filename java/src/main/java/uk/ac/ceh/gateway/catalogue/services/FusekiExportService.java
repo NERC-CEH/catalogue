@@ -70,7 +70,7 @@ public class FusekiExportService implements CatalogueExportService {
         this.catalogueTitle = defaultCatalogue.getTitle();
     }
 
-    @Scheduled(initialDelay = TimeConstants.ONE_MINUTE, fixedDelay = TimeConstants.ONE_DAY)
+    @Scheduled(initialDelay = TimeConstants.ONE_MINUTE, fixedDelay = (TimeConstants.ONE_MINUTE * 5))
     @SneakyThrows
     public void runExport() {
         post(getBigTtl());
