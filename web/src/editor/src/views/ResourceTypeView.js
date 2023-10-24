@@ -3,9 +3,9 @@ import template from '../templates/ResourceType'
 
 export default ObjectInputView.extend({
 
-  initialize () {
+  initialize (options) {
     this.template = template
-    ObjectInputView.prototype.initialize.apply(this)
+    ObjectInputView.prototype.initialize.call(this, options)
     this.listenTo(this.model, 'change:resourceType', function (model, value) {
       this.model.set('type', value.value)
     })

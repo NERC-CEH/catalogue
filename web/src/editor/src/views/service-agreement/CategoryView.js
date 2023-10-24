@@ -9,8 +9,9 @@ const template = _.template(`
 `)
 export default ObjectInputView.extend({
 
-  initialize () {
+  initialize (options) {
     this.template = template
+    ObjectInputView.prototype.initialize.call(this, options)
   },
 
   render () {
