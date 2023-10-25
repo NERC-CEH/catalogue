@@ -1,5 +1,5 @@
 /* eslint no-new: "off" */
-import _ from 'underscore'
+import './globals'
 import $ from 'jquery'
 import Backbone from 'backbone'
 import 'bootstrap'
@@ -39,15 +39,6 @@ import { SimpleUploadView } from './simple-upload/src/App'
 import { MessageView } from './search/src/views'
 import { ServiceAgreement } from './editor/src/models'
 import { UploadModel, UploadView } from './hubbub/src/Upload'
-
-/* This is the initializer method for the entire front end. Here we can
-set up the different applications and initialize any javascript code which
- we like globally. */
-
-// Fix for underscore not being global
-// Some templates use underscore
-// Remove once templates fixed
-window._ = _
 
 if ($('.catalogue-control').length) {
   initCatalogue()
