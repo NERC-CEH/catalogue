@@ -1,3 +1,4 @@
+/* global window */
 /* eslint no-new: "off" */
 import './globals'
 import $ from 'jquery'
