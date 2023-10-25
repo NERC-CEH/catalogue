@@ -279,8 +279,7 @@ function initServiceAgreement () {
           window.location.href = `/service-agreement/${id}`
         },
         error () {
-          // eslint-disable-next-line no-unused-vars
-          const serviceAgreement = new ServiceAgreementEditorView({
+          new ServiceAgreementEditorView({
             el: '#metadata',
             model: new ServiceAgreement(data, options)
           })
