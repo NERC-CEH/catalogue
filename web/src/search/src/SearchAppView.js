@@ -2,6 +2,7 @@ import $ from 'jquery'
 import Backbone from 'backbone'
 import deparam from 'deparam.js'
 import { FacetsPanelView, SearchFormView, SearchPageView } from './views'
+import { SpatialFilterView } from "./spatialFilter";
 
 export default Backbone.View.extend({
   el: '#search',
@@ -44,6 +45,7 @@ export default Backbone.View.extend({
   Create the sub views of the search web application
   */
   render () {
+    console.log('hello from SearchAppView')
     this.searchFormView = new SearchFormView({
       model: this.model,
       el: this.$('.search-form')
@@ -58,6 +60,12 @@ export default Backbone.View.extend({
       model: this.model,
       el: this.$('.facet-filter')
     })
+
+    this.spatialFilterView = new SpatialFilterView({
+      model: this.model,
+      el: this.$('.spatial-filter')
+    })
+
     return this
   }
 })

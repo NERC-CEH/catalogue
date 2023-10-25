@@ -1,3 +1,6 @@
+@import (inline) "../node_modules/leaflet-draw/dist/leaflet.draw.css";
+@import (inline) "../node_modules/leaflet/dist/leaflet.css";
+
 #search {
   @search-form-height: 52px;
   @filters-columns: 4;
@@ -55,8 +58,13 @@
         position: absolute;
         bottom: 0;
       }
+      .map {
+        height: 300px;
+        border: solid 1px yellow;
+      }
       .facet-filter {
-        position: absolute;
+        //position: absolute;
+        max-height: 400px;
         top: @filter-heading-height;
         bottom: @filter-heading-height;
         left: 0;
