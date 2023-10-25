@@ -40,15 +40,20 @@ import { MessageView } from './search/src/views'
 import { ServiceAgreement } from './editor/src/models'
 import { UploadModel, UploadView } from './hubbub/src/Upload'
 
-if ($('.catalogue-control').length) {
+const $catalogue = $('.catalogue-control')
+const $documentUpload = $('#document-upload')
+const $edit = $('.edit-control')
+const $serviceAgreement = $('.service-agreement')
+
+if ($catalogue.length) {
   initCatalogue()
 }
 
-if ($('.edit-control').length) {
+if ($edit.length) {
   initEditor()
 }
 
-if ($('.service-agreement').length) {
+if ($serviceAgreement.length) {
   initServiceAgreement()
 }
 
@@ -68,7 +73,7 @@ if ($('#simple-upload').length) {
   initSimpleUpload()
 }
 
-if ($('#document-upload').length) {
+if ($documentUpload.length) {
   initHubbub()
 }
 
@@ -80,7 +85,7 @@ Backbone.history.start()
 
 /* Initialize the catalogue application */
 function initCatalogue () {
-  $('.catalogue-control').on('click', function (event) {
+  $catalogue.on('click', function (event) {
     event.preventDefault()
     $.getJSON($(event.target).attr('href'), function (data) {
       const model = new Catalogue(data)
@@ -232,7 +237,7 @@ function initEditor () {
   // the create document dropdown
   const $editorCreate = $('#editorCreate')
 
-  $('.edit-control').on('click', function (event) {
+  $edit.on('click', function (event) {
     event.preventDefault()
 
     const title = $(event.target).data('documentType')
@@ -265,7 +270,7 @@ function initEditor () {
 function initServiceAgreement () {
   const $gemini = $('#service-agreement-gemini')
 
-  $('.service-agreement').on('click', function (event) {
+  $serviceAgreement.on('click', function (event) {
     event.preventDefault()
     const id = $(event.currentTarget).data('id')
     const data = { eidcContactDetails: 'info@eidc.ac.uk' }
@@ -317,7 +322,7 @@ function initSimpleUpload () {
 }
 
 function initHubbub () {
-  const id = $('#document-upload').data('guid')
+  const id = $documentUpload.data('guid')
   new UploadView({
     el: '.document-upload',
     model: new UploadModel({ id })
