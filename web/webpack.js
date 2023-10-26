@@ -1,5 +1,3 @@
-const webpack = require('webpack')
-
 module.exports = {
   entry: {
     main: './src/index.js'
@@ -14,12 +12,5 @@ module.exports = {
         }
       }
     ]
-  },
-  plugins: [
-    // Needed for Bootstrap
-    new webpack.ProvidePlugin({
-      $: 'jquery',
-      jQuery: 'jquery'
-    })
-  ]
+  }
 }
