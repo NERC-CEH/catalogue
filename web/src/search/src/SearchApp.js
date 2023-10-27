@@ -108,5 +108,19 @@ export default Backbone.Model.extend({
     }
     this.results = null
     this.trigger('cleared:results')
+  },
+
+  /*
+  Update the search box, which triggers an update of the results
+   */
+  setBbox(bbox) {
+    this.set({'bbox': bbox})
+  },
+
+  /*
+  Clear the search box, which triggers an update of the results
+   */
+  clearBbox() {
+    this.unset('bbox')
   }
 })

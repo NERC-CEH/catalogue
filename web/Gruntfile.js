@@ -38,6 +38,14 @@ module.exports = function (grunt) {
         tasks: ['less']
       }
     },
+    copy: {
+      main: {
+        expand: true,
+        cwd: 'img/',
+        src: 'spritesheet.svg',
+        dest: 'css/images/'
+      }
+    },
     concurrent: {
       watch: {
         tasks: ['watch:less'],
@@ -51,7 +59,8 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-clean')
   grunt.loadNpmTasks('grunt-contrib-less')
   grunt.loadNpmTasks('grunt-contrib-watch')
+  grunt.loadNpmTasks('grunt-contrib-copy')
   grunt.registerTask('develop', ['less', 'concurrent'])
-  grunt.registerTask('build', ['clean', 'less'])
+  grunt.registerTask('build', ['clean', 'less', 'copy'])
   grunt.registerTask('default', ['build'])
 }
