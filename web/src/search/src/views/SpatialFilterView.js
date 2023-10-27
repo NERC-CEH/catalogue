@@ -101,9 +101,7 @@ export default Backbone.View.extend({
     },
 
     render () {
-        if (this.shapeDrawn === true) {
-            this.viewMap()
-        }
+        this.$el.append(this.template())
         this.viewMap()
         return this
     }

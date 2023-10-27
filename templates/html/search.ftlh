@@ -12,7 +12,7 @@
       <div class="header facet-heading">
         <h3>Spatial filters</h3>
       </div>
-            <div class="spatial-filter"><#include "search/_drawing.ftlh"></div>
+            <div class="spatial-filter"></div>
     </div>
 
     <div class="results"><#include "search/_page.ftlh"></div>
