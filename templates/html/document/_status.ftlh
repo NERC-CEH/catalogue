@@ -13,7 +13,7 @@
         </#if>
     </p>
     <#if reasonChanged??>
-        <p><@b.linebreaks reasonChanged/></p>
+        <p><@blocks.linebreaksAndLinks reasonChanged/></p>
     </#if>
     
     <p>If you need access to this archived version, please <a href="${catalogue.contactUrl}" target="_blank" rel="noopener noreferrer">contact the ${supersededContact}</a></p>
