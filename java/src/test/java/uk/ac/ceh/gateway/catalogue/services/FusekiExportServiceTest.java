@@ -38,7 +38,6 @@ public class FusekiExportServiceTest {
     @Mock private CatalogueService catalogueService;
     @Mock private DocumentRepository documentRepository;
     @Mock private MetadataListingService listing;
-    private RestTemplate restTemplate;
     private MockRestServiceServer mockServer;
 
     private static final String BASE_URI = "http://catalogue.invalid/";
@@ -48,9 +47,9 @@ public class FusekiExportServiceTest {
     private static final String CATALOGUE_ID = "testId";
     private static final String CATALOGUE_TITLE = "Test catalogue title";
 
-    private Configuration configuration = new Configuration();
+    private final Configuration configuration = new Configuration(Configuration.VERSION_2_3_32);
 
-    private Catalogue catalogue = Catalogue.builder()
+    private final Catalogue catalogue = Catalogue.builder()
         .id(CATALOGUE_ID)
         .title(CATALOGUE_TITLE)
         .url("n/a")
@@ -61,7 +60,7 @@ public class FusekiExportServiceTest {
     @SneakyThrows
     @BeforeEach
     public void setup() {
-        restTemplate = new RestTemplate();
+        RestTemplate restTemplate = new RestTemplate();
         mockServer = MockRestServiceServer.bindTo(restTemplate).build();
         configuration.setDirectoryForTemplateLoading(new File("../templates"));
         // called in constructor of FusekiExportService
