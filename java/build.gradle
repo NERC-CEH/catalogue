@@ -40,7 +40,7 @@ dependencies {
     implementation 'org.apache.jena:jena-tdb:4.2.0'
     implementation 'org.apache.solr:solr-solrj'
     implementation 'org.ehcache:ehcache:3.9.7'
-    implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.4'
+    implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.8'
     implementation 'org.hibernate.validator:hibernate-validator'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
