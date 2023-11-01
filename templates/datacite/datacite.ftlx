@@ -33,17 +33,7 @@
   <publicationYear><#if doc.datasetReferenceDate.publicationDate??>${doc.datasetReferenceDate.publicationDate.year?c}</#if></publicationYear>
   
   <#if subjectList?has_content>
-  <subjects>
-    <#list subjectList as subject>
-      <#if subject.value?has_content>
-        <#if subject.uri?has_content>
-        <subject valueURI="${subject.uri}">${subject.value}</subject>
-        <#else>
-        <subject>${subject.value}</subject>
-        </#if>
-      </#if>
-    </#list>
-  </subjects>
+   <#include "_subjects.ftlx">
   </#if>
 
   <#if (pocs?? && pocs?has_content) || (rightsHolders?? && rightsHolders?has_content) || (custodians?? && custodians?has_content) >
