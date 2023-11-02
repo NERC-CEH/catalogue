@@ -101,7 +101,7 @@
               <li><a href="${uri}?format=json">json</a></li>
               <#if resourceType?? && (resourceType.value == 'dataset' || resourceType.value == 'application' || resourceType.value == 'service' )>
                 <#if citation??>
-                  <li><a href="${uri}/datacite">Datacite xml</a></li>
+                  <li><a href="${uri?replace("/id/", "/documents/")}/datacite.xml">Datacite xml</a></li>
                 </#if>
                 <li><a href="${uri}.xml?format=gemini">ISO 19115 (XML)</a></li>
                 <li><a href="${uri}?format=schema.org">schema.org (json-LD)</a></li>

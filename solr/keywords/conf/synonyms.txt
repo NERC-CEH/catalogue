@@ -30,11 +30,13 @@ bacterium,bacteria
 crustacean,crustacea
 dormouse,dormice
 fungus,fungi
-genera,genus
 goose,geese
 isopod,isopoda
 louse,lice
 mouse,mice
 stratum,strata
 synthesis,syntheses
-
+sulphur,sulfur
+sulphate,sulfate
+aluminium,aluminum
+environment,enviroment,enviromnent

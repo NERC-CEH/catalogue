@@ -3,7 +3,10 @@
     "defType":"edismax",
     "q.alt":"*:*",
     "rows":"10",
+    "qf":"label",
     "fl":"*,score",
+    "ps":"1",
+    "sort":"score DESC",
     "":{"v":0}
   },
   "facets":{
