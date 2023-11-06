@@ -40,7 +40,8 @@
     display: grid;
     grid-template-columns: auto 50px;
     gap: 0.6em;
-    > div {
+
+    >div {
       margin: 0 !important;
       padding: 0.2em 0.6em;
     }
@@ -53,6 +54,7 @@
         margin-bottom: 0.25em;
         padding: 0.5em 0;
       }
+
       &:last-child {
         .provenance {
           border-bottom: none;
@@ -121,9 +123,11 @@
 
       label {
         padding-top: @spacer;
+
         small {
           font-weight: normal;
           color: gray;
+
           &:before {
             content: "\A";
             white-space: pre-wrap;
@@ -135,8 +139,10 @@
     .dataentry {
       label {
         font-size: 12px;
+
         a {
           margin-left: 0.5em;
+
           &:hover {
             text-decoration: none;
           }
@@ -171,7 +177,7 @@
     }
   }
 
-  .multiline .existing > .row {
+  .multiline .existing>.row {
     border-style: solid;
     border-width: 1px;
     border-color: lighten(@gray-light, 15%);
@@ -185,6 +191,7 @@
   }
 
   .optgroup {
+
     &-assist,
     &-eidc,
     &-elter,
@@ -197,15 +204,21 @@
     display: inline-block;
     .pull-left;
   }
+
   .keywords {
     .uri:disabled {
       font-style: italic;
     }
   }
+
+
+  /*VOCAB KEYWORD PICKER STYLES */
+
   .vocabularyPicker {
     display: flex;
     gap: 0.25em 1.25em;
     flex-wrap: wrap;
+
     .vocab {
       label {
         span {
@@ -213,6 +226,18 @@
         }
       }
     }
+  }
+
+  .dataentry.child:has(.keywordPicker):not(:has(.hidden)) {
+    padding-bottom: 1.2em ;
+    padding-top: 1.2em ;
+  }
+
+  input.autocomplete::placeholder {
+    font-weight: bold;
+    font-style: italic;
+    opacity: 0.5;
+    color: blue;
   }
 
   .dropdown-menu.predefined {
@@ -254,12 +279,14 @@
 
 .editor-buttons {
   text-align: right;
+
   #editorDelete {
     margin-right: 3em;
   }
 }
 
 .form-control {
+
   &[readonly],
   &[disabled] {
     background-color: lighten(@gray-light, 30%);
@@ -278,5 +305,26 @@ ul.ui-autocomplete {
   li.ui-menu-item {
     font-size: 0.8em;
     font-family: @font-family-sans-serif;
+  }
+}
+
+.ui-autocomplete {
+  max-height: 350px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+ 
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  &:-webkit-scrollbar-thumb {
+    background: #999;
   }
 }

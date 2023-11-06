@@ -29,8 +29,8 @@ public class KeywordVocabularySolrQueryService {
             SolrQuery query = new SolrQuery();
             query.setQuery(term);
             query.setParam(CommonParams.DF, "label");
-            query.setSort("label", ORDER.asc);
-            query.setRows(100);
+            query.setSort("score", ORDER.desc);
+            query.setRows(50);
             query.addFilterQuery(generateVocabQuery(vocabIds));
             log.debug(query.getQuery());
             log.debug("Filter queries: {}", (Object) query.getFilterQueries());
