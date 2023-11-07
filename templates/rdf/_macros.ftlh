@@ -12,9 +12,14 @@
 </#if>
 
 <#macro contactList contacts prefix="c">
+  <#assign contactSeq = 0 >
   <#if contacts?has_content>
     <#list contacts as contact>
-      <#assign contactIdentifier="_:" + prefix + contact?counter>
+
+       <#if !contact.nameIdentifier?has_content && !contact.nameIdentifier?matches("^http(|s)://orcid.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$")>
+        <#assign contactSeq = contactSeq + 1>
+      </#if> 
+      <#assign contactIdentifier="_:" +  id + "_" + prefix + contactSeq>
 
       <#if contact.individualName?has_content>
         <#if contact.nameIdentifier?has_content && contact.nameIdentifier?matches("^http(|s)://orcid.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$")>
@@ -32,9 +37,15 @@
 </#macro>
 
 <#macro contactDetail contacts prefix="c">
+  <#assign contactSeq = 0 >
   <#if contacts?has_content>
     <#list contacts as contact>
-      <#assign contactIdentifier="_:" + prefix + contact?counter>
+
+      <#if !contact.nameIdentifier?has_content && !contact.nameIdentifier?matches("^http(|s)://orcid.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$")>
+        <#assign contactSeq = contactSeq + 1>
+      </#if> 
+
+      <#assign contactIdentifier="_:" +  id + "_" + prefix + contactSeq>
 
       <#if contact.individualName?has_content>
         <#assign contactType="vcard:Individual">
