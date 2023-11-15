@@ -23,11 +23,7 @@ compileJava {
     options.incremental = true
 }
 
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
-    }
-}
+java.sourceCompatibility = JavaVersion.VERSION_17
 
 dependencies {
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-guava'
