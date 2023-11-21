@@ -15,7 +15,7 @@
   <#if contacts?has_content>
     <#list contacts as contact>
 
-      <#assign contactIdentifier="_:" +  id + "_" + prefix +  contact?index>
+      <#assign contactIdentifier= id + "_" + prefix +  contact?index>
       <#if contact.individualName?has_content>
         <#if contact.nameIdentifier?has_content && contact.nameIdentifier?matches("^http(|s)://orcid.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$")>
           <#assign contactIdentifier= "\l" + contact.nameIdentifier + "\g">
@@ -35,7 +35,7 @@
   <#if contacts?has_content>
     <#list contacts as contact>
 
-      <#assign contactIdentifier="_:" +  id + "_" + prefix + contact?index>
+      <#assign contactIdentifier=  id + "_" + prefix + contact?index>
       <#if contact.individualName?has_content>
         <#assign contactType="vcard:Individual">
         <#assign contactName=contact.individualName>
