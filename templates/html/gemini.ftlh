@@ -58,143 +58,147 @@
   <#assign recordType = func.recordTypeOrResourceType()>
 
   <div id="metadata" class="${metadata.state?lower_case} ${linkedClass}">
+    
+    <#if accessLimitation.value == "deleted" && metadata.catalogue == "eidc">
+      <#include "document/_tombstone.ftlh">
+    <#else>
+    
+      <div class="section section-grey">
+        <div class="container">
+          <#include "document/_admin.ftlh">
+          <#if title?? && title?has_content>
+            <#include "document/_title.ftlh">
+          </#if>
 
-    <div class="section section-grey">
-      <div class="container">
-        <#include "document/_admin.ftlh">
-        <#if title?? && title?has_content>
-           <#include "document/_title.ftlh">
-        </#if>
+          <#if rel_supersedes?has_content && rel_supersedes?size gt 0>
+              <#include "document/_latestVersion.ftlh">
+          </#if>
 
-        <#if rel_supersedes?has_content && rel_supersedes?size gt 0>
-            <#include "document/_latestVersion.ftlh">
-        </#if>
+          <#if description??>
+            <div class="description">
+              <div class="description-text">
+                <@blocks.linebreaksAndLinks description!"" />
 
-        <#if description??>
-          <div class="description">
-            <div class="description-text">
-              <@blocks.linebreaksAndLinks description!"" />
-
-              <#if resourceType.value != 'aggregate' && resourceType.value != 'collection'>
-                <#if datasetReferenceDate??>
-                  <#if datasetReferenceDate.publicationDate??>
-                    <div class="publicationDate">
-                      Publication date: ${datasetReferenceDate.publicationDate}
-                    </div>
+                <#if resourceType.value != 'aggregate' && resourceType.value != 'collection'>
+                  <#if datasetReferenceDate??>
+                    <#if datasetReferenceDate.publicationDate??>
+                      <div class="publicationDate">
+                        Publication date: ${datasetReferenceDate.publicationDate}
+                      </div>
+                    </#if>
                   </#if>
                 </#if>
-              </#if>
 
+              </div>
+              <div class="browseimage">
+                <#include "document/_browseGraphic.ftlh">
+              </div>
             </div>
-            <div class="browseimage">
-              <#include "document/_browseGraphic.ftlh">
-            </div>
-          </div>
-        </#if>
+          </#if>
 
-        <#if resourceType.value != 'aggregate' && resourceType.value != 'collection'>
-          <div class="pull-right btn-group alternativeViews">
-            <span aria-expanded="false" aria-haspopup="true" data-toggle="dropdown" class="dropdown-toggle " type="button">
-                View record as <span class="caret"></span>
-            </span>
-            <ul class="dropdown-menu dropdown-menu-right">
-              <li><a href="${uri}?format=json">json</a></li>
-              <#if resourceType?? && (resourceType.value == 'dataset' || resourceType.value == 'application' || resourceType.value == 'service' )>
-                <#if citation??>
-                  <li><a href="${uri?replace("/id/", "/documents/")}/datacite.xml">Datacite xml</a></li>
+          <#if resourceType.value != 'aggregate' && resourceType.value != 'collection'>
+            <div class="pull-right btn-group alternativeViews">
+              <span aria-expanded="false" aria-haspopup="true" data-toggle="dropdown" class="dropdown-toggle " type="button">
+                  View record as <span class="caret"></span>
+              </span>
+              <ul class="dropdown-menu dropdown-menu-right">
+                <li><a href="${uri}?format=json">json</a></li>
+                <#if resourceType?? && (resourceType.value == 'dataset' || resourceType.value == 'application' || resourceType.value == 'service' )>
+                  <#if citation??>
+                    <li><a href="${uri?replace("/id/", "/documents/")}/datacite.xml">Datacite xml</a></li>
+                  </#if>
+                  <li><a href="${uri}.xml?format=gemini">ISO 19115 (XML)</a></li>
+                  <li><a href="${uri}?format=schema.org">schema.org (json-LD)</a></li>
+                  <li><a href="${uri}?format=ttl">RDF (Turtle)</a></li>
                 </#if>
-                <li><a href="${uri}.xml?format=gemini">ISO 19115 (XML)</a></li>
-                <li><a href="${uri}?format=schema.org">schema.org (json-LD)</a></li>
-                <li><a href="${uri}?format=ttl">RDF (Turtle)</a></li>
-              </#if>
-            </ul>
-          </div>
-        </#if>
+              </ul>
+            </div>
+          </#if>
 
-      </div>
-    </div>
-
-
-    <#if permission.userCanEditRestrictedFields(metadata.catalogue) && metadata.catalogue == "eidc">
-      <div class="section"><div class="container">
-        <#include "document/_metadataqualityAlert.ftlh">
-      </div></div>
-    </#if>
-
-    <#if resourceType.value == 'aggregate' || resourceType.value == 'collection'>
-      <div class="section">
-        <div class="container">
-          <#include "document/_aggregate.ftlh">
         </div>
       </div>
-    <#else>
-      <#if isLinkedDoc="true">
-       <div class="section">
-        <div class="container">
-          <#include "document/_linked.ftlh">
-         </div>
+
+      <#if permission.userCanEditRestrictedFields(metadata.catalogue) && metadata.catalogue == "eidc">
+        <div class="section"><div class="container">
+          <#include "document/_metadataqualityAlert.ftlh">
+        </div></div>
+      </#if>
+
+      <#if resourceType.value == 'aggregate' || resourceType.value == 'collection'>
+        <div class="section">
+          <div class="container">
+            <#include "document/_aggregate.ftlh">
+          </div>
+        </div>
+      <#else>
+        <#if isLinkedDoc="true">
+        <div class="section">
+          <div class="container">
+            <#include "document/_linked.ftlh">
+          </div>
+          </div>
+        </#if>
+        <div class="section">
+          <div class="container">
+            <div class="metadata-grid">
+              <div class="col1">
+                <#include "document/_formats.ftlh">
+                <#include "document/_extent.ftlh">
+                <#include "document/_dataquality.ftlh">
+                <#include "document/_related.ftlh">
+                <#include "document/_citation_list.ftlh">
+                <#include "document/_supplemental.ftlh">
+                <#include "document/_contacts.ftlh">
+
+                <#if topicCategories?? || descriptiveKeywords?? ||  inspireTheme?? || funding?? || spatialRepresentationTypes?? || spatialReferenceSystems??>
+                  <h2>Additional metadata</h2>
+                  <dl id="otherInfo" class="dl-horizontal">
+                    <#include "document/_tags.ftlh">
+                    <#include "document/_funding.ftlh">
+                    <#if resourceType?has_content && resourceType.value !='nonGeographicDataset'>
+                      <#include "document/_spatial.ftlh">
+                    </#if>
+                      <#if metadataDateTime?has_content>
+                      <dt>Last updated</dt><dd>${metadataDateTime?datetime.iso?datetime?string['dd MMMM yyyy  HH:mm']}</dd>
+                      </#if>
+                  </dl>
+                </#if>
+              </div>
+              <div class="col2">
+
+                <#if isLinkedDoc!="true">
+                    <#include "document/_uploadData.ftlh">
+                    <#include "document/_metrics.ftlh">
+                  
+                    <#if resourceStatus?? && resourceStatus != "Unknown">
+                      <#if resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'application'>
+                        <#include "document/_distribution_dataset.ftlh">
+                      <#elseif resourceType.value == 'service' && mapViewable>
+                        <#include "document/_distribution_service.ftlh">
+                      <#elseif resourceType.value == 'nercSignpost' || resourceType.value == 'signpost'>
+                        <#include "document/_distribution_signpost.ftlh">
+                      </#if>
+                    </#if>
+
+                    <#if resourceType.value == 'thirdPartyDataset'>
+                      <#include "document/_third_party.ftlh">
+                    </#if>
+                </#if>
+
+            </div>
+          </div>
         </div>
       </#if>
-      <div class="section">
-        <div class="container">
-          <div class="metadata-grid">
-            <div class="col1">
-              <#include "document/_formats.ftlh">
-              <#include "document/_extent.ftlh">
-              <#include "document/_dataquality.ftlh">
-              <#include "document/_related.ftlh">
-              <#include "document/_citation_list.ftlh">
-              <#include "document/_supplemental.ftlh">
-              <#include "document/_contacts.ftlh">
 
-              <#if topicCategories?? || descriptiveKeywords?? ||  inspireTheme?? || funding?? || spatialRepresentationTypes?? || spatialReferenceSystems??>
-                <h2>Additional metadata</h2>
-                <dl id="otherInfo" class="dl-horizontal">
-                  <#include "document/_tags.ftlh">
-                  <#include "document/_funding.ftlh">
-                  <#if resourceType?has_content && resourceType.value !='nonGeographicDataset'>
-                    <#include "document/_spatial.ftlh">
-                  </#if>
-                    <#if metadataDateTime?has_content>
-                    <dt>Last updated</dt><dd>${metadataDateTime?datetime.iso?datetime?string['dd MMMM yyyy  HH:mm']}</dd>
-                    </#if>
-                </dl>
-              </#if>
-            </div>
-            <div class="col2">
-
-              <#if isLinkedDoc!="true">
-                  <#include "document/_uploadData.ftlh">
-                  <#include "document/_metrics.ftlh">
-                 
-                  <#if resourceStatus?? && resourceStatus != "Unknown">
-                    <#if resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'application'>
-                      <#include "document/_distribution_dataset.ftlh">
-                    <#elseif resourceType.value == 'service' && mapViewable>
-                      <#include "document/_distribution_service.ftlh">
-                    <#elseif resourceType.value == 'nercSignpost' || resourceType.value == 'signpost'>
-                      <#include "document/_distribution_signpost.ftlh">
-                    </#if>
-                  </#if>
-
-                  <#if resourceType.value == 'thirdPartyDataset'>
-                    <#include "document/_third_party.ftlh">
-                  </#if>
-              </#if>
-
+      <#if permission.userCanEditRestrictedFields(metadata.catalogue) && metadata.catalogue == "eidc">
+          <div class="section">
+              <div class="container">
+                  <#include "document/_metadataqualityReport.ftlh">
+              </div>
           </div>
-        </div>
-      </div>
-    </#if>
+      </#if>
 
-    <#if permission.userCanEditRestrictedFields(metadata.catalogue) && metadata.catalogue == "eidc">
-        <div class="section">
-            <div class="container">
-                <#include "document/_metadataqualityReport.ftlh">
-            </div>
-        </div>
     </#if>
-
   </div>
 
   <#else>

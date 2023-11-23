@@ -70,7 +70,7 @@ public class SearchQuery {
                 .setQuery(term)
                 .setParam("defType", "edismax")
                 .setParam("qf", "title^50 description^25 keyword^2 lineage organisation individual surname altTitle resourceIdentifier identifier supplementalDescription supplementalName infrastructureCapabilities^2")
-                .setParam("bq", "resourceStatus:Available^10, resourceStatus:Controlled^8, resourceStatus:Embargoed^8, resourceStatus:Restricted^8")
+                .setParam("bq", "resourceStatus:Available^100, resourceStatus:Controlled^100, resourceStatus:Embargoed^80, resourceStatus:Restricted^80, resourceStatus:Superseded^10, resourceStatus:Deleted^1")
                 .setParam("bf", "version")
                 .setParam("ps", "5")
                 .setParam("pf", "title^50 description^25 keyword^2 supplementalDescription")
