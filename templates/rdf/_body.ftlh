@@ -3,6 +3,12 @@
   <#if description?has_content>
   dct:description "${description?replace("\n", " ")}" ;
   </#if>
+
+  <#if lineage?has_content>
+  dct:provenance [ a dct:ProvenanceStatement ;
+      rdfs:label "${lineage?replace("\n", " ")}"  ] ;
+  </#if>
+
   <#if boundingBoxes?has_content && boundingBoxes?has_content>
     <#list boundingBoxes as extent>
        dct:spatial "${extent.wkt}"^^geo:wktLiteral ;
