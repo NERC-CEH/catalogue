@@ -7,9 +7,16 @@ export default _.template(`
   </div>
   <div class="col-sm-11">
     <select data-name="type" class="editor-input type" id="descriptiveKeyword<%= data.index %>type">
-      <option value="" selected >- Select Type (optional) -</option>
-      <optgroup label="Keyword type" class="optgroup optgroup-eidc">
-        <option value="Catalogue topic">Catalogue topic</option>
+      <option value="" selected >- Select type (optional) -</option>
+      <optgroup label="Keyword type for the EIDC" class="optgroup optgroup-eidc">
+        <option value="discipline">Discipline</option>
+        <option value="instrument">Instrument</option>
+        <option value="place">Place</option>
+        <option value="project">Project</option>
+        <option value="taxon">Taxon</option>
+        <option value="theme">Theme</option>
+      </optgroup>
+      <optgroup label="All ISO 19115 types" class="optgroup optgroup-iso19115">
         <option value="dataCentre">Data Centre</option>
         <option value="discipline">Discipline</option>
         <option value="instrument">Instrument</option>
