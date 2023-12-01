@@ -130,7 +130,7 @@ public class FusekiExportService implements CatalogueExportService {
     }
 
     private boolean isRequired(MetadataDocument doc) {
-        String[] requiredTypes = {"service","dataset"};
+        String[] requiredTypes = {"service","dataset","signpost"};
         return Arrays.asList(requiredTypes).contains(doc.getType());
     }
 
