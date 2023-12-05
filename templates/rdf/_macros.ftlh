@@ -15,7 +15,7 @@
   <#if contacts?has_content>
     <#list contacts as contact>
 
-      <#assign contactIdentifier= ":" + id + "_" + prefix +  contact?index>
+      <#assign contactIdentifier= id + "_" + prefix +  contact?index>
       <#if contact.individualName?has_content>
         <#if contact.nameIdentifier?has_content && contact.nameIdentifier?matches("^http(|s)://orcid.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$")>
           <#assign contactIdentifier= "\l" + contact.nameIdentifier + "\g">
@@ -35,7 +35,7 @@
   <#if contacts?has_content>
     <#list contacts as contact>
 
-      <#assign contactIdentifier= ":" + id + "_" + prefix + contact?index>
+      <#assign contactIdentifier= id + "_" + prefix + contact?index>
       <#if contact.individualName?has_content>
         <#assign contactType="vcard:Individual">
         <#assign contactName=contact.individualName>
@@ -65,6 +65,33 @@
         <#if contact.email?has_content>vcard:hasEmail "${contact.email}" ;</#if>
         .
       </#if>
+    </#list>
+  </#if>
+</#macro>
+
+<#macro projectList>
+  <#if elterProject?has_content>
+    <#list elterProject as project>
+
+      <#assign projectIdentifier= id + "_proj" + project?index>
+      <#if project.uri?has_content>
+        <#assign projectIdentifier=project.uri>
+      </#if>
+      <${projectIdentifier?no_esc}><#sep>,</#sep>
+    </#list>
+  </#if>
+</#macro>
+
+<#macro projectDetail>
+  <#if elterProject?has_content>
+    <#list elterProject as project>
+
+      <#assign projectIdentifier= id + "_proj" + project?index>
+      <#if project.uri?has_content>
+        <#assign projectIdentifier=project.uri>
+      </#if>
+
+      <${projectIdentifier?no_esc}> a prov:Activity ; <#if project.value?has_content>rdfs:label "${project.value}"</#if> .
     </#list>
   </#if>
 </#macro>

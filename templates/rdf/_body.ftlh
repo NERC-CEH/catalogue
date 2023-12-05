@@ -40,14 +40,6 @@
   ;
   </#if>
 
-  <#-- Keywords -->
-  <#assign allKeywords = []>
-  <#if descriptiveKeywords?has_content>
-    <#list descriptiveKeywords as descriptiveKeyword>
-        <#assign allKeywords = allKeywords + descriptiveKeyword.keywords >
-    </#list>
-  </#if>
-
   <#if allKeywords?has_content>
   dct:subject
     <#list allKeywords as keyword>
@@ -64,6 +56,10 @@
   ;
   </#if>
 
+  <#if elterProject?has_content>
+   prov:wasGeneratedBy <@projectList /> ;
+  </#if>
+
   <#if type=='dataset' || type=='nonGeographicDataset' || type=='signpost'>
     <#include "turtle/_dataset.ftlh">
   <#elseif type=='aggregate'|| type=='collection'|| type=='series'>
@@ -76,13 +72,24 @@
   </#if>
 .
 
-
 <#if pointsOfContact?has_content>
   <@contactDetail pointsOfContact "c" />
 </#if>
+
 <#if publishers?has_content>
   <@contactDetail publishers "pub" />
 </#if>
+
 <#if authors?has_content>
   <@contactDetail authors "a" />
 </#if>
+
+<#if allKeywords?has_content>
+  <#list allKeywords as keyword>
+    <#if keyword.uri?has_content && keyword.value?has_content>
+        <${keyword.uri}> rdfs:label "${keyword.value}" .
+      </#if>
+  </#list>
+</#if>
+
+<@projectDetail />
