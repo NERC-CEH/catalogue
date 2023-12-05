@@ -60,6 +60,10 @@
    prov:wasGeneratedBy <@projectList /> ;
   </#if>
 
+  <#if funding?has_content>
+   prov:wasGeneratedBy <@fundingList /> ;
+  </#if>
+
   <#if type=='dataset' || type=='nonGeographicDataset' || type=='signpost'>
     <#include "turtle/_dataset.ftlh">
   <#elseif type=='aggregate'|| type=='collection'|| type=='series'>
@@ -92,4 +96,5 @@
   </#list>
 </#if>
 
+<@fundingDetail />
 <@projectDetail />
