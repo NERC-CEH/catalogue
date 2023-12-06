@@ -6,8 +6,9 @@ export default Backbone.Model.extend({
   },
 
   uris: {
-    'TA-RA project': 'http://vocabs.lter-europe.net/elter_cl/10684',
-    'e-shape': ''
+    'Bio-DT': 'https://doi.org/10.3030/101057437',
+    'e-shape': '',
+    'TA-RA project': 'http://vocabs.lter-europe.net/elter_cl/10684'
   },
 
   initialize () {
