@@ -71,33 +71,6 @@
   </#if>
 </#macro>
 
-<#macro projectList>
-  <#if elterProject?has_content>
-    <#list elterProject as project>
-
-      <#assign projectIdentifier= id + "_proj" + project?index>
-      <#if project.uri?has_content>
-        <#assign projectIdentifier=project.uri>
-      </#if>
-      <${projectIdentifier?no_esc}><#sep>,</#sep>
-    </#list>
-  </#if>
-</#macro>
-
-<#macro projectDetail>
-  <#if elterProject?has_content>
-    <#list elterProject as project>
-
-      <#assign projectIdentifier= id + "_proj" + project?index>
-      <#if project.uri?has_content>
-        <#assign projectIdentifier=project.uri>
-      </#if>
-
-      <${projectIdentifier?no_esc}> a prov:Activity ; <#if project.value?has_content>rdfs:label "${project.value}"</#if> .
-    </#list>
-  </#if>
-</#macro>
-
 <#macro fundingList>
   <#if funding?has_content>
     <#list funding as fund>
@@ -125,3 +98,58 @@
   </#if>
 </#macro>
 
+<#--ELTER -->
+<#macro projectList>
+  <#if elterProject?has_content>
+    <#list elterProject as project>
+
+      <#assign projectIdentifier= id + "_proj" + project?index>
+      <#if project.uri?has_content>
+        <#assign projectIdentifier=project.uri>
+      </#if>
+      <${projectIdentifier?no_esc}><#sep>,</#sep>
+    </#list>
+  </#if>
+</#macro>
+
+<#macro projectDetail>
+  <#if elterProject?has_content>
+    <#list elterProject as project>
+
+      <#assign projectIdentifier= id + "_proj" + project?index>
+      <#if project.uri?has_content>
+        <#assign projectIdentifier=project.uri>
+      </#if>
+
+      <${projectIdentifier?no_esc}> a prov:Activity ; <#if project.value?has_content>rdfs:label "${project.value}"</#if> .
+    </#list>
+  </#if>
+</#macro>
+
+<#macro deimsList>
+  <#if deimsSites?has_content>
+    <#list deimsSites as deimsSite>
+
+      <#assign deimsID= id + "_site" + deimsSite?index>
+      <#if deimsSite.url?has_content>
+        <#assign deimsID=deimsSite.url>
+      </#if>
+      <${deimsID?no_esc}><#sep>,</#sep>
+    </#list>
+  </#if>
+</#macro>
+
+<#macro deimsDetail>
+  <#if deimsSites?has_content>
+    <#list deimsSites as deimsSite>
+
+      <#assign deimsID= id + "_site" + deimsSite?index>
+      <#if deimsSite.url?has_content>
+        <#assign deimsID=deimsSite.url>
+      </#if>
+
+      <${deimsID?no_esc}> a prov:Location; <#if deimsSite.title?has_content>rdfs:label "${deimsSite.title}"</#if> .
+    </#list>
+  </#if>
+</#macro>
+<#--END ELTER-->
