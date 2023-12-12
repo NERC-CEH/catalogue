@@ -1,3 +1,4 @@
+<#ftl encoding="UTF-8">
 <#compress>
 <#-- Keywords -->
     <#assign allKeywords = []>

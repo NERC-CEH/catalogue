@@ -1,3 +1,78 @@
+<#macro pointOfContact contact>
+	<gmd:pointOfContact>
+		<gmd:CI_ResponsibleParty>
+			<#if contact.individualName?has_content>
+				<gmd:individualName>
+					<#if contact.nameIdentifier?has_content && contact.nameIdentifier?matches("^http(|s)://orcid.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$")> 
+						<gmx:Anchor xlink:href="${contact.nameIdentifier}" xlink:actuate="onRequest" xlink:title="orcid">${contact.individualName}</gmx:Anchor>
+					<#else>
+						<gco:CharacterString>${contact.individualName}</gco:CharacterString>
+					</#if>
+				</gmd:individualName>
+			</#if>
+			<#if contact.organisationName?has_content>
+				<gmd:organisationName>
+					<#if contact.organisationIdentifier?has_content && contact.organisationIdentifier?matches("^http(|s)://ror.org/\\w{8,10}$")> 
+						<gmx:Anchor xlink:href="${contact.organisationIdentifier}" xlink:actuate="onRequest" xlink:title="RoR">${contact.organisationName}</gmx:Anchor>
+					<#else>
+						<gco:CharacterString>${contact.organisationName}</gco:CharacterString>
+					</#if>
+				</gmd:organisationName>
+			</#if>
+			<gmd:contactInfo>
+				<gmd:CI_Contact>
+					<gmd:address>
+						<gmd:CI_Address>
+							<#if contact.deliveryPoint?has_content>
+							<gmd:deliveryPoint><gco:CharacterString>${contact.deliveryPoint}</gco:CharacterString></gmd:deliveryPoint>
+							</#if>
+							<#if contact.city?has_content>
+							<gmd:city><gco:CharacterString>${contact.city}</gco:CharacterString></gmd:city>
+							</#if>
+							<#if contact.administrativeArea?has_content>
+							<gmd:administrativeArea><gco:CharacterString>${contact.administrativeArea}</gco:CharacterString></gmd:administrativeArea>
+							</#if>
+							<#if contact.postalCode?has_content>
+							<gmd:postalCode><gco:CharacterString>${contact.postalCode}</gco:CharacterString></gmd:postalCode>
+							</#if>
+							<#if contact.country?has_content>
+							<gmd:country><gco:CharacterString>${contact.country}</gco:CharacterString></gmd:country>
+							</#if>
+							<gmd:electronicMailAddress><gco:CharacterString>enquiries@ceh.ac.uk</gco:CharacterString></gmd:electronicMailAddress>
+						</gmd:CI_Address>
+					</gmd:address>
+					<#if contact.nameIdentifier?has_content && contact.nameIdentifier?matches("^http(|s)://orcid.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$")> 
+                     <gmd:onlineResource>
+                        <gmd:CI_OnlineResource>
+                           <gmd:linkage>
+                              <gmd:URL>${contact.nameIdentifier}</gmd:URL>
+                           </gmd:linkage>
+                           <gmd:name>
+                              <gco:CharacterString>ORCID record</gco:CharacterString>
+                           </gmd:name>
+                           <gmd:description>
+                              <gco:CharacterString>ORCID is an open, non-profit, community-driven effort to create and maintain a registry of unique researcher identifiers and a transparent method of linking research activities and outputs to these identifiers.</gco:CharacterString>
+                           </gmd:description>
+                           <gmd:function>
+                              <gmd:CI_OnLineFunctionCode codeList="https://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="information">information</gmd:CI_OnLineFunctionCode>
+                           </gmd:function>
+                        </gmd:CI_OnlineResource>
+                     </gmd:onlineResource>
+					</#if>
+				</gmd:CI_Contact>
+			</gmd:contactInfo>
+			<gmd:role>
+			<#if contact.role = "rightsHolder" >
+				<#assign contactRole='owner'>
+			<#else>
+				<#assign contactRole=contact.role >
+			</#if>
+				<gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="${contactRole}">${contactRole}</gmd:CI_RoleCode>
+			</gmd:role>
+		</gmd:CI_ResponsibleParty>
+	</gmd:pointOfContact>
+</#macro>
+
 <#setting number_format="0">
 <#setting date_format = 'yyyy-MM-dd'>
 <#compress>
@@ -29,7 +104,9 @@
   </#if>
   <gmd:contact>
     <gmd:CI_ResponsibleParty>
-      <gmd:organisationName><gco:CharacterString>Environmental Information Data Centre</gco:CharacterString></gmd:organisationName>
+      <gmd:organisationName>
+        <gmx:Anchor xlink:href="https://ror.org/04xw4m193" xlink:actuate="onRequest" xlink:title="RoR">NERC EDS Environmental Information Data Centre</gmx:Anchor>
+      </gmd:organisationName>
       <gmd:contactInfo>
         <gmd:CI_Contact>
           <gmd:address>
@@ -41,6 +118,22 @@
               <gmd:electronicMailAddress><gco:CharacterString>info@eidc.ac.uk</gco:CharacterString></gmd:electronicMailAddress>
             </gmd:CI_Address>
           </gmd:address>
+          <gmd:onlineResource>
+            <gmd:CI_OnlineResource>
+                <gmd:linkage>
+                  <gmd:URL>https://eidc.ac.uk/</gmd:URL>
+                </gmd:linkage>
+                <gmd:name>
+                  <gco:CharacterString>EIDC website</gco:CharacterString>
+                </gmd:name>
+                <gmd:description>
+                  <gco:CharacterString>The Environmental Information Data Centre (EIDC) is the UK's national data centre for terrestrial and freshwater sciences.</gco:CharacterString>
+                </gmd:description>
+                <gmd:function>
+                  <gmd:CI_OnLineFunctionCode codeList="https://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="information">information</gmd:CI_OnLineFunctionCode>
+                </gmd:function>
+            </gmd:CI_OnlineResource>
+          </gmd:onlineResource>
         </gmd:CI_Contact>
       </gmd:contactInfo>
       <gmd:role>

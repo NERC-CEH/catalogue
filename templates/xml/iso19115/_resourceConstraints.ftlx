@@ -6,13 +6,13 @@
 			</gmd:accessConstraints>
 			<gmd:otherConstraints>
 				<#if accessLimitation.code=="Restricted">
-					<gmx:Anchor xlink:href="${accessLimitation.uri}">${accessLimitation.value}</gmx:Anchor>
+					<gmx:Anchor xlink:href="${accessLimitation.uri}" xlink:actuate="onRequest">${accessLimitation.value}</gmx:Anchor>
 				<#elseif accessLimitation.code=="Available">
 					<#assign _value=accessLimitation.value>
 					<#if accessLimitation.value=="no limitations to public access">
 						<#assign _value="no limitations">
 					</#if>
-					<gmx:Anchor xlink:href="${accessLimitation.uri}">${_value}</gmx:Anchor>
+					<gmx:Anchor xlink:href="${accessLimitation.uri}" xlink:actuate="onRequest">${_value}</gmx:Anchor>
 				<#else>
 					<gco:CharacterString>${accessLimitation.code}</gco:CharacterString>
 				</#if>

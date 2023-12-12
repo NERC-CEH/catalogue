@@ -60,6 +60,11 @@
    prov:wasGeneratedBy <@projectList /> ;
   </#if>
 
+  <#if deimsSites?has_content>
+    prov:atLocation <@deimsList />
+    ; 
+  </#if>
+
   <#if funding?has_content>
    prov:wasGeneratedBy <@fundingList /> ;
   </#if>
@@ -98,3 +103,4 @@
 
 <@fundingDetail />
 <@projectDetail />
+<@deimsDetail />
