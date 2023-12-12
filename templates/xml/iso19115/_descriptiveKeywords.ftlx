@@ -54,7 +54,7 @@
           <#list keywordList as item>
           <gmd:keyword>
             <#if item.uri?has_content>
-              <gmx:Anchor xlink:href="${item.uri}">${item.value}</gmx:Anchor>
+              <gmx:Anchor xlink:href="${item.uri}" xlink:actuate="onRequest">${item.value}</gmx:Anchor>
             <#else>
               <gco:CharacterString>${item.value}</gco:CharacterString>
             </#if>
