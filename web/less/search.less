@@ -25,10 +25,12 @@
       background-color: @filter-body-background; // @panel-bg;
       border-right: @filter-border;
     }
+
     h3 {
       font-size: 1.2em;
       color: @filter-body-colour;
     }
+
     .header {
       height: @filter-heading-height;
       width: 100%;
@@ -41,6 +43,7 @@
         font-size: 1.3em;
         color: @filter-heading-color; //@header-text;
         cursor: pointer;
+
         &:hover {
           text-decoration: underline;
         }
@@ -51,10 +54,12 @@
       #drawing-toggle {
         display: none;
       }
+
       .map-heading {
         position: absolute;
         bottom: 0;
       }
+
       .facet-filter {
         position: absolute;
         top: @filter-heading-height;
@@ -64,23 +69,30 @@
         overflow-y: auto;
         overflow-x: hidden;
         scrollbar-gutter: stable;
-        scrollbar-width: thin /* Firefox only*/;
+        scrollbar-width: thin
+          /* Firefox only*/
+        ;
         padding-left: 1em;
+
         .facet {
           margin-bottom: 1em;
           max-height: 600px;
           overflow-y: auto;
           overflow-x: hidden;
           scrollbar-width: thin;
+
           h3 {
             font-weight: 600;
             margin-bottom: 0.25em;
           }
+
           ul {
-            padding:0;
-            margin:1px;
+            padding: 0;
+            margin: 1px;
+
             li {
               list-style: none;
+
               .facet-count {
                 margin-left: 0.5em;
                 color: lighten(@filter-body-link-colour, 10%);
@@ -107,6 +119,7 @@
           }
         }
       }
+
       /* For webkit browsers only*/
       .facet-filter::-webkit-scrollbar {
         width: 8px;
@@ -125,9 +138,11 @@
 
     &.map-mode {
       @selected-color: @brand-success;
+
       .facet-filter {
         display: none;
       }
+
       .map-heading {
         margin-top: @filter-heading-gap;
         height: @filter-heading-height;
@@ -144,6 +159,7 @@
         bottom: 0;
         left: 0;
         right: 0;
+
         div.olControlZoom {
           left: 2px;
           top: 5px;
@@ -168,31 +184,38 @@
     margin-top: @search-form-height;
     .make-md-column(@results-columns);
     .make-md-column-offset(@filters-columns);
+
     .results__list {
       display: grid;
       margin: 2em;
       gap: 1em;
+
       .result {
         padding: 1.3em;
         background-color: rgba(0, 0, 0, 0.03);
         color: @text-color;
+
         &:hover {
           background-color: rgba(0, 0, 0, 0.06);
           outline: 2px solid @link-hover-color;
           text-decoration: none;
         }
+
         &__tags {
           display: flex;
           flex-direction: row;
           border-bottom: 1px solid lightgray;
           padding-bottom: 5px;
           margin-bottom: 5px;
+
           div {
             margin-right: 1em;
           }
+
           .recordType {
             color: #337085;
           }
+
           .resourceStatus,
           .condition,
           .state {
@@ -201,36 +224,53 @@
             padding-top: 3px;
           }
         }
+
         &__title {
           margin: 0 0 0.3em 0;
           font-size: 1.35em;
           line-height: 1.35em;
           color: black;
         }
+
         &__citationCount {
           text-align: right;
           color: @gray;
           font-size: 1.1rem;
           margin-top: -2px;
         }
+
         &--pending {
           border-left: darkorange 10px solid;
           background-color: rgba(0, 0, 0, 0.1);
         }
+
         &--draft {
           border-left: darkred 10px solid;
           background-color: lighten(@gray-light, 30%);
-          background-image: repeating-linear-gradient(
-            315deg,
-            transparent,
-            transparent 18px,
-            rgba(139, 0, 0, 0.15) 20px
-          );
+          background-image: repeating-linear-gradient(315deg,
+              transparent,
+              transparent 18px,
+              rgba(139, 0, 0, 0.15) 20px);
 
           .result__description {
             color: #999;
           }
         }
+
+        &--Deleted {
+          border-left: darkred 10px solid;
+          background-image: repeating-linear-gradient(130deg,
+              transparent,
+              transparent 48px,
+              #CCC 2px,
+              transparent 50px);
+
+          .result__description,
+          .result__title {
+            color: #999;
+          }
+        }
+
         &--Available,
         &--Unknown,
         &--Controlled,
@@ -239,15 +279,19 @@
             display: none;
           }
         }
-        &--Restricted {
+
+        &--Restricted,
+        &--Deleted {
           .resourceStatus {
             color: red;
             text-transform: uppercase;
+
             &::after {
               content: " !";
             }
           }
         }
+
         &--published {
           .state {
             display: none;
