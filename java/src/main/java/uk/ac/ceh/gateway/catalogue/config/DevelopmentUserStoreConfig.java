@@ -61,6 +61,8 @@ public class DevelopmentUserStoreConfig {
     public static final String INFRASTRUCTURE_PUBLISHER = "role_infrastructure_publisher";
     public static final String SA_EDITOR = "role_sa_editor";
     public static final String SA_PUBLISHER = "role_sa_publisher";
+    public static final String UKEOF_EDITOR = "role_ukeof_editor";
+    public static final String UKEOF_PUBLISHER = "role_ukeof_publisher";
     public static final String UKSCAPE_EDITOR = "role_ukscape_editor";
     public static final String UKSCAPE_PUBLISHER = "role_ukscape_publisher";
 
@@ -331,6 +333,16 @@ public class DevelopmentUserStoreConfig {
     }
 
     @Bean
+    public CatalogueUser ukeofPublisher() throws UsernameAlreadyTakenException {
+        val user = new CatalogueUser()
+            .setUsername("ukeof-publisher")
+            .setEmail("ukeof-publisher@ceh.ac.uk");
+        addUserToGroup(user, UKEOF_EDITOR, UKEOF_PUBLISHER);
+        userStore().addUser(user, "password");
+        return user;
+    }
+
+    @Bean
     public CatalogueUser ukscapePublisher() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser()
             .setUsername("ukscape-publisher")
@@ -395,6 +407,8 @@ public class DevelopmentUserStoreConfig {
         groupStore.createGroup(INFRASTRUCTURE_PUBLISHER, "");
         groupStore.createGroup(SA_EDITOR, "");
         groupStore.createGroup(SA_PUBLISHER, "");
+        groupStore.createGroup(UKEOF_PUBLISHER, "");
+        groupStore.createGroup(UKEOF_EDITOR, "");
         groupStore.createGroup(UKSCAPE_PUBLISHER, "");
         groupStore.createGroup(UKSCAPE_EDITOR, "");
         return groupStore;
