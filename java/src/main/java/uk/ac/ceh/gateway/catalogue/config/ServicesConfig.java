@@ -46,6 +46,9 @@ import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
 import uk.ac.ceh.gateway.catalogue.modelnerc.NercModel;
 import uk.ac.ceh.gateway.catalogue.modelnerc.NercModelUse;
+import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringActivity;
+import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
+import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
 import uk.ac.ceh.gateway.catalogue.osdp.*;
 import uk.ac.ceh.gateway.catalogue.postprocess.BaseMonitoringTypePostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.ClassMapPostProcessingService;
@@ -157,9 +160,9 @@ public class ServicesConfig {
             .register(OSDP_AGENT, Agent.class)
             .register(OSDP_DATASET, uk.ac.ceh.gateway.catalogue.osdp.Dataset.class)
             .register(OSDP_MODEL, uk.ac.ceh.gateway.catalogue.osdp.Model.class)
-            .register(OSDP_MONITORING_ACTIVITY, MonitoringActivity.class)
-            .register(OSDP_MONITORING_FACILITY, MonitoringFacility.class)
-            .register(OSDP_MONITORING_PROGRAMME, MonitoringProgramme.class)
+            .register(MONITORING_ACTIVITY, MonitoringActivity.class)
+            .register(MONITORING_FACILITY, MonitoringFacility.class)
+            .register(MONITORING_PROGRAMME, MonitoringProgramme.class)
             .register(OSDP_PUBLICATION, Publication.class)
             .register(OSDP_SAMPLE, Sample.class)
             .register(SAMPLE_ARCHIVE, SampleArchive.class)

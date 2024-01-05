@@ -78,6 +78,24 @@ public class DocumentTypes {
         .type(LINKED_ELTER)
         .build();
 
+    public static final String MONITORING_ACTIVITY = "monitoring-activity";
+    public static DocumentType MONITORING_ACTIVITY_TYPE = DocumentType.builder()
+        .title("Monitoring Activity")
+        .type(MONITORING_ACTIVITY)
+        .build();
+
+    public static final String MONITORING_FACILITY = "monitoring-facility";
+    public static DocumentType MONITORING_FACILITY_TYPE = DocumentType.builder()
+        .title("Monitoring Facility")
+        .type(MONITORING_FACILITY)
+        .build();
+
+    public static final String MONITORING_PROGRAMME = "monitoring-programme";
+    public static DocumentType MONITORING_PROGRAMME_TYPE = DocumentType.builder()
+        .title("Monitoring Programme")
+        .type(MONITORING_PROGRAMME)
+        .build();
+
     public static final String NERC_MODEL = "nerc-model";
     public static DocumentType NERC_MODEL_TYPE = DocumentType.builder()
         .title("Model code")
@@ -106,24 +124,6 @@ public class DocumentTypes {
     public static DocumentType OSDP_MODEL_TYPE = DocumentType.builder()
         .title("Model")
         .type(OSDP_MODEL)
-        .build();
-
-    public static final String OSDP_MONITORING_ACTIVITY = "osdp-monitoring-activity";
-    public static DocumentType OSDP_MONITORING_ACTIVITY_TYPE = DocumentType.builder()
-        .title("Monitoring Activity")
-        .type(OSDP_MONITORING_ACTIVITY)
-        .build();
-
-    public static final String OSDP_MONITORING_FACILITY = "osdp-monitoring-facility";
-    public static DocumentType OSDP_MONITORING_FACILITY_TYPE = DocumentType.builder()
-        .title("Monitoring Facility")
-        .type(OSDP_MONITORING_FACILITY)
-        .build();
-
-    public static final String OSDP_MONITORING_PROGRAMME = "osdp-monitoring-programme";
-    public static DocumentType OSDP_MONITORING_PROGRAMME_TYPE = DocumentType.builder()
-        .title("Monitoring Programme")
-        .type(OSDP_MONITORING_PROGRAMME)
         .build();
 
     public static final String OSDP_PUBLICATION = "osdp-publication";

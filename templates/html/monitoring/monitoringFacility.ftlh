@@ -1,4 +1,4 @@
-<#import "osdp.ftlh" as o>
+<#import "base.ftlh" as o>
 <#import "../blocks.ftlh" as b>
 
 <@o.base>
@@ -16,13 +16,7 @@
   <#if geometry?? && geometry?has_content>
     <@b.key "Geometry" "Geometry of Monitoring Facility"><@o.geometry geometry /></@b.key>
   </#if>
-  <#if observationCapabilities?? && observationCapabilities?has_content>
-    <@b.key "Observation Capabilities" "Observation Capabilities of Monitoring Facility">
-    <#list observationCapabilities as observationCapability>
-      <@o.observationCapability observationCapability />
-    </#list>
-    </@b.key>
-  </#if>
+ 
   <@o.relationships "Part Of" "Part of another Monitoring Facility" "http://onto.nerc.ac.uk/CEHMD/rels/partOf" />
   <@o.inverseRelationships "Used By" "Used by this Monitoring Activity" "http://onto.nerc.ac.uk/CEHMD/rels/uses" />
   <@o.inverseRelationships "Responsible for" "Agents responsible for this Monitoring Activity" "http://onto.nerc.ac.uk/CEHMD/rels/responsibleFor" />
