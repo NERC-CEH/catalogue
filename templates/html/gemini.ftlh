@@ -59,10 +59,6 @@
 
   <div id="metadata" class="${metadata.state?lower_case} ${linkedClass}">
     
-    <#if accessLimitation.value == "deleted" && metadata.catalogue == "eidc">
-      <#include "document/_tombstone.ftlh">
-    <#else>
-    
       <div class="section section-grey">
         <div class="container">
           <#include "document/_admin.ftlh">
@@ -198,7 +194,6 @@
           </div>
       </#if>
 
-    </#if>
   </div>
 
   <#else>

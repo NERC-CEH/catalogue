@@ -319,6 +319,7 @@
     background-color: var(--notice-background-color);
     border-radius: 6px;
     z-index: 1000;
+    color: var(--notice-color, #111);
 
     small {
       font-size: 80%;
@@ -335,8 +336,15 @@
       margin-bottom: 0;
     }
 
-    &--restricted {
+    &-restricted {
+      --notice-border-color: red;
+    }
+
+    &-deleted {
       --notice-color: red;
+      --notice-border-color: red;
+      --notice-border-width: 5px;
+  
     }
 
     &-signpost {

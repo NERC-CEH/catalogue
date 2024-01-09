@@ -35,5 +35,7 @@
             and is expected to become available by ${datasetReferenceDate.releasedDate?date?string["d MMMM yyyy"]}
         </#if>
     </p>
+<#elseif resourceStatus == "Deleted">
+    <p><strong>This record has been deleted</strong></p>
 </#if>
 
