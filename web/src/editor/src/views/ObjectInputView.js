@@ -2,7 +2,6 @@ import _ from 'underscore'
 import $ from 'jquery'
 import Backbone from 'backbone'
 import validationTemplate from '../templates/validation'
-import 'jquery-ui/ui/widgets/sortable'
 
 export default Backbone.View.extend({
 

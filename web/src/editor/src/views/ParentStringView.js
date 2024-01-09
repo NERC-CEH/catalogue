@@ -4,7 +4,6 @@ import SingleView from '../SingleView'
 import parentTemplate from '../templates/Parent'
 import childTemplate from '../templates/MultiString'
 import template from '../templates/ChildLarge'
-import 'jquery-ui/ui/widgets/sortable'
 
 export default SingleView.extend({
 

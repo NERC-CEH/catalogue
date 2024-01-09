@@ -4,7 +4,6 @@ import SingleView from '../SingleView'
 import ChildView from './ChildView'
 import template from '../templates/Parent'
 import { Positionable } from '../collections'
-import 'jquery-ui/ui/widgets/sortable'
 
 export default SingleView.extend({
 
