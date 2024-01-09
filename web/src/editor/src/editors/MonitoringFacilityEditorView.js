@@ -6,8 +6,7 @@ import {
   RelationshipView,
   SingleObjectView,
   TemporalExtentView,
-  TextareaView,
-  ObservationCapabilityView
+  TextareaView
 } from '../views'
 import { MultipleDate } from '../models'
 import BoundingBox from '../geometryMap/BoundingBox'
@@ -104,17 +103,6 @@ export default EditorView.extend({
           ],
           helpText: `
 <p>Relationships to other OSDP document types</p>
-`
-        }),
-
-        new ParentView({
-          model: this.model,
-          modelAttribute: 'observationCapabilities',
-          label: 'Observation Capabilities',
-          ObjectInputView: ObservationCapabilityView,
-          multiline: true,
-          helpText: `
-<p>Observation capabilities of the Monitoring Facility</p>
 `
         })
       ]
