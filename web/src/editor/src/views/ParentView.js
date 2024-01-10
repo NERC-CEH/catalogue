@@ -41,18 +41,16 @@ export default SingleView.extend({
     const that = this
     $(document).ready(function () {
       that.$('.existing').append(view.el)
-      if (that.data.disabled !== 'disabled') {
-        if (that.data.modelAttribute !== 'boundingBoxes') {
-          that.$('.existing').sortable({
-            animation: 150,
-            start: (event, ui) => {
-              that._oldPosition = ui.item.index()
-            },
-            update: (event, ui) => {
-              that.collection.position(that._oldPosition, ui.item.index())
-            }
-          })
-        }
+      if (that.data.disabled !== 'disabled' && that.data.modelAttribute !== 'boundingBoxes') {
+        that.$('.existing').sortable({
+          animation: 150,
+          start: (event, ui) => {
+            that._oldPosition = ui.item.index()
+          },
+          update: (event, ui) => {
+            that.collection.position(that._oldPosition, ui.item.index())
+          }
+        })
       }
     })
   },
