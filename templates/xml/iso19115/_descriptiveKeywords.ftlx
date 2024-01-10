@@ -1,5 +1,5 @@
 <#assign all_keywords = []>
-<#if descriptiveKeywords?? || observeableProperties??>
+<#if descriptiveKeywords?? || observeableProperties?? || keywords_instrument?? || keywords_project?? || keywords_theme?? || keywords_discipline?? || keywords_place?? || keywords_other??>
 
   <#function controlledKeywords hash regex match=true>
       <#local result = []>
@@ -25,8 +25,26 @@
     </#list>
   </#if>
 
-  <#if observedProperties??>
-    <#assign all_keywords = all_keywords + observedProperties>
+  <#if keywords_observedProperty??>
+    <#assign all_keywords = all_keywords + keywords_observedProperty>
+  </#if>
+  <#if keywords_keywords_instrument??>
+    <#assign all_keywords = all_keywords + keywords_instrument>
+  </#if>
+  <#if keywords_project??>
+    <#assign all_keywords = all_keywords + keywords_project>
+  </#if>
+  <#if keywords_theme??>
+    <#assign all_keywords = all_keywords + keywords_theme>
+  </#if>
+  <#if keywords_discipline??>
+    <#assign all_keywords = all_keywords + keywords_discipline>
+  </#if>
+  <#if keywords_place??>
+    <#assign all_keywords = all_keywords + keywords_place>
+  </#if>
+  <#if keywords_other??>
+    <#assign all_keywords = all_keywords + keywords_other>
   </#if>
 
   <#assign 

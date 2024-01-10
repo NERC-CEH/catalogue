@@ -9,9 +9,7 @@ export default ObjectInputView.extend({
 
   events: function () {
     return _.extend({}, ObjectInputView.prototype.events, {
-      'click .add' () { return this.add() },
-
-      'click .predefined' (event) { return this.addPredefined(event) }
+      'click .add' () { return this.add() }
     })
   },
 
@@ -20,15 +18,6 @@ export default ObjectInputView.extend({
     ObjectInputView.prototype.initialize.call(this, options)
     this.render()
     const keywordType = this.model.get('type')
-    if (keywordType != null) {
-      // IE only supports .startsWith() in MS Edge (> version 11)
-      if (keywordType.lastIndexOf('Catalogue topic', 0) === 0) {
-        this.$('#catalogueTopic').removeClass('hidden')
-        this.$('.add').addClass('hidden')
-        this.$('select.type').attr('disabled', 'disabled')
-      }
-    }
-
     this.keywords = this.model.getRelatedCollection('keywords')
     this.createList(this.keywords, '.keywords', this.addOne)
   },

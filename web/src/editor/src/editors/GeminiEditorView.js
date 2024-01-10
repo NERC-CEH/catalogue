@@ -10,6 +10,7 @@ import {
   KeywordVocabularyView,
   DistributionFormatView, FundingView,
   InspireThemeView, MapDataSourceView,
+  KeywordThemeView,
   OnlineResourceView,
   ParentStringView,
   ParentView,
@@ -28,11 +29,11 @@ import {
 } from '../views'
 import {
   AccessLimitation, Contact,
-  DescriptiveKeyword, DistributionFormat, Funding,
+  DescriptiveKeyword,  DistributionFormat, Funding,
   InspireTheme, MapDataSource,
   MultipleDate, OnlineResource, Supplemental,
   ResourceType, Service, SpatialResolution,
-  TopicCategory
+  TopicCategory, KeywordTheme
 } from '../models'
 import BoundingBox from '../geometryMap/BoundingBox'
 import BoundingBoxView from '../geometryMap/BoundingBoxView'
@@ -247,12 +248,70 @@ export default EditorView.extend({
           model: this.model,
           ModelType: TopicCategory,
           modelAttribute: 'topicCategories',
-          label: 'Topic categories',
+          label: 'ISO 19115 topic categories',
           ObjectInputView: TopicCategoryView,
           helpText: `\
-<p>Please note these are very broad themes and should not be confused with EIDC science topics.</p>
+<p>Please note these are very broad themes required by the metadata standard and should not be confused with science topics.</p>
 <p>Multiple topic categories are allowed - please include all that are pertinent.  For example, "<i>Estimates of topsoil invertebrates</i>" = Biota <strong>and</strong> Environment <strong>and</strong> Geoscientific Information.</p>\
 `
+        }),
+        new ParentView({
+          model: this.model,
+          ModelType: KeywordTheme,
+          modelAttribute: 'keywords_theme',
+          label: 'Science topic',
+          ObjectInputView: KeywordThemeView,
+          multiline: false,
+          helpText: `These are used to populate the topic facet in the search interface - try to include at least one`
+        }),
+
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'keywords_observedProperty',
+          label: 'Observed properties',
+          ObjectInputView: KeywordVocabularyView,
+          multiline: true,
+          helpText: `Controlled keywords describing the observed properties/variables contained in this data resource`
+        }),
+
+
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'keywords_place',
+          label: 'Places',
+          ObjectInputView: KeywordVocabularyView,
+          multiline: true,
+          helpText: `\
+          Controlled keywords describing geographic places pertinent to this resource. 
+          For example, named countries/regions in which the research was conducted.
+          `
+        }),
+
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'keywords_project',
+          label: 'Projects',
+          ObjectInputView: KeywordVocabularyView,
+          multiline: true,
+          helpText: `Controlled keywords describing projects that fund/support the creation of this resource`
+        }),
+
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'keywords_instrument',
+          label: 'Instruments',
+          ObjectInputView: KeywordVocabularyView,
+          multiline: true,
+          helpText: `Controlled keywords describing instruments/sensors used to generate this data`
+        }),
+
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'keywords_other',
+          label: 'Other keywords',
+          ObjectInputView: KeywordVocabularyView,
+          multiline: true,
+          helpText: `All other keywords not described elsewhere`
         }),
 
         new ParentView({
@@ -264,23 +323,6 @@ export default EditorView.extend({
           helpText: `\
 <p>If the resource falls within the scope of an INSPIRE theme it must be declared here.</p>
 <p>Conformity is the degree to which the <i class='text-red'>data</i> conforms to the relevant INSPIRE data specification.</p>\
-`
-        }),
-        new PredefinedParentView({
-          model: this.model,
-          ModelType: DescriptiveKeyword,
-          modelAttribute: 'descriptiveKeywords',
-          label: 'Other keywords',
-          ObjectInputView: DescriptiveKeywordView,
-          multiline: true,
-          predefined: {
-            'Catalogue topic': {
-              type: 'Catalogue topic'
-            }
-          },
-          helpText: `
-<p>Keywords (preferably taken from a controlled vocabulary) categorising and describing the data resource.</p>
-<p>Good quality keywords help to improve the efficiency of search, making it easier to find relevant records.</p>\
 `
         }),
 
@@ -334,8 +376,7 @@ export default EditorView.extend({
           helpText: `\
 <p>Include addresses of web services used to access the data and supporting information.</p>
 <p>Other links such as project websites or papers should <b>NOT</b> be included here. You can add them to "Additional information"</p>\
-`,
-          disabled
+`
         }),
 
         new PredefinedParentView({
@@ -433,8 +474,7 @@ export default EditorView.extend({
           ObjectInputView: ResourceIdentifierView,
           helpText: `
 <p>A unique string or number used to identify the data resource. The codespace identifies the context in which the code is unique.</p>
-`,
-          disabled
+`
         }),
 
         new ParentView({
@@ -445,8 +485,7 @@ export default EditorView.extend({
           multiline: true,
           helpText: `
 <p>This is to link related datasets,etc which are in <i>this</i> catalogue. Externally hosted datasets can be linked using <strong>Supplemental</strong> &gt; <strong>Additional links</strong> &gt; <strong>Related dataset</strong></p>
-`,
-          disabled
+`
         })
       ]
     },
@@ -684,8 +723,7 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'service',
           ModelType: Service,
-          label: 'Service',
-          disabled
+          label: 'Service'
         }),
 
         new ParentView({
@@ -707,22 +745,27 @@ export default EditorView.extend({
 <p>The 'Byte?' option that appears for raster (GeoTiff) datasets is used to indicate whether the GeoTiff is a 'byte' or 'non-byte' datatype.
 This is only needed if you configure 'Stylying=Classification' for your GeoTiff.</p>
 <p>Paths should be specified relative to the base of the datastore. e.g. <strong>5b3fcf9f-19d4-4ad3-a8bb-0a5ea02c857e/my_shapefile</strong></p>\
-`,
-          disabled
+`
         })
       ]
     },
     {
-      label: 'beta',
-      title: 'Experimental',
+      label: '_old',
+      title: 'Unused properties that will soon be removed',
       views: [
         new ParentView({
           model: this.model,
-          modelAttribute: 'observedProperties',
-          label: 'Observed properties',
-          ObjectInputView: KeywordVocabularyView,
-          multiline: true
-        })
+          ModelType: DescriptiveKeyword,
+          modelAttribute: 'descriptiveKeywords',
+          label: 'Other keywords',
+          ObjectInputView: DescriptiveKeywordView,
+          multiline: true,
+          helpText: `
+<p>Keywords (preferably taken from a controlled vocabulary) categorising and describing the data resource.</p>
+<p>Good quality keywords help to improve the efficiency of search, making it easier to find relevant records.</p>\
+`
+        }),
+
       ]
     }
     ]

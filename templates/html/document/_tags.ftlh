@@ -16,13 +16,10 @@
   </#if>
 </#macro>
 
-<#if observedProperties?has_content>
-  <@keywordList observedProperties "Observed properties" true/>
-</#if>
-
 <#if topicCategories?has_content>
   <@keywordList topicCategories "Topic categories"/>
 </#if>
+
 
 <#if inspireThemes??>
   <dt>INSPIRE theme<#if inspireThemes?size gt 1>s</#if></dt>
@@ -34,7 +31,46 @@
 </dd>
 </#if>
 
+<#-- KEYWORDS -->
 <#assign allKeywords= []>
+
+<#if keywords_theme?has_content>
+  <#list keywords_theme as keyword>
+      <#assign allKeywords = allKeywords + [keyword]>
+  </#list>
+</#if>
+<#if keywords_observedProperty?has_content>
+  <#list keywords_observedProperty as keyword>
+      <#assign allKeywords = allKeywords + [keyword]>
+  </#list>
+</#if>
+<#if keywords_instrument?has_content>
+  <#list keywords_instrument as keyword>
+      <#assign allKeywords = allKeywords + [keyword]>
+  </#list>
+</#if>
+<#if keywords_discipline?has_content>
+  <#list keywords_discipline as keyword>
+      <#assign allKeywords = allKeywords + [keyword]>
+  </#list>
+</#if>
+<#if keywords_place?has_content>
+  <#list keywords_place as keyword>
+      <#assign allKeywords = allKeywords + [keyword]>
+  </#list>
+</#if>
+<#if keywords_project?has_content>
+  <#list keywords_project as keyword>
+      <#assign allKeywords = allKeywords + [keyword]>
+  </#list>
+</#if>
+<#if keywords_other?has_content>
+  <#list keywords_other as keyword>
+      <#assign allKeywords = allKeywords + [keyword]>
+  </#list>
+</#if>
+
+<#--This can be deleted when descriptiveKeywords are removed -->
 <#if descriptiveKeywords?has_content>
   <#list descriptiveKeywords as descriptiveKeyword>
     <#list descriptiveKeyword.keywords as keyword>
@@ -42,13 +78,7 @@
     </#list>
   </#list>
 </#if>
-<#if keywords?has_content>
-  <#list keywords as keyword>
-      <#assign allKeywords = allKeywords + [keyword]>
-  </#list>
-</#if>
 
 <#if allKeywords?has_content>
-  <@keywordList allKeywords "Other keywords" true/>
+  <@keywordList allKeywords "Keywords" true/>
 </#if>
-

@@ -47,7 +47,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private Number version;
     private List<String> alternateTitles, spatialRepresentationTypes, datasetLanguages,
             securityConstraints;
-    private List<Keyword> topicCategories, observedProperties;
+    private List<Keyword> topicCategories, keywords_discipline, keywords_instrument, keywords_observedProperty, keywords_place, keywords_project, keywords_theme, keywords_other;
     private List<Geometry> geometries;
     private List<DistributionInfo> distributionFormats;
     private List<DescriptiveKeywords> descriptiveKeywords;
@@ -186,10 +186,10 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     }
 
     public List<String> getTopics() {
-        return Optional.ofNullable(descriptiveKeywords)
+        return Optional.ofNullable(keywords_theme)
                 .orElse(Collections.emptyList())
                 .stream()
-                .flatMap(dk -> dk.getKeywords().stream())
+                //.flatMap(dk -> dk.getKeywords().stream())
                 .map(Keyword::getUri)
                 .filter(uri -> uri.startsWith(TOPIC_PROJECT_URL))
                 .collect(Collectors.toList());
