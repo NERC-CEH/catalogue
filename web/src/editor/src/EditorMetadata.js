@@ -25,7 +25,9 @@ export default Backbone.Model.extend({
   },
 
   sync (method, model, options) {
-    return Backbone.sync.call(this, method, model, _.extend(options, {
+    if (this.title === 'GEMINI_DOCUMENT') {
+      model.unset('relationships', true)
+    }
     return Backbone.sync.call(this, method, model, {
       ...options,
       accepts: {
