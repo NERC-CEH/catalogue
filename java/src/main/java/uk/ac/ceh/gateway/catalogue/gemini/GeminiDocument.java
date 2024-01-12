@@ -47,9 +47,10 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private Number version;
     private List<String> alternateTitles, spatialRepresentationTypes, datasetLanguages,
             securityConstraints;
-    private List<Keyword> topicCategories, keywords_discipline, keywords_instrument, keywords_observedProperty, keywords_place, keywords_project, keywords_theme, keywords_other;
+    private List<Keyword> topicCategories;
     private List<Geometry> geometries;
     private List<DistributionInfo> distributionFormats;
+    private List<Keyword> keywords_discipline, keywords_instrument, keywords_observedProperty, keywords_place, keywords_project, keywords_theme, keywords_other;
     private List<DescriptiveKeywords> descriptiveKeywords;
     private List<InspireTheme> inspireThemes;
     private List<SpatialResolution> spatialResolutions;

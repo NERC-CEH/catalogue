@@ -45,9 +45,9 @@
     <#list allKeywords as keyword>
       <#if keyword.uri?has_content>
         <#if keyword.value?has_content>
-          <${keyword.uri}>, "${keyword.value}"<#t>
+          <${keyword.uri?trim}>, "${keyword.value}"<#t>
         <#else>
-          "${keyword.uri}"<#t>
+          "${keyword.uri?trim}"<#t>
         </#if>
       <#else>
         "${keyword.value}"<#t>
@@ -96,7 +96,7 @@
 <#if allKeywords?has_content>
   <#list allKeywords as keyword>
     <#if keyword.uri?has_content && keyword.value?has_content>
-        <${keyword.uri}> rdfs:label "${keyword.value}" .
+        <${keyword.uri?trim}> rdfs:label "${keyword.value}" .
       </#if>
   </#list>
 </#if>
