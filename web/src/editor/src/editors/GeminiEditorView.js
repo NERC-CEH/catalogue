@@ -3,13 +3,17 @@ import EditorView from '../EditorView'
 import InputView from '../InputView'
 import {
   AccessLimitationView,
+  AdditionalLinksView,
   CheckboxView,
   ContactView,
   DatasetReferenceDateView,
   DescriptiveKeywordView,
+  DistributionFormatView,
+  FundingView,
+  IncomingCitationView,
+  InspireThemeView,
   KeywordVocabularyView,
-  DistributionFormatView, FundingView,
-  InspireThemeView, MapDataSourceView,
+  MapDataSourceView,
   OnlineResourceView,
   ParentStringView,
   ParentView,
@@ -19,22 +23,36 @@ import {
   ResourceConstraintView,
   ResourceIdentifierView,
   ResourceMaintenanceView,
-  ResourceTypeView, ServiceView,
-  SingleObjectView, SpatialReferenceSystemView, SpatialRepresentationTypeView, SpatialResolutionView,
-  AdditionalLinksView, IncomingCitationView,
+  ResourceTypeView,
+  ServiceView,
+  SingleObjectView,
+  SpatialReferenceSystemView,
+  SpatialRepresentationTypeView,
+  SpatialResolutionView,
   TemporalExtentView,
   TextareaView,
   TopicCategoryView
 } from '../views'
 import {
-  AccessLimitation, Contact,
-  DescriptiveKeyword, DistributionFormat, Funding,
-  InspireTheme, MapDataSource,
-  MultipleDate, OnlineResource, Supplemental,
-  ResourceType, Service, SpatialResolution,
+  AccessLimitation,
+  Contact,
+  DescriptiveKeyword,
+  DistributionFormat,
+  Funding,
+  InspireTheme,
+  MapDataSource,
+  MultipleDate,
+  OnlineResource,
+  ResourceType,
+  Service,
+  SpatialResolution,
+  Supplemental,
   TopicCategory
 } from '../models'
-import { BoundingBox, BoundingBoxView } from '../geometryMap'
+import {
+  BoundingBox,
+  BoundingBoxView
+} from '../geometryMap'
 
 export default EditorView.extend({
 

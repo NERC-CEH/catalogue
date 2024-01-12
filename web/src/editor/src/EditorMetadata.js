@@ -26,11 +26,13 @@ export default Backbone.Model.extend({
 
   sync (method, model, options) {
     return Backbone.sync.call(this, method, model, _.extend(options, {
+    return Backbone.sync.call(this, method, model, {
+      ...options,
       accepts: {
         json: this.mediaType
       },
       contentType: this.mediaType
-    }))
+    })
   },
 
   validate (attrs) {
