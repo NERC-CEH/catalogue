@@ -14,7 +14,7 @@ describe('Test BoundingBoxView', function () {
     // when
     view.render()
     // then
-    expect(view.$('.map')).toBeDefined()
+    expect(view.$('.map').length).toEqual(1) // "view.$('.map')).toBeDefined()" is not used here since it returns true regardless of the jquery selector used
   })
 
   it('when view is constructing should exist', () => {

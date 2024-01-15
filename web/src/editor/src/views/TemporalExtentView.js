@@ -1,5 +1,4 @@
 /* eslint no-new: "off" */
-import _ from 'underscore'
 import ObjectInputView from './ObjectInputView'
 import template from '../templates/temporalExtent'
 import AirDatepicker from 'air-datepicker'
@@ -12,21 +11,20 @@ const datepickerOptions = {
 }
 
 export default ObjectInputView.extend({
-
   initialize (options) {
-    // TODO: work out why these date pickers don't appear
     this.template = template
     ObjectInputView.prototype.initialize.call(this, options)
-    const that = this
-    new AirDatepicker('.input-begin', _.extend({}, datepickerOptions, {
-      onSelect ({ formattedDate }) {
-        that.model.set('begin', formattedDate)
-      }
-    }))
-    new AirDatepicker('.input-end', _.extend({}, datepickerOptions, {
-      onSelect ({ formattedDate }) {
-        that.model.set('end', formattedDate)
-      }
-    }))
+  },
+
+  render () {
+    ObjectInputView.prototype.render.call(this)
+    new AirDatepicker(this.$('#input-begin')[0], {
+      ...datepickerOptions,
+      onSelect: ({ formattedDate }) => this.model.set('begin', formattedDate)
+    })
+    new AirDatepicker(this.$('#input-end')[0], {
+      ...datepickerOptions,
+      onSelect: ({ formattedDate }) => this.model.set('end', formattedDate)
+    })
   }
 })

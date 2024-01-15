@@ -4,7 +4,6 @@ import SingleView from '../SingleView'
 import ChildView from './ChildView'
 import template from '../templates/Parent'
 import { Positionable } from '../collections'
-import 'jquery-ui/ui/widgets/sortable'
 
 export default SingleView.extend({
 
@@ -42,7 +41,7 @@ export default SingleView.extend({
     const that = this
     $(document).ready(function () {
       that.$('.existing').append(view.el)
-      if (that.data.disabled !== 'disabled') {
+      if (that.data.disabled !== 'disabled' && that.data.modelAttribute !== 'boundingBoxes') {
         that.$('.existing').sortable({
           animation: 150,
           start: (event, ui) => {

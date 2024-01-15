@@ -12,7 +12,7 @@ export default ObjectInputView.extend({
 
     this.$('.autocomplete').autocomplete({
       minLength: 2,
-      source (request, response) {
+      source: (request, response) => {
         let query
         const term = request.term.trim()
         if (_.isEmpty(term)) {
@@ -27,6 +27,18 @@ export default ObjectInputView.extend({
           identifier: d.identifier,
           type: d.resourceType
         }))))
+      },
+      select: (event, ui) => {
+        this.model.set('identifier', ui.item.identifier)
+        this.$('.identifier').val(ui.item.identifier)
+        this.model.set('href', `${window.location.origin}/id/${ui.item.identifier}`)
+        this.$('.href').val(`${window.location.origin}/id/${ui.item.identifier}`)
+        this.model.set('associationType', ui.item.type)
+        this.$('.associationType').val(ui.item.type)
+        this.model.set('title', ui.item.label)
+        this.$('.title').val(ui.item.label)
+        this.$('.relationshipSearch').addClass('hidden')
+        this.$('.relationshipRecord').removeClass('hidden')
       }
     })
 
@@ -35,19 +47,6 @@ export default ObjectInputView.extend({
       this.$('.relationshipSearch').addClass('hidden')
       this.$('.relationshipRecord').removeClass('hidden')
     }
-
-    this.$('.autocomplete').on('autocompleteselect', (event, ui) => {
-      this.model.set('identifier', ui.item.identifier)
-      this.$('.identifier').val(ui.item.identifier)
-      this.model.set('href', `${window.location.origin}/id/${ui.item.identifier}`)
-      this.$('.href').val(`${window.location.origin}/id/${ui.item.identifier}`)
-      this.model.set('associationType', ui.item.type)
-      this.$('.associationType').val(ui.item.type)
-      this.model.set('title', ui.item.label)
-      this.$('.title').val(ui.item.label)
-      this.$('.relationshipSearch').addClass('hidden')
-      this.$('.relationshipRecord').removeClass('hidden')
-    })
   },
 
   render () {

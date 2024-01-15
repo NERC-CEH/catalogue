@@ -1,6 +1,5 @@
 import Backbone from 'backbone'
 import { Positionable } from '../collections'
-import 'jquery-ui/ui/widgets/sortable'
 
 export const NestedModel = Backbone.Model.extend({
 
