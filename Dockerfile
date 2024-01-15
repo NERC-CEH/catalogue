@@ -12,9 +12,9 @@ RUN npm run build-prod
 # Build Java
 FROM gradle:8.2-jdk17-alpine AS build-java
 WORKDIR /app
-COPY --chown=gradle:gradle java/src src/
 COPY --chown=gradle:gradle java/build.gradle .
 COPY --chown=gradle:gradle java/lombok.config .
+COPY --chown=gradle:gradle java/src src/
 RUN gradle bootJar
 WORKDIR build/libs
 RUN java -Djarmode=layertools -jar app.jar extract
