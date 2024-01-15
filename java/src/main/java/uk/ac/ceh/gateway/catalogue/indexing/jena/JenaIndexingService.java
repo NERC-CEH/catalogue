@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.indexing.jena;
 import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ParameterizedSparqlString;
 import org.apache.jena.query.ReadWrite;
@@ -62,11 +63,12 @@ public class JenaIndexingService extends AbstractIndexingService<MetadataDocumen
 
     @Override
     protected boolean canIndex(MetadataDocument doc) {
-        log.debug("can index? {}", doc.getId());
         if (doc == null) {
             return false;
         }
-        return !(doc instanceof ServiceAgreement);
+        val result = !(doc instanceof ServiceAgreement);
+        log.debug("can index {}? {}", doc.getId(), result);
+        return result;
     }
 
     @Override
@@ -91,13 +93,10 @@ public class JenaIndexingService extends AbstractIndexingService<MetadataDocumen
                 })
                 .map(document -> {
                     //Remove any triples where this document uri is the subject
-                    ParameterizedSparqlString pss = new ParameterizedSparqlString("DELETE WHERE { ?id ?p ?o }");
-                    pss.setParam(
-                        "id",
-                        ResourceFactory.createResource(
-                            documentIdentifierService.generateUri(document)
-                        )
-                    );
+                    val pss = new ParameterizedSparqlString("DELETE WHERE { ?id ?p ?o }");
+                    val uri = documentIdentifierService.generateUri(document);
+                    log.debug("Removing triples for {}", uri);
+                    pss.setParam("id", ResourceFactory.createResource(uri));
                     return pss;
                 })
                 .forEach((pss) -> UpdateExecutionFactory.create(pss.asUpdate(), jenaTdb).execute());
