@@ -1,28 +1,90 @@
-<subjects>
-  <#list allKeywords as keyword>
+<#-- KEYWORDS -->
+  <#assign allKeywords= []>
 
-    <#-- Assign a subject scheme-->
-    <#if keyword.uri?has_content>
-      <#if keyword.uri?matches("^http[s]?://inspire.ec.europa.eu/\\S+$")>
-        <#assign subjectScheme="European Union INSPIRE registry" schemeURI="http://inspire.ec.europa.eu/registry/">
-      <#elseif keyword.uri?matches("^http[s]?://www.wikidata.org/entity/\\S+$")>
-        <#assign subjectScheme="Wikidata" schemeURI="https://www.wikidata.org/">
-      <#elseif keyword.uri?matches("^http[s]?://sws.geonames.org/\\S+$")>
-        <#assign subjectScheme="Geonames" schemeURI="http://www.geonames.org/">
-      <#elseif keyword.uri?matches("^http[s]?://www.eionet.europa.eu/gemet/concept/\\S+$")>
-        <#assign subjectScheme="GEMET concepts" schemeURI="https://www.eionet.europa.eu/gemet/">
-      <#else>
-        <#assign subjectScheme="" schemeURI="">
-      </#if> 
-    </#if>
+  <#if doc.descriptiveKeywords?has_content>
+    <#list doc.descriptiveKeywords as descriptiveKeyword>
+      <#list descriptiveKeyword.keywords as keyword>
+        <#assign allKeywords = allKeywords + [keyword]>
+      </#list>
+    </#list>
+  </#if>
 
-    <#if keyword.value?has_content>
-      <#if keyword.uri?has_content>
-        <subject valueURI="${keyword.uri?trim}" <#if subjectScheme?has_content>subjectScheme="${subjectScheme}"</#if> <#if schemeURI?has_content>schemeURI="${schemeURI}"</#if>>${keyword.value}</subject>
-      <#else>
-        <subject>${keyword.value?trim}</subject>
-      </#if>
+  <#if doc.keywords_theme?has_content>
+    <#list doc.keywords_theme as keyword>
+        <#assign allKeywords = allKeywords + [keyword]>
+    </#list>
+  </#if>
+  <#if doc.keywords_observedProperty?has_content>
+    <#list doc.keywords_observedProperty as keyword>
+        <#assign allKeywords = allKeywords + [keyword]>
+    </#list>
+  </#if>
+  <#if doc.keywords_instrument?has_content>
+    <#list doc.keywords_instrument as keyword>
+        <#assign allKeywords = allKeywords + [keyword]>
+    </#list>
+  </#if>
+  <#if doc.keywords_discipline?has_content>
+    <#list doc.keywords_discipline as keyword>
+        <#assign allKeywords = allKeywords + [keyword]>
+    </#list>
+  </#if>
+  <#if doc.keywords_place?has_content>
+    <#list doc.keywords_place as keyword>
+        <#assign allKeywords = allKeywords + [keyword]>
+    </#list>
+  </#if>
+  <#if doc.keywords_project?has_content>
+    <#list doc.keywords_project as keyword>
+        <#assign allKeywords = allKeywords + [keyword]>
+    </#list>
+  </#if>
+  <#if doc.keywords_other?has_content>
+    <#list doc.keywords_other as keyword>
+        <#assign allKeywords = allKeywords + [keyword]>
+    </#list>
+  </#if>
+
+  <#--DE-DUPLICATE KEYWORD LIST -->
+  <#assign deDup = [] />
+  <#list allKeywords as originalList>
+    <#if ! deDup?seq_contains(originalList)>
+      <#assign deDup = deDup + [originalList] />
     </#if>
   </#list>
+  <#assign allKeywords = deDup />
+<#--END KEYWORDS -->
+  
+  
+<#if allKeywords?has_content>
 
-</subjects>
+  <subjects>
+    <#list allKeywords as keyword>
+
+      <#-- Assign a subject scheme-->
+      <#if keyword.uri?has_content>
+        <#if keyword.uri?matches("^http[s]?://inspire.ec.europa.eu/\\S+$")>
+          <#assign subjectScheme="European Union INSPIRE registry" schemeURI="http://inspire.ec.europa.eu/registry/">
+        <#elseif keyword.uri?matches("^http[s]?://www.wikidata.org/entity/\\S+$")>
+          <#assign subjectScheme="Wikidata" schemeURI="https://www.wikidata.org/">
+        <#elseif keyword.uri?matches("^http[s]?://sws.geonames.org/\\S+$")>
+          <#assign subjectScheme="Geonames" schemeURI="http://www.geonames.org/">
+        <#elseif keyword.uri?matches("^http[s]?://www.eionet.europa.eu/gemet/concept/\\S+$")>
+          <#assign subjectScheme="GEMET concepts" schemeURI="https://www.eionet.europa.eu/gemet/">
+        <#else>
+          <#assign subjectScheme="" schemeURI="">
+        </#if> 
+      </#if>
+
+      <#if keyword.value?has_content>
+        <#if keyword.uri?has_content>
+          <subject valueURI="${keyword.uri?trim}" <#if subjectScheme?has_content>subjectScheme="${subjectScheme}"</#if> <#if schemeURI?has_content>schemeURI="${schemeURI}"</#if>>${keyword.value}</subject>
+        <#else>
+          <subject>${keyword.value?trim}</subject>
+        </#if>
+      </#if>
+    </#list>
+  </subjects>
+<#else>
+  <!--  ARSE -->
+</#if>

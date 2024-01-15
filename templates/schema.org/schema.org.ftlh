@@ -96,7 +96,7 @@
         <#assign deDup = deDup + [originalList] />
     </#if>
   </#list>
-  <#assign allKeywords = deDup?sort_by("uri")?sort_by("value") />
+  <#assign allKeywords = deDup?sort_by("value")?sort_by("uri") />
 <#-- END KEYWORD LIST--->
 
 
