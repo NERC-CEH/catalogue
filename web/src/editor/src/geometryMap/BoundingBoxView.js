@@ -31,6 +31,14 @@ export default ObjectInputView.extend({
     this.listenTo(this.model.collection, 'visible', this.viewMap)
   },
 
+  remove () {
+    // This overrides the remove() with an empty method
+    // Somehow the method stack beneath the overridden remove() causes an undefined string to be sent a str.trim() method in leaflet-src.js.
+    // The leaflet library doesn't check for undefined and throws an exception that prevents the model.collection's change event being triggered
+    // This override gets around that
+    // For more info see https://github.com/Leaflet/Leaflet/issues/4422
+  },
+
   createMap () {
     const baseMaps = {
       Map: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {

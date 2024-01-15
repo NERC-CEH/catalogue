@@ -3,7 +3,6 @@ import $ from 'jquery'
 import ParentLargeView from './ParentLargeView'
 import template from '../templates/PredefinedParent'
 import dropdownTemplate from '../templates/PredefinedParentDropdown'
-import 'jquery-ui'
 
 export default ParentLargeView.extend({
 

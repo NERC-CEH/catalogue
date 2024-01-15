@@ -16,14 +16,14 @@ import {
   LinkEditorView,
   ModelEditorView,
   MonitoringEditorView,
+  MonitoringActivityEditorView,
+  MonitoringFacilityEditorView,
+  MonitoringProgrammeEditorView,
   NercModelEditorView,
   NercModelUseEditorView,
   OsdpAgentEditorView,
   OsdpDatasetEditorView,
   OsdpModelEditorView,
-  OsdpMonitoringActivityEditorView,
-  OsdpMonitoringFacilityEditorView,
-  OsdpMonitoringProgrammeEditorView,
   OsdpPublicationEditorView,
   OsdpSampleEditorView,
   SampleArchiveEditorView, ServiceAgreementEditorView, UkemsDocumentEditorView
@@ -133,6 +133,21 @@ function initEditor () {
       Model: LinkEditorMetadata,
       mediaType: 'application/link+json'
     },
+    'monitoring-activity': {
+      View: MonitoringActivityEditorView,
+      Model: EditorMetadata,
+      mediaType: 'application/vnd.monitoring-activity+json'
+    },
+    'monitoring-programme': {
+      View: MonitoringProgrammeEditorView,
+      Model: EditorMetadata,
+      mediaType: 'application/vnd.monitoring-programme+json'
+    },
+    'monitoring-facility': {
+      View: MonitoringFacilityEditorView,
+      Model: EditorMetadata,
+      mediaType: 'application/vnd.monitoring-facility+json'
+    },
     'osdp-agent': {
       View: OsdpAgentEditorView,
       Model: EditorMetadata,
@@ -157,21 +172,6 @@ function initEditor () {
       View: OsdpPublicationEditorView,
       Model: EditorMetadata,
       mediaType: 'application/vnd.osdp.publication+json'
-    },
-    'osdp-monitoring-activity': {
-      View: OsdpMonitoringActivityEditorView,
-      Model: EditorMetadata,
-      mediaType: 'application/vnd.osdp.monitoring-activity+json'
-    },
-    'osdp-monitoring-programme': {
-      View: OsdpMonitoringProgrammeEditorView,
-      Model: EditorMetadata,
-      mediaType: 'application/vnd.osdp.monitoring-programme+json'
-    },
-    'osdp-monitoring-facility': {
-      View: OsdpMonitoringFacilityEditorView,
-      Model: EditorMetadata,
-      mediaType: 'application/vnd.osdp.monitoring-facility+json'
     },
     'sample-archive': {
       View: SampleArchiveEditorView,

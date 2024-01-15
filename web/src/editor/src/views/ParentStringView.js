@@ -4,7 +4,6 @@ import SingleView from '../SingleView'
 import parentTemplate from '../templates/Parent'
 import childTemplate from '../templates/MultiString'
 import template from '../templates/ChildLarge'
-import 'jquery-ui/ui/widgets/sortable'
 
 export default SingleView.extend({
 
@@ -27,17 +26,6 @@ export default SingleView.extend({
     SingleView.prototype.initialize.call(this, options)
     this.array = this.model.has(this.data.modelAttribute) ? _.clone(this.model.get(this.data.modelAttribute)) : []
     this.render()
-
-    this.$('.existing').sortable({
-      start: (event, ui) => {
-        this._oldPosition = ui.item.index()
-      },
-      update: (event, ui) => {
-        const toMove = (this.array.splice(this._oldPosition, 1))[0]
-        this.array.splice(ui.item.index(), 0, toMove)
-        this.updateModel()
-      }
-    })
   },
 
   renderParent () {

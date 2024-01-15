@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.*;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringActivity;
+import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
+import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
 import uk.ac.ceh.gateway.catalogue.osdp.*;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
@@ -127,7 +130,7 @@ public class OsdpDocumentController extends AbstractDocumentController {
     @PreAuthorize("@permission.userCanCreate(#catalogue)")
     @RequestMapping (value = "documents",
         method = RequestMethod.POST,
-        consumes = OSDP_MONITORING_ACTIVITY_JSON_VALUE)
+        consumes = MONITORING_ACTIVITY_JSON_VALUE)
     public ResponseEntity<MetadataDocument> newMonitoringActivity(
         @ActiveUser CatalogueUser user,
         @RequestBody MonitoringActivity document,
@@ -137,14 +140,14 @@ public class OsdpDocumentController extends AbstractDocumentController {
             user,
             document,
             catalogue,
-            "new OSDP Monitoring Activity"
+            "new Monitoring activity"
         );
     }
 
     @PreAuthorize("@permission.userCanEdit(#file)")
     @RequestMapping(value = "documents/{file}",
         method = RequestMethod.PUT,
-        consumes = OSDP_MONITORING_ACTIVITY_JSON_VALUE)
+        consumes = MONITORING_ACTIVITY_JSON_VALUE)
     public ResponseEntity<MetadataDocument> updateMonitoringActivity(
         @ActiveUser CatalogueUser user,
         @PathVariable("file") String file,
@@ -160,7 +163,7 @@ public class OsdpDocumentController extends AbstractDocumentController {
     @PreAuthorize("@permission.userCanCreate(#catalogue)")
     @RequestMapping (value = "documents",
         method = RequestMethod.POST,
-        consumes = OSDP_MONITORING_FACILITY_JSON_VALUE)
+        consumes = MONITORING_FACILITY_JSON_VALUE)
     public ResponseEntity<MetadataDocument> newMonitoringFacility(
         @ActiveUser CatalogueUser user,
         @RequestBody MonitoringFacility document,
@@ -170,14 +173,14 @@ public class OsdpDocumentController extends AbstractDocumentController {
             user,
             document,
             catalogue,
-            "new OSDP Monitoring Facility"
+            "new Monitoring facility"
         );
     }
 
     @PreAuthorize("@permission.userCanEdit(#file)")
     @RequestMapping(value = "documents/{file}",
         method = RequestMethod.PUT,
-        consumes = OSDP_MONITORING_FACILITY_JSON_VALUE)
+        consumes = MONITORING_FACILITY_JSON_VALUE)
     public ResponseEntity<MetadataDocument> updateMonitoringFacility(
         @ActiveUser CatalogueUser user,
         @PathVariable("file") String file,
@@ -193,7 +196,7 @@ public class OsdpDocumentController extends AbstractDocumentController {
     @PreAuthorize("@permission.userCanCreate(#catalogue)")
     @RequestMapping (value = "documents",
         method = RequestMethod.POST,
-        consumes = OSDP_MONITORING_PROGRAMME_JSON_VALUE)
+        consumes = MONITORING_PROGRAMME_JSON_VALUE)
     public ResponseEntity<MetadataDocument> newMonitoringProgramme(
         @ActiveUser CatalogueUser user,
         @RequestBody MonitoringProgramme document,
@@ -203,14 +206,14 @@ public class OsdpDocumentController extends AbstractDocumentController {
             user,
             document,
             catalogue,
-            "new OSDP Monitoring Programme"
+            "new Monitoring programme"
         );
     }
 
     @PreAuthorize("@permission.userCanEdit(#file)")
     @RequestMapping(value = "documents/{file}",
         method = RequestMethod.PUT,
-        consumes = OSDP_MONITORING_PROGRAMME_JSON_VALUE)
+        consumes = MONITORING_PROGRAMME_JSON_VALUE)
     public ResponseEntity<MetadataDocument> updateMonitoringProgramme(
         @ActiveUser CatalogueUser user,
         @PathVariable("file") String file,
