@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
   @Template(called="html/infrastructure/infrastructurerecord.ftlh", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
 })
 public class InfrastructureRecord extends AbstractMetadataDocument {
-  
+
   private String capabilities, lifecycle, uniqueness, partners, locationText, access, userCosts, fundingSources, scienceArea, infrastructureScale ;
 
   private InfrastructureCategory infrastructureCategory;

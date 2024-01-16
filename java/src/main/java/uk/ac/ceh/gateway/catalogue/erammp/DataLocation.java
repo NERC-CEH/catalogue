@@ -11,7 +11,7 @@ import lombok.Value;
 @Value
 public class DataLocation {
     private final String uid, name, fileLocation, purpose;
-    
+
     @Builder
     @JsonCreator
     private DataLocation(

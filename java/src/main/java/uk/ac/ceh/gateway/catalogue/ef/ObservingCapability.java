@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
     "process"
 })
 public class ObservingCapability {
-    private Link 
+    private Link
         domain,
         phenomenon,
         process,

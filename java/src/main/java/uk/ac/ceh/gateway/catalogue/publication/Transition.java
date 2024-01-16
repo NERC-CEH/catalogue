@@ -8,7 +8,7 @@ import lombok.Builder;
 public class Transition {
     private final State toState;
     private final String id, title, helpText;
-    
+
     public static Transition UNKNOWN_TRANSITION = Transition.builder()
                                         .toState(State.UNKNOWN_STATE)
                                         .id("fi7tap")

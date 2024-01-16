@@ -31,13 +31,13 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
     private Keyword dataCategory;
 
     private List<File> files;
-   
+
     private List<SupportingDoc> supportingDocs;
 
     private ResourceConstraint endUserLicence;
-   
+
     private List<ResponsibleParty> ownersOfIpr;
-    
+
     private List<Keyword> allKeywords;
 
     private List<DescriptiveKeywords> descriptiveKeywords;

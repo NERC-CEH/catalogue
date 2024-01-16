@@ -37,11 +37,11 @@ public class DataTypeSchema {
     public static class Constraints {
         private final String minimum, maximum, minLength, maxLength;
         private final boolean unique;
-        
+
         @Builder
         @JsonCreator
         private Constraints(
-            @JsonProperty("minimum") String minimum, 
+            @JsonProperty("minimum") String minimum,
             @JsonProperty("maximum") String maximum,
             @JsonProperty("minLength") String minLength,
             @JsonProperty("maxLength") String maxLength,
@@ -53,5 +53,5 @@ public class DataTypeSchema {
             this.unique = unique;
         }
 
-    }     
+    }
 }

@@ -51,7 +51,7 @@ public class NercModel extends AbstractMetadataDocument implements WellKnownText
 
     private List<String>
         organisations;
-    
+
     private List<OnlineLink> onlineResources;
     private List<Supplemental> references;
     private List<ResponsibleParty> responsibleParties;

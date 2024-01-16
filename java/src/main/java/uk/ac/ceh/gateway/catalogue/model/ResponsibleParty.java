@@ -12,7 +12,7 @@ import lombok.Builder;
 public class ResponsibleParty {
     private final String individualName, organisationName, organisationIdentifier, role, email, phone, nameIdentifier;
     private final Address address;
-    
+
     @Builder
     @JsonCreator
     private ResponsibleParty(
@@ -31,13 +31,13 @@ public class ResponsibleParty {
         this.email = nullToEmpty(email);
         this.phone = nullToEmpty(phone);
         this.nameIdentifier = nullToEmpty(nameIdentifier);
-        this.address = (address == null || address.isEmpty()) ? null : address;    
+        this.address = (address == null || address.isEmpty()) ? null : address;
     }
-    
+
     public String getRoleDisplayName() {
         return toTitlecase(role);
     }
-    
+
     private String toTitlecase(String camelCase) {
         StringBuilder result = new StringBuilder();
 
@@ -66,16 +66,16 @@ public class ResponsibleParty {
         }
         return result.toString();
     }
-    
+
     @Value
     @JsonIgnoreProperties({"empty"})
     public static class Address {
         private final String deliveryPoint, city, administrativeArea, postalCode, country;
-        
+
         @Builder
         @JsonCreator
         private Address(
-            @JsonProperty("deliveryPoint") String deliveryPoint, 
+            @JsonProperty("deliveryPoint") String deliveryPoint,
             @JsonProperty("city") String city,
             @JsonProperty("administrativeArea") String administrativeArea,
             @JsonProperty("postalCode") String postalCode,
@@ -86,7 +86,7 @@ public class ResponsibleParty {
             this.postalCode = nullToEmpty(postalCode);
             this.country = nullToEmpty(country);
         }
-        
+
         public boolean isEmpty() {
             return deliveryPoint.isEmpty() && city.isEmpty() && administrativeArea.isEmpty() && postalCode.isEmpty() && country.isEmpty();
         }

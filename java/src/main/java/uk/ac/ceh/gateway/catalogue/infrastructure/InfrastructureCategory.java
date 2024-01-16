@@ -13,7 +13,7 @@ public class InfrastructureCategory {
     @Builder
     @JsonCreator
     public InfrastructureCategory(
-        @JsonProperty("value") String value, 
+        @JsonProperty("value") String value,
         @JsonProperty("description") String description,
         @JsonProperty("infrastructureClass") String infrastructureClass,
         @JsonProperty("uri") String uri){

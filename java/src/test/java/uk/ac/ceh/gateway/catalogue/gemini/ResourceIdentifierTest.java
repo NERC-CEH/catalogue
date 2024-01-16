@@ -15,15 +15,15 @@ public class ResourceIdentifierTest {
                                         .codeSpace("CEH:EIDC:")
                                         .build();
         String expected = "CEH:EIDC:#1230549234";
-        
+
         //When
         String actual = identifier.getCoupledResource();
-        
+
         //Then
         assertThat("actual coupled resource string should equal expected", actual, equalTo(expected));
         assertThat("internal CIG record should be true", identifier.isInternal(), equalTo(true));
-    }  
-    
+    }
+
     @Test
     public void getDoiCoupleResource() {
         //Given
@@ -32,10 +32,10 @@ public class ResourceIdentifierTest {
                                         .codeSpace("doi:")
                                         .build();
         String expected = "doi:10.5285/05e5d538-6be7-476d-9141-76d9328738a4";
-        
+
         //When
         String actual = identifier.getCoupledResource();
-        
+
         //Then
         assertThat("actual coupled resource string should equal expected", actual, equalTo(expected));
         assertThat("other identifier is not an internal identifier", identifier.isInternal(), equalTo(false));

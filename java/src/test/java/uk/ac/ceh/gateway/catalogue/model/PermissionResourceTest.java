@@ -27,11 +27,11 @@ public class PermissionResourceTest {
         Set<IdentityPermissions> expected = new HashSet<>();
         expected.add(IdentityPermissions.builder().identity("public").canView(true).build());
         expected.add(IdentityPermissions.builder().identity("test").canView(true).canEdit(true).canDelete(true).build());
-        
+
         //When
         Set<IdentityPermissions> actual = resource.getPermissions();
-        
+
         //Then
         assertThat("Actual permissions should equal expected", actual, equalTo(expected));
-    }   
+    }
 }
