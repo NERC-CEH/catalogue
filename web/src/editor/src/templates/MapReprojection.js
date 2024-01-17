@@ -6,7 +6,7 @@ export default _.template(`
     <label class="control-label">EPSG:</label>
   </div>
   <div class="col-sm-2 col-lg-2">
-    <div class="input-group"> 
+    <div class="input-group">
       <input data-name='epsgCode' class="editor-input" value="<%= data.epsgCode %>"  <%= data.disabled%>>
       <span class="input-group-btn">
         <button class="editor-button-xs remove" type="button"  <%= data.disabled%>><span class="fa-solid fa-times" aria-hidden="true"></span></button>

@@ -3,9 +3,9 @@ import Backbone from 'backbone'
 import { MessageListView } from '../src/Message'
 describe('Test MessageListView', function () {
   const template =
-    `<div> 
-<div id="messages-tools"></div> 
-<ul id="messages-list"></ul> 
+    `<div>
+<div id="messages-tools"></div>
+<ul id="messages-list"></ul>
 </div>`
   let el = null
   let messages = null

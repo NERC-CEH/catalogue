@@ -9,7 +9,7 @@ export default _.template(`
     <input data-name='name' class="editor-input" id="supplemental<%= data.index %>Name" value="<%= data.name %>">
   </div>
 </div>
-<div class="row">  
+<div class="row">
   <div class="col-sm-2">
     <label class="control-label" for="supplemental<%= data.index %>Description">Description</label>
   </div>

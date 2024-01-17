@@ -126,7 +126,7 @@ const messages = {
   CHANGED_MTIME: {
     title: 'Detected a possible file change',
     content: `\
-THIS FILE MAY HAVE CHANGED. 
+THIS FILE MAY HAVE CHANGED.
 Please VALIDATE to ensure the file has not been altered or corrupted\
 `
   },

@@ -4,9 +4,9 @@ import { FileListView, FileCollection } from '../src/File'
 
 describe('Test FileListView', function () {
   const template =
-    `<div> 
-      <div id="files-tools"></div> 
-      <ul id="files-list"></ul> 
+    `<div>
+      <div id="files-tools"></div>
+      <ul id="files-list"></ul>
     </div>`
   let el = null
   let files = null

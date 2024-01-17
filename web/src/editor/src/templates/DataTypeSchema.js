@@ -88,7 +88,7 @@ export default _.template(`
     </div>
     <div class="col-sm-10">
         <label class="radio-inline">
-          <input type="radio" data-name="unique" name="schema-unique<%= data.index %>" value="true" <% if (data.constraints.unique == true) { %> checked="checked" <% } %> /> Yes 
+          <input type="radio" data-name="unique" name="schema-unique<%= data.index %>" value="true" <% if (data.constraints.unique == true) { %> checked="checked" <% } %> /> Yes
         </label>
         <label class="radio-inline">
           <input type="radio" data-name="unique" name="schema-unique<%= data.index %>" value="false" <% if (data.constraints.unique == false) { %> checked="checked" <% } %> />No

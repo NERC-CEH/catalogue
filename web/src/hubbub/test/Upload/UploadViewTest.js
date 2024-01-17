@@ -48,7 +48,7 @@ describe('UploadView', function () {
             <div class="document-upload">
                 <div class="dropzone-container">
                     <div class="dropzone-files"><div>
-                    <button class="fileinput-button"></button>    
+                    <button class="fileinput-button"></button>
                 </div>
                 <div class="datastore-files"></div>
                 <div class="data-files"></div>

@@ -9,7 +9,7 @@ export default _.template(`
     <input placeholder='(e.g. NERC)' data-name='funderName' class="editor-input" id="funding<%= data.index %>FunderName" value="<%= data.funderName %>">
   </div>
 </div>
-<div class="row">  
+<div class="row">
   <div class="col-sm-2">
     <label class="control-label" for="funding<%= data.index %>FunderIdentifier">Funding body ID</label>
   </div>
