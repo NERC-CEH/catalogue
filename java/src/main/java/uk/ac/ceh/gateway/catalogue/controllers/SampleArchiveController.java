@@ -19,22 +19,22 @@ import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.SAMPLE_ARCHIVE_JSO
 @Controller
 public class SampleArchiveController extends AbstractDocumentController {
 
-  public SampleArchiveController(DocumentRepository documentRepository) {
-    super(documentRepository);
-    log.info("Creating {}", this);
-  }
+    public SampleArchiveController(DocumentRepository documentRepository) {
+        super(documentRepository);
+        log.info("Creating {}", this);
+    }
 
-  @PreAuthorize("@permission.userCanCreate(#catalogue)")
-  @RequestMapping(value = "documents", method = RequestMethod.POST, consumes = SAMPLE_ARCHIVE_JSON_VALUE)
-  public ResponseEntity<MetadataDocument> newSampleArchive(@ActiveUser CatalogueUser user, @RequestBody SampleArchive document,
-      @RequestParam("catalogue") String catalogue) {
-    return saveNewMetadataDocument(user, document, catalogue, "new Sample Archive");
-  }
+    @PreAuthorize("@permission.userCanCreate(#catalogue)")
+    @RequestMapping(value = "documents", method = RequestMethod.POST, consumes = SAMPLE_ARCHIVE_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> newSampleArchive(@ActiveUser CatalogueUser user, @RequestBody SampleArchive document,
+            @RequestParam("catalogue") String catalogue) {
+        return saveNewMetadataDocument(user, document, catalogue, "new Sample Archive");
+    }
 
-  @PreAuthorize("@permission.userCanEdit(#file)")
-  @RequestMapping(value = "documents/{file}", method = RequestMethod.PUT, consumes = SAMPLE_ARCHIVE_JSON_VALUE)
-  public ResponseEntity<MetadataDocument> updateSampleArchive(@ActiveUser CatalogueUser user, @PathVariable("file") String file,
-      @RequestBody SampleArchive document) {
-    return saveMetadataDocument(user, file, document);
-  }
+    @PreAuthorize("@permission.userCanEdit(#file)")
+    @RequestMapping(value = "documents/{file}", method = RequestMethod.PUT, consumes = SAMPLE_ARCHIVE_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> updateSampleArchive(@ActiveUser CatalogueUser user, @PathVariable("file") String file,
+            @RequestBody SampleArchive document) {
+        return saveMetadataDocument(user, file, document);
+    }
 }

@@ -137,7 +137,7 @@ public class ServiceAgreementQualityServiceTest {
         verify(documentReader).read(FOLDER + "test0", "meta");
     }
 
-     @Test
+    @Test
     public void checkAuthorCorrect() {
         //given
         val parsed = JsonPath.parse(getClass().getResourceAsStream("authorsRight.json"), this.config);

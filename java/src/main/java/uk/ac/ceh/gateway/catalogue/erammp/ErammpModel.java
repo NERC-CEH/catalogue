@@ -25,25 +25,25 @@ import java.util.stream.Collectors;
 @ToString(callSuper = true)
 @Accessors(chain = true)
 @ConvertUsing({
-  @Template(called="html/erammp/erammp_model.ftlh", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
+    @Template(called="html/erammp/erammp_model.ftlh", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
 })
 public class ErammpModel extends AbstractMetadataDocument implements WellKnownText {
-  private String modelApproach, version, ipr, spatialResolution, runtimeTotal, runtimeWales, runtimeOptimisation, calibrationEffort, futureRun, integrationExperience, integrationHistory;
-  private List<Keyword> keywords;
-  private List<BoundingBox> boundingBoxes;
-  private List<String> outputFormats, sectors, programmingLanguages, operatingSystems, timeSteps;
-  private List<ResponsibleParty> contacts;
-  private List<OnlineLink> onlineResources;
-  private List<ErammpModelParameters> inputs;
-  private List<ErammpModelParameters> outputs;
-  private boolean spatiallyExplicit, calibratedForWales;
+    private String modelApproach, version, ipr, spatialResolution, runtimeTotal, runtimeWales, runtimeOptimisation, calibrationEffort, futureRun, integrationExperience, integrationHistory;
+    private List<Keyword> keywords;
+    private List<BoundingBox> boundingBoxes;
+    private List<String> outputFormats, sectors, programmingLanguages, operatingSystems, timeSteps;
+    private List<ResponsibleParty> contacts;
+    private List<OnlineLink> onlineResources;
+    private List<ErammpModelParameters> inputs;
+    private List<ErammpModelParameters> outputs;
+    private boolean spatiallyExplicit, calibratedForWales;
 
-  @Override
-  public @NonNull List<String> getWKTs() {
-    return Optional.ofNullable(boundingBoxes)
-        .orElse(Collections.emptyList())
-        .stream()
-        .map(BoundingBox::getWkt)
-        .collect(Collectors.toList());
-  }
+    @Override
+    public @NonNull List<String> getWKTs() {
+        return Optional.ofNullable(boundingBoxes)
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(BoundingBox::getWkt)
+                .collect(Collectors.toList());
+    }
 }

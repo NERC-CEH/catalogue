@@ -21,50 +21,50 @@ import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.*;
 @RequestMapping("documents")
 public class NercModelController extends AbstractDocumentController {
 
-  public NercModelController(DocumentRepository documentRepository) {
-    super(documentRepository);
-    log.info("Creating");
-  }
+    public NercModelController(DocumentRepository documentRepository) {
+        super(documentRepository);
+        log.info("Creating");
+    }
 
-  @PreAuthorize("@permission.userCanCreate(#catalogue)")
-  @PostMapping(consumes = NERC_MODEL_JSON_VALUE)
-  public ResponseEntity<MetadataDocument> newNercModel(
-      @ActiveUser CatalogueUser user,
-      @RequestBody NercModel document,
-      @RequestParam("catalogue") String catalogue
-  ) {
-    return saveNewMetadataDocument(user, document, catalogue, "new Model");
-  }
+    @PreAuthorize("@permission.userCanCreate(#catalogue)")
+    @PostMapping(consumes = NERC_MODEL_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> newNercModel(
+            @ActiveUser CatalogueUser user,
+            @RequestBody NercModel document,
+            @RequestParam("catalogue") String catalogue
+    ) {
+        return saveNewMetadataDocument(user, document, catalogue, "new Model");
+    }
 
-  @PreAuthorize("@permission.userCanEdit(#file)")
-  @PutMapping(value = "{file}", consumes = NERC_MODEL_JSON_VALUE)
-  public ResponseEntity<MetadataDocument> updateNercModel(
-      @ActiveUser CatalogueUser user,
-      @PathVariable("file") String file,
-      @RequestBody NercModel document
-  ) {
-    return saveMetadataDocument(user, file, document);
-  }
+    @PreAuthorize("@permission.userCanEdit(#file)")
+    @PutMapping(value = "{file}", consumes = NERC_MODEL_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> updateNercModel(
+            @ActiveUser CatalogueUser user,
+            @PathVariable("file") String file,
+            @RequestBody NercModel document
+    ) {
+        return saveMetadataDocument(user, file, document);
+    }
 
-  @PreAuthorize("@permission.userCanCreate(#catalogue)")
-  @PostMapping(consumes = NERC_MODEL_USE_JSON_VALUE)
-  public ResponseEntity<MetadataDocument> newNercModelUse(
-      @ActiveUser CatalogueUser user,
-      @RequestBody NercModelUse document,
-      @RequestParam("catalogue") String catalogue
-  ) {
-    return saveNewMetadataDocument(user, document, catalogue, "new Model implementation (NERC)");
-  }
+    @PreAuthorize("@permission.userCanCreate(#catalogue)")
+    @PostMapping(consumes = NERC_MODEL_USE_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> newNercModelUse(
+            @ActiveUser CatalogueUser user,
+            @RequestBody NercModelUse document,
+            @RequestParam("catalogue") String catalogue
+    ) {
+        return saveNewMetadataDocument(user, document, catalogue, "new Model implementation (NERC)");
+    }
 
-  @PreAuthorize("@permission.userCanEdit(#file)")
-  @PutMapping(value = "{file}", consumes = NERC_MODEL_USE_JSON_VALUE)
-  public ResponseEntity<MetadataDocument> updateNercModelUse(
-      @ActiveUser CatalogueUser user,
-      @PathVariable("file") String file,
-      @RequestBody NercModelUse document
-  ) {
-    return saveMetadataDocument(user, file, document);
-  }
+    @PreAuthorize("@permission.userCanEdit(#file)")
+    @PutMapping(value = "{file}", consumes = NERC_MODEL_USE_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> updateNercModelUse(
+            @ActiveUser CatalogueUser user,
+            @PathVariable("file") String file,
+            @RequestBody NercModelUse document
+    ) {
+        return saveMetadataDocument(user, file, document);
+    }
 
 
 }

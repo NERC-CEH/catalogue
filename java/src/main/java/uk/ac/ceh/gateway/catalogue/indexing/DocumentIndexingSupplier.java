@@ -12,5 +12,5 @@ package uk.ac.ceh.gateway.catalogue.indexing;
  */
 @FunctionalInterface
 public interface DocumentIndexingSupplier<T> {
-   T get() throws DocumentIndexingException;
+    T get() throws DocumentIndexingException;
 }

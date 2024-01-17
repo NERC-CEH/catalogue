@@ -23,7 +23,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * A search results object for documents
  */
 @ConvertUsing({
-    @Template(called = "/html/search.ftlh", whenRequestedAs = MediaType.TEXT_HTML_VALUE)
+        @Template(called = "/html/search.ftlh", whenRequestedAs = MediaType.TEXT_HTML_VALUE)
 })
 @Value
 @Slf4j
@@ -83,21 +83,21 @@ public class SearchResults {
     }
 
     SearchResults(
-       int numFound,
-       String term,
-       int page,
-       int rows,
-       String url,
-       String withoutBbox,
-       String intersectingBbox,
-       String withinBbox,
-       String prevPage,
-       String nextPage,
-       List<SolrIndex> results,
-       List<Facet> facets,
-       Catalogue catalogue,
-       List<Link> relatedSearches
-    ) {
+            int numFound,
+            String term,
+            int page,
+            int rows,
+            String url,
+            String withoutBbox,
+            String intersectingBbox,
+            String withinBbox,
+            String prevPage,
+            String nextPage,
+            List<SolrIndex> results,
+            List<Facet> facets,
+            Catalogue catalogue,
+            List<Link> relatedSearches
+            ) {
         this.numFound = numFound;
         this.term = term;
         this.page = page;
@@ -113,7 +113,7 @@ public class SearchResults {
         this.catalogue = catalogue;
         this.relatedSearches = relatedSearches;
         log.debug("Creating: {}", this);
-    }
+            }
 
     private long populateNumFound(QueryResponse response) {
         return Optional.ofNullable(response.getResults())
@@ -210,7 +210,7 @@ public class SearchResults {
                     .url(((active) ? query.withoutFacetFilter(filter) : query.withFacetFilter(filter)).toUrl())
                     .build();
             })
-            .collect(Collectors.toList());
+        .collect(Collectors.toList());
     }
 
     private List<FacetResult> getHierarchicalFacetResults(SearchQuery query, FacetField facetField, String prefix) {

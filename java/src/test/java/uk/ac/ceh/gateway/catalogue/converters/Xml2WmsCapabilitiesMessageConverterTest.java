@@ -37,13 +37,13 @@ public class Xml2WmsCapabilitiesMessageConverterTest {
 
         //Then
         List<String> layers = capabilities.getLayers()
-                                          .stream()
-                                          .map(Layer::getName)
-                                          .collect(Collectors.toList());
+            .stream()
+            .map(Layer::getName)
+            .collect(Collectors.toList());
 
         assertThat("Expected 3 layers", layers.size(), equalTo(3));
         assertThat("Expected three layers", layers, equalTo(Arrays.asList(
-                "Layer 1", "Layer 2", "Layer 3")));
+                        "Layer 1", "Layer 2", "Layer 3")));
     }
 
     @Test
@@ -57,13 +57,13 @@ public class Xml2WmsCapabilitiesMessageConverterTest {
 
         //Then
         List<String> layers = capabilities.getLayers()
-                                          .stream()
-                                          .map(Layer::getTitle)
-                                          .collect(Collectors.toList());
+            .stream()
+            .map(Layer::getTitle)
+            .collect(Collectors.toList());
 
         assertThat("Expected 3 layers", layers.size(), equalTo(3));
         assertThat("Expected three layers", layers, equalTo(Arrays.asList(
-                "Title 1", "Title 2", "Title 3")));
+                        "Title 1", "Title 2", "Title 3")));
     }
 
     @Test

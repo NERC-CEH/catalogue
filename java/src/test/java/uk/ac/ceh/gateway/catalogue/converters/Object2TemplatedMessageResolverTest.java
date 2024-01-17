@@ -50,17 +50,17 @@ class Object2TemplatedMessageResolverTest {
 
         //When
         Assertions.assertThrows(HttpMessageNotReadableException.class, () ->
-            converter.readInternal(Object.class, in)
-        );
+                converter.readInternal(Object.class, in)
+                );
     }
 
     @Test
     void checkSupportedMediaTypesAreRead() {
         //Given
         @ConvertUsing(
-            @Template(called="template",whenRequestedAs="application/json")
+        @Template(called="template",whenRequestedAs="application/json")
         )
-        class MyType {}
+            class MyType {}
 
         val converter = new Object2TemplatedMessageConverter<MyType>(MyType.class, configuration);
 
@@ -76,9 +76,9 @@ class Object2TemplatedMessageResolverTest {
     void checkTemplateIsCalledForProcessingOnWrite() throws IOException, TemplateException {
         //Given
         @ConvertUsing(
-            @Template(called="bob",whenRequestedAs="application/xml")
+        @Template(called="bob",whenRequestedAs="application/xml")
         )
-        class MyType {}
+            class MyType {}
 
         val message = mock(HttpOutputMessage.class, RETURNS_DEEP_STUBS);
         val out = mock(OutputStream.class);
@@ -104,10 +104,10 @@ class Object2TemplatedMessageResolverTest {
     void checkTemplateExceptionThrowsHttpNotWritableException() {
         //Given
         @ConvertUsing(
-                @Template(called = "bob", whenRequestedAs = "application/xml")
+        @Template(called = "bob", whenRequestedAs = "application/xml")
         )
-        class MyType {
-        }
+            class MyType {
+            }
 
         val message = mock(HttpOutputMessage.class, RETURNS_DEEP_STUBS);
         val out = mock(OutputStream.class);
@@ -122,24 +122,24 @@ class Object2TemplatedMessageResolverTest {
         MyType dataToProcess = new MyType();
 
         doThrow(new TemplateException("Epic failure", null))
-                .when(freemarkerTemplate)
-                .process(eq(dataToProcess), any(Writer.class));
+            .when(freemarkerTemplate)
+            .process(eq(dataToProcess), any(Writer.class));
 
         //When
         Assertions.assertThrows(HttpMessageNotWritableException.class, () ->
-            converter.writeInternal(dataToProcess, message)
-        );
+                converter.writeInternal(dataToProcess, message)
+                );
     }
 
     @Test
     void checkCanWriteAnnotatedType() {
         //Given
         @ConvertUsing(
-            @Template(called="bob",whenRequestedAs="application/xml")
+        @Template(called="bob",whenRequestedAs="application/xml")
         )
-        class MyType {}
+            class MyType {}
 
-       val converter = new Object2TemplatedMessageConverter<MyType>(MyType.class, configuration);
+        val converter = new Object2TemplatedMessageConverter<MyType>(MyType.class, configuration);
 
         //When
         boolean canWrite = converter.canWrite(MyType.class, MediaType.APPLICATION_XML);
@@ -153,9 +153,9 @@ class Object2TemplatedMessageResolverTest {
     void checkCantWriteUndefinedTypeAnnotatedType() {
         //Given
         @ConvertUsing(
-            @Template(called="bob",whenRequestedAs="application/xml")
+        @Template(called="bob",whenRequestedAs="application/xml")
         )
-        class MyType {}
+            class MyType {}
 
         val converter = new Object2TemplatedMessageConverter<MyType>(MyType.class, configuration);
 

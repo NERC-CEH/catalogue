@@ -79,14 +79,14 @@ public class MapViewerControllerTest {
     private void givenDefaultCatalogue() {
         given(catalogueService.defaultCatalogue())
             .willReturn(
-                Catalogue.builder()
+                    Catalogue.builder()
                     .id("default")
                     .title("test")
                     .url("https://example.com")
                     .contactUrl("")
                     .logo("eidc.png")
                     .build()
-            );
+                    );
     }
 
     @SneakyThrows
@@ -141,8 +141,8 @@ public class MapViewerControllerTest {
 
         //when
         mvc.perform(
-            get("/maps")
-        )
+                get("/maps")
+                )
             .andExpect(status().isOk())
             .andExpect(view().name("/html/mapviewer"));
     }
@@ -155,7 +155,7 @@ public class MapViewerControllerTest {
 
         //When
         mvc.perform(
-            get("/maps/{file}", file)
+                get("/maps/{file}", file)
                 .queryParam("SERVICE", "WMS")
                 .queryParam("VERSION", "1.3.0")
                 .queryParam("REQUEST", "GetMap")
@@ -166,7 +166,7 @@ public class MapViewerControllerTest {
                 .queryParam("WIDTH", "250")
                 .queryParam("HEIGHT", "250")
                 .queryParam("FORMAT", "image/png")
-        )
+                )
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.IMAGE_PNG));
     }
@@ -181,17 +181,17 @@ public class MapViewerControllerTest {
         //When
         mvc.perform(
                 get("/maps/{file}", file)
-                    .queryParam("service", "WMS")
-                    .queryParam("version", "1.3.0")
-                    .queryParam("request", "GetMap")
-                    .queryParam("layers", "layer0", "layer1")
-                    .queryParam("styles", "default")
-                    .queryParam("crs", "EPSG:27700")
-                    .queryParam("bbox", "-145.15,21.73,-57.15,58.96")
-                    .queryParam("width", "250")
-                    .queryParam("height", "250")
-                    .queryParam("format", "image/png")
-            )
+                .queryParam("service", "WMS")
+                .queryParam("version", "1.3.0")
+                .queryParam("request", "GetMap")
+                .queryParam("layers", "layer0", "layer1")
+                .queryParam("styles", "default")
+                .queryParam("crs", "EPSG:27700")
+                .queryParam("bbox", "-145.15,21.73,-57.15,58.96")
+                .queryParam("width", "250")
+                .queryParam("height", "250")
+                .queryParam("format", "image/png")
+                )
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.IMAGE_PNG));
     }
@@ -204,7 +204,7 @@ public class MapViewerControllerTest {
 
         //when
         mvc.perform(
-            get("/maps/{file}", file)
+                get("/maps/{file}", file)
                 .queryParam("SERVICE", "WMS")
                 .queryParam("VERSION", "1.3.0")
                 .queryParam("REQUEST", "GetFeatureInfo")
@@ -218,7 +218,7 @@ public class MapViewerControllerTest {
                 .queryParam("I", "10")
                 .queryParam("J", "20")
                 .queryParam(INFO_FORMAT, "text/xml")
-        )
+                )
             .andExpect(status().isOk())
             .andExpect(content().contentType("text/xml"))
             .andExpect(content().xml("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><FeatureInfoResponse><FIELDS bar=\"green\" foo=\"red\"/></FeatureInfoResponse>"));
@@ -234,7 +234,7 @@ public class MapViewerControllerTest {
 
         //when
         mvc.perform(
-            get("/maps/{file}", file)
+                get("/maps/{file}", file)
                 .queryParam("SERVICE", "WMS")
                 .queryParam("VERSION", "1.3.0")
                 .queryParam("REQUEST", "GetFeatureInfo")
@@ -248,7 +248,7 @@ public class MapViewerControllerTest {
                 .queryParam("I", "10")
                 .queryParam("J", "20")
                 .queryParam(INFO_FORMAT, "application/vnd.ogc.xml")
-        )
+                )
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().contentType("application/vnd.ogc.xml"));

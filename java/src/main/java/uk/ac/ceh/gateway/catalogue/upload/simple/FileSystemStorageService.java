@@ -28,10 +28,10 @@ public class FileSystemStorageService implements StorageService {
 
     public FileSystemStorageService(
             @Value("${upload.simple.datastore}") String datastore
-    ) {
+            ) {
         this.datastore = datastore;
         log.info("Creating {}", this);
-    }
+            }
 
     @Override
     @SneakyThrows
@@ -49,7 +49,7 @@ public class FileSystemStorageService implements StorageService {
 
             file.transferTo(uploadFile.toFile());
         } catch (FileExitsException ex) {
-          throw ex;
+            throw ex;
         } catch (Exception ex) {
             throw new StorageServiceException(id, ex.getMessage(), ex);
         }
@@ -66,9 +66,9 @@ public class FileSystemStorageService implements StorageService {
             val directory = Paths.get(datastore, id).toFile();
             val filenames = Optional.ofNullable(directory.list()).orElse(new String[0]);
             return Arrays.stream(filenames)
-                    .sorted()
-                    .map(FileInfo::new)
-                    .collect(Collectors.toList());
+                .sorted()
+                .map(FileInfo::new)
+                .collect(Collectors.toList());
         } catch (UserInputException ex) {
             throw ex;
         } catch (Exception ex) {
