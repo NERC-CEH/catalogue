@@ -50,7 +50,8 @@ public class B2shareImportServiceTest {
     private List<DeimsSolrIndex> dummyDeimsSiteList;
     private DeimsSolrIndex dummyDeimsSite;
 
-    String b2shareResponseUrl = getClass().getResource("b2share-valid-api-response.json").toString();
+    String b2shareResponseUrlMain = getClass().getResource("b2share-valid-api-response.json").toString();
+    String b2shareResponseUrlSecondary = getClass().getResource("b2share-valid-api-response.json").toString();
     String invalidB2shareResponseUrl = getClass().getResource("b2share-invalid-api-response.json").toString();
 
     private static final String CATALOGUE = "elter";
@@ -82,7 +83,8 @@ public class B2shareImportServiceTest {
         b2shareImportService = new B2shareImportService(
                 documentRepository,
                 solrClient,
-                b2shareResponseUrl
+                b2shareResponseUrlMain,
+                b2shareResponseUrlSecondary
                 );
 
         // given
@@ -140,7 +142,8 @@ public class B2shareImportServiceTest {
         b2shareImportService = new B2shareImportService(
                 documentRepository,
                 solrClient,
-                b2shareResponseUrl
+                b2shareResponseUrlMain,
+                b2shareResponseUrlSecondary
                 );
 
         Map<String, Object> solrFieldMapping = new HashMap<>();
@@ -207,6 +210,7 @@ public class B2shareImportServiceTest {
         b2shareImportService = new B2shareImportService(
                 documentRepository,
                 solrClient,
+                invalidB2shareResponseUrl,
                 invalidB2shareResponseUrl
                 );
 
@@ -230,6 +234,7 @@ public class B2shareImportServiceTest {
         b2shareImportService = new B2shareImportService(
                 documentRepository,
                 solrClient,
+                invalidB2shareResponseUrl,
                 invalidB2shareResponseUrl
                 );
 

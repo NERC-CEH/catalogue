@@ -57,11 +57,12 @@ public class B2shareImportService implements CatalogueImportService {
     // constructor prep
     private final DateTimeFormatter dateParser;
     private final DocumentRepository documentRepository;
+    private final List<String> b2shareApiUrls;
     private final ObjectMapper objectMapper;
     private final Pattern deimsIdNormalise;
     private final Pattern doiNormalise;
     private final SolrClient solrClient;
-    private final String b2shareRecordsFirstPageUrl;
+    //private final String b2shareRecordsFirstPageUrl;
 
     // fixed fields
     private static final AccessLimitation openAccess = AccessLimitation.builder()
@@ -135,11 +136,12 @@ public class B2shareImportService implements CatalogueImportService {
     public B2shareImportService(
             DocumentRepository documentRepository,
             SolrClient solrClient,
-            @Value("${b2share.api}") String b2shareRecordsFirstPageUrl
+            @Value("${b2share.main.api}") String b2shareMainApiUrl,
+            @Value("${b2share.secondary.api}") String b2shareSecondaryApiUrl
             ) {
         log.info("Creating");
 
-        this.b2shareRecordsFirstPageUrl = b2shareRecordsFirstPageUrl;
+        this.b2shareApiUrls = List.of(b2shareMainApiUrl, b2shareSecondaryApiUrl);
         this.dateParser = new DateTimeFormatterBuilder()
             // order matters! put patterns containing others first
             .appendPattern("[y-M-d'T'H:m:s.nXXX]")
@@ -405,57 +407,60 @@ public class B2shareImportService implements CatalogueImportService {
         }
 
         // ready to import
-        JsonNode b2shareRecordsPage = null;
-        String b2shareRecordsnextPageUrl = b2shareRecordsFirstPageUrl;
-        while (! b2shareRecordsnextPageUrl.equals("")) {
-            // get next page of records
-            b2shareRecordsPage = objectMapper.readTree(new URL(b2shareRecordsnextPageUrl));
+        for (String b2shareRecordsFirstPageUrl : b2shareApiUrls) {
+            JsonNode b2shareRecordsPage = null;
+            String b2shareRecordsNextPageUrl = b2shareRecordsFirstPageUrl;
+            while (! b2shareRecordsNextPageUrl.equals("")) {
+                // get next page of records
+                b2shareRecordsPage = objectMapper.readTree(new URL(b2shareRecordsNextPageUrl));
 
-            for (JsonNode record : b2shareRecordsPage.path("hits").path("hits")){
-                // process each record on page
-                // normalise DOI to actual DOI, i.e. "10.xxx.../xxxx"
-                String originalDoi = record.path("metadata").path("DOI").asText();
-                Matcher doiCheck = doiNormalise.matcher(originalDoi);
-                if (!doiCheck.find()) {
-                    log.debug("No DOI detected in record {}", originalDoi);
-                    skippedRecords++;
-                    continue;
-                }
-                String normalisedDoi = doiCheck.group(0);
-                if (blacklistedDois.contains(normalisedDoi)) {
-                    log.debug("Skipping blacklisted doi {}", normalisedDoi);
-                    skippedRecords++;
-                    blacklistedRecords++;
-                    continue;
-                }
+                for (JsonNode record : b2shareRecordsPage.path("hits").path("hits")){
+                    // process each record on page
+                    // normalise DOI to actual DOI, i.e. "10.xxx.../xxxx"
+                    String originalDoi = record.path("metadata").path("DOI").asText();
+                    Matcher doiCheck = doiNormalise.matcher(originalDoi);
+                    if (!doiCheck.find()) {
+                        log.debug("No DOI detected in record {}", originalDoi);
+                        skippedRecords++;
+                        continue;
+                    }
+                    String normalisedDoi = doiCheck.group(0);
+                    if (blacklistedDois.contains(normalisedDoi)) {
+                        log.debug("Skipping blacklisted doi {}", normalisedDoi);
+                        skippedRecords++;
+                        blacklistedRecords++;
+                        continue;
+                    }
 
-                // ready to import, as we have a record and a correctly-structured DOI
-                // to use as the importId
-                ElterDocument recordDocument = createDocumentFromJson(record);
-                recordDocument.setImportId(normalisedDoi);
+                    // ready to import, as we have a record and a correctly-structured DOI
+                    // to use as the importId
+                    ElterDocument recordDocument = createDocumentFromJson(record);
+                    recordDocument.setImportId(normalisedDoi);
 
-                if (localRecordList.containsKey(normalisedDoi)) {
-                    updateRecord(localRecordList.get(normalisedDoi), normalisedDoi,  recordDocument, importUser);
-                    updatedRecords++;
+                    if (localRecordList.containsKey(normalisedDoi)) {
+                        updateRecord(localRecordList.get(normalisedDoi), normalisedDoi,  recordDocument, importUser);
+                        updatedRecords++;
+                    }
+                    else {
+                        String newId = createRecord(normalisedDoi, recordDocument, importUser);
+                        log.debug("New document ID is {}", newId);
+                        newRecords++;
+                    }
                 }
-                else {
-                    String newId = createRecord(normalisedDoi, recordDocument, importUser);
-                    log.debug("New document ID is {}", newId);
-                    newRecords++;
-                }
+                b2shareRecordsNextPageUrl = b2shareRecordsPage.path("links").path("next").asText();
             }
-            b2shareRecordsnextPageUrl = b2shareRecordsPage.path("links").path("next").asText();
+            totalRecords = b2shareRecordsPage.get("hits").get("total").asInt();
         }
-        totalRecords = b2shareRecordsPage.get("hits").get("total").asInt();
 
         // finished, log summary
         log.info("Finished B2SHARE metadata import!");
-        log.info("{} created + {} updated + {} skipped = {} total ({} records in B2SHARE)",
+        log.info("{} created + {} updated + {} skipped = {} total ({} records across {} B2SHARE instances)",
                 newRecords,
                 updatedRecords,
                 skippedRecords,
                 newRecords + updatedRecords + skippedRecords,
-                totalRecords
+                totalRecords,
+                b2shareApiUrls.size()
                 );
         log.info("{}/{} blacklisted DOIs were skipped", blacklistedRecords, blacklistedDois.size());
     }
