@@ -24,10 +24,10 @@ export default Backbone.View.extend({
     },
 
     /*
-    Since we update the selected result based upon the scroll position, we need
-    to be able to scroll all the way to select the last result. This method will
-    ensure that the margin of the results view allows for such.
-    */
+     * Since we update the selected result based upon the scroll position, we need
+     * to be able to scroll all the way to select the last result. This method will
+     * ensure that the margin of the results view allows for such.
+     */
     padResults () {
         if (this.$('.result').length) {
             // Where the top result should start
@@ -42,10 +42,10 @@ export default Backbone.View.extend({
     },
 
     /*
-    A page of search results may already be loaded in to the html. We can read
-    that html and populate the model. If there is no html this method SHOULD NOT
-    trigger a change on the model.
-    */
+     * A page of search results may already be loaded in to the html. We can read
+     * that html and populate the model. If there is no html this method SHOULD NOT
+     * trigger a change on the model.
+     */
     readModelFromHTML () {
         this.model.getResults().set({
             numFound: this.$('#num-records').val(),
@@ -59,9 +59,9 @@ export default Backbone.View.extend({
     },
 
     /*
-    Event listener for when the selected id has changed on the search page model.
-    Highlight that search result, with the selected class
-    */
+     * Event listener for when the selected id has changed on the search page model.
+     * Highlight that search result, with the selected class
+     */
     updateSelected () {
         this.$('.result').removeClass('selected')
         this.$(`#${this.model.getResults().get('selected')}`)
@@ -69,15 +69,15 @@ export default Backbone.View.extend({
     },
 
     /*
-    Clear the dom of any content
-    */
+     * Clear the dom of any content
+     */
     clear () {
         this.$el.empty()
     },
 
     /*
-    Draw in the new content
-    */
+     * Draw in the new content
+     */
     render () {
         this.$el.html(this.template(this.model.getResults().attributes))
         const $relatedSearches = this.$('.results__related_searches')

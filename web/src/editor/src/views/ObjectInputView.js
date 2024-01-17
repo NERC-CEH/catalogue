@@ -43,10 +43,10 @@ export default Backbone.View.extend({
     },
 
     /*
-    Defines a sortable list view which is bound to a positionable collection.
-    The supplied `view` callback function is required to generate a constructed
-    child view element which will be rendered on to the list
-    */
+     * Defines a sortable list view which is bound to a positionable collection.
+     * The supplied `view` callback function is required to generate a constructed
+     * child view element which will be rendered on to the list
+     */
     createList (collection, selector, view) {
         const element = this.$(selector)
         const that = this

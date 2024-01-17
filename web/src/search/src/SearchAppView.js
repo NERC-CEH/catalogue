@@ -22,9 +22,9 @@ export default Backbone.View.extend({
     },
 
     /*
-    Grab the query state from the anchors clicked href. Use this to update the
-    models state
-    */
+     * Grab the query state from the anchors clicked href. Use this to update the
+     * models state
+     */
     handleUrl (e) {
         const query = $(e.currentTarget).attr('href').split('?')[1]
         this.model.setState(deparam(query, true))
@@ -32,17 +32,17 @@ export default Backbone.View.extend({
     },
 
     /*
-    Set an empty state object on the model. This will revert the application to
-    the default state.
-    */
+     * Set an empty state object on the model. This will revert the application to
+     * the default state.
+     */
     defaultState (e) {
         this.model.setState({})
         e.preventDefault()
     },
 
     /*
-    Create the sub views of the search web application
-    */
+     * Create the sub views of the search web application
+     */
     render () {
         this.searchFormView = new SearchFormView({
             model: this.model,

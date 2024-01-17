@@ -1,12 +1,12 @@
 import _ from 'underscore'
 
 /*
- This underscore template generates a given facet results client side.
- It is recursively defined and as such needs to be supplied with itself
-
- IMPORTANT: If you change the structure of this, please update the
- corresponding freemarker template /templates/search/_facets.tpl
-*/
+ * This underscore template generates a given facet results client side.
+ * It is recursively defined and as such needs to be supplied with itself
+ *
+ * IMPORTANT: If you change the structure of this, please update the
+ * corresponding freemarker template /templates/search/_facets.tpl
+ */
 export default _.template(`
 <div class="facet">
     <ul>

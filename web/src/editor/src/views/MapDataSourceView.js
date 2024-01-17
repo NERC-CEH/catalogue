@@ -100,15 +100,15 @@ export default ObjectInputView.extend({
     handlerByteTypeVisibility (e) { this.updateByteTypeVisibility(e.stylingMode, e.attributes.type) },
 
     /*
-    Update the bytetype radio button to match the model
-    */
+     * Update the bytetype radio button to match the model
+     */
     updateByteRadioButton () {
         $(this.$('input[data-name=\'bytetype\'][value=\'#{this.model.attributes.bytetype}\']')[0]).attr('checked', 'checked')
     },
 
     /*
-    Set the visibility of the byteType selector.  Only show it when the styling is 'attributes' and the type is 'RASTER'
-    */
+     * Set the visibility of the byteType selector.  Only show it when the styling is 'attributes' and the type is 'RASTER'
+     */
     updateByteTypeVisibility (stylingMode, type) {
         if ((stylingMode.toLowerCase() === 'attributes') && (type.toLowerCase() === 'raster')) { this.$('.byte-box').show() } else { this.$('.byte-box').hide() }
     }

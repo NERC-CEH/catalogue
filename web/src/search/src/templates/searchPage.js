@@ -1,11 +1,11 @@
 import _ from 'underscore'
+
 /*
- This underscore template generates the search results client side.
-
- IMPORTANT: If you change the structure of this, please update the
- corresponding freemarker template /templates/search/_page.ftl
-*/
-
+ * This underscore template generates the search results client side.
+ *
+ * IMPORTANT: If you change the structure of this, please update the
+ * corresponding freemarker template /templates/search/_page.ftl
+ */
 export default _.template(`
 <div class="results__header">
     <span id="num-records"><%=numFound%></span> records found

@@ -23,14 +23,14 @@ export default NestedModel.extend({
     },
 
     /*
-    Return a releated collection of the attributes element of this model
-    */
+     * Return a releated collection of the attributes element of this model
+     */
     getAttributes () { return this.getRelatedCollection('attributes', MapAttribute) },
 
     /*
-    Update the styling mode and trigger a change event as either the features
-    or attributes will now be hidden.
-    */
+     * Update the styling mode and trigger a change event as either the features
+     * or attributes will now be hidden.
+     */
     setStylingMode (mode) {
         this.stylingMode = mode
         this.trigger('change', this, {})
@@ -69,9 +69,9 @@ export default NestedModel.extend({
     },
 
     /*
-    Depending on the stylingMode, either hide the `features` or `attributes`
-    attributes.
-    */
+     * Depending on the stylingMode, either hide the `features` or `attributes`
+     * attributes.
+     */
     toJSON () {
         const json = NestedModel.prototype.toJSON.apply(this, arguments)
         switch (this.stylingMode) {

@@ -12,10 +12,10 @@ export default Backbone.Model.extend({
     },
 
     /*
-    This SearchPage may have the selected id populated. If it does, this method
-    will return the full result which is selected. If nothing is selected, return
-    undefined.
-    */
+     * This SearchPage may have the selected id populated. If it does, this method
+     * will return the full result which is selected. If nothing is selected, return
+     * undefined.
+     */
     getSelectedResult () {
         if (this.has('results')) {
             _.find(this.attributes.results, e => e.identifier === this.attributes.selected)

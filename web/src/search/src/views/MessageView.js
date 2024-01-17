@@ -25,8 +25,8 @@ export default Backbone.View.extend({
     },
 
     /*
-        Handle the error event.
-        */
+     * Handle the error event.
+     */
     appendError (model, res) {
         let message
         this.$el.show()
@@ -43,8 +43,8 @@ export default Backbone.View.extend({
     },
 
     /*
-        Handle the info event.
-        */
+     * Handle the info event.
+     */
     appendInfo (message) {
         this.$el.show()
 
