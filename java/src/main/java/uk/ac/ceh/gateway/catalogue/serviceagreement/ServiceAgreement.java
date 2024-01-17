@@ -43,8 +43,8 @@ public class ServiceAgreement extends AbstractMetadataDocument {
     private List<BoundingBox> areaOfStudy;
 
     /*
-    FLAGS
-    */
+     * FLAGS
+     */
     @JsonIgnore
     private boolean historical;
 

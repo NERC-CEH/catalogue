@@ -136,9 +136,10 @@ public class JenaIndexingServiceTest {
     @Test
     void checkThatCannotUnindexObjectTriples() throws Exception {
         /*
-        Do not want to remove Object triples as they have been asserted by
-        another resource.
-        */
+         * Do not want to remove Object triples as they have been asserted by
+         * another resource.
+         */
+
         //Given
         val objectUri = "https://www.ceh.ac.uk/removeMe";
         val subject = ResourceFactory.createResource("https://www.external.com/subject");

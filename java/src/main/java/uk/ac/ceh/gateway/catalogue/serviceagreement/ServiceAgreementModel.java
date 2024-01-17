@@ -47,8 +47,8 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
     private String state;
 
     /*
-    FLAGS
-    */
+     * FLAGS
+     */
     @JsonIgnore
     private boolean historical;
 
