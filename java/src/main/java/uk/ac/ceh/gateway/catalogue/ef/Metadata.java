@@ -19,12 +19,12 @@ import java.time.LocalDateTime;
     "quality"
 })
 public class Metadata {
-    public enum State { 
-        @XmlEnumValue("private") PRIVATE, 
-        @XmlEnumValue("public") PUBLIC, 
-        @XmlEnumValue("sensitive") SENSITIVE 
+    public enum State {
+        @XmlEnumValue("private") PRIVATE,
+        @XmlEnumValue("public") PUBLIC,
+        @XmlEnumValue("sensitive") SENSITIVE
     }
-    
+
     @NotNull
     private UUID fileIdentifier;
     private String selfUrl;
@@ -35,7 +35,7 @@ public class Metadata {
     @NotNull
     private State publicationState;
     private Quality quality;
-    
+
     @Data
     @XmlType(propOrder = {
         "lineage"

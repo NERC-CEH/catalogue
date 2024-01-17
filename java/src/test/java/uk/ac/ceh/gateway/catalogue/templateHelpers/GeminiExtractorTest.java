@@ -19,7 +19,7 @@ import static org.mockito.Mockito.when;
 public class GeminiExtractorTest {
 
     private GeminiExtractor service;
-    
+
     @BeforeEach
     public void init() {
         String localDateStr = "2021-12-20";
@@ -74,7 +74,7 @@ public class GeminiExtractorTest {
         assertThat(env.getMaxX(), is(180d));
         assertThat(env.getMaxY(), is(90d));
     }
-    
+
     @Test
     @SneakyThrows
     public void checkThatCanGetContainedExtent() {
@@ -87,17 +87,17 @@ public class GeminiExtractorTest {
                 .northBoundLatitude("4")
                 .build();
         when(document.getBoundingBoxes()).thenReturn(Arrays.asList(bbox1));
-        
+
         //When
         Envelope env = service.getExtent(document);
-        
+
         //Then
         assertThat(env.getMinX(), is(1d));
         assertThat(env.getMinY(), is(2d));
         assertThat(env.getMaxX(), is(3d));
         assertThat(env.getMaxY(), is(4d));
     }
-    
+
     @Test
     @SneakyThrows
     public void checkThatCanGetContainedExtentOf2Bbox() {
@@ -109,7 +109,7 @@ public class GeminiExtractorTest {
                 .eastBoundLongitude("3")
                 .northBoundLatitude("4")
                 .build();
-        
+
         BoundingBox bbox2 = BoundingBox.builder()
                 .westBoundLongitude("5")
                 .southBoundLatitude("6")
@@ -117,10 +117,10 @@ public class GeminiExtractorTest {
                 .northBoundLatitude("8")
                 .build();
         when(document.getBoundingBoxes()).thenReturn(Arrays.asList(bbox1, bbox2));
-        
+
         //When
         Envelope env = service.getExtent(document);
-        
+
         //Then
         assertThat(env.getMinX(), is(1d));
         assertThat(env.getMinY(), is(2d));

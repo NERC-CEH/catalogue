@@ -14,7 +14,7 @@ public class Service {
     private final String type, couplingType;
     private final List<String> versions;
     private final List<CoupledResource> coupledResources;
-    private final List<OperationMetadata> containsOperations; 
+    private final List<OperationMetadata> containsOperations;
 
     @Builder
     @JsonCreator
@@ -22,7 +22,7 @@ public class Service {
         @JsonProperty("type") String type,
         @JsonProperty("couplingType") String couplingType,
         @JsonProperty("versions") List<String> versions,
-        @JsonProperty("coupledResources") List<CoupledResource> coupledResources, 
+        @JsonProperty("coupledResources") List<CoupledResource> coupledResources,
         @JsonProperty("containsOperations") List<OperationMetadata> containsOperations
     ) {
         this.type = Strings.nullToEmpty(type);
@@ -46,7 +46,7 @@ public class Service {
             this.operationName = Strings.nullToEmpty(operationName);
             this.identifier = Strings.nullToEmpty(identifier);
             this.layerName = Strings.nullToEmpty(layerName);
-        } 
+        }
     }
 
     @Value
@@ -63,6 +63,6 @@ public class Service {
             this.operationName = Strings.nullToEmpty(operationName);
             this.platform = Strings.nullToEmpty(platform);
             this.url = Strings.nullToEmpty(url);
-        } 
+        }
     }
 }

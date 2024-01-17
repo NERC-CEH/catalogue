@@ -10,14 +10,14 @@ import uk.ac.ceh.gateway.catalogue.ef.Link;
 @Value
 public class Keyword {
     private final String value, uri;
-       
+
     @Builder
     @JsonCreator
     private Keyword(@JsonProperty("value") String value, @JsonProperty("uri") String URI) {
         this.value = nullToEmpty(value);
         this.uri = nullToEmpty(URI);
     }
-    
+
     public Link asLink() {
         return new Link()
             .setHref(uri)

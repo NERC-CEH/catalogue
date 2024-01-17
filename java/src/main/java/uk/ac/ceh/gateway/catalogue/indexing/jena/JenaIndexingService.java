@@ -46,7 +46,7 @@ public class JenaIndexingService extends AbstractIndexingService<MetadataDocumen
         this.documentIdentifierService = documentIdentifierService;
         this.jenaTdb = jenaTdb;
         log.info("Creating");
-    }
+            }
 
     @Override
     public boolean isIndexEmpty() throws DocumentIndexingException {
@@ -88,18 +88,18 @@ public class JenaIndexingService extends AbstractIndexingService<MetadataDocumen
                     try {
                         return canIndex(readDocument(document));
                     } catch (Exception e) {
-                       return false;
+                        return false;
                     }
                 })
-                .map(document -> {
-                    //Remove any triples where this document uri is the subject
-                    val pss = new ParameterizedSparqlString("DELETE WHERE { ?id ?p ?o }");
-                    val uri = documentIdentifierService.generateUri(document);
-                    log.debug("Removing triples for {}", uri);
-                    pss.setParam("id", ResourceFactory.createResource(uri));
-                    return pss;
-                })
-                .forEach((pss) -> UpdateExecutionFactory.create(pss.asUpdate(), jenaTdb).execute());
+            .map(document -> {
+                //Remove any triples where this document uri is the subject
+                val pss = new ParameterizedSparqlString("DELETE WHERE { ?id ?p ?o }");
+                val uri = documentIdentifierService.generateUri(document);
+                log.debug("Removing triples for {}", uri);
+                pss.setParam("id", ResourceFactory.createResource(uri));
+                return pss;
+            })
+            .forEach((pss) -> UpdateExecutionFactory.create(pss.asUpdate(), jenaTdb).execute());
             return null;
         });
     }

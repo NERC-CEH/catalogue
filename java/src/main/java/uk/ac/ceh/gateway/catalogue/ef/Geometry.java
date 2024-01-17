@@ -6,11 +6,11 @@ import lombok.experimental.Accessors;
 
 @Data
 @Accessors(chain = true)
-public class Geometry {    
+public class Geometry {
     @XmlAttribute(name = "SRS")
     private final String SRS = "urn:ogc:def:crs:EPSG::4326";
     @XmlAttribute
-    private Boolean representativePoint; 
+    private Boolean representativePoint;
     @XmlValue
     private String value;
 }

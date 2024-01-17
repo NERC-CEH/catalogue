@@ -20,28 +20,28 @@ import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.ERAMMP_MODEL_JSON_
 @RequestMapping("documents")
 public class ErammpModelController extends AbstractDocumentController {
 
-  public ErammpModelController(DocumentRepository documentRepository) {
-    super(documentRepository);
-    log.info("Creating {}", this);
-  }
+    public ErammpModelController(DocumentRepository documentRepository) {
+        super(documentRepository);
+        log.info("Creating {}", this);
+    }
 
-  @PreAuthorize("@permission.userCanCreate(#catalogue)")
-  @PostMapping(consumes = ERAMMP_MODEL_JSON_VALUE)
-  public ResponseEntity<MetadataDocument> newErammpModel(
-      @ActiveUser CatalogueUser user,
-      @RequestBody ErammpModel document,
-      @RequestParam("catalogue") String catalogue
-  ) {
-    return saveNewMetadataDocument(user, document, catalogue, "new ERAMMP model");
-  }
+    @PreAuthorize("@permission.userCanCreate(#catalogue)")
+    @PostMapping(consumes = ERAMMP_MODEL_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> newErammpModel(
+            @ActiveUser CatalogueUser user,
+            @RequestBody ErammpModel document,
+            @RequestParam("catalogue") String catalogue
+    ) {
+        return saveNewMetadataDocument(user, document, catalogue, "new ERAMMP model");
+    }
 
-  @PreAuthorize("@permission.userCanEdit(#file)")
-  @PutMapping(value = "{file}", consumes = ERAMMP_MODEL_JSON_VALUE)
-  public ResponseEntity<MetadataDocument> updateErammpModel(
-      @ActiveUser CatalogueUser user,
-      @PathVariable("file") String file,
-      @RequestBody ErammpModel document
-  ) {
-    return saveMetadataDocument(user, file, document);
-  }
+    @PreAuthorize("@permission.userCanEdit(#file)")
+    @PutMapping(value = "{file}", consumes = ERAMMP_MODEL_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> updateErammpModel(
+            @ActiveUser CatalogueUser user,
+            @PathVariable("file") String file,
+            @RequestBody ErammpModel document
+    ) {
+        return saveMetadataDocument(user, file, document);
+    }
 }

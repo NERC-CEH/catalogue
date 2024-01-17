@@ -17,22 +17,22 @@ import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.*;
 @Controller
 public class UkemsDocumentController extends AbstractDocumentController {
 
-  @Autowired
-  public UkemsDocumentController(DocumentRepository documentRepository) {
-    super(documentRepository);
-  }
+    @Autowired
+    public UkemsDocumentController(DocumentRepository documentRepository) {
+        super(documentRepository);
+    }
 
-  @PreAuthorize("@permission.userCanCreate(#catalogue)")
-  @RequestMapping(value = "documents", method = RequestMethod.POST, consumes = UKEMS_DOCUMENT_JSON_VALUE)
-  public ResponseEntity<MetadataDocument> newUkemsDocument(@ActiveUser CatalogueUser user, @RequestBody UkemsDocument document,
-      @RequestParam("catalogue") String catalogue) throws DocumentRepositoryException {
-    return saveNewMetadataDocument(user, document, catalogue, "new UK-EMS document");
-  }
+    @PreAuthorize("@permission.userCanCreate(#catalogue)")
+    @RequestMapping(value = "documents", method = RequestMethod.POST, consumes = UKEMS_DOCUMENT_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> newUkemsDocument(@ActiveUser CatalogueUser user, @RequestBody UkemsDocument document,
+            @RequestParam("catalogue") String catalogue) throws DocumentRepositoryException {
+        return saveNewMetadataDocument(user, document, catalogue, "new UK-EMS document");
+    }
 
-  @PreAuthorize("@permission.userCanEdit(#file)")
-  @RequestMapping(value = "documents/{file}", method = RequestMethod.PUT, consumes = UKEMS_DOCUMENT_JSON_VALUE)
-  public ResponseEntity<MetadataDocument> saveUkemsDocument(@ActiveUser CatalogueUser user, @PathVariable("file") String file,
-      @RequestBody UkemsDocument document) throws DocumentRepositoryException {
-    return saveMetadataDocument(user, file, document);
-  }
+    @PreAuthorize("@permission.userCanEdit(#file)")
+    @RequestMapping(value = "documents/{file}", method = RequestMethod.PUT, consumes = UKEMS_DOCUMENT_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> saveUkemsDocument(@ActiveUser CatalogueUser user, @PathVariable("file") String file,
+            @RequestBody UkemsDocument document) throws DocumentRepositoryException {
+        return saveMetadataDocument(user, file, document);
+    }
 }

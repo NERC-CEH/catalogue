@@ -18,11 +18,11 @@ public class InspireTheme {
     @Builder
     @JsonCreator
     private InspireTheme(
-        @JsonProperty("theme") String theme, 
-        @JsonProperty("uri") String uri, 
+        @JsonProperty("theme") String theme,
+        @JsonProperty("uri") String uri,
         @JsonProperty("conformity") String conformity) {
         this.theme = nullToEmpty(theme);
         this.uri = nullToEmpty(uri);
         this.conformity = nullToEmpty(conformity);
-        }    
+        }
 }

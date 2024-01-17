@@ -4,14 +4,14 @@ import template from '../templates/MapFeatures'
 
 export default ObjectInputView.extend({
 
-  initialize (options) {
-    this.template = template
-    ObjectInputView.prototype.initialize.call(this, options)
+    initialize (options) {
+        this.template = template
+        ObjectInputView.prototype.initialize.call(this, options)
 
-    /* eslint no-new: "off" */
-    new MapStyleSelectorView({
-      el: this.$('.style-selector'),
-      model: this.model.getRelated('style')
-    })
-  }
+        /* eslint no-new: "off" */
+        new MapStyleSelectorView({
+            el: this.$('.style-selector'),
+            model: this.model.getRelated('style')
+        })
+    }
 })

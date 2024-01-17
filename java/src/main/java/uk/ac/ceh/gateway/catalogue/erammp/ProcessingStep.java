@@ -9,7 +9,7 @@ import lombok.Builder;
 @Value
 public class ProcessingStep {
     private final String step;
-    
+
     @Builder
     @JsonCreator
     private ProcessingStep(

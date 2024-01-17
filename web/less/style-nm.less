@@ -45,257 +45,257 @@
 @panel-default-heading-bg: @nerc-lightgreen;
 
 html {
-  overflow-y: scroll;
-  min-height: 100%;
-  position: relative;
+    overflow-y: scroll;
+    min-height: 100%;
+    position: relative;
 }
 
 body {
-  margin-top: @navbar-height + (@navbar-border-width*2);
-  margin-bottom: @footer-height;
+    margin-top: @navbar-height + (@navbar-border-width*2);
+    margin-bottom: @footer-height;
 }
 
 .navbar {
-  border-bottom-width: @navbar-border-width;
-  box-shadow: 0 0 0 (@navbar-border-width)/2 @nerc-darkgreen;
+    border-bottom-width: @navbar-border-width;
+    box-shadow: 0 0 0 (@navbar-border-width)/2 @nerc-darkgreen;
 
-  &-toggle {
-    background-color: black;
-    color: white;
-  }
-
-  a {
-    font-weight: bolder;
-
-    &::after {
-      @linethickness: 2px;
-      content: " ";
-      display: block;
-      background-color: @navbar-default-link-hover-color;
-      width: 0;
-      height: @linethickness;
-      margin: @linethickness 0 - (@linethickness) 0;
+    &-toggle {
+        background-color: black;
+        color: white;
     }
 
-    &:hover {
-      &::after {
-        width: 100%;
-      }
+    a {
+        font-weight: bolder;
+
+        &::after {
+            @linethickness: 2px;
+            content: " ";
+            display: block;
+            background-color: @navbar-default-link-hover-color;
+            width: 0;
+            height: @linethickness;
+            margin: @linethickness 0 - (@linethickness) 0;
+        }
+
+        &:hover {
+            &::after {
+                width: 100%;
+            }
+        }
     }
-  }
 }
 
 .models {
-  &--modelinfo {
-    margin-bottom: 2em;
-  }
+    &--modelinfo {
+        margin-bottom: 2em;
+    }
 }
 
 .filters-panel {
-  .header {
-    h3 {
-      color: white;
+    .header {
+        h3 {
+            color: white;
+        }
     }
-  }
 }
 
 .adminToolbar {
-  margin-top: 1em;
+    margin-top: 1em;
 }
 
 .navbar-fixed-bottom {
-  background-color: #eee;
+    background-color: #eee;
 }
 
 a.navbar-brand {
-  min-height: @navbar-height;
-  min-width: 280px;
-  background-image: url("https://eidc.ceh.ac.uk/images/nerc_small.png");
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
-  margin: 0 0 0 0.35em;
+    min-height: @navbar-height;
+    min-width: 280px;
+    background-image: url("https://eidc.ceh.ac.uk/images/nerc_small.png");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    margin: 0 0 0 0.35em;
 
-  img {
-    display: none;
-  }
+    img {
+        display: none;
+    }
 }
 
 .description {
-  margin-bottom: 2em;
+    margin-bottom: 2em;
 }
 
 .key-value {
-  display: grid;
-  margin: 1.1em 0;
+    display: grid;
+    margin: 1.1em 0;
 
-  .key {
-    font-weight: bold;
-  }
+    .key {
+        font-weight: bold;
+    }
 }
 
 .references {
-  .reference {
-    margin: 1em 0 1.6em 0;
-  }
+    .reference {
+        margin: 1em 0 1.6em 0;
+    }
 }
 
 .nerc-model {
-  #adminPanel {
-    padding: 1em 0.5em;
-  }
-
-  p.text-danger {
-    font-weight: bolder;
-    color: red;
-  }
-
-  .btn {
-    &-code {
-      background-color: lighten(@nerc-blue, 60%);
-      color: black;
-      border-color: lightgray;
-      border-radius: 6px;
+    #adminPanel {
+        padding: 1em 0.5em;
     }
 
-    &-documentation {
-      color: black;
-      border-color: lightgray;
-      border-radius: 6px;
-    }
-  }
-
-  .accessLinks {
-    a {
-      border-radius: 1000px;
-      margin: 0.65em 0;
-      display: flex;
-      gap: 0.5em;
-      flex-wrap: nowrap;
-      justify-content: flex-start;
-      align-items: center;
-      &:hover, &:focus {
-        outline: 1px solid @nerc-lightgreen;
-        text-decoration: none;
-        div:first-child {
-          background-color: @nerc-darkgreen;
-          color: white;
-        }
-      }
-      div:first-child {
-        border-radius: 1000px;
-        height: 40px;
-        width: 40px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-    }
-  }
-  .table--qa {
-    margin: 1em 3em;
-
-    table {
-      thead {
-        th {
-          background-color: #eee;
-          border-width: 0;
-        }
-      }
-
-      tbody {
-        td,
-        th {
-          border-color: #ddd !important;
-        }
-      }
+    p.text-danger {
+        font-weight: bolder;
+        color: red;
     }
 
-    @media only screen and (max-width: 760px),
-      (min-device-width: 768px) and (max-device-width: 1024px) {
-      // On small screens, force qa table to not display as a table
-      @head-width: 100px;
-
-      table,
-      thead,
-      tbody,
-      th,
-      td,
-      tr {
-        display: block;
-        border-width: 0 !important;
-      }
-
-      // Hide table headers (for accessibility, don't use display:none )
-      thead tr {
-        position: absolute;
-        top: -9999px;
-        left: -9999px;
-      }
-
-      tr {
-        margin: 0 0 3rem 0;
-      }
-
-      td {
-        border: none;
-        position: relative;
-        margin-left: @head-width*1.2;
-        padding: 0.4em !important;
-
-        &:before {
-          position: absolute;
-          padding: 0.4em 0.6em;
-          top: 0;
-          left: 3em;
-          margin-left: -(@head-width*1.5);
-          text-align: right;
-          width: @head-width;
-          font-weight: bolder;
-          white-space: nowrap;
+    .btn {
+        &-code {
+            background-color: lighten(@nerc-blue, 60%);
+            color: black;
+            border-color: lightgray;
+            border-radius: 6px;
         }
 
-        &:nth-of-type(1):before {
-          content: "Category";
+        &-documentation {
+            color: black;
+            border-color: lightgray;
+            border-radius: 6px;
         }
-
-        &:nth-of-type(2):before {
-          content: "Date";
-        }
-
-        &:nth-of-type(3):before {
-          content: "Notes";
-        }
-      }
     }
-  }
+
+    .accessLinks {
+        a {
+            border-radius: 1000px;
+            margin: 0.65em 0;
+            display: flex;
+            gap: 0.5em;
+            flex-wrap: nowrap;
+            justify-content: flex-start;
+            align-items: center;
+            &:hover, &:focus {
+                outline: 1px solid @nerc-lightgreen;
+                text-decoration: none;
+                div:first-child {
+                    background-color: @nerc-darkgreen;
+                    color: white;
+                }
+            }
+            div:first-child {
+                border-radius: 1000px;
+                height: 40px;
+                width: 40px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+        }
+    }
+    .table--qa {
+        margin: 1em 3em;
+
+        table {
+            thead {
+                th {
+                    background-color: #eee;
+                    border-width: 0;
+                }
+            }
+
+            tbody {
+                td,
+                th {
+                    border-color: #ddd !important;
+                }
+            }
+        }
+
+        @media only screen and (max-width: 760px),
+            (min-device-width: 768px) and (max-device-width: 1024px) {
+            // On small screens, force qa table to not display as a table
+            @head-width: 100px;
+
+            table,
+            thead,
+            tbody,
+            th,
+            td,
+            tr {
+                display: block;
+                border-width: 0 !important;
+            }
+
+            // Hide table headers (for accessibility, don't use display:none )
+            thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+
+            tr {
+                margin: 0 0 3rem 0;
+            }
+
+            td {
+                border: none;
+                position: relative;
+                margin-left: @head-width*1.2;
+                padding: 0.4em !important;
+
+                &:before {
+                    position: absolute;
+                    padding: 0.4em 0.6em;
+                    top: 0;
+                    left: 3em;
+                    margin-left: -(@head-width*1.5);
+                    text-align: right;
+                    width: @head-width;
+                    font-weight: bolder;
+                    white-space: nowrap;
+                }
+
+                &:nth-of-type(1):before {
+                    content: "Category";
+                }
+
+                &:nth-of-type(2):before {
+                    content: "Date";
+                }
+
+                &:nth-of-type(3):before {
+                    content: "Notes";
+                }
+            }
+        }
+    }
 }
 
 .links {
-  display: grid;
-  gap: 1.6em;
+    display: grid;
+    gap: 1.6em;
 
-  &--link {
-    &--url {
-      font-weight: bolder;
-      margin-left: 1.6em;
+    &--link {
+        &--url {
+            font-weight: bolder;
+            margin-left: 1.6em;
+        }
     }
-  }
 }
 
 //media query for screens wider than 600px
 @media only screen and (min-width: 600px) {
-  .nerc-model {
-    .hideLarge {display:none}
-    .container {
-      .key-value {
-        grid-template-columns: 13em auto;
-        gap: 1em;
-      }
+    .nerc-model {
+        .hideLarge {display:none}
+        .container {
+            .key-value {
+                grid-template-columns: 13em auto;
+                gap: 1em;
+            }
 
-      .key {
-        text-align: right;
-      }
+            .key {
+                text-align: right;
+            }
+        }
     }
-  }
 }

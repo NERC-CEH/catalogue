@@ -32,11 +32,11 @@ public class CrowdGroupStoreTest {
     void setup() {
         val restTemplate = new RestTemplate();
         groupStore = new CrowdGroupStore(
-            "https://example.com/latest",
-            "abc",
-            "1234",
-            restTemplate
-        );
+                "https://example.com/latest",
+                "abc",
+                "1234",
+                restTemplate
+                );
         mockServer = MockRestServiceServer.createServer(restTemplate);
     }
 
@@ -44,14 +44,14 @@ public class CrowdGroupStoreTest {
     void getGroup() {
         //given
         val response = """
-                       {
-                        "groups": [
-                            { "name": "group-1" },
-                            { "name": "group-2" },
-                            { "name": "group-3" }
-                        ]
-                       }
-                       """;
+        {
+            "groups": [
+            { "name": "group-1" },
+            { "name": "group-2" },
+            { "name": "group-3" }
+            ]
+        }
+        """;
         mockServer.expect(requestTo("https://example.com/latest/user/group/nested?username=foo"))
             .andExpect(method(HttpMethod.GET))
             .andExpect(header("authorization", "Basic YWJjOjEyMzQ="))
@@ -61,10 +61,10 @@ public class CrowdGroupStoreTest {
 
         //then
         assertThat(groups, contains(
-            new CatalogueGroup("group-1"),
-            new CatalogueGroup("group-2"),
-            new CatalogueGroup("group-3")
-        ));
+                    new CatalogueGroup("group-1"),
+                    new CatalogueGroup("group-2"),
+                    new CatalogueGroup("group-3")
+                    ));
     }
 
     @Test
@@ -76,39 +76,39 @@ public class CrowdGroupStoreTest {
 
         //when
         assertThrows(UnknownUserException.class, () ->
-            groupStore.getGroups(user)
-        );
+                groupStore.getGroups(user)
+                );
     }
 
     @Test
     void groupNotImplemented() {
         //when
         assertThrows(NotImplementedException.class, () ->
-            groupStore.getGroup("test")
-        );
+                groupStore.getGroup("test")
+                );
     }
 
     @Test
     void allGroupsNotImplemented() {
         //when
         assertThrows(NotImplementedException.class, () ->
-            groupStore.getAllGroups()
-        );
+                groupStore.getAllGroups()
+                );
     }
 
     @Test
     void isGroupInExistenceNotImplemented() {
         //when
         assertThrows(NotImplementedException.class, () ->
-            groupStore.isGroupInExistance("test")
-        );
+                groupStore.isGroupInExistance("test")
+                );
     }
 
     @Test
     void isGroupDeletableNotImplemented() {
         //when
         assertThrows(NotImplementedException.class, () ->
-            groupStore.isGroupDeletable("test")
-        );
+                groupStore.isGroupDeletable("test")
+                );
     }
 }

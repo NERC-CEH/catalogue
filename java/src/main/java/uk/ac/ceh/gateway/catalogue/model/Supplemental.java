@@ -13,7 +13,7 @@ public class Supplemental {
     @Builder
     @JsonCreator
     private Supplemental(
-        @JsonProperty("name") String name, 
+        @JsonProperty("name") String name,
         @JsonProperty("description") String description,
         @JsonProperty("url") String url,
         @JsonProperty("type") String type,
@@ -23,5 +23,5 @@ public class Supplemental {
         this.url = nullToEmpty(url);
         this.type = nullToEmpty(type);
         this.function = nullToEmpty(function);
-    }   
+    }
 }

@@ -22,7 +22,7 @@ public class TemporalExtentConverter {
         this.begin = xpath.compile(BEGIN);
         this.end = xpath.compile(END);
     }
-    
+
     public List<TimePeriod> convert(Document document) throws XPathExpressionException {
         List<TimePeriod> toReturn = new ArrayList<>();
         NodeList nodeList = (NodeList) temporalExtents.evaluate(document, XPathConstants.NODESET);

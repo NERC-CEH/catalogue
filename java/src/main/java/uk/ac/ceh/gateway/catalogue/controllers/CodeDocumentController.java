@@ -17,28 +17,28 @@ import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.CODE_JSON_VALUE;
 @RequestMapping("documents")
 public class CodeDocumentController extends AbstractDocumentController {
 
-  @Autowired
-  public CodeDocumentController(DocumentRepository documentRepository) {
-    super(documentRepository);
-  }
+    @Autowired
+    public CodeDocumentController(DocumentRepository documentRepository) {
+        super(documentRepository);
+    }
 
-  @PreAuthorize("@permission.userCanCreate(#catalogue)")
-  @PostMapping(consumes = CODE_JSON_VALUE)
-  public ResponseEntity<MetadataDocument> newCodeDocument(
-      @ActiveUser CatalogueUser user,
-      @RequestBody CodeDocument document,
-      @RequestParam("catalogue") String catalogue
-  ) {
-    return saveNewMetadataDocument(user, document, catalogue, "new code document");
-  }
+    @PreAuthorize("@permission.userCanCreate(#catalogue)")
+    @PostMapping(consumes = CODE_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> newCodeDocument(
+            @ActiveUser CatalogueUser user,
+            @RequestBody CodeDocument document,
+            @RequestParam("catalogue") String catalogue
+    ) {
+        return saveNewMetadataDocument(user, document, catalogue, "new code document");
+    }
 
-  @PreAuthorize("@permission.userCanEdit(#file)")
-  @PutMapping(value = "{file}", consumes = CODE_JSON_VALUE)
-  public ResponseEntity<MetadataDocument> saveCodeDocument(
-      @ActiveUser CatalogueUser user,
-      @PathVariable("file") String file,
-      @RequestBody CodeDocument document
-  ) {
-    return saveMetadataDocument(user, file, document);
-  }
+    @PreAuthorize("@permission.userCanEdit(#file)")
+    @PutMapping(value = "{file}", consumes = CODE_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> saveCodeDocument(
+            @ActiveUser CatalogueUser user,
+            @PathVariable("file") String file,
+            @RequestBody CodeDocument document
+    ) {
+        return saveMetadataDocument(user, file, document);
+    }
 }

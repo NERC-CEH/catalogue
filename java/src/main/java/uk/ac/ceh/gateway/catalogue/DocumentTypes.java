@@ -53,7 +53,7 @@ public class DocumentTypes {
             .title("Infrastructure record")
             .type(INFRASTRUCTURERECORD)
             .build();
-    
+
     public static final String GEMINI = "GEMINI_DOCUMENT";
     public static DocumentType GEMINI_TYPE = DocumentType.builder()
         .title("Data resource")

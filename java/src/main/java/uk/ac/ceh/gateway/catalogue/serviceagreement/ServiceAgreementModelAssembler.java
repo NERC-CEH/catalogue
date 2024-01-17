@@ -17,7 +17,7 @@ public class ServiceAgreementModelAssembler extends RepresentationModelAssembler
     private final DocumentRepository documentRepository;
     private final ServiceAgreementQualityService serviceAgreementQualityService;
     public ServiceAgreementModelAssembler(DocumentRepository documentRepository,
-                                          ServiceAgreementQualityService serviceAgreementQualityService) {
+            ServiceAgreementQualityService serviceAgreementQualityService) {
         super(ServiceAgreementController.class, ServiceAgreementModel.class);
         this.documentRepository = documentRepository;
         this.serviceAgreementQualityService = serviceAgreementQualityService;
@@ -29,7 +29,7 @@ public class ServiceAgreementModelAssembler extends RepresentationModelAssembler
         return createModelWithId(
                 serviceAgreement.getId(),
                 serviceAgreement
-        );
+                );
     }
 
     @SneakyThrows
@@ -39,7 +39,7 @@ public class ServiceAgreementModelAssembler extends RepresentationModelAssembler
         val id = serviceAgreement.getId();
 
         val historyLink = linkTo(methodOn(ServiceAgreementController.class)
-            .getHistory(id))
+                .getHistory(id))
             .withRel("history")
             .withTitle("History");
 
@@ -49,23 +49,23 @@ public class ServiceAgreementModelAssembler extends RepresentationModelAssembler
                 serviceAgreementQualityService.check(serviceAgreement.getId()).getErrors() == 0) {
             val submitLink = linkTo(methodOn(ServiceAgreementController.class)
                     .submitServiceAgreement(null, id))
-                    .withRel("submit")
-                    .withTitle("Submit");
+                .withRel("submit")
+                .withTitle("Submit");
             model.add(submitLink);
-        }
+                }
         if ("pending publication".equals(serviceAgreement.getState())) {
             val gemini = documentRepository.read(serviceAgreement.getId());
             if (gemini.getState().equals("draft")) {
                 val publishLink = linkTo(methodOn(ServiceAgreementController.class)
                         .publishServiceAgreement(null, id))
-                        .withRel("publish")
-                        .withTitle("Publish");
+                    .withRel("publish")
+                    .withTitle("Publish");
                 model.add(publishLink);
 
                 val addEdit = linkTo(methodOn(ServiceAgreementController.class)
                         .giveDepositorEditPermission(null, id))
-                        .withRel("add-editor")
-                        .withTitle("Further Edits Required");
+                    .withRel("add-editor")
+                    .withTitle("Further Edits Required");
                 model.add(addEdit);
             }
         }

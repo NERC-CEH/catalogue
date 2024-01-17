@@ -42,233 +42,233 @@ public class DocumentController extends AbstractDocumentController {
     }
 
     @RequestMapping (value = "documents/upload",
-                     method = RequestMethod.GET)
-    public String uploadForm() {
-        return "html/upload";
-    }
+    method = RequestMethod.GET)
+        public String uploadForm() {
+            return "html/upload";
+        }
 
     @PreAuthorize("@permission.userCanCreate(#catalogue)")
     @RequestMapping (value = "documents",
-                     method = RequestMethod.POST,
-                     consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    method = RequestMethod.POST,
+    consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseBody
     public Object uploadFile(
             @ActiveUser CatalogueUser user,
             @RequestParam("file") MultipartFile multipartFile,
             @RequestParam("type") String documentType,
             @RequestParam("catalogue") String catalogue
-    ) throws DocumentRepositoryException, IOException  {
+            ) throws DocumentRepositoryException, IOException  {
         val data = documentRepository.save(
-            user,
-            multipartFile.getInputStream(),
-            MediaType.parseMediaType(
-                Objects.requireNonNull(multipartFile.getContentType())
-            ),
-            documentType,
-            catalogue,
-            "new file upload"
-        );
+                user,
+                multipartFile.getInputStream(),
+                MediaType.parseMediaType(
+                    Objects.requireNonNull(multipartFile.getContentType())
+                    ),
+                documentType,
+                catalogue,
+                "new file upload"
+                );
         log.debug("Document URI: {}", data.getUri());
         return new RedirectView(data.getUri());
-    }
+            }
 
     @PreAuthorize("@permission.userCanCreate(#catalogue)")
     @RequestMapping (value = "documents",
-                     method = RequestMethod.POST,
-                     consumes = MODEL_JSON_VALUE)
+    method = RequestMethod.POST,
+    consumes = MODEL_JSON_VALUE)
     public ResponseEntity<MetadataDocument> newModelDocument(
             @ActiveUser CatalogueUser user,
             @RequestBody ImpDocument document,
             @RequestParam("catalogue") String catalogue
-    ) {
+            ) {
         return saveNewMetadataDocument(
-            user,
-            document,
-            catalogue,
-            "new Model Document"
-        );
-    }
+                user,
+                document,
+                catalogue,
+                "new Model Document"
+                );
+            }
 
     @PreAuthorize("@permission.userCanEdit(#file)")
     @RequestMapping (value = "documents/{file}",
-                     method = RequestMethod.PUT,
-                     consumes = MODEL_JSON_VALUE)
+    method = RequestMethod.PUT,
+    consumes = MODEL_JSON_VALUE)
     public ResponseEntity<MetadataDocument> updateModelDocument(
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file,
             @RequestBody ImpDocument document
-    ) {
+            ) {
         return saveMetadataDocument(
-            user,
-            file,
-            document
-        );
-    }
+                user,
+                file,
+                document
+                );
+            }
 
     @PreAuthorize("@permission.userCanCreate(#catalogue)")
     @RequestMapping (value = "documents",
-                     method = RequestMethod.POST,
-                     consumes = GEMINI_JSON_VALUE)
+    method = RequestMethod.POST,
+    consumes = GEMINI_JSON_VALUE)
     public ResponseEntity<MetadataDocument> newGeminiDocument(
             @ActiveUser CatalogueUser user,
             @RequestBody GeminiDocument document,
             @RequestParam("catalogue") String catalogue
-    ) {
+            ) {
         return saveNewMetadataDocument(
-            user,
-            document,
-            catalogue,
-            "new Gemini Document"
-        );
-    }
+                user,
+                document,
+                catalogue,
+                "new Gemini Document"
+                );
+            }
 
     @PreAuthorize("@permission.userCanEdit(#file)")
     @RequestMapping(value = "documents/{file}",
-                    method = RequestMethod.PUT,
-                    consumes = GEMINI_JSON_VALUE)
+    method = RequestMethod.PUT,
+    consumes = GEMINI_JSON_VALUE)
     public ResponseEntity<MetadataDocument> updateGeminiDocument(
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file,
             @RequestBody GeminiDocument document
-    ) {
+            ) {
         return saveMetadataDocument(
-            user,
-            file,
-            document
-        );
-    }
+                user,
+                file,
+                document
+                );
+            }
 
     @PreAuthorize("@permission.userCanCreate(#catalogue)")
     @RequestMapping (value = "documents",
-                     method = RequestMethod.POST,
-                     consumes = CEH_MODEL_JSON_VALUE)
+    method = RequestMethod.POST,
+    consumes = CEH_MODEL_JSON_VALUE)
     public ResponseEntity<MetadataDocument> newCehModelDocument(
             @ActiveUser CatalogueUser user,
             @RequestBody CehModel document,
             @RequestParam("catalogue") String catalogue
-    ) {
+            ) {
         return saveNewMetadataDocument(
-            user,
-            document,
-            catalogue,
-            "new CEH Model document"
-        );
-    }
+                user,
+                document,
+                catalogue,
+                "new CEH Model document"
+                );
+            }
 
     @PreAuthorize("@permission.userCanEdit(#file)")
     @RequestMapping(value = "documents/{file}",
-                    method = RequestMethod.PUT,
-                    consumes = CEH_MODEL_JSON_VALUE)
+    method = RequestMethod.PUT,
+    consumes = CEH_MODEL_JSON_VALUE)
     public ResponseEntity<MetadataDocument> updateCehModelDocument(
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file,
             @RequestBody CehModel document
-    ) {
+            ) {
         return saveMetadataDocument(
-            user,
-            file,
-            document
-        );
-    }
+                user,
+                file,
+                document
+                );
+            }
 
     @PreAuthorize("@permission.userCanCreate(#catalogue)")
     @RequestMapping (value = "documents",
-        method = RequestMethod.POST,
-        consumes = DATA_TYPE_JSON_VALUE)
+    method = RequestMethod.POST,
+    consumes = DATA_TYPE_JSON_VALUE)
     public ResponseEntity<MetadataDocument> newDataType(
-        @ActiveUser CatalogueUser user,
-        @RequestBody DataType document,
-        @RequestParam("catalogue") String catalogue
-    ) {
+            @ActiveUser CatalogueUser user,
+            @RequestBody DataType document,
+            @RequestParam("catalogue") String catalogue
+            ) {
         return saveNewMetadataDocument(
-            user,
-            document,
-            catalogue,
-            "new Data type"
-        );
-    }
+                user,
+                document,
+                catalogue,
+                "new Data type"
+                );
+            }
 
     @PreAuthorize("@permission.userCanEdit(#file)")
     @RequestMapping(value = "documents/{file}",
-        method = RequestMethod.PUT,
-        consumes = DATA_TYPE_JSON_VALUE)
+    method = RequestMethod.PUT,
+    consumes = DATA_TYPE_JSON_VALUE)
     public ResponseEntity<MetadataDocument> updateDataType(
-        @ActiveUser CatalogueUser user,
-        @PathVariable("file") String file,
-        @RequestBody DataType document
-    ) {
+            @ActiveUser CatalogueUser user,
+            @PathVariable("file") String file,
+            @RequestBody DataType document
+            ) {
         return saveMetadataDocument(
-            user,
-            file,
-            document
-        );
-    }
+                user,
+                file,
+                document
+                );
+            }
 
     @PreAuthorize("@permission.userCanCreate(#catalogue)")
     @RequestMapping (value = "documents",
-                     method = RequestMethod.POST,
-                     consumes = CEH_MODEL_APPLICATION_JSON_VALUE)
+    method = RequestMethod.POST,
+    consumes = CEH_MODEL_APPLICATION_JSON_VALUE)
     public ResponseEntity<MetadataDocument> newCehModelApplicationDocument(
             @ActiveUser CatalogueUser user,
             @RequestBody CehModelApplication document,
             @RequestParam("catalogue") String catalogue
-    ) {
+            ) {
         return saveNewMetadataDocument(
-            user,
-            document,
-            catalogue,
-            "new CEH Model document"
-        );
-    }
+                user,
+                document,
+                catalogue,
+                "new CEH Model document"
+                );
+            }
 
     @PreAuthorize("@permission.userCanEdit(#file)")
     @RequestMapping(value = "documents/{file}",
-                    method = RequestMethod.PUT,
-                    consumes = CEH_MODEL_APPLICATION_JSON_VALUE)
+    method = RequestMethod.PUT,
+    consumes = CEH_MODEL_APPLICATION_JSON_VALUE)
     public ResponseEntity<MetadataDocument> updateCehModelApplicationDocument(
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file,
             @RequestBody CehModelApplication document
-    ) {
+            ) {
         return saveMetadataDocument(
-            user,
-            file,
-            document
-        );
-    }
+                user,
+                file,
+                document
+                );
+            }
 
     @PreAuthorize("@permission.userCanCreate(#catalogue)")
     @RequestMapping (value = "documents",
-                     method = RequestMethod.POST,
-                     consumes = LINKED_JSON_VALUE)
+    method = RequestMethod.POST,
+    consumes = LINKED_JSON_VALUE)
     public ResponseEntity<MetadataDocument> newLinkDocument(
             @ActiveUser CatalogueUser user,
             @RequestBody LinkDocument document,
             @RequestParam("catalogue") String catalogue
-    ) {
+            ) {
         return saveNewMetadataDocument(
-            user,
-            document,
-            catalogue,
-            "new Linked Document"
-        );
-    }
+                user,
+                document,
+                catalogue,
+                "new Linked Document"
+                );
+            }
 
     @PreAuthorize("@permission.userCanEdit(#file)")
     @RequestMapping(value = "documents/{file}",
-                    method = RequestMethod.PUT,
-                    consumes = LINKED_JSON_VALUE)
+    method = RequestMethod.PUT,
+    consumes = LINKED_JSON_VALUE)
     public ResponseEntity<MetadataDocument> updateLinkDocument(
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file,
             @RequestBody LinkDocument document
-    ) {
+            ) {
         return saveMetadataDocument(
-            user,
-            file,
-            document
-        );
-    }
+                user,
+                file,
+                document
+                );
+            }
 
     @CrossOrigin
     @ResponseBody
@@ -278,31 +278,31 @@ public class DocumentController extends AbstractDocumentController {
     public MetadataDocument readMetadata(
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file
-    ) {
+            ) {
         return postProcessLinkDocument(documentRepository.read(file));
-    }
+            }
 
     @CrossOrigin
     @SneakyThrows
     @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
     @GetMapping("documents/{file}.xml")
     public String readMetadataXml(
-        @ActiveUser CatalogueUser user,
-        @PathVariable("file") String file
-    ) {
+            @ActiveUser CatalogueUser user,
+            @PathVariable("file") String file
+            ) {
         return "forward:/documents/" + file + "?format=" + GEMINI_XML_SHORT;
-    }
+            }
 
     @ResponseBody
     @SneakyThrows
     @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
     @GetMapping(value = "documents/{file}", produces = LINKED_JSON_VALUE)
     public MetadataDocument readLinkDocument(
-        @ActiveUser CatalogueUser user,
-        @PathVariable("file") String file
-    ) {
+            @ActiveUser CatalogueUser user,
+            @PathVariable("file") String file
+            ) {
         return documentRepository.read(file);
-    }
+            }
 
 
     @ResponseBody
@@ -313,9 +313,9 @@ public class DocumentController extends AbstractDocumentController {
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file,
             @PathVariable("revision") String revision
-    ) {
+            ) {
         return postProcessLinkDocument(documentRepository.read(file, revision));
-    }
+            }
 
     private MetadataDocument postProcessLinkDocument(MetadataDocument document) {
         log.debug("processing {}", document.getId());
@@ -341,13 +341,13 @@ public class DocumentController extends AbstractDocumentController {
 
     @PreAuthorize("@permission.toAccess(#user, #file, 'DELETE')")
     @RequestMapping(value = "documents/{file}",
-                    method = RequestMethod.DELETE)
+    method = RequestMethod.DELETE)
     @ResponseBody
     @SneakyThrows
     public DataRevision<CatalogueUser> deleteDocument(
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file
-    ) {
+            ) {
         return documentRepository.delete(user, file);
-    }
+            }
 }

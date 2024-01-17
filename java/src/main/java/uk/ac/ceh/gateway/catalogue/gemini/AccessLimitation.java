@@ -13,7 +13,7 @@ public class AccessLimitation {
     @Builder
     @JsonCreator
     public AccessLimitation(
-        @JsonProperty("value") String value, 
+        @JsonProperty("value") String value,
         @JsonProperty("code") String code,
         @JsonProperty("description") String description,
         @JsonProperty("uri") String uri){

@@ -107,21 +107,21 @@ public class BaseMonitoringTypePostProcessingService implements PostProcessingSe
      */
     private List<Link> withLinks(Property relationship, Resource doc) {
         ParameterizedSparqlString pss = new ParameterizedSparqlString(
-            "SELECT ?link ?title ?start ?end " +
-            "WHERE {{" +
-            "    ?link ?relationship ?doc ." +
-            "    MINUS { ?link <http://purl.org/voc/ef#linkingTime> ?time . } ." +
-            "    OPTIONAL { ?link <http://purl.org/dc/terms/title> ?title . } ." +
-            "  } " +
-            "  UNION {" +
-            "    ?timingLink ?relationship ?doc ." +
-            "    ?timingLink <http://purl.org/dc/terms/identifier> ?link . " +
-            "    ?timingLink <http://purl.org/voc/ef#linkingTime> ?time ." +
-            "    OPTIONAL { ?link <http://purl.org/dc/terms/title> ?title . } . " +
-            "    OPTIONAL { ?time <http://def.seegrid.csiro.au/isotc211/iso19108/2002/temporal#begin> ?start } . " +
-            "    OPTIONAL { ?time <http://def.seegrid.csiro.au/isotc211/iso19108/2002/temporal#end> ?end }" +
-            "}}"
-        );
+                "SELECT ?link ?title ?start ?end " +
+                "WHERE {{" +
+                "    ?link ?relationship ?doc ." +
+                "    MINUS { ?link <http://purl.org/voc/ef#linkingTime> ?time . } ." +
+                "    OPTIONAL { ?link <http://purl.org/dc/terms/title> ?title . } ." +
+                "  } " +
+                "  UNION {" +
+                "    ?timingLink ?relationship ?doc ." +
+                "    ?timingLink <http://purl.org/dc/terms/identifier> ?link . " +
+                "    ?timingLink <http://purl.org/voc/ef#linkingTime> ?time ." +
+                "    OPTIONAL { ?link <http://purl.org/dc/terms/title> ?title . } . " +
+                "    OPTIONAL { ?time <http://def.seegrid.csiro.au/isotc211/iso19108/2002/temporal#begin> ?start } . " +
+                "    OPTIONAL { ?time <http://def.seegrid.csiro.au/isotc211/iso19108/2002/temporal#end> ?end }" +
+                "}}"
+                );
         pss.setParam("doc", doc);
         pss.setParam("relationship", relationship);
         List<Link> toReturn = new ArrayList<>();
@@ -144,6 +144,6 @@ public class BaseMonitoringTypePostProcessingService implements PostProcessingSe
     }
 
     private LocalDate getDate(Literal d) {
-      return (LocalDate) d.getValue();
+        return (LocalDate) d.getValue();
     }
 }

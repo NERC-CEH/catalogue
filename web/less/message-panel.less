@@ -1,19 +1,19 @@
 #message-panel {
-  .panel();
+    .panel();
 
-  position:  fixed;
-  display:   none;
-  top:       @navbar-height + @navbar-border-width;
-  right:     0;
-  padding:   4px;
-  font-size: 80%;
+    position:  fixed;
+    display:   none;
+    top:       @navbar-height + @navbar-border-width;
+    right:     0;
+    padding:   4px;
+    font-size: 80%;
 
-  .alert { padding: 7px; margin-bottom: 0; }
+    .alert { padding: 7px; margin-bottom: 0; }
 
-  //Ideally I would like the icon to be in a button.
-  //However I can't get the styling to look quite right.
-  span.fa, span.fa-solid , span.fa-regular {
-    cursor: pointer;
-    &:hover { color: black; }
-  }
+    //Ideally I would like the icon to be in a button.
+    //However I can't get the styling to look quite right.
+    span.fa, span.fa-solid , span.fa-regular {
+        cursor: pointer;
+        &:hover { color: black; }
+    }
 }

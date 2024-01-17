@@ -45,8 +45,8 @@ class MapFileTest {
         doc.setTitle("Foo");
         val mapDataDefinition = new MapDataDefinition();
         /*
-        TODO: fill DataSource list to improve template testing
-        Need to expand DataSource to test template
+         * TODO: fill DataSource list to improve template testing
+         * Need to expand DataSource to test template
          */
         mapDataDefinition.setData(Collections.emptyList());
         doc.setMapDataDefinition(mapDataDefinition);

@@ -15,7 +15,7 @@ public class DatasetReferenceDate {
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     private final LocalDate creationDate, publicationDate, revisionDate, unavailableDate, supersededDate, deprecatedDate, releasedDate;
-    
+
     @Builder
     @JsonCreator
     private DatasetReferenceDate(
@@ -26,13 +26,13 @@ public class DatasetReferenceDate {
         @JsonProperty("supersededDate") LocalDate supersededDate,
         @JsonProperty("deprecatedDate") LocalDate deprecatedDate,
         @JsonProperty("releasedDate") LocalDate releasedDate) {
-        
+
         this.creationDate = creationDate;
         this.publicationDate = publicationDate;
-        this.revisionDate = revisionDate;        
-        this.unavailableDate = unavailableDate;        
-        this.supersededDate = supersededDate;        
-        this.deprecatedDate = deprecatedDate;        
-        this.releasedDate = releasedDate;        
+        this.revisionDate = revisionDate;
+        this.unavailableDate = unavailableDate;
+        this.supersededDate = supersededDate;
+        this.deprecatedDate = deprecatedDate;
+        this.releasedDate = releasedDate;
     }
 }

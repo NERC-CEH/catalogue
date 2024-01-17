@@ -12,16 +12,16 @@ public interface DocumentRepository {
         CatalogueUser user,
         String id
     ) throws DocumentRepositoryException;
-    
+
     MetadataDocument read(
         String file
     ) throws DocumentRepositoryException;
-    
+
     MetadataDocument read(
         String file,
         String revision
     ) throws DocumentRepositoryException;
-    
+
     MetadataDocument save(
         CatalogueUser user,
         InputStream inputStream,
@@ -30,14 +30,14 @@ public interface DocumentRepository {
         String catalogue,
         String message
     ) throws DocumentRepositoryException;
-    
+
     MetadataDocument save(
         CatalogueUser user,
         MetadataDocument document,
         String id,
         String message
     ) throws DocumentRepositoryException;
-    
+
     MetadataDocument save(
         CatalogueUser user,
         MetadataDocument document,

@@ -24,74 +24,74 @@ import static org.mockito.Mockito.verifyNoInteractions;
 @Slf4j
 @ExtendWith(MockitoExtension.class)
 public class JenaIndexMetadataDocumentGeneratorTest {
-  @InjectMocks private JenaIndexMetadataDocumentGenerator generator;
-  @Mock private DocumentIdentifierService service;
+    @InjectMocks private JenaIndexMetadataDocumentGenerator generator;
+    @Mock private DocumentIdentifierService service;
 
-  @Test
-  void generateResourceFromId() {
-    //given
-    val id = "123-456-789";
-    given(service.generateUri(id)).willReturn("https://example.com/123-456-789");
+    @Test
+    void generateResourceFromId() {
+        //given
+        val id = "123-456-789";
+        given(service.generateUri(id)).willReturn("https://example.com/123-456-789");
 
-    //when
-    generator.resource(id);
+        //when
+        generator.resource(id);
 
-    //then
-    verify(service).generateUri(id);
-  }
+        //then
+        verify(service).generateUri(id);
+    }
 
-  @Test
-  void generateResourceFromUri() {
-    //given
-    val uri = "https://example.som/123-456-789";
+    @Test
+    void generateResourceFromUri() {
+        //given
+        val uri = "https://example.som/123-456-789";
 
-    //when
-    generator.resource(uri);
+        //when
+        generator.resource(uri);
 
-    //then
-    verifyNoInteractions(service);
-  }
-  @Test
-  void emptyIdentifierDoesNotGetIndexed() {
-    //Given
-    val document = new GeminiDocument();
-    document.setId("");
+        //then
+        verifyNoInteractions(service);
+    }
+    @Test
+    void emptyIdentifierDoesNotGetIndexed() {
+        //Given
+        val document = new GeminiDocument();
+        document.setId("");
 
-    //When
-    List<Statement> actual = generator.generateIndex(document);
+        //When
+        List<Statement> actual = generator.generateIndex(document);
 
-    //Then
-    assertThat("Statement list should be empty", actual.isEmpty(), equalTo(true));
-  }
+        //Then
+        assertThat("Statement list should be empty", actual.isEmpty(), equalTo(true));
+    }
 
-  @Test
-  void identifierDoesGetIndexed() {
-    //Given
-    val document = new GeminiDocument();
-    document.setId("1234-5678");
+    @Test
+    void identifierDoesGetIndexed() {
+        //Given
+        val document = new GeminiDocument();
+        document.setId("1234-5678");
 
-    //When
-    List<Statement> actual = generator.generateIndex(document);
+        //When
+        List<Statement> actual = generator.generateIndex(document);
 
-    //Then
-    assertThat("Statement list should be empty", actual.size(), equalTo(1));
-    assertThat("Statement Object should be the identifier", actual.get(0).getLiteral().getString(), equalTo("1234-5678"));
-  }
+        //Then
+        assertThat("Statement list should be empty", actual.size(), equalTo(1));
+        assertThat("Statement Object should be the identifier", actual.get(0).getLiteral().getString(), equalTo("1234-5678"));
+    }
 
-  @Test
-  void relationshipsIndexed() {
-    //given
-    val document = new GeminiDocument();
-    document.setId("1234-5678");
-    document.setRelationships(Set.of(
-        new Relationship("https://vocabs.ceh.ac.uk/eidc#uses", "https://example.com/12")
-    ));
+    @Test
+    void relationshipsIndexed() {
+        //given
+        val document = new GeminiDocument();
+        document.setId("1234-5678");
+        document.setRelationships(Set.of(
+                new Relationship("https://vocabs.ceh.ac.uk/eidc#uses", "https://example.com/12")
+        ));
 
-    //when
-    val actual = generator.generateIndex(document);
-    log.info("statements: {}", actual);
+        //when
+        val actual = generator.generateIndex(document);
+        log.info("statements: {}", actual);
 
-    //then
-    assertThat(actual.size(), equalTo(2));
-  }
+        //then
+        assertThat(actual.size(), equalTo(2));
+    }
 }

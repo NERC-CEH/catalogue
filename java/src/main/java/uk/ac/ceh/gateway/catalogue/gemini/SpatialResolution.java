@@ -13,11 +13,11 @@ public class SpatialResolution {
     @Builder
     @JsonCreator
     private SpatialResolution(
-        @JsonProperty("distance") String distance, 
+        @JsonProperty("distance") String distance,
         @JsonProperty("uom") String uom,
         @JsonProperty("equivalentScale") String equivalentScale) {
         this.distance = nullToEmpty(distance);
         this.uom = nullToEmpty(uom);
         this.equivalentScale = nullToEmpty(equivalentScale);
-    }   
+    }
 }

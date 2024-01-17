@@ -31,82 +31,81 @@ import static uk.ac.ceh.gateway.catalogue.indexing.jena.Ontology.IDENTIFIER;
 @Slf4j
 @ExtendWith(MockitoExtension.class)
 class JenaIndexGeminiDocumentGeneratorTest {
-  private final String baseURI;
-  private final String id;
-  private final String uri;
-  private final Statement identifierStatement;
-  private final Statement uriStatement;
-  private final Statement relatedStatement;
+    private final String baseURI;
+    private final String id;
+    private final String uri;
+    private final Statement identifierStatement;
+    private final Statement uriStatement;
+    private final Statement relatedStatement;
 
-  @Mock private DocumentIdentifierService service;
-  private JenaIndexGeminiDocumentGenerator generator;
+    @Mock private DocumentIdentifierService service;
+    private JenaIndexGeminiDocumentGenerator generator;
 
-  public JenaIndexGeminiDocumentGeneratorTest() {
-    baseURI = "https://example.com";
-    id = "02982b8d-b688-4b3a-862b-1260eeac86f4";
-    uri = baseURI + "/id/" + id;
-    val subject = createResource(uri);
-    identifierStatement = createStatement(
-        subject,
-        IDENTIFIER,
-        createPlainLiteral(id)
-    );
-    uriStatement = createStatement(
-        subject,
-        IDENTIFIER,
-        createPlainLiteral(uri)
-    );
-    relatedStatement = createStatement(
-        subject,
-        EIDCUSES,
-        createProperty("https://example.com/id/b5fbe026-d706-4ee3-8f7b-4f62e663b4b9")
-    );
-  }
+    public JenaIndexGeminiDocumentGeneratorTest() {
+        baseURI = "https://example.com";
+        id = "02982b8d-b688-4b3a-862b-1260eeac86f4";
+        uri = baseURI + "/id/" + id;
+        val subject = createResource(uri);
+        identifierStatement = createStatement(
+                subject,
+                IDENTIFIER,
+                createPlainLiteral(id)
+                );
+        uriStatement = createStatement(
+                subject,
+                IDENTIFIER,
+                createPlainLiteral(uri)
+                );
+        relatedStatement = createStatement(
+                subject,
+                EIDCUSES,
+                createProperty("https://example.com/id/b5fbe026-d706-4ee3-8f7b-4f62e663b4b9")
+                );
+    }
 
-  @BeforeEach
-  public void setup() {
-    generator = new JenaIndexGeminiDocumentGenerator(new JenaIndexMetadataDocumentGenerator(service), baseURI);
-  }
+    @BeforeEach
+    public void setup() {
+        generator = new JenaIndexGeminiDocumentGenerator(new JenaIndexMetadataDocumentGenerator(service), baseURI);
+    }
 
-  @Test
-  void blankStringResourceIdentifiersNotIndexed() {
-    //Given
-    val document = new GeminiDocument();
-    document.setId("t");
-    document.setResourceIdentifiers(List.of(ResourceIdentifier.builder().build()));
-    given(service.generateUri("t")).willReturn("t");
+    @Test
+    void blankStringResourceIdentifiersNotIndexed() {
+        //Given
+        val document = new GeminiDocument();
+        document.setId("t");
+        document.setResourceIdentifiers(List.of(ResourceIdentifier.builder().build()));
+        given(service.generateUri("t")).willReturn("t");
 
-    //When
-    List<Statement> actual = generator.generateIndex(document);
+        //When
+        List<Statement> actual = generator.generateIndex(document);
 
-    //Then
-    assertThat("Should be two identifier statements", actual.size(), equalTo(2));
-    assertThat("Statement literal should be identifier", actual.get(0).getLiteral().getString(), equalTo("t"));
-    assertThat("Statement literal should be identifier", actual.get(1).getLiteral().getString(), equalTo("t"));
-    // No resource identifiers added to statements
-  }
+        //Then
+        assertThat("Should be two identifier statements", actual.size(), equalTo(2));
+        assertThat("Statement literal should be identifier", actual.get(0).getLiteral().getString(), equalTo("t"));
+        assertThat("Statement literal should be identifier", actual.get(1).getLiteral().getString(), equalTo("t"));
+        // No resource identifiers added to statements
+    }
 
-  @Test
-  void missingRelatedRecordRelNoStatementAdded() {
-    //given
-    val document = new GeminiDocument();
-    document.setId(id);
-    document.setRelatedRecords(
-        List.of(new RelatedRecord(
-            null,
-            "b5fbe026-d706-4ee3-8f7b-4f62e663b4b9",
-            "https://example.com/id/b5fbe026-d706-4ee3-8f7b-4f62e663b4b9",
-            "Title",
-            "Dataset"
-            ))
-    );
-    given(service.generateUri(id)).willReturn(uri);
+    @Test
+    void missingRelatedRecordRelNoStatementAdded() {
+        //given
+        val document = new GeminiDocument();
+        document.setId(id);
+        document.setRelatedRecords(
+                List.of(new RelatedRecord(
+                        null,
+                        "b5fbe026-d706-4ee3-8f7b-4f62e663b4b9",
+                        "https://example.com/id/b5fbe026-d706-4ee3-8f7b-4f62e663b4b9",
+                        "Title",
+                        "Dataset"
+                        ))
+                );
+        given(service.generateUri(id)).willReturn(uri);
 
-    //when
-    val statements = generator.generateIndex(document);
+        //when
+        val statements = generator.generateIndex(document);
 
-    //when
-    assertThat(statements, containsInAnyOrder(identifierStatement, uriStatement));
-  }
-
+        //when
+        assertThat(statements, containsInAnyOrder(identifierStatement, uriStatement));
+    }
 }

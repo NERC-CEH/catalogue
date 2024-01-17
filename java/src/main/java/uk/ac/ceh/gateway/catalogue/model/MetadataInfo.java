@@ -118,16 +118,16 @@ public class MetadataInfo {
 
         updated.forEach(ip -> {
             if (ip.isCanView()) {
-                toReturn.addPermission(Permission.VIEW, ip.getIdentity());    
+                toReturn.addPermission(Permission.VIEW, ip.getIdentity());
             }
             if (ip.isCanEdit()) {
-                toReturn.addPermission(Permission.EDIT, ip.getIdentity());    
+                toReturn.addPermission(Permission.EDIT, ip.getIdentity());
             }
             if (ip.isCanDelete()) {
-                toReturn.addPermission(Permission.DELETE, ip.getIdentity());    
+                toReturn.addPermission(Permission.DELETE, ip.getIdentity());
             }
             if (ip.isCanUpload()) {
-                toReturn.addPermission(Permission.UPLOAD, ip.getIdentity());    
+                toReturn.addPermission(Permission.UPLOAD, ip.getIdentity());
             }
         });
         preventAllPermissionsBeingRemovedOrOnlyPublic(toReturn);

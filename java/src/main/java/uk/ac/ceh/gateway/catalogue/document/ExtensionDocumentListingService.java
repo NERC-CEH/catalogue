@@ -32,34 +32,34 @@ public class ExtensionDocumentListingService implements DocumentListingService {
         //Scan through the files list, return any which there exists a .meta and .raw
         //file
         return filterFilenames(files,(e) -> e.getValue().stream()
-                                              .map(Filename::getExtension)
-                                              .collect(Collectors.toList())
-                                              .containsAll(extensions));
+                .map(Filename::getExtension)
+                .collect(Collectors.toList())
+                .containsAll(extensions));
     }
 
     @Override
     public List<String> filterFilenamesEitherExtension(Collection<String> files) {
-      //Scan through the files list, return any which there exists a .meta or .raw
-      //file
-      return filterFilenames(files,(e) -> {
-          List<String> exts = e.getValue().stream()
-                                        .map(Filename::getExtension)
-                                        .collect(Collectors.toList());
-          return exts.contains("meta") || exts.contains("raw");
+        //Scan through the files list, return any which there exists a .meta or .raw
+        //file
+        return filterFilenames(files,(e) -> {
+            List<String> exts = e.getValue().stream()
+                .map(Filename::getExtension)
+                .collect(Collectors.toList());
+            return exts.contains("meta") || exts.contains("raw");
         }
-      );
+        );
     }
 
     private List<String> filterFilenames(Collection<String> files, Predicate<Map.Entry<String,List<Filename>>> filter) {
-          return files.stream()
-                  .map(Filename::new)
-                  .collect(Collectors.groupingBy(Filename::getName))
-                  .entrySet()
-                  .stream()
-                  .filter(filter)
-                  .map(Map.Entry::getKey)
-                  .collect(Collectors.toList());
-      }
+        return files.stream()
+            .map(Filename::new)
+            .collect(Collectors.groupingBy(Filename::getName))
+            .entrySet()
+            .stream()
+            .filter(filter)
+            .map(Map.Entry::getKey)
+            .collect(Collectors.toList());
+    }
 
     @Data
     private static class Filename {

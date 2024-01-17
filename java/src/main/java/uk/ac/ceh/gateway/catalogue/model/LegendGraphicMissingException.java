@@ -6,5 +6,5 @@ public class LegendGraphicMissingException extends IllegalArgumentException {
     public LegendGraphicMissingException(String mess) {
         super(mess);
     }
-    
+
 }
