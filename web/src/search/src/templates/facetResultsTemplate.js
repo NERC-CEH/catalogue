@@ -9,24 +9,24 @@ import _ from 'underscore'
 */
 export default _.template(`
 <div class="facet">
-  <ul>
-    <% _.each(results, function(facet) { %>
-      <% if(facet.name != 'Unknown') { %>
-        <li>
-          <a href="<%=facet.url%>" title="<%=facet.name%> (<%=facet.count%>)"><%=facet.name%> <small class="facet-count">(<%=facet.count%>)</small></a>
+    <ul>
+        <% _.each(results, function(facet) { %>
+            <% if(facet.name != 'Unknown') { %>
+                <li>
+                    <a href="<%=facet.url%>" title="<%=facet.name%> (<%=facet.count%>)"><%=facet.name%> <small class="facet-count">(<%=facet.count%>)</small></a>
 
-          <% if(facet.active) { %>
-            <a href="<%=facet.url%>" title="<%=facet.name%> (<%=facet.count%>)">
-            <span class="fa-solid fa-times"></span>
-            </a>
-          <% } %>
+                    <% if(facet.active) { %>
+                        <a href="<%=facet.url%>" title="<%=facet.name%> (<%=facet.count%>)">
+                        <span class="fa-solid fa-times"></span>
+                        </a>
+                    <% } %>
 
-          <% if (facet.subFacetResults) { %>
-            <%= template({results:facet.subFacetResults, template: template}) %>
-          <% } %>
-        <% } %>
-        </li>
-    <% }); %>
-  </ul>
+                    <% if (facet.subFacetResults) { %>
+                        <%= template({results:facet.subFacetResults, template: template}) %>
+                    <% } %>
+                <% } %>
+                </li>
+        <% }); %>
+    </ul>
 </div>
 `)
