@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.StreamUtils;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
+import uk.ac.ceh.gateway.catalogue.config.SecurityConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
@@ -43,7 +44,11 @@ import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.UPLO
 @WithMockCatalogueUser
 @Slf4j
 @ActiveProfiles({"test", "upload:simple"})
-@Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
+@Import({
+    SecurityConfig.class,
+    SecurityConfigCrowd.class,
+    DevelopmentUserStoreConfig.class
+})
 @DisplayName("Simple Upload Controller")
 @WebMvcTest(
     controllers = UploadController.class,
