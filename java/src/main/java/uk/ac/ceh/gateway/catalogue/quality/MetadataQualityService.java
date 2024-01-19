@@ -604,11 +604,24 @@ public class MetadataQualityService {
     }
 
     Optional<MetadataCheck> checkKeywords(DocumentContext parsed) {
-        val keywords = parsed.read("$.descriptiveKeywords[*].keywords[*]", typeRefStringString);
-        if (keywords.isEmpty()) {
-            return Optional.of(new MetadataCheck("Keywords are missing", ERROR));
+        val keywords_theme = parsed.read("$.keywords_theme[*]", typeRefStringString);
+        val keywords_place = parsed.read("$.keywords_place[*]", typeRefStringString);
+        val keywords_project = parsed.read("$.keywords_project[*]", typeRefStringString);
+        val keywords_observedProperty = parsed.read("$.keywords_observedProperty[*]", typeRefStringString);
+        val keywords_instrument = parsed.read("$.keywords_instrument[*]", typeRefStringString);
+        val keywords_other = parsed.read("$.keywords_other[*]", typeRefStringString);
+        val allKeywords = new ArrayList<Map<String, String>>();
+        allKeywords.addAll(keywords_theme);
+        allKeywords.addAll(keywords_place);
+        allKeywords.addAll(keywords_project);
+        allKeywords.addAll(keywords_observedProperty);
+        allKeywords.addAll(keywords_instrument);
+        allKeywords.addAll(keywords_other);
+
+        if (allKeywords.isEmpty()) {
+            return Optional.of(new MetadataCheck("There are no keywords", ERROR));
         }
-        if (keywords.stream().anyMatch(keyword -> fieldIsMissing(keyword, "value"))) {
+        if (allKeywords.stream().anyMatch(keyword -> fieldIsMissing(keyword, "value"))) {
             return Optional.of(new MetadataCheck("Keyword is empty", ERROR));
         } else {
             return Optional.empty();
