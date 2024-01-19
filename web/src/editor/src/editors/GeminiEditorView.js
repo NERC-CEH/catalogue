@@ -7,14 +7,11 @@ import {
   CheckboxView,
   ContactView,
   DatasetReferenceDateView,
-  DescriptiveKeywordView,
   DistributionFormatView,
   FundingView,
   IncomingCitationView,
   InspireThemeView,
   KeywordVocabularyView,
-  DistributionFormatView, FundingView,
-  InspireThemeView, MapDataSourceView,
   KeywordThemeView,
   MapDataSourceView,
   OnlineResourceView,
@@ -34,15 +31,16 @@ import {
   SpatialResolutionView,
   TemporalExtentView,
   TextareaView,
-  TopicCategoryView
+  TopicCategoryView,
+  DescriptiveKeywordView
 } from '../views'
 import {
   AccessLimitation,
   Contact,
-  DescriptiveKeyword,
   DistributionFormat,
   Funding,
   InspireTheme,
+  KeywordTheme,
   MapDataSource,
   MultipleDate,
   OnlineResource,
@@ -51,7 +49,7 @@ import {
   SpatialResolution,
   Supplemental,
   TopicCategory,
-  KeywordTheme
+  DescriptiveKeyword
 } from '../models'
 import {
   BoundingBox,

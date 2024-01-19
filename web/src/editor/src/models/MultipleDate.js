@@ -15,25 +15,25 @@ export default Backbone.Model.extend({
       begin: 'Begin',
       end: 'End'
     }
-
-    const dateRegExp = '^(19[0-9]{2}|2[0-9]{3})-(0[1-9]|1[012])-([123]0|[012][1-9]|31)$'
+  
+    const dateRegEx = '^\\d{4}\\-(0[1-9]|1[0-2])\\-(0[1-9]|(1|2)[0-9]|3[0-1])$'
     const errors = []
 
     _.chain(attrs)
       .keys()
       .each(function (key) {
         const dateString = attrs[key]
-        if (!dateString.match(dateRegExp)) {
+        if (!dateString.match(dateRegEx)) {
           errors.push({
             message:
-              `${labels[key]} is wrong. The date format is supposed to be yyyy-mm-dd`
+              `${labels[key]} is wrong. The date must be valid and in the format yyyy-mm-dd`
           })
         }
 
         if (isNaN(Date.parse(dateString))) {
           return errors.push({
             message:
-              `${labels[key]} doesn't look like a date to me`
+              `${labels[key]} doesn't look like a valid date`
           })
         }
       })
