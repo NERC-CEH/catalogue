@@ -21,6 +21,7 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.JiraService;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.List;
 
 import static java.lang.String.format;
@@ -173,9 +174,12 @@ public class GitRepoServiceAgreementServiceTest {
         val dataOngoingCommit = mock(DataOngoingCommit.class);
 
         given(repo.submitData(
-            eq("service-agreement/" + ID + ".raw"),
+            any(String.class),
             any(DataWriter.class)
         ))
+            .willReturn(dataOngoingCommit);
+
+        given(dataOngoingCommit.submitData(any(), any()))
             .willReturn(dataOngoingCommit);
 
         given(dataOngoingCommit.commit(
@@ -189,6 +193,7 @@ public class GitRepoServiceAgreementServiceTest {
         service.update(user, ID, serviceAgreement);
 
         //Then
+        verify(metadataInfoMapper, times(2)).readInfo(any(InputStream.class));
         verify(dataOngoingCommit).commit(user, "updating service agreement " + ID);
     }
 

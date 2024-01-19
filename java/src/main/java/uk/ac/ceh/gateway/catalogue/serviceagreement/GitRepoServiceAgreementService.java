@@ -99,10 +99,13 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     @Override
     public ServiceAgreement update(CatalogueUser user, String id, ServiceAgreement serviceAgreement) {
         serviceAgreement.setId(id);
-        val metadataInfo = serviceAgreement.getMetadata();
+        val fromDatastore = repo.getData(FOLDER + id + ".meta");
+        val metadataInfo = metadataInfoMapper.readInfo(fromDatastore.getInputStream());
         addPermissionsForDepositor(metadataInfo, serviceAgreement);
-        repo.submitData(FOLDER + id + ".raw", (o) -> serviceAgreementMapper.writeInfo(serviceAgreement, o))
-                .commit(user, "updating service agreement " + id);
+        repo
+            .submitData(FOLDER + id + ".meta", (o) -> metadataInfoMapper.writeInfo(metadataInfo, o))
+            .submitData(FOLDER + id + ".raw", (o) -> serviceAgreementMapper.writeInfo(serviceAgreement, o))
+            .commit(user, "updating service agreement " + id);
         return get(id);
     }
 
