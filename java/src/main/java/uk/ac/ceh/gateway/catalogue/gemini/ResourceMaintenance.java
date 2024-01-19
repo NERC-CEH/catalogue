@@ -8,7 +8,7 @@ import lombok.Value;
 
 @Value
 public class ResourceMaintenance {
-    private String frequencyOfUpdate, note; 
+    private String frequencyOfUpdate, note;
 
     @Builder
     @JsonCreator

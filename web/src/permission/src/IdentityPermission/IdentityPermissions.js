@@ -3,7 +3,7 @@ import IdentityPermission from './IdentityPermission'
 
 export default Backbone.Collection.extend({
 
-  model: IdentityPermission,
-  comparator: 'identity'
+    model: IdentityPermission,
+    comparator: 'identity'
 
 })

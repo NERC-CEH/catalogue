@@ -13,8 +13,8 @@ public class FacetFilter {
     private static final String DELIMITER = "|";
     String field;
     String value;
-   
-    
+
+
     public FacetFilter(String filter) {
         filter = URLDecoder.decode(filter, StandardCharsets.UTF_8);
         if(StringUtils.countOccurrencesOf(filter, DELIMITER) == 1){
@@ -30,12 +30,12 @@ public class FacetFilter {
             );
         }
     }
-    
+
     public FacetFilter(String field, String value) {
         this.field = field;
         this.value = value;
     }
-    
+
     public String asURIContent() {
         try {
             return URLEncoder.encode(
@@ -56,7 +56,7 @@ public class FacetFilter {
             );
         }
     }
-    
+
     public String asSolrFilterQuery() {
         return new StringBuilder("{!term f=").append(field).append("}").append(value).toString();
     }

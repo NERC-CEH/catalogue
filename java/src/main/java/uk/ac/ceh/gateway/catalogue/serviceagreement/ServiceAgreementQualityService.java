@@ -143,7 +143,7 @@ public class ServiceAgreementQualityService {
             val description = parsed.read("$.description", String.class).trim();
             if (!stringIsMissing(description) && description.length() < 100)  {
                 toReturn.add(new MetadataCheck("Description is incomplete (minimum 100 characters)", ERROR));
-            } 
+            }
         } catch (NullPointerException ex) {
             toReturn.add(new MetadataCheck("Description is incomplete (minimum 100 characters)", ERROR));
         }
@@ -174,14 +174,14 @@ public class ServiceAgreementQualityService {
                     toReturn.add(new MetadataCheck("Author name format incorrect", ERROR));
                 }
             }
-            
+
             if (authors.stream().anyMatch(author -> fieldIsMissing(author, "organisationName"))) {
                 toReturn.add(new MetadataCheck("Author's affiliation (organisation name) is missing", ERROR));
             }
-    
-            checkEmail(authors, "Author's email address is incorrect (%s)").ifPresent(toReturn::addAll);    
+
+            checkEmail(authors, "Author's email address is incorrect (%s)").ifPresent(toReturn::addAll);
         }
-        
+
         if (toReturn.isEmpty()) {
             return Optional.empty();
         } else {
@@ -263,7 +263,7 @@ public class ServiceAgreementQualityService {
                     toReturn.add(new MetadataCheck("File names should only consist of alphanumeric characters, underscore and hyphens", ERROR));
                 }
             }
-            
+
             if (files.stream().anyMatch(file -> fieldIsMissing(file, "format"))) {
                 toReturn.add(new MetadataCheck("File format is missing", ERROR));
             }
@@ -301,7 +301,7 @@ public class ServiceAgreementQualityService {
                     toReturn.add(new MetadataCheck("Supporting document filename should only consist of alphanumeric characters, underscore and hyphens", ERROR));
                 }
             }
-            
+
             if (supportingDocs.stream().anyMatch(supportingDoc -> fieldIsMissing(supportingDoc, "content"))) {
                 toReturn.add(new MetadataCheck("Supporting document content is missing", ERROR));
             }

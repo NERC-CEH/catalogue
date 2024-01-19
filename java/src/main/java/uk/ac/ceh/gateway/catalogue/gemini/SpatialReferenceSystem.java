@@ -13,11 +13,11 @@ public class SpatialReferenceSystem {
     @Builder
     @JsonCreator
     private SpatialReferenceSystem(
-        @JsonProperty("code") String code, 
+        @JsonProperty("code") String code,
         @JsonProperty("codeSpace") String codeSpace,
         @JsonProperty("title") String title){
         this.code = nullToEmpty(code);
         this.codeSpace = nullToEmpty(codeSpace);
         this.title = nullToEmpty(title);
-    }   
+    }
 }

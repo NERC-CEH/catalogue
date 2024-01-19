@@ -15,13 +15,13 @@ public class ColourRampTest {
         //Given
         ColourRamp ramp = new ColourRamp(new Color(0xff,0xec,0x8b));
         ramp.addStep(1, new Color(0x8b,0x47,0x26));
-        
+
         //When
         List<Color> collect = IntStream
                 .range(0, 6)
                 .mapToObj(i -> ramp.getColour(i, 5))
                 .collect(Collectors.toList());
-        
+
         //Then
         assertEquals(collect, Arrays.asList(
             new Color(0xff,0xec,0x8b),
@@ -31,21 +31,21 @@ public class ColourRampTest {
             new Color(0xa2,0x68,0x3a),
             new Color(0x8b,0x47,0x26)
         ));
-    }     
-    
+    }
+
     @Test
     public void checkThatCanGenerateMultiStopColourRamp() {
         //Given
         ColourRamp ramp = new ColourRamp(new Color(0xa2, 0xcd, 0x5a));
         ramp.addStep(1, new Color(0xff, 0xec, 0x8b));
         ramp.addStep(1, new Color(0x00, 0x00, 0x80));
-        
+
         //When
         List<Color> collect = IntStream
                 .range(0, 9)
                 .mapToObj(i -> ramp.getColour(i, 8))
                 .collect(Collectors.toList());
-        
+
         //Then
         assertEquals(collect, Arrays.asList(
             new Color(0xA2, 0xCD, 0x5A),
@@ -58,5 +58,5 @@ public class ColourRampTest {
             new Color(0x3F, 0x3B, 0x82),
             new Color(0x00, 0x00, 0x80)
         ));
-    }     
+    }
 }

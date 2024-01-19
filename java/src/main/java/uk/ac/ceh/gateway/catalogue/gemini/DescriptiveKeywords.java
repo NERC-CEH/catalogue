@@ -14,7 +14,7 @@ import static com.google.common.base.Strings.nullToEmpty;
 public class DescriptiveKeywords {
     private final List<Keyword> keywords;
     private final String type;
-    
+
     @Builder
     @JsonCreator
     private DescriptiveKeywords(@JsonProperty("keywords") List<Keyword> keywords,

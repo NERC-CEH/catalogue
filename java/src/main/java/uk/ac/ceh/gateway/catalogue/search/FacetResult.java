@@ -12,7 +12,7 @@ public class FacetResult {
     private final boolean active;
     private final long count;
     private final List<FacetResult> subFacetResults;
-    
+
     @Builder
     private FacetResult(String name, String url, boolean active, long count, List<FacetResult> subFacetResults) {
         this.name = nullToEmpty(name);

@@ -27,19 +27,19 @@ import java.util.stream.Collectors;
 @ToString(callSuper = true)
 @Accessors(chain = true)
 @ConvertUsing({
-  @Template(called="html/infrastructure/infrastructurerecord.ftlh", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
+    @Template(called="html/infrastructure/infrastructurerecord.ftlh", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
 })
 public class InfrastructureRecord extends AbstractMetadataDocument {
-  
-  private String capabilities, lifecycle, uniqueness, partners, locationText, access, userCosts, fundingSources, scienceArea, infrastructureScale ;
 
-  private InfrastructureCategory infrastructureCategory;
-  private List<Keyword> infrastructureChallenge;
-  private List<ResponsibleParty> owners;
-  private List<String> users;
-  private List<BoundingBox> boundingBoxes;
-  private List<OnlineResource> onlineResources;
-  private List<RelatedRecord> relatedRecords;
+    private String capabilities, lifecycle, uniqueness, partners, locationText, access, userCosts, fundingSources, scienceArea, infrastructureScale ;
+
+    private InfrastructureCategory infrastructureCategory;
+    private List<Keyword> infrastructureChallenge;
+    private List<ResponsibleParty> owners;
+    private List<String> users;
+    private List<BoundingBox> boundingBoxes;
+    private List<OnlineResource> onlineResources;
+    private List<RelatedRecord> relatedRecords;
 }
 
 

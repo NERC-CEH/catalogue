@@ -31,7 +31,7 @@ public class ServiceAgreement extends AbstractMetadataDocument {
     private Keyword dataCategory;
 
     private List<File> files;
-    
+
     private List<SupportingDoc> supportingDocs;
 
     private ResourceConstraint endUserLicence;
@@ -39,12 +39,12 @@ public class ServiceAgreement extends AbstractMetadataDocument {
     private List<ResponsibleParty> ownersOfIpr;
 
     private List<DescriptiveKeywords> descriptiveKeywords;
- 
+
     private List<BoundingBox> areaOfStudy;
 
     /*
-    FLAGS
-    */
+     * FLAGS
+     */
     @JsonIgnore
     private boolean historical;
 

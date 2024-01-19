@@ -38,7 +38,7 @@ public class ResponsiblePartyConverter {
         this.postalCode = xpath.compile(POSTAL_CODE);
         this.country = xpath.compile(COUNTRY);
     }
-    
+
     public List<ResponsibleParty> convert(Document document) throws XPathExpressionException {
         List<ResponsibleParty> toReturn = new ArrayList<>();
         NodeList nodeList = (NodeList) responsibleParties.evaluate(document, XPathConstants.NODESET);
@@ -55,7 +55,7 @@ public class ResponsiblePartyConverter {
         }
         return toReturn;
     }
-    
+
     private Address convertAddress(Node responsiblePartyNode) throws XPathExpressionException {
         return Address.builder()
             .deliveryPoint(deliveryPoint.evaluate(responsiblePartyNode))

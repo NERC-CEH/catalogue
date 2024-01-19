@@ -14,13 +14,13 @@ public class MapServerException extends RuntimeException {
     static final long serialVersionUID = 1L;
     @Getter private final MediaType contentType;
     @Getter private final HttpStatus statusCode;
-    
+
     public MapServerException(String mess, HttpStatus statusCode, MediaType contentType) {
         super(mess);
         this.statusCode = statusCode;
         this.contentType = contentType;
     }
-    
+
     /**
      * Get the MapServerException in a form which can be returned to the end user
      * @return ResponseEntity containing a String body

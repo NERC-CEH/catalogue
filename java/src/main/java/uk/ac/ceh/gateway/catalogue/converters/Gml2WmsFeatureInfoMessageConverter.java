@@ -64,7 +64,7 @@ public class Gml2WmsFeatureInfoMessageConverter extends AbstractHttpMessageConve
         } catch (SAXException se) {
             throw new HttpMessageNotReadableException("The xml content could not be parsed", se, inputMessage);
         } catch (XPathExpressionException ex) {
-           throw new HttpMessageNotReadableException("An xpath failed to evaluate", ex, inputMessage);
+            throw new HttpMessageNotReadableException("An xpath failed to evaluate", ex, inputMessage);
         }
     }
 

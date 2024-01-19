@@ -12,11 +12,11 @@ import org.springframework.http.MediaType;
 public class TransparentProxy {
     private @NotNull final URI uri;
     private final MediaType desiredMediaType;
-    
+
     public TransparentProxy(String url) throws URISyntaxException {
         this(url, null);
     }
-    
+
     public TransparentProxy(String url, MediaType desiredMediaType) throws URISyntaxException {
         this(new URI(url), desiredMediaType);
     }

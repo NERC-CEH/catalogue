@@ -16,14 +16,14 @@ public class DatasetReferenceDatesConverter {
     private static final String REVISION = "/*/gmd:identificationInfo/*/gmd:citation/*/gmd:date[*/gmd:dateType/*/@codeListValue='revision']";
     private static final String DATE = "*/gmd:date/gco:Date";
     private final XPathExpression creation, publication, revision, date;
-    
+
     public DatasetReferenceDatesConverter(XPath xpath) throws XPathExpressionException{
         this.creation = xpath.compile(CREATION);
         this.publication = xpath.compile(PUBLICATION);
         this.revision = xpath.compile(REVISION);
         this.date = xpath.compile(DATE);
     }
-    
+
     public DatasetReferenceDate convert(Document document) throws XPathExpressionException{
         return DatasetReferenceDate.builder()
                 .creationDate(getDate(this.creation, document))
@@ -31,7 +31,7 @@ public class DatasetReferenceDatesConverter {
                 .revisionDate(getDate(this.revision, document))
                 .build();
     }
-    
+
     private LocalDate getDate(XPathExpression dateExpression, Document document) throws XPathExpressionException{
         LocalDate toReturn = null;
         Node dateNode = (Node) dateExpression.evaluate(document, XPathConstants.NODE);

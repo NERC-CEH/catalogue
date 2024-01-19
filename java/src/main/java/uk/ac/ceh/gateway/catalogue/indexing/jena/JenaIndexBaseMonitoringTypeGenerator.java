@@ -64,10 +64,10 @@ public class JenaIndexBaseMonitoringTypeGenerator implements IndexGenerator<Base
                 createRelationships(links, me, programme.getBroaderThan(),  BROADER);
             }
             Optional.ofNullable(baseMonitoringType.getBoundingBoxes())
-                    .orElse(Collections.emptyList())
-                    .stream()
-                    .map(BoundingBox::getWkt)
-                    .forEach( w -> links.add(createStatement(me, HAS_GEOMETRY, createTypedLiteral(w, WKT_LITERAL))));
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(BoundingBox::getWkt)
+                .forEach( w -> links.add(createStatement(me, HAS_GEOMETRY, createTypedLiteral(w, WKT_LITERAL))));
         }
         return links;
     }
@@ -105,9 +105,9 @@ public class JenaIndexBaseMonitoringTypeGenerator implements IndexGenerator<Base
 
             Resource linkingTime = createResource();
             Optional.ofNullable(timedLink.getLinkingTime().getStart())
-                    .ifPresent( s -> statements.add(createStatement(linkingTime, TEMPORAL_BEGIN, dateTime(s))));
+                .ifPresent( s -> statements.add(createStatement(linkingTime, TEMPORAL_BEGIN, dateTime(s))));
             Optional.ofNullable(timedLink.getLinkingTime().getEnd())
-                    .ifPresent( s -> statements.add(createStatement(linkingTime, TEMPORAL_END, dateTime(s))));
+                .ifPresent( s -> statements.add(createStatement(linkingTime, TEMPORAL_END, dateTime(s))));
 
             statements.add(createStatement(timedLinkUri, LINKING_TIME, linkingTime));
         }
@@ -128,7 +128,7 @@ public class JenaIndexBaseMonitoringTypeGenerator implements IndexGenerator<Base
             return timed.getLinkingTime() != null && (
                     timed.getLinkingTime().getStart() != null ||
                     timed.getLinkingTime().getEnd() != null
-                );
+                    );
         }
         return false;
     }
@@ -137,4 +137,4 @@ public class JenaIndexBaseMonitoringTypeGenerator implements IndexGenerator<Base
     private static Literal dateTime(LocalDate time){
         return createTypedLiteral(time);
     }
- }
+}

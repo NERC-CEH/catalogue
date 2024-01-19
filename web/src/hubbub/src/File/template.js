@@ -4,8 +4,8 @@ export default _.template(`
 <div class="panel panel-file <%= classes %>">
     <div class="panel-heading">
         <% if (errorType === 'file') { %>
-             <i class="file-icon fa-solid fa-exclamation-circle"></i>
-         <% } else { %>
+            <i class="file-icon fa-solid fa-exclamation-circle"></i>
+        <% } else { %>
             <% if (status === 'MOVING_FROM' || status === 'MOVING_TO') { %>
                 <span class="panel-heading-type"><%= size %></span>
             <% } %>

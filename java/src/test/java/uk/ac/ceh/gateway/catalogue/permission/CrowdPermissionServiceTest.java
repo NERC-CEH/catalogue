@@ -151,7 +151,7 @@ public class CrowdPermissionServiceTest {
     public void adminCanUpload() {
         //given
         populateSecurityContextHolderAndAuthentication("admin", "ROLE_CIG_SYSTEM_ADMIN");
-      //  configDocumentInfoMapper(MetadataInfo.builder().build());
+        //configDocumentInfoMapper(MetadataInfo.builder().build());
 
         //when
         val actual = permissionService.userCanUpload("test");
@@ -189,7 +189,7 @@ public class CrowdPermissionServiceTest {
     public void namedEditorCannotEditRestricted() {
         //Given
         populateSecurityContextHolderAndAuthentication("editor");
-       // configDocumentInfoMapper(MetadataInfo.builder().catalogue("eidc").build());
+        //configDocumentInfoMapper(MetadataInfo.builder().catalogue("eidc").build());
 
         //When
         val actual = permissionService.userCanEditRestrictedFields("eidc");
@@ -229,7 +229,7 @@ public class CrowdPermissionServiceTest {
     @Test
     public void anonymousCanAccessPublicRecord() {
         //Given
-//        given(repo.getLatestRevision()).willReturn(new DummyRevision("revision"));
+        //given(repo.getLatestRevision()).willReturn(new DummyRevision("revision"));
         given(repo.getData("revision", "test.meta")).willAnswer(RETURNS_MOCKS);
         given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(publik());
 
@@ -245,7 +245,7 @@ public class CrowdPermissionServiceTest {
     public void namedUserCanAccessPublicRecord() {
         //Given
         val namedUser = populateSecurityContextHolder("named");
-       // given(repo.getLatestRevision()).willReturn(new DummyRevision("revision"));
+        //given(repo.getLatestRevision()).willReturn(new DummyRevision("revision"));
         given(repo.getData("revision", "test.meta")).willAnswer(RETURNS_MOCKS);
         given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(publik());
 
@@ -294,7 +294,7 @@ public class CrowdPermissionServiceTest {
         val namedUser = populateSecurityContextHolder("username");
         val metadataInfo = draft();
         metadataInfo.addPermission(Permission.VIEW, "group0");
-//        given(repo.getLatestRevision()).willReturn(new DummyRevision("revision"));
+        //given(repo.getLatestRevision()).willReturn(new DummyRevision("revision"));
         given(repo.getData("revision", "test.meta")).willAnswer(RETURNS_MOCKS);
         given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(metadataInfo);
         given(groupStore.getGroups(namedUser)).willReturn(Collections.singletonList(new CrowdGroup("group0")));
@@ -311,7 +311,7 @@ public class CrowdPermissionServiceTest {
     public void namedUserCannotWriteDraftRecordWithNoGroupPermission() {
         //Given
         val namedUser = populateSecurityContextHolder("username");
-//        given(repo.getLatestRevision()).willReturn(new DummyRevision("revision"));
+        //given(repo.getLatestRevision()).willReturn(new DummyRevision("revision"));
         given(repo.getData("revision", "test.meta")).willAnswer(RETURNS_MOCKS);
         given(documentInfoMapper.readInfo(any(InputStream.class))).willReturn(draft());
         given(groupStore.getGroups(namedUser)).willReturn(Collections.emptyList());

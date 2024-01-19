@@ -13,7 +13,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ServiceTest {
     private ObjectMapper mapper;
-    
+
     @BeforeEach
     public void setup() {
         mapper = new ObjectMapper();
@@ -39,14 +39,14 @@ public class ServiceTest {
                     .build()
             ))
             .build();
-        
+
         //When
         Service actual = mapper.readValue(json, Service.class);
         String service = mapper.writeValueAsString(actual);
-        
+
         //Then
         assertThat("Actual service should equal expected", actual, equalTo(expected));
         assertThat("service should be the same as the input json string", service, equalTo(json));
     }
-    
+
 }

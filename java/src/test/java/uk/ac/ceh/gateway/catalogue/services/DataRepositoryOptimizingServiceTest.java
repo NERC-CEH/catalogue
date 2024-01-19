@@ -26,34 +26,34 @@ public class DataRepositoryOptimizingServiceTest {
     public void setup() {
         this.service = new DataRepositoryOptimizingService(this.repo);
     }
-    
+
     @Test
     public void checkThatDateGetsSetOnOptimization() throws DataRepositoryException {
         //When
         service.performOptimization();
-        
+
         //Then
         assertNotNull(service.getLastOptimized());
     }
-    
+
     @Test
     public void checkThatDateDoesntPersistIfNotUsingAGitRepo()throws DataRepositoryException {
         //Given
         DataRepository<CatalogueUser> repo = mock(DataRepository.class); // Not a Git repository
         DataRepositoryOptimizingService service = new DataRepositoryOptimizingService(repo);
-        
+
         //When
         service.performOptimization();
-        
+
         //Then
         assertNull(service.getLastOptimized());
     }
-    
+
     @Test
     public void checkThatOptimizesWhenCalled() throws DataRepositoryException {
         //When
         service.performOptimization();
-        
+
         //Then
         verify(repo).optimize();
     }

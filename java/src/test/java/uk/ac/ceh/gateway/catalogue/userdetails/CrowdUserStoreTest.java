@@ -30,11 +30,11 @@ class CrowdUserStoreTest {
     void setup() {
         val restTemplate = new RestTemplate();
         userStore = new CrowdUserStore(
-            "https://example.com/latest",
-            "abc",
-            "1234",
-            restTemplate
-        );
+                "https://example.com/latest",
+                "abc",
+                "1234",
+                restTemplate
+                );
         mockServer = MockRestServiceServer.createServer(restTemplate);
     }
 
@@ -43,11 +43,11 @@ class CrowdUserStoreTest {
     void getUser() {
         //given
         val response = """
-                       {
-                        "name": "foo",
-                        "email": "foo@example.com"
-                       }
-                       """;
+        {
+            "name": "foo",
+                "email": "foo@example.com"
+        }
+        """;
         mockServer.expect(requestTo("https://example.com/latest/user?username=foo&expand=attributes"))
             .andExpect(method(HttpMethod.GET))
             .andExpect(header("authorization", "Basic YWJjOjEyMzQ="))
@@ -70,8 +70,8 @@ class CrowdUserStoreTest {
 
         //when
         assertThrows(UnknownUserException.class, () ->
-            userStore.getUser(username)
-        );
+                userStore.getUser(username)
+                );
     }
 
     @Test
@@ -83,24 +83,24 @@ class CrowdUserStoreTest {
 
         //when
         assertThrows(HttpServerErrorException.InternalServerError.class, () ->
-            userStore.getUser(username)
-        );
+                userStore.getUser(username)
+                );
     }
 
     @Test
     void userExistsError() {
         //when
         assertThrows(NotImplementedException.class, () ->
-            userStore.userExists(username)
-        );
+                userStore.userExists(username)
+                );
     }
 
     @Test
     void authenticationError() {
         //when
         assertThrows(NotImplementedException.class, () ->
-            userStore.authenticate(username, "password")
-        );
+                userStore.authenticate(username, "password")
+                );
     }
 
 }

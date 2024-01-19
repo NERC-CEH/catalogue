@@ -38,11 +38,11 @@ public class ExtractTopicFromDocument implements TopicIndexer {
 
     @Override
     public List<String> index(GeminiDocument document) {
-       return document.getTopics()
-           .stream()
-           .filter(t -> topicHierarchy.containsKey(t))
-           .flatMap(t -> topicHierarchy.get(t).stream())
-           .distinct()
-           .collect(Collectors.toList());
+        return document.getTopics()
+            .stream()
+            .filter(t -> topicHierarchy.containsKey(t))
+            .flatMap(t -> topicHierarchy.get(t).stream())
+            .distinct()
+            .collect(Collectors.toList());
     }
 }

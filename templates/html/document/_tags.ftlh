@@ -9,10 +9,10 @@
 
 <#macro displayLinkedKeyword value="" uri="">
   <#if uri?has_content>
-    <abbr title="${uri?trim}">${value?trim}</abbr>
+    <span class="bob"><abbr title="${uri?trim}">${value?trim}</abbr></span>
     <a href="${uri?trim}" target="_blank" rel="noopener noreferrer" class="externalVocabularyLink"><sup class="fa-solid fa-xs fa-arrow-up-right-from-square"></sup></a>
   <#else>
-    ${value?trim}
+    <span class="bob">${value?trim}</span>
   </#if>
 </#macro>
 

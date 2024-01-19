@@ -15,12 +15,12 @@ import uk.ac.ceh.gateway.catalogue.ogc.WmsFeatureInfo.Layer.Feature;
 
 public class WmsFeatureInfo2XmlMessageConverterTest {
     private WmsFeatureInfo2XmlMessageConverter converter;
-    
+
     @BeforeEach
     public void init() {
         converter = new WmsFeatureInfo2XmlMessageConverter();
     }
-    
+
     @Test
     public void checkThatCanProduceAMapServiceResponse() throws Exception {
         //Given
@@ -33,10 +33,10 @@ public class WmsFeatureInfo2XmlMessageConverterTest {
         Layer layer1 = new Layer();
         layer1.setFeatures(Arrays.asList(feature1));
         info.setLayers(Arrays.asList(layer1));
-       
+
         //When
         converter.writeInternal(info, response);
-        
+
         //Then
         assertThat(response.getBodyAsString(), equalTo("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><FeatureInfoResponse><FIELDS attr1=\"value1\"/></FeatureInfoResponse>"));
     }

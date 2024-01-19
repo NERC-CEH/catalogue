@@ -5,10 +5,10 @@ import java.util.Map;
 import lombok.Data;
 
 /**
- * The following object represents a validation report for an individual 
+ * The following object represents a validation report for an individual
  * metadata document.
- * 
- * The object is composed of a metadata documents id and a list of validation 
+ *
+ * The object is composed of a metadata documents id and a list of validation
  * summaries from validators which have been run against the document represented
  * by that ID
  */
@@ -16,7 +16,7 @@ import lombok.Data;
 public class ValidationReport {
     private final String documentId;
     private final Map<String, ValidationLevel> results;
-    
+
     public ValidationReport(String documentId) {
         this.documentId = documentId;
         this.results = new HashMap<>();

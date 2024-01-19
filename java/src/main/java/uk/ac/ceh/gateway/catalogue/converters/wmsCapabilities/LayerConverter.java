@@ -17,9 +17,9 @@ import java.util.List;
 
 @Slf4j
 @ToString
-public class LayerConverter {    
+public class LayerConverter {
     private final XPathExpression layer, name, title, legendUrl;
-    
+
     public LayerConverter(XPath xpath) throws XPathExpressionException {
         this.layer = xpath.compile("//wms:Layer[wms:Name][not(wms:Layer)]");
         this.name = xpath.compile("wms:Name");
@@ -27,20 +27,20 @@ public class LayerConverter {
         this.legendUrl = xpath.compile("wms:Style[wms:Name = 'default']/wms:LegendURL/wms:OnlineResource/@xlink:href");
         log.info("Creating {}", this);
     }
-    
+
     public List<Layer> convert(Document document) throws XPathExpressionException {
         List<Layer> toReturn = new ArrayList<>();
         NodeList nodeList = (NodeList) layer.evaluate(document, XPathConstants.NODESET);
         for(int i=0; i<nodeList.getLength(); i++) {
             Node layerNode = nodeList.item(i);
-            
+
             Layer toAdd = new Layer();
             toAdd.setName(name.evaluate(layerNode));
             toAdd.setTitle(title.evaluate(layerNode));
             toAdd.setLegendUrl(Strings.emptyToNull(legendUrl.evaluate(layerNode)));
-            
+
             toReturn.add(toAdd);
         }
         return toReturn;
-    }    
+    }
 }

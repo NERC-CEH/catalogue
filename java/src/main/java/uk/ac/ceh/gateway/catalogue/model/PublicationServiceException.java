@@ -6,15 +6,15 @@ public class PublicationServiceException extends RuntimeException {
     public PublicationServiceException() {
         super();
     }
-    
+
     public PublicationServiceException(String mess) {
         super(mess);
     }
-    
+
     public PublicationServiceException(Throwable cause) {
         super(cause);
     }
-    
+
     public PublicationServiceException(String mess, Throwable cause) {
         super(mess, cause);
     }

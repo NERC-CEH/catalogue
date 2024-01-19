@@ -45,11 +45,11 @@ public class ServiceConverter {
 
     public Service convert(Document document) throws XPathExpressionException {
         Node service = (Node) identificationInfo.evaluate(document, XPathConstants.NODE);
-        
+
         if (service == null) {
             return null;
         }
-        
+
         return Service.builder()
             .type(type.evaluate(service))
             .couplingType(couplingType.evaluate(service))
@@ -58,7 +58,7 @@ public class ServiceConverter {
             .containsOperations(getOperationMetadata(service))
             .build();
     }
-    
+
     private List<CoupledResource> getCoupledResources(Node service) throws XPathExpressionException {
         List<CoupledResource> toReturn = new ArrayList<>();
         NodeList nodeList = (NodeList) coupledResources.evaluate(service, XPathConstants.NODESET);
@@ -73,7 +73,7 @@ public class ServiceConverter {
         }
         return toReturn;
     }
-    
+
     private List<OperationMetadata> getOperationMetadata(Node service) throws XPathExpressionException {
         List<OperationMetadata> toReturn = new ArrayList<>();
         NodeList nodeList = (NodeList) containsOperations.evaluate(service, XPathConstants.NODESET);

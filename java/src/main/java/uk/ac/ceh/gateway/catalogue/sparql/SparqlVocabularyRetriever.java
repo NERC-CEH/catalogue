@@ -19,11 +19,11 @@ import java.util.Arrays;
 @ToString
 public class SparqlVocabularyRetriever implements VocabularyRetriever {
     /*
-    This was used to retrieve the Natural Capital vocabulary.
-    The Natural Capital vocabulary no longer exists on the new vocab server.
-    This class needs modifying to work with multiple graphs so that it
-    can be used in the SolrIndexMetadataDocumentGenerator in place of
-    getKeywordsFilteredByUrlFragment
+     * This was used to retrieve the Natural Capital vocabulary.
+     * The Natural Capital vocabulary no longer exists on the new vocab server.
+     * This class needs modifying to work with multiple graphs so that it
+     * can be used in the SolrIndexMetadataDocumentGenerator in place of
+     * getKeywordsFilteredByUrlFragment
      */
     private final RestTemplate template;
     private final URI query;

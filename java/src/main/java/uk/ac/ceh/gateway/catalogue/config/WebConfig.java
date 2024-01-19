@@ -224,9 +224,9 @@ public class WebConfig implements WebMvcConfigurer {
     public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
         log.info("configuring Content Negotiation");
         /*
-         Document types just producing json format do not need to register
-         a media type can just append ?format=json to url
-        */
+         * Document types just producing json format do not need to register
+         * a media type can just append ?format=json to url
+         */
         configurer
             .favorParameter(true)
             .mediaType(BIBTEX_SHORT, BIBTEX)

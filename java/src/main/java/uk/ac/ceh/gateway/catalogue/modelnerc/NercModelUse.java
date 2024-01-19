@@ -32,7 +32,7 @@ public class NercModelUse extends AbstractMetadataDocument {
     private List<Funding> funding;
 
     private List<Supplemental> references;
-    
+
     private List<ModelInfo> modelInfos;
 
     private List<OnlineLink> onlineResources;
@@ -40,7 +40,7 @@ public class NercModelUse extends AbstractMetadataDocument {
     private List<DataInfo>
         inputData,
         outputData;
-     
+
     private List<AdditionalInfo> additionalInfo;
 
     @JsonIgnore
@@ -81,7 +81,7 @@ public class NercModelUse extends AbstractMetadataDocument {
             key,
             value;
     }
-    
+
     @Data
     public static class DataInfo {
         private String

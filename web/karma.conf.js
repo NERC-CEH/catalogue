@@ -1,36 +1,36 @@
 process.env.CHROME_BIN = require('puppeteer').executablePath()
 
 module.exports = function (config) {
-  config.set({
+    config.set({
 
-    frameworks: ['jasmine-ajax', 'jasmine', 'webpack'],
+        frameworks: ['jasmine-ajax', 'jasmine', 'webpack'],
 
-    files: [
-      'src/*/test/*.js'
-    ],
+        files: [
+            'src/*/test/*.js'
+        ],
 
-    preprocessors: {
-      'src/*/test/*.js': ['webpack']
-    },
+        preprocessors: {
+            'src/*/test/*.js': ['webpack']
+        },
 
-    webpack: require('./webpack.js'),
+        webpack: require('./webpack.js'),
 
-    reporters: ['progress', 'junit'],
+        reporters: ['progress', 'junit'],
 
-    colors: true,
+        colors: true,
 
-    autoWatch: true,
+        autoWatch: true,
 
-    browsers: ['ChromeHeadless_CI'],
+        browsers: ['ChromeHeadless_CI'],
 
-    customLaunchers: {
-      ChromeHeadless_CI: {
-        base: 'ChromeHeadless',
-        flags: ['--no-sandbox']
-      }
-    },
+        customLaunchers: {
+            ChromeHeadless_CI: {
+                base: 'ChromeHeadless',
+                flags: ['--no-sandbox']
+            }
+        },
 
-    singleRun: true
+        singleRun: true
 
-  })
+    })
 }

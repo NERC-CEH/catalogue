@@ -28,17 +28,17 @@ public class TMSToWMSGetMapService {
 
     public String getWMSMapRequest(String url, String layer, int z, int x, int y) {
         return convertToValidWMSEndpoint(url) +
-                "LAYERS=" + layer +
-                "&BBOX=" + getBBoxParam(z, x, y) +
-                "&WIDTH=" + width +
-                "&HEIGHT=" + height +
-                "&STYLES=" +
-                "&TRANSPARENT=TRUE" +
-                "&FORMAT=image%2Fpng" +
-                "&SRS=EPSG%3A3857" +
-                "&VERSION=1.1.1" +
-                "&SERVICE=WMS" +
-                "&REQUEST=GetMap&";
+            "LAYERS=" + layer +
+            "&BBOX=" + getBBoxParam(z, x, y) +
+            "&WIDTH=" + width +
+            "&HEIGHT=" + height +
+            "&STYLES=" +
+            "&TRANSPARENT=TRUE" +
+            "&FORMAT=image%2Fpng" +
+            "&SRS=EPSG%3A3857" +
+            "&VERSION=1.1.1" +
+            "&SERVICE=WMS" +
+            "&REQUEST=GetMap&";
     }
 
     /**
@@ -51,8 +51,8 @@ public class TMSToWMSGetMapService {
      */
     public String getBBoxParam(int z, int x, int y) {
         return Arrays.stream(getBBox(z,x,y))
-                     .mapToObj(bboxPartFormat::format)
-                     .collect(Collectors.joining(","));
+            .mapToObj(bboxPartFormat::format)
+            .collect(Collectors.joining(","));
     }
 
     /**

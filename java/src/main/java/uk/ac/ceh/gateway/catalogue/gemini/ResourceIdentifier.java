@@ -14,7 +14,7 @@ import lombok.Builder;
 public class ResourceIdentifier {
     private final static String CEH_CODE_SPACE = "CEH:EIDC:";
     private final String code, codeSpace, version;
-    
+
     @Builder
     @JsonCreator
     private ResourceIdentifier(
@@ -25,7 +25,7 @@ public class ResourceIdentifier {
         this.codeSpace = nullToEmpty(codeSpace);
         this.version = nullToEmpty(version);
     }
-    
+
     @JsonIgnore
     public String getCoupledResource() {
         if (CEH_CODE_SPACE.equals(codeSpace)) {
@@ -34,7 +34,7 @@ public class ResourceIdentifier {
             return format("%s%s", codeSpace, code);
         }
     }
-    
+
     public boolean isInternal() {
         return CEH_CODE_SPACE.equals(codeSpace);
     }

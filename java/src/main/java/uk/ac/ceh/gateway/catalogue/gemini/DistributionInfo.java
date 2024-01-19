@@ -9,12 +9,12 @@ import lombok.Value;
 @Value
 public class DistributionInfo {
     private final String name, type, version;
-    
+
     @Builder
     @JsonCreator
     private DistributionInfo(@JsonProperty("name") String name, @JsonProperty("type") String type, @JsonProperty("version") String version) {
         this.name = nullToEmpty(name);
         this.type = nullToEmpty(type);
         this.version = nullToEmpty(version);
-    } 
+    }
 }

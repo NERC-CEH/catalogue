@@ -14,7 +14,7 @@ public class AnyXMLHandler implements DomHandler<String, StreamResult> {
     private final Logger logger = LoggerFactory.getLogger(AnyXMLHandler.class);
     private static final String START_TAG = "<ukeof:anyXML xmlns:ukeof=\"http://www.ukeof.org.uk/schema/1\">";
     private static final String END_TAG = "</ukeof:anyXML>";
-    
+
     @Override
     public StreamResult createUnmarshaller(ValidationEventHandler errorHandler) {
         return new StreamResult(new StringWriter());
@@ -26,7 +26,7 @@ public class AnyXMLHandler implements DomHandler<String, StreamResult> {
         logger.debug("\n--StreamResult--\n{}\n--END--", xml);
         int beginIndex = xml.indexOf(START_TAG) + START_TAG.length();
         int endIndex = xml.indexOf(END_TAG);
-        
+
         if (endIndex > -1) {
             return xml.substring(beginIndex, endIndex);
         } else {
