@@ -70,6 +70,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     @Override
     @SneakyThrows
     public ServiceAgreement get(String id) {
+        log.debug("GETting service agreement: {}", id);
         val serviceAgreement = dataDocumentToServiceAgreement(
                 repo.getData(FOLDER + id + ".raw"),
                 repo.getData(FOLDER + id + ".meta")
@@ -87,9 +88,10 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
                 catalogue
         );
         addPermissionsForDepositor(metadataInfo, serviceAgreement);
-        repo.submitData(FOLDER + id + ".meta", (o) -> metadataInfoMapper.writeInfo(metadataInfo, o))
-                .submitData(FOLDER + id + ".raw", (o) -> serviceAgreementMapper.writeInfo(serviceAgreement, o))
-                .commit(user, "creating service agreement " + id);
+        repo
+            .submitData(FOLDER + id + ".meta", (o) -> metadataInfoMapper.writeInfo(metadataInfo, o))
+            .submitData(FOLDER + id + ".raw", (o) -> serviceAgreementMapper.writeInfo(serviceAgreement, o))
+            .commit(user, "creating service agreement " + id);
         return get(id);
     }
 
@@ -106,15 +108,17 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
 
     @SneakyThrows
     private void updateMetadata(CatalogueUser user, String id, MetadataInfo metadataInfo) {
-        repo.submitData(FOLDER + id + ".meta", (o) -> metadataInfoMapper.writeInfo(metadataInfo, o))
-                .commit(user, "updating service agreement metadata " + id);
+        repo
+            .submitData(FOLDER + id + ".meta", (o) -> metadataInfoMapper.writeInfo(metadataInfo, o))
+            .commit(user, "updating service agreement metadata " + id);
     }
 
     @SneakyThrows
     public void delete(CatalogueUser user, String id) {
-        repo.deleteData(FOLDER + id + ".meta")
-                .deleteData(FOLDER + id + ".raw")
-                .commit(user, "delete document: " + id);
+        repo
+            .deleteData(FOLDER + id + ".meta")
+            .deleteData(FOLDER + id + ".raw")
+            .commit(user, "delete document: " + id);
     }
 
     private void addPermissionsForDepositor(MetadataInfo metadataInfo, ServiceAgreement serviceAgreement) {
@@ -289,6 +293,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
             String id,
             String version
     ) {
+        log.debug("Previous version: {} of service agreement: {}", version, id);
         val serviceAgreement = dataDocumentToServiceAgreement(
             repo.getData(version, FOLDER + id + ".raw"),
             repo.getData(version, FOLDER + id + ".meta")
