@@ -12,6 +12,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
+import uk.ac.ceh.gateway.catalogue.config.SecurityConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -30,13 +31,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles({"test", "server:eidc"})
 @DisplayName("CatalogueDocumentController")
 @Import({
+    SecurityConfig.class,
     SecurityConfigCrowd.class,
     DevelopmentUserStoreConfig.class
 })
 @WebMvcTest(CatalogueDocumentController.class)
 public class CatalogueDocumentControllerTest {
     private @MockBean DocumentRepository documentRepository;
-    private @MockBean CatalogueService catalogueService;
     private @MockBean(name="permission") PermissionService permissionService;
 
     @Autowired private MockMvc mvc;

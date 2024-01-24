@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter;
@@ -14,7 +15,6 @@ import uk.ac.ceh.components.userstore.springsecurity.PreAuthenticatedUsernameAut
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
 import javax.servlet.Filter;
-import java.util.Collections;
 
 @Slf4j
 @Configuration
@@ -23,19 +23,20 @@ public class SecurityConfigCrowd {
 
     @Bean
     @Qualifier("auth")
-    public Filter requestHeaderAuthenticationFilter(AuthenticationProvider authenticationProvider) {
+    public Filter requestHeaderAuthenticationFilter(AuthenticationManager authenticationManager) {
         RequestHeaderAuthenticationFilter remoteUserFilter = new RequestHeaderAuthenticationFilter();
         remoteUserFilter.setPrincipalRequestHeader("Remote-User");
         remoteUserFilter.setExceptionIfHeaderMissing(false);
         remoteUserFilter.setContinueFilterChainOnUnsuccessfulAuthentication(false);
-        remoteUserFilter.setAuthenticationManager(new ProviderManager(Collections.singletonList(authenticationProvider)));
+        remoteUserFilter.setAuthenticationManager(authenticationManager);
         log.info("Creating RequestHeaderAuthenticationFilter");
         return remoteUserFilter;
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider(UserStore<CatalogueUser> userStore, GroupStore<CatalogueUser> groupStore) {
+    public AuthenticationManager crowdAuthenticationManager(UserStore<CatalogueUser> userStore, GroupStore<CatalogueUser> groupStore) {
         log.info("Creating AuthenticationProvider");
-        return new PreAuthenticatedUsernameAuthenticationProvider<>(userStore, groupStore);
+        AuthenticationProvider crowdAuthenticationProvider = new PreAuthenticatedUsernameAuthenticationProvider<>(userStore, groupStore);
+        return new ProviderManager(crowdAuthenticationProvider);
     }
 }

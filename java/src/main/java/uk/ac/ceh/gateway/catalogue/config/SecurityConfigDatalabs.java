@@ -11,7 +11,6 @@ import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter;
 
 import javax.servlet.Filter;
-import java.util.Collections;
 
 @Slf4j
 @Configuration
@@ -26,7 +25,7 @@ public class SecurityConfigDatalabs {
     ) {
         log.info("creating RememberMeAuthenticationFilter");
         return new RememberMeAuthenticationFilter(
-                new ProviderManager(Collections.singletonList(authenticationProvider)),
+                new ProviderManager(authenticationProvider),
                 rememberMeServices
         );
     }
