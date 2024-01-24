@@ -16,6 +16,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
+import uk.ac.ceh.gateway.catalogue.config.SecurityConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
@@ -35,7 +36,11 @@ import static uk.ac.ceh.gateway.catalogue.controllers.DocumentController.MAINTEN
 )
 @ActiveProfiles("test")
 @DisplayName("SparqlController")
-@Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
+@Import({
+    SecurityConfig.class,
+    SecurityConfigCrowd.class,
+    DevelopmentUserStoreConfig.class
+})
 @WebMvcTest(
     controllers=SparqlController.class,
     properties="spring.freemarker.template-loader-path=file:../templates"

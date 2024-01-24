@@ -18,6 +18,7 @@ import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
+import uk.ac.ceh.gateway.catalogue.config.SecurityConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -47,7 +48,11 @@ import static uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadController.*;
 @WithMockCatalogueUser(username = UPLOADER_USERNAME)
 @Slf4j
 @ActiveProfiles({"test", "upload:hubbub"})
-@Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
+@Import({
+    SecurityConfig.class,
+    SecurityConfigCrowd.class,
+    DevelopmentUserStoreConfig.class
+})
 @DisplayName("HubbubUploadController")
 @WebMvcTest(
     controllers = UploadController.class,

@@ -21,6 +21,7 @@ import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
+import uk.ac.ceh.gateway.catalogue.config.SecurityConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
@@ -39,7 +40,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WithMockCatalogueUser
 @ActiveProfiles({"service-agreement", "test"})
 @DisplayName("ServiceAgreementController")
-@Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
+@Import({
+    SecurityConfig.class,
+    SecurityConfigCrowd.class,
+    DevelopmentUserStoreConfig.class
+})
 @WebMvcTest(
     controllers = ServiceAgreementController.class,
     properties="spring.freemarker.template-loader-path=file:../templates"

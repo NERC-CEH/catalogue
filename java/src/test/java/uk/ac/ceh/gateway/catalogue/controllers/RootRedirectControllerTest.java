@@ -10,6 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.gateway.catalogue.config.CatalogueServiceConfig;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
+import uk.ac.ceh.gateway.catalogue.config.SecurityConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -17,7 +18,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ActiveProfiles({"test", "server:eidc"})
 @DisplayName("RootRedirectController")
-@Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class, CatalogueServiceConfig.class})
+@Import({
+    SecurityConfig.class,
+    SecurityConfigCrowd.class,
+    DevelopmentUserStoreConfig.class,
+    CatalogueServiceConfig.class
+})
 @WebMvcTest(RootRedirectController.class)
 class RootRedirectControllerTest {
 
