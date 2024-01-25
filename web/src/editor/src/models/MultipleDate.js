@@ -23,17 +23,15 @@ export default Backbone.Model.extend({
       .keys()
       .each(function (key) {
         const dateString = attrs[key]
-        if (!dateString.match(dateRegExp)) {
+        if (!dateString.match(dateRegEx)) {
           errors.push({
-            message:
-                            `${labels[key]} is wrong. The date format is yyyy-mm-dd`
+            message: `${labels[key]} is wrong. The date format is yyyy-mm-dd`
           })
         }
 
         if (isNaN(Date.parse(dateString))) {
           return errors.push({
-            message:
-                            `${labels[key]} doesn't look like a valid date`
+            message: `${labels[key]} doesn't look like a valid date`
           })
         }
       })
@@ -44,8 +42,7 @@ export default Backbone.Model.extend({
 
       if (begin > end) {
         errors.push({
-          message:
-                        'Collection of this data finished before it started!'
+          message: 'Collection of this data finished before it started!'
         })
       }
     }

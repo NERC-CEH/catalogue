@@ -251,7 +251,7 @@ function initEditor () {
       })
     } else {
       $.ajax({
-        url: $(location).attr('href'),
+        url: $(window.location).attr('href'),
         dataType: 'json',
         accepts: {
           json: documentType.mediaType

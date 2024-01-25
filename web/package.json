@@ -41,6 +41,19 @@
             "jasmine"
         ]
     },
+    "standard": {
+        "globals": [
+            "afterEach",
+            "beforeEach",
+            "describe",
+            "expect",
+            "it",
+            "jasmine",
+            "spyOn",
+            "xdescribe",
+            "xit"
+        ]
+    },
     "devDependencies": {
         "@babel/core": "^7.22.15",
         "@babel/eslint-parser": "^7.22.15",

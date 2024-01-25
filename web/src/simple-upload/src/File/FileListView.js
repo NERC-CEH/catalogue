@@ -36,7 +36,7 @@ export default Backbone.View.extend({
 
   deleteSelected () {
     const toDelete = this.files.where({ toDelete: true })
-    if (confirm(`Delete ${toDelete.length} files?`)) {
+    if (window.confirm(`Delete ${toDelete.length} files?`)) {
       const options = {
         success: model => {
           this.messages.add(new Backbone.Model({ message: `Deleted: ${model.get('name')}`, type: 'info' }))
