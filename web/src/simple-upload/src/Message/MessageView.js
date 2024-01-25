@@ -4,15 +4,15 @@ import _ from 'underscore'
 const template = _.template('<span class="<%= type %>"><%= message %></span>')
 export default Backbone.View.extend({
 
-    tagName: 'li',
+  tagName: 'li',
 
-    initialize () {
-        this.template = template
-        this.listenTo(this.model, 'remove', this.remove)
-    },
+  initialize () {
+    this.template = template
+    this.listenTo(this.model, 'remove', this.remove)
+  },
 
-    render () {
-        this.$el.html(this.template(this.model.attributes))
-        return this
-    }
+  render () {
+    this.$el.html(this.template(this.model.attributes))
+    return this
+  }
 })

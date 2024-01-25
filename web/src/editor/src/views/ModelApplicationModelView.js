@@ -3,14 +3,14 @@ import template from '../templates/ModelApplicationModel'
 
 export default ObjectInputView.extend({
 
-    initialize (options) {
-        this.template = template
-        ObjectInputView.prototype.initialize.call(this, options)
-    },
+  initialize (options) {
+    this.template = template
+    ObjectInputView.prototype.initialize.call(this, options)
+  },
 
-    render () {
-        ObjectInputView.prototype.render.apply(this)
-        this.$('select').val(this.model.get('applicationScale'))
-        return this
-    }
+  render () {
+    ObjectInputView.prototype.render.apply(this)
+    this.$('select').val(this.model.get('applicationScale'))
+    return this
+  }
 })
