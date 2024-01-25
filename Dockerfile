@@ -4,7 +4,10 @@ WORKDIR /web
 COPY web ./
 RUN npm install -g npm
 RUN npm ci --no-audit
+# RUN ls node_modules/leaflet-draw
 RUN npm run build-css
+# RUN mkdir -p /web/css/images
+# RUN cp node_modules/leaflet-draw/dist/images/* /web/css/images
 RUN npm run build-prod
 
 # Build Java
@@ -33,7 +36,11 @@ COPY --chown=spring:spring templates /opt/ceh-catalogue/templates
 COPY --chown=spring:spring --from=build-web /web/img /opt/ceh-catalogue/static/img
 COPY --chown=spring:spring --from=build-web /web/dist /opt/ceh-catalogue/static/scripts
 COPY --chown=spring:spring --from=build-web /web/css /opt/ceh-catalogue/static/css
+COPY --chown=spring:spring --from=build-web /web/node_modules/leaflet-draw/dist/images /opt/ceh-catalogue/static/css/images
 COPY --chown=spring:spring --from=build-web /web/node_modules/@fortawesome/fontawesome-free/webfonts /opt/ceh-catalogue/static/fonts
+
+
+
 RUN chown spring:spring -R /var/ceh-catalogue && chown spring:spring -R /var/upload
 VOLUME ["/var/ceh-catalogue/datastore", "/var/ceh-catalogue/dropbox", "/var/ceh-catalogue/mapfiles", "/var/upload/datastore"]
 EXPOSE 8080 8081

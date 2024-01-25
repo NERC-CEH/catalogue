@@ -13,13 +13,13 @@ export default ObjectInputView.extend({
     ObjectInputView.prototype.initialize.apply(this)
     this.render()
     this.viewMap()
-    this.listenTo(this.model, 'change:geometryString', function (model, value) {
+    this.listenTo(this.model, 'change:geometry', function (model, value) {
       this.$('#box').val(value)
     })
   },
 
   getGeometry () {
-    const parsedJson = JSON.parse(this.model.get('geometryString'))
+    const parsedJson = JSON.parse(this.model.get('geometry'))
     return L.geoJson(parsedJson)
   },
 
@@ -35,13 +35,13 @@ export default ObjectInputView.extend({
     this.map = new L.Map(this.$('.map')[0], { center: new L.LatLng(51.513, -0.09), zoom: 4 })
 
     this.drawnItems = L.featureGroup()
-    if (this.model.get('geometryString')) {
+    if (this.model.get('geometry')) {
       this.geometry = this.getGeometry()
       this.drawButtons = false
       this.drawnItems.addLayer(this.geometry)
 
       //Zoom to polygon if one was provided
-      if(this.model.has("geometryString")){
+      if(this.model.has("geometry")){
         if (this.model.getGeometry().toLowerCase().includes('polygon')) {
           this.map.fitBounds(this.drawnItems.getBounds())
         }

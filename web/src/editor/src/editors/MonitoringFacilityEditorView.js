@@ -9,8 +9,6 @@ import {
   TextareaView
 } from '../views'
 import { MultipleDate } from '../models'
-import BoundingBox from '../geometryMap/BoundingBox'
-import BoundingBoxView from '../geometryMap/BoundingBoxView'
 import Geometry from '../geometryMap/Geometry'
 import GeometryView from '../geometryMap/GeometryView'
 
@@ -45,7 +43,7 @@ export default EditorView.extend({
 
         new SingleObjectView({
           model: this.model,
-          modelAttribute: 'geometryString',
+          modelAttribute: 'geometry',
           ModelType: Geometry,
           label: 'Geometry',
           ObjectInputView: GeometryView,
@@ -99,16 +97,6 @@ export default EditorView.extend({
 `
         })
 
-        // new SingleObjectView({
-        //   model: this.model,
-        //   modelAttribute: 'boundingBox',
-        //   ModelType: BoundingBox,
-        //   label: 'Bounding Box',
-        //   ObjectInputView: BoundingBoxView,
-        //   helpText: `
-        // <p>Bounding Box of Monitoring Facility</p>
-        // `
-        // }),
       ]
     }
     ]
