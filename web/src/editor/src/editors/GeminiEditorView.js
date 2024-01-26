@@ -277,7 +277,7 @@ export default EditorView.extend({
         new ParentView({
           model: this.model,
           ModelType: KeywordTheme,
-          modelAttribute: 'keywords_theme',
+          modelAttribute: 'keywordsTheme',
           label: 'Science topic',
           ObjectInputView: KeywordThemeView,
           multiline: false,
@@ -286,7 +286,7 @@ export default EditorView.extend({
 
         new ParentView({
           model: this.model,
-          modelAttribute: 'keywords_observedProperty',
+          modelAttribute: 'keywordsObservedProperty',
           label: 'Observed properties',
           ObjectInputView: KeywordVocabularyView,
           multiline: true,
@@ -295,7 +295,7 @@ export default EditorView.extend({
 
         new ParentView({
           model: this.model,
-          modelAttribute: 'keywords_place',
+          modelAttribute: 'keywordsPlace',
           label: 'Places',
           ObjectInputView: KeywordVocabularyView,
           multiline: true,
@@ -307,7 +307,7 @@ export default EditorView.extend({
 
         new ParentView({
           model: this.model,
-          modelAttribute: 'keywords_project',
+          modelAttribute: 'keywordsProject',
           label: 'Projects',
           ObjectInputView: KeywordVocabularyView,
           multiline: true,
@@ -316,7 +316,7 @@ export default EditorView.extend({
 
         new ParentView({
           model: this.model,
-          modelAttribute: 'keywords_instrument',
+          modelAttribute: 'keywordsInstrument',
           label: 'Instruments',
           ObjectInputView: KeywordVocabularyView,
           multiline: true,
@@ -325,7 +325,7 @@ export default EditorView.extend({
 
         new ParentView({
           model: this.model,
-          modelAttribute: 'keywords_other',
+          modelAttribute: 'keywordsOther',
           label: 'Other keywords',
           ObjectInputView: KeywordVocabularyView,
           multiline: true,

@@ -14,6 +14,7 @@ import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
 
 @Slf4j
 public class GeminiDocumentTest {
@@ -22,6 +23,47 @@ public class GeminiDocumentTest {
     private final String doc1 = "https://example.com/doc/1";
     private final String doc2 = "https://example.com/doc/2";
     private final String doc3 = "https://example.com/doc/3";
+
+    @Test
+    void getAllKeywordsWhenEmpty() {
+        //given
+        val document = new GeminiDocument();
+
+        //when
+        val actual = document.getAllKeywords();
+
+        //then
+        assertThat(actual, is(empty()));
+    }
+
+    @Test
+    void getAllKeywordsWithValuesFromMultipleKeywords() {
+        //given
+        val document = new GeminiDocument();
+        document.setDescriptiveKeywords(List.of(
+            DescriptiveKeywords.builder()
+                .type("test")
+                .keywords(List.of(
+                    Keyword.builder().value("four").build(),
+                    Keyword.builder().value("five").build()
+                ))
+                .build()
+        ));
+        document.setKeywordsDiscipline(List.of(
+            Keyword.builder().value("discipline 1").build(),
+            Keyword.builder().value("discipline 2").build()
+        ));
+        document.setKeywordsPlace(List.of(
+            Keyword.builder().value("place 1").build(),
+            Keyword.builder().value("place 2").build()
+        ));
+
+        //when
+        val actual = document.getAllKeywords();
+
+        //then
+        assertThat(actual.size(), equalTo(6));
+    }
 
     @Test
     void relationshipsFromRelatedRecordsNonePopulated() {
