@@ -30,7 +30,7 @@ test_web:
     - cd web/
     - npm install -g npm
     - npm ci --no-audit
-    - npm standard
+    - npm run standard
     - npm test
   artifacts:
     when: always
