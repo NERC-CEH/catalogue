@@ -13,13 +13,13 @@ export default ObjectInputView.extend({
     ObjectInputView.prototype.initialize.apply(this)
     this.render()
     this.viewMap()
-    this.listenTo(this.model, 'change:geometry', function (model, value) {
+    this.listenTo(this.model, 'change:geometryString', function (model, value) {
       this.$('#box').val(value)
     })
   },
 
   getGeometry () {
-    const parsedJson = JSON.parse(this.model.get('geometry'))
+    const parsedJson = JSON.parse(this.model.get('geometryString'))
     return L.geoJson(parsedJson)
   },
 
@@ -35,13 +35,13 @@ export default ObjectInputView.extend({
     this.map = new L.Map(this.$('.map')[0], { center: new L.LatLng(51.513, -0.09), zoom: 4 })
 
     this.drawnItems = L.featureGroup()
-    if (this.model.get('geometry')) {
-      this.geometry = this.getGeometry()
+    if (this.model.getGeometry()) {
+      this.geometryString = this.getGeometry()
       this.drawButtons = false
-      this.drawnItems.addLayer(this.geometry)
+      this.drawnItems.addLayer(this.geometryString)
 
       //Zoom to polygon if one was provided
-      if(this.model.has("geometry")){
+      if(this.model.hasGeometry()){
         if (this.model.getGeometry().toLowerCase().includes('polygon')) {
           this.map.fitBounds(this.drawnItems.getBounds())
         }
@@ -69,9 +69,9 @@ export default ObjectInputView.extend({
 
     this.listenTo(this.map, L.Draw.Event.CREATED, function (event) {
       const layer = event.layer
-      this.drawButtons = false
       const geoJson = JSON.stringify(layer.toGeoJSON())
       this.model.setGeometry(geoJson)
+      this.drawButtons = false
       this.map.removeControl(this.drawControl)
       this.drawControl = this.createToolbar()
       this.map.addControl(this.drawControl)

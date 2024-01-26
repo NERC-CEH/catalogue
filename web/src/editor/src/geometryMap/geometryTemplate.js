@@ -10,7 +10,7 @@ export default _.template(`
     <div class="col-sm-2 col-lg-2">
         <label>Advanced: Edit Geometry Json</label>
         <!--<button class="editor-button-xs showhide" title="show/hide details"><span class="fa-solid fa-chevron-down" aria-hidden="true"></span></button>-->
-        <textarea rows="20" data-name="geometry" id="box" class="editor-input" value="<%= data.geometry %>" style="width: 500px; height: 250px;"><%= data.geometry %></textarea>
+        <textarea rows="20" data-name="geometryString" id="box" class="editor-input" value="<%= data.geometryString %>" style="width: 500px; height: 250px;"><%= data.geometryString %></textarea>
         <br>
     </div>
 </div>

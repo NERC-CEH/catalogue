@@ -3,18 +3,18 @@ import Backbone from 'backbone'
 export default Backbone.Model.extend({
 
   hasGeometry () {
-    return this.has('geometry')
+    return this.has('geometryString')
   },
 
   getGeometry () {
-    return this.get('geometry')
+    return this.get('geometryString')
   },
 
-  setGeometry (geometry) {
-    this.set('geometry', geometry)
+  setGeometry (geometryString) {
+    this.set('geometryString', geometryString)
   },
 
   clearGeometry () {
-    this.set('geometry', null)
+    this.set('geometryString', null)
   }
 })

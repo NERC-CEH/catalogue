@@ -10,7 +10,6 @@ import uk.ac.ceh.gateway.catalogue.gemini.Geometry;
 import uk.ac.ceh.gateway.catalogue.gemini.TimePeriod;
 import uk.ac.ceh.gateway.catalogue.indexing.solr.WellKnownText;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
-import uk.ac.ceh.gateway.catalogue.osdp.ObservationCapability;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +29,7 @@ public class MonitoringFacility extends AbstractMetadataDocument implements Well
     public List<String> getWKTs() {
         List<String> toReturn = new ArrayList<>();
         if(geometry != null) {
-            toReturn.add("geometry.getWkt() to be implemented");
+            toReturn.add(geometry.getWkt());
         }
         if(boundingBox != null) {
             toReturn.add(boundingBox.getWkt());
