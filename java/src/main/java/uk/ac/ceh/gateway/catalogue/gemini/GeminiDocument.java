@@ -47,10 +47,10 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private Number version;
     private List<String> alternateTitles, spatialRepresentationTypes, datasetLanguages,
             securityConstraints;
-    private List<Keyword> topicCategories;
+    private List<Keyword> topicCategories, keywordsDiscipline, keywordsInstrument, keywordsObservedProperty,
+            keywordsPlace, keywordsProject, keywordsTheme, keywordsOther;
     private List<Geometry> geometries;
     private List<DistributionInfo> distributionFormats;
-    private List<Keyword> keywords_discipline, keywords_instrument, keywords_observedProperty, keywords_place, keywords_project, keywords_theme, keywords_other;
     private List<DescriptiveKeywords> descriptiveKeywords;
     private List<InspireTheme> inspireThemes;
     private List<SpatialResolution> spatialResolutions;
@@ -114,11 +114,26 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     @Override
     @JsonIgnore
     public List<Keyword> getAllKeywords() {
+        return Stream.of(
+            keywordsFromDescriptiveKeywords(),
+            Optional.ofNullable(keywordsDiscipline).orElse(Collections.emptyList()),
+            Optional.ofNullable(keywordsInstrument).orElse(Collections.emptyList()),
+            Optional.ofNullable(keywordsObservedProperty).orElse(Collections.emptyList()),
+            Optional.ofNullable(keywordsPlace).orElse(Collections.emptyList()),
+            Optional.ofNullable(keywordsProject).orElse(Collections.emptyList()),
+            Optional.ofNullable(keywordsTheme).orElse(Collections.emptyList()),
+            Optional.ofNullable(keywordsOther).orElse(Collections.emptyList())
+        )
+            .flatMap(Collection::stream)
+            .collect(Collectors.toList());
+    }
+
+    private List<Keyword> keywordsFromDescriptiveKeywords() {
         return Optional.ofNullable(descriptiveKeywords)
-                .orElse(Collections.emptyList())
-                .stream()
-                .flatMap(dk -> dk.getKeywords().stream())
-                .collect(Collectors.toList());
+            .orElse(Collections.emptyList())
+            .stream()
+            .flatMap(dk -> dk.getKeywords().stream())
+            .collect(Collectors.toList());
     }
 
     @Override
@@ -187,7 +202,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     }
 
     public List<String> getTopics() {
-        return Optional.ofNullable(keywords_theme)
+        return Optional.ofNullable(keywordsTheme)
                 .orElse(Collections.emptyList())
                 .stream()
                 //.flatMap(dk -> dk.getKeywords().stream())

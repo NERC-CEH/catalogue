@@ -3,14 +3,14 @@ import PermissionView from './PermissionView'
 
 export default Backbone.View.extend({
 
-    el: '.permission',
+  el: '.permission',
 
-    initialize () {
-        this.listenTo(this.model, 'loaded', this.render)
-    },
+  initialize () {
+    this.listenTo(this.model, 'loaded', this.render)
+  },
 
-    render () {
-        const view = new PermissionView({ model: this.model.getPermission() })
-        view.render()
-    }
+  render () {
+    const view = new PermissionView({ model: this.model.getPermission() })
+    view.render()
+  }
 })

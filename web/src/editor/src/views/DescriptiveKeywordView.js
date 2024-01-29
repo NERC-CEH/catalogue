@@ -17,7 +17,6 @@ export default ObjectInputView.extend({
     this.template = template
     ObjectInputView.prototype.initialize.call(this, options)
     this.render()
-    const keywordType = this.model.get('type')
     this.keywords = this.model.getRelatedCollection('keywords')
     this.createList(this.keywords, '.keywords', this.addOne)
   },

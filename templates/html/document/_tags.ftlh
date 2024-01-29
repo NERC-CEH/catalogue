@@ -30,64 +30,6 @@
 </dd>
 </#if>
 
-<#-- KEYWORDS -->
-<#assign allKeywords= []>
-
-<#if keywords_theme?has_content>
-  <#list keywords_theme as keyword>
-      <#assign allKeywords = allKeywords + [keyword]>
-  </#list>
-</#if>
-<#if keywords_observedProperty?has_content>
-  <#list keywords_observedProperty as keyword>
-      <#assign allKeywords = allKeywords + [keyword]>
-  </#list>
-</#if>
-<#if keywords_instrument?has_content>
-  <#list keywords_instrument as keyword>
-      <#assign allKeywords = allKeywords + [keyword]>
-  </#list>
-</#if>
-<#if keywords_discipline?has_content>
-  <#list keywords_discipline as keyword>
-      <#assign allKeywords = allKeywords + [keyword]>
-  </#list>
-</#if>
-<#if keywords_place?has_content>
-  <#list keywords_place as keyword>
-      <#assign allKeywords = allKeywords + [keyword]>
-  </#list>
-</#if>
-<#if keywords_project?has_content>
-  <#list keywords_project as keyword>
-      <#assign allKeywords = allKeywords + [keyword]>
-  </#list>
-</#if>
-<#if keywords_other?has_content>
-  <#list keywords_other as keyword>
-      <#assign allKeywords = allKeywords + [keyword]>
-  </#list>
-</#if>
-
-<#--This can be deleted when descriptiveKeywords are removed -->
-    <#if descriptiveKeywords?has_content>
-      <#list descriptiveKeywords as descriptiveKeyword>
-        <#list descriptiveKeyword.keywords as keyword>
-          <#assign allKeywords = allKeywords + [keyword]>
-        </#list>
-      </#list>
-    </#if>
-
-    <#--DE-DUPLICATE KEYWORD LIST -->
-    <#assign deDup = [] />
-    <#list allKeywords as originalList>
-      <#if ! deDup?seq_contains(originalList)>
-          <#assign deDup = deDup + [originalList] />
-      </#if>
-    </#list>
-    <#assign allKeywords = deDup />
-<#--END OF SECTION TO DELETE -->
-
 <#if allKeywords?has_content>
   <@keywordList allKeywords "Keywords" true/>
 </#if>
