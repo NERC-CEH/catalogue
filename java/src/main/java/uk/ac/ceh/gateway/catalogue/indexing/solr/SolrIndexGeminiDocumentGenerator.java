@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.indexing.solr;
 
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.Funding;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
@@ -50,6 +51,12 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
             .setAuthorName(grab(document.getAuthors(), ResponsibleParty::getIndividualName))
             .setAuthorOrcid(grab(document.getAuthors(), ResponsibleParty::getNameIdentifier))
             .setAuthorRor(grab(document.getAuthors(), ResponsibleParty::getOrganisationIdentifier))
+            .setKeywords_instrument(grab(document.getKeywords_instrument(), Keyword::getValue))
+            .setKeywords_observedProperty(grab(document.getKeywords_observedProperty(), Keyword::getValue))
+            .setKeywords_place(grab(document.getKeywords_place(), Keyword::getValue))
+            .setKeywords_project(grab(document.getKeywords_project(), Keyword::getValue))
+            .setKeywords_theme(grab(document.getKeywords_theme(), Keyword::getValue))
+            .setKeywords_other(grab(document.getKeywords_other(), Keyword::getValue))
             .setFunder(grab(document.getFunding(), Funding::getFunderName))
             .setGrant(grab(document.getFunding(), Funding::getAwardNumber))
             .setIncomingCitationCount(document.getIncomingCitationCount())

@@ -19,7 +19,7 @@
   <titles>
     <title>${doc.title}</title>
   </titles>
-  <publisher>NERC EDS Environmental Information Data Centre</publisher>
+  <publisher publisherIdentifier="https://ror.org/04xw4m193" publisherIdentifierScheme="ROR" schemeURI="https://ror.org/">NERC EDS Environmental Information Data Centre</publisher>
   <publicationYear><#if doc.datasetReferenceDate.publicationDate??>${doc.datasetReferenceDate.publicationDate.year?c}</#if></publicationYear>
 
   <#include "_subjects.ftlx">

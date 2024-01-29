@@ -39,6 +39,13 @@ public class SolrIndex {
     private @Field List<String> inmsDemonstrationRegion;
     private @Field List<String> inmsProject;
     private @Field List<String> keyword;
+    private @Field List<String> keywords_instrument;
+    private @Field List<String> keywords_observedProperty;
+    private @Field List<String> keywords_place;
+    private @Field List<String> keywords_project;
+    private @Field List<String> keywords_theme;
+    private @Field List<String> keywords_other;
+    private @Field List<String> keywords_all;
     private @Field String licence;
     private @Field String lineage;
     private @Field String dataLevel;
