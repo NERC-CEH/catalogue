@@ -1,5 +1,5 @@
 <#assign all_keywords = []>
-<#if descriptiveKeywords?? || observeableProperties?? || keywords_instrument?? || keywords_project?? || keywords_theme?? || keywords_discipline?? || keywords_place?? || keywords_other??>
+<#if descriptiveKeywords?? || keywordsInstrument?? || keywordsProject?? || keywordsTheme?? || keywordsDiscipline?? || keywordsPlace?? || keywordsOther?? || keywordObservedProperty ??>
 
   <#function controlledKeywords hash regex match=true>
       <#local result = []>
@@ -25,31 +25,31 @@
     </#list>
   </#if>
 
-  <#if keywords_observedProperty??>
-    <#assign all_keywords = all_keywords + keywords_observedProperty>
+  <#if keywordsObservedProperty??>
+    <#assign all_keywords = all_keywords + keywordObservedProperty>
   </#if>
-  <#if keywords_keywords_instrument??>
-    <#assign all_keywords = all_keywords + keywords_instrument>
+  <#if keywordsInstrument??>
+    <#assign all_keywords = all_keywords + keywordsInstrument>
   </#if>
-  <#if keywords_project??>
-    <#assign all_keywords = all_keywords + keywords_project>
+  <#if keywordsProject??>
+    <#assign all_keywords = all_keywords + keywordsProject>
   </#if>
-  <#if keywords_theme??>
-    <#assign all_keywords = all_keywords + keywords_theme>
+  <#if keywordsTheme??>
+    <#assign all_keywords = all_keywords + keywordsTheme>
   </#if>
-  <#if keywords_discipline??>
-    <#assign all_keywords = all_keywords + keywords_discipline>
+  <#if keywordsDiscipline??>
+    <#assign all_keywords = all_keywords + keywordsDiscipline>
   </#if>
-  <#if keywords_place??>
-    <#assign all_keywords = all_keywords + keywords_place>
+  <#if keywordsPlace??>
+    <#assign all_keywords = all_keywords + keywordsPlace>
   </#if>
-  <#if keywords_other??>
-    <#assign all_keywords = all_keywords + keywords_other>
+  <#if keywordsOther??>
+    <#assign all_keywords = all_keywords + keywordsOther>
   </#if>
 
-  <#assign 
+  <#assign
     keywords_withURIs = controlledKeywords(all_keywords, "^http(s?)://.+")
-    keywords_withoutURIs = controlledKeywords(all_keywords, "^$") 
+    keywords_withoutURIs = controlledKeywords(all_keywords, "^$")
 
     <#-- specify the patterns for the various vocabularies -->
     wikidata = "^http(s?)://www.wikidata.org/entity/.+"

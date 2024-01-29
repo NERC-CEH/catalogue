@@ -14,7 +14,7 @@
           <#assign subjectScheme="Geonames" schemeURI="https://www.geonames.org/">
         <#elseif keyword.uri?matches("^http[s]?://www.eionet.europa.eu/gemet/concept/\\S+$")>
           <#assign subjectScheme="GEMET concepts" schemeURI="https://www.eionet.europa.eu/gemet/">
-        </#if> 
+        </#if>
         {
           "@type": "DefinedTerm",
           "@id": "${keyword.uri?trim}",
@@ -43,6 +43,8 @@
 </#if>
 
 <#-- COMPILE KEYWORD LIST--->
+<#-- Combining all keywords into a single list for the time being. -->
+<#-- They may need to map to different parts of the schema later -->
   <#assign allKeywords = [] >
 
   <#if descriptiveKeywords?has_content>
@@ -58,33 +60,33 @@
         <#assign allKeywords = allKeywords + [keyword]>
     </#list>
   </#if>
-  <#if keywords_theme?has_content>
-    <#list keywords_theme as keyword>
+  <#if keywordsTheme?has_content>
+    <#list keywordsTheme as keyword>
         <#assign allKeywords = allKeywords + [keyword]>
     </#list>
   </#if>
-  <#if keywords_instrument?has_content>
-    <#list keywords_instrument as keyword>
+  <#if keywordsInstrument?has_content>
+    <#list keywordsInstrument as keyword>
         <#assign allKeywords = allKeywords + [keyword]>
     </#list>
   </#if>
-  <#if keywords_discipline?has_content>
-    <#list keywords_discipline as keyword>
+  <#if keywordsDiscipline?has_content>
+    <#list keywordsDiscipline as keyword>
         <#assign allKeywords = allKeywords + [keyword]>
     </#list>
   </#if>
-  <#if keywords_place?has_content>
-    <#list keywords_place as keyword>
+  <#if keywordsPlace?has_content>
+    <#list keywordsPlace as keyword>
         <#assign allKeywords = allKeywords + [keyword]>
     </#list>
   </#if>
-  <#if keywords_project?has_content>
-    <#list keywords_project as keyword>
+  <#if keywordsProject?has_content>
+    <#list keywordsProject as keyword>
         <#assign allKeywords = allKeywords + [keyword]>
     </#list>
   </#if>
-  <#if keywords_other?has_content>
-    <#list keywords_other as keyword>
+  <#if keywordsOther?has_content>
+    <#list keywordsOther as keyword>
         <#assign allKeywords = allKeywords + [keyword]>
     </#list>
   </#if>
@@ -142,8 +144,8 @@
   "url":"${uri?trim}",
   </#if>
 
-  <#if keywords_observedProperty?? && keywords_observedProperty?has_content>
-    "variableMeasured": [ <@keywordList keywords_observedProperty/>],
+  <#if keywordsObservedProperty?? && keywordsObservedProperty?has_content>
+    "variableMeasured": [ <@keywordList keywordsObservedProperty/>],
   </#if>
 
   <#if allKeywords?has_content>
