@@ -7,6 +7,7 @@
 <#assign pocs = func.filter(doc.responsibleParties, "role", "pointOfContact")>
 <#assign rightsHolders = func.filter(doc.responsibleParties, "role", "rightsHolder")>
 <#assign custodians = func.filter(doc.responsibleParties, "role", "custodian")>
+<#assign publishers = func.filter(doc.responsibleParties, "role", "publisher")>
 <#-- Don't leave a blank line before the ?xml processing instruction, it needs
  to be the first thing in the file.
  Comments, assignments & imports are stripped out by Freemarker but blank lines
@@ -23,7 +24,15 @@
   <titles>
     <title>${doc.title}</title>
   </titles>
-  <publisher publisherIdentifier="https://ror.org/04xw4m193" publisherIdentifierScheme="ROR" schemeURI="https://ror.org/">NERC EDS Environmental Information Data Centre</publisher>
+
+  <#if publishers??>
+    <#if publishers?first.organisationIdentifier?? && publishers?first.organisationIdentifier?matches("^https://ror.org/\\w{8,10}$")>
+        <publisher publisherIdentifier="${publishers?first.organisationIdentifier}" publisherIdentifierScheme="ROR" schemeURI="https://ror.org/">${publishers?first.organisationName}</publisher>
+    <#else>
+        <publisher>${publishers?first.organisationName}</publisher>
+    </#if>
+  </#if>
+
   <publicationYear><#if doc.datasetReferenceDate.publicationDate??>${doc.datasetReferenceDate.publicationDate.year?c}</#if></publicationYear>
 
   <#include "_subjects.ftlx">
