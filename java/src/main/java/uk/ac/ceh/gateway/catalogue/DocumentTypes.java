@@ -90,6 +90,12 @@ public class DocumentTypes {
         .type(MONITORING_FACILITY)
         .build();
 
+    public static final String MONITORING_NETWORK = "monitoring-network";
+    public static DocumentType MONITORING_NETWORK_TYPE = DocumentType.builder()
+        .title("Monitoring Network")
+        .type(MONITORING_NETWORK)
+        .build();
+
     public static final String MONITORING_PROGRAMME = "monitoring-programme";
     public static DocumentType MONITORING_PROGRAMME_TYPE = DocumentType.builder()
         .title("Monitoring Programme")
