@@ -205,7 +205,6 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
         return Optional.ofNullable(keywordsTheme)
                 .orElse(Collections.emptyList())
                 .stream()
-                //.flatMap(dk -> dk.getKeywords().stream())
                 .map(Keyword::getUri)
                 .filter(uri -> uri.startsWith(TOPIC_PROJECT_URL))
                 .collect(Collectors.toList());
