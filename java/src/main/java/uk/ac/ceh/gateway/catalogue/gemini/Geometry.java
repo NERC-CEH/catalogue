@@ -84,16 +84,12 @@ public class Geometry {
     private void addPolygon(JsonNode coordinates, StringBuilder wktFeature){
         // Start the polygon
         wktFeature.append("POLYGON((");
-        ArrayList<JsonNode> firstCoord = new ArrayList<>();
         // Add the vertices
         for (final JsonNode coordinate : coordinates.get(0)){
-            if(firstCoord.isEmpty()){
-                firstCoord.add(coordinate);
-            }
             wktFeature.append(coordinate.get(0)).append(" ").append(coordinate.get(1)).append(", ");
         }
         // Close the polygon
-        wktFeature.append(firstCoord.get(0).get(0)).append(" ").append(firstCoord.get(0).get(1)).append("))");
+        wktFeature.replace(wktFeature.length() - 2, wktFeature.length(), "") .append("))");
     }
 
     /**
