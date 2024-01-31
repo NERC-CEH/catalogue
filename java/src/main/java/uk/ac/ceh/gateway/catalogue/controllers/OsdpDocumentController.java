@@ -11,6 +11,7 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringActivity;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
+import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
 import uk.ac.ceh.gateway.catalogue.osdp.*;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
@@ -193,6 +194,38 @@ public class OsdpDocumentController extends AbstractDocumentController {
         );
     }
 
+    @PreAuthorize("@permission.userCanCreate(#catalogue)")
+    @RequestMapping (value = "documents",
+        method = RequestMethod.POST,
+        consumes = MONITORING_NETWORK_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> newMonitoringNetwork(
+        @ActiveUser CatalogueUser user,
+        @RequestBody MonitoringNetwork document,
+        @RequestParam("catalogue") String catalogue
+    ) throws DocumentRepositoryException  {
+        return saveNewMetadataDocument(
+            user,
+            document,
+            catalogue,
+            "new Monitoring Network"
+        );
+    }
+
+    @PreAuthorize("@permission.userCanEdit(#file)")
+    @RequestMapping(value = "documents/{file}",
+        method = RequestMethod.PUT,
+        consumes = MONITORING_NETWORK_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> updateMonitoringNetwork(
+        @ActiveUser CatalogueUser user,
+        @PathVariable("file") String file,
+        @RequestBody MonitoringNetwork document
+    ) throws DocumentRepositoryException  {
+        return saveMetadataDocument(
+            user,
+            file,
+            document
+        );
+    }
     @PreAuthorize("@permission.userCanCreate(#catalogue)")
     @RequestMapping (value = "documents",
         method = RequestMethod.POST,

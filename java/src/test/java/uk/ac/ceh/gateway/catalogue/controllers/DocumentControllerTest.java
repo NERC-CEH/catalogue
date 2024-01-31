@@ -43,6 +43,7 @@ import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringActivity;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
+import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
 import uk.ac.ceh.gateway.catalogue.osdp.*;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
@@ -291,6 +292,8 @@ class DocumentControllerTest {
             Arguments.of(new MonitoringActivity(), APPLICATION_JSON, JSON, null),
             Arguments.of(new MonitoringFacility(), TEXT_HTML, HTML, null),
             Arguments.of(new MonitoringFacility(), APPLICATION_JSON, JSON, null),
+            Arguments.of(new MonitoringNetwork(), TEXT_HTML, HTML, null),
+            Arguments.of(new MonitoringNetwork(), APPLICATION_JSON, JSON, null),
             Arguments.of(new MonitoringProgramme(), TEXT_HTML, HTML, null),
             Arguments.of(new MonitoringProgramme(), APPLICATION_JSON, JSON, null),
             Arguments.of(network, TEXT_HTML, HTML, null),
