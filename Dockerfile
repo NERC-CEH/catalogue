@@ -4,10 +4,7 @@ WORKDIR /web
 COPY web ./
 RUN npm install -g npm
 RUN npm ci --no-audit
-# RUN ls node_modules/leaflet-draw
 RUN npm run build-css
-# RUN mkdir -p /web/css/images
-# RUN cp node_modules/leaflet-draw/dist/images/* /web/css/images
 RUN npm run build-prod
 
 # Build Java
