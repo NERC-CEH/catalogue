@@ -69,11 +69,11 @@ public class SearchQuery {
         SolrQuery query = new SolrQuery()
                 .setQuery(term)
                 .setParam("defType", "edismax")
-                .setParam("qf", "title^50 description^25 keyword^2 lineage organisation individual surname altTitle resourceIdentifier identifier supplementalDescription supplementalName infrastructureCapabilities^2")
-                .setParam("bq", "resourceStatus:Available^10, resourceStatus:Controlled^8, resourceStatus:Embargoed^8, resourceStatus:Restricted^8")
+                .setParam("qf", "title^50 description^25 keyword^5 lineage organisation individual surname altTitle resourceIdentifier identifier supplementalDescription supplementalName infrastructureCapabilities^2")
+                .setParam("bq", "resourceStatus:Available^10, resourceStatus:Controlled^10, resourceStatus:Embargoed^8, resourceStatus:Restricted^8, resourceStatus:Superseded^1, resourceStatus:Withdrawn^1, resourceStatus:Deleted^1")
                 .setParam("bf", "version")
                 .setParam("ps", "5")
-                .setParam("pf", "title^50 description^25 keyword^2 supplementalDescription")
+                .setParam("pf", "title^50 description^25 keyword^5 supplementalDescription")
                 .setStart((page-1)*rows)
                 .setRows(rows);
         setSpatialFilter(query);
