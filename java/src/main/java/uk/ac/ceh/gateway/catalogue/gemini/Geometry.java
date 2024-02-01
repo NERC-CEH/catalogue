@@ -100,5 +100,4 @@ public class Geometry {
     private void addPoint(JsonNode coordinate, StringBuilder wktFeature){
         wktFeature.append("POINT(").append(coordinate.get(0)).append(" ").append(coordinate.get(1)).append(")");
     }
-
 }
