@@ -1,52 +1,54 @@
-import { ObjectInputView } from '../views'
+import {ObjectInputView} from '../views'
 import L from 'leaflet'
 import 'leaflet-draw'
 import template from './geometryTemplate'
+
 export default ObjectInputView.extend({
 
     events: {
-        'click #update': 'viewMap',
-        'click button.showhide': 'showHide',
         'change #box': 'handleInput'
     },
 
-    initialize () {
-        // TODO: check if this is still needed
-        // L.Icon.Default.imagePath = 'https://unpkg.com/leaflet-draw@1.0.2/dist/images/' // fix for leaflet draw image bug
+    initialize() {
         this.template = template
         ObjectInputView.prototype.initialize.apply(this)
         this.render()
-        this.listenTo(this.model, 'change:geometryString', function (model, value) {
-            this.$('#geometryString').val(value)
-            this.render()
-            this.viewMap()
-        })
-
-        this.listenTo(this.model, 'showhide', function () { this.showHide() })
-    },
-
-    handleInput () {
-        this.model.set('geometryString', this.$('#box').val())
         this.viewMap()
+        this.listenTo(this.model, 'change:geometryString', function (model, value) {
+            this.$('#box').val(value)
+        })
     },
 
-    createMap () {
-        this.map = new L.Map(this.$('.map')[0], { center: new L.LatLng(51.513, -0.09), zoom: 4 })
+    getGeometry() {
+        const parsedJson = JSON.parse(this.model.get('geometryString'))
+        return L.geoJson(parsedJson)
+    },
+
+    handleInput() {
+        this.model.setGeometry(this.$('#box').val())
+
+        // Redraw shape
+        this.drawnItems.clearLayers()
+        this.drawnItems.addLayer(this.getGeometry())
+    },
+
+    createMap() {
+        this.map = new L.Map(this.$('.map')[0], {center: new L.LatLng(51.513, -0.09), zoom: 4})
 
         this.drawnItems = L.featureGroup()
-        if (this.model.get('geometryString')) {
-            const parsedJson = JSON.parse(this.model.get('geometryString'))
+        if (this.model.getGeometry()) {
+            this.geometryString = this.getGeometry()
             this.drawButtons = false
+            this.drawnItems.addLayer(this.geometryString)
 
-            this.geometry = L.geoJson(parsedJson)
-            this.drawnItems.addLayer(this.geometry)
-            this.shapeDrawn = true
+            //Zoom to polygon if one was provided
+            if (this.model.hasGeometry()) {
+                if (this.model.getGeometry().toLowerCase().includes('polygon')) {
+                    this.map.fitBounds(this.drawnItems.getBounds())
+                }
+            }
         } else {
             this.drawButtons = true
-            this.shapeDrawn = false
-        }
-        if (this.shapeDrawn === true) {
-            this.map.setView(this.geometry.getBounds().getCenter(), 4)
         }
         this.drawControl = this.createToolbar()
         this.drawnItems.addTo(this.map)
@@ -61,40 +63,35 @@ export default ObjectInputView.extend({
             })
         }
 
-        L.control.layers(baseMaps, { drawlayer: this.drawnItems }, { position: 'topright', collapsed: false }).addTo(this.map)
+        L.control.layers(baseMaps, {drawlayer: this.drawnItems}, {
+            position: 'topright',
+            collapsed: false
+        }).addTo(this.map)
 
         this.map.addControl(this.drawControl)
         baseMaps.Map.addTo(this.map)
 
         this.listenTo(this.map, L.Draw.Event.CREATED, function (event) {
             const layer = event.layer
+            const geoJson = JSON.stringify(layer.toGeoJSON())
+            this.model.setGeometry(geoJson)
             this.drawButtons = false
-            this.model.set('geometryString', JSON.stringify(layer.toGeoJSON()))
-            this.$('#geometryString').val(JSON.stringify(layer.toGeoJSON()))
             this.map.removeControl(this.drawControl)
             this.drawControl = this.createToolbar()
             this.map.addControl(this.drawControl)
-
             this.drawnItems.addLayer(layer)
         })
 
         this.listenTo(this.map, L.Draw.Event.DELETED, function () {
-            this.model.set('geometryString', null)
-            this.$('#geometryString').val(null)
+            this.model.clearGeometry()
             this.drawButtons = true
             this.map.removeControl(this.drawControl)
             this.drawControl = this.createToolbar()
             this.map.addControl(this.drawControl)
         })
-
-        this.listenTo(this.map, L.Draw.Event.EDITMOVE, function (event) {
-            const layer = event.layer
-            this.model.set('geometryString', JSON.stringify(layer.toGeoJSON()))
-            this.$('#geometryString').val(JSON.stringify(layer.toGeoJSON()))
-        })
     },
 
-    createToolbar () {
+    createToolbar() {
         this.deleteButton = this.drawButtons !== true
         return new L.Control.Draw({
             position: 'topleft',
@@ -114,14 +111,7 @@ export default ObjectInputView.extend({
         })
     },
 
-    showHide () {
-        this.$('.extended').toggleClass('hidden')
-        this.$('#box').toggleClass('hidden')
-        this.$('.showhide span').toggleClass('fa-chevron-down')
-        this.$('.showhide span').toggleClass('fa-chevron-up')
-    },
-
-    viewMap () {
+    viewMap() {
         if (this.map) {
             this.map.off()
             this.map.remove()
@@ -129,7 +119,7 @@ export default ObjectInputView.extend({
         this.createMap()
     },
 
-    render () {
+    render() {
         ObjectInputView.prototype.render.apply(this)
         return this
     }
