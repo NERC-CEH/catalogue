@@ -23,7 +23,6 @@ import java.util.List;
  * The following is a cacheable metadata file lister. It will scan the data
  * repository for metadata files of a particular type which are accessible by a
  * particular user.
-
  */
 @Slf4j
 @ToString

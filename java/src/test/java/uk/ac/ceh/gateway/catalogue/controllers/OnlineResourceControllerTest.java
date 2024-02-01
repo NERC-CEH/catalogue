@@ -86,8 +86,8 @@ public class OnlineResourceControllerTest {
         layer.setLegendUrl("foo");
         layer.setName("layer1");
         wmsCapabilities.setLayers(Collections.singletonList(
-            layer
-        ));
+                    layer
+                    ));
         given(getCapabilitiesObtainerService.getWmsCapabilities(any(OnlineResource.class)))
             .willReturn(wmsCapabilities);
     }
@@ -96,8 +96,8 @@ public class OnlineResourceControllerTest {
     private void givenDocumentWithOnlineResource() {
         val document = new GeminiDocument();
         document.setOnlineResources(Collections.singletonList(
-            OnlineResource.builder().url("http://example.com/a").build()
-        ));
+                    OnlineResource.builder().url("http://example.com/a").build()
+                    ));
         given(documentBundleReader.readBundle(file)).willReturn(document);
     }
 
@@ -105,8 +105,8 @@ public class OnlineResourceControllerTest {
     private void givenDocumentWithWmsOnlineResource() {
         val document = new GeminiDocument();
         document.setOnlineResources(Collections.singletonList(
-            OnlineResource.builder().url("http://example.com/a?request=getcapabilities&service=wms").build()
-        ));
+                    OnlineResource.builder().url("http://example.com/a?request=getcapabilities&service=wms").build()
+                    ));
         given(documentBundleReader.readBundle(file)).willReturn(document);
     }
 
@@ -114,8 +114,8 @@ public class OnlineResourceControllerTest {
     private void givenHistoricDocumentWithOnlineResource() {
         val document = new GeminiDocument();
         document.setOnlineResources(Collections.singletonList(
-            OnlineResource.builder().url("a").build()
-        ));
+                    OnlineResource.builder().url("a").build()
+                    ));
         given(documentBundleReader.readBundle(file, revision)).willReturn(document);
     }
 
@@ -123,8 +123,8 @@ public class OnlineResourceControllerTest {
     private void givenDocumentWithNoOnlineResources() {
         val document = new GeminiDocument();
         document.setOnlineResources(
-            Collections.emptyList()
-        );
+                Collections.emptyList()
+                );
         given(documentBundleReader.readBundle(file, revision))
             .willReturn(document);
     }
@@ -139,9 +139,9 @@ public class OnlineResourceControllerTest {
 
         //When
         mvc.perform(
-            get("/documents/{file}/onlineResources", file)
+                get("/documents/{file}/onlineResources", file)
                 .accept(MediaType.APPLICATION_JSON)
-        )
+                )
             .andExpect(status().isOk())
             .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
             .andExpect(content().json(expectedResponse));
@@ -157,9 +157,9 @@ public class OnlineResourceControllerTest {
 
         //When
         mvc.perform(
-            get("/history/{revision}/{file}/onlineResources", revision, file)
+                get("/history/{revision}/{file}/onlineResources", revision, file)
                 .accept(MediaType.APPLICATION_JSON)
-        )
+                )
             .andExpect(status().isOk())
             .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
             .andExpect(content().json(expectedResponse));
@@ -174,10 +174,10 @@ public class OnlineResourceControllerTest {
         givenDocumentWithNoOnlineResources();
 
         //When
-       mvc.perform(
-           get("/history/{revision}/{file}/onlineResources/{index}", revision, file, index)
-       )
-           .andExpect(status().isNotFound());
+        mvc.perform(
+                get("/history/{revision}/{file}/onlineResources/{index}", revision, file, index)
+                )
+            .andExpect(status().isNotFound());
     }
 
     @Test
@@ -188,8 +188,8 @@ public class OnlineResourceControllerTest {
 
         //when
         mvc.perform(
-            get("/documents/{file}/onlineResources/{index}", file, 0)
-        )
+                get("/documents/{file}/onlineResources/{index}", file, 0)
+                )
             .andExpect(status().is3xxRedirection())
             .andExpect(header().string("location", "http://example.com/a"));
     }
@@ -203,8 +203,8 @@ public class OnlineResourceControllerTest {
 
         //when
         mvc.perform(
-            get("/documents/{file}/onlineResources/{index}", file, 0)
-        )
+                get("/documents/{file}/onlineResources/{index}", file, 0)
+                )
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(content().json("{\"layers\":[{\"name\":\"layer1\",\"legendUrl\":\"foo\"}],\"directMap\":\"directMap\",\"directFeatureInfo\":\"directFeatureInfo\"}"));
@@ -223,8 +223,8 @@ public class OnlineResourceControllerTest {
 
         //when
         mvc.perform(
-            get("/documents/{file}/onlineResources/{index}/tms/1.0.0/{layer}/{z}/{x}/{y}.png", file, 0, "layer1", 1, 2, 3)
-        )
+                get("/documents/{file}/onlineResources/{index}/tms/1.0.0/{layer}/{z}/{x}/{y}.png", file, 0, "layer1", 1, 2, 3)
+                )
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.IMAGE_PNG));
     }
@@ -240,8 +240,8 @@ public class OnlineResourceControllerTest {
 
         //When
         mvc.perform(
-            get("/documents/{file}/onlineResources/{index}/{layer}/legend", file, 0, "layer1")
-        )
+                get("/documents/{file}/onlineResources/{index}/{layer}/legend", file, 0, "layer1")
+                )
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.IMAGE_PNG));
     }

@@ -19,18 +19,18 @@ public class ThesaurusName {
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     private final LocalDate date;
-    
+
     @Builder
     @JsonCreator
     private ThesaurusName(
-        @JsonProperty("title") String title, 
-        @JsonProperty("date") LocalDate date, 
+        @JsonProperty("title") String title,
+        @JsonProperty("date") LocalDate date,
         @JsonProperty("dateType") String dateType) {
         this.title = nullToEmpty(title);
         this.date = date;
         this.dateType = nullToEmpty(dateType);
     }
-    
+
     public boolean isEmpty() {
         return title.isEmpty() && dateType.isEmpty() && date == null;
     }

@@ -11,11 +11,11 @@ public class WmsFeatureInfo {
     @Data
     public static class Layer {
         private String name;
-    	private List<Feature> features;
+        private List<Feature> features;
 
-    	@Data
-    	public static class Feature {
+        @Data
+        public static class Feature {
             private Map<String, String> attributes;
-    	}
+        }
     }
 }

@@ -45,6 +45,7 @@ import uk.ac.ceh.gateway.catalogue.modelnerc.NercModel;
 import uk.ac.ceh.gateway.catalogue.modelnerc.NercModelUse;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringActivity;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
+import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
 import uk.ac.ceh.gateway.catalogue.osdp.*;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
@@ -94,6 +95,7 @@ public class WebConfig implements WebMvcConfigurer {
         val modelApplication = new Object2TemplatedMessageConverter<>(ModelApplication.class, freemarkerConfiguration);
         val monitoringActivity = new Object2TemplatedMessageConverter<>(MonitoringActivity.class, freemarkerConfiguration);
         val monitoringFacility = new Object2TemplatedMessageConverter<>(MonitoringFacility.class, freemarkerConfiguration);
+        val monitoringNetwork = new Object2TemplatedMessageConverter<>(MonitoringNetwork.class, freemarkerConfiguration);
         val monitoringProgramme = new Object2TemplatedMessageConverter<>(MonitoringProgramme.class, freemarkerConfiguration);
         val network = new Object2TemplatedMessageConverter<>(Network.class, freemarkerConfiguration);
         val nercModel = new Object2TemplatedMessageConverter<>(NercModel.class, freemarkerConfiguration);
@@ -140,6 +142,7 @@ public class WebConfig implements WebMvcConfigurer {
             modelApplication,
             monitoringActivity,
             monitoringFacility,
+            monitoringNetwork,
             monitoringProgramme,
             network,
             nercModel,
@@ -224,9 +227,9 @@ public class WebConfig implements WebMvcConfigurer {
     public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
         log.info("configuring Content Negotiation");
         /*
-         Document types just producing json format do not need to register
-         a media type can just append ?format=json to url
-        */
+         * Document types just producing json format do not need to register
+         * a media type can just append ?format=json to url
+         */
         configurer
             .favorParameter(true)
             .mediaType(BIBTEX_SHORT, BIBTEX)

@@ -14,10 +14,10 @@ import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 public class Link {
     @XmlAttribute(namespace = "http://www.w3.org/1999/xlink")
     private String title, href;
-    
+
     @XmlValue
     private String value;
-    
+
     public String getDisplayText() {
         return Arrays.asList(value, title, href)
                 .stream()
@@ -34,7 +34,7 @@ public class Link {
             .URI(href)
             .build();
     }
-    
+
     @Data
     @EqualsAndHashCode(callSuper = true)
     @ToString(callSuper = true)

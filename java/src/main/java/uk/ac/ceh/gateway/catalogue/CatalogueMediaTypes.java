@@ -46,11 +46,13 @@ public class CatalogueMediaTypes {
 
     public static final String MONITORING_ACTIVITY_JSON_VALUE = "application/vnd.monitoring-activity+json";
     public static final String MONITORING_FACILITY_JSON_VALUE = "application/vnd.monitoring-facility+json";
+    public static final String MONITORING_NETWORK_JSON_VALUE = "application/vnd.monitoring-network+json";
     public static final String MONITORING_PROGRAMME_JSON_VALUE = "application/vnd.monitoring-programme+json";
 
     public static final String MODEL_JSON_VALUE = "application/model+json";
     public static final String NERC_MODEL_JSON_VALUE = "application/vnd.nerc-model+json";
     public static final String NERC_MODEL_USE_JSON_VALUE = "application/vnd.nerc-model-use+json";
+
     public static final String OSDP_AGENT_JSON_VALUE = "application/vnd.osdp.agent+json";
     public static final String OSDP_DATASET_JSON_VALUE = "application/vnd.osdp.dataset+json";
     public static final String OSDP_MODEL_JSON_VALUE = "application/vnd.osdp.model+json";

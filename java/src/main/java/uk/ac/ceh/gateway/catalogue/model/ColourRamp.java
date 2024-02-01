@@ -6,18 +6,18 @@ import java.util.List;
 import lombok.Data;
 
 /**
- * This class defines the a colour ramp which generates arbitary colours from 
- * the range. 
+ * This class defines the a colour ramp which generates arbitary colours from
+ * the range.
  */
 public class ColourRamp {
     private final List<Range> steps;
     private int total;
-    
+
     public ColourRamp(Color base) {
         this.steps = new ArrayList<>();
         this.steps.add(new Range(0, base));
     }
-    
+
     /**
      * Obtains a colour from the colour range where max represents the maximum
      * value of pos which will be requested
@@ -27,13 +27,13 @@ public class ColourRamp {
      */
     public Color getColour(int pos, int max) {
         double scaledI = (pos*total)/(double)max;
-        
-        //Locate the two colours to get the range between       
+
+        //Locate the two colours to get the range between
         for(int i=0; i<steps.size(); i++) {
             Range me = steps.get(i);
             Range next = steps.get(i+1);
             scaledI -= me.steps;
-            
+
             if(scaledI <= next.steps) {
                 return new Color(
                         getMidValue(scaledI, next.steps, me.stop.getRed(),   next.stop.getRed()),
@@ -44,7 +44,7 @@ public class ColourRamp {
         }
         return null;
     }
-    
+
     /**
      * Adds a step in this colour range which occurs after the last set step
      * by the given weight
@@ -55,13 +55,13 @@ public class ColourRamp {
         steps.add(new Range(weight, colour));
         total += weight;
     }
-    
+
     @Data
     private static class Range {
         private final int steps;
         private final Color stop;
     }
-    
+
     private static int getMidValue(double position, int amount, int start, int end) {
         return (int)(start - ((start-end) * position)/amount);
     }

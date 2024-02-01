@@ -6,7 +6,7 @@ import javax.xml.namespace.NamespaceContext;
 
 /**
  * Hardcode the namespaces you need
- * 
+ *
  * @see http://www.ibm.com/developerworks/xml/library/x-nmspccontext/index.html
  */
 public class HardcodedUKEOFNamespaceResolver implements NamespaceContext {
@@ -16,7 +16,7 @@ public class HardcodedUKEOFNamespaceResolver implements NamespaceContext {
         if(prefix == null) {
             throw new IllegalArgumentException("No prefix provided!");
         }
-        
+
         switch(prefix) {
             case "ukeof": return "http://www.ukeof.org.uk/schema/1";
             case "xlink": return "http://www.w3.org/1999/xlink";

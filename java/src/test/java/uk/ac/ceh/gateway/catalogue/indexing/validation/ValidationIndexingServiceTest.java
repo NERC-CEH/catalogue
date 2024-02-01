@@ -38,7 +38,6 @@ class ValidationIndexingServiceTest {
 
     @InjectMocks private ValidationIndexingService service;
 
-
     @Test
     void checkThatIndexEmptyIsAtStart() {
         //Given
@@ -62,9 +61,9 @@ class ValidationIndexingServiceTest {
             .willReturn(new ValidationReport("2"));
 
         //When
-       assertThrows(DocumentIndexingException.class, () ->
-            service.indexDocuments(docs, rev)
-        );
+        assertThrows(DocumentIndexingException.class, () ->
+                service.indexDocuments(docs, rev)
+                );
 
         //Then
         assertFalse(service.isIndexEmpty());

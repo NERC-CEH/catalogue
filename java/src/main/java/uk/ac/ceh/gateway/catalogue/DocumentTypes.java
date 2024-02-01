@@ -53,7 +53,7 @@ public class DocumentTypes {
             .title("Infrastructure record")
             .type(INFRASTRUCTURERECORD)
             .build();
-    
+
     public static final String GEMINI = "GEMINI_DOCUMENT";
     public static DocumentType GEMINI_TYPE = DocumentType.builder()
         .title("Data resource")
@@ -88,6 +88,12 @@ public class DocumentTypes {
     public static DocumentType MONITORING_FACILITY_TYPE = DocumentType.builder()
         .title("Monitoring Facility")
         .type(MONITORING_FACILITY)
+        .build();
+
+    public static final String MONITORING_NETWORK = "monitoring-network";
+    public static DocumentType MONITORING_NETWORK_TYPE = DocumentType.builder()
+        .title("Monitoring Network")
+        .type(MONITORING_NETWORK)
         .build();
 
     public static final String MONITORING_PROGRAMME = "monitoring-programme";

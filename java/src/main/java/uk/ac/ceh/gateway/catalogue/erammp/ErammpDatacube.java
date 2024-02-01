@@ -27,28 +27,28 @@ import java.util.stream.Collectors;
 @ToString(callSuper = true)
 @Accessors(chain = true)
 @ConvertUsing({
-  @Template(called="html/erammp/erammp_datacube.ftlh", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
+    @Template(called="html/erammp/erammp_datacube.ftlh", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
 })
 public class ErammpDatacube extends AbstractMetadataDocument implements WellKnownText{
-  private String version, dataFormat, spatialResolution, spatialRepresentationType, condition;
-  private List<BoundingBox> boundingBoxes;
-  private List<DataLocation> dataLocations;
-  private List<ResponsibleParty> provider;
-  private List<OnlineLink> onlineResources;
-  private List<SpatialReferenceSystem> spatialReferenceSystems;
-  private List<ResourceConstraint> useConstraints, accessConstraints;
-  private List<DataTypeSchema> schema;
-  private List<ProcessingStep> processingSteps;
+    private String version, dataFormat, spatialResolution, spatialRepresentationType, condition;
+    private List<BoundingBox> boundingBoxes;
+    private List<DataLocation> dataLocations;
+    private List<ResponsibleParty> provider;
+    private List<OnlineLink> onlineResources;
+    private List<SpatialReferenceSystem> spatialReferenceSystems;
+    private List<ResourceConstraint> useConstraints, accessConstraints;
+    private List<DataTypeSchema> schema;
+    private List<ProcessingStep> processingSteps;
 
 
-  @Override
-  public @NonNull List<String> getWKTs() {
-    return Optional.ofNullable(boundingBoxes)
-        .orElse(Collections.emptyList())
-        .stream()
-        .map(BoundingBox::getWkt)
-        .collect(Collectors.toList());
-  }
+    @Override
+    public @NonNull List<String> getWKTs() {
+        return Optional.ofNullable(boundingBoxes)
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(BoundingBox::getWkt)
+                .collect(Collectors.toList());
+    }
 }
 
 

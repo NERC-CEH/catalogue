@@ -26,23 +26,23 @@ import java.util.stream.Collectors;
 @ToString(callSuper = true)
 @Accessors(chain = true)
 @ConvertUsing({
-    @Template(called="html/sample_archive/sample_archive.ftlh", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
+        @Template(called="html/sample_archive/sample_archive.ftlh", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
 })
 public class SampleArchive extends AbstractMetadataDocument implements WellKnownText {
-  private String lineage, availability, accessRestrictions, storage, healthSafety, website;
-  private List<Keyword>  taxa, tissues, specimenTypes, physicalStates, keywords;
-  private TimePeriod temporalExtent;
-  private List<BoundingBox> boundingBoxes;
-  private List<ResponsibleParty> archiveLocations, archiveContacts, metadataContacts;
-  private List<OnlineLink> onlineResources;
-  private List<Funding> funding;
+    private String lineage, availability, accessRestrictions, storage, healthSafety, website;
+    private List<Keyword>  taxa, tissues, specimenTypes, physicalStates, keywords;
+    private TimePeriod temporalExtent;
+    private List<BoundingBox> boundingBoxes;
+    private List<ResponsibleParty> archiveLocations, archiveContacts, metadataContacts;
+    private List<OnlineLink> onlineResources;
+    private List<Funding> funding;
 
-  @Override
-  public List<String> getWKTs() {
-    return Optional.ofNullable(boundingBoxes)
-        .orElse(Collections.emptyList())
-        .stream()
-        .map(BoundingBox::getWkt)
-        .collect(Collectors.toList());
-  }
+    @Override
+    public List<String> getWKTs() {
+        return Optional.ofNullable(boundingBoxes)
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(BoundingBox::getWkt)
+                .collect(Collectors.toList());
+    }
 }

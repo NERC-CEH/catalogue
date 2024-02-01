@@ -1,205 +1,205 @@
 .document-upload {
-  margin-top: 32px;
+    margin-top: 32px;
 
-  .return {
-    font-size: 18px;
-  }
-
-  .panel-file {
-    transition: margin ease-in-out 0.2s;
-    margin: 16px 0;
-    border-radius: 0;
-
-    &.is-collapsed {
-      margin: 0 0 -2px;
-      border-bottom: 0;
-
-      .panel-heading-chevron {
-        transform: rotate(180deg);
-      }
-
-      & .panel-body,
-      & .panel-footer {
-        display: none;
-      }
+    .return {
+        font-size: 18px;
     }
 
-    &:last-child {
-      margin-bottom: 16px;
-    }
+    .panel-file {
+        transition: margin ease-in-out 0.2s;
+        margin: 16px 0;
+        border-radius: 0;
 
-    &.panel-default .panel-heading {
-      background-color: transparent;
-      color: #333;
+        &.is-collapsed {
+            margin: 0 0 -2px;
+            border-bottom: 0;
 
-      &:hover {
-        background-color: #eee;
-      }
-    }
+            .panel-heading-chevron {
+                transform: rotate(180deg);
+            }
 
-    &.panel-danger .panel-heading:hover {
-      background-color: #ffa8a6;
-    }
-
-    .panel-heading {
-      display: flex;
-      border-radius: 0;
-
-      &:hover {
-        cursor: pointer;
-      }
-
-      &-chevron {
-        transition: transform ease-in-out 0.2s;
-        margin-left: auto;
-        line-height: 22px;
-      }
-
-      &-type {
-        margin-left: 12px;
-      }
-    }
-
-    .panel-file-message {
-      margin-top: 16px;
-
-      &-title {
-        font-size: 16px;
-        font-weight: bold;
-      }
-
-      &-body {
-        white-space: pre;
-        font-size: 14px;
-        margin: 0;
-      }
-    }
-
-    .panel-footer {
-      display: flex;
-
-      .buttons {
-        margin-left: auto;
-        .btn {
-          .btn-sm;
+            & .panel-body,
+            & .panel-footer {
+                display: none;
+            }
         }
-      }
+
+        &:last-child {
+            margin-bottom: 16px;
+        }
+
+        &.panel-default .panel-heading {
+            background-color: transparent;
+            color: #333;
+
+            &:hover {
+                background-color: #eee;
+            }
+        }
+
+        &.panel-danger .panel-heading:hover {
+            background-color: #ffa8a6;
+        }
+
+        .panel-heading {
+            display: flex;
+            border-radius: 0;
+
+            &:hover {
+                cursor: pointer;
+            }
+
+            &-chevron {
+                transition: transform ease-in-out 0.2s;
+                margin-left: auto;
+                line-height: 22px;
+            }
+
+            &-type {
+                margin-left: 12px;
+            }
+        }
+
+        .panel-file-message {
+            margin-top: 16px;
+
+            &-title {
+                font-size: 16px;
+                font-weight: bold;
+            }
+
+            &-body {
+                white-space: pre;
+                font-size: 14px;
+                margin: 0;
+            }
+        }
+
+        .panel-footer {
+            display: flex;
+
+            .buttons {
+                margin-left: auto;
+                .btn {
+                    .btn-sm;
+                }
+            }
+        }
     }
-  }
 
-  .dropzone-container {
-    border-radius: 4px;
-    padding: 16px;
-    border: 2px dashed #c4c4c4;
-    width: 100%;
-    margin-bottom: 16px;
-  }
+    .dropzone-container {
+        border-radius: 4px;
+        padding: 16px;
+        border: 2px dashed #c4c4c4;
+        width: 100%;
+        margin-bottom: 16px;
+    }
 
-  .dropzone-files {
-    margin-bottom: 32px;
-  }
+    .dropzone-files {
+        margin-bottom: 32px;
+    }
 
-  .dz-default {
-    display: none;
-  }
+    .dz-default {
+        display: none;
+    }
 
-  .finish,
-  .fileinput-button,
-  .load {
-    width: 100%;
-  }
+    .finish,
+    .fileinput-button,
+    .load {
+        width: 100%;
+    }
 
-  .no-issue {
-    margin-top: 16px;
-  }
+    .no-issue {
+        margin-top: 16px;
+    }
 
-  &-section {
-    margin-bottom: 96px;
-  }
+    &-section {
+        margin-bottom: 96px;
+    }
 
-  .file-head {
-    font-size: 16px;
-    padding-bottom: 16px;
-    margin: 0;
-    border-bottom: solid 2px #aaa;
-  }
+    .file-head {
+        font-size: 16px;
+        padding-bottom: 16px;
+        margin: 0;
+        border-bottom: solid 2px #aaa;
+    }
 
-  .file-row {
-    margin: 0;
-    padding-top: 8px;
-    padding-bottom: 8px;
-    border-bottom: solid 1px #ccc;
-  }
+    .file-row {
+        margin: 0;
+        padding-top: 8px;
+        padding-bottom: 8px;
+        border-bottom: solid 1px #ccc;
+    }
 
-  .file-name,
-  .file-size,
-  .file-checksum,
-  .file-status,
-  .file-estimate {
-    font-size: 14px;
-    height: 36px;
-    line-height: 32px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+    .file-name,
+    .file-size,
+    .file-checksum,
+    .file-status,
+    .file-estimate {
+        font-size: 14px;
+        height: 36px;
+        line-height: 32px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 
-  .file-message {
-    font-size: 13px;
-    color: #808080;
-    margin-top: -8px;
-  }
+    .file-message {
+        font-size: 13px;
+        color: #808080;
+        margin-top: -8px;
+    }
 
-  .file-warning {
-    color: #f0ad4e;
-  }
+    .file-warning {
+        color: #f0ad4e;
+    }
 
-  .file-danger {
-    color: #c9302c;
-  }
+    .file-danger {
+        color: #c9302c;
+    }
 
-  .file-warning,
-  .file-danger {
-    font-weight: bold;
-  }
+    .file-warning,
+    .file-danger {
+        font-weight: bold;
+    }
 
-  .file-icon {
-    margin-right: 4px;
-  }
+    .file-icon {
+        margin-right: 4px;
+    }
 
-  .btn-icon {
-    margin-right: 8px;
-  }
+    .btn-icon {
+        margin-right: 8px;
+    }
 
-  .file-actions {
-    display: flex;
-  }
+    .file-actions {
+        display: flex;
+    }
 
-  .file-action {
-    width: 50%;
-    margin-left: 8px;
-  }
+    .file-action {
+        width: 50%;
+        margin-left: 8px;
+    }
 
-  .file-action:first-child {
-    margin-left: 0;
-  }
+    .file-action:first-child {
+        margin-left: 0;
+    }
 
-  .hash-dropbox,
-  .register-dropbox,
-  .schedule,
-  .reschedule,
-  .move-all {
-    margin-top: 16px;
-    width: 100%;
-  }
+    .hash-dropbox,
+    .register-dropbox,
+    .schedule,
+    .reschedule,
+    .move-all {
+        margin-top: 16px;
+        width: 100%;
+    }
 
-  .no-documents {
-    color: #bbb;
-    font-weight: 400;
-    letter-spacing: 1px;
-  }
+    .no-documents {
+        color: #bbb;
+        font-weight: 400;
+        letter-spacing: 1px;
+    }
 }
 
 .is-non-admin .document-upload .panel-footer {
-  display: none;
+    display: none;
 }

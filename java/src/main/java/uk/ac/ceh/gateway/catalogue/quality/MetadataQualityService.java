@@ -28,32 +28,32 @@ public class MetadataQualityService {
     private final DocumentReader documentReader;
     private final Configuration config;
     private final Set<String> validResourceTypes = ImmutableSet.of(
-        "application",
-        "dataset",
-        "nonGeographicDataset",
-        "service"
-    );
+            "application",
+            "dataset",
+            "nonGeographicDataset",
+            "service"
+            );
     private final Set<String> allowedEmails = ImmutableSet.of(
-        "enquiries@ceh.ac.uk",
-        "info@eidc.ac.uk"
-    );
+            "enquiries@ceh.ac.uk",
+            "info@eidc.ac.uk"
+            );
     private final TypeRef<List<Map<String, String>>> typeRefStringString = new TypeRef<>() {
     };
 
     public MetadataQualityService(
-        @NonNull DocumentReader documentReader,
-        @NonNull ObjectMapper objectMapper
-    ) {
+            @NonNull DocumentReader documentReader,
+            @NonNull ObjectMapper objectMapper
+            ) {
         this.documentReader = documentReader;
         this.config = Configuration.defaultConfiguration()
             .jsonProvider(new JacksonJsonProvider(objectMapper))
             .mappingProvider(new JacksonMappingProvider(objectMapper))
             .addOptions(
-                Option.DEFAULT_PATH_LEAF_TO_NULL,
-                Option.SUPPRESS_EXCEPTIONS
-            );
+                    Option.DEFAULT_PATH_LEAF_TO_NULL,
+                    Option.SUPPRESS_EXCEPTIONS
+                    );
         log.info("Creating");
-    }
+            }
 
     @SneakyThrows
     public Results check(String id) {
@@ -61,13 +61,13 @@ public class MetadataQualityService {
 
         try {
             val parsedDoc = JsonPath.parse(
-                documentReader.read(id, "raw"),
-                config
-            );
+                    documentReader.read(id, "raw"),
+                    config
+                    );
             val parsedMeta = JsonPath.parse(
-                documentReader.read(id, "meta"),
-                config
-            );
+                    documentReader.read(id, "meta"),
+                    config
+                    );
 
             if (isQualifyingDocument(parsedDoc, parsedMeta)) {
                 val checks = new ArrayList<MetadataCheck>();
@@ -102,9 +102,9 @@ public class MetadataQualityService {
         val requiredKeys = ImmutableSet.of("title", "description", "resourceType");
         val toReturn = new ArrayList<MetadataCheck>();
         val toCheck = parsedDoc.read(
-            "$.['title','description']",
-            new TypeRef<Map<String, String>>() {}
-            );
+                "$.['title','description']",
+                new TypeRef<Map<String, String>>() {}
+                );
         toCheck.put("resourceType", parsedDoc.read("$.resourceType.value", String.class));
         requiredKeys.forEach(key -> {
             if (fieldIsMissing(toCheck, key)) {
@@ -188,9 +188,9 @@ public class MetadataQualityService {
         }
         val toReturn = new ArrayList<MetadataCheck>();
         val toCheck = parsed.read(
-            "$.['boundingBoxes','spatialRepresentationTypes','spatialReferenceSystems','spatialResolutions']",
-            new TypeRef<Map<String, List>>() {}
-        );
+                "$.['boundingBoxes','spatialRepresentationTypes','spatialReferenceSystems','spatialResolutions']",
+                new TypeRef<Map<String, List>>() {}
+                );
         toCheck.forEach((key, value) -> {
             if ( !fieldListIsMissing(toCheck, key)) {
                 toReturn.add(new MetadataCheck("The record has " + key + " but the resource type is Non-geographic dataset", ERROR));
@@ -213,9 +213,9 @@ public class MetadataQualityService {
 
         checkBoundingBoxes(parsed).ifPresent(toReturn::addAll);
         val spatial = parsed.read(
-            "$.['boundingBoxes','spatialRepresentationTypes']",
-            new TypeRef<Map<String, List>>() {}
-            );
+                "$.['boundingBoxes','spatialRepresentationTypes']",
+                new TypeRef<Map<String, List>>() {}
+                );
         requiredKeys.forEach(key -> {
             if (fieldListIsMissing(spatial, key)) {
                 toReturn.add(new MetadataCheck(key + " is missing", ERROR));
@@ -244,9 +244,9 @@ public class MetadataQualityService {
         checkTopicCategoriesService(parsed).ifPresent(toReturn::add);
         checkBoundingBoxes(parsed).ifPresent(toReturn::addAll);
         val spatial = parsed.read(
-            "$.['boundingBoxes','spatialReferenceSystems']",
-            new TypeRef<Map<String, List>>() {}
-            );
+                "$.['boundingBoxes','spatialReferenceSystems']",
+                new TypeRef<Map<String, List>>() {}
+                );
         requiredKeys.forEach(key -> {
             if (fieldListIsMissing(spatial, key)) {
                 toReturn.add(new MetadataCheck(key + " is missing", ERROR));
@@ -262,9 +262,9 @@ public class MetadataQualityService {
     Optional<List<MetadataCheck>> checkBoundingBoxes(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
         val boundingBoxes = parsed.read(
-            "$.boundingBoxes[*].['northBoundLatitude','southBoundLatitude','eastBoundLongitude','westBoundLongitude']",
-            new TypeRef<List<Map<String, Number>>>() {}
-        );
+                "$.boundingBoxes[*].['northBoundLatitude','southBoundLatitude','eastBoundLongitude','westBoundLongitude']",
+                new TypeRef<List<Map<String, Number>>>() {}
+                );
 
         boundingBoxes.forEach(boundingBox -> {
             boundingBox.forEach((key, value) -> {
@@ -316,9 +316,9 @@ public class MetadataQualityService {
         val requiredKeys = ImmutableSet.of("resourceStatus", "lineage");
         val toReturn = new ArrayList<MetadataCheck>();
         val toCheck = parsed.read(
-            "$.['resourceStatus', 'lineage']",
-            new TypeRef<Map<String, String>>() {}
-            );
+                "$.['resourceStatus', 'lineage']",
+                new TypeRef<Map<String, String>>() {}
+                );
         requiredKeys.forEach(key -> {
             if (fieldIsMissing(toCheck, key)) {
                 toReturn.add(new MetadataCheck(key + " is missing", ERROR));
@@ -360,10 +360,10 @@ public class MetadataQualityService {
         checkPointOfContact(parsed).ifPresent(toReturn::addAll);
         checkDistributor(parsed).ifPresent(toReturn::addAll);
 
-       val size = parsed.read(
-            "$.onlineResources[*][?(@.function in ['information', 'search'])].function",
-            List.class
-        ).size();
+        val size = parsed.read(
+                "$.onlineResources[*][?(@.function in ['information', 'search'])].function",
+                List.class
+                ).size();
         if (size < 1) {
             toReturn.add(new MetadataCheck("Search/information link is missing", ERROR));
         }
@@ -381,13 +381,13 @@ public class MetadataQualityService {
     Optional<List<MetadataCheck>> checkDistributor(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
         val distributors = parsed.read(
-            "$.distributorContacts[*][?(@.role == 'distributor')].['organisationName','email']",
-            typeRefStringString
-        );
+                "$.distributorContacts[*][?(@.role == 'distributor')].['organisationName','email']",
+                typeRefStringString
+                );
         val nonDistributors = parsed.read(
-            "$.distributorContacts[*][?(@.role != 'distributor')].['organisationName','email']",
-            typeRefStringString
-        );
+                "$.distributorContacts[*][?(@.role != 'distributor')].['organisationName','email']",
+                typeRefStringString
+                );
 
         checkAddress(distributors, "Distributor").ifPresent(toReturn::addAll);
         if (distributors.size() > 1) {
@@ -410,9 +410,9 @@ public class MetadataQualityService {
     Optional<List<MetadataCheck>> checkDistributorEIDC(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
         val distributors = parsed.read(
-            "$.distributorContacts[*][?(@.role == 'distributor')].['organisationName','email']",
-            typeRefStringString
-        );
+                "$.distributorContacts[*][?(@.role == 'distributor')].['organisationName','email']",
+                typeRefStringString
+                );
         distributors.stream()
             .filter(distributor -> fieldNotEqual(distributor, "organisationName", "NERC EDS Environmental Information Data Centre"))
             .map(distributor -> distributor.getOrDefault("organisationName", "unknown"))
@@ -433,9 +433,9 @@ public class MetadataQualityService {
     Optional<List<MetadataCheck>> checkPublisher(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
         val publishers = parsed.read(
-            "$.responsibleParties[*][?(@.role == 'publisher')].['organisationName','email']",
-            typeRefStringString
-        );
+                "$.responsibleParties[*][?(@.role == 'publisher')].['organisationName','email']",
+                typeRefStringString
+                );
         checkAddress(publishers, "Publisher").ifPresent(toReturn::addAll);
         if (publishers.size() > 1) {
             toReturn.add(new MetadataCheck("There should be only ONE publisher", ERROR));
@@ -463,9 +463,9 @@ public class MetadataQualityService {
     Optional<List<MetadataCheck>> checkCustodian(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
         val custodians = parsed.read(
-            "$.responsibleParties[*][?(@.role == 'custodian')].['organisationName','email']",
-            typeRefStringString
-        );
+                "$.responsibleParties[*][?(@.role == 'custodian')].['organisationName','email']",
+                typeRefStringString
+                );
         checkAddress(custodians, "Custodian").ifPresent(toReturn::addAll);
         if (custodians.size() > 1) {
             toReturn.add(new MetadataCheck("There should be only ONE custodian", ERROR));
@@ -493,9 +493,9 @@ public class MetadataQualityService {
     Optional<List<MetadataCheck>> checkPointOfContact(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
         val pocs = parsed.read(
-            "$.responsibleParties[*][?(@.role == 'pointOfContact')].['organisationName','individualName','email']",
-            typeRefStringString
-        );
+                "$.responsibleParties[*][?(@.role == 'pointOfContact')].['organisationName','individualName','email']",
+                typeRefStringString
+                );
         if (pocs.size() == 0 ) {
             toReturn.add(new MetadataCheck("Point of contact is missing", ERROR));
         }
@@ -513,10 +513,10 @@ public class MetadataQualityService {
         }
 
         pocs.stream()
-        .filter(poc -> poc.containsKey("email"))
-        .map(poc -> poc.get("email"))
-        .filter(email -> email.endsWith("@ceh.ac.uk") && !email.equals("enquiries@ceh.ac.uk"))
-        .forEach(email -> toReturn.add(new MetadataCheck(format("Point of contact's email address is %s", email), ERROR)));
+            .filter(poc -> poc.containsKey("email"))
+            .map(poc -> poc.get("email"))
+            .filter(email -> email.endsWith("@ceh.ac.uk") && !email.equals("enquiries@ceh.ac.uk"))
+            .forEach(email -> toReturn.add(new MetadataCheck(format("Point of contact's email address is %s", email), ERROR)));
 
         if (toReturn.isEmpty()) {
             return Optional.empty();
@@ -527,9 +527,9 @@ public class MetadataQualityService {
 
     Optional<MetadataCheck> checkInspireThemes(DocumentContext parsed) {
         val inspireThemes = parsed.read(
-            "$.inspireThemes[*]",
-            typeRefStringString
-        );
+                "$.inspireThemes[*]",
+                typeRefStringString
+                );
         if (inspireThemes.isEmpty()) {
             return Optional.of(new MetadataCheck("INSPIRE Theme is missing", ERROR));
         }
@@ -542,9 +542,9 @@ public class MetadataQualityService {
 
     Optional<MetadataCheck> checkSpatialResolutions(DocumentContext parsed) {
         val spatialResolutions = parsed.read(
-            "$.spatialResolutions[*]",
-            typeRefStringString
-        );
+                "$.spatialResolutions[*]",
+                typeRefStringString
+                );
         if (spatialResolutions.isEmpty()) {
             return Optional.of(new MetadataCheck("Spatial resolutions is missing", WARNING));
         }
@@ -557,9 +557,9 @@ public class MetadataQualityService {
 
     Optional<MetadataCheck> checkSpatialReferenceSystems(DocumentContext parsed) {
         val spatialReferenceSystems = parsed.read(
-            "$.spatialReferenceSystems[*]",
-            typeRefStringString
-        );
+                "$.spatialReferenceSystems[*]",
+                typeRefStringString
+                );
         if (spatialReferenceSystems.isEmpty()) {
             return Optional.of(new MetadataCheck("Spatial reference systems are missing", ERROR));
         }
@@ -572,9 +572,9 @@ public class MetadataQualityService {
 
     Optional<MetadataCheck> checkDataFormat(DocumentContext parsed) {
         val dataFormats = parsed.read(
-            "$.distributionFormats[*]",
-            typeRefStringString
-        );
+                "$.distributionFormats[*]",
+                typeRefStringString
+                );
         if (dataFormats.isEmpty()) {
             return Optional.of(new MetadataCheck("Data format is missing", ERROR));
         }
@@ -590,9 +590,9 @@ public class MetadataQualityService {
 
     Optional<MetadataCheck> checkRelatedRecords(DocumentContext parsed) {
         val relatedRecords = parsed.read(
-            "$.relatedRecords[*]",
-            typeRefStringString
-        );
+                "$.relatedRecords[*]",
+                typeRefStringString
+                );
         if (relatedRecords.stream().anyMatch(relatedRecord -> fieldIsMissing(relatedRecord, "rel"))) {
             return Optional.of(new MetadataCheck("Related record is incomplete", ERROR));
         }
@@ -617,9 +617,9 @@ public class MetadataQualityService {
 
     Optional<MetadataCheck> checkTopicCategories(DocumentContext parsed) {
         val topicCategories = parsed.read(
-            "$.topicCategories[*]",
-            typeRefStringString
-            );
+                "$.topicCategories[*]",
+                typeRefStringString
+                );
         if (topicCategories.isEmpty()) {
             return Optional.of(new MetadataCheck("Topic category is missing", ERROR));
         }
@@ -632,9 +632,9 @@ public class MetadataQualityService {
 
     Optional<MetadataCheck> checkTopicCategoriesService(DocumentContext parsed) {
         val topicCategories = parsed.read(
-            "$.topicCategories[*]",
-            typeRefStringString
-            );
+                "$.topicCategories[*]",
+                typeRefStringString
+                );
         if (topicCategories.isEmpty()) {
             return Optional.empty();
         } else {
@@ -645,9 +645,9 @@ public class MetadataQualityService {
     Optional<List<MetadataCheck>> checkAuthors(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
         val authors = parsed.read(
-            "$.responsibleParties[*][?(@.role == 'author')].['individualName', 'organisationName','email']",
-            typeRefStringString
-            );
+                "$.responsibleParties[*][?(@.role == 'author')].['individualName', 'organisationName','email']",
+                typeRefStringString
+                );
         if (authors.size() == 0) {
             toReturn.add(new MetadataCheck("There are no authors", INFO));
         }
@@ -697,13 +697,13 @@ public class MetadataQualityService {
 
         val toReturn = new ArrayList<MetadataCheck>();
         val orders = parsed.read(
-            "$.onlineResources[*][?(@.function == 'order')]",
-            typeRefStringString
-        );
+                "$.onlineResources[*][?(@.function == 'order')]",
+                typeRefStringString
+                );
         val downloads = parsed.read(
-            "$.onlineResources[*][?(@.function == 'download')]",
-            typeRefStringString
-        );
+                "$.onlineResources[*][?(@.function == 'download')]",
+                typeRefStringString
+                );
         val totalOrdersAndDownloads = orders.size() + downloads.size();
 
         if (totalOrdersAndDownloads == 0) {
@@ -713,13 +713,13 @@ public class MetadataQualityService {
         }
 
         if(orders.stream()
-            .anyMatch(order -> fieldNotStartingWith(order, "url", "https://order-eidc.ceh.ac.uk/resources"))) {
+                .anyMatch(order -> fieldNotStartingWith(order, "url", "https://order-eidc.ceh.ac.uk/resources"))) {
             toReturn.add(new MetadataCheck("Orders do not have a valid EIDC url", INFO));
-        }
+                }
         if(downloads.stream()
-            .anyMatch(order -> fieldNotStartingWith(order, "url", "https://catalogue.ceh.ac.uk/datastore/eidchub/") && fieldNotStartingWith(order, "url", "https://data-package.ceh.ac.uk/data"))) {
+                .anyMatch(order -> fieldNotStartingWith(order, "url", "https://catalogue.ceh.ac.uk/datastore/eidchub/") && fieldNotStartingWith(order, "url", "https://data-package.ceh.ac.uk/data"))) {
             toReturn.add(new MetadataCheck("Downloads do not have a valid EIDC url", INFO));
-        }
+                }
         if (toReturn.isEmpty()) {
             return Optional.empty();
         } else {
@@ -734,13 +734,13 @@ public class MetadataQualityService {
 
         val toReturn = new ArrayList<MetadataCheck>();
         val orders = parsed.read(
-            "$.onlineResources[*][?(@.function == 'order')]",
-            typeRefStringString
-        );
+                "$.onlineResources[*][?(@.function == 'order')]",
+                typeRefStringString
+                );
         val downloads = parsed.read(
-            "$.onlineResources[*][?(@.function == 'download')]",
-            typeRefStringString
-        );
+                "$.onlineResources[*][?(@.function == 'download')]",
+                typeRefStringString
+                );
         val totalOrdersAndDownloads = orders.size() + downloads.size();
 
         if (totalOrdersAndDownloads > 0) {

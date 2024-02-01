@@ -26,14 +26,14 @@ public class DescriptiveKeywordsConverter {
         this.keywordCharacter = xpath.compile(KEYWORD_CHARACTER);
         this.keywordAnchor = xpath.compile(KEYWORD_ANCHOR);
     }
-    
+
     public List<DescriptiveKeywords> convert(Document document) throws XPathExpressionException {
         List<DescriptiveKeywords> toReturn = new ArrayList<>();
         NodeList nodeList = (NodeList) descriptiveKeywords.evaluate(document, XPathConstants.NODESET);
         for(int i=0; i<nodeList.getLength(); i++){
             Node node = nodeList.item(i);
-            
-                    
+
+
             toReturn.add(DescriptiveKeywords.builder()
                     .keywords(getKeywordsFromDescriptiveKeywordsNode(node))
                     .type(type.evaluate(node))
@@ -42,21 +42,21 @@ public class DescriptiveKeywordsConverter {
         }
         return toReturn;
     }
-    
+
     private List<Keyword> getKeywordsFromDescriptiveKeywordsNode(Node node) throws XPathExpressionException{
         List<Keyword> toReturn = new ArrayList<>();
         toReturn.addAll(getKeywordsFromCharacterString(node));
         toReturn.addAll(getKeywordsURIFromDescriptiveKeywordsNode(node));
         return toReturn;
     }
-    
+
     private List<Keyword> getKeywordsFromCharacterString(Node node) throws XPathExpressionException {
         List<String> keywords = NodeListConverter.getListOfStrings((NodeList) keywordCharacter.evaluate(node, XPathConstants.NODESET));
         return keywords.stream()
             .map((keyword) -> { return Keyword.builder().value(keyword).build(); })
             .collect(Collectors.toList());
     }
-    
+
     private List<Keyword> getKeywordsURIFromDescriptiveKeywordsNode(Node descriptiveKeywordsNode) throws XPathExpressionException{
         List<Keyword> toReturn = new ArrayList<>();
         NodeList nodeList = (NodeList) keywordAnchor.evaluate(descriptiveKeywordsNode, XPathConstants.NODESET);
@@ -77,5 +77,5 @@ public class DescriptiveKeywordsConverter {
             );
         }
         return toReturn;
-    }  
+    }
 }

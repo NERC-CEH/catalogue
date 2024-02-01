@@ -18,28 +18,28 @@ import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.INFRASTRUCTURERECO
 @RequestMapping("documents")
 public class InfrastructureRecordController extends AbstractDocumentController {
 
-  public InfrastructureRecordController(DocumentRepository documentRepository) {
-    super(documentRepository);
-    log.info("Creating");
-  }
+    public InfrastructureRecordController(DocumentRepository documentRepository) {
+        super(documentRepository);
+        log.info("Creating");
+    }
 
-  @PreAuthorize("@permission.userCanCreate(#catalogue)")
-  @PostMapping(consumes = INFRASTRUCTURERECORD_JSON_VALUE)
-  public ResponseEntity<MetadataDocument> newInfrastructureRecord(
-      @ActiveUser CatalogueUser user,
-      @RequestBody InfrastructureRecord document,
-      @RequestParam("catalogue") String catalogue
-  ) {
-    return saveNewMetadataDocument(user, document, catalogue, "new infrastructure record");
-  }
+    @PreAuthorize("@permission.userCanCreate(#catalogue)")
+    @PostMapping(consumes = INFRASTRUCTURERECORD_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> newInfrastructureRecord(
+            @ActiveUser CatalogueUser user,
+            @RequestBody InfrastructureRecord document,
+            @RequestParam("catalogue") String catalogue
+    ) {
+        return saveNewMetadataDocument(user, document, catalogue, "new infrastructure record");
+    }
 
-  @PreAuthorize("@permission.userCanEdit(#file)")
-  @PutMapping(value = "{file}", consumes = INFRASTRUCTURERECORD_JSON_VALUE)
-  public ResponseEntity<MetadataDocument> updateInfrastructureRecord(
-      @ActiveUser CatalogueUser user,
-      @PathVariable("file") String file,
-      @RequestBody InfrastructureRecord document
-  ) {
-    return saveMetadataDocument(user, file, document);
-  }
+    @PreAuthorize("@permission.userCanEdit(#file)")
+    @PutMapping(value = "{file}", consumes = INFRASTRUCTURERECORD_JSON_VALUE)
+    public ResponseEntity<MetadataDocument> updateInfrastructureRecord(
+            @ActiveUser CatalogueUser user,
+            @PathVariable("file") String file,
+            @RequestBody InfrastructureRecord document
+    ) {
+        return saveMetadataDocument(user, file, document);
+    }
 }

@@ -11,7 +11,7 @@ public class UkeofXml2EFDocumentMessageConverter extends Jaxb2HttpMessageConvert
         super("http://www.ukeof.org.uk/schema/1","http://www.ukeof.org.uk/schema/1/UKEOF_v1.0.xsd");
         log.info("Creating {}", this);
     }
-    
+
     @Override
     protected boolean supports(Class<?> clazz) {
         return clazz.isAssignableFrom(BaseMonitoringType.class);

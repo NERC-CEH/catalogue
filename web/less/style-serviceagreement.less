@@ -1,246 +1,246 @@
 .serviceAgreement {
-  .adminPanel {
-    margin: 1em 0 !important;
-    .btn {
-      min-width: 150px;
-    }
-    form {
-      display: inline-block;
-    }
-  }
-
-  .indent {
-    &--1 {
-      margin-left: 2em;
-    }
-    &--2 {
-      margin-left: 4em;
-    }
-  }
-
-  .historical {
-    border: 14px solid red;
-    h1.text-red {
-      border-bottom: 1px solid gray;
-      padding-bottom: 0.4em;
-    }
-  }
-
-  .contactDetails {
-    margin-top: 3em;
-    .keyvalue {
-      gap: 0;
-      grid-template-columns: 1fr;
-      margin: 0;
-      > div {
-        padding: 0.75em;
-        margin: 0;
-        outline: 1px solid;
-        text-align: left;
-      }
-      .key {
-        background-color: hsl(0, 0%, 95%);
-      }
-    }
-  }
-
-  .title {
-    display: flex;
-    gap: 1em;
-    align-items: center;
-    .logo {
-      display: none;
-    }
-  }
-  .keyvalue {
-    display: grid;
-    margin: 1em 0;
-    .key {
-      font-weight: bolder;
-    }
-  }
-
-  .qualityReport {
-    display: flex;
-    flex-direction: column;
-    margin: 2em 0;
-    gap: 0.5em;
-    .qualityItem {
-      background-color:var(--bgcolour);
-      font-weight:bolder;
-      border-bottom:1px solid white;
-      padding: 0.5em;
-      display: grid;
-      grid-template-columns: 50px auto;
-      div:first-of-type {
-        justify-self: center;
-      }
-      &--error {
-        --bgcolour: hsla(0, 100%, 50%, .15);
-        >div:first-of-type {color:red;}
-      }
-      &--warning {
-        --bgcolour: hsla(39, 100%, 50%, .15);
-        >div:first-of-type {color:orange;}
-      }
-      &--info {
-        --bgcolour: hsla(240, 100%, 50%, .15);
-        >div:first-of-type {color:blue;}
-      }
-    }
-  }
-
-  .supportingDoc {
-    display: grid;
-    grid-template-columns: 250px auto;
-  }
-
-  .tbl {
-    &--collapse {
-      @border-color: lightgrey;
-      margin: 1em 0;
-      table {
-        border-spacing: 0;
-        width: 100%;
-        border-collapse: collapse;
-        th,
-        td {
-          padding: 0.4em;
-          margin: 0;
-          border: 1px solid @border-color;
-        }
-        thead {
-          th {
-            background-color: hsl(0, 0%, 95%);
-            text-align: left;
+    .adminPanel {
+        margin: 1em 0 !important;
+        .btn {
             min-width: 150px;
-          }
         }
-      }
-      @media only screen and (max-width: 760px),
-        (min-device-width: 768px) and (max-device-width: 1024px) {
-        // On small screens, force table to NOT display as a table //
-        @head-width: 200px;
-
-        table,
-        thead,
-        tbody,
-        th,
-        td,
-        tr {
-          display: block;
-          border-width: 0 !important;
+        form {
+            display: inline-block;
         }
-
-        // Hide table headers (for accessibility, don't use display:none )
-        thead tr {
-          position: absolute;
-          top: -9999px;
-          left: -9999px;
-        }
-
-        tr {
-          margin: 0 0 0.6em 0;
-          padding-bottom: 0.6em;
-          border-bottom: 1px solid @border-color !important;
-        }
-
-        td {
-          border: none;
-          position: relative;
-          margin-left: @head-width*1.2;
-          padding: 0.3em 5em !important;
-          &:before {
-            position: absolute;
-            padding: 0.3em;
-            top: 0;
-            // left: @head-width*1.2;
-            margin-left: -(@head-width) * 1.1;
-            text-align: right;
-            width: @head-width;
-            font-weight: bolder;
-            white-space: nowrap;
-          }
-        }
-      }
     }
-  }
 
-  @media (min-width: 600px) {
+    .indent {
+        &--1 {
+            margin-left: 2em;
+        }
+        &--2 {
+            margin-left: 4em;
+        }
+    }
+
+    .historical {
+        border: 14px solid red;
+        h1.text-red {
+            border-bottom: 1px solid gray;
+            padding-bottom: 0.4em;
+        }
+    }
+
+    .contactDetails {
+        margin-top: 3em;
+        .keyvalue {
+            gap: 0;
+            grid-template-columns: 1fr;
+            margin: 0;
+            > div {
+                padding: 0.75em;
+                margin: 0;
+                outline: 1px solid;
+                text-align: left;
+            }
+            .key {
+                background-color: hsl(0, 0%, 95%);
+            }
+        }
+    }
+
+    .title {
+        display: flex;
+        gap: 1em;
+        align-items: center;
+        .logo {
+            display: none;
+        }
+    }
     .keyvalue {
-      grid-template-columns: 200px auto;
+        display: grid;
+        margin: 1em 0;
+        .key {
+            font-weight: bolder;
+        }
     }
-    .key {
-      text-align: right;
-      margin-right: 1em;
+
+    .qualityReport {
+        display: flex;
+        flex-direction: column;
+        margin: 2em 0;
+        gap: 0.5em;
+        .qualityItem {
+            background-color:var(--bgcolour);
+            font-weight:bolder;
+            border-bottom:1px solid white;
+            padding: 0.5em;
+            display: grid;
+            grid-template-columns: 50px auto;
+            div:first-of-type {
+                justify-self: center;
+            }
+            &--error {
+                --bgcolour: hsla(0, 100%, 50%, .15);
+                >div:first-of-type {color:red;}
+            }
+            &--warning {
+                --bgcolour: hsla(39, 100%, 50%, .15);
+                >div:first-of-type {color:orange;}
+            }
+            &--info {
+                --bgcolour: hsla(240, 100%, 50%, .15);
+                >div:first-of-type {color:blue;}
+            }
+        }
     }
-  }
+
+    .supportingDoc {
+        display: grid;
+        grid-template-columns: 250px auto;
+    }
+
+    .tbl {
+        &--collapse {
+            @border-color: lightgrey;
+            margin: 1em 0;
+            table {
+                border-spacing: 0;
+                width: 100%;
+                border-collapse: collapse;
+                th,
+                td {
+                    padding: 0.4em;
+                    margin: 0;
+                    border: 1px solid @border-color;
+                }
+                thead {
+                    th {
+                        background-color: hsl(0, 0%, 95%);
+                        text-align: left;
+                        min-width: 150px;
+                    }
+                }
+            }
+            @media only screen and (max-width: 760px),
+                (min-device-width: 768px) and (max-device-width: 1024px) {
+                // On small screens, force table to NOT display as a table //
+                @head-width: 200px;
+
+                table,
+                thead,
+                tbody,
+                th,
+                td,
+                tr {
+                    display: block;
+                    border-width: 0 !important;
+                }
+
+                // Hide table headers (for accessibility, don't use display:none )
+                thead tr {
+                    position: absolute;
+                    top: -9999px;
+                    left: -9999px;
+                }
+
+                tr {
+                    margin: 0 0 0.6em 0;
+                    padding-bottom: 0.6em;
+                    border-bottom: 1px solid @border-color !important;
+                }
+
+                td {
+                    border: none;
+                    position: relative;
+                    margin-left: @head-width*1.2;
+                    padding: 0.3em 5em !important;
+                    &:before {
+                        position: absolute;
+                        padding: 0.3em;
+                        top: 0;
+                        // left: @head-width*1.2;
+                        margin-left: -(@head-width) * 1.1;
+                        text-align: right;
+                        width: @head-width;
+                        font-weight: bolder;
+                        white-space: nowrap;
+                    }
+                }
+            }
+        }
+    }
+
+    @media (min-width: 600px) {
+        .keyvalue {
+            grid-template-columns: 200px auto;
+        }
+        .key {
+            text-align: right;
+            margin-right: 1em;
+        }
+    }
 }
 
 @media only screen and (max-width: 760px),
-  (min-device-width: 768px) and (max-device-width: 1024px) {
-  .serviceAgreement {
-    .tbl {
-      margin-left: 10em;
-      &--authors {
-        td {
-          &:nth-of-type(1):before {
-            content: "Author name";
-          }
-          &:nth-of-type(2):before {
-            content: "Affiliation";
-          }
-          &:nth-of-type(3):before {
-            content: "EMail address";
-          }
-          &:nth-of-type(4):before {
-            content: "ORCiD";
-          }
+    (min-device-width: 768px) and (max-device-width: 1024px) {
+    .serviceAgreement {
+        .tbl {
+            margin-left: 10em;
+            &--authors {
+                td {
+                    &:nth-of-type(1):before {
+                        content: "Author name";
+                    }
+                    &:nth-of-type(2):before {
+                        content: "Affiliation";
+                    }
+                    &:nth-of-type(3):before {
+                        content: "EMail address";
+                    }
+                    &:nth-of-type(4):before {
+                        content: "ORCiD";
+                    }
+                }
+            }
+            &--files {
+                td {
+                    &:nth-of-type(1):before {
+                        content: "Filename";
+                    }
+                    &:nth-of-type(2):before {
+                        content: "Format";
+                    }
+                    &:nth-of-type(3):before {
+                        content: "Size";
+                    }
+                }
+            }
         }
-      }
-      &--files {
-        td {
-          &:nth-of-type(1):before {
-            content: "Filename";
-          }
-          &:nth-of-type(2):before {
-            content: "Format";
-          }
-          &:nth-of-type(3):before {
-            content: "Size";
-          }
-        }
-      }
     }
-  }
 }
 
 @media only print {
-  @lineheight: 1.3em;
-  .serviceAgreement {
-    @page {
-      size: 210mm 297mm;
-      margin: 25mm 16mm;
+    @lineheight: 1.3em;
+    .serviceAgreement {
+        @page {
+            size: 210mm 297mm;
+            margin: 25mm 16mm;
+        }
+        .section,
+        p,
+        table,
+        tr {
+            page-break-inside: avoid;
+        }
+        h2 {
+            border: 2px solid gray;
+            border-width: 2px 0;
+            padding: (@lineheight / 2) 0;
+        }
+        .title {
+            .logo {
+                display: block !important;
+                width: 250px;
+                height: 80px;
+                background: url(https://eidc.ceh.ac.uk/images/sitelogo.png) no-repeat;
+                background-size: contain;
+            }
+        }
     }
-    .section,
-    p,
-    table,
-    tr {
-      page-break-inside: avoid;
-    }
-    h2 {
-      border: 2px solid gray;
-      border-width: 2px 0;
-      padding: (@lineheight / 2) 0;
-    }
-    .title {
-      .logo {
-        display: block !important;
-        width: 250px;
-        height: 80px;
-        background: url(https://eidc.ceh.ac.uk/images/sitelogo.png) no-repeat;
-        background-size: contain;
-      }
-    }
-  }
 }

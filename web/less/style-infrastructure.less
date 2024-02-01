@@ -21,80 +21,80 @@
 @header-text: @gray-dark;
 @line-height: 1.8;
 html {
-  overflow-y: scroll;
-  min-height: 100%;
-  position: relative;
+    overflow-y: scroll;
+    min-height: 100%;
+    position: relative;
 }
 
 body {
-  margin-top: @navbar-height + @navbar-border-width;
-  margin-bottom: @footer-height;
+    margin-top: @navbar-height + @navbar-border-width;
+    margin-bottom: @footer-height;
 }
 
 .navbar-nav {
-  .navbar-title {
-    a {
-      color: white !important;
-      font-weight: bold;
-    }
-  }
-
-  li {
-    &:not(.navbar-title) {
-      a {
-        &:hover {
-          border-bottom: white 3px solid;
-          padding-bottom: 3px;
+    .navbar-title {
+        a {
+            color: white !important;
+            font-weight: bold;
         }
-      }
     }
-  }
+
+    li {
+        &:not(.navbar-title) {
+            a {
+                &:hover {
+                    border-bottom: white 3px solid;
+                    padding-bottom: 3px;
+                }
+            }
+        }
+    }
 }
 
 #pageTitle {
-  margin: 2em 0;
+    margin: 2em 0;
 }
 
 #adminToolbar {
-  margin: 1.5em 0;
+    margin: 1.5em 0;
 }
 
 .input-group-addon {
-  background-color: #eee;
+    background-color: #eee;
 }
 
 .modal-open {
-  padding: 0 !important;
+    padding: 0 !important;
 }
 
 .fa-spin-2x {
-  -webkit-animation: fa-spin 1s infinite linear;
-  animation: fa-spin 1s infinite linear;
+    -webkit-animation: fa-spin 1s infinite linear;
+    animation: fa-spin 1s infinite linear;
 }
 
 .contact {
-  display: grid;
-  grid-template-columns: 30px auto;margin-bottom:3em;
-  div {
-    > span {
-      display: block;
+    display: grid;
+    grid-template-columns: 30px auto;margin-bottom:3em;
+    div {
+        > span {
+            display: block;
+        }
     }
-  }
 }
 
 .browseimages {
-  text-align: center;
-  img {
-    max-width: 100%;
-  }
+    text-align: center;
+    img {
+        max-width: 100%;
+    }
 }
 .key-value {
-  margin: 2em 0;
-  line-height: @line-height-base;
-  > div {
-    &:first-of-type {
-      font-weight: bolder;
-      font-size: 1.125em;
+    margin: 2em 0;
+    line-height: @line-height-base;
+    > div {
+        &:first-of-type {
+            font-weight: bolder;
+            font-size: 1.125em;
+        }
     }
-  }
 }

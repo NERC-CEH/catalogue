@@ -13,7 +13,7 @@ public class Funding {
     @Builder
     @JsonCreator
     private Funding(
-        @JsonProperty("funderName") String funderName, 
+        @JsonProperty("funderName") String funderName,
         @JsonProperty("funderIdentifier") String funderIdentifier,
         @JsonProperty("awardTitle") String awardTitle,
         @JsonProperty("awardNumber") String awardNumber,
@@ -23,5 +23,5 @@ public class Funding {
         this.awardTitle = nullToEmpty(awardTitle);
         this.awardNumber = nullToEmpty(awardNumber);
         this.awardURI = nullToEmpty(awardURI);
-    }   
+    }
 }

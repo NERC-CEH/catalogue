@@ -16,7 +16,7 @@ default:
 
 test_java:
   stage: test
-  image: gradle:8.2-jdk17-alpine
+  image: gradle:8.5-jdk17-alpine
   script: gradle test --no-daemon
   artifacts:
     when: always

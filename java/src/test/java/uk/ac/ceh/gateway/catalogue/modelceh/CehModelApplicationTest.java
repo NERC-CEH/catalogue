@@ -22,29 +22,29 @@ public class CehModelApplicationTest {
         ModelInfo modelInfo2 = new ModelInfo(); // null id
         ModelInfo modelInfo3 = new ModelInfo(); // empty string
         modelInfo3.setId("");
-        
+
         CehModelApplication modelApplication = new CehModelApplication();
         modelApplication.setModelInfos(Arrays.asList(
             modelInfo0, modelInfo1, modelInfo2
         ));
-        
+
         //When
         Set<Relationship> actual = modelApplication.getRelationships();
-        
+
         //Then
         assertThat("should only be 2 relationships", actual.size(), is(2));
     }
-    
+
     @Test
     public void getRelationshipsNoModelInfo() {
-        //Given        
+        //Given
         CehModelApplication modelApplication = new CehModelApplication();
-        
+
         //When
         Set<Relationship> actual = modelApplication.getRelationships();
-        
+
         //Then
         assertThat("should be no relationships", actual.size(), is(0));
     }
-    
+
 }

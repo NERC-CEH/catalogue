@@ -21,8 +21,8 @@ public class RevisionOfConverter {
     }
 
     public String convert(Document document) throws XPathExpressionException {
-        NodeList nodeList = (NodeList) revisionOf.evaluate(document, XPathConstants.NODESET); 
-        
+        NodeList nodeList = (NodeList) revisionOf.evaluate(document, XPathConstants.NODESET);
+
         if (nodeList.getLength() > 0) {
             Node node = nodeList.item(0);
             return String.format("%s#%s", codeSpace.evaluate(node), code.evaluate(node));

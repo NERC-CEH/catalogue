@@ -6,7 +6,7 @@ import javax.xml.namespace.NamespaceContext;
 
 /**
  * Hardcode the namespaces you need
- * 
+ *
  * @see http://www.ibm.com/developerworks/xml/library/x-nmspccontext/index.html
  */
 public class HardcodedGeminiNamespaceResolver implements NamespaceContext {
@@ -16,7 +16,7 @@ public class HardcodedGeminiNamespaceResolver implements NamespaceContext {
         if(prefix == null) {
             throw new IllegalArgumentException("No prefix provided!");
         }
-        
+
         switch(prefix) {
             case "gmd": return "http://www.isotc211.org/2005/gmd";
             case "gco": return "http://www.isotc211.org/2005/gco";

@@ -6,7 +6,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class NodeListConverter {
-    
+
     public static List<String> getListOfStrings(NodeList nodeList) {
         ArrayList<String> toReturn = new ArrayList<>();
         for(int i=0; i<nodeList.getLength(); i++){

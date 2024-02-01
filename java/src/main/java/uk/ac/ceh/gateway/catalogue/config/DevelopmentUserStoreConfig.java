@@ -20,7 +20,6 @@ import static uk.ac.ceh.gateway.catalogue.model.MetadataInfo.READONLY_GROUP;
  * with a in memory user store. This is useful when developing the application
  * in an environment which can not contact Crowd
  * @see CrowdUserStoreConfig
-
  */
 @Configuration
 @Profile({"development", "test"})

@@ -28,10 +28,10 @@ public class CitationService {
 
     public CitationService(
             @Value("${doi.prefix}") String nercDoiPrefix
-    ) {
+            ) {
         this.nercDoiPrefix = nercDoiPrefix;
         log.info("Creating {}", this);
-    }
+            }
 
     /**
      * Generate a citation value for the current geminidocument. If the document
@@ -63,7 +63,7 @@ public class CitationService {
 
             if (pubDate.isPresent() && publisher.isPresent()) {
                 return Optional.of(
-                    Citation
+                        Citation
                         .builder()
                         .authors(   getAuthors(geminiDocument))
                         .doi(       doi.getCode())
@@ -74,7 +74,7 @@ public class CitationService {
                         .bibtex(    getInAlternateFormat(geminiDocument, BIBTEX_SHORT))
                         .ris(       getInAlternateFormat(geminiDocument, RESEARCH_INFO_SYSTEMS_SHORT))
                         .build()
-                );
+                        );
             }
         }
         return Optional.empty();
@@ -82,27 +82,27 @@ public class CitationService {
 
     protected URI getInAlternateFormat(GeminiDocument geminiDocument, String alternateFormat) {
         return UriComponentsBuilder.fromUriString(geminiDocument.getUri())
-                                   .replacePath("documents/")
-                                   .path(geminiDocument.getId())
-                                   .path("/citation")
-                                   .queryParam("format", alternateFormat)
-                                   .build()
-                                   .toUri();
+            .replacePath("documents/")
+            .path(geminiDocument.getId())
+            .path("/citation")
+            .queryParam("format", alternateFormat)
+            .build()
+            .toUri();
     }
 
     protected Optional<ResponsibleParty> getPublisher(GeminiDocument geminiDocument) {
         return geminiDocument
-                .getResponsibleParties()
-                .stream()
-                .filter((p) -> "publisher".equals(p.getRole()))
-                .findFirst();
+            .getResponsibleParties()
+            .stream()
+            .filter((p) -> "publisher".equals(p.getRole()))
+            .findFirst();
     }
 
     protected List<String> getAuthors(GeminiDocument geminiDocument) {
         return geminiDocument.getResponsibleParties()
-                             .stream()
-                             .filter((p) -> p.getRole().equals("author"))
-                             .map(ResponsibleParty::getIndividualName)
-                             .collect(Collectors.toList());
+            .stream()
+            .filter((p) -> p.getRole().equals("author"))
+            .map(ResponsibleParty::getIndividualName)
+            .collect(Collectors.toList());
     }
 }

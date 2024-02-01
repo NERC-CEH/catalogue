@@ -64,21 +64,21 @@ public class IndexingServicesConfig {
 
     @Bean @Qualifier("datacite-index")
     public DocumentIndexingService dataciteIndexingService(
-        BundledReaderService<MetadataDocument> bundledReaderService,
-        DataciteService dataciteService
-    ) {
-       return new DataciteIndexingService(bundledReaderService, dataciteService);
-    }
+            BundledReaderService<MetadataDocument> bundledReaderService,
+            DataciteService dataciteService
+            ) {
+        return new DataciteIndexingService(bundledReaderService, dataciteService);
+            }
 
     @Bean @Qualifier("jena-index")
     public JenaIndexingService jenaIndexingService(
-        @Value("${documents.baseUri}") String baseUri,
-        BundledReaderService<MetadataDocument> bundledReaderService,
-        DataRepository<CatalogueUser> dataRepository,
-        DocumentIdentifierService documentIdentifierService,
-        DocumentListingService documentListingService,
-        Dataset tdbModel
-    ) {
+            @Value("${documents.baseUri}") String baseUri,
+            BundledReaderService<MetadataDocument> bundledReaderService,
+            DataRepository<CatalogueUser> dataRepository,
+            DocumentIdentifierService documentIdentifierService,
+            DocumentListingService documentListingService,
+            Dataset tdbModel
+            ) {
         JenaIndexMetadataDocumentGenerator documentGenerator = new JenaIndexMetadataDocumentGenerator(documentIdentifierService);
 
         ClassMap<IndexGenerator<?, List<Statement>>> mappings = new PrioritisedClassMap<IndexGenerator<?, List<Statement>>>()
@@ -91,50 +91,50 @@ public class IndexingServicesConfig {
             .register(MetadataDocument.class, documentGenerator);
 
         return new JenaIndexingService(
-            bundledReaderService,
-            documentListingService,
-            dataRepository,
-            new IndexGeneratorRegistry<>(mappings),
-            documentIdentifierService,
-            tdbModel
-        );
-    }
+                bundledReaderService,
+                documentListingService,
+                dataRepository,
+                new IndexGeneratorRegistry<>(mappings),
+                documentIdentifierService,
+                tdbModel
+                );
+            }
 
     @Bean @Qualifier("mapserver-index")
     public MapServerIndexingService mapServerIndexingService(
-        BundledReaderService<MetadataDocument> bundledReaderService,
-        DataRepository<CatalogueUser> dataRepository,
-        DocumentListingService documentListingService,
-        freemarker.template.Configuration freemarkerConfiguration,
-        @Value("${maps.location}") File mapsLocation,
-        MapServerDetailsService mapServerDetailsService
-    ) {
+            BundledReaderService<MetadataDocument> bundledReaderService,
+            DataRepository<CatalogueUser> dataRepository,
+            DocumentListingService documentListingService,
+            freemarker.template.Configuration freemarkerConfiguration,
+            @Value("${maps.location}") File mapsLocation,
+            MapServerDetailsService mapServerDetailsService
+            ) {
         val generator = new MapServerIndexGenerator(freemarkerConfiguration, mapServerDetailsService);
         return new MapServerIndexingService(
-            bundledReaderService,
-            documentListingService,
-            dataRepository,
-            generator,
-            mapsLocation);
-    }
+                bundledReaderService,
+                documentListingService,
+                dataRepository,
+                generator,
+                mapsLocation);
+            }
 
     @Bean @Qualifier("solr-index")
     public SolrIndexingService solrIndexingService(
-        BundledReaderService<MetadataDocument> bundledReaderService,
-        CodeLookupService codeLookupService,
-        DataRepository<CatalogueUser> dataRepository,
-        DocumentIdentifierService documentIdentifierService,
-        DocumentListingService documentListingService,
-        DocumentRepository documentRepository,
-        JenaLookupService jenaLookupService,
-        SolrClient solrClient,
-        VocabularyService vocabularyService
-    ) {
+            BundledReaderService<MetadataDocument> bundledReaderService,
+            CodeLookupService codeLookupService,
+            DataRepository<CatalogueUser> dataRepository,
+            DocumentIdentifierService documentIdentifierService,
+            DocumentListingService documentListingService,
+            DocumentRepository documentRepository,
+            JenaLookupService jenaLookupService,
+            SolrClient solrClient,
+            VocabularyService vocabularyService
+            ) {
         val metadataDocumentGenerator = new SolrIndexMetadataDocumentGenerator(
-            codeLookupService,
-            documentIdentifierService,
-            vocabularyService
-        );
+                codeLookupService,
+                documentIdentifierService,
+                vocabularyService
+                );
         val linkDocumentGenerator = new SolrIndexLinkDocumentGenerator();
         linkDocumentGenerator.setRepository(documentRepository);
 
@@ -151,52 +151,52 @@ public class IndexingServicesConfig {
         log.info("Set repository & registry on {}", linkDocumentGenerator);
 
         return new SolrIndexingService(
-            bundledReaderService,
-            documentListingService,
-            dataRepository,
-            indexGeneratorRegistry,
-            solrClient,
-            jenaLookupService,
-            documentIdentifierService
-        );
-    }
+                bundledReaderService,
+                documentListingService,
+                dataRepository,
+                indexGeneratorRegistry,
+                solrClient,
+                jenaLookupService,
+                documentIdentifierService
+                );
+            }
 
     @Bean
     @Qualifier("validation-index")
     @SneakyThrows
     public ValidationIndexingService validationIndexingService(
-        BundledReaderService<MetadataDocument> bundledReaderService,
-        DataRepository<CatalogueUser> dataRepository,
-        DocumentIdentifierService documentIdentifierService,
-        DocumentListingService documentListingService,
-        DocumentWritingService documentWritingService,
-        PostProcessingService<MetadataDocument> postProcessingService,
-        @Value("${schemas.location}") String schemas
-    ) {
+            BundledReaderService<MetadataDocument> bundledReaderService,
+            DataRepository<CatalogueUser> dataRepository,
+            DocumentIdentifierService documentIdentifierService,
+            DocumentListingService documentListingService,
+            DocumentWritingService documentWritingService,
+            PostProcessingService<MetadataDocument> postProcessingService,
+            @Value("${schemas.location}") String schemas
+            ) {
         val schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         val geminiSchema = schemaFactory.newSchema(
-            of("gemini/srv/srv.xsd", "gemini/gmx/gmx.xsd")
+                of("gemini/srv/srv.xsd", "gemini/gmx/gmx.xsd")
                 .map( (s) -> new StreamSource(new File(schemas, s)))
                 .toArray(Source[]::new)
-        );
+                );
 
         val htmlValidator = new MediaTypeValidator("HTML Generation", TEXT_HTML, documentWritingService);
         val schemaValidator = new XSDSchemaValidator("Gemini", GEMINI_XML, documentWritingService, geminiSchema);
 
         val mappings = new PrioritisedClassMap<IndexGenerator<?, ValidationReport>>()
             .register(GeminiDocument.class, new ValidationIndexGenerator(List.of(
-                schemaValidator,
-                htmlValidator
-            )))
+                            schemaValidator,
+                            htmlValidator
+                            )))
             .register(MetadataDocument.class, new ValidationIndexGenerator(List.of(htmlValidator)));
 
         return new ValidationIndexingService(
-            bundledReaderService,
-            documentListingService,
-            dataRepository,
-            postProcessingService,
-            documentIdentifierService,
-            new IndexGeneratorRegistry<>(mappings)
-        );
-    }
+                bundledReaderService,
+                documentListingService,
+                dataRepository,
+                postProcessingService,
+                documentIdentifierService,
+                new IndexGeneratorRegistry<>(mappings)
+                );
+            }
 }

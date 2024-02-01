@@ -1,0 +1,19 @@
+root = true
+
+# Default rule - overrides below work as later rules take precedence
+[*]
+charset = utf-8
+end_of_line = lf
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Different indent only for yaml. Only .yml present at time of writing
+# but include .yaml to futureproof
+[*.{yaml,yml}]
+indent_size = 2
+
+# Preserve crlf for windows-specific file
+[*.bat]
+end_of_line = crlf

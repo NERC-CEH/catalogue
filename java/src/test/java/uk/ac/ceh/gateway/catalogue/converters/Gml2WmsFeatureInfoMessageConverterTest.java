@@ -19,21 +19,21 @@ import static org.mockito.Mockito.when;
 
 public class Gml2WmsFeatureInfoMessageConverterTest {
     private Gml2WmsFeatureInfoMessageConverter reader;
-    
+
     @BeforeEach
     public void init() throws XPathExpressionException {
         reader = new Gml2WmsFeatureInfoMessageConverter();
     }
-    
+
     @Test
     public void canGetMSGmlFromXML() throws IOException {
         //Given
         HttpInputMessage message = mock(HttpInputMessage.class);
         when(message.getBody()).thenReturn(getClass().getResourceAsStream("msGMLOutput.xml"));
-        
+
         //When
         WmsFeatureInfo gml = reader.readInternal(WmsFeatureInfo.class, message);
-        
+
         //Then
         List<Layer> layers = gml.getLayers();
         Layer layer = layers.get(0);

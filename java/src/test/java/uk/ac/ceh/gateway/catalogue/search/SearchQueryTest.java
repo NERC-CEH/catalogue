@@ -32,23 +32,23 @@ public class SearchQueryTest {
     @Mock private GroupStore<CatalogueUser> groupStore;
     private static final FacetFactory FACET_FACTORY = new HardcodedFacetFactory();
     static final List<Facet> DEFAULT_FACETS = FACET_FACTORY.newInstances(
-        Arrays.asList("resourceType","licence")
-    );
+            Arrays.asList("resourceType","licence")
+            );
 
     @Test
     public void queryHasCatalogueAsViewFilter() {
         //Given
         SearchQuery query = new SearchQuery(
-            ENDPOINT,
-            new CatalogueUser().setUsername("helen"),
-            SearchQuery.DEFAULT_SEARCH_TERM,
-            DEFAULT_BBOX,
-            SpatialOperation.ISWITHIN,
-            DEFAULT_PAGE,
-            DEFAULT_ROWS,
-            DEFAULT_FILTERS,
-            groupStore,
-            Catalogue
+                ENDPOINT,
+                new CatalogueUser().setUsername("helen"),
+                SearchQuery.DEFAULT_SEARCH_TERM,
+                DEFAULT_BBOX,
+                SpatialOperation.ISWITHIN,
+                DEFAULT_PAGE,
+                DEFAULT_ROWS,
+                DEFAULT_FILTERS,
+                groupStore,
+                Catalogue
                 .builder()
                 .id("eidc")
                 .title("Environmental Information Data Centre")
@@ -56,8 +56,8 @@ public class SearchQueryTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-            DEFAULT_FACETS
-        );
+                DEFAULT_FACETS
+                );
 
         //When
         SolrQuery solrQuery = query.build();
@@ -72,16 +72,16 @@ public class SearchQueryTest {
         //Given
         CatalogueUser user = new CatalogueUser().setUsername("helen");
         SearchQuery query = new SearchQuery(
-            ENDPOINT,
-            user,
-            SearchQuery.DEFAULT_SEARCH_TERM,
-            DEFAULT_BBOX,
-            SpatialOperation.ISWITHIN,
-            DEFAULT_PAGE,
-            DEFAULT_ROWS,
-            DEFAULT_FILTERS,
-            groupStore,
-            Catalogue
+                ENDPOINT,
+                user,
+                SearchQuery.DEFAULT_SEARCH_TERM,
+                DEFAULT_BBOX,
+                SpatialOperation.ISWITHIN,
+                DEFAULT_PAGE,
+                DEFAULT_ROWS,
+                DEFAULT_FILTERS,
+                groupStore,
+                Catalogue
                 .builder()
                 .id("eidc")
                 .title("Environmental Information Data Centre")
@@ -89,8 +89,8 @@ public class SearchQueryTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-            DEFAULT_FACETS
-        );
+                DEFAULT_FACETS
+                );
 
         //When
         SolrQuery solrQuery = query.build();
@@ -106,16 +106,16 @@ public class SearchQueryTest {
         given(groupStore.getGroups(user)).willReturn(Arrays.asList(createGroup("CEH"), createGroup("EIDC")));
 
         SearchQuery query = new SearchQuery(
-            ENDPOINT,
-            user,
-            SearchQuery.DEFAULT_SEARCH_TERM,
-            DEFAULT_BBOX,
-            SpatialOperation.ISWITHIN,
-            DEFAULT_PAGE,
-            DEFAULT_ROWS,
-            DEFAULT_FILTERS,
-            groupStore,
-            Catalogue
+                ENDPOINT,
+                user,
+                SearchQuery.DEFAULT_SEARCH_TERM,
+                DEFAULT_BBOX,
+                SpatialOperation.ISWITHIN,
+                DEFAULT_PAGE,
+                DEFAULT_ROWS,
+                DEFAULT_FILTERS,
+                groupStore,
+                Catalogue
                 .builder()
                 .id("eidc")
                 .title("Environmental Information Data Centre")
@@ -123,8 +123,8 @@ public class SearchQueryTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-            DEFAULT_FACETS
-        );
+                DEFAULT_FACETS
+                );
 
         //When
         SolrQuery solrQuery = query.build();
@@ -140,16 +140,16 @@ public class SearchQueryTest {
         given(groupStore.getGroups(user)).willReturn(List.of(createGroup("ROLE_EIDC_PUBLISHER")));
 
         SearchQuery query = new SearchQuery(
-            ENDPOINT,
-            user,
-            SearchQuery.DEFAULT_SEARCH_TERM,
-            DEFAULT_BBOX,
-            SpatialOperation.ISWITHIN,
-            DEFAULT_PAGE,
-            DEFAULT_ROWS,
-            DEFAULT_FILTERS,
-            groupStore,
-            Catalogue
+                ENDPOINT,
+                user,
+                SearchQuery.DEFAULT_SEARCH_TERM,
+                DEFAULT_BBOX,
+                SpatialOperation.ISWITHIN,
+                DEFAULT_PAGE,
+                DEFAULT_ROWS,
+                DEFAULT_FILTERS,
+                groupStore,
+                Catalogue
                 .builder()
                 .id("eidc")
                 .title("Environmental Information Data Centre")
@@ -157,8 +157,8 @@ public class SearchQueryTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-            DEFAULT_FACETS
-        );
+                DEFAULT_FACETS
+                );
 
         //When
         SolrQuery solrQuery = query.build();
@@ -186,16 +186,16 @@ public class SearchQueryTest {
     public void buildQueryWithNoExtraParameters() {
         //Given
         SearchQuery query = new SearchQuery(
-            ENDPOINT,
-            CatalogueUser.PUBLIC_USER,
-            SearchQuery.DEFAULT_SEARCH_TERM,
-            DEFAULT_BBOX,
-            SpatialOperation.ISWITHIN,
-            DEFAULT_PAGE,
-            DEFAULT_ROWS,
-            DEFAULT_FILTERS,
-            groupStore,
-            Catalogue
+                ENDPOINT,
+                CatalogueUser.PUBLIC_USER,
+                SearchQuery.DEFAULT_SEARCH_TERM,
+                DEFAULT_BBOX,
+                SpatialOperation.ISWITHIN,
+                DEFAULT_PAGE,
+                DEFAULT_ROWS,
+                DEFAULT_FILTERS,
+                groupStore,
+                Catalogue
                 .builder()
                 .id("eidc")
                 .title("Environmental Information Data Centre")
@@ -203,8 +203,8 @@ public class SearchQueryTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-            DEFAULT_FACETS
-        );
+                DEFAULT_FACETS
+                );
         //When
         SolrQuery solrQuery = query.build();
 
@@ -224,16 +224,16 @@ public class SearchQueryTest {
     public void buildQueryOnSecondPage() {
         //Given
         SearchQuery query = new SearchQuery(
-            ENDPOINT,
-            CatalogueUser.PUBLIC_USER,
-            SearchQuery.DEFAULT_SEARCH_TERM,
-            DEFAULT_BBOX,
-            SpatialOperation.ISWITHIN,
-            2,
-            40,
-            DEFAULT_FILTERS,
-            groupStore,
-            Catalogue
+                ENDPOINT,
+                CatalogueUser.PUBLIC_USER,
+                SearchQuery.DEFAULT_SEARCH_TERM,
+                DEFAULT_BBOX,
+                SpatialOperation.ISWITHIN,
+                2,
+                40,
+                DEFAULT_FILTERS,
+                groupStore,
+                Catalogue
                 .builder()
                 .id("eidc")
                 .title("Environmental Information Data Centre")
@@ -241,8 +241,8 @@ public class SearchQueryTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-            DEFAULT_FACETS
-        );
+                DEFAULT_FACETS
+                );
 
         //When
         SolrQuery solrQuery = query.build();
@@ -257,16 +257,16 @@ public class SearchQueryTest {
         //Given
         String term = "land cover";
         SearchQuery query = new SearchQuery(
-            ENDPOINT,
-            CatalogueUser.PUBLIC_USER,
-            term,
-            DEFAULT_BBOX,
-            SpatialOperation.ISWITHIN,
-            DEFAULT_PAGE,
-            DEFAULT_ROWS,
-            DEFAULT_FILTERS,
-            groupStore,
-            Catalogue
+                ENDPOINT,
+                CatalogueUser.PUBLIC_USER,
+                term,
+                DEFAULT_BBOX,
+                SpatialOperation.ISWITHIN,
+                DEFAULT_PAGE,
+                DEFAULT_ROWS,
+                DEFAULT_FILTERS,
+                groupStore,
+                Catalogue
                 .builder()
                 .id("eidc")
                 .title("Environmental Information Data Centre")
@@ -274,8 +274,8 @@ public class SearchQueryTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-            DEFAULT_FACETS
-        );
+                DEFAULT_FACETS
+                );
         //When
         SolrQuery solrQuery = query.build();
 
@@ -288,17 +288,17 @@ public class SearchQueryTest {
     public void buildQueryWithDefaultTermAndFilter() {
         //Given
         SearchQuery query = new SearchQuery(
-            ENDPOINT,
-            CatalogueUser.PUBLIC_USER,
-            SearchQuery.DEFAULT_SEARCH_TERM,
-            DEFAULT_BBOX,
-            SpatialOperation.ISWITHIN,
-            DEFAULT_PAGE,
-            DEFAULT_ROWS,
-            List.of(
-                new FacetFilter("resourceType", "dataset")),
-            groupStore,
-            Catalogue
+                ENDPOINT,
+                CatalogueUser.PUBLIC_USER,
+                SearchQuery.DEFAULT_SEARCH_TERM,
+                DEFAULT_BBOX,
+                SpatialOperation.ISWITHIN,
+                DEFAULT_PAGE,
+                DEFAULT_ROWS,
+                List.of(
+                    new FacetFilter("resourceType", "dataset")),
+                groupStore,
+                Catalogue
                 .builder()
                 .id("eidc")
                 .title("Environmental Information Data Centre")
@@ -306,8 +306,8 @@ public class SearchQueryTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-            DEFAULT_FACETS
-        );
+                DEFAULT_FACETS
+                );
         //When
         SolrQuery solrQuery = query.build();
 
@@ -322,16 +322,16 @@ public class SearchQueryTest {
         String bbox = "1.11,2.22,3.33,4.44";
 
         SearchQuery query = new SearchQuery(
-            ENDPOINT,
-            CatalogueUser.PUBLIC_USER,
-            SearchQuery.DEFAULT_SEARCH_TERM,
-            bbox,
-            SpatialOperation.ISWITHIN,
-            DEFAULT_PAGE,
-            DEFAULT_ROWS,
-            DEFAULT_FILTERS,
-            groupStore,
-            Catalogue
+                ENDPOINT,
+                CatalogueUser.PUBLIC_USER,
+                SearchQuery.DEFAULT_SEARCH_TERM,
+                bbox,
+                SpatialOperation.ISWITHIN,
+                DEFAULT_PAGE,
+                DEFAULT_ROWS,
+                DEFAULT_FILTERS,
+                groupStore,
+                Catalogue
                 .builder()
                 .id("eidc")
                 .title("Environmental Information Data Centre")
@@ -339,8 +339,8 @@ public class SearchQueryTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-            DEFAULT_FACETS
-        );
+                DEFAULT_FACETS
+                );
 
         //When
         SolrQuery solrQuery = query.build();
@@ -349,22 +349,22 @@ public class SearchQueryTest {
         assertThat(Arrays.asList(solrQuery.getFilterQueries()).contains("locations:\"IsWithin(1.11,2.22,3.33,4.44)\""), is(true));
     }
 
-     @Test
+    @Test
     public void canSetIntersectBBox() {
         //Given
         String bbox = "1.11,2.22,3.33,4.44";
 
         SearchQuery query = new SearchQuery(
-            ENDPOINT,
-            CatalogueUser.PUBLIC_USER,
-            SearchQuery.DEFAULT_SEARCH_TERM,
-            bbox,
-            SpatialOperation.INTERSECTS,
-            DEFAULT_PAGE,
-            DEFAULT_ROWS,
-            DEFAULT_FILTERS,
-            groupStore,
-            Catalogue
+                ENDPOINT,
+                CatalogueUser.PUBLIC_USER,
+                SearchQuery.DEFAULT_SEARCH_TERM,
+                bbox,
+                SpatialOperation.INTERSECTS,
+                DEFAULT_PAGE,
+                DEFAULT_ROWS,
+                DEFAULT_FILTERS,
+                groupStore,
+                Catalogue
                 .builder()
                 .id("eidc")
                 .title("Environmental Information Data Centre")
@@ -372,8 +372,8 @@ public class SearchQueryTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-            DEFAULT_FACETS
-        );
+                DEFAULT_FACETS
+                );
 
         //When
         SolrQuery solrQuery = query.build();
@@ -386,16 +386,16 @@ public class SearchQueryTest {
     public void checkThatWithFacetReturnsToFirstPage() {
         //Given
         SearchQuery query = new SearchQuery(
-            ENDPOINT,
-            CatalogueUser.PUBLIC_USER,
-            SearchQuery.DEFAULT_SEARCH_TERM,
-            DEFAULT_BBOX,
-            SpatialOperation.ISWITHIN,
-            18,
-            DEFAULT_ROWS,
-            DEFAULT_FILTERS,
-            groupStore,
-            Catalogue
+                ENDPOINT,
+                CatalogueUser.PUBLIC_USER,
+                SearchQuery.DEFAULT_SEARCH_TERM,
+                DEFAULT_BBOX,
+                SpatialOperation.ISWITHIN,
+                18,
+                DEFAULT_ROWS,
+                DEFAULT_FILTERS,
+                groupStore,
+                Catalogue
                 .builder()
                 .id("eidc")
                 .title("Environmental Information Data Centre")
@@ -403,8 +403,8 @@ public class SearchQueryTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-            DEFAULT_FACETS
-        );
+                DEFAULT_FACETS
+                );
 
         //When
         SearchQuery queryWithFacet = query.withFacetFilter(new FacetFilter("what", "ever"));
@@ -419,16 +419,16 @@ public class SearchQueryTest {
         //Given
         FacetFilter filter = new FacetFilter("licence", "ever");
         SearchQuery query = new SearchQuery(
-            ENDPOINT,
-            CatalogueUser.PUBLIC_USER,
-            SearchQuery.DEFAULT_SEARCH_TERM,
-            DEFAULT_BBOX,
-            SpatialOperation.ISWITHIN,
-            18,
-            DEFAULT_ROWS,
-            List.of(filter),
-            groupStore,
-            Catalogue
+                ENDPOINT,
+                CatalogueUser.PUBLIC_USER,
+                SearchQuery.DEFAULT_SEARCH_TERM,
+                DEFAULT_BBOX,
+                SpatialOperation.ISWITHIN,
+                18,
+                DEFAULT_ROWS,
+                List.of(filter),
+                groupStore,
+                Catalogue
                 .builder()
                 .id("eidc")
                 .title("Environmental Information Data Centre")
@@ -436,8 +436,8 @@ public class SearchQueryTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-            DEFAULT_FACETS
-        );
+                DEFAULT_FACETS
+                );
 
         //When
         SearchQuery queryWithFacet = query.withoutFacetFilter(filter);
@@ -451,16 +451,16 @@ public class SearchQueryTest {
         //Given
         FacetFilter filter = new FacetFilter("licence", "open");
         SearchQuery query = new SearchQuery(
-            ENDPOINT,
-            CatalogueUser.PUBLIC_USER,
-            SearchQuery.DEFAULT_SEARCH_TERM,
-            DEFAULT_BBOX,
-            SpatialOperation.ISWITHIN,
-            18,
-            DEFAULT_ROWS,
-            DEFAULT_FILTERS,
-            groupStore,
-           Catalogue
+                ENDPOINT,
+                CatalogueUser.PUBLIC_USER,
+                SearchQuery.DEFAULT_SEARCH_TERM,
+                DEFAULT_BBOX,
+                SpatialOperation.ISWITHIN,
+                18,
+                DEFAULT_ROWS,
+                DEFAULT_FILTERS,
+                groupStore,
+                Catalogue
                 .builder()
                 .id("eidc")
                 .title("Environmental Information Data Centre")
@@ -468,8 +468,8 @@ public class SearchQueryTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-            DEFAULT_FACETS
-        );
+                DEFAULT_FACETS
+                );
 
         //When
         SearchQuery newQuery = query.withFacetFilter(filter);
@@ -483,16 +483,16 @@ public class SearchQueryTest {
         //Given
         FacetFilter filter = new FacetFilter("what", "ever");
         SearchQuery query = new SearchQuery(
-            ENDPOINT,
-            CatalogueUser.PUBLIC_USER,
-            SearchQuery.DEFAULT_SEARCH_TERM,
-            DEFAULT_BBOX,
-            SpatialOperation.ISWITHIN,
-            18,
-            DEFAULT_ROWS,
-            List.of(filter),
-            groupStore,
-            Catalogue
+                ENDPOINT,
+                CatalogueUser.PUBLIC_USER,
+                SearchQuery.DEFAULT_SEARCH_TERM,
+                DEFAULT_BBOX,
+                SpatialOperation.ISWITHIN,
+                18,
+                DEFAULT_ROWS,
+                List.of(filter),
+                groupStore,
+                Catalogue
                 .builder()
                 .id("eidc")
                 .title("Environmental Information Data Centre")
@@ -500,8 +500,8 @@ public class SearchQueryTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-            DEFAULT_FACETS
-        );
+                DEFAULT_FACETS
+                );
 
         //When
         SearchQuery newQuery = query.withoutFacetFilter(filter);
@@ -515,16 +515,16 @@ public class SearchQueryTest {
         //Given
         List<FacetFilter> filters = List.of(new FacetFilter("hey", "lo"));
         SearchQuery query = new SearchQuery(
-            ENDPOINT,
-            CatalogueUser.PUBLIC_USER,
-            SearchQuery.DEFAULT_SEARCH_TERM,
-            DEFAULT_BBOX,
-            SpatialOperation.ISWITHIN,
-            DEFAULT_PAGE,
-            DEFAULT_ROWS,
-            filters,
-            groupStore,
-            Catalogue
+                ENDPOINT,
+                CatalogueUser.PUBLIC_USER,
+                SearchQuery.DEFAULT_SEARCH_TERM,
+                DEFAULT_BBOX,
+                SpatialOperation.ISWITHIN,
+                DEFAULT_PAGE,
+                DEFAULT_ROWS,
+                filters,
+                groupStore,
+                Catalogue
                 .builder()
                 .id("eidc")
                 .title("Environmental Information Data Centre")
@@ -532,8 +532,8 @@ public class SearchQueryTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-            DEFAULT_FACETS
-        );
+                DEFAULT_FACETS
+                );
 
         FacetFilter filter = new FacetFilter("hey", "lo");
 
@@ -548,16 +548,16 @@ public class SearchQueryTest {
     public void checkThatCompleteUrlIsGenerated() {
         //Given
         SearchQuery interestingQuery = new SearchQuery(
-            "http://my.endpo.int",
-            CatalogueUser.PUBLIC_USER,
-            "My Search Term",
-            "1,2,3,4",
-            SpatialOperation.ISWITHIN,
-            24,
-            30,
-            List.of(new FacetFilter("licence", "b")),
-            groupStore,
-            Catalogue
+                "http://my.endpo.int",
+                CatalogueUser.PUBLIC_USER,
+                "My Search Term",
+                "1,2,3,4",
+                SpatialOperation.ISWITHIN,
+                24,
+                30,
+                List.of(new FacetFilter("licence", "b")),
+                groupStore,
+                Catalogue
                 .builder()
                 .id("eidc")
                 .title("Environmental Information Data Centre")
@@ -565,8 +565,8 @@ public class SearchQueryTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-            DEFAULT_FACETS
-        );
+                DEFAULT_FACETS
+                );
 
         //When
         String url = interestingQuery.toUrl();
@@ -585,16 +585,16 @@ public class SearchQueryTest {
     public void checkUrlIsGenerated() {
         //Given
         SearchQuery interestingQuery = new SearchQuery(
-            "http://my.endpo.int",
-            CatalogueUser.PUBLIC_USER,
-            "My Search Term",
-            "1,2,3,4",
-            SpatialOperation.ISWITHIN,
-            24,
-            30,
-            List.of(new FacetFilter("licence%7Cb")),
-            groupStore,
-            Catalogue
+                "http://my.endpo.int",
+                CatalogueUser.PUBLIC_USER,
+                "My Search Term",
+                "1,2,3,4",
+                SpatialOperation.ISWITHIN,
+                24,
+                30,
+                List.of(new FacetFilter("licence%7Cb")),
+                groupStore,
+                Catalogue
                 .builder()
                 .id("eidc")
                 .title("Environmental Information Data Centre")
@@ -602,8 +602,8 @@ public class SearchQueryTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-            DEFAULT_FACETS
-        );
+                DEFAULT_FACETS
+                );
 
         //When
         String url = interestingQuery.toUrl();
@@ -616,16 +616,16 @@ public class SearchQueryTest {
     public void checkThatDefaultQueryDoesNotContainQueryString() {
         //Given
         SearchQuery boringQuery = new SearchQuery(
-            ENDPOINT,
-            CatalogueUser.PUBLIC_USER,
-            SearchQuery.DEFAULT_SEARCH_TERM,
-            DEFAULT_BBOX,
-            SpatialOperation.ISWITHIN,
-            DEFAULT_PAGE,
-            DEFAULT_ROWS,
-            DEFAULT_FILTERS,
-            groupStore,
-            Catalogue
+                ENDPOINT,
+                CatalogueUser.PUBLIC_USER,
+                SearchQuery.DEFAULT_SEARCH_TERM,
+                DEFAULT_BBOX,
+                SpatialOperation.ISWITHIN,
+                DEFAULT_PAGE,
+                DEFAULT_ROWS,
+                DEFAULT_FILTERS,
+                groupStore,
+                Catalogue
                 .builder()
                 .id("eidc")
                 .title("Environmental Information Data Centre")
@@ -633,8 +633,8 @@ public class SearchQueryTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-            DEFAULT_FACETS
-        );
+                DEFAULT_FACETS
+                );
 
         //When
         String url = boringQuery.toUrl();
@@ -649,16 +649,16 @@ public class SearchQueryTest {
         String newBbox = "10,20,30,40";
 
         SearchQuery query = new SearchQuery(
-            ENDPOINT,
-            CatalogueUser.PUBLIC_USER,
-            SearchQuery.DEFAULT_SEARCH_TERM,
-            DEFAULT_BBOX,
-            SpatialOperation.ISWITHIN,
-            DEFAULT_PAGE,
-            DEFAULT_ROWS,
-            DEFAULT_FILTERS,
-            groupStore,
-            Catalogue
+                ENDPOINT,
+                CatalogueUser.PUBLIC_USER,
+                SearchQuery.DEFAULT_SEARCH_TERM,
+                DEFAULT_BBOX,
+                SpatialOperation.ISWITHIN,
+                DEFAULT_PAGE,
+                DEFAULT_ROWS,
+                DEFAULT_FILTERS,
+                groupStore,
+                Catalogue
                 .builder()
                 .id("eidc")
                 .title("Environmental Information Data Centre")
@@ -666,8 +666,8 @@ public class SearchQueryTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-            DEFAULT_FACETS
-        );
+                DEFAULT_FACETS
+                );
 
         //When
         SearchQuery newQuery = query.withBbox(newBbox);
@@ -680,16 +680,16 @@ public class SearchQueryTest {
     public void sameBBoxReturnsSameSearchQuery() {
         //Given
         SearchQuery query = new SearchQuery(
-            ENDPOINT,
-            CatalogueUser.PUBLIC_USER,
-            SearchQuery.DEFAULT_SEARCH_TERM,
-            DEFAULT_BBOX,
-            SpatialOperation.ISWITHIN,
-            DEFAULT_PAGE,
-            DEFAULT_ROWS,
-            DEFAULT_FILTERS,
-            groupStore,
-            Catalogue
+                ENDPOINT,
+                CatalogueUser.PUBLIC_USER,
+                SearchQuery.DEFAULT_SEARCH_TERM,
+                DEFAULT_BBOX,
+                SpatialOperation.ISWITHIN,
+                DEFAULT_PAGE,
+                DEFAULT_ROWS,
+                DEFAULT_FILTERS,
+                groupStore,
+                Catalogue
                 .builder()
                 .id("eidc")
                 .title("Environmental Information Data Centre")
@@ -697,8 +697,8 @@ public class SearchQueryTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-            DEFAULT_FACETS
-        );
+                DEFAULT_FACETS
+                );
 
         //When
         SearchQuery newQuery = query.withBbox(DEFAULT_BBOX);
@@ -711,31 +711,31 @@ public class SearchQueryTest {
     public void impFacetsConfigured() {
         //Given
         Catalogue catalogue = Catalogue.builder()
-                .id("cmp")
-                .title("Catchment Management Modelling Platform")
-                .url("http://www.ceh.ac.uk")
-                .contactUrl("")
-                .logo("eidc.png")
-                .facetKey("impCaMMPIssues")
-                .facetKey("impDataType")
-                .facetKey("impScale")
-                .facetKey("impTopic")
-                .facetKey("impWaterPollutant")
-                .facetKey("resourceType")
-                .build();
+            .id("cmp")
+            .title("Catchment Management Modelling Platform")
+            .url("http://www.ceh.ac.uk")
+            .contactUrl("")
+            .logo("eidc.png")
+            .facetKey("impCaMMPIssues")
+            .facetKey("impDataType")
+            .facetKey("impScale")
+            .facetKey("impTopic")
+            .facetKey("impWaterPollutant")
+            .facetKey("resourceType")
+            .build();
         SearchQuery query = new SearchQuery(
-            ENDPOINT,
-            CatalogueUser.PUBLIC_USER,
-            SearchQuery.DEFAULT_SEARCH_TERM,
-            DEFAULT_BBOX,
-            SpatialOperation.ISWITHIN,
-            DEFAULT_PAGE,
-            DEFAULT_ROWS,
-            DEFAULT_FILTERS,
-            groupStore,
-            catalogue,
-            FACET_FACTORY.newInstances(catalogue.getFacetKeys())
-        );
+                ENDPOINT,
+                CatalogueUser.PUBLIC_USER,
+                SearchQuery.DEFAULT_SEARCH_TERM,
+                DEFAULT_BBOX,
+                SpatialOperation.ISWITHIN,
+                DEFAULT_PAGE,
+                DEFAULT_ROWS,
+                DEFAULT_FILTERS,
+                groupStore,
+                catalogue,
+                FACET_FACTORY.newInstances(catalogue.getFacetKeys())
+                );
 
         //When
         List<String> actual = query

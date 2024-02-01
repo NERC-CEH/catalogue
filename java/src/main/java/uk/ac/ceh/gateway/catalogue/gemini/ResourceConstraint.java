@@ -9,7 +9,7 @@ import lombok.Value;
 @Value
 public class ResourceConstraint {
     private final String value, code, uri;
-    
+
     @Builder
     @JsonCreator
     public ResourceConstraint(
