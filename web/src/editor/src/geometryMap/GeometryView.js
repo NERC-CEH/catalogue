@@ -1,7 +1,8 @@
-import { ObjectInputView } from '../views'
+import {ObjectInputView} from '../views'
 import L from 'leaflet'
 import 'leaflet-draw'
 import template from './geometryTemplate'
+
 export default ObjectInputView.extend({
 
   events: {

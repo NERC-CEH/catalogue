@@ -48,6 +48,7 @@ import uk.ac.ceh.gateway.catalogue.modelnerc.NercModel;
 import uk.ac.ceh.gateway.catalogue.modelnerc.NercModelUse;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringActivity;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
+import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
 import uk.ac.ceh.gateway.catalogue.osdp.*;
 import uk.ac.ceh.gateway.catalogue.postprocess.BaseMonitoringTypePostProcessingService;
@@ -162,6 +163,7 @@ public class ServicesConfig {
             .register(OSDP_MODEL, uk.ac.ceh.gateway.catalogue.osdp.Model.class)
             .register(MONITORING_ACTIVITY, MonitoringActivity.class)
             .register(MONITORING_FACILITY, MonitoringFacility.class)
+            .register(MONITORING_NETWORK, MonitoringNetwork.class)
             .register(MONITORING_PROGRAMME, MonitoringProgramme.class)
             .register(OSDP_PUBLICATION, Publication.class)
             .register(OSDP_SAMPLE, Sample.class)

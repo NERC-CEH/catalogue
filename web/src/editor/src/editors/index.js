@@ -11,6 +11,7 @@ export { default as OsdpPublicationEditorView } from './OsdpPublicationEditorVie
 export { default as MonitoringActivityEditorView } from './MonitoringActivityEditorView'
 export { default as MonitoringProgrammeEditorView } from './MonitoringProgrammeEditorView'
 export { default as MonitoringFacilityEditorView } from './MonitoringFacilityEditorView'
+export { default as MonitoringNetworkEditorView } from './MonitoringNetworkEditorView'
 export { default as SampleArchiveEditorView } from './SampleArchiveEditorView'
 export { default as ErammpModelEditorView } from './ErammpModelEditorView'
 export { default as NercModelEditorView } from './NercModelEditorView'

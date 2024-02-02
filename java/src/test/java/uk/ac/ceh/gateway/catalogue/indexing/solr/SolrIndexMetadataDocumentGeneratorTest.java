@@ -11,6 +11,7 @@ import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.DescriptiveKeywords;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.Geometry;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.imp.Model;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
@@ -97,7 +98,11 @@ class SolrIndexMetadataDocumentGeneratorTest {
             .westBoundLongitude("-0.5")
             .build()
         );
-        document.setGeometry("POLYGON((30 10, 40 40, 20 40, 10 20, 30 10))");
+        String geojsonPolygon = "{\"type\":\"Feature\",\"properties\":{},\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[-2.526855,53.956086],[-0.241699,52.802761],[-4.020996,52.802761],[-2.526855,53.956086]]]}}";
+        document.setGeometry(Geometry.builder()
+                .value(geojsonPolygon)
+                .build()
+        );
 
         //When
         SolrIndex actual = generator.generateIndex(document);
@@ -105,24 +110,49 @@ class SolrIndexMetadataDocumentGeneratorTest {
         //Then
         assertThat(
             actual.getLocations(),
-            hasItems("POLYGON((30 10, 40 40, 20 40, 10 20, 30 10))", "POLYGON((-0.5 53.3, -0.5 59.4, 2.4 59.4, 2.4 53.3, -0.5 53.3))")
+            hasItems("POLYGON((-2.526855 53.956086, -0.241699 52.802761, -4.020996 52.802761, -2.526855 53.956086))", "POLYGON((-0.5 53.3, -0.5 59.4, 2.4 59.4, 2.4 53.3, -0.5 53.3))")
         );
     }
 
     @Test
     @SneakyThrows
-    void geometryLocationsAddedToIndex() {
+    void geometryPolygonLocationsAddedToIndex() {
         //Given
         MonitoringFacility document = new MonitoringFacility();
-        document.setGeometry("POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))");
+        String geojsonPolygon = "{\"type\":\"Feature\",\"properties\":{},\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[-2.526855,53.956086],[-0.241699,52.802761],[-4.020996,52.802761],[-2.526855,53.956086]]]}}";
+        document.setGeometry(Geometry.builder()
+                .value(geojsonPolygon)
+                .build()
+        );
 
         //When
         SolrIndex actual = generator.generateIndex(document);
 
         //Then
         assertThat(
-            actual.getLocations(),
-            hasItems("POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))")
+                actual.getLocations(),
+                hasItems("POLYGON((-2.526855 53.956086, -0.241699 52.802761, -4.020996 52.802761, -2.526855 53.956086))")
+        );
+    }
+
+    @Test
+    @SneakyThrows
+    void geometryPointLocationsAddedToIndex() {
+        //Given
+        MonitoringFacility document = new MonitoringFacility();
+        String geojsonPolygon = "{\"type\":\"Feature\",\"properties\":{},\"geometry\":{\"type\":\"Point\",\"coordinates\":[-1.875916,53.891391]}}";
+        document.setGeometry(Geometry.builder()
+                .value(geojsonPolygon)
+                .build()
+        );
+
+        //When
+        SolrIndex actual = generator.generateIndex(document);
+
+        //Then
+        assertThat(
+                actual.getLocations(),
+                hasItems("POINT(-1.875916 53.891391)")
         );
     }
 

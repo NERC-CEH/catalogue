@@ -4,18 +4,13 @@ import {
   KeywordView,
   ParentView,
   RelationshipView,
-  SingleObjectView,
-  TemporalExtentView,
   TextareaView
 } from '../views'
-import {MultipleDate} from '../models'
-import Geometry from '../geometryMap/Geometry'
-import GeometryView from '../geometryMap/GeometryView'
 
 export default EditorView.extend({
 
   initialize () {
-    if (!this.model.has('type')) { this.model.set('type', 'monitoringFacility') }
+    if (!this.model.has('type')) { this.model.set('type', 'monitoringNetwork') }
 
     this.sections = [{
       label: 'Basic Info',
@@ -31,15 +26,6 @@ export default EditorView.extend({
 `
         }),
 
-        new InputView({
-          model: this.model,
-          modelAttribute: 'facilityType',
-          label: 'Type',
-          helpText: `
-<p>Type of Monitoring Facility</p>
-`
-        }),
-
         new TextareaView({
           model: this.model,
           modelAttribute: 'description',
@@ -47,17 +33,6 @@ export default EditorView.extend({
           label: 'Description',
           helpText: `
 <p>Description of Monitoring Facility</p>
-`
-        }),
-
-        new SingleObjectView({
-          model: this.model,
-          modelAttribute: 'temporalExtent',
-          ModelType: MultipleDate,
-          label: 'Temporal Extent',
-          ObjectInputView: TemporalExtentView,
-          helpText: `
-<p>Temporal Extent of Monitoring Facility</p>
 `
         }),
 
@@ -70,26 +45,6 @@ export default EditorView.extend({
 <p>Keywords for discovery</p>
 `
         }),
-
-        new SingleObjectView({
-          model: this.model,
-          modelAttribute: 'boundingBox',
-          ModelType: BoundingBox,
-          label: 'Bounding Box',
-          ObjectInputView: BoundingBoxView,
-          helpText: `
-                <p>Bounding Box of Monitoring Facility</p>
-                `
-        }),
-
-        //         new GeometryView({
-        //           model: this.model,
-        //           modelAttribute: 'geometry',
-        //           label: 'Geometry',
-        //           helpText: `
-        // <p>Geometry of Monitoring Facility</p>
-        // `
-        //         }),
 
         new ParentView({
           model: this.model,
