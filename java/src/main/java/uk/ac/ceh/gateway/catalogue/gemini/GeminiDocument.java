@@ -225,20 +225,41 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
                 .orElse(Collections.emptyList());
     }
 
+    private List<ResponsibleParty>responsiblePartyByRole(String role) {
+        return getResponsibleParties()
+            .stream()
+            .filter((responsibleParty) -> responsibleParty.getRole().equalsIgnoreCase(role))
+            .collect(Collectors.toList());
+    }
+
     public List<ResponsibleParty> getAuthors() {
-        return Optional.ofNullable(responsibleParties)
-                .orElse(Collections.emptyList())
-                .stream()
-                .filter((authors) -> authors.getRole().equalsIgnoreCase("author"))
-                .collect(Collectors.toList());
+        return responsiblePartyByRole("author");
+    }
+
+    public List<ResponsibleParty> getCustodians() {
+        return responsiblePartyByRole("custodian");
+    }
+
+    public List<ResponsibleParty> getPointOfContacts() {
+        return responsiblePartyByRole("pointOfContact");
     }
 
     public List<ResponsibleParty> getRightsHolders() {
-        return Optional.ofNullable(responsibleParties)
-                .orElse(Collections.emptyList())
-                .stream()
-                .filter((authors) -> authors.getRole().equalsIgnoreCase("rightsHolder"))
-                .collect(Collectors.toList());
+        return responsiblePartyByRole("rightsHolder");
+    }
+
+    public List<ResponsibleParty> getPublishers() {
+        return responsiblePartyByRole("publisher");
+    }
+
+    public List<DistributionInfo> getDistributionFormats() {
+        return Optional.ofNullable(distributionFormats)
+            .orElse(Collections.emptyList());
+    }
+
+    public List<BoundingBox> getBoundingBoxes() {
+        return Optional.ofNullable(boundingBoxes)
+            .orElse(Collections.emptyList());
     }
 
     public List<Funding> getFunding() {

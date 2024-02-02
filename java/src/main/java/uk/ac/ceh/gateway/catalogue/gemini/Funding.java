@@ -8,7 +8,7 @@ import lombok.Builder;
 
 @Value
 public class Funding {
-    private final String funderName, funderIdentifier, awardTitle, awardNumber, awardURI;
+    String funderName, funderIdentifier, awardTitle, awardNumber, awardURI;
 
     @Builder
     @JsonCreator
@@ -23,5 +23,13 @@ public class Funding {
         this.awardTitle = nullToEmpty(awardTitle);
         this.awardNumber = nullToEmpty(awardNumber);
         this.awardURI = nullToEmpty(awardURI);
+    }
+
+    public boolean isOrcid() {
+        return funderIdentifier.matches("^http(|s)://orcid.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$");
+    }
+
+    public boolean isRor() {
+        return funderIdentifier.matches("^https://ror.org/\\w{8,10}$");
     }
 }
