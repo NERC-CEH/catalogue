@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.datacite;
 import freemarker.template.Configuration;
 import lombok.SneakyThrows;
 import lombok.val;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,6 +47,13 @@ public class DataciteServiceTest {
     DocumentIdentifierService identifierService;
     Configuration configuration;
     String doiPrefix = "10.8268";
+
+    @SneakyThrows
+    private String encoded(String filename) {
+        val xml = Objects.requireNonNull(getClass().getResourceAsStream(filename));
+        val encoded = Base64.encodeBase64(xml.readAllBytes());
+        return IOUtils.toString(encoded, StandardCharsets.UTF_8.name());
+    }
 
     @BeforeEach
     @SneakyThrows
@@ -214,9 +222,7 @@ public class DataciteServiceTest {
         //Given
         val document = getGeminiDocument();
         when(identifierService.generateUri(ID)).thenReturn("https://catalogue.ceh.ac.uk/id/" + ID);
-        val encoded = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("encoded.txt")), StandardCharsets.UTF_8);
 
-        // TODO: in future could look at the xml content sent to Datacite
         mockServer
                 .expect(requestTo("https://example.com/doi/10.8268/d4bdc836-5b89-44c5-aca2-2880a5d5a5be"))
                 .andExpect(method(HttpMethod.PUT))
@@ -224,7 +230,7 @@ public class DataciteServiceTest {
                 .andExpect(jsonPath("$.data.id").value(doiPrefix + "/" + ID))
                 .andExpect(jsonPath("$.data.attributes.doi").value(doiPrefix + "/" + ID))
                 .andExpect(jsonPath("$.data.attributes.url").value("https://catalogue.ceh.ac.uk/id/" + ID))
-                .andExpect(jsonPath("$.data.attributes.xml").value(encoded))
+                .andExpect(jsonPath("$.data.attributes.xml").value(encoded("datacite.xml")))
                 .andRespond(withSuccess());
 
         //When
@@ -241,9 +247,7 @@ public class DataciteServiceTest {
         //Given
         val document = getGeminiDocumentWithLegacyPublisher();
         when(identifierService.generateUri(ID)).thenReturn("https://catalogue.ceh.ac.uk/id/" + ID);
-        val encoded = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("encoded.txt")), StandardCharsets.UTF_8);
 
-        // TODO: in future could look at the xml content sent to Datacite
         mockServer
                 .expect(requestTo("https://example.com/doi/10.8268/d4bdc836-5b89-44c5-aca2-2880a5d5a5be"))
                 .andExpect(method(HttpMethod.PUT))
@@ -251,7 +255,7 @@ public class DataciteServiceTest {
                 .andExpect(jsonPath("$.data.id").value(doiPrefix + "/" + ID))
                 .andExpect(jsonPath("$.data.attributes.doi").value(doiPrefix + "/" + ID))
                 .andExpect(jsonPath("$.data.attributes.url").value("https://catalogue.ceh.ac.uk/id/" + ID))
-                .andExpect(jsonPath("$.data.attributes.xml").value(encoded))
+                .andExpect(jsonPath("$.data.attributes.xml").value(encoded("datacite-legacy.xml")))
                 .andRespond(withSuccess());
 
         //When
@@ -269,7 +273,6 @@ public class DataciteServiceTest {
         //Given
         val document = getGeminiDocument();
         when(identifierService.generateUri(ID)).thenReturn("https://catalogue.ceh.ac.uk/id/" + ID);
-        val encoded = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("encoded.txt")), StandardCharsets.UTF_8);
 
         mockServer
                 .expect(requestTo("https://example.com/doi"))
@@ -278,7 +281,7 @@ public class DataciteServiceTest {
                 .andExpect(jsonPath("$.data.id").value(doiPrefix + "/" + ID))
                 .andExpect(jsonPath("$.data.attributes.doi").value(doiPrefix + "/" + ID))
                 .andExpect(jsonPath("$.data.attributes.url").value("https://catalogue.ceh.ac.uk/id/" + ID))
-                .andExpect(jsonPath("$.data.attributes.xml").value(encoded))
+                .andExpect(jsonPath("$.data.attributes.xml").value(encoded("datacite.xml")))
                 .andRespond(withSuccess());
 
         //When
@@ -290,7 +293,7 @@ public class DataciteServiceTest {
     }
 
     private GeminiDocument getGeminiDocument(){
-        val author = ResponsibleParty.builder().role("author").build();
+        val author = ResponsibleParty.builder().role("author").individualName("Ann Arbor").build();
         val publisher = ResponsibleParty.builder().role("publisher").organisationName("Test publisher").build();
         val metadata = MetadataInfo.builder().state("published").build();
         metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
@@ -306,7 +309,7 @@ public class DataciteServiceTest {
     }
 
     private GeminiDocument getGeminiDocumentWithLegacyPublisher(){
-        val author = ResponsibleParty.builder().role("author").build();
+        val author = ResponsibleParty.builder().role("author").individualName("Bob Foo").build();
         val publisher = ResponsibleParty.builder().role("publisher").organisationName("Test legacy publisher").build();
         val metadata = MetadataInfo.builder().state("published").build();
         metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);

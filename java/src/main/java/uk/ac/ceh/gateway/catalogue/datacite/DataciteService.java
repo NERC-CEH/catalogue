@@ -275,10 +275,12 @@ public class DataciteService {
             data.put("doc", document);
             data.put("resourceType", getDataciteResourceType(document));
             data.put("doi", doi);
-            return FreeMarkerTemplateUtils.processTemplateIntoString(
+            val processed = FreeMarkerTemplateUtils.processTemplateIntoString(
                     configuration.getTemplate(templateLocation),
                     data
             );
+            log.debug(processed);
+            return processed;
         }
         catch(IOException | TemplateException ex) {
             throw new DataciteException(ex);
