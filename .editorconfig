@@ -9,6 +9,10 @@ indent_style = space
 insert_final_newline = true
 trim_trailing_whitespace = true
 
+[*.{ftl,ftlh,ftlx}]
+indent_size = 2
+
+# Two spaces in Standard Javascript
 [*.js]
 indent_size = 2
 
