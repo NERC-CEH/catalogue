@@ -374,6 +374,7 @@ public class CatalogueServiceConfig {
                 .facetKey("resourceType")
                 .documentType(MONITORING_ACTIVITY_TYPE)
                 .documentType(MONITORING_FACILITY_TYPE)
+                .documentType(MONITORING_NETWORK_TYPE)
                 .documentType(MONITORING_PROGRAMME_TYPE)
                 .vocabularies(getCatalogueVocabularies(vocabularies, defaultCatalogueKey))
                 .fileUpload(false)

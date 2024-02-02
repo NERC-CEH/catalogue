@@ -18,6 +18,7 @@ import {
   MonitoringEditorView,
   MonitoringActivityEditorView,
   MonitoringFacilityEditorView,
+  MonitoringNetworkEditorView,
   MonitoringProgrammeEditorView,
   NercModelEditorView,
   NercModelUseEditorView,
@@ -147,6 +148,11 @@ function initEditor () {
       View: MonitoringFacilityEditorView,
       Model: EditorMetadata,
       mediaType: 'application/vnd.monitoring-facility+json'
+    },
+    'monitoring-network': {
+      View: MonitoringNetworkEditorView,
+      Model: EditorMetadata,
+      mediaType: 'application/vnd.monitoring-network+json'
     },
     'osdp-agent': {
       View: OsdpAgentEditorView,

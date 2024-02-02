@@ -262,3 +262,13 @@ The upstream service returned some content, but it was not in the format which w
 ![Invalid Resource](java/src/main/resources/proxy-invalid-resource.png)
 
 The wms get capabilities returned a malformed reference to either a GetLegend or GetMap url. This can happen if you are using a buggy web map server or a corrupt external get capabilities.
+
+
+## Logging level during development
+
+The logging level of individual components can be controlled by adding them to the service's environment in the docker-compose.override.yml, like the following:
+
+        services:
+          web:
+            environment:
+              - LOGGING_LEVEL_UK_AC_CEH_CATALOGUE_GEMINI_GEOMETRY=DEBUG
