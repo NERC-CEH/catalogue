@@ -18,11 +18,11 @@
       <#assign contactIdentifier= "<" + id + "_" + prefix +  contact?index + ">">
       <#if contact.individualName?has_content>
         <#if contact.isOrcid()>
-          <#assign contactIdentifier= "\l" + contact.nameIdentifier + "\g">
+          <#assign contactIdentifier= "\l" + contact.nameIdentifier?trim + "\g">
         </#if>
       <#else>
         <#if contact.isRor()>
-          <#assign contactIdentifier="\l" + contact.organisationIdentifier+ "\g">
+          <#assign contactIdentifier="\l" + contact.organisationIdentifier?trim + "\g">
         </#if>
       </#if>
 
@@ -43,14 +43,14 @@
             <#assign orgName=contact.organisationName>
           </#if>
            <#if contact.isOrcid()>
-            <#assign contactIdentifier="\l" + contact.nameIdentifier + "\g">
+            <#assign contactIdentifier="\l" + contact.nameIdentifier?trim + "\g">
           </#if>
         <#elseif contact.organisationName?has_content >
           <#assign contactType="vcard:Organization">
           <#assign contactName=contact.organisationName>
           <#assign orgName="">
            <#if contact.isRor()>
-            <#assign contactIdentifier="\l" + contact.organisationIdentifier+ "\g">
+            <#assign contactIdentifier="\l" + contact.organisationIdentifier?trim + "\g">
           </#if>
         </#if>
 
@@ -79,7 +79,7 @@
       <#if fund.awardURI?has_content>
         <#assign fundIdentifier=fund.awardURI>
       </#if>
-      <${fundIdentifier?no_esc}><#sep>,</#sep>
+      <${fundIdentifier?trim?no_esc}><#sep>,</#sep>
     </#list>
   </#if>
 </#macro>
@@ -93,7 +93,7 @@
         <#assign fundIdentifier=fund.awardURI>
       </#if>
 
-      <${fundIdentifier?no_esc}> a prov:Activity ; <#if fund.awardTitle?has_content>rdfs:label "${fund.awardTitle}"</#if> .
+      <${fundIdentifier?trim?no_esc}> a prov:Activity ; <#if fund.awardTitle?has_content>rdfs:label "${fund.awardTitle}"</#if> .
     </#list>
   </#if>
 </#macro>
@@ -102,7 +102,7 @@
   <#if keywords?has_content>
     <#list keywords as kw>
       <#if kw.uri?has_content>
-        <#assign keyword ="\l" + kw.uri+ "\g">
+        <#assign keyword ="\l" + kw.uri?trim+ "\g">
       <#else>
         <#assign keyword ='"' + kw.value+ '"'>
       </#if>
@@ -115,7 +115,7 @@
   <#if keywords?has_content>
     <#list keywords as kw>
       <#if kw.uri?has_content>
-        <${kw.uri}> a skos:Concept; skos:preflabel "${kw.value}"; rdfs:label "${kw.value}".
+        <${kw.uri?trim}> a skos:Concept; skos:preflabel "${kw.value}"; rdfs:label "${kw.value}".
       </#if>
     </#list>
   </#if>
@@ -128,7 +128,7 @@
 
         <#assign projectIdentifier= id + "_proj" + project?index>
         <#if project.uri?has_content>
-          <#assign projectIdentifier=project.uri>
+          <#assign projectIdentifier=project.uri?trim>
         </#if>
         <${projectIdentifier?no_esc}><#sep>,</#sep>
       </#list>
@@ -141,7 +141,7 @@
 
         <#assign projectIdentifier= id + "_proj" + project?index>
         <#if project.uri?has_content>
-          <#assign projectIdentifier=project.uri>
+          <#assign projectIdentifier=project.uri?trim>
         </#if>
 
         <${projectIdentifier?no_esc}> a prov:Activity ; <#if project.value?has_content>rdfs:label "${project.value}"</#if> .

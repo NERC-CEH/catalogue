@@ -30,10 +30,10 @@ dct:type dcmitype:Dataset ;
   dct:available "${datasetReferenceDate.publicationDate}" ;
 </#if>
 
- dcat:landingPage <${uri}><#if datacitable?string=="true" && citation?has_content>, <${citation.url}></#if>;
+ dcat:landingPage <${uri}><#if datacitable?string=="true" && citation?has_content>, <${citation.url?trim}></#if>;
 
 <#if datacitable?string=='true' && citation?has_content>
-    dct:bibliographicCitation "${citation.authors?join(' ,')} (${citation.year?string("0")}). ${citation.title}. ${citation.publisher}. ${citation.url}" ;
+    dct:bibliographicCitation "${citation.authors?join(' ,')} (${citation.year?string("0")}). ${citation.title}. ${citation.publisher}. ${citation.url?trim}" ;
 </#if>
 
 <#if keywordsTheme?has_content>
@@ -45,7 +45,7 @@ dct:type dcmitype:Dataset ;
 dcat:Distribution [
     dcat:accessURL
     <#list downloads as download>
-      <${download.url}> <#sep>,
+      <${download.url?trim}> <#sep>,
     </#list>
     ;
     <#include "_rights.ftlh">
