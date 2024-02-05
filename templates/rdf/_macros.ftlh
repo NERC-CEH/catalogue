@@ -17,11 +17,11 @@
 
       <#assign contactIdentifier= "<" + id + "_" + prefix +  contact?index + ">">
       <#if contact.individualName?has_content>
-        <#if contact.nameIdentifier?has_content && contact.nameIdentifier?matches("^http(|s)://orcid.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$")>
+        <#if contact.isOrcid()>
           <#assign contactIdentifier= "\l" + contact.nameIdentifier + "\g">
         </#if>
       <#else>
-        <#if contact.organisationIdentifier?has_content && contact.organisationIdentifier?matches("^http(|s)://ror.org/[0-9a-z]+$")>
+        <#if contact.isRor()>
           <#assign contactIdentifier="\l" + contact.organisationIdentifier+ "\g">
         </#if>
       </#if>
@@ -34,7 +34,7 @@
 <#macro contactDetail contacts prefix="c">
   <#if contacts?has_content>
     <#list contacts as contact>
-      <#if contact.individualName?has_content || contact.organisationIdentifier?has_content> 
+      <#if contact.individualName?has_content || contact.organisationIdentifier?has_content>
         <#assign contactIdentifier= "<" + id + "_" + prefix + contact?index + ">">
         <#if contact.individualName?has_content>
           <#assign contactType="vcard:Individual">
@@ -42,19 +42,19 @@
           <#if contact.organisationName?has_content>
             <#assign orgName=contact.organisationName>
           </#if>
-          <#if contact.nameIdentifier?has_content && contact.nameIdentifier?matches("^http(|s)://orcid.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$")>
+           <#if contact.isOrcid()>
             <#assign contactIdentifier="\l" + contact.nameIdentifier + "\g">
           </#if>
         <#elseif contact.organisationName?has_content >
           <#assign contactType="vcard:Organization">
           <#assign contactName=contact.organisationName>
           <#assign orgName="">
-          <#if contact.organisationIdentifier?has_content && contact.organisationIdentifier?matches("^http(|s)://ror.org/[0-9a-z]+$")>
+           <#if contact.isRor()>
             <#assign contactIdentifier="\l" + contact.organisationIdentifier+ "\g">
           </#if>
         </#if>
 
-        
+
           <#--
           UKCEH and EIDC organisations are defined at the catalogue level so don't need to be included here
           Only return data for organisations other than UKCEH or EIDC
@@ -98,58 +98,81 @@
   </#if>
 </#macro>
 
+<#macro keywordList keywords>
+  <#if keywords?has_content>
+    <#list keywords as kw>
+      <#if kw.uri?has_content>
+        <#assign keyword ="\l" + kw.uri+ "\g">
+      <#else>
+        <#assign keyword ='"' + kw.value+ '"'>
+      </#if>
+      ${keyword?no_esc}<#sep>,</#sep>
+    </#list>
+  </#if>
+</#macro>
+
+<#macro keywordDetail keywords>
+  <#if keywords?has_content>
+    <#list keywords as kw>
+      <#if kw.uri?has_content>
+        <${kw.uri}> a skos:Concept; skos:preflabel "${kw.value}"; rdfs:label "${kw.value}".
+      </#if>
+    </#list>
+  </#if>
+</#macro>
+
 <#--ELTER -->
-<#macro projectList>
-  <#if elterProject?has_content>
-    <#list elterProject as project>
+  <#macro projectList>
+    <#if elterProject?has_content>
+      <#list elterProject as project>
 
-      <#assign projectIdentifier= id + "_proj" + project?index>
-      <#if project.uri?has_content>
-        <#assign projectIdentifier=project.uri>
-      </#if>
-      <${projectIdentifier?no_esc}><#sep>,</#sep>
-    </#list>
-  </#if>
-</#macro>
+        <#assign projectIdentifier= id + "_proj" + project?index>
+        <#if project.uri?has_content>
+          <#assign projectIdentifier=project.uri>
+        </#if>
+        <${projectIdentifier?no_esc}><#sep>,</#sep>
+      </#list>
+    </#if>
+  </#macro>
 
-<#macro projectDetail>
-  <#if elterProject?has_content>
-    <#list elterProject as project>
+  <#macro projectDetail>
+    <#if elterProject?has_content>
+      <#list elterProject as project>
 
-      <#assign projectIdentifier= id + "_proj" + project?index>
-      <#if project.uri?has_content>
-        <#assign projectIdentifier=project.uri>
-      </#if>
+        <#assign projectIdentifier= id + "_proj" + project?index>
+        <#if project.uri?has_content>
+          <#assign projectIdentifier=project.uri>
+        </#if>
 
-      <${projectIdentifier?no_esc}> a prov:Activity ; <#if project.value?has_content>rdfs:label "${project.value}"</#if> .
-    </#list>
-  </#if>
-</#macro>
+        <${projectIdentifier?no_esc}> a prov:Activity ; <#if project.value?has_content>rdfs:label "${project.value}"</#if> .
+      </#list>
+    </#if>
+  </#macro>
 
-<#macro deimsList>
-  <#if deimsSites?has_content>
-    <#list deimsSites as deimsSite>
+  <#macro deimsList>
+    <#if deimsSites?has_content>
+      <#list deimsSites as deimsSite>
 
-      <#assign deimsID= id + "_site" + deimsSite?index>
-      <#if deimsSite.url?has_content>
-        <#assign deimsID=deimsSite.url>
-      </#if>
-      <${deimsID?no_esc}><#sep>,</#sep>
-    </#list>
-  </#if>
-</#macro>
+        <#assign deimsID= id + "_site" + deimsSite?index>
+        <#if deimsSite.url?has_content>
+          <#assign deimsID=deimsSite.url>
+        </#if>
+        <${deimsID?no_esc}><#sep>,</#sep>
+      </#list>
+    </#if>
+  </#macro>
 
-<#macro deimsDetail>
-  <#if deimsSites?has_content>
-    <#list deimsSites as deimsSite>
+  <#macro deimsDetail>
+    <#if deimsSites?has_content>
+      <#list deimsSites as deimsSite>
 
-      <#assign deimsID= id + "_site" + deimsSite?index>
-      <#if deimsSite.url?has_content>
-        <#assign deimsID=deimsSite.url>
-      </#if>
+        <#assign deimsID= id + "_site" + deimsSite?index>
+        <#if deimsSite.url?has_content>
+          <#assign deimsID=deimsSite.url>
+        </#if>
 
-      <${deimsID?no_esc}> a prov:Location; <#if deimsSite.title?has_content>rdfs:label "${deimsSite.title}"</#if> .
-    </#list>
-  </#if>
-</#macro>
+        <${deimsID?no_esc}> a prov:Location; <#if deimsSite.title?has_content>rdfs:label "${deimsSite.title}"</#if> .
+      </#list>
+    </#if>
+  </#macro>
 <#--END ELTER-->

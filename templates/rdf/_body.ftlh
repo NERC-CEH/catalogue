@@ -41,19 +41,7 @@
   </#if>
 
   <#if allKeywords?has_content>
-  dct:subject
-    <#list allKeywords as keyword>
-      <#if keyword.uri?has_content>
-        <#if keyword.value?has_content>
-          <${keyword.uri?trim}>, "${keyword.value}"<#t>
-        <#else>
-          "${keyword.uri?trim}"<#t>
-        </#if>
-      <#else>
-        "${keyword.value}"<#t>
-      </#if><#sep>,</#sep><#t>
-    </#list>
-  ;
+   dct:subject <@keywordList allKeywords/> ;
   </#if>
 
   <#if elterProject?has_content>
@@ -61,8 +49,7 @@
   </#if>
 
   <#if deimsSites?has_content>
-    prov:atLocation <@deimsList />
-    ; 
+    prov:atLocation <@deimsList /> ;
   </#if>
 
   <#if funding?has_content>
@@ -93,14 +80,7 @@
   <@contactDetail authors "a" />
 </#if>
 
-<#if allKeywords?has_content>
-  <#list allKeywords as keyword>
-    <#if keyword.uri?has_content && keyword.value?has_content>
-        <${keyword.uri?trim}> rdfs:label "${keyword.value}" .
-      </#if>
-  </#list>
-</#if>
-
+<@keywordDetail allKeywords/>
 <@fundingDetail />
 <@projectDetail />
 <@deimsDetail />

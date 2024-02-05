@@ -1,7 +1,7 @@
 <#compress>
 <#import "../functions.ftlh" as func>
 
-<#macro keywordList keywords>
+<#macro displayKeywords keywords>
   <#list keywords as keyword>
       <#if keyword.uri?has_content>
 
@@ -28,6 +28,21 @@
     </#list>
 </#macro>
 
+<#macro displayVariables keywords>
+  <#list keywords as keyword>
+      <#if keyword.uri?has_content>
+        {
+          "@type": "StatisticalVariable",
+          "@id": "${keyword.uri?trim}",
+          "name": "${keyword.value?trim}"
+        }
+      <#else>
+        "${keyword.value?trim}"
+      </#if>
+      <#sep>,</#sep>
+    </#list>
+</#macro>
+
 <#if useConstraints?has_content>
   <#assign licences = func.filter(useConstraints, "code", "license")>
 </#if>
@@ -43,64 +58,31 @@
 </#if>
 
 <#-- COMPILE KEYWORD LIST--->
-<#-- Combining all keywords into a single list for the time being. -->
-<#-- They may need to map to different parts of the schema later -->
-  <#assign allKeywords = [] >
+  <#assign keywordList = [] >
 
   <#if descriptiveKeywords?has_content>
     <#list descriptiveKeywords as descriptiveKeyword>
       <#list descriptiveKeyword.keywords as keyword>
-      <#assign allKeywords = allKeywords + [keyword] >
+      <#assign keywordList = keywordList + [keyword] >
       </#list>
     </#list>
   </#if>
 
-  <#if keywords?has_content>
-    <#list keywords as keyword>
-        <#assign allKeywords = allKeywords + [keyword]>
-    </#list>
-  </#if>
-  <#if keywordsTheme?has_content>
-    <#list keywordsTheme as keyword>
-        <#assign allKeywords = allKeywords + [keyword]>
-    </#list>
-  </#if>
-  <#if keywordsInstrument?has_content>
-    <#list keywordsInstrument as keyword>
-        <#assign allKeywords = allKeywords + [keyword]>
-    </#list>
-  </#if>
-  <#if keywordsDiscipline?has_content>
-    <#list keywordsDiscipline as keyword>
-        <#assign allKeywords = allKeywords + [keyword]>
-    </#list>
-  </#if>
-  <#if keywordsPlace?has_content>
-    <#list keywordsPlace as keyword>
-        <#assign allKeywords = allKeywords + [keyword]>
-    </#list>
-  </#if>
-  <#if keywordsProject?has_content>
-    <#list keywordsProject as keyword>
-        <#assign allKeywords = allKeywords + [keyword]>
-    </#list>
-  </#if>
-  <#if keywordsOther?has_content>
-    <#list keywordsOther as keyword>
-        <#assign allKeywords = allKeywords + [keyword]>
+  <#if allKeywords?has_content>
+    <#list allKeywords as keyword>
+        <#assign keywordList = keywordList + [keyword]>
     </#list>
   </#if>
 
   <#--DE-DUPLICATE KEYWORD LIST -->
   <#assign deDup = [] />
-  <#list allKeywords as originalList>
+  <#list keywordList as originalList>
     <#if ! deDup?seq_contains(originalList)>
         <#assign deDup = deDup + [originalList] />
     </#if>
   </#list>
-  <#assign allKeywords = deDup?sort_by("value")?sort_by("uri") />
+  <#assign keywordList = deDup?sort_by("value")?sort_by("uri") />
 <#-- END KEYWORD LIST--->
-
 
 <#if type=='dataset' || type=='nonGeographicDataset' || type=='signpost'>
   <#assign docType = "Dataset">
@@ -145,11 +127,11 @@
   </#if>
 
   <#if keywordsObservedProperty?? && keywordsObservedProperty?has_content>
-    "variableMeasured": [ <@keywordList keywordsObservedProperty/>],
+    "variableMeasured": [ <@displayVariables keywordsObservedProperty/>],
   </#if>
 
-  <#if allKeywords?has_content>
-  "keywords": [<@keywordList allKeywords/>],
+  <#if keywordList?has_content>
+  "keywords": [<@displayKeywords keywordList/>],
   </#if>
 
   <#if authors?has_content>
