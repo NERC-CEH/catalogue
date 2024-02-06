@@ -275,6 +275,13 @@
             font-size: 0.9em;
         }
     }
+    // Hide the leaflet 'save' button as it is never used: https://stackoverflow.com/questions/51360283/how-to-remove-save-option-from-leaflet-draw-api-delete-button
+    .leaflet-draw-actions li:first-child a[title="Save changes"] {
+        visibility: hidden;
+        width: 0;
+        padding: 0;
+    }
+
 }
 
 .editor-buttons {
