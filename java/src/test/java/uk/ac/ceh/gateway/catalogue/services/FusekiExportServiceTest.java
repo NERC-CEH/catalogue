@@ -1,33 +1,25 @@
 package uk.ac.ceh.gateway.catalogue.services;
 
 import freemarker.template.Configuration;
-
 import lombok.SneakyThrows;
-
-import java.io.File;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
-
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
+import java.io.File;
+
 import static org.hamcrest.CoreMatchers.equalTo;
-
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
@@ -65,6 +57,8 @@ public class FusekiExportServiceTest {
         configuration.setDirectoryForTemplateLoading(new File("../templates"));
         // called in constructor of FusekiExportService
         given(catalogueService.defaultCatalogue())
+            .willReturn(catalogue);
+        given(catalogueService.retrieve(CATALOGUE_ID))
             .willReturn(catalogue);
 
         service = new FusekiExportService(
