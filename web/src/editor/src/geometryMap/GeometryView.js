@@ -71,9 +71,8 @@ export default ObjectInputView.extend({
     this.map.addControl(this.drawControl)
     baseMaps.Map.addTo(this.map)
 
-    const rounding = function (key, val){
-      if (typeof val === 'number')
-        return val.toFixed(5)
+    const rounding = function (key, val) {
+      if (typeof val === 'number') { return val.toFixed(5) }
       return val
     }
 
