@@ -7,66 +7,54 @@ import template from '../templates/DescriptiveKeyword'
 
 export default ObjectInputView.extend({
 
-    events: function () {
-        return _.extend({}, ObjectInputView.prototype.events, {
-            'click .add' () { return this.add() },
+  events: function () {
+    return _.extend({}, ObjectInputView.prototype.events, {
+      'click .add' () { return this.add() }
+    })
+  },
 
-            'click .predefined' (event) { return this.addPredefined(event) }
-        })
-    },
+  initialize (options) {
+    this.template = template
+    ObjectInputView.prototype.initialize.call(this, options)
+    this.render()
+    this.keywords = this.model.getRelatedCollection('keywords')
+    this.createList(this.keywords, '.keywords', this.addOne)
+  },
 
-    initialize (options) {
-        this.template = template
-        ObjectInputView.prototype.initialize.call(this, options)
-        this.render()
-        const keywordType = this.model.get('type')
-        if (keywordType != null) {
-            // IE only supports .startsWith() in MS Edge (> version 11)
-            if (keywordType.lastIndexOf('Catalogue topic', 0) === 0) {
-                this.$('#catalogueTopic').removeClass('hidden')
-                this.$('.add').addClass('hidden')
-                this.$('select.type').attr('disabled', 'disabled')
-            }
-        }
+  render () {
+    ObjectInputView.prototype.render.apply(this)
+    this.$('.type').val(this.model.get('type'))
+    return this
+  },
 
-        this.keywords = this.model.getRelatedCollection('keywords')
-        this.createList(this.keywords, '.keywords', this.addOne)
-    },
+  addOne (model, keywordIndex) {
+    this.data = _.omit(this.data, 'el')
+    return new ChildView(_.extend({}, this.data, {
+      model,
+      keywordIndex,
+      ObjectInputView: KeywordVocabularyView
+    }))
+  },
 
-    render () {
-        ObjectInputView.prototype.render.apply(this)
-        this.$('.type').val(this.model.get('type'))
-        return this
-    },
+  add () { this.keywords.add({}) },
 
-    addOne (model, keywordIndex) {
-        this.data = _.omit(this.data, 'el')
-        return new ChildView(_.extend({}, this.data, {
-            model,
-            keywordIndex,
-            ObjectInputView: KeywordVocabularyView
-        }))
-    },
+  addPredefined (event) {
+    event.preventDefault()
+    const $target = this.$(event.target)
+    this.keywords.add({
+      value: $target.text(),
+      uri: $target.attr('href')
+    })
+  },
 
-    add () { this.keywords.add({}) },
+  modify (event) {
+    const name = $(event.target).data('name')
+    const value = $(event.target).val()
 
-    addPredefined (event) {
-        event.preventDefault()
-        const $target = this.$(event.target)
-        this.keywords.add({
-            value: $target.text(),
-            uri: $target.attr('href')
-        })
-    },
-
-    modify (event) {
-        const name = $(event.target).data('name')
-        const value = $(event.target).val()
-
-        if (value) {
-            this.model.set(name, value)
-        } else {
-            this.model.unset(name)
-        }
+    if (value) {
+      this.model.set(name, value)
+    } else {
+      this.model.unset(name)
     }
+  }
 })

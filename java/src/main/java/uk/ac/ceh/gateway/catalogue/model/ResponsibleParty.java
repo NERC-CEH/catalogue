@@ -10,8 +10,8 @@ import lombok.Builder;
 @Value
 @JsonIgnoreProperties({"roleDisplayName"})
 public class ResponsibleParty {
-    private final String individualName, organisationName, organisationIdentifier, role, email, phone, nameIdentifier;
-    private final Address address;
+    String individualName, organisationName, organisationIdentifier, role, email, phone, nameIdentifier;
+    Address address;
 
     @Builder
     @JsonCreator
@@ -32,6 +32,18 @@ public class ResponsibleParty {
         this.phone = nullToEmpty(phone);
         this.nameIdentifier = nullToEmpty(nameIdentifier);
         this.address = (address == null || address.isEmpty()) ? null : address;
+    }
+
+    public boolean isOrcid() {
+        return nameIdentifier.matches("^http(|s)://orcid.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$");
+    }
+
+    public boolean isIsni() {
+        return nameIdentifier.matches("^https://isni.org/isni/\\d{15}(X|\\d)$");
+    }
+
+    public boolean isRor() {
+        return organisationIdentifier.matches("^https://ror.org/\\w{8,10}$");
     }
 
     public String getRoleDisplayName() {
@@ -70,7 +82,7 @@ public class ResponsibleParty {
     @Value
     @JsonIgnoreProperties({"empty"})
     public static class Address {
-        private final String deliveryPoint, city, administrativeArea, postalCode, country;
+        String deliveryPoint, city, administrativeArea, postalCode, country;
 
         @Builder
         @JsonCreator

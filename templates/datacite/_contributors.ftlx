@@ -1,44 +1,40 @@
-<contributors>
-    <#if pocs?? && pocs?has_content>
-    <#list pocs as contact>
+<#if doc.pointOfContacts?has_content || doc.rightsHolders?has_content || doc.custodians?has_content>
+  <contributors>
+    <#list doc.pointOfContacts as contact>
         <contributor contributorType="ContactPerson">
-        <#if contact.individualName?has_content>
+          <#if contact.individualName?has_content>
             <contributorName nameType="Personal">${contact.individualName}</contributorName>
-            <#if contact.nameIdentifier?matches("^http(|s)://orcid.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$")>
+            <#if contact.isOrcid()>
                 <nameIdentifier nameIdentifierScheme="ORCID" schemeURI="https://orcid.org/">${contact.nameIdentifier}</nameIdentifier>
             </#if>
-            <#if contact.organisationIdentifier?has_content && contact.organisationIdentifier?matches("^https://ror.org/\\w{8,10}$")>
+            <#if contact.isRor()>
                 <affiliation affiliationIdentifier="${contact.organisationIdentifier}" affiliationIdentifierScheme="ROR">${contact.organisationName}</affiliation>
             <#else>
                 <affiliation>${contact.organisationName}</affiliation>
             </#if>
-        <#else>
+          <#else>
             <contributorName nameType="Organizational">${contact.organisationName}</contributorName>
-                <#if contact.organisationIdentifier?has_content && contact.organisationIdentifier?matches("^https://ror.org/\\w{8,10}$")>
-                <nameIdentifier nameIdentifierScheme="ROR">${contact.organisationIdentifier}</nameIdentifier>
-                </#if>
-        </#if>
+            <#if contact.isRor()>
+              <nameIdentifier nameIdentifierScheme="ROR">${contact.organisationIdentifier}</nameIdentifier>
+            </#if>
+          </#if>
         </contributor>
     </#list>
-    </#if>
-    <#if rightsHolders?? && rightsHolders?has_content>
-    <#list rightsHolders as contact>
-        <contributor contributorType="RightsHolder">
+    <#list doc.rightsHolders as contact>
+      <contributor contributorType="RightsHolder">
         <contributorName nameType="Organizational">${contact.organisationName}</contributorName>
-        <#if contact.organisationIdentifier?has_content && contact.organisationIdentifier?matches("^https://ror.org/\\w{8,10}$")>
-            <nameIdentifier nameIdentifierScheme="ROR">${contact.organisationIdentifier}</nameIdentifier>
+        <#if contact.isRor()>
+          <nameIdentifier nameIdentifierScheme="ROR">${contact.organisationIdentifier}</nameIdentifier>
         </#if>
-        </contributor>
+      </contributor>
     </#list>
-    </#if>
-    <#if custodians?? && custodians?has_content>
-    <#list custodians as contact>
-        <contributor contributorType="HostingInstitution">
+    <#list doc.custodians as contact>
+      <contributor contributorType="HostingInstitution">
         <contributorName nameType="Organizational">${contact.organisationName}</contributorName>
-        <#if contact.organisationIdentifier?has_content && contact.organisationIdentifier?matches("^https://ror.org/\\w{8,10}$")>
-            <nameIdentifier nameIdentifierScheme="ROR">${contact.organisationIdentifier}</nameIdentifier>
+        <#if contact.isRor()>
+          <nameIdentifier nameIdentifierScheme="ROR">${contact.organisationIdentifier}</nameIdentifier>
         </#if>
-        </contributor>
+      </contributor>
     </#list>
-    </#if>
-</contributors>
+  </contributors>
+</#if>

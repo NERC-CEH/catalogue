@@ -10,11 +10,6 @@ a dcat:Dataset, dcmitype:Dataset ;
 <#if onlineResources?has_content>
   <#assign downloads = func.filter(onlineResources, "function", "download") + func.filter(onlineResources, "function", "order")>
 </#if>
-<#if descriptiveKeywords?has_content>
-  <#assign
-  themelist = func.filter(descriptiveKeywords, "type", "Catalogue topic")
-  >
-</#if>
 
 <#if resourceIdentifiers??>
   dct:identifier
@@ -35,40 +30,14 @@ dct:type dcmitype:Dataset ;
   dct:available "${datasetReferenceDate.publicationDate}" ;
 </#if>
 
- dcat:landingPage <${uri}><#if datacitable?string=="true" && citation?has_content>, <${citation.url}></#if>;
+ dcat:landingPage <${uri}><#if datacitable?string=="true" && citation?has_content>, <${citation.url?trim}></#if>;
 
 <#if datacitable?string=='true' && citation?has_content>
-    dct:bibliographicCitation "${citation.authors?join(' ,')} (${citation.year?string("0")}). ${citation.title}. ${citation.publisher}. ${citation.url}" ;
+    dct:bibliographicCitation "${citation.authors?join(' ,')} (${citation.year?string("0")}). ${citation.title}. ${citation.publisher}. ${citation.url?trim}" ;
 </#if>
 
-<#-- Themes-->
-<#if themelist?has_content>
-  dcat:theme
-  <#list themelist as themes>
-    <#list themes.keywords as theme>
-      <#if theme.uri?has_content>
-        <${theme.uri}><#sep>,
-      </#if>
-    </#list><#sep>,
-  </#list>
-  ;
-</#if>
-
-<#-- Keywords -->
-<#if allKeywords?has_content>
-dcat:keyword
-  <#list allKeywords as keyword>
-    <#if keyword.uri?has_content>
-      <#if keyword.value?has_content>
-        <${keyword.uri}>, "${keyword.value}"<#t>
-      <#else>
-        "${keyword.uri}"<#t>
-      </#if>
-    <#else>
-      "${keyword.value}"<#t>
-    </#if><#sep>,</#sep><#t>
-  </#list>
-;
+<#if keywordsTheme?has_content>
+  dct:theme <@keywordList keywordsTheme/> ;
 </#if>
 
 <#--Distribution-->
@@ -76,7 +45,7 @@ dcat:keyword
 dcat:Distribution [
     dcat:accessURL
     <#list downloads as download>
-      <${download.url}> <#sep>,
+      <${download.url?trim}> <#sep>,
     </#list>
     ;
     <#include "_rights.ftlh">

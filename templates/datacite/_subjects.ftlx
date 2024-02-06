@@ -1,28 +1,26 @@
-<subjects>
-  <#list subjectList as subject>
-
+<#list doc.allKeywords as keyword>
+  <subjects>
     <#-- Assign a subject scheme-->
-    <#if subject.uri?has_content>
-      <#if subject.uri?matches("^http(|s)://inspire.ec.europa.eu/\\S+$")>
+    <#if keyword.uri?has_content>
+      <#if keyword.uri?matches("^http[s]?://inspire.ec.europa.eu/\\S+$")>
         <#assign subjectScheme="European Union INSPIRE registry" schemeURI="http://inspire.ec.europa.eu/registry/">
-      <#elseif subject.uri?matches("^http(|s)://www.wikidata.org/entity/\\S+$")>
+      <#elseif keyword.uri?matches("^http[s]?://www.wikidata.org/entity/\\S+$")>
         <#assign subjectScheme="Wikidata" schemeURI="https://www.wikidata.org/">
-      <#elseif subject.uri?matches("^http(|s)://sws.geonames.org/\\S+$")>
+      <#elseif keyword.uri?matches("^http[s]?://sws.geonames.org/\\S+$")>
         <#assign subjectScheme="Geonames" schemeURI="http://www.geonames.org/">
-      <#elseif subject.uri?matches("^http(|s)://www.eionet.europa.eu/gemet/concept/\\S+$")>
+      <#elseif keyword.uri?matches("^http[s]?://www.eionet.europa.eu/gemet/concept/\\S+$")>
         <#assign subjectScheme="GEMET concepts" schemeURI="https://www.eionet.europa.eu/gemet/">
       <#else>
         <#assign subjectScheme="" schemeURI="">
-      </#if> 
-    </#if>
-
-    <#if subject.value?has_content>
-      <#if subject.uri?has_content>
-        <subject valueURI="${subject.uri}" <#if subjectScheme?has_content>subjectScheme="${subjectScheme}"</#if> <#if schemeURI?has_content>schemeURI="${schemeURI}"</#if>>${subject.value}</subject>
-      <#else>
-        <subject>${subject.value}</subject>
       </#if>
     </#if>
-  </#list>
 
-</subjects>
+    <#if keyword.value?has_content>
+      <#if keyword.uri?has_content>
+        <subject valueURI="${keyword.uri?trim}" <#if subjectScheme?has_content>subjectScheme="${subjectScheme}"</#if> <#if schemeURI?has_content>schemeURI="${schemeURI}"</#if>>${keyword.value}</subject>
+      <#else>
+        <subject>${keyword.value?trim}</subject>
+      </#if>
+    </#if>
+  </subjects>
+</#list>

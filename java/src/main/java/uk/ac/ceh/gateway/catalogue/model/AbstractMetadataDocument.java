@@ -12,10 +12,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.adapters.LocalDateTimeSerializer;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Data
 @Accessors(chain = true)
@@ -29,6 +26,11 @@ public abstract class AbstractMetadataDocument implements MetadataDocument {
     private MetadataInfo metadata;
     private Set<Relationship> relationships;
     private List<Keyword> keywords;
+
+    public List<ResourceIdentifier> getResourceIdentifiers() {
+        return Optional.ofNullable(resourceIdentifiers)
+            .orElse(Collections.emptyList());
+    }
 
     @Override
     @JsonIgnore

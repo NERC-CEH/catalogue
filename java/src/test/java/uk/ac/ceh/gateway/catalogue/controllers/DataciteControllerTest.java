@@ -18,6 +18,7 @@ import uk.ac.ceh.gateway.catalogue.datacite.DataciteResponse;
 import uk.ac.ceh.gateway.catalogue.datacite.DataciteService;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
+import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
@@ -25,6 +26,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -62,10 +64,16 @@ class DataciteControllerTest {
         gemini.setTitle("Datacite Example");
         gemini.setDescription("Dataset description");
         gemini.setDatasetReferenceDate(DatasetReferenceDate.builder()
-            .publicationDate(LocalDate.of(2021, 05, 05))
+            .publicationDate(LocalDate.of(2021, 5, 5))
             .build()
         );
         gemini.setResourceIdentifiers(new ArrayList<>());
+        gemini.setResponsibleParties(List.of(
+            ResponsibleParty.builder()
+                .role("publisher")
+                .organisationName("NERC EDS Environmental Information Data Centre")
+                .build()
+        ));
         given(documentRepository.read(file))
             .willReturn(gemini);
     }

@@ -47,7 +47,8 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private Number version;
     private List<String> alternateTitles, spatialRepresentationTypes, datasetLanguages,
             securityConstraints;
-    private List<Keyword> topicCategories, observedProperties;
+    private List<Keyword> topicCategories, keywordsDiscipline, keywordsInstrument, keywordsObservedProperty,
+            keywordsPlace, keywordsProject, keywordsTheme, keywordsOther;
     private List<Geometry> geometries;
     private List<DistributionInfo> distributionFormats;
     private List<DescriptiveKeywords> descriptiveKeywords;
@@ -113,11 +114,26 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     @Override
     @JsonIgnore
     public List<Keyword> getAllKeywords() {
+        return Stream.of(
+            keywordsFromDescriptiveKeywords(),
+            Optional.ofNullable(keywordsDiscipline).orElse(Collections.emptyList()),
+            Optional.ofNullable(keywordsInstrument).orElse(Collections.emptyList()),
+            Optional.ofNullable(keywordsObservedProperty).orElse(Collections.emptyList()),
+            Optional.ofNullable(keywordsPlace).orElse(Collections.emptyList()),
+            Optional.ofNullable(keywordsProject).orElse(Collections.emptyList()),
+            Optional.ofNullable(keywordsTheme).orElse(Collections.emptyList()),
+            Optional.ofNullable(keywordsOther).orElse(Collections.emptyList())
+        )
+            .flatMap(Collection::stream)
+            .collect(Collectors.toList());
+    }
+
+    private List<Keyword> keywordsFromDescriptiveKeywords() {
         return Optional.ofNullable(descriptiveKeywords)
-                .orElse(Collections.emptyList())
-                .stream()
-                .flatMap(dk -> dk.getKeywords().stream())
-                .collect(Collectors.toList());
+            .orElse(Collections.emptyList())
+            .stream()
+            .flatMap(dk -> dk.getKeywords().stream())
+            .collect(Collectors.toList());
     }
 
     @Override
@@ -186,10 +202,9 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     }
 
     public List<String> getTopics() {
-        return Optional.ofNullable(descriptiveKeywords)
+        return Optional.ofNullable(keywordsTheme)
                 .orElse(Collections.emptyList())
                 .stream()
-                .flatMap(dk -> dk.getKeywords().stream())
                 .map(Keyword::getUri)
                 .filter(uri -> uri.startsWith(TOPIC_PROJECT_URL))
                 .collect(Collectors.toList());
@@ -210,20 +225,41 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
                 .orElse(Collections.emptyList());
     }
 
+    private List<ResponsibleParty>responsiblePartyByRole(String role) {
+        return getResponsibleParties()
+            .stream()
+            .filter((responsibleParty) -> responsibleParty.getRole().equalsIgnoreCase(role))
+            .collect(Collectors.toList());
+    }
+
     public List<ResponsibleParty> getAuthors() {
-        return Optional.ofNullable(responsibleParties)
-                .orElse(Collections.emptyList())
-                .stream()
-                .filter((authors) -> authors.getRole().equalsIgnoreCase("author"))
-                .collect(Collectors.toList());
+        return responsiblePartyByRole("author");
+    }
+
+    public List<ResponsibleParty> getCustodians() {
+        return responsiblePartyByRole("custodian");
+    }
+
+    public List<ResponsibleParty> getPointOfContacts() {
+        return responsiblePartyByRole("pointOfContact");
     }
 
     public List<ResponsibleParty> getRightsHolders() {
-        return Optional.ofNullable(responsibleParties)
-                .orElse(Collections.emptyList())
-                .stream()
-                .filter((authors) -> authors.getRole().equalsIgnoreCase("rightsHolder"))
-                .collect(Collectors.toList());
+        return responsiblePartyByRole("rightsHolder");
+    }
+
+    public List<ResponsibleParty> getPublishers() {
+        return responsiblePartyByRole("publisher");
+    }
+
+    public List<DistributionInfo> getDistributionFormats() {
+        return Optional.ofNullable(distributionFormats)
+            .orElse(Collections.emptyList());
+    }
+
+    public List<BoundingBox> getBoundingBoxes() {
+        return Optional.ofNullable(boundingBoxes)
+            .orElse(Collections.emptyList());
     }
 
     public List<Funding> getFunding() {

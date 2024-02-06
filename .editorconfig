@@ -9,6 +9,13 @@ indent_style = space
 insert_final_newline = true
 trim_trailing_whitespace = true
 
+[*.{ftl,ftlh,ftlx}]
+indent_size = 2
+
+# Two spaces in Standard Javascript
+[*.js]
+indent_size = 2
+
 # Different indent only for yaml. Only .yml present at time of writing
 # but include .yaml to futureproof
 [*.{yaml,yml}]

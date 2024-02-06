@@ -1,23 +1,25 @@
-<creators>
-<#list authors as author>
-  <#if author.individualName?has_content>
-  <creator>
-    <creatorName>${author.individualName}</creatorName>
-    <#if author.nameIdentifier?has_content>
-      <#if author.nameIdentifier?matches("^http(|s)://orcid.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$")>
-        <nameIdentifier nameIdentifierScheme="ORCID" schemeURI="https://orcid.org/">${author.nameIdentifier}</nameIdentifier>
-      <#elseif author.nameIdentifier?matches("^http://isni.org/\\d{16}$")>
-        <nameIdentifier nameIdentifierScheme="ISNI" schemeURI="http://isni.org/">${author.nameIdentifier}</nameIdentifier>
-      </#if>
+<#list doc.authors>
+  <creators>
+  <#items  as author>
+    <#if author.individualName?has_content>
+      <creator>
+        <creatorName>${author.individualName}</creatorName>
+        <#if author.nameIdentifier?has_content>
+          <#if author.isOidc()>
+            <nameIdentifier nameIdentifierScheme="ORCID" schemeURI="https://orcid.org/">${author.nameIdentifier}</nameIdentifier>
+          <#elseif author.isIsni()>
+            <nameIdentifier nameIdentifierScheme="ISNI" schemeURI="http://isni.org/">${author.nameIdentifier}</nameIdentifier>
+          </#if>
+        </#if>
+        <#if author.organisationName?has_content>
+          <#if author.isRor()>
+             <affiliation affiliationIdentifier="${author.organisationIdentifier}" affiliationIdentifierScheme="ROR" SchemeURI="https://ror.org/">${author.organisationName}</affiliation>
+          <#else>
+            <affiliation>${author.organisationName}</affiliation>
+          </#if>
+        </#if>
+      </creator>
     </#if>
-    <#if author.organisationName?has_content>
-      <#if author.organisationIdentifier?has_content && author.organisationIdentifier?matches("^https://ror.org/\\w{8,10}$")>
-         <affiliation affiliationIdentifier="${author.organisationIdentifier}" affiliationIdentifierScheme="ROR" SchemeURI="https://ror.org/">${author.organisationName}</affiliation>
-      <#else>
-        <affiliation>${author.organisationName}</affiliation>
-      </#if>
-    </#if>
-  </creator>
-  </#if>
+  </#items>
+  </creators>
 </#list>
-</creators>

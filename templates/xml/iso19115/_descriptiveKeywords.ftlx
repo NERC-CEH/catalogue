@@ -1,5 +1,5 @@
 <#assign all_keywords = []>
-<#if descriptiveKeywords?? || observeableProperties??>
+<#if descriptiveKeywords?? || keywordsAll??>
 
   <#function controlledKeywords hash regex match=true>
       <#local result = []>
@@ -25,13 +25,13 @@
     </#list>
   </#if>
 
-  <#if observedProperties??>
-    <#assign all_keywords = all_keywords + observedProperties>
+  <#if allKeywords??>
+    <#assign all_keywords = all_keywords + allKeywords>
   </#if>
 
-  <#assign 
+  <#assign
     keywords_withURIs = controlledKeywords(all_keywords, "^http(s?)://.+")
-    keywords_withoutURIs = controlledKeywords(all_keywords, "^$") 
+    keywords_withoutURIs = controlledKeywords(all_keywords, "^$")
 
     <#-- specify the patterns for the various vocabularies -->
     wikidata = "^http(s?)://www.wikidata.org/entity/.+"

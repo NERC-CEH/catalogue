@@ -3,7 +3,7 @@
 		<gmd:CI_ResponsibleParty>
 			<#if contact.individualName?has_content>
 				<gmd:individualName>
-					<#if contact.nameIdentifier?has_content && contact.nameIdentifier?matches("^http(|s)://orcid.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$")> 
+					<#if contact.isOrcid()>
 						<gmx:Anchor xlink:href="${contact.nameIdentifier}" xlink:actuate="onRequest" xlink:title="orcid">${contact.individualName}</gmx:Anchor>
 					<#else>
 						<gco:CharacterString>${contact.individualName}</gco:CharacterString>
@@ -12,7 +12,7 @@
 			</#if>
 			<#if contact.organisationName?has_content>
 				<gmd:organisationName>
-					<#if contact.organisationIdentifier?has_content && contact.organisationIdentifier?matches("^http(|s)://ror.org/\\w{8,10}$")> 
+					<#if contact.isRor()>
 						<gmx:Anchor xlink:href="${contact.organisationIdentifier}" xlink:actuate="onRequest" xlink:title="RoR">${contact.organisationName}</gmx:Anchor>
 					<#else>
 						<gco:CharacterString>${contact.organisationName}</gco:CharacterString>
@@ -41,7 +41,7 @@
 							<gmd:electronicMailAddress><gco:CharacterString>enquiries@ceh.ac.uk</gco:CharacterString></gmd:electronicMailAddress>
 						</gmd:CI_Address>
 					</gmd:address>
-					<#if contact.nameIdentifier?has_content && contact.nameIdentifier?matches("^http(|s)://orcid.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$")> 
+					<#if contact.isOrcid()>
                      <gmd:onlineResource>
                         <gmd:CI_OnlineResource>
                            <gmd:linkage>
@@ -80,7 +80,7 @@
 <#if resourceType.value??>
   <#if resourceType.value == "nercSignpost">
     <#assign recordType="dataset">
-  <#else> 
+  <#else>
     <#assign recordType=resourceType.value>
   </#if>
 </#if>
@@ -93,7 +93,7 @@
   </gmd:language>
   <gmd:characterSet>
     <gmd:MD_CharacterSetCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="8859part1">ISO/IEC 8859-1 (also known as Latin 1)</gmd:MD_CharacterSetCode>
-  </gmd:characterSet>  
+  </gmd:characterSet>
   <#if recordType??>
     <gmd:hierarchyLevel>
       <gmd:MD_ScopeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_ScopeCode" codeListValue="${recordType}">${recordType}</gmd:MD_ScopeCode>
@@ -110,7 +110,7 @@
       <gmd:contactInfo>
         <gmd:CI_Contact>
           <gmd:address>
-            <gmd:CI_Address>              
+            <gmd:CI_Address>
               <gmd:deliveryPoint><gco:CharacterString>Lancaster Environment Centre,  Library Avenue, Bailrigg</gco:CharacterString></gmd:deliveryPoint>
               <gmd:city><gco:CharacterString>Lancaster</gco:CharacterString></gmd:city>
               <gmd:postalCode><gco:CharacterString>LA1 4AP</gco:CharacterString></gmd:postalCode>

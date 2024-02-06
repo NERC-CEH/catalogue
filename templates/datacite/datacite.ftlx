@@ -1,42 +1,24 @@
-<#--
-<#import "../underscore.ftlh" as _>
-<#assign authors = _.filter(doc.responsibleParties, _.isAuthor)>
--->
-<#import "../functions.ftlh" as func>
-<#assign authors = func.filter(doc.responsibleParties, "role", "author")>
-<#assign pocs = func.filter(doc.responsibleParties, "role", "pointOfContact")>
-<#assign rightsHolders = func.filter(doc.responsibleParties, "role", "rightsHolder")>
-<#assign custodians = func.filter(doc.responsibleParties, "role", "custodian")>
-<#assign subjectList = []>
-<#if doc.descriptiveKeywords?has_content>
-  <#list doc.descriptiveKeywords as descriptiveKeyword>
-    <#assign subjectList = subjectList + descriptiveKeyword.keywords>
-  </#list>
-</#if>
-<#if doc.observedProperties?has_content>
-  <#assign subjectList = subjectList + doc.observedProperties>
-</#if>
 <#compress><?xml version="1.0" encoding="UTF-8"?>
 <resource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://datacite.org/schema/kernel-4" xsi:schemaLocation="http://datacite.org/schema/kernel-4 http://schema.datacite.org/meta/kernel-4.2/metadata.xsd">
   <identifier identifierType="DOI">${doi}</identifier>
 
-  <#if authors?has_content>
-    <#include "_creators.ftlx">
-  </#if>
+  <#include "_creators.ftlx">
 
   <titles>
     <title>${doc.title}</title>
   </titles>
-  <publisher>NERC EDS Environmental Information Data Centre</publisher>
+
+  <#if doc.publishers?first.isRor()>
+    <#assign publisher = doc.publishers?first>
+    <publisher publisherIdentifier="${publisher.organisationIdentifier}" publisherIdentifierScheme="ROR" schemeURI="https://ror.org/">${publisher.organisationName}</publisher>
+  <#else>
+      <publisher>${doc.publishers?first.organisationName}</publisher>
+  </#if>
+
   <publicationYear><#if doc.datasetReferenceDate.publicationDate??>${doc.datasetReferenceDate.publicationDate.year?c}</#if></publicationYear>
 
-  <#if subjectList?has_content>
-   <#include "_subjects.ftlx">
-  </#if>
-
-  <#if (pocs?? && pocs?has_content) || (rightsHolders?? && rightsHolders?has_content) || (custodians?? && custodians?has_content) >
-    <#include "_contributors.ftlx">
-  </#if>
+  <#include "_subjects.ftlx">
+  <#include "_contributors.ftlx">
 
   <dates>
     <#setting date_format = 'yyyy-MM-dd'>
@@ -53,19 +35,19 @@
     <resourceType resourceTypeGeneral="${resourceType}"/>
   </#if>
 
-  <#if doc.resourceIdentifiers?has_content>
-  <alternateIdentifiers>
-    <#list doc.resourceIdentifiers as uri>
-      <#if uri.codeSpace!="doi:">
-      <#if uri.coupledResource?starts_with("http")>
-        <alternateIdentifier alternateIdentifierType="URL">${uri.coupledResource}</alternateIdentifier>
-      <#else>
-        <alternateIdentifier alternateIdentifierType="URN">${uri.coupledResource}</alternateIdentifier>
-      </#if>
-      </#if>
-    </#list>
-  </alternateIdentifiers>
-  </#if>
+  <#list doc.resourceIdentifiers>
+    <alternateIdentifiers>
+      <#items as uri>
+        <#if uri.codeSpace!="doi:">
+          <#if uri.coupledResource?starts_with("http")>
+            <alternateIdentifier alternateIdentifierType="URL">${uri.coupledResource}</alternateIdentifier>
+          <#else>
+            <alternateIdentifier alternateIdentifierType="URN">${uri.coupledResource}</alternateIdentifier>
+          </#if>
+        </#if>
+      </#items>
+    </alternateIdentifiers>
+  </#list>
 
   <#include "_related.ftlx">
   <#include "_formats.ftlx">
@@ -73,13 +55,13 @@
 
   <descriptions>
     <description descriptionType="Abstract">${doc.description}</description>
-    <#if doc.lineage?has_content && doc.lineage??>
+    <#if doc.lineage?has_content>
       <description descriptionType="Methods">${doc.lineage}</description>
     </#if>
   </descriptions>
-  <#if doc.boundingBoxes?has_content && doc.boundingBoxes??>
+  <#list doc.boundingBoxes>
   <geoLocations>
-    <#list doc.boundingBoxes as extent>
+    <#items  as extent>
     <geoLocation>
       <geoLocationBox>
         <westBoundLongitude>${extent.westBoundLongitude}</westBoundLongitude>
@@ -88,31 +70,31 @@
         <northBoundLatitude>${extent.northBoundLatitude}</northBoundLatitude>
       </geoLocationBox>
     </geoLocation>
-    </#list>
+    </#items>
   </geoLocations>
-  </#if>
-  <#if doc.funding?has_content>
-  <fundingReferences>
-    <#list doc.funding as funder>
-      <fundingReference>
-        <funderName>${funder.funderName}</funderName>
-        <#if funder.funderIdentifier?has_content>
-          <#if funder.funderIdentifier?matches("^http(|s)://ror.org/[0-9a-z]+$")>
-            <funderIdentifier funderIdentifierType="ROR">${funder.funderIdentifier}</funderIdentifier>
-          <#elseif funder.funderIdentifier?matches("^http(|s)://(|dx.)doi.org/10.13039/\\d+$")>
-            <funderIdentifier funderIdentifierType="Crossref Funder">${funder.funderIdentifier}</funderIdentifier>
-          <#else>
-            <funderIdentifier funderIdentifierType="Other">${funder.funderIdentifier}</funderIdentifier>
+  </#list>
+  <#list doc.funding>
+    <fundingReferences>
+      <#items as funder>
+        <fundingReference>
+          <funderName>${funder.funderName}</funderName>
+          <#if funder.funderIdentifier?has_content>
+            <#if funder.isRor()>
+              <funderIdentifier funderIdentifierType="ROR">${funder.funderIdentifier}</funderIdentifier>
+            <#elseif funder.isOrcid()>
+              <funderIdentifier funderIdentifierType="Crossref Funder">${funder.funderIdentifier}</funderIdentifier>
+            <#else>
+              <funderIdentifier funderIdentifierType="Other">${funder.funderIdentifier}</funderIdentifier>
+            </#if>
           </#if>
-        </#if>
-        <#if funder.awardNumber?has_content>
-          <awardNumber>${funder.awardNumber}</awardNumber>
-        </#if>
-        <#if funder.awardTitle?has_content>
-          <awardTitle>${funder.awardTitle}</awardTitle>
-        </#if>
-      </fundingReference>
+          <#if funder.awardNumber?has_content>
+            <awardNumber>${funder.awardNumber}</awardNumber>
+          </#if>
+          <#if funder.awardTitle?has_content>
+            <awardTitle>${funder.awardTitle}</awardTitle>
+          </#if>
+        </fundingReference>
+      </#items>
+    </fundingReferences>
     </#list>
-  </fundingReferences>
-  </#if>
 </resource></#compress>

@@ -1,5 +1,48 @@
 <#compress>
 <#import "../functions.ftlh" as func>
+
+<#macro displayKeywords keywords>
+  <#list keywords as keyword>
+      <#if keyword.uri?has_content>
+
+        <#assign subjectScheme="" schemeURI="">
+        <#if keyword.uri?matches("^http[s]?://inspire.ec.europa.eu/\\S+$")>
+          <#assign subjectScheme="European Union INSPIRE registry" schemeURI="http://inspire.ec.europa.eu/registry/">
+        <#elseif keyword.uri?matches("^http[s]?://www.wikidata.org/entity/\\S+$")>
+          <#assign subjectScheme="Wikidata" schemeURI="https://www.wikidata.org/">
+        <#elseif keyword.uri?matches("^http[s]?://sws.geonames.org/\\S+$")>
+          <#assign subjectScheme="Geonames" schemeURI="https://www.geonames.org/">
+        <#elseif keyword.uri?matches("^http[s]?://www.eionet.europa.eu/gemet/concept/\\S+$")>
+          <#assign subjectScheme="GEMET concepts" schemeURI="https://www.eionet.europa.eu/gemet/">
+        </#if>
+        {
+          "@type": "DefinedTerm",
+          "@id": "${keyword.uri?trim}",
+          "name": "${keyword.value?trim}"
+           <#if subjectScheme?has_content>,"inDefinedTermSet": "${schemeURI}"</#if>
+        }
+      <#else>
+        "${keyword.value?trim}"
+      </#if>
+      <#sep>,</#sep>
+    </#list>
+</#macro>
+
+<#macro displayVariables keywords>
+  <#list keywords as keyword>
+      <#if keyword.uri?has_content>
+        {
+          "@type": "StatisticalVariable",
+          "@id": "${keyword.uri?trim}",
+          "name": "${keyword.value?trim}"
+        }
+      <#else>
+        "${keyword.value?trim}"
+      </#if>
+      <#sep>,</#sep>
+    </#list>
+</#macro>
+
 <#if useConstraints?has_content>
   <#assign licences = func.filter(useConstraints, "code", "license")>
 </#if>
@@ -13,6 +56,33 @@
     infoLinks = func.filter(onlineResources, "function", "information")
   >
 </#if>
+
+<#-- COMPILE KEYWORD LIST--->
+  <#assign keywordList = [] >
+
+  <#if descriptiveKeywords?has_content>
+    <#list descriptiveKeywords as descriptiveKeyword>
+      <#list descriptiveKeyword.keywords as keyword>
+      <#assign keywordList = keywordList + [keyword] >
+      </#list>
+    </#list>
+  </#if>
+
+  <#if allKeywords?has_content>
+    <#list allKeywords as keyword>
+        <#assign keywordList = keywordList + [keyword]>
+    </#list>
+  </#if>
+
+  <#--DE-DUPLICATE KEYWORD LIST -->
+  <#assign deDup = [] />
+  <#list keywordList as originalList>
+    <#if ! deDup?seq_contains(originalList)>
+        <#assign deDup = deDup + [originalList] />
+    </#if>
+  </#list>
+  <#assign keywordList = deDup?sort_by("value")?sort_by("uri") />
+<#-- END KEYWORD LIST--->
 
 <#if type=='dataset' || type=='nonGeographicDataset' || type=='signpost'>
   <#assign docType = "Dataset">
@@ -31,7 +101,7 @@
   <#if alternateTitles?has_content>
     "alternateName":[
     <#list alternateTitles as altTitle>
-      "${altTitle}"<#sep>,
+      "${altTitle}"<#sep>,</#sep>
     </#list>
     ],
   </#if>
@@ -52,22 +122,16 @@
         },
     "url": "${citation.url}",
   <#else>
-  "@id": "${uri}",
-  "url":"${uri}",
+  "@id": "${uri?trim}",
+  "url":"${uri?trim}",
   </#if>
 
-<#if observedProperties?? && observedProperties?has_content>
-  "variableMeasured": [<#list observedProperties as op>"${op.value}"<#sep>,</#list>],
-</#if>
+  <#if keywordsObservedProperty?? && keywordsObservedProperty?has_content>
+    "variableMeasured": [ <@displayVariables keywordsObservedProperty/>],
+  </#if>
 
-  <#if descriptiveKeywords?has_content>
-    <#assign kwlist = [] >
-    <#list descriptiveKeywords as descriptiveKeyword>
-      <#list descriptiveKeyword.keywords as keyword>
-      <#assign kwlist = kwlist + [keyword.value] >
-      </#list>
-    </#list>
-    "keywords": [<#list kwlist as kw>"${kw}"<#sep>,</#list>],
+  <#if keywordList?has_content>
+  "keywords": [<@displayKeywords keywordList/>],
   </#if>
 
   <#if authors?has_content>
@@ -133,7 +197,6 @@
     ],
   </#if>
 
-
   <#if boundingBoxes?has_content>
    "spatialCoverage": [
     <#list boundingBoxes as extent>
@@ -151,7 +214,7 @@
   <#if docType == "Dataset" || docType == "SoftwareSourceCode">
     <#if licences?? && licences?has_content>
       <#if licences?first.uri?? && licences?first.uri?has_content>
-        "license": "${licences?first.uri}",
+        "license": "${licences?first.uri?trim}",
       </#if>
     </#if>
 
@@ -164,6 +227,7 @@
           <#if download.url?ends_with(".zip")>,"encodingFormat":"application/zip"</#if>
           <#if download.url?ends_with(".csv")>,"encodingFormat":"text/csv"</#if>
           <#if download.url?starts_with("https://data-package.ceh.ac.uk/data/")>,"encodingFormat":"application/zip"</#if>
+          <#if download.url?starts_with("https://catalogue.ceh.ac.uk/datastore")>,"encodingFormat":"text/directory"</#if>
         }<#sep>,
         </#list>
       ],
@@ -188,8 +252,6 @@
 }
 </#if>
 </#compress>
-
-
 
 
 <#-- NEEDS UPDATING  -->

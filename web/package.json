@@ -10,6 +10,8 @@
         "build-dev": "webpack --mode development",
         "build-prod": "webpack --mode production",
         "lint": "eslint .",
+        "standard": "standard",
+        "standard-fix": "standard --fix",
         "test": "karma start --single-run",
         "test-server": "concurrently 'webpack --watch' 'karma start'",
         "watch": "webpack --mode development --watch"
@@ -40,6 +42,19 @@
             "jasmine"
         ]
     },
+    "standard": {
+        "globals": [
+            "afterEach",
+            "beforeEach",
+            "describe",
+            "expect",
+            "it",
+            "jasmine",
+            "spyOn",
+            "xdescribe",
+            "xit"
+        ]
+    },
     "devDependencies": {
         "@babel/core": "^7.22.15",
         "@babel/eslint-parser": "^7.22.15",
@@ -61,6 +76,7 @@
         "karma-junit-reporter": "^2.0.1",
         "karma-webpack": "^5.0.0",
         "puppeteer": "^21.1.1",
+        "standard": "^17.1.0",
         "webpack": "^5.88.2",
         "webpack-cli": "^5.1.4"
     },
