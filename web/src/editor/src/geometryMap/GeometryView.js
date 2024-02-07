@@ -71,9 +71,14 @@ export default ObjectInputView.extend({
     this.map.addControl(this.drawControl)
     baseMaps.Map.addTo(this.map)
 
+    const rounding = function (key, val) {
+      if (typeof val === 'number') { return val.toFixed(5) }
+      return val
+    }
+
     this.listenTo(this.map, L.Draw.Event.CREATED, function (event) {
       const layer = event.layer
-      const geoJson = JSON.stringify(layer.toGeoJSON())
+      const geoJson = JSON.stringify(layer.toGeoJSON(), rounding)
       this.model.setGeometry(geoJson)
       this.drawButtons = false
       this.map.removeControl(this.drawControl)
