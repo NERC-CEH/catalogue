@@ -14,7 +14,7 @@
     <@b.key "Bounding Box" "Bounding Box of Monitoring Facility"><@o.boundingBox boundingBox /></@b.key>
   </#if>
   <#if geometry?? && geometry?has_content>
-    <@b.key "Geometry" "Geometry of Monitoring Facility"><@o.geometry geometry.geometryString /></@b.key>
+    <@b.key "Location" "Location of monitoring facility"><@o.geometry geometry.geometryString /></@b.key>
   </#if>
 
   <@o.relationships "Part Of" "Part of another Monitoring Facility" "http://onto.nerc.ac.uk/CEHMD/rels/partOf" />
