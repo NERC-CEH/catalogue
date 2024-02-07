@@ -1,6 +1,6 @@
-import { ObjectInputView } from '../views'
 import L from 'leaflet'
 import 'leaflet-draw'
+import { ObjectInputView } from '../views'
 import template from './geometryTemplate'
 
 export default ObjectInputView.extend({
@@ -72,7 +72,7 @@ export default ObjectInputView.extend({
     baseMaps.Map.addTo(this.map)
 
     const rounding = function (key, val) {
-      if (typeof val === 'number') { return val.toFixed(5) }
+      if (typeof val === 'number') { return Number(val.toFixed(5)) }
       return val
     }
 
