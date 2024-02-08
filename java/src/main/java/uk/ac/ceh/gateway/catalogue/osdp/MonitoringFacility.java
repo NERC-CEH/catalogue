@@ -13,6 +13,7 @@ import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import java.util.ArrayList;
 import java.util.List;
 
+//TODO this should be deprecate and removed as OSDP no longer used
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ConvertUsing({

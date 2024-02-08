@@ -29,7 +29,7 @@
           <#if description?? && description?has_content>
             <@b.linebreaksAndLinks description />
           </#if>
-          
+
         </div>
       </div>
       <div class="section">
@@ -133,7 +133,7 @@ Temporal Extent
 </#macro>
 
 <#macro geometry geometry>
-  <div id="geometry-map">
-      <span content="${geometry}" datatype="geo:wktLiteral"/>
+  <div id="studyarea-map">
+      <span content="${geometry}" dataType="geoJson"/>
   </div>
 </#macro>
