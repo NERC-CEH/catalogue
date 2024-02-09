@@ -1,14 +1,14 @@
-<#if onlineResources?has_content>
-  <#assign infoResources = func.filterRegex(func.filter(onlineResources, "function", "information"), "url", "https://data-package.ceh.ac.uk/sd/")>
+<#if doc.onlineResources?has_content>
+  <#assign infoResources = func.filterRegex(func.filter(doc.onlineResources, "function", "information"), "url", "https://data-package.ceh.ac.uk/sd/")>
 </#if>
-<#if incomingRelationships?has_content>
-  <#assign rel_supersededBy = func.filter(incomingRelationships, "rel", "https://vocabs.ceh.ac.uk/eidc#supersedes")>
+<#if doc.incomingRelationships?has_content>
+  <#assign rel_supersededBy = func.filter(doc.incomingRelationships, "rel", "https://vocabs.ceh.ac.uk/eidc#supersedes")>
 </#if>
-<#if relatedRecords?has_content>
-  <#assign rel_supersedes = func.filter(relatedRecords, "rel", "https://vocabs.ceh.ac.uk/eidc#supersedes")>
+<#if doc.relatedRecords?has_content>
+  <#assign rel_supersedes = func.filter(doc.relatedRecords, "rel", "https://vocabs.ceh.ac.uk/eidc#supersedes")>
 </#if>
 
-<#if incomingCitations?has_content || infoResources?has_content || rel_supersededBy?has_content || rel_supersedes?has_content>
+<#if doc.incomingCitations?has_content || infoResources?has_content || rel_supersededBy?has_content || rel_supersedes?has_content>
   <relatedIdentifiers>
 
     <#if infoResources?has_content>
@@ -29,8 +29,8 @@
       </#list>
     </#if>
 
-    <#if incomingCitations?has_content>
-      <#list incomingCitations as link>
+    <#if doc.incomingCitations?has_content>
+      <#list doc.incomingCitations as link>
         <#if link.url?matches("^http(|s)://(|dx.)doi.org/10.\\d{2,9}/.+$")>
           <#assign idtype="DOI", uri=link.url?replace("http://dx.doi.org/","")?replace("http://doi.org/","")?replace("https://doi.org/","")>
         <#else>
