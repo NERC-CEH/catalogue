@@ -10,7 +10,7 @@
 
 <#if doc.incomingCitations?has_content || infoResources?has_content || rel_supersededBy?has_content || rel_supersedes?has_content>
   <relatedIdentifiers>
-    
+
     <#if infoResources?has_content>
       <#list infoResources as infoResource>
         <relatedIdentifier relatedIdentifierType="URL" relationType="IsDescribedBy" resourceTypeGeneral="Text">${infoResource.url}</relatedIdentifier>
@@ -19,14 +19,14 @@
 
     <#if rel_supersedes?has_content && rel_supersedes?size gt 0>
       <#list rel_supersedes as item>
-        <relatedIdentifier relatedIdentifierType="DOI" relationType="IsNewVersionOf" resourceTypeGeneral="Dataset">${item.href?replace("https://catalogue.ceh.ac.uk/id/","10.5285/")}</relatedIdentifier>  
-      </#list> 
+        <relatedIdentifier relatedIdentifierType="DOI" relationType="IsNewVersionOf" resourceTypeGeneral="Dataset">${item.href?replace("https://catalogue.ceh.ac.uk/id/","10.5285/")}</relatedIdentifier>
+      </#list>
     </#if>
 
     <#if rel_supersededBy?has_content && rel_supersededBy?size gt 0>
       <#list rel_supersededBy as item>
-        <relatedIdentifier relatedIdentifierType="DOI" relationType="IsPreviousVersionOf" resourceTypeGeneral="Dataset">${item.href?replace("https://catalogue.ceh.ac.uk/id/","10.5285/")}</relatedIdentifier>  
-      </#list> 
+        <relatedIdentifier relatedIdentifierType="DOI" relationType="IsPreviousVersionOf" resourceTypeGeneral="Dataset">${item.href?replace("https://catalogue.ceh.ac.uk/id/","10.5285/")}</relatedIdentifier>
+      </#list>
     </#if>
 
     <#if doc.incomingCitations?has_content>
@@ -39,6 +39,6 @@
         <relatedIdentifier relatedIdentifierType="${idtype}" relationType="IsReferencedBy" resourceTypeGeneral="Text">${uri}</relatedIdentifier>
       </#list>
     </#if>
-  
+
   </relatedIdentifiers>
 </#if>

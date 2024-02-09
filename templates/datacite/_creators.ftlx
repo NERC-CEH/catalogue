@@ -5,7 +5,7 @@
       <creator>
         <creatorName>${author.individualName}</creatorName>
         <#if author.nameIdentifier?has_content>
-          <#if author.isOidc()>
+          <#if author.isOrcid()>
             <nameIdentifier nameIdentifierScheme="ORCID" schemeURI="https://orcid.org/">${author.nameIdentifier}</nameIdentifier>
           <#elseif author.isIsni()>
             <nameIdentifier nameIdentifierScheme="ISNI" schemeURI="http://isni.org/">${author.nameIdentifier}</nameIdentifier>
