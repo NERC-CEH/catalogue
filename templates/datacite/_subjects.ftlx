@@ -1,6 +1,6 @@
-<#list doc.allKeywords>
+<#if doc.allKeywords?? && doc.allKeywords?has_content>
   <subjects>
-    <#items as keyword>
+    <#list doc.allKeywords as keyword>
       <#-- Assign a subject scheme-->
       <#if keyword.uri?has_content>
         <#if keyword.uri?matches("^http[s]?://inspire.ec.europa.eu/\\S+$")>
@@ -23,6 +23,6 @@
           <subject>${keyword.value?trim}</subject>
         </#if>
       </#if>
-   </#items>
+    </#list>
   </subjects>
-</#list>
+</#if>
