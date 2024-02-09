@@ -1,4 +1,4 @@
-<#if doc.useConstraints?has_content>
+<#if useConstraints?has_content>
     <#assign licences = func.filter(doc.useConstraints, "code", "license")>
     <#if licences?has_content>
     <rightsList>
