@@ -1,7 +1,7 @@
 import $ from 'jquery'
 import Backbone from 'backbone'
 import deparam from 'deparam.js'
-import { FacetsPanelView, SearchFormView, SearchPageView } from './views'
+import { FacetsPanelView, SearchFormView, SearchPageView, SpatialFilterView } from './views'
 
 export default Backbone.View.extend({
   el: '#search',
@@ -48,15 +48,17 @@ export default Backbone.View.extend({
       model: this.model,
       el: this.$('.search-form')
     })
-
     this.searchResultsView = new SearchPageView({
       model: this.model,
       el: this.$('.results')
     })
-
     this.facetsPanelView = new FacetsPanelView({
       model: this.model,
       el: this.$('.facet-filter')
+    })
+    this.spatialFilterView = new SpatialFilterView({
+      model: this.model,
+      el: this.$('.spatial-filter')
     })
     return this
   }

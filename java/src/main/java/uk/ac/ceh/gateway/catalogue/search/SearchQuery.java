@@ -271,9 +271,15 @@ public class SearchQuery {
         return builder.build().toUriString();
     }
 
+    /**
+     * The bounding boxes of a single metadata record are indexed in solr in the field 'locations'
+     * Using this 'locations' field, the simplest spatial query to find the records within a search box is: 'locations:"Intersects(ENVELOPE(minX, maxX, maxY, minY)"
+     * @bbox: a bounding box string of the form: minX,maxX,maxY,minY
+     * @spatialOperation: one of two values defined in SpatialOperation that defines what spatial operation to perform
+     */
     private void setSpatialFilter(SolrQuery query) {
         if(bbox != null) {
-            query.addFilterQuery(String.format("locations:\"%s(%s)\"", spatialOperation.getOperation(), bbox));
+            query.addFilterQuery(String.format("locations:\"%s(ENVELOPE(%s))\"", spatialOperation.getOperation(), bbox));
         }
     }
     private void setRecordVisibility(SolrQuery query) {

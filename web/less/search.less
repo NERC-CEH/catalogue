@@ -10,7 +10,9 @@
     //Hide the filters panel in small screen mode
     .filters-panel {
         height: 0; // WARNING: We would usually just set display:none to
-        overflow: hidden; // hide the panel. This causes OpenLayers to fail to load
+        overflow: auto;
+        //scrollbar-gutter: stable;
+        scrollbar-width: thin;
     }
 
     @media (min-width: @screen-md-min) {
@@ -55,8 +57,18 @@
                 position: absolute;
                 bottom: 0;
             }
+            .map {
+                height: 300px;
+            }
+            .spatial-filter {
+                // hide the Save and Cancel buttons from the draw actions (https://stackoverflow.com/questions/51360283/how-to-remove-save-option-from-leaflet-draw-api-delete-button)
+                ul.leaflet-draw-actions.leaflet-draw-actions-bottom li a[title="Save changes"],
+                ul.leaflet-draw-actions.leaflet-draw-actions-bottom li a[title="Cancel editing, discards all changes"] {
+                    display: none;
+                }
+            }
             .facet-filter {
-                position: absolute;
+                max-height: 400px;
                 top: @filter-heading-height;
                 bottom: @filter-heading-height;
                 left: 0;

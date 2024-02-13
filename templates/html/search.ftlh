@@ -6,9 +6,13 @@
 
     <div class="filters-panel">
       <div class="header facet-heading">
-        <h3>Filters</h3>
+        <h3>Facet filters</h3>
       </div>
       <div class="facet-filter"><#include "search/_facets.ftlh"></div>
+      <div class="header facet-heading">
+        <h3>Spatial filters</h3>
+      </div>
+      <div class="spatial-filter"></div>
     </div>
 
     <div class="results"><#include "search/_page.ftlh"></div>
