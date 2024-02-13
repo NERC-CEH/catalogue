@@ -8,12 +8,9 @@
   dct:provenance [ a dct:ProvenanceStatement ;
       rdfs:label "${lineage?replace("\n", " ")}"  ] ;
   </#if>
-
-  <#if boundingBoxes?has_content && boundingBoxes?has_content>
-    <#list boundingBoxes as extent>
-       dct:spatial "${extent.wkt}"^^geo:wktLiteral ;
-    </#list>
-  </#if>
+  <#list boundingBoxes as extent>
+     dct:spatial "${extent.wkt}"^^geo:wktLiteral ;
+  </#list>
   <#if temporalExtents?has_content>
     <#list temporalExtents as extent>
        dct:temporal "${(extent.begin?date)!''}/${(extent.end?date)!''}"^^dct:PeriodOfTime ;
@@ -31,14 +28,9 @@
   </#if>
 
   dct:language "eng" ;
-  <#assign rel_memberOf = jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#memberOf")>
-  <#if rel_memberOf?has_content && rel_memberOf?size gt 0>
-  dct:isPartOf
-    <#list rel_memberOf as item>
-      <${item.href}><#sep>,
-    </#list>
-  ;
-  </#if>
+  <#list jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#memberOf")>
+  dct:isPartOf <#items as item><${item.href}><#sep>, </#items>;
+  </#list>
 
   <#if allKeywords?has_content>
    dct:subject <@keywordList allKeywords/> ;

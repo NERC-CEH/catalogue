@@ -52,7 +52,6 @@
 </#if>
 <#if onlineResources?has_content>
   <#assign
-    downloads = func.filter(onlineResources, "function", "download") + func.filter(onlineResources, "function", "order")
     infoLinks = func.filter(onlineResources, "function", "information")
   >
 </#if>
@@ -218,9 +217,9 @@
       </#if>
     </#if>
 
-    <#if downloads?has_content>
+    <#list downloads>
       "distribution":[
-        <#list downloads as download>
+        <#items as download>
         {
           "@type":"DataDownload",
           "contentUrl":"${download.url}"
@@ -229,9 +228,9 @@
           <#if download.url?starts_with("https://data-package.ceh.ac.uk/data/")>,"encodingFormat":"application/zip"</#if>
           <#if download.url?starts_with("https://catalogue.ceh.ac.uk/datastore")>,"encodingFormat":"text/directory"</#if>
         }<#sep>,
-        </#list>
+        </#items>
       ],
-    </#if>
+    </#list>
   <#if publishers?has_content>
     <#assign publisher = publishers?first>
     "publisher":
