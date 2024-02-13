@@ -35,9 +35,9 @@ import uk.ac.ceh.gateway.catalogue.indexing.validation.ValidationIndexingService
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.LinkDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
-import uk.ac.ceh.gateway.catalogue.infrastructure.InfrastructureRecord;
 import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
 import uk.ac.ceh.gateway.catalogue.sparql.VocabularyService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
@@ -88,6 +88,7 @@ public class IndexingServicesConfig {
             .register(CodeDocument.class, new JenaIndexCodeDocumentGenerator(documentGenerator, baseUri))
             .register(InfrastructureRecord.class, new JenaIndexInfrastructureRecordGenerator(documentGenerator, baseUri))
             .register(LinkDocument.class, new JenaIndexLinkDocumentGenerator(documentGenerator))
+            .register(MonitoringFacility.class, new JenaIndexMonitoringFacilityGenerator(documentGenerator, baseUri))
             .register(MetadataDocument.class, documentGenerator);
 
         return new JenaIndexingService(
