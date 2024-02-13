@@ -2,6 +2,8 @@ package uk.ac.ceh.gateway.catalogue.monitoring;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
+import lombok.val;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
@@ -26,10 +28,11 @@ public class MonitoringFacility extends AbstractMetadataDocument implements Well
     private Geometry geometry;
 
     @Override
-    public List<String> getWKTs() {
+    public @NonNull List<String> getWKTs() {
         List<String> toReturn = new ArrayList<>();
         if(geometry != null) {
-            toReturn.add(geometry.getWkt());
+            val possibleWkt = geometry.getWkt();
+            possibleWkt.ifPresent(toReturn::add);
         }
         if(boundingBox != null) {
             toReturn.add(boundingBox.getWkt());
