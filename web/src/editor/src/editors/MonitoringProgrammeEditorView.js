@@ -9,8 +9,10 @@ import {
   TextareaView
 } from '../views'
 import { MultipleDate } from '../models'
-import BoundingBoxView from '../geometryMap/BoundingBoxView'
-import BoundingBox from '../geometryMap/BoundingBox'
+import {
+  BoundingBox,
+  BoundingBoxView
+} from '../geometryMap'
 
 export default EditorView.extend({
 
