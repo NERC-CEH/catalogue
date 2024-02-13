@@ -16,7 +16,6 @@ class GeometryTest {
     void getEmptyWkt() {
         //given
         val geometry = Geometry.builder().geometryString("").build();
-        val expected = "";
 
         //when
         val actual = geometry.getWkt().isEmpty();
