@@ -15,6 +15,6 @@ export default Backbone.Model.extend({
   },
 
   clearGeometry () {
-    this.set('geometryString', null)
+    this.unset('geometryString')
   }
 })

@@ -9,8 +9,10 @@ import {
   TextareaView
 } from '../views'
 import { MultipleDate } from '../models'
-import Geometry from '../geometryMap/Geometry'
-import GeometryView from '../geometryMap/GeometryView'
+import {
+  Geometry,
+  GeometryView
+} from '../geometryMap'
 
 export default EditorView.extend({
 

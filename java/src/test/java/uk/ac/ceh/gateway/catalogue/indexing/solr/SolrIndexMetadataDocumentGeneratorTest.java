@@ -100,7 +100,7 @@ class SolrIndexMetadataDocumentGeneratorTest {
         );
         String geojsonPolygon = "{\"type\":\"Feature\",\"properties\":{},\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[-2.526855,53.956086],[-0.241699,52.802761],[-4.020996,52.802761],[-2.526855,53.956086]]]}}";
         document.setGeometry(Geometry.builder()
-                .value(geojsonPolygon)
+                .geometryString(geojsonPolygon)
                 .build()
         );
 
@@ -121,7 +121,7 @@ class SolrIndexMetadataDocumentGeneratorTest {
         MonitoringFacility document = new MonitoringFacility();
         String geojsonPolygon = "{\"type\":\"Feature\",\"properties\":{},\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[-2.526855,53.956086],[-0.241699,52.802761],[-4.020996,52.802761],[-2.526855,53.956086]]]}}";
         document.setGeometry(Geometry.builder()
-                .value(geojsonPolygon)
+                .geometryString(geojsonPolygon)
                 .build()
         );
 
@@ -142,7 +142,7 @@ class SolrIndexMetadataDocumentGeneratorTest {
         MonitoringFacility document = new MonitoringFacility();
         String geojsonPolygon = "{\"type\":\"Feature\",\"properties\":{},\"geometry\":{\"type\":\"Point\",\"coordinates\":[-1.875916,53.891391]}}";
         document.setGeometry(Geometry.builder()
-                .value(geojsonPolygon)
+                .geometryString(geojsonPolygon)
                 .build()
         );
 
