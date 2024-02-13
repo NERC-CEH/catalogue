@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DisplayName("Geometry")
 class GeometryTest {
@@ -18,10 +19,10 @@ class GeometryTest {
         val expected = "";
 
         //when
-        val actual = geometry.getWkt();
+        val actual = geometry.getWkt().isEmpty();
 
         //then
-        assertThat(actual, equalTo(expected));
+        assertTrue(actual);
     }
 
     @Test
@@ -33,7 +34,7 @@ class GeometryTest {
         val expected = "POINT(-1.535339 53.252069)";
 
         //when
-        val actual = geometry.getWkt();
+        val actual = geometry.getWkt().get();
 
         //then
         assertThat(actual, equalTo(expected));
@@ -48,7 +49,7 @@ class GeometryTest {
         val expected = "POLYGON((-4.570313 53.956086, -4.570313 47.989922, 7.382813 47.754098, -4.570313 53.956086))";
 
         //when
-        val actual = geometry.getWkt();
+        val actual = geometry.getWkt().get();
 
         //then
         assertThat(actual, equalTo(expected));
