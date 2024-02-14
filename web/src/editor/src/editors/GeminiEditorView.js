@@ -164,7 +164,8 @@ export default EditorView.extend({
 <p>This is the <i>smallest</i> interval of time that can be distinguished in the temporal fields of the data.</p>
 <p>For example, for weather station data reporting rainfall once a day, the temporal resolution would be "1 D". For a dataset reporting flux measurements four times per second, the temporal resolution would be ".25 s".</p>\
 <p>Multiple values are permissible for datasets that measure several variables at different resolutions.</p>\
-`        })
+`
+        }),
 
       ]
     },
