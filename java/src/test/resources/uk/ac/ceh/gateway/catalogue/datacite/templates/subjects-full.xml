@@ -1,0 +1,4 @@
+<subjects>
+    <subject valueURI="https://example.com/trumpet">Trumpet</subject>
+    <subject valueURI="https://sws.geonames.org/2650225" subjectScheme="Geonames" schemeURI="http://www.geonames.org/">Edinburgh</subject>
+</subjects>
