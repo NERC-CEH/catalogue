@@ -25,8 +25,8 @@ public class JenaIndexMonitoringFacilityGenerator implements IndexGenerator<Moni
     private final String baseUri;
 
     public JenaIndexMonitoringFacilityGenerator(JenaIndexMetadataDocumentGenerator generator, String baseUri) {
-        this.generator = generator;
         this.baseUri = baseUri;
+        this.generator = generator;
         log.info("Creating {}", this);
     }
 

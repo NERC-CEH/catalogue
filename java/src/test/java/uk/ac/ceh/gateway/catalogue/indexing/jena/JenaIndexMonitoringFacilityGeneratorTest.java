@@ -34,10 +34,43 @@ public class JenaIndexMonitoringFacilityGeneratorTest {
     private MonitoringFacility document;
     @BeforeEach
     void setUp() {
-        document = mock(MonitoringFacility.class);
+        document = new MonitoringFacility();
         Resource monitoringFacilityResource = ResourceFactory.createResource("http://monitoringFacility");
         when(generator.resource(document.getId())).thenReturn(monitoringFacilityResource);
         service = new JenaIndexMonitoringFacilityGenerator(generator, baseUri);
+    }
+    @Test
+    void geometryShouldBeIndexedWhenProvided() {
+        //Given
+        String exampleGeometry = "{\"type\":\"Feature\",\"properties\":{},\"geometry\":{\"type\":\"Point\",\"coordinates\":[-2.76856,58.56252]}}";
+        document.setGeometry(Geometry.builder().geometryString(exampleGeometry).build());
+
+        //When
+        List<Statement> actual = service.generateIndex(document);
+
+        //Then
+        assertThat("Should be one identifier statements", actual.size(), equalTo(1));
+        assertThat("Geometry statement should be as expected", actual.get(0).getLiteral().getString(), equalTo(exampleGeometry));
+    }
+
+
+    @Test
+    void relatedRecordsShouldBeIndexedWhenProvided() {
+        //Given
+        String relatedUrl = "https://example.com/related";
+        String relatedId = "1";
+        String documentUrl = "https://example.com/document/1";
+        String title = "title";
+        String description = "something";
+        RelatedRecord relatedRecord = new RelatedRecord(relatedUrl, relatedId, documentUrl, title, description);
+        document.setRelatedRecords(Collections.singletonList(relatedRecord));
+
+        //When
+        List<Statement> actual = service.generateIndex(document);
+
+        //Then
+        assertThat("Should be one identifier statements", actual.size(), equalTo(1));
+        assertThat("relatedRecords statement should be as expected", actual.get(0).getPredicate().toString(), equalTo(relatedUrl));
     }
 
     @Test
@@ -49,38 +82,5 @@ public class JenaIndexMonitoringFacilityGeneratorTest {
 
         //Then
         assertThat("Should be no statements if no indexed fields present", actual.size(), equalTo(0));
-    }
-
-    @Test
-    void geometryShouldBeIndexedWhenProvided() {
-        //Given
-        String exampleGeometry = "{\"type\":\"Feature\",\"properties\":{},\"geometry\":{\"type\":\"Point\",\"coordinates\":[-2.76856,58.56252]}}";
-        when(document.getGeometry()).thenReturn(Geometry.builder().geometryString(exampleGeometry).build());
-
-        //When
-        List<Statement> actual = service.generateIndex(document);
-
-        //Then
-        assertThat("Should be one identifier statement", actual.size(), equalTo(1));
-        assertThat("Geometry statement should be as expected", actual.get(0).getLiteral().getString(), equalTo(exampleGeometry));
-    }
-
-    @Test
-    void relatedRecordsShouldBeIndexedWhenProvided() {
-        //Given
-        String relatedUrl = "https://example.com/related";
-        String relatedId = "1";
-        String documentUrl = "https://example.com/document/1";
-        String title = "title";
-        String description = "something";
-        RelatedRecord relatedRecord = new RelatedRecord(relatedUrl, relatedId, documentUrl, title, description);
-        when(document.getRelatedRecords()).thenReturn(Collections.singletonList(relatedRecord));
-
-        //When
-        List<Statement> actual = service.generateIndex(document);
-
-        //Then
-        assertThat("Should be one identifier statements", actual.size(), equalTo(1));
-        assertThat("Geometry statement should be as expected", actual.get(0).getPredicate().toString(), equalTo(relatedUrl));
     }
 }
