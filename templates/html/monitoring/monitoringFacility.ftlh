@@ -1,24 +1,20 @@
-<#import "base.ftlh" as o>
-<#import "../blocks.ftlh" as b>
+<#import "_base.ftlh" as base>
+<#import "_macros.ftlh" as m>
 
-<@o.base>
-  <#if facilityType?? && facilityType?has_content>
-    <@b.key "Type" "Type of Monitoring Facility">${facilityType}</@b.key>
-  </#if>
+<@base.base>
+
    <#if temporalExtent?? && temporalExtent?has_content>
-    <@b.key "Temporal Extent" "Temporal extent of Monitoring Facility">
-        <@o.temporalExt temporalExtent />
-    </@b.key>
-  </#if>
-  <#if boundingBox?? && boundingBox?has_content>
-    <@b.key "Bounding Box" "Bounding Box of Monitoring Facility"><@o.boundingBox boundingBox /></@b.key>
-  </#if>
-  <#if geometry?? && geometry?has_content>
-    <@b.key "Location" "Location of monitoring facility"><@o.geometry geometry.geometryString /></@b.key>
+     <@m.dataRow "Temporal Extent"><@m.temporalExt temporalExtent /></@m.dataRow>
   </#if>
 
-  <@o.relationships "Part Of" "Part of another Monitoring Facility" "http://onto.nerc.ac.uk/CEHMD/rels/partOf" />
-  <@o.inverseRelationships "Used By" "Used by this Monitoring Activity" "http://onto.nerc.ac.uk/CEHMD/rels/uses" />
-  <@o.inverseRelationships "Responsible for" "Agents responsible for this Monitoring Activity" "http://onto.nerc.ac.uk/CEHMD/rels/responsibleFor" />
-  <@o.inverseRelationships "Has Part" "Monitoring Facility has parts" "http://onto.nerc.ac.uk/CEHMD/rels/partOf" />
-</@o.base>
+  <#if geometry?? && geometry?has_content>
+    <@m.dataRow "Location">
+      <@m.geometry geometry.geometryString />
+    </@m.dataRow>
+  </#if>
+
+  <@m.relationships "Part Of" "Part of another Monitoring Facility" "http://ontm.nerc.ac.uk/CEHMD/rels/partOf" />
+  <@m.inverseRelationships "Used By" "Used by this Monitoring Activity" "http://ontm.nerc.ac.uk/CEHMD/rels/uses" />
+  <@m.inverseRelationships "Responsible for" "Agents responsible for this Monitoring Activity" "http://ontm.nerc.ac.uk/CEHMD/rels/responsibleFor" />
+  <@m.inverseRelationships "Has Part" "Monitoring Facility has parts" "http://ontm.nerc.ac.uk/CEHMD/rels/partOf" />
+</@base.base>

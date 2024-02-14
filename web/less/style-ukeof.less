@@ -11,7 +11,7 @@
 
 @fa-font-path: "../fonts";
 
-@ukeof-green: hsl(111, 50%, 39%);
+@ukeof-green: #8fc542;
 @brand-success: @ukeof-green;
 @gray-lighter: @ukeof-green;
 @header-text: #fff;
@@ -19,27 +19,21 @@
 @panel-default-text: @header-text;
 @footer-height: 3.25em;
 
-@navbar-height: 70px;
-@navbar-default-bg: white;
+@navbar-height: 65px;
+@navbar-default-bg: @ukeof-green;
 @navbar-margin-bottom: @line-height-computed;
-@navbar-default-border: @ukeof-green;
-@navbar-border-width: 5px;
+@navbar-default-border: #444;
+@navbar-border-width: 0;
 @navbar-border-radius: 0;
 @navbar-default-color: @gray-light;
-@navbar-default-border: @ukeof-green;
-@navbar-default-link-color: @ukeof-green;
-@navbar-default-link-hover-color: @link-hover-color;
-@navbar-default-link-hover-bg: darken(@navbar-default-bg, 5%);
-@navbar-default-link-active-color: @navbar-default-link-hover-color;
-@navbar-default-link-active-bg: darken(@navbar-default-bg, 5%);
-@navbar-default-link-disabled-color: #444;
-@navbar-default-link-disabled-bg: transparent;
+@navbar-default-link-color: white;
+@navbar-default-link-hover-color: #444;
+@navbar-default-link-hover-bg: #e7e7e7;
+@navbar-default-link-active-bg: transparent;
+@navbar-default-link-active-color:@navbar-default-link-color;
 @navbar-default-brand-color: @navbar-default-link-color;
 @navbar-default-brand-hover-color: #fff;
 @navbar-default-brand-hover-bg: transparent;
-@navbar-default-toggle-hover-bg: #333;
-@navbar-default-toggle-icon-bar-bg: #fff;
-@navbar-default-toggle-border-color: #333;
 
 
 html {
@@ -57,9 +51,10 @@ body {
 .navbar {
     .navbar-brand {
         margin: 0 0 0 0.35em;
+
         img {
             max-width: 200px;
-            padding:.5em 1em;
+            padding: .5em 1em;
         }
     }
 
@@ -67,10 +62,34 @@ body {
 
     a {
         font-weight: bolder;
+        text-transform: uppercase;
     }
 
     &-toggle {
         background-color: black;
         color: white;
     }
+}
+
+.data-rows {
+    display: grid;
+    gap: 1em;
+    grid-template-columns: min-content auto;
+    .data-row {
+        grid-column: span 2;
+        display: grid;
+        gap: 0 1em;
+        grid-template-columns: subgrid;
+
+        .datalabel {
+            font-weight: 600;
+            white-space: nowrap;
+            text-align: right;
+        }
+    }
+}
+
+#studyarea-map{
+    height: 400px !important;
+    width: 500px !important;
 }
