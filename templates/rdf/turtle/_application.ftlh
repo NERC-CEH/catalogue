@@ -3,7 +3,5 @@ a dcmitype:Software ;
 
 <#--Authors-->
 <#if authors?has_content>
-  dct:contributor
-  <#include "_authors.ftlh">
-  ;
+  dct:contributor <@contactList authors "a" />  ;
 </#if>

@@ -3,13 +3,6 @@
 <#if useConstraints?has_content>
     <#assign licences = func.filter(useConstraints, "code", "license")>
 </#if>
-<#if responsibleParties?has_content>
-    <#assign
-    authors = func.filter(responsibleParties, "role", "author")
-    pointsOfContact = func.filter(responsibleParties, "role", "pointOfContact")
-    publishers  = func.filter(responsibleParties, "role", "publisher")
-    >
-</#if>
 
 <#macro contactList contacts prefix="c">
   <#if contacts?has_content>
@@ -99,26 +92,22 @@
 </#macro>
 
 <#macro keywordList keywords>
-  <#if keywords?has_content>
-    <#list keywords as kw>
-      <#if kw.uri?has_content>
-        <#assign keyword ="\l" + kw.uri?trim+ "\g">
-      <#else>
-        <#assign keyword ='"' + kw.value+ '"'>
-      </#if>
-      ${keyword?no_esc}<#sep>,</#sep>
-    </#list>
-  </#if>
+  <#list keywords as kw>
+    <#if kw.uri?has_content>
+      <#assign keyword ="\l" + kw.uri?trim+ "\g">
+    <#else>
+      <#assign keyword ='"' + kw.value+ '"'>
+    </#if>
+    ${keyword?no_esc}<#sep>,</#sep>
+  </#list>
 </#macro>
 
 <#macro keywordDetail keywords>
-  <#if keywords?has_content>
-    <#list keywords as kw>
-      <#if kw.uri?has_content>
-        <${kw.uri?trim}> a skos:Concept; skos:preflabel "${kw.value}"; rdfs:label "${kw.value}".
-      </#if>
-    </#list>
-  </#if>
+  <#list keywords as kw>
+    <#if kw.uri?has_content>
+      <${kw.uri?trim}> a skos:Concept; skos:prefLabel "${kw.value}"; rdfs:label "${kw.value}".
+    </#if>
+  </#list>
 </#macro>
 
 <#--ELTER -->

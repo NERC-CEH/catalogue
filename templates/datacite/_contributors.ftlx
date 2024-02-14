@@ -1,6 +1,6 @@
-<#if doc.pointOfContacts?has_content || doc.rightsHolders?has_content || doc.custodians?has_content>
+<#if doc.pointsOfContact?has_content || doc.rightsHolders?has_content || doc.custodians?has_content>
   <contributors>
-    <#list doc.pointOfContacts as contact>
+    <#list doc.pointsOfContact as contact>
         <contributor contributorType="ContactPerson">
           <#if contact.individualName?has_content>
             <contributorName nameType="Personal">${contact.individualName}</contributorName>
