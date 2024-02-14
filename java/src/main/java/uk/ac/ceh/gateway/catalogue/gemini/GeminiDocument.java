@@ -45,7 +45,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private String otherCitationDetails, lineage, reasonChanged,
             metadataStandardName, metadataStandardVersion;
     private Number version;
-    private List<String> alternateTitles, spatialRepresentationTypes, datasetLanguages,
+    private List<String> alternateTitles, spatialRepresentationTypes, temporalResolution, datasetLanguages,
             securityConstraints;
     private List<Keyword> topicCategories, keywordsDiscipline, keywordsInstrument, keywordsObservedProperty,
             keywordsPlace, keywordsProject, keywordsTheme, keywordsOther;
