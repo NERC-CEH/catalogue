@@ -20,11 +20,9 @@ import static uk.ac.ceh.gateway.catalogue.indexing.jena.Ontology.*;
 @ToString
 public class JenaIndexMonitoringFacilityGenerator implements IndexGenerator<MonitoringFacility, List<Statement>> {
     private final JenaIndexMetadataDocumentGenerator generator;
-    private final String baseUri;
 
     public JenaIndexMonitoringFacilityGenerator(JenaIndexMetadataDocumentGenerator generator, String baseUri) {
         this.generator = generator;
-        this.baseUri = baseUri;
         log.info("Creating {}", this);
     }
 
