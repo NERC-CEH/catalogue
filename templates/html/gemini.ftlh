@@ -70,6 +70,12 @@
             <#include "document/_latestVersion.ftlh">
         </#if>
 
+        <#if resourceType.value=="application" && metadata.catalogue == "eidc">
+          <div class="disclaimer">
+            <strong>DISCLAIMER:</strong> Publication of this ${recordType?lower_case!''} by the EIDC does not signify any endorsement or approval. By accessing and using the resource, you acknowledge that it is entirely at your own risk and you are solely responsible for any loss or liability that may arise.
+          </div>
+        </#if>
+
         <#if description??>
           <div class="description">
             <div class="description-text">
@@ -114,7 +120,6 @@
       </div>
     </div>
 
-
     <#if permission.userCanEditRestrictedFields(metadata.catalogue) && metadata.catalogue == "eidc">
       <div class="section"><div class="container">
         <#include "document/_metadataqualityAlert.ftlh">
@@ -147,7 +152,7 @@
               <#include "document/_supplemental.ftlh">
               <#include "document/_contacts.ftlh">
 
-              <#if topicCategories?? || descriptiveKeywords?? ||  inspireTheme?? || funding?? || spatialRepresentationTypes?? || spatialReferenceSystems??>
+              <#if topicCategories?? || descriptiveKeywords?? || temporalResolution?? || inspireTheme?? || funding?? || spatialRepresentationTypes?? || spatialReferenceSystems??>
                 <h2>Additional metadata</h2>
                 <dl id="otherInfo" class="dl-horizontal">
                   <#include "document/_tags.ftlh">
@@ -155,18 +160,25 @@
                   <#if resourceType?has_content && resourceType.value !='nonGeographicDataset'>
                     <#include "document/_spatial.ftlh">
                   </#if>
-                    <#if metadataDateTime?has_content>
+                  <#if temporalResolution?has_content>
+                    <dt>Temporal resolution</dt>
+                    <dd>
+                      <#list temporalResolution as tr>${tr}<#sep>, </#sep></#list>
+                    </dd>
+                  </#if>
+                  <#if metadataDateTime?has_content>
                     <dt>Last updated</dt><dd>${metadataDateTime?datetime.iso?datetime?string['dd MMMM yyyy  HH:mm']}</dd>
-                    </#if>
+                  </#if>
                 </dl>
               </#if>
+
             </div>
             <div class="col2">
 
               <#if isLinkedDoc!="true">
                   <#include "document/_uploadData.ftlh">
                   <#include "document/_metrics.ftlh">
-                 
+
                   <#if resourceStatus?? && resourceStatus != "Unknown">
                     <#if resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'application'>
                       <#include "document/_distribution_dataset.ftlh">
@@ -203,7 +215,7 @@
       <a class="edit-control" data-document-type="${metadata.documentType}">Edit</a></p>
     </div>
   </#if>
-  
+
   <#include "document/_footer.ftlh">
 
   <script type="application/ld+json">
