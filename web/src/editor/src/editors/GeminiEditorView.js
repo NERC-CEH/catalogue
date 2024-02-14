@@ -165,7 +165,7 @@ export default EditorView.extend({
 <p>For example, for weather station data reporting rainfall once a day, the temporal resolution would be "1 D". For a dataset reporting flux measurements four times per second, the temporal resolution would be ".25 s".</p>\
 <p>Multiple values are permissible for datasets that measure several variables at different resolutions.</p>\
 `
-        }),
+        })
 
       ]
     },
