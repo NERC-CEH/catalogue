@@ -26,9 +26,9 @@ public class JenaIndexMonitoringFacilityGeneratorTest {
     @Test
     void geometryShouldBeIndexedWhenProvided() {
         //Given
-        MonitoringFacility document = mock(MonitoringFacility.class);
+        MonitoringFacility document = new MonitoringFacility();
         String exampleGeometry = "{\"type\":\"Feature\",\"properties\":{},\"geometry\":{\"type\":\"Point\",\"coordinates\":[-2.76856,58.56252]}}";
-        when(document.getGeometry()).thenReturn(Geometry.builder().value(exampleGeometry).build());
+        document.setGeometry(Geometry.builder().value(exampleGeometry).build());
 
         Resource monitoringFacilityResource = ResourceFactory.createResource("http://monitoringFacility");
         when(generator.resource(document.getId())).thenReturn(monitoringFacilityResource);
@@ -44,7 +44,7 @@ public class JenaIndexMonitoringFacilityGeneratorTest {
     @Test
     void geometryShouldNotBeIndexedWhenNotProvided() {
         //Given
-        MonitoringFacility document = mock(MonitoringFacility.class);
+        MonitoringFacility document = new MonitoringFacility();
         Resource monitoringFacilityResource = ResourceFactory.createResource("http://monitoringFacility");
         when(generator.resource(document.getId())).thenReturn(monitoringFacilityResource);
 
