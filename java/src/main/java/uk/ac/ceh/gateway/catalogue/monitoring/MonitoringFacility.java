@@ -9,6 +9,7 @@ import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.Geometry;
+import uk.ac.ceh.gateway.catalogue.gemini.RelatedRecord;
 import uk.ac.ceh.gateway.catalogue.gemini.TimePeriod;
 import uk.ac.ceh.gateway.catalogue.indexing.solr.WellKnownText;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
@@ -26,6 +27,7 @@ public class MonitoringFacility extends AbstractMetadataDocument implements Well
     private TimePeriod temporalExtent;
     private BoundingBox boundingBox;
     private Geometry geometry;
+    private List<RelatedRecord> relatedRecords;
 
     @Override
     public @NonNull List<String> getWKTs() {

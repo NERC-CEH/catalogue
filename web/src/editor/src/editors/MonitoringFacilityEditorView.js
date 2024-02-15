@@ -6,7 +6,8 @@ import {
   RelationshipView,
   SingleObjectView,
   TemporalExtentView,
-  TextareaView
+  TextareaView,
+  RelatedRecordView
 } from '../views'
 import { MultipleDate } from '../models'
 import {
@@ -101,6 +102,22 @@ export default EditorView.extend({
 `
         })
 
+      ]
+    },
+    {
+      label: 'ID & relationships',
+      title: 'Identifiers and links to related resources',
+      views: [
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'relatedRecords',
+          label: 'Related records',
+          ObjectInputView: RelatedRecordView,
+          multiline: true,
+          helpText: `
+<p>This is to link related datasets,etc which are in <i>this</i> catalogue. Externally hosted datasets can be linked using <strong>Supplemental</strong> &gt; <strong>Additional links</strong> &gt; <strong>Related dataset</strong></p>
+`
+        })
       ]
     }
     ]
