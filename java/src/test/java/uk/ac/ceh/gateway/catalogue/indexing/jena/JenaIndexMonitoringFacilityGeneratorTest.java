@@ -15,7 +15,6 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -28,7 +27,7 @@ public class JenaIndexMonitoringFacilityGeneratorTest {
         //Given
         MonitoringFacility document = new MonitoringFacility();
         String exampleGeometry = "{\"type\":\"Feature\",\"properties\":{},\"geometry\":{\"type\":\"Point\",\"coordinates\":[-2.76856,58.56252]}}";
-        document.setGeometry(Geometry.builder().value(exampleGeometry).build());
+        document.setGeometry(Geometry.builder().geometryString(exampleGeometry).build());
 
         Resource monitoringFacilityResource = ResourceFactory.createResource("http://monitoringFacility");
         when(generator.resource(document.getId())).thenReturn(monitoringFacilityResource);
