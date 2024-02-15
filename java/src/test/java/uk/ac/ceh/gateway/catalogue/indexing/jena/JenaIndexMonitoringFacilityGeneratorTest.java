@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.indexing.jena;
 
-import lombok.val;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
@@ -14,17 +13,12 @@ import uk.ac.ceh.gateway.catalogue.gemini.Geometry;
 import uk.ac.ceh.gateway.catalogue.gemini.RelatedRecord;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.apache.jena.rdf.model.ResourceFactory.*;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static uk.ac.ceh.gateway.catalogue.indexing.jena.Ontology.EIDCUSES;
-import static uk.ac.ceh.gateway.catalogue.indexing.jena.Ontology.IDENTIFIER;
 
 @ExtendWith(MockitoExtension.class)
 public class JenaIndexMonitoringFacilityGeneratorTest {
