@@ -154,7 +154,19 @@ export default EditorView.extend({
           helpText: `
 <p>The time period(s) the data resource covers.  This is often the same as the data capture period but it need not be so.</p>
 `
+        }),
+
+        new ParentStringView({
+          model: this.model,
+          modelAttribute: 'temporalResolution',
+          label: 'Temporal resolution',
+          helpText: `\
+<p>This is the <i>smallest</i> interval of time that can be distinguished in the temporal fields of the data.</p>
+<p>For example, for weather station data reporting rainfall once a day, the temporal resolution would be "1 D". For a dataset reporting flux measurements four times per second, the temporal resolution would be ".25 s".</p>\
+<p>Multiple values are permissible for datasets that measure several variables at different resolutions.</p>\
+`
         })
+
       ]
     },
     {

@@ -171,9 +171,13 @@
       "email": "enquiries@ceh.ac.uk"
     },
     {
-      "organisationName": "EIDC Hub",
-      "role": "custodian",
-      "email": "info@eidc.ac.uk"
+      "organisationName": "NERC EDS Environmental Information Data Centre",
+            "organisationIdentifier": "https://ror.org/04xw4m193",
+            "role": "custodian",
+            "email": "info@eidc.ac.uk",
+            "isni": false,
+            "orcid": false,
+            "ror": true
     },
     {
       "organisationName": "NERC Environmental Information Data Centre",

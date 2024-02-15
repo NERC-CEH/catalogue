@@ -45,7 +45,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private String otherCitationDetails, lineage, reasonChanged,
             metadataStandardName, metadataStandardVersion;
     private Number version;
-    private List<String> alternateTitles, spatialRepresentationTypes, datasetLanguages,
+    private List<String> alternateTitles, spatialRepresentationTypes, temporalResolution, datasetLanguages,
             securityConstraints;
     private List<Keyword> topicCategories, keywordsDiscipline, keywordsInstrument, keywordsObservedProperty,
             keywordsPlace, keywordsProject, keywordsTheme, keywordsOther;
@@ -170,6 +170,20 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
         return toReturn;
     }
 
+    public List<OnlineResource> getOnlineResources() {
+        return Optional.ofNullable(onlineResources)
+            .orElse(Collections.emptyList());
+    }
+
+    @JsonIgnore
+    public List<OnlineResource> getDownloads() {
+        Set<String> downloadRoles = Set.of("download", "order");
+        return getOnlineResources()
+            .stream()
+            .filter(onlineResource -> downloadRoles.contains(onlineResource.getFunction()))
+            .collect(Collectors.toList());
+    }
+
     /**
      * Return a link to the map viewer for this Gemini record if it can be
      * rendered in the map viewer
@@ -240,7 +254,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
         return responsiblePartyByRole("custodian");
     }
 
-    public List<ResponsibleParty> getPointOfContacts() {
+    public List<ResponsibleParty> getPointsOfContact() {
         return responsiblePartyByRole("pointOfContact");
     }
 

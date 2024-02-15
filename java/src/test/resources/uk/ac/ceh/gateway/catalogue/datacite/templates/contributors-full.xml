@@ -1,0 +1,14 @@
+<contributors>
+    <contributor contributorType="ContactPerson">
+        <contributorName nameType="Personal">Bob</contributorName>
+        <affiliation>Example Inc.</affiliation>
+    </contributor>
+    <contributor contributorType="RightsHolder">
+        <contributorName nameType="Organizational">Science Inc.</contributorName>
+        <nameIdentifier nameIdentifierScheme="ROR">https://ror.org/00pggkr55</nameIdentifier>
+    </contributor>
+    <contributor contributorType="HostingInstitution">
+        <contributorName nameType="Organizational">EIDC</contributorName>
+        <nameIdentifier nameIdentifierScheme="ROR">https://ror.org/04xw4m193</nameIdentifier>
+    </contributor>
+</contributors>

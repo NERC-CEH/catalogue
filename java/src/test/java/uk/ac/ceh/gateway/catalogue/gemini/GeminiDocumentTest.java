@@ -24,6 +24,24 @@ public class GeminiDocumentTest {
     private final String doc2 = "https://example.com/doc/2";
     private final String doc3 = "https://example.com/doc/3";
 
+
+    @Test
+    void getDownloads() {
+        //given
+        val gemini = new GeminiDocument();
+        gemini.setOnlineResources(List.of(
+            OnlineResource.builder().function("download").build(),
+            OnlineResource.builder().function("order").build(),
+            OnlineResource.builder().function("something").build()
+        ));
+
+        //when
+        val actual = gemini.getDownloads();
+
+        //then
+        assertThat(actual.size(), equalTo(2));
+    }
+
     @Test
     void getAllKeywordsWhenEmpty() {
         //given

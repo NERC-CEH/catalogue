@@ -1,3 +1,4 @@
+<#compress>
 <#include "_prefixes.ftlh">
 @prefix : <${baseUri}/id/> .
 @base <${baseUri}/> .
@@ -5,7 +6,7 @@
 <${baseUri}/${catalogue}/documents/> a dcat:Catalog ;
     dct:title "${title} digital asset register"@en ;
     foaf:homepage <https://catalogue.ceh.ac.uk/${catalogue}/documents> ;
-    <#if records?has_content>dcat:resource <#list records as record>:${record} <#sep>,</#sep></#list> ;</#if>
+    <#list records>dcat:resource <#items as record>:${record}<#sep>, </#items>;</#list>
 .
 
 <#if catalogue=="eidc" >
@@ -16,3 +17,4 @@
     vcard:fn "UK Centre for Ecology & Hydrology" ;
 .
 </#if>
+</#compress>

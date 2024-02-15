@@ -9,45 +9,74 @@
     --quality-error-fade: hsl(0, 50%, 85%);
     --border_radius: 0.5em;
 }
+
 .metadata-grid {
     .col1 {
         grid-area: col1;
     }
+
     .col2 {
         grid-area: col2;
     }
+
     display: grid;
     grid-template-columns: auto fit-content(360px);
     gap: 2em 0;
-    grid-template-areas:
-        "col2 col2"
-        "col1 col1";
+    grid-template-areas: "col2 col2"
+    "col1 col1";
 }
 
 #metadata {
     a {
         word-break: break-word;
     }
+
     .section {
         padding: 2em 0;
+
         &-grey {
             background-color: hsl(0, 0%, 95%);
             border: 1px solid #ccc;
             border-width: 1px 0;
+            &:has(.notice) {
+                .disclaimer {
+                    margin-top: -2.5em
+                }
+            }
         }
     }
+
+
+    .disclaimer {
+        border: 1px solid #bbb;
+        border-width: 1px 0;
+        padding: 1em 0;
+        margin: -1.1em 0 1em 0;
+        font-style: italic;
+
+        strong {
+            font-style: normal;
+        }
+    }
+
+
+
+
 
     .description {
         display: grid;
         grid-template-columns: auto fit-content(450px);
+
         .browseimage {
             display: none;
+
             img {
                 padding: 1em;
                 max-width: 100%;
                 max-height: 200px;
             }
         }
+
         .description-text {
             line-height: @line-height-base;
         }
@@ -62,6 +91,7 @@
     #section-title {
         margin-top: 3em;
         padding: 1em 0;
+
         &:not(:has(.notice)) {
             border-bottom: 1px solid @gray-light;
             margin-bottom: 1em;
@@ -105,10 +135,12 @@
 
             cursor: pointer;
         }
+
         &:hover,
         &:selected {
             background-color: rgba(0, 0, 0, 0.05);
         }
+
         &.open {
             .dropdown-toggle {
                 box-shadow: none;
@@ -125,6 +157,7 @@
         justify-items: center;
         border: 2px solid gray;
         padding: 1em;
+
         &-eidc {
             display: grid;
             grid-template-columns: 1fr;
@@ -133,7 +166,7 @@
             gap: 1em;
         }
 
-        > div {
+        >div {
             font-weight: bold;
             text-align: center;
         }
@@ -141,6 +174,7 @@
 
     #latestVersion {
         margin-bottom: 1.5em;
+
         .otherVersions {
             margin-left: 0.6em;
             color: @link-color;
@@ -207,9 +241,10 @@
     }
 
     .distribution-dataset {
-        > div {
+        >div {
             margin-bottom: 2em;
         }
+
         .licenceText {
             .ogl-logo {
                 margin-top: 0.3em;
@@ -242,6 +277,7 @@
     #document-thirdparty {
         display: block;
     }
+
     #section-children {
         margin-top: 3em;
     }
@@ -253,21 +289,27 @@
             overflow-x: clip;
             padding-right: 0.5em;
         }
+
         ::-webkit-scrollbar {
             width: 8px;
         }
+
         ::-webkit-scrollbar-track {
             background: #f1f1f1;
         }
+
         ::-webkit-scrollbar-thumb {
             background: #ccc;
         }
+
         ::-webkit-scrollbar-thumb:hover {
             background: #888;
         }
+
         ::-webkit-scrollbar-thumb:focus {
             background: #888;
         }
+
         ::-webkit-scrollbar-thumb {
             background: #888;
         }
@@ -289,21 +331,26 @@
         background-color: var(--notice-background-color);
         border-radius: 6px;
         z-index: 1000;
+
         small {
             font-size: 80%;
             text-decoration: underline;
             text-decoration-style: dotted;
         }
+
         span {
             color: red;
             font-weight: bolder;
         }
+
         p:last-of-type {
             margin-bottom: 0;
         }
+
         &--restricted {
             --notice-color: red;
         }
+
         &-signpost {
             .licenceText {
                 display: none;
@@ -324,8 +371,10 @@
             background: @gray-light;
             margin: 1.2em 0;
         }
+
         .onlineResourceLinks {
             margin: 2em 0;
+
             .btn {
                 white-space: balance;
                 margin: 0.8em 0;
@@ -334,21 +383,26 @@
                 &:active {
                     transform: translate(2px, 2px);
                 }
+
                 span:first-child {
                     margin-right: 0.35em;
                 }
+
                 &-download {
                     .btn-block;
                     font-weight: bold;
                     background-color: @brand-success;
+
                     &:hover,
                     &:focus {
                         background-color: lighten(@brand-success, 15%);
                     }
                 }
+
                 &-supporting {
                     .btn-block;
                     background-color: lighten(@brand-success, 15%);
+
                     &:hover,
                     &:focus {
                         background-color: lighten(@brand-success, 30%);
@@ -360,6 +414,7 @@
 
     #document-otherContacts {
         dl.dl-horizontal {
+
             dd,
             dt {
                 margin-bottom: 0;
@@ -380,6 +435,7 @@
         justify-content: center;
         gap: 1em;
         flex-wrap: wrap;
+
         a.card {
             display: grid;
             width: 365px;
@@ -389,11 +445,13 @@
             background-color: var(--card-background);
             border-radius: 8px;
             text-decoration: none;
+
             .content {
                 display: flex;
                 gap: 1em;
                 flex-direction: row;
             }
+
             .card-icon {
                 display: grid;
                 justify-content: center;
@@ -404,22 +462,28 @@
                 background-color: var(--card-background);
                 color: var(--card-inverse);
             }
+
             .card-type {
                 color: #999;
             }
+
             .card-title {
                 color: black;
             }
+
             &:hover,
             &:focus {
                 background-color: var(--card-inverse);
+
                 .card-type,
                 .card-title {
                     color: var(--card-background);
                 }
+
                 .fa-stack-2x {
                     display: none;
                 }
+
                 .fa-inverse {
                     --fa-inverse: var(--card-inverse);
                 }
@@ -431,13 +495,16 @@
         display: block;
         padding: 0.5em;
         border-bottom: 1px solid #ddd;
+
         .card-icon {
             display: none;
         }
+
         .card-type {
             display: inline-block;
             margin-right: 1em;
         }
+
         .card-title {
             display: inline-block;
             font-weight: bold;
@@ -506,9 +573,11 @@
     .panel-heading {
         padding: 0.5em 1em;
     }
+
     .externalVocabularyLink {
         font-size: 0.85em;
     }
+
     .responsibleParty {
         a.contactEmail {
             margin-left: 0.5em;
@@ -696,9 +765,11 @@
             grid-area: signpost-logo;
             justify-self: right;
         }
+
         .signpost-text {
             grid-area: signpost-text;
         }
+
         .signpost-url {
             grid-area: signpost-url;
         }
@@ -708,9 +779,11 @@
         .signpost-logo {
             display: none;
         }
+
         .signpost-logo img {
             max-width: 140px;
         }
+
         .signpost-content {
             display: grid;
             gap: 1em;
@@ -719,12 +792,14 @@
                 "signpost-text signpost-text"
                 "signpost-url signpost-url";
         }
+
         @media only screen and (min-width: 420px) {
             .signpost-content {
                 grid-template-areas:
                     "signpost-text signpost-logo"
                     "signpost-url signpost-logo";
             }
+
             .signpost-logo {
                 display: block;
             }
@@ -737,6 +812,7 @@
                 max-width: 140px;
             }
         }
+
         .signpost-content {
             display: grid;
             gap: 1em;
@@ -745,6 +821,7 @@
                 "signpost-logo signpost-logo"
                 "signpost-text signpost-text"
                 "signpost-url signpost-url";
+
             .signpost-logo {
                 justify-self: center;
             }
@@ -755,6 +832,7 @@
                 grid-template-areas:
                     "signpost-text signpost-logo"
                     "signpost-url signpost-logo";
+
                 .signpost-logo {
                     justify-self: right;
                 }
@@ -780,12 +858,14 @@
     position: absolute;
     width: 100%;
     bottom: 0;
+
     span {
         &:not(:last-of-type)::after {
             content: "|";
             margin: 0 0.6em;
         }
     }
+
     .altviews {
         span:first-of-type {
             margin-left: 0.6em;
@@ -796,6 +876,7 @@
 dl.dl-horizontal {
     &--compact {
         margin-left: 5rem;
+
         dt {
             overflow: hidden;
             text-overflow: ellipsis;
@@ -829,9 +910,11 @@ dl.dl-horizontal {
             border: none;
         }
     }
+
     .key-value {
         padding: 1.5em 0;
         border-top: 1px solid lightgray;
+
         &:first-of-type {
             border: none;
         }
@@ -865,19 +948,23 @@ dl.dl-horizontal {
         .grid--one {
             grid-area: one;
         }
+
         .grid--two {
             grid-area: two;
         }
+
         .grid--three {
             grid-area: three;
         }
+
         @media screen and (min-width: 850px) {
             --gridspacing: 1em;
             grid-template-areas:
                 "one two"
                 "three two";
+
             .grid--two {
-                > div {
+                >div {
                     border-left: 1px solid lightgray;
                     padding-left: var(--gridspacing);
                     margin-left: var(--gridspacing);
@@ -892,6 +979,7 @@ dl.dl-horizontal {
     .metadata-grid {
         gap: 0 2em;
         grid-template-areas: "col1 col2";
+
         .col2:has(*) {
             border-left: 1px solid lightgray;
             padding-left: 2em;

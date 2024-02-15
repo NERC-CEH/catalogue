@@ -1,16 +1,5 @@
 a dcat:Dataset, dcmitype:Dataset ;
 
-<#if responsibleParties?has_content>
-  <#assign
-    authors = func.filter(responsibleParties, "role", "author")
-    pointsOfContact = func.filter(responsibleParties, "role", "pointOfContact")
-    publishers  = func.filter(responsibleParties, "role", "publisher")
-    >
-</#if>
-<#if onlineResources?has_content>
-  <#assign downloads = func.filter(onlineResources, "function", "download") + func.filter(onlineResources, "function", "order")>
-</#if>
-
 <#if resourceIdentifiers??>
   dct:identifier
     <#list resourceIdentifiers as id>
@@ -23,7 +12,6 @@ a dcat:Dataset, dcmitype:Dataset ;
     ;
 </#if>
 
-dcat:CatalogRecord <${uri}> ;
 dct:type dcmitype:Dataset ;
 
 <#if datasetReferenceDate?? && datasetReferenceDate.publicationDate?has_content>
@@ -41,37 +29,28 @@ dct:type dcmitype:Dataset ;
 </#if>
 
 <#--Distribution-->
-<#if downloads?has_content>
-dcat:Distribution [
+<#list downloads>
+dcat:distribution [
     dcat:accessURL
-    <#list downloads as download>
+    <#items as download>
       <${download.url?trim}> <#sep>,
-    </#list>
+    </#items>
     ;
     <#include "_rights.ftlh">
-    <#if distributionFormats?has_content>
+    <#list distributionFormats>
     dct:format
-      <#list distributionFormats as format>
+      <#items as format>
       [
       a dct:IMT ;
       rdf:value "${format.name}" ; rdfs:label "${format.name}"
       ] <#sep>,
-      </#list>
+      </#items>
       ;
-    </#if>
+    </#list>
 ];
-</#if>
+</#list>
 
 <#--Authors-->
 <#if authors?has_content>
-  dcat:contributor <@contactList authors "a" /> ;
-</#if>
-
-<#assign rel_memberOf = jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#memberOf")>
-<#if rel_memberOf?has_content && rel_memberOf?size gt 0>
-dct:isPartOf
-  <#list rel_memberOf as item>
-    <${item.href}><#sep>,
-  </#list>
-;
+  dct:contributor <@contactList authors "a" /> ;
 </#if>
