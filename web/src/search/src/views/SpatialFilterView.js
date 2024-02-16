@@ -6,6 +6,10 @@ import Backbone from "backbone";
 
 export default Backbone.View.extend({
 
+  events: {
+    'click .spatialOp': 'updateSpatialOp'
+  },
+
   initialize () {
     this.template = template
     this.render()
@@ -87,6 +91,10 @@ export default Backbone.View.extend({
     })
   },
 
+  updateSpatialOp (e) {
+    this.model.set('op', e.target.dataset.op)
+  },
+
   /**
    * The bounding boxes of a single metadata record are indexed in solr in the field 'locations'
    * Using this 'locations' field, the simplest spatial query to find the records within a search box is: 'locations:"Intersects(ENVELOPE(minX, maxX, maxY, minY)"
@@ -105,7 +113,7 @@ export default Backbone.View.extend({
   },
 
   render () {
-    this.$el.append(this.template())
+    this.$el.append(this.template(this.model.attributes))
     this.viewMap()
     return this
   }

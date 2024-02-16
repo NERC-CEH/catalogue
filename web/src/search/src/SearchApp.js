@@ -8,7 +8,7 @@ export default Backbone.Model.extend({
     drawing: false,
     mapsearch: false,
     bbox: undefined,
-    op: undefined,
+    op: 'intersects',
     facet: [],
     term: undefined,
     page: 1,
@@ -122,6 +122,6 @@ export default Backbone.Model.extend({
    */
   clearBbox() {
     this.unset('bbox')
-    this.unset('op')
+    this.unset('spatialOp')
   }
 })
