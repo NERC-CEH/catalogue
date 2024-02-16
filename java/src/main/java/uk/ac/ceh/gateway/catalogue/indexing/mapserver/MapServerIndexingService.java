@@ -100,7 +100,7 @@ public class MapServerIndexingService extends AbstractIndexingService<MetadataDo
     private void changeFilePermissions(String filename) {
         // Set the file permissions to allow mapserver to read them
         try {
-            Runtime.getRuntime().exec(format("chmod 644 %s", filename));
+            Runtime.getRuntime().exec(new String[]{format("chmod 644 %s", filename)});
         } catch (IOException e) {
             throw new RuntimeException(format("Cannot change file permissions for: %s", filename), e);
         }
