@@ -187,7 +187,7 @@
 		</gmd:language>
 		<gmd:characterSet>
 			<gmd:MD_CharacterSetCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8">utf8</gmd:MD_CharacterSetCode>
-		</gmd:characterSet>	
+		</gmd:characterSet>
 		</#if>
 		<#if topicCategories??>
 		<#list topicCategories as topicCategory>
@@ -198,7 +198,7 @@
       </#if>
 		</#list>
 		</#if>
-		
+
 	<#if type = 'service'>
 	<#assign ns = 'srv'>
 	<#include "_service.ftlx">
