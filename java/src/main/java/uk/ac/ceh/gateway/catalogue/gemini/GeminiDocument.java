@@ -295,6 +295,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
                 .collect(Collectors.toList());
     }
 
+    @JsonIgnore
     public @NonNull List<String> getBounds() {
         return Optional.ofNullable(boundingBoxes)
                 .orElse(Collections.emptyList())
