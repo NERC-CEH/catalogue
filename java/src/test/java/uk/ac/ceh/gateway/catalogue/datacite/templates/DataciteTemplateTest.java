@@ -13,7 +13,9 @@ import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.xmlunit.builder.DiffBuilder;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
+import uk.ac.ceh.gateway.catalogue.model.Link;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -25,6 +27,8 @@ import java.util.Objects;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 @Slf4j
 @DisplayName("Datacite template")
@@ -68,6 +72,36 @@ public class DataciteTemplateTest {
         gemini = new GeminiDocument();
         model = new HashMap<>();
         model.put("doc", gemini);
+    }
+
+    @Nested
+    @DisplayName("related")
+    class Related {
+
+        @Test
+        @SneakyThrows
+        @DisplayName("with related records")
+        void related() {
+            //given
+            val uri = "https://example.org/id/123456789";
+            gemini.setUri(uri);
+            val jena = mock(JenaLookupService.class);
+            configuration.setSharedVariable("jena", jena);
+            val expected = expected("related-full.xml");
+
+            given(jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#supersedes")).willReturn(List.of(
+                Link.builder().href("https://catalogue.ceh.ac.uk/id/847463839").build()
+            ));
+            given(jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#supersedes")).willReturn(List.of(
+                Link.builder().href("https://catalogue.ceh.ac.uk/id/28319461").build()
+            ));
+
+            //when
+            val actual = template("_related.ftlx");
+
+            //then
+            compare(expected, actual);
+        }
     }
 
     @Nested

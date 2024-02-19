@@ -1,12 +1,10 @@
 <#if doc.onlineResources?has_content>
   <#assign infoResources = func.filterRegex(func.filter(doc.onlineResources, "function", "information"), "url", "https://data-package.ceh.ac.uk/sd/")>
 </#if>
-<#if doc.incomingRelationships?has_content>
-  <#assign rel_supersededBy = func.filter(doc.incomingRelationships, "rel", "https://vocabs.ceh.ac.uk/eidc#supersedes")>
-</#if>
-<#if doc.relatedRecords?has_content>
-  <#assign rel_supersedes = func.filter(doc.relatedRecords, "rel", "https://vocabs.ceh.ac.uk/eidc#supersedes")>
-</#if>
+<#assign
+  rel_supersedes = jena.relationships(doc.uri, "https://vocabs.ceh.ac.uk/eidc#supersedes")
+  rel_supersededBy = jena.inverseRelationships(doc.uri, "https://vocabs.ceh.ac.uk/eidc#supersedes")
+>
 
 <#if doc.incomingCitations?has_content || infoResources?has_content || rel_supersededBy?has_content || rel_supersedes?has_content>
   <relatedIdentifiers>
@@ -17,17 +15,13 @@
       </#list>
     </#if>
 
-    <#if rel_supersedes?has_content && rel_supersedes?size gt 0>
-      <#list rel_supersedes as item>
-        <relatedIdentifier relatedIdentifierType="DOI" relationType="IsNewVersionOf" resourceTypeGeneral="Dataset">${item.href?replace("https://catalogue.ceh.ac.uk/id/","10.5285/")}</relatedIdentifier>
-      </#list>
-    </#if>
+    <#list rel_supersedes as item>
+      <relatedIdentifier relatedIdentifierType="DOI" relationType="IsNewVersionOf" resourceTypeGeneral="Dataset">${item.href?replace("https://catalogue.ceh.ac.uk/id/","10.5285/")}</relatedIdentifier>
+    </#list>
 
-    <#if rel_supersededBy?has_content && rel_supersededBy?size gt 0>
-      <#list rel_supersededBy as item>
-        <relatedIdentifier relatedIdentifierType="DOI" relationType="IsPreviousVersionOf" resourceTypeGeneral="Dataset">${item.href?replace("https://catalogue.ceh.ac.uk/id/","10.5285/")}</relatedIdentifier>
-      </#list>
-    </#if>
+    <#list rel_supersededBy as item>
+      <relatedIdentifier relatedIdentifierType="DOI" relationType="IsPreviousVersionOf" resourceTypeGeneral="Dataset">${item.href?replace("https://catalogue.ceh.ac.uk/id/","10.5285/")}</relatedIdentifier>
+    </#list>
 
     <#if doc.incomingCitations?has_content>
       <#list doc.incomingCitations as link>

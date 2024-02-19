@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
+import freemarker.template.Configuration;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,12 +17,13 @@ import uk.ac.ceh.gateway.catalogue.config.SecurityConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.datacite.DataciteResponse;
 import uk.ac.ceh.gateway.catalogue.datacite.DataciteService;
+import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
+import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
-import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
-import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -53,11 +55,19 @@ class DataciteControllerTest {
     @MockBean private DocumentRepository documentRepository;
     @MockBean private DocumentIdentifierService identifierService;
     @MockBean private DataciteService dataciteService;
+    @MockBean private JenaLookupService jenaLookupService;
 
     @Autowired private MockMvc mvc;
+    @Autowired private Configuration configuration;
 
     private final String file = "1234";
     private final GeminiDocument gemini = new GeminiDocument();
+
+
+    @SneakyThrows
+    private void givenFreemarkerConfiguration() {
+        configuration.setSharedVariable("jena", jenaLookupService);
+    }
 
     @SneakyThrows
     private void givenDocumentRepository() {
@@ -108,6 +118,7 @@ class DataciteControllerTest {
     @Test
     void getDataciteXml() throws Exception {
         //given
+        givenFreemarkerConfiguration();
         givenDocumentRepository();
         givenDataciteService();
 
@@ -123,6 +134,7 @@ class DataciteControllerTest {
     @Test
     void getDataciteXmlNoAccept() throws Exception {
         //given
+        givenFreemarkerConfiguration();
         givenDocumentRepository();
         givenDataciteService();
 
