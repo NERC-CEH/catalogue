@@ -11,8 +11,5 @@
     </@b.key>
   </#if>
 
-  <@o.relationships "Part Of" "Part of another Monitoring Facility" "http://onto.nerc.ac.uk/CEHMD/rels/partOf" />
-  <@o.inverseRelationships "Used By" "Used by this Monitoring Activity" "http://onto.nerc.ac.uk/CEHMD/rels/uses" />
-  <@o.inverseRelationships "Responsible for" "Agents responsible for this Monitoring Activity" "http://onto.nerc.ac.uk/CEHMD/rels/responsibleFor" />
-  <@o.inverseRelationships "Contains" "Monitoring Network contains" "http://onto.nerc.ac.uk/CEHMD/rels/partOf" />
+  <@o.inverseRelationships "Contains" "Contains Monitoring Facilities" "http://purl.org/voc/ef#belongsTo" />
 </@o.base>
