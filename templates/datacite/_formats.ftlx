@@ -1,9 +1,11 @@
-<#list doc.distributionFormats as format>
+<#list doc.distributionFormats>
   <formats>
-    <#if format.type?has_content>
-      <format>${format.type} ${format.name}</format>
-    <#else>
-      <format>${format.name}</format>
-    </#if>
+    <#items as format>
+      <#if format.type?has_content>
+        <format>${format.type} ${format.name}</format>
+      <#else>
+        <format>${format.name}</format>
+      </#if>
+    </#items>
   </formats>
 </#list>
