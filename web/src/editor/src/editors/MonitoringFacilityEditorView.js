@@ -94,10 +94,15 @@ export default EditorView.extend({
           multiline: true,
           options: [
             { value: 'http://onto.nerc.ac.uk/CEHMD/rels/partOf', label: 'Part of' },
-            { value: 'http://onto.nerc.ac.uk/CEHMD/rels/produces', label: 'Produces' }
+            { value: 'http://onto.nerc.ac.uk/CEHMD/rels/produces', label: 'Produces' },
+            { value: 'https://vocabs.ceh.ac.uk/eidc#generates', label: 'Generates' },
+            { value: 'https://vocabs.ceh.ac.uk/eidc#memberOf', label: 'Member Of' },
+            { value: 'https://vocabs.ceh.ac.uk/eidc#relatedTo', label: 'Related to' },
+            { value: 'https://vocabs.ceh.ac.uk/eidc#supersedes', label: 'Supersedes' },
+            { value: 'https://vocabs.ceh.ac.uk/eidc#Uses', label: 'Uses' }
           ],
           helpText: `
-<p>Relationships to other OSDP document types</p>
+<p>Relationships to other document types</p>
 `
         })
 

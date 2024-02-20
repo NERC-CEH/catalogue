@@ -1,11 +1,13 @@
 package uk.ac.ceh.gateway.catalogue.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import static com.google.common.base.Strings.nullToEmpty;
-import lombok.Value;
 import lombok.Builder;
+import lombok.Value;
+
+import static com.google.common.base.Strings.nullToEmpty;
 
 @Value
 @JsonIgnoreProperties({"roleDisplayName"})
@@ -34,14 +36,17 @@ public class ResponsibleParty {
         this.address = (address == null || address.isEmpty()) ? null : address;
     }
 
+    @JsonIgnore
     public boolean isOrcid() {
         return nameIdentifier.matches("^http(|s)://orcid.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$");
     }
 
+    @JsonIgnore
     public boolean isIsni() {
         return nameIdentifier.matches("^https://isni.org/isni/\\d{15}(X|\\d)$");
     }
 
+    @JsonIgnore
     public boolean isRor() {
         return organisationIdentifier.matches("^https://ror.org/\\w{8,10}$");
     }

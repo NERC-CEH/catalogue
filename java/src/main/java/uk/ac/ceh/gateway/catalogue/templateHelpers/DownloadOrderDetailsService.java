@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -19,11 +18,11 @@ import java.util.stream.Collectors;
  * - Links to resources in the order manager
  * - Links to download resources
  * - If this document is currently orderable/downloadable
- *
+ * <p>
  * If an order resource is present inside the online resource list but does not
  * link to the order manager, then we will deem this to not be orderable (e.g.
  * Embargoed).
- *
+ * <p>
  * The logic in this class makes use of the fact that OnlineResources have safe
  * variables (That is strings are never null)
  */
@@ -34,17 +33,12 @@ public class DownloadOrderDetailsService {
     private final Pattern supportingDocUrlPattern;
     private final List<Pattern> orderManagerUrlPatterns;
 
-    private static final String SUPPORTING_DOC_URL_PATTERN = "https:\\/\\/data-package\\.ceh\\.ac\\.uk\\/sd\\/.*";
-    private static final List<String> ORDER_MANAGER_URL_PATTERNS = Arrays.asList(
-        "http(s?):\\/\\/catalogue\\.ceh\\.ac\\.uk\\/download\\?fileIdentifier=.*",
-        "https:\\/\\/order-eidc\\.ceh\\.ac\\.uk\\/resources\\/.{8}\\/order\\?*.*"
-    );
-
     public DownloadOrderDetailsService() {
-        this.supportingDocUrlPattern = Pattern.compile(SUPPORTING_DOC_URL_PATTERN);
-        this.orderManagerUrlPatterns = ORDER_MANAGER_URL_PATTERNS.stream()
-            .map(Pattern::compile)
-            .collect(Collectors.toList());
+        this.supportingDocUrlPattern = Pattern.compile("https://data-package\\.ceh\\.ac\\.uk/sd/.*");
+        this.orderManagerUrlPatterns = List.of(
+            Pattern.compile("http(s?)://catalogue\\.ceh\\.ac\\.uk/download\\?fileIdentifier=.*"),
+            Pattern.compile("https://order-eidc\\.ceh\\.ac\\.uk/resources/.{8}/order\\?*.*")
+        );
         log.info("Creating {}", this);
     }
 
@@ -83,8 +77,8 @@ public class DownloadOrderDetailsService {
             return onlineResources
                 .stream()
                 .filter(r -> r.getFunction().equals("information"))
-                .filter(r -> supportingDocUrlPattern.matcher(r.getUrl()).matches())
                 .map(OnlineResource::getUrl)
+                .filter(url -> supportingDocUrlPattern.matcher(url).matches())
                 .findFirst().orElse(null);
         }
 

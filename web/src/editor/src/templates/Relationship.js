@@ -14,8 +14,15 @@ export default _.template(`
     <div class="col-sm-2 col-lg-2">
         <label for="relationship<%= data.index %>Target">Target</label>
     </div>
-    <div class="col-sm-10 col-lg-10">
-        <input data-name="target" id="relationship<%= data.index %>Target" class="editor-input" value="<%= data.target %>">
+    <div class="relationshipSearch">
+        <div class="col-sm-10 col-lg-10">
+            <input data-name="target" value="<%= data.target %>" id="relationship<%= data.index %>Target" class="form-control editor-input autocomplete" placeholder="Search the catalogue...">
+        </div>
+    </div>
+    <div class="relationshipRecord hidden">
+        <div class="col-sm-10 col-lg-10">
+            <input data-name="target" id="relationship<%= data.index %>Target" class="editor-input identifier" value="<%= data.target %>" disabled="true">
+        </div>
     </div>
 </div>
 `)

@@ -145,27 +145,19 @@
           <div class="metadata-grid">
             <div class="col1">
               <#include "document/_formats.ftlh">
-              <#include "document/_extent.ftlh">
+              <#if resourceType?has_content && resourceType.value !='nonGeographicDataset'><#include "document/_spatial.ftlh"></#if>
+              <#include "document/_temporal.ftlh">
               <#include "document/_dataquality.ftlh">
               <#include "document/_related.ftlh">
               <#include "document/_citation_list.ftlh">
               <#include "document/_supplemental.ftlh">
               <#include "document/_contacts.ftlh">
 
-              <#if topicCategories?? || descriptiveKeywords?? || temporalResolution?? || inspireTheme?? || funding?? || spatialRepresentationTypes?? || spatialReferenceSystems??>
+              <#if topicCategories?? || descriptiveKeywords?? || inspireTheme?? || funding?? >
                 <h2>Additional metadata</h2>
                 <dl id="otherInfo" class="dl-horizontal">
                   <#include "document/_tags.ftlh">
                   <#include "document/_funding.ftlh">
-                  <#if resourceType?has_content && resourceType.value !='nonGeographicDataset'>
-                    <#include "document/_spatial.ftlh">
-                  </#if>
-                  <#if temporalResolution?has_content>
-                    <dt>Temporal resolution</dt>
-                    <dd>
-                      <#list temporalResolution as tr>${tr}<#sep>, </#sep></#list>
-                    </dd>
-                  </#if>
                   <#if metadataDateTime?has_content>
                     <dt>Last updated</dt><dd>${metadataDateTime?datetime.iso?datetime?string['dd MMMM yyyy  HH:mm']}</dd>
                   </#if>
