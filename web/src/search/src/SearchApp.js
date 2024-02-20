@@ -122,6 +122,5 @@ export default Backbone.Model.extend({
    */
   clearBbox() {
     this.unset('bbox')
-    this.unset('spatialOp')
   }
 })

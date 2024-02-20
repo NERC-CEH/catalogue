@@ -13,6 +13,10 @@ export default Backbone.View.extend({
   initialize () {
     this.template = template
     this.render()
+
+    // If 'bbox' or 'op' are in the hash arguments of the querystring (ie backbone router controlled), then the model will emit a change event for the changed arg, which must be updated on the UI
+    this.listenTo(this.model, 'change:op', function (model, value) { this.updateOp(value) })
+    this.listenTo(this.model, 'change:bbox', function (model, value) { this.updateBbox(value) })
   },
 
   createMap () {
@@ -38,7 +42,6 @@ export default Backbone.View.extend({
     this.listenTo(this.map, L.Draw.Event.CREATED, function (event) {
       this.boundingBox = event.layer
       this.drawnItems.addLayer(this.boundingBox)
-      this.shapeDrawn = true
       this.map.removeControl(this.drawControl)
       this.drawControl = this.deleteToolbar()
       this.map.addControl(this.drawControl)
@@ -51,6 +54,26 @@ export default Backbone.View.extend({
       this.map.addControl(this.drawControl)
       this.model.clearBbox()
     })
+  },
+
+  updateOp(op) {
+    this.$el.find('#opWithin').prop('checked', (op === 'iswithin'))
+    this.$el.find('#opIntersects').prop('checked', (op === 'intersects'))
+  },
+
+  // Add the bounding box to the map if it has been added to the model and there isn't yet a bounding box on the map
+  // The incomming bbox is a comma separated string of lat/lon of the form west-lon,east-lon,north-lat,south-lat
+  updateBbox(bbox){
+    if((bbox !== undefined) && (this.drawnItems.getLayers().length === 0)){
+
+      const coords = bbox.split(',')
+      const bounds = [[coords[3],coords[0]],[coords[2],coords[1]]]
+      this.drawnItems.addLayer(L.rectangle(bounds, {color: "#ff7800", weight: 1}))
+
+      this.map.removeControl(this.drawControl)
+      this.drawControl = this.deleteToolbar()
+      this.map.addControl(this.drawControl)
+    }
   },
 
   createToolbar () {
@@ -113,7 +136,7 @@ export default Backbone.View.extend({
   },
 
   render () {
-    this.$el.append(this.template(this.model.attributes))
+    this.$el.empty().append(this.template(this.model.attributes))
     this.viewMap()
     return this
   }
