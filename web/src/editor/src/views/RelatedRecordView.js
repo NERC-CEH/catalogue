@@ -3,6 +3,7 @@ import $ from 'jquery'
 import ObjectInputView from './ObjectInputView'
 import template from '../templates/RelatedRecord'
 
+// TODO: remove
 export default ObjectInputView.extend({
 
   initialize () {

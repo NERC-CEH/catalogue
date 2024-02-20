@@ -1,16 +1,22 @@
 import { EditorView, InputView, SelectView } from '../index'
 import {
   ContactView,
-  DatasetReferenceDateView, InspireThemeView, KeywordView,
+  DatasetReferenceDateView,
+  InspireThemeView,
+  KeywordView,
   ParentStringView,
   ParentView,
-  PredefinedParentView, RelatedRecordView, ResourceConstraintView, ReviewView,
-  SingleObjectView, TemporalExtentView,
+  PredefinedParentView,
+  RelatedRecordView,
+  ResourceConstraintView,
+  ReviewView,
+  SingleObjectView,
+  TemporalExtentView,
   TextareaView
 } from '../views'
 import { Contact, InspireTheme, MultipleDate } from '../models'
 import { BoundingBox, BoundingBoxView } from '../geometryMap'
-
+// TODO: replace RelatedRecordView with RelationshipView
 export default EditorView.extend({
 
   initialize () {

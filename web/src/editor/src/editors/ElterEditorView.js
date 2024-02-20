@@ -4,36 +4,51 @@ import {
   DatasetReferenceDateView,
   DeimsSiteView,
   DistributionFormatView,
+  ElterProjectView,
   FundingView,
   InspireThemeView,
+  KeywordVocabularyView,
+  MapDataSourceView,
   OnlineResourceView,
   ParentStringView,
   ParentView,
   PredefinedParentView,
   ReadOnlyView,
-  RelatedRecordView, ResourceConstraintView, ResourceIdentifierView,
+  RelatedRecordView,
+  ResourceConstraintView,
+  ResourceIdentifierView,
   ResourceTypeView,
-  SingleObjectView, SpatialReferenceSystemView, SpatialRepresentationTypeView, SpatialResolutionView,
+  ServiceView,
+  SingleObjectView,
+  SpatialReferenceSystemView,
+  SpatialRepresentationTypeView,
+  SpatialResolutionView,
   SupplementalView,
   TemporalExtentView,
-  TextareaView, TopicCategoryView, ElterProjectView, KeywordVocabularyView, ServiceView, MapDataSourceView
+  TextareaView,
+  TopicCategoryView
 } from '../views'
 import {
   AccessLimitation,
   Contact,
-  DistributionFormat, Funding,
+  DistributionFormat,
+  ElterProject,
+  Funding,
   InspireTheme,
+  MapDataSource,
   MultipleDate,
   OnlineResource,
-  ResourceType, SpatialResolution, Service, MapDataSource,
-  TopicCategory, ElterProject
+  ResourceType,
+  Service,
+  SpatialResolution,
+  TopicCategory
 } from '../models'
 import EditorView from '../EditorView'
 import InputView from '../InputView'
 import BoundingBoxView from '../geometryMap/BoundingBoxView'
 import BoundingBox from '../geometryMap/BoundingBox'
 import SelectView from '../SelectView'
-
+// TODO: replace RelatedRecordView with RelationshipView
 export default EditorView.extend({
 
   initialize () {

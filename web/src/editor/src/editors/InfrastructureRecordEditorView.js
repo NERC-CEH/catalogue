@@ -1,16 +1,25 @@
 import { EditorView, InputView, SelectView } from '../index'
 import {
-  ContactView, InfrastructureCategoryView, InfrastructureChallengeView, InfrastructureOnlineLinkView, KeywordView,
+  ContactView,
+  InfrastructureCategoryView,
+  InfrastructureChallengeView,
+  InfrastructureOnlineLinkView,
+  KeywordView,
   ParentStringView,
   ParentView,
   PredefinedParentView,
-  RelatedRecordView, SingleObjectView,
+  RelatedRecordView,
+  SingleObjectView,
   TextareaView,
   TextOnlyView
 } from '../views'
-import { Contact, InfrastructureCategory, InfrastructureChallenge } from '../models'
+import {
+  Contact,
+  InfrastructureCategory,
+  InfrastructureChallenge
+} from '../models'
 import { BoundingBox, BoundingBoxView } from '../geometryMap'
-
+// TODO: replace RelatedRecordView with RelationshipView
 export default EditorView.extend({
 
   initialize () {

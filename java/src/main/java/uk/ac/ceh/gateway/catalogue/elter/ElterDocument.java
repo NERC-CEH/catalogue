@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.springframework.http.MediaType;
@@ -15,7 +16,6 @@ import uk.ac.ceh.gateway.catalogue.deims.DeimsSolrIndex;
 import uk.ac.ceh.gateway.catalogue.gemini.*;
 import uk.ac.ceh.gateway.catalogue.indexing.solr.WellKnownText;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
-import uk.ac.ceh.gateway.catalogue.model.Link;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.model.Supplemental;
 
@@ -50,7 +50,6 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
     private List<ResponsibleParty> responsibleParties, distributorContacts;
     private List<TimePeriod> temporalExtents;
     private List<OnlineResource> onlineResources;
-    private Set<Link> incomingRelationships;
     private List<SpatialReferenceSystem> spatialReferenceSystems;
     private List<Supplemental> supplemental;
     @JsonIgnore
@@ -94,16 +93,15 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
         }
         // description
         StringBuilder descriptionBuilder = new StringBuilder();
-        for (Iterator<JsonNode> iter = inputJson.get("descriptions").iterator(); iter.hasNext(); ) {
-            JsonNode node = iter.next();
-            if (descriptionBuilder.length() > 0){
+        for (JsonNode node : inputJson.get("descriptions")) {
+            if (!descriptionBuilder.isEmpty()) {
                 descriptionBuilder.append("\n\n");
             }
             JsonNode descriptionTypeNode = node.get("descriptionType");
             if (descriptionTypeNode != null) {
                 String descriptionType = descriptionTypeNode.asText();
-                if (! descriptionType.equals("Other")) {
-                    descriptionBuilder.append(descriptionType + ": ");
+                if (!descriptionType.equals("Other")) {
+                    descriptionBuilder.append(descriptionType).append(": ");
                 }
             }
             descriptionBuilder.append(node.get("description").asText().strip());
@@ -186,14 +184,6 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
         return this;
     }
 
-    public Set<Link> getAssociatedResources() {
-        Set<Link> toReturn = new HashSet<>();
-        if (incomingRelationships != null) {
-            toReturn.addAll(incomingRelationships);
-        }
-        return toReturn;
-    }
-
     /**
      * Return a link to the map viewer for this Gemini record if it can be
      * rendered in the map viewer
@@ -267,7 +257,7 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
     }
 
     @Override
-    public List<String> getWKTs() {
+    public @NonNull List<String> getWKTs() {
         return Optional.ofNullable(boundingBoxes)
                 .orElse(Collections.emptyList())
                 .stream()

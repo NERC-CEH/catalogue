@@ -50,7 +50,9 @@ import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringActivity;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
-import uk.ac.ceh.gateway.catalogue.osdp.*;
+import uk.ac.ceh.gateway.catalogue.osdp.Agent;
+import uk.ac.ceh.gateway.catalogue.osdp.Publication;
+import uk.ac.ceh.gateway.catalogue.osdp.Sample;
 import uk.ac.ceh.gateway.catalogue.postprocess.BaseMonitoringTypePostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.ClassMapPostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.GeminiDocumentPostProcessingService;
@@ -121,11 +123,10 @@ public class ServicesConfig {
     public PostProcessingService postProcessingService(
         CitationService citationService,
         DataciteService dataciteService,
-        org.apache.jena.query.Dataset tdbModel,
-        DocumentIdentifierService documentIdentifierService
+        org.apache.jena.query.Dataset tdbModel
     ) {
         ClassMap<PostProcessingService> mappings = new PrioritisedClassMap<PostProcessingService>()
-            .register(GeminiDocument.class, new GeminiDocumentPostProcessingService(citationService, dataciteService, tdbModel, documentIdentifierService))
+            .register(GeminiDocument.class, new GeminiDocumentPostProcessingService(citationService, dataciteService))
             .register(BaseMonitoringType.class, new BaseMonitoringTypePostProcessingService(tdbModel));
         return new ClassMapPostProcessingService(mappings);
     }

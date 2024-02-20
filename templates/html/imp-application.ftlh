@@ -109,14 +109,6 @@
           </#list>
           </ul>
         </#if>
-        <#if associatedResources?? >
-          <h2>Associated Resources</h2>
-          <ul>
-          <#list associatedResources as resource>
-            <li>${resource.associationType!} <a href="${resource.href!}">${resource.title!resource.href}</a></li>
-          </#list>
-          </ul>
-        </#if>
       </div>
     </div>
 </@skeleton.master>

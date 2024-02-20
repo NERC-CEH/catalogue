@@ -7,12 +7,13 @@ import {
   CheckboxView,
   ContactView,
   DatasetReferenceDateView,
+  DescriptiveKeywordView,
   DistributionFormatView,
   FundingView,
   IncomingCitationView,
   InspireThemeView,
-  KeywordVocabularyView,
   KeywordThemeView,
+  KeywordVocabularyView,
   MapDataSourceView,
   OnlineResourceView,
   ParentStringView,
@@ -31,12 +32,12 @@ import {
   SpatialResolutionView,
   TemporalExtentView,
   TextareaView,
-  TopicCategoryView,
-  DescriptiveKeywordView
+  TopicCategoryView
 } from '../views'
 import {
   AccessLimitation,
   Contact,
+  DescriptiveKeyword,
   DistributionFormat,
   Funding,
   InspireTheme,
@@ -48,14 +49,10 @@ import {
   Service,
   SpatialResolution,
   Supplemental,
-  TopicCategory,
-  DescriptiveKeyword
+  TopicCategory
 } from '../models'
-import {
-  BoundingBox,
-  BoundingBoxView
-} from '../geometryMap'
-
+import { BoundingBox, BoundingBoxView } from '../geometryMap'
+// TODO: replace RelatedRecordView with RelationshipView
 export default EditorView.extend({
 
   initialize () {

@@ -228,4 +228,17 @@ public class JenaLookupService {
         }
         return toReturn;
     }
+
+    private ParameterizedSparqlString eidcIncomingRelationships() {
+        // TODO: this query finds all eidc incoming relationships, wire this into Freemarker
+        return new ParameterizedSparqlString(
+            "SELECT ?node ?type ?title ?rel " +
+                "WHERE { " +
+                "  ?node ?rel ?me . " +
+                "  ?node <http://purl.org/dc/terms/title> ?title ; " +
+                "        <http://purl.org/dc/terms/type>  ?type . " +
+                "FILTER(regex( str(?rel), '^https://vocabs.ceh.ac.uk/eidc#' ) )" +
+                "}"
+        );
+    }
 }

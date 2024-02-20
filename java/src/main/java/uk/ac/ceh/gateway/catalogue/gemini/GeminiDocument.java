@@ -11,7 +11,6 @@ import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.indexing.solr.WellKnownText;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
-import uk.ac.ceh.gateway.catalogue.model.Link;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.model.Supplemental;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreement;
@@ -62,7 +61,6 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private List<ResponsibleParty> distributorContacts, responsibleParties;
     private List<TimePeriod> temporalExtents;
     private List<OnlineResource> onlineResources;
-    private Set<Link> incomingRelationships;
     private List<SpatialReferenceSystem> spatialReferenceSystems;
     private List<Supplemental> incomingCitations, supplemental;
     @JsonIgnore
@@ -161,15 +159,6 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     public GeminiDocument setCitation(Citation citation) {
         this.citation = citation;
         return this;
-    }
-
-    @SuppressWarnings("unused")
-    public Set<Link> getAssociatedResources() {
-        Set<Link> toReturn = new HashSet<>();
-        if (incomingRelationships != null) {
-            toReturn.addAll(incomingRelationships);
-        }
-        return toReturn;
     }
 
     public List<OnlineResource> getOnlineResources() {
