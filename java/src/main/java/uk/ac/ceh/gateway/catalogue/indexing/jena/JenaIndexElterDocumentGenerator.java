@@ -61,7 +61,7 @@ public class JenaIndexElterDocumentGenerator implements IndexGenerator<ElterDocu
             .stream()
             .filter(r -> !r.isEmpty())
             .forEach(r ->
-                toReturn.add(createStatement(me, EIDCUSES, createResource(r)))
+                toReturn.add(createStatement(me, EIDC_USES, createResource(r)))
             );
 
         return toReturn;
