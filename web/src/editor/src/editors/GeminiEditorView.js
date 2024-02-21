@@ -790,10 +790,10 @@ export default EditorView.extend({
     <li>GeoTiff - Raster</li>
 </ul>
 <p>To maximise performance, it is generally best to provide reprojected variants of data sources in common EPSG codes.</p>
-<p>Vector datasets should be spatially indexed (using <a href="http://mapserver.org/utilities/shptree.html">shptree</a>)</p>
-<p>Raster datasets should be provided with <a href="http://www.gdal.org/gdaladdo.html">overviews</a>. GeoTiff supports internal overviews.</p>
+<p>Vector datasets should be spatially indexed (using <a href="https://mapserver.org/utilities/shptree.html">shptree</a>)</p>
+<p>Raster datasets should be provided with <a href="https://www.gdal.org/gdaladdo.html">overviews</a>. GeoTiff supports internal overviews.</p>
 <p>The 'Byte?' option that appears for raster (GeoTiff) datasets is used to indicate whether the GeoTiff is a 'byte' or 'non-byte' datatype.
-This is only needed if you configure 'Stylying=Classification' for your GeoTiff.</p>
+This is only needed if you configure 'Styling=Classification' for your GeoTiff.</p>
 <p>Paths should be specified relative to the base of the datastore. e.g. <strong>5b3fcf9f-19d4-4ad3-a8bb-0a5ea02c857e/my_shapefile</strong></p>\
 `
         })
