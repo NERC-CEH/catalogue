@@ -7,7 +7,7 @@ import {
   ParentStringView,
   ParentView,
   PredefinedParentView,
-  RelatedRecordView,
+  RelationshipView,
   ResourceConstraintView,
   ReviewView,
   SingleObjectView,
@@ -16,7 +16,7 @@ import {
 } from '../views'
 import { Contact, InspireTheme, MultipleDate } from '../models'
 import { BoundingBox, BoundingBoxView } from '../geometryMap'
-// TODO: replace RelatedRecordView with RelationshipView
+
 export default EditorView.extend({
 
   initialize () {
@@ -290,10 +290,17 @@ export default EditorView.extend({
 
         new ParentView({
           model: this.model,
-          modelAttribute: 'relatedRecords',
-          label: 'Related records',
-          ObjectInputView: RelatedRecordView,
-          multiline: true
+          modelAttribute: 'relationships',
+          label: 'Relationships',
+          ObjectInputView: RelationshipView,
+          multiline: true,
+          options: [
+            { value: 'http://onto.nerc.ac.uk/CEHMD/rels/cites', label: 'Cites' },
+            { value: 'http://onto.nerc.ac.uk/CEHMD/rels/related', label: 'Related' },
+            { value: 'http://onto.nerc.ac.uk/CEHMD/rels/supercedes', label: 'Supercedes' },
+            { value: 'http://onto.nerc.ac.uk/CEHMD/rels/produces', label: 'Produces' },
+            { value: 'http://onto.nerc.ac.uk/CEHMD/rels/uses', label: 'Uses' }
+          ]
         })
 
       ]

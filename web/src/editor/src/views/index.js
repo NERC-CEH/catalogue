@@ -18,7 +18,6 @@ export { default as FundingView } from './FundingView'
 export { default as SupplementalView } from './SupplementalView'
 export { default as ServiceView } from './ServiceView'
 export { default as MapDataSourceView } from './MapDataSourceView'
-export { default as RelatedRecordView } from './RelatedRecordView' // TODO: remove
 export { default as DescriptiveKeywordView } from './DescriptiveKeywordView'
 export { default as TopicCategoryView } from './TopicCategoryView'
 export { default as KeywordThemeView } from './KeywordThemeView'

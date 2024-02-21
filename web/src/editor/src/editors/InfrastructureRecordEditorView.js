@@ -8,7 +8,7 @@ import {
   ParentStringView,
   ParentView,
   PredefinedParentView,
-  RelatedRecordView,
+  RelationshipView,
   SingleObjectView,
   TextareaView,
   TextOnlyView
@@ -19,7 +19,7 @@ import {
   InfrastructureChallenge
 } from '../models'
 import { BoundingBox, BoundingBoxView } from '../geometryMap'
-// TODO: replace RelatedRecordView with RelationshipView
+
 export default EditorView.extend({
 
   initialize () {
@@ -274,10 +274,15 @@ export default EditorView.extend({
 
         new ParentView({
           model: this.model,
-          modelAttribute: 'relatedRecords',
-          label: 'Related records',
-          ObjectInputView: RelatedRecordView,
-          multiline: true
+          modelAttribute: 'relationships',
+          label: 'Relationships',
+          ObjectInputView: RelationshipView,
+          multiline: true,
+          options: [
+            { value: 'http://onto.nerc.ac.uk/CEHMD/rels/related', label: 'Related' },
+            { value: 'http://onto.nerc.ac.uk/CEHMD/rels/produces', label: 'Produces' },
+            { value: 'http://onto.nerc.ac.uk/CEHMD/rels/uses', label: 'Uses' }
+          ]
         })
       ]
     }

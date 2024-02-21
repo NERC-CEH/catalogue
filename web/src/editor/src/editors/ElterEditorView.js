@@ -14,7 +14,7 @@ import {
   ParentView,
   PredefinedParentView,
   ReadOnlyView,
-  RelatedRecordView,
+  RelationshipView,
   ResourceConstraintView,
   ResourceIdentifierView,
   ResourceTypeView,
@@ -48,7 +48,7 @@ import InputView from '../InputView'
 import BoundingBoxView from '../geometryMap/BoundingBoxView'
 import BoundingBox from '../geometryMap/BoundingBox'
 import SelectView from '../SelectView'
-// TODO: replace RelatedRecordView with RelationshipView
+
 export default EditorView.extend({
 
   initialize () {
@@ -312,10 +312,32 @@ export default EditorView.extend({
 
         new ParentView({
           model: this.model,
-          modelAttribute: 'relatedRecords',
-          label: 'Related records',
-          ObjectInputView: RelatedRecordView,
-          multiline: true
+          modelAttribute: 'relationships',
+          label: 'Relationships',
+          ObjectInputView: RelationshipView,
+          multiline: true,
+          options: [
+            {
+              value: 'https://vocabs.ceh.ac.uk/eidc#generates',
+              label: 'Generates (e.g. a model generates a dataset)'
+            },
+            {
+              value: 'https://vocabs.ceh.ac.uk/eidc#memberOf',
+              label: 'Member of (e.g. a dataset is a member of a data collection)'
+            },
+            {
+              value: 'https://vocabs.ceh.ac.uk/eidc#relatedTo',
+              label: 'Related To'
+            },
+            {
+              value: 'https://vocabs.ceh.ac.uk/eidc#supercedes',
+              label: 'Supercedes'
+            },
+            {
+              value: 'https://vocabs.ceh.ac.uk/eidc#uses',
+              label: 'Uses'
+            }
+          ]
         })
       ]
     },
