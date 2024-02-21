@@ -1,3 +1,4 @@
+<#-- @ftlvariable name="sparqlEndpoint" type="java.lang.String" -->
 <head>
   <link href="https://unpkg.com/@triply/yasgui/build/yasgui.min.css" rel="stylesheet" type="text/css" />
   <script src="https://unpkg.com/@triply/yasgui/build/yasgui.min.js"></script>
@@ -8,7 +9,7 @@
 <script>
   const yasgui = new Yasgui(document.getElementById("yasgui"), {
     requestConfig: {
-      endpoint: "https://sparql.catalogue.ceh.ac.uk/ds/sparql"
+      endpoint: "${sparqlEndpoint}"
     }
   });
   const yasqe = yasgui.getTab().yasqe
