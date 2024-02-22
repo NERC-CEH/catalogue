@@ -10,7 +10,9 @@
     //Hide the filters panel in small screen mode
     .filters-panel {
         height: 0; // WARNING: We would usually just set display:none to
-        overflow: hidden; // hide the panel. This causes OpenLayers to fail to load
+        overflow: auto;
+        //scrollbar-gutter: stable;
+        scrollbar-width: thin;
     }
 
     @media (min-width: @screen-md-min) {
@@ -29,6 +31,7 @@
             font-size: 1.2em;
             color: @filter-body-colour;
         }
+
         .header {
             height: @filter-heading-height;
             width: 100%;
@@ -41,6 +44,7 @@
                 font-size: 1.3em;
                 color: @filter-heading-color; //@header-text;
                 cursor: pointer;
+
                 &:hover {
                     text-decoration: underline;
                 }
@@ -51,12 +55,35 @@
             #drawing-toggle {
                 display: none;
             }
+
             .map-heading {
                 position: absolute;
                 bottom: 0;
             }
+
+            .map {
+                height: 250px;
+            }
+
+            .spatial-filter {
+                // hide the Save and Cancel buttons from the draw actions (https://stackoverflow.com/questions/51360283/how-to-remove-save-option-from-leaflet-draw-api-delete-button)
+                ul.leaflet-draw-actions.leaflet-draw-actions-bottom li a[title="Save changes"],
+                ul.leaflet-draw-actions.leaflet-draw-actions-bottom li a[title="Cancel editing, discards all changes"] {
+                    display: none;
+                }
+
+                .form-operation {
+                    padding-left: 15px;
+
+                    label {
+                        font-weight: 400;
+                        color: @filter-body-colour;
+                    }
+                }
+            }
+
             .facet-filter {
-                position: absolute;
+                height: 40%;
                 top: @filter-heading-height;
                 bottom: @filter-heading-height;
                 left: 0;
@@ -66,21 +93,26 @@
                 scrollbar-gutter: stable;
                 scrollbar-width: thin /* Firefox only*/;
                 padding-left: 1em;
+
                 .facet {
                     margin-bottom: 1em;
                     max-height: 600px;
                     overflow-y: auto;
                     overflow-x: hidden;
                     scrollbar-width: thin;
+
                     h3 {
                         font-weight: 600;
                         margin-bottom: 0.25em;
                     }
+
                     ul {
-                        padding:0;
-                        margin:1px;
+                        padding: 0;
+                        margin: 1px;
+
                         li {
                             list-style: none;
+
                             .facet-count {
                                 margin-left: 0.5em;
                                 color: lighten(@filter-body-link-colour, 10%);
@@ -107,7 +139,9 @@
                     }
                 }
             }
+
             /* For webkit browsers only*/
+
             .facet-filter::-webkit-scrollbar {
                 width: 8px;
             }
@@ -125,9 +159,11 @@
 
         &.map-mode {
             @selected-color: @brand-success;
+
             .facet-filter {
                 display: none;
             }
+
             .map-heading {
                 margin-top: @filter-heading-gap;
                 height: @filter-heading-height;
@@ -144,6 +180,7 @@
                 bottom: 0;
                 left: 0;
                 right: 0;
+
                 div.olControlZoom {
                     left: 2px;
                     top: 5px;

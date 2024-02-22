@@ -8,7 +8,7 @@ export default Backbone.Model.extend({
     drawing: false,
     mapsearch: false,
     bbox: undefined,
-    op: undefined,
+    op: 'intersects',
     facet: [],
     term: undefined,
     page: 1,
@@ -108,5 +108,19 @@ export default Backbone.Model.extend({
     }
     this.results = null
     this.trigger('cleared:results')
+  },
+  /*
+  Update the search box, which triggers an update of the results
+   */
+  setBbox (bbox) {
+    this.set({ bbox })
+  },
+
+  /*
+  Clear the search box, which triggers an update of the results
+  Also clear the 'op', since this is the spatial operation to perform, which is not needed if there is no bbox
+   */
+  clearBbox () {
+    this.unset('bbox')
   }
 })
