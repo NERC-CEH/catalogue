@@ -10,10 +10,7 @@ import {
   TextareaView
 } from '../views'
 import { MultipleDate } from '../models'
-import {
-  BoundingBox,
-  BoundingBoxView
-} from '../geometryMap'
+import { BoundingBox, BoundingBoxView } from '../geometryMap'
 
 export default EditorView.extend({
 
@@ -99,7 +96,7 @@ export default EditorView.extend({
             { value: 'http://onto.nerc.ac.uk/CEHMD/rels/uses', label: 'Uses' }
           ],
           helpText: `
-<p>Relationships to other OSDP document types</p>
+<p>Relationships to other document types</p>
 `
         })
       ]

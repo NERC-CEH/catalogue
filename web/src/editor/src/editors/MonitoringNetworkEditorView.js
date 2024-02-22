@@ -57,7 +57,7 @@ export default EditorView.extend({
             { value: 'http://onto.nerc.ac.uk/CEHMD/rels/produces', label: 'Produces' }
           ],
           helpText: `
-<p>Relationships to other OSDP document types</p>
+<p>Relationships to other document types</p>
 `
         })
       ]
