@@ -1,8 +1,7 @@
-import _ from 'underscore'
 import L from 'leaflet'
 import 'leaflet-draw'
 import template from '../templates/spatialFilterTemplate'
-import Backbone from "backbone";
+import Backbone from 'backbone'
 
 export default Backbone.View.extend({
 
@@ -23,7 +22,7 @@ export default Backbone.View.extend({
     const baseMaps = {
       Map: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 18,
-        attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+        attribution: '&copy; <a href=\'https://openstreetmap.org/copyright\'>OpenStreetMap contributors</a>'
       }),
       Satellite: L.tileLayer('http://www.google.cn/maps/vt?lyrs=s@189&gl=cn&x={x}&y={y}&z={z}', {
         attribution: 'google'
@@ -56,19 +55,18 @@ export default Backbone.View.extend({
     })
   },
 
-  updateOp(op) {
+  updateOp (op) {
     this.$el.find('#opWithin').prop('checked', (op === 'iswithin'))
     this.$el.find('#opIntersects').prop('checked', (op === 'intersects'))
   },
 
   // Add the bounding box to the map if it has been added to the model and there isn't yet a bounding box on the map
   // The incomming bbox is a comma separated string of lat/lon of the form west-lon,east-lon,north-lat,south-lat
-  updateBbox(bbox){
-    if((bbox !== undefined) && (this.drawnItems.getLayers().length === 0)){
-
+  updateBbox (bbox) {
+    if ((bbox !== undefined) && (this.drawnItems.getLayers().length === 0)) {
       const coords = bbox.split(',')
-      const bounds = [[coords[3],coords[0]],[coords[2],coords[1]]]
-      this.drawnItems.addLayer(L.rectangle(bounds, {color: "#ff7800", weight: 1}))
+      const bounds = [[coords[3], coords[0]], [coords[2], coords[1]]]
+      this.drawnItems.addLayer(L.rectangle(bounds))
 
       this.map.removeControl(this.drawControl)
       this.drawControl = this.deleteToolbar()
@@ -123,8 +121,8 @@ export default Backbone.View.extend({
    * Using this 'locations' field, the simplest spatial query to find the records within a search box is: 'locations:"Intersects(ENVELOPE(minX, maxX, maxY, minY)"
    * So the Bbox property of the model for doing the search, needs to be the String: minX,maxX,maxY,minY
    */
-  setBbox(bounds){
-    this.model.setBbox([bounds._bounds._southWest.lng,bounds._bounds._northEast.lng,bounds._bounds._northEast.lat,bounds._bounds._southWest.lat].toString())
+  setBbox (bounds) {
+    this.model.setBbox([bounds._bounds._southWest.lng, bounds._bounds._northEast.lng, bounds._bounds._northEast.lat, bounds._bounds._southWest.lat].toString())
   },
 
   viewMap () {

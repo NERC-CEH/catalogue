@@ -346,7 +346,7 @@ public class SearchQueryTest {
         SolrQuery solrQuery = query.build();
 
         //Then
-        assertThat(Arrays.asList(solrQuery.getFilterQueries()).contains("locations:\"IsWithin(1.11,2.22,3.33,4.44)\""), is(true));
+        assertThat(Arrays.asList(solrQuery.getFilterQueries()).contains("locations:\"iswithin(ENVELOPE(1.11,2.22,3.33,4.44))\""), is(true));
     }
 
     @Test
@@ -379,7 +379,7 @@ public class SearchQueryTest {
         SolrQuery solrQuery = query.build();
 
         //Then
-        assertThat(Arrays.asList(solrQuery.getFilterQueries()).contains("locations:\"Intersects(1.11,2.22,3.33,4.44)\""), is(true));
+        assertThat(Arrays.asList(solrQuery.getFilterQueries()).contains("locations:\"intersects(ENVELOPE(1.11,2.22,3.33,4.44))\""), is(true));
     }
 
     @Test
@@ -574,7 +574,7 @@ public class SearchQueryTest {
         //Then
         assertThat("Term should be searched for", url, containsString("term=My+Search+Term"));
         assertThat("BBOX should be searched for", url, containsString("bbox=1,2,3,4"));
-        assertThat("OP should be present", url, containsString("op=IsWithin"));
+        assertThat("OP should be present", url, containsString("op=iswithin"));
         assertThat("page should be specified", url, containsString("page=24"));
         assertThat("rows should be present", url, containsString("rows=30"));
         assertThat("facet should be filtered", url, containsString("facet=licence%7Cb"));
@@ -609,7 +609,7 @@ public class SearchQueryTest {
         String url = interestingQuery.toUrl();
 
         //Then
-        assertThat(url, equalTo("http://my.endpo.int?page=24&rows=30&term=My+Search+Term&bbox=1,2,3,4&op=IsWithin&facet=licence%7Cb"));
+        assertThat(url, equalTo("http://my.endpo.int?#page=24&rows=30&term=My+Search+Term&bbox=1,2,3,4&op=iswithin&facet=licence%7Cb"));
     }
 
     @Test

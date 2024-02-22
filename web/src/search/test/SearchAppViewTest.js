@@ -1,11 +1,12 @@
 import SearchAppView from '../src/SearchAppView'
 import SearchApp from '../src/SearchApp'
+import $ from 'jquery'
 
 describe('Test SearchAppView', () => {
   let view = null
 
   beforeEach(() => {
-    $(document.body).html(`<div id="search"><div class="spatial-filter"><div class="map"></div></div></div>`)
+    $(document.body).html('<div id=\'search\'><div class=\'spatial-filter\'><div class=\'map\'></div></div></div>')
     const model = new SearchApp({ title: 'some text' })
     view = new SearchAppView({
       model

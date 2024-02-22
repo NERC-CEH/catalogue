@@ -1,8 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
 public enum SpatialOperation {
-    INTERSECTS ("Intersects"),
-    ISWITHIN ("IsWithin");
+    INTERSECTS ("intersects"),
+    ISWITHIN ("iswithin");
 
     private final String operation;
 

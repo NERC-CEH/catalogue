@@ -112,15 +112,15 @@ export default Backbone.Model.extend({
   /*
   Update the search box, which triggers an update of the results
    */
-  setBbox(bbox) {
-    this.set({'bbox': bbox})
+  setBbox (bbox) {
+    this.set({ bbox })
   },
 
   /*
   Clear the search box, which triggers an update of the results
   Also clear the 'op', since this is the spatial operation to perform, which is not needed if there is no bbox
    */
-  clearBbox() {
+  clearBbox () {
     this.unset('bbox')
   }
 })

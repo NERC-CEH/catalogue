@@ -268,7 +268,11 @@ public class SearchQuery {
         }
 
         // cannot just encode UriComponents as other parameters (facets, bbox) already Uri encoded
-        return builder.build().toUriString();
+        // Note: if a querystring exists (denoted by '?'), then add a '#' after it to turn the whole querystring into
+        // a backbone hash fragment (https://backbonejs.org/).  This makes the search filters all persist via the url, without this then facet filters would overrule the spatial filter on the interface.
+        // Also, there may be a more elegant way to do this since UriComponentsBuilder has support for fragments, but the current solution is very simple and effective
+        return builder.build().toUriString().replace("?", "?#");
+
     }
 
     /**

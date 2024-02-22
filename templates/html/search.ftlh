@@ -8,10 +8,12 @@
           <h3>Facet filters</h3>
         </div>
         <div class="facet-filter"><#include "search/_facets.ftlh"></div>
-        <div class="header facet-heading">
-          <h3>Spatial filter</h3>
+        <div class="spatial">
+          <div class="header facet-heading">
+            <h3>Spatial filter</h3>
+          </div>
+          <div class="spatial-filter"></div>
         </div>
-        <div class="spatial-filter"></div>
     </div>
 
     <div class="results"><#include "search/_page.ftlh"></div>
