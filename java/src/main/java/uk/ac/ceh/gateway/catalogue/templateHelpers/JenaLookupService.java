@@ -137,21 +137,21 @@ public class JenaLookupService {
         ObjectMapper mapper = new ObjectMapper();
 
         for (Link link : links) {
-            if (link.getGeometry() != null  && !link.getGeometry().isEmpty()) {
+            if (!link.getGeometry().isEmpty()) {
                 JsonNode jsonNode = mapper.readTree(link.getGeometry());
                 features.add(jsonNode);
             }
         }
 
         // Prevent output (and hence plotting map) if no Geometry information found
-        if (!features.isEmpty()) {
-            ObjectNode featureCollection = mapper.createObjectNode();
-            featureCollection.put("type", "FeatureCollection");
-            featureCollection.set("features", mapper.valueToTree(features));
-            return mapper.writeValueAsString(featureCollection);
+        if (features.isEmpty()) {
+            return "";
         }
 
-        return "";
+        ObjectNode featureCollection = mapper.createObjectNode();
+        featureCollection.put("type", "FeatureCollection");
+        featureCollection.set("features", mapper.valueToTree(features));
+        return mapper.writeValueAsString(featureCollection);
     }
 
     public List<Link> allRelatedRecords(String uri) {
@@ -209,7 +209,7 @@ public class JenaLookupService {
                     .href(s.getResource("node").getURI())
                     .associationType(s.getLiteral("type").getString())
                     .rel(s.getResource("rel").getURI())
-                    .geometry(s.getLiteral("geom") != null ? s.getLiteral("geom").getString() : null)
+                    .geometry(s.getLiteral("geom") != null ? s.getLiteral("geom").getString() : "")
                     .build()
             ));
         } finally {

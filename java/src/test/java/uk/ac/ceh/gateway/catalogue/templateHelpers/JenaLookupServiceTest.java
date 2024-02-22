@@ -82,8 +82,8 @@ public class JenaLookupServiceTest {
 
         //Then
         assertThat("Should be 1 Link", actual.size(), equalTo(1));
-        assertThat("Tile should be Monitoring Facility", actual.stream().findFirst().get().getTitle(), equalTo("Monitoring Facility"));
-        assertThat("Geometry should be resolved", actual.stream().findFirst().get().getGeometry(), equalTo(geometryString));
+        assertThat("Tile should be Monitoring Facility", actual.stream().findFirst().orElseThrow().getTitle(), equalTo("Monitoring Facility"));
+        assertThat("Geometry should be resolved", actual.stream().findFirst().orElseThrow().getGeometry(), equalTo(geometryString));
     }
 
     @Test
