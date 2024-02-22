@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.templateHelpers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
@@ -26,6 +27,7 @@ public class JenaLookupServiceTest {
     private JenaLookupService service;
 
     private static final Property OSDP_PRODUCES = ResourceFactory.createProperty("http://onto.nerc.ac.uk/CEHMD/rels/produces");
+    private static final Property PART_OF = ResourceFactory.createProperty("http://onto.nerc.ac.uk/CEHMD/rels/partOf");
 
     @BeforeEach
     public void init() {
@@ -63,6 +65,49 @@ public class JenaLookupServiceTest {
         //Then
         assertThat("Should be 1 Link", actual.size(), equalTo(1));
         assertThat("Tile should be Dataset 1", actual.stream().findFirst().get().getTitle(), equalTo("Monitoring Activity"));
+    }
+
+    @Test
+    public void lookupInverseRelationshipsWithGeometries() {
+        //Given
+        Model triples = jenaTdb.getDefaultModel();
+        String geometryString = "{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[0,0]}}";
+        triples.add(createResource("http://monitoringFacility"), TITLE, "Monitoring Facility");
+        triples.add(createResource("http://monitoringFacility"), PART_OF, createResource("http://network1"));
+        triples.add(createResource("http://monitoringFacility"), TYPE, "Monitoring Facility");
+        triples.add(createResource("http://monitoringFacility"), HAS_GEOMETRY, geometryString);
+
+        //When
+        List<Link> actual = service.inverseRelationships("http://network1", PART_OF.toString());
+
+        //Then
+        assertThat("Should be 1 Link", actual.size(), equalTo(1));
+        assertThat("Tile should be Monitoring Facility", actual.stream().findFirst().orElseThrow().getTitle(), equalTo("Monitoring Facility"));
+        assertThat("Geometry should be resolved", actual.stream().findFirst().orElseThrow().getGeometry(), equalTo(geometryString));
+    }
+
+    @Test
+    public void inverseRelationshipCombinedGeometries() throws JsonProcessingException {
+        //Given
+        Model triples = jenaTdb.getDefaultModel();
+        String geometryString = "{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[0,0]}}";
+        String geometryString2 = "{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point2\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[1,1]}}";
+        String combinedGeometry = "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[0,0]}},{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point2\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[1,1]}}]}";
+        triples.add(createResource("http://monitoringFacility"), TITLE, "Monitoring Facility");
+        triples.add(createResource("http://monitoringFacility"), PART_OF, createResource("http://network1"));
+        triples.add(createResource("http://monitoringFacility"), TYPE, "Monitoring Facility");
+        triples.add(createResource("http://monitoringFacility"), HAS_GEOMETRY, geometryString);
+
+        triples.add(createResource("http://monitoringFacility2"), TITLE, "Monitoring Facility 2");
+        triples.add(createResource("http://monitoringFacility2"), PART_OF, createResource("http://network1"));
+        triples.add(createResource("http://monitoringFacility2"), TYPE, "Monitoring Facility");
+        triples.add(createResource("http://monitoringFacility2"), HAS_GEOMETRY, geometryString2);
+
+        //When
+        String actual = service.inverseRelationshipCombinedGeometries("http://network1", PART_OF.toString());
+
+        //Then
+        assertThat("Generates correct combined GeoJSON", actual, equalTo(combinedGeometry));
     }
 
 
