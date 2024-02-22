@@ -10,6 +10,7 @@ import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
+import uk.ac.ceh.gateway.catalogue.gemini.RelatedRecord;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 
@@ -32,6 +33,7 @@ public class InfrastructureRecord extends AbstractMetadataDocument {
     private List<String> users;
     private List<BoundingBox> boundingBoxes;
     private List<OnlineResource> onlineResources;
+    private List<RelatedRecord> relatedRecords; // TODO: remove after data migration
 }
 
 
