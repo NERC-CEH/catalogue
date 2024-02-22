@@ -53,8 +53,12 @@ export default EditorView.extend({
           ObjectInputView: RelationshipView,
           multiline: true,
           options: [
-            { value: 'http://onto.nerc.ac.uk/CEHMD/rels/partOf', label: 'Part of' },
-            { value: 'http://onto.nerc.ac.uk/CEHMD/rels/produces', label: 'Produces' }
+            { value: 'http://purl.org/voc/ef#broader', label: 'Broader' },
+            { value: 'http://purl.org/voc/ef#involvedIn', label: 'Involved In' },
+            { value: 'http://purl.org/voc/ef#narrower', label: 'Narrower' },
+            { value: 'http://purl.org/voc/ef#relatedTo', label: 'Related To' },
+            { value: 'http://purl.org/voc/ef#supersededBy', label: 'Superseded By' },
+            { value: 'http://purl.org/voc/ef#supersedes', label: 'Supersedes' }
           ],
           helpText: `
 <p>Relationships to other OSDP document types</p>

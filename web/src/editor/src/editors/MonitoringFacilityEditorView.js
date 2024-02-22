@@ -93,13 +93,7 @@ export default EditorView.extend({
           ObjectInputView: RelationshipView,
           multiline: true,
           options: [
-            { value: 'http://onto.nerc.ac.uk/CEHMD/rels/partOf', label: 'Part of' },
-            { value: 'http://onto.nerc.ac.uk/CEHMD/rels/produces', label: 'Produces' },
-            { value: 'https://vocabs.ceh.ac.uk/eidc#generates', label: 'Generates' },
-            { value: 'https://vocabs.ceh.ac.uk/eidc#memberOf', label: 'Member Of' },
-            { value: 'https://vocabs.ceh.ac.uk/eidc#relatedTo', label: 'Related to' },
-            { value: 'https://vocabs.ceh.ac.uk/eidc#supersedes', label: 'Supersedes' },
-            { value: 'https://vocabs.ceh.ac.uk/eidc#Uses', label: 'Uses' }
+            { value: 'http://purl.org/voc/ef#belongsTo', label: 'Belongs To' }
           ],
           helpText: `
 <p>Relationships to other document types</p>
