@@ -3,7 +3,7 @@
 
 <@o.base>
   <#assign inverseRelationshipCombinedGeometriesOutput>
-    <@o.inverseRelationshipCombinedGeometries "http://onto.nerc.ac.uk/CEHMD/rels/partOf" />
+    <@o.inverseRelationshipCombinedGeometries "http://purl.org/voc/ef#belongsTo" />
   </#assign>
   <#if inverseRelationshipCombinedGeometriesOutput?has_content>
     <@b.key "Location" "Monitoring Network">

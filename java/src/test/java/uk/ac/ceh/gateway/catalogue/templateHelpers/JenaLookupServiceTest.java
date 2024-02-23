@@ -27,7 +27,7 @@ public class JenaLookupServiceTest {
     private JenaLookupService service;
 
     private static final Property OSDP_PRODUCES = ResourceFactory.createProperty("http://onto.nerc.ac.uk/CEHMD/rels/produces");
-    private static final Property PART_OF = ResourceFactory.createProperty("http://onto.nerc.ac.uk/CEHMD/rels/partOf");
+    private static final Property BELONGS_TO = ResourceFactory.createProperty("http://purl.org/voc/ef#belongsTo");
 
     @BeforeEach
     public void init() {
@@ -73,12 +73,12 @@ public class JenaLookupServiceTest {
         Model triples = jenaTdb.getDefaultModel();
         String geometryString = "{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[0,0]}}";
         triples.add(createResource("http://monitoringFacility"), TITLE, "Monitoring Facility");
-        triples.add(createResource("http://monitoringFacility"), PART_OF, createResource("http://network1"));
+        triples.add(createResource("http://monitoringFacility"), BELONGS_TO, createResource("http://network1"));
         triples.add(createResource("http://monitoringFacility"), TYPE, "Monitoring Facility");
         triples.add(createResource("http://monitoringFacility"), HAS_GEOMETRY, geometryString);
 
         //When
-        List<Link> actual = service.inverseRelationships("http://network1", PART_OF.toString());
+        List<Link> actual = service.inverseRelationships("http://network1", BELONGS_TO.toString());
 
         //Then
         assertThat("Should be 1 Link", actual.size(), equalTo(1));
@@ -94,17 +94,17 @@ public class JenaLookupServiceTest {
         String geometryString2 = "{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point2\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[1,1]}}";
         String combinedGeometry = "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[0,0]}},{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point2\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[1,1]}}]}";
         triples.add(createResource("http://monitoringFacility"), TITLE, "Monitoring Facility");
-        triples.add(createResource("http://monitoringFacility"), PART_OF, createResource("http://network1"));
+        triples.add(createResource("http://monitoringFacility"), BELONGS_TO, createResource("http://network1"));
         triples.add(createResource("http://monitoringFacility"), TYPE, "Monitoring Facility");
         triples.add(createResource("http://monitoringFacility"), HAS_GEOMETRY, geometryString);
 
         triples.add(createResource("http://monitoringFacility2"), TITLE, "Monitoring Facility 2");
-        triples.add(createResource("http://monitoringFacility2"), PART_OF, createResource("http://network1"));
+        triples.add(createResource("http://monitoringFacility2"), BELONGS_TO, createResource("http://network1"));
         triples.add(createResource("http://monitoringFacility2"), TYPE, "Monitoring Facility");
         triples.add(createResource("http://monitoringFacility2"), HAS_GEOMETRY, geometryString2);
 
         //When
-        String actual = service.inverseRelationshipCombinedGeometries("http://network1", PART_OF.toString());
+        String actual = service.inverseRelationshipCombinedGeometries("http://network1", BELONGS_TO.toString());
 
         //Then
         assertThat("Generates correct combined GeoJSON", actual, equalTo(combinedGeometry));
