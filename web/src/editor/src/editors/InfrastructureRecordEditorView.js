@@ -1,14 +1,23 @@
 import { EditorView, InputView, SelectView } from '../index'
 import {
-  ContactView, InfrastructureCategoryView, InfrastructureChallengeView, InfrastructureOnlineLinkView, KeywordView,
+  ContactView,
+  InfrastructureCategoryView,
+  InfrastructureChallengeView,
+  InfrastructureOnlineLinkView,
+  KeywordView,
   ParentStringView,
   ParentView,
   PredefinedParentView,
-  RelatedRecordView, SingleObjectView,
+  RelationshipView,
+  SingleObjectView,
   TextareaView,
   TextOnlyView
 } from '../views'
-import { Contact, InfrastructureCategory, InfrastructureChallenge } from '../models'
+import {
+  Contact,
+  InfrastructureCategory,
+  InfrastructureChallenge
+} from '../models'
 import { BoundingBox, BoundingBoxView } from '../geometryMap'
 
 export default EditorView.extend({
@@ -265,10 +274,15 @@ export default EditorView.extend({
 
         new ParentView({
           model: this.model,
-          modelAttribute: 'relatedRecords',
-          label: 'Related records',
-          ObjectInputView: RelatedRecordView,
-          multiline: true
+          modelAttribute: 'relationships',
+          label: 'Relationships',
+          ObjectInputView: RelationshipView,
+          multiline: true,
+          options: [
+            { value: 'http://onto.nerc.ac.uk/CEHMD/rels/related', label: 'Related' },
+            { value: 'http://onto.nerc.ac.uk/CEHMD/rels/produces', label: 'Produces' },
+            { value: 'http://onto.nerc.ac.uk/CEHMD/rels/uses', label: 'Uses' }
+          ]
         })
       ]
     }

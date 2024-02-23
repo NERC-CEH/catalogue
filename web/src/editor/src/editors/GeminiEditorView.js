@@ -7,19 +7,20 @@ import {
   CheckboxView,
   ContactView,
   DatasetReferenceDateView,
+  DescriptiveKeywordView,
   DistributionFormatView,
   FundingView,
   IncomingCitationView,
   InspireThemeView,
-  KeywordVocabularyView,
   KeywordThemeView,
+  KeywordVocabularyView,
   MapDataSourceView,
   OnlineResourceView,
   ParentStringView,
   ParentView,
   PredefinedParentView,
   ReadOnlyView,
-  RelatedRecordView,
+  RelationshipView,
   ResourceConstraintView,
   ResourceIdentifierView,
   ResourceMaintenanceView,
@@ -31,12 +32,12 @@ import {
   SpatialResolutionView,
   TemporalExtentView,
   TextareaView,
-  TopicCategoryView,
-  DescriptiveKeywordView
+  TopicCategoryView
 } from '../views'
 import {
   AccessLimitation,
   Contact,
+  DescriptiveKeyword,
   DistributionFormat,
   Funding,
   InspireTheme,
@@ -48,13 +49,9 @@ import {
   Service,
   SpatialResolution,
   Supplemental,
-  TopicCategory,
-  DescriptiveKeyword
+  TopicCategory
 } from '../models'
-import {
-  BoundingBox,
-  BoundingBoxView
-} from '../geometryMap'
+import { BoundingBox, BoundingBoxView } from '../geometryMap'
 
 export default EditorView.extend({
 
@@ -510,12 +507,34 @@ export default EditorView.extend({
 
         new ParentView({
           model: this.model,
-          modelAttribute: 'relatedRecords',
-          label: 'Related records',
-          ObjectInputView: RelatedRecordView,
+          modelAttribute: 'relationships',
+          label: 'Relationships',
+          ObjectInputView: RelationshipView,
           multiline: true,
+          options: [
+            {
+              value: 'https://vocabs.ceh.ac.uk/eidc#generates',
+              label: 'Generates (e.g. a model generates a dataset)'
+            },
+            {
+              value: 'https://vocabs.ceh.ac.uk/eidc#memberOf',
+              label: 'Member of (e.g. a dataset is a member of a data collection)'
+            },
+            {
+              value: 'https://vocabs.ceh.ac.uk/eidc#relatedTo',
+              label: 'Related To'
+            },
+            {
+              value: 'https://vocabs.ceh.ac.uk/eidc#supercedes',
+              label: 'Supercedes'
+            },
+            {
+              value: 'https://vocabs.ceh.ac.uk/eidc#uses',
+              label: 'Uses'
+            }
+          ],
           helpText: `
-<p>This is to link related datasets,etc which are in <i>this</i> catalogue. Externally hosted datasets can be linked using <strong>Supplemental</strong> &gt; <strong>Additional links</strong> &gt; <strong>Related dataset</strong></p>
+<p>This is to link related datasets, etc. which are in <i>this</i> catalogue. Externally hosted datasets can be linked using <strong>Supplemental</strong> &gt; <strong>Additional links</strong> &gt; <strong>Related dataset</strong></p>
 `
         })
       ]
@@ -771,10 +790,10 @@ export default EditorView.extend({
     <li>GeoTiff - Raster</li>
 </ul>
 <p>To maximise performance, it is generally best to provide reprojected variants of data sources in common EPSG codes.</p>
-<p>Vector datasets should be spatially indexed (using <a href="http://mapserver.org/utilities/shptree.html">shptree</a>)</p>
-<p>Raster datasets should be provided with <a href="http://www.gdal.org/gdaladdo.html">overviews</a>. GeoTiff supports internal overviews.</p>
+<p>Vector datasets should be spatially indexed (using <a href="https://mapserver.org/utilities/shptree.html">shptree</a>)</p>
+<p>Raster datasets should be provided with <a href="https://www.gdal.org/gdaladdo.html">overviews</a>. GeoTiff supports internal overviews.</p>
 <p>The 'Byte?' option that appears for raster (GeoTiff) datasets is used to indicate whether the GeoTiff is a 'byte' or 'non-byte' datatype.
-This is only needed if you configure 'Stylying=Classification' for your GeoTiff.</p>
+This is only needed if you configure 'Styling=Classification' for your GeoTiff.</p>
 <p>Paths should be specified relative to the base of the datastore. e.g. <strong>5b3fcf9f-19d4-4ad3-a8bb-0a5ea02c857e/my_shapefile</strong></p>\
 `
         })

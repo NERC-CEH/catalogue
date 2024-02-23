@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.templateHelpers;
 
+import lombok.val;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.Model;
@@ -20,6 +21,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.ac.ceh.gateway.catalogue.indexing.jena.Ontology.*;
 
 public class JenaLookupServiceTest {
@@ -30,9 +32,32 @@ public class JenaLookupServiceTest {
     private static final Property BELONGS_TO = ResourceFactory.createProperty("http://purl.org/voc/ef#belongsTo");
 
     @BeforeEach
-    public void init() {
+    void init() {
         jenaTdb = TDBFactory.createDataset();
         service = new JenaLookupService(jenaTdb);
+    }
+
+    @Test
+    void findEidcRelationsForCollection() {
+        //given
+        val collection = "https://collection";
+        val dataset1 = "http://dataset1";
+        val dataset2 = "http://dataset2";
+        Model triples = jenaTdb.getDefaultModel();
+        triples.add(createResource(dataset1), TITLE, "Dataset 1");
+        triples.add(createResource(dataset1), TYPE, "dataset");
+        triples.add(createResource(dataset1), EIDC_MEMBER_OF, createResource(collection));
+        triples.add(createResource(dataset2), TITLE, "Dataset 2");
+        triples.add(createResource(dataset2), TYPE, "dataset");
+        triples.add(createResource(dataset2), EIDC_MEMBER_OF, createResource(collection));
+        triples.add(createResource("http://other"), REFERENCES, createResource(collection));
+
+        //when
+        List<Link> actual = service.incomingEidcRelations(collection);
+
+        //then
+        assertThat(actual.size(), equalTo(2));
+
     }
 
     @Test
@@ -48,7 +73,7 @@ public class JenaLookupServiceTest {
 
         //Then
         assertThat("Should be 1 Link", actual.size(), equalTo(1));
-        assertThat("Tile should be Dataset 1", actual.stream().findFirst().get().getTitle(), equalTo("Dataset 1"));
+        assertThat("Tile should be Dataset 1", actual.stream().findFirst().orElseThrow().getTitle(), equalTo("Dataset 1"));
     }
 
     @Test
@@ -64,7 +89,7 @@ public class JenaLookupServiceTest {
 
         //Then
         assertThat("Should be 1 Link", actual.size(), equalTo(1));
-        assertThat("Tile should be Dataset 1", actual.stream().findFirst().get().getTitle(), equalTo("Monitoring Activity"));
+        assertThat("Tile should be Dataset 1", actual.stream().findFirst().orElseThrow().getTitle(), equalTo("Monitoring Activity"));
     }
 
     @Test
@@ -253,8 +278,8 @@ public class JenaLookupServiceTest {
         List<String> actual = service.linked("http://master");
 
         //Then
-        assertThat("should contain two plain identifiers", actual.contains("049283da-ee18-4b46-b714-d76f9a1ee479"));
-        assertThat("should contain two plain identifiers", actual.contains("d8234690-1b61-4084-a349-eb53467383fe"));
+        assertTrue(actual.contains("049283da-ee18-4b46-b714-d76f9a1ee479"));
+        assertTrue(actual.contains("d8234690-1b61-4084-a349-eb53467383fe"));
 
     }
 }

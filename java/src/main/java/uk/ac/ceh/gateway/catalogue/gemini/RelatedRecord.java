@@ -10,6 +10,7 @@ import uk.ac.ceh.gateway.catalogue.model.Relationship;
 import java.util.Optional;
 
 @Value
+// TODO: To be removed once data migrated to Relationships
 public class RelatedRecord {
     @NonNull String rel, identifier;
     String href, title, associationType;

@@ -27,6 +27,11 @@ public abstract class AbstractMetadataDocument implements MetadataDocument {
     private Set<Relationship> relationships;
     private List<Keyword> keywords;
 
+    public Set<Relationship> getRelationships() {
+        return Optional.ofNullable(relationships)
+            .orElse(Collections.emptySet());
+    }
+
     public List<ResourceIdentifier> getResourceIdentifiers() {
         return Optional.ofNullable(resourceIdentifiers)
             .orElse(Collections.emptyList());

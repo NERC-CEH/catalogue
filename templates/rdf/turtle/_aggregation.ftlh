@@ -1,9 +1,7 @@
 a dcmitype:Collection ;
-
-<#if associatedResources?has_content>
+<#list jena.incomingEidcRelations(uri)>
 dct:hasPart
-<#list associatedResources as associatedResource>
+  <#items as associatedResource>
     <${associatedResource.href}><#sep>,
+  </#items>;
 </#list>
-;
-</#if>

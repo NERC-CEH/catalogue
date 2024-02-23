@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.NonNull;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Property;
@@ -34,7 +35,7 @@ public class JenaLookupService {
 
     public JenaLookupService(@NonNull Dataset jenaTdb) {
         this.jenaTdb = jenaTdb;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     /**
@@ -163,7 +164,7 @@ public class JenaLookupService {
 
     /**
      * This finds the most recent version of a superseded resource
-     * i.e. if a superseded recource is itself superseded, it will return
+     * i.e. if a superseded resource is itself superseded, it will return
      * only the last in the chain
      */
     public List<Link> superseded(String uri) {
@@ -264,5 +265,21 @@ public class JenaLookupService {
             jenaTdb.end();
         }
         return toReturn;
+    }
+
+    /**
+     * Return all the EIDC incoming relations for a collection
+     *
+     * @return List of relations
+     */
+    public List<Link> incomingEidcRelations(String uri) {
+        val query = "SELECT * " +
+                    "WHERE { " +
+                    "  ?node ?rel ?me ; " +
+                    "  <http://purl.org/dc/terms/title> ?title ; " +
+                    "  <http://purl.org/dc/terms/type>  ?type . " +
+                    "FILTER(strstarts(str(?rel), 'https://vocabs.ceh.ac.uk/eidc#'))" +
+                    "}";
+        return links(uri, query);
     }
 }

@@ -1,12 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.indexing.jena;
 
-import com.google.common.base.Strings;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
-import uk.ac.ceh.gateway.catalogue.model.CodeDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
+import uk.ac.ceh.gateway.catalogue.model.CodeDocument;
 
 import java.util.Collections;
 import java.util.List;
@@ -43,20 +42,6 @@ public class JenaIndexCodeDocumentGenerator implements IndexGenerator<CodeDocume
             .forEach(b ->
                 toReturn.add(createStatement(me, HAS_GEOMETRY, createTypedLiteral(b.getWkt(), WKT_LITERAL)))
             );
-
-        Optional.ofNullable(document.getRelatedRecords())
-            .orElse(Collections.emptyList())
-            .stream()
-            .filter(rr -> !Strings.isNullOrEmpty(rr.getRel()))
-            .filter(rr -> !Strings.isNullOrEmpty(rr.getIdentifier()))
-            .forEach(rr -> {
-                log.debug(rr.toString());
-                toReturn.add(createStatement(
-                    me,
-                    createProperty(rr.getRel()),
-                    createProperty(baseUri + "/id/" + rr.getIdentifier())
-                ));
-            });
 
         return toReturn;
     }

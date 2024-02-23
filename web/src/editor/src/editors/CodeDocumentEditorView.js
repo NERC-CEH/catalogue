@@ -1,11 +1,17 @@
 import { EditorView, InputView, SelectView } from '../index'
 import {
   ContactView,
-  DatasetReferenceDateView, InspireThemeView, KeywordView,
+  DatasetReferenceDateView,
+  InspireThemeView,
+  KeywordView,
   ParentStringView,
   ParentView,
-  PredefinedParentView, RelatedRecordView, ResourceConstraintView, ReviewView,
-  SingleObjectView, TemporalExtentView,
+  PredefinedParentView,
+  RelationshipView,
+  ResourceConstraintView,
+  ReviewView,
+  SingleObjectView,
+  TemporalExtentView,
   TextareaView
 } from '../views'
 import { Contact, InspireTheme, MultipleDate } from '../models'
@@ -284,10 +290,17 @@ export default EditorView.extend({
 
         new ParentView({
           model: this.model,
-          modelAttribute: 'relatedRecords',
-          label: 'Related records',
-          ObjectInputView: RelatedRecordView,
-          multiline: true
+          modelAttribute: 'relationships',
+          label: 'Relationships',
+          ObjectInputView: RelationshipView,
+          multiline: true,
+          options: [
+            { value: 'http://onto.nerc.ac.uk/CEHMD/rels/cites', label: 'Cites' },
+            { value: 'http://onto.nerc.ac.uk/CEHMD/rels/related', label: 'Related' },
+            { value: 'http://onto.nerc.ac.uk/CEHMD/rels/supercedes', label: 'Supercedes' },
+            { value: 'http://onto.nerc.ac.uk/CEHMD/rels/produces', label: 'Produces' },
+            { value: 'http://onto.nerc.ac.uk/CEHMD/rels/uses', label: 'Uses' }
+          ]
         })
 
       ]

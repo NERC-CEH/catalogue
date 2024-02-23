@@ -4,29 +4,44 @@ import {
   DatasetReferenceDateView,
   DeimsSiteView,
   DistributionFormatView,
+  ElterProjectView,
   FundingView,
   InspireThemeView,
+  KeywordVocabularyView,
+  MapDataSourceView,
   OnlineResourceView,
   ParentStringView,
   ParentView,
   PredefinedParentView,
   ReadOnlyView,
-  RelatedRecordView, ResourceConstraintView, ResourceIdentifierView,
+  RelationshipView,
+  ResourceConstraintView,
+  ResourceIdentifierView,
   ResourceTypeView,
-  SingleObjectView, SpatialReferenceSystemView, SpatialRepresentationTypeView, SpatialResolutionView,
+  ServiceView,
+  SingleObjectView,
+  SpatialReferenceSystemView,
+  SpatialRepresentationTypeView,
+  SpatialResolutionView,
   SupplementalView,
   TemporalExtentView,
-  TextareaView, TopicCategoryView, ElterProjectView, KeywordVocabularyView, ServiceView, MapDataSourceView
+  TextareaView,
+  TopicCategoryView
 } from '../views'
 import {
   AccessLimitation,
   Contact,
-  DistributionFormat, Funding,
+  DistributionFormat,
+  ElterProject,
+  Funding,
   InspireTheme,
+  MapDataSource,
   MultipleDate,
   OnlineResource,
-  ResourceType, SpatialResolution, Service, MapDataSource,
-  TopicCategory, ElterProject
+  ResourceType,
+  Service,
+  SpatialResolution,
+  TopicCategory
 } from '../models'
 import EditorView from '../EditorView'
 import InputView from '../InputView'
@@ -297,10 +312,32 @@ export default EditorView.extend({
 
         new ParentView({
           model: this.model,
-          modelAttribute: 'relatedRecords',
-          label: 'Related records',
-          ObjectInputView: RelatedRecordView,
-          multiline: true
+          modelAttribute: 'relationships',
+          label: 'Relationships',
+          ObjectInputView: RelationshipView,
+          multiline: true,
+          options: [
+            {
+              value: 'https://vocabs.ceh.ac.uk/eidc#generates',
+              label: 'Generates (e.g. a model generates a dataset)'
+            },
+            {
+              value: 'https://vocabs.ceh.ac.uk/eidc#memberOf',
+              label: 'Member of (e.g. a dataset is a member of a data collection)'
+            },
+            {
+              value: 'https://vocabs.ceh.ac.uk/eidc#relatedTo',
+              label: 'Related To'
+            },
+            {
+              value: 'https://vocabs.ceh.ac.uk/eidc#supercedes',
+              label: 'Supercedes'
+            },
+            {
+              value: 'https://vocabs.ceh.ac.uk/eidc#uses',
+              label: 'Uses'
+            }
+          ]
         })
       ]
     },

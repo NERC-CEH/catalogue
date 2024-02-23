@@ -61,7 +61,7 @@ export default EditorView.extend({
             { value: 'http://purl.org/voc/ef#supersedes', label: 'Supersedes' }
           ],
           helpText: `
-<p>Relationships to other OSDP document types</p>
+<p>Relationships to other document types</p>
 `
         })
       ]

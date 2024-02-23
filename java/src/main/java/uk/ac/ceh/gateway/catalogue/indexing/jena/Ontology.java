@@ -16,7 +16,8 @@ public class Ontology {
     public static final Property SOURCE = ResourceFactory.createProperty("http://purl.org/dc/terms/source");
 
     public static final Property ANYREL = ResourceFactory.createProperty("https://vocabs.ceh.ac.uk/eidc#");
-    public static final Property EIDCUSES = ResourceFactory.createProperty("https://vocabs.ceh.ac.uk/eidc#uses");
+    public static final Property EIDC_MEMBER_OF = ResourceFactory.createProperty("https://vocabs.ceh.ac.uk/eidc#memberOf");
+    public static final Property EIDC_USES = ResourceFactory.createProperty("https://vocabs.ceh.ac.uk/eidc#uses");
 
     public static final Property SET_UP_FOR = ResourceFactory.createProperty("http://purl.org/voc/ef#setUpFor");
     public static final Property USES = ResourceFactory.createProperty("http://purl.org/voc/ef#uses");

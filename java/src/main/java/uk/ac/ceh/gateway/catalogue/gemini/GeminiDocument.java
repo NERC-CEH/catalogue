@@ -10,7 +10,9 @@ import uk.ac.ceh.gateway.catalogue.citation.Citation;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.indexing.solr.WellKnownText;
-import uk.ac.ceh.gateway.catalogue.model.*;
+import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
+import uk.ac.ceh.gateway.catalogue.model.Supplemental;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreement;
 
 import java.util.*;
@@ -59,10 +61,9 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private List<ResponsibleParty> distributorContacts, responsibleParties;
     private List<TimePeriod> temporalExtents;
     private List<OnlineResource> onlineResources;
-    private Set<Link> incomingRelationships;
     private List<SpatialReferenceSystem> spatialReferenceSystems;
     private List<Supplemental> incomingCitations, supplemental;
-    private List<RelatedRecord> relatedRecords;
+    private List<RelatedRecord> relatedRecords;  // TODO: remove after migration to Relationships
     @JsonIgnore
     private Citation citation;
     @JsonIgnore
@@ -159,15 +160,6 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     public GeminiDocument setCitation(Citation citation) {
         this.citation = citation;
         return this;
-    }
-
-    @SuppressWarnings("unused")
-    public Set<Link> getAssociatedResources() {
-        Set<Link> toReturn = new HashSet<>();
-        if (incomingRelationships != null) {
-            toReturn.addAll(incomingRelationships);
-        }
-        return toReturn;
     }
 
     public List<OnlineResource> getOnlineResources() {
@@ -307,22 +299,6 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
         return Optional.ofNullable(incomingCitations)
             .orElse(Collections.emptyList())
             .size();
-    }
-
-    @Override
-    public Set<Relationship> getRelationships() {
-        val relations = Optional.ofNullable(super.getRelationships())
-            .orElse(Collections.emptySet());
-        val related = Optional.ofNullable(relatedRecords)
-            .orElse(Collections.emptyList())
-            .stream()
-            .map(RelatedRecord::toRelationship)
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .collect(Collectors.toSet());
-        return Stream.of(relations, related)
-            .flatMap(Collection::stream)
-            .collect(Collectors.toSet());
     }
 
 }

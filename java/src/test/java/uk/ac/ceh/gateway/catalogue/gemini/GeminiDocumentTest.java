@@ -105,10 +105,8 @@ public class GeminiDocumentTest {
             new Relationship(rel1, doc3)
         );
         val document = new ElterDocument();
-        document.setRelatedRecords(List.of(
-            new RelatedRecord(rel1, "1", doc1, "", "")
-        ));
         document.setRelationships(Set.of(
+            new Relationship(rel1, doc1),
             new Relationship(rel1, doc2),
             new Relationship(rel1, doc3)
         ));

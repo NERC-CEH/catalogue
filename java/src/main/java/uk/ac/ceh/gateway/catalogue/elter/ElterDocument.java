@@ -5,9 +5,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 import lombok.ToString;
 import lombok.experimental.Accessors;
-import lombok.val;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.citation.Citation;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
@@ -15,13 +15,14 @@ import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.deims.DeimsSolrIndex;
 import uk.ac.ceh.gateway.catalogue.gemini.*;
 import uk.ac.ceh.gateway.catalogue.indexing.solr.WellKnownText;
-import uk.ac.ceh.gateway.catalogue.model.*;
+import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
+import uk.ac.ceh.gateway.catalogue.model.Supplemental;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.*;
 import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAPABILITIES;
@@ -49,10 +50,9 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
     private List<ResponsibleParty> responsibleParties, distributorContacts;
     private List<TimePeriod> temporalExtents;
     private List<OnlineResource> onlineResources;
-    private Set<Link> incomingRelationships;
     private List<SpatialReferenceSystem> spatialReferenceSystems;
     private List<Supplemental> supplemental;
-    private List<RelatedRecord> relatedRecords;
+    private List<RelatedRecord> relatedRecords; // TODO: remove after migration to Relationships
     @JsonIgnore
     private Citation citation;
     @JsonIgnore
@@ -94,16 +94,15 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
         }
         // description
         StringBuilder descriptionBuilder = new StringBuilder();
-        for (Iterator<JsonNode> iter = inputJson.get("descriptions").iterator(); iter.hasNext(); ) {
-            JsonNode node = iter.next();
-            if (descriptionBuilder.length() > 0){
+        for (JsonNode node : inputJson.get("descriptions")) {
+            if (!descriptionBuilder.isEmpty()) {
                 descriptionBuilder.append("\n\n");
             }
             JsonNode descriptionTypeNode = node.get("descriptionType");
             if (descriptionTypeNode != null) {
                 String descriptionType = descriptionTypeNode.asText();
-                if (! descriptionType.equals("Other")) {
-                    descriptionBuilder.append(descriptionType + ": ");
+                if (!descriptionType.equals("Other")) {
+                    descriptionBuilder.append(descriptionType).append(": ");
                 }
             }
             descriptionBuilder.append(node.get("description").asText().strip());
@@ -155,22 +154,6 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
     }
 
     @Override
-    public Set<Relationship> getRelationships() {
-        val relations = Optional.ofNullable(super.getRelationships())
-            .orElse(Collections.emptySet());
-        val related = Optional.ofNullable(relatedRecords)
-            .orElse(Collections.emptyList())
-            .stream()
-            .map(RelatedRecord::toRelationship)
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .collect(Collectors.toSet());
-        return Stream.of(relations, related)
-            .flatMap(Collection::stream)
-            .collect(Collectors.toSet());
-    }
-
-    @Override
     public String getType() {
         return Optional.ofNullable(resourceType)
                 .map(Keyword::getValue)
@@ -200,14 +183,6 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
     public ElterDocument setCitation(Citation citation) {
         this.citation = citation;
         return this;
-    }
-
-    public Set<Link> getAssociatedResources() {
-        Set<Link> toReturn = new HashSet<>();
-        if (incomingRelationships != null) {
-            toReturn.addAll(incomingRelationships);
-        }
-        return toReturn;
     }
 
     /**
@@ -283,7 +258,7 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
     }
 
     @Override
-    public List<String> getWKTs() {
+    public @NonNull List<String> getWKTs() {
         return Optional.ofNullable(boundingBoxes)
                 .orElse(Collections.emptyList())
                 .stream()
