@@ -268,12 +268,22 @@ public class SearchQuery {
         }
 
         // cannot just encode UriComponents as other parameters (facets, bbox) already Uri encoded
-        return builder.build().toUriString();
+        // Note: if a querystring exists (denoted by '?'), then add a '#' after it to turn the whole querystring into
+        // a backbone hash fragment (https://backbonejs.org/).  This makes the search filters all persist via the url, without this then facet filters would overrule the spatial filter on the interface.
+        // Also, there may be a more elegant way to do this since UriComponentsBuilder has support for fragments, but the current solution is very simple and effective
+        return builder.build().toUriString().replace("?", "?#");
+
     }
 
+    /**
+     * The bounding boxes of a single metadata record are indexed in solr in the field 'locations'
+     * Using this 'locations' field, the simplest spatial query to find the records within a search box is: 'locations:"Intersects(ENVELOPE(minX, maxX, maxY, minY)"
+     * @bbox: a bounding box string of the form: minX,maxX,maxY,minY
+     * @spatialOperation: one of two values defined in SpatialOperation that defines what spatial operation to perform
+     */
     private void setSpatialFilter(SolrQuery query) {
         if(bbox != null) {
-            query.addFilterQuery(String.format("locations:\"%s(%s)\"", spatialOperation.getOperation(), bbox));
+            query.addFilterQuery(String.format("locations:\"%s(ENVELOPE(%s))\"", spatialOperation.getOperation(), bbox));
         }
     }
     private void setRecordVisibility(SolrQuery query) {

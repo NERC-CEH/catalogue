@@ -20,6 +20,7 @@
 @footer-height: 16em;
 @header-text: @gray-dark;
 @line-height: 1.8;
+
 html {
     overflow-y: scroll;
     min-height: 100%;
@@ -74,9 +75,11 @@ body {
 
 .contact {
     display: grid;
-    grid-template-columns: 30px auto;margin-bottom:3em;
+    grid-template-columns: 30px auto;
+    margin-bottom: 3em;
+
     div {
-        > span {
+        >span {
             display: block;
         }
     }
@@ -84,17 +87,31 @@ body {
 
 .browseimages {
     text-align: center;
+
     img {
         max-width: 100%;
     }
 }
+
 .key-value {
     margin: 2em 0;
     line-height: @line-height-base;
-    > div {
+
+    >div {
         &:first-of-type {
             font-weight: bolder;
             font-size: 1.125em;
         }
+    }
+}
+
+/*TEMPORARY MEASURE TO HIDE THE SPATIAL SEARCH */
+.filters-panel {
+    .spatial {
+        display: none !important;
+    }
+
+    .facet-filter {
+        min-height: 90%;
     }
 }

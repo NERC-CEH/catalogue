@@ -9,7 +9,7 @@ import static com.google.common.base.Strings.nullToEmpty;
 
 @Value
 public class Link {
-    String title, href, rel, associationType;
+    String title, href, rel, associationType, geometry;
 
     @Builder
     @JsonCreator
@@ -17,11 +17,13 @@ public class Link {
         @JsonProperty("title") String title,
         @JsonProperty("href") String href,
         @JsonProperty("rel") String rel,
-        @JsonProperty("associationType") String associationType
+        @JsonProperty("associationType") String associationType,
+        @JsonProperty("geometry") String geometry
     ) {
         this.title = nullToEmpty(title);
         this.href = nullToEmpty(href);
         this.rel = nullToEmpty(rel);
         this.associationType = nullToEmpty(associationType);
+        this.geometry = nullToEmpty(geometry);
     }
 }

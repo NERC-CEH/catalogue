@@ -1,5 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.templateHelpers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.NonNull;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -112,11 +116,43 @@ public class JenaLookupService {
     }
 
     public List<Link> inverseRelationships(String uri, String relation) {
-        String sparql = "PREFIX dc: <http://purl.org/dc/terms/> SELECT ?node ?title ?type ?rel WHERE {?node ?rel ?me; ?relation ?me . ?node dc:title ?title; dc:type ?type.} ORDER BY ?title";
+        String hasGeometry = "http://www.opengis.net/ont/geosparql#hasGeometry";
+        String sparql = "PREFIX dc: <http://purl.org/dc/terms/> SELECT ?node ?title ?type ?rel ?geom WHERE {?node ?rel ?me ; ?relation ?me. ?node dc:title ?title; dc:type ?type. OPTIONAL {?node <" + hasGeometry + "> ?geom}.}ORDER BY ?title";
         ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
         pss.setIri("me", uri);
         pss.setIri("relation", relation);
         return links(pss);
+    }
+
+    /**
+     * Function to compile a FeatureCollection from Geometries found in inversely related records
+     */
+    public String inverseRelationshipCombinedGeometries(String uri, String relation) throws JsonProcessingException {
+        List<Link> links = inverseRelationships(uri, relation);
+        // Return if no links found
+        if (links.isEmpty()) {
+            return "";
+        }
+
+        List<JsonNode> features = new ArrayList<>();
+        ObjectMapper mapper = new ObjectMapper();
+
+        for (Link link : links) {
+            if (!link.getGeometry().isEmpty()) {
+                JsonNode jsonNode = mapper.readTree(link.getGeometry());
+                features.add(jsonNode);
+            }
+        }
+
+        // Prevent output (and hence plotting map) if no Geometry information found
+        if (features.isEmpty()) {
+            return "";
+        }
+
+        ObjectNode featureCollection = mapper.createObjectNode();
+        featureCollection.put("type", "FeatureCollection");
+        featureCollection.set("features", mapper.valueToTree(features));
+        return mapper.writeValueAsString(featureCollection);
     }
 
     public List<Link> allRelatedRecords(String uri) {
@@ -174,6 +210,7 @@ public class JenaLookupService {
                     .href(s.getResource("node").getURI())
                     .associationType(s.getLiteral("type").getString())
                     .rel(s.getResource("rel").getURI())
+                    .geometry(s.getLiteral("geom") != null ? s.getLiteral("geom").getString() : "")
                     .build()
             ));
         } finally {

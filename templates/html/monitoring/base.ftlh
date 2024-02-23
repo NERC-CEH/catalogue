@@ -137,3 +137,10 @@ Temporal Extent
       <span content="${geometry}" dataType="geoJson"/>
   </div>
 </#macro>
+
+<#macro inverseRelationshipCombinedGeometries relation>
+  <#local combinedGeometry=jena.inverseRelationshipCombinedGeometries(uri, relation) />
+  <#if combinedGeometry?has_content>
+    <@geometry geometry=combinedGeometry />
+  </#if>
+</#macro>
