@@ -52,7 +52,6 @@ public class ElterDocument extends AbstractMetadataDocument implements WellKnown
     private List<OnlineResource> onlineResources;
     private List<SpatialReferenceSystem> spatialReferenceSystems;
     private List<Supplemental> supplemental;
-    private List<RelatedRecord> relatedRecords; // TODO: remove after migration to Relationships
     @JsonIgnore
     private Citation citation;
     @JsonIgnore
