@@ -63,7 +63,6 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private List<OnlineResource> onlineResources;
     private List<SpatialReferenceSystem> spatialReferenceSystems;
     private List<Supplemental> incomingCitations, supplemental;
-    private List<RelatedRecord> relatedRecords;  // TODO: remove after migration to Relationships
     @JsonIgnore
     private Citation citation;
     @JsonIgnore
