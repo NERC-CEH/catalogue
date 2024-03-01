@@ -20,36 +20,6 @@
 @header-text: #fff;
 @link-hover-color: #e75f22;
 @panel-default-text: @header-text;
-@footer-height: 3.25em;
-
-@navbar-height: 90px;
-@navbar-default-bg: white;
-@navbar-margin-bottom: @line-height-computed;
-@navbar-default-border: @eidc-blue;
-@navbar-border-width: 8px;
-@navbar-border-radius: 0;
-@navbar-default-color: @gray-light;
-@navbar-default-border: @eidc-blue;
-@navbar-default-link-color: @eidc-blue;
-@navbar-default-link-hover-color: @link-hover-color;
-@navbar-default-link-hover-bg: darken(@navbar-default-bg, 5%);
-@navbar-default-link-active-color: @navbar-default-link-hover-color;
-@navbar-default-link-active-bg: darken(@navbar-default-bg, 5%);
-@navbar-default-link-disabled-color: #444;
-@navbar-default-link-disabled-bg: transparent;
-@navbar-default-brand-color: @navbar-default-link-color;
-@navbar-default-brand-hover-color: #fff;
-@navbar-default-brand-hover-bg: transparent;
-@navbar-default-toggle-hover-bg: #333;
-@navbar-default-toggle-icon-bar-bg: #fff;
-@navbar-default-toggle-border-color: #333;
-
-@filter-heading-background: darken(@eidc-blue, 5%);
-@filter-heading-color: hsl(0, 0%, 100%);
-@filter-body-background: @eidc-blue;
-@filter-body-colour: hsl(0, 0%, 100%);
-@filter-body-link-colour: hsl(0, 0%, 100%);
-@filter-border: none;
 
 /* CSS custom properties */
 :root {
@@ -58,29 +28,8 @@
 
 html {
     overflow-y: scroll;
-    min-height: 100%;
-    position: relative;
-    scroll-padding-top: @navbar-height * 1.5;
 }
 
-body {
-    margin-top: @navbar-height + (@navbar-border-width*2);
-    margin-bottom: @footer-height;
-}
-
-.navbar {
-    .navbar-brand {
-        margin: 0 0 0 0.35em;
-    }
-    border-bottom-width: @navbar-border-width;
-    a {
-        font-weight: bolder;
-    }
-    &-toggle {
-        background-color: black;
-        color: white;
-    }
-}
 
 #editorCreate {
     .dropdown-menu {
@@ -202,47 +151,6 @@ body {
 
 /*Change menu collapse breakpoint */
 @media (max-width: 1200px) {
-    .navbar-header {
-        float: none;
-    }
-
-    .navbar-left,
-    .navbar-right {
-        float: none !important;
-        padding: 0 1em;
-    }
-    .navbar-toggle {
-        display: block;
-    }
-
-    .navbar-collapse {
-        border-top: 1px solid transparent;
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    }
-
-    .navbar-fixed-top {
-        top: 0;
-        border-width: 0 0 @navbar-border-width 0;
-    }
-
-    .navbar-collapse.collapse {
-        display: none !important;
-    }
-
-    .navbar-nav {
-        float: none !important;
-        margin-top: 7.5px;
-    }
-
-    .navbar-nav > li {
-        float: none;
-    }
-
-    .navbar-nav > li > a {
-        padding-top: 10px;
-        padding-bottom: 10px;
-    }
-
     .collapse.in {
         display: block !important;
     }
@@ -258,15 +166,3 @@ a#atlwdg-trigger {
         display: none;
     }
 }
-
-// To add a spatial search map to the search page, comment out these two styles
-// -----------------------
-.spatial,spatial-filter {
-    display: none;
-}
-
-.facet-filter {
-    position: absolute;
-    height: 90% !important;
-}
-// -----------------------

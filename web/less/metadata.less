@@ -10,6 +10,28 @@
     --border_radius: 0.5em;
 }
 
+body {display:flex; flex-direction: column; min-height: 100vh;}
+
+footer {
+    margin-top:auto;
+    background-color: #ccc;
+    width: 100%;
+
+    span {
+        &:not(:last-of-type)::after {
+            content: "|";
+            margin: 0 0.6em;
+        }
+    }
+
+    .altviews {
+        span:first-of-type {
+            margin-left: 0.6em;
+        }
+    }
+}
+
+
 .metadata-grid {
     .col1 {
         grid-area: col1;
@@ -38,6 +60,7 @@
             background-color: hsl(0, 0%, 95%);
             border: 1px solid #ccc;
             border-width: 1px 0;
+
             &:has(.notice) {
                 .disclaimer {
                     margin-top: -2.5em
@@ -848,27 +871,6 @@
 
         .btn {
             min-width: 18em;
-        }
-    }
-}
-
-.footer {
-    background-color: #ccc;
-    padding: 1em;
-    position: absolute;
-    width: 100%;
-    bottom: 0;
-
-    span {
-        &:not(:last-of-type)::after {
-            content: "|";
-            margin: 0 0.6em;
-        }
-    }
-
-    .altviews {
-        span:first-of-type {
-            margin-left: 0.6em;
         }
     }
 }

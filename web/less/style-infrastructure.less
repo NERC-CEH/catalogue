@@ -17,40 +17,13 @@
 
 @ri-blue: hsl(207, 30%, 64%);
 @filter-heading-background: @ri-blue;
-@footer-height: 16em;
 @header-text: @gray-dark;
 @line-height: 1.8;
 
 html {
     overflow-y: scroll;
-    min-height: 100%;
-    position: relative;
 }
 
-body {
-    margin-top: @navbar-height + @navbar-border-width;
-    margin-bottom: @footer-height;
-}
-
-.navbar-nav {
-    .navbar-title {
-        a {
-            color: white !important;
-            font-weight: bold;
-        }
-    }
-
-    li {
-        &:not(.navbar-title) {
-            a {
-                &:hover {
-                    border-bottom: white 3px solid;
-                    padding-bottom: 3px;
-                }
-            }
-        }
-    }
-}
 
 #pageTitle {
     margin: 2em 0;
@@ -102,16 +75,5 @@ body {
             font-weight: bolder;
             font-size: 1.125em;
         }
-    }
-}
-
-/*TEMPORARY MEASURE TO HIDE THE SPATIAL SEARCH */
-.filters-panel {
-    .spatial {
-        display: none !important;
-    }
-
-    .facet-filter {
-        min-height: 90%;
     }
 }

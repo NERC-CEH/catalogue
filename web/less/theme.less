@@ -12,7 +12,26 @@
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap");
 @import "../node_modules/bootstrap/less/bootstrap";
 @import "variables";
+@import "customProperties";
 // Add CSS Customizations to your theme here.
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+footer {
+    margin-top: auto
+}
+
+header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: var(--header-background-colour);
+    height:var(--header-height)
+}
 
 h1,
 h2,
@@ -22,6 +41,7 @@ h5,
 h6 {
     a {
         color: @brand-success;
+
         &:hover,
         &:focus {
             color: @link-hover-color;
@@ -32,37 +52,25 @@ h6 {
 
 .jumbotron {
     padding: 1.5em;
+
     h2 {
         font-size: 2.5em;
     }
+
     p {
         font-weight: bold;
         font-size: 1.3em;
     }
+
     a:link,
     a:visited {
         color: #ff0;
     }
+
     a.btn:link,
     a.btn:visited {
         font-size: 0.9em;
         color: #fff;
-    }
-}
-
-.navbar-brand {
-    margin: calc((@navbar-height - 50px) / 2) 0; //50px is the height of the UKCEH logo
-    border-right: 2px solid transparent;
-    height: 100%;
-    padding: 0;
-}
-
-li.navbar-title {
-    div {
-        padding: @navbar-padding-vertical @navbar-padding-horizontal;
-    }
-    a {
-        color: white;
     }
 }
 
@@ -77,14 +85,9 @@ i.fa-brands {
         border: 1px solid lightgray;
         padding: 0.4em;
         margin: 0.5em 0;
+
         .result--title {
             font-weight: bolder;
         }
-    }
-}
-
-@media (min-width: 768px) {
-    .navbar-brand {
-        border-color: white;
     }
 }

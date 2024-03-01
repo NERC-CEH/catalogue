@@ -58,7 +58,7 @@ export default Backbone.View.extend({
     })
     this.spatialFilterView = new SpatialFilterView({
       model: this.model,
-      el: this.$('.spatial-filter')
+      el: this.$('.mapsearch')
     })
     return this
   }

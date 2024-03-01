@@ -1,10 +1,270 @@
-#search {
-    @search-form-height: 52px;
-    @filters-columns: 4;
-    @results-columns: @grid-columns - @filters-columns;
+:root {
+    --filters-background-colour: #EEE;
+    --filters-border-colour: black;
+}
 
-    .make-row();
-    .container-fixed();
+// PAGE STRUCTURE
+
+html,
+body {
+    overflow-y: hidden !important;
+}
+
+main {
+    .search {
+        display: flex;
+        overflow: hidden;
+        height: calc(100vh - var(--header-height));
+        will-change: overflow;
+
+        >div {
+            overflow: auto;
+            height: auto;
+            flex: 1;
+        }
+
+        .filters {
+            display: none;
+            flex: 0 0 400px;
+            padding: 1em;
+            background-color: var(--filters-background-colour);
+            border-right: 2px solid var(--filters-border-colour);
+        }
+
+        .search-form {
+            position: sticky;
+            background-color: white;
+            top: 0;
+            z-index: 999;
+            padding: 1em;
+        }
+
+        .results {
+            >* {
+                padding: 1em;
+            }
+        }
+    }
+}
+
+@media (min-width: 1000px) {
+    main {
+        .search {
+            .filters {
+                display: block;
+            }
+        }
+    }
+}
+
+
+//Filters formatting
+main {
+    .search {
+        .facet-filter {
+            overflow-y: auto;
+            overflow-x: hidden;
+            scrollbar-gutter: stable;
+            scrollbar-width: thin // Firefox only
+            ;
+            padding-left: 1em;
+
+            .facet {
+                margin-bottom: 1em;
+                max-height: 600px;
+                overflow-y: auto;
+                overflow-x: hidden;
+                scrollbar-width: thin;
+
+                h3.facet-header {
+                    font-weight: 600;
+                    margin-bottom: 0.25em;
+                }
+
+                ul {
+                    padding: 0;
+                    margin: 1px;
+
+                    li {
+                        list-style: none;
+
+                        .facet-count {
+                            margin-left: 0.5em;
+                            color: lighten(@filter-body-link-colour, 10%);
+                        }
+
+                        a {
+                            color: @filter-body-link-colour;
+                            white-space: nowrap;
+                        }
+                    }
+                }
+
+                &::-webkit-scrollbar {
+                    width: 0.25em;
+                }
+
+                &::-webkit-scrollbar-track {
+                    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+                }
+
+                &::-webkit-scrollbar-thumb {
+                    background-color: darkgrey;
+                    outline: 1px solid slategrey;
+                }
+            }
+        }
+
+        // For webkit browsers only
+        .facet-filter::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .facet-filter::-webkit-scrollbar-track {
+            background: @brand-success;
+        }
+
+        .facet-filter::-webkit-scrollbar-thumb {
+            background-color: white;
+            border-radius: 20px;
+            border: 1px solid @brand-success;
+        }
+    }
+}
+
+//MAP
+#search {
+    .map {
+        height: 350px;
+    }
+
+    .mapsearch {
+        ul.leaflet-draw-actions.leaflet-draw-actions-bottom li a[title="Save changes"],
+        ul.leaflet-draw-actions.leaflet-draw-actions-bottom li a[title="Cancel editing, discards all changes"] {
+            display: none;
+        }
+
+        .form-operation {
+            padding-left: 15px;
+
+            label {
+                font-weight: 400;
+                color:black;
+            }
+        }
+    }
+
+}
+
+
+
+//RESULTS FORMATTING
+.results__list {
+    display: grid;
+    gap: 1em;
+
+    .result {
+        padding: 1.3em;
+        background-color: rgba(0, 0, 0, 0.03);
+        color: @text-color;
+
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.06);
+            outline: 2px solid @link-hover-color;
+            text-decoration: none;
+        }
+
+        &__tags {
+            display: flex;
+            flex-direction: row;
+            border-bottom: 1px solid lightgray;
+            padding-bottom: 5px;
+            margin-bottom: 5px;
+
+            div {
+                margin-right: 1em;
+            }
+
+            .recordType {
+                color: #337085;
+            }
+
+            .resourceStatus,
+            .condition,
+            .state {
+                font-weight: bold;
+                font-size: 1.1rem;
+                padding-top: 3px;
+            }
+        }
+
+        &__title {
+            margin: 0 0 0.3em 0;
+            font-size: 1.35em;
+            line-height: 1.35em;
+            color: black;
+        }
+
+        &__citationCount {
+            text-align: right;
+            color: @gray;
+            font-size: 1.1rem;
+            margin-top: -2px;
+        }
+
+        &--pending {
+            border-left: darkorange 10px solid;
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        &--draft {
+            border-left: darkred 10px solid;
+            background-color: lighten(@gray-light, 30%);
+            background-image: repeating-linear-gradient(315deg,
+                    transparent,
+                    transparent 18px,
+                    rgba(139, 0, 0, 0.15) 20px);
+
+            .result__description {
+                color: #999;
+            }
+        }
+
+        &--Available,
+        &--Unknown,
+        &--Controlled,
+        &--In-progress {
+            .resourceStatus {
+                display: none;
+            }
+        }
+
+        &--Restricted {
+            .resourceStatus {
+                color: red;
+                text-transform: uppercase;
+
+                &::after {
+                    content: " !";
+                }
+            }
+        }
+
+        &--published {
+            .state {
+                display: none;
+            }
+        }
+    }
+}
+
+
+
+
+
+/*
+#search {
+
     padding: 0; // Remove the padding when in small screen mode
 
     //Hide the filters panel in small screen mode
@@ -16,40 +276,7 @@
     }
 
     @media (min-width: @screen-md-min) {
-        .filters-panel {
-            .make-md-column(@filters-columns);
-            height: auto; // Re allow height
-            position: fixed;
-            padding: 0;
-            top: @navbar-height + @navbar-border-width;
-            bottom: 0;
-            left: 0;
-            background-color: @filter-body-background; // @panel-bg;
-            border-right: @filter-border;
-        }
-        h3 {
-            font-size: 1.2em;
-            color: @filter-body-colour;
-        }
 
-        .header {
-            height: @filter-heading-height;
-            width: 100%;
-            background-color: @filter-heading-background; //;@panel-default-heading-bg;
-            padding: 15px;
-
-            h3 {
-                display: inline;
-                margin: 0;
-                font-size: 1.3em;
-                color: @filter-heading-color; //@header-text;
-                cursor: pointer;
-
-                &:hover {
-                    text-decoration: underline;
-                }
-            }
-        }
 
         &.facets-mode {
             #drawing-toggle {
@@ -66,6 +293,7 @@
             }
 
             .spatial-filter {
+
                 // hide the Save and Cancel buttons from the draw actions (https://stackoverflow.com/questions/51360283/how-to-remove-save-option-from-leaflet-draw-api-delete-button)
                 ul.leaflet-draw-actions.leaflet-draw-actions-bottom li a[title="Save changes"],
                 ul.leaflet-draw-actions.leaflet-draw-actions-bottom li a[title="Cancel editing, discards all changes"] {
@@ -82,80 +310,7 @@
                 }
             }
 
-            .facet-filter {
-                height: 40%;
-                top: @filter-heading-height;
-                bottom: @filter-heading-height;
-                left: 0;
-                right: 0;
-                overflow-y: auto;
-                overflow-x: hidden;
-                scrollbar-gutter: stable;
-                scrollbar-width: thin /* Firefox only*/;
-                padding-left: 1em;
 
-                .facet {
-                    margin-bottom: 1em;
-                    max-height: 600px;
-                    overflow-y: auto;
-                    overflow-x: hidden;
-                    scrollbar-width: thin;
-
-                    h3 {
-                        font-weight: 600;
-                        margin-bottom: 0.25em;
-                    }
-
-                    ul {
-                        padding: 0;
-                        margin: 1px;
-
-                        li {
-                            list-style: none;
-
-                            .facet-count {
-                                margin-left: 0.5em;
-                                color: lighten(@filter-body-link-colour, 10%);
-                            }
-
-                            a {
-                                color: @filter-body-link-colour;
-                                white-space: nowrap;
-                            }
-                        }
-                    }
-
-                    &::-webkit-scrollbar {
-                        width: 0.25em;
-                    }
-
-                    &::-webkit-scrollbar-track {
-                        box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-                    }
-
-                    &::-webkit-scrollbar-thumb {
-                        background-color: darkgrey;
-                        outline: 1px solid slategrey;
-                    }
-                }
-            }
-
-            /* For webkit browsers only*/
-
-            .facet-filter::-webkit-scrollbar {
-                width: 8px;
-            }
-
-            .facet-filter::-webkit-scrollbar-track {
-                background: @brand-success;
-            }
-
-            .facet-filter::-webkit-scrollbar-thumb {
-                background-color: white;
-                border-radius: 20px;
-                border: 1px solid @brand-success;
-            }
-        }
 
         &.map-mode {
             @selected-color: @brand-success;
@@ -175,8 +330,6 @@
             }
 
             .map-filter {
-                position: absolute;
-                top: @filter-heading-height * 2 + @filter-heading-gap;
                 bottom: 0;
                 left: 0;
                 right: 0;
@@ -189,108 +342,6 @@
         }
     }
 
-    // Keep the search box onscreen at all times
-    form.search-form {
-        .make-md-column-offset(@filters-columns);
-        position: fixed;
-        top: @navbar-height + (@navbar-border-width * 2);
-        left: 0;
-        right: 0;
-        padding: 8px;
-        height: @search-form-height;
-        background-color: @body-bg;
-    }
 
-    .results {
-        margin-top: @search-form-height;
-        .make-md-column(@results-columns);
-        .make-md-column-offset(@filters-columns);
-        .results__list {
-            display: grid;
-            margin: 2em;
-            gap: 1em;
-            .result {
-                padding: 1.3em;
-                background-color: rgba(0, 0, 0, 0.03);
-                color: @text-color;
-                &:hover {
-                    background-color: rgba(0, 0, 0, 0.06);
-                    outline: 2px solid @link-hover-color;
-                    text-decoration: none;
-                }
-                &__tags {
-                    display: flex;
-                    flex-direction: row;
-                    border-bottom: 1px solid lightgray;
-                    padding-bottom: 5px;
-                    margin-bottom: 5px;
-                    div {
-                        margin-right: 1em;
-                    }
-                    .recordType {
-                        color: #337085;
-                    }
-                    .resourceStatus,
-                    .condition,
-                    .state {
-                        font-weight: bold;
-                        font-size: 1.1rem;
-                        padding-top: 3px;
-                    }
-                }
-                &__title {
-                    margin: 0 0 0.3em 0;
-                    font-size: 1.35em;
-                    line-height: 1.35em;
-                    color: black;
-                }
-                &__citationCount {
-                    text-align: right;
-                    color: @gray;
-                    font-size: 1.1rem;
-                    margin-top: -2px;
-                }
-                &--pending {
-                    border-left: darkorange 10px solid;
-                    background-color: rgba(0, 0, 0, 0.1);
-                }
-                &--draft {
-                    border-left: darkred 10px solid;
-                    background-color: lighten(@gray-light, 30%);
-                    background-image: repeating-linear-gradient(
-                        315deg,
-                        transparent,
-                        transparent 18px,
-                        rgba(139, 0, 0, 0.15) 20px
-                    );
-
-                    .result__description {
-                        color: #999;
-                    }
-                }
-                &--Available,
-                &--Unknown,
-                &--Controlled,
-                &--In-progress {
-                    .resourceStatus {
-                        display: none;
-                    }
-                }
-                &--Restricted {
-                    .resourceStatus {
-                        color: red;
-                        text-transform: uppercase;
-                        &::after {
-                            content: " !";
-                        }
-                    }
-                }
-                &--published {
-                    .state {
-                        display: none;
-                    }
-                }
-            }
-        }
-    }
 }
+*/
