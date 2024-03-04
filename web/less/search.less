@@ -11,12 +11,13 @@
     .filters-panel {
         height: 0; // WARNING: We would usually just set display:none to
         overflow: auto;
-        //scrollbar-gutter: stable;
+        display:none;
         scrollbar-width: thin;
     }
 
     @media (min-width: @screen-md-min) {
         .filters-panel {
+            display:block;
             .make-md-column(@filters-columns);
             height: auto; // Re allow height
             position: fixed;
