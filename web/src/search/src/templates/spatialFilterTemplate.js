@@ -1,7 +1,7 @@
 import _ from 'underscore'
 
 export default _.template(`
-    <div class="map"></div>
+
     <div class="form-operation">
       <p>Choose how to query records:</p>
       <div>
@@ -9,12 +9,11 @@ export default _.template(`
           <input class="spatialOp" data-op="intersects" type="radio" name="operations" id="opIntersects" <% if (op === 'intersects') {%> checked<%}%>>
           Intersects
         </label>
-      </div>
-      <div>
         <label>
           <input class="spatialOp" data-op="iswithin" type="radio" name="operations" id="opWithin" <% if (op === 'iswithin') {%> checked<%}%>>
           Within
         </label>
       </div>
     </div>
+    <div class="map"></div>
 `)

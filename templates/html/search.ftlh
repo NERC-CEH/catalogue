@@ -4,17 +4,24 @@
   <div class="search facets-mode" id="search">
 
     <div class="filters">
-        <div class="text">
-          <h3 class="facet-heading">Filters</h3>
-          <div class="facet-filter">
-            <#include "search/_facets.ftlh">
+      <div class="accordion">
+        <div class="accordion-item active">
+          <div>
+            <div class="accordion-heading">Filters</div>
+            <div class="accordion-content">
+              <div class="facet-filter"><#include "search/_facets.ftlh"></div>
+            </div>
           </div>
         </div>
-        <div class="spatial">
-          <h3 class="facet-heading">Spatial filter</h3>
-          <div class="mapsearch">
+        <div class="accordion-item">
+          <div>
+            <div class="accordion-heading">Spatial search</div>
+            <div class="accordion-content">
+              <div class="mapsearch"></div>
+            </div>
           </div>
         </div>
+      </div>
     </div>
 
     <div>
@@ -35,4 +42,16 @@
     </div>
 
   </div>
+
+  <script>
+  const items = document.querySelectorAll(".accordion-item");
+
+  items.forEach((item) => {
+    item.addEventListener("click", function () {
+      var activeElement = document.querySelector(".accordion .active");
+      if (activeElement != null) activeElement.classList.remove("active");
+      this.classList.add("active");
+    });
+  });
+</script>
 </@skeleton.master>

@@ -13,7 +13,6 @@
 body {display:flex; flex-direction: column; min-height: 100vh;}
 
 footer {
-    margin-top:auto;
     background-color: #ccc;
     width: 100%;
 
@@ -414,7 +413,7 @@ footer {
                 &-download {
                     .btn-block;
                     font-weight: bold;
-                    background-color: @brand-success;
+                    background-color: var(--primary-colour);
 
                     &:hover,
                     &:focus {
@@ -453,7 +452,7 @@ footer {
 
     .cards {
         --card-background: hsl(0, 0%, 100%);
-        --card-inverse: @brand-success;
+        --card-inverse: var(--primary-colour);
         display: flex;
         justify-content: center;
         gap: 1em;

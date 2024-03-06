@@ -12,48 +12,24 @@
 //colours
 @ukri-blue: hsla(241, 37%, 28%, 1);
 @nerc-blue: @ukri-blue;
-@nerc-lightgreen: hsla(106, 48%, 53%, 1);
-@nerc-darkgreen: hsla(120, 37%, 38%, 1);
-@nerc-hightlight: hsla(341, 59%, 50%, 1);
 
 @link-hover-color: @nerc-blue;
 
+:root {
+    --ukri-blue: hsla(241, 37%, 28%, 1);
+    --nerc-lightgreen: hsla(106, 48%, 53%, 1);
+    --nerc-darkgreen: hsla(120, 37%, 38%, 1);
+
+    --header-background-colour:white;
+    --header-link-background-colour: var(--header-background-colour);
+    --header-link-hover-background-colour:color-mix(in lab, var(--header-link-background-colour), black 15px);
+    --header-link-colour: var(--nerc-darkgreen);
+    --header-link-hover-colour: red;}
 
 html {
     overflow-y: scroll;
 }
 
-/*
-.navbar {
-    border-bottom-width: @navbar-border-width;
-    box-shadow: 0 0 0 (@navbar-border-width)/2 @nerc-darkgreen;
-
-    &-toggle {
-        background-color: black;
-        color: white;
-    }
-
-    a {
-        font-weight: bolder;
-
-        &::after {
-            @linethickness: 2px;
-            content: " ";
-            display: block;
-            background-color: @navbar-default-link-hover-color;
-            width: 0;
-            height: @linethickness;
-            margin: @linethickness 0 - (@linethickness) 0;
-        }
-
-        &:hover {
-            &::after {
-                width: 100%;
-            }
-        }
-    }
-}
-*/
 .models {
     &--modelinfo {
         margin-bottom: 2em;
@@ -64,9 +40,6 @@ html {
     margin-top: 1em;
 }
 
-.navbar-fixed-bottom {
-    background-color: #eee;
-}
 
 a.navbar-brand {
     background-image: url("https://eidc.ceh.ac.uk/images/nerc_small.png");
@@ -134,10 +107,10 @@ a.navbar-brand {
             justify-content: flex-start;
             align-items: center;
             &:hover, &:focus {
-                outline: 1px solid @nerc-lightgreen;
+                outline: 1px solid var(--nerc-lightgreenvar);
                 text-decoration: none;
                 div:first-child {
-                    background-color: @nerc-darkgreen;
+                    background-color: var(--nerc-darkgreen);
                     color: white;
                 }
             }

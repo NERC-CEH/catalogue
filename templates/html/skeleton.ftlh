@@ -8,66 +8,6 @@
 
 <#assign catalogueid="">
 
-<#macro navigation searching=false>
-  <#--
-  <nav role="navigation" class="navigation">
-    <div class="navigation-header">
-      <div class="site-logo">
-        <#if catalogue?has_content>
-          <a href="${catalogue.url}"><img src="/static/img/cataloguelogo/${catalogue.logo}" alt="${catalogue.title}"/></a>
-        <#else>
-          <img src="/static/img/cataloguelogo/ukceh.png" alt="UKCEH"/>
-        </#if>
-      </div>
-      <button type="button" class="toggle-menu">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-    </div>
-    <div class="navigation-menu">
-      <ul class="navigation-left">
-        <#if catalogue?has_content>
-          <li class="navbar-title">
-            <a href="${catalogue.url}">${catalogue.title}</a>
-          </li>
-
-          <#if catalogue.id == "assist" || catalogue.id == 'eidc'|| catalogue.id == 'elter' || catalogue.id == "erammp">
-            <#include "menus/${catalogue.id }.ftlh">
-          <#else>
-            <li class="<#if searching>active</#if>"><a href="/${catalogue.id}/documents">Search</a></li>
-          </#if>
-
-        </#if>
-      </ul>
-      <ul class="nav navbar-nav navbar-right">
-        <#if searching && catalogue?has_content && permission.userCanCreate(catalogue.id)>
-          <li>
-            <div id="editorCreate" class="dropdown">
-              <button class="btn btn-default dropdown-toggle" type="button" id="createMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                Create
-                <span class="caret"></span>
-              </button>
-              <ul class="dropdown-menu" aria-labelledby="createMenu">
-                <#list catalogue.documentTypes as docType>
-                  <li><a class="edit-control" data-document-type="${docType.type}" href="#">${docType.title}</a></li>
-                </#list>
-                <#if catalogue.fileUpload>
-                  <li role="separator" class="divider"></li>
-                  <li><a href="/documents/upload">File Upload</a></li>
-                </#if>
-              </ul>
-            </div>
-          </li>
-        </#if>
-        <li id="sso-user"></li>
-      </ul>
-    </div>
-
-  </nav>-->
-</#macro>
-
 <#macro master title catalogue="" rdf="" schemaorg="" canonical="" searching=false can_edit_restricted=false containerClass="container" scripts=defaultScripts footer="">
   <#assign catalogueid="">
   <#if catalogue?has_content>
@@ -111,7 +51,56 @@
     <body data-edit-restricted="${can_edit_restricted?then('','disabled')}">
       <header>
         <div class="${containerClass}">
-          <@navigation searching/>
+
+          <div class="toolbar">
+            <div class="brand">
+              <#if catalogue?has_content>
+                <a href="${catalogue.url}"><img src="/static/img/cataloguelogo/${catalogue.logo}" alt="${catalogue.title}"/></a>
+              <#else>
+                <img src="/static/img/cataloguelogo/ukceh.png" alt="UKCEH"/>
+              </#if>
+            </div>
+            <div class="nav-toggle">
+              <i class="fa-solid fa-2x fa-bars"></i>
+              <i class="fa-solid fa-2x fa-xmark"></i>
+            </div>
+            <div class="navigation">
+              <nav class="navbar">
+                <#if catalogue?has_content>
+                  <a class="navbar-title" href="${catalogue.url}">${catalogue.title}</a>
+
+                  <#if catalogue.id == "assist" || catalogue.id == 'eidc'|| catalogue.id == 'elter' || catalogue.id == "erammp">
+                    <#include "menus/${catalogue.id }.ftlh">
+                  <#else>
+                    <a href="/${catalogue.id}/documents">Search</a>
+                  </#if>
+                </#if>
+              </nav>
+              <nav class="navbar navbar-right">
+
+                <#if searching && catalogue?has_content && permission.userCanCreate(catalogue.id)>
+                    <div id="editorCreate" class="dropdown">
+                      <button class="btn btn-default dropdown-toggle" type="button" id="createMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        Create
+                        <span class="caret"></span>
+                      </button>
+                      <ul class="dropdown-menu" aria-labelledby="createMenu">
+                        <#list catalogue.documentTypes as docType>
+                          <li><a class="edit-control" data-document-type="${docType.type}" href="#">${docType.title}</a></li>
+                        </#list>
+                        <#if catalogue.fileUpload>
+                          <li role="separator" class="divider"></li>
+                          <li><a href="/documents/upload">File Upload</a></li>
+                        </#if>
+                      </ul>
+                    </div>
+                </#if>
+                <span id="sso-user"></span>
+              </nav>
+            </div>
+          </div>
+
+
         </div>
       </header>
       <main>
@@ -128,6 +117,15 @@
       </#if>
       <div id="message-panel"></div>
       ${scripts}
+      <script>
+        function classToggle() {
+          const navs = document.querySelectorAll(".navbar, .toolbar");
+          navs.forEach((nav) => nav.classList.toggle("reveal"));
+        }
+        document
+          .querySelector(".nav-toggle")
+          .addEventListener("click", classToggle);
+      </script>
     </body>
   </html></#compress>
 </#macro>

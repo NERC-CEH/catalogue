@@ -16,25 +16,38 @@
 
 @eidc-blue: hsl(195, 45%, 36%);
 @brand-success: @eidc-blue;
-@gray-lighter: @eidc-blue;
-@header-text: #fff;
-@link-hover-color: #e75f22;
-@panel-default-text: @header-text;
+@panel-default-text: #FFF;
 
 /* CSS custom properties */
 :root {
-    --eidc-blue: @eidc-blue;
+    --eidc-blue: hsl(195, 45%, 36%);
+
+    //--link-colour: blue;
+    --link-hover-colour: #e75f22;
+
+    --header-height: 95px;
+    --header-background-colour: white;
+    --header-link-background-colour: var(--header-background-colour);
+    --header-link-hover-background-colour: color-mix(in lab, var(--header-link-background-colour), black 5%);
+    --header-link-colour: var(--eidc-blue);
+    --header-link-hover-colour: var(--link-hover-colour);
+    --header-border-colour: var( --eidc-blue);
+    --header-border-width: 8px;
+    --nav-toggle-colour: var(--header-link-colour);
+
+    --filter-width:500px;
+    --filter-heading-background-colour:color-mix(in lab, var(--eidc-blue), black 15%);
+    --filter-heading-colour:white;
+    --filter-body-background-colour: var(--eidc-blue);
+    --filter-body-colour: white;
+    --filter-border: 0;
+
 }
+
+
 
 html {
     overflow-y: scroll;
-}
-
-
-#editorCreate {
-    .dropdown-menu {
-        margin-top: -1.7em;
-    }
 }
 
 .adminToolbar {
@@ -59,7 +72,7 @@ html {
 }
 
 .panel-right {
-    > div {
+    >div {
         margin: 1em 0;
         background-color: #f5f5f5;
         padding: 1em;
@@ -92,7 +105,7 @@ html {
 #document-upload-panel {
     a {
         &:hover {
-            color: @header-text;
+            color: #FFF;
             text-decoration: none;
         }
 
@@ -143,6 +156,7 @@ html {
 }
 
 #editor {
+
     .optgroup-eidc,
     .optgroup-iso19115 {
         display: initial;
@@ -161,6 +175,7 @@ a#atlwdg-trigger {
     padding: 0.25em 1.5em;
     background-color: #337085;
 }
+
 @media only screen and (max-width: 820px) {
     a#atlwdg-trigger {
         display: none;

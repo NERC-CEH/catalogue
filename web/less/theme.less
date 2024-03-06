@@ -22,15 +22,20 @@ body {
 }
 
 footer {
-    margin-top: auto
+    margin-top: auto;
+
+    .container {
+        padding: 1em;
+    }
 }
 
 header {
     position: sticky;
     top: 0;
-    z-index: 1000;
+    z-index: 5000;
     background-color: var(--header-background-colour);
-    height:var(--header-height)
+    height: var(--header-height);
+    border-bottom: solid var(--header-border-colour) var(--header-border-width);
 }
 
 h1,
@@ -40,39 +45,144 @@ h4,
 h5,
 h6 {
     a {
-        color: @brand-success;
+        color: var(--link-colour);
 
         &:hover,
         &:focus {
-            color: @link-hover-color;
+            color: var(--link-hover-colour);
             text-decoration: none;
         }
     }
 }
 
-.jumbotron {
-    padding: 1.5em;
+/* -- START Navigation*/
 
-    h2 {
-        font-size: 2.5em;
-    }
+header {
 
-    p {
-        font-weight: bold;
-        font-size: 1.3em;
-    }
+    .toolbar {
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 1em;
+        font-family: sans-serif;
+        color: white;
 
-    a:link,
-    a:visited {
-        color: #ff0;
-    }
+        .brand {
+            display: flex;
+            align-items: center;
+        }
 
-    a.btn:link,
-    a.btn:visited {
-        font-size: 0.9em;
-        color: #fff;
+        .navigation {
+            display: flex;
+            flex-grow: 1;
+            flex-wrap: nowrap;
+            justify-content: space-between;
+
+            .navbar {
+                padding: 0;
+                margin: 0;
+                display: flex;
+                flex-wrap: nowrap;
+                align-items: center;
+
+                a {
+                    padding: calc(var(--header-height, 3.4em) / 4) 1em;
+                    white-space: nowrap;
+                    text-decoration: none;
+                    font-weight: 600;
+                    background-color: var(--header-link-background-colour);
+                    color: var(--header-link-colour);
+
+                    &:hover {
+                        background-color: var(--header-link-hover-background-colour);
+                        color: var(--header-link-hover-colour);
+                    }
+                }
+
+
+            }
+
+            .navbar-right {
+                margin-left: auto;
+
+                .dropdown-menu {
+                    a {
+                        padding: .75em;
+                    }
+                }
+            }
+        }
+
+        .nav-toggle {
+            color: var(--nav-toggle-colour);
+            display: none;
+            padding: 1em;
+        }
     }
 }
+
+@media only screen and (max-width: 980px) {
+    header {
+        .toolbar {
+            flex-direction: column;
+
+            .nav-toggle {
+                align-self: flex-end;
+                display: initial;
+                position: absolute;
+                cursor: pointer;
+
+                .fa-bars {
+                    display: inline;
+                }
+
+                .fa-xmark {
+                    display: none;
+                }
+            }
+
+            .navigation {
+                display: block;
+                position: absolute;
+                top: 3.5em;
+                left: 0;
+                right: 0;
+                background-color: var(--header-background-colour);
+
+                .navbar {
+                    flex-direction: column;
+                    display: none;
+
+                    a {
+                        padding: 0.5em 1em;
+                    }
+                }
+
+                .navbar-right {
+                    margin-left: 0;
+                }
+            }
+
+            .navbar.reveal {
+                display: flex;
+            }
+        }
+
+        .reveal {
+            .nav-toggle {
+                .fa-bars {
+                    display: none;
+                }
+
+                .fa-xmark {
+                    display: inline;
+                }
+            }
+        }
+    }
+}
+
+/* -- END Navigation */
+
 
 i.fa-solid,
 i.fa-regular,

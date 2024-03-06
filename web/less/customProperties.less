@@ -1,4 +1,40 @@
 :root {
-    --header-background-colour:black;
+    --body-background-colour: #fff;
+    --text-default-colour: #333;
+
+    --primary-colour: #5cb85c;
+    --secondary-colour: #dd632a;
+
+    --link-colour: var(--primary-colour);
+    --link-hover-colour: var(--secondary-colour);
+
+    /*
+    --font-family-sans-serif: "Open Sans", sans-serif;
+    --font-size-base: 15px;
+    --font-size-large: calc((var(--font-size-base) * 1.25));
+    --font-size-small: calc((var(--font-size-base) * 0.85));
+    --font-size-h1: calc((var(--font-size-base) * 2.2));
+    --font-size-h2: calc((var(--font-size-base) * 1.75));
+    --font-size-h3: calc((var(--font-size-base) * 1.5));
+    --font-size-h4: calc((var(--font-size-base) * 1.2));
+    --font-size-h5: var(--font-size-base);
+    --font-size-h6: calc((var(--font-size-base) * 0.85)); // ~12px
+*/
+    --header-background-colour:#333;
     --header-height:85px;
+    --header-link-background-colour: var(--header-background-colour);
+    --header-link-hover-background-colour: color-mix(in lab, var(--header-link-background-colour), white 30%);
+    --header-link-colour: white;
+    --header-link-hover-colour: white;
+    --header-border-colour: transparent;
+    --header-border-width: 0;
+    --nav-toggle-colour: var(--header-link-colour);
+
+    --filter-width:400px;
+    --filter-heading-background-colour:var(--primary-colour);
+    --filter-heading-colour:white;
+    --filter-body-background-colour: var(--body-background-colour);
+    --filter-body-colour: black;
+    --filter-body-link-colour: black;
+    --filter-border: 1px solid var(--filter-heading-background-colour);
 }

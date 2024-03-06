@@ -1,12 +1,6 @@
-:root {
-    --filters-background-colour: #EEE;
-    --filters-border-colour: black;
-}
-
 // PAGE STRUCTURE
-
-html,
-body {
+html:has(.search),
+body:has(.search) {
     overflow-y: hidden !important;
 }
 
@@ -25,11 +19,64 @@ main {
 
         .filters {
             display: none;
-            flex: 0 0 400px;
-            padding: 1em;
-            background-color: var(--filters-background-colour);
-            border-right: 2px solid var(--filters-border-colour);
+            flex: 0 0 var(--filter-width);
+            border-right: var(--filter-border);
+
+
+            .accordion {
+                margin: 0;
+                padding: 0;
+                display: flex;
+                height: 100%;
+                flex-direction: column;
+                gap: 0;
+
+                .accordion-item {
+                    >div {
+                        display: flex;
+                        flex-direction: column;
+                        width: 100%;
+                        min-height: 100%;
+
+                        .accordion-heading {
+                            cursor: pointer;
+                            background-color: var(--filter-heading-background-colour);
+                            color: var(--filter-heading-colour);
+                            display: block;
+                            padding: .3em .6em;
+                            font-size: 1.3em;
+                        }
+
+                        .accordion-content {
+                            display: none;
+                            position: relative;
+                            height: 100%;
+                            background-color: var(--filter-body-background-colour);
+                            color: var(--filter-body-colour);
+
+                            h3,
+                            a {
+                                color: var(--filter-body-colour);
+                            }
+                        }
+
+                    }
+                }
+
+                .accordion-item.active {
+                    display: flex;
+                    flex: 1 1 auto;
+
+                    >div div {
+                        display: block;
+                    }
+                }
+            }
         }
+
+
+
+
 
         .search-form {
             position: sticky;
@@ -65,21 +112,19 @@ main {
             overflow-y: auto;
             overflow-x: hidden;
             scrollbar-gutter: stable;
-            scrollbar-width: thin // Firefox only
-            ;
+            scrollbar-width: thin; // Firefox only
             padding-left: 1em;
 
             .facet {
-                margin-bottom: 1em;
+                .facet-header {
+                    font-weight: 600;
+                    font-size: 1.35em;
+                }
+                margin: 2em 0;
                 max-height: 600px;
                 overflow-y: auto;
                 overflow-x: hidden;
                 scrollbar-width: thin;
-
-                h3.facet-header {
-                    font-weight: 600;
-                    margin-bottom: 0.25em;
-                }
 
                 ul {
                     padding: 0;
@@ -90,11 +135,11 @@ main {
 
                         .facet-count {
                             margin-left: 0.5em;
-                            color: lighten(@filter-body-link-colour, 10%);
+                            opacity: 75%;
                         }
 
                         a {
-                            color: @filter-body-link-colour;
+                            color: var(--filter-body-link-colour);
                             white-space: nowrap;
                         }
                     }
@@ -121,41 +166,40 @@ main {
         }
 
         .facet-filter::-webkit-scrollbar-track {
-            background: @brand-success;
+            background: var(--primary-colour);
         }
 
         .facet-filter::-webkit-scrollbar-thumb {
             background-color: white;
             border-radius: 20px;
-            border: 1px solid @brand-success;
+            border: 1px solid var(--primary-colour);
         }
     }
 }
 
 //MAP
 #search {
-    .map {
-        height: 350px;
-    }
 
     .mapsearch {
+        position: relative;
+        height: 100%;
+
         ul.leaflet-draw-actions.leaflet-draw-actions-bottom li a[title="Save changes"],
         ul.leaflet-draw-actions.leaflet-draw-actions-bottom li a[title="Cancel editing, discards all changes"] {
             display: none;
         }
 
-        .form-operation {
-            padding-left: 15px;
+        .map {
+            position: relative;
+            height: calc(100% - var(--header-height));
+        }
 
-            label {
-                font-weight: 400;
-                color:black;
-            }
+        .form-operation {
+            padding: 0.6em;
         }
     }
 
 }
-
 
 
 //RESULTS FORMATTING
@@ -166,7 +210,7 @@ main {
     .result {
         padding: 1.3em;
         background-color: rgba(0, 0, 0, 0.03);
-        color: @text-color;
+        color: var(--text-default-color);
 
         &:hover {
             background-color: rgba(0, 0, 0, 0.06);
@@ -257,91 +301,3 @@ main {
         }
     }
 }
-
-
-
-
-
-/*
-#search {
-
-    padding: 0; // Remove the padding when in small screen mode
-
-    //Hide the filters panel in small screen mode
-    .filters-panel {
-        height: 0; // WARNING: We would usually just set display:none to
-        overflow: auto;
-        //scrollbar-gutter: stable;
-        scrollbar-width: thin;
-    }
-
-    @media (min-width: @screen-md-min) {
-
-
-        &.facets-mode {
-            #drawing-toggle {
-                display: none;
-            }
-
-            .map-heading {
-                position: absolute;
-                bottom: 0;
-            }
-
-            .map {
-                height: 250px;
-            }
-
-            .spatial-filter {
-
-                // hide the Save and Cancel buttons from the draw actions (https://stackoverflow.com/questions/51360283/how-to-remove-save-option-from-leaflet-draw-api-delete-button)
-                ul.leaflet-draw-actions.leaflet-draw-actions-bottom li a[title="Save changes"],
-                ul.leaflet-draw-actions.leaflet-draw-actions-bottom li a[title="Cancel editing, discards all changes"] {
-                    display: none;
-                }
-
-                .form-operation {
-                    padding-left: 15px;
-
-                    label {
-                        font-weight: 400;
-                        color: @filter-body-colour;
-                    }
-                }
-            }
-
-
-
-        &.map-mode {
-            @selected-color: @brand-success;
-
-            .facet-filter {
-                display: none;
-            }
-
-            .map-heading {
-                margin-top: @filter-heading-gap;
-                height: @filter-heading-height;
-            }
-
-            .result.selected {
-                border-left: 8px solid @selected-color;
-                background-color: lighten(@selected-color, 50%);
-            }
-
-            .map-filter {
-                bottom: 0;
-                left: 0;
-                right: 0;
-
-                div.olControlZoom {
-                    left: 2px;
-                    top: 5px;
-                }
-            }
-        }
-    }
-
-
-}
-*/
