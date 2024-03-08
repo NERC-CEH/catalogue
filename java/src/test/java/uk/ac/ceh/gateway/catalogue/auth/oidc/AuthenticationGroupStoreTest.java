@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @Slf4j
 @ExtendWith(SpringExtension.class)
 @SecurityTestExecutionListeners
-public class DataLabsGroupStoreTest {
+public class AuthenticationGroupStoreTest {
 
     private final static String ANY_STRING = "any";
     private final static String ROLE_1 = "ROLE1";
@@ -29,7 +29,7 @@ public class DataLabsGroupStoreTest {
 
     @BeforeEach
     public void init() {
-        target = new DataLabsGroupStore<>();
+        target = new AuthenticationGroupStore<>();
     }
 
     @Test

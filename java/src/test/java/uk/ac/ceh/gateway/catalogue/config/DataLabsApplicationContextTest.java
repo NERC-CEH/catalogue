@@ -22,7 +22,7 @@ class DataLabsApplicationContextTest {
     void authenticationContext() {
         assertNotNull(applicationContext.getBean("dataLabsAuthenticationProvider"));
         assertNotNull(applicationContext.getBean("rememberMeServicesDataLabs"));
-        assertNotNull(applicationContext.getBean("dataLabsGroupStore"));
+        assertNotNull(applicationContext.getBean("authenticationGroupStore"));
         assertNotNull(applicationContext.getBean("rememberMeAuthenticationFilter"));
     }
 
