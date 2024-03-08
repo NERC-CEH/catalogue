@@ -195,6 +195,7 @@ export default Backbone.View.extend({
   render () {
     this.$el.html(this.template(this.model.attributes))
     $('body').toggleClass('edit-mode');
+    $('#search').toggleClass('search');
     this.sections.forEach(section => {
       section.views.forEach(view => {
         this.$('#editor').append(view.render().el)

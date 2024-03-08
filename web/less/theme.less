@@ -69,6 +69,10 @@ header {
         .brand {
             display: flex;
             align-items: center;
+
+            img {
+                max-height: calc(var(--header-height) - 30px);
+            }
         }
 
         .navigation {
@@ -105,8 +109,13 @@ header {
                 margin-left: auto;
 
                 .dropdown-menu {
+                    background-color: #EEE;
+
                     a {
                         padding: .75em;
+                        background-color: #EEE;
+                        color: black;
+                        font-weight: normal;
                     }
                 }
             }

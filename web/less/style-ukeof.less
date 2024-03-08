@@ -11,9 +11,14 @@
 
 @fa-font-path: "../fonts";
 
-@ukeof-green: hsl(111, 50%, 39%);
-@brand-success: @ukeof-green;
-@gray-lighter: @ukeof-green;
-@header-text: #fff;
-@link-hover-color: #e74022;
-@panel-default-text: @header-text;
+:root {
+    --primary-colour: hsl(111, 50%, 39%);
+
+    --header-background-colour: white;
+    --header-link-background-colour: var(--header-background-colour);
+    --header-link-hover-background-colour: color-mix(in lab, var(--header-link-background-colour), black 5%);
+    --header-link-colour: var(--primary-colour);
+    --header-link-hover-colour: var(--link-hover-colour);
+    --header-border-colour: var(--primary-colour);
+    --header-border-width: 4px;
+}
