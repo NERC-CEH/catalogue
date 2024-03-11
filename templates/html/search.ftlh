@@ -13,7 +13,7 @@
             </div>
           </div>
         </div>
-        <div class="accordion-item">
+        <div class="accordion-item accordion-map">
           <div>
             <div class="accordion-heading">Spatial search</div>
             <div class="accordion-content">

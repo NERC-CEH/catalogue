@@ -6,7 +6,9 @@ import { FacetsPanelView, SearchFormView, SearchPageView, SpatialFilterView } fr
 export default Backbone.View.extend({
   el: '#search',
 
-  events: {},
+  events: {
+    'click .accordion-item': 'updateMapsearch'
+  },
 
   initialize (options) {
     this.appUrl = window.location.href.split('#')[0].split('?')[0]
@@ -38,6 +40,12 @@ export default Backbone.View.extend({
   defaultState (e) {
     this.model.setState({})
     e.preventDefault()
+  },
+
+  updateMapsearch (e) {
+    const targetClass = 'accordion-map'
+    const isMapSearch = e.currentTarget.classList.contains(targetClass)
+    this.model.set('mapsearch', isMapSearch)
   },
 
   /*

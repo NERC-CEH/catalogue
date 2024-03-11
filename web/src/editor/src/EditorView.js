@@ -132,7 +132,7 @@ export default Backbone.View.extend({
 
   exit () {
     _.invoke(this.sections, 'remove')
-    $('body').toggleClass('edit-mode');
+    $('body').toggleClass('edit-mode')
     this.remove()
 
     if ((Backbone.history.location.pathname === `/${this.catalogue}/documents`) && !this.model.isNew()) {
@@ -194,8 +194,8 @@ export default Backbone.View.extend({
 
   render () {
     this.$el.html(this.template(this.model.attributes))
-    $('body').toggleClass('edit-mode');
-    $('#search').toggleClass('search');
+    $('body').toggleClass('edit-mode')
+    $('#search').toggleClass('search')
     this.sections.forEach(section => {
       section.views.forEach(view => {
         this.$('#editor').append(view.render().el)

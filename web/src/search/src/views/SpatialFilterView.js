@@ -16,6 +16,7 @@ export default Backbone.View.extend({
     // If 'bbox' or 'op' are in the hash arguments of the querystring (ie backbone router controlled), then the model will emit a change event for the changed arg, which must be updated on the UI
     this.listenTo(this.model, 'change:op', function (model, value) { this.updateOp(value) })
     this.listenTo(this.model, 'change:bbox', function (model, value) { this.updateBbox(value) })
+    this.listenTo(this.model, 'change:mapsearch', function (model, value) { this.refreshMap() })
   },
 
   createMap () {
@@ -41,7 +42,7 @@ export default Backbone.View.extend({
     this.listenTo(this.map, L.Draw.Event.CREATED, function (event) {
       this.boundingBox = event.layer
       this.drawnItems.addLayer(this.boundingBox)
-      this.map.removeControl(this.drawControl)
+      // this.map.removeControl(this.drawControl)
       this.drawControl = this.deleteToolbar()
       this.map.addControl(this.drawControl)
       this.setBbox(this.boundingBox)
@@ -114,6 +115,18 @@ export default Backbone.View.extend({
 
   updateSpatialOp (e) {
     this.model.set('op', e.target.dataset.op)
+  },
+
+  /**
+   * If the map is hidden when first visiting the page (eg because accordion is showing facets and hiding map) then
+   * leaflet doesn't initialize properly as it doesn't have information about the space it needs to fill.
+   * The solution is to use map.invalidateSize(), as discussed here:
+   * https://stackoverflow.com/questions/35220431/how-to-render-leaflet-map-when-in-hidden-display-none-parent
+   */
+  refreshMap () {
+    if (this.model.changed.mapsearch) {
+      this.map.invalidateSize()
+    }
   },
 
   /**
