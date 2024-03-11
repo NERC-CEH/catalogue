@@ -74,10 +74,6 @@ main {
             }
         }
 
-
-
-
-
         .search-form {
             position: sticky;
             background-color: white;
@@ -86,11 +82,6 @@ main {
             padding: 1em;
         }
 
-        .results {
-            >* {
-                padding: 1em;
-            }
-        }
     }
 }
 
@@ -120,6 +111,7 @@ main {
                     font-weight: 600;
                     font-size: 1.35em;
                 }
+
                 margin: 2em 0;
                 max-height: 600px;
                 overflow-y: auto;
@@ -201,103 +193,117 @@ main {
 
 }
 
-
 //RESULTS FORMATTING
-.results__list {
-    display: grid;
-    gap: 1em;
 
-    .result {
-        padding: 1.3em;
-        background-color: rgba(0, 0, 0, 0.03);
-        color: var(--text-default-color);
+.results {
+    min-height: 90%;
+    display: flex;
+    flex-direction: column;
 
-        &:hover {
-            background-color: rgba(0, 0, 0, 0.06);
-            outline: 2px solid @link-hover-color;
-            text-decoration: none;
-        }
+    >* {
+        padding: 1em;
+    }
 
-        &__tags {
-            display: flex;
-            flex-direction: row;
-            border-bottom: 1px solid lightgray;
-            padding-bottom: 5px;
-            margin-bottom: 5px;
+    .results__list {
+        display: grid;
+        gap: 1em;
 
-            div {
-                margin-right: 1em;
+        .result {
+            padding: 1.3em;
+            background-color: rgba(0, 0, 0, 0.03);
+            color: var(--text-default-color);
+
+            &:hover {
+                background-color: rgba(0, 0, 0, 0.06);
+                outline: 2px solid @link-hover-color;
+                text-decoration: none;
             }
 
-            .recordType {
-                color: #337085;
+            &__tags {
+                display: flex;
+                flex-direction: row;
+                border-bottom: 1px solid lightgray;
+                padding-bottom: 5px;
+                margin-bottom: 5px;
+
+                div {
+                    margin-right: 1em;
+                }
+
+                .recordType {
+                    color: #337085;
+                }
+
+                .resourceStatus,
+                .condition,
+                .state {
+                    font-weight: bold;
+                    font-size: 1.1rem;
+                    padding-top: 3px;
+                }
             }
 
-            .resourceStatus,
-            .condition,
-            .state {
-                font-weight: bold;
+            &__title {
+                margin: 0 0 0.3em 0;
+                font-size: 1.35em;
+                line-height: 1.35em;
+                color: black;
+            }
+
+            &__citationCount {
+                text-align: right;
+                color: @gray;
                 font-size: 1.1rem;
-                padding-top: 3px;
+                margin-top: -2px;
             }
-        }
 
-        &__title {
-            margin: 0 0 0.3em 0;
-            font-size: 1.35em;
-            line-height: 1.35em;
-            color: black;
-        }
-
-        &__citationCount {
-            text-align: right;
-            color: @gray;
-            font-size: 1.1rem;
-            margin-top: -2px;
-        }
-
-        &--pending {
-            border-left: darkorange 10px solid;
-            background-color: rgba(0, 0, 0, 0.1);
-        }
-
-        &--draft {
-            border-left: darkred 10px solid;
-            background-color: lighten(@gray-light, 30%);
-            background-image: repeating-linear-gradient(315deg,
-                    transparent,
-                    transparent 18px,
-                    rgba(139, 0, 0, 0.15) 20px);
-
-            .result__description {
-                color: #999;
+            &--pending {
+                border-left: darkorange 10px solid;
+                background-color: rgba(0, 0, 0, 0.1);
             }
-        }
 
-        &--Available,
-        &--Unknown,
-        &--Controlled,
-        &--In-progress {
-            .resourceStatus {
-                display: none;
+            &--draft {
+                border-left: darkred 10px solid;
+                background-color: lighten(@gray-light, 30%);
+                background-image: repeating-linear-gradient(315deg,
+                        transparent,
+                        transparent 18px,
+                        rgba(139, 0, 0, 0.15) 20px);
+
+                .result__description {
+                    color: #999;
+                }
             }
-        }
 
-        &--Restricted {
-            .resourceStatus {
-                color: red;
-                text-transform: uppercase;
+            &--Available,
+            &--Unknown,
+            &--Controlled,
+            &--In-progress {
+                .resourceStatus {
+                    display: none;
+                }
+            }
 
-                &::after {
-                    content: " !";
+            &--Restricted {
+                .resourceStatus {
+                    color: red;
+                    text-transform: uppercase;
+
+                    &::after {
+                        content: " !";
+                    }
+                }
+            }
+
+            &--published {
+                .state {
+                    display: none;
                 }
             }
         }
+    }
 
-        &--published {
-            .state {
-                display: none;
-            }
-        }
+    .results__footer {
+        margin-top: auto;
     }
 }
