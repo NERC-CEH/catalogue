@@ -42,7 +42,7 @@ export default Backbone.View.extend({
     this.listenTo(this.map, L.Draw.Event.CREATED, function (event) {
       this.boundingBox = event.layer
       this.drawnItems.addLayer(this.boundingBox)
-      // this.map.removeControl(this.drawControl)
+      this.map.removeControl(this.drawControl)
       this.drawControl = this.deleteToolbar()
       this.map.addControl(this.drawControl)
       this.setBbox(this.boundingBox)
