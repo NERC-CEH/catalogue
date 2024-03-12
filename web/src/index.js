@@ -363,7 +363,7 @@ function navbarToggle ($navbarItems) {
 }
 
 function accordionToggle ($accordionItems) {
-  $accordionItems.on('click', (e)=> {
+  $accordionItems.on('click', (e) => {
     const $currentTarget = $(e.currentTarget)
     if (!$currentTarget.hasClass('active')) {
       $('.accordion-item').removeClass('active')
