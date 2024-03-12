@@ -15,10 +15,10 @@ export default Backbone.View.extend({
 
     // Mutate the events hash so that is listens to clicks of urls which will
     // update the state of this web application
-    this.events["click a[href='#{this.appUrl}']"] = 'defaultState'
-    this.events["click a[href='#{this.appUrl}?']"] = 'handleUrl'
+    this.events[`click a[href='${this.appUrl}']`] = 'defaultState'
+    this.events[`click a[href^='${this.appUrl}?']`] = 'handleUrl'
 
-    this.delegateEvents(this.events) // Register the mutated events object
+    this.delegateEvents() // Register the mutated events object
 
     this.render()
   },
@@ -30,7 +30,7 @@ export default Backbone.View.extend({
   handleUrl (e) {
     const query = $(e.currentTarget).attr('href').split('?')[1]
     this.model.setState(deparam(query, true))
-    e.preventDefault()
+    return false
   },
 
   /*
@@ -39,7 +39,7 @@ export default Backbone.View.extend({
      */
   defaultState (e) {
     this.model.setState({})
-    e.preventDefault()
+    return false
   },
 
   updateMapsearch (e) {
