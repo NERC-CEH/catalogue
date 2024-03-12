@@ -22,6 +22,7 @@ import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.indexing.solr.SolrIndex;
 import uk.ac.ceh.gateway.catalogue.model.Link;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
+import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
 
 import java.util.Arrays;
@@ -53,6 +54,7 @@ class SearchControllerTest {
     @MockBean private FacetFactory facetFactory;
     @MockBean private CodeLookupService codeLookupService;
     @MockBean(name="permission") private PermissionService permissionService;
+    @MockBean private ProfileService profileService;
     @MockBean private Searcher searcher;
 
     @Autowired private MockMvc mvc;
@@ -99,6 +101,7 @@ class SearchControllerTest {
         configuration.setSharedVariable("catalogues", catalogueService);
         configuration.setSharedVariable("codes", codeLookupService);
         configuration.setSharedVariable("permission", permissionService);
+        configuration.setSharedVariable("profile", profileService);
     }
 
     private void givenUserCanCreate() {
