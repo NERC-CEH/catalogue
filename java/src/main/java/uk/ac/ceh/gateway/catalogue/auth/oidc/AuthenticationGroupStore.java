@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
-@Profile({"auth:datalabs", "auth:oidc"})
+@Profile("auth:datalabs")
 @Service
 public class AuthenticationGroupStore<CatalogueUser extends User> implements GroupStore<CatalogueUser> {
     public AuthenticationGroupStore() {

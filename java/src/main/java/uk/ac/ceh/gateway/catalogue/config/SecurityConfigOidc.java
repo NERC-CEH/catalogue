@@ -8,24 +8,10 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
-import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
-import org.springframework.security.oauth2.core.oidc.OidcIdToken;
-import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
-import org.springframework.security.oauth2.core.oidc.user.OidcUser;
-import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
-import org.springframework.security.oauth2.core.user.OAuth2UserAuthority;
 import org.springframework.security.web.SecurityFilterChain;
 import uk.ac.ceh.components.userstore.springsecurity.AnonymousUserAuthenticationFilter;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.CatalogueUserOidcUserService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 @Slf4j
 @Profile("auth:oidc")
@@ -34,63 +20,35 @@ import java.util.Set;
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class SecurityConfigOidc {
 
+    /**
+     * Configures the security filter chain for HTTP requests when using OIDC.
+     *
+     * @param http the HttpSecurity object to configure
+     * @return the configured SecurityFilterChain
+     * @throws Exception if an error occurs during configuration
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .cors()
+            .cors() // Enable Cross-Origin Resource Sharing (CORS)
             .and()
-            .anonymous()
-                .authenticationFilter(new AnonymousUserAuthenticationFilter("NotSure", CatalogueUser.PUBLIC_USER, "ROLE_ANONYMOUS"))
+            .anonymous() // Allow anonymous access
+            .authenticationFilter(new AnonymousUserAuthenticationFilter("NotSure", CatalogueUser.PUBLIC_USER, "ROLE_ANONYMOUS"))
             .and()
             .authorizeRequests((authorizeRequests) -> authorizeRequests
-                .mvcMatchers(HttpMethod.POST, "/**").fullyAuthenticated()
-                .mvcMatchers(HttpMethod.PUT, "/**").fullyAuthenticated()
-                .mvcMatchers(HttpMethod.DELETE, "/**").fullyAuthenticated()
+                .mvcMatchers(HttpMethod.POST, "/**").fullyAuthenticated() // Require full authentication for POST requests
+                .mvcMatchers(HttpMethod.PUT, "/**").fullyAuthenticated() // Require full authentication for PUT requests
+                .mvcMatchers(HttpMethod.DELETE, "/**").fullyAuthenticated() // Require full authentication for DELETE requests
             )
             .oauth2Login(oauth2 -> oauth2
                 .userInfoEndpoint(
                     userInfo -> userInfo
-                        .oidcUserService(this.oidcUserService())
-                        .userAuthoritiesMapper(this.userAuthoritiesMapper())
+                        .oidcUserService(new CatalogueUserOidcUserService()) // Set OIDC user service for OAuth2 login
                 )
             )
-            .csrf()
-                .disable();
+            .csrf() // Disable Cross-Site Request Forgery (CSRF) protection
+            .disable();
         return http.build();
     }
 
-    private OAuth2UserService<OidcUserRequest, OidcUser> oidcUserService() {
-        return new CatalogueUserOidcUserService();
-    }
-
-    private GrantedAuthoritiesMapper userAuthoritiesMapper() {
-        return (authorities) -> {
-            Set<GrantedAuthority> mappedAuthorities = new HashSet<>();
-            GrantedAuthority eidcEditor = new SimpleGrantedAuthority("role_eidc_editor");
-            GrantedAuthority eidcPublisher = new SimpleGrantedAuthority("role_eidc_publisher");
-            mappedAuthorities.add(eidcEditor);
-            mappedAuthorities.add(eidcPublisher);
-
-            authorities.forEach(authority -> {
-                if (authority instanceof OidcUserAuthority oidcUserAuthority) {
-
-                    OidcIdToken idToken = oidcUserAuthority.getIdToken();
-                    OidcUserInfo userInfo = oidcUserAuthority.getUserInfo();
-
-                    // Map the claims found in idToken and/or userInfo
-                    // to one or more GrantedAuthority's and add it to mappedAuthorities
-
-                } else if (authority instanceof OAuth2UserAuthority oauth2UserAuthority) {
-
-                    Map<String, Object> userAttributes = oauth2UserAuthority.getAttributes();
-
-                    // Map the attributes found in userAttributes
-                    // to one or more GrantedAuthority's and add it to mappedAuthorities
-
-                }
-            });
-
-            return mappedAuthorities;
-        };
-    }
 }

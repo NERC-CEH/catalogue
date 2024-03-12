@@ -99,7 +99,17 @@
                 </div>
               </li>
             </#if>
-            <li id="sso-user"></li>
+            <#if profile.isActive("auth:oidc")>
+              <li>
+                <#if userInfo.isLoggedIn()>
+                  <a href="/logout">Logout</a>
+                <#else>
+                  <a href="/login">Login</a>
+                </#if>
+              </li>
+            <#else>
+              <li id="sso-user"></li>
+            </#if>
           </ul>
         </div>
       </div>
