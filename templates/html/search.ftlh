@@ -40,18 +40,5 @@
         <#include "search/_page.ftlh">
       </div>
     </div>
-
   </div>
-
-  <script>
-  const items = document.querySelectorAll(".accordion-item");
-
-  items.forEach((item) => {
-    item.addEventListener("click", function () {
-      var activeElement = document.querySelector(".accordion .active");
-      if (activeElement != null) activeElement.classList.remove("active");
-      this.classList.add("active");
-    });
-  });
-</script>
 </@skeleton.master>

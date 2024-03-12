@@ -12,31 +12,29 @@
 <link rel="stylesheet" type="text/css" href="/static/css/style-test.css">
 </head>
 <body data-edit-restricted="disabled">
-<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+<header>
 <div class="container">
-<div class="navbar-header">
-<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
-<span class="sr-only">Toggle navigation</span>
-<span class="icon-bar"></span>
-<span class="icon-bar"></span>
-<span class="icon-bar"></span>
-</button>
-<a href="https://example.com" class="navbar-brand"><img src="/static/img/cataloguelogo/eidc.png" alt="Test Catalogue"/></a>
+<div class="toolbar">
+<div class="brand">
+<a href="https://example.com"><img src="/static/img/cataloguelogo/eidc.png" alt="Test Catalogue"/></a>
 </div>
-<div class="navbar-collapse collapse">
-<ul class="nav navbar-nav">
-<li class="navbar-title">
-<a href="https://example.com">Test Catalogue</a>
-</li>
-<li class=""><a href="/test/documents">Search</a></li>
-</ul>
-<ul class="nav navbar-nav navbar-right">
-<li id="sso-user"></li>
-</ul>
+<div class="nav-toggle">
+<i class="fa-solid fa-2x fa-bars"></i>
+<i class="fa-solid fa-2x fa-xmark"></i>
+</div>
+<div class="navigation">
+<nav class="navbar">
+<a class="navbar-title" href="https://example.com">Test Catalogue</a>
+<a href="/test/documents">Search</a>
+</nav>
+<nav class="navbar navbar-right">
+<span id="sso-user"></span>
+</nav>
 </div>
 </div>
 </div>
-<div>
+</header>
+<main>
 <div class="container" id="simple-upload">
 <h1>Upload Test</h1>
 <a href="/documents/123-456-789">Return to metadata</a>
@@ -70,7 +68,7 @@
 <script id="messages-data" type="application/json">
 {"message":"Test error","type": "error"}
 </script>
-</div>
+</main>
 <div id="message-panel"></div>
 <script src="/static/scripts/main.js"></script>
 </body>
