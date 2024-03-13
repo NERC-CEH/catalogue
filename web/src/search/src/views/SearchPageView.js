@@ -1,4 +1,4 @@
-import _ from 'underscore'
+ import _ from 'underscore'
 import $ from 'jquery'
 import Backbone from 'backbone'
 import template from '../templates/searchPage'
@@ -13,10 +13,6 @@ export default Backbone.View.extend({
     this.listenTo(this.model, 'results-sync', this.render)
     this.listenTo(this.model, 'results-change:selected', this.updateSelected)
 
-    // Ensure @ refers to this in the findSelected method. This means that we
-    // can:
-    //   - Pass @findSelected directly to the jquery.on method
-    //   - Unbind @findSelected when the view is removed
   },
 
   /*

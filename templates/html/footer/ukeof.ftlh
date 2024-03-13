@@ -9,7 +9,7 @@
   </div>
 
   <div>
-    <a href="https://creativecommons.org/licenses/by/4.0/" rel="noopener noreferrer"><small>This information is available under a Creative Commons Attribution-Share Alike 4.0 International license (CC BY-SA 4.0)<small></a>
+    <a href="https://creativecommons.org/licenses/by/4.0/" rel="noopener noreferrer"><small>This information is available under a Creative Commons Attribution-Share Alike 4.0 International license (CC BY-SA 4.0)</small></a>
   </div>
 </div>
 
