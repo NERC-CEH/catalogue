@@ -82,7 +82,7 @@ header {
         .brand {
             display: flex;
             align-items: center;
-            height:var(--header-height);
+            height: var(--header-height);
 
             img {
                 max-height: calc(var(--header-height) - 30px);
@@ -95,6 +95,7 @@ header {
             flex-wrap: nowrap;
             justify-content: space-between;
             background-color: var(--header-background-colour);
+
             .navbar {
                 padding: 0;
                 margin: 0;
@@ -157,6 +158,7 @@ header {
 
 @media only screen and (max-width: 980px) {
     header {
+
         .container,
         .container-fluid {
             padding: 0 !important;
@@ -215,21 +217,18 @@ header {
                     }
                 }
             }
-
-
         }
 
-        .reveal {
-            .nav-toggle {
-                .fa-bars {
-                    display: none;
-                }
+        .nav-toggle.reveal {
+            .fa-bars {
+                display: none;
+            }
 
-                .fa-xmark {
-                    display: inline;
-                }
+            .fa-xmark {
+                display: inline;
             }
         }
+
     }
 }
 
