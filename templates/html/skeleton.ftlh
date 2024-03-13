@@ -8,7 +8,7 @@
 
 <#assign catalogueid="">
 
-<#macro master title catalogue="" rdf="" schemaorg="" canonical="" searching=false can_edit_restricted=false containerClass="container" scripts=defaultScripts footer="">
+<#macro master title catalogue="" rdf="" schemaorg="" canonical="" searching=false can_edit_restricted=false containerClass="container" scripts=defaultScripts footer="" footer=false>
   <#assign catalogueid="">
   <#if catalogue?has_content>
     <#assign catalogueid= catalogue.id >
@@ -106,10 +106,10 @@
       <main>
         <#nested>
       </main>
-      <#if footer?has_content>
-      <footer>
-         <#include "${footer}">
-      </footer>
+      <#if footer = true>
+        <footer>
+          <#include "footer/${catalogue.id}.ftlh">
+        </footer>
       </#if>
       <#if catalogue?has_content && catalogue.id == "eidc">
         <script type="text/javascript" src="https://jira.ceh.ac.uk/s/d41d8cd98f00b204e9800998ecf8427e-CDN/-8wgtt1/813004/fe1f443e9c2ab11853ac2c907ebc1d28/2.2.4.7/_/download/batch/com.atlassian.plugins.jquery:jquery/com.atlassian.plugins.jquery:jquery.js?collectorId=1977b77c"></script>

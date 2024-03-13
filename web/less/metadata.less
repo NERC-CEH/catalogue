@@ -12,25 +12,6 @@
 
 body {display:flex; flex-direction: column; min-height: 100vh;}
 
-footer {
-    background-color: #ccc;
-    width: 100%;
-
-    span {
-        &:not(:last-of-type)::after {
-            content: "|";
-            margin: 0 0.6em;
-        }
-    }
-
-    .altviews {
-        span:first-of-type {
-            margin-left: 0.6em;
-        }
-    }
-}
-
-
 .metadata-grid {
     .col1 {
         grid-area: col1;

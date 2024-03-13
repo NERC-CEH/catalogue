@@ -1,13 +1,8 @@
 <#import "../skeleton.ftlh" as skeleton>
 <#import "../blocks.ftlh" as b>
 
-<#assign odspScripts>
-  <script src="/static/scripts/editor-bundle.js"></script>
-</#assign>
-
-
 <#macro base>
-  <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
+  <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) footer=true>
     <div id="metadata" class="${metadata.state?lower_case}">
     <#if !type??>
     <#else>

@@ -53,7 +53,7 @@
   </#list>
 </#macro>
 
-<@skeleton.master title=title catalogue=catalogue rdf="${uri}?format=ttl" schemaorg="${uri}?format=schema.org" canonical="${uri}" can_edit_restricted=permission.userCanEditRestrictedFields(metadata.catalogue) footer="document/_footer.ftlh">
+<@skeleton.master title=title catalogue=catalogue rdf="${uri}?format=ttl" schemaorg="${uri}?format=schema.org" canonical="${uri}" can_edit_restricted=permission.userCanEditRestrictedFields(metadata.catalogue) footer=true>
   <#if resourceType?has_content && resourceType.value !=''>
   <#assign recordType = func.recordTypeOrResourceType()>
 

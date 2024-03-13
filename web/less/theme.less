@@ -34,7 +34,7 @@ body {
 
 footer {
     margin-top: auto;
-
+    background-color: var(--footer-background-colour);
     .container {
         padding: 1em;
     }
@@ -45,7 +45,6 @@ header {
     top: 0;
     z-index: 5000;
     background-color: var(--header-background-colour);
-    height: var(--header-height);
     border-bottom: solid var(--header-border-colour) var(--header-border-width);
 }
 
@@ -73,6 +72,7 @@ h6 {
 header {
 
     .toolbar {
+        height: var(--header-height);
         display: flex;
         flex-wrap: nowrap;
         gap: 1em;
@@ -82,10 +82,10 @@ header {
         .brand {
             display: flex;
             align-items: center;
+            //height: var(--header-height);
 
             img {
                 max-height: calc(var(--header-height) - 30px);
-                border-right: 2px solid white;
             }
         }
 
@@ -115,21 +115,33 @@ header {
                         color: var(--header-link-hover-colour);
                     }
                 }
-
-
             }
 
             .navbar-right {
                 margin-left: auto;
 
                 .dropdown-menu {
-                    background-color: #EEE;
+                    --dropdown-background-color: #EEE;
+                    background-color: var(--dropdown-background-color);
 
-                    a {
-                        padding: .75em;
-                        background-color: #EEE;
-                        color: black;
-                        font-weight: normal;
+                    li {
+                        border-bottom: 1px solid lightgray;
+
+                        &:last-child {
+                            border: none;
+                        }
+
+                        a {
+                            padding: .75em;
+                            background-color: var(--dropdown-background-color);
+                            color: black;
+                            font-weight: 400;
+
+                            &:hover {
+                                background-color: color-mix(in lab, var(--dropdown-background-color), black 5%);
+                                color: var(--header-link-hover-colour);
+                            }
+                        }
                     }
                 }
             }
@@ -171,10 +183,6 @@ header {
 
             .navigation {
                 display: block;
-                position: absolute;
-                top: 3.5em;
-                left: 0;
-                right: 0;
                 background-color: var(--header-background-colour);
 
                 .navbar {
@@ -195,6 +203,7 @@ header {
 
             .navbar.reveal {
                 display: flex;
+                border-bottom: solid var(--header-border-colour) var(--header-border-width);
             }
         }
 
@@ -218,7 +227,6 @@ header {
     background-color: var(--primary-colour);
     color: white;
 }
-
 
 i.fa-solid,
 i.fa-regular,

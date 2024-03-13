@@ -11,20 +11,20 @@
     documents = func.filter(onlineResources, "function", "documentation")
   >
 </#if>
-<@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
+<@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) footer=true>
 
 
  <div id="metadata" class="nerc-model nerc-modelcode">
     <div class="section section-grey">
       <div class="container">
-        
+
         <#if title?? && title?has_content>
           <div id="pageTitle">
             <@b.admin/>
             <h1>
             <#if (metadata.state == 'draft' || metadata.state == 'pending') >
               <small class="text-danger"><b>${codes.lookup('publication.state', metadata.state)?upper_case!''}</b></small>
-            </#if> 
+            </#if>
             ${title}
              <#if (version?? && version?has_content) || (releaseDate?? && releaseDate?has_content)>
                 <small><br>
@@ -34,7 +34,7 @@
             </#if>
             </h1>
           </div>
-        </#if>    
+        </#if>
 
         <#if description??>
           <div class="description">
@@ -48,15 +48,15 @@
             </div>
           </div>
         </#if>
-        
+
       </div>
     </div>
-    
+
     <div class="section">
       <div class="container">
         <div class="metadata-grid">
           <div class="col1">
-          
+
             <div>
               <h2 class="hideLarge">Fundamental information</h2>
               <#if purpose?? && purpose?has_content>
@@ -138,7 +138,7 @@
                       </div>
                     </div>
                   </#list>
-                
+
                 </#if>
 
                 <#if boundingBoxes?has_content>
@@ -163,7 +163,7 @@
                 <div class="table--qa">
                   <table class="table">
                     <thead>
-                      <tr>  
+                      <tr>
                         <th>Category</th>
                         <th>Date</th>
                         <th>Notes</th>
@@ -192,7 +192,7 @@
                   <#list nercModelUses>
                       <#items as modelUse>
                         <@b.blockUrl modelUse/>
-                      </#items>         
+                      </#items>
                   </#list>
                 </div>
               </#if>
@@ -232,7 +232,7 @@
                       ${ai.value}
                     </@m.key>
                 </#list>
-              </#if>     
+              </#if>
 
             </div>
             </#if>
@@ -241,14 +241,14 @@
 
           </div>
           <div class="col2">
-           
+
             <#if (code?? && code?has_content) || (documents?? && documents?has_content)>
               <div class="accessLinks">
                 <#if code?? && code?has_content>
                   <#list code as link>
                     <#if link.url?? && link.url?has_content>
                       <@m.urlAccess link "code">
-                        <div><i class="fa-solid fa-code fa-lg"></i></div> 
+                        <div><i class="fa-solid fa-code fa-lg"></i></div>
                         <div>
                         <#if link.name?? && link.name?has_content>
                           ${link.name}
@@ -295,13 +295,13 @@
                 <#else>
                   <p class="text-danger">There are no contacts listed for this model</p>
                 </#if>
-          
+
 
           </div>
         </div>
       </div>
     </div>
-  
+
   </div>
   <#include "_footer.ftlh">
 

@@ -11,7 +11,7 @@
 >
 </#if>
 
-<@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) footer="infrastructure/_footer.ftlh">
+<@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) footer=true>
   <div id="metadata" class="metadata infrastructure-metadata">
     <div class="section section-grey">
       <div class="container">
