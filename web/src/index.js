@@ -358,7 +358,7 @@ function createMessageViewFor (app) {
 
 function navbarToggle ($navbarItems) {
   $($navbarItems[0]).on('click', () => {
-    $('.navbar, .toolbar').toggleClass('reveal')
+    $('.navigation').toggleClass('reveal')
   })
 }
 

@@ -3,6 +3,12 @@
 
 @fa-font-path: "../fonts";
 
+:root {
+    --primary-colour: var(--ukceh-colours-teal);
+    --tertiary-colour: var(--ukceh-colours-green);
+
+}
+
 #pageTitle {
     margin: 2em 0;
 }
@@ -47,6 +53,7 @@
 
 .footer-ri {
     background-color: transparent;
+
     .footer-curve {
         background-image: url(https://www.ceh.ac.uk/themes/custom/ceh/images/footer_curve.svg);
         background-size: cover;
@@ -70,24 +77,29 @@
             padding: 1em;
             justify-items: center;
             align-items: center;
+
             .logo {
                 grid-area: logo;
                 background-color: #333;
+
                 img {
                     max-width: 180px;
                     margin: 0.4em 2em;
                 }
             }
+
             .menu {
                 a {
                     color: white;
                     margin-right: 1em;
                 }
             }
+
             .socials {
                 grid-area: socials;
                 display: flex;
                 gap: 1em;
+
                 a.social {
                     --size: 52px;
                     color: black;
@@ -99,6 +111,7 @@
                     display: grid;
                     justify-content: center;
                     align-items: center;
+
                     &:hover,
                     &:focus {
                         background-color: transparent;
@@ -107,6 +120,7 @@
                     }
                 }
             }
+
             .menu {
                 grid-area: menu;
             }
@@ -121,6 +135,7 @@
                 grid-template-areas:
                     "logo logo"
                     "menu socials";
+
                 .logo {
                     img {
                         max-width: 220px;

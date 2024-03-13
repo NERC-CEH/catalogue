@@ -53,18 +53,18 @@
         <div class="${containerClass}">
 
           <div class="toolbar">
-            <div class="brand">
-              <#if catalogue?has_content>
-                <a href="${catalogue.url}"><img src="/static/img/cataloguelogo/${catalogue.logo}" alt="${catalogue.title}"/></a>
-              <#else>
-                <img src="/static/img/cataloguelogo/ukceh.png" alt="UKCEH"/>
-              </#if>
-            </div>
             <div class="nav-toggle">
               <i class="fa-solid fa-2x fa-bars"></i>
               <i class="fa-solid fa-2x fa-xmark"></i>
             </div>
             <div class="navigation">
+              <div class="brand">
+                <#if catalogue?has_content>
+                  <a href="${catalogue.url}"><img src="/static/img/cataloguelogo/${catalogue.logo}" alt="${catalogue.title}"/></a>
+                <#else>
+                  <img src="/static/img/cataloguelogo/ukceh.png" alt="UKCEH"/>
+                </#if>
+              </div>
               <nav class="navbar">
                 <#if catalogue?has_content>
                   <a class="navbar-title" href="${catalogue.url}">${catalogue.title}</a>

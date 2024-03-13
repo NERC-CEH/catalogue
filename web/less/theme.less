@@ -35,6 +35,7 @@ body {
 footer {
     margin-top: auto;
     background-color: var(--footer-background-colour);
+
     .container {
         padding: 1em;
     }
@@ -75,14 +76,13 @@ header {
         height: var(--header-height);
         display: flex;
         flex-wrap: nowrap;
-        gap: 1em;
         font-family: sans-serif;
         color: white;
 
         .brand {
             display: flex;
             align-items: center;
-            //height: var(--header-height);
+            height:var(--header-height);
 
             img {
                 max-height: calc(var(--header-height) - 30px);
@@ -94,7 +94,7 @@ header {
             flex-grow: 1;
             flex-wrap: nowrap;
             justify-content: space-between;
-
+            background-color: var(--header-background-colour);
             .navbar {
                 padding: 0;
                 margin: 0;
@@ -157,6 +157,11 @@ header {
 
 @media only screen and (max-width: 980px) {
     header {
+        .container,
+        .container-fluid {
+            padding: 0 !important;
+        }
+
         .toolbar {
             flex-direction: column;
 
@@ -182,8 +187,9 @@ header {
             }
 
             .navigation {
+                padding: 0 1em;
                 display: block;
-                background-color: var(--header-background-colour);
+
 
                 .navbar {
                     flex-direction: column;
@@ -199,12 +205,18 @@ header {
                 .navbar-right {
                     margin-left: 0;
                 }
+
+                &.reveal {
+                    border-bottom: solid var(--header-border-colour) var(--header-border-width);
+
+                    .navbar {
+                        display: flex;
+
+                    }
+                }
             }
 
-            .navbar.reveal {
-                display: flex;
-                border-bottom: solid var(--header-border-colour) var(--header-border-width);
-            }
+
         }
 
         .reveal {
