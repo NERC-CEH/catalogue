@@ -117,15 +117,6 @@
       </#if>
       <div id="message-panel"></div>
       ${scripts}
-      <script>
-        function classToggle() {
-          const navs = document.querySelectorAll(".navbar, .toolbar");
-          navs.forEach((nav) => nav.classList.toggle("reveal"));
-        }
-        document
-          .querySelector(".nav-toggle")
-          .addEventListener("click", classToggle);
-      </script>
     </body>
   </html></#compress>
 </#macro>

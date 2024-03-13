@@ -30,5 +30,4 @@ describe('Test SearchAppView', () => {
     expect(view.facetsPanelView.model.get('title')).toEqual('some text')
     expect(view.spatialFilterView.model.get('title')).toEqual('some text')
   })
-
 })
