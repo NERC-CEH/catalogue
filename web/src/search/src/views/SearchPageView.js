@@ -12,7 +12,6 @@ export default Backbone.View.extend({
     this.listenTo(this.model, 'cleared:results', this.clear)
     this.listenTo(this.model, 'results-sync', this.render)
     this.listenTo(this.model, 'results-change:selected', this.updateSelected)
-
   },
 
   /*
