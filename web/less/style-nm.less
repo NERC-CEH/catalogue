@@ -1,88 +1,27 @@
 @import "theme";
-@import "../node_modules/@fortawesome/fontawesome-free/less/fontawesome";
-@import "../node_modules/@fortawesome/fontawesome-free/less/regular";
-@import "../node_modules/@fortawesome/fontawesome-free/less/solid";
-@import "message-panel";
-@import "search";
-@import "metadata";
-@import "editor";
+
 
 @fa-font-path: "../fonts";
 
 //colours
 @ukri-blue: hsla(241, 37%, 28%, 1);
 @nerc-blue: @ukri-blue;
-@nerc-lightgreen: hsla(106, 48%, 53%, 1);
-@nerc-darkgreen: hsla(120, 37%, 38%, 1);
-@nerc-hightlight: hsla(341, 59%, 50%, 1);
 
 @link-hover-color: @nerc-blue;
 
-@navbar-height: 68px;
-@navbar-default-bg: white;
-@navbar-margin-bottom: @line-height-computed;
-@navbar-default-border: @nerc-darkgreen;
-@navbar-border-width: 12px;
-@navbar-border-radius: 0;
-@navbar-default-color: @gray-light;
-@navbar-default-border: @nerc-blue;
-@navbar-default-link-color: @nerc-blue;
-@navbar-default-link-hover-color: @nerc-blue;
-@navbar-default-link-hover-bg: darken(@navbar-default-bg, 5%);
-@navbar-default-link-active-color: @navbar-default-link-hover-color;
-@navbar-default-link-active-bg: darken(@navbar-default-bg, 5%);
-@navbar-default-link-disabled-color: #444;
-@navbar-default-link-disabled-bg: transparent;
-@navbar-default-brand-color: @navbar-default-link-color;
-@navbar-default-brand-hover-color: #fff;
-@navbar-default-brand-hover-bg: transparent;
-@navbar-default-toggle-hover-bg: #333;
-@navbar-default-toggle-icon-bar-bg: #fff;
-@navbar-default-toggle-border-color: #333;
+:root {
+    --ukri-blue: hsla(241, 37%, 28%, 1);
+    --nerc-lightgreen: hsla(106, 48%, 53%, 1);
+    --nerc-darkgreen: hsla(120, 37%, 38%, 1);
 
-@footer-height: 3.25em;
-@header-text: @gray-dark;
-@panel-default-heading-bg: @nerc-lightgreen;
+    --header-background-colour:white;
+    --header-link-background-colour: var(--header-background-colour);
+    --header-link-hover-background-colour:color-mix(in lab, var(--header-link-background-colour), black 15px);
+    --header-link-colour: var(--nerc-darkgreen);
+    --header-link-hover-colour: red;}
 
 html {
     overflow-y: scroll;
-    min-height: 100%;
-    position: relative;
-}
-
-body {
-    margin-top: @navbar-height + (@navbar-border-width*2);
-    margin-bottom: @footer-height;
-}
-
-.navbar {
-    border-bottom-width: @navbar-border-width;
-    box-shadow: 0 0 0 (@navbar-border-width)/2 @nerc-darkgreen;
-
-    &-toggle {
-        background-color: black;
-        color: white;
-    }
-
-    a {
-        font-weight: bolder;
-
-        &::after {
-            @linethickness: 2px;
-            content: " ";
-            display: block;
-            background-color: @navbar-default-link-hover-color;
-            width: 0;
-            height: @linethickness;
-            margin: @linethickness 0 - (@linethickness) 0;
-        }
-
-        &:hover {
-            &::after {
-                width: 100%;
-            }
-        }
-    }
 }
 
 .models {
@@ -91,25 +30,12 @@ body {
     }
 }
 
-.filters-panel {
-    .header {
-        h3 {
-            color: white;
-        }
-    }
-}
-
 .adminToolbar {
     margin-top: 1em;
 }
 
-.navbar-fixed-bottom {
-    background-color: #eee;
-}
 
 a.navbar-brand {
-    min-height: @navbar-height;
-    min-width: 280px;
     background-image: url("https://eidc.ceh.ac.uk/images/nerc_small.png");
     background-position: center;
     background-repeat: no-repeat;
@@ -175,10 +101,10 @@ a.navbar-brand {
             justify-content: flex-start;
             align-items: center;
             &:hover, &:focus {
-                outline: 1px solid @nerc-lightgreen;
+                outline: 1px solid var(--nerc-lightgreenvar);
                 text-decoration: none;
                 div:first-child {
-                    background-color: @nerc-darkgreen;
+                    background-color: var(--nerc-darkgreen);
                     color: white;
                 }
             }

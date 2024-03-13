@@ -8,7 +8,9 @@ import _ from 'underscore'
  */
 export default _.template(`
 <% _.each(facets, function(facet) { %>
-    <h3><%= facet.displayName %></h3>
+  <div class="facet">
+    <div class="facet-header"><%= facet.displayName %></div>
     <%= template({"results": facet.results, "template": template}) %>
+  </div>
 <% }); %>
 `)

@@ -1,76 +1,43 @@
-// Import our own style sheets
+@import "../node_modules/@fortawesome/fontawesome-free/less/brands";
 @import "theme";
-@import "../node_modules/@fortawesome/fontawesome-free/less/fontawesome";
-@import "../node_modules/@fortawesome/fontawesome-free/less/regular";
-@import "../node_modules/@fortawesome/fontawesome-free/less/solid";
-@import "message-panel";
-@import "search";
-@import "metadata";
-@import "editor";
-@import "validation";
 
 @fa-font-path: "../fonts";
 
-@ukeof-green: hsl(111, 50%, 39%);
-@brand-success: @ukeof-green;
-@gray-lighter: @ukeof-green;
-@header-text: #fff;
-@link-hover-color: #e74022;
-@panel-default-text: @header-text;
-@footer-height: 3.25em;
+:root {
+    --primary-colour: hsl(84, 55%, 48%);
+    --secondary-colour: hsl(84, 55%, 48%);
+    --teritary-colour: #BF3888;
 
-@navbar-height: 70px;
-@navbar-default-bg: white;
-@navbar-margin-bottom: @line-height-computed;
-@navbar-default-border: @ukeof-green;
-@navbar-border-width: 5px;
-@navbar-border-radius: 0;
-@navbar-default-color: @gray-light;
-@navbar-default-border: @ukeof-green;
-@navbar-default-link-color: @ukeof-green;
-@navbar-default-link-hover-color: @link-hover-color;
-@navbar-default-link-hover-bg: darken(@navbar-default-bg, 5%);
-@navbar-default-link-active-color: @navbar-default-link-hover-color;
-@navbar-default-link-active-bg: darken(@navbar-default-bg, 5%);
-@navbar-default-link-disabled-color: #444;
-@navbar-default-link-disabled-bg: transparent;
-@navbar-default-brand-color: @navbar-default-link-color;
-@navbar-default-brand-hover-color: #fff;
-@navbar-default-brand-hover-bg: transparent;
-@navbar-default-toggle-hover-bg: #333;
-@navbar-default-toggle-icon-bar-bg: #fff;
-@navbar-default-toggle-border-color: #333;
+    --link-hover-colour: hsl(204, 55%, 48%);
 
-
-html {
-    overflow-y: scroll;
-    min-height: 100%;
-    position: relative;
-    scroll-padding-top: @navbar-height * 1.5;
+    --header-height: 100px;
+    --header-background-colour: white;
+    --header-link-background-colour: var(--header-background-colour);
+    --header-link-hover-background-colour: color-mix(in lab, var(--header-link-background-colour), black 5%);
+    --header-link-colour: var(--primary-colour);
+    --header-link-hover-colour: var(--link-hover-colour);
+    --header-border-colour: var(--primary-colour);
+    --header-border-width: 4px;
 }
 
-body {
-    margin-top: @navbar-height + (@navbar-border-width*2);
-    margin-bottom: @footer-height;
-}
 
-.navbar {
-    .navbar-brand {
-        margin: 0 0 0 0.35em;
-        img {
-            max-width: 200px;
-            padding:.5em 1em;
+footer {
+    text-align: center;
+
+    .footerLinks {
+        margin-top: .5em;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+
+        a {
+            border-left: 1px solid;
+            padding: 0 1em;
+
+            &:first-child {
+                border: none;
+                padding-left: 0;
+            }
         }
-    }
-
-    border-bottom-width: @navbar-border-width;
-
-    a {
-        font-weight: bolder;
-    }
-
-    &-toggle {
-        background-color: black;
-        color: white;
     }
 }

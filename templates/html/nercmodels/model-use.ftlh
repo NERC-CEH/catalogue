@@ -7,23 +7,23 @@
   <#assign websites = func.filter(onlineResources, "function", "website") >
 </#if>
 
-<@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
+<@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) footer=true>
 
  <div id="metadata" class= "nerc-model nerc-modeluse">
     <div class="section section-grey">
       <div class="container">
-        
+
         <#if title?? && title?has_content>
           <div id="pageTitle">
             <@b.admin/>
             <h1>
             <#if (metadata.state == 'draft' || metadata.state == 'pending') >
               <small class="text-danger"><b>${codes.lookup('publication.state', metadata.state)?upper_case!''}</b></small>
-            </#if> 
+            </#if>
             ${title}
             </h1>
           </div>
-        </#if>    
+        </#if>
 
         <#if description??>
           <div class="description">
@@ -37,10 +37,10 @@
             </div>
           </div>
         </#if>
-        
+
       </div>
     </div>
-    
+
     <div class="section">
       <div class="container">
         <div class="metadata-grid">
@@ -122,13 +122,13 @@
                   <@m.key ai.key>
                     ${ai.value}
                   </@m.key>
-              </#list>        
+              </#list>
             </#if>
 
             <#if (references?? && references?has_content) ||  (websites?? && websites?has_content)>
               <div class="links">
                 <h2>References and online resources</h2>
-                
+
                   <#if (references?? && references?has_content)>
                     <#list references as link>
                     <div class="links--link">
@@ -143,7 +143,7 @@
                     </div>
                     </#list>
                   </#if>
-                
+
                   <#if (websites?? && websites?has_content)>
                     <#list websites as link>
                     <div class="links--link">
@@ -168,7 +168,7 @@
         </div>
       </div>
     </div>
-  
+
   </div>
 
   <#include "_footer.ftlh">

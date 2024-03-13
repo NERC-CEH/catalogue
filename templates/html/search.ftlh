@@ -3,30 +3,42 @@
 <@skeleton.master title="Search" catalogue=catalogue searching=true containerClass="container-fluid" >
   <div class="search facets-mode" id="search">
 
-    <div class="filters-panel">
-        <div class="header facet-heading">
-          <h3>Facet filters</h3>
-        </div>
-        <div class="facet-filter"><#include "search/_facets.ftlh"></div>
-        <div class="spatial">
-          <div class="header facet-heading">
-            <h3>Spatial filter</h3>
+    <div class="filters">
+      <div class="accordion">
+        <div class="accordion-item active">
+          <div>
+            <div class="accordion-heading">Filters</div>
+            <div class="accordion-content">
+              <div class="facet-filter"><#include "search/_facets.ftlh"></div>
+            </div>
           </div>
-          <div class="spatial-filter"></div>
         </div>
-    </div>
-
-    <div class="results"><#include "search/_page.ftlh"></div>
-    <form class="search-form" action="/${docroot}" method="get">
-      <div class="input-group">
-        <input placeholder="Search the catalogue" name="term" type="text" autocomplete="off" class="form-control">
-        <div class="input-group-btn">
-          <button tabindex="-1" class="btn btn-success" type="button" aria-label="Search">
-            <span class="fa-solid fa-magnifying-glass"></span>
-          </button>
+        <div class="accordion-item accordion-map">
+          <div>
+            <div class="accordion-heading">Spatial search</div>
+            <div class="accordion-content">
+              <div class="mapsearch"></div>
+            </div>
+          </div>
         </div>
       </div>
-    </form>
+    </div>
 
+    <div>
+      <form class="search-form" action="/${docroot}" method="get">
+        <div class="input-group">
+          <input placeholder="Search the catalogue" name="term" type="text" autocomplete="off" class="form-control">
+          <div class="input-group-btn">
+            <button tabindex="-1" class="btn" type="button" aria-label="Search">
+              <span class="fa-solid fa-magnifying-glass"></span>
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <div class="results">
+        <#include "search/_page.ftlh">
+      </div>
+    </div>
   </div>
 </@skeleton.master>

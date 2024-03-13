@@ -46,6 +46,8 @@ const $catalogue = $('.catalogue-control')
 const $documentUpload = $('#document-upload')
 const $edit = $('.edit-control')
 const $serviceAgreement = $('.service-agreement')
+const $navbarToggle = $('.nav-toggle')
+const $accordionToggle = $('.accordion-item')
 
 if ($catalogue.length) {
   initCatalogue()
@@ -53,6 +55,14 @@ if ($catalogue.length) {
 
 if ($edit.length) {
   initEditor()
+}
+
+if ($navbarToggle.length) {
+  navbarToggle($navbarToggle)
+}
+
+if ($accordionToggle.length) {
+  accordionToggle($accordionToggle)
 }
 
 if ($serviceAgreement.length) {
@@ -344,4 +354,21 @@ function initStudyAreaMap () {
 
 function createMessageViewFor (app) {
   new MessageView({ model: app })
+}
+
+function navbarToggle ($navbarItems) {
+  $($navbarItems[0]).on('click', () => {
+    $('.navigation').toggleClass('reveal')
+    $('.nav-toggle').toggleClass('reveal')
+  })
+}
+
+function accordionToggle ($accordionItems) {
+  $accordionItems.on('click', (e) => {
+    const $currentTarget = $(e.currentTarget)
+    if (!$currentTarget.hasClass('active')) {
+      $('.accordion-item').removeClass('active')
+      $currentTarget.toggleClass('active')
+    }
+  })
 }

@@ -1,7 +1,7 @@
 <#import "skeleton.ftlh" as skeleton>
 <#assign canEdit = permission.userCanEdit(id)>
 
-<@skeleton.master title="Permissions" catalogue=catalogues.retrieve(catalogue)>
+<@skeleton.master title="Permissions" catalogue=catalogues.retrieve(catalogue) >
   <div id="metadata" data-id="${id}" class="container permission">
     <h2>Permissions</h2>
     <div>
