@@ -1,4 +1,4 @@
-<#if boundingBoxes?? || spatialRepresentationTypes?? || spatialReferenceSystems??>
+<#if boundingBoxes?has_content || spatialRepresentationTypes?? || spatialReferenceSystems??>
   <div id="spatial">
   <h2>Spatial information</h2>
     <dl class="dl-horizontal">

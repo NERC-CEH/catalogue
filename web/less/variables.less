@@ -38,12 +38,12 @@
 //
 //## Font, line-height, and color for body text, headings, and more.
 
-@font-family-sans-serif:  "Open Sans", sans-serif;
+@font-family-sans-serif:  "Lato", sans-serif;
 //** Default monospace fonts for `<code>`, `<kbd>`, and `<pre>`.
 @font-family-monospace:   monospace;
 @font-family-base:        @font-family-sans-serif;
 
-@font-size-base:          15px;
+@font-size-base:          16px;
 @font-size-large:         ceil((@font-size-base * 1.25));
 @font-size-small:         ceil((@font-size-base * 0.85));
 
@@ -337,7 +337,6 @@
 @navbar-border-width:              1px;
 @navbar-border-radius:             @border-radius-base;
 @navbar-padding-horizontal:        floor((@grid-gutter-width / 2));
-@navbar-padding-vertical:          (((@navbar-height + @navbar-border-width)- @line-height-computed) / 2);
 @navbar-collapse-max-height:       340px;
 
 @navbar-default-color:                      @gray-light;
@@ -838,15 +837,3 @@
 @dl-horizontal-offset:        @component-offset-horizontal;
 //** Horizontal line color.
 @hr-border:                   @gray-lighter;
-
-//== Search facets
-//
-//##
-@filter-heading-height: 50px;
-@filter-heading-gap: 3px;
-@filter-heading-background: @brand-success;
-@filter-heading-color: hsl(0, 0%, 0%);
-@filter-body-background: hsl(0, 0%, 100%);
-@filter-body-colour: hsl(0, 0%, 0%);
-@filter-body-link-colour: hsl(0, 0%, 0%);
-@filter-border: 1px solid hsl(0, 0%, 80%);

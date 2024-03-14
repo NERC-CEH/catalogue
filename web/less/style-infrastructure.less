@@ -1,72 +1,18 @@
-// Import our own style sheets
-@import "theme";
-@import "../node_modules/@fortawesome/fontawesome-free/less/fontawesome";
-@import "../node_modules/@fortawesome/fontawesome-free/less/solid";
-@import "../node_modules/@fortawesome/fontawesome-free/less/regular";
 @import "../node_modules/@fortawesome/fontawesome-free/less/brands";
-@import "message-panel";
-@import "search";
-@import "metadata";
-@import "editor";
-@import "validation";
-@import "documents-upload";
-@import "upload-simple";
-@import "style-infrastructurefooter";
+@import "theme";
 
 @fa-font-path: "../fonts";
 
-@ri-blue: hsl(207, 30%, 64%);
-@filter-heading-background: @ri-blue;
-@footer-height: 16em;
-@header-text: @gray-dark;
-@line-height: 1.8;
+:root {
+    --primary-colour: var(--ukceh-colours-teal);
+    --tertiary-colour: var(--ukceh-colours-green);
 
-html {
-    overflow-y: scroll;
-    min-height: 100%;
-    position: relative;
-}
-
-body {
-    margin-top: @navbar-height + @navbar-border-width;
-    margin-bottom: @footer-height;
-}
-
-.navbar-nav {
-    .navbar-title {
-        a {
-            color: white !important;
-            font-weight: bold;
-        }
-    }
-
-    li {
-        &:not(.navbar-title) {
-            a {
-                &:hover {
-                    border-bottom: white 3px solid;
-                    padding-bottom: 3px;
-                }
-            }
-        }
-    }
 }
 
 #pageTitle {
     margin: 2em 0;
 }
 
-#adminToolbar {
-    margin: 1.5em 0;
-}
-
-.input-group-addon {
-    background-color: #eee;
-}
-
-.modal-open {
-    padding: 0 !important;
-}
 
 .fa-spin-2x {
     -webkit-animation: fa-spin 1s infinite linear;
@@ -105,13 +51,97 @@ body {
     }
 }
 
-/*TEMPORARY MEASURE TO HIDE THE SPATIAL SEARCH */
-.filters-panel {
-    .spatial {
-        display: none !important;
+.footer-ri {
+    background-color: transparent;
+
+    .footer-curve {
+        background-image: url(https://www.ceh.ac.uk/themes/custom/ceh/images/footer_curve.svg);
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-position: unset;
+        min-height: 50px;
     }
 
-    .facet-filter {
-        min-height: 90%;
+    .footer-content {
+        background-color: #333;
+        color: white;
+
+        .footergrid {
+            display: grid;
+            grid-template-areas:
+                "logo logo"
+                "socials socials"
+                "menu menu";
+            gap: 1em;
+            padding: 1em;
+            justify-items: center;
+            align-items: center;
+
+            .logo {
+                grid-area: logo;
+                background-color: #333;
+
+                img {
+                    max-width: 180px;
+                    margin: 0.4em 2em;
+                }
+            }
+
+            .menu {
+                a {
+                    color: white;
+                    margin-right: 1em;
+                }
+            }
+
+            .socials {
+                grid-area: socials;
+                display: flex;
+                gap: 1em;
+
+                a.social {
+                    --size: 52px;
+                    color: black;
+                    text-decoration: none;
+                    background-color: white;
+                    border-radius: 100%;
+                    height: var(--size);
+                    width: var(--size);
+                    display: grid;
+                    justify-content: center;
+                    align-items: center;
+
+                    &:hover,
+                    &:focus {
+                        background-color: transparent;
+                        color: #fff;
+                        outline: 3px solid white;
+                    }
+                }
+            }
+
+            .menu {
+                grid-area: menu;
+            }
+        }
+    }
+}
+
+@media only screen and (min-width: 1020px) {
+    .footer-ri {
+        .footer-content {
+            .footergrid {
+                grid-template-areas:
+                    "logo logo"
+                    "menu socials";
+
+                .logo {
+                    img {
+                        max-width: 220px;
+                    }
+                }
+            }
+        }
     }
 }

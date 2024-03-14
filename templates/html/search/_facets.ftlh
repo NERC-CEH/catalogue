@@ -27,9 +27,9 @@
 
 <#list facets as facet>
   <#if facet.results?size gt 0>
-  <div class="facet">
-    <h3>${facet.displayName}</h3>
-    <@facetResults facet.results/>
-  </div>
+    <div class="facet">
+      <div class="facet-header">${facet.displayName}</div>
+      <@facetResults facet.results/>
+    </div>
   </#if>
 </#list>

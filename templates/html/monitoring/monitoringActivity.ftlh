@@ -1,4 +1,4 @@
-<#import "base.ftlh" as m>
+<#import "monitoringBase.ftlh" as m>
 <#import "../blocks.ftlh" as b>
 
 <@m.base>

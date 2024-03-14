@@ -53,7 +53,7 @@
   </#list>
 </#macro>
 
-<@skeleton.master title=title catalogue=catalogue rdf="${uri}?format=ttl" schemaorg="${uri}?format=schema.org" canonical="${uri}" can_edit_restricted=permission.userCanEditRestrictedFields(metadata.catalogue)>
+<@skeleton.master title=title catalogue=catalogue rdf="${uri}?format=ttl" schemaorg="${uri}?format=schema.org" canonical="${uri}" can_edit_restricted=permission.userCanEditRestrictedFields(metadata.catalogue) footer=true>
   <#if resourceType?has_content && resourceType.value !=''>
   <#assign recordType = func.recordTypeOrResourceType()>
 
@@ -207,8 +207,6 @@
       <a class="edit-control" data-document-type="${metadata.documentType}">Edit</a></p>
     </div>
   </#if>
-
-  <#include "document/_footer.ftlh">
 
   <script type="application/ld+json">
 	  <#include "../schema.org/schema.org.ftlh">

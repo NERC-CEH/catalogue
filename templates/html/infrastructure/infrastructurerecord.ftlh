@@ -11,7 +11,7 @@
 >
 </#if>
 
-<@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
+<@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) footer=true>
   <div id="metadata" class="metadata infrastructure-metadata">
     <div class="section section-grey">
       <div class="container">
@@ -22,11 +22,11 @@
             <h1>
             <#if (metadata.state == 'draft' || metadata.state == 'pending') >
               <small class="text-danger"><b>${codes.lookup('publication.state', metadata.state)?upper_case!''}</b></small>
-            </#if> 
+            </#if>
             ${title}
             </h1>
           </div>
-        </#if>    
+        </#if>
 
         <#if description??>
           <div class="description">
@@ -40,10 +40,10 @@
             </div>
           </div>
         </#if>
-        
+
       </div>
     </div>
-    
+
     <div class="section">
       <div class="container">
         <div class="metadata-grid">
@@ -71,7 +71,7 @@
             </#if>
 
             <#if rel_all?has_content && rel_all?size gt 0 >
-            
+
                 <@displaykey "Related">
                   <dl>
                   <#list rel_all as item>
@@ -95,11 +95,11 @@
                 </@displaykey>
             </#if>
 
-            <#if infrastructureScale?? ||  (boundingBoxes?? && boundingBoxes?has_content)>           
+            <#if infrastructureScale?? ||  (boundingBoxes?? && boundingBoxes?has_content)>
               <@displaykey "Scale">
                 <#if infrastructureScale??>${infrastructureScale}</#if>
               </@displaykey>
-              
+
               <#if boundingBoxes?? && boundingBoxes?has_content >
                   <div id="studyarea-map">
                   <#list boundingBoxes as extent>
@@ -145,7 +145,7 @@
                     </div>
                   </#list>
                 <#else>
-                  <p class="text-danger">NO CONTACT IDENTIFIED</p>  
+                  <p class="text-danger">NO CONTACT IDENTIFIED</p>
                 </#if>
             </@displaykey>
 
@@ -164,10 +164,9 @@
           </div>
       </div>
     </div>
-  
+
   </div>
 
-  <#include "_footer.ftlh">
 </@skeleton.master>
 
 <#--macros -->

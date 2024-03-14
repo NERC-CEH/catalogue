@@ -10,6 +10,8 @@
     --border_radius: 0.5em;
 }
 
+body {display:flex; flex-direction: column; min-height: 100vh;}
+
 .metadata-grid {
     .col1 {
         grid-area: col1;
@@ -38,6 +40,7 @@
             background-color: hsl(0, 0%, 95%);
             border: 1px solid #ccc;
             border-width: 1px 0;
+
             &:has(.notice) {
                 .disclaimer {
                     margin-top: -2.5em
@@ -76,11 +79,6 @@
                 max-height: 200px;
             }
         }
-
-        .description-text {
-            line-height: @line-height-base;
-        }
-
         @media only screen and (min-width: 640px) {
             .browseimage {
                 display: block;
@@ -391,7 +389,7 @@
                 &-download {
                     .btn-block;
                     font-weight: bold;
-                    background-color: @brand-success;
+                    background-color: var(--primary-colour);
 
                     &:hover,
                     &:focus {
@@ -430,7 +428,7 @@
 
     .cards {
         --card-background: hsl(0, 0%, 100%);
-        --card-inverse: @brand-success;
+        --card-inverse: var(--primary-colour);
         display: flex;
         justify-content: center;
         gap: 1em;
@@ -848,27 +846,6 @@
 
         .btn {
             min-width: 18em;
-        }
-    }
-}
-
-.footer {
-    background-color: #ccc;
-    padding: 1em;
-    position: absolute;
-    width: 100%;
-    bottom: 0;
-
-    span {
-        &:not(:last-of-type)::after {
-            content: "|";
-            margin: 0 0.6em;
-        }
-    }
-
-    .altviews {
-        span:first-of-type {
-            margin-left: 0.6em;
         }
     }
 }

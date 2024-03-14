@@ -12,33 +12,6 @@ export default Backbone.View.extend({
     this.listenTo(this.model, 'cleared:results', this.clear)
     this.listenTo(this.model, 'results-sync', this.render)
     this.listenTo(this.model, 'results-change:selected', this.updateSelected)
-
-    this.padResults() // Change the padding of the results page
-
-    // Ensure @ refers to this in the findSelected method. This means that we
-    // can:
-    //   - Pass @findSelected directly to the jquery.on method
-    //   - Unbind @findSelected when the view is removed
-    _.bindAll(this, 'padResults')
-    $(window).on('resize', this.padResults)
-  },
-
-  /*
-     * Since we update the selected result based upon the scroll position, we need
-     * to be able to scroll all the way to select the last result. This method will
-     * ensure that the margin of the results view allows for such.
-     */
-  padResults () {
-    if (this.$('.result').length) {
-      // Where the top result should start
-      const topPosition = $('.navbar').height() + $('.search-form').height()
-      const onScreen = this.$('.result').last().nextAll().addBack() // Elements to show
-      const onScreenHeight = _.reduce(onScreen,
-        (height, e) => height + $(e).outerHeight(true),
-        topPosition)
-
-      this.$el.css({ marginBottom: $(window).height() - onScreenHeight })
-    }
   },
 
   /*
@@ -99,7 +72,7 @@ export default Backbone.View.extend({
         )
       })
     }
-    this.padResults()
+
     return this
-  } // Pad the results pane
+  }
 })

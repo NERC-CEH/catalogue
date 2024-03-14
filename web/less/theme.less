@@ -8,11 +8,46 @@
  * https://github.com/divshot/themestrap
  */
 
-//@import url(https://fonts.googleapis.com/css?family=Open+Sans:300,400,700);
-@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600&display=swap");
 @import "../node_modules/bootstrap/less/bootstrap";
+@import "../node_modules/@fortawesome/fontawesome-free/less/fontawesome";
+@import "../node_modules/@fortawesome/fontawesome-free/less/regular";
+@import "../node_modules/@fortawesome/fontawesome-free/less/solid";
+@import "message-panel";
+@import "search";
+@import "metadata";
+@import "editor";
+@import "validation";
+@import "documents-upload";
+@import "upload-simple";
 @import "variables";
+@import "customProperties";
 // Add CSS Customizations to your theme here.
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    font-family: var(--font-family-body);
+}
+
+footer {
+    margin-top: auto;
+    background-color: var(--footer-background-colour);
+
+    .container {
+        padding: 1em;
+    }
+}
+
+header {
+    position: sticky;
+    top: 0;
+    z-index: 5000;
+    background-color: var(--header-background-colour);
+    border-bottom: solid var(--header-border-colour) var(--header-border-width);
+}
 
 h1,
 h2,
@@ -20,50 +55,188 @@ h3,
 h4,
 h5,
 h6 {
+    font-family: var(--font-family-hreaders);
+
     a {
-        color: @brand-success;
+        color: var(--link-colour);
+
         &:hover,
         &:focus {
-            color: @link-hover-color;
+            color: var(--link-hover-colour);
             text-decoration: none;
         }
     }
 }
 
-.jumbotron {
-    padding: 1.5em;
-    h2 {
-        font-size: 2.5em;
-    }
-    p {
-        font-weight: bold;
-        font-size: 1.3em;
-    }
-    a:link,
-    a:visited {
-        color: #ff0;
-    }
-    a.btn:link,
-    a.btn:visited {
-        font-size: 0.9em;
-        color: #fff;
-    }
-}
+/* -- START Navigation*/
 
-.navbar-brand {
-    margin: calc((@navbar-height - 50px) / 2) 0; //50px is the height of the UKCEH logo
-    border-right: 2px solid transparent;
-    height: 100%;
-    padding: 0;
-}
+header {
 
-li.navbar-title {
-    div {
-        padding: @navbar-padding-vertical @navbar-padding-horizontal;
-    }
-    a {
+    .toolbar {
+        height: var(--header-height);
+        display: flex;
+        flex-wrap: nowrap;
+        font-family: sans-serif;
         color: white;
+
+        .brand {
+            display: flex;
+            align-items: center;
+            height: var(--header-height);
+
+            img {
+                max-height: calc(var(--header-height) - 30px);
+            }
+        }
+
+        .navigation {
+            display: flex;
+            flex-grow: 1;
+            flex-wrap: nowrap;
+            justify-content: space-between;
+            background-color: var(--header-background-colour);
+
+            .navbar {
+                padding: 0;
+                margin: 0;
+                display: flex;
+                flex-wrap: nowrap;
+                align-items: center;
+
+                a {
+                    padding: calc(var(--header-height, 3.4em) / 4) 1em;
+                    white-space: nowrap;
+                    text-decoration: none;
+                    font-weight: 600;
+                    background-color: var(--header-link-background-colour);
+                    color: var(--header-link-colour);
+
+                    &:hover {
+                        background-color: var(--header-link-hover-background-colour);
+                        color: var(--header-link-hover-colour);
+                    }
+                }
+            }
+
+            .navbar-right {
+                margin-left: auto;
+
+                .dropdown-menu {
+                    --dropdown-background-color: #EEE;
+                    background-color: var(--dropdown-background-color);
+
+                    li {
+                        border-bottom: 1px solid lightgray;
+
+                        &:last-child {
+                            border: none;
+                        }
+
+                        a {
+                            padding: .75em;
+                            background-color: var(--dropdown-background-color);
+                            color: black;
+                            font-weight: 400;
+
+                            &:hover {
+                                background-color: color-mix(in lab, var(--dropdown-background-color), black 5%);
+                                color: var(--header-link-hover-colour);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        .nav-toggle {
+            color: var(--nav-toggle-colour);
+            display: none;
+            padding: 1em;
+        }
     }
+}
+
+@media only screen and (max-width: 980px) {
+    header {
+
+        .container,
+        .container-fluid {
+            padding: 0 !important;
+        }
+
+        .toolbar {
+            flex-direction: column;
+
+            .brand {
+                img {
+                    border-right: none;
+                }
+            }
+
+            .nav-toggle {
+                align-self: flex-end;
+                display: initial;
+                position: absolute;
+                cursor: pointer;
+
+                .fa-bars {
+                    display: inline;
+                }
+
+                .fa-xmark {
+                    display: none;
+                }
+            }
+
+            .navigation {
+                padding: 0 1em;
+                display: block;
+
+
+                .navbar {
+                    flex-direction: column;
+                    display: none;
+
+                    a {
+                        padding: 0.5em 1em;
+                        min-width: 100%;
+                        text-align: center;
+                    }
+                }
+
+                .navbar-right {
+                    margin-left: 0;
+                }
+
+                &.reveal {
+                    border-bottom: solid var(--header-border-colour) var(--header-border-width);
+
+                    .navbar {
+                        display: flex;
+
+                    }
+                }
+            }
+        }
+
+        .nav-toggle.reveal {
+            .fa-bars {
+                display: none;
+            }
+
+            .fa-xmark {
+                display: inline;
+            }
+        }
+
+    }
+}
+
+/* -- END Navigation */
+
+.search-form .btn {
+    background-color: var(--primary-colour);
+    color: white;
 }
 
 i.fa-solid,
@@ -77,14 +250,9 @@ i.fa-brands {
         border: 1px solid lightgray;
         padding: 0.4em;
         margin: 0.5em 0;
+
         .result--title {
             font-weight: bolder;
         }
-    }
-}
-
-@media (min-width: 768px) {
-    .navbar-brand {
-        border-color: white;
     }
 }

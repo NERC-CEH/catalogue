@@ -4,6 +4,46 @@
 @import (inline) "../node_modules/air-datepicker/air-datepicker.css";
 @import (inline) "../node_modules/jquery-ui/dist/themes/base/jquery-ui.min.css";
 
+
+.edit-mode {
+    a#atlwdg-trigger {
+        display: none;
+    }
+
+    footer {
+        display: none;
+    }
+
+    #metadata,
+    #search {
+        display: flex;
+        flex-direction: column;
+        min-height: calc(100vh - var(--header-height));
+
+        .container-fluid {
+            width: 100%;
+        }
+
+        .editor-footer {
+            margin-top: auto;
+            background-color: #eee;
+            padding: 0 1em;
+            max-height: 80px;
+            overflow: hidden;
+
+            .container-fluid {
+                display: flex;
+                flex-wrap: nowrap;
+                align-items: center;
+
+                .right {
+                    margin-left: auto;
+                }
+            }
+        }
+    }
+}
+
 #editorNav li {
     cursor: pointer;
 }
@@ -229,8 +269,8 @@
     }
 
     .dataentry.child:has(.keywordPicker):not(:has(.hidden)) {
-        padding-bottom: 1.2em ;
-        padding-top: 1.2em ;
+        padding-bottom: 1.2em;
+        padding-top: 1.2em;
     }
 
     input.autocomplete::placeholder {
@@ -311,7 +351,7 @@
 ul.ui-autocomplete {
     li.ui-menu-item {
         font-size: 0.8em;
-        font-family: @font-family-sans-serif;
+        font-family: var(--font-family-sans-serif);
     }
 }
 

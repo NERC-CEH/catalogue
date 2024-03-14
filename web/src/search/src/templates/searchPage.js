@@ -11,7 +11,7 @@ export default _.template(`
     <span id="num-records"><%=numFound%></span> records found
 </div>
 
-<div class="results__related_searches"/>
+<div class="results__related_searches"></div>
 
 <div class="results__list">
 <% _.each(results, function(result) { %>
