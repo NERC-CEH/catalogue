@@ -51,3 +51,19 @@ Need to provide:
 - spring.security.oauth2.client.registration.elter.redirect-uri
 
 #### Authorization
+
+Roles are looked up from a local json file. This file needs to be mounted in to the Docker container at `/var/ceh-catalogue/oidc/roles.json`.
+This location can be changed in the `auth.oidc.roles.location` property.
+
+The key is the authenticated user's email address.
+
+
+```json
+{
+    "admin1@example.com": ["ROLE_EIDC_EDITOR", "ROLE_EIDC_PUBLISHER", "ROLE_CIG_SYSTEM_ADMIN"],
+    "publisher1@example.com": ["ROLE_EIDC_EDITOR", "ROLE_EIDC_PUBLISHER"],
+    "publisher2@example.com": ["ROLE_EIDC_EDITOR", "ROLE_EIDC_PUBLISHER"],
+    "editor1@example.com": ["ROLE_EIDC_EDITOR"],
+    "editor2@example.com": ["ROLE_EIDC_EDITOR"]
+}
+```
