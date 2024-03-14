@@ -16,7 +16,7 @@ class LocalFileGroupStoreTest {
     @Test
     void getGroups() {
         //given
-        val testUser = new CatalogueUser().setUsername("test@example.com");
+        val testUser = new CatalogueUser("test@example.com", "test@example.com");
 
         //when
         val actual = localFileGroupStore.getGroups(testUser);
@@ -41,7 +41,7 @@ class LocalFileGroupStoreTest {
     @Test
     void getGroupsForEmptyUser() {
         //given
-        val testUser = new CatalogueUser();
+        val testUser = CatalogueUser.PUBLIC_USER;
 
         //when
         val actual = localFileGroupStore.getGroups(testUser);

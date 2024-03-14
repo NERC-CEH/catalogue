@@ -130,7 +130,7 @@ public class PermissionControllerTest {
     @Test
     public void getCurrentPermission() throws Exception {
         //Given
-        CatalogueUser publisher = new CatalogueUser().setUsername("publisher");
+        CatalogueUser publisher = new CatalogueUser("publisher", "publisher@example.com");
         String file = "1234-567-890";
         MetadataInfo info = MetadataInfo.builder().build();
         MetadataDocument document = new GeminiDocument()
@@ -154,7 +154,7 @@ public class PermissionControllerTest {
     @Test
     public void permissions() throws Exception {
         //Given
-        CatalogueUser publisher = new CatalogueUser().setUsername("publisher");
+        CatalogueUser publisher = new CatalogueUser("publisher", "publisher");
         String file = "1234-567-890";
         MetadataInfo info = MetadataInfo.builder().catalogue("catalogue").build();
         MetadataDocument document = new GeminiDocument().setMetadata(info);
@@ -178,7 +178,7 @@ public class PermissionControllerTest {
     public void nonPublisherAttemptToMakeRecordPublic() throws Exception {
         //Given
 
-        CatalogueUser notPublisher = new CatalogueUser().setUsername("notPublisher");
+        CatalogueUser notPublisher = new CatalogueUser("notPublisher", "notPublisher");
         String file = "1234-567-890";
         MetadataInfo info = MetadataInfo.builder().catalogue("eidc").build();
         info.addPermission(Permission.VIEW, "bob");
@@ -209,7 +209,7 @@ public class PermissionControllerTest {
     @Test
     public void PublisherToMakeRecordPublic() throws Exception {
         //Given
-        CatalogueUser publisher = new CatalogueUser().setUsername("publisher");
+        CatalogueUser publisher = new CatalogueUser("publisher", "publisher");
         String file = "1234-567-890";
         MetadataInfo info = MetadataInfo.builder().catalogue("eidc").state("published").build();
         info.addPermission(Permission.VIEW, "bob");

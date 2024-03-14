@@ -5,21 +5,21 @@ import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
-import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.CatalogueOidcUser;
 
 @Slf4j
 public class CatalogueUserOidcUserService extends OidcUserService {
 
     /**
-     * Converts OidcUser into a CatalogueUser for use in the catalogue controllers with the @ActiveUser annotation
+     * Converts OidcUser into a CatalogueOidcUser for use in the catalogue controllers with the @ActiveUser annotation
      *
      * @param userRequest the OIDC user request
-     * @return CatalogueUser wrapping the OidcUser
+     * @return CatalogueOidcUser wrapping the OidcUser
      * @throws OAuth2AuthenticationException if an authentication error occurs
      */
     @Override
     public OidcUser loadUser(OidcUserRequest userRequest) throws OAuth2AuthenticationException {
         log.info(userRequest.getIdToken().getSubject());
-        return new CatalogueUser(super.loadUser(userRequest));
+        return new CatalogueOidcUser(super.loadUser(userRequest));
     }
 }

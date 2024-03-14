@@ -14,9 +14,7 @@ class CatalogueUserTest {
     @Test
     void checkCatalogueUserSerializable() {
         //given
-        CatalogueUser user = new CatalogueUser();
-        user.setUsername("test");
-        user.setEmail("test@example.com");
+        CatalogueUser user = new CatalogueUser("test", "test");
 
         //when
         byte[] serialize = SerializationUtils.serialize(user);
@@ -39,8 +37,7 @@ class CatalogueUserTest {
     @Test
     void checkUserWithUsernameIsNotPublic() {
         //Given
-        CatalogueUser user = new CatalogueUser();
-        user.setUsername("james@bo.jones");
+        CatalogueUser user = new CatalogueUser("james", "james@bo.jones");
 
         //When
         boolean isPublic = user.isPublic();

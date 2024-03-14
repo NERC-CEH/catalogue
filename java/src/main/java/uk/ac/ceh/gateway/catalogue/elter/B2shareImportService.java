@@ -2,6 +2,31 @@ package uk.ac.ceh.gateway.catalogue.elter;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.solr.client.solrj.SolrClient;
+import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.params.CommonParams;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+import uk.ac.ceh.gateway.catalogue.TimeConstants;
+import uk.ac.ceh.gateway.catalogue.deims.DeimsSolrIndex;
+import uk.ac.ceh.gateway.catalogue.gemini.AccessLimitation;
+import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
+import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
+import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
+import uk.ac.ceh.gateway.catalogue.imports.CatalogueImportService;
+import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
+import uk.ac.ceh.gateway.catalogue.model.Supplemental;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
 import java.io.IOException;
 import java.net.URL;
@@ -18,36 +43,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import lombok.SneakyThrows;
-import lombok.ToString;
-import lombok.extern.slf4j.Slf4j;
-
-import org.apache.solr.client.solrj.SolrClient;
-import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.common.SolrDocument;
-import org.apache.solr.common.SolrDocumentList;
-import org.apache.solr.common.params.CommonParams;
 import static org.apache.solr.client.solrj.SolrRequest.METHOD.POST;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
-
-import uk.ac.ceh.gateway.catalogue.TimeConstants;
-import uk.ac.ceh.gateway.catalogue.deims.DeimsSolrIndex;
-import uk.ac.ceh.gateway.catalogue.elter.ElterDocument;
-import uk.ac.ceh.gateway.catalogue.gemini.AccessLimitation;
-import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
-import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
-import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
-import uk.ac.ceh.gateway.catalogue.imports.CatalogueImportService;
-import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
-import uk.ac.ceh.gateway.catalogue.model.Supplemental;
-import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
 @Profile("server:elter & imports")
 @Slf4j
@@ -227,14 +223,14 @@ public class B2shareImportService implements CatalogueImportService {
         // description
         StringBuilder descriptionBuilder = new StringBuilder();
         for (JsonNode node : metadataJson.path("descriptions")) {
-            if (descriptionBuilder.length() > 0){
+            if (!descriptionBuilder.isEmpty()){
                 descriptionBuilder.append("\n\n");
             }
             JsonNode descriptionTypeNode = node.get("description_type");
             if (descriptionTypeNode != null) {
                 String descriptionType = descriptionTypeNode.asText();
                 if (! descriptionType.equals("Other")) {
-                    descriptionBuilder.append(descriptionType + ": ");
+                    descriptionBuilder.append(descriptionType).append(": ");
                 }
             }
             descriptionBuilder.append(node.get("description").asText().strip());
@@ -286,7 +282,7 @@ public class B2shareImportService implements CatalogueImportService {
             log.debug("invalid created date {}", createdTimestamp);
         }
         try {
-            if (!publishedTimestamp.equals("")) {
+            if (!publishedTimestamp.isEmpty()) {
                 published = LocalDate.parse(publishedTimestamp, dateParser);
             }
         } catch (DateTimeParseException e) {
@@ -388,7 +384,7 @@ public class B2shareImportService implements CatalogueImportService {
     public void runImport(){
         // prep
         log.info("Running B2SHARE metadata import...");
-        CatalogueUser importUser = new CatalogueUser().setUsername("B2SHARE metadata import").setEmail("info@eudat.eu");
+        CatalogueUser importUser = new CatalogueUser("B2SHARE metadata import", "info@eudat.eu");
         Map<String, String> localRecordList = null;
         int blacklistedRecords = 0;
         int newRecords = 0;
@@ -407,7 +403,7 @@ public class B2shareImportService implements CatalogueImportService {
         // ready to import
         JsonNode b2shareRecordsPage = null;
         String b2shareRecordsnextPageUrl = b2shareRecordsFirstPageUrl;
-        while (! b2shareRecordsnextPageUrl.equals("")) {
+        while (!b2shareRecordsnextPageUrl.isEmpty()) {
             // get next page of records
             b2shareRecordsPage = objectMapper.readTree(new URL(b2shareRecordsnextPageUrl));
 

@@ -24,9 +24,7 @@ public class CrowdGroupStoreTest {
     private GroupStore<CatalogueUser> groupStore;
     private MockRestServiceServer mockServer;
 
-    private final CatalogueUser user = new CatalogueUser()
-        .setUsername("foo")
-        .setEmail("foo@example.com");
+    private final CatalogueUser user = new CatalogueUser("foo", "foo@example.com");
 
     @BeforeEach
     void setup() {

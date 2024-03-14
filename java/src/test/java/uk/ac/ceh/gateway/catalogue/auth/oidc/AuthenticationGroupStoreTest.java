@@ -37,8 +37,7 @@ public class AuthenticationGroupStoreTest {
     public void successfullyGetGroups() {
 
         //Given
-        val catalogueUser = new CatalogueUser();
-        catalogueUser.setUsername("test");
+        val catalogueUser = new CatalogueUser("test", "test");
 
         //When
         List<Group> groups = target.getGroups(catalogueUser);
@@ -52,8 +51,7 @@ public class AuthenticationGroupStoreTest {
     @WithMockCatalogueUser
     public void getGroupsWithEmptyGrantedAuthorities() {
         //Given
-        val catalogueUser = new CatalogueUser();
-        catalogueUser.setUsername("test");
+        val catalogueUser = new CatalogueUser("test", "test");
 
         //When
         List<Group> groups = target.getGroups(catalogueUser);
@@ -67,8 +65,7 @@ public class AuthenticationGroupStoreTest {
     public void userDoesNotMatchPrincipal() {
         Assertions.assertThrows(Exception.class, () -> {
             //Given
-            val catalogueUser = new CatalogueUser();
-            catalogueUser.setUsername("not test");
+            val catalogueUser = new CatalogueUser("notTest", "notTest@example.com");
 
             //When
             target.getGroups(catalogueUser);

@@ -110,9 +110,7 @@ public class CatalogueDocumentControllerTest {
     public void updateCatalogue() throws Exception {
         //Given
         givenUserCanEdit();
-        val user = new CatalogueUser()
-            .setUsername("test")
-            .setEmail("test@eample.com");
+        val user = new CatalogueUser("test","test@eample.com");
 
         val document = new GeminiDocument()
             .setId(file)

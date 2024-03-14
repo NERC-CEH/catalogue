@@ -3,28 +3,27 @@ package uk.ac.ceh.gateway.catalogue.controllers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
-
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
-import uk.ac.ceh.gateway.catalogue.model.*;
+import uk.ac.ceh.gateway.catalogue.elter.ElterDocument;
+import uk.ac.ceh.gateway.catalogue.elter.LinkedDocumentRetrievalService;
+import uk.ac.ceh.gateway.catalogue.elter.LinkedElterDocument;
+import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-
-import uk.ac.ceh.gateway.catalogue.elter.ElterDocument;
-import uk.ac.ceh.gateway.catalogue.elter.LinkedElterDocument;
-import uk.ac.ceh.gateway.catalogue.elter.LinkedDocumentRetrievalService;
 
 @WithMockCatalogueUser
 @ActiveProfiles("test")
@@ -48,7 +47,7 @@ class ElterDocumentControllerTest {
     @Test
     public void checkCanCreateElterDocument() throws Exception {
         //Given
-        CatalogueUser user = new CatalogueUser();
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
         ElterDocument document = new ElterDocument();
         document.setUri("https://catalogue.ceh.ac.uk/id/123-test");
         String message = "new Elter Document";
@@ -67,7 +66,7 @@ class ElterDocumentControllerTest {
     @Test
     public void checkCanEditElterDocument() throws Exception {
         //Given
-        CatalogueUser user = new CatalogueUser();
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
         ElterDocument document = new ElterDocument();
         document.setUri("https://catalogue.ceh.ac.uk/id/123-test");
         String fileId = "test";
@@ -88,7 +87,7 @@ class ElterDocumentControllerTest {
     @Test
     public void checkCanCreateLinkedElterDocument() throws Exception {
         //Given
-        CatalogueUser user = new CatalogueUser();
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
         ElterDocument document = new ElterDocument();
         document.setUri("https://catalogue.ceh.ac.uk/id/123-test");
         String message = "new linked Elter Document";
