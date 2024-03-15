@@ -7,7 +7,7 @@ export default ObjectInputView.extend({
 
   optionTemplate: _.template('<option value="<%= value %>"><%= label %></option>'),
 
-  initialize(options) {
+  initialize (options) {
     (async () => {
       this.template = template
       this.options = options.options
@@ -16,13 +16,13 @@ export default ObjectInputView.extend({
 
       const generateInformationString = async target => {
         // Records can be kept either as a full URI or simply a UID
-        const urlRegEx = /(?:https?):\/\/(\w+:?\w*)?(\S+)(:\d+)?(\/|\/([\w#!:.?+=&%!\-\/]))?/;
+        const urlRegEx = /(?:https?):\/\/(\w+:?\w*)?(\S+)(:\d+)?(\/|\/([\w#!:.?+=&%!\-/]))?/
         const isValidUrl = url => urlRegEx.test(url)
-        const query = isValidUrl(target) ? target : `/documents/${target}`;
+        const query = isValidUrl(target) ? target : `/documents/${target}`
 
         try {
-          const data = await $.getJSON(query);
-          return `${data.title} (${data.type}, ${data.id})`;
+          const data = await $.getJSON(query)
+          return `${data.title} (${data.type}, ${data.id})`
         } catch (error) {
           return target
         }
@@ -46,29 +46,30 @@ export default ObjectInputView.extend({
               label: d.title
             })))
           } catch (error) {
-            console.error('Error fetching data:', error);
+            console.error('Error fetching data:', error)
           }
         },
         select: async (event, ui) => {
-          const infoString = await generateInformationString(ui.item.value);
+          const infoString = await generateInformationString(ui.item.value)
           this.$('.title').val(ui.item.label)
           this.$('.identifier').val(ui.item.value)
-          this.$('.read-only-identifier').val(infoString);
+          this.$('.read-only-identifier').val(infoString)
 
-          this.$('.relationshipSearch').addClass('hidden');
-          this.$('.relationshipRecord').removeClass('hidden');
+          this.$('.relationshipSearch').addClass('hidden')
+          this.$('.relationshipRecord').removeClass('hidden')
         }
       })
 
-      const target = this.model.get('target');
+      const target = this.model.get('target')
       if (!_.isEmpty(target)) {
-        this.existingRecord = true;
-        const infoString = await generateInformationString(target);
-        this.model.set('info', infoString);
+        this.existingRecord = true
+        const infoString = await generateInformationString(target)
+        this.model.set('info', infoString)
         this.render()
 
-        // Remove info from model to prevent unwanted warnings when exiting before saving
-        this.model.unset('info');
+        // Remove info from model to prevent incorrect warnings when exiting
+        // having made no changes
+        this.model.unset('info')
       }
     })()
   },
@@ -77,7 +78,7 @@ export default ObjectInputView.extend({
     ObjectInputView.prototype.render.apply(this)
 
     if (this.existingRecord) {
-      this.$('.relationshipRecord').removeClass('hidden');
+      this.$('.relationshipRecord').removeClass('hidden')
       this.$('.relationshipSearch').addClass('hidden')
     }
 

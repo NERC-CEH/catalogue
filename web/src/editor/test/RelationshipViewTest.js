@@ -5,11 +5,11 @@ import 'jquery-ui/ui/widgets/autocomplete'
 describe('Test RelationshipView', function () {
   let model = null
   let view = null
-  let options = [{ value: 'option1', label: 'Relationship' }]
+  const options = [{ value: 'option1', label: 'Relationship' }]
 
   beforeEach(function () {
-    model = new Backbone.Model({ target: 'target' });
-    view = new RelationshipView({ model, options });
+    model = new EditorMetadata({ target: 'target' })
+    view = new RelationshipView({ model, options })
   })
 
   it('test render', () => {
@@ -20,16 +20,16 @@ describe('Test RelationshipView', function () {
   })
 
   it('should set relationshipSearch to hidden if target exists', () => {
-    model = new Backbone.Model({ target: 'target' });
-    view = new RelationshipView({ model, options });
+    model = new EditorMetadata({ target: 'target' })
+    view = new RelationshipView({ model, options })
     view.render()
-    expect(view.$('.relationshipSearch').hasClass('hidden')).toBeTrue();
+    expect(view.$('.relationshipSearch').hasClass('hidden')).toBeTrue()
   })
 
   it('should set relationshipRecord to hidden if target does not exist', () => {
-    model = new Backbone.Model({ target: '' });
-    view = new RelationshipView({ model, options });
+    model = new EditorMetadata({ target: '' })
+    view = new RelationshipView({ model, options })
     view.render()
-    expect(view.$('.relationshipRecord').hasClass('hidden')).toBeTrue();
+    expect(view.$('.relationshipRecord').hasClass('hidden')).toBeTrue()
   })
 })
