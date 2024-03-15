@@ -4,7 +4,7 @@ import deparam from 'deparam.js'
 
 export default Backbone.Router.extend({
   routes: {
-    '*data': 'updateModel'
+    '?*data': 'updateModel'
   },
 
   initialize (options) {
@@ -24,8 +24,7 @@ export default Backbone.Router.extend({
      * router will be able to parse and process at a later time
      */
   updateRoute () {
-    const queryString = $.param(this.model.getState(), true)
-    this.navigate(queryString, { replace: true })
+    this.navigate($.param(this.model.getState(), true), { replace: true })
   },
 
   /*

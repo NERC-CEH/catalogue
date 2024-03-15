@@ -609,7 +609,7 @@ public class SearchQueryTest {
         String url = interestingQuery.toUrl();
 
         //Then
-        assertThat(url, equalTo("http://my.endpo.int?#page=24&rows=30&term=My+Search+Term&bbox=1,2,3,4&op=iswithin&facet=licence%7Cb"));
+        assertThat(url, equalTo("http://my.endpo.int?page=24&rows=30&term=My+Search+Term&bbox=1,2,3,4&op=iswithin&facet=licence%7Cb"));
     }
 
     @Test
