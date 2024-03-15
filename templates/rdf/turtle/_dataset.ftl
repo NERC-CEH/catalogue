@@ -36,7 +36,7 @@ dcat:distribution [
       <${download.url?trim}> <#sep>,
     </#items>
     ;
-    <#include "_rights.ftlh">
+    <#include "_rights.ftl">
     <#list distributionFormats>
     dct:format
       <#items as format>

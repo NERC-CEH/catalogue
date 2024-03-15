@@ -1,8 +1,8 @@
-<#ftl encoding="UTF-8">
+<#ftl output_format="plainText">
 <#compress>
-<#include "_macros.ftlh">
-<#include "_prefixes.ftlh">
+<#include "_macros.ftl">
+<#include "_prefixes.ftl">
 @base <${uri?replace(id,"")?replace("id/","")}> .
 @prefix : <${uri?replace(id,"")}> .
-<#include "_body.ftlh">
+<#include "_body.ftl">
 </#compress>

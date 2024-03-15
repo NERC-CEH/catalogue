@@ -1,5 +1,6 @@
+<#ftl output_format="plainText">
 <#compress>
-<#include "_prefixes.ftlh">
+<#include "_prefixes.ftl">
 @prefix : <${baseUri}/id/> .
 @base <${baseUri}/> .
 

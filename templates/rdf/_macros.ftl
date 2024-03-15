@@ -19,7 +19,7 @@
         </#if>
       </#if>
 
-      ${contactIdentifier?no_esc}<#sep>,</#sep>
+      ${contactIdentifier}<#sep>,</#sep>
     </#list>
   </#if>
 </#macro>
@@ -53,7 +53,7 @@
           Only return data for organisations other than UKCEH or EIDC
           -->
           <#if !contactIdentifier?matches("^\lhttp(|s)://ror.org/04xw4m193\g$") && !contactIdentifier?matches("^\lhttp(|s)://ror.org/00pggkr55\g$")>
-            ${contactIdentifier?no_esc} a ${contactType} ;
+            ${contactIdentifier} a ${contactType} ;
             vcard:fn "${contactName}" ;
             <#if orgName?has_content>vcard:organization-name "${orgName}" ;</#if>
             <#if contact.email?has_content>vcard:hasEmail "${contact.email}" ;</#if>
@@ -72,7 +72,7 @@
       <#if fund.awardURI?has_content>
         <#assign fundIdentifier=fund.awardURI>
       </#if>
-      <${fundIdentifier?trim?no_esc}><#sep>,</#sep>
+      <${fundIdentifier?trim}><#sep>,</#sep>
     </#list>
   </#if>
 </#macro>
@@ -86,7 +86,7 @@
         <#assign fundIdentifier=fund.awardURI>
       </#if>
 
-      <${fundIdentifier?trim?no_esc}> a prov:Activity ; <#if fund.awardTitle?has_content>rdfs:label "${fund.awardTitle}"</#if> .
+      <${fundIdentifier?trim}> a prov:Activity ; <#if fund.awardTitle?has_content>rdfs:label "${fund.awardTitle}"</#if> .
     </#list>
   </#if>
 </#macro>
@@ -98,7 +98,7 @@
     <#else>
       <#assign keyword ='"' + kw.value+ '"'>
     </#if>
-    ${keyword?no_esc}<#sep>,</#sep>
+    ${keyword}<#sep>,</#sep>
   </#list>
 </#macro>
 
@@ -119,7 +119,7 @@
         <#if project.uri?has_content>
           <#assign projectIdentifier=project.uri?trim>
         </#if>
-        <${projectIdentifier?no_esc}><#sep>,</#sep>
+        <${projectIdentifier}><#sep>,</#sep>
       </#list>
     </#if>
   </#macro>
@@ -133,7 +133,7 @@
           <#assign projectIdentifier=project.uri?trim>
         </#if>
 
-        <${projectIdentifier?no_esc}> a prov:Activity ; <#if project.value?has_content>rdfs:label "${project.value}"</#if> .
+        <${projectIdentifier}> a prov:Activity ; <#if project.value?has_content>rdfs:label "${project.value}"</#if> .
       </#list>
     </#if>
   </#macro>
@@ -146,7 +146,7 @@
         <#if deimsSite.url?has_content>
           <#assign deimsID=deimsSite.url>
         </#if>
-        <${deimsID?no_esc}><#sep>,</#sep>
+        <${deimsID}><#sep>,</#sep>
       </#list>
     </#if>
   </#macro>
@@ -160,7 +160,7 @@
           <#assign deimsID=deimsSite.url>
         </#if>
 
-        <${deimsID?no_esc}> a prov:Location; <#if deimsSite.title?has_content>rdfs:label "${deimsSite.title}"</#if> .
+        <${deimsID}> a prov:Location; <#if deimsSite.title?has_content>rdfs:label "${deimsSite.title}"</#if> .
       </#list>
     </#if>
   </#macro>

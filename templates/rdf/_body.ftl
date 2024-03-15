@@ -1,11 +1,11 @@
 :${id}
   dct:title "${title}" ;
   <#if description?has_content>
-  dct:description "${description?replace("\n", " ")}" ;
+    dct:description "${description?replace("\n", " ")}" ;
   </#if>
 
   <#if lineage?has_content>
-  dct:provenance [ a dct:ProvenanceStatement ;
+    dct:provenance [ a dct:ProvenanceStatement ;
       rdfs:label "${lineage?replace("\n", " ")}"  ] ;
   </#if>
   <#list boundingBoxes as extent>
@@ -17,7 +17,7 @@
     </#list>
   </#if>
 
-  <#--Points of contact2-->
+  <#--Points of contact-->
   <#if pointsOfContact?has_content>
     dcat:contactPoint <@contactList pointsOfContact "c" />  ;
   </#if>
@@ -29,7 +29,7 @@
 
   dct:language "eng" ;
   <#list jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#memberOf")>
-  dct:isPartOf <#items as item><${item.href}><#sep>, </#items>;
+    dct:isPartOf <#items as item><${item.href}><#sep>, </#items>;
   </#list>
 
   <#if allKeywords?has_content>
@@ -49,13 +49,13 @@
   </#if>
 
   <#if type=='dataset' || type=='nonGeographicDataset' || type=='signpost'>
-    <#include "turtle/_dataset.ftlh">
+    <#include "turtle/_dataset.ftl">
   <#elseif type=='aggregate'|| type=='collection'|| type=='series'>
-    <#include "turtle/_aggregation.ftlh">
+    <#include "turtle/_aggregation.ftl">
   <#elseif type=='service'>
-    <#include "turtle/_service.ftlh">
+    <#include "turtle/_service.ftl">
   <#elseif type=='application'>
-    <#include "turtle/_application.ftlh">
+    <#include "turtle/_application.ftl">
   <#else>
   </#if>
 .

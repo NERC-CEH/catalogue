@@ -3,7 +3,6 @@ package uk.ac.ceh.gateway.catalogue.search;
 import lombok.Value;
 import org.springframework.util.StringUtils;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -37,24 +36,13 @@ public class FacetFilter {
     }
 
     public String asURIContent() {
-        try {
-            return URLEncoder.encode(
-                new StringBuilder(field)
-                    .append(DELIMITER)
-                    .append(value)
-                    .toString(),
-                "UTF-8"
-            );
-        } catch (UnsupportedEncodingException ex) {
-            throw new RuntimeException(
-                String.format(
-                    "Cannot url encode field: %s, and value: %s",
-                    field,
-                    value
-                ),
-                ex
-            );
-        }
+        return URLEncoder.encode(
+            new StringBuilder(field)
+                .append(DELIMITER)
+                .append(value)
+                .toString(),
+                StandardCharsets.UTF_8
+        );
     }
 
     public String asSolrFilterQuery() {
