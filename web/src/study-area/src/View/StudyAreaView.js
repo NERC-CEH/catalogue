@@ -13,8 +13,8 @@ export default Backbone.View.extend({
 
   createMap () {
     const studyArea = JSON.parse(this.getStudyArea()[0])
-    const boundingBox = L.geoJson(studyArea)
-    const map = new L.Map($('#studyarea-map')[0], { center: boundingBox.getBounds().getCenter() })
+    const feature = L.geoJson(studyArea)
+    const map = new L.Map($('#studyarea-map')[0], { center: feature.getBounds().getCenter() })
     const baseMaps = {
       Map: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 18,
@@ -26,8 +26,28 @@ export default Backbone.View.extend({
     }
 
     L.control.layers(baseMaps, {}, { position: 'topright', collapsed: false }).addTo(map)
-    boundingBox.addTo(map)
-    map.fitBounds(boundingBox.getBounds())
+    feature.addTo(map)
+    map.on('zoomend', function() {
+      const zoomThreshold = 16
+      const zoomFeature = map.getBoundsZoom(feature.getBounds())
+      const zoomMap = map.getZoom()
+      console.log(zoomThreshold)
+      console.log(zoomFeature)
+      console.log(zoomMap)
+      // if(zoomMap < zoomThreshold){
+      if(zoomMap < zoomThreshold && zoomFeature > zoomThreshold){
+        console.log('everything is a point')
+      } else {
+        console.log('points and polygons')
+      }
+    }, map)
+    map.fitBounds(feature.getBounds())
+    if (studyArea.geometry.type.toLowerCase() === 'point') {
+      map.setZoom(9)
+    }
+    if (studyArea.geometry.type.toLowerCase() === 'polygon') {
+      console.log(map.getBoundsZoom(feature.getBounds()))
+    }
   },
 
   getStudyArea () {
