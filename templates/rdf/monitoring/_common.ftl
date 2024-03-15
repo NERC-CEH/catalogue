@@ -6,7 +6,7 @@ PREFIX dct: <http://purl.org/dc/terms/>
 <${id}>
   dct:title "${title}" ;
   <#if description?has_content>
-    dct:description "${description?replace("\n", " ")}" ;
+    dct:description '''${description}''' ; <#-- triple single quote handles multi-line strings -->
   </#if>
   <#nested> <#-- includes more specific statements about <id> here -->
   dct:language "eng" . <#-- closes statements about <id> -->
