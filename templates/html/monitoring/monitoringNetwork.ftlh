@@ -1,15 +1,14 @@
-<#import "monitoringBase.ftlh" as o>
-<#import "../blocks.ftlh" as b>
+<#import "monitoringBase.ftlh" as m>
 
-<@o.base>
+<@m.base>
   <#assign inverseRelationshipCombinedGeometriesOutput>
-    <@o.inverseRelationshipCombinedGeometries "http://purl.org/voc/ef#belongsTo" />
+    <@m.inverseRelationshipCombinedGeometries "http://purl.org/voc/ef#belongsTo" />
   </#assign>
   <#if inverseRelationshipCombinedGeometriesOutput?has_content>
-    <@b.key "Location" "Monitoring Network">
+    <@m.keyValue "Location" "Monitoring Network">
       ${inverseRelationshipCombinedGeometriesOutput}
-    </@b.key>
+    </@m.keyValue>
   </#if>
 
-  <@o.inverseRelationships "Contains" "Contains Monitoring Facilities" "http://purl.org/voc/ef#belongsTo" />
-</@o.base>
+  <@m.inverseRelationships "Contains" "Contains Monitoring Facilities" "http://purl.org/voc/ef#belongsTo" />
+</@m.base>

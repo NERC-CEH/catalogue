@@ -1,22 +1,26 @@
 <#import "monitoringBase.ftlh" as m>
-<#import "../blocks.ftlh" as b>
 
 <@m.base>
   <#if parametersMeasured?? && parametersMeasured?has_content>
-    <@b.key "Parameters Measured" "Parameters measured in Monitoring Activity">
+    <@m.keyValue "Parameters Measured">
       <#list parametersMeasured as parameter>
         <@m.parametersMeasured parameter />
       </#list>
-    </@b.key>
+    </@m.keyValue>
   </#if>
   <#if temporalExtent?? && temporalExtent?has_content>
-    <@b.key "Temporal Extent" "Temporal extent of Monitoring Activity">
+    <@m.keyValue "Temporal Extent">
         <@m.temporalExt temporalExtent />
-    </@b.key>
+    </@m.keyValue>
   </#if>
+
   <#if boundingBox?? && boundingBox?has_content>
-    <@b.key "Bounding Box" "Bounding Box of Monitoring Activity"><@m.boundingBox boundingBox /></@b.key>
+    <@m.keyValue "Bounding Box" >
+      <@m.map boundingBox.bounds />
+    </@m.keyValue>
   </#if>
+
+
   <@m.inverseRelationships "Associated With" "Agents associated with this Monitoring Activity" "http://ontm.nerc.ac.uk/CEHMD/rels/associatedWith" />
   <@m.relationships "Produces" "Research Artifacts produced by this Monitoring Activity" "http://ontm.nerc.ac.uk/CEHMD/rels/produces" />
   <@m.relationships "Uses" "Monitoring Facilities used by this Monitoring Activity" "http://ontm.nerc.ac.uk/CEHMD/rels/uses" />

@@ -3,61 +3,38 @@ import _ from 'underscore'
 export default _.template(`
 <select data-name="value" class="editor-input" id="input-resourceType">
     <option value="" selected>- Select Resource Type -</option>
-    <optgroup label="EIDC resource types" class="optgroup optgroup-eidc">
-        <option value="dataset">Dataset</option>
-        <option value="nonGeographicDataset">Dataset (non-geographic)</option>
-        <option value="aggregate">Data collection (aggregation)</option>
-        <option value="application">Model code (application)</option>
-        <option value="nercSignpost">NERC signpost</option>
-        <option value="service">Web service</option>
+    <optgroup label="Commonly used">
+      <option class="option-iso option-eidc option-inms option-assist option-elter" value="dataset">Dataset</option>
+      <option class="option-iso option-eidc option-inms option-elter" value="nonGeographicDataset">Dataset (non-geographic)</option>
+      <option class="option-iso option-eidc option-inms option-assist option-elter" value="aggregate">Data collection (aggregation)</option>
+      <option class="option-iso option-eidc option-elter" value="application">Model code (application)</option>
+      <option class="option-eidc" value="nercSignpost">NERC signpost</option>
+      <option class="option-elter" value="signpost">Signpost</option>
+      <option class="option-inms option-assist" value="thirdPartyDataset">Third-party dataset</option>
+      <option class="option-iso option-eidc option-inms option-elter" value="service">Web service</option>
     </optgroup>
-    <optgroup label="INMS resource types" class="optgroup optgroup-inms">
-        <option value="dataset">Dataset</option>
-        <option value="thirdPartyDataset">Third-party dataset</option>
-        <option value="nonGeographicDataset">Dataset (non-geographic)</option>
-        <option value="aggregate">Data collection (aggregation)</option>
-        <option value="service">Map (web service)</option>
-    </optgroup>
-    <optgroup label="ASSIST resource types" class="optgroup optgroup-assist">
-        <option value="dataset">Dataset</option>
-        <option value="thirdPartyDataset">Third-party dataset</option>
-        <option value="aggregate">Data collection (aggregation)</option>
-    </optgroup>
-    <optgroup label="eLTER resource types" class="optgroup optgroup-elter">
-        <option value="dataset">Dataset</option>
-        <option value="nonGeographicDataset">Dataset (non-geographic)</option>
-        <option value="aggregate">Data collection (aggregation)</option>
-        <option value="application">Model code (application)</option>
-        <option value="signpost">Signpost</option>
-        <option value="service">Web service</option>
-    </optgroup>
-    <optgroup label="All ISO 19115 resource types" class="optgroup optgroup-iso19115">
-        <option value="aggregate">Aggregate</option>
-        <option value="application">Application</option>
-        <option value="attribute">Attribute</option>
-        <option value="attributeType">Attribute type</option>
-        <option value="collection">Collection</option>
-        <option value="collectionHardware">Collection hardware</option>
-        <option value="collectionSession">Collection session</option>
-        <option value="coverage">Coverage</option>
-        <option value="dataset">Dataset</option>
-        <option value="dimensionGroup">Dimension group</option>
-        <option value="document">Document</option>
-        <option value="feature">Feature</option>
-        <option value="featureType">Feature type</option>
-        <option value="fieldSession">Field session</option>
-        <option value="initiative">Initiative</option>
-        <option value="metadata">Metadata</option>
-        <option value="model">Model</option>
-        <option value="nonGeographicDataset">Non-geographic dataset</option>
-        <option value="product">Product</option>
-        <option value="propertyType">Property type</option>
-        <option value="repository">Repository</option>
-        <option value="series">Series</option>
-        <option value="service">Service</option>
-        <option value="sample">Sample</option>
-        <option value="software">Software</option>
-        <option value="tile">Tile</option>
+    <optgroup label="Other">
+      <option class="option-iso" value="attribute">Attribute</option>
+      <option class="option-iso" value="attributeType">Attribute type</option>
+      <option class="option-iso" value="collection">Collection</option>
+      <option class="option-iso" value="collectionHardware">Collection hardware</option>
+      <option class="option-iso" value="collectionSession">Collection session</option>
+      <option class="option-iso" value="coverage">Coverage</option>
+      <option class="option-iso" value="dimensionGroup">Dimension group</option>
+      <option class="option-iso" value="document">Document</option>
+      <option class="option-iso" value="feature">Feature</option>
+      <option class="option-iso" value="featureType">Feature type</option>
+      <option class="option-iso" value="fieldSession">Field session</option>
+      <option class="option-iso" value="initiative">Initiative</option>
+      <option class="option-iso" value="metadata">Metadata</option>
+      <option class="option-iso" value="model">Model</option>
+      <option class="option-iso" value="product">Product</option>
+      <option class="option-iso" value="propertyType">Property type</option>
+      <option class="option-iso" value="repository">Repository</option>
+      <option class="option-iso" value="series">Series</option>
+      <option class="option-iso" value="sample">Sample</option>
+      <option class="option-iso" value="software">Software</option>
+      <option class="option-iso" value="tile">Tile</option>
     </optgroup>
 </select>
 `)

@@ -18,8 +18,8 @@
                 <a class="social" target="_blank" href="https://www.linkedin.com/company/uk-centre-for-ecology-hydrology/"aria-label="Go to our Linkedin">
                     <i class="fa-brands fa-xl fa-fw fa-linkedin-in"></i>
                 </a>
-                <a class="social" target="_blank" href="https://twitter.com/@UK_CEH" aria-label="Go to our Twitter">
-                    <i class="fa-brands fa-xl fa-fw fa-twitter"></i>
+                <a class="social" target="_blank" href="https://twitter.com/@UK_CEH" aria-label="Go to our X (Twitter) feed">
+                    <i class="fa-brands fa-xl fa-fw fa-x-twitter"></i>
                 </a>
                 <a class="social" target="_blank" href="https://www.facebook.com/UKCentreforEcologyandHydrology" aria-label="Go to our Facebook">
                     <i class="fa-brands fa-xl fa-fw fa-facebook-f"></i>

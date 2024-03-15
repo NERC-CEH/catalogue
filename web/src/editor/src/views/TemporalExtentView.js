@@ -7,7 +7,8 @@ import localeEn from 'air-datepicker/locale/en'
 const datepickerOptions = {
   dateFormat: 'yyyy-MM-dd',
   locale: localeEn,
-  position: 'top left'
+  isMobile: true,
+  autoClose: true
 }
 
 export default ObjectInputView.extend({

@@ -32,13 +32,37 @@
           <#nested>
 
           <#if keywords?? && keywords?has_content>
-            <@b.key "Keywords" ""><@b.keywords keywords/></@b.key>
+            <@keyValue "Keywords" ""><@b.keywords keywords/></@keyValue>
           </#if>
         </div>
       </div>
     </#if>
     </div>
   </@skeleton.master>
+</#macro>
+
+<#macro keyValue key description="" auto_esc=false>
+  <div class="row key-value" title="${description}">
+    <div class="col-sm-3 key">
+      <div class="key-title">${key}</div>
+    </div>
+    <div class="col-sm-9 value">
+      <#nested>
+    </div>
+  </div>
+</#macro>
+
+<#macro supplemental supplementalList>
+  <#list supplementalList>
+    <#items as sup>
+      <#if sup.function?has_content?has_content>
+        <#assign key = sup.function?capitalize>
+      <#else>
+          <#assign key = "Other">
+      </#if>
+      <@keyValue "${key}"><@b.linebreaksAndLinks sup.description /></@keyValue>
+    </#items>
+  </#list>
 </#macro>
 
 <#--
@@ -102,34 +126,28 @@ Temporal Extent
 <#macro relationships title description relation> <#--UPDATE-->
   <#local links=jena.relationships(uri, relation) />
   <#if links?has_content>
-    <@b.key description "">
+    <@keyValue description "">
       <#list links as link>
         <@b.blockUrl link />
       </#list>
-    </@b.key>
+    </@keyValue>
   </#if>
 </#macro>
 
 <#macro inverseRelationships title description relation> <#--UPDATE-->
   <#local links=jena.inverseRelationships(uri, relation) />
   <#if links?has_content>
-    <@b.key description  "">
+    <@keyValue description  "">
       <#list links as link>
         <@b.blockUrl link />
       </#list>
-    </@b.key>
+    </@keyValue>
   </#if>
 </#macro>
 
-<#macro boundingBox boundingBox>
+<#macro map mapData>
   <div id="studyarea-map">
-      <span content="${boundingBox.wkt}" datatype="geo:wktLiteral"/>
-  </div>
-</#macro>
-
-<#macro geometry geometry>
-  <div id="studyarea-map">
-      <span content="${geometry}" dataType="geoJson"/>
+    <span content="${mapData}" dataType="geoJson"/>
   </div>
 </#macro>
 

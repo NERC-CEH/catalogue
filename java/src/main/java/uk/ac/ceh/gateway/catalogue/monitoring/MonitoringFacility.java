@@ -7,11 +7,14 @@ import lombok.val;
 import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
-import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.Geometry;
 import uk.ac.ceh.gateway.catalogue.gemini.TimePeriod;
+import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.indexing.solr.WellKnownText;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.Supplemental;
+import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,10 +25,14 @@ import java.util.List;
     @Template(called="html/monitoring/monitoringFacility.ftlh", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
 })
 public class MonitoringFacility extends AbstractMetadataDocument implements WellKnownText {
-    private String facilityType;
-    private TimePeriod temporalExtent;
-    private BoundingBox boundingBox;
+    private List<String> alternateTitles;
+    private Keyword facilityType;
     private Geometry geometry;
+    private boolean geometryRepresentative, mobile;
+    private List<Supplemental> supplemental;
+    private List<Keyword> environmentalDomain;
+    private List<ResponsibleParty> responsibleParties;
+    private TimePeriod temporalExtent;
 
     @Override
     public @NonNull List<String> getWKTs() {
@@ -33,9 +40,6 @@ public class MonitoringFacility extends AbstractMetadataDocument implements Well
         if(geometry != null) {
             val possibleWkt = geometry.getWkt();
             possibleWkt.ifPresent(toReturn::add);
-        }
-        if(boundingBox != null) {
-            toReturn.add(boundingBox.getWkt());
         }
         return toReturn;
     }

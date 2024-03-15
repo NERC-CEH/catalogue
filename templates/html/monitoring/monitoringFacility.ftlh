@@ -1,21 +1,36 @@
-<#import "monitoringBase.ftlh" as o>
-<#import "../blocks.ftlh" as b>
+<#import "monitoringBase.ftlh" as m>
 
-<@o.base>
+<@m.base>
   <#if facilityType?? && facilityType?has_content>
-    <@b.key "Type" "Type of Monitoring Facility">${facilityType}</@b.key>
-  </#if>
-   <#if temporalExtent?? && temporalExtent?has_content>
-    <@b.key "Temporal Extent" "Temporal extent of Monitoring Facility">
-        <@o.temporalExt temporalExtent />
-    </@b.key>
-  </#if>
-  <#if boundingBox?? && boundingBox?has_content>
-    <@b.key "Bounding Box" "Bounding Box of Monitoring Facility"><@o.boundingBox boundingBox /></@b.key>
-  </#if>
-  <#if geometry?? && geometry?has_content>
-    <@b.key "Location" "Location of monitoring facility"><@o.geometry geometry.geometryString /></@b.key>
+    <@m.keyValue "Type" "type of monitoring facility">${facilityType.value}</@m.keyValue>
   </#if>
 
-  <@o.relationships "Belongs To" "Belongs to Monitoring Network" "http://purl.org/voc/ef#belongsTo" />
-</@o.base>
+
+  <#if geometry?? && geometry?has_content>
+  <div>
+    <@m.keyValue "Location">
+      <@m.map geometry.geometryString />
+    </@m.keyValue>
+
+    <#if mobile>
+      MOBILE
+    </#if>
+
+    <#if geometryRepresentative>
+      Geometry is representative
+    </#if>
+  </div>
+  </#if>
+
+  <#if supplemental?? && supplemental?has_content>
+    <@m.supplemental supplemental />
+  </#if>
+
+   <#if temporalExtent?? && temporalExtent?has_content>
+    <@m.keyValue "Temporal Extent">
+        <@m.temporalExt temporalExtent />
+    </@m.keyValue>
+  </#if>
+
+  <@m.relationships "Belongs To" "Belongs to Monitoring Network" "http://purl.org/voc/ef#belongsTo" />
+</@m.base>

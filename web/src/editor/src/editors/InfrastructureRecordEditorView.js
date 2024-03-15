@@ -18,7 +18,10 @@ import {
   InfrastructureCategory,
   InfrastructureChallenge
 } from '../models'
-import { BoundingBox, BoundingBoxView } from '../geometryMap'
+import {
+  Geometry,
+  GeometryView
+} from '../geometryMap'
 
 export default EditorView.extend({
 
@@ -145,8 +148,8 @@ export default EditorView.extend({
       ]
     },
     {
-      label: 'Scale',
-      title: 'Scale',
+      label: 'Scale/location',
+      title: 'Scale/location',
       views: [
 
         new TextareaView({
@@ -166,21 +169,15 @@ export default EditorView.extend({
           ]
         }),
 
-        new PredefinedParentView({
+        new SingleObjectView({
           model: this.model,
-          modelAttribute: 'boundingBoxes',
-          ModelType: BoundingBox,
-          label: 'Spatial extent',
-          ObjectInputView: BoundingBoxView,
-          multiline: true,
-          predefined: {
-            'Great Britain': {
-              northBoundLatitude: 60.861,
-              eastBoundLongitude: 1.768,
-              southBoundLatitude: 49.864,
-              westBoundLongitude: -8.648
-            }
-          }
+          modelAttribute: 'geometry',
+          ModelType: Geometry,
+          label: 'Geometry',
+          ObjectInputView: GeometryView,
+          helpText: `
+<p>Geometry of Monitoring Facility</p>
+`
         })
 
       ]
