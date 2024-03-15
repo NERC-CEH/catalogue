@@ -21,7 +21,7 @@ export default _.template(`
     </div>
     <div class="relationshipRecord hidden">
         <div class="col-sm-10 col-lg-10">
-            <input data-name="target" id="relationship<%= data.index %>Target" class="editor-input identifier" value="<%= data.target %>" disabled="true">
+            <input data-name="info" id="relationship<%= data.index %>Target" class="editor-input read-only-identifier" value="<%= data.info %>" disabled="true">
         </div>
     </div>
 </div>
