@@ -24,7 +24,6 @@ export default ObjectInputView.extend({
           const data = await $.getJSON(query)
           return `${data.title} (${data.type}, ${data.id})`
         } catch (error) {
-//          console.log(`error - ${JSON.stringify(error)}`)
           return target
         }
       }
