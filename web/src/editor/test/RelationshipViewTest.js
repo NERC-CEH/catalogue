@@ -10,7 +10,6 @@ describe('Test RelationshipView', function () {
   beforeEach(function () {
     model = new EditorMetadata({ target: 'target' })
     view = new RelationshipView({ model, options })
-
     spyOn($, 'getJSON').and.callFake((url) => {
        return {
          title: 'title',
@@ -18,7 +17,6 @@ describe('Test RelationshipView', function () {
          type: 'type',
        }
     });
-    spyOn(view, 'generateInformationString').and.callThrough();
   })
 
   it('test render', () => {
@@ -41,7 +39,7 @@ describe('Test RelationshipView', function () {
     view.render()
     expect(view.$('.relationshipRecord').hasClass('hidden')).toBeTrue()
   })
-
+  
   it('should do correct http call for uid', () => {
       model = new EditorMetadata({ target: 'exampleUid' })
       view = new RelationshipView({ model, options })
