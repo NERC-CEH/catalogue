@@ -20,8 +20,9 @@ public class MonitoringFacilityTemplateTest {
         RDFDataMgr.read(model, reader, base, Lang.TTL);
 
         //when
-
+        // TODO generate turtle triple statements from the freemarker template
 
         //then
+        // TODO add assertions about some triples in the model
     }
 }
