@@ -65,7 +65,7 @@ export default Backbone.Model.extend({
      * fetch the results if the change event contains search related fields
      */
   performSearch (evt) {
-    if (!_.chain(evt.changed).pick(...Array.from(this.searchFields || [])).isEmpty().value()) {
+    if (!_.chain(evt.changed).pick(this.searchFields).isEmpty().value()) {
       this.clearResults() // Make sure that the results have been cleared
       this.createSearchPage() // Redefine a new search page
       this.results.fetch({ cache: false, traditional: true, data: this.getState() })
@@ -77,9 +77,7 @@ export default Backbone.Model.extend({
      * an object which can be used for querying the search api.
      */
   getState () {
-    const state = this.pick(...Array.from(this.searchFields || []))
-    _.each(state, function (v, k) { if (!v) { return delete state[k] } })
-    return state
+    return this.pick((val, key) => val && _.contains(this.searchFields, key))
   },
 
   /*
@@ -89,8 +87,7 @@ export default Backbone.Model.extend({
      * @defaults
      */
   setState (state, options) {
-    const searchDefaults = _.pick(this.defaults, ...Array.from(this.searchFields))
-    this.set(_.defaults(state, searchDefaults), options)
+    this.set({ ..._.pick(this.defaults, this.searchFields), ...state }, options)
   },
 
   /*
