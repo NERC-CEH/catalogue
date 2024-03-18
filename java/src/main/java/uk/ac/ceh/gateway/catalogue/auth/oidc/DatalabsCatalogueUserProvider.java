@@ -57,7 +57,7 @@ public class DatalabsCatalogueUserProvider implements CatalogueUserProvider {
                 .orElseThrow(() -> new AuthenticationException("No user found for " + subject))
                 .get("name")
                 .asText();
-            return new CatalogueUser().setUsername(name).setEmail(name);
+            return new CatalogueUser(name, name);
         } else {
             throw new AuthenticationException("No Users array present for " + subject);
         }

@@ -445,7 +445,7 @@ class DocumentControllerTest {
     @Test
     public void checkCanCreateModelDocument() throws Exception {
         //Given
-        CatalogueUser user = new CatalogueUser();
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
         Model document = new Model();
         document.setUri("https://catalogue.ceh.ac.uk/id/123-test");
         String message = "new Model Document";
@@ -464,7 +464,7 @@ class DocumentControllerTest {
     @Test
     public void checkCanEditModelDocument() throws Exception {
         //Given
-        CatalogueUser user = new CatalogueUser();
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
         Model document = new Model();
         document.setUri("https://catalogue.ceh.ac.uk/id/123-test");
         String fileId = "test";
@@ -485,7 +485,7 @@ class DocumentControllerTest {
     @Test
     public void checkCanCreateGeminiDocument() throws Exception {
         //Given
-        CatalogueUser user = new CatalogueUser();
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
         GeminiDocument document = new GeminiDocument();
         document.setUri("https://catalogue.ceh.ac.uk/id/123-test");
         String message = "new Gemini Document";
@@ -506,7 +506,7 @@ class DocumentControllerTest {
         //Given
         String fileId = "test";
         String message = "Edited document: test";
-        CatalogueUser user = new CatalogueUser();
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
         MetadataDocument document = new GeminiDocument()
             .setId(fileId)
             .setUri("https://catalogue.ceh.ac.uk/id/123-test")
@@ -527,7 +527,7 @@ class DocumentControllerTest {
     @Test
     public void checkCanCreateLinkedDocument() throws Exception {
         //Given
-        CatalogueUser user = new CatalogueUser();
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
         LinkDocument document = LinkDocument.builder().linkedDocumentId(linkedDocumentId).build();
         document.setUri("https://catalogue.ceh.ac.uk/id/123-test");
         String message = "new Linked Document";
@@ -548,7 +548,7 @@ class DocumentControllerTest {
     @Test
     public void checkCanEditLinkedDocument() throws Exception {
         //Given
-        CatalogueUser user = new CatalogueUser();
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
         LinkDocument document = LinkDocument.builder().linkedDocumentId(linkedDocumentId).build();
         document.setUri("https://catalogue.ceh.ac.uk/id/123-test");
         String fileId = "test";

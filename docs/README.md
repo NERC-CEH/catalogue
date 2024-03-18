@@ -13,6 +13,7 @@ Catalogue.
 
 ## Developer Documentation
 
+- [Authentication & Authorization](auth.md)
 - [New Catalogue](./new-catalogue.md)
 - [New Document Type](./newDocumentType.md)
 - [Server Profiles](./profiles.md)

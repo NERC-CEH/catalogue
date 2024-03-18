@@ -8,7 +8,7 @@
 
 <#assign catalogueid="">
 
-<#macro master title catalogue="" rdf="" schemaorg="" canonical="" searching=false can_edit_restricted=false containerClass="container" scripts=defaultScripts footer="" footer=false>
+<#macro master title catalogue="" rdf="" schemaorg="" canonical="" searching=false can_edit_restricted=false containerClass="container" scripts=defaultScripts footer=false>
   <#assign catalogueid="">
   <#if catalogue?has_content>
     <#assign catalogueid= catalogue.id >
@@ -95,12 +95,18 @@
                       </ul>
                     </div>
                 </#if>
-                <span id="sso-user"></span>
+                <#if profile.isActive("auth:oidc")>
+                    <#if userInfo.isLoggedIn()>
+                      <a href="/logout">Logout</a>
+                    <#else>
+                      <a href="/login">Login</a>
+                    </#if>
+                <#else>
+                  <span id="sso-user"></span>
+                </#if>
               </nav>
             </div>
           </div>
-
-
         </div>
       </header>
       <main>

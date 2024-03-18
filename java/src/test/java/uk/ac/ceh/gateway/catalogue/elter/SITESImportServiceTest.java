@@ -1,54 +1,42 @@
 package uk.ac.ceh.gateway.catalogue.elter;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import lombok.SneakyThrows;
-import lombok.val;
-
 import org.apache.commons.io.IOUtils;
-
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.SolrParams;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
-
 import uk.ac.ceh.gateway.catalogue.deims.DeimsSolrIndex;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.publication.PublicationService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import static org.apache.solr.client.solrj.SolrRequest.METHOD.POST;
-
 import static org.hamcrest.CoreMatchers.equalTo;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 @ExtendWith(MockitoExtension.class)
@@ -77,9 +65,7 @@ public class SITESImportServiceTest {
         queryResponse = mock(QueryResponse.class);
         mockServer = MockRestServiceServer.bindTo(restTemplate).build();
 
-        expectedUser = new CatalogueUser()
-            .setUsername("SITES metadata import")
-            .setEmail("info@fieldsites.se");
+        expectedUser = new CatalogueUser("SITES metadata import", "info@fieldsites.se");
 
         dummyDeimsSiteList = new ArrayList<>();
         dummyDeimsSite = new DeimsSolrIndex();

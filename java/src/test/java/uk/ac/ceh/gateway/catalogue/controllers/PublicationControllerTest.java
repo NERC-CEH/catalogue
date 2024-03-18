@@ -19,6 +19,7 @@ import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
+import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
 import uk.ac.ceh.gateway.catalogue.publication.State;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
@@ -54,6 +55,7 @@ class PublicationControllerTest {
     @MockBean private PublicationService publicationService;
     @MockBean(name="permission") private PermissionService permissionService;
     @MockBean private CatalogueService catalogueService;
+    @MockBean private ProfileService profileService;
 
     @Autowired private MockMvc mvc;
     @Autowired private Configuration configuration;
@@ -91,6 +93,7 @@ class PublicationControllerTest {
     @SneakyThrows
     private void givenFreemarkerConfiguration() {
         configuration.setSharedVariable("catalogues", catalogueService);
+        configuration.setSharedVariable("profile", profileService);
     }
 
     @Test

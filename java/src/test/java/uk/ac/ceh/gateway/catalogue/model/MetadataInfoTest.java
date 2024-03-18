@@ -96,7 +96,7 @@ public class MetadataInfoTest {
         info.addPermission(Permission.VIEW, "ceh");
 
         //When
-        boolean actual = info.canAccess(Permission.VIEW, new CatalogueUser().setUsername("test"), createGroups("ceh", "nerc"));
+        boolean actual = info.canAccess(Permission.VIEW, new CatalogueUser("test", "ceh"), createGroups("ceh", "nerc"));
 
         //Then
         assertThat("Public should be able to view", actual, equalTo(true));
@@ -157,7 +157,7 @@ public class MetadataInfoTest {
     public void userInReadonlyGroupCanView() {
         //Given
         MetadataInfo info = MetadataInfo.builder().build();
-        CatalogueUser readonly = new CatalogueUser().setUsername("readonly");
+        CatalogueUser readonly = new CatalogueUser("readonly", "readonly@ceh.ac.uk");
 
         //When
         boolean actual = info.canAccess(Permission.VIEW, readonly, createGroups("ROLE_CIG_READONLY"));
@@ -170,7 +170,7 @@ public class MetadataInfoTest {
     public void userInReadonlyGroupCannotEdit() {
         //Given
         MetadataInfo info = MetadataInfo.builder().build();
-        CatalogueUser readonly = new CatalogueUser().setUsername("readonly");
+        CatalogueUser readonly = new CatalogueUser("readonly", "readonly@ceh.ac.uk");
 
         //When
         boolean actual = info.canAccess(Permission.EDIT, readonly, createGroups("ROLE_CIG_READONLY"));
@@ -183,7 +183,7 @@ public class MetadataInfoTest {
     public void userInReadonlyGroupCannotDelete() {
         //Given
         MetadataInfo info = MetadataInfo.builder().build();
-        CatalogueUser readonly = new CatalogueUser().setUsername("readonly");
+        CatalogueUser readonly = new CatalogueUser("readonly", "readonly");
 
         //When
         boolean actual = info.canAccess(Permission.DELETE, readonly, createGroups("ROLE_CIG_READONLY"));
@@ -196,7 +196,7 @@ public class MetadataInfoTest {
     public void userInPublisherGroupCanView() {
         //Given
         MetadataInfo info = MetadataInfo.builder().catalogue("eidc").build();
-        CatalogueUser publisher = new CatalogueUser().setUsername("publisher");
+        CatalogueUser publisher = new CatalogueUser("publisher", "publisher");
 
         //When
         boolean actual = info.canAccess(Permission.VIEW, publisher, createGroups("ROLE_EIDC_PUBLISHER"));
@@ -218,14 +218,14 @@ public class MetadataInfoTest {
         assertThat("Should not be public unless the state is published", isPublic, is(false));
     }
 
-    private List<Group> createGroups(String... groupnames) {
+    private List<Group> createGroups(String... groupNames) {
         List<Group> toReturn = new ArrayList<>();
-        for (String groupname : groupnames) {
+        for (String groupName : groupNames) {
             toReturn.add(new Group() {
 
                 @Override
                 public String getName() {
-                    return groupname;
+                    return groupName;
                 }
 
                 @Override

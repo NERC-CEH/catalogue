@@ -13,6 +13,7 @@ import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.DownloadOrderDetailsService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.GeminiExtractor;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
+import uk.ac.ceh.gateway.catalogue.userdetails.SecurityUserInfo;
 import uk.ac.ceh.gateway.catalogue.wms.MapServerDetailsService;
 
 import javax.annotation.PostConstruct;
@@ -44,6 +45,7 @@ public class FreemarkerConfig {
         freemarkerConfiguration.setSharedVariable("metadataQuality", metadataQualityService);
         freemarkerConfiguration.setSharedVariable("permission", permissionService);
         freemarkerConfiguration.setSharedVariable("profile", profileService);
+        freemarkerConfiguration.setSharedVariable("userInfo", new SecurityUserInfo());
 
         if (serviceAgreementQualityService != null) {
             freemarkerConfiguration.setSharedVariable("serviceAgreementQuality", serviceAgreementQualityService);

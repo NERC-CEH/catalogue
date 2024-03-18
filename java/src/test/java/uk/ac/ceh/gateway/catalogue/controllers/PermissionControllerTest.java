@@ -20,14 +20,15 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
+import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.permission.CataloguePermission;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
+import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
-import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -54,6 +55,7 @@ public class PermissionControllerTest {
     @MockBean(name="permission") private PermissionService permissionService;
     @MockBean private DocumentRepository documentRepository;
     @MockBean private CatalogueService catalogueService;
+    @MockBean private ProfileService profileService;
 
     private PermissionController permissionController;
 
@@ -81,6 +83,7 @@ public class PermissionControllerTest {
     private void givenFreemarkerConfiguration() {
         configuration.setSharedVariable("permission", permissionService);
         configuration.setSharedVariable("catalogues", catalogueService);
+        configuration.setSharedVariable("profile", profileService);
     }
 
     private void givenUserCanEdit() {
@@ -127,7 +130,7 @@ public class PermissionControllerTest {
     @Test
     public void getCurrentPermission() throws Exception {
         //Given
-        CatalogueUser publisher = new CatalogueUser().setUsername("publisher");
+        CatalogueUser publisher = new CatalogueUser("publisher", "publisher@example.com");
         String file = "1234-567-890";
         MetadataInfo info = MetadataInfo.builder().build();
         MetadataDocument document = new GeminiDocument()
@@ -151,7 +154,7 @@ public class PermissionControllerTest {
     @Test
     public void permissions() throws Exception {
         //Given
-        CatalogueUser publisher = new CatalogueUser().setUsername("publisher");
+        CatalogueUser publisher = new CatalogueUser("publisher", "publisher");
         String file = "1234-567-890";
         MetadataInfo info = MetadataInfo.builder().catalogue("catalogue").build();
         MetadataDocument document = new GeminiDocument().setMetadata(info);
@@ -175,7 +178,7 @@ public class PermissionControllerTest {
     public void nonPublisherAttemptToMakeRecordPublic() throws Exception {
         //Given
 
-        CatalogueUser notPublisher = new CatalogueUser().setUsername("notPublisher");
+        CatalogueUser notPublisher = new CatalogueUser("notPublisher", "notPublisher");
         String file = "1234-567-890";
         MetadataInfo info = MetadataInfo.builder().catalogue("eidc").build();
         info.addPermission(Permission.VIEW, "bob");
@@ -206,7 +209,7 @@ public class PermissionControllerTest {
     @Test
     public void PublisherToMakeRecordPublic() throws Exception {
         //Given
-        CatalogueUser publisher = new CatalogueUser().setUsername("publisher");
+        CatalogueUser publisher = new CatalogueUser("publisher", "publisher");
         String file = "1234-567-890";
         MetadataInfo info = MetadataInfo.builder().catalogue("eidc").state("published").build();
         info.addPermission(Permission.VIEW, "bob");

@@ -17,14 +17,14 @@ import java.util.Optional;
 import static uk.ac.ceh.gateway.catalogue.indexing.solr.SolrIndexMetadataDocumentGenerator.grab;
 
 /**
- * Processes a GeminiDocument and populates a SolrIndex object will all of the
+ * Processes a GeminiDocument and populates a SolrIndex object with all the
  * bits of the document transferred. Ready to be indexed by Solr
  */
 @Slf4j
 @ToString
 public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDocument, SolrIndex> {
-    private static final String OGL_PATTERN1 = ".*open-government-licence.*\\/plain$";
-    private static final String OGL_PATTERN2 = ".*OGL.*\\/plain$";
+    private static final String OGL_PATTERN1 = ".*open-government-licence.*/plain$";
+    private static final String OGL_PATTERN2 = ".*OGL.*/plain$";
 
 
     private final TopicIndexer topicIndexer;

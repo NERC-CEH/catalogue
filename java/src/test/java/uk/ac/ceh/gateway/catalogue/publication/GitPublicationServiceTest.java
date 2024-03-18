@@ -40,9 +40,7 @@ public class GitPublicationServiceTest {
     @BeforeEach
     public void given() throws IOException {
         workflow = new PublicationConfig().workflow();
-        editor = new CatalogueUser()
-            .setUsername("Ron MacDonald")
-            .setEmail("ron@example.com");
+        editor = new CatalogueUser( "Ron MacDonald", "ron@example.com");
 
         this.draft = new GeminiDocument()
             .setTitle("draft")

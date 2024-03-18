@@ -201,8 +201,7 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
         if (document instanceof Model) {
             String applicationScale = ((Model) document).getApplicationScale();
             toReturn.add(applicationScale);
-        } else if (document instanceof CehModelApplication) {
-            CehModelApplication application = (CehModelApplication) document;
+        } else if (document instanceof CehModelApplication application) {
             Optional.ofNullable(application.getModelInfos())
                 .orElse(Collections.emptyList())
                 .stream()

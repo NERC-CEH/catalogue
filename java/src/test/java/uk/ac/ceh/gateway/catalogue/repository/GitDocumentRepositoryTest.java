@@ -78,7 +78,7 @@ public class GitDocumentRepositoryTest {
     @SneakyThrows
     public void savingMultipartFileStoresInputStreamIntoRepo() {
         //Given
-        CatalogueUser user = new CatalogueUser().setUsername("test").setEmail("test@example.com");
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
         InputStream inputStream = new ByteArrayInputStream("<?xml version=\"1.0\" encoding=\"UTF-8\"?><root></root>".getBytes());
         String documentType = "GEMINI_DOCUMENT";
         String message = "message";
@@ -101,7 +101,7 @@ public class GitDocumentRepositoryTest {
     @SneakyThrows
     public void saveNewGeminiDocument() {
         //Given
-        CatalogueUser user = new CatalogueUser().setUsername("test").setEmail("test@example.com");
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
         GeminiDocument document = new GeminiDocument();
         String message = "new Gemini document";
         String catalogue = "test";
@@ -121,7 +121,7 @@ public class GitDocumentRepositoryTest {
     public void saveEditedGeminiDocument() {
         //Given
         String id = "tulips";
-        CatalogueUser user = new CatalogueUser().setUsername("test").setEmail("test@example.com");
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
         MetadataInfo metadataInfo = MetadataInfo.builder().build();
         MetadataDocument incomingDocument = new GeminiDocument()
             .setMetadata(metadataInfo);
@@ -140,7 +140,7 @@ public class GitDocumentRepositoryTest {
     @SneakyThrows
     public void checkCanDeleteAFile() {
         //Given
-        CatalogueUser user = new CatalogueUser().setUsername("test").setEmail("test@example.com");
+        CatalogueUser user = new CatalogueUser("test", "test@example.com");
 
         //When
         documentRepository.delete(user, "id");
@@ -153,9 +153,7 @@ public class GitDocumentRepositoryTest {
     @SneakyThrows
     public void checkMetadataInfoUpdated() {
         //Given
-        CatalogueUser editor = new CatalogueUser()
-            .setUsername("editor")
-            .setEmail("editor@example.com");
+        CatalogueUser editor = new CatalogueUser("editor", "editor@example.com");
         String file = "3c25e9b7-d3dd-41be-ae29-e8979bb462a2";
         String message = "Test message";
         MetadataInfo metadataInfo = MetadataInfo.builder()
