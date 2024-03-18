@@ -31,7 +31,7 @@ public class GitRepoWrapperTest {
     @Test
     public void canSave() throws DataRepositoryException {
         //Given
-        CatalogueUser user = new CatalogueUser();
+        CatalogueUser user = new CatalogueUser("test", "test@ceh.ac.uk");
         String id = "test";
         String message = "template: test";
         MetadataInfo metadataInfo = MetadataInfo.builder().build();
@@ -54,7 +54,7 @@ public class GitRepoWrapperTest {
     public void canDelete() throws DataRepositoryException {
         //Given
         DataOngoingCommit dataOngoingCommit = mock(DataOngoingCommit.class);
-        CatalogueUser user = new CatalogueUser();
+        CatalogueUser user = new CatalogueUser("test", "test@ceh.ac.uk");
         String id = "test";
 
         given(repo.deleteData("test.meta")).willReturn(dataOngoingCommit);

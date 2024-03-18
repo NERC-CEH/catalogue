@@ -40,7 +40,7 @@ public class SearchQueryTest {
         //Given
         SearchQuery query = new SearchQuery(
                 ENDPOINT,
-                new CatalogueUser().setUsername("helen"),
+                new CatalogueUser("helen", "helen"),
                 SearchQuery.DEFAULT_SEARCH_TERM,
                 DEFAULT_BBOX,
                 SpatialOperation.ISWITHIN,
@@ -70,7 +70,7 @@ public class SearchQueryTest {
     @Test
     public void loggedInUserHasUsernameAsViewFilter() {
         //Given
-        CatalogueUser user = new CatalogueUser().setUsername("helen");
+        CatalogueUser user = new CatalogueUser("helen", "helen");
         SearchQuery query = new SearchQuery(
                 ENDPOINT,
                 user,
@@ -102,7 +102,7 @@ public class SearchQueryTest {
     @Test
     public void loggedInUserWithGroupsHasUsernameAndGroupsAsViewFilter() {
         //Given
-        CatalogueUser user = new CatalogueUser().setUsername("helen");
+        CatalogueUser user = new CatalogueUser("helen", "helen");
         given(groupStore.getGroups(user)).willReturn(Arrays.asList(createGroup("CEH"), createGroup("EIDC")));
 
         SearchQuery query = new SearchQuery(
@@ -136,7 +136,7 @@ public class SearchQueryTest {
     @Test
     public void publisherDoesNotHaveViewFilter() {
         //Given
-        CatalogueUser user = new CatalogueUser().setUsername("publisher");
+        CatalogueUser user = new CatalogueUser("publisher", "publisher");
         given(groupStore.getGroups(user)).willReturn(List.of(createGroup("ROLE_EIDC_PUBLISHER")));
 
         SearchQuery query = new SearchQuery(

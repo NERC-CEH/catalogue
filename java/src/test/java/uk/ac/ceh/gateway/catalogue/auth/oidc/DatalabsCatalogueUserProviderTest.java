@@ -46,10 +46,7 @@ class DatalabsCatalogueUserProviderTest {
         val response = IOUtils.toByteArray(
             Objects.requireNonNull(getClass().getResource("users.json"))
         );
-        val expected = new CatalogueUser();
-        expected
-            .setUsername("foo@example.com")
-            .setEmail("foo@example.com");
+        val expected = new CatalogueUser("foo@example.com", "foo@example.com");
 
         mockServer.expect(requestTo(usersEndpointEncoded))
             .andExpect(method(HttpMethod.GET))

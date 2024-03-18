@@ -15,7 +15,6 @@ import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
-import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.vocabularies.KeywordVocabulary;
@@ -41,12 +40,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class CatalogueControllerTest {
     private @MockBean DocumentRepository documentRepository;
     private @MockBean CatalogueService catalogueService;
-    private @MockBean(name="permission") PermissionService permissionService;
 
     @Autowired private MockMvc mvc;
-    private CatalogueController controller;
-
-    private final String file = "955b5a6e-dd3f-4b20-a3b5-a9d1d04ba052";
 
     private void givenCataloguesRetrieveAll() {
         Catalogue a = Catalogue.builder().id("a").title("a").url("a").contactUrl("").logo("eidc.png").build();

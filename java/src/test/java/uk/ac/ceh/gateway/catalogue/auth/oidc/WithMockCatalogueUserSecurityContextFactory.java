@@ -18,9 +18,7 @@ public class WithMockCatalogueUserSecurityContextFactory implements WithSecurity
     public SecurityContext createSecurityContext(WithMockCatalogueUser catalogueUser) {
         SecurityContext context = SecurityContextHolder.createEmptyContext();
 
-        val principal = new CatalogueUser();
-        principal.setUsername(catalogueUser.username());
-        principal.setEmail(catalogueUser.email());
+        val principal = new CatalogueUser(catalogueUser.username(), catalogueUser.email());
 
         val grantedAuthorities = Arrays.stream(catalogueUser.grantedAuthorities())
                 .map(SimpleGrantedAuthority::new)

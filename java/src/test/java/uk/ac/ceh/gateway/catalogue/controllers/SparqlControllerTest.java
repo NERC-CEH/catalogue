@@ -20,6 +20,7 @@ import uk.ac.ceh.gateway.catalogue.config.SecurityConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
+import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
@@ -51,12 +52,14 @@ class SparqlControllerTest {
 
     @Autowired private MockMvc mvc;
     @Autowired private Configuration configuration;
+    @MockBean private ProfileService profileService;
 
     private final String catalogueKey = "eidc";
 
     @SneakyThrows
     private void givenFreemarkerConfiguration() {
         configuration.setSharedVariable("catalogues", catalogueService);
+        configuration.setSharedVariable("profile", profileService);
     }
 
     private void givenDefaultCatalogue() {

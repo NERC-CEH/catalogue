@@ -14,11 +14,11 @@ import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.controllers.DataciteController;
 import uk.ac.ceh.gateway.catalogue.controllers.DocumentController;
+import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.model.PermissionDeniedException;
-import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
 
 import java.io.IOException;
 import java.util.Collections;

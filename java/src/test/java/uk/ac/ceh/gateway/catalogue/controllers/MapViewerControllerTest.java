@@ -42,6 +42,7 @@ import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.ogc.WmsFeatureInfo;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
+import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
 
 import java.io.IOException;
 import java.net.URI;
@@ -70,6 +71,7 @@ public class MapViewerControllerTest {
     @MockBean @Qualifier("wms") private RestTemplate rest;
     @MockBean private CatalogueService catalogueService;
     @MockBean private CloseableHttpClient httpClient;
+    @MockBean private ProfileService profileService;
 
     @Autowired private Configuration configuration;
     @Autowired private MockMvc mvc;
@@ -92,6 +94,7 @@ public class MapViewerControllerTest {
     @SneakyThrows
     private void givenFreemarkerConfiguration() {
         configuration.setSharedVariable("catalogues", catalogueService);
+        configuration.setSharedVariable("profile", profileService);
     }
 
     private void givenGetMapResponse() throws IOException {

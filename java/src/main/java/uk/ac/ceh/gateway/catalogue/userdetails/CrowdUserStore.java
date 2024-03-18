@@ -54,9 +54,10 @@ public class CrowdUserStore implements UserStore<CatalogueUser> {
             );
             val node = Optional.ofNullable(response.getBody())
                 .orElseThrow(() -> new UserDetailsException(format("No body for %s %s", uriTemplate, username)));
-            return new CatalogueUser()
-                .setUsername(node.get("name").asText())
-                .setEmail(node.get("email").asText());
+            return new CatalogueUser(
+                node.get("name").asText(),
+                node.get("email").asText()
+            );
         } catch (HttpClientErrorException.NotFound ex) {
             throw new UnknownUserException(username);
         }

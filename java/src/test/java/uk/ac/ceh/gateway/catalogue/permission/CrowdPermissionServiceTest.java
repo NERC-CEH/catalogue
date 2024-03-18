@@ -57,14 +57,14 @@ public class CrowdPermissionServiceTest {
     }
 
     private CatalogueUser populateSecurityContextHolder(String username) {
-        val user = new CatalogueUser().setUsername(username);
+        val user = new CatalogueUser(username, username);
         SecurityContext securityContext = mock(SecurityContext.class);
         SecurityContextHolder.setContext(securityContext);
         return user;
     }
 
     private CatalogueUser populateSecurityContextHolderAndAuthentication(String username, String... roleNames) {
-        val user = new CatalogueUser().setUsername(username);
+        val user = new CatalogueUser(username, username);
         List<Group> roles = Arrays.stream(roleNames)
                 .map(CrowdGroup::new)
                 .collect(Collectors.toList());
@@ -78,7 +78,7 @@ public class CrowdPermissionServiceTest {
     }
 
     private CatalogueUser publisherCanViewPopulateSecurityContextHolder(String username, String... roleNames) {
-        val user = new CatalogueUser().setUsername(username);
+        val user = new CatalogueUser(username, username);
         List<Group> roles = Arrays.stream(roleNames)
                 .map(CrowdGroup::new)
                 .collect(Collectors.toList());

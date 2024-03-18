@@ -26,6 +26,7 @@ import uk.ac.ceh.gateway.catalogue.indexing.mapserver.MapServerIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.solr.SolrIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.validation.ValidationIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.MaintenanceResponse;
+import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
 import uk.ac.ceh.gateway.catalogue.services.DataRepositoryOptimizingService;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -57,6 +58,7 @@ public class MaintenanceControllerTest {
     @MockBean @Qualifier("validation-index") ValidationIndexingService validationService;
     @MockBean @Qualifier("mapserver-index") MapServerIndexingService mapserverService;
     @MockBean CatalogueService catalogueService;
+    @MockBean ProfileService profileService;
 
     @Autowired private MockMvc mvc;
     @Autowired private Configuration configuration;
@@ -72,6 +74,7 @@ public class MaintenanceControllerTest {
     @SneakyThrows
     private void givenFreemarkerConfiguration() {
         configuration.setSharedVariable("catalogues", catalogueService);
+        configuration.setSharedVariable("profile", profileService);
     }
 
     private void givenDefaultCatalogue() {

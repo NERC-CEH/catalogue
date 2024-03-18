@@ -58,9 +58,7 @@ public class GitRepoServiceAgreementServiceTest {
 
     @BeforeAll
     static void init() {
-        user = new CatalogueUser();
-        user.setUsername("test");
-        user.setEmail("test@example.com");
+        user = new CatalogueUser("test","test@example.com");
     }
 
     @BeforeEach
