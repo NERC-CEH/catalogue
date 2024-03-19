@@ -119,6 +119,15 @@ header {
             }
 
             .navbar-right {
+                li {
+                    list-style: none;
+
+                    &.dropdown {
+                        margin: 1em;
+                    }
+
+                }
+
                 margin-left: auto;
 
                 .dropdown-menu {
@@ -126,6 +135,7 @@ header {
                     background-color: var(--dropdown-background-color);
 
                     li {
+                        list-style: none;
                         border-bottom: 1px solid lightgray;
 
                         &:last-child {

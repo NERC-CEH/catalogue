@@ -1,15 +1,19 @@
 import EditorView from '../EditorView'
 import InputView from '../InputView'
 import {
-  KeywordView,
-  ParametersMeasuredView,
+  KeywordVocabularyView,
   ParentView,
+  PredefinedParentView,
   RelationshipView,
   SingleObjectView,
   TemporalExtentView,
-  TextareaView
+  TextareaView,
+  ContactView,
+  ParentStringView,
+  EnvironmentalDomainView,
+  PurposeOfCollectionView
 } from '../views'
-import { MultipleDate } from '../models'
+import { MultipleDate, EnvironmentalDomain, PurposeOfCollection, Contact } from '../models'
 import { BoundingBox, BoundingBoxView } from '../geometryMap'
 
 export default EditorView.extend({
@@ -25,20 +29,20 @@ export default EditorView.extend({
         new InputView({
           model: this.model,
           modelAttribute: 'title',
-          label: 'Name',
-          helpText: `
-<p>Name of Monitoring Activity</p>
-`
+          label: 'Name'
+        }),
+
+        new ParentStringView({
+          model: this.model,
+          modelAttribute: 'alternateTitles',
+          label: 'Alternative name(s)'
         }),
 
         new TextareaView({
           model: this.model,
           modelAttribute: 'description',
           rows: 13,
-          label: 'Description',
-          helpText: `
-<p>Description of Monitoring Activity</p>
-`
+          label: 'Description'
         }),
 
         new SingleObjectView({
@@ -46,32 +50,74 @@ export default EditorView.extend({
           modelAttribute: 'temporalExtent',
           ModelType: MultipleDate,
           label: 'Temporal Extent',
-          ObjectInputView: TemporalExtentView,
-          helpText: `
-<p>Temporal Extent of Monitoring Activity</p>
-`
+          ObjectInputView: TemporalExtentView
         }),
 
         new ParentView({
           model: this.model,
-          modelAttribute: 'parametersMeasured',
-          label: 'Parameters Measured',
-          ObjectInputView: ParametersMeasuredView,
-          multiline: true,
-          helpText: `
-<p>Parameters measured as part of Monitoring Activity</p>
-`
+          modelAttribute: 'environmentalDomain',
+          ModelType: EnvironmentalDomain,
+          label: 'Environmental domain',
+          ObjectInputView: EnvironmentalDomainView
         }),
 
         new ParentView({
           model: this.model,
-          modelAttribute: 'keywords',
+          modelAttribute: 'purposeOfCollection',
+          ModelType: PurposeOfCollection,
+          label: 'Purpose of collection',
+          ObjectInputView: PurposeOfCollectionView
+        }),
+
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'keywordsParameters',
+          label: 'Paremeters measured',
+          ObjectInputView: KeywordVocabularyView
+        }),
+
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'keywordsOther',
           label: 'Keywords',
-          ObjectInputView: KeywordView,
-          helpText: `
-<p>Keywords for discovery</p>
-`
-        }),
+          ObjectInputView: KeywordVocabularyView
+        })
+      ]
+    },
+    {
+      label: 'Contacts',
+      title: 'Contacts',
+      views: [
+        new PredefinedParentView({
+          model: this.model,
+          ModelType: Contact,
+          modelAttribute: 'responsibleParties',
+          label: 'Contacts',
+          ObjectInputView: ContactView,
+          multiline: true,
+          predefined: {
+            'Point of contact - UKCEH': {
+              organisationName: 'UK Centre for Ecology & Hydrology',
+              role: 'pointOfContact',
+              email: 'enquiries@ceh.ac.uk',
+              organisationIdentifier: 'https://ror.org/00pggkr55',
+              address: {
+                deliveryPoint: 'Maclean Building, Benson Lane, Crowmarsh Gifford',
+                postalCode: 'OX10 8BB',
+                city: 'Wallingford',
+                administrativeArea: 'Oxfordshire',
+                country: 'United Kingdom'
+              }
+            }
+          }
+        })
+      ]
+    },
+    {
+      label: 'Location',
+      title: 'Location',
+      views: [
+
 
         new SingleObjectView({
           model: this.model,

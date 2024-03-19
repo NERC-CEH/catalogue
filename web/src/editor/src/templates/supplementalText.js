@@ -4,8 +4,10 @@ export default _.template(`
 <div class="row">
     <div class="col-md-2 col-sm-4">
       <select class="editor-input function" data-name="function" >
-        <option value="" selected class="option">-- Type of information --</option>
-        <option value="objectives" class="option option-ukeof">Objectives</option>
+        <option value="" selected class="option">-- Type --</option>
+        <option value="methods" class="option">Methods</option>
+        <option value="technicalInfo" class="option">Technical information</option>
+        <option value="other" class="option">Other</option>
       </select>
     </div>
     <div class="col-md-10 col-sm-8">

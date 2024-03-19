@@ -8,13 +8,13 @@ import {
   SingleObjectView,
   TemporalExtentView,
   TextareaView,
+  ContactView,
   FacilityTypeView,
   EnvironmentalDomainView,
   ParentStringView,
-  SupplementalTextView,
   CheckboxView
 } from '../views'
-import { MultipleDate, FacilityType, EnvironmentalDomain, Supplemental } from '../models'
+import { MultipleDate, FacilityType, EnvironmentalDomain, Contact } from '../models'
 import {
   Geometry,
   GeometryView
@@ -73,13 +73,15 @@ export default EditorView.extend({
 `
         }),
 
-        new ParentView({
+        new SingleObjectView({
           model: this.model,
-          modelAttribute: 'supplemental',
-          ModelType: Supplemental,
-          multiline: true,
-          label: 'Additional information',
-          ObjectInputView: SupplementalTextView
+          modelAttribute: 'operationalPeriod',
+          ModelType: MultipleDate,
+          label: 'Operational period',
+          ObjectInputView: TemporalExtentView,
+          helpText: `
+<p>Temporal Extent of Monitoring Facility</p>
+`
         })
       ]
     },
@@ -140,41 +142,36 @@ export default EditorView.extend({
           }
         })
       ]
-      },
-      {
-        label: 'Supplemental',
-        title: 'Additional information and funding',
-        views: [
+    },
+    {
+      label: 'Tags and links',
+      title: 'Keywords and links to other records',
+      views: [
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'resourceIdentifiers',
+          label: 'I identifiers',
+          ObjectInputView: ResourceIdentifierView
+        }),
 
-          new SingleObjectView({
-            model: this.model,
-            modelAttribute: 'temporalExtent',
-            ModelType: MultipleDate,
-            label: 'Temporal extent',
-            ObjectInputView: TemporalExtentView,
-            helpText: `
-<p>Temporal Extent of Monitoring Facility</p>
-`
-          }),
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'keywords',
+          label: 'Keywords',
+          ObjectInputView: KeywordVocabularyView,
+          multiline: true
+        }),
 
-          new ParentView({
-            model: this.model,
-            modelAttribute: 'keywords',
-            label: 'Keywords',
-            ObjectInputView: KeywordVocabularyView,
-            multiline: true
-          }),
-
-          new ParentView({
-            model: this.model,
-            modelAttribute: 'relationships',
-            label: 'Relationships',
-            ObjectInputView: RelationshipView,
-            multiline: true,
-            options: [
-              { value: 'http://purl.org/voc/ef#belongsTo', label: 'Belongs To' }
-            ],
-            helpText: `
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'relationships',
+          label: 'Relationships',
+          ObjectInputView: RelationshipView,
+          multiline: true,
+          options: [
+            { value: 'http://purl.org/voc/ef#belongsTo', label: 'Belongs To' }
+          ],
+          helpText: `
 <p>Relationships to other document types</p>
 `
         })

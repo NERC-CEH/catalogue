@@ -88,34 +88,6 @@ class SolrIndexMetadataDocumentGeneratorTest {
 
     @Test
     @SneakyThrows
-    void boundingBoxAndGeometryLocationsAddedToIndex() {
-        //Given
-        MonitoringFacility document = new MonitoringFacility();
-        document.setBoundingBox(BoundingBox.builder()
-            .northBoundLatitude("59.4")
-            .eastBoundLongitude("2.4")
-            .southBoundLatitude("53.3")
-            .westBoundLongitude("-0.5")
-            .build()
-        );
-        String geojsonPolygon = "{\"type\":\"Feature\",\"properties\":{},\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[-2.526855,53.956086],[-0.241699,52.802761],[-4.020996,52.802761],[-2.526855,53.956086]]]}}";
-        document.setGeometry(Geometry.builder()
-                .geometryString(geojsonPolygon)
-                .build()
-        );
-
-        //When
-        SolrIndex actual = generator.generateIndex(document);
-
-        //Then
-        assertThat(
-            actual.getLocations(),
-            hasItems("POLYGON((-2.526855 53.956086, -0.241699 52.802761, -4.020996 52.802761, -2.526855 53.956086))", "POLYGON((-0.5 53.3, -0.5 59.4, 2.4 59.4, 2.4 53.3, -0.5 53.3))")
-        );
-    }
-
-    @Test
-    @SneakyThrows
     void geometryPolygonLocationsAddedToIndex() {
         //Given
         MonitoringFacility document = new MonitoringFacility();

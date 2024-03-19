@@ -42,7 +42,7 @@ export default Backbone.Model.extend({
 
       if (begin > end) {
         errors.push({
-          message: 'Collection of this data finished before it started!'
+          message: 'End date is before start date'
         })
       }
     }

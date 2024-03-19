@@ -12,9 +12,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.TimePeriod;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.indexing.solr.WellKnownText;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
-import uk.ac.ceh.gateway.catalogue.model.Supplemental;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,10 +27,9 @@ public class MonitoringFacility extends AbstractMetadataDocument implements Well
     private Keyword facilityType;
     private Geometry geometry;
     private boolean geometryRepresentative, mobile;
-    private List<Supplemental> supplemental;
-    private List<Keyword> environmentalDomain;
+    private List<Keyword> environmentalDomain, keywordsOther;
     private List<ResponsibleParty> responsibleParties;
-    private TimePeriod temporalExtent;
+    private TimePeriod operationalPeriod;
 
     @Override
     public @NonNull List<String> getWKTs() {
