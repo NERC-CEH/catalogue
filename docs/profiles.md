@@ -21,7 +21,6 @@ Choice of:
 * `server:elter`
 * `server:inms`
 * `server:pimfe`
-* `server:ukeof`
 
 ## Development and testing
 * `development` for local development, including setting up test users

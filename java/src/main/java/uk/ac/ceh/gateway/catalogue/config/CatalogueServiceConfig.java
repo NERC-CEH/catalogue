@@ -270,6 +270,21 @@ public class CatalogueServiceConfig {
                 .documentType(LINK_TYPE)
                 .fileUpload(false)
                 .vocabularies(getCatalogueVocabularies(vocabularies, "ukscape"))
+                .build(),
+
+            Catalogue.builder()
+                .id("ukeof")
+                .title("UK Environmental Observation Framework")
+                .url("https://www.ukeof.org.uk/")
+                .contactUrl("https://www.ukeof.org.uk/contact")
+                .logo("ukeof.png")
+                .facetKey("resourceType")
+                .documentType(MONITORING_ACTIVITY_TYPE)
+                .documentType(MONITORING_FACILITY_TYPE)
+                .documentType(MONITORING_NETWORK_TYPE)
+                .documentType(MONITORING_PROGRAMME_TYPE)
+                .vocabularies(getCatalogueVocabularies(vocabularies,"ukeof"))
+                .fileUpload(false)
                 .build()
         );
     }
@@ -353,31 +368,6 @@ public class CatalogueServiceConfig {
                 .documentType(NERC_MODEL_USE_TYPE)
                 .vocabularies(getCatalogueVocabularies(vocabularies, defaultCatalogueKey))
                 .fileUpload(true)
-                .build()
-        );
-    }
-
-    @Bean
-    @Profile("server:ukeof")
-    public CatalogueService ukeofCatalogue(List<KeywordVocabulary> vocabularies) {
-        String defaultCatalogueKey = "ukeof";
-
-        return new InMemoryCatalogueService(
-            defaultCatalogueKey,
-
-            Catalogue.builder()
-                .id(defaultCatalogueKey)
-                .title("UK Environmental Observation Framework")
-                .url("https://www.ukeof.org.uk/")
-                .contactUrl("https://www.ukeof.org.uk/contact")
-                .logo("ukeof.png")
-                .facetKey("resourceType")
-                .documentType(MONITORING_ACTIVITY_TYPE)
-                .documentType(MONITORING_FACILITY_TYPE)
-                .documentType(MONITORING_NETWORK_TYPE)
-                .documentType(MONITORING_PROGRAMME_TYPE)
-                .vocabularies(getCatalogueVocabularies(vocabularies, defaultCatalogueKey))
-                .fileUpload(false)
                 .build()
         );
     }
