@@ -2,10 +2,10 @@
 <#compress>
 <#import "_common.ftl" as c>
 <#assign other>
-<https://example.com/org5> a <https://ukeof.org.uk/organisation> ; <#-- example of other statements not about <id> -->
-  dct:title "University of Lancaster" .
+<#-- other statements not about <id> -->
 </#assign>
 <@c.common other=other>
-  a <https://ukeof.org.uk/network> ; <#-- an example of Network specific statements -->
+<#-- network specific statements about <id> -->
+  a <https://ukeof.org.uk/network> ;
 </@c.common>
 </#compress>
