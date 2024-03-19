@@ -28,6 +28,9 @@ export default Backbone.View.extend({
     L.control.layers(baseMaps, {}, { position: 'topright', collapsed: false }).addTo(map)
     boundingBox.addTo(map)
     map.fitBounds(boundingBox.getBounds())
+    if (studyArea.geometry.type.toLowerCase() === 'point') {
+      map.setZoom(9)
+    }
   },
 
   getStudyArea () {
