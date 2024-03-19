@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @Slf4j
 @ExtendWith(SpringExtension.class)
 @SecurityTestExecutionListeners
-public class DataLabsGroupStoreTest {
+public class AuthenticationGroupStoreTest {
 
     private final static String ANY_STRING = "any";
     private final static String ROLE_1 = "ROLE1";
@@ -29,7 +29,7 @@ public class DataLabsGroupStoreTest {
 
     @BeforeEach
     public void init() {
-        target = new DataLabsGroupStore<>();
+        target = new AuthenticationGroupStore<>();
     }
 
     @Test
@@ -37,8 +37,7 @@ public class DataLabsGroupStoreTest {
     public void successfullyGetGroups() {
 
         //Given
-        val catalogueUser = new CatalogueUser();
-        catalogueUser.setUsername("test");
+        val catalogueUser = new CatalogueUser("test", "test");
 
         //When
         List<Group> groups = target.getGroups(catalogueUser);
@@ -52,8 +51,7 @@ public class DataLabsGroupStoreTest {
     @WithMockCatalogueUser
     public void getGroupsWithEmptyGrantedAuthorities() {
         //Given
-        val catalogueUser = new CatalogueUser();
-        catalogueUser.setUsername("test");
+        val catalogueUser = new CatalogueUser("test", "test");
 
         //When
         List<Group> groups = target.getGroups(catalogueUser);
@@ -67,8 +65,7 @@ public class DataLabsGroupStoreTest {
     public void userDoesNotMatchPrincipal() {
         Assertions.assertThrows(Exception.class, () -> {
             //Given
-            val catalogueUser = new CatalogueUser();
-            catalogueUser.setUsername("not test");
+            val catalogueUser = new CatalogueUser("notTest", "notTest@example.com");
 
             //When
             target.getGroups(catalogueUser);

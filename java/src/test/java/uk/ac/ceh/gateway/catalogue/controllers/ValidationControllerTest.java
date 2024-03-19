@@ -19,6 +19,7 @@ import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.indexing.validation.ValidationIndexingService;
+import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
 import uk.ac.ceh.gateway.catalogue.validation.ValidationLevel;
 import uk.ac.ceh.gateway.catalogue.validation.ValidationReport;
 import uk.ac.ceh.gateway.catalogue.validation.ValidationResult;
@@ -49,6 +50,7 @@ class ValidationControllerTest {
     @Qualifier("validation-index")
     @MockBean
     private ValidationIndexingService validationIndexingService;
+    @MockBean private ProfileService profileService;
 
     @Autowired private MockMvc mvc;
     @Autowired private Configuration configuration;
@@ -58,6 +60,7 @@ class ValidationControllerTest {
     @SneakyThrows
     private void givenFreemarkerConfiguration() {
         configuration.setSharedVariable("catalogues", catalogueService);
+        configuration.setSharedVariable("profile", profileService);
     }
 
     private void givenDefaultCatalogue() {

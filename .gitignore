@@ -37,3 +37,4 @@ DevStartupController.java
 docker-compose.override.yml
 *.private.env.json
 /sparql.http
+/oidc-roles.json

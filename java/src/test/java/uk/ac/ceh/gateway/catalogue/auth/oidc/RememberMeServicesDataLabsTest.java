@@ -53,8 +53,7 @@ public class RememberMeServicesDataLabsTest {
     private RememberMeServicesDataLabs target;
 
     private void givenValidCatalogueUser(String token) {
-        val user = new CatalogueUser();
-        user.setUsername(EMAIL).setEmail(EMAIL);
+        val user = new CatalogueUser(EMAIL, EMAIL);
         given(catalogueUserProvider.provide(USER_NAME, token))
             .willReturn(user);
     }

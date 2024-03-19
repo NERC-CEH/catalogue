@@ -25,6 +25,7 @@ import uk.ac.ceh.gateway.catalogue.config.SecurityConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
+import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
 
 import java.util.Collections;
 import java.util.List;
@@ -54,7 +55,8 @@ class ServiceAgreementControllerTest {
     @MockBean private ServiceAgreementService serviceAgreementService;
     @MockBean private ServiceAgreementModelAssembler assembler;
     @MockBean private CatalogueService catalogueService;
-    private @MockBean(name="permission") PermissionService permissionService;
+    @MockBean(name="permission") private PermissionService permissionService;
+    @MockBean private ProfileService profileService;
 
     private static ServiceAgreement serviceAgreement;
     private static final String ID = "test";
@@ -74,6 +76,7 @@ class ServiceAgreementControllerTest {
     @SneakyThrows
     void setup() {
         configuration.setSharedVariable("catalogues", catalogueService);
+        configuration.setSharedVariable("profile", profileService);
     }
 
     private void givenDefaultCatalogue() {

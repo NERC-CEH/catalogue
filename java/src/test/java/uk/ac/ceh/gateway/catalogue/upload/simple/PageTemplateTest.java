@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.util.StreamUtils;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
+import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
 
 import java.io.File;
 import java.io.StringWriter;
@@ -27,6 +28,7 @@ public class PageTemplateTest {
 
     @Mock
     private CatalogueService catalogueService;
+    @Mock private ProfileService profileService;
 
     private Map<String, Object> configureModel() {
         val files = Arrays.asList(
@@ -48,6 +50,7 @@ public class PageTemplateTest {
         val config = new Configuration(Configuration.VERSION_2_3_31);
         config.setDirectoryForTemplateLoading(new File("../templates"));
         config.setSharedVariable("catalogues", catalogueService);
+        config.setSharedVariable("profile", profileService);
         return config;
     }
 

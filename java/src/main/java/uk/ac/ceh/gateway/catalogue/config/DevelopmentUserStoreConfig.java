@@ -19,7 +19,7 @@ import static uk.ac.ceh.gateway.catalogue.model.MetadataInfo.READONLY_GROUP;
  * The following spring JavaConfig defines the beans required for the interacting
  * with a in memory user store. This is useful when developing the application
  * in an environment which can not contact Crowd
- * @see CrowdUserStoreConfig
+ * @see SecurityConfigCrowd
  */
 @Configuration
 @Profile({"development", "test"})
@@ -72,9 +72,7 @@ public class DevelopmentUserStoreConfig {
 
     @Bean
     public CatalogueUser admin() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser()
-            .setUsername(ADMIN)
-            .setEmail("admin@ceh.ac.uk");
+        val user = new CatalogueUser(ADMIN,"admin@ceh.ac.uk");
         addUserToGroup(user, MAINTENANCE_ROLE);
         userStore().addUser(user, "password");
         return user;
@@ -82,9 +80,7 @@ public class DevelopmentUserStoreConfig {
 
     @Bean
     public CatalogueUser assistEditor() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser()
-            .setUsername("assist-editor")
-            .setEmail("assist-editor@ceh.ac.uk");
+        val user = new CatalogueUser("assist-editor", "assist-editor@ceh.ac.uk");
         addUserToGroup(user, ASSIST_EDITOR);
         userStore().addUser(user, "password");
         return user;
@@ -92,9 +88,7 @@ public class DevelopmentUserStoreConfig {
 
     @Bean
     public CatalogueUser assistPublisher() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser()
-            .setUsername("assist-publisher")
-            .setEmail("assist-publisher@ceh.ac.uk");
+        val user = new CatalogueUser("assist-publisher", "assist-publisher@ceh.ac.uk");
         addUserToGroup(user, ASSIST_EDITOR, ASSIST_PUBLISHER);
         userStore().addUser(user, "password");
         return user;
@@ -102,9 +96,7 @@ public class DevelopmentUserStoreConfig {
 
     @Bean
     public CatalogueUser cmpEditor() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser()
-            .setUsername("cmp-editor")
-            .setEmail("cmp-editor@ceh.ac.uk");
+        val user = new CatalogueUser("cmp-editor", "cmp-editor@ceh.ac.uk");
         addUserToGroup(user, CMP_EDITOR);
         userStore().addUser(user, "password");
         return user;
@@ -112,9 +104,7 @@ public class DevelopmentUserStoreConfig {
 
     @Bean
     public CatalogueUser cmpPublisher() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser()
-            .setUsername("cmp-publisher")
-            .setEmail("cmp-publisher@ceh.ac.uk");
+        val user = new CatalogueUser("cmp-publisher","cmp-publisher@ceh.ac.uk");
         addUserToGroup(user, CMP_EDITOR, CMP_PUBLISHER);
         userStore().addUser(user, "password");
         return user;
@@ -122,9 +112,7 @@ public class DevelopmentUserStoreConfig {
 
     @Bean
     public CatalogueUser datalabsEditor() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser()
-                .setUsername("datalabs-editor")
-                .setEmail("datalabs-editor@ceh.ac.uk");
+        val user = new CatalogueUser("datalabs-editor", "datalabs-editor@ceh.ac.uk");
         addUserToGroup(user, DATALABS_EDITOR);
         userStore().addUser(user, "password");
         return user;
@@ -132,9 +120,7 @@ public class DevelopmentUserStoreConfig {
 
     @Bean
     public CatalogueUser datalabsPublisher() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser()
-                .setUsername("datalabs-publisher")
-                .setEmail("datalabs-publisher@ceh.ac.uk");
+        val user = new CatalogueUser("datalabs-publisher","datalabs-publisher@ceh.ac.uk");
         addUserToGroup(user, DATALABS_EDITOR, DATALABS_PUBLISHER);
         userStore().addUser(user, "password");
         return user;
@@ -142,9 +128,7 @@ public class DevelopmentUserStoreConfig {
 
     @Bean
     public CatalogueUser eidcEditor() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser()
-            .setUsername("eidc-editor")
-            .setEmail("eidc-editor@ceh.ac.uk");
+        val user = new CatalogueUser("eidc-editor", "eidc-editor@ceh.ac.uk");
         addUserToGroup(user, EIDC_EDITOR);
         userStore().addUser(user, "password");
         return user;
@@ -152,9 +136,7 @@ public class DevelopmentUserStoreConfig {
 
     @Bean
     public CatalogueUser eidcPublisher() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser()
-            .setUsername(EIDC_PUBLISHER_USERNAME)
-            .setEmail("eidc-publisher@ceh.ac.uk");
+        val user = new CatalogueUser(EIDC_PUBLISHER_USERNAME, "eidc-publisher@ceh.ac.uk");
         addUserToGroup(user, DATACITE_ROLE, EIDC_EDITOR, EIDC_PUBLISHER);
         userStore().addUser(user, "password");
         return user;
@@ -162,9 +144,7 @@ public class DevelopmentUserStoreConfig {
 
     @Bean
     public CatalogueUser elterEditor() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser()
-            .setUsername("elter-editor")
-            .setEmail("elter-editor@ceh.ac.uk");
+        val user = new CatalogueUser("elter-editor", "elter-editor@ceh.ac.uk");
         addUserToGroup(user, ELTER_EDITOR);
         userStore().addUser(user, "password");
         return user;
@@ -172,9 +152,7 @@ public class DevelopmentUserStoreConfig {
 
     @Bean
     public CatalogueUser elterPublisher() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser()
-            .setUsername("elter-publisher")
-            .setEmail("elter-publisher@ceh.ac.uk");
+        val user = new CatalogueUser("elter-publisher", "elter-publisher@ceh.ac.uk");
         addUserToGroup(user, ELTER_EDITOR, ELTER_PUBLISHER);
         userStore().addUser(user, "password");
         return user;
@@ -182,9 +160,7 @@ public class DevelopmentUserStoreConfig {
 
     @Bean
     public CatalogueUser sitesMetadataImport() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser()
-            .setUsername("SITES metadata import")
-            .setEmail("info@fieldsites.se");
+        val user = new CatalogueUser("SITES metadata import", "info@fieldsites.se");
         addUserToGroup(user, ELTER_EDITOR, ELTER_PUBLISHER);
         userStore().addUser(user, "password");
         return user;
@@ -192,9 +168,7 @@ public class DevelopmentUserStoreConfig {
 
     @Bean
     public CatalogueUser b2shareMetadataImport() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser()
-            .setUsername("B2SHARE metadata import")
-            .setEmail("info@eudat.eu");
+        val user = new CatalogueUser("B2SHARE metadata import", "info@eudat.eu");
         addUserToGroup(user, ELTER_EDITOR, ELTER_PUBLISHER);
         userStore().addUser(user, "password");
         return user;
@@ -202,9 +176,7 @@ public class DevelopmentUserStoreConfig {
 
     @Bean
     public CatalogueUser erammpEditor() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser()
-            .setUsername("erammp-editor")
-            .setEmail("erammp-editor@ceh.ac.uk");
+        val user = new CatalogueUser("erammp-editor", "erammp-editor@ceh.ac.uk");
         addUserToGroup(user, ERAMMP_EDITOR);
         userStore().addUser(user, "password");
         return user;
@@ -212,9 +184,7 @@ public class DevelopmentUserStoreConfig {
 
     @Bean
     public CatalogueUser erammpPublisher() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser()
-            .setUsername("erammp-publisher")
-            .setEmail("erammp-publisher@ceh.ac.uk");
+        val user = new CatalogueUser("erammp-publisher", "erammp-publisher@ceh.ac.uk");
         addUserToGroup(user, ERAMMP_EDITOR, ERAMMP_PUBLISHER);
         userStore().addUser(user, "password");
         return user;
@@ -222,9 +192,7 @@ public class DevelopmentUserStoreConfig {
 
     @Bean
     public CatalogueUser inmsPublisher() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser()
-            .setUsername("inms-publisher")
-            .setEmail("inms-publisher@ceh.ac.uk");
+        val user = new CatalogueUser("inms-publisher", "inms-publisher@ceh.ac.uk");
         addUserToGroup(user, INMS_EDITOR, INMS_PUBLISHER);
         userStore().addUser(user, "password");
         return user;
@@ -232,9 +200,7 @@ public class DevelopmentUserStoreConfig {
 
     @Bean
     public CatalogueUser mPublisher() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser()
-            .setUsername("m-publisher")
-            .setEmail("m-publisher@ceh.ac.uk");
+        val user = new CatalogueUser("m-publisher","m-publisher@ceh.ac.uk");
         addUserToGroup(user, M_EDITOR, M_PUBLISHER);
         userStore().addUser(user, "password");
         return user;
@@ -242,9 +208,7 @@ public class DevelopmentUserStoreConfig {
 
     @Bean
     public CatalogueUser nmPublisher() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser()
-            .setUsername("nm-publisher")
-            .setEmail("nm-publisher@ceh.ac.uk");
+        val user = new CatalogueUser("nm-publisher", "nm-publisher@ceh.ac.uk");
         addUserToGroup(user, NM_EDITOR, NM_PUBLISHER);
         userStore().addUser(user, "password");
         return user;
@@ -252,9 +216,7 @@ public class DevelopmentUserStoreConfig {
 
     @Bean
     public CatalogueUser ncEditor() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser()
-            .setUsername("nc-editor")
-            .setEmail("nc-editor@ceh.ac.uk");
+        val user = new CatalogueUser("nc-editor", "nc-editor@ceh.ac.uk");
         addUserToGroup(user, NC_EDITOR);
         userStore().addUser(user, "password");
         return user;
@@ -262,9 +224,7 @@ public class DevelopmentUserStoreConfig {
 
     @Bean
     public CatalogueUser ncPublisher() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser()
-            .setUsername("nc-publisher")
-            .setEmail("nc-publisher@ceh.ac.uk");
+        val user = new CatalogueUser("nc-publisher", "nc-publisher@ceh.ac.uk");
         addUserToGroup(user, NC_EDITOR, NC_PUBLISHER);
         userStore().addUser(user, "password");
         return user;
@@ -272,9 +232,7 @@ public class DevelopmentUserStoreConfig {
 
     @Bean
     public CatalogueUser osdpPublisher() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser()
-            .setUsername("osdp-publisher")
-            .setEmail("osdp-publisher@ceh.ac.uk");
+        val user = new CatalogueUser("osdp-publisher", "osdp-publisher@ceh.ac.uk");
         addUserToGroup(user, OSDP_EDITOR, OSDP_PUBLISHER);
         userStore().addUser(user, "password");
         return user;
@@ -282,9 +240,7 @@ public class DevelopmentUserStoreConfig {
 
     @Bean
     public CatalogueUser readonly() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser()
-            .setUsername("readonly")
-            .setEmail("readonly@ceh.ac.uk");
+        val user = new CatalogueUser("readonly", "readonly@ceh.ac.uk");
         addUserToGroup(user, READONLY_GROUP);
         userStore().addUser(user, "password");
         return user;
@@ -293,9 +249,7 @@ public class DevelopmentUserStoreConfig {
 
     @Bean
     public CatalogueUser infrastructureEditor() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser()
-            .setUsername("infrastructure-editor")
-            .setEmail("infrastructure-editor@ceh.ac.uk");
+        val user = new CatalogueUser("infrastructure-editor", "infrastructure-editor@ceh.ac.uk");
         addUserToGroup(user, INFRASTRUCTURE_EDITOR);
         userStore().addUser(user, "password");
         return user;
@@ -303,9 +257,7 @@ public class DevelopmentUserStoreConfig {
 
     @Bean
     public CatalogueUser infrastructurePublisher() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser()
-            .setUsername("infrastructure-publisher")
-            .setEmail("infrastructure-publisher@ceh.ac.uk");
+        val user = new CatalogueUser("infrastructure-publisher", "infrastructure-publisher@ceh.ac.uk");
         addUserToGroup(user, INFRASTRUCTURE_EDITOR, INFRASTRUCTURE_PUBLISHER);
         userStore().addUser(user, "password");
         return user;
@@ -313,9 +265,7 @@ public class DevelopmentUserStoreConfig {
 
     @Bean
     public CatalogueUser saPublisher() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser()
-            .setUsername("sa-publisher")
-            .setEmail("sa-publisher@ceh.ac.uk");
+        val user = new CatalogueUser("sa-publisher", "sa-publisher@ceh.ac.uk");
         addUserToGroup(user, SA_EDITOR, SA_PUBLISHER);
         userStore().addUser(user, "password");
         return user;
@@ -323,9 +273,7 @@ public class DevelopmentUserStoreConfig {
 
     @Bean
     public CatalogueUser superadmin() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser()
-            .setUsername("superadmin")
-            .setEmail("superadmin@ceh.ac.uk");
+        val user = new CatalogueUser("superadmin", "superadmin@ceh.ac.uk");
         addUserToGroup(user, CEH_GROUP_NAME, EIDC_EDITOR, EIDC_PUBLISHER, MAINTENANCE_ROLE, DATACITE_ROLE);
         userStore().addUser(user, "password");
         return user;
@@ -333,9 +281,7 @@ public class DevelopmentUserStoreConfig {
 
     @Bean
     public CatalogueUser ukeofPublisher() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser()
-            .setUsername("ukeof-publisher")
-            .setEmail("ukeof-publisher@ceh.ac.uk");
+        val user = new CatalogueUser("ukeof-publisher", "ukeof-publisher@ceh.ac.uk");
         addUserToGroup(user, UKEOF_EDITOR, UKEOF_PUBLISHER);
         userStore().addUser(user, "password");
         return user;
@@ -343,9 +289,7 @@ public class DevelopmentUserStoreConfig {
 
     @Bean
     public CatalogueUser ukscapePublisher() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser()
-            .setUsername("ukscape-publisher")
-            .setEmail("ukscape-publisher@ceh.ac.uk");
+        val user = new CatalogueUser("ukscape-publisher", "ukscape-publisher@ceh.ac.uk");
         addUserToGroup(user, UKSCAPE_EDITOR, UKSCAPE_PUBLISHER);
         userStore().addUser(user, "password");
         return user;
@@ -354,9 +298,7 @@ public class DevelopmentUserStoreConfig {
     @Bean
     public CatalogueUser unprivilegedUser() throws UsernameAlreadyTakenException {
         // Used in UploadControllerTest to check upload permissions
-        val user = new CatalogueUser()
-            .setUsername(UNPRIVILEGED_USERNAME)
-            .setEmail("unprivileged@example.com");
+        val user = new CatalogueUser(UNPRIVILEGED_USERNAME, "unprivileged@example.com");
         userStore().addUser(user, "password");
         return user;
     }
@@ -364,9 +306,7 @@ public class DevelopmentUserStoreConfig {
     @Bean
     public CatalogueUser uploader() throws UsernameAlreadyTakenException {
         // Used in UploadControllerTest to check upload permissions
-        val user = new CatalogueUser()
-            .setUsername(UPLOADER_USERNAME)
-            .setEmail("uploader@example.com");
+        val user = new CatalogueUser(UPLOADER_USERNAME, "uploader@example.com");
         userStore().addUser(user, "password");
         return user;
     }

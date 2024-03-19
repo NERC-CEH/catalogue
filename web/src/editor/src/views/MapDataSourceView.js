@@ -103,7 +103,7 @@ export default ObjectInputView.extend({
      * Update the bytetype radio button to match the model
      */
   updateByteRadioButton () {
-    $(this.$('input[data-name=\'bytetype\'][value=\'#{this.model.attributes.bytetype}\']')[0]).attr('checked', 'checked')
+    this.$(`input[data-name='bytetype'][value='${this.model.attributes.bytetype}']`).attr('checked', 'checked')
   },
 
   /*

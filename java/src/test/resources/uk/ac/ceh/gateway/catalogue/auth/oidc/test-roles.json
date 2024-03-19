@@ -1,0 +1,5 @@
+{
+    "person@example.com": ["ROLE_EIDC_EDITOR", "ROLE_EIDC_PUBLISHER", "ROLE_CIG_SYSTEM_ADMIN"],
+    "test@example.com": ["ROLE_EIDC_EDITOR", "ROLE_EIDC_PUBLISHER"],
+    "someone@example.com": ["ROLE_EIDC_EDITOR"]
+}
