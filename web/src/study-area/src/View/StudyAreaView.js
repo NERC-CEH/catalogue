@@ -2,6 +2,7 @@ import _ from 'underscore'
 import $ from 'jquery'
 import Backbone from 'backbone'
 import L from 'leaflet'
+import 'leaflet.markercluster/dist/leaflet.markercluster.js';
 
 export default Backbone.View.extend({
 
@@ -26,7 +27,15 @@ export default Backbone.View.extend({
     }
 
     L.control.layers(baseMaps, {}, { position: 'topright', collapsed: false }).addTo(map)
-    boundingBox.addTo(map)
+    const numberOfLayers = Object.keys(boundingBox._layers).length
+    if (numberOfLayers > 10) {
+      const markers = L.markerClusterGroup();
+      markers.addLayer(boundingBox);
+      map.addLayer(markers);
+    } else {
+      boundingBox.addTo(map)
+    }
+
     map.fitBounds(boundingBox.getBounds())
   },
 
