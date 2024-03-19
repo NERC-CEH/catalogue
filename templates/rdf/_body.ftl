@@ -1,16 +1,20 @@
-:${id}
+<${id}>
   dct:title "${title}" ;
   <#if description?has_content>
-    dct:description "${description?replace("\n", " ")}" ;
+    dct:description '''${description}''' ;
   </#if>
 
   <#if lineage?has_content>
-    dct:provenance [ a dct:ProvenanceStatement ;
-      rdfs:label "${lineage?replace("\n", " ")}"  ] ;
+    dct:provenance [
+      a dct:ProvenanceStatement ;
+      rdfs:label '''${lineage}'''
+    ] ;
   </#if>
+
   <#list boundingBoxes as extent>
      dct:spatial "${extent.wkt}"^^geo:wktLiteral ;
   </#list>
+
   <#if temporalExtents?has_content>
     <#list temporalExtents as extent>
        dct:temporal "${(extent.begin?date)!''}/${(extent.end?date)!''}"^^dct:PeriodOfTime ;
@@ -27,9 +31,8 @@
     dct:publisher  <@contactList publishers "pub" /> ;
   </#if>
 
-  dct:language "eng" ;
   <#list jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#memberOf")>
-    dct:isPartOf <#items as item><${item.href}><#sep>, </#items>;
+    dct:isPartOf <#items as item><${item.href}><#sep>, </#items> ;
   </#list>
 
   <#if allKeywords?has_content>
@@ -56,9 +59,9 @@
     <#include "turtle/_service.ftl">
   <#elseif type=='application'>
     <#include "turtle/_application.ftl">
-  <#else>
   </#if>
-.
+
+  dct:language "eng" . <#-- leave here to close all the statements about the dataset -->
 
 <#if pointsOfContact?has_content>
   <@contactDetail pointsOfContact "c" />
