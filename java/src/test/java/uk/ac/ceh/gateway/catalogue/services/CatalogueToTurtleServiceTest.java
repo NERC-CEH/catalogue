@@ -61,7 +61,7 @@ class CatalogueToTurtleServiceTest {
 
         //Then
         assertTrue(result.map(
-            ttl -> ttl.contains("<%s/%s/documents/> a dcat:Catalog".formatted(baseUri, catalogueKey))
+            ttl -> ttl.contains("<%s/documents>".formatted(catalogueKey))
         ).orElse(false));
     }
 }

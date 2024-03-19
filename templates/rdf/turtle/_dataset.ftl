@@ -1,24 +1,15 @@
 a dcat:Dataset, dcmitype:Dataset ;
-
-<#if resourceIdentifiers??>
-  dct:identifier
-    <#list resourceIdentifiers as id>
-    <#if id.coupledResource?starts_with("http")>
-      <${id.coupledResource}>
-    <#else>
-      "${id.coupledResource}"
-    </#if><#sep>,
-    </#list>
-    ;
-</#if>
-
 dct:type dcmitype:Dataset ;
+
+<#list resourceIdentifiers >
+  dct:identifier <#items as id><#if id.coupledResource?starts_with("http")><${id.coupledResource}><#else>"${id.coupledResource}"</#if><#sep>, </#items> ;
+</#list>
 
 <#if datasetReferenceDate?? && datasetReferenceDate.publicationDate?has_content>
   dct:available "${datasetReferenceDate.publicationDate}" ;
 </#if>
 
- dcat:landingPage <${uri}><#if datacitable?string=="true" && citation?has_content>, <${citation.url?trim}></#if>;
+ dcat:landingPage <${uri}><#if datacitable?string=="true" && citation?has_content>, <${citation.url?trim}></#if> ;
 
 <#if datacitable?string=='true' && citation?has_content>
     dct:bibliographicCitation "${citation.authors?join(' ,')} (${citation.year?string("0")}). ${citation.title}. ${citation.publisher}. ${citation.url?trim}" ;
@@ -36,7 +27,7 @@ dcat:distribution [
       <${download.url?trim}> <#sep>,
     </#items>
     ;
-    <#include "_rights.ftlh">
+    <#include "_rights.ftl">
     <#list distributionFormats>
     dct:format
       <#items as format>

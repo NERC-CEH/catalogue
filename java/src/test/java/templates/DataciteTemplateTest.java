@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.datacite.templates;
+package templates;
 
 import freemarker.template.Configuration;
 import lombok.SneakyThrows;

@@ -1,4 +1,4 @@
-[#ftl]
+[#ftl output_format="plainText"]
 [#escape x as x?replace('"', '\\"')]
 
 [#--
@@ -13,7 +13,7 @@
     PROJECTION "init=epsg:${prefProj.epsgCode}" END
     PROCESSING "POLYLINE_NO_CLIP=True"
     NAME "${name}"
-    TYPE ${data.type} 
+    TYPE ${data.type}
     TEMPLATE "dummy"
     STATUS ON
     METADATA
@@ -25,9 +25,9 @@
 
     [#--
     Esri File GeoDatabase support
-    
+
     Determine if we should use an OGR connection type to access the source data. If
-    a layer attribute is present then we will do, otherwise just use a standard 
+    a layer attribute is present then we will do, otherwise just use a standard
     mapserver DATA block.
     --]
     [#if data.layer?has_content]
@@ -62,8 +62,8 @@
 [/#macro]
 
 [#--
-  Generate a value expression for the given value. This Macro will vary 
-  the type of expression which is written based upon the attributes type 
+  Generate a value expression for the given value. This Macro will vary
+  the type of expression which is written based upon the attributes type
   (number/text).
 --]
 [#macro valueExpr attr type value]

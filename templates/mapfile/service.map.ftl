@@ -1,4 +1,4 @@
-[#ftl]
+[#ftl output_format="plainText"]
 [#compress]
 MAP
 [#include "_header.map.ftl"]
