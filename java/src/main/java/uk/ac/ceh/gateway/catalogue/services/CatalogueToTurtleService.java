@@ -22,7 +22,11 @@ public class CatalogueToTurtleService implements DocumentsToTurtleService {
     private static final Set<String> REQUIRED_TYPES = ImmutableSet.of(
         "service",
         "dataset",
-        "signpost"
+        "signpost",
+        "monitoringActivity",
+        "monitoringFacility",
+        "monitoringNetwork",
+        "monitoringProgramme"
     );
     private final CatalogueService catalogueService;
     private final Configuration configuration;
