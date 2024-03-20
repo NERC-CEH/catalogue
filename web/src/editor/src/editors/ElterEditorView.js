@@ -330,8 +330,8 @@ export default EditorView.extend({
               label: 'Related To'
             },
             {
-              value: 'https://vocabs.ceh.ac.uk/eidc#supercedes',
-              label: 'Supercedes'
+              value: 'https://vocabs.ceh.ac.uk/eidc#supersedes',
+              label: 'Supersedes'
             },
             {
               value: 'https://vocabs.ceh.ac.uk/eidc#uses',
