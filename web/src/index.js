@@ -47,7 +47,6 @@ const $documentUpload = $('#document-upload')
 const $edit = $('.edit-control')
 const $serviceAgreement = $('.service-agreement')
 const $navbarToggle = $('.nav-toggle')
-const $accordionToggle = $('.accordion-item')
 
 if ($catalogue.length) {
   initCatalogue()
@@ -59,10 +58,6 @@ if ($edit.length) {
 
 if ($navbarToggle.length) {
   navbarToggle($navbarToggle)
-}
-
-if ($accordionToggle.length) {
-  accordionToggle($accordionToggle)
 }
 
 if ($serviceAgreement.length) {
@@ -360,15 +355,5 @@ function navbarToggle ($navbarItems) {
   $($navbarItems[0]).on('click', () => {
     $('.navigation').toggleClass('reveal')
     $('.nav-toggle').toggleClass('reveal')
-  })
-}
-
-function accordionToggle ($accordionItems) {
-  $accordionItems.on('click', (e) => {
-    const $currentTarget = $(e.currentTarget)
-    if (!$currentTarget.hasClass('active')) {
-      $('.accordion-item').removeClass('active')
-      $currentTarget.toggleClass('active')
-    }
   })
 }

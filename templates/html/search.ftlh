@@ -4,24 +4,45 @@
   <div class="search facets-mode" id="search">
 
     <div class="filters">
-      <div class="accordion">
-        <div class="accordion-item active">
-          <div>
-            <div class="accordion-heading">Filters</div>
-            <div class="accordion-content">
-              <div class="facet-filter"><#include "search/_facets.ftlh"></div>
-            </div>
+
+<#--      <div class="accordion">-->
+<#--        <div class="accordion-item active">-->
+<#--          <div>-->
+<#--            <div class="accordion-heading">Filters</div>-->
+<#--            <div class="accordion-content">-->
+<#--              <div class="facet-filter"><#include "search/_facets.ftlh"></div>-->
+<#--            </div>-->
+<#--          </div>-->
+<#--        </div>-->
+<#--        <div class="accordion-item accordion-map">-->
+<#--          <div>-->
+<#--            <div class="accordion-heading">Spatial search</div>-->
+<#--            <div class="accordion-content">-->
+<#--              <div class="mapsearch"></div>-->
+<#--            </div>-->
+<#--          </div>-->
+<#--        </div>-->
+<#--      </div>-->
+
+
+      <!-- Nav tabs -->
+      <div>
+        <ul class="nav nav-tabs" role="tablist">
+          <li role="presentation" class="tab-search active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Filters</a></li>
+          <li role="presentation" class="tab-search tab-map"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Map search</a></li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content">
+          <div role="tabpanel" class="tab-pane active" id="home">
+            <div class="facet-filter"><#include "search/_facets.ftlh"></div>
           </div>
-        </div>
-        <div class="accordion-item accordion-map">
-          <div>
-            <div class="accordion-heading">Spatial search</div>
-            <div class="accordion-content">
-              <div class="mapsearch"></div>
-            </div>
+          <div role="tabpanel" class="tab-pane" id="profile">
+            <div class="mapsearch"></div>
           </div>
         </div>
       </div>
+
     </div>
 
     <div>

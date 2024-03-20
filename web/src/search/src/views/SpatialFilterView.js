@@ -16,7 +16,7 @@ export default Backbone.View.extend({
     // If 'bbox' or 'op' are in the hash arguments of the querystring (ie backbone router controlled), then the model will emit a change event for the changed arg, which must be updated on the UI
     this.listenTo(this.model, 'change:op', function (model, value) { this.updateOp(value) })
     this.listenTo(this.model, 'change:bbox', function (model, value) { this.updateBbox(value) })
-    this.listenTo(this.model, 'change:mapsearch', function (model, value) { this.refreshMap() })
+    this.listenTo(this.model, 'change:mapsearch', function (model, value) { this.refreshMap(model, value) })
   },
 
   createMap () {
@@ -122,10 +122,17 @@ export default Backbone.View.extend({
    * leaflet doesn't initialize properly as it doesn't have information about the space it needs to fill.
    * The solution is to use map.invalidateSize(), as discussed here:
    * https://stackoverflow.com/questions/35220431/how-to-render-leaflet-map-when-in-hidden-display-none-parent
+   *
+   * When implementing with Bootstrap 3.4.1 tabs, the only way we could get it to work was to wrap the invalidateSize()
+   * in a tiny (1ms) timeout.  It is mentioned in a comment in:
+   * https://stackoverflow.com/questions/31030949/leaflet-map-not-showing-in-bootstrap-div
+   *
    */
-  refreshMap () {
-    if (this.model.changed.mapsearch) {
-      this.map.invalidateSize()
+  refreshMap (model, isMapSearch) {
+    if (isMapSearch) {
+      setTimeout(() => {
+        this.map.invalidateSize()
+      })
     }
   },
 
