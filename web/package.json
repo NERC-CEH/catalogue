@@ -97,6 +97,7 @@
         "jquery-ui": "^1.13.1",
         "leaflet": "^1.9.4",
         "leaflet-draw": "^1.0.4",
+        "leaflet.markercluster": "^1.5.3",
         "sweetalert2": "^11.7.27",
         "underscore": "^1.13.6"
     }

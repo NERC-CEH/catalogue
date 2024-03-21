@@ -1,5 +1,5 @@
 a dcmitype:Software ;
-<#include "_rights.ftlh">
+<#include "_rights.ftl">
 
 <#--Authors-->
 <#if authors?has_content>

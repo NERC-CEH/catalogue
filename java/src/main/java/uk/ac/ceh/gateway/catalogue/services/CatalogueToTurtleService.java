@@ -22,7 +22,11 @@ public class CatalogueToTurtleService implements DocumentsToTurtleService {
     private static final Set<String> REQUIRED_TYPES = ImmutableSet.of(
         "service",
         "dataset",
-        "signpost"
+        "signpost",
+        "monitoringActivity",
+        "monitoringFacility",
+        "monitoringNetwork",
+        "monitoringProgramme"
     );
     private final CatalogueService catalogueService;
     private final Configuration configuration;
@@ -74,7 +78,7 @@ public class CatalogueToTurtleService implements DocumentsToTurtleService {
 
     @SneakyThrows
     private String generateCatalogueTtl(Map<String, Object> model) {
-        val freemarkerTemplate = configuration.getTemplate("rdf/catalogue.ttl.ftlh");
+        val freemarkerTemplate = configuration.getTemplate("rdf/catalogue.ttl.ftl");
         return FreeMarkerTemplateUtils.processTemplateIntoString(freemarkerTemplate, model);
     }
 
@@ -101,7 +105,7 @@ public class CatalogueToTurtleService implements DocumentsToTurtleService {
 
     @SneakyThrows
     private String docToString(MetadataDocument model) {
-        val freemarkerTemplate = configuration.getTemplate("rdf/ttlUnprefixed.ftlh");
+        val freemarkerTemplate = configuration.getTemplate("rdf/ttlUnprefixed.ftl");
         return FreeMarkerTemplateUtils.processTemplateIntoString(freemarkerTemplate, model);
     }
 }

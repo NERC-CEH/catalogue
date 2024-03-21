@@ -85,7 +85,7 @@ the EIDC catalogue is then available on:
 
 ### Intellij set-up
 
-Make sure that you have the Lombok plugin installed, if not you can download it from `settings -> Plugins -> marketplace` and search for Lombok. 
+Make sure that you have the Lombok plugin installed, if not you can download it from `settings -> Plugins -> marketplace` and search for Lombok.
 Check that annotation processing is enabled in `settings -> Build, Execution, Deployment -> compiler -> Annotation processors`.
 
 
@@ -98,12 +98,12 @@ You can change code while the catalogue is still running using the following com
 
 The watch will detect any changes to the Javascript code and automatically compile.
 Uncomment the following line in your `docker-compose.override.yaml`:
-   
+
     -./web/dist:/opt/ceh-catalogue/static/scripts
 
 Instructions on making a `docker-compose.override.yml` are in `docker-compose.yml`.
-Start up the catalogue with `docker-compose up --build` then connect to the docker service using the services tab in 
-IntelliJ. You might need to add your user to the docker user group before connecting to the service. 
+Start up the catalogue with `docker-compose up --build` then connect to the docker service using the services tab in
+IntelliJ. You might need to add your user to the docker user group before connecting to the service.
 Now you can make changes to the front end without restarting docker and rebuilding the backend.
 
 #### Note - there are many uses of Jquery's $(document).ready() function in the editor module of the frontend. Do not just remove them as they are there to prevent timing issues with views of existing documents in the editor. Unless of course you can find a better alternative.
@@ -112,7 +112,7 @@ Now you can make changes to the front end without restarting docker and rebuildi
 
       npm run test
 
-Karma tests are found in each module in web/scripts if you need to edit or add new tests. 
+Karma tests are found in each module in web/scripts if you need to edit or add new tests.
 For example the tests for the editor module are in `web/scripts/editor/test`.
 The Karma tests are configured in `karma.conf.js`.
 
@@ -121,7 +121,7 @@ Java files will be built automatically when `docker-compose up -d --build` is ru
 Java unit tests can be run through IntelliJ.
 
 ### Spring profiles
-Spring Profiles provide a way to segregate parts of your application configuration and make it only available in certain environments. 
+Spring Profiles provide a way to segregate parts of your application configuration and make it only available in certain environments.
 Any @Component or @Configuration can be marked with @Profile to limit when it is loaded.
 The active profiles are configured in `docker-compose.yaml`
 The catalogue contains the following Spring profiles:
@@ -129,12 +129,12 @@ The catalogue contains the following Spring profiles:
 The development profile runs code that is only available when developing such as the `DevelopmentUserStoreConfig.java` which makes testing code locally easier as it allows the user access to more user permissions.
 ##### upload:simple/hubbub
 Allows the user to upload their documents using `FileSystemStorageService.java` when `upload:simple` is active or the Hubbub API which `UploadService.java` interfaces with when `upload:hubbub` is active.
-##### server:eidc/elter/datalabs/ukeof/inms
+##### server:eidc/elter/datalabs/inms
 The server profile e.g. `server:eidc` decides which catalogue you will use and which documents that you will use with it. For example the EIDC catalogue will use Gemini documents and `server:elter` aka the Elter catalogue will use Elter documents.
 ##### search:basic/enhanced
 Select which algorithm Solr uses to search for documents.
 ##### service-agreement
-Allows the user to create online service agreements for datasets. 
+Allows the user to create online service agreements for datasets.
 
 ### Developing LESS
 In the web directory run
@@ -148,7 +148,7 @@ will run a process that watches the less directories and recompiles the files on
 
 If you need to add a new document type to the catalogue like  GeminiDocument.java or ElterDocument.java
 extend your new class with AbstractMetadataDocument.java and configure it in the following classes:
-CatalogueMediaTypes.java, CatalogueServiceConfig.java, ServicesConfig.java and WebConfig.java. 
+CatalogueMediaTypes.java, CatalogueServiceConfig.java, ServicesConfig.java and WebConfig.java.
 For an example of how to do this Look at how the GeminiDocuments or ElterDocuments are configured in each of these classes.
 
 ## Multiple Catalogues
@@ -173,7 +173,7 @@ another catalogue using the Link document type.
 
 ## Remote-User
 
-The catalogue is designed to sit behind a **Security Proxy** 
+The catalogue is designed to sit behind a **Security Proxy**
 see [RequestHeaderAuthenticationFilter](http://docs.spring.io/autorepo/docs/spring-security/3.2.0.RELEASE/apidocs/org/springframework/security/web/authentication/preauth/RequestHeaderAuthenticationFilter.html) which acts as the authentication source for the application. Therefore, the catalogue will respond to the `Remote-User` header and handle requests as the specified user.
 
 To simplify development, the `DevelopmentUserStoreConfig` is applied by default. This creates some dummy users in various different groups which you can masquerade as. The simplest way to do this is use a browser extension which applies the `Remote-User` header. I recommend **ModHeader for Chrome**.
