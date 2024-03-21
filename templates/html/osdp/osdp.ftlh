@@ -58,7 +58,7 @@ OSDP Research Artifact base template
     </#if>
     <#nested>
     <@o.relationships "Related" "Relation between artifacts" "http://onto.nerc.ac.uk/CEHMD/rels/related" />
-    <@o.relationships "Supercedes" "Supercedes this artifacts" "http://onto.nerc.ac.uk/CEHMD/rels/supercedes" />
+    <@o.relationships "Supersedes" "Supersedes this artifacts" "http://onto.nerc.ac.uk/CEHMD/rels/supersedes" />
     <@o.relationships "Cites" "Citations for this artifact" "http://onto.nerc.ac.uk/CEHMD/rels/cites" />
     <@o.relationships "Revises" "Artifact revisions" "http://onto.nerc.ac.uk/CEHMD/rels/revises" />
     <@o.relationships "Uses" "Artifact uses" "http://onto.nerc.ac.uk/CEHMD/rels/uses" />
@@ -66,7 +66,7 @@ OSDP Research Artifact base template
 
     <@o.inverseRelationships "Created By" "Agent who created this artifact" "http://onto.nerc.ac.uk/CEHMD/rels/creates" />
     <@o.inverseRelationships "Related" "Relation between artifacts" "http://onto.nerc.ac.uk/CEHMD/rels/related" />
-    <@o.inverseRelationships "Superceded By" "Superceded by this artifacts" "http://onto.nerc.ac.uk/CEHMD/rels/supercedes" />
+    <@o.inverseRelationships "Superseded By" "Superseded by this artifacts" "http://onto.nerc.ac.uk/CEHMD/rels/supersedes" />
     <@o.inverseRelationships "Cited By" "Cited by this artifact" "http://onto.nerc.ac.uk/CEHMD/rels/cites" />
     <@o.inverseRelationships "Revised By" "Revised by this artifact" "http://onto.nerc.ac.uk/CEHMD/rels/revises" />
     <@o.inverseRelationships "Used By" "Used by this artifact" "http://onto.nerc.ac.uk/CEHMD/rels/uses" />
