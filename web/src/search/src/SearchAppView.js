@@ -7,7 +7,7 @@ export default Backbone.View.extend({
   el: '#search',
 
   events: {
-    'click .tab-search': 'updateMapsearch'
+    'click .search-tab': 'updateMapsearch'
   },
 
   initialize (options) {
@@ -43,7 +43,7 @@ export default Backbone.View.extend({
   },
 
   updateMapsearch (e) {
-    const targetClass = 'tab-map'
+    const targetClass = 'map-tab'
     const isMapSearch = e.currentTarget.classList.contains(targetClass)
     this.model.set('mapsearch', isMapSearch)
   },

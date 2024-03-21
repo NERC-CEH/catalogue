@@ -22,8 +22,7 @@ main {
             flex: 0 0 var(--filter-width);
             border-right: var(--filter-border);
 
-
-            .accordion {
+            .search-tabs {
                 margin: 0;
                 padding: 0;
                 display: flex;
@@ -31,46 +30,37 @@ main {
                 flex-direction: column;
                 gap: 0;
 
-                .accordion-item {
-                    >div {
-                        display: flex;
-                        flex-direction: column;
-                        width: 100%;
-                        min-height: 100%;
-
-                        .accordion-heading {
+                .nav-tabs{
+                    background-color: var(--filter-body-background-colour);
+                    .search-tab {
+                        a {
                             cursor: pointer;
-                            background-color: var(--filter-heading-background-colour);
+                            background-color: var(--filter-body-background-colour);
                             color: var(--filter-heading-colour);
                             display: block;
                             padding: .3em .6em;
                             font-size: 1.3em;
+                            border-bottom: 1px solid var(--filter-tab-border-colour);
                         }
-
-                        .accordion-content {
-                            display: none;
-                            position: relative;
-                            height: 100%;
-                            background-color: var(--filter-body-background-colour);
-                            color: var(--filter-body-colour);
-
-                            h3,
+                        &.active {
                             a {
-                                color: var(--filter-body-colour);
+                                border-bottom-color: transparent;
                             }
                         }
-
                     }
                 }
 
-                .accordion-item.active {
-                    display: flex;
-                    flex: 1 1 auto;
+                .tab-content {
+                    position: relative;
+                    height: 100%;
+                    background-color: var(--filter-body-background-colour);
+                    color: var(--filter-body-colour);
 
-                    >div div {
-                        display: block;
+                    a {
+                        color: var(--filter-body-colour);
                     }
                 }
+
             }
         }
 
@@ -166,37 +156,43 @@ main {
             border-radius: 20px;
             border: 1px solid var(--primary-colour);
         }
-    }
-}
 
-
-//MAP
-#search {
-    .mapsearch {
-        position: relative;
-        height: 600px;
-
-        ul.leaflet-draw-actions.leaflet-draw-actions-bottom li a[title="Save changes"],
-        ul.leaflet-draw-actions.leaflet-draw-actions-bottom li a[title="Cancel editing, discards all changes"] {
-            display: none;
-        }
-
-        .map {
+        .mapsearch {
             position: relative;
-            height: calc(100% - var(--header-height));
+            height: 600px;
 
-            .leaflet-control-zoom {
-                a {
-                    color: #444;
+            ul.leaflet-draw-actions.leaflet-draw-actions-bottom li a[title="Save changes"],
+            ul.leaflet-draw-actions.leaflet-draw-actions-bottom li a[title="Cancel editing, discards all changes"] {
+                display: none;
+            }
+
+            .map {
+                position: relative;
+                height: calc(100% - var(--header-height));
+
+                .leaflet-control-zoom {
+                    a {
+                        color: #444;
+                    }
                 }
+            }
+
+            .form-operation {
+                padding: 0.6em;
+            }
+
+            .leaflet-control-layers-list {
+                overflow: hidden;
+                fontsize: 9px;
+            }
+
+            .leaflet-control-attribution {
+                background-color: #999;
+                font-size: 9px;
             }
         }
 
-        .form-operation {
-            padding: 0.6em;
-        }
     }
-
 }
 
 //RESULTS FORMATTING

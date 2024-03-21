@@ -26,10 +26,10 @@
 
 
       <!-- Nav tabs -->
-      <div>
+      <div class="search-tabs">
         <ul class="nav nav-tabs" role="tablist">
-          <li role="presentation" class="tab-search active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Filters</a></li>
-          <li role="presentation" class="tab-search tab-map"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Map search</a></li>
+          <li role="presentation" class="search-tab active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Filters</a></li>
+          <li role="presentation" class="search-tab map-tab"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Spatial search</a></li>
         </ul>
 
         <!-- Tab panes -->
