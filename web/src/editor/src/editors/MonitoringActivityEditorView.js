@@ -13,8 +13,7 @@ import {
   EnvironmentalDomainView,
   PurposeOfCollectionView,
   ResourceIdentifierView,
-  SupplementalLinkView,
-  TextOnlyView
+  SupplementalLinkView
 } from '../views'
 import { MultipleDate, EnvironmentalDomain, PurposeOfCollection, Contact, Supplemental } from '../models'
 import { BoundingBox, BoundingBoxView } from '../geometryMap'
@@ -28,11 +27,6 @@ export default EditorView.extend({
       label: 'General',
       title: 'General information',
       views: [
-
-        new TextOnlyView({
-          model: this.model,
-          text: "Monitoring activity"
-        }),
 
         new InputView({
           model: this.model,
@@ -120,7 +114,7 @@ export default EditorView.extend({
           ObjectInputView: KeywordVocabularyView
         })
       ]
-     },
+    },
     {
       label: 'Contacts',
       title: 'Contacts',

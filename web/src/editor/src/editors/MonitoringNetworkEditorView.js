@@ -76,52 +76,52 @@ export default EditorView.extend({
           ObjectInputView: ContactView,
           multiline: true,
           predefined: {
-              'Lead organisation - Environment Agency': {
-                organisationName: 'Environment Agency',
-                role: 'pointOfContact',
-                email: 'enquiries@environment-agency.gov.uk',
-                organisationIdentifier: 'https://ror.org/01zewfb16'
-              },
-              'Lead organisation - Natural England': {
-                organisationName: 'Natural England',
-                role: 'pointOfContact',
-                email: 'enquiries@naturalengland.org.uk',
-                organisationIdentifier: 'https://ror.org/00r66pz14'
-              },
-              'Lead organisation - Natural Resources Wales': {
-                organisationName: 'Natural Resources Wales',
-                role: 'pointOfContact',
-                email: 'enquiries@naturalresourceswales.gov.uk',
-                organisationIdentifier: 'https://ror.org/04x65hs26'
-              },
-              'Lead organisation - UKCEH': {
-                organisationName: 'UK Centre for Ecology & Hydrology',
-                role: 'pointOfContact',
-                email: 'enquiries@ceh.ac.uk',
-                organisationIdentifier: 'https://ror.org/00pggkr55'
-              },
-              'Funder - Defra': {
-                organisationName: 'Defra',
-                role: 'funder',
-                email: 'defra.helpline@defra.gsi.gov.uk',
-                organisationIdentifier: 'https://ror.org/00tnppw48'
-              },
-              'Funder - NERC': {
-                organisationName: 'Natural Environment Research Council',
-                role: 'funder',
-                organisationIdentifier: 'https://ror.org/02b5d8509'
-              },
-              'Funder - Scottish Government': {
-                organisationName: 'Scottish Government',
-                role: 'funder',
-                organisationIdentifier: 'https://ror.org/04v2xmd71'
-              },
-              'Funder - Welsh Government': {
-                organisationName: 'Welsh Government',
-                role: 'funder',
-                organisationIdentifier: 'https://ror.org/000wh6t45'
-              }
+            'Lead organisation - Environment Agency': {
+              organisationName: 'Environment Agency',
+              role: 'pointOfContact',
+              email: 'enquiries@environment-agency.gov.uk',
+              organisationIdentifier: 'https://ror.org/01zewfb16'
+            },
+            'Lead organisation - Natural England': {
+              organisationName: 'Natural England',
+              role: 'pointOfContact',
+              email: 'enquiries@naturalengland.org.uk',
+              organisationIdentifier: 'https://ror.org/00r66pz14'
+            },
+            'Lead organisation - Natural Resources Wales': {
+              organisationName: 'Natural Resources Wales',
+              role: 'pointOfContact',
+              email: 'enquiries@naturalresourceswales.gov.uk',
+              organisationIdentifier: 'https://ror.org/04x65hs26'
+            },
+            'Lead organisation - UKCEH': {
+              organisationName: 'UK Centre for Ecology & Hydrology',
+              role: 'pointOfContact',
+              email: 'enquiries@ceh.ac.uk',
+              organisationIdentifier: 'https://ror.org/00pggkr55'
+            },
+            'Funder - Defra': {
+              organisationName: 'Defra',
+              role: 'funder',
+              email: 'defra.helpline@defra.gsi.gov.uk',
+              organisationIdentifier: 'https://ror.org/00tnppw48'
+            },
+            'Funder - NERC': {
+              organisationName: 'Natural Environment Research Council',
+              role: 'funder',
+              organisationIdentifier: 'https://ror.org/02b5d8509'
+            },
+            'Funder - Scottish Government': {
+              organisationName: 'Scottish Government',
+              role: 'funder',
+              organisationIdentifier: 'https://ror.org/04v2xmd71'
+            },
+            'Funder - Welsh Government': {
+              organisationName: 'Welsh Government',
+              role: 'funder',
+              organisationIdentifier: 'https://ror.org/000wh6t45'
             }
+          }
         })
       ]
     },
