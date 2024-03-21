@@ -14,7 +14,8 @@ export default _.template(`
                 <option class="option-eidc" value="depositor">Depositor</option>
                 <option class="option-eidc" value="distributor">Distributor</option>
                 <option class="option-ukeof" value="funder">Funder</option>
-                <option class="" value="pointOfContact">Point of contact</option>
+                <option class="option-eidc option-nm" value="pointOfContact">Point of contact</option>
+                <option class="option-ukeof" value="pointOfContact">Lead organisation (point of contact)</option>
                 <option class="option-nm option-eidc" value="publisher">Publisher</option>
                 <option class="option-nm option-eidc" value="rightsHolder">Rights holder</option>
                 <option class="option-nm" value="owner">Senior Responsible Officer [SRO]</option>

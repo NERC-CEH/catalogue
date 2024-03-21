@@ -11,6 +11,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.indexing.solr.WellKnownText;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
+import uk.ac.ceh.gateway.catalogue.model.Supplemental;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,13 +22,13 @@ import java.util.List;
     @Template(called="html/monitoring/monitoringActivity.ftlh", whenRequestedAs= MediaType.TEXT_HTML_VALUE)
 })
 public class MonitoringActivity extends AbstractMetadataDocument implements WellKnownText {
-    private String objectives;
     private List<String> alternateTitles;
-    private TimePeriod temporalExtent;
-    private List<Keyword> environmentalDomain, purposeOfCollection, keywordsParameters, keywordsOther;
+    private String objectives;
     private BoundingBox boundingBox;
     private List<ResponsibleParty> responsibleParties;
-
+    private TimePeriod operatingPeriod;
+    private List<Keyword> environmentalDomain, purposeOfCollection, keywordsParameters, keywordsOther;
+    private List<Supplemental> linksData, linksOther;
 
     @Override
     public List<String> getWKTs() {

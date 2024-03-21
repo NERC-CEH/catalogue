@@ -11,6 +11,7 @@ import {
   ContactView,
   FacilityTypeView,
   EnvironmentalDomainView,
+  ResourceIdentifierView,
   ParentStringView,
   CheckboxView
 } from '../views'
@@ -28,17 +29,14 @@ export default EditorView.extend({
     }
 
     this.sections = [{
-      label: 'Basic Info',
-      title: 'Basic Info',
+      label: 'General',
+      title: 'General information',
       views: [
 
         new InputView({
           model: this.model,
           modelAttribute: 'title',
-          label: 'Name',
-          helpText: `
-<p>Name of Monitoring Facility</p>
-`
+          label: 'Name'
         }),
 
         new ParentStringView({
@@ -55,6 +53,13 @@ export default EditorView.extend({
           ObjectInputView: FacilityTypeView
         }),
 
+        new TextareaView({
+          model: this.model,
+          modelAttribute: 'description',
+          rows: 13,
+          label: 'Description'
+        }),
+
         new ParentView({
           model: this.model,
           modelAttribute: 'environmentalDomain',
@@ -63,21 +68,11 @@ export default EditorView.extend({
           ObjectInputView: EnvironmentalDomainView
         }),
 
-        new TextareaView({
-          model: this.model,
-          modelAttribute: 'description',
-          rows: 13,
-          label: 'Description',
-          helpText: `
-<p>Description of Monitoring Facility</p>
-`
-        }),
-
         new SingleObjectView({
           model: this.model,
           modelAttribute: 'operationalPeriod',
           ModelType: MultipleDate,
-          label: 'Operational period',
+          label: 'Operating period',
           ObjectInputView: TemporalExtentView,
           helpText: `
 <p>Temporal Extent of Monitoring Facility</p>
@@ -126,18 +121,50 @@ export default EditorView.extend({
           ObjectInputView: ContactView,
           multiline: true,
           predefined: {
-            'Point of contact - UKCEH': {
+            'Lead organisation - Environment Agency': {
+              organisationName: 'Environment Agency',
+              role: 'pointOfContact',
+              email: 'enquiries@environment-agency.gov.uk',
+              organisationIdentifier: 'https://ror.org/01zewfb16'
+            },
+            'Lead organisation - Natural England': {
+              organisationName: 'Natural England',
+              role: 'pointOfContact',
+              email: 'enquiries@naturalengland.org.uk',
+              organisationIdentifier: 'https://ror.org/00r66pz14'
+            },
+            'Lead organisation - Natural Resources Wales': {
+              organisationName: 'Natural Resources Wales',
+              role: 'pointOfContact',
+              email: 'enquiries@naturalresourceswales.gov.uk',
+              organisationIdentifier: 'https://ror.org/04x65hs26'
+            },
+            'Lead organisation - UKCEH': {
               organisationName: 'UK Centre for Ecology & Hydrology',
               role: 'pointOfContact',
               email: 'enquiries@ceh.ac.uk',
-              organisationIdentifier: 'https://ror.org/00pggkr55',
-              address: {
-                deliveryPoint: 'Maclean Building, Benson Lane, Crowmarsh Gifford',
-                postalCode: 'OX10 8BB',
-                city: 'Wallingford',
-                administrativeArea: 'Oxfordshire',
-                country: 'United Kingdom'
-              }
+              organisationIdentifier: 'https://ror.org/00pggkr55'
+            },
+            'Funder - Defra': {
+              organisationName: 'Defra',
+              role: 'funder',
+              email: 'defra.helpline@defra.gsi.gov.uk',
+              organisationIdentifier: 'https://ror.org/00tnppw48'
+            },
+            'Funder - NERC': {
+              organisationName: 'Natural Environment Research Council',
+              role: 'funder',
+              organisationIdentifier: 'https://ror.org/02b5d8509'
+            },
+            'Funder - Scottish Government': {
+              organisationName: 'Scottish Government',
+              role: 'funder',
+              organisationIdentifier: 'https://ror.org/04v2xmd71'
+            },
+            'Funder - Welsh Government': {
+              organisationName: 'Welsh Government',
+              role: 'funder',
+              organisationIdentifier: 'https://ror.org/000wh6t45'
             }
           }
         })
@@ -150,7 +177,7 @@ export default EditorView.extend({
         new ParentView({
           model: this.model,
           modelAttribute: 'resourceIdentifiers',
-          label: 'I identifiers',
+          label: 'Identifiers',
           ObjectInputView: ResourceIdentifierView
         }),
 

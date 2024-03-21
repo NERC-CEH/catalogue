@@ -10,7 +10,7 @@ import {
   DescriptiveKeywordView,
   DistributionFormatView,
   FundingView,
-  IncomingCitationView,
+  SupplementalLinkView,
   InspireThemeView,
   KeywordThemeView,
   KeywordVocabularyView,
@@ -699,7 +699,7 @@ export default EditorView.extend({
           ModelType: Supplemental,
           multiline: true,
           label: 'Citations <small>Publications in which these data are cited</small>',
-          ObjectInputView: IncomingCitationView
+          ObjectInputView: SupplementalLinkView
         }),
 
         new ParentView({
