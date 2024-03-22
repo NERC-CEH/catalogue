@@ -30,7 +30,7 @@ export default Backbone.View.extend({
       })
     }
 
-    this.map = new L.Map(this.$('.map')[0], { center: new L.LatLng(54, 1), zoom: 4 })
+    this.map = new L.Map(this.$('.map')[0], { center: new L.LatLng(55, -3), zoom: 5 })
     this.map.addLayer(baseMaps.Map)
     this.drawnItems = L.featureGroup()
     this.drawControl = this.createToolbar()

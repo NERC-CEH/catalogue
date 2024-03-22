@@ -159,7 +159,8 @@ main {
 
         .mapsearch {
             position: relative;
-            height: 600px;
+            height: calc(100vh - (var(--header-height) + var(--search-map-header-height)));
+            width: 100%;
 
             ul.leaflet-draw-actions.leaflet-draw-actions-bottom li a[title="Save changes"],
             ul.leaflet-draw-actions.leaflet-draw-actions-bottom li a[title="Cancel editing, discards all changes"] {
@@ -168,7 +169,7 @@ main {
 
             .map {
                 position: relative;
-                height: calc(100% - var(--header-height));
+                height: 100%;
 
                 .leaflet-control-zoom {
                     a {
