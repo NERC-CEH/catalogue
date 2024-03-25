@@ -17,7 +17,7 @@
   ],
   "relationships": [
     {"relation": "http://onto.nerc.ac.uk/CEHMD/rels/dependencies", "target": "47194076-899c-473f-b7bb-430ccd230670"},
-    {"relation": "http://onto.nerc.ac.uk/CEHMD/rels/supercedes", "target": "ff55462e-38a4-4f30-b562-f82ff263d9c3"},
+    {"relation": "http://onto.nerc.ac.uk/CEHMD/rels/supersedes", "target": "ff55462e-38a4-4f30-b562-f82ff263d9c3"},
     {"relation": "http://onto.nerc.ac.uk/CEHMD/rels/cites", "target": "986d3df3-d9bf-42eb-8e18-850b8d54f37b"},
     {"relation": "http://onto.nerc.ac.uk/CEHMD/rels/revises", "target": "571a676f-6c32-489b-b7ec-18dcc617a9f1"},
     {"relation": "http://onto.nerc.ac.uk/CEHMD/rels/related", "target": "ff55462e-38a4-4f30-b562-f82ff263d9c3"}
