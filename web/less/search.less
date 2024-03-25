@@ -21,7 +21,6 @@ main {
             display: none;
             flex: 0 0 var(--filter-width);
             border-right: var(--filter-border);
-
             .search-tabs {
                 margin: 0;
                 padding: 0;
@@ -29,11 +28,10 @@ main {
                 height: 100%;
                 flex-direction: column;
                 gap: 0;
-
                 .nav-tabs{
                     background-color: var(--filter-body-background-colour);
-                    .search-tab {
-                        a {
+                    > li {
+                        > a {
                             cursor: pointer;
                             background-color: var(--filter-body-background-colour);
                             color: var(--filter-heading-colour);
@@ -41,26 +39,29 @@ main {
                             padding: .3em .6em;
                             font-size: 1.3em;
                             border-bottom: 1px solid var(--filter-tab-border-colour);
+                            &:hover {
+                                border-color: var(--filter-tab-border-colour);
+                            }
                         }
                         &.active {
-                            a {
-                                border-bottom-color: transparent;
+                            > a {
+                                border-color: var(--filter-tab-border-colour) var(--filter-tab-border-colour) transparent;
+                                &:hover {
+                                    border-color: var(--filter-tab-border-colour) var(--filter-tab-border-colour) transparent;
+                                }
                             }
                         }
                     }
                 }
-
                 .tab-content {
                     position: relative;
                     height: 100%;
                     background-color: var(--filter-body-background-colour);
                     color: var(--filter-body-colour);
-
                     a {
                         color: var(--filter-body-colour);
                     }
                 }
-
             }
         }
 
@@ -84,7 +85,6 @@ main {
         }
     }
 }
-
 
 //Filters formatting
 main {
@@ -197,7 +197,6 @@ main {
 }
 
 //RESULTS FORMATTING
-
 .results {
     min-height: 90%;
     display: flex;
