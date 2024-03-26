@@ -22,7 +22,7 @@
           </#if>
 
           <#if description?? && description?has_content>
-            <@b.linebreaksAndLinks description />
+            <div><@b.linebreaksAndLinks description /></div>
           </#if>
 
         </div>
@@ -31,9 +31,66 @@
         <div class="container">
           <#nested>
 
-          <#if keywords?? && keywords?has_content>
-            <@keyValue "Keywords" ""><@b.keywords keywords/></@keyValue>
+          <#if environmentalDomain??>
+             <@keyValue "Environmental domain" ""><@b.keywords environmentalDomain/></@keyValue>
           </#if>
+
+          <#if purposeOfCollection??>
+             <@keyValue "Purpose of collection" ""><@b.keywords purposeOfCollection/></@keyValue>
+          </#if>
+
+
+          <#if objectives?? && objectives?has_content>
+             <@keyValue "Objectives" ""><@b.linebreaksAndLinks objectives /></@keyValue>
+          </#if>
+
+          <#if operatingPeriod?has_content>
+            <@keyValue "Operating period" "">
+              <#list operatingPeriod?sort_by("begin")>
+                <#items as op>
+                  <@displayPeriod op /><#sep><br></#sep>
+                </#items>
+               </#list>
+            </@keyValue>
+          </#if>
+
+          <#if responsibleParties?has_content>
+            <div>
+              <h2>Contacts</h2>
+
+              <#list responsibleParties>
+                <#items as rp>
+                  <@contactDetails rp/>
+                </#items>
+              </#list>
+
+            </div>
+          </#if>
+
+          <#if linksData?has_content>
+            <@displayLinks linksData "Links to data"/>
+          </#if>
+
+          <#if linksOther?has_content>
+            <@displayLinks linksOther "Other links"/>
+          </#if>
+
+          <div>
+            <h2>Other metadata</h2>
+
+            <#if keywordsParameters?? && keywordsParameters?has_content>
+              <@keyValue "Parameters measured" ""><@b.keywords keywordsParameters/></@keyValue>
+            </#if>
+
+            <#if keywordsOther?? && keywordsOther?has_content>
+              <@keyValue "Keywords" ""><@b.keywords keywordsOther /></@keyValue>
+            </#if>
+
+            <#if metadataDateTime?has_content>
+              <@keyValue "Last updated" "">${metadataDateTime?datetime.iso?datetime?string['dd MMMM yyyy  HH:mm']}</@keyValue>
+            </#if>
+          </div>
+
         </div>
       </div>
     </#if>
@@ -44,7 +101,7 @@
 <#macro keyValue key description="" auto_esc=false>
   <div class="row key-value" title="${description}">
     <div class="col-sm-3 key">
-      <div class="key-title">${key}</div>
+     ${key}
     </div>
     <div class="col-sm-9 value">
       <#nested>
@@ -107,17 +164,17 @@ ParametersMeasured
 </#macro>
 
 <#--
-Temporal Extent
+Operating period
 -->
-<#macro temporalExt temporalExtent>
-  <#if temporalExtent.begin?? && temporalExtent.begin?has_content>
-    ${temporalExtent.begin}
+<#macro displayPeriod period>
+  <#if period.begin?? && period.begin?has_content>
+    ${period.begin}
   <#else>
     …
   </#if>
   to
-  <#if temporalExtent.end?? && temporalExtent.end?has_content>
-    ${temporalExtent.end}
+  <#if period.end?? && period.end?has_content>
+    ${period.end}
   <#else>
     …
   </#if>
@@ -156,4 +213,47 @@ Temporal Extent
   <#if combinedGeometry?has_content>
     <@geometry geometry=combinedGeometry />
   </#if>
+</#macro>
+
+<#macro contactDetails contact>
+ <@keyValue contact.role?capitalize  "">
+    <#if contact.individualName?has_content>
+      <span>
+        ${contact.individualName}
+        <#if contact.nameIdentifier?has_content>
+          <a href="${contact.nameIdentifier}" target="_blank" rel="noopener noreferrer">
+            <img src="/static/img/orcid_16x16.png" alt="ORCID iD icon" title="ORCID iD">
+          </a>
+        </#if>
+      </span>
+      <br>
+    </#if>
+
+    <#if contact.organisationName?has_content>
+      <span>
+        ${contact.organisationName}
+        <#if contact.organisationIdentifier?has_content>
+          <a href="${contact.organisationIdentifier}" target="_blank" rel="noopener noreferrer">
+            <img src="/static/img/ror_16x16.png" alt="RoR icon" title="Research Organisation Identifier">
+          </a>
+        </#if>
+      </span>
+      <br>
+    </#if>
+  </@keyValue>
+</#macro>
+
+
+<#macro displayLinks linkList title="">
+  <#list linkList>
+    <@keyValue "${title}" "">
+      <#items as link>
+        <#if link.url?has_content>
+          <a href="${link.url}" target="_blank" rel="noopener noreferrer">${link.description}</a>
+        <#else>
+          ${link.description}
+        </#if><#sep><br></#sep>
+      </#items>
+    </@keyValue>
+  </#list>
 </#macro>

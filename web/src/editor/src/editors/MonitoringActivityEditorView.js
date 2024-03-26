@@ -43,7 +43,7 @@ export default EditorView.extend({
         new TextareaView({
           model: this.model,
           modelAttribute: 'description',
-          rows: 13,
+          rows: 10,
           label: 'Description'
         }),
 
@@ -51,10 +51,10 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'objectives',
           label: 'Objectives',
-          rows: 13
+          rows: 7
         }),
 
-        new SingleObjectView({
+        new ParentView({
           model: this.model,
           modelAttribute: 'operatingPeriod',
           ModelType: MultipleDate,
@@ -65,8 +65,8 @@ export default EditorView.extend({
       ]
     },
     {
-      label: 'Location',
-      title: 'Location',
+      label: 'Location/coverage',
+      title: 'Spatial coverage of the activity',
       views: [
 
         new SingleObjectView({
@@ -206,7 +206,7 @@ export default EditorView.extend({
 
         new ParentView({
           model: this.model,
-          modelAttribute: ' linksData',
+          modelAttribute: 'linksData',
           ModelType: Supplemental,
           multiline: true,
           label: 'Links to data',
@@ -215,7 +215,7 @@ export default EditorView.extend({
 
         new ParentView({
           model: this.model,
-          modelAttribute: ' linksOther',
+          modelAttribute: 'linksOther',
           ModelType: Supplemental,
           multiline: true,
           label: 'Other links',

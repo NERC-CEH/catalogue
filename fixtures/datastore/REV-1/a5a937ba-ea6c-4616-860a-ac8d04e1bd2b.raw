@@ -1,0 +1,64 @@
+{
+  "id": "a5a937ba-ea6c-4616-860a-ac8d04e1bd2b",
+  "uri": "http://localhost:8080/id/a5a937ba-ea6c-4616-860a-ac8d04e1bd2b",
+  "type": "monitoringNetwork",
+  "title": "UK Upland Waters Monitoring Network",
+  "description": "The UKs unique national research network on upland waters, designed to track trends in water quality and freshwater biodiversity across the uplands in response to changes in climate, atmospheric pollution and land-use. Established in 1988 as the UK Acid Waters Monitoring Network, becoming the UK Upland Waters Monitoring Network in 2013. Physical, chemical and biological measurements at 24 sensitive headwater streams and lakes situated in upland regions of the UK with ten sites in Scotland, six in England, four in Wales and four in Northern Ireland. Sites are situated beyond the limit of agricultural enclosure with either moorland or afforested catchments and span a gradient of conditions from low to high pollutant deposition. Physical measurements include surface water temperature at all non-Irish stream sites, high resolution water column temperature profiling at all lake sites, water-level monitoring at two lake sites and water flow gauging at several sites. Instrumentation for temperature and flow monitoring at additional sites is planned. Chemical measurements include pH, alkalinity, Ca, Mg, Na, K, SO4, xSO4, Cl, NO3, Total P, Sol Al, Labile Al, Non-lab Al, DOC, Cond.) using methods designed for low alkalinity waters. Biological sampling includes diatoms, aquatic macrophytes, macroinvertebrates and fish with identification at the species level. Chl a monitoring is planned. Detailed maps are available from the Forestry Commission for sites with afforested catchments. Protocols for catchment land-use surveys for sites with moorland catchments are under review. Data are subject to rigorous screening and analysis and presented in annual reports. Interpretative reports are prepared and published every five years and made available on the project website. The network contributes data from four sites to the UK ECN, LTER Europe and ILTER, six sites to UNECE ICP Waters and two sites to UNECE ICP Integrated Monitoring. It also supports a wide range of national (e.g. NERC-funded) and international (e.g. EU RTD Seventh Framework) projects including WISER and BioFresh. Same methodologies and measurements are used at all sites to gather biology and chemistry.",
+  "metadataDate": "2024-03-26T09:39:45",
+  "alternateTitles": [
+    "Acid Waters Monitoring Network"
+  ],
+  "objectives": "To track long-term changes in the water quality and biodiversity of freshwater ecosystems in the UK uplands with respect to their response to (i) climate change, (ii) acid deposition; (iii) nutrient-nitrogen deposition; (iv) toxic pollutant contamination (under review); and (v) land-use/management change. To provide early warning of changes in upland freshwater ecosystems that might impair their function in providing drinking water, wildlife habitat and amenity. To contribute to the understanding of the ecology and biogeochemistry of upland lakes and streams in the UK by supporting research. To provide evidence of changes in terrestrial ecology and biogeochemistry from the analysis of runoff chemistry. To identify chemical thresholds in defining ecological status in support of the EU Water Framework Directive. To support policy formulation and the management of upland freshwater ecosystems in the UK in accordance with the statutory duties of responsible authorities",
+  "responsibleParties": [
+    {
+      "organisationName": "Ensis Ltd",
+      "role": "pointOfContact"
+    },
+    {
+      "organisationName": "Defra",
+      "organisationIdentifier": "https://ror.org/00tnppw48",
+      "role": "funder",
+      "email": "defra.helpline@defra.gsi.gov.uk"
+    },
+    {
+      "organisationName": "Natural Resources Wales",
+      "organisationIdentifier": "https://ror.org/04x65hs26",
+      "role": "funder",
+      "email": "enquiries@naturalresourceswales.gov.uk"
+    },
+    {
+      "organisationName": "Welsh Government",
+      "organisationIdentifier": "https://ror.org/000wh6t45",
+      "role": "funder"
+    },
+    {
+      "organisationName": "Environment Agency",
+      "organisationIdentifier": "https://ror.org/01zewfb16",
+      "role": "funder",
+      "email": "enquiries@environment-agency.gov.uk"
+    }
+  ],
+  "keywordsOther": [
+    {
+      "value": "Macroinvertebrates"
+    },
+    {
+      "value": "Uplands"
+    },
+    {
+      "value": "Aquatic macrophytes"
+    },
+    {
+      "value": "eutrophication",
+      "uri": "http://www.eionet.europa.eu/gemet/concept/3007"
+    },
+    {
+      "value": "climate change",
+      "uri": "http://www.eionet.europa.eu/gemet/concept/1471"
+    },
+    {
+      "value": "River discharge",
+      "uri": "http://onto.nerc.ac.uk/EF/ECV/land/riverDischarge"
+    }
+  ]
+}

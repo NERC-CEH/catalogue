@@ -56,28 +56,18 @@ export default EditorView.extend({
         new TextareaView({
           model: this.model,
           modelAttribute: 'description',
-          rows: 13,
+          rows: 10,
           label: 'Description'
         }),
 
         new ParentView({
           model: this.model,
-          modelAttribute: 'environmentalDomain',
-          ModelType: EnvironmentalDomain,
-          label: 'Environmental domain',
-          ObjectInputView: EnvironmentalDomainView
-        }),
-
-        new SingleObjectView({
-          model: this.model,
-          modelAttribute: 'operationalPeriod',
+          modelAttribute: 'operatingPeriod',
           ModelType: MultipleDate,
           label: 'Operating period',
-          ObjectInputView: TemporalExtentView,
-          helpText: `
-<p>Temporal Extent of Monitoring Facility</p>
-`
+          ObjectInputView: TemporalExtentView
         })
+
       ]
     },
     {
@@ -99,13 +89,40 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'geometryRepresentative',
           label: 'Geometry is representative?'
-
         }),
 
         new CheckboxView({
           model: this.model,
           modelAttribute: 'mobile',
           label: 'Facility is mobile?'
+        })
+      ]
+    },
+    {
+      label: 'Keywords/classification',
+      title: 'Keywords',
+      views: [
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'environmentalDomain',
+          ModelType: EnvironmentalDomain,
+          label: 'Environmental domain',
+          ObjectInputView: EnvironmentalDomainView
+        }),
+
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'keywordsParameters',
+          label: 'Parameters measured',
+          ObjectInputView: KeywordVocabularyView
+        }),
+
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'keywords',
+          label: 'Keywords',
+          ObjectInputView: KeywordVocabularyView,
+          multiline: true
         })
       ]
     },
@@ -171,22 +188,14 @@ export default EditorView.extend({
       ]
     },
     {
-      label: 'Tags and links',
-      title: 'Keywords and links to other records',
+      label: 'IDs and links',
+      title: 'IDs and links',
       views: [
         new ParentView({
           model: this.model,
           modelAttribute: 'resourceIdentifiers',
           label: 'Identifiers',
           ObjectInputView: ResourceIdentifierView
-        }),
-
-        new ParentView({
-          model: this.model,
-          modelAttribute: 'keywords',
-          label: 'Keywords',
-          ObjectInputView: KeywordVocabularyView,
-          multiline: true
         }),
 
         new ParentView({

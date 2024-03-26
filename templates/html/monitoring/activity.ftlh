@@ -1,25 +1,15 @@
 <#import "monitoringBase.ftlh" as m>
 
 <@m.base>
-  <#if parametersMeasured?? && parametersMeasured?has_content>
-    <@m.keyValue "Parameters Measured">
-      <#list parametersMeasured as parameter>
-        <@m.parametersMeasured parameter />
-      </#list>
-    </@m.keyValue>
-  </#if>
-  <#if temporalExtent?? && temporalExtent?has_content>
-    <@m.keyValue "Temporal Extent">
-        <@m.temporalExt temporalExtent />
-    </@m.keyValue>
-  </#if>
 
   <#if boundingBox?? && boundingBox?has_content>
     <@m.keyValue "Bounding Box" >
-      <@m.map boundingBox.bounds />
+      <div class="mapper">
+        <@m.map boundingBox.bounds />
+      </div>
     </@m.keyValue>
-  </#if>
 
+  </#if>
 
   <@m.inverseRelationships "Associated With" "Agents associated with this Monitoring Activity" "http://ontm.nerc.ac.uk/CEHMD/rels/associatedWith" />
   <@m.relationships "Produces" "Research Artifacts produced by this Monitoring Activity" "http://ontm.nerc.ac.uk/CEHMD/rels/produces" />

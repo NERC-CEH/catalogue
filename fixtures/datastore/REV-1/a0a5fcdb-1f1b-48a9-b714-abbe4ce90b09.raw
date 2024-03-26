@@ -1,0 +1,100 @@
+{
+  "id": "a0a5fcdb-1f1b-48a9-b714-abbe4ce90b09",
+  "uri": "http://localhost:8080/id/a0a5fcdb-1f1b-48a9-b714-abbe4ce90b09",
+  "type": "monitoringActivity",
+  "title": "Agri-environment scheme monitoring in England (ESA, CSS and ASPS schemes) - Monitoring of Cereal Field Margin Options",
+  "description": "This three-year programme of work aimed to undertake a comprehensive and comparative evaluation of the effectiveness of a range of field margin management options used within various agri-environment schemes in conserving arable plants and providing resources for foraging bumblebees. The project looked at\n(i) 5-year old margins provided in two areas under the Arable Stewardship Pilot Scheme; \n(ii) Cultivated margins for Rare Arable Plants established and previously monitored under the Breckland ESA Scheme; and\n(iii) Arable margins established nationally under the expansion of the Countryside Stewardship Scheme to accommodate a wider range of Arable Options. \n\nThe project as a whole was intended to provide a comprehensive picture of the contribution being made by agri-environment schemes to delivery of the Habitat Action Plan for Cereal Field Margins.",
+  "metadataDate": "2024-03-26T09:20:44",
+  "resourceIdentifiers": [
+    {
+      "code": "641313",
+      "codeSpace": "UKEOF"
+    },
+    {
+      "code": "132267",
+      "codeSpace": "Envirobase"
+    }
+  ],
+  "objectives": "Agri-environment monitoring activities are designed to enable an assessment of the impact of each Scheme on target features of environmental interest. They also provide information about the performance of management prescriptions. Monitoring activities are co-ordinated, rather than carried out in isolation, to ensure that an overall assessment of the effectiveness of the scheme can be made. Most monitoring protocols allow for repeat surveys capable of detecting significant real change and provide baseline and resurvey data. Due to the nature of sampling and the use of common methods, sample sites within the monitoring programme can be used to provide data or a sampling framework to address other policy and scientific needs. The main objective of this activity is: a) to undertake a comprehensive and comparative evaluation of the effectiveness of a range of field margin management options used within various agri-environment schemes in conserving arable plants and providing resources for foraging bumblebees.",
+  "boundingBox": {
+    "westBoundLongitude": -6.207,
+    "eastBoundLongitude": 2.67,
+    "southBoundLatitude": 49.302,
+    "northBoundLatitude": 55.158,
+    "coordinates": "[[[-6.207, 49.302], [-6.207, 55.158], [2.67, 55.158], [2.67, 49.302], [-6.207, 49.302]]]",
+    "bounds": "{\"type\": \"Feature\",      \"properties\": {},      \"geometry\": {        \"type\": \"Polygon\",        \"coordinates\": [[[-6.207, 49.302], [-6.207, 55.158], [2.67, 55.158], [2.67, 49.302], [-6.207, 49.302]]]      }}"
+  },
+  "responsibleParties": [
+    {
+      "organisationName": "Natural England",
+      "organisationIdentifier": "https://ror.org/00r66pz14",
+      "role": "pointOfContact",
+      "email": "enquiries@naturalengland.org.uk"
+    },
+    {
+      "organisationName": "ADAS",
+      "role": "user",
+      "email": "enquiries@adas.co.uk"
+    },
+    {
+      "organisationName": "UK Centre for Ecology & Hydrology",
+      "organisationIdentifier": "https://ror.org/00pggkr55",
+      "role": "user",
+      "email": "enquiries@ceh.ac.uk"
+    },
+    {
+      "organisationName": "Natural England",
+      "organisationIdentifier": "https://ror.org/00r66pz14",
+      "role": "funder",
+      "email": "enquiries@naturalengland.org.uk"
+    },
+    {
+      "organisationName": "European Agricultural Fund for Rural Development",
+      "role": "funder"
+    }
+  ],
+  "environmentalDomain": [
+    {
+      "value": "biosphere",
+      "uri": "http://ex.org/domain/biosphere"
+    }
+  ],
+  "purposeOfCollection": [
+    {
+      "value": "strategic",
+      "uri": "http://ex.org/domain/strategic"
+    },
+    {
+      "value": "ministerialCommitment",
+      "uri": "http://ex.org/domain/ministerialCommitment"
+    },
+    {
+      "value": "policy",
+      "uri": "http://ex.org/domain/policy"
+    },
+    {
+      "value": "dataCollection",
+      "uri": "http://ex.org/domain/dataCollection"
+    }
+  ],
+  "keywordsParameters": [
+    {
+      "value": "land use",
+      "uri": "http://www.eionet.europa.eu/gemet/concept/4678"
+    },
+    {
+      "value": "Site condition"
+    }
+  ],
+  "keywordsOther": [
+    {
+      "value": "Agri-environment scheme"
+    },
+    {
+      "value": "Cereal field margin"
+    },
+    {
+      "value": "Cereal headlands"
+    }
+  ]
+}

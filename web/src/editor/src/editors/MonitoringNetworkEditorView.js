@@ -9,9 +9,9 @@ import {
   TextareaView,
   ContactView,
   ResourceIdentifierView,
-  SupplementalLinkView
+  SupplementalLinkView, EnvironmentalDomainView
 } from '../views'
-import { Contact, Supplemental } from '../models'
+import { Contact, Supplemental, EnvironmentalDomain } from '../models'
 
 export default EditorView.extend({
 
@@ -38,7 +38,7 @@ export default EditorView.extend({
         new TextareaView({
           model: this.model,
           modelAttribute: 'description',
-          rows: 13,
+          rows: 10,
           label: 'Description'
         }),
 
@@ -46,7 +46,7 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'objectives',
           label: 'Objectives',
-          rows: 13
+          rows: 7
         })
       ]
     },
@@ -54,6 +54,21 @@ export default EditorView.extend({
       label: 'Keywords/classification',
       title: 'Keywords and classification',
       views: [
+
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'environmentalDomain',
+          ModelType: EnvironmentalDomain,
+          label: 'Environmental domain',
+          ObjectInputView: EnvironmentalDomainView
+        }),
+
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'keywordsParameters',
+          label: 'Parameters measured',
+          ObjectInputView: KeywordVocabularyView
+        }),
 
         new ParentView({
           model: this.model,
@@ -155,7 +170,7 @@ export default EditorView.extend({
 
         new ParentView({
           model: this.model,
-          modelAttribute: ' linksData',
+          modelAttribute: 'linksData',
           ModelType: Supplemental,
           multiline: true,
           label: 'Links to data',
@@ -164,7 +179,7 @@ export default EditorView.extend({
 
         new ParentView({
           model: this.model,
-          modelAttribute: ' linksOther',
+          modelAttribute: 'linksOther',
           ModelType: Supplemental,
           multiline: true,
           label: 'Other links',

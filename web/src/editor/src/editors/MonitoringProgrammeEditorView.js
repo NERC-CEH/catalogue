@@ -43,7 +43,7 @@ export default EditorView.extend({
         new TextareaView({
           model: this.model,
           modelAttribute: 'description',
-          rows: 13,
+          rows: 10,
           label: 'Description'
         }),
 
@@ -51,24 +51,21 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'objectives',
           label: 'Objectives',
-          rows: 13
+          rows: 7
         }),
 
-        new SingleObjectView({
+        new ParentView({
           model: this.model,
           modelAttribute: 'operatingPeriod',
           ModelType: MultipleDate,
           label: 'Operating period',
-          ObjectInputView: TemporalExtentView,
-          helpText: `
-<p>Temporal Extent of Monitoring Programme</p>
-`
+          ObjectInputView: TemporalExtentView
         })
       ]
     },
     {
-      label: 'Location',
-      title: 'Location',
+      label: 'Location/coverage',
+      title: 'Spatial coverage of the programme',
       views: [
 
         new SingleObjectView({
@@ -105,7 +102,7 @@ export default EditorView.extend({
         new ParentView({
           model: this.model,
           modelAttribute: 'keywordsParameters',
-          label: 'Paremeters measured',
+          label: 'Parameters measured',
           ObjectInputView: KeywordVocabularyView
         }),
 
@@ -209,7 +206,7 @@ export default EditorView.extend({
 
         new ParentView({
           model: this.model,
-          modelAttribute: ' linksData',
+          modelAttribute: 'linksData',
           ModelType: Supplemental,
           multiline: true,
           label: 'Links to data',
@@ -218,7 +215,7 @@ export default EditorView.extend({
 
         new ParentView({
           model: this.model,
-          modelAttribute: ' linksOther',
+          modelAttribute: 'wwlinksOther',
           ModelType: Supplemental,
           multiline: true,
           label: 'Other links',

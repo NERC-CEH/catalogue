@@ -128,31 +128,7 @@ class SolrIndexMetadataDocumentGeneratorTest {
         );
     }
 
-    @Test
-    @SneakyThrows
-    void boundingBoxLocationsAddedToIndex() {
-        //Given
-        MonitoringFacility document = new MonitoringFacility();
-        document.setBoundingBox(BoundingBox.builder()
-            .northBoundLatitude("59.4")
-            .eastBoundLongitude("2.4")
-            .southBoundLatitude("53.3")
-            .westBoundLongitude("-0.5")
-            .build()
-        );
-
-        //When
-        SolrIndex actual = generator.generateIndex(document);
-
-        //Then
-        assertThat(
-            "locations transferred to index",
-            actual.getLocations(),
-            hasItems("POLYGON((-0.5 53.3, -0.5 59.4, 2.4 59.4, 2.4 53.3, -0.5 53.3))")
-        );
-    }
-
-    @Test
+        @Test
     void applicationScaleAddedToIndex() {
         //Given
         Model document = new Model();

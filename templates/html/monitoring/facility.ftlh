@@ -5,7 +5,6 @@
     <@m.keyValue "Type" "type of monitoring facility">${facilityType.value}</@m.keyValue>
   </#if>
 
-
   <#if geometry?? && geometry?has_content>
   <div>
     <@m.keyValue "Location">
@@ -20,16 +19,6 @@
       Geometry is representative
     </#if>
   </div>
-  </#if>
-
-  <#if supplemental?? && supplemental?has_content>
-    <@m.supplemental supplemental />
-  </#if>
-
-   <#if temporalExtent?? && temporalExtent?has_content>
-    <@m.keyValue "Temporal Extent">
-        <@m.temporalExt temporalExtent />
-    </@m.keyValue>
   </#if>
 
   <@m.relationships "Belongs To" "Belongs to Monitoring Network" "http://purl.org/voc/ef#belongsTo" />
