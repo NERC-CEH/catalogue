@@ -66,14 +66,8 @@ export default EditorView.extend({
           ModelType: MultipleDate,
           label: 'Operating period',
           ObjectInputView: TemporalExtentView
-        })
+        }),
 
-      ]
-    },
-    {
-      label: 'Location',
-      title: 'Location',
-      views: [
         new SingleObjectView({
           model: this.model,
           modelAttribute: 'geometry',
