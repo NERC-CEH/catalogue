@@ -197,7 +197,9 @@ export default EditorView.extend({
           options: [
             { value: 'http://onto.nerc.ac.uk/CEHMD/rels/uses', label: 'Uses' }
           ],
-          helpText: `<p>Facilities and networks used by this activity</p>`
+          helpText: `
+<p>Facilities and networks used by this activity</p>
+`
         }),
 
         new ParentView({

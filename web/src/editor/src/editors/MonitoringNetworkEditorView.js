@@ -5,7 +5,6 @@ import {
   ParentView,
   ParentStringView,
   PredefinedParentView,
-  RelationshipView,
   TextareaView,
   ContactView,
   ResourceIdentifierView,
