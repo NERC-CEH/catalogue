@@ -1,4 +1,4 @@
-WW<#import "../functions.ftlh" as func>
+<#import "../functions.ftlh" as func>
 <#setting date_format = 'yyyy-MM-dd'>
 <#if useConstraints?has_content>
     <#assign licences = func.filter(useConstraints, "code", "license")>
