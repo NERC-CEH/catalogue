@@ -205,7 +205,8 @@ export default EditorView.extend({
           ObjectInputView: RelationshipView,
           multiline: true,
           options: [
-            { value: 'http://purl.org/voc/ef#belongsTo', label: 'Belongs To' }
+            { value: 'http://purl.org/voc/ef#belongsTo', label: 'Belongs To' },
+            { value: 'http://purl.org/voc/ef#supersedes', label: 'Supersedes' }
           ],
           helpText: `
 <p>Relationships to other document types</p>

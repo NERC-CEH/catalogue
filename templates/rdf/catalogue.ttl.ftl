@@ -5,6 +5,7 @@ BASE <${baseUri}/>
 PREFIX : <${baseUri}/id/>
 
 <${catalogue}/documents>
+   a dcat:Catalog ;
   dct:title "${title} digital asset register"@en ;
   foaf:homepage <https://catalogue.ceh.ac.uk/${catalogue}/documents> ;
 
@@ -12,7 +13,7 @@ PREFIX : <${baseUri}/id/>
     dcat:resource <#items as record>:${record}<#sep>, </#items> ;
   </#list>
 
-  a dcat:Catalog . <#-- leave here to close off all the statements about the catalogue -->
+  . <#-- leave here to close off all the statements about the catalogue -->
 
 <#if catalogue=="eidc" >
 <https://ror.org/04xw4m193>

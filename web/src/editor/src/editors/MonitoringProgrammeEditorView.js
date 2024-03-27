@@ -108,7 +108,7 @@ export default EditorView.extend({
 
         new ParentView({
           model: this.model,
-          modelAttribute: 'keywordsOther',
+          modelAttribute: 'keywords',
           label: 'Keywords',
           ObjectInputView: KeywordVocabularyView
         })
@@ -195,12 +195,10 @@ export default EditorView.extend({
           ObjectInputView: RelationshipView,
           multiline: true,
           options: [
-            { value: 'http://onto.nerc.ac.uk/CEHMD/rels/produces', label: 'Produces' },
-            { value: 'http://onto.nerc.ac.uk/CEHMD/rels/setupFor', label: 'Setup for' },
-            { value: 'http://onto.nerc.ac.uk/CEHMD/rels/uses', label: 'Uses' }
+            { value: 'http://onto.nerc.ac.uk/CEHMD/rels/triggers', label: 'Triggers' }
           ],
           helpText: `
-<p>Relationships to other document types</p>
+<p>Activities triggered by this programme</p>
 `
         }),
 
@@ -215,7 +213,7 @@ export default EditorView.extend({
 
         new ParentView({
           model: this.model,
-          modelAttribute: 'wwlinksOther',
+          modelAttribute: 'linksOther',
           ModelType: Supplemental,
           multiline: true,
           label: 'Other links',

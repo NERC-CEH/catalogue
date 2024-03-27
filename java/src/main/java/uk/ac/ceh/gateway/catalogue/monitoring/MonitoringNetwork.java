@@ -27,7 +27,7 @@ public class MonitoringNetwork extends AbstractMetadataDocument{
     private String objectives;
     private List<ResponsibleParty> responsibleParties;
     private TimePeriod operatingPeriod;
-    private List<Keyword> environmentalDomain, keywordsOther, keywordsParameters;
+    private List<Keyword> environmentalDomain, keywordsParameters;
     private List<Supplemental> linksData, linksOther;
 
 }

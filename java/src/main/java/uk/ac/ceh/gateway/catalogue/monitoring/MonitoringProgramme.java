@@ -30,7 +30,7 @@ public class MonitoringProgramme extends AbstractMetadataDocument implements Wel
     private BoundingBox boundingBox;
     private List<ResponsibleParty> responsibleParties;
     private List<TimePeriod> operatingPeriod;
-    private List<Keyword> environmentalDomain, purposeOfCollection, keywordsParameters, keywordsOther;
+    private List<Keyword> environmentalDomain, purposeOfCollection, keywordsParameters;
     private List<Supplemental> linksData, linksOther;
 
     @Override

@@ -32,7 +32,7 @@ public class MonitoringFacility extends AbstractMetadataDocument implements Well
     private boolean geometryRepresentative, mobile;
     private List<ResponsibleParty> responsibleParties;
     private List<TimePeriod> operatingPeriod;
-    private List<Keyword> environmentalDomain, keywordsOther, keywordsParameters;
+    private List<Keyword> environmentalDomain, keywordsParameters;
 
     @Override
     public @NonNull List<String> getWKTs() {

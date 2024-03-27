@@ -32,11 +32,11 @@
           <#nested>
 
           <#if environmentalDomain??>
-             <@keyValue "Environmental domain" ""><@b.keywords environmentalDomain/></@keyValue>
+           <@keyValue "Environmental domain" ""><@displayKeywords environmentalDomain/></@keyValue>
           </#if>
 
           <#if purposeOfCollection??>
-             <@keyValue "Purpose of collection" ""><@b.keywords purposeOfCollection/></@keyValue>
+             <@keyValue "Purpose of collection" ""><@displayKeywords purposeOfCollection/></@keyValue>
           </#if>
 
 
@@ -79,11 +79,11 @@
             <h2>Other metadata</h2>
 
             <#if keywordsParameters?? && keywordsParameters?has_content>
-              <@keyValue "Parameters measured" ""><@b.keywords keywordsParameters/></@keyValue>
+              <@keyValue "Parameters measured" ""><@displayKeywords keywordsParameters ","/></@keyValue>
             </#if>
 
-            <#if keywordsOther?? && keywordsOther?has_content>
-              <@keyValue "Keywords" ""><@b.keywords keywordsOther /></@keyValue>
+            <#if keywords?? && keywords?has_content>
+              <@keyValue "Keywords" ""><@displayKeywords keywords ","/></@keyValue>
             </#if>
 
             <#if metadataDateTime?has_content>
@@ -99,7 +99,7 @@
 </#macro>
 
 <#macro keyValue key description="" auto_esc=false>
-  <div class="row key-value" title="${description}">
+  <div class="key-value" title="${description}">
     <div class="col-sm-3 key">
      ${key}
     </div>
@@ -211,12 +211,12 @@ Operating period
 <#macro inverseRelationshipCombinedGeometries relation>
   <#local combinedGeometry=jena.inverseRelationshipCombinedGeometries(uri, relation) />
   <#if combinedGeometry?has_content>
-    <@geometry geometry=combinedGeometry />
+    <@map combinedGeometry />
   </#if>
 </#macro>
 
 <#macro contactDetails contact>
- <@keyValue contact.role?capitalize  "">
+ <@keyValue contact.role?capitalize "">
     <#if contact.individualName?has_content>
       <span>
         ${contact.individualName}
@@ -243,7 +243,6 @@ Operating period
   </@keyValue>
 </#macro>
 
-
 <#macro displayLinks linkList title="">
   <#list linkList>
     <@keyValue "${title}" "">
@@ -255,5 +254,26 @@ Operating period
         </#if><#sep><br></#sep>
       </#items>
     </@keyValue>
+  </#list>
+</#macro>
+
+<#macro displayKeywords keywords separator="<br>">
+  <#list keywords as keyword>
+
+    <#if keyword.uri?? && keyword.uri?has_content>
+        <a href="${keyword.uri}">
+          <#if keyword.value?? && keyword.value?has_content>
+            ${keyword.value}
+          <#else>
+              ${keyword.uri}
+          </#if>
+        </a>
+    <#elseif keyword.value?? && keyword.value?has_content>
+      ${keyword.value}
+    <#else>
+     <span class="text-muted">missing</span>
+    </#if>
+
+    <#sep>${separator?no_esc}</#sep>
   </#list>
 </#macro>

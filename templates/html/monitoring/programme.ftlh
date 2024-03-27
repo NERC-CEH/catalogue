@@ -7,8 +7,7 @@
     </@m.keyValue>
   </#if>
 
-  <@m.inverseRelationships "Triggers" "Monitoring Activities triggered by this Monitoring Programme" "http://ontm.nerc.ac.uk/CEHMD/rels/setupFor" />
-  <@m.relationships "Associated With" "Projects associated with this Monitoring Programme" "http://ontm.nerc.ac.uk/CEHMD/rels/associatedWith" />
-  <@m.relationships "Owns" "Research Artifacts owned by this Monitoring Programme" "http://ontm.nerc.ac.uk/CEHMD/rels/owns" />
-  <@m.inverseRelationships "Associated With" "Agents associated with this Monitoring Programme" "http://ontm.nerc.ac.uk/CEHMD/rels/associatedWith" />
+  <@m.relationships "Triggers" "Activities set up for this programme" "http://onto.nerc.ac.uk/CEHMD/rels/triggers" />
+
+
 </@m.base>

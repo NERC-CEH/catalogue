@@ -10,5 +10,6 @@
     </@m.keyValue>
   </#if>
 
-  <@m.inverseRelationships "Contains" "Contains Monitoring Facilities" "http://purl.org/voc/ef#belongsTo" />
+  <@m.inverseRelationships "Contains" "Contains" "http://purl.org/voc/ef#belongsTo" />
+  <@m.inverseRelationships "Used by" "Used by" "http://onto.nerc.ac.uk/CEHMD/rels/uses" />
 </@m.base>
