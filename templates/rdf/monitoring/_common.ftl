@@ -20,5 +20,6 @@ PREFIX geo: <http://www.opengis.net/ont/geosparql#>
   <#nested>
 
   dct:language "eng" .
+  <#-- other triples not about <id>, e.g. authors, organisations -->
+  ${other} <#-- includes other triples here -->
 </#macro>
-
