@@ -18,6 +18,7 @@
     --header-link-hover-colour: var(--link-hover-colour);
     --header-border-colour: var(--primary-colour);
     --header-border-width: 4px;
+    --header-logo-height: calc(var(--header-height) - 50px);
 }
 
 footer {
@@ -39,4 +40,41 @@ footer {
             }
         }
     }
+}
+
+header {
+    .toolbar {
+        .brand {
+            img {
+                max-height: calc(var(--header-height) - 45px);
+            }
+        }
+    }
+}
+
+#editor {
+    .option-ukeof {
+        display: initial;
+    }
+}
+
+
+#metadata {
+
+    #studyarea-map,
+    #geometry-map {
+        height: 400px;
+        width: 400px;
+    }
+
+    .key-value {
+        >div {
+            padding: .5em 0;
+        }
+
+        .key {
+            font-weight: 600;
+        }
+    }
+    h2 { clear:both;  padding-top:2em;  }
 }

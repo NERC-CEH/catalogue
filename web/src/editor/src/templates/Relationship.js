@@ -6,8 +6,10 @@ export default _.template(`
         <label for="relationship<%= data.index %>Relation">Relation</label>
     </div>
     <div class="col-sm-10 col-lg-10">
-        <input list="relationship<%= data.index %>relationships" data-name="relation" id="relationship<%= data.index %>Relation" class="editor-input" value="<%= data.relation %>">
-        <datalist id="relationship<%= data.index %>relationships"></datalist>
+        <select data-name="relation" id="relationship<%= data.index %>Relation" class="relationshipList editor-input" value="<%= data.relation %>">
+          <option value="">Choose a relationship</option>
+        </select>
+
     </div>
 </div>
 <div class="row">

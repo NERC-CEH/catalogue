@@ -22,14 +22,10 @@ main {
             flex: 0 0 var(--filter-width);
             border-right: var(--filter-border);
             .search-tabs {
-                margin: 0;
-                padding: 0;
-                display: flex;
-                height: 100%;
-                flex-direction: column;
-                gap: 0;
+                background-color: var(--filter-body-background-colour);
                 .nav-tabs{
-                    background-color: var(--filter-body-background-colour);
+                    padding-top:3px;
+
                     > li {
                         > a {
                             cursor: pointer;
@@ -271,6 +267,7 @@ main {
                         transparent,
                         transparent 18px,
                         rgba(139, 0, 0, 0.15) 20px);
+                margin-left:3em;
 
                 .result__description {
                     color: #999;

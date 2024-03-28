@@ -95,17 +95,18 @@
                 </@displaykey>
             </#if>
 
-            <#if infrastructureScale?? ||  (boundingBoxes?? && boundingBoxes?has_content)>
-              <@displaykey "Scale">
-                <#if infrastructureScale??>${infrastructureScale}</#if>
-              </@displaykey>
+            <#if infrastructureScale?? || geometry?? >
 
-              <#if boundingBoxes?? && boundingBoxes?has_content >
+              <#if infrastructureScale??>
+                <@displaykey "Scale">${infrastructureScale}</@displaykey>
+              </#if>
+
+              <#if geometry?? >
+                <@displaykey "Location">
                   <div id="studyarea-map">
-                  <#list boundingBoxes as extent>
-                    <span content="${extent.wkt}" datatype="geo:wktLiteral"/>
-                  </#list>
-                </div>
+                    <span content="${geometry.geometryString}" dataType="geoJson"/>
+                  </div>
+                </@displaykey>
               </#if>
             </#if>
 

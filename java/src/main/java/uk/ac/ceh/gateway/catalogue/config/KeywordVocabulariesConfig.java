@@ -179,7 +179,7 @@ public class KeywordVocabulariesConfig {
          *
          * See EMC-6 in Jira for details.
          */
-        val catalogueIds = List.of("eidc");
+        val catalogueIds = List.of("eidc","ukeof");
         return new HttpKeywordVocabulary(
                 "gemet",
                 "GEMET",

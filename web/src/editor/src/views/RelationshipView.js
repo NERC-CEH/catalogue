@@ -77,7 +77,7 @@ export default ObjectInputView.extend({
     }
 
     this.options.forEach(option => {
-      return this.$('datalist').append(this.optionTemplate(option))
+      return this.$('.relationshipList').append(this.optionTemplate(option))
     })
     return this
   }

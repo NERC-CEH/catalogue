@@ -54,9 +54,9 @@
           -->
           <#if !contactIdentifier?matches("^\lhttp(|s)://ror.org/04xw4m193\g$") && !contactIdentifier?matches("^\lhttp(|s)://ror.org/00pggkr55\g$")>
             ${contactIdentifier} a ${contactType} ;
-            vcard:fn "${contactName}" ;
-            <#if orgName?has_content>vcard:organization-name "${orgName}" ;</#if>
-            <#if contact.email?has_content>vcard:hasEmail "${contact.email}" ;</#if>
+            vcard:fn "${contactName?trim}" ;
+            <#if orgName?has_content>vcard:organization-name "${orgName?trim}" ;</#if>
+            <#if contact.email?has_content>vcard:hasEmail "${contact.email?trim}" ;</#if>
             .
           </#if>
       </#if>
