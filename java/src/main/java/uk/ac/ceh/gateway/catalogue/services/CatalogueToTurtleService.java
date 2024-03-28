@@ -95,6 +95,7 @@ public class CatalogueToTurtleService implements DocumentsToTurtleService {
         return ids.stream()
             .map(this::getMetadataDocument)
             .map(this::docToString)
+            .filter(s -> !s.isEmpty())
             .collect(Collectors.toList());
     }
 
@@ -105,7 +106,26 @@ public class CatalogueToTurtleService implements DocumentsToTurtleService {
 
     @SneakyThrows
     private String docToString(MetadataDocument model) {
-        val freemarkerTemplate = configuration.getTemplate("rdf/ttlUnprefixed.ftl");
-        return FreeMarkerTemplateUtils.processTemplateIntoString(freemarkerTemplate, model);
+        return switch (model.getType()) {
+            case "dataset", "service", "signpost" ->
+                template(model, "rdf/ttlUnprefixed.ftl");
+            case "monitoringActivity" ->
+                template(model, "rdf/monitoring/activity.ftl");
+            case "monitoringFacility" ->
+                template(model, "rdf/monitoring/facility.ftl");
+            case "monitoringNetwork" ->
+                template(model, "rdf/monitoring/network.ftl");
+            case "monitoringProgramme" ->
+                template(model, "rdf/monitoring/programme.ftl");
+            default -> "";
+        };
+    }
+
+    @SneakyThrows
+    private String template(MetadataDocument model, String templateName) {
+        return FreeMarkerTemplateUtils.processTemplateIntoString(
+            configuration.getTemplate(templateName),
+            model
+        );
     }
 }
