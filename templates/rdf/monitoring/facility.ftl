@@ -7,7 +7,7 @@
   </#if>
 
   <#if environmentalDomain??>
-    ef:mediaMonitored <#list environmentalDomain as ad><${ad.uri}><#sep>,</#sep></#list>
+    ef:mediaMonitored <#list environmentalDomain as ad><${ad.uri}><#sep>,</#sep></#list> ;
   </#if>
 </@c.common>
 </#compress>

@@ -192,35 +192,6 @@ public class KeywordVocabulariesConfig {
                 );
             }
 
-    @Profile("server:ukeof")
-    @Bean
-    public KeywordVocabulary ukeofGemetVocabulary(
-            SolrClient solrClient,
-            @Value("${gemet.concepturl}") String gemetConceptUrl
-            ) {
-        /* GEMET is the GEneral Multilingual Environmental Thesaurus
-         *
-         * This vocabulary was implemented using the documentation located at
-         * https://www.eionet.europa.eu/gemet/en/webservices/
-         *
-         * Its purpose is to harvest the GEMET concepts only - so NOT themes,
-         * groups and supergroups.
-         *
-         * See EMC-6 in Jira for details.
-         */
-        val catalogueIds = List.of("ukeof");
-        return new HttpKeywordVocabulary(
-                "gemet",
-                "GEMET",
-                gemetConceptUrl,
-                "",
-                "/uri",
-                "/preferredLabel/string",
-                solrClient,
-                catalogueIds
-                );
-            }
-
     @Profile("server:inms")
     @Bean
     public KeywordVocabulary inmsVocabulary(
