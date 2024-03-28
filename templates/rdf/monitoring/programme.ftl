@@ -2,7 +2,7 @@
 <#compress>
 <#import "_common.ftl" as c>
 
-<@c.common rdftype="ef:EnvironmentalMonitoringProgramme" other=other>
+<@c.common rdftype="ef:EnvironmentalMonitoringProgramme">
   <#-- programme specific statements about <id> -->
 </@c.common>
 </#compress>
