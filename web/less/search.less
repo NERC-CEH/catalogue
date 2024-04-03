@@ -21,41 +21,37 @@ main {
             display: none;
             flex: 0 0 var(--filter-width);
             border-right: var(--filter-border);
-            .search-tabs {
-                background-color: var(--filter-body-background-colour);
-                .nav-tabs{
-                    padding-top:3px;
 
-                    > li {
-                        > a {
+            .search-tabs {
+                background-color: var(--filter-background-colour);
+                min-height: calc(100vh - var(--header-height));
+
+                .nav-tabs {
+
+                    padding-top: 3px;
+
+                    >li {
+                        >a {
                             cursor: pointer;
-                            background-color: var(--filter-body-background-colour);
-                            color: var(--filter-heading-colour);
+                            background-color: var(--filter-background-colour);
+                            color: var(--filter-link-colour);
                             display: block;
                             padding: .3em .6em;
                             font-size: 1.3em;
                             border-bottom: 1px solid var(--filter-tab-border-colour);
+
                             &:hover {
-                                border-color: var(--filter-tab-border-colour);
+                                background-color: color-mix(in lab, var(--filter-background-colour), black 20%);
                             }
                         }
+
                         &.active {
-                            > a {
-                                border-color: var(--filter-tab-border-colour) var(--filter-tab-border-colour) transparent;
-                                &:hover {
-                                    border-color: var(--filter-tab-border-colour) var(--filter-tab-border-colour) transparent;
-                                }
+                            top: 1px;
+
+                            a {
+                                border-bottom: none;
                             }
                         }
-                    }
-                }
-                .tab-content {
-                    position: relative;
-                    height: 100%;
-                    background-color: var(--filter-body-background-colour);
-                    color: var(--filter-body-colour);
-                    a {
-                        color: var(--filter-body-colour);
                     }
                 }
             }
@@ -96,6 +92,7 @@ main {
                 .facet-header {
                     font-weight: 600;
                     font-size: 1.35em;
+                    color:var(--filter-heading-colour);
                 }
 
                 margin: 2em 0;
@@ -117,7 +114,7 @@ main {
                         }
 
                         a {
-                            color: var(--filter-body-link-colour);
+                            color: var(--filter-link-colour);
                             white-space: nowrap;
                         }
                     }
@@ -176,16 +173,18 @@ main {
 
             .form-operation {
                 padding: 0.6em;
+                color: var(--filter-colour, white);
             }
 
             .leaflet-control-layers-list {
                 overflow: hidden;
-                fontsize: 9px;
+                font-size: 1.2rem;
             }
 
             .leaflet-control-attribution {
                 background-color: #999;
-                font-size: 9px;
+                font-size: 1.2rem;
+                padding: .5rem;
             }
         }
 
@@ -267,7 +266,7 @@ main {
                         transparent,
                         transparent 18px,
                         rgba(139, 0, 0, 0.15) 20px);
-                margin-left:3em;
+                margin-left: 3em;
 
                 .result__description {
                     color: #999;
