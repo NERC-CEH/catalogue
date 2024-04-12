@@ -56,7 +56,6 @@ you will need to create a `secrets.env` file with the following
 ```
 jira.password=FindMeInK33Pa55
 crowd.password=
-plone.password=
 doi.password=
 hubbub.password=
 fuseki.password=
