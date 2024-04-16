@@ -16,7 +16,7 @@
   <h2 id="authors">Author<#if authors?size gt 1>s</#if></h2>
 
       <#list authors>
-      <#assign authorMaxSize = 4 >
+      <#assign authorMaxSize = 30 >
       <#assign moreAuthors = authors?size-authorMaxSize >
 
         <#items as author>
