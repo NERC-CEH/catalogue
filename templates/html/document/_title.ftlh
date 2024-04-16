@@ -6,7 +6,7 @@
           <button type="button" class="close" data-dismiss="modal" aria-label="CLose"><i aria-hidden="true" class="fa-solid fa-xmark"></i></button>
           <p><strong>Cite this dataset as</strong></p>
           <p id="citation-text">
-            ${citation.authors?join('; ')} (${citation.year?string["0000"]}). <b>${citation.title}</b>. ${citation.publisher}.  (${codes.lookup('datacite.resourceTypeGeneral',citation.resourceTypeGeneral)}). ${citation.url}
+            ${citation.authors?join(', ')} (${citation.year?string["0000"]}). <b>${citation.title}</b>. ${citation.publisher}.  (${codes.lookup('datacite.resourceTypeGeneral',citation.resourceTypeGeneral)}). ${citation.url}
           </p>
           <p><small>
             Import this citation into your reference management software:<br>
@@ -22,21 +22,21 @@
 </#if>
 
 <div id="section-title" class="clearfix">
-<#if citation?has_content>
-  <div class="authorList">
-    <#if citation.authors?size gte 8>
-      ${citation.authors?first} <em>et al</em>
-    <#else>
-      ${citation.authors?join('; ')}
-    </#if>
-  </div>
-</#if>
+  <#if citation?has_content>
+    <div class="authorList">
+      <#if citation.authors?size gte 8>
+        ${citation.authors?first} <em>et al</em>
+      <#else>
+        ${citation.authors?join('; ')}
+      </#if>
+    </div>
+  </#if>
 
   <h1 id="document-title">
     <#if (metadata.state == 'draft' || metadata.state == 'pending') >
       <small class="text-danger"><b>${codes.lookup('publication.state', metadata.state)?upper_case!''}</b></small>
     </#if>
-     <#if isLinkedDoc="true"> 
+     <#if isLinkedDoc="true">
         <i class="fa-solid fa-link" title="linked document"></i>
       </#if>
     ${title}
@@ -68,6 +68,4 @@
       <#include "_status.ftlh">
     </div>
   </#if>
-
-
 </div>

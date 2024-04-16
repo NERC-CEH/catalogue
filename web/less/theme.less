@@ -30,6 +30,7 @@ body {
     flex-direction: column;
     min-height: 100vh;
     font-family: var(--font-family-body);
+    text-wrap: pretty;
 }
 
 footer {
@@ -44,7 +45,7 @@ footer {
 header {
     position: sticky;
     top: 0;
-    z-index: 5000;
+    z-index: 2000;
     background-color: var(--header-background-colour);
     border-bottom: solid var(--header-border-colour) var(--header-border-width);
 }
@@ -108,7 +109,7 @@ header {
                     padding: calc(var(--header-height, 3.4em) / 4) 1em;
                     white-space: nowrap;
                     text-decoration: none;
-                    font-weight: 200;
+                    font-weight: var(--header-link-weight);
                     background-color: var(--header-link-background-colour);
                     color: var(--header-link-colour);
 
