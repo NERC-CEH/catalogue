@@ -16,8 +16,9 @@
   <h2 id="authors">Author<#if authors?size gt 1>s</#if></h2>
 
       <#list authors>
-      <#assign authorMaxSize = 30 >
+      <#assign authorMaxSize = 4 >
       <#assign moreAuthors = authors?size-authorMaxSize >
+
         <#items as author>
           <#assign rpClass="responsibleParty">
           <#if author?counter gt authorMaxSize>
@@ -27,23 +28,22 @@
           <div class="${rpClass}">
             <@func.displayContact author false false true />
           </div>
-
         </#items>
 
       <#if authors?size gt authorMaxSize >
-        <p>
-            <small>
-                <a href=".responsiblePartyCollapse" class="moreAuthors collapsed" data-toggle="collapse" aria-controls="responsiblePartyCollapse" area-expanded="false" role="button">
-                  <span>${moreAuthors} more authors. </span>Show
-                </a>
-            </small>
+        <p class="responsiblePartyCollapse trigger">
+          <small>
+            <a href=".responsiblePartyCollapse" class="moreAuthors" data-toggle="collapse"
+            aria-controls="responsiblePartyCollapse" area-expanded="false" role="button">
+              <span>${moreAuthors} more authors. </span>Show
+            </a>
+          </small>
         </p>
       </#if>
       </#list>
 
   </div>
 </#if>
-
 
 <#if otherContacts?has_content || rightsHolders?has_content>
   <div id="document-otherContacts">

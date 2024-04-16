@@ -10,7 +10,11 @@
     --border_radius: 0.5em;
 }
 
-body {display:flex; flex-direction: column; min-height: 100vh;}
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
 
 .metadata-grid {
     .col1 {
@@ -79,6 +83,7 @@ body {display:flex; flex-direction: column; min-height: 100vh;}
                 max-height: 200px;
             }
         }
+
         @media only screen and (min-width: 640px) {
             .browseimage {
                 display: block;
@@ -251,18 +256,22 @@ body {display:flex; flex-direction: column; min-height: 100vh;}
         }
     }
 
-    .modal-body {
-        #citation-text {
-            margin: -0.5em 2em 2em 2em;
-        }
+    .modal {
+        z-index: 2001;
 
-        .licenceText {
-            margin-top: 3em;
-            .text-center;
+        .modal-body {
+            #citation-text {
+                margin: -0.5em 2em 2em 2em;
+            }
 
-            img {
-                display: block;
-                margin: 5px auto;
+            .licenceText {
+                margin-top: 3em;
+                .text-center;
+
+                img {
+                    display: block;
+                    margin: 5px auto;
+                }
             }
         }
     }
@@ -604,27 +613,36 @@ body {display:flex; flex-direction: column; min-height: 100vh;}
         }
     }
 
-    #document-authors {
-        a.moreAuthors {
-            &::after {
-                content: "fewer ↑";
-            }
+    .responsiblePartyCollapse.trigger.collapse {
+        display: block
+    }
 
-            span {
-                display: none;
+    .responsiblePartyCollapse.trigger {
+        &:not(.in) {
+            a.moreAuthors {
+                &::after {
+                    content: "more ↓";
+                }
+
+                span {
+                    display: inline;
+                }
             }
         }
 
-        a.moreAuthors.collapsed {
-            &::after {
-                content: "more ↓";
-            }
+        &.in {
+            a.moreAuthors {
+                &::after {
+                    content: "fewer ↑";
+                }
 
-            span {
-                display: inline;
+                span {
+                    display: none;
+                }
             }
         }
     }
+
 
     #document-upload-panel {
         border-radius: 0;
