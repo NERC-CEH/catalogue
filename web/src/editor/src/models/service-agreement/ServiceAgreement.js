@@ -18,7 +18,8 @@ export default EditorMetadata.extend({
 
   validate (attrs) {
     const errors = EditorMetadata.prototype.validate.call(this, attrs) || []
-    if ((attrs != null ? attrs.depositorContactDetails : undefined) == null) {
+
+    if (!attrs?.depositorContactDetails) {
       errors.push('Depositor contact details are mandatory')
     }
 
