@@ -285,7 +285,7 @@ public class ServiceAgreementQualityService {
     Optional<List<MetadataCheck>> checkSupportingDocs(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
         val supportingDocs = parsed.read(
-                "$.supportingDocs[*].['filename','content']",
+                "$.supportingDocs[*].['name','content']",
                 typeRefStringString
         );
 
@@ -294,14 +294,14 @@ public class ServiceAgreementQualityService {
         }
 
         if (supportingDocs.size() >= 1 ) {
-            if (supportingDocs.stream().anyMatch(supportingDoc -> fieldIsMissing(supportingDoc, "filename"))) {
-                toReturn.add(new MetadataCheck("Supporting document filename is missing", ERROR));
+            if (supportingDocs.stream().anyMatch(supportingDoc -> fieldIsMissing(supportingDoc, "name"))) {
+                toReturn.add(new MetadataCheck("Supporting document name is missing", ERROR));
             } else {
-                if (supportingDocs.stream().anyMatch(supportingDoc -> supportingDoc.get("filename").contains(" "))) {
-                    toReturn.add(new MetadataCheck("Supporting document filename should not contain any spaces", ERROR));
+                if (supportingDocs.stream().anyMatch(supportingDoc -> supportingDoc.get("name").contains(" "))) {
+                    toReturn.add(new MetadataCheck("Supporting document name should not contain any spaces", ERROR));
                 }
-                if (supportingDocs.stream().noneMatch(supportingDoc -> supportingDoc.get("filename").matches("^[\\w-_\\.]*$"))) {
-                    toReturn.add(new MetadataCheck("Supporting document filename should only consist of alphanumeric characters, underscore and hyphens", ERROR));
+                if (supportingDocs.stream().noneMatch(supportingDoc -> supportingDoc.get("name").matches("^[\\w-_\\.]*$"))) {
+                    toReturn.add(new MetadataCheck("Supporting document name should only consist of alphanumeric characters, underscore and hyphens", ERROR));
                 }
             }
 

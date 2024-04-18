@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class SupportingDoc {
-    private String filename;
+    private String name;
+    private String format;
     private String content;
 }
