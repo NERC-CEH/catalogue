@@ -67,7 +67,7 @@ public class ServiceAgreementQualityServiceTest {
 
     @BeforeEach
     public void setup() {
-        this.service = new ServiceAgreementQualityService(documentReader, objectMapper);
+        this.service = new ServiceAgreementQualityService(documentReader, objectMapper, "EIDCHELP-");
     }
 
 
