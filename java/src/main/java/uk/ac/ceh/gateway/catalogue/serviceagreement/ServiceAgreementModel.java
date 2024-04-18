@@ -42,7 +42,7 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
 
     private List<DescriptiveKeywords> descriptiveKeywords;
 
-    private List<BoundingBox> areaOfStudy;
+    private List<BoundingBox> boundingBoxes;
 
     private String state;
 
@@ -80,7 +80,7 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
         this.descriptiveKeywords = serviceAgreement.getDescriptiveKeywords();
         this.description = serviceAgreement.getDescription();
         this.lineage = serviceAgreement.getLineage();
-        this.areaOfStudy = serviceAgreement.getAreaOfStudy();
+        this.boundingBoxes = serviceAgreement.getBoundingBoxes();
         this.historical = serviceAgreement.isHistorical();
         this.state = serviceAgreement.getState();
     }

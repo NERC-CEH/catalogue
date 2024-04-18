@@ -124,12 +124,12 @@ public class ServiceAgreementQualityService {
 
     Optional<List<MetadataCheck>> checkDiscoveryMetadata(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
-        val areaOfStudy = parsed.read(
-            "$.areaOfStudy[*]",
+        val boundingBoxes = parsed.read(
+            "$.boundingBoxes[*]",
             typeRefStringString
         );
 
-        if (areaOfStudy.size() == 0 ) {
+        if (boundingBoxes.size() == 0 ) {
             toReturn.add(new MetadataCheck("Area of study not included", INFO));
         }
 

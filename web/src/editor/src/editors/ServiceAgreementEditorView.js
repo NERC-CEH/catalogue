@@ -411,7 +411,7 @@ export default EditorView.extend({
 
         new PredefinedParentView({
           model: this.model,
-          modelAttribute: 'areaOfStudy',
+          modelAttribute: 'boundingBoxes',
           ModelType: BoundingBox,
           label: 'Area of Study',
           ObjectInputView: BoundingBoxView,
