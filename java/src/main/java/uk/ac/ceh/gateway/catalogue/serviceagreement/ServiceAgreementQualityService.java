@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Value;
 import uk.ac.ceh.gateway.catalogue.document.reading.DocumentReader;
 import uk.ac.ceh.gateway.catalogue.quality.MetadataCheck;
 import uk.ac.ceh.gateway.catalogue.quality.Results;
@@ -34,15 +35,16 @@ public class ServiceAgreementQualityService {
     private final Configuration config;
     private final Pattern AUTHOR_PATTERN = Pattern.compile("^[\\w\\-\\s']+, (\\w\\.){1,5}$");
     private final Pattern EMAIL_PATTERN = Pattern.compile("^[a-z0-9\\\\!#$%&'*+/=?^_`{|}~\\-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~\\-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$");
-
+    private final String jiraPrefix;
 
     private final TypeRef<List<Map<String, String>>> typeRefStringString = new TypeRef<>() {
     };
 
     public ServiceAgreementQualityService(
             @NonNull DocumentReader documentReader,
-            @NonNull ObjectMapper objectMapper
-    ) {
+            @NonNull ObjectMapper objectMapper,
+            @NonNull @Value("${jira.serviceAgreement.prefix}") String jiraPrefix
+            ) {
         this.documentReader = documentReader;
         this.config = Configuration.defaultConfiguration()
                 .jsonProvider(new JacksonJsonProvider(objectMapper))
@@ -51,6 +53,7 @@ public class ServiceAgreementQualityService {
                         Option.DEFAULT_PATH_LEAF_TO_NULL,
                         Option.SUPPRESS_EXCEPTIONS
                 );
+        this.jiraPrefix = jiraPrefix;
         log.info("Creating");
     }
 
@@ -104,11 +107,11 @@ public class ServiceAgreementQualityService {
 
         try {
             val depositReference = parsedDoc.read("$.depositReference", String.class).trim();
-            if (!depositReference.matches("^EIDCHELP-\\d{1,9}$")) {
-                toReturn.add(new MetadataCheck("Deposit reference must be present and must match EIDCHELP-XXXX", ERROR));
+            if (!depositReference.matches("^"+jiraPrefix+"\\d{1,9}$")) {
+                toReturn.add(new MetadataCheck("Deposit reference must be present and must match "+jiraPrefix+"XXXX", ERROR));
             }
         } catch (NullPointerException ex) {
-            toReturn.add(new MetadataCheck("Deposit reference must be present and must match EIDCHELP-XXXX", ERROR));
+            toReturn.add(new MetadataCheck("Deposit reference must be present and must match "+jiraPrefix+"XXXX", ERROR));
         }
 
 
