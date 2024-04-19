@@ -4,6 +4,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.context.annotation.Profile;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
@@ -47,10 +48,9 @@ public class ServiceAgreementModelAssembler extends RepresentationModelAssembler
 
         if ("draft".equals(serviceAgreement.getState()) &&
                 serviceAgreementQualityService.check(serviceAgreement.getId()).getErrors() == 0) {
-            val submitLink = linkTo(methodOn(ServiceAgreementController.class)
-                    .submitServiceAgreement(null, id))
-                .withRel("submit")
-                .withTitle("Submit");
+            val href = linkTo(methodOn(ServiceAgreementController.class)
+                .submitServiceAgreement(null, id)).toUriComponentsBuilder().scheme("https").build().toUriString();
+            val submitLink = Link.of(href, "submit").withTitle("Submit");
             model.add(submitLink);
                 }
         if ("pending publication".equals(serviceAgreement.getState())) {
