@@ -12,14 +12,10 @@ import {
 import { EditorView, InputView } from '../index'
 import { Author, DescriptiveKeyword, Funding, RightsHolder, SupportingDoc } from '../models'
 import { BoundingBox, BoundingBoxView } from '../geometryMap'
-import Swal from 'sweetalert2'
 
 export default EditorView.extend({
 
   initialize () {
-    this.delegate({ 'click #exitWithoutSaving': 'exit' })
-    this.delegate({ 'click #editorExit': 'attemptExit' })
-
     this.sections = [{
       label: 'General',
       title: '',
@@ -477,21 +473,6 @@ export default EditorView.extend({
     ]
 
     return EditorView.prototype.initialize.apply(this)
-  },
-
-  attemptExit () {
-    Swal.fire({
-      title: 'Do you want to exit without saving?',
-      confirmButtonText: 'Yes?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.exit()
-      }
-    })
   },
 
   exit () {
