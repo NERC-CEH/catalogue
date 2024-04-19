@@ -43,7 +43,7 @@
                 </div>
             </div>
             </#if>
-                
+
             <#if permission.userCanEditServiceAgreement(id) && !isHistorical()>
                 <#include "_serviceAgreementQualityReport.ftlh">
             </#if>
@@ -155,8 +155,8 @@
                                             <i>${doc.filename}</i>
                                         <#else>
                                            <span class="alert alert--error">missing</span>
-                                        </#if>                                       
-                                    </div> 
+                                        </#if>
+                                    </div>
                                     <div class="supportingDoc__content">
                                         <#if doc.content?? >
                                             <@blocks.linebreaks doc.content />
@@ -208,11 +208,11 @@
                 </div>
             </#if>
 
-            <#if description?has_content || lineage?has_content || allKeywords?has_content || areaOfStudy??>
+            <#if description?has_content || lineage?has_content || allKeywords?has_content || boundingBoxes??>
                 <div class="section section--metadata">
                     <h2>Discovery metadata</h2>
                     <p><i>Information in this section will be used to create a record in the EIDC data catalogue.</i></p>
-                    <@displayData "Description" description/> 
+                    <@displayData "Description" description/>
                     <@displayData "Lineage" lineage/>
                     <@displayKeywords/>
                     <@displayArea/>
@@ -373,12 +373,12 @@
 </#macro>
 
 <#macro displayArea>
-    <#if areaOfStudy??>
+    <#if boundingBoxes??>
         <div class="keyvalue">
             <div class="key">Area of study</div>
             <div class="key">
                 <div id="studyarea-map">
-                    <#list areaOfStudy as extent>
+                    <#list boundingBoxes as extent>
                         <span content="${extent.wkt}" datatype="geo:wktLiteral"/>
                     </#list>
                 </div>

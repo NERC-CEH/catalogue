@@ -40,7 +40,7 @@ public class ServiceAgreement extends AbstractMetadataDocument {
 
     private List<DescriptiveKeywords> descriptiveKeywords;
 
-    private List<BoundingBox> areaOfStudy;
+    private List<BoundingBox> boundingBoxes;
 
     /*
      * FLAGS
