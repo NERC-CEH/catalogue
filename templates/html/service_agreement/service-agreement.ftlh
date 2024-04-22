@@ -158,11 +158,13 @@
                                         </#if>
                                     </div>
                                     <div class="supportingDoc__content">
-                                        <#if doc.content?? >
-                                            <@blocks.linebreaks doc.content />
-                                        <#else>
-                                           <span class="alert alert--error">missing</span>
-                                        </#if>
+                                        <ul>
+                                            <#list doc.content as kind>
+                                                <li>${doc.contentTypeToText(kind)}</li>
+                                            <#else>
+                                                <span class="alert alert--error">missing</span>
+                                            </#list>
+                                        </ul>
                                     </div>
                                 </div>
                             </#list>
