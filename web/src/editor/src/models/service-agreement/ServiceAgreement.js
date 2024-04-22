@@ -1,5 +1,4 @@
 import { EditorMetadata } from '../../index'
-import _ from 'underscore'
 
 export default EditorMetadata.extend({
 
@@ -23,10 +22,7 @@ export default EditorMetadata.extend({
       errors.push('Depositor contact details are mandatory')
     }
 
-    if (_.isEmpty(errors)) {
-      // return nothing from Backbone.Model.validate because returning something signals a validation error.
-
-    } else {
+    if (errors.length) {
       return errors
     }
   }
