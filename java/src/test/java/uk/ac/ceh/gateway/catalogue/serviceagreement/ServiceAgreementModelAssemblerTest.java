@@ -1,10 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
-import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -33,12 +34,11 @@ class ServiceAgreementModelAssemblerTest {
     private final String id = "b7fc9ed3-c166-45ec-93a9-93a294ab74a9";
 
     @BeforeEach
-    void setup() {
-        assembler = new ServiceAgreementModelAssembler(documentRepository, serviceAgreementQualityService);
+    void setup(TestInfo testInfo) {
+        assembler = new ServiceAgreementModelAssembler(documentRepository, serviceAgreementQualityService, String.join(",", testInfo.getTags()));
     }
 
-    @Test
-    void publishLinkAppears() {
+    void publishLinkAppears(String schema) {
         //given
         val serviceAgreement = new ServiceAgreement();
         serviceAgreement.setId(id);
@@ -49,7 +49,21 @@ class ServiceAgreementModelAssemblerTest {
         val model = assembler.toModel(serviceAgreement);
 
         //then
-        assertTrue(model.getLink("publish").isPresent());
+        String relation = "publish";
+        assertTrue(model.getLink(relation).isPresent());
+        assertTrue(model.getLink(relation).get().getHref().startsWith(schema));
+    }
+
+    @Test
+    @Tag("prod")
+    void publishLinkAppearsProd() {
+        publishLinkAppears("https:");
+    }
+
+    @Test
+    @Tag("development")
+    void publishLinkAppearsDev() {
+        publishLinkAppears("http:");
     }
 
     @Test
@@ -69,8 +83,7 @@ class ServiceAgreementModelAssemblerTest {
         assertFalse(model.getLink("publish").isPresent());
     }
 
-    @Test
-    void historyLinkAppears() {
+    void historyLinkAppears(String schema) {
         //given
         val serviceAgreement = new ServiceAgreement();
         serviceAgreement.setId(id);
@@ -82,11 +95,24 @@ class ServiceAgreementModelAssemblerTest {
         val model = assembler.toModel(serviceAgreement);
 
         //then
-        assertTrue(model.getLink("history").isPresent());
+        String relation = "history";
+        assertTrue(model.getLink(relation).isPresent());
+        assertTrue(model.getLink(relation).get().getHref().startsWith(schema));
     }
 
     @Test
-    void permissionLinkAppears() {
+    @Tag("prod")
+    void historyLinkAppearsProd() {
+        publishLinkAppears("https:");
+    }
+
+    @Test
+    @Tag("development")
+    void historyLinkAppearsDev() {
+        publishLinkAppears("http:");
+    }
+
+    void permissionLinkAppears(String schema) {
         //given
         val serviceAgreement = new ServiceAgreement();
         serviceAgreement.setId(id);
@@ -97,7 +123,21 @@ class ServiceAgreementModelAssemblerTest {
         val model = assembler.toModel(serviceAgreement);
 
         //then
-        assertTrue(model.getLink("add-editor").isPresent());
+        String relation = "add-editor";
+        assertTrue(model.getLink(relation).isPresent());
+        assertTrue(model.getLink(relation).get().getHref().startsWith(schema));
+    }
+
+    @Test
+    @Tag("prod")
+    void permissionLinkAppearsProd() {
+        publishLinkAppears("https:");
+    }
+
+    @Test
+    @Tag("development")
+    void permissionLinkAppearsDev() {
+        publishLinkAppears("http:");
     }
 
     @Test
@@ -117,8 +157,7 @@ class ServiceAgreementModelAssemblerTest {
         assertFalse(model.getLink("add-editor").isPresent());
     }
 
-    @Test
-    void submitLinkAppears() {
+    void submitLinkAppears(String schema) {
         //given
         val serviceAgreement = new ServiceAgreement();
         serviceAgreement.setId(id);
@@ -131,7 +170,21 @@ class ServiceAgreementModelAssemblerTest {
         val model = assembler.toModel(serviceAgreement);
 
         //then
-        assertTrue(model.getLink("submit").isPresent());
+        String relation = "submit";
+        assertTrue(model.getLink(relation).isPresent());
+        assertTrue(model.getLink(relation).get().getHref().startsWith(schema));
+    }
+
+    @Test
+    @Tag("prod")
+    void submitLinkAppearsProd() {
+        publishLinkAppears("https:");
+    }
+
+    @Test
+    @Tag("development")
+    void submitLinkAppearsDev() {
+        publishLinkAppears("http:");
     }
 
     @Test
