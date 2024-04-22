@@ -9,6 +9,7 @@ import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.env.Environment;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.quality.MetadataCheck;
@@ -29,13 +30,16 @@ class ServiceAgreementModelAssemblerTest {
 
     @Mock private ServiceAgreementQualityService serviceAgreementQualityService;
 
+    @Mock private Environment env;
+
     private ServiceAgreementModelAssembler assembler;
 
     private final String id = "b7fc9ed3-c166-45ec-93a9-93a294ab74a9";
 
     @BeforeEach
     void setup(TestInfo testInfo) {
-        assembler = new ServiceAgreementModelAssembler(documentRepository, serviceAgreementQualityService, String.join(",", testInfo.getTags()));
+        given(this.env.getActiveProfiles()).willReturn(testInfo.getTags().toArray(new String[0]));
+        assembler = new ServiceAgreementModelAssembler(documentRepository, serviceAgreementQualityService, env);
     }
 
     void publishLinkAppears(String schema) {

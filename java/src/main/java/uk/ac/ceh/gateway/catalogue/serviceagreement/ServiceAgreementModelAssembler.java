@@ -4,11 +4,11 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.env.Environment;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
-import org.springframework.beans.factory.annotation.Value;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
@@ -27,13 +27,12 @@ public class ServiceAgreementModelAssembler extends RepresentationModelAssembler
 
     public ServiceAgreementModelAssembler(DocumentRepository documentRepository,
             ServiceAgreementQualityService serviceAgreementQualityService,
-            @Value("${spring.profiles.active}") String activeProfiles
+            Environment env
 ) {
         super(ServiceAgreementController.class, ServiceAgreementModel.class);
         this.documentRepository = documentRepository;
         this.serviceAgreementQualityService = serviceAgreementQualityService;
-        this.activeProfiles = activeProfiles;
-        log.info("Creating");
+        this.activeProfiles = String.join(",", env.getActiveProfiles());
     }
 
     @Override
