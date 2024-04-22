@@ -26,7 +26,7 @@
               <h1>
               <#if (metadata.state == 'draft' || metadata.state == 'pending') >
                 <small class="text-danger"><b>${codes.lookup('publication.state', metadata.state)?upper_case!''}</b></small>
-              </#if> 
+              </#if>
               ${title}
               <#if (version?? && version?has_content) || (releaseDate?? && releaseDate?has_content)>
                   <small><br>
@@ -36,7 +36,7 @@
               </#if>
               </h1>
             </div>
-          </#if>    
+          </#if>
 
           <#if description??>
             <div class="description">
@@ -139,7 +139,7 @@
             <@m.key "Spatial extent">
               <div id="studyarea-map">
                 <#list boundingBoxes as extent>
-                  <span content="${extent.wkt}" datatype="geo:wktLiteral"/>
+                  <span content="${extent.bounds}" datatype="geoJson"/>
                 </#list>
               </div>
             </@m.key>
@@ -193,7 +193,7 @@
           <@m.key "Transparency" "Model is placed in the wider domain for scrutiny, and/or results are published"><@m.qa transparency /></@m.key>
           <@m.key "Periodic review" "Model is reviewed at intervals to ensure it remains fit for the intended purpose, if used on an ongoing basis"><@m.qa periodicReview /></@m.key>
         </section>
-        
+
         <#if versionHistories?? && versionHistories?has_content>
           <section>
            <h2>Version control change notes</h2>
@@ -244,7 +244,7 @@
             </#list>
             </section>
           </#if>
-        
+
 
         <#if references?? && references?has_content>
         <section>

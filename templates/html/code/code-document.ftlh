@@ -5,7 +5,7 @@
   <#assign licences = f.filter(useConstraints, "code", "license")>
 </#if>
 <#if responsibleParties?has_content>
-  <#assign 
+  <#assign
     owners = f.filter(responsibleParties, "role", "owner")
     contacts = f.filter(responsibleParties, "role", "pointOfContact")
     >
@@ -16,7 +16,7 @@
   rel_hasMember = jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#memberOf")
   rel_related = jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#relatedTo") + jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#relatedTo")
   relationships = rel_memberOf + rel_hasMember + rel_related
-> 
+>
 
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
 
@@ -55,19 +55,19 @@
             <#if (owners?? && owners?has_content) || (contacts?? && contacts?has_content)>
             <div>
               <#if owners?? && owners?has_content>
-                  <@displayContact "Owner" owners />     
+                  <@displayContact "Owner" owners />
               </#if>
 
               <#if contacts?? && contacts?has_content>
-                  <@displayContact "Contact" contacts />     
+                  <@displayContact "Contact" contacts />
               </#if>
              </div>
              </#if>
-           
+
           </div>
 
           <div class="grid--three">
-            
+
             <#if version?? && version?has_content>
               <@displaySimple "Version" version />
             </#if>
@@ -82,7 +82,7 @@
                 </#if>
               </p>
             </#if>
-            
+
             <#if primaryLanguage?? && primaryLanguage?has_content>
               <@displaySimple "Primary language" primaryLanguage />
             </#if>
@@ -131,7 +131,7 @@
                 <h3>Spatial extent</h3>
                   <div id="studyarea-map">
                     <#list boundingBoxes as extent>
-                      <span content="${extent.wkt}" datatype="geo:wktLiteral"/>
+                      <span content="${extent.bounds}" datatype="geoJson"/>
                     </#list>
                   </div>
               </div>
@@ -159,17 +159,17 @@
 
             <#if relationships?has_content>
               <h3>Related record<#if relationships?size gt 1>s</#if></h3>
-              
+
               <#if rel_memberOf?has_content>
-                <@displayRelations rel_memberOf "This notebook is used in" /> 
+                <@displayRelations rel_memberOf "This notebook is used in" />
               </#if>
 
               <#if rel_hasMember?has_content>
-                <@displayRelations rel_hasMember "This project uses" /> 
+                <@displayRelations rel_hasMember "This project uses" />
               </#if>
 
               <#if rel_related?has_content>
-                <@displayRelations rel_related "Other related records" /> 
+                <@displayRelations rel_related "Other related records" />
               </#if>
 
             </#if>
@@ -186,7 +186,7 @@
               </#list>
             </div>
             </#if>
-            
+
             <#if inspireThemes?has_content>
             <h3>INSPIRE theme<#if inspireThemes?size gt 1>s</#if></h3>
             <div class="inspireThemes">
@@ -231,9 +231,9 @@
    <@displayNest key>
       <#list value as item>
         <#if item?matches("^http(s)?://.+$")>
-          <#local foo = "<a href='" + item + "'>" + item + "</a>"> 
+          <#local foo = "<a href='" + item + "'>" + item + "</a>">
         <#else>
-        <#local foo = item> 
+        <#local foo = item>
         </#if>
         <div>${foo?no_esc}</div>
       </#list>
