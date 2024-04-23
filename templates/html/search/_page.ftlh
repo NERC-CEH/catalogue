@@ -34,7 +34,7 @@
           <div class="resourceStatus">${result.resourceStatus}</div>
       </#if>
 
-      <div class="state">${codes.lookup('publication.state', result.state)?upper_case!''}</div>
+      <div class="state">${(codes.lookup("publication.state", result.state)!)!?upper_case!''}</div>
 
       <#if result.condition?? >
         <div class="condition">${result.condition}</div>

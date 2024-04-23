@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.controllers;
 
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,10 +15,10 @@ import uk.ac.ceh.gateway.catalogue.publication.PublicationService;
 @Slf4j
 @ToString
 @RestController
-public class PublicationController {
+public class DocumentPublicationController {
     private final PublicationService publicationService;
 
-    public PublicationController(PublicationService publicationService) {
+    public DocumentPublicationController(@Qualifier("document") PublicationService publicationService) {
         this.publicationService = publicationService;
         log.info("Creating {}", this);
     }
