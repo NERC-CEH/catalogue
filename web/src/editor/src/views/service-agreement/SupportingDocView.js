@@ -7,7 +7,6 @@ export default ObjectInputView.extend({
 
   initialize (options) {
     ObjectInputView.prototype.initialize.call(this, options)
-    console.log(this)
 
     this.$('.autocomplete').autocomplete({
       source: [
