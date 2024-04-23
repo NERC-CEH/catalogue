@@ -107,13 +107,13 @@ class ServiceAgreementModelAssemblerTest {
     @Test
     @Tag("prod")
     void historyLinkAppearsProd() {
-        publishLinkAppears("https:");
+        historyLinkAppears("https:");
     }
 
     @Test
     @Tag("development")
     void historyLinkAppearsDev() {
-        publishLinkAppears("http:");
+        historyLinkAppears("http:");
     }
 
     void permissionLinkAppears(String schema) {
@@ -135,13 +135,13 @@ class ServiceAgreementModelAssemblerTest {
     @Test
     @Tag("prod")
     void permissionLinkAppearsProd() {
-        publishLinkAppears("https:");
+        permissionLinkAppears("https:");
     }
 
     @Test
     @Tag("development")
     void permissionLinkAppearsDev() {
-        publishLinkAppears("http:");
+        permissionLinkAppears("http:");
     }
 
     @Test
@@ -182,13 +182,13 @@ class ServiceAgreementModelAssemblerTest {
     @Test
     @Tag("prod")
     void submitLinkAppearsProd() {
-        publishLinkAppears("https:");
+        submitLinkAppears("https:");
     }
 
     @Test
     @Tag("development")
     void submitLinkAppearsDev() {
-        publishLinkAppears("http:");
+        submitLinkAppears("http:");
     }
 
     @Test
