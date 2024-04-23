@@ -379,7 +379,7 @@
             <div class="key">
                 <div id="studyarea-map">
                     <#list boundingBoxes as extent>
-                        <span content="${extent.wkt}" datatype="geo:wktLiteral"/>
+                        <span content="${extent.bounds}" datatype="geoJson"/>
                     </#list>
                 </div>
             </div>
