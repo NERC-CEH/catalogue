@@ -151,8 +151,8 @@
                             <#list supportingDocs as doc>
                                 <div class="supportingDoc">
                                     <div class="supportingDoc__name">
-                                        <#if doc.filename?? >
-                                            <i>${doc.filename}</i>
+                                        <#if doc.name?? && doc.format??>
+                                            <i>${doc.name}.${doc.format}</i>
                                         <#else>
                                            <span class="alert alert--error">missing</span>
                                         </#if>

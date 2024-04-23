@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -72,9 +71,9 @@ public class ServiceAgreementQualityServiceTest {
 
 
     @Test
-    public void checkBasicsCorrect() {
+    public void checkBasicsRight() {
         //given
-        val parsed = JsonPath.parse(getClass().getResourceAsStream("basicsCorrect.json"), this.config);
+        val parsed = JsonPath.parse(getClass().getResourceAsStream("basicsRight.json"), this.config);
 
         //when
         val actual = this.service.checkBasics(parsed).isPresent();
@@ -138,7 +137,7 @@ public class ServiceAgreementQualityServiceTest {
     }
 
     @Test
-    public void checkAuthorCorrect() {
+    public void checkAuthorRight() {
         //given
         val parsed = JsonPath.parse(getClass().getResourceAsStream("authorsRight.json"), this.config);
 
@@ -162,7 +161,7 @@ public class ServiceAgreementQualityServiceTest {
     }
 
     @Test
-    public void checkOwnersCorrect() {
+    public void checkOwnersRight() {
         //given
         val parsed = JsonPath.parse(getClass().getResourceAsStream("ownersRight.json"), this.config);
 
@@ -186,7 +185,7 @@ public class ServiceAgreementQualityServiceTest {
     }
 
     @Test
-    public void checkDepositorContactDetailsCorrect() {
+    public void checkDepositorContactDetailsRight() {
         //given
         val parsed = JsonPath.parse(getClass().getResourceAsStream("contactDetailsRight.json"), this.config);
 
@@ -210,7 +209,7 @@ public class ServiceAgreementQualityServiceTest {
     }
 
     @Test
-    public void checkFilesCorrect() {
+    public void checkFilesRight() {
         //given
         val parsed = JsonPath.parse(getClass().getResourceAsStream("checkFilesRight.json"), this.config);
 
@@ -315,7 +314,7 @@ public class ServiceAgreementQualityServiceTest {
                 new MetadataCheck("check 10", WARNING)
         );
 
-        val results =Arrays.asList(
+        val results = Arrays.asList(
                 new Results(checks, "test0"),
                 new Results(checks, "test1")
         );
@@ -326,5 +325,29 @@ public class ServiceAgreementQualityServiceTest {
         //then
         assertThat(actual.getTotalErrors(), equalTo(expectedTotalErrors));
         assertThat(actual.getTotalWarnings(), equalTo(expectedTotalWarnings));
+    }
+
+    @Test
+    public void checkSupportingDocsRight() {
+        //given
+        val parsed = JsonPath.parse(getClass().getResourceAsStream("supportingDocsRight.json"), this.config);
+
+        //when
+        val actual = this.service.checkSupportingDocs(parsed).isPresent();
+
+        //then
+        assertFalse(actual);
+    }
+
+    @Test
+    public void checkSupportingDocsWrong() {
+        //given
+        val parsed = JsonPath.parse(getClass().getResourceAsStream("supportingDocsWrong.json"), this.config);
+
+        //when
+        val actual = this.service.checkSupportingDocs(parsed).isPresent();
+
+        //then
+        assertTrue(actual);
     }
 }

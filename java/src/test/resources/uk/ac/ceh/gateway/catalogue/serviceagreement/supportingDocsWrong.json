@@ -1,0 +1,21 @@
+{
+  "supportingDocs": [
+    {
+      "name": "foo bar",
+      "format": "docx",
+      "content": "blah blah blah"
+    },
+    {
+      "name": "bar",
+      "format": "txt"
+    },
+    {
+      "name": "foo-bar_baz",
+      "content": "content"
+    },
+    {
+      "name": "foo",
+      "content": "missing format"
+    }
+  ]
+}

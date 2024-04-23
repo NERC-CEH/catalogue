@@ -1,0 +1,14 @@
+{
+  "supportingDocs": [
+    {
+      "name": "foo",
+      "format": "docx",
+      "content": "content"
+    },
+    {
+      "name": "bar-baz_qux",
+      "content": "out of order",
+      "format": "od3"
+    }
+  ]
+}

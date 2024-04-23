@@ -285,7 +285,7 @@ public class ServiceAgreementQualityService {
     Optional<List<MetadataCheck>> checkSupportingDocs(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
         val supportingDocs = parsed.read(
-                "$.supportingDocs[*].['filename','content']",
+                "$.supportingDocs[*].['name', 'format', 'content']",
                 typeRefStringString
         );
 
@@ -293,22 +293,23 @@ public class ServiceAgreementQualityService {
             toReturn.add(new MetadataCheck("Supporting documentation is empty", ERROR));
         }
 
-        if (supportingDocs.size() >= 1 ) {
-            if (supportingDocs.stream().anyMatch(supportingDoc -> fieldIsMissing(supportingDoc, "filename"))) {
-                toReturn.add(new MetadataCheck("Supporting document filename is missing", ERROR));
-            } else {
-                if (supportingDocs.stream().anyMatch(supportingDoc -> supportingDoc.get("filename").contains(" "))) {
-                    toReturn.add(new MetadataCheck("Supporting document filename should not contain any spaces", ERROR));
-                }
-                if (supportingDocs.stream().noneMatch(supportingDoc -> supportingDoc.get("filename").matches("^[\\w-_\\.]*$"))) {
-                    toReturn.add(new MetadataCheck("Supporting document filename should only consist of alphanumeric characters, underscore and hyphens", ERROR));
-                }
+        supportingDocs.stream().forEach(supportingDoc -> {
+            if (fieldIsMissing(supportingDoc, "name")) {
+                toReturn.add(new MetadataCheck("Supporting document name is missing", ERROR));
+            } else if (!supportingDoc.get("name").matches("^[\\w-]+$")) {
+                toReturn.add(new MetadataCheck("Supporting document name should only consist of alphanumeric characters, underscore and hyphens", ERROR));
             }
 
-            if (supportingDocs.stream().anyMatch(supportingDoc -> fieldIsMissing(supportingDoc, "content"))) {
+            if (fieldIsMissing(supportingDoc, "format")) {
+                toReturn.add(new MetadataCheck("Supporting document format is missing", ERROR));
+            } else if (!supportingDoc.get("format").matches("^\\p{Alnum}+$")) {
+                toReturn.add(new MetadataCheck("Supporting document format should only consist of alphanumeric characters", ERROR));
+            }
+
+            if (fieldIsMissing(supportingDoc, "content")) {
                 toReturn.add(new MetadataCheck("Supporting document content is missing", ERROR));
             }
-        }
+        });
 
         if (toReturn.isEmpty()) {
             return Optional.empty();
