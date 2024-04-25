@@ -25,21 +25,13 @@
 @import "customProperties";
 // Add CSS Customizations to your theme here.
 
+
 body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
     font-family: var(--font-family-body);
     text-wrap: pretty;
-}
-
-footer {
-    margin-top: auto;
-    background-color: var(--footer-background-colour);
-
-    .container {
-        padding: 1em;
-    }
 }
 
 header {
@@ -49,6 +41,29 @@ header {
     background-color: var(--header-background-colour);
     border-bottom: solid var(--header-border-colour) var(--header-border-width);
 }
+
+footer {
+    margin-top: auto;
+    background-color: var(--footer-background-colour);
+
+    .container {
+        padding: 1em;
+
+        span {
+            &:not(:last-of-type)::after {
+                content: "|";
+                margin: 0 0.6em;
+            }
+        }
+
+        .altviews {
+            span:first-of-type {
+                margin-left: 0.6em;
+            }
+        }
+    }
+}
+
 
 h1,
 h2,
@@ -87,7 +102,7 @@ header {
 
             img {
                 max-height: var(--header-logo-height);
-                border-right:var(--header-logo-border);
+                border-right: var(--header-logo-border);
             }
         }
 
