@@ -149,7 +149,7 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'transferMethod',
           label: 'Transfer Method',
-          placeholderAttribute: 'Click to select a option or type in your preferred method',
+          placeholderAttribute: 'Click to select an option or type in your preferred method',
           listAttribute: `
 <option value='Upload via EIDC catalogue (preferred)' />
 <option value='Cloud transfer e.g. via OneDrive' />
