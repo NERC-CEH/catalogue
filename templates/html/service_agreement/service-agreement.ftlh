@@ -159,7 +159,7 @@
                                     </div>
                                     <div class="supportingDoc__content">
                                         <ul>
-                                            <#list doc.content as kind>
+                                            <#list doc.content![] as kind>
                                                 <li>${doc.contentTypeToText(kind)}</li>
                                             <#else>
                                                 <span class="alert alert--error">missing</span>
