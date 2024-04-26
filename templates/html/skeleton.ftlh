@@ -114,7 +114,11 @@
       </main>
       <#if footer = true>
         <footer>
-          <#include "footer/${catalogue.id}.ftlh">
+            <#if catalogue.id == "eidc">
+              <#include "footer/eidc.ftlh">
+            <#else>
+                <#include "footer/ukceh.ftlh">
+            </#if>
         </footer>
       </#if>
       <#if catalogue?has_content && catalogue.id == "eidc">

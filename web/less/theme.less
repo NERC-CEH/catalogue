@@ -14,6 +14,7 @@
 @import "../node_modules/@fortawesome/fontawesome-free/less/fontawesome";
 @import "../node_modules/@fortawesome/fontawesome-free/less/regular";
 @import "../node_modules/@fortawesome/fontawesome-free/less/solid";
+@import "../node_modules/@fortawesome/fontawesome-free/less/brands";
 @import "message-panel";
 @import "search";
 @import "metadata";
@@ -25,6 +26,7 @@
 @import "customProperties";
 // Add CSS Customizations to your theme here.
 
+
 body {
     display: flex;
     flex-direction: column;
@@ -33,21 +35,83 @@ body {
     text-wrap: pretty;
 }
 
-footer {
-    margin-top: auto;
-    background-color: var(--footer-background-colour);
-
-    .container {
-        padding: 1em;
-    }
-}
-
 header {
     position: sticky;
     top: 0;
     z-index: 2000;
     background-color: var(--header-background-colour);
     border-bottom: solid var(--header-border-colour) var(--header-border-width);
+}
+
+footer {
+    margin-top: auto;
+    background-color: var(--footer-background-colour);
+}
+
+.footer-ukceh {
+    background-color: #333;
+    color: white;
+
+    a {
+        color: white;
+    }
+
+    .container {
+        display: grid;
+        gap: 1em;
+        grid-template-columns: 1fr 1fr;
+
+        >div {
+            padding: 0.5em;
+        }
+
+        .footer-logo {
+            grid-column-start: 1;
+            grid-column-end: 3;
+
+            img {
+                max-width: 180px;
+            }
+        }
+
+        .footer-policies {
+            display: flex;
+            flex-direction: column;
+            gap: .25em;
+            flex-wrap: nowrap;
+        }
+
+        .footer-socials {
+            display: flex;
+            gap: 1em;
+            flex-wrap: nowrap;
+            align-self: center;
+            justify-content: center;
+
+            a {
+                padding: 0.75em;
+                border: 2px solid transparent;
+                border-radius: 1000px;
+
+                &:hover {
+
+                    border-color: white;
+                }
+            }
+
+
+
+        }
+
+        .footer-copy {
+            border-top: 1px solid white;
+            text-align: center;
+            grid-column-start: 1;
+            grid-column-end: 3;
+        }
+
+
+    }
 }
 
 h1,
@@ -87,7 +151,7 @@ header {
 
             img {
                 max-height: var(--header-logo-height);
-                border-right:var(--header-logo-border);
+                border-right: var(--header-logo-border);
             }
         }
 
