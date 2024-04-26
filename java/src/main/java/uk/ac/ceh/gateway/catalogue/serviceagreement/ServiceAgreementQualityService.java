@@ -19,6 +19,7 @@ import uk.ac.ceh.gateway.catalogue.quality.Results;
 
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static uk.ac.ceh.gateway.catalogue.quality.Results.Severity.ERROR;
@@ -36,6 +37,7 @@ public class ServiceAgreementQualityService {
     private final Pattern AUTHOR_PATTERN = Pattern.compile("^[\\w\\-\\s']+, (\\w\\.){1,5}$");
     private final Pattern EMAIL_PATTERN = Pattern.compile("^[a-z0-9\\\\!#$%&'*+/=?^_`{|}~\\-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~\\-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$");
     private final String jiraPrefix;
+    private final ImmutableSet<String> mandatoryContentTypes = ImmutableSet.of("generationMethods", "natureUnits", "qc", "dataStructure");
 
     private final TypeRef<List<Map<String, String>>> typeRefStringString = new TypeRef<>() {
     };
@@ -280,9 +282,10 @@ public class ServiceAgreementQualityService {
 
     Optional<List<MetadataCheck>> checkSupportingDocs(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
+
         val supportingDocs = parsed.read(
-                "$.supportingDocs[*].['name', 'format']",
-                typeRefStringString
+                "$.supportingDocs[*].['name', 'format', 'content']",
+                new TypeRef<List<SupportingDoc>>(){}
         );
 
         if (supportingDocs.size() == 0) {
@@ -290,18 +293,30 @@ public class ServiceAgreementQualityService {
         }
 
         supportingDocs.stream().forEach(supportingDoc -> {
-            if (fieldIsMissing(supportingDoc, "name")) {
+            if (supportingDoc.getName() == null) {
                 toReturn.add(new MetadataCheck("Supporting document name is missing", ERROR));
-            } else if (!supportingDoc.get("name").matches("^[\\w-]+$")) {
-                toReturn.add(new MetadataCheck("Supporting document name should only consist of alphanumeric characters, underscore and hyphens", ERROR));
+            } else if (!supportingDoc.getName().matches("^[\\w-]+$")) {
+                toReturn.add(new MetadataCheck("Supporting document name should consist of alphanumeric characters, underscore and hyphens", ERROR));
             }
 
-            if (fieldIsMissing(supportingDoc, "format")) {
+            if (supportingDoc.getFormat() == null) {
                 toReturn.add(new MetadataCheck("Supporting document format is missing", ERROR));
-            } else if (!supportingDoc.get("format").matches("^\\p{Alnum}+$")) {
-                toReturn.add(new MetadataCheck("Supporting document format should only consist of alphanumeric characters", ERROR));
+            } else if (!supportingDoc.getFormat().matches("^\\p{Alnum}+$")) {
+                toReturn.add(new MetadataCheck("Supporting document format should consist of alphanumeric characters", ERROR));
+            }
+
+            if (supportingDoc.getContent() == null) {
+                toReturn.add(new MetadataCheck("Supporting document content is missing", ERROR));
             }
         });
+
+        val allContentTypes = supportingDocs.stream()
+            .flatMap(doc -> Optional.ofNullable(doc.getContent()).orElseGet(ArrayList::new).stream())
+            .collect(Collectors.toSet());
+
+        if (!allContentTypes.containsAll(mandatoryContentTypes)) {
+            toReturn.add(new MetadataCheck("Supporting documents do not cover all mandatory fields", ERROR));
+        }
 
         if (toReturn.isEmpty()) {
             return Optional.empty();
