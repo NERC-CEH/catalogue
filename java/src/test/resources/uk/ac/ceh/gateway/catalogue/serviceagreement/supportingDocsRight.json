@@ -3,11 +3,11 @@
     {
       "name": "foo",
       "format": "docx",
-      "content": "content"
+      "content": ["content"]
     },
     {
       "name": "bar-baz_qux",
-      "content": "out of order",
+      "content": ["out of order"],
       "format": "od3"
     }
   ]

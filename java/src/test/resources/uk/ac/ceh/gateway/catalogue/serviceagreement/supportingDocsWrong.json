@@ -3,7 +3,7 @@
     {
       "name": "foo bar",
       "format": "docx",
-      "content": "blah blah blah"
+      "content": ["blah blah blah"]
     },
     {
       "name": "bar",
@@ -11,11 +11,11 @@
     },
     {
       "name": "foo-bar_baz",
-      "content": "content"
+      "content": ["content"]
     },
     {
       "name": "foo",
-      "content": "missing format"
+      "content": ["missing format"]
     }
   ]
 }

@@ -285,7 +285,7 @@ public class ServiceAgreementQualityService {
     Optional<List<MetadataCheck>> checkSupportingDocs(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
         val supportingDocs = parsed.read(
-                "$.supportingDocs[*].['name', 'format', 'content']",
+                "$.supportingDocs[*].['name', 'format']",
                 typeRefStringString
         );
 
@@ -304,10 +304,6 @@ public class ServiceAgreementQualityService {
                 toReturn.add(new MetadataCheck("Supporting document format is missing", ERROR));
             } else if (!supportingDoc.get("format").matches("^\\p{Alnum}+$")) {
                 toReturn.add(new MetadataCheck("Supporting document format should only consist of alphanumeric characters", ERROR));
-            }
-
-            if (fieldIsMissing(supportingDoc, "content")) {
-                toReturn.add(new MetadataCheck("Supporting document content is missing", ERROR));
             }
         });
 

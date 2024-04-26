@@ -23,5 +23,18 @@ export default ObjectInputView.extend({
         $(this).trigger('change')
       }
     }).on('focus', ({ target: t }) => $(t).autocomplete('search'))
+
+    const mandatory = $('<optgroup>', { label: 'Mandatory elements' })
+    const content = this.model.get('content') ?? []
+    for (const [value, text] of Object.entries(this.model.mandatoryContentTypes)) {
+      mandatory.append($('<option>', { value, selected: content.includes(value) }).text(text))
+    }
+
+    const conditional = $('<optgroup>', { label: 'Conditional elements (must be included if relevant to the data resource)' })
+    for (const [value, text] of Object.entries(this.model.conditionalContentTypes)) {
+      conditional.append($('<option>', { value, selected: content.includes(value) }).text(text))
+    }
+
+    this.$(`#supportingDocs${this.data.index}Content`).append([mandatory, conditional])
   }
 })

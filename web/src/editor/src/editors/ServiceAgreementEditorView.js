@@ -178,11 +178,8 @@ export default EditorView.extend({
         new TextOnlyView({
           model: this.model,
           label: 'Document(s) to be provided',
-          text: `<p>Please provide the title and file extension of document(s) you will provide to enable re-use of the data (see <a href="https://eidc.ac.uk/deposit/supportingDocumentation">https://eidc.ac.uk/deposit/supportingDocumentation</a>).</a>
-<p>Describe the content of the documentation to be supplied. Mandatory elements are:</p>
-<ul><li>Collection/generation methods</li><li>Nature and Units of recorded values</li><li>Quality control</li><li>Details of data structure</li></ul>
-<p>Required elements (if appropriate) include:</p>
-<ul><li>Experimental design/Sampling regime</li><li>Fieldwork and laboratory instrumentation</li><li>Calibration steps and values</li><li>Analytical methods</li><li>Any other information useful to the interpretation of the data</li></ul>\
+          text: `<p>Please provide the title and file extension of document(s) you will provide to enable re-use of the data (see <a href="https://eidc.ac.uk/deposit/supportingDocumentation">https://eidc.ac.uk/deposit/supportingDocumentation</a>).</p>
+<p>Describe the content of the documentation to be supplied. Use control/command/shift-click or click and drag to select multiple types. All mandatory elements must be provided across the supporting documents, but not necessarily all in the same one.</p>
 `
         }),
 
