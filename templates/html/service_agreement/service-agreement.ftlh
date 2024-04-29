@@ -22,7 +22,7 @@
                 <div class="row hidden-print adminPanel" role="toolbar">
                     <#if !isHistorical()>
                         <#if getState() != "pending publication" && getState() != "published">
-                           <div class="btn-group">
+                           <div class="btn-group btn-group-sm">
                              <button type="button" class="btn btn-default edit-control btn-wide" data-document-type="service-agreement">Edit</button>
                              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
                                <span class="caret"></span>
@@ -41,17 +41,17 @@
 
                         <#list getModelLinks() as link>
                             <#if link.rel == 'history'>
-                                <a href="${link.href}" class="btn btn-default">${link.title}</a>
+                                <a href="${link.href}" class="btn btn-default btn-wide btn-sm">${link.title}</a>
                             <#else>
                                 <form action="${link.href}" method="post">
-                                    <input type="submit" class="btn btn-default" value="${link.title}">
+                                    <input type="submit" class="btn btn-default btn-wide btn-sm" value="${link.title}">
                                 </form>
                             </#if>
                         </#list>
                     <#elseif  isHistorical()>
                         <#list getModelLinks() as link>
                             <#if link.title == 'History'>
-                                <a href="${link.href}" class="btn btn-default">${link.title}</a>
+                                <a href="${link.href}" class="btn btn-default btn-wide btn-sm">${link.title}</a>
                             </#if>
                         </#list>
                     </#if>
