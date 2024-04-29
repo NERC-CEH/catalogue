@@ -29,12 +29,9 @@ import uk.ac.ceh.gateway.catalogue.quality.Results;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.ac.ceh.gateway.catalogue.quality.Results.Severity.ERROR;
@@ -76,10 +73,10 @@ public class ServiceAgreementQualityServiceTest {
         val parsed = JsonPath.parse(getClass().getResourceAsStream("basicsRight.json"), this.config);
 
         //when
-        val actual = this.service.checkBasics(parsed).isPresent();
+        val actual = this.service.checkBasics(parsed);
 
         //then
-        assertFalse(actual);
+        assertThat(actual, empty());
     }
 
     @Test
@@ -88,10 +85,10 @@ public class ServiceAgreementQualityServiceTest {
         val parsed = JsonPath.parse(getClass().getResourceAsStream("basicsWrong.json"), this.config);
 
         //when
-        val actual = this.service.checkBasics(parsed).isPresent();
+        val actual = this.service.checkBasics(parsed);
 
         //then
-        assertTrue(actual);
+        assertThat(actual, not(empty()));
     }
 
     @Test
@@ -142,10 +139,10 @@ public class ServiceAgreementQualityServiceTest {
         val parsed = JsonPath.parse(getClass().getResourceAsStream("authorsRight.json"), this.config);
 
         //when
-        val actual = this.service.checkAuthors(parsed).isPresent();
+        val actual = this.service.checkAuthors(parsed);
 
         //then
-        assertFalse(actual);
+        assertThat(actual, empty());
     }
 
     @Test
@@ -154,10 +151,10 @@ public class ServiceAgreementQualityServiceTest {
         val parsed = JsonPath.parse(getClass().getResourceAsStream("authorsWrong.json"), this.config);
 
         //when
-        val actual = this.service.checkAuthors(parsed).isPresent();
+        val actual = this.service.checkAuthors(parsed);
 
         //then
-        assertTrue(actual);
+        assertThat(actual, not(empty()));
     }
 
     @Test
@@ -166,10 +163,10 @@ public class ServiceAgreementQualityServiceTest {
         val parsed = JsonPath.parse(getClass().getResourceAsStream("ownersRight.json"), this.config);
 
         //when
-        val actual = this.service.checkOwnerOfIpr(parsed).isPresent();
+        val actual = this.service.checkOwnerOfIpr(parsed);
 
         //then
-        assertFalse(actual);
+        assertThat(actual, empty());
     }
 
     @Test
@@ -178,10 +175,10 @@ public class ServiceAgreementQualityServiceTest {
         val parsed = JsonPath.parse(getClass().getResourceAsStream("ownersWrong.json"), this.config);
 
         //when
-        val actual = this.service.checkOwnerOfIpr(parsed).isPresent();
+        val actual = this.service.checkOwnerOfIpr(parsed);
 
         //then
-        assertTrue(actual);
+        assertThat(actual, not(empty()));
     }
 
     @Test
@@ -190,10 +187,10 @@ public class ServiceAgreementQualityServiceTest {
         val parsed = JsonPath.parse(getClass().getResourceAsStream("contactDetailsRight.json"), this.config);
 
         //when
-        val actual = this.service.checkDepositorContactDetails(parsed).isPresent();
+        val actual = this.service.checkDepositorContactDetails(parsed);
 
         //then
-        assertFalse(actual);
+        assertThat(actual, empty());
     }
 
     @Test
@@ -202,10 +199,10 @@ public class ServiceAgreementQualityServiceTest {
         val parsed = JsonPath.parse(getClass().getResourceAsStream("contactDetailsWrong.json"), this.config);
 
         //when
-        val actual = this.service.checkDepositorContactDetails(parsed).isPresent();
+        val actual = this.service.checkDepositorContactDetails(parsed);
 
         //then
-        assertTrue(actual);
+        assertThat(actual, not(empty()));
     }
 
     @Test
@@ -214,10 +211,10 @@ public class ServiceAgreementQualityServiceTest {
         val parsed = JsonPath.parse(getClass().getResourceAsStream("checkFilesRight.json"), this.config);
 
         //when
-        val actual = this.service.checkFiles(parsed).isPresent();
+        val actual = this.service.checkFiles(parsed);
 
         //then
-        assertFalse(actual);
+        assertThat(actual, empty());
     }
 
     @Test
@@ -226,10 +223,10 @@ public class ServiceAgreementQualityServiceTest {
         val parsed = JsonPath.parse(getClass().getResourceAsStream("checkFilesWrong.json"), this.config);
 
         //when
-        val actual = this.service.checkFiles(parsed).isPresent();
+        val actual = this.service.checkFiles(parsed);
 
         //then
-        assertTrue(actual);
+        assertThat(actual, not(empty()));
     }
 
     @Test
@@ -290,7 +287,7 @@ public class ServiceAgreementQualityServiceTest {
                 .getProblems()
                 .stream()
                 .map(MetadataCheck::getSeverity)
-                .collect(Collectors.toList());
+                .toList();
 
         //then
         assertThat(actual, equalTo(expected));
@@ -333,10 +330,10 @@ public class ServiceAgreementQualityServiceTest {
         val parsed = JsonPath.parse(getClass().getResourceAsStream("supportingDocsRight.json"), this.config);
 
         //when
-        val actual = this.service.checkSupportingDocs(parsed).isPresent();
+        val actual = this.service.checkSupportingDocs(parsed);
 
         //then
-        assertFalse(actual);
+        assertThat(actual, empty());
     }
 
     @Test
@@ -345,9 +342,9 @@ public class ServiceAgreementQualityServiceTest {
         val parsed = JsonPath.parse(getClass().getResourceAsStream("supportingDocsWrong.json"), this.config);
 
         //when
-        val actual = this.service.checkSupportingDocs(parsed).isPresent();
+        val actual = this.service.checkSupportingDocs(parsed);
 
         //then
-        assertTrue(actual);
+        assertThat(actual, not(empty()));
     }
 }
