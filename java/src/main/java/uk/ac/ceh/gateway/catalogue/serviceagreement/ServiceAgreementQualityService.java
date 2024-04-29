@@ -247,10 +247,6 @@ public class ServiceAgreementQualityService {
             toReturn.add(new MetadataCheck("You must describe the files to be deposited (either a list of files or a naming convention)", ERROR));
         }
 
-        if (files.size() >=1 && !stringIsMissing(fileNamingConvention)) {
-            toReturn.add(new MetadataCheck("You should EITHER list the files to be deposited OR  a naming convention, not both)", INFO));
-        }
-
         if (stringIsMissing(fileNumber)) {
             toReturn.add(new MetadataCheck("Number of files to be deposited is missing", ERROR));
         }
