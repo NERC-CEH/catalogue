@@ -72,6 +72,10 @@ if ($('.permission').length) {
   initPermission()
 }
 
+if ($('.service-agreement-permission').length) {
+  initPermission()
+}
+
 if ($('#search').length) {
   initSearch()
 }

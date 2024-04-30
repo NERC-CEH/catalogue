@@ -2,16 +2,12 @@ import _ from 'underscore'
 import $ from 'jquery'
 import Backbone from 'backbone'
 
-const template = _.template(`
-<td><%= identity %></td>
-<td><input data-permission="canView" type="checkbox" <% if(canView) { %>checked<% } %>></td>
-<td><input data-permission="canEdit" type="checkbox" <% if(canEdit) { %>checked<% } %>></td>
-<td><input data-permission="canDelete" type="checkbox" <% if(canDelete) { %>checked<% } %>></td>
-<td><input data-permission="canUpload" type="checkbox" <% if(canUpload) { %>checked<% } %>></td>
-<td><button class="editor-button-xs"><i class="fa-solid fa-times"></i></button></td>
-`)
-
 export default Backbone.View.extend({
+
+  initialize(options) {
+    this.template = options.template
+  },
+
   tagName: 'tr',
 
   events: {
@@ -29,7 +25,7 @@ export default Backbone.View.extend({
   },
 
   render () {
-    this.$el.html(template(this.model.attributes))
+    this.$el.html(this.template(this.model.attributes))
     return this
   }
 })
