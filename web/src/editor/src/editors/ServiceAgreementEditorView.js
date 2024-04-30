@@ -179,7 +179,7 @@ export default EditorView.extend({
           model: this.model,
           label: 'Document(s) to be provided',
           text: `<p>Please provide the title and file extension of document(s) you will provide to enable re-use of the data (see <a href="https://eidc.ac.uk/deposit/supportingDocumentation">https://eidc.ac.uk/deposit/supportingDocumentation</a>).</p>
-<p>Describe the content of the documentation to be supplied. Use control/command/shift-click or click and drag to select multiple types. All mandatory elements must be provided across the supporting documents, but not necessarily all in the same one.</p>
+<p>Describe the content of the documentation to be supplied. All mandatory elements must be provided across the supporting documents, but not necessarily all in the same one.</p>
 `
         }),
 
