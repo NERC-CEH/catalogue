@@ -3,11 +3,11 @@
     {
       "name": "foo",
       "format": "docx",
-      "content": ["content"]
+      "content": ["content", "natureUnits", "generationMethods", "dataStructure", "qc"]
     },
     {
       "name": "bar-baz_qux",
-      "content": ["out of order"],
+      "content": ["generationMethods", "out of order", "qc", "natureUnits", "dataStructure"],
       "format": "od3"
     }
   ]
