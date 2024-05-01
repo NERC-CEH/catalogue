@@ -40,7 +40,7 @@ export default EditorView.extend({
         new InputView({
           model: this.model,
           modelAttribute: 'depositorContactDetails',
-          label: "Depositor's contact details"
+          label: "Depositor's email"
         }),
 
         new InputView({
@@ -142,6 +142,14 @@ export default EditorView.extend({
           rows: 5,
           helpText: `
 <p>Specify a naming convention <strong>only</strong> if there are too many files to list individually.  Please also indicate the total size of the deposit (e.g. 500Gb).</p>
+`
+        }),
+
+        new TextOnlyView({
+          model: this.model,
+          text: `\
+<p>Data Transfer</p>
+\
 `
         }),
 
