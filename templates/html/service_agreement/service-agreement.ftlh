@@ -355,9 +355,9 @@
 
 
 <#macro displayKeywords>
-  <div class="dl-horizontal">
-    <#include "../document/_tags.ftlh">
-  </div>
+    <dl class="keyvalue">
+      <#include "../document/_tags.ftlh">
+    </dl>
 </#macro>
 
 <#macro displayArea>
