@@ -17,11 +17,8 @@ export default _.template(`
 </div>
 <div class="row">
     <div class="col-sm-1">
-        <label class="control-label" for="supportingDocs<%= data.index %>Content">Content</label>
+        <label class="control-label">Content</label>
     </div>
-    <div class="col-sm-7">
-        <select multiple data-name="content" class="editor-textarea" id="supportingDocs<%= data.index %>Content" size="11">
-        </select>
-    </div>
+    <div class="col-sm-7" id="supportingDocs<%= data.index %>Content"></div>
 </div>
 `)
