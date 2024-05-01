@@ -1,17 +1,18 @@
 import _ from 'underscore'
 import Backbone from 'backbone'
 import {
-  AuthorView, CategoryView, DescriptiveKeywordView, EndUserLicenceView,
+  AuthorView, CategoryView, EndUserLicenceView,
   FileView, FundingView,
   ParentView,
   PredefinedParentView, RightsHolderView,
   SingleObjectView, SupportingDocView,
   TextareaView,
-  TextOnlyView
+  TextOnlyView,
 } from '../views'
 import { EditorView, InputView } from '../index'
-import { Author, DescriptiveKeyword, Funding, RightsHolder, SupportingDoc } from '../models'
+import {Author, Funding, RightsHolder, SupportingDoc} from '../models'
 import { BoundingBox, BoundingBoxView } from '../geometryMap'
+import { createServiceAgreementKeywordView } from '../Keywords'
 
 export default EditorView.extend({
 
@@ -351,6 +352,11 @@ export default EditorView.extend({
       ]
     },
     {
+        label: 'Keywords',
+        title: 'Keywords',
+        views: createServiceAgreementKeywordView(this.model)
+    },
+    {
       label: 'Discovery metadata',
       title: 'Discovery metadata',
       views: [
@@ -383,24 +389,6 @@ export default EditorView.extend({
           helpText: `\
 <p>Information about the source data used in the construction of this data resource.</p>
 <p>Quality assessments and enhancement processes applied to the data resource can also be noted and summarised here.</p>\
-`
-        }),
-
-        new PredefinedParentView({
-          model: this.model,
-          ModelType: DescriptiveKeyword,
-          modelAttribute: 'descriptiveKeywords',
-          label: 'Keywords',
-          ObjectInputView: DescriptiveKeywordView,
-          multiline: true,
-          predefined: {
-            'Catalogue topic': {
-              type: 'Catalogue topic'
-            }
-          },
-          helpText: `\
-<p>Keywords (preferably taken from a controlled vocabulary) categorising and describing the data resource.</p>
-<p>Good quality keywords help to improve the efficiency of search, making it easier to find relevant records.</p>\
 `
         }),
 
