@@ -9,6 +9,7 @@ import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.model.PublicationServiceException;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreement;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreementException;
@@ -75,12 +76,18 @@ public class ServiceAgreementPublicationService implements PublicationService {
     }
 
     private Set<PublishingRole> getPublishingRoles(CatalogueUser user, MetadataInfo info) {
-        return groupStore.getGroups(user).stream()
+        Set<PublishingRole> publishingRoles = groupStore.getGroups(user).stream()
             .map(Group::getName)
             .map(String::toLowerCase)
             .filter(name -> name.startsWith(String.format("role_%s", info.getCatalogue())))
             .map(name -> name.substring(name.lastIndexOf("_") + 1))
             .map(name -> new PublishingRole(name))
             .collect(Collectors.toSet());
+
+        if (!publishingRoles.contains(new PublishingRole("publisher")) &&
+            info.getIdentities(Permission.EDIT).contains(user.getUsername())) {
+            publishingRoles.add(new PublishingRole("depositor"));
+        }
+        return publishingRoles;
     }
 }

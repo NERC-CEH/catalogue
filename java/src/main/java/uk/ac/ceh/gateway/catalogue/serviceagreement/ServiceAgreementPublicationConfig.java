@@ -85,8 +85,9 @@ public class ServiceAgreementPublicationConfig {
             .build();
 
         // Roles
-        PublishingRole publisher;
+        PublishingRole publisher, depositor;
         publisher = new PublishingRole("publisher");
+        depositor = new PublishingRole("depositor");
 
         // Add transitions to states
         draft.addTransitions(publisher, ImmutableSet.of(draftToSubmitted));
@@ -94,6 +95,9 @@ public class ServiceAgreementPublicationConfig {
         underReview.addTransitions(publisher, ImmutableSet.of(underReviewToReadyForAgreement, underReviewToDraft));
         readyForAgreement.addTransitions(publisher, ImmutableSet.of(readyForAgreementToSubmitted, readyForAgreementToAgreed));
         agreed.addTransitions(publisher, ImmutableSet.of(agreedToDraft));
+
+        draft.addTransitions(depositor, ImmutableSet.of(draftToSubmitted));
+        readyForAgreement.addTransitions(depositor, ImmutableSet.of(readyForAgreementToAgreed));
 
         // Add states to workflow
         Map<String, State> states = new ImmutableMap.Builder<String, State>()

@@ -19,18 +19,15 @@ import uk.ac.ceh.gateway.catalogue.publication.PublicationService;
 @RestController
 public class ServiceAgreementPublicationController {
     private final PublicationService publicationService;
-    private final ServiceAgreementService serviceAgreementService;
 
     public ServiceAgreementPublicationController(
-        @Qualifier("service-agreement") PublicationService publicationService,
-        ServiceAgreementService serviceAgreementService
+        @Qualifier("service-agreement") PublicationService publicationService
     ) {
         this.publicationService = publicationService;
-        this.serviceAgreementService = serviceAgreementService;
         log.info("Creating {}", this);
     }
 
-    @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
+    @PreAuthorize("@permission.userCanEditServiceAgreement(#file)")
     @GetMapping("service-agreement/{file}/publication")
     public HttpEntity<StateResource> currentPublication(
         @ActiveUser CatalogueUser user,
@@ -38,7 +35,7 @@ public class ServiceAgreementPublicationController {
         return ResponseEntity.ok(publicationService.current(user, file));
     }
 
-    @PreAuthorize("@permission.userCanEdit(#file)")
+    @PreAuthorize("@permission.userCanEditServiceAgreement(#file)")
     @PostMapping("service-agreement/{file}/publication/{toState}")
     public HttpEntity<StateResource> transitionPublication(
         @ActiveUser CatalogueUser user,

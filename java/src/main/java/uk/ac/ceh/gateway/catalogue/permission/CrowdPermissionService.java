@@ -34,7 +34,7 @@ public class CrowdPermissionService implements PermissionService {
     private final DataRepository<CatalogueUser> repo;
     private final DocumentInfoMapper<MetadataInfo> documentInfoMapper;
     private final GroupStore<CatalogueUser> groupStore;
-    public static final String FOLDER = "service-agreement/";
+    public static final String SERVICE_AGREEMENT_FOLDER = "service-agreement/";
 
     public CrowdPermissionService(
             @NonNull DataRepository<CatalogueUser> repo,
@@ -141,7 +141,7 @@ public class CrowdPermissionService implements PermissionService {
 
     @Override
     public boolean userCanEditServiceAgreement(@NonNull String file) {
-        return this.userCanEdit(FOLDER + file);
+        return this.userCanEdit(SERVICE_AGREEMENT_FOLDER + file);
     }
 
     @Override
@@ -159,7 +159,7 @@ public class CrowdPermissionService implements PermissionService {
 
     @Override
     public boolean userCanDeleteServiceAgreement(@NonNull String file) {
-        return this.userCanDelete(FOLDER + file);
+        return this.userCanDelete(SERVICE_AGREEMENT_FOLDER + file);
     }
 
     @Override
@@ -187,7 +187,7 @@ public class CrowdPermissionService implements PermissionService {
 
     @Override
     public boolean userCanViewServiceAgreement(@NonNull String file) {
-        return this.userCanView(FOLDER + file);
+        return this.userCanView(SERVICE_AGREEMENT_FOLDER + file);
     }
 
     @Override
