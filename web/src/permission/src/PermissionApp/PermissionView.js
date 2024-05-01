@@ -96,6 +96,6 @@ export default Backbone.View.extend({
   },
 
   leave () {
-    window.location.assign(`/documents/${this.model.get('id')}/permission`)
+    window.location.assign(`/${this.model.get('doctype')}/${this.model.get('id')}/permission`)
   }
 })

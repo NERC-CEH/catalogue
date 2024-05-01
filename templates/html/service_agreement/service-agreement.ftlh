@@ -22,7 +22,28 @@
                 <div class="row hidden-print adminPanel" role="toolbar">
                     <#if !isHistorical()>
                         <#if getState() != "pending publication" && getState() != "published">
-                        <button type="button" class="btn btn-default edit-control" data-document-type="service-agreement">Edit</button>
+                          <div class="btn-group btn-group-sm">
+                            <button type="button" class="btn btn-default edit-control btn-wide" data-document-type="service-agreement">Edit</button>
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+                              <span class="caret"></span>
+                              <span class="sr-only">Toggle Dropdown</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-right">
+                              <li>
+                                <a href="/service-agreement/${id}/publication">
+                                  <i class="fa-solid fa-file"></i>
+                                  Service agreement publication status
+                                </a>
+                              </li>
+                              <li>
+                                <a href="/service-agreement/${id}/permission">
+                                  <i class="fa-solid fa-file"></i>
+                                  Service agreement permissions
+                                </a>
+                              </li>
+                            </ul>
+                          </div>
+
                         </#if>
                         <#list getModelLinks() as link>
                             <#if link.rel == 'history'>

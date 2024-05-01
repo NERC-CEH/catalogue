@@ -31,7 +31,7 @@
     <div class="navbar navbar-default navbar-fixed-bottom">
       <div class="container">
         <div class="navbar-right">
-          <a class="btn btn-default navbar-btn" href="/documents/${id}">Return to metadata</a>
+          <a class="btn btn-default navbar-btn" href="/service-agreement/${id}">Return to service agreement</a>
             <#if canEdit>
               <a class="btn btn-primary navbar-btn" href="#service-agreement-permission/${id}"><i class="fa-regular fa-edit"></i> Edit</a>
             </#if>
