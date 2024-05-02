@@ -27,7 +27,7 @@ import {
   SpatialRepresentationTypeView,
   SpatialResolutionView,
   TemporalExtentView,
-  TextareaView,
+  TextareaView
 } from '../views'
 import {
   AccessLimitation,
@@ -41,7 +41,7 @@ import {
   ResourceType,
   Service,
   SpatialResolution,
-  Supplemental,
+  Supplemental
 } from '../models'
 import { BoundingBox, BoundingBoxView } from '../geometryMap'
 import { createGeminiKeywordView } from '../Keywords'

@@ -7,10 +7,10 @@ import {
   PredefinedParentView, RightsHolderView,
   SingleObjectView, SupportingDocView,
   TextareaView,
-  TextOnlyView,
+  TextOnlyView
 } from '../views'
 import { EditorView, InputView } from '../index'
-import {Author, Funding, RightsHolder, SupportingDoc} from '../models'
+import { Author, Funding, RightsHolder, SupportingDoc } from '../models'
 import { BoundingBox, BoundingBoxView } from '../geometryMap'
 import { createServiceAgreementKeywordView } from '../Keywords'
 
@@ -352,9 +352,9 @@ export default EditorView.extend({
       ]
     },
     {
-        label: 'Keywords',
-        title: 'Keywords',
-        views: createServiceAgreementKeywordView(this.model)
+      label: 'Keywords',
+      title: 'Keywords',
+      views: createServiceAgreementKeywordView(this.model)
     },
     {
       label: 'Discovery metadata',
