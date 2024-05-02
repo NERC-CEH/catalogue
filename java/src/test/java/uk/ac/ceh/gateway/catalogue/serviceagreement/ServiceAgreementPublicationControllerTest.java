@@ -66,12 +66,12 @@ class ServiceAgreementPublicationControllerTest {
     private final String catalogueKey = "eidc";
 
     private void givenUserCanView() {
-        given(permissionService.toAccess(any(CatalogueUser.class), eq(file), eq("VIEW")))
+        given(permissionService.userCanEditServiceAgreement(eq(file)))
             .willReturn(true);
     }
 
     private void givenUserCanEdit() {
-        given(permissionService.userCanEdit(file))
+        given(permissionService.userCanEditServiceAgreement(file))
             .willReturn(true);
     }
 

@@ -85,7 +85,7 @@ public class ServiceAgreementPublicationService implements PublicationService {
             .collect(Collectors.toSet());
 
         if (!publishingRoles.contains(new PublishingRole("publisher")) &&
-            info.getIdentities(Permission.EDIT).contains(user.getUsername())) {
+            info.getIdentities(Permission.EDIT).contains(user.getUsername().toLowerCase())) {
             publishingRoles.add(new PublishingRole("depositor"));
         }
         return publishingRoles;

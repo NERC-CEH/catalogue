@@ -10,13 +10,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.config.ServiceAgreementPublicationConfig;
-import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
-import uk.ac.ceh.gateway.catalogue.model.PublicationServiceException;
+import uk.ac.ceh.gateway.catalogue.model.*;
+import uk.ac.ceh.gateway.catalogue.publication.*;
 import uk.ac.ceh.gateway.catalogue.publication.ServiceAgreementPublicationService;
-import uk.ac.ceh.gateway.catalogue.publication.Workflow;
-import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
-import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -29,7 +25,6 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class ServiceAgreementPublicationServiceTest {
     @Mock GroupStore<CatalogueUser> groupStore;
-    @Mock DocumentRepository documentRepository;
     @Qualifier("service-agreement")
     Workflow workflow;
     CatalogueUser editor;
@@ -57,6 +52,23 @@ public class ServiceAgreementPublicationServiceTest {
     public void successfullyTransitionState() throws Exception {
         //Given
         when(groupStore.getGroups(editor)).thenReturn(Collections.singletonList(createGroup("ROLE_EIDC_EDITOR")));
+        when(serviceAgreementService.get(FILENAME)).thenReturn(draft);
+
+        //When
+        publicationService.transition(editor, FILENAME, SUBMITTED_ID);
+
+        //Then
+        verify(serviceAgreementService).get(FILENAME);
+        verify(serviceAgreementService).updateMetadata(editor, draft.getId(), draft.getMetadata());
+    }
+
+    @Test
+    public void depositorCanSuccessfullyTransitionState() throws Exception {
+        //Given
+        MetadataInfo exampleMetadata = MetadataInfo.builder().state("draft").catalogue("eidc").build();
+        exampleMetadata.addPermission(Permission.EDIT, editor.getUsername());
+
+        draft.setMetadata(exampleMetadata);
         when(serviceAgreementService.get(FILENAME)).thenReturn(draft);
 
         //When
