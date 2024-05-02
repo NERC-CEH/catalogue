@@ -50,8 +50,15 @@
     </head>
     <body data-edit-restricted="${can_edit_restricted?then('','disabled')}">
       <header>
+        <div class="ukcehBrand">
+          <div class="${containerClass}">
+            <div class="ukcehBrand-toolbar">
+              <div>Part of UKCEH <img src="/static/img/cataloguelogo/ukceh.png" alt="UKCEH logo" title="UKCEH" ></div>
+              <div><a href="http://www.ceh.ac.uk" target="_blank" rel="noopener noreferrer">UKCEH website</a></div>
+            </div>
+            </div>
+        </div>
         <div class="${containerClass}">
-
           <div class="toolbar">
             <div class="nav-toggle">
               <i class="fa-solid fa-2x fa-bars"></i>
@@ -114,8 +121,8 @@
       </main>
       <#if footer = true>
         <footer>
-            <#if catalogue.id == "eidc">
-              <#include "footer/eidc.ftlh">
+            <#if catalogue.id == "eidc" || catalogue.id == "ukeof">
+              <#include "footer/${catalogue.id}.ftlh">
             <#else>
                 <#include "footer/ukceh.ftlh">
             </#if>
