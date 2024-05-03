@@ -11,7 +11,7 @@ The CEH metadata catalogue project.
 The current code can be built and demoed
 
 ```commandline
-docker-compose up -d --build
+docker compose up -d --build
 ```
 Browse to http://localhost:8080/eidc/documents to see the catalogue populated with some demo records.
 
@@ -76,7 +76,7 @@ You will then need to log in to the Gitlab Docker Registry, nb. this uses your G
 
 Having installed these you can then build the catalogue code base by running:
 
-    docker-compose up -d --build
+    docker compose up -d --build
 
 the EIDC catalogue is then available on:
 
@@ -200,7 +200,7 @@ services:
 ```
 
 ```commandline
-docker-compose -f docker-compose.yml -f docker-compose.hubbub.yml -f docker-compose.override.yml up -d --build
+docker compose -f docker-compose.yml -f docker-compose.hubbub.yml -f docker-compose.override.yml up -d --build
 ```
 ### Populate the database
 
