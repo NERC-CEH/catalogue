@@ -38,9 +38,9 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
 
     private List<ResponsibleParty> ownersOfIpr;
 
-    private List<Keyword> allKeywords;
+    private List<Keyword> topicCategories, keywordsDiscipline, keywordsInstrument, keywordsObservedProperty,
+        keywordsPlace, keywordsProject, keywordsTheme, keywordsOther, allKeywords;
 
-    private List<DescriptiveKeywords> descriptiveKeywords;
 
     private List<BoundingBox> boundingBoxes;
 
@@ -76,8 +76,15 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
         this.useConstraints = serviceAgreement.getUseConstraints();
         this.supersededData = serviceAgreement.getSupersededData();
         this.otherInfo = serviceAgreement.getOtherInfo();
+        this.topicCategories = serviceAgreement.getTopicCategories();
+        this.keywordsDiscipline = serviceAgreement.getKeywordsDiscipline();
+        this.keywordsInstrument = serviceAgreement.getKeywordsInstrument();
+        this.keywordsObservedProperty = serviceAgreement.getKeywordsObservedProperty();
+        this.keywordsPlace = serviceAgreement.getKeywordsPlace();
+        this.keywordsProject = serviceAgreement.getKeywordsProject();
+        this.keywordsTheme = serviceAgreement.getKeywordsTheme();
+        this.keywordsOther = serviceAgreement.getKeywordsOther();
         this.allKeywords = serviceAgreement.getAllKeywords();
-        this.descriptiveKeywords = serviceAgreement.getDescriptiveKeywords();
         this.description = serviceAgreement.getDescription();
         this.lineage = serviceAgreement.getLineage();
         this.boundingBoxes = serviceAgreement.getBoundingBoxes();
