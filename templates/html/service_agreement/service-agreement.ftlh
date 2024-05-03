@@ -210,7 +210,7 @@
                 </div>
             </#if>
 
-            <#if description?has_content || lineage?has_content || allKeywords?has_content || topicCategories?? || descriptiveKeywords?? || inspireTheme?? || boundingBoxes??>
+            <#if description?has_content || lineage?has_content || allKeywords?has_content || topicCategories?? ||  inspireTheme?? || boundingBoxes??>
                 <div class="section section--metadata">
                     <h2>Discovery metadata</h2>
                     <p><i>Information in this section will be used to create a record in the EIDC data catalogue.</i></p>

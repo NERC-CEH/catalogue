@@ -40,7 +40,6 @@ public class ServiceAgreement extends AbstractMetadataDocument {
 
     private List<ResponsibleParty> ownersOfIpr;
 
-    private List<DescriptiveKeywords> descriptiveKeywords;
     private List<Keyword> topicCategories, keywordsDiscipline, keywordsInstrument, keywordsObservedProperty,
         keywordsPlace, keywordsProject, keywordsTheme, keywordsOther;
 
@@ -56,7 +55,6 @@ public class ServiceAgreement extends AbstractMetadataDocument {
     @JsonIgnore
     public List<Keyword> getAllKeywords() {
         return Stream.of(
-                keywordsFromDescriptiveKeywords(),
                 Optional.ofNullable(keywordsDiscipline).orElse(Collections.emptyList()),
                 Optional.ofNullable(keywordsInstrument).orElse(Collections.emptyList()),
                 Optional.ofNullable(keywordsObservedProperty).orElse(Collections.emptyList()),
@@ -66,14 +64,6 @@ public class ServiceAgreement extends AbstractMetadataDocument {
                 Optional.ofNullable(keywordsOther).orElse(Collections.emptyList())
             )
             .flatMap(Collection::stream)
-            .collect(Collectors.toList());
-    }
-
-    private List<Keyword> keywordsFromDescriptiveKeywords() {
-        return Optional.ofNullable(descriptiveKeywords)
-            .orElse(Collections.emptyList())
-            .stream()
-            .flatMap(dk -> dk.getKeywords().stream())
             .collect(Collectors.toList());
     }
 
