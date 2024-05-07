@@ -2,8 +2,8 @@ import Backbone from 'backbone'
 import _ from 'underscore'
 import Permission from './Permission'
 
-const DOC_TYPE_DOCUMENTS = "documents";
-const DOC_TYPE_SERVICE_AGREEMENT = "service-agreement";
+const DOC_TYPE_DOCUMENTS = 'documents'
+const DOC_TYPE_SERVICE_AGREEMENT = 'service-agreement'
 
 export default Backbone.Model.extend({
 
@@ -14,7 +14,7 @@ export default Backbone.Model.extend({
   loadPermission (identifier, doctype = DOC_TYPE_DOCUMENTS) {
     const permission = new Permission({
       id: identifier,
-      doctype: doctype
+      doctype
     })
 
     return permission.fetch({

@@ -1,10 +1,9 @@
-import _ from 'underscore'
 import $ from 'jquery'
 import Backbone from 'backbone'
 
 export default Backbone.View.extend({
 
-  initialize(options) {
+  initialize (options) {
     this.template = options.template
   },
 

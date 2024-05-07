@@ -33,7 +33,7 @@ export default Backbone.View.extend({
     this.listenTo(this.model, 'permission:add', this.addAll)
     this.listenTo(this.model, 'permission:remove', this.addAll)
     this.listenTo(this.model, 'save:success', this.leave)
-    if(this.model.get('doctype') === 'service-agreement'){
+    if (this.model.get('doctype') === 'service-agreement') {
       this.identityTemplate = serviceAgreementTemplate
     } else {
       this.identityTemplate = documentsTemplate
@@ -54,7 +54,7 @@ export default Backbone.View.extend({
 
   addOne (permission) {
     _.extend(permission, { parent: this.model })
-    const view = new IdentityPermissionView({ model: permission, template: this.identityTemplate})
+    const view = new IdentityPermissionView({ model: permission, template: this.identityTemplate })
     this.$('tbody').append(view.render().el)
   },
 
@@ -70,7 +70,6 @@ export default Backbone.View.extend({
   },
 
   reload () {
-
     this.model.loadCollection()
     this.addAll()
   },
