@@ -210,7 +210,7 @@
                 </div>
             </#if>
 
-            <#if description?has_content || lineage?has_content || allKeywords?has_content || boundingBoxes??>
+            <#if description?has_content || lineage?has_content || allKeywords?has_content || topicCategories?? ||  inspireTheme?? || boundingBoxes??>
                 <div class="section section--metadata">
                     <h2>Discovery metadata</h2>
                     <p><i>Information in this section will be used to create a record in the EIDC data catalogue.</i></p>
@@ -355,23 +355,9 @@
 
 
 <#macro displayKeywords>
-    <#if allKeywords?has_content>
-        <div class="keyvalue">
-            <div class="key">Keywords</div>
-            <div class="value">
-                <#list allKeywords?sort_by("value") as keyword>
-                    <span>
-                        <#if keyword.uri?has_content>
-                            <a href="${keyword.uri}" target="_blank"
-                            rel="noopener noreferrer">${keyword.value?trim}</a><#if keyword_has_next>,&nbsp;</#if>
-                        <#else>
-                            ${keyword.value?trim}<#if keyword_has_next>,&nbsp;</#if>
-                        </#if>
-                    </span>
-                </#list>
-            </div>
-        </div>
-    </#if>
+    <dl class="keyvalue">
+      <#include "../document/_tags.ftlh">
+    </dl>
 </#macro>
 
 <#macro displayArea>

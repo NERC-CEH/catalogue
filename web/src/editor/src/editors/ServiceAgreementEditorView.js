@@ -1,16 +1,16 @@
 import _ from 'underscore'
 import Backbone from 'backbone'
 import {
-  AuthorView, CategoryView, DescriptiveKeywordView, EndUserLicenceView,
-  FileView, FundingView,
+  AuthorView, CategoryView, EndUserLicenceView,
+  FileView, FundingView, KeywordThemeView, KeywordVocabularyView,
   ParentView,
   PredefinedParentView, RightsHolderView,
   SingleObjectView, SupportingDocView,
   TextareaView,
-  TextOnlyView
+  TextOnlyView, TopicCategoryView
 } from '../views'
 import { EditorView, InputView } from '../index'
-import { Author, DescriptiveKeyword, Funding, RightsHolder, SupportingDoc } from '../models'
+import { Author, Funding, KeywordTheme, RightsHolder, SupportingDoc, TopicCategory } from '../models'
 import { BoundingBox, BoundingBoxView } from '../geometryMap'
 
 export default EditorView.extend({
@@ -351,6 +351,75 @@ export default EditorView.extend({
       ]
     },
     {
+      label: 'Keywords',
+      title: 'Keywords',
+      views: [
+        new ParentView({
+          model: this.model,
+          ModelType: TopicCategory,
+          modelAttribute: 'topicCategories',
+          label: 'ISO 19115 topic categories',
+          ObjectInputView: TopicCategoryView,
+          helpText: `\
+<p>Please note these are very broad themes required by the metadata standard and should not be confused with science topics.</p>
+<p>Multiple topic categories are allowed - please include all that are pertinent.  For example, "<i>Estimates of topsoil invertebrates</i>" = Biota <strong>and</strong> Environment <strong>and</strong> Geoscientific Information.</p>\
+`
+        }),
+        new ParentView({
+          model: this.model,
+          ModelType: KeywordTheme,
+          modelAttribute: 'keywordsTheme',
+          label: 'Science topic',
+          ObjectInputView: KeywordThemeView,
+          multiline: false,
+          helpText: 'These are used to populate the topic facet in the search interface - try to include at least one'
+        }),
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'keywordsObservedProperty',
+          label: 'Observed properties',
+          ObjectInputView: KeywordVocabularyView,
+          multiline: true,
+          helpText: 'Controlled keywords describing the observed properties/variables contained in this data resource'
+        }),
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'keywordsPlace',
+          label: 'Places',
+          ObjectInputView: KeywordVocabularyView,
+          multiline: true,
+          helpText: `\
+        Controlled keywords describing geographic places pertinent to this resource.
+        For example, named countries/regions in which the research was conducted.
+        `
+        }),
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'keywordsProject',
+          label: 'Projects',
+          ObjectInputView: KeywordVocabularyView,
+          multiline: true,
+          helpText: 'Controlled keywords describing projects that fund/support the creation of this resource'
+        }),
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'keywordsInstrument',
+          label: 'Instruments',
+          ObjectInputView: KeywordVocabularyView,
+          multiline: true,
+          helpText: 'Controlled keywords describing instruments/sensors used to generate this data'
+        }),
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'keywordsOther',
+          label: 'Other keywords',
+          ObjectInputView: KeywordVocabularyView,
+          multiline: true,
+          helpText: 'All other keywords not described elsewhere'
+        })
+      ]
+    },
+    {
       label: 'Discovery metadata',
       title: 'Discovery metadata',
       views: [
@@ -383,24 +452,6 @@ export default EditorView.extend({
           helpText: `\
 <p>Information about the source data used in the construction of this data resource.</p>
 <p>Quality assessments and enhancement processes applied to the data resource can also be noted and summarised here.</p>\
-`
-        }),
-
-        new PredefinedParentView({
-          model: this.model,
-          ModelType: DescriptiveKeyword,
-          modelAttribute: 'descriptiveKeywords',
-          label: 'Keywords',
-          ObjectInputView: DescriptiveKeywordView,
-          multiline: true,
-          predefined: {
-            'Catalogue topic': {
-              type: 'Catalogue topic'
-            }
-          },
-          helpText: `\
-<p>Keywords (preferably taken from a controlled vocabulary) categorising and describing the data resource.</p>
-<p>Good quality keywords help to improve the efficiency of search, making it easier to find relevant records.</p>\
 `
         }),
 
