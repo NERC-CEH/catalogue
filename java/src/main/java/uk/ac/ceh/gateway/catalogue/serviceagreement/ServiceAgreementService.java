@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 
 public interface ServiceAgreementService {
 
@@ -9,6 +10,8 @@ public interface ServiceAgreementService {
     ServiceAgreement create(CatalogueUser user, String id, String catalogue, ServiceAgreement serviceAgreement);
 
     ServiceAgreement update(CatalogueUser user, String id, ServiceAgreement serviceAgreement);
+
+    void updateMetadata(CatalogueUser user, String id, MetadataInfo metadataInfo);
 
     void delete(CatalogueUser user, String id);
 

@@ -15,10 +15,10 @@ import java.util.stream.Collectors;
 })
 @Value
 public class StateResource {
-    String id, title, metadataId, catalogue;
+    String id, title, metadataId, catalogue, basePath;
     Set<TransitionResource> transitions;
 
-    public StateResource(State currentState, Set<PublishingRole> roles, String metadataId, String catalogue) {
+    public StateResource(State currentState, Set<PublishingRole> roles, String metadataId, String catalogue, String basePath) {
         this.id = currentState.getId();
         this.title = currentState.getTitle();
         this.catalogue = catalogue;
@@ -27,5 +27,6 @@ public class StateResource {
             .map(transition -> new TransitionResource(currentState, transition))
             .collect(Collectors.toSet());
         this.metadataId = Objects.requireNonNull(Strings.emptyToNull(metadataId));
+        this.basePath = basePath;
     }
 }

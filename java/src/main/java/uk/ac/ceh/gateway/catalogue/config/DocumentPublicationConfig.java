@@ -3,6 +3,8 @@ package uk.ac.ceh.gateway.catalogue.config;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uk.ac.ceh.gateway.catalogue.publication.PublishingRole;
@@ -11,9 +13,10 @@ import uk.ac.ceh.gateway.catalogue.publication.Transition;
 import uk.ac.ceh.gateway.catalogue.publication.Workflow;
 
 @Configuration
-public class PublicationConfig {
+public class DocumentPublicationConfig {
 
-    @Bean
+    @Bean(name="documentWorkflow")
+    @Qualifier("document")
     public Workflow workflow() {
 
         // States

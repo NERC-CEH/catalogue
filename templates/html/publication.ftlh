@@ -6,12 +6,12 @@
     <p><b>Change the publication status of this record</b></p>
 
       <#list transitions as transition>
-        <form method="post" action="/documents/${metadataId}/publication/${transition.id}">
+        <form method="post" action="/${basePath}/${metadataId}/publication/${transition.id}">
           <p><button type="submit" class="btn btn-default" title="${transition.helpText}">${transition.title}</button></p>
         </form>
       </#list>
 
-      <a href="/documents/${metadataId}" class="btn btn-default" title="Take no action and return to the metadata record">Cancel</a>
+      <a href="/${basePath}/${metadataId}" class="btn btn-default" title="Take no action and return to the metadata record">Cancel</a>
     </div>
   </div>
 </@skeleton.master>
