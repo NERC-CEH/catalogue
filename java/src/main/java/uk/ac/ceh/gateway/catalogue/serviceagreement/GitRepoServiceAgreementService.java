@@ -110,7 +110,8 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     }
 
     @SneakyThrows
-    private void updateMetadata(CatalogueUser user, String id, MetadataInfo metadataInfo) {
+    @Override
+    public void updateMetadata(CatalogueUser user, String id, MetadataInfo metadataInfo) {
         repo
             .submitData(FOLDER + id + ".meta", (o) -> metadataInfoMapper.writeInfo(metadataInfo, o))
             .commit(user, "updating service agreement metadata " + id);

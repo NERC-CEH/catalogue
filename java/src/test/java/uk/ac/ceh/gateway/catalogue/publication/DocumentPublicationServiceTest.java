@@ -9,7 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
-import uk.ac.ceh.gateway.catalogue.config.PublicationConfig;
+import uk.ac.ceh.gateway.catalogue.config.DocumentPublicationConfig;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
@@ -26,7 +26,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class GitPublicationServiceTest {
+public class DocumentPublicationServiceTest {
     @Mock GroupStore<CatalogueUser> groupStore;
     @Mock DocumentRepository documentRepository;
     Workflow workflow;
@@ -35,11 +35,11 @@ public class GitPublicationServiceTest {
     private static final String PENDING_ID = "ykhm7b";
     private static final String DRAFT_ID = "qtak5r";
     private MetadataDocument draft, published;
-    private GitPublicationService publicationService;
+    private DocumentPublicationService publicationService;
 
     @BeforeEach
     public void given() throws IOException {
-        workflow = new PublicationConfig().workflow();
+        workflow = new DocumentPublicationConfig().workflow();
         editor = new CatalogueUser( "Ron MacDonald", "ron@example.com");
 
         this.draft = new GeminiDocument()
@@ -52,7 +52,7 @@ public class GitPublicationServiceTest {
             .setId("db49a6ee-5c9e-4bef-8e6e-196387df4d97")
             .setMetadata(MetadataInfo.builder().state("published").catalogue("eidc").build());
 
-        this.publicationService = new GitPublicationService(groupStore, workflow, documentRepository);
+        this.publicationService = new DocumentPublicationService(groupStore, workflow, documentRepository);
     }
 
     @Test

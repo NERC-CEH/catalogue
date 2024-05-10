@@ -6,6 +6,7 @@ import lombok.val;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
@@ -41,18 +42,19 @@ import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.EIDC
 
 @WithMockCatalogueUser
 @ActiveProfiles("test")
-@DisplayName("PublicationController")
+@DisplayName("DocumentPublicationController")
 @Import({
     SecurityConfig.class,
     SecurityConfigCrowd.class,
     DevelopmentUserStoreConfig.class
 })
 @WebMvcTest(
-    controllers=PublicationController.class,
+    controllers=DocumentPublicationController.class,
     properties="spring.freemarker.template-loader-path=file:../templates"
 )
-class PublicationControllerTest {
-    @MockBean private PublicationService publicationService;
+class DocumentPublicationControllerTest {
+    @MockBean @Qualifier("document")
+    private PublicationService publicationService;
     @MockBean(name="permission") private PermissionService permissionService;
     @MockBean private CatalogueService catalogueService;
     @MockBean private ProfileService profileService;
@@ -74,13 +76,13 @@ class PublicationControllerTest {
     }
 
     private void givenCurrentState() {
-        val state = new StateResource(State.UNKNOWN_STATE, new HashSet<>(), file, catalogueKey);
+        val state = new StateResource(State.UNKNOWN_STATE, new HashSet<>(), file, catalogueKey, "documents");
         given(publicationService.current(any(CatalogueUser.class), eq(file)))
             .willReturn(state);
     }
 
     private void givenStateTransition() {
-        val state = new StateResource(State.UNKNOWN_STATE, new HashSet<>(), file, catalogueKey);
+        val state = new StateResource(State.UNKNOWN_STATE, new HashSet<>(), file, catalogueKey, "documents");
         given(publicationService.transition(any(CatalogueUser.class), eq(file), eq("foo")))
             .willReturn(state);
     }

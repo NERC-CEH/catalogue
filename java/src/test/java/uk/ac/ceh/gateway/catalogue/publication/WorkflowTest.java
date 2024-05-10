@@ -2,7 +2,7 @@ package uk.ac.ceh.gateway.catalogue.publication;
 
 import com.google.common.collect.ImmutableSet;
 import org.junit.jupiter.api.Test;
-import uk.ac.ceh.gateway.catalogue.config.PublicationConfig;
+import uk.ac.ceh.gateway.catalogue.config.DocumentPublicationConfig;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 
 import java.util.Set;
@@ -17,7 +17,7 @@ public class WorkflowTest {
 
     public WorkflowTest() {
         //Given
-        workflow = new PublicationConfig().workflow();
+        workflow = new DocumentPublicationConfig().workflow();
         editor = new PublishingRole("editor");
         publisher = new PublishingRole("publisher");
     }
