@@ -1,5 +1,4 @@
 import Backbone from 'backbone'
-import _ from 'underscore'
 
 export default Backbone.Model.extend({
 
@@ -7,35 +6,20 @@ export default Backbone.Model.extend({
     address: {}
   },
 
-  validate (attrs) {
+  validate ({ organisationName, organisationIdentifier }) {
     const rorRegEx = /^https?:\/\/ror.org\/\w{8,10}$/
 
     const errors = []
 
-    const {
-      organisationName
-    } = attrs
-    const {
-      organisationIdentifier
-    } = attrs
-
-    const isValidROR = id => rorRegEx.test(id)
-
-    if (organisationIdentifier && !isValidROR(organisationIdentifier)) {
-      errors.push({
-        message:
-                    'That RoR is invalid '
-      })
+    if (!organisationIdentifier?.match(rorRegEx)) {
+      errors.push({ message: 'That RoR is invalid' })
     }
 
     if (!organisationName) {
-      errors.push({ message: 'Affiliation (organisation name) is  mandatory.' })
+      errors.push({ message: 'Affiliation (organisation name) is mandatory.' })
     }
 
-    if (_.isEmpty(errors)) {
-      // return nothing from Backbone.Model.validate
-      // because returning something signals a validation error.
-    } else {
+    if (errors.length) {
       return errors
     }
   }

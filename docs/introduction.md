@@ -30,6 +30,7 @@ Containers:
 * Mapserver - Apache and Mapserver powering Web Map Service (WMS)
 * Proxy - Java application for user authentication and authorisation
 * Solr - Apache Solr powers search
+* nginx - Handles remote-user header requests
 
 Deployments:
 * EIP - Puppet configuration

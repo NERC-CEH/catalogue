@@ -1,7 +1,9 @@
-package uk.ac.ceh.gateway.catalogue.controllers;
+package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -11,31 +13,34 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.publication.PublicationService;
 
+@Profile("service-agreement")
 @Slf4j
 @ToString
 @RestController
-public class PublicationController {
+public class ServiceAgreementPublicationController {
     private final PublicationService publicationService;
 
-    public PublicationController(PublicationService publicationService) {
+    public ServiceAgreementPublicationController(
+        @Qualifier("service-agreement") PublicationService publicationService
+    ) {
         this.publicationService = publicationService;
         log.info("Creating {}", this);
     }
 
-    @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")
-    @GetMapping("documents/{file}/publication")
+    @PreAuthorize("@permission.userCanEditServiceAgreement(#file)")
+    @GetMapping("service-agreement/{file}/publication")
     public HttpEntity<StateResource> currentPublication(
-            @ActiveUser CatalogueUser user,
-            @PathVariable("file") String file) {
+        @ActiveUser CatalogueUser user,
+        @PathVariable("file") String file) {
         return ResponseEntity.ok(publicationService.current(user, file));
     }
 
-    @PreAuthorize("@permission.userCanEdit(#file)")
-    @PostMapping("documents/{file}/publication/{toState}")
+    @PreAuthorize("@permission.userCanEditServiceAgreement(#file)")
+    @PostMapping("service-agreement/{file}/publication/{toState}")
     public HttpEntity<StateResource> transitionPublication(
-            @ActiveUser CatalogueUser user,
-            @PathVariable("file") String file,
-            @PathVariable("toState") String toState) {
+        @ActiveUser CatalogueUser user,
+        @PathVariable("file") String file,
+        @PathVariable("toState") String toState) {
         log.debug("Transition {} to {}", file, toState);
         return ResponseEntity.ok(publicationService.transition(user, file, toState));
     }

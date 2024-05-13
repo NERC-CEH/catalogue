@@ -11,7 +11,7 @@ The CEH metadata catalogue project.
 The current code can be built and demoed
 
 ```commandline
-docker-compose up -d --build
+docker compose up -d --build
 ```
 Browse to http://localhost:8080/eidc/documents to see the catalogue populated with some demo records.
 
@@ -76,7 +76,7 @@ You will then need to log in to the Gitlab Docker Registry, nb. this uses your G
 
 Having installed these you can then build the catalogue code base by running:
 
-    docker-compose up -d --build
+    docker compose up -d --build
 
 the EIDC catalogue is then available on:
 
@@ -175,22 +175,31 @@ another catalogue using the Link document type.
 The catalogue is designed to sit behind a **Security Proxy**
 see [RequestHeaderAuthenticationFilter](http://docs.spring.io/autorepo/docs/spring-security/3.2.0.RELEASE/apidocs/org/springframework/security/web/authentication/preauth/RequestHeaderAuthenticationFilter.html) which acts as the authentication source for the application. Therefore, the catalogue will respond to the `Remote-User` header and handle requests as the specified user.
 
-To simplify development, the `DevelopmentUserStoreConfig` is applied by default. This creates some dummy users in various different groups which you can masquerade as. The simplest way to do this is use a browser extension which applies the `Remote-User` header. I recommend **ModHeader for Chrome**.
-
-Then set the request header:
-
-    Remote-User: superadmin
+To simplify development, the `DevelopmentUserStoreConfig` is applied by default. This creates some dummy users in various different groups which you can masquerade as using the Dev Bar at the top of the page.
 
 Other users are configured in [DevelopmentUserStoreConfig](java/src/main/java/uk/ac/ceh/gateway/catalogue/config/DevelopmentUserStoreConfig.java) for the different catalogues.
 
 ## Developing Upload - Hubbub API
 Getting everything running
 
-Minimum configuration needed in `docker-compose.override.yaml`
+Minimum configuration needed in `docker-compose.override.yml`
 ```yaml
 version: "3.7"
 services:
+  nginx:
+    image: nginx:latest
+    depends_on:
+      - web
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    restart: always
   web:
+    build: .
+    depends_on:
+      - solr
     volumes:
       - ./templates:/opt/ceh-catalogue/templates
       - ./web/scripts/dist/main.bundle.js:/opt/ceh-catalogue/static/scripts/main.bundle.js
@@ -200,7 +209,7 @@ services:
 ```
 
 ```commandline
-docker-compose -f docker-compose.yml -f docker-compose.hubbub.yml -f docker-compose.override.yml up -d --build
+docker compose -f docker-compose.yml -f docker-compose.hubbub.yml -f docker-compose.override.yml up -d --build
 ```
 ### Populate the database
 

@@ -1,16 +1,16 @@
 import _ from 'underscore'
 import Backbone from 'backbone'
 import {
-  AuthorView, CategoryView, DescriptiveKeywordView, EndUserLicenceView,
-  FileView, FundingView,
+  AuthorView, CategoryView, EndUserLicenceView,
+  FileView, FundingView, KeywordThemeView, KeywordVocabularyView,
   ParentView,
   PredefinedParentView, RightsHolderView,
   SingleObjectView, SupportingDocView,
   TextareaView,
-  TextOnlyView
+  TextOnlyView, TopicCategoryView
 } from '../views'
 import { EditorView, InputView } from '../index'
-import { Author, DescriptiveKeyword, Funding, RightsHolder, SupportingDoc } from '../models'
+import { Author, Funding, KeywordTheme, RightsHolder, SupportingDoc, TopicCategory } from '../models'
 import { BoundingBox, BoundingBoxView } from '../geometryMap'
 
 export default EditorView.extend({
@@ -149,8 +149,10 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'transferMethod',
           label: 'Transfer Method',
+          placeholderAttribute: 'Click to select an option or type in your preferred method',
           listAttribute: `
-<option value='Upload via EIDC catalogue' />
+<option value='Upload via EIDC catalogue (preferred)' />
+<option value='Cloud transfer e.g. via OneDrive' />
 `
         }),
 
@@ -176,11 +178,8 @@ export default EditorView.extend({
         new TextOnlyView({
           model: this.model,
           label: 'Document(s) to be provided',
-          text: `<p>Please provide the title and file extension of document(s) you will provide to enable re-use of the data (see <a href="https://eidc.ac.uk/deposit/supportingDocumentation">https://eidc.ac.uk/deposit/supportingDocumentation</a>).</a>
-<p>Describe the content of the documentation to be supplied. Mandatory elements are:</p>
-<ul><li>Collection/generation methods</li><li>Nature and Units of recorded values</li><li>Quality control</li><li>Details of data structure</li></ul>
-<p>Required elements (if appropriate) include:</p>
-<ul><li>Experimental design/Sampling regime</li><li>Fieldwork and laboratory instrumentation</li><li>Calibration steps and values</li><li>Analytical methods</li><li>Any other information useful to the interpretation of the data</li></ul>\
+          text: `<p>Please provide the title and file extension of document(s) you will provide to enable re-use of the data (see <a href="https://eidc.ac.uk/deposit/supportingDocumentation">https://eidc.ac.uk/deposit/supportingDocumentation</a>).</p>
+<p>Describe the content of the documentation to be supplied. All mandatory elements must be provided across the supporting documents, but not necessarily all in the same one.</p>
 `
         }),
 
@@ -352,6 +351,75 @@ export default EditorView.extend({
       ]
     },
     {
+      label: 'Keywords',
+      title: 'Keywords',
+      views: [
+        new ParentView({
+          model: this.model,
+          ModelType: TopicCategory,
+          modelAttribute: 'topicCategories',
+          label: 'ISO 19115 topic categories',
+          ObjectInputView: TopicCategoryView,
+          helpText: `\
+<p>Please note these are very broad themes required by the metadata standard and should not be confused with science topics.</p>
+<p>Multiple topic categories are allowed - please include all that are pertinent.  For example, "<i>Estimates of topsoil invertebrates</i>" = Biota <strong>and</strong> Environment <strong>and</strong> Geoscientific Information.</p>\
+`
+        }),
+        new ParentView({
+          model: this.model,
+          ModelType: KeywordTheme,
+          modelAttribute: 'keywordsTheme',
+          label: 'Science topic',
+          ObjectInputView: KeywordThemeView,
+          multiline: false,
+          helpText: 'These are used to populate the topic facet in the search interface - try to include at least one'
+        }),
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'keywordsObservedProperty',
+          label: 'Observed properties',
+          ObjectInputView: KeywordVocabularyView,
+          multiline: true,
+          helpText: 'Controlled keywords describing the observed properties/variables contained in this data resource'
+        }),
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'keywordsPlace',
+          label: 'Places',
+          ObjectInputView: KeywordVocabularyView,
+          multiline: true,
+          helpText: `\
+        Controlled keywords describing geographic places pertinent to this resource.
+        For example, named countries/regions in which the research was conducted.
+        `
+        }),
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'keywordsProject',
+          label: 'Projects',
+          ObjectInputView: KeywordVocabularyView,
+          multiline: true,
+          helpText: 'Controlled keywords describing projects that fund/support the creation of this resource'
+        }),
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'keywordsInstrument',
+          label: 'Instruments',
+          ObjectInputView: KeywordVocabularyView,
+          multiline: true,
+          helpText: 'Controlled keywords describing instruments/sensors used to generate this data'
+        }),
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'keywordsOther',
+          label: 'Other keywords',
+          ObjectInputView: KeywordVocabularyView,
+          multiline: true,
+          helpText: 'All other keywords not described elsewhere'
+        })
+      ]
+    },
+    {
       label: 'Discovery metadata',
       title: 'Discovery metadata',
       views: [
@@ -384,24 +452,6 @@ export default EditorView.extend({
           helpText: `\
 <p>Information about the source data used in the construction of this data resource.</p>
 <p>Quality assessments and enhancement processes applied to the data resource can also be noted and summarised here.</p>\
-`
-        }),
-
-        new PredefinedParentView({
-          model: this.model,
-          ModelType: DescriptiveKeyword,
-          modelAttribute: 'descriptiveKeywords',
-          label: 'Keywords',
-          ObjectInputView: DescriptiveKeywordView,
-          multiline: true,
-          predefined: {
-            'Catalogue topic': {
-              type: 'Catalogue topic'
-            }
-          },
-          helpText: `\
-<p>Keywords (preferably taken from a controlled vocabulary) categorising and describing the data resource.</p>
-<p>Good quality keywords help to improve the efficiency of search, making it easier to find relevant records.</p>\
 `
         }),
 

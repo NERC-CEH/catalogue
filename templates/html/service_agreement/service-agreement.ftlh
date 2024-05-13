@@ -14,7 +14,7 @@
 
             <div class="title">
                 <div class="logo"></div>
-                <h1>EIDC Deposit Agreement for ${title!"NOT PROVIDED"}</h1>
+                <h1>EIDC Deposit Agreement for ${title!"NOT PROVIDED"} (Status: ${getState()?upper_case})</h1>
             </div>
 
             <#if permission.userCanEditServiceAgreement(id)>
@@ -22,42 +22,36 @@
                 <div class="row hidden-print adminPanel" role="toolbar">
                     <#if !isHistorical()>
                         <#if getState() != "pending publication" && getState() != "published">
-                          <div class="btn-group btn-group-sm">
-                            <button type="button" class="btn btn-default edit-control btn-wide" data-document-type="service-agreement">Edit</button>
-                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
-                              <span class="caret"></span>
-                              <span class="sr-only">Toggle Dropdown</span>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-right">
-                              <li>
-                                <a href="/service-agreement/${id}/publication">
-                                  <i class="fa-solid fa-file"></i>
-                                  Service agreement publication status
-                                </a>
-                              </li>
-                              <li>
-                                <a href="/service-agreement/${id}/permission">
-                                  <i class="fa-solid fa-file"></i>
-                                  Service agreement permissions
-                                </a>
-                              </li>
-                            </ul>
-                          </div>
-
+                           <div class="btn-group btn-group-sm">
+                             <button type="button" class="btn btn-default edit-control btn-wide" data-document-type="service-agreement">Edit</button>
+                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+                               <span class="caret"></span>
+                               <span class="sr-only">Toggle Dropdown</span>
+                             </button>
+                             <ul class="dropdown-menu dropdown-menu-right">
+                               <li>
+                                 <a href="/service-agreement/${id}/publication">
+                                    <i class="fa-solid fa-file"></i>
+                                    Service agreement publication status
+                                 </a>
+                               </li>
+                             </ul>
+                           </div>
                         </#if>
+
                         <#list getModelLinks() as link>
                             <#if link.rel == 'history'>
-                                <a href="${link.href}" class="btn btn-default">${link.title}</a>
+                                <a href="${link.href}" class="btn btn-default btn-wide btn-sm">${link.title}</a>
                             <#else>
                                 <form action="${link.href}" method="post">
-                                    <input type="submit" class="btn btn-default" value="${link.title}">
+                                    <input type="submit" class="btn btn-default btn-wide btn-sm" value="${link.title}">
                                 </form>
                             </#if>
                         </#list>
                     <#elseif  isHistorical()>
                         <#list getModelLinks() as link>
                             <#if link.title == 'History'>
-                                <a href="${link.href}" class="btn btn-default">${link.title}</a>
+                                <a href="${link.href}" class="btn btn-default btn-wide btn-sm">${link.title}</a>
                             </#if>
                         </#list>
                     </#if>
@@ -179,11 +173,13 @@
                                         </#if>
                                     </div>
                                     <div class="supportingDoc__content">
-                                        <#if doc.content?? >
-                                            <@blocks.linebreaks doc.content />
-                                        <#else>
-                                           <span class="alert alert--error">missing</span>
-                                        </#if>
+                                        <ul>
+                                            <#list doc.content![] as kind>
+                                                <li>${doc.contentTypeToText(kind)}</li>
+                                            <#else>
+                                                <span class="alert alert--error">missing</span>
+                                            </#list>
+                                        </ul>
                                     </div>
                                 </div>
                             </#list>
@@ -229,7 +225,7 @@
                 </div>
             </#if>
 
-            <#if description?has_content || lineage?has_content || allKeywords?has_content || boundingBoxes??>
+            <#if description?has_content || lineage?has_content || allKeywords?has_content || topicCategories?? ||  inspireTheme?? || boundingBoxes??>
                 <div class="section section--metadata">
                     <h2>Discovery metadata</h2>
                     <p><i>Information in this section will be used to create a record in the EIDC data catalogue.</i></p>
@@ -374,23 +370,9 @@
 
 
 <#macro displayKeywords>
-    <#if allKeywords?has_content>
-        <div class="keyvalue">
-            <div class="key">Keywords</div>
-            <div class="value">
-                <#list allKeywords?sort_by("value") as keyword>
-                    <span>
-                        <#if keyword.uri?has_content>
-                            <a href="${keyword.uri}" target="_blank"
-                            rel="noopener noreferrer">${keyword.value?trim}</a><#if keyword_has_next>,&nbsp;</#if>
-                        <#else>
-                            ${keyword.value?trim}<#if keyword_has_next>,&nbsp;</#if>
-                        </#if>
-                    </span>
-                </#list>
-            </div>
-        </div>
-    </#if>
+    <dl class="keyvalue">
+      <#include "../document/_tags.ftlh">
+    </dl>
 </#macro>
 
 <#macro displayArea>

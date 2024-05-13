@@ -40,6 +40,25 @@ html {
     overflow-y: scroll;
 }
 
+footer {
+    .container {
+        padding: 1em;
+
+        span {
+            &:not(:last-of-type)::after {
+                content: "|";
+                margin: 0 0.6em;
+            }
+        }
+
+        .altviews {
+            span:first-of-type {
+                margin-left: 0.6em;
+            }
+        }
+    }
+}
+
 .adminToolbar {
     margin-top: 1em;
 }
@@ -162,21 +181,5 @@ a#atlwdg-trigger {
 @media only screen and (max-width: 820px) {
     a#atlwdg-trigger {
         display: none;
-    }
-}
-
-footer {
-
-    span {
-        &:not(:last-of-type)::after {
-            content: "|";
-            margin: 0 0.6em;
-        }
-    }
-
-    .altviews {
-        span:first-of-type {
-            margin-left: 0.6em;
-        }
     }
 }

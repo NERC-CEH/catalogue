@@ -1,8 +1,8 @@
 .serviceAgreement {
     .adminPanel {
         margin: 1em 0 !important;
-        .btn {
-            min-width: 150px;
+        .btn-wide {
+            min-width: 10em;
         }
         form {
             display: inline-block;
@@ -57,6 +57,9 @@
         margin: 1em 0;
         .key {
             font-weight: bolder;
+        }
+        dd {
+            margin-bottom: 1.5em;
         }
     }
 
@@ -170,9 +173,12 @@
         .keyvalue {
             grid-template-columns: 200px auto;
         }
-        .key {
+        .key, dt {
             text-align: right;
             margin-right: 1em;
+        }
+        dd {
+            margin-bottom: 1.5em;
         }
     }
 }
