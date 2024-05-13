@@ -3,7 +3,7 @@ import _ from 'underscore'
 import template from './PermissionsTemplate'
 import { IdentityPermission, IdentityPermissionView } from '../IdentityPermission'
 
-const documentsTemplate = _.template(`
+export const documentsTemplate = _.template(`
 <td><%= identity %></td>
 <td><input data-permission="canView" type="checkbox" <% if(canView) { %>checked<% } %>></td>
 <td><input data-permission="canEdit" type="checkbox" <% if(canEdit) { %>checked<% } %>></td>
@@ -12,7 +12,7 @@ const documentsTemplate = _.template(`
 <td><button class="editor-button-xs"><i class="fa-solid fa-times"></i></button></td>
 `)
 
-const serviceAgreementTemplate = _.template(`
+export const serviceAgreementTemplate = _.template(`
 <td><%= identity %></td>
 <td><input data-permission="canView" type="checkbox" <% if(canView) { %>checked<% } %>></td>
 <td><input data-permission="canEdit" type="checkbox" <% if(canEdit) { %>checked<% } %>></td>
@@ -33,7 +33,7 @@ export default Backbone.View.extend({
     this.listenTo(this.model, 'permission:add', this.addAll)
     this.listenTo(this.model, 'permission:remove', this.addAll)
     this.listenTo(this.model, 'save:success', this.leave)
-    if (this.model.get('doctype') === 'service-agreement') {
+    if (this.model && this.model.get('doctype') === 'service-agreement') {
       this.identityTemplate = serviceAgreementTemplate
     } else {
       this.identityTemplate = documentsTemplate

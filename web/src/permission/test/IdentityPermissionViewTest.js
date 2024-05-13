@@ -1,5 +1,5 @@
 import { IdentityPermissionView } from '../src/IdentityPermission/index.js'
-import { Permission } from '../src/PermissionApp/index.js'
+import { Permission, DocumentsTemplate } from '../src/PermissionApp/index.js'
 
 describe('Test IdentityPermissionView', () => {
   it('View should be defined', () => {
@@ -19,7 +19,7 @@ describe('Test IdentityPermissionView', () => {
       canDelete: true,
       canUpload: false
     })
-    const view = new IdentityPermissionView({ model })
+    const view = new IdentityPermissionView({ model, template: DocumentsTemplate })
     spyOn(view, 'removePermission')
     view.initialize()
     view.delegateEvents()
@@ -41,9 +41,9 @@ describe('Test IdentityPermissionView', () => {
       canDelete: true,
       canUpload: false
     })
-    const view = new IdentityPermissionView({ model })
+    const view = new IdentityPermissionView({ model, template: DocumentsTemplate })
     spyOn(view, 'update')
-    view.initialize()
+    view.initialize({ model, template: DocumentsTemplate })
     view.delegateEvents()
     view.render()
 

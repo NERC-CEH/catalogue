@@ -4,7 +4,9 @@ import Backbone from 'backbone'
 export default Backbone.View.extend({
 
   initialize (options) {
-    this.template = options.template
+    if (typeof options !== 'undefined' && Object.hasOwn(options, 'template')) {
+      this.template = options.template
+    }
   },
 
   tagName: 'tr',
