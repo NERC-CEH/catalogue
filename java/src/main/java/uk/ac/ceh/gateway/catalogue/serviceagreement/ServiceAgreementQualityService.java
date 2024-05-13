@@ -95,18 +95,18 @@ public class ServiceAgreementQualityService {
     }
 
     List<MetadataCheck> checkBasics(DocumentContext parsedDoc) {
-        val requiredKeys = ImmutableSet.of("title", "depositorContactDetails", "eidcName", "transferMethod", "depositReference");
+        val requiredKeys = Map.of("Title", "title", "Depositor contact details", "depositorContactDetails", "EIDC name", "eidcName", "Transfer method", "transferMethod", "Deposit reference", "depositReference");
         val toReturn = new ArrayList<MetadataCheck>();
         val toCheck = parsedDoc.read(
                 "$.['title', 'depositorContactDetails', 'eidcName', 'transferMethod', 'depositReference']",
                 new TypeRef<Map<String, String>>() {}
         );
 
-        requiredKeys.forEach(key -> {
-            if (fieldIsMissing(toCheck, key)) {
-                toReturn.add(new MetadataCheck(key + " is missing", ERROR));
+        for (var entry : requiredKeys.entrySet()) {
+            if (fieldIsMissing(toCheck, entry.getValue())) {
+                toReturn.add(new MetadataCheck(entry.getKey() + " is missing", ERROR));
             }
-        });
+        };
 
         val depositReference = parsedDoc.read("$.depositReference", String.class);
         if (stringIsMissing(depositReference) || !depositReference.trim().matches("^"+jiraPrefix+"\\d{1,9}$")) {
