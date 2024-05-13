@@ -203,7 +203,7 @@ export default EditorView.extend({
           model: this.model,
           label: 'End user licence',
           text: `
-<p>Please state under which licence the data will be made available. the vast majority of NERC-funded data are provided under the Open Government Licence. We recommend that you seek guidance from your institution and/or funding agency as to the appropriate licence.</p>
+<p>Please state under which licence the data will be made available. The vast majority of NERC-funded data are provided under the <a href='https://eidc.ceh.ac.uk/licences/OGL/plain' target='_blank' rel='noopener noreferrer'>Open Government Licence.</a>. We recommend that you seek guidance from your institution and/or funding agency as to the appropriate licence.</p>
 `
         }),
 
