@@ -122,10 +122,12 @@
       </main>
       <#if footer = true>
         <footer>
-            <#if catalogue.id == "eidc" || catalogue.id == "ukeof">
-              <#include "footer/${catalogue.id}.ftlh">
+            <#if catalogue.id == "eidc">
+              <#include "footer/eidc.ftlh">
+            <#elseif catalogue.id == "ukeof">
+              <#include "footer/ukeof.ftlh">
             <#else>
-                <#include "footer/ukceh.ftlh">
+              <#include "footer/ukceh.ftlh">
             </#if>
         </footer>
       </#if>
