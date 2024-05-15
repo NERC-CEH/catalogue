@@ -89,10 +89,15 @@ main {
             padding-left: 1em;
 
             .facet {
+
+                &:not(:has(li)) {
+                    display: none;
+                }
+
                 .facet-header {
                     font-weight: 600;
                     font-size: 1.35em;
-                    color:var(--filter-heading-colour);
+                    color: var(--filter-heading-colour);
                 }
 
                 margin: 2em 0;

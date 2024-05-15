@@ -119,7 +119,7 @@
 				<#else>
 					<#assign role=responsibleParty.role >
 				</#if>
-					<gmd:CI_RoleCode codeList="https://standards.iso.org/iso/19139/resources/gmxCodelists.xml##CI_RoleCode" codeListValue="${role}">${role}</gmd:CI_RoleCode>
+					<gmd:CI_RoleCode codeList="https://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_RoleCode" codeListValue="${role}">${role}</gmd:CI_RoleCode>
 				</gmd:role>
 			</gmd:CI_ResponsibleParty>
 		</gmd:pointOfContact>-->
