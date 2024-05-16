@@ -408,7 +408,7 @@ export default EditorView.extend({
         Controlled keywords describing geographic places pertinent to this resource.
         For example, named countries/regions in which the research was conducted.
         `,
-        required: true
+          required: true
         }),
         new ParentView({
           model: this.model,
