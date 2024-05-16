@@ -95,10 +95,23 @@ public class ServiceAgreementQualityService {
     }
 
     List<MetadataCheck> checkBasics(DocumentContext parsedDoc) {
-        val requiredKeys = Map.of("Title", "title", "Depositor contact details", "depositorContactDetails", "EIDC name", "eidcName", "Transfer method", "transferMethod", "Deposit reference", "depositReference");
+        val requiredKeys = Map.ofEntries(
+            Map.entry("Title", "title"),
+            Map.entry("Depositor contact details", "depositorContactDetails"),
+            Map.entry("EIDC name", "eidcName"),
+            Map.entry("Transfer method", "transferMethod"),
+            Map.entry("Deposit reference", "depositReference"),
+            Map.entry("ISO 19115 topic categories keywords", "topicCategories"),
+            Map.entry("Science topic keywords", "keywordsTheme"),
+            Map.entry("Observed properties keywords", "keywordsObservedProperty"),
+            Map.entry("Places keywords", "keywordsPlace"),
+            Map.entry("Projects keywords", "keywordsProject"),
+            Map.entry("Instruments keywords", "keywordsInstrument"),
+            Map.entry("Other keywords", "keywordsOther"));
+
         val toReturn = new ArrayList<MetadataCheck>();
         val toCheck = parsedDoc.read(
-                "$.['title', 'depositorContactDetails', 'eidcName', 'transferMethod', 'depositReference']",
+                "$.['title', 'depositorContactDetails', 'eidcName', 'transferMethod', 'depositReference', 'keywords', 'topicCategories', 'keywordsTheme', 'keywordsObservedProperty', 'keywordsPlace', 'keywordsProject', 'keywordsInstrument', 'keywordsOther']",
                 new TypeRef<Map<String, String>>() {}
         );
 
