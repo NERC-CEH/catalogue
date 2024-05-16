@@ -111,7 +111,7 @@ public class ServiceAgreementQualityService {
 
         val toReturn = new ArrayList<MetadataCheck>();
         val toCheck = parsedDoc.read(
-                "$.['title', 'depositorContactDetails', 'eidcName', 'transferMethod', 'depositReference', 'keywords', 'topicCategories', 'keywordsTheme', 'keywordsObservedProperty', 'keywordsPlace', 'keywordsProject', 'keywordsInstrument', 'keywordsOther']",
+                "$.['title', 'depositorContactDetails', 'eidcName', 'transferMethod', 'depositReference', 'topicCategories', 'keywordsTheme', 'keywordsObservedProperty', 'keywordsPlace', 'keywordsProject', 'keywordsInstrument', 'keywordsOther']",
                 new TypeRef<Map<String, String>>() {}
         );
 
