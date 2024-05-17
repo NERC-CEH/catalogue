@@ -29,8 +29,7 @@ import {
   OsdpSampleEditorView,
   SampleArchiveEditorView, ServiceAgreementEditorView, UkemsDocumentEditorView
 } from './editor/src/editors'
-import { EditorMetadata } from './editor/src'
-import LinkEditorMetadata from './editor/src/LinkEditorMetadata'
+import { EditorMetadata, LinkEditorMetadata, GeminiEditorMetadata } from './editor/src'
 import { Catalogue, CatalogueView } from './catalogue/src/CatalogueApp'
 import { StudyAreaView } from './study-area/src/View'
 import { PermissionApp, PermissionAppView, PermissionRouter } from './permission/src/PermissionApp'
@@ -111,7 +110,7 @@ function initEditor () {
   const lookup = {
     GEMINI_DOCUMENT: {
       View: GeminiEditorView,
-      Model: EditorMetadata,
+      Model: GeminiEditorMetadata,
       mediaType: 'application/gemini+json'
     },
     EF_DOCUMENT: {

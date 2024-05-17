@@ -29,12 +29,12 @@ public abstract class AbstractMetadataDocument implements MetadataDocument {
 
     public Set<Relationship> getRelationships() {
         return Optional.ofNullable(relationships)
-            .orElse(Collections.emptySet());
+            .orElseGet(Collections::emptySet);
     }
 
     public List<ResourceIdentifier> getResourceIdentifiers() {
         return Optional.ofNullable(resourceIdentifiers)
-            .orElse(Collections.emptyList());
+            .orElseGet(Collections::emptyList);
     }
 
     @Override
@@ -53,8 +53,7 @@ public abstract class AbstractMetadataDocument implements MetadataDocument {
 
     @Override
     public MetadataDocument addAdditionalKeywords(List<Keyword> additionalKeywords) {
-        keywords = Optional.ofNullable(keywords)
-                .orElse(new ArrayList<>());
+        keywords = Optional.ofNullable(keywords).orElseGet(ArrayList::new);
 
         keywords.addAll(additionalKeywords);
         return this;
