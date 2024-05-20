@@ -2,10 +2,11 @@ package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 
 public interface ServiceAgreementService {
 
-    ServiceAgreement get(String id);
+    ServiceAgreement get(CatalogueUser user, String id);
 
     ServiceAgreement create(CatalogueUser user, String id, String catalogue, ServiceAgreement serviceAgreement);
 
@@ -26,4 +27,6 @@ public interface ServiceAgreementService {
     History getHistory(String id);
 
     ServiceAgreement getPreviousVersion(String id, String version);
+
+    StateResource transitState(CatalogueUser user, String id, String toState);
 }

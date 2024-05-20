@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.hateoas.Link;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.components.datastore.DataRevision;
@@ -26,8 +27,12 @@ import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
+import uk.ac.ceh.gateway.catalogue.publication.ServiceAgreementPublicationService;
+import uk.ac.ceh.gateway.catalogue.publication.State;
+import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 import static org.mockito.BDDMockito.given;
@@ -36,6 +41,7 @@ import static org.springframework.hateoas.MediaTypes.HAL_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.EIDC_PUBLISHER_USERNAME;
 
 @Slf4j
 @WithMockCatalogueUser
@@ -57,19 +63,23 @@ class ServiceAgreementControllerTest {
     @MockBean private CatalogueService catalogueService;
     @MockBean(name="permission") private PermissionService permissionService;
     @MockBean private ProfileService profileService;
+    @MockBean private ServiceAgreementPublicationService serviceAgreementPublicationService;
 
     private static ServiceAgreement serviceAgreement;
     private static final String ID = "test";
     private static final String VERSION = "version";
+    private static final String catalogueKey = "eidc";
 
     @Autowired private MockMvc mvc;
     @Autowired private Configuration configuration;
 
     @BeforeAll
     static void init() {
+        val stateResource = new StateResource(State.UNKNOWN_STATE, new HashSet<>(), ID, catalogueKey, "service-agreement");
         serviceAgreement = new ServiceAgreement();
         serviceAgreement.setId(ID);
         serviceAgreement.setTitle("Test Service Agreement");
+        serviceAgreement.setCurrentStateResource(stateResource);
     }
 
     @BeforeEach
@@ -468,6 +478,31 @@ class ServiceAgreementControllerTest {
                 .andExpect(content().json(expectedResponse));
     }
 
+    @Test
+    @SneakyThrows
+    @WithMockCatalogueUser
+    void transitionState() {
+        //given
+        val toState = new State("foo", "bar");
+        givenUserCanEditServiceAgreement();
+        givenStateTransition();
+
+        //when
+        mvc.perform(
+                post("/service-agreement/{file}/form-publication/{toState}", ID, toState.getId())
+                    .header("remote-user", EIDC_PUBLISHER_USERNAME)
+                    .accept(MediaType.TEXT_HTML)
+            )
+            .andExpect(status().isFound())
+            .andExpect(redirectedUrl("/service-agreement/" + ID));
+    }
+
+    private void givenStateTransition() {
+        val stateResource = new StateResource(State.UNKNOWN_STATE, new HashSet<>(), ID, catalogueKey, "service-agreement");
+        given(serviceAgreementService.transitState(any(CatalogueUser.class), eq(ID), eq("foo")))
+            .willReturn(stateResource);
+    }
+
     private void givenServiceAgreementModel() {
         val self = Link.of("https://catalogue/service-agreement/test", "self");
         val model = new ServiceAgreementModel(serviceAgreement);
@@ -544,7 +579,7 @@ class ServiceAgreementControllerTest {
     }
 
     private void givenServiceAgreement() {
-        given(serviceAgreementService.get(ID))
+        given(serviceAgreementService.get(any(CatalogueUser.class), eq(ID)))
             .willReturn(serviceAgreement);
     }
 

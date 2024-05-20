@@ -42,10 +42,19 @@ public class ServiceAgreementPublicationService implements PublicationService {
     @Override
     public StateResource current(CatalogueUser user, String fileIdentifier) {
         try {
-            ServiceAgreement doc = serviceAgreementService.get(fileIdentifier);
+            ServiceAgreement doc = serviceAgreementService.get(user, fileIdentifier);
             return current(user, doc.getMetadata(), doc.getId());
         } catch (ServiceAgreementException | NullPointerException ex) {
             throw new PublicationServiceException(String.format("Could not get current state for: %s", fileIdentifier), ex);
+        }
+    }
+
+    public StateResource current(CatalogueUser user, ServiceAgreement serviceAgreement) {
+        try {
+            ServiceAgreement doc = serviceAgreement;
+            return current(user, doc.getMetadata(), doc.getId());
+        } catch (ServiceAgreementException | NullPointerException ex) {
+            throw new PublicationServiceException(String.format("Could not get current state for: %s", serviceAgreement.getId()), ex);
         }
     }
 
@@ -57,7 +66,7 @@ public class ServiceAgreementPublicationService implements PublicationService {
     @Override
     public StateResource transition(CatalogueUser user, String fileIdentifier, String transitionId) {
         try {
-            final ServiceAgreement doc = serviceAgreementService.get(fileIdentifier);
+            final ServiceAgreement doc = serviceAgreementService.get(user, fileIdentifier);
             final MetadataInfo original = doc.getMetadata();
             final Set<PublishingRole> publishingRoles = getPublishingRoles(user, original);
             final Transition transition = workflow

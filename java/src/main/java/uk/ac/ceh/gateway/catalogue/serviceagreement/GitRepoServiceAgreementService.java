@@ -5,6 +5,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,8 @@ import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.publication.ServiceAgreementPublicationService;
+import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.JiraService;
 
@@ -35,6 +38,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     private final DocumentInfoMapper<ServiceAgreement> serviceAgreementMapper;
     private final DocumentRepository documentRepository;
     private final JiraService jiraService;
+    private final ServiceAgreementPublicationService publicationService;
     private final String PUBLISHED = "published";
     public static final String FOLDER = "service-agreement/";
     private static final String DRAFT = "draft";
@@ -46,13 +50,15 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
             DocumentInfoMapper<MetadataInfo> metadataInfoMapper,
             DocumentInfoMapper<ServiceAgreement> serviceAgreementMapper,
             DocumentRepository documentRepository,
-            JiraService jiraService) {
+            JiraService jiraService,
+            @Lazy ServiceAgreementPublicationService publicationService) {
         this.baseUri = baseUri;
         this.repo = repo;
         this.metadataInfoMapper = metadataInfoMapper;
         this.serviceAgreementMapper = serviceAgreementMapper;
         this.documentRepository = documentRepository;
         this.jiraService = jiraService;
+        this.publicationService = publicationService;
         log.info("Creating");
     }
 
@@ -69,14 +75,21 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
 
     @Override
     @SneakyThrows
-    public ServiceAgreement get(String id) {
+    public ServiceAgreement get(CatalogueUser user, String id) {
         log.debug("GETting service agreement: {}", id);
         val serviceAgreement = dataDocumentToServiceAgreement(
-                repo.getData(FOLDER + id + ".raw"),
-                repo.getData(FOLDER + id + ".meta")
+            repo.getData(FOLDER + id + ".raw"),
+            repo.getData(FOLDER + id + ".meta")
         );
         serviceAgreement.setHistorical(false);
+        serviceAgreement.setCurrentStateResource(publicationService.current(user, serviceAgreement));
         return serviceAgreement;
+    }
+
+    @Override
+    @SneakyThrows
+    public StateResource transitState(CatalogueUser user, String id, String toState) {
+        return publicationService.transition(user, id, toState);
     }
 
     @SneakyThrows
@@ -92,7 +105,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
             .submitData(FOLDER + id + ".meta", (o) -> metadataInfoMapper.writeInfo(metadataInfo, o))
             .submitData(FOLDER + id + ".raw", (o) -> serviceAgreementMapper.writeInfo(serviceAgreement, o))
             .commit(user, "creating service agreement " + id);
-        return get(id);
+        return get(user, id);
     }
 
     @SneakyThrows
@@ -106,7 +119,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
             .submitData(FOLDER + id + ".meta", (o) -> metadataInfoMapper.writeInfo(metadataInfo, o))
             .submitData(FOLDER + id + ".raw", (o) -> serviceAgreementMapper.writeInfo(serviceAgreement, o))
             .commit(user, "updating service agreement " + id);
-        return get(id);
+        return get(user, id);
     }
 
     @SneakyThrows
@@ -173,7 +186,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     }
 
     public void submitServiceAgreement(CatalogueUser user, String id) {
-        ServiceAgreement serviceAgreement = get(id);
+        ServiceAgreement serviceAgreement = get(user, id);
         String metadataRecordState = serviceAgreement.getState();
         if (metadataRecordState.equals(DRAFT)) {
             try {
@@ -207,7 +220,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     public void publishServiceAgreement(CatalogueUser user, String id) {
         val gemini = (GeminiDocument) documentRepository.read(id);
         val metadataRecordState = gemini.getState();
-        val serviceAgreement = get(id);
+        val serviceAgreement = get(user, id);
         val serviceAgreementState = serviceAgreement.getState();
         log.debug("gemini: {}, service agreement: {}", metadataRecordState, serviceAgreementState);
         if (metadataRecordState.equals(DRAFT) && serviceAgreementState.equals(PENDING_PUBLICATION)) {
@@ -248,7 +261,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
 
     @SneakyThrows
     public void giveDepositorEditPermission(CatalogueUser user, String id) {
-        val serviceAgreement = get(id);
+        val serviceAgreement = get(user, id);
         val serviceAgreementState = serviceAgreement.getState();
         val metadata = serviceAgreement.getMetadata();
         val gemini = (GeminiDocument) documentRepository.read(id);

@@ -81,10 +81,11 @@ public class ServiceAgreementController {
     @PreAuthorize("@permission.userCanViewServiceAgreement(#id)")
     @GetMapping("{id}")
     public ServiceAgreementModel get(
+            @ActiveUser CatalogueUser user,
             @PathVariable("id") String id
             ) {
         log.info("GET {}", id);
-        val serviceAgreement = serviceAgreementService.get(id);
+        val serviceAgreement = serviceAgreementService.get(user, id);
         return serviceAgreementModelAssembler.toModel(serviceAgreement);
             }
 
@@ -206,6 +207,19 @@ public class ServiceAgreementController {
                 serviceAgreementService.get(id)
             )
         );
+    }
+
+    }
+
+    @PreAuthorize("@permission.userCanEditServiceAgreement(#id)")
+    @PostMapping("{id}/form-publication/{toState}")
+    public RedirectView formTransitionPublication(
+        @ActiveUser CatalogueUser user,
+        @PathVariable("id") String id,
+        @PathVariable("toState") String toState) {
+
+        val nextStateResource = serviceAgreementService.transitState(user, id, toState);
+        return new RedirectView("/service-agreement/" + id);
     }
 
 }
