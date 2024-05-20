@@ -29,10 +29,8 @@ import java.util.stream.Collectors;
 @Service
 public class GeminiExtractor {
     private final static Envelope GLOBAL_EXTENT = new Envelope(-180, 180, -90, 90);
-    private LocalDate serviceAgreementStart;
 
-    public GeminiExtractor(@Value("${serviceagreement.start}") String localDateStr) {
-        serviceAgreementStart = LocalDate.parse(localDateStr);
+    public GeminiExtractor() {
         log.info("Creating {}", this);
     }
 
@@ -45,10 +43,6 @@ public class GeminiExtractor {
                 .map(Keyword::getValue)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
-    }
-
-    public boolean isNewServiceAgreement(LocalDate creationDate) {
-        return creationDate.isAfter(serviceAgreementStart);
     }
 
     /**
