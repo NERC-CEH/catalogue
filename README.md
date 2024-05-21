@@ -51,7 +51,7 @@ cd -
 
 ## Usernames and Passwords
 
-you will need to create a `secrets.env` file with the following
+You will need to create a `secrets.env` file with the following. Ask one of the team for access to Keypass to retrieve the jira password.
 
 ```
 jira.password=FindMeInK33Pa55
@@ -205,7 +205,6 @@ services:
       - ./web/scripts/dist/main.bundle.js:/opt/ceh-catalogue/static/scripts/main.bundle.js
     environment:
       - spring.profiles.active=development,upload:hubbub,server:eidc,search:basic
-      - jira.username=<your username>
 ```
 
 ```commandline
