@@ -4,14 +4,16 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
-
 import java.util.List;
 
 @Profile("service-agreement")
@@ -171,4 +173,39 @@ public class ServiceAgreementController {
             throw new ResourceNotFoundException("Metadata record does not exist");
         }
             }
+
+    @PreAuthorize("@permission.userCanEditServiceAgreement(#id)")
+    @RequestMapping(method = RequestMethod.GET, value = "{id}/permission")
+    @ResponseBody
+    public HttpEntity<ServiceAgreementPermissionResource> currentPermission (
+        @ActiveUser CatalogueUser user,
+        @PathVariable("id") String id
+    ) {
+        log.info("GETTING SERVICE AGREEMENT PERMISSIONS");
+        return ResponseEntity.ok(
+            new ServiceAgreementPermissionResource(
+                serviceAgreementService.get(id)
+            )
+        );
+    }
+
+    @PreAuthorize("@permission.userCanEditServiceAgreement(#id)")
+    @RequestMapping(method =  RequestMethod.PUT, value = "{id}/permission")
+    @ResponseBody
+    public HttpEntity<ServiceAgreementPermissionResource> updatePermission (
+        @ActiveUser CatalogueUser user,
+        @PathVariable("id") String id,
+        @RequestBody ServiceAgreementPermissionResource permissionResource
+    ) {
+        log.info("UPDATING SERVICE AGREEMENT PERMISSIONS");
+        MetadataInfo original = serviceAgreementService.get(id).getMetadata();
+        MetadataInfo updated = permissionResource.updatePermissions(original);
+        serviceAgreementService.updateMetadata(user, id, updated);
+        return ResponseEntity.ok(
+            new ServiceAgreementPermissionResource(
+                serviceAgreementService.get(id)
+            )
+        );
+    }
+
 }
