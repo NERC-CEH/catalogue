@@ -20,8 +20,9 @@ export default SingleView.extend({
 
   render () {
     SingleView.prototype.render.apply(this)
-    this.$('.dataentry').append(template({ data: _.extend({}, this.data, { value: this.model.get(this.data.modelAttribute) }) }))
-    this.$('[type="checkbox"]').prop('checked', this.model.get(this.data.modelAttribute))
+    const value = this.model.get(this.data.modelAttribute)
+    this.$('.dataentry').append(template({ data: { ...this.data, value } }))
+    this.$('[type="checkbox"]').prop('checked', value)
     if (this.data.readonly) {
       this.$(':input').prop('readonly', true)
     }

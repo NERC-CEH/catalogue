@@ -22,8 +22,7 @@ public class GeminiExtractorTest {
 
     @BeforeEach
     public void init() {
-        String localDateStr = "2021-12-20";
-        service = new GeminiExtractor(localDateStr);
+        service = new GeminiExtractor();
     }
 
     @Test
@@ -126,23 +125,5 @@ public class GeminiExtractorTest {
         assertThat(env.getMinY(), is(2d));
         assertThat(env.getMaxX(), is(7d));
         assertThat(env.getMaxY(), is(8d));
-    }
-
-    @Test
-    public void isNewServiceAgreementTest() {
-        //When
-        Boolean isNewServiceAgreement = service.isNewServiceAgreement(LocalDate.parse("2022-12-20"));
-
-        //Then
-        assertThat(isNewServiceAgreement, is(true));
-    }
-
-    @Test
-    public void isNotNewServiceAgreementTest() {
-        //When
-        Boolean isNewServiceAgreement = service.isNewServiceAgreement(LocalDate.parse("2020-12-20"));
-
-        //Then
-        assertThat(isNewServiceAgreement, is(false));
     }
 }

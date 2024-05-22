@@ -77,7 +77,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private Keyword resourceType;
     private AccessLimitation accessLimitation;
     private boolean notGEMINI;
-
+    private Boolean hasOnlineServiceAgreement;
 
     public void populateFromServiceAgreement(ServiceAgreement serviceAgreement) {
         this.setTitle(serviceAgreement.getTitle());
