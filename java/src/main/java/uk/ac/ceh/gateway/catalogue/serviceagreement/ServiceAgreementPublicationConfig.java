@@ -41,35 +41,35 @@ public class ServiceAgreementPublicationConfig {
         Transition draftToSubmitted = Transition.builder()
             .toState(submitted)
             .id(draftToSubmittedId)
-            .title("Submit Service Agreement")
+            .title("Submit")
             .helpText("Submit service agreement for review")
             .build();
 
         Transition submittedToUnderReview = Transition.builder()
             .toState(underReview)
             .id(submittedToUnderReviewId)
-            .title("Review Service Agreement")
+            .title("For approval")
             .helpText("Agree service agreement")
             .build();
 
         Transition submittedToDraft = Transition.builder()
             .toState(draft)
             .id(submittedToDraftId)
-            .title("Revert to draft state")
+            .title("Edits required")
             .helpText("Move service agreement back to draft state")
             .build();
 
         Transition underReviewToReadyForAgreement = Transition.builder()
             .toState(readyForAgreement)
             .id(underReviewToReadyForAgreementId)
-            .title("Complete Review")
+            .title("Ready for agreement")
             .helpText("Complete review of service agreement")
             .build();
 
         Transition underReviewToDraft = Transition.builder()
             .toState(draft)
             .id(underReviewToDraftId)
-            .title("Revert to draft")
+            .title("Edits required")
             .helpText("Move service agreement back to draft state")
             .build();
 
@@ -83,14 +83,14 @@ public class ServiceAgreementPublicationConfig {
         Transition readyForAgreementToSubmitted = Transition.builder()
             .toState(submitted)
             .id(readyForAgreementToSubmittedId)
-            .title("Revert to submitted")
+            .title("Edits required")
             .helpText("Move service agreement back to submitted state")
             .build();
 
         Transition agreedToDraft = Transition.builder()
             .toState(draft)
             .id(agreedToDraftId)
-            .title("Revert to draft")
+            .title("Edits required")
             .helpText("Move service agreement back to draft state")
             .build();
 
@@ -103,11 +103,11 @@ public class ServiceAgreementPublicationConfig {
         draft.addTransitions(publisher, ImmutableSet.of(draftToSubmitted));
         submitted.addTransitions(publisher, ImmutableSet.of(submittedToUnderReview, submittedToDraft));
         underReview.addTransitions(publisher, ImmutableSet.of(underReviewToReadyForAgreement, underReviewToDraft));
-        readyForAgreement.addTransitions(publisher, ImmutableSet.of(readyForAgreementToSubmitted, readyForAgreementToAgreed));
+        readyForAgreement.addTransitions(publisher, ImmutableSet.of(readyForAgreementToAgreed, readyForAgreementToSubmitted));
         agreed.addTransitions(publisher, ImmutableSet.of(agreedToDraft));
 
         draft.addTransitions(depositor, ImmutableSet.of(draftToSubmitted));
-        readyForAgreement.addTransitions(depositor, ImmutableSet.of(readyForAgreementToAgreed));
+        readyForAgreement.addTransitions(depositor, ImmutableSet.of(readyForAgreementToAgreed, readyForAgreementToSubmitted));
 
         // Add states to workflow
         Map<String, State> states = new ImmutableMap.Builder<String, State>()

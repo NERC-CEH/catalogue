@@ -126,13 +126,14 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         } else if (transitionId.equals(ServiceAgreementPublicationConfig.readyForAgreementToSubmittedId)) {
 
             ServiceAgreement serviceAgreement = get(user, id);
+            removeEditPermissions(user, id, serviceAgreement);
             sendJiraComment(serviceAgreement, "Service Agreement (%s): %s has been returned to submitted status");
 
         } else if (transitionId.equals(ServiceAgreementPublicationConfig.readyForAgreementToDraftId)) {
 
             ServiceAgreement serviceAgreement = get(user, id);
             addPermissionsForDepositor(user, id, serviceAgreement.getMetadata(), serviceAgreement);
-            sendJiraComment(serviceAgreement, "Service Agreement (%s): %s has been returned to submitted status");
+            sendJiraComment(serviceAgreement, "Service Agreement (%s): %s is sent back to draft status for re-edit");
 
         }
     }
