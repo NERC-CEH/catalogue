@@ -101,7 +101,9 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     @SneakyThrows
     public void doTransitopActon(CatalogueUser user, String id, String transitionId) {
         if (transitionId.equals(ServiceAgreementPublicationConfig.draftToSubmittedId)) {
+
             submitServiceAgreement(user, id);
+
         } else if (transitionId.equals(ServiceAgreementPublicationConfig.submittedToUnderReviewId)) {
 
         } else if (transitionId.equals(ServiceAgreementPublicationConfig.submittedToDraftId)
@@ -122,8 +124,16 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
             publishServiceAgreement(user, id);
 
         } else if (transitionId.equals(ServiceAgreementPublicationConfig.readyForAgreementToSubmittedId)) {
+
             ServiceAgreement serviceAgreement = get(user, id);
             sendJiraComment(serviceAgreement, "Service Agreement (%s): %s has been returned to submitted status");
+
+        } else if (transitionId.equals(ServiceAgreementPublicationConfig.readyForAgreementToDraftId)) {
+
+            ServiceAgreement serviceAgreement = get(user, id);
+            addPermissionsForDepositor(user, id, serviceAgreement.getMetadata(), serviceAgreement);
+            sendJiraComment(serviceAgreement, "Service Agreement (%s): %s has been returned to submitted status");
+
         }
     }
 

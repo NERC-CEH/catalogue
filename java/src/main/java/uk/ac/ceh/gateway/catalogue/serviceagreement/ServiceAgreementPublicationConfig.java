@@ -23,6 +23,7 @@ public class ServiceAgreementPublicationConfig {
     public static final String readyForAgreementToAgreedId = "g0r6d";
     public static final String readyForAgreementToSubmittedId = "7zirq";
     public static final String agreedToDraftId = "p3rpz1";
+    public static final String readyForAgreementToDraftId = "7zirq";
 
     @Bean(name="serviceAgreementWorkflow")
     @Qualifier("service-agreement")

@@ -21,13 +21,17 @@
             <div class="text-right">
                 <div class="row hidden-print adminPanel" role="toolbar">
                     <#if !isHistorical()>
-                        <#assign canChangeState = false>
-                        <#list getModelLinks() as link>
-                            <#if link.rel != 'history'>
-                                <#assign canChangeState = true>
-                                <#break>
+                        <#assign canChangeState = true>
+                        <#if serviceAgreementQuality??>
+                            <#assign
+                                SA_checks = serviceAgreementQuality.check(id)
+                                problems = SA_checks.getProblems()
+                                errors = func.filter(problems, "severity", "ERROR")
+                            >
+                            <#if errors?? && errors?has_content>
+                                <#assign canChangeState = false>
                             </#if>
-                        </#list>
+                        </#if>
                         <#if getState() != "draft">
                             <#assign canChangeState = true>
                         </#if>
