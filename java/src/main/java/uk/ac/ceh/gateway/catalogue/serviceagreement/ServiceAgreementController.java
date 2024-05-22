@@ -185,7 +185,7 @@ public class ServiceAgreementController {
         log.info("GETTING SERVICE AGREEMENT PERMISSIONS");
         return ResponseEntity.ok(
             new ServiceAgreementPermissionResource(
-                serviceAgreementService.get(id)
+                serviceAgreementService.get(user, id)
             )
         );
     }
@@ -199,16 +199,14 @@ public class ServiceAgreementController {
         @RequestBody ServiceAgreementPermissionResource permissionResource
     ) {
         log.info("UPDATING SERVICE AGREEMENT PERMISSIONS");
-        MetadataInfo original = serviceAgreementService.get(id).getMetadata();
+        MetadataInfo original = serviceAgreementService.get(user, id).getMetadata();
         MetadataInfo updated = permissionResource.updatePermissions(original);
         serviceAgreementService.updateMetadata(user, id, updated);
         return ResponseEntity.ok(
             new ServiceAgreementPermissionResource(
-                serviceAgreementService.get(id)
+                serviceAgreementService.get(user, id)
             )
         );
-    }
-
     }
 
     @PreAuthorize("@permission.userCanEditServiceAgreement(#id)")
