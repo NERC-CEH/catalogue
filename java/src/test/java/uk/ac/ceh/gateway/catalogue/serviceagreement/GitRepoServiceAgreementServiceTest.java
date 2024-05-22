@@ -187,11 +187,6 @@ public class GitRepoServiceAgreementServiceTest {
         given(dataOngoingCommit.submitData(any(), any()))
             .willReturn(dataOngoingCommit);
 
-        given(dataOngoingCommit.commit(
-            any(CatalogueUser.class), eq("updating service agreement " + ID)
-        ))
-            .willReturn(mock(DataRevision.class));
-
         givenPublishedServiceAgreement();
 
         //When
@@ -238,7 +233,7 @@ public class GitRepoServiceAgreementServiceTest {
     @SneakyThrows
     public void canSubmitServiceAgreement() {
         //Given
-        givenDraftServiceAgreement();
+        givenSubmittedServiceAgreement();
 
         DataOngoingCommit dataOngoingCommit = mock(DataOngoingCommit.class);
         given(repo.submitData(any(), any())).willReturn(dataOngoingCommit);
@@ -251,7 +246,7 @@ public class GitRepoServiceAgreementServiceTest {
             serviceAgreement.getDepositReference(),
             format("Service Agreement (%s): %s submitted for review", ID, serviceAgreement.getTitle())
         );
-        verify(dataOngoingCommit, times(2)).commit(user, "updating service agreement metadata " + ID);
+        verify(dataOngoingCommit).commit(user, "updating service agreement metadata " + ID);
     }
 
     @Test
@@ -276,9 +271,12 @@ public class GitRepoServiceAgreementServiceTest {
     @SneakyThrows
     void cannotSubmitServiceAgreementJiraFail() {
         //given
-        givenDraftServiceAgreement();
+        givenSubmittedServiceAgreement();
         given(serviceAgreementMapper.readInfo(any()))
-                .willReturn(serviceAgreement);
+            .willReturn(serviceAgreement);
+
+        DataOngoingCommit dataOngoingCommit = mock(DataOngoingCommit.class);
+        given(repo.submitData(any(), any())).willReturn(dataOngoingCommit);
 
         RestClientResponseException restClientResponseException = mock(RestClientResponseException.class);
         doThrow(restClientResponseException).when(jiraService).comment(any(), any());
@@ -303,9 +301,6 @@ public class GitRepoServiceAgreementServiceTest {
 
         givenPendingPublicationServiceAgreement();
 
-        DataOngoingCommit dataOngoingCommit = mock(DataOngoingCommit.class);
-        given(repo.submitData(any(), any())).willReturn(dataOngoingCommit);
-
         //When
         service.publishServiceAgreement(user, ID);
 
@@ -317,7 +312,6 @@ public class GitRepoServiceAgreementServiceTest {
                     serviceAgreement.getTitle()
             )
         );
-        verify(dataOngoingCommit).commit(user, "updating service agreement metadata " + ID);
         verify(documentRepository).save(user, expected, "populated from service agreement");
     }
 
@@ -583,6 +577,31 @@ public class GitRepoServiceAgreementServiceTest {
                 .willReturn(rawDocument);
         given(serviceAgreementMapper.readInfo(any()))
                 .willReturn(serviceAgreement);
+        serviceAgreement.setMetadata(metadata);
+        serviceAgreement.setTitle("this is a test");
+        serviceAgreement.setEndUserLicence(new ResourceConstraint("test", "test", "test"));
+        serviceAgreement.setDepositReference("test");
+        serviceAgreement.setDepositorContactDetails("test");
+    }
+
+    @SneakyThrows
+    private void givenSubmittedServiceAgreement() {
+        val metadataInfoDocument = mock(DataDocument.class);
+        given(repo.getData(FOLDER + ID + ".meta"))
+            .willReturn(metadataInfoDocument);
+
+        val metadata = MetadataInfo.builder()
+            .state("submitted")
+            .rawType(APPLICATION_JSON_VALUE)
+            .build();
+        given(metadataInfoMapper.readInfo(any()))
+            .willReturn(metadata);
+
+        val rawDocument = mock(DataDocument.class);
+        given(repo.getData(FOLDER + ID + ".raw"))
+            .willReturn(rawDocument);
+        given(serviceAgreementMapper.readInfo(any()))
+            .willReturn(serviceAgreement);
         serviceAgreement.setMetadata(metadata);
         serviceAgreement.setTitle("this is a test");
         serviceAgreement.setEndUserLicence(new ResourceConstraint("test", "test", "test"));

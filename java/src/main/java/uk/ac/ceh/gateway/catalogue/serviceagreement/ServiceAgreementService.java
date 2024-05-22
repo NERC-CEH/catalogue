@@ -29,4 +29,6 @@ public interface ServiceAgreementService {
     ServiceAgreement getPreviousVersion(String id, String version);
 
     StateResource transitState(CatalogueUser user, String id, String toState);
+
+    void doTransitopActon(CatalogueUser user, String id, String transitionId);
 }

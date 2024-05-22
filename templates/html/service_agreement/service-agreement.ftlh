@@ -32,20 +32,22 @@
                             <#assign canChangeState = true>
                         </#if>
                         <div class="btn-group btn-group-sm">
-                            <button type="button" class="btn btn-default edit-control btn-wide" data-document-type="service-agreement">Edit</button>
-                            <#if canChangeState>
-                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
-                                    <span class="caret"></span>
-                                    <span class="sr-only">Toggle Dropdown</span>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-right">
-                                    <li>
-                                        <a href="/service-agreement/${id}/publication">
-                                           <i class="fa-solid fa-file"></i>
-                                           Service agreement publication status
-                                        </a>
-                                    </li>
-                                </ul>
+                            <#if getState() != "ready-for-agreement">
+                                <button type="button" class="btn btn-default edit-control btn-wide" data-document-type="service-agreement">Edit</button>
+                                <#if canChangeState>
+                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+                                        <span class="caret"></span>
+                                        <span class="sr-only">Toggle Dropdown</span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-right">
+                                        <li>
+                                            <a href="/service-agreement/${id}/publication">
+                                               <i class="fa-solid fa-file"></i>
+                                               Service agreement publication status
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </#if>
                             </#if>
                         </div>
 

@@ -78,6 +78,7 @@ public class ServiceAgreementPublicationService implements PublicationService {
                 fileIdentifier,
                 doc.getMetadata()
             );
+            serviceAgreementService.doTransitopActon(user, fileIdentifier, transition.getId());
             return current(user, doc.getMetadata(), doc.getId());
         } catch (ServiceAgreementException | NullPointerException ex) {
             throw new PublicationServiceException(String.format("Could not transition: %s", fileIdentifier), ex);
