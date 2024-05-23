@@ -30,5 +30,5 @@ public interface ServiceAgreementService {
 
     StateResource transitState(CatalogueUser user, String id, String toState);
 
-    void doTransitopActon(CatalogueUser user, String id, String transitionId);
+    void doTransitionAction(CatalogueUser user, String id, String transitionId);
 }

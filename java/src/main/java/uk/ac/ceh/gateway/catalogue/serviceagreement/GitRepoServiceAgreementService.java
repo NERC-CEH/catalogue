@@ -99,7 +99,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
 
     @Override
     @SneakyThrows
-    public void doTransitopActon(CatalogueUser user, String id, String transitionId) {
+    public void doTransitionAction(CatalogueUser user, String id, String transitionId) {
         if (transitionId.equals(ServiceAgreementPublicationConfig.draftToSubmittedId)) {
 
             submitServiceAgreement(user, id);
