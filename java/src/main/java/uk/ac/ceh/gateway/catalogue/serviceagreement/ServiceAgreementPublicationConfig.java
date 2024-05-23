@@ -70,16 +70,9 @@ public class ServiceAgreementPublicationConfig {
             .helpText("Agree Service Agreement")
             .build();
 
-        Transition readyForAgreementToSubmitted = Transition.builder()
-            .toState(submitted)
-            .id("7zirq")
-            .title("Revert to submitted")
-            .helpText("Move service agreement back to submitted state")
-            .build();
-
-        Transition agreedToDraft = Transition.builder()
+        Transition readyForAgreementToDraft = Transition.builder()
             .toState(draft)
-            .id("p3rpz1")
+            .id("7zirq")
             .title("Revert to draft")
             .helpText("Move service agreement back to draft state")
             .build();
@@ -90,11 +83,8 @@ public class ServiceAgreementPublicationConfig {
         depositor = new PublishingRole("depositor");
 
         // Add transitions to states
-        draft.addTransitions(publisher, ImmutableSet.of(draftToSubmitted));
         submitted.addTransitions(publisher, ImmutableSet.of(submittedToUnderReview, submittedToDraft));
         underReview.addTransitions(publisher, ImmutableSet.of(underReviewToReadyForAgreement, underReviewToDraft));
-        readyForAgreement.addTransitions(publisher, ImmutableSet.of(readyForAgreementToSubmitted, readyForAgreementToAgreed));
-        agreed.addTransitions(publisher, ImmutableSet.of(agreedToDraft));
 
         draft.addTransitions(depositor, ImmutableSet.of(draftToSubmitted));
         readyForAgreement.addTransitions(depositor, ImmutableSet.of(readyForAgreementToAgreed));
