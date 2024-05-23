@@ -21,8 +21,6 @@ public class ServiceAgreementPublicationConfig {
     public static final String underReviewToReadyForAgreementId = "jbre2";
     public static final String underReviewToDraftId = "l2leq";
     public static final String readyForAgreementToAgreedId = "g0r6d";
-    public static final String readyForAgreementToSubmittedId = "7zirq";
-    public static final String agreedToDraftId = "p3rpz1";
     public static final String readyForAgreementToDraftId = "7zirq";
 
     @Bean(name="serviceAgreementWorkflow")
@@ -80,16 +78,9 @@ public class ServiceAgreementPublicationConfig {
             .helpText("Agree Service Agreement")
             .build();
 
-        Transition readyForAgreementToSubmitted = Transition.builder()
-            .toState(submitted)
-            .id(readyForAgreementToSubmittedId)
-            .title("Edits required")
-            .helpText("Move service agreement back to submitted state")
-            .build();
-
-        Transition agreedToDraft = Transition.builder()
+        Transition readyForAgreementToDraft = Transition.builder()
             .toState(draft)
-            .id(agreedToDraftId)
+            .id(readyForAgreementToDraftId)
             .title("Edits required")
             .helpText("Move service agreement back to draft state")
             .build();
@@ -100,14 +91,11 @@ public class ServiceAgreementPublicationConfig {
         depositor = new PublishingRole("depositor");
 
         // Add transitions to states
-        draft.addTransitions(publisher, ImmutableSet.of(draftToSubmitted));
         submitted.addTransitions(publisher, ImmutableSet.of(submittedToUnderReview, submittedToDraft));
         underReview.addTransitions(publisher, ImmutableSet.of(underReviewToReadyForAgreement, underReviewToDraft));
-        readyForAgreement.addTransitions(publisher, ImmutableSet.of(readyForAgreementToAgreed, readyForAgreementToSubmitted));
-        agreed.addTransitions(publisher, ImmutableSet.of(agreedToDraft));
 
         draft.addTransitions(depositor, ImmutableSet.of(draftToSubmitted));
-        readyForAgreement.addTransitions(depositor, ImmutableSet.of(readyForAgreementToAgreed, readyForAgreementToSubmitted));
+        readyForAgreement.addTransitions(depositor, ImmutableSet.of(readyForAgreementToAgreed));
 
         // Add states to workflow
         Map<String, State> states = new ImmutableMap.Builder<String, State>()

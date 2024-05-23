@@ -107,8 +107,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         } else if (transitionId.equals(ServiceAgreementPublicationConfig.submittedToUnderReviewId)) {
 
         } else if (transitionId.equals(ServiceAgreementPublicationConfig.submittedToDraftId)
-            || transitionId.equals(ServiceAgreementPublicationConfig.underReviewToDraftId)
-            || transitionId.equals(ServiceAgreementPublicationConfig.agreedToDraftId)) {
+            || transitionId.equals(ServiceAgreementPublicationConfig.underReviewToDraftId)) {
 
             ServiceAgreement serviceAgreement = get(user, id);
             addPermissionsForDepositor(user, id, serviceAgreement.getMetadata(), serviceAgreement);
@@ -122,12 +121,6 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
 
             removeEditPermissions(user, id, get(user, id));
             publishServiceAgreement(user, id);
-
-        } else if (transitionId.equals(ServiceAgreementPublicationConfig.readyForAgreementToSubmittedId)) {
-
-            ServiceAgreement serviceAgreement = get(user, id);
-            removeEditPermissions(user, id, serviceAgreement);
-            sendJiraComment(serviceAgreement, "Service Agreement (%s): %s has been returned to submitted status");
 
         } else if (transitionId.equals(ServiceAgreementPublicationConfig.readyForAgreementToDraftId)) {
 
