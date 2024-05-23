@@ -95,7 +95,7 @@ public class ServiceAgreementPublicationConfig {
         underReview.addTransitions(publisher, ImmutableSet.of(underReviewToReadyForAgreement, underReviewToDraft));
 
         draft.addTransitions(depositor, ImmutableSet.of(draftToSubmitted));
-        readyForAgreement.addTransitions(depositor, ImmutableSet.of(readyForAgreementToAgreed));
+        readyForAgreement.addTransitions(depositor, ImmutableSet.of(readyForAgreementToAgreed, readyForAgreementToDraft));
 
         // Add states to workflow
         Map<String, State> states = new ImmutableMap.Builder<String, State>()
