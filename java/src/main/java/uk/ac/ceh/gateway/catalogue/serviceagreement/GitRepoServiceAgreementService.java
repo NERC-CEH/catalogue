@@ -171,23 +171,20 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     }
 
     private void addPermissionsForDepositor(CatalogueUser user, String id, MetadataInfo metadataInfo, ServiceAgreement serviceAgreement) {
-        val possibleEmail = Optional.ofNullable(serviceAgreement.getDepositorContactDetails());
-        if (possibleEmail.isPresent()) {
-            val rawEmail = possibleEmail.get();
-            val email = (rawEmail.endsWith("@ceh.ac.uk")) ?
-                    rawEmail.replace("@ceh.ac.uk", "") :
-                    rawEmail;
-            val permissions = getMetadataPermissions(metadataInfo);
-            permissions.put(EDIT, email);
-            permissions.put(VIEW, email);
-            updateMetadata(user, id, metadataInfo.withPermissions(permissions));
-        } else {
+        val rawEmail = Optional.ofNullable(serviceAgreement.getDepositorContactDetails()).orElseThrow(() -> {
             val message = format(
                     "No depositor contact details present, cannot add permissions for Service Agreement: %s",
                     serviceAgreement.getId()
             );
-            throw new ServiceAgreementException(message);
-        }
+            return new ServiceAgreementException(message);
+        });
+        val email = rawEmail.endsWith("@ceh.ac.uk") ?
+            rawEmail.replace("@ceh.ac.uk", "") :
+            rawEmail;
+        val permissions = getMetadataPermissions(metadataInfo);
+        permissions.put(EDIT, email);
+        permissions.put(VIEW, email);
+        updateMetadata(user, id, metadataInfo.withPermissions(permissions));
     }
 
     private Multimap<Permission, String> getMetadataPermissions(MetadataInfo metadataInfo) {
@@ -199,20 +196,13 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
 
     private void removeEditPermissions(CatalogueUser user, String id, ServiceAgreement serviceAgreement) {
         val metadataInfo = serviceAgreement.getMetadata();
-        val possibleEmail = Optional.ofNullable(serviceAgreement.getDepositorContactDetails());
         val permissions = getMetadataPermissions(metadataInfo);
-        if (possibleEmail.isPresent()) {
-            val email = possibleEmail.get();
-
+        Optional.ofNullable(serviceAgreement.getDepositorContactDetails()).ifPresent(email -> {
             permissions.remove(EDIT, email);
-            permissions.remove(EDIT, user.getUsername());
             permissions.remove(UPLOAD, email);
-            permissions.remove(UPLOAD, user.getUsername());
-        } else {
-
-            permissions.remove(EDIT, user.getUsername());
-            permissions.remove(UPLOAD, user.getUsername());
-        }
+        });
+        permissions.remove(EDIT, user.getUsername());
+        permissions.remove(UPLOAD, user.getUsername());
         updateMetadata(user, id, metadataInfo.withPermissions(permissions));
     }
 
