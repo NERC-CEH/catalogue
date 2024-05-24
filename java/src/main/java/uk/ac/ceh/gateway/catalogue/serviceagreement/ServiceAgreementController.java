@@ -209,7 +209,7 @@ public class ServiceAgreementController {
         );
     }
 
-    @PreAuthorize("@permission.userCanEditServiceAgreement(#id)")
+    @PreAuthorize("@permission.userCanViewServiceAgreement(#id)")
     @PostMapping("{id}/form-publication/{toState}")
     public RedirectView formTransitionPublication(
         @ActiveUser CatalogueUser user,

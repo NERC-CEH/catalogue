@@ -17,7 +17,6 @@
                 <h1>EIDC Deposit Agreement for ${title!"NOT PROVIDED"} (Status: ${getStateTitle()?upper_case})</h1>
             </div>
 
-            <#if permission.userCanEditServiceAgreement(id)>
             <div class="text-right">
                 <div class="row hidden-print adminPanel" role="toolbar">
                     <#if !isHistorical()>
@@ -35,31 +34,16 @@
                         <#if getState() != "draft">
                             <#assign canChangeState = true>
                         </#if>
-                        <div class="btn-group btn-group-sm">
-                            <#if getState() != "ready-for-agreement">
+                        <#if permission.userCanEditServiceAgreement(id)>
+                            <div class="btn-group btn-group-sm">
                                 <button type="button" class="btn btn-default edit-control btn-wide" data-document-type="service-agreement">Edit</button>
-                                <#if canChangeState>
-                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
-                                        <span class="caret"></span>
-                                        <span class="sr-only">Toggle Dropdown</span>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-right">
-                                        <li>
-                                            <a href="/service-agreement/${id}/publication">
-                                               <i class="fa-solid fa-file"></i>
-                                               Service agreement publication status
-                                            </a>
-                                        </li>
-                                    </ul>
+                            </div>
+                            <#list getModelLinks() as link>
+                                <#if link.rel == 'history'>
+                                    <a href="${link.href}" class="btn btn-default btn-wide btn-sm">${link.title}</a>
                                 </#if>
-                            </#if>
-                        </div>
-
-                        <#list getModelLinks() as link>
-                            <#if link.rel == 'history'>
-                                <a href="${link.href}" class="btn btn-default btn-wide btn-sm">${link.title}</a>
-                            </#if>
-                        </#list>
+                            </#list>
+                        </#if>
                         <#if canChangeState>
                             <#list transitions as transition>
                                 <form method="post" action="/service-agreement/${id}/form-publication/${transition.id}">
@@ -76,7 +60,6 @@
                     </#if>
                 </div>
             </div>
-            </#if>
 
             <#if permission.userCanEditServiceAgreement(id) && !isHistorical()>
                 <#include "_serviceAgreementQualityReport.ftlh">

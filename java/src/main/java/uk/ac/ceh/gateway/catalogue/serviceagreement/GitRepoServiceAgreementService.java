@@ -104,22 +104,14 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
 
             submitServiceAgreement(user, id);
 
-        } else if (transitionId.equals(ServiceAgreementPublicationConfig.submittedToUnderReviewId)) {
-
         } else if (transitionId.equals(ServiceAgreementPublicationConfig.submittedToDraftId)
             || transitionId.equals(ServiceAgreementPublicationConfig.underReviewToDraftId)) {
 
             ServiceAgreement serviceAgreement = get(user, id);
             addPermissionsForDepositor(user, id, serviceAgreement.getMetadata(), serviceAgreement);
 
-        } else if (transitionId.equals(ServiceAgreementPublicationConfig.underReviewToReadyForAgreementId)) {
-
-            ServiceAgreement serviceAgreement = get(user, id);
-            addPermissionsForDepositor(user, id, serviceAgreement.getMetadata(), serviceAgreement);
-
         } else if (transitionId.equals(ServiceAgreementPublicationConfig.readyForAgreementToAgreedId)) {
 
-            removeEditPermissions(user, id, get(user, id));
             publishServiceAgreement(user, id);
 
         } else if (transitionId.equals(ServiceAgreementPublicationConfig.readyForAgreementToDraftId)) {

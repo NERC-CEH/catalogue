@@ -484,7 +484,7 @@ class ServiceAgreementControllerTest {
     void transitionState() {
         //given
         val toState = new State("foo", "bar");
-        givenUserCanEditServiceAgreement();
+        givenUserCanViewServiceAgreement();
         givenStateTransition();
 
         //when
