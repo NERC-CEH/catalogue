@@ -19,8 +19,11 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.never;
 
 @ExtendWith(MockitoExtension.class)
 public class ServiceAgreementPublicationServiceTest {
@@ -52,13 +55,13 @@ public class ServiceAgreementPublicationServiceTest {
     public void successfullyTransitionState() throws Exception {
         //Given
         when(groupStore.getGroups(editor)).thenReturn(Collections.singletonList(createGroup("ROLE_EIDC_EDITOR")));
-        when(serviceAgreementService.get(FILENAME)).thenReturn(draft);
+        when(serviceAgreementService.get(editor, FILENAME)).thenReturn(draft);
 
         //When
         publicationService.transition(editor, FILENAME, SUBMITTED_ID);
 
         //Then
-        verify(serviceAgreementService).get(FILENAME);
+        verify(serviceAgreementService).get(editor, FILENAME);
         verify(serviceAgreementService).updateMetadata(editor, draft.getId(), draft.getMetadata());
     }
 
@@ -69,27 +72,39 @@ public class ServiceAgreementPublicationServiceTest {
         exampleMetadata.addPermission(Permission.EDIT, editor.getUsername());
 
         draft.setMetadata(exampleMetadata);
-        when(serviceAgreementService.get(FILENAME)).thenReturn(draft);
+        when(serviceAgreementService.get(editor, FILENAME)).thenReturn(draft);
 
         //When
         publicationService.transition(editor, FILENAME, SUBMITTED_ID);
 
         //Then
-        verify(serviceAgreementService).get(FILENAME);
+        verify(serviceAgreementService).get(editor, FILENAME);
         verify(serviceAgreementService).updateMetadata(editor, draft.getId(), draft.getMetadata());
     }
 
     @Test
     public void successfullyGetCurrentState() throws Exception {
         //Given
-        when(serviceAgreementService.get(FILENAME)).thenReturn(draft);
+        when(serviceAgreementService.get(editor, FILENAME)).thenReturn(draft);
 
         //When
         StateResource current = publicationService.current(editor, FILENAME);
 
         //Then
-        verify(serviceAgreementService).get(FILENAME);
-        assertThat("State is should be draft", current.getId(), equalTo("draft"));
+        verify(serviceAgreementService).get(editor, FILENAME);
+        assertThat("State should be draft", current.getId(), equalTo("draft"));
+    }
+
+    @Test
+    public void successfullyGetCurrentStateWithoutCallingGetServiceAgreement() throws Exception {
+        //Given
+
+        //When
+        StateResource current = publicationService.current(editor, draft);
+
+        //Then
+        verify(serviceAgreementService, never()).get(any(CatalogueUser.class), anyString());
+        assertThat("Service agreement state should be draft", current.getId(), equalTo("draft"));
     }
 
     @Test
@@ -98,13 +113,13 @@ public class ServiceAgreementPublicationServiceTest {
         String fileDoesNotExist = "this file name does not exist";
         Assertions.assertThrows(PublicationServiceException.class, () -> {
             //Given
-            when(serviceAgreementService.get(fileDoesNotExist)).thenThrow(new PublicationServiceException("test"));
+            when(serviceAgreementService.get(editor, fileDoesNotExist)).thenThrow(new PublicationServiceException("test"));
 
             //When
             publicationService.current(editor, fileDoesNotExist);
 
             //Then
-            verify(serviceAgreementService).get(FILENAME);
+            verify(serviceAgreementService).get(editor, FILENAME);
         });
     }
 
