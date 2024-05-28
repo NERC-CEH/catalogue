@@ -1,1 +1,272 @@
-{"id":"c63c543f-3e95-4c1c-8c69-12f942271813","uri":"http://localhost:8080/id/c63c543f-3e95-4c1c-8c69-12f942271813","type":"dataset","title":"Annual Forest Loss at 15m resolution in the Corridor Ankeniheny-Zahamena (CAZ), Madagascar, 2006-2014","description":"The dataset delineates annual forest loss in the CAZ digitized from annual 15 metre resolution LANDSAT imagery. This dataset creates a baseline for possible long-term, near real-time monitoring of encroachment and illegal logging within the Ankeniheny-Zahamena Corridor (CAZ), Madagascar. This analysis includes a summary of suspected encroachment and illegal logging from June 2006 to December 2010 within the \"protected area,\"which consists of zones such as priority for conservation, sustainable use, and controlled settlements.","metadataDate":"2024-02-14T10:42:43","resourceIdentifiers":[{"code":"https://catalogue.ceh.ac.uk/id/c63c543f-3e95-4c1c-8c69-12f942271813"},{"code":"10.5285/c63c543f-3e95-4c1c-8c69-12f942271813","codeSpace":"doi:"},{"code":"http://localhost:8080/id/c63c543f-3e95-4c1c-8c69-12f942271813"}],"relationships":[{"relation":"https://vocabs.ceh.ac.uk/eidc#memberOf","target":"https://catalogue.ceh.ac.uk/id/9461f9d7-f7a5-4328-a395-50a3b25da190"}],"lineage":"Landsat 7 SLC-off imagery at a resolution of 15 m was compared to Landsat 2005 imagery and the Change in Natural Forest Cover from 1990 to 2005 developed by the United States Agency for International Development (USAID), Conservation International and the Madagascar Ministry of Environment, Water, Forests and Tourism. The imagery was acquired from the U.S. Geological Survey (USGS) Global Visualization Viewer (Glovis), available at http://glovis.usgs.gov/.\n\nENVI 4.7 was used for processing and gap filling of the imagery. Visual interpretation based on shape, color, proximity to features and texture was used to digitize suspected forest encroachment using ArcGIS 9.3.1.\n\nThe data have not been validated; therefore some of the clearings are likely due to natural disturbances such as landslides, flooding, natural fires or tree falls.","spatialRepresentationTypes":["Vector"],"topicCategories":[{"value":"environment","uri":"http://inspire.ec.europa.eu/metadata-codelist/TopicCategory/environment"}],"keywordsPlace":[{"value":"Madagascar","uri":"http://sws.geonames.org/1062947"},{"value":"Corridor Ankeniheny Zahamena","uri":"http://sws.geonames.org/7910440"}],"keywordsOther":[{"value":"protected area"},{"value":"forest clearing"}],"distributionFormats":[{"name":"Shapefile","version":"unknown"},{"name":"KML (Google Earth)","type":"application/vnd.google-earth.kml+xml","version":"unknown"},{"name":"Geography Markup Language (gml)","type":"application/gml+xml","version":"unknnown"},{"name":"MapInfo .TAB","version":"unknown"}],"spatialResolutions":[{"distance":"15","uom":"Meter"}],"boundingBoxes":[{"westBoundLongitude":48.202,"eastBoundLongitude":49.152,"southBoundLatitude":-18.989,"northBoundLatitude":-17.434,"coordinates":"[[[48.202, -18.989], [48.202, -17.434], [49.152, -17.434], [49.152, -18.989], [48.202, -18.989]]]","bounds":"{\"type\":\"Feature\",\"properties\":{},\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[48.202, -18.989], [48.202, -17.434], [49.152, -17.434], [49.152, -18.989], [48.202, -18.989]]]}}"}],"distributorContacts":[{"organisationName":"NERC EDS Environmental Information Data Centre","organisationIdentifier":"https://ror.org/04xw4m193","role":"distributor","email":"info@eidc.ac.uk","isni":false,"orcid":false,"ror":true}],"responsibleParties":[{"individualName":"Tabor, K.","organisationName":"Betty and Gordon Moore Center for Science, Conservation International","organisationIdentifier":"https://ror.org/024weye46","role":"pointOfContact","email":"ktabor@conservation.org","address":{"city":"Arlington","administrativeArea":"United States","postalCode":"22202"},"isni":false,"orcid":false,"ror":true},{"individualName":"Cano, C.A.","organisationName":"Betty and Gordon Moore Center for Science, Conservation International","organisationIdentifier":"https://ror.org/024weye46","role":"author","email":"ccano@conservation.org","address":{"city":"Arlington","administrativeArea":"United States","postalCode":"22202"},"isni":false,"orcid":false,"ror":true},{"organisationName":"NERC Environmental Information Data Centre","role":"publisher","email":"info@eidc.ac.uk","isni":false,"orcid":false,"ror":false},{"organisationName":"NERC EDS Environmental Information Data Centre","organisationIdentifier":"https://ror.org/04xw4m193","role":"custodian","email":"info@eidc.ac.uk","isni":false,"orcid":false,"ror":true}],"temporalExtents":[{"begin":"2006-06-01","end":"2014-12-31"}],"onlineResources":[{"url":"https://data-package.ceh.ac.uk/data/c63c543f-3e95-4c1c-8c69-12f942271813","name":"Download the data","description":"Download a copy of this data","function":"download","type":"OTHER"},{"url":"https://data-package.ceh.ac.uk/sd/c63c543f-3e95-4c1c-8c69-12f942271813.zip","name":"Supporting information","description":"Supporting information available to assist in re-use of this dataset","function":"information","type":"OTHER"}],"spatialReferenceSystems":[{"code":"CRS:84","codeSpace":"urn:ogc:def:crs:EPSG"}],"supplemental":[{"description":"Tabor, K., K. Jones, J. Hewson, A. Rasolohery, A. Rambeloson, T. Andrianjohaninarivo, and C. Harvey (submitted Nov 2016 PlosOne). Evaluating the Effectiveness of Conservation Investments in Reducing Deforestation and Fires in Ankeniheny-Zahemena Corridor, Madagascar."}],"relatedRecords":[{"rel":"https://vocabs.ceh.ac.uk/eidc#memberOf","identifier":"9461f9d7-f7a5-4328-a395-50a3b25da190","href":"https://catalogue.ceh.ac.uk/id/9461f9d7-f7a5-4328-a395-50a3b25da190","title":"Can Paying for Global Ecosystem Services reduce poverty? (P4GES)","associationType":"Aggregation"}],"datasetReferenceDate":{"creationDate":"2017-02-01","publicationDate":"2017-03-14"},"resourceMaintenance":[{"frequencyOfUpdate":"notPlanned"}],"useConstraints":[{"value":"This resource is made available under the terms of the Open Government Licence","code":"license","uri":"http://eidc.ceh.ac.uk/admin/licences/OGL/plain"}],"resourceType":{"value":"dataset","uri":"http://inspire.ec.europa.eu/metadata-codelist/ResourceType/dataset"},"accessLimitation":{"value":"Registration is required to access this data","code":"Available","uri":"https://www.eidc.ac.uk/help/faq/registration"},"notGEMINI":true,"incomingCitationCount":0,"custodians":[{"organisationName":"NERC EDS Environmental Information Data Centre","organisationIdentifier":"https://ror.org/04xw4m193","role":"custodian","email":"info@eidc.ac.uk","isni":false,"orcid":false,"ror":true}],"pointOfContacts":[{"individualName":"Tabor, K.","organisationName":"Betty and Gordon Moore Center for Science, Conservation International","organisationIdentifier":"https://ror.org/024weye46","role":"pointOfContact","email":"ktabor@conservation.org","address":{"city":"Arlington","administrativeArea":"United States","postalCode":"22202"},"isni":false,"orcid":false,"ror":true}],"publishers":[{"organisationName":"NERC Environmental Information Data Centre","role":"publisher","email":"info@eidc.ac.uk","isni":false,"orcid":false,"ror":false}],"resourceStatus":"Available","authors":[{"individualName":"Cano, C.A.","organisationName":"Betty and Gordon Moore Center for Science, Conservation International","organisationIdentifier":"https://ror.org/024weye46","role":"author","email":"ccano@conservation.org","address":{"city":"Arlington","administrativeArea":"United States","postalCode":"22202"},"isni":false,"orcid":false,"ror":true}],"bounds":["{\"type\":\"Feature\",\"properties\":{},\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[48.202, -18.989], [48.202, -17.434], [49.152, -17.434], [49.152, -18.989], [48.202, -18.989]]]}}"],"citation":{"authors":["Cano, C.A."],"doi":"10.5285/c63c543f-3e95-4c1c-8c69-12f942271813","title":"Annual Forest Loss at 15m resolution in the Corridor Ankeniheny-Zahamena (CAZ), Madagascar, 2006-2014","publisher":"NERC Environmental Information Data Centre","resourceTypeGeneral":"dataset","year":2017,"bibtex":"http://localhost:8080/documents/c63c543f-3e95-4c1c-8c69-12f942271813/citation?format=bib","ris":"http://localhost:8080/documents/c63c543f-3e95-4c1c-8c69-12f942271813/citation?format=ris","url":"https://doi.org/10.5285/c63c543f-3e95-4c1c-8c69-12f942271813"}}
+{
+  "id": "3980cfcb-f19d-4a70-b056-e023fb57e807",
+  "uri": "https://catalogue-staging.ceh.ac.uk/id/3980cfcb-f19d-4a70-b056-e023fb57e807",
+  "type": "dataset",
+  "title": "Ferret speed data in Ventnor (Nov 2005)",
+  "description": "Just how rapid can a ferret be? We find out by scaring the crap out of them on the Isle of Wight.\n\nThis work was funded by Elon Musk, for some reason.",
+  "metadataDate": "2024-03-18T15:53:11",
+  "resourceIdentifiers": [
+    {
+      "code": "https://catalogue-staging.ceh.ac.uk/id/3980cfcb-f19d-4a70-b056-e023fb57e807"
+    },
+    {
+      "code": "https://catalogue.ceh.ac.uk/id/3980cfcb-f19d-4a70-b056-e023fb57e807"
+    },
+    {
+      "code": "10.5285/3980cfcb-f19d-4a70-b056-e023fb57e807",
+      "codeSpace": "doi:"
+    }
+  ],
+  "relationships": [
+    {
+      "relation": "https://vocabs.ceh.ac.uk/eidc#supersedes",
+      "target": "4fc0cda2-2d89-4971-9aad-07bea9955687"
+    },
+    {
+      "relation": "https://vocabs.ceh.ac.uk/eidc#memberOf",
+      "target": "0c26fb58-68ae-45a3-a404-62be2a2a527c"
+    },
+    {
+      "relation": "https://vocabs.ceh.ac.uk/eidc#memberOf",
+      "target": "https://catalogue.ceh.ac.uk/id/0c26fb58-68ae-45a3-a404-62be2a2a527c"
+    },
+    {
+      "relation": "https://vocabs.ceh.ac.uk/eidc#supersedes",
+      "target": "https://catalogue.ceh.ac.uk/id/4fc0cda2-2d89-4971-9aad-07bea9955687"
+    }
+  ],
+  "lineage": "We raced ferrets by firing at them with a real gun and timing them over a 100m distance with a speed gun.  The fastest individual was Speedy Valenti who clocked in at 32kph.  Unfortunately during a third trial he was hit by a bullet and killed.",
+  "spatialRepresentationTypes": [
+    "textTable"
+  ],
+  "topicCategories": [
+    {
+      "value": "biota",
+      "uri": "http://inspire.ec.europa.eu/metadata-codelist/TopicCategory/biota"
+    },
+    {
+      "value": "society",
+      "uri": "http://inspire.ec.europa.eu/metadata-codelist/TopicCategory/society"
+    }
+  ],
+  "keywordsPlace": [
+    {
+      "value": "Isle of Wight",
+      "uri": "http://sws.geonames.org/2646007"
+    },
+    {
+      "value": "Ventnor",
+      "uri": "http://sws.geonames.org/7293726"
+    }
+  ],
+  "keywordsTheme": [
+    {
+      "value": "Animal behaviour",
+      "uri": "http://onto.nerc.ac.uk/CEHMD/topic/20"
+    }
+  ],
+  "keywordsOther": [
+    {
+      "value": "Stoat"
+    },
+    {
+      "value": "Quickness"
+    },
+    {
+      "value": "Speediness"
+    },
+    {
+      "value": "Fastitude"
+    },
+    {
+      "value": "Rapidity"
+    },
+    {
+      "value": "swiftidity"
+    },
+    {
+      "value": "fleet of foot"
+    },
+    {
+      "value": "Kurzschwanzwiesel"
+    },
+    {
+      "value": "Großes Wiesel"
+    }
+  ],
+  "distributionFormats": [
+    {
+      "name": "Comma-separated values (CSV)",
+      "type": "text/csv",
+      "version": "unknown"
+    },
+    {
+      "name": "Shapefile",
+      "version": "unknown"
+    }
+  ],
+  "inspireThemes": [
+    {
+      "theme": "Environmental Monitoring Facilities",
+      "uri": "http://inspire.ec.europa.eu/theme/ef"
+    }
+  ],
+  "spatialResolutions": [
+    {
+      "distance": "1"
+    }
+  ],
+  "funding": [
+    {
+      "funderName": "Institute of Small Mammal Speed Research",
+      "funderIdentifier": "https://doi.org/10.13039/801100660270",
+      "awardTitle": "Scare-a-stoat",
+      "awardNumber": "ST/0/A7",
+      "awardURI": "http://www.ismsr.org.uk/quickstoats",
+      "orcid": false,
+      "ror": false
+    },
+    {
+      "funderName": "Natural Environment Research Council",
+      "funderIdentifier": "https://ror.org/02b5d8509",
+      "awardNumber": "NE/-f3rr37",
+      "awardURI": "https://gtr.ukri.org/projects?ref=NE/P004512/1",
+      "orcid": false,
+      "ror": true
+    }
+  ],
+  "boundingBoxes": [
+    {
+      "westBoundLongitude": -1.327,
+      "eastBoundLongitude": -1.162,
+      "southBoundLatitude": 50.573,
+      "northBoundLatitude": 50.646,
+      "coordinates": "[[[-1.327, 50.573], [-1.327, 50.646], [-1.162, 50.646], [-1.162, 50.573], [-1.327, 50.573]]]",
+      "bounds": "{\"type\": \"Feature\",      \"properties\": {},      \"geometry\": {        \"type\": \"Polygon\",        \"coordinates\": [[[-1.327, 50.573], [-1.327, 50.646], [-1.162, 50.646], [-1.162, 50.573], [-1.327, 50.573]]]      }}"
+    }
+  ],
+  "distributorContacts": [
+    {
+      "organisationName": "NERC EDS Environmental Information Data Centre",
+      "organisationIdentifier": "https://ror.org/04xw4m193",
+      "role": "distributor",
+      "email": "info@eidc.ac.uk"
+    }
+  ],
+  "responsibleParties": [
+    {
+      "individualName": "Capt. Gladys Stoat-Pamphlet",
+      "organisationName": "Centre for Ecology & Hydrology",
+      "role": "pointOfContact",
+      "email": "enquiries@ceh.ac.uk",
+      "address": {
+        "deliveryPoint": "Lancaster Environment Centre, Library Avenue, Bailrigg",
+        "city": "Lancaster",
+        "administrativeArea": "Lancashire",
+        "postalCode": "LA1 4AP",
+        "country": "United Kingdom"
+      }
+    },
+    {
+      "individualName": "Stoat-Pamphlet, G.",
+      "organisationName": "Centre for Ecology & Hydrology",
+      "role": "author",
+      "email": "enquiries@ceh.ac.uk",
+      "nameIdentifier": "https://orcid.org/0000-4567-8974-578X",
+      "address": {
+        "deliveryPoint": "13 Weasel Mansions",
+        "city": "Stoatville",
+        "postalCode": "ST0 47S"
+      }
+    },
+    {
+      "organisationName": "UK Centre for Ecology & Hydrology",
+      "organisationIdentifier": "https://ror.org/00pggkr55",
+      "role": "rightsHolder",
+      "email": "enquiries@ceh.ac.uk"
+    },
+    {
+      "organisationName": "NERC EDS Environmental Information Data Centre",
+      "organisationIdentifier": "https://ror.org/04xw4m193",
+      "role": "custodian",
+      "email": "info@eidc.ac.uk"
+    },
+    {
+      "organisationName": "NERC EDS Environmental Information Data Centre",
+      "organisationIdentifier": "https://ror.org/04xw4m193",
+      "role": "publisher",
+      "email": "info@eidc.ac.uk"
+    }
+  ],
+  "temporalExtents": [
+    {
+      "begin": "2005-11-01",
+      "end": "2005-11-30"
+    }
+  ],
+  "onlineResources": [
+    {
+      "url": "https://data-package.ceh.ac.uk/sd/3980cfcb-f19d-4a70-b056-e023fb57e807.zip",
+      "name": "Supporting information",
+      "description": "Supporting information available to assist in re-use of this dataset",
+      "function": "information",
+      "type": "OTHER"
+    },
+    {
+      "url": "https://data-package.ceh.ac.uk/data/3980cfcb-f19d-4a70-b056-e023fb57e807",
+      "name": "Download the data",
+      "description": "Download a copy of this data",
+      "function": "download",
+      "type": "OTHER"
+    }
+  ],
+  "spatialReferenceSystems": [
+    {
+      "code": "27700",
+      "codeSpace": "urn:ogc:def:crs:EPSG",
+      "title": "OSGB 1936 / British National Grid"
+    }
+  ],
+  "incomingCitations": [
+    {
+      "description": "Pole, Kat (2023). Speedy invasive ferrets are a threat to native lazy weasels.  American Journal of Mustelid Mechanics, vol. 3.",
+      "url": "https://doi.org/10.3456/mjhd-x,9876"
+    },
+    {
+      "description": "Stoat-Pamphlet, G. (2017). How fast can a stoat run when threatened by gunfire.  J. Stoat Biomechanics 2(3) pp 134-176.",
+      "url": "https://doi.org/10.1452/23423.234"
+    },
+    {
+      "description": "Smith, M. (2017). What the hell type of science are we funding?  Journal of Public Finances vol2.",
+      "url": "https://doi.org/10.97854/jpf.2017.198765"
+    }
+  ],
+  "datasetReferenceDate": {
+    "creationDate": "2017-11-07",
+    "publicationDate": "2017-11-09",
+    "releasedDate": "2019-01-31"
+  },
+  "useConstraints": [
+    {
+      "value": "Do what you like with the data",
+      "code": "otherRestrictions",
+      "uri": "http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/stoats/plain"
+    },
+    {
+      "value": "This resource is made available under the terms of the Open Government Licence",
+      "code": "license",
+      "uri": "http://eidc.ceh.ac.uk/administration-folder/tools/ceh-standard-licence-texts/OGL/plain"
+    }
+  ],
+  "resourceType": {
+    "value": "dataset",
+    "uri": "http://inspire.ec.europa.eu/metadata-codelist/ResourceType/dataset"
+  },
+  "accessLimitation": {
+    "value": "no limitations to public access",
+    "code": "Available",
+    "uri": "http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/noLimitations"
+  },
+  "notGEMINI": false
+
+}
