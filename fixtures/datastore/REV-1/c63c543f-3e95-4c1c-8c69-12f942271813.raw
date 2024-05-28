@@ -1,19 +1,19 @@
 {
-  "id": "3980cfcb-f19d-4a70-b056-e023fb57e807",
-  "uri": "https://catalogue-staging.ceh.ac.uk/id/3980cfcb-f19d-4a70-b056-e023fb57e807",
+  "id": "c63c543f-3e95-4c1c-8c69-12f942271813",
+  "uri": "http://localhost:8080/id/c63c543f-3e95-4c1c-8c69-12f942271813",
   "type": "dataset",
   "title": "Ferret speed data in Ventnor (Nov 2005)",
   "description": "Just how rapid can a ferret be? We find out by scaring the crap out of them on the Isle of Wight.\n\nThis work was funded by Elon Musk, for some reason.",
   "metadataDate": "2024-03-18T15:53:11",
   "resourceIdentifiers": [
     {
-      "code": "https://catalogue-staging.ceh.ac.uk/id/3980cfcb-f19d-4a70-b056-e023fb57e807"
+      "code": "http://localhost:8080/id/c63c543f-3e95-4c1c-8c69-12f942271813"
     },
     {
-      "code": "https://catalogue.ceh.ac.uk/id/3980cfcb-f19d-4a70-b056-e023fb57e807"
+      "code": "https://catalogue.ceh.ac.uk/id/c63c543f-3e95-4c1c-8c69-12f942271813"
     },
     {
-      "code": "10.5285/3980cfcb-f19d-4a70-b056-e023fb57e807",
+      "code": "10.5285/c63c543f-3e95-4c1c-8c69-12f942271813",
       "codeSpace": "doi:"
     }
   ],
@@ -206,14 +206,14 @@
   ],
   "onlineResources": [
     {
-      "url": "https://data-package.ceh.ac.uk/sd/3980cfcb-f19d-4a70-b056-e023fb57e807.zip",
+      "url": "https://data-package.ceh.ac.uk/sd/c63c543f-3e95-4c1c-8c69-12f942271813.zip",
       "name": "Supporting information",
       "description": "Supporting information available to assist in re-use of this dataset",
       "function": "information",
       "type": "OTHER"
     },
     {
-      "url": "https://data-package.ceh.ac.uk/data/3980cfcb-f19d-4a70-b056-e023fb57e807",
+      "url": "https://data-package.ceh.ac.uk/data/c63c543f-3e95-4c1c-8c69-12f942271813",
       "name": "Download the data",
       "description": "Download a copy of this data",
       "function": "download",

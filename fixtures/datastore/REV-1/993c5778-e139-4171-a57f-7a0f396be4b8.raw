@@ -1,16 +1,16 @@
 {
-  "id": "5b338064-b09b-4846-a0b3-b7ec358e5e1e",
-  "uri": "https://catalogue-staging.ceh.ac.uk/id/5b338064-b09b-4846-a0b3-b7ec358e5e1e",
+  "id": "993c5778-e139-4171-a57f-7a0f396be4b8",
+  "uri": "http://localhost:8080/id/993c5778-e139-4171-a57f-7a0f396be4b8",
   "type": "dataset",
   "title": "Bees on Mars",
   "description": "Data comprise flower counts and bee abundance, diversity and activity data collected during extensive surveys carried out in my garden on 4th February 2015. The pollen diets of bees were quantified using a teaspoon and some sellotape. The purpose of the study was to provide valuable information to scientists, governments and land managers in designing effective measures to establish bee communities on Mars \n\nThe work was funded by NERC's \"Bees of Tomorrow Travelling to Mars\" (BOTTtoM) programme.",
   "metadataDate": "2024-03-08T14:32:45",
   "resourceIdentifiers": [
     {
-      "code": "https://catalogue-staging.ceh.ac.uk/id/5b338064-b09b-4846-a0b3-b7ec358e5e1e"
+      "code": "http://localhost:8080/id/993c5778-e139-4171-a57f-7a0f396be4b8"
     },
     {
-      "code": "10.5285/5b338064-b09b-4846-a0b3-b7ec358e5e1e",
+      "code": "10.5285/993c5778-e139-4171-a57f-7a0f396be4b8",
       "codeSpace": "doi:"
     }
   ],
@@ -573,14 +573,14 @@
   ],
   "onlineResources": [
     {
-      "url": "https://data-package.ceh.ac.uk/data/5b338064-b09b-4846-a0b3-b7ec358e5e1e",
+      "url": "https://data-package.ceh.ac.uk/data/993c5778-e139-4171-a57f-7a0f396be4b8",
       "name": "Download the data",
       "description": "Download a copy of this data",
       "function": "download",
       "type": "OTHER"
     },
     {
-      "url": "http://eidc.ceh.ac.uk/metadata/5b338064-b09b-4846-a0b3-b7ec358e5e1e/zip_export/",
+      "url": "http://eidc.ceh.ac.uk/metadata/993c5778-e139-4171-a57f-7a0f396be4b8/zip_export/",
       "name": "Supporting information",
       "description": "Supporting information available to assist in re-use of this dataset",
       "function": "information",
