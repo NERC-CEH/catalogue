@@ -1,73 +1,75 @@
 <!DOCTYPE html>
 <html lang="en-GB" data-catalogue=test>
-<head>
-<meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="dcterms.language" content="en">
-<meta name="dcterms.title" content="Upload Test">
-<meta name="og.title" content="Upload Test">
-<meta name="og.site_name" content="Test Catalogue">
-<title>Upload Test - Test Catalogue</title>
-<link rel="stylesheet" type="text/css" href="/static/css/style-test.css">
+    <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="dcterms.language" content="en">
+    <meta name="dcterms.title" content="Upload Test">
+    <meta name="og.title" content="Upload Test">
+    <meta name="og.site_name" content="Test Catalogue">
+    <title>Upload Test - Test Catalogue</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/style-test.css">
 </head>
 <body data-edit-restricted="disabled">
     <header>
         <div class="ukcehBrand"><div class="container"></div></div>
         <div class="container">
-          <div class="toolbar">
-            <div class="nav-toggle">
-              <i class="fa-solid fa-2x fa-bars"></i>
-              <i class="fa-solid fa-2x fa-xmark"></i>
+            <div class="toolbar">
+                <div class="nav-toggle">
+                    <i class="fa-solid fa-2x fa-bars"></i>
+                    <i class="fa-solid fa-2x fa-xmark"></i>
             </div>
-            <div class="navigation">
-              <div class="brand">
-                <a href="https://example.com"><img src="/static/img/cataloguelogo/eidc.png" alt="Test Catalogue" /></a>
-              </div>
-              <nav class="navbar">
-                <a class="navbar-title" href="https://example.com">Test Catalogue</a>
-                <a href="/test/documents">Search</a>
-              </nav>
-              <nav class="navbar navbar-right"><span id="sso-user"></span></nav>
+                <div class="navigation">
+                    <div class="brand">
+                        <a href="https://example.com"><img src="/static/img/cataloguelogo/eidc.png" alt="Test Catalogue"/></a>
+                </div>
+                    <nav class="navbar">
+                        <a class="navbar-title" href="https://example.com">Test Catalogue</a>
+                        <a href="/test/documents">Search</a>
+                </nav>
+                    <nav class="navbar navbar-right">
+                        <span id="sso-user"></span>
+                </nav>
             </div>
-          </div>
         </div>
-      </header>
-<main>
-    <div class="container" id="simple-upload">
-        <h1>Upload Test</h1>
-        <a href="/documents/123-456-789">Return to metadata</a>
-        <div id="messages">
-            <h2>Messages</h2>
-            <div id="messages-tools"></div>
-            <ul id="messages-list"></ul>
+    </div>
+</header>
+    <main>
+        <div class="container" id="simple-upload">
+            <h1>Upload Test</h1>
+            <a href="/documents/123-456-789">Return to metadata</a>
+            <div id="messages">
+                <h2>Messages</h2>
+                <div id="messages-tools"></div>
+                <ul id="messages-list"></ul>
         </div>
-        <div id="upload">
-            <h2>Upload</h2>
-            <form action="/upload/123-456-789" id="simple-upload-dropzone"></form>
+            <div id="upload">
+                <h2>Upload</h2>
+                <form action="/upload/123-456-789" id="simple-upload-dropzone"></form>
         </div>
-        <div id="files">
-            <h2>Files</h2>
-            <div id="files-tools"></div>
-            <ul id="files-list">
-                <li>data1.csv</li>
-                <li>data2.csv</li>
-                <li>name with spaces.csv</li>
+            <div id="files">
+                <h2>Files</h2>
+                <div id="files-tools"></div>
+                <ul id="files-list">
+                    <li>data1.csv</li>
+                    <li>data2.csv</li>
+                    <li>name with spaces.csv</li>
             </ul>
         </div>
     </div>
-    <script id="files-data" type="application/json">
-    [
-    {"name":"data1.csv","urlEncodedName":"data1.csv"},
-    {"name":"data2.csv","urlEncodedName":"data2.csv"},
-    {"name":"name with spaces.csv","urlEncodedName":"name%20with%20spaces.csv"}
-    ]
-    </script>
-    <script id="messages-data" type="application/json">
-    {"message":"Test error","type": "error"}
-    </script>
-    <div id="message-panel"></div>
+        <script id="files-data" type="application/json">
+        [
+        {"name":"data1.csv","urlEncodedName":"data1.csv"},
+        {"name":"data2.csv","urlEncodedName":"data2.csv"},
+        {"name":"name with spaces.csv","urlEncodedName":"name%20with%20spaces.csv"}
+        ]
+        </script>
+        <script id="messages-data" type="application/json">
+        {"message":"Test error","type": "error"}
+        </script>
+        <div id="message-panel"></div>
 </main>
-<script src="/static/scripts/main.js"></script>
+    <script src="/static/scripts/main.js"></script>
 </body>
 </html>
