@@ -134,6 +134,12 @@ export default EditorView.extend({
           label: 'Version'
         }),
 
+        new CheckboxView({
+          model: this.model,
+          modelAttribute: 'hasOnlineServiceAgreement',
+          label: 'Does this record have an online service agreement?'
+        }),
+
         new ParentView({
           model: this.model,
           modelAttribute: 'temporalExtents',

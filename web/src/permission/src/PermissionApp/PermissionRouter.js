@@ -3,7 +3,8 @@ import Backbone from 'backbone'
 export default Backbone.Router.extend({
 
   routes: {
-    'permission/:identifier': 'loadPermission'
+    'permission/:identifier': 'loadPermission',
+    'service-agreement-permission/:identifier': 'loadServiceAgreementPermission'
   },
 
   initialize (options) {
@@ -12,5 +13,9 @@ export default Backbone.Router.extend({
 
   loadPermission (identifier) {
     return this.model.loadPermission(identifier)
+  },
+
+  loadServiceAgreementPermission (identifier) {
+    return this.model.loadServiceAgreementPermission(identifier)
   }
 })

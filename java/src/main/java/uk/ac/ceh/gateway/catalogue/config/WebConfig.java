@@ -53,6 +53,7 @@ import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.History;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreementModel;
+import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreementPermissionResource;
 import uk.ac.ceh.gateway.catalogue.sparql.SparqlResponse;
 import uk.ac.ceh.gateway.catalogue.ukems.UkemsDocument;
 import uk.ac.ceh.gateway.catalogue.wms.WmsFormatParameterFilter;
@@ -108,6 +109,7 @@ public class WebConfig implements WebMvcConfigurer {
         val sampleArchive = new Object2TemplatedMessageConverter<>(SampleArchive.class, freemarkerConfiguration);
         val searchResults = new Object2TemplatedMessageConverter<>(SearchResults.class, freemarkerConfiguration);
         val serviceAgreementModel = new Object2TemplatedMessageConverter<>(ServiceAgreementModel.class, freemarkerConfiguration);
+        val serviceAgreementPermissionResource = new Object2TemplatedMessageConverter<>(ServiceAgreementPermissionResource.class, freemarkerConfiguration);
         val sparqlResponse = new Object2TemplatedMessageConverter<>(SparqlResponse.class, freemarkerConfiguration);
         val stateResource = new Object2TemplatedMessageConverter<>(StateResource.class, freemarkerConfiguration);
         val ukems = new Object2TemplatedMessageConverter<>(UkemsDocument.class, freemarkerConfiguration);
@@ -155,6 +157,7 @@ public class WebConfig implements WebMvcConfigurer {
             sampleArchive,
             searchResults,
             serviceAgreementModel,
+            serviceAgreementPermissionResource,
             sparqlResponse,
             stateResource,
             ukems,
