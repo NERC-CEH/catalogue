@@ -112,7 +112,7 @@
                   <#if responsibleParty.email?has_content>
                     ${responsibleParty.email}
                   <#else>
-                    info@eidc.ac.uk
+                    EMAIL NOT PROVIDED
                   </#if>
                 </gco:CharacterString></gmd:electronicMailAddress>
 							</gmd:CI_Address>

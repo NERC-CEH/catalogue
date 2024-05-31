@@ -44,8 +44,10 @@
                 <#else>
                   <#if contact.isRor() && contact.organisationIdentifier?ends_with("04xw4m193") >
                     info@eidc.ac.uk
-                  <#else>
+                  <#elseif contact.isRor() && contact.organisationIdentifier?ends_with("00pggkr55") >
                     enquiries@ceh.ac.uk
+                  <#else>
+                    EMAIL NOT PROVIDED
                   </#if>
                 </#if>
               </gco:CharacterString></gmd:electronicMailAddress>

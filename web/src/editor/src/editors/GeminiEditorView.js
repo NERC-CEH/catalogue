@@ -137,7 +137,8 @@ export default EditorView.extend({
         new CheckboxView({
           model: this.model,
           modelAttribute: 'hasOnlineServiceAgreement',
-          label: 'Does this record have an online service agreement?'
+          label: 'Does this record have an online service agreement?',
+          class: `eidconly`
         }),
 
         new ParentView({
