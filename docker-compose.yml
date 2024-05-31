@@ -34,6 +34,8 @@ services:
       # Run 'npm run watch' and connect to the catalogue docker service to have code recompiled while developing
       # Then use the services tab in IntelliJ
       #- ./web/dist:/opt/ceh-catalogue/static/scripts
+      # Uncomment when enabling 'metrics' profile for local sqlite database
+      #- ./metrics-db:/var/ceh-catalogue/metrics-db/
     environment:
       - documents.baseUri=http://localhost:8080
       - doi.api=https://api.test.datacite.org/dois
