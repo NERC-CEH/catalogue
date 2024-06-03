@@ -13,6 +13,7 @@ target
 java/out
 java/bin
 /upload/
+/metrics-db/
 
 # Ignore Test output
 test-reports/**
