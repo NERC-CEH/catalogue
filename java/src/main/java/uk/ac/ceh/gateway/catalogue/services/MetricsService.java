@@ -7,4 +7,6 @@ import org.springframework.lang.NonNull;
 public interface MetricsService {
     void recordView(@NonNull String uuid, @NonNull String addr);
     void recordDownload(@NonNull String uuid, @NonNull String addr);
+    int totalViews(@NonNull String uuid);
+    int totalDownloads(@NonNull String uuid);
 }

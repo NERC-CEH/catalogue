@@ -11,6 +11,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -81,6 +82,42 @@ class JDBCMetricsServiceTest {
         //then
         val rows = getDocumentsAndAmounts("downloads");
         assertThat(rows, contains(contains(TEST_DOCUMENT, 2)));
+    }
+
+    @Test
+    void testCountViews() throws SQLException {
+        val howMany = 3;
+
+        //given
+        IntStream.range(0, howMany).forEach(_i -> {
+            service.recordView(TEST_DOCUMENT, TEST_IP1);
+            service.recordView(TEST_DOCUMENT, TEST_IP2);
+            service.syncDB();
+        });
+
+        //when
+        val amount = service.totalViews(TEST_DOCUMENT);
+
+        //then
+        assertThat(amount, equalTo(2 * howMany));
+    }
+
+    @Test
+    void testCountDownloads() throws SQLException {
+        val howMany = 3;
+
+        //given
+        IntStream.range(0, howMany).forEach(_i -> {
+            service.recordDownload(TEST_DOCUMENT, TEST_IP1);
+            service.recordDownload(TEST_DOCUMENT, TEST_IP2);
+            service.syncDB();
+        });
+
+        //when
+        val amount = service.totalDownloads(TEST_DOCUMENT);
+
+        //then
+        assertThat(amount, equalTo(2 * howMany));
     }
 
     List<List<Object>> getDocumentsAndAmounts(String table) throws SQLException {
