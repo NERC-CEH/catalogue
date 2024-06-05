@@ -22,7 +22,6 @@ export default Backbone.View.extend({
 
   render () {
     this.$el.html(template({ data: this.data }))
-    this.$el.addClass(this.data.class)
     return this
   },
 

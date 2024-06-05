@@ -138,7 +138,7 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'hasOnlineServiceAgreement',
           label: 'Does this record have an online service agreement?',
-          class: 'eidconly'
+          className: 'component eidconly'
         }),
 
         new ParentView({
