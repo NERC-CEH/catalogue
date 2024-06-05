@@ -54,7 +54,7 @@ public class DownloadControllerTest {
             .andExpect(redirectedUrl(url));
 
         //then
-        verify(metricsService).recordDownload(uuid, InetAddress.getByName("127.0.0.1"));
+        verify(metricsService).recordDownload(uuid, "127.0.0.1");
     }
 
     @Test

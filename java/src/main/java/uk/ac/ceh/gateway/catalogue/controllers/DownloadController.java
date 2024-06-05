@@ -5,6 +5,7 @@ import javax.ws.rs.QueryParam;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,7 +34,7 @@ public class DownloadController {
     );
 
     public DownloadController(
-        MetricsService metricsService,
+        @Nullable MetricsService metricsService,
         @Value("#{'${metrics.users.excluded}'.split(',')}") List<String> excludedUsers
     ) {
         this.metricsService = metricsService;
@@ -48,16 +49,12 @@ public class DownloadController {
         @QueryParam("url") String url,
         HttpServletRequest request
     ) {
-        return process(user, uuid, url, request);
-    }
-
-    private String process(CatalogueUser user, String uuid, String url,HttpServletRequest request){
         String redirectUrl = URLDecoder.decode(url, StandardCharsets.UTF_8);
         if(!valid(redirectUrl)) {
             throw new RuntimeException("Invalid download url");
         }
-        if(!excludedUsers.contains(user.getUsername())) {
-            recordDownload(uuid, request);
+        if(!excludedUsers.contains(user.getUsername()) && this.metricsService != null) {
+            this.metricsService.recordDownload(uuid, request.getRemoteAddr());
         }
         return "redirect:" + redirectUrl;
     }
@@ -66,21 +63,5 @@ public class DownloadController {
         return this.validUrls
             .stream()
             .anyMatch(p -> p.matcher(url).matches());
-    }
-
-    private void recordDownload(String uuid, HttpServletRequest request){
-        InetAddress addr = getAddress(request);
-        this.metricsService.recordDownload(uuid, addr);
-    }
-
-    private InetAddress getAddress(HttpServletRequest request) {
-        String ip = request.getRemoteAddr();
-        InetAddress addr;
-        try {
-            addr = InetAddress.getByName(ip);
-        } catch (UnknownHostException e) {
-            throw new RuntimeException("Unknown host: " + ip);
-        }
-        return addr;
     }
 }
