@@ -134,6 +134,8 @@ The server profile e.g. `server:eidc` decides which catalogue you will use and w
 Select which algorithm Solr uses to search for documents.
 ##### service-agreement
 Allows the user to create online service agreements for datasets.
+##### metrics
+Creates the embedded sqlite database for the metric reporting.
 
 ### Developing LESS
 In the web directory run

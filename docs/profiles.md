@@ -33,6 +33,10 @@ Choice of:
 Enables Online Service Agreements functionality
 * `service-agreement`
 
+## Metric reporting
+Creates the embedded sqlite database used to store metric data
+* `metrics`
+
 ## Uploads
 Dataset upload functionality
 
