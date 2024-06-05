@@ -64,13 +64,7 @@ class JDBCMetricsServiceTest {
         service.syncDB();
 
         //then
-        val stmt = db.getConnection().createStatement();
-        val rs = stmt.executeQuery("SELECT document, amount FROM views");
-        val rows = new ArrayList<List<Object>>();
-        while (rs.next()) {
-            rows.add(List.of(rs.getString(1), rs.getInt(2)));
-        }
-
+        val rows = getDocumentsAndAmounts("views");
         assertThat(rows, contains(contains(TEST_DOCUMENT, 2)));
     }
 
@@ -85,13 +79,17 @@ class JDBCMetricsServiceTest {
         service.syncDB();
 
         //then
+        val rows = getDocumentsAndAmounts("downloads");
+        assertThat(rows, contains(contains(TEST_DOCUMENT, 2)));
+    }
+
+    List<List<Object>> getDocumentsAndAmounts(String table) throws SQLException {
         val stmt = db.getConnection().createStatement();
-        val rs = stmt.executeQuery("SELECT document, amount FROM downloads");
+        val rs = stmt.executeQuery("SELECT document, amount FROM " + table);
         val rows = new ArrayList<List<Object>>();
         while (rs.next()) {
             rows.add(List.of(rs.getString(1), rs.getInt(2)));
         }
-
-        assertThat(rows, contains(contains(TEST_DOCUMENT, 2)));
+        return rows;
     }
 }
