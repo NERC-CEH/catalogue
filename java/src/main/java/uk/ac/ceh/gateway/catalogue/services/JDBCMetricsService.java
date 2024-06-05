@@ -52,9 +52,7 @@ public class JDBCMetricsService implements MetricsService {
         this.viewed = Collections.synchronizedMap(new HashMap<>());
         this.downloaded = Collections.synchronizedMap(new HashMap<>());
 
-        for (val table : List.of(VIEW_TABLE, DOWNLOAD_TABLE)) {
-            jdbcTemplate.execute(CREATE_STATEMENT.formatted(table));
-        }
+        List.of(VIEW_TABLE, DOWNLOAD_TABLE).forEach(table -> jdbcTemplate.execute(CREATE_STATEMENT.formatted(table)));
     }
 
     @Override
