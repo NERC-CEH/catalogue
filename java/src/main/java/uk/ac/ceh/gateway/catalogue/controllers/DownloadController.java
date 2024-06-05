@@ -13,9 +13,7 @@ import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.services.MetricsService;
 
-import java.net.InetAddress;
 import java.net.URLDecoder;
-import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.regex.Pattern;

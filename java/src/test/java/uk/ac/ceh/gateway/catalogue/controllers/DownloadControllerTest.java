@@ -12,7 +12,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.services.MetricsService;
 
-import java.net.InetAddress;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
