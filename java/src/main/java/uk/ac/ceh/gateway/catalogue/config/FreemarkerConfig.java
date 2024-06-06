@@ -9,6 +9,7 @@ import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
 import uk.ac.ceh.gateway.catalogue.quality.MetadataQualityService;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreementQualityService;
+import uk.ac.ceh.gateway.catalogue.services.MetricsService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.DownloadOrderDetailsService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.GeminiExtractor;
@@ -32,6 +33,7 @@ public class FreemarkerConfig {
     private final PermissionService permissionService;
     private final ProfileService profileService;
     @Nullable private final ServiceAgreementQualityService serviceAgreementQualityService;
+    @Nullable private final MetricsService metricsService;
 
     @SneakyThrows
     @PostConstruct
@@ -49,6 +51,10 @@ public class FreemarkerConfig {
 
         if (serviceAgreementQualityService != null) {
             freemarkerConfiguration.setSharedVariable("serviceAgreementQuality", serviceAgreementQualityService);
+        }
+
+        if (metricsService != null) {
+            freemarkerConfiguration.setSharedVariable("metrics", metricsService);
         }
     }
 }
