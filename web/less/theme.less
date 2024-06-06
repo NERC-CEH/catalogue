@@ -40,41 +40,90 @@ header {
     top: 0;
     z-index: 2000;
     background-color: var(--header-background-colour);
-    border-bottom: solid var(--header-border-colour) var(--header-border-width);
+    border-bottom: solid var(--header-border-bottom-colour) var(--header-border-bottom-width);
+
+    .ukcehBrand {
+        display: var(--ukceh-brand-display);
+        background-color: #eee;
+
+        &:before {
+            display: block;
+            content: "";
+            height: 5px;
+            background: linear-gradient(to left, var(--primary-colour), var(--secondary-colour));
+        }
+
+        .ukcehBrand-toolbar {
+            display: var(--display-brandbar, none); //hide the brand toolbar by default
+            flex-wrap: nowrap;
+            justify-content: space-between;
+            align-items: center;
+            font-size: .85em;
+
+            &:before,
+            &:after {
+                all: unset //this is to deal with some bootstrap 3 issues
+            }
+
+            img {
+                max-height: 40px;
+            }
+
+            a {
+                background-color: #222;
+                display: block;
+                padding: .7em 1em;
+                color: white;
+            }
+
+            >div {
+                flex: 0 0 fit-content;
+                padding: 0.25em;
+            }
+        }
+    }
 }
+
 
 footer {
     margin-top: auto;
     background-color: var(--footer-background-colour);
-}
-
-.footer-ukceh {
-    background-color: #333;
-    color: white;
-
-    a {
-        color: white;
-    }
+    color: var(--footer-colour);
 
     .container {
         display: grid;
         gap: 1em;
         grid-template-columns: 1fr 1fr;
 
+        a {
+            color: var(--footer-link-colour);
+
+            &:hover,
+            &:focus {
+                color: var(--footer-link-hover-colour);
+            }
+        }
+
         >div {
             padding: 0.5em;
         }
 
-        .footer-logo {
+        .footer-logos {
+            font-size: 0.85em;
             grid-column-start: 1;
             grid-column-end: 3;
+            display: flex;
+            gap: 1em;
+            justify-content: space-between;
+            align-items:center;
 
             img {
                 max-width: 180px;
+                max-height: 90px;
             }
         }
 
-        .footer-policies {
+        .footer-links {
             display: flex;
             flex-direction: column;
             gap: .25em;
@@ -86,7 +135,7 @@ footer {
             gap: 1em;
             flex-wrap: nowrap;
             align-self: center;
-            justify-content: center;
+            justify-content: flex-end;
 
             a {
                 padding: 0.75em;
@@ -98,12 +147,9 @@ footer {
                     border-color: white;
                 }
             }
-
-
-
         }
 
-        .footer-copy {
+        .footer-terms {
             border-top: 1px solid white;
             text-align: center;
             grid-column-start: 1;
@@ -167,7 +213,7 @@ header {
                 margin: 0;
                 display: flex;
                 flex-wrap: nowrap;
-                align-items: center;
+                align-items: stretch;
 
                 a {
                     padding: calc(var(--header-height, 3.4em) / 4) 1em;
@@ -176,6 +222,7 @@ header {
                     font-weight: var(--header-link-weight);
                     background-color: var(--header-link-background-colour);
                     color: var(--header-link-colour);
+                    align-content: center;
 
                     &:hover {
                         background-color: var(--header-link-hover-background-colour);
@@ -185,6 +232,9 @@ header {
             }
 
             .navbar-right {
+                margin-left: auto;
+                align-items: center;
+
                 li {
                     list-style: none;
 
@@ -193,8 +243,6 @@ header {
                     }
 
                 }
-
-                margin-left: auto;
 
                 .dropdown-menu {
                     --dropdown-background-color: #EEE;
@@ -285,7 +333,7 @@ header {
                 }
 
                 &.reveal {
-                    border-bottom: solid var(--header-border-colour) var(--header-border-width);
+                    border-bottom: solid var(--header-border-bottom-colour) var(--header-border-bottom-width);
 
                     .navbar {
                         display: flex;

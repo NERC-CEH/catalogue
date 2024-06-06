@@ -50,8 +50,15 @@
     </head>
     <body data-edit-restricted="${can_edit_restricted?then('','disabled')}">
       <header>
+        <div class="ukcehBrand">
+          <div class="${containerClass}">
+            <div class="ukcehBrand-toolbar">
+              <div>Part of UKCEH <img src="/static/img/cataloguelogo/ukceh.png" alt="UKCEH logo" title="UKCEH" ></div>
+              <div><a href="http://www.ceh.ac.uk" target="_blank" rel="noopener noreferrer">UKCEH website</a></div>
+            </div>
+            </div>
+        </div>
         <div class="${containerClass}">
-
           <div class="toolbar">
             <div class="nav-toggle">
               <i class="fa-solid fa-2x fa-bars"></i>
@@ -111,13 +118,16 @@
       </header>
       <main>
         <#nested>
+        <div id="message-panel"></div>
       </main>
       <#if footer = true>
         <footer>
             <#if catalogue.id == "eidc">
               <#include "footer/eidc.ftlh">
+            <#elseif catalogue.id == "ukeof">
+              <#include "footer/ukeof.ftlh">
             <#else>
-                <#include "footer/ukceh.ftlh">
+              <#include "footer/ukceh.ftlh">
             </#if>
         </footer>
       </#if>
@@ -125,7 +135,6 @@
         <script type="text/javascript" src="https://jira.ceh.ac.uk/s/d41d8cd98f00b204e9800998ecf8427e-CDN/-8wgtt1/813004/fe1f443e9c2ab11853ac2c907ebc1d28/2.2.4.7/_/download/batch/com.atlassian.plugins.jquery:jquery/com.atlassian.plugins.jquery:jquery.js?collectorId=1977b77c"></script>
         <script type="text/javascript" src="https://jira.ceh.ac.uk/s/743f218046d73ea8e8033c2a0fad57f5-T/-8wgtt1/813004/fe1f443e9c2ab11853ac2c907ebc1d28/4.0.4/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?locale=en-UK&collectorId=1977b77c"></script>
       </#if>
-      <div id="message-panel"></div>
       ${scripts}
     </body>
   </html></#compress>
