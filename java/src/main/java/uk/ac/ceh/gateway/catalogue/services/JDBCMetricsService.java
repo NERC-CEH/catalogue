@@ -24,10 +24,11 @@ import javax.sql.DataSource;
 @Slf4j
 @Service
 public class JDBCMetricsService implements MetricsService {
-    @NonNull private Map<String, Set<String>> viewed;
-    @NonNull private Map<String, Set<String>> downloaded;
-    @NonNull private SimpleJdbcInsert simpleJdbcInsertView;
-    @NonNull private SimpleJdbcInsert simpleJdbcInsertDownload;
+    @NonNull private final Map<String, Set<String>> viewed;
+    @NonNull private final Map<String, Set<String>> downloaded;
+    @NonNull private final SimpleJdbcInsert viewInserter;
+    @NonNull private final SimpleJdbcInsert downloadInserter;
+    @NonNull private final JdbcTemplate jdbcTemplate;
     @Nullable private long lastRun;
 
     // SQLite has no built-in datetime type, so we store dates as Unix timestamps (seconds since 1 Jan 1970)
@@ -39,20 +40,19 @@ public class JDBCMetricsService implements MetricsService {
             document text NOT NULL
         )
         """;
+    private static final String TOTAL_STATEMENT = "SELECT coalesce(sum(amount), 0) FROM %s WHERE document = ?";
     private static final String VIEW_TABLE = "views";
     private static final String DOWNLOAD_TABLE = "downloads";
 
     public JDBCMetricsService(@NonNull DataSource dataSource) {
         log.info("Creating {}", this);
-        val jdbcTemplate = new JdbcTemplate(dataSource);
-        this.simpleJdbcInsertView = new SimpleJdbcInsert(dataSource).withTableName(VIEW_TABLE);
-        this.simpleJdbcInsertDownload = new SimpleJdbcInsert(dataSource).withTableName(DOWNLOAD_TABLE);
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
+        this.viewInserter = new SimpleJdbcInsert(dataSource).withTableName(VIEW_TABLE);
+        this.downloadInserter = new SimpleJdbcInsert(dataSource).withTableName(DOWNLOAD_TABLE);
         this.viewed = Collections.synchronizedMap(new HashMap<>());
         this.downloaded = Collections.synchronizedMap(new HashMap<>());
 
-        for (val table : List.of(VIEW_TABLE, DOWNLOAD_TABLE)) {
-            jdbcTemplate.execute(CREATE_STATEMENT.formatted(table));
-        }
+        List.of(VIEW_TABLE, DOWNLOAD_TABLE).forEach(table -> jdbcTemplate.execute(CREATE_STATEMENT.formatted(table)));
     }
 
     @Override
@@ -69,30 +69,40 @@ public class JDBCMetricsService implements MetricsService {
         }
     }
 
+    @Override
+    public int totalViews(@NonNull String uuid) {
+        return totalAmount(VIEW_TABLE, uuid);
+    }
+
+    @Override
+    public int totalDownloads(@NonNull String uuid) {
+        return totalAmount(DOWNLOAD_TABLE, uuid);
+    }
+
     @Scheduled(initialDelay=TimeConstants.ONE_HOUR, fixedDelay=TimeConstants.ONE_HOUR)
     public void syncDB() {
         log.info("Exporting metric counts");
 
         synchronized (viewed) {
             viewed.forEach((doc, viewers) ->
-                simpleJdbcInsertView.execute(Map.of(
-                        "start_timestamp", lastRun,
-                        "end_timestamp", Instant.now().getEpochSecond(),
-                        "amount", viewers.size(),
-                        "document", doc
-                    ))
+                viewInserter.execute(Map.of(
+                    "start_timestamp", lastRun,
+                    "end_timestamp", Instant.now().getEpochSecond(),
+                    "amount", viewers.size(),
+                    "document", doc
+                ))
             );
             viewed.clear();
         }
 
         synchronized (downloaded) {
             downloaded.forEach((doc, downloaders) ->
-                simpleJdbcInsertDownload.execute(Map.of(
-                        "start_timestamp", lastRun,
-                        "end_timestamp", Instant.now().getEpochSecond(),
-                        "amount", downloaders.size(),
-                        "document", doc
-                    ))
+                downloadInserter.execute(Map.of(
+                    "start_timestamp", lastRun,
+                    "end_timestamp", Instant.now().getEpochSecond(),
+                    "amount", downloaders.size(),
+                    "document", doc
+                ))
             );
             downloaded.clear();
         }
@@ -102,5 +112,9 @@ public class JDBCMetricsService implements MetricsService {
 
     private void recordMetric(@NonNull Map<String, Set<String>> map, @NonNull String uuid, @NonNull String addr) {
         map.computeIfAbsent(uuid, k -> new HashSet<>()).add(addr);
+    }
+
+    private int totalAmount(@NonNull String table, @NonNull String uuid) {
+        return jdbcTemplate.queryForObject(TOTAL_STATEMENT.formatted(table), Integer.class, uuid);
     }
 }
