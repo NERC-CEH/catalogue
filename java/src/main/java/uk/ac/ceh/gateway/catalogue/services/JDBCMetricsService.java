@@ -26,7 +26,8 @@ import javax.sql.DataSource;
 public class JDBCMetricsService implements MetricsService {
     @NonNull private Map<String, Set<String>> viewed;
     @NonNull private Map<String, Set<String>> downloaded;
-    @NonNull private SimpleJdbcInsert simpleJdbcInsert;
+    @NonNull private SimpleJdbcInsert simpleJdbcInsertView;
+    @NonNull private SimpleJdbcInsert simpleJdbcInsertDownload;
     @Nullable private long lastRun;
 
     // SQLite has no built-in datetime type, so we store dates as Unix timestamps (seconds since 1 Jan 1970)
@@ -44,7 +45,8 @@ public class JDBCMetricsService implements MetricsService {
     public JDBCMetricsService(@NonNull DataSource dataSource) {
         log.info("Creating {}", this);
         val jdbcTemplate = new JdbcTemplate(dataSource);
-        this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource);
+        this.simpleJdbcInsertView = new SimpleJdbcInsert(dataSource).withTableName(VIEW_TABLE);
+        this.simpleJdbcInsertDownload = new SimpleJdbcInsert(dataSource).withTableName(DOWNLOAD_TABLE);
         this.viewed = Collections.synchronizedMap(new HashMap<>());
         this.downloaded = Collections.synchronizedMap(new HashMap<>());
 
@@ -73,8 +75,7 @@ public class JDBCMetricsService implements MetricsService {
 
         synchronized (viewed) {
             viewed.forEach((doc, viewers) ->
-                simpleJdbcInsert.withTableName(VIEW_TABLE)
-                    .execute(Map.of(
+                simpleJdbcInsertView.execute(Map.of(
                         "start_timestamp", lastRun,
                         "end_timestamp", Instant.now().getEpochSecond(),
                         "amount", viewers.size(),
@@ -86,8 +87,7 @@ public class JDBCMetricsService implements MetricsService {
 
         synchronized (downloaded) {
             downloaded.forEach((doc, downloaders) ->
-                simpleJdbcInsert.withTableName(DOWNLOAD_TABLE)
-                    .execute(Map.of(
+                simpleJdbcInsertDownload.execute(Map.of(
                         "start_timestamp", lastRun,
                         "end_timestamp", Instant.now().getEpochSecond(),
                         "amount", downloaders.size(),
