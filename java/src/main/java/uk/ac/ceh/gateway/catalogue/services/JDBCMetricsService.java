@@ -11,13 +11,14 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.TimeConstants;
 
-import javax.sql.DataSource;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.sql.DataSource;
 
 @Profile("metrics")
 @Slf4j
@@ -44,8 +45,8 @@ public class JDBCMetricsService implements MetricsService {
         log.info("Creating {}", this);
         val jdbcTemplate = new JdbcTemplate(dataSource);
         this.simpleJdbcInsert = new SimpleJdbcInsert(dataSource);
-        this.viewed = new HashMap<>();
-        this.downloaded = new HashMap<>();
+        this.viewed = Collections.synchronizedMap(new HashMap<>());
+        this.downloaded = Collections.synchronizedMap(new HashMap<>());
 
         for (val table : List.of(VIEW_TABLE, DOWNLOAD_TABLE)) {
             jdbcTemplate.execute(CREATE_STATEMENT.formatted(table));
@@ -54,39 +55,47 @@ public class JDBCMetricsService implements MetricsService {
 
     @Override
     public void recordView(@NonNull String uuid, @NonNull String addr) {
-        recordMetric(viewed, uuid, addr);
+        synchronized (viewed) {
+            recordMetric(viewed, uuid, addr);
+        }
     }
 
     @Override
     public void recordDownload(@NonNull String uuid, @NonNull String addr) {
-        recordMetric(downloaded, uuid, addr);
+        synchronized (downloaded) {
+            recordMetric(downloaded, uuid, addr);
+        }
     }
 
     @Scheduled(initialDelay=TimeConstants.ONE_HOUR, fixedDelay=TimeConstants.ONE_HOUR)
     public void syncDB() {
         log.info("Exporting metric counts");
 
-        viewed.forEach((doc, viewers) ->
-            simpleJdbcInsert.withTableName(VIEW_TABLE)
-                .execute(Map.of(
-                    "start_timestamp", lastRun,
-                    "end_timestamp", Instant.now().getEpochSecond(),
-                    "amount", viewers.size(),
-                    "document", doc
-                ))
-        );
-        viewed.clear();
+        synchronized (viewed) {
+            viewed.forEach((doc, viewers) ->
+                simpleJdbcInsert.withTableName(VIEW_TABLE)
+                    .execute(Map.of(
+                        "start_timestamp", lastRun,
+                        "end_timestamp", Instant.now().getEpochSecond(),
+                        "amount", viewers.size(),
+                        "document", doc
+                    ))
+            );
+            viewed.clear();
+        }
 
-        downloaded.forEach((doc, downloaders) ->
-            simpleJdbcInsert.withTableName(DOWNLOAD_TABLE)
-                .execute(Map.of(
-                    "start_timestamp", lastRun,
-                    "end_timestamp", Instant.now().getEpochSecond(),
-                    "amount", downloaders.size(),
-                    "document", doc
-                ))
-        );
-        downloaded.clear();
+        synchronized (downloaded) {
+            downloaded.forEach((doc, downloaders) ->
+                simpleJdbcInsert.withTableName(DOWNLOAD_TABLE)
+                    .execute(Map.of(
+                        "start_timestamp", lastRun,
+                        "end_timestamp", Instant.now().getEpochSecond(),
+                        "amount", downloaders.size(),
+                        "document", doc
+                    ))
+            );
+            downloaded.clear();
+        }
 
         lastRun = Instant.now().getEpochSecond();
     }
