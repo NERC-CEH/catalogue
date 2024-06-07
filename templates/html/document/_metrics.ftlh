@@ -9,8 +9,7 @@
 </#if>
 <#if metrics??>
   <#assign totalViews = metrics.totalViews(id) totalDownloads = metrics.totalDownloads(id)>
-  ${totalViews} view<#if totalViews != 1>s</#if><br>
-  ${totalDownloads} download<#if totalDownloads != 1>s</#if>
-  </h2>
+  <h2>${totalViews} view<#if totalViews != 1>s</#if></h2>
+  <h2>${totalDownloads} download<#if totalDownloads != 1>s</#if></h2>
 </#if>
 </div>
