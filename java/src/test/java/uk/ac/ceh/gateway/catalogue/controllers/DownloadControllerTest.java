@@ -76,3 +76,4 @@ public class DownloadControllerTest {
         verify(metricsService, never()).recordDownload(any(), any());
     }
 }
+

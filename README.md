@@ -18,7 +18,8 @@ Browse to http://localhost:8080/eidc/documents to see the catalogue populated wi
 ### Standalone installation using published Docker images
 
 ```commandline
-mkdir datastore dropbox upload
+mkdir datastore dropbox upload metrics-db
+chmod a+w metrics-db
 cp fixtures/datastore/REV-1/* datastore
 cd datastore
 git init
