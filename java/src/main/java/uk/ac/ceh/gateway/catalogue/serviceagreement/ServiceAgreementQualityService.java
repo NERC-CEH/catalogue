@@ -96,30 +96,37 @@ public class ServiceAgreementQualityService {
 
     List<MetadataCheck> checkBasics(DocumentContext parsedDoc) {
         val requiredKeys = Map.ofEntries(
-            Map.entry("Title", "title"),
-            Map.entry("Depositor contact details", "depositorContactDetails"),
-            Map.entry("EIDC name", "eidcName"),
-            Map.entry("Transfer method", "transferMethod"),
-            Map.entry("Deposit reference", "depositReference"),
-            Map.entry("ISO 19115 topic categories keywords", "topicCategories"),
-            Map.entry("Science topic keywords", "keywordsTheme"),
-            Map.entry("Observed properties keywords", "keywordsObservedProperty"),
-            Map.entry("Places keywords", "keywordsPlace"),
-            Map.entry("Projects keywords", "keywordsProject"),
-            Map.entry("Instruments keywords", "keywordsInstrument"),
-            Map.entry("Other keywords", "keywordsOther"));
+            Map.entry("title", "Title"),
+            Map.entry("depositorContactDetails", "Depositor contact details"),
+            Map.entry("eidcName", "EIDC name"),
+            Map.entry("transferMethod", "Transfer method"),
+            Map.entry("depositReference", "Deposit reference"),
+            Map.entry("topicCategories", "ISO 19115 topic categories keywords"),
+            Map.entry("keywordsTheme", "Science topic keywords"),
+            Map.entry("keywordsObservedProperty","Observed properties keywords"),
+            Map.entry("keywordsPlace", "Places keywords"),
+            Map.entry("keywordsProject", "Project keywords"),
+            Map.entry("keywordsInstrument", "Instrument keywords"),
+            Map.entry("keywordsOther", "Other keywords"));
 
         val toReturn = new ArrayList<MetadataCheck>();
+
+        // Build string to check for missing fields
+        val keysToCheck = new StringJoiner(",");
+        requiredKeys.forEach((key, value) -> keysToCheck.add("'" + key + "'"));
+        String joinedKeysToCheck = keysToCheck.toString();
+        joinedKeysToCheck = "$.[" + joinedKeysToCheck + "]";
+
         val toCheck = parsedDoc.read(
-                "$.['title', 'depositorContactDetails', 'eidcName', 'transferMethod', 'depositReference', 'topicCategories', 'keywordsTheme', 'keywordsObservedProperty', 'keywordsPlace', 'keywordsProject', 'keywordsInstrument', 'keywordsOther']",
+                joinedKeysToCheck,
                 new TypeRef<Map<String, String>>() {}
         );
 
-        for (var entry : requiredKeys.entrySet()) {
-            if (fieldIsMissing(toCheck, entry.getValue())) {
-                toReturn.add(new MetadataCheck(entry.getKey() + " is missing", ERROR));
+        requiredKeys.forEach((key, value) -> {
+            if (fieldIsMissing(toCheck, key)) {
+                toReturn.add(new MetadataCheck(value + " is missing", ERROR));
             }
-        };
+        });
 
         val depositReference = parsedDoc.read("$.depositReference", String.class);
         if (stringIsMissing(depositReference) || !depositReference.trim().matches("^"+jiraPrefix+"\\d{1,9}$")) {
