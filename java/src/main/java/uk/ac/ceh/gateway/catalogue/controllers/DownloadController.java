@@ -26,9 +26,9 @@ public class DownloadController {
     private final List<String> excludedUsers;
 
     private final List<Pattern> validUrls = List.of(
-        Pattern.compile("http(s?)://catalogue\\.ceh\\.ac\\.uk/download\\?fileIdentifier=.*"),
         Pattern.compile("https://order-eidc\\.ceh\\.ac\\.uk/resources/.{8}/order\\?*.*"),
-        Pattern.compile("https://data-package\\.ceh\\.ac\\.uk/.*")
+        Pattern.compile("https://data-package\\.ceh\\.ac\\.uk/.*"),
+        Pattern.compile("https://catalogue\\.ceh\\.ac\\.uk/datastore/eidchub/.*")
     );
 
     public DownloadController(
@@ -52,12 +52,13 @@ public class DownloadController {
             throw new RuntimeException("Invalid download url");
         }
         if(!excludedUsers.contains(user.getUsername()) && this.metricsService != null) {
+            log.info(String.format("Redirecting to %s", request.getRemoteAddr()));
             this.metricsService.recordDownload(uuid, request.getRemoteAddr());
         }
         return "redirect:" + redirectUrl;
     }
 
-    private boolean valid(String url){
+    protected boolean valid(String url){
         return this.validUrls
             .stream()
             .anyMatch(p -> p.matcher(url).matches());

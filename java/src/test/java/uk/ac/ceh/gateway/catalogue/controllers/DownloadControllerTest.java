@@ -14,12 +14,15 @@ import uk.ac.ceh.gateway.catalogue.services.MetricsService;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
 
 @Slf4j
 @WithMockCatalogueUser
@@ -75,5 +78,42 @@ public class DownloadControllerTest {
         //then
         verify(metricsService, never()).recordDownload(any(), any());
     }
+
+    @Test
+    public void allowValidUrls() {
+        //given
+        List<String> validUrls = List.of(
+            "https://catalogue.ceh.ac.uk/datastore/eidchub/abcdef12-3456-1234-0987-6876abcd1234",
+            "https://data-package.ceh.ac.uk/data/c63c543f-3e95-4c1c-8c69-12f942271813",
+            "https://order-eidc.ceh.ac.uk/resources/KBAHWTRW/order"
+        );
+        List<String> users = List.of("foo", "bar");
+        DownloadController controller = new DownloadController(metricsService, users);
+
+        //when
+        List<String> actual = validUrls.stream().filter(url -> controller.valid(url)).collect(Collectors.toList());
+
+        //then
+        assertThat("All urls should be valid", actual.size(), equalTo(3));
+    }
+
+    @Test
+    public void disallowInvalidUrls() {
+        //given
+        List<String> validUrls = List.of(
+            "https://www.google.com",
+            "https://subdomain.domain.ac.uk",
+            "https://invalid.com"
+        );
+        List<String> users = List.of("foo", "bar");
+        DownloadController controller = new DownloadController(metricsService, users);
+
+        //when
+        List<String> actual = validUrls.stream().filter(url -> controller.valid(url)).collect(Collectors.toList());
+
+        //then
+        assertThat("No urls should be valid", actual.size(), equalTo(0));
+    }
+
 }
 
