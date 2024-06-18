@@ -72,10 +72,10 @@ public class SolrIndex {
     private @Field List<String> supplementalName;
     private @Field String title;
     private @Field List<String> topic;
-    private @Field List<String> ukscapeResearchProject;
-    private @Field List<String> ukscapeResearchTheme;
-    private @Field List<String> ukscapeScienceChallenge;
-    private @Field List<String> ukscapeService;
+    private @Field List<String> ukcehResearchProject;
+    private @Field List<String> ukcehResearchTheme;
+    private @Field List<String> ukcehScienceChallenge;
+    private @Field List<String> ukcehService;
     private @Field Number version;
     private @Field List<String> view;
     // infrastructure catalogue

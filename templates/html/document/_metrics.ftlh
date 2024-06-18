@@ -1,15 +1,31 @@
-<div id="document-metrics">
-<#if incomingCitations?has_content && catalogue.id=="eidc">
-  <#if incomingCitationCount gt 0 >
-    <h2><a href="#section-citations">
-    <i class="fa-solid fa-book-open-reader pull-right"></i>
-    <span>${incomingCitationCount}</span> citation<#if incomingCitationCount gt 1>s</#if>
-    </a></h2>
+<#if incomingCitations?has_content || metrics??>
+
+  <#if metrics??>
+    <#assign
+      totalViews = metrics.totalViews(id)
+      totalDownloads = metrics.totalDownloads(id)>
   </#if>
+
+  <div class="usage">
+    <div class="metrics">
+      <#if incomingCitations?has_content && catalogue.id=="eidc">
+        <#if incomingCitationCount gt 0 >
+        <div class="metric">
+          <span><a href="#section-citations">${incomingCitationCount}</a></span> <a href="#section-citations">citation<#if incomingCitationCount gt 1>s</#if></a>
+        </div>
+        </#if>
+      </#if>
+      <#if totalDownloads?? && totalDownloads gt 0 >
+        <div class="metric">
+          <span>${totalDownloads}</span> download<#if totalDownloads != 1>s</#if>
+        </div>
+      </#if>
+      <#if totalViews?? && totalViews gt 0 >
+        <div class="metric">
+          <span>${totalViews}</span> view<#if totalViews != 1>s</#if>
+        </div>
+      </#if>
+    </div>
+    <p><a href="https://eidc.ac.uk/help/metrics" target="_blank" rel="noopener noreferrer" ><small>What does this mean?</small></a></p>
+  </div>
 </#if>
-<#if metrics??>
-  <#assign totalViews = metrics.totalViews(id) totalDownloads = metrics.totalDownloads(id)>
-  <h2>${totalViews} view<#if totalViews != 1>s</#if></h2>
-  <h2>${totalDownloads} download<#if totalDownloads != 1>s</#if></h2>
-</#if>
-</div>

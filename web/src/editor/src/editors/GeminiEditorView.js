@@ -6,7 +6,6 @@ import {
   AdditionalLinksView,
   ContactView,
   DatasetReferenceDateView,
-  DescriptiveKeywordView,
   DistributionFormatView,
   FundingView,
   SupplementalLinkView,
@@ -32,7 +31,6 @@ import {
 import {
   AccessLimitation,
   Contact,
-  DescriptiveKeyword,
   DistributionFormat,
   Funding, InspireTheme, KeywordTheme,
   MapDataSource,
@@ -132,13 +130,6 @@ export default EditorView.extend({
           modelAttribute: 'version',
           typeAttribute: 'number',
           label: 'Version'
-        }),
-
-        new CheckboxView({
-          model: this.model,
-          modelAttribute: 'hasOnlineServiceAgreement',
-          label: 'Does this record have an online service agreement?',
-          className: 'component eidconly'
         }),
 
         new ParentView({
@@ -791,20 +782,15 @@ This is only needed if you configure 'Styling=Classification' for your GeoTiff.<
       ]
     },
     {
-      label: '_old',
-      title: 'Unused properties that will soon be removed',
+      label: '_admin',
+      title: 'EIDC admin only',
       views: [
-        new ParentView({
+
+        new CheckboxView({
           model: this.model,
-          ModelType: DescriptiveKeyword,
-          modelAttribute: 'descriptiveKeywords',
-          label: 'Other keywords',
-          ObjectInputView: DescriptiveKeywordView,
-          multiline: true,
-          helpText: `
-<p>Keywords (preferably taken from a controlled vocabulary) categorising and describing the data resource.</p>
-<p>Good quality keywords help to improve the efficiency of search, making it easier to find relevant records.</p>\
-`
+          modelAttribute: 'hasOnlineServiceAgreement',
+          label: 'Does this record have an online service agreement?',
+          className: 'component eidconly'
         })
 
       ]
