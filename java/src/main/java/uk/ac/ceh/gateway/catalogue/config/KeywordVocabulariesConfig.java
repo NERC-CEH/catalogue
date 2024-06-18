@@ -246,7 +246,7 @@ public class KeywordVocabulariesConfig {
                 sparqlEndpoint,
                 "<http://vocabs.ceh.ac.uk/ukscape/>",
                 "?uri skos:broader <http://vocabs.ceh.ac.uk/ukscape/research-theme> . ?uri skos:prefLabel ?label .",
-                "Research theme",
+                "research-theme",
                 "Research themes",
                 catalogueIds
                 );
@@ -266,7 +266,7 @@ public class KeywordVocabulariesConfig {
                 sparqlEndpoint,
                 "<http://vocabs.ceh.ac.uk/ukscape/>",
                 "?uri skos:broader <http://vocabs.ceh.ac.uk/ukscape/research-project> . ?uri skos:prefLabel ?label .",
-                "research project",
+                "research-project",
                 "Research projects",
                 catalogueIds
                 );
@@ -286,7 +286,7 @@ public class KeywordVocabulariesConfig {
                 sparqlEndpoint,
                 "<http://vocabs.ceh.ac.uk/ukscape/>",
                 "?uri skos:broader <http://vocabs.ceh.ac.uk/ukscape/research-theme> . ?uri skos:prefLabel ?label .",
-                "research theme",
+                "research-theme",
                 "Research themes",
                 catalogueIds
                 );
@@ -306,7 +306,7 @@ public class KeywordVocabulariesConfig {
                 sparqlEndpoint,
                 "<http://vocabs.ceh.ac.uk/ukscape/>",
                 "?uri skos:broader <http://vocabs.ceh.ac.uk/ukscape/science-challenge> . ?uri skos:prefLabel ?label .",
-                "science challenge",
+                "science-challenge",
                 "Science challenges",
                 catalogueIds
                 );
