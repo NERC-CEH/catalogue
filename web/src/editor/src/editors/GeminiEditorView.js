@@ -6,7 +6,6 @@ import {
   AdditionalLinksView,
   ContactView,
   DatasetReferenceDateView,
-  DescriptiveKeywordView,
   DistributionFormatView,
   FundingView,
   SupplementalLinkView,
@@ -32,7 +31,6 @@ import {
 import {
   AccessLimitation,
   Contact,
-  DescriptiveKeyword,
   DistributionFormat,
   Funding, InspireTheme, KeywordTheme,
   MapDataSource,

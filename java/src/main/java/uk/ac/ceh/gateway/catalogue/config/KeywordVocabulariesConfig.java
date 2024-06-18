@@ -246,8 +246,8 @@ public class KeywordVocabulariesConfig {
                 sparqlEndpoint,
                 "<http://vocabs.ceh.ac.uk/ukscape/>",
                 "?uri skos:broader <http://vocabs.ceh.ac.uk/ukscape/research-theme> . ?uri skos:prefLabel ?label .",
-                "ukscape-research-theme",
-                "Research Themes",
+                "Research theme",
+                "Research themes",
                 catalogueIds
                 );
             }
@@ -259,15 +259,15 @@ public class KeywordVocabulariesConfig {
             SolrClient solrClient,
             @Value("${ukceh.sparql.endpoint}") String sparqlEndpoint
             ) {
-        val catalogueIds = List.of("ukscape");
+        val catalogueIds = List.of("ukscape", "ukceh");
         return new SparqlKeywordVocabulary(
                 restTemplate,
                 solrClient,
                 sparqlEndpoint,
                 "<http://vocabs.ceh.ac.uk/ukscape/>",
                 "?uri skos:broader <http://vocabs.ceh.ac.uk/ukscape/research-project> . ?uri skos:prefLabel ?label .",
-                "research-project",
-                "Research Projects",
+                "research project",
+                "Research projects",
                 catalogueIds
                 );
             }
@@ -279,15 +279,15 @@ public class KeywordVocabulariesConfig {
             SolrClient solrClient,
             @Value("${ukceh.sparql.endpoint}") String sparqlEndpoint
             ) {
-        val catalogueIds = List.of("ukscape");
+        val catalogueIds = List.of("ukscape", "ukceh");
         return new SparqlKeywordVocabulary(
                 restTemplate,
                 solrClient,
                 sparqlEndpoint,
                 "<http://vocabs.ceh.ac.uk/ukscape/>",
                 "?uri skos:broader <http://vocabs.ceh.ac.uk/ukscape/research-theme> . ?uri skos:prefLabel ?label .",
-                "research-theme",
-                "Research Themes",
+                "research theme",
+                "Research themes",
                 catalogueIds
                 );
             }
@@ -299,15 +299,15 @@ public class KeywordVocabulariesConfig {
             SolrClient solrClient,
             @Value("${ukceh.sparql.endpoint}") String sparqlEndpoint
             ) {
-        val catalogueIds = List.of("ukscape");
+        val catalogueIds = List.of("ukscape", "ukceh");
         return new SparqlKeywordVocabulary(
                 restTemplate,
                 solrClient,
                 sparqlEndpoint,
                 "<http://vocabs.ceh.ac.uk/ukscape/>",
                 "?uri skos:broader <http://vocabs.ceh.ac.uk/ukscape/science-challenge> . ?uri skos:prefLabel ?label .",
-                "science-challenge",
-                "Science Challenges",
+                "science challenge",
+                "Science challenges",
                 catalogueIds
                 );
             }
@@ -319,7 +319,7 @@ public class KeywordVocabulariesConfig {
             SolrClient solrClient,
             @Value("${ukceh.sparql.endpoint}") String sparqlEndpoint
             ) {
-        val catalogueIds = List.of("ukscape");
+        val catalogueIds = List.of("ukscape", "ukceh");
         return new SparqlKeywordVocabulary(
                 restTemplate,
                 solrClient,

@@ -94,47 +94,60 @@ footer {
 
 }
 
-.metrics {
+.usage {
     container-type: inline-size;
-    container-name: metrics;
+    container-name: usage;
 
-    >div {
+    p {
+        text-align: center;
+        white-space: nowrap;
+        margin-top: .65em;
+    }
+
+    div.metrics {
         display: flex;
-        gap: 0 1em;
 
         .metric {
-            padding: .5em 1em;
-            line-height: 1.2;
-            align-content: center;
+            display: flex;
             flex: 1;
-
-            span {
-                font-size: 1.75em;
-                margin-right: 3px;
-            }
+            align-items: center;
+            border-right: 1px solid lightgray;
+            padding: 0 1em;
 
             &:last-of-type {
                 border: none;
+            }
+
+            white-space:nowrap;
+
+            span {
+                font-size: 1.3em;
+            }
+        }
+    }
+
+}
+
+@container usage (width >=340px) {
+    div.metrics {
+        .metric {
+            flex-direction: row;
+            justify-content: center !important;
+
+            span {
+                margin-right: 5px;
             }
         }
     }
 }
 
-@container metrics (width >=340px) {
-    div {
-        flex-direction: row;
-    }
-
+@container usage (width < 340px) {
     .metric {
-        text-align: center;
-        border-right: 1px solid #DDD;
-        ;
-    }
-}
-
-@container metrics (width < 340px) {
-    div {
         flex-direction: column;
+
+        span {
+            font-size: 1.3em;
+        }
     }
 }
 
