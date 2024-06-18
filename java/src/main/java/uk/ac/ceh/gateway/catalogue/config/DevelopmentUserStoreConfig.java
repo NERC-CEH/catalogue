@@ -36,6 +36,8 @@ public class DevelopmentUserStoreConfig {
     // Catalogue specific roles
     public static final String ASSIST_EDITOR = "role_assist_editor";
     public static final String ASSIST_PUBLISHER = "role_assist_publisher";
+    public static final String UKCEH_EDITOR = "role_ukceh_editor";
+    public static final String UKCEH_PUBLISHER = "role_ukceh_publisher";
     public static final String CMP_EDITOR = "role_cmp_editor";
     public static final String CMP_PUBLISHER = "role_cmp_publisher";
     public static final String DATALABS_EDITOR = "role_datalabs_editor";
@@ -106,6 +108,22 @@ public class DevelopmentUserStoreConfig {
     public CatalogueUser cmpPublisher() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser("cmp-publisher","cmp-publisher@ceh.ac.uk");
         addUserToGroup(user, CMP_EDITOR, CMP_PUBLISHER);
+        userStore().addUser(user, "password");
+        return user;
+    }
+
+    @Bean
+    public CatalogueUser ukcehEditor() throws UsernameAlreadyTakenException {
+        val user = new CatalogueUser("ukceh-editor", "ukceh-editor@ceh.ac.uk");
+        addUserToGroup(user, UKCEH_EDITOR);
+        userStore().addUser(user, "password");
+        return user;
+    }
+
+    @Bean
+    public CatalogueUser ukcehPublisher() throws UsernameAlreadyTakenException {
+        val user = new CatalogueUser("ukceh-publisher","ukceh-publisher@ceh.ac.uk");
+        addUserToGroup(user, UKCEH_EDITOR, UKCEH_PUBLISHER);
         userStore().addUser(user, "password");
         return user;
     }
@@ -274,7 +292,15 @@ public class DevelopmentUserStoreConfig {
     @Bean
     public CatalogueUser superadmin() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser("superadmin", "superadmin@ceh.ac.uk");
-        addUserToGroup(user, CEH_GROUP_NAME, EIDC_EDITOR, EIDC_PUBLISHER, MAINTENANCE_ROLE, DATACITE_ROLE);
+        addUserToGroup(user, CEH_GROUP_NAME,
+        ASSIST_EDITOR, ASSIST_PUBLISHER,
+        EIDC_EDITOR, EIDC_PUBLISHER, UKCEH_EDITOR, UKCEH_PUBLISHER,
+        INFRASTRUCTURE_EDITOR, INFRASTRUCTURE_PUBLISHER,
+        NM_EDITOR, NM_PUBLISHER,
+        SA_EDITOR, SA_PUBLISHER,
+        UKEOF_EDITOR, UKEOF_PUBLISHER,
+        UKSCAPE_EDITOR, UKSCAPE_PUBLISHER,
+        MAINTENANCE_ROLE, DATACITE_ROLE);
         userStore().addUser(user, "password");
         return user;
     }
@@ -321,6 +347,8 @@ public class DevelopmentUserStoreConfig {
         groupStore.createGroup(CEH_GROUP_NAME, "");
         groupStore.createGroup(CMP_EDITOR, "");
         groupStore.createGroup(CMP_PUBLISHER, "");
+        groupStore.createGroup(UKCEH_EDITOR, "");
+        groupStore.createGroup(UKCEH_PUBLISHER, "");
         groupStore.createGroup(DATACITE_ROLE, "");
         groupStore.createGroup(DATALABS_EDITOR, "");
         groupStore.createGroup(DATALABS_PUBLISHER, "");

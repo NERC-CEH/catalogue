@@ -100,6 +100,23 @@ public class CatalogueServiceConfig {
                 .build(),
 
             Catalogue.builder()
+                .id("ukceh")
+                .title("UK Centre for Ecology & Hydrology")
+                .url("https://www.ceh.ac.uk")
+                .contactUrl("https://www.ceh.ac.uk/contact-us")
+                .logo("ukceh.png")
+                .facetKey("ukcehResearchTheme")
+                .facetKey("ukcehScienceChallenge")
+                .facetKey("ukcehResearchProject")
+                .facetKey("ukcehService")
+                .facetKey("recordType")
+                .documentType(GEMINI_TYPE)
+                .vocabularies(getCatalogueVocabularies(vocabularies, "ukceh"))
+                .fileUpload(false)
+                .build(),
+
+
+            Catalogue.builder()
                 .id("edge")
                 .title("EDgE")
                 .url("https://edge.climate.copernicus.eu")
@@ -258,18 +275,18 @@ public class CatalogueServiceConfig {
                 .url("https://uk-scape.ceh.ac.uk/resources/digital-assets-catalogue")
                 .contactUrl("https://ukscape.ceh.ac.uk/about/contact-us")
                 .logo("ukceh.png")
-                .facetKey("ukscapeResearchTheme")
-                .facetKey("ukscapeScienceChallenge")
-                .facetKey("ukscapeResearchProject")
+                .facetKey("ukcehResearchTheme")
+                .facetKey("ukcehScienceChallenge")
+                .facetKey("ukcehResearchProject")
+                .facetKey("ukcehService")
                 .facetKey("resourceType")
-                .facetKey("ukscapeService")
                 .facetKey("status")
                 .documentType(GEMINI_TYPE)
                 .documentType(CEH_MODEL_TYPE)
                 .documentType(CEH_MODEL_APPLICATION_TYPE)
                 .documentType(LINK_TYPE)
                 .fileUpload(false)
-                .vocabularies(getCatalogueVocabularies(vocabularies, "ukscape"))
+                .vocabularies(getCatalogueVocabularies(vocabularies, "ukceh"))
                 .build(),
 
             Catalogue.builder()

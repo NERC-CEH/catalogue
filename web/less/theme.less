@@ -115,7 +115,8 @@ footer {
             display: flex;
             gap: 1em;
             justify-content: space-between;
-            align-items:center;
+            align-items: center;
+            flex-wrap: wrap;
 
             img {
                 max-width: 180px;
@@ -155,8 +156,13 @@ footer {
             grid-column-start: 1;
             grid-column-end: 3;
         }
+    }
+}
 
 
+@media only screen and (max-width: 600px) {
+    .footer-logos {
+        justify-content: center;
     }
 }
 

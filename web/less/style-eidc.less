@@ -22,12 +22,12 @@
     --header-link-hover-background-colour: color-mix(in lab, var(--header-link-background-colour), black 5%);
     --header-link-colour: var(--eidc-blue);
     --header-link-hover-colour: var(--link-hover-colour);
-    --header-link-weight:600;
+    --header-link-weight: 600;
     --header-border-bottom-colour: var(--eidc-blue);
     --header-border-bottom-width: 8px;
     --header-logo-border: none;
     --nav-toggle-colour: var(--header-link-colour);
-    --ukceh-brand-display:none;
+    --ukceh-brand-display: none;
 
     --filter-background-colour: var(--eidc-blue);
     --filter-colour: white;
@@ -92,25 +92,52 @@ footer {
         }
     }
 
-    #document-metrics {
-        h2 {
-            margin: 0;
-            font-size: 1.25em;
-            border: none;
+}
 
-            i {
-                margin-right: 0.35em;
-                font-size: 1.85em;
-                color: @eidc-blue;
-            }
+.metrics {
+    container-type: inline-size;
+    container-name: metrics;
+
+    >div {
+        display: flex;
+        gap: 0 1em;
+
+        .metric {
+            padding: .5em 1em;
+            line-height: 1.2;
+            align-content: center;
+            flex: 1;
 
             span {
-                font-size: 1.85em;
-                color: @eidc-blue;
+                font-size: 1.75em;
+                margin-right: 3px;
+            }
+
+            &:last-of-type {
+                border: none;
             }
         }
     }
 }
+
+@container metrics (width >=340px) {
+    div {
+        flex-direction: row;
+    }
+
+    .metric {
+        text-align: center;
+        border-right: 1px solid #DDD;
+        ;
+    }
+}
+
+@container metrics (width < 340px) {
+    div {
+        flex-direction: column;
+    }
+}
+
 
 #document-upload-panel {
     a {
@@ -169,8 +196,10 @@ footer {
     .option-eidc {
         display: initial !important;
     }
+
     .component.eidconly {
-        display: block;
+        visibility: visible;
+        height: auto;
     }
 }
 

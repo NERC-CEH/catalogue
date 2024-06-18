@@ -53,10 +53,10 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
     @SuppressWarnings("unused")
     public static final String SA_TAXON_URL = "http://vocabs.ceh.ac.uk/esb/taxon";
 
-    private static final String UKSCAPE_RESEARCH_PROJECT_URL = "http://vocabs.ceh.ac.uk/ukscape/research-project";
-    private static final String UKSCAPE_RESEARCH_THEME_URL = "http://vocabs.ceh.ac.uk/ukscape/research-theme";
-    private static final String UKSCAPE_SCIENCE_CHALLENGE_URL = "http://vocabs.ceh.ac.uk/ukscape/science-challenge";
-    private static final String UKSCAPE_SERVICE_URL = "http://vocabs.ceh.ac.uk/ukscape/service";
+    private static final String UKCEH_RESEARCH_PROJECT_URL = "http://vocabs.ceh.ac.uk/ukscape/research-project";
+    private static final String UKCEH_RESEARCH_THEME_URL = "http://vocabs.ceh.ac.uk/ukscape/research-theme";
+    private static final String UKCEH_SCIENCE_CHALLENGE_URL = "http://vocabs.ceh.ac.uk/ukscape/science-challenge";
+    private static final String UKCEH_SERVICE_URL = "http://vocabs.ceh.ac.uk/ukscape/service";
 
     private final CodeLookupService codeLookupService;
     private final DocumentIdentifierService identifierService;
@@ -103,10 +103,10 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
             .setResourceType(codeLookupService.lookup("metadata.resourceType", document.getType()))
             .setState(getState(document))
             .setTitle(document.getTitle())
-            .setUkscapeResearchTheme(grab(getKeywordsFilteredByUrlFragment(document, UKSCAPE_RESEARCH_THEME_URL), Keyword::getValue))
-            .setUkscapeResearchProject(grab(getKeywordsFilteredByUrlFragment(document, UKSCAPE_RESEARCH_PROJECT_URL), Keyword::getValue))
-            .setUkscapeScienceChallenge(grab(getKeywordsFilteredByUrlFragment(document, UKSCAPE_SCIENCE_CHALLENGE_URL), Keyword::getValue))
-            .setUkscapeService(grab(getKeywordsFilteredByUrlFragment(document, UKSCAPE_SERVICE_URL), Keyword::getValue))
+            .setUkcehResearchTheme(grab(getKeywordsFilteredByUrlFragment(document, UKCEH_RESEARCH_THEME_URL), Keyword::getValue))
+            .setUkcehResearchProject(grab(getKeywordsFilteredByUrlFragment(document, UKCEH_RESEARCH_PROJECT_URL), Keyword::getValue))
+            .setUkcehScienceChallenge(grab(getKeywordsFilteredByUrlFragment(document, UKCEH_SCIENCE_CHALLENGE_URL), Keyword::getValue))
+            .setUkcehService(grab(getKeywordsFilteredByUrlFragment(document, UKCEH_SERVICE_URL), Keyword::getValue))
             .setView(getViews(document))
             ;
     }

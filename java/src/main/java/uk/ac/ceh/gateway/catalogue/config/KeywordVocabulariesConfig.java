@@ -254,7 +254,7 @@ public class KeywordVocabulariesConfig {
 
     @Profile("server:eidc")
     @Bean
-    public KeywordVocabulary ukscapeResearchProjectVocabulary(
+    public KeywordVocabulary ukcehResearchProjectVocabulary(
             @Qualifier("sparql") RestTemplate restTemplate,
             SolrClient solrClient,
             @Value("${ukceh.sparql.endpoint}") String sparqlEndpoint
@@ -266,7 +266,7 @@ public class KeywordVocabulariesConfig {
                 sparqlEndpoint,
                 "<http://vocabs.ceh.ac.uk/ukscape/>",
                 "?uri skos:broader <http://vocabs.ceh.ac.uk/ukscape/research-project> . ?uri skos:prefLabel ?label .",
-                "ukscape-research-project",
+                "research-project",
                 "Research Projects",
                 catalogueIds
                 );
@@ -274,7 +274,7 @@ public class KeywordVocabulariesConfig {
 
     @Profile("server:eidc")
     @Bean
-    public KeywordVocabulary ukscapeResearchThemeVocabulary(
+    public KeywordVocabulary ukcehResearchThemeVocabulary(
             @Qualifier("sparql") RestTemplate restTemplate,
             SolrClient solrClient,
             @Value("${ukceh.sparql.endpoint}") String sparqlEndpoint
@@ -286,7 +286,7 @@ public class KeywordVocabulariesConfig {
                 sparqlEndpoint,
                 "<http://vocabs.ceh.ac.uk/ukscape/>",
                 "?uri skos:broader <http://vocabs.ceh.ac.uk/ukscape/research-theme> . ?uri skos:prefLabel ?label .",
-                "ukscape-research-theme",
+                "research-theme",
                 "Research Themes",
                 catalogueIds
                 );
@@ -294,7 +294,7 @@ public class KeywordVocabulariesConfig {
 
     @Profile("server:eidc")
     @Bean
-    public KeywordVocabulary ukscapeScienceChallengeVocabulary(
+    public KeywordVocabulary ukcehScienceChallengeVocabulary(
             @Qualifier("sparql") RestTemplate restTemplate,
             SolrClient solrClient,
             @Value("${ukceh.sparql.endpoint}") String sparqlEndpoint
@@ -306,7 +306,7 @@ public class KeywordVocabulariesConfig {
                 sparqlEndpoint,
                 "<http://vocabs.ceh.ac.uk/ukscape/>",
                 "?uri skos:broader <http://vocabs.ceh.ac.uk/ukscape/science-challenge> . ?uri skos:prefLabel ?label .",
-                "ukscape-science-challenge",
+                "science-challenge",
                 "Science Challenges",
                 catalogueIds
                 );
@@ -314,7 +314,7 @@ public class KeywordVocabulariesConfig {
 
     @Profile("server:eidc")
     @Bean
-    public KeywordVocabulary ukscapeServiceVocabulary(
+    public KeywordVocabulary ukcehServiceVocabulary(
             @Qualifier("sparql") RestTemplate restTemplate,
             SolrClient solrClient,
             @Value("${ukceh.sparql.endpoint}") String sparqlEndpoint
@@ -326,7 +326,7 @@ public class KeywordVocabulariesConfig {
                 sparqlEndpoint,
                 "<http://vocabs.ceh.ac.uk/ukscape/>",
                 "?uri skos:broader <http://vocabs.ceh.ac.uk/ukscape/service> . ?uri skos:prefLabel ?label .",
-                "ukscape-service",
+                "service",
                 "Services",
                 catalogueIds
                 );
