@@ -88,7 +88,7 @@ public class CatalogueServiceConfig {
 
             Catalogue.builder()
                 .id("ukceh")
-                .title("UK Centre for Ecology & Hydrology")
+                .title("UKCEH digital asset register")
                 .url("https://www.ceh.ac.uk")
                 .contactUrl("https://www.ceh.ac.uk/contact-us")
                 .logo("ukceh.png")
