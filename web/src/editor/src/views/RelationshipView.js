@@ -77,7 +77,9 @@ export default ObjectInputView.extend({
     }
 
     this.options.forEach(option => {
-      return this.$('.relationshipList').append(this.optionTemplate(option))
+      if(option.value !== this.model.attributes.relation) {
+        return this.$('.relationshipList').append(this.optionTemplate(option))
+      }
     })
     return this
   }

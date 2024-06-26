@@ -7,9 +7,8 @@ export default _.template(`
     </div>
     <div class="col-sm-10 col-lg-10">
         <select data-name="relation" id="relationship<%= data.index %>Relation" class="relationshipList editor-input" value="<%= data.relation %>">
-          <option value="">Choose a relationship</option>
+          <option value=""><%= (data.relation) ? (data.options.filter(opt => data.relation === opt.value)[0].label) : "Choose a relationship"%></option>
         </select>
-
     </div>
 </div>
 <div class="row">
