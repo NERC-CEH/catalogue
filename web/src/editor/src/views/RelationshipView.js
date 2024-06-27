@@ -19,7 +19,7 @@ async function generateInformationString (target) {
 
 export default ObjectInputView.extend({
 
-  optionTemplate: _.template('<option value="<%= value %>"><%= label %></option>'),
+  optionTemplate: _.template('<option value="<%= value %>" <%=selected%> ><%= label %></option>'),
 
   async initialize (options) {
     this.template = template
@@ -76,10 +76,16 @@ export default ObjectInputView.extend({
       this.$('.relationshipSearch').addClass('hidden')
     }
 
+    // If there is no relationship, add an option that's used to indicate that the user needs to choose a relationship
+    if (!this.model.attributes.relation) {
+      this.options.unshift({ value: '', label: 'Choose a relationship', selected: 'selected' })
+    }
+
     this.options.forEach(option => {
-      if (option.value !== this.model.attributes.relation) {
-        return this.$('.relationshipList').append(this.optionTemplate(option))
-      }
+      // If relationship is defined OR it matches the "Choose a Relationship" option then make it the selected option in the UI
+      option.selected = (option.value === this.model.attributes.relation || option.value === '') ? 'selected' : ''
+
+      return this.$('.relationshipList').append(this.optionTemplate(option))
     })
     return this
   }
