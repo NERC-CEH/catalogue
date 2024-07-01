@@ -99,9 +99,9 @@ export default Backbone.View.extend({
   },
 
   save () {
-    let boundingBox = this.model.get("boundingBox")
+    const boundingBox = this.model.get('boundingBox')
     if (boundingBox && !boundingBox.hasBoundingBox()) {
-      this.model.unset("boundingBox")
+      this.model.unset('boundingBox')
     }
     if (this.model.save()) {
       Swal.fire({
