@@ -87,7 +87,14 @@ export default Backbone.View.extend({
         return feature
       }
     })
-    const featureInPoints = L.geoJson(pointFeatureCollection)
+    const featureInPoints = L.geoJson(pointFeatureCollection, {
+      onEachFeature: (feature, layer) => {
+        const title = feature.properties.title
+        const link = feature.properties.link
+        const content = `<h5><a href=${link}>${title}</a></h5>`
+        layer.bindPopup(content)
+      }
+    })
 
     if (numberOfLayers === 1) {
       this.pointDisplay(feature, studyArea, map)
