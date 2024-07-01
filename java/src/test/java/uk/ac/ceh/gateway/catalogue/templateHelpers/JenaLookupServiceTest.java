@@ -117,7 +117,7 @@ public class JenaLookupServiceTest {
         Model triples = jenaTdb.getDefaultModel();
         String geometryString = "{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[0,0]}}";
         String geometryString2 = "{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point2\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[1,1]}}";
-        String combinedGeometry = "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[0,0]}},{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point2\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[1,1]}}]}";
+        String combinedGeometry = "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point\",\"title\":\"Monitoring Facility\",\"link\":\"http://monitoringFacility\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[0,0]}},{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point2\",\"title\":\"Monitoring Facility 2\",\"link\":\"http://monitoringFacility2\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[1,1]}}]}";
         triples.add(createResource("http://monitoringFacility"), TITLE, "Monitoring Facility");
         triples.add(createResource("http://monitoringFacility"), BELONGS_TO, createResource("http://network1"));
         triples.add(createResource("http://monitoringFacility"), TYPE, "Monitoring Facility");

@@ -140,6 +140,15 @@ public class JenaLookupService {
         for (Link link : links) {
             if (!link.getGeometry().isEmpty()) {
                 JsonNode jsonNode = mapper.readTree(link.getGeometry());
+                ObjectNode propertiesNode;
+                if(jsonNode.has("properties")) {
+                    propertiesNode = (ObjectNode)jsonNode.get("properties");
+                } else {
+                    propertiesNode = mapper.createObjectNode();
+                    ((ObjectNode)jsonNode).set("properties", propertiesNode);
+                }
+                propertiesNode.put("title", link.getTitle());
+                propertiesNode.put("link", link.getHref());
                 features.add(jsonNode);
             }
         }
