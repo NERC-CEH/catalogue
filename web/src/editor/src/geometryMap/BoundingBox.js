@@ -81,28 +81,28 @@ export default Backbone.Model.extend({
       })
     }
 
-    if (isOutOfRange(attrs.westBoundLongitude, -180, 180)) {
+    if (attrs.westBoundLongitude && isOutOfRange(attrs.westBoundLongitude, -180, 180)) {
       errors.push({
         message:
                                         'West Bounding Longitude should be between -180&deg; and 180&deg;'
       })
     }
 
-    if (isOutOfRange(attrs.eastBoundLongitude, -180, 180)) {
+    if (attrs.eastBoundLongitude && isOutOfRange(attrs.eastBoundLongitude, -180, 180)) {
       errors.push({
         message:
                                         'East Bounding Longitude should be between -180&deg; and 180&deg;'
       })
     }
 
-    if (isOutOfRange(attrs.northBoundLatitude, -90, 90)) {
+    if (attrs.northBoundLatitude && isOutOfRange(attrs.northBoundLatitude, -90, 90)) {
       errors.push({
         message:
                                         'North Bounding Longitude should be between -90&deg; and 90&deg;'
       })
     }
 
-    if (isOutOfRange(attrs.southBoundLatitude, -90, 90)) {
+    if (attrs.southBoundLatitude && isOutOfRange(attrs.southBoundLatitude, -90, 90)) {
       errors.push({
         message:
                                         'South Bounding Longitude should be between -90&deg; and 90&deg;'
