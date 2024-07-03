@@ -1,5 +1,4 @@
 [#ftl]
-[#escape x as x?replace('"', '\\"')]
 WEB
   IMAGEPATH "/ms4w/tmp/ms_tmp/"
   IMAGEURL  "/ms_tmp/"
@@ -36,6 +35,5 @@ WEB
     "wms_style_title"                  "inspire_common:DEFAULT"
     "wms_sld_enabled"                  "false"
     "wms_getfeatureinfo_formatlist"    "text/xml,application/json"
-    END
+  END
 END
-[/#escape]
