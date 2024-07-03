@@ -8,18 +8,18 @@ export default SingleView.extend({
     SingleView.prototype.initialize.call(this, options)
     this.render()
 
-    const inputModel = new this.data.ModelType(this.model.get(this.data.modelAttribute))
-    this.listenTo(inputModel, 'change', this.updateMetadataModel)
+    this.inputModel = new this.data.ModelType(this.model.get(this.data.modelAttribute))
+    this.listenTo(this.inputModel, 'change', this.updateMetadataModel)
     this.listenTo(this.model, 'sync', function (model) {
-      inputModel.set(model.get(this.data.modelAttribute))
+      this.inputModel.set(model.get(this.data.modelAttribute))
     })
-
+    this.objectInputView = null
     const that = this
     $(document).ready(function () {
       /* eslint no-new: "off" */
-      new that.data.ObjectInputView(_.extend({}, that.data, {
+      that.objectInputView = new that.data.ObjectInputView(_.extend({}, that.data, {
         el: that.$('.dataentry'),
-        model: inputModel
+        model: that.inputModel
       }))
     })
   }
