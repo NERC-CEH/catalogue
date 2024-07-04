@@ -64,14 +64,12 @@ public class JenaIndexMetadataDocumentGenerator implements IndexGenerator<Metada
                         );
                     });
                 });
-            //TODO add publication status here
-            toReturn.add(
-                createStatement(
-                    me,
-                    IDENTIFIER,
-                    createPlainLiteral(document.getState())
-                )
-            );
+
+            Optional.ofNullable(emptyToNull(document.getState()))
+                .ifPresent(t -> toReturn.add(
+                    createStatement(me, STATUS, createPlainLiteral(t)))
+                );
+
         }
         return toReturn;
     }
