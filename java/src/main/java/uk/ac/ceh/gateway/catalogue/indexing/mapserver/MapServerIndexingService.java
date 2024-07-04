@@ -97,10 +97,16 @@ public class MapServerIndexingService extends AbstractIndexingService<MetadataDo
         }
     }
 
+    @SuppressWarnings("deprecation")
     private void changeFilePermissions(String filename) {
         // Set the file permissions to allow mapserver to read them
         try {
-            Runtime.getRuntime().exec(new String[]{format("chmod 644 %s", filename)});
+            /*
+            N.B. Attempted to upgrade this code as .exec(string) is deprecated
+            but .exec(new String[]{string}) fails, as cannot change file permissions
+            see EMC-167
+             */
+            Runtime.getRuntime().exec(format("chmod 644 %s", filename));
         } catch (IOException e) {
             throw new RuntimeException(format("Cannot change file permissions for: %s", filename), e);
         }

@@ -1,6 +1,4 @@
 [#ftl output_format="plainText"]
-[#escape x as x?replace('"', '\\"')]
-
 [#--
   Generates a layer block for the given datasource
   $data data source
@@ -114,4 +112,3 @@
     [/#if]
   END
 [/#macro]
-[/#escape]
