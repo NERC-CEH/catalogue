@@ -67,7 +67,7 @@ public class JenaIndexMetadataDocumentGenerator implements IndexGenerator<Metada
 
             Optional.ofNullable(emptyToNull(document.getState()))
                 .ifPresent(t -> toReturn.add(
-                    createStatement(me, STATUS, createPlainLiteral(t)))
+                    createStatement(me, PUBLICATION_STATUS, createPlainLiteral(t)))
                 );
 
         }
