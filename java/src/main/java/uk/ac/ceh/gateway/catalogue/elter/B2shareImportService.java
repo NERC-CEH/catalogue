@@ -385,11 +385,11 @@ public class B2shareImportService implements CatalogueImportService {
         // prep
         log.info("Running B2SHARE metadata import...");
         CatalogueUser importUser = new CatalogueUser("B2SHARE metadata import", "info@eudat.eu");
-        Map<String, String> localRecordList = null;
+        Map<String, String> localRecordList;
         int blacklistedRecords = 0;
         int newRecords = 0;
         int skippedRecords = 0;
-        int totalRecords = 0;
+        int totalRecords;
         int updatedRecords = 0;
 
         // get local records
@@ -442,6 +442,7 @@ public class B2shareImportService implements CatalogueImportService {
             }
             b2shareRecordsnextPageUrl = b2shareRecordsPage.path("links").path("next").asText();
         }
+        assert b2shareRecordsPage != null;
         totalRecords = b2shareRecordsPage.get("hits").get("total").asInt();
 
         // finished, log summary
