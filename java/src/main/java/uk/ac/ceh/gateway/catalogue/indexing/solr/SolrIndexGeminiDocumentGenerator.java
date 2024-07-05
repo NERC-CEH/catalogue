@@ -46,6 +46,7 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
     public SolrIndex generateIndex(GeminiDocument document) {
         return metadataDocumentSolrIndex
             .generateIndex(document)
+            .setPublicationDate(document.getPublicationDate())
             .setAltTitle(document.getAlternateTitles())
             .setAuthorAffiliation(grab(document.getAuthors(), ResponsibleParty::getOrganisationName))
             .setAuthorName(grab(document.getAuthors(), ResponsibleParty::getIndividualName))

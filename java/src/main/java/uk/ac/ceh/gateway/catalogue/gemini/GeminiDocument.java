@@ -15,6 +15,7 @@ import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.model.Supplemental;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreement;
 
+import java.time.ZoneId;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -103,6 +104,13 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
                 .orElse("Unknown");
     }
 
+    public Date getPublicationDate() {
+        return Optional.ofNullable(datasetReferenceDate)
+                .map(DatasetReferenceDate::getPublicationDate)
+                .map(date -> Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant()))
+                .orElse(null);
+    }
+    
     @Override
     public GeminiDocument setType(String type) {
         super.setType(type);

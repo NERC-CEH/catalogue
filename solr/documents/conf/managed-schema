@@ -68,6 +68,7 @@
       multiValued="true"
     />
 
+    <field name="publicationDate" type="pdate"/>
     <field name="_text_" type="text_general" stored="false"/>
     <field name="_version_" type="plong" indexed="false" stored="false"/>
     <field name="altTitle" type="text_general"/>
