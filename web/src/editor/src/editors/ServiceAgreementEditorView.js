@@ -380,6 +380,7 @@ export default EditorView.extend({
           label: 'Observed properties',
           ObjectInputView: KeywordVocabularyView,
           multiline: true,
+          className: 'hidden',
           helpText: 'Controlled keywords describing the observed properties/variables contained in this data resource'
         }),
         new ParentView({
@@ -388,6 +389,7 @@ export default EditorView.extend({
           label: 'Places',
           ObjectInputView: KeywordVocabularyView,
           multiline: true,
+          className: 'hidden',
           helpText: `\
         Controlled keywords describing geographic places pertinent to this resource.
         For example, named countries/regions in which the research was conducted.
@@ -399,6 +401,7 @@ export default EditorView.extend({
           label: 'Projects',
           ObjectInputView: KeywordVocabularyView,
           multiline: true,
+          className: 'hidden',
           helpText: 'Controlled keywords describing projects that fund/support the creation of this resource'
         }),
         new ParentView({
@@ -407,6 +410,7 @@ export default EditorView.extend({
           label: 'Instruments',
           ObjectInputView: KeywordVocabularyView,
           multiline: true,
+          className: 'hidden',
           helpText: 'Controlled keywords describing instruments/sensors used to generate this data'
         }),
         new ParentView({
