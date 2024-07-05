@@ -2,26 +2,23 @@ package uk.ac.ceh.gateway.catalogue.vocabularies;
 
 import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.IOException;
-import java.net.URL;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.StreamSupport;
-
 import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrServerException;
-
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.client.HttpStatusCodeException;
 
-import static java.lang.String.format;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.StreamSupport;
 
+import static java.lang.String.format;
 import static uk.ac.ceh.gateway.catalogue.TimeConstants.ONE_MINUTE;
 import static uk.ac.ceh.gateway.catalogue.TimeConstants.SEVEN_DAYS;
 
@@ -92,12 +89,12 @@ public class HttpKeywordVocabulary implements KeywordVocabulary {
     public void retrieve() {
         log.info("Retrieving vocabulary ({}) {}", vocabularyId, vocabularyName);
 
-        // not ideal always deleting because of the possibilty of errors
+        // not ideal always deleting because of the possibility of errors
         // but can add logic around this later
         solrClient.deleteByQuery(COLLECTION, "vocabId:" + vocabularyId);
         for (String endpoint : httpEndpoints){
             try {
-                val vocabularyNode = Optional.ofNullable(objectMapper.readTree(new URL(endpoint)))
+                val vocabularyNode = Optional.ofNullable(objectMapper.readTree(new URI(endpoint).toURL()))
                     .orElseThrow(() -> new KeywordVocabularyException("Cannot get response body"))
                     .at(resultsArrayPointer);
                 log.debug(vocabularyNode.toString());
@@ -124,7 +121,7 @@ public class HttpKeywordVocabulary implements KeywordVocabulary {
                         format("Cannot retrieve %s from vocab server, error: %s %s", vocabularyId, ex.getRawStatusCode(), ex.getResponseBodyAsString()),
                         ex
                         );
-            } catch (IOException ex) {
+            } catch (IOException | URISyntaxException ex) {
                 throw new KeywordVocabularyException(
                         format("Failed to communicate with Solr for %s", vocabularyId),
                         ex

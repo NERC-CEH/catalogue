@@ -2,16 +2,10 @@ package uk.ac.ceh.gateway.catalogue.elter;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.net.URL;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
@@ -22,6 +16,10 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
+
+import java.net.URI;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Profile("server:elter")
 @Slf4j
@@ -56,7 +54,7 @@ public class LinkedDocumentRetrievalService {
             // call Datacite
             String dataciteRecordUrl = dataciteApiRoot + "/" + inputDoi;
             log.info("GET {}", dataciteRecordUrl);
-            JsonNode dataciteJson = objectMapper.readTree(new URL(dataciteRecordUrl));
+            JsonNode dataciteJson = objectMapper.readTree(new URI(dataciteRecordUrl).toURL());
 
             // create and return ElterDocument
             ElterDocument document = new ElterDocument();

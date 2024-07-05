@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
-import java.net.URL;
+import java.net.URI;
 
 @Configuration
 @Profile("auth:datalabs")
@@ -20,6 +20,6 @@ public class OidcConfig {
     @Bean
     @SneakyThrows
     public JWKSource<SecurityContext> keySource() {
-        return new RemoteJWKSet<>(new URL(remoteJwks));
+        return new RemoteJWKSet<>(new URI(remoteJwks).toURL());
     }
 }
