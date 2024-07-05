@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
@@ -17,7 +17,7 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 @Profile("auth:oidc")
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
+@EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfigOidc {
 
     /**
@@ -35,10 +35,10 @@ public class SecurityConfigOidc {
             .anonymous() // Allow anonymous access
             .authenticationFilter(new AnonymousUserAuthenticationFilter("NotSure", CatalogueUser.PUBLIC_USER, "ROLE_ANONYMOUS"))
             .and()
-            .authorizeRequests((authorizeRequests) -> authorizeRequests
-                .mvcMatchers(HttpMethod.POST, "/**").fullyAuthenticated() // Require full authentication for POST requests
-                .mvcMatchers(HttpMethod.PUT, "/**").fullyAuthenticated() // Require full authentication for PUT requests
-                .mvcMatchers(HttpMethod.DELETE, "/**").fullyAuthenticated() // Require full authentication for DELETE requests
+            .authorizeHttpRequests((authorizeRequests) -> authorizeRequests
+                .requestMatchers(HttpMethod.POST, "/**").fullyAuthenticated() // Require full authentication for POST requests
+                .requestMatchers(HttpMethod.PUT, "/**").fullyAuthenticated() // Require full authentication for PUT requests
+                .requestMatchers(HttpMethod.DELETE, "/**").fullyAuthenticated() // Require full authentication for DELETE requests
             )
             .oauth2Login(oauth2 -> oauth2
                 .userInfoEndpoint(

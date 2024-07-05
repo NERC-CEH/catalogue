@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -22,7 +22,7 @@ import javax.servlet.Filter;
 @Profile("!auth:oidc")
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
+@EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfig {
 
     @Autowired
@@ -42,10 +42,10 @@ public class SecurityConfig {
             .anonymous()
                 .authenticationFilter(new AnonymousUserAuthenticationFilter("NotSure", CatalogueUser.PUBLIC_USER, "ROLE_ANONYMOUS"))
             .and()
-            .authorizeRequests()
-                .mvcMatchers(HttpMethod.POST, "/**").fullyAuthenticated()
-                .mvcMatchers(HttpMethod.PUT, "/**").fullyAuthenticated()
-                .mvcMatchers(HttpMethod.DELETE, "/**").fullyAuthenticated()
+            .authorizeHttpRequests()
+                .requestMatchers(HttpMethod.POST, "/**").fullyAuthenticated()
+                .requestMatchers(HttpMethod.PUT, "/**").fullyAuthenticated()
+                .requestMatchers(HttpMethod.DELETE, "/**").fullyAuthenticated()
             .and()
             .csrf()
                 .disable()
