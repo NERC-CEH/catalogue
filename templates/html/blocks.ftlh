@@ -270,8 +270,7 @@ Replace \n with line breaks and replace plain text http links with actionable on
     <#list value?split("\n") as line>
       <#list line?split("\\s",'r') as word>
         <#if word?matches("[\\(\\[]?http(s?)://[-a-zA-Z0-9@:%_+.~#?&/=]+[\\]\\)]?",'r')>
-          <#assign link = word?replace('^\\(', '', 'ri')?replace('\\)$', '', 'ri')>
-          <#assign link = word?replace('^\\[', '', 'ri')?replace('\\]$', '', 'ri')>
+          <#assign link = word?replace('^\\(', '', 'ri')?replace('\\)$', '', 'ri')?replace('^\\[', '', 'ri')?replace('\\]$', '', 'ri')>
           <a href="${link}" target="_blank" rel="noopener noreferrer">${word}</a>
         <#else>
           ${word}
