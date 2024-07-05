@@ -1,11 +1,12 @@
 package uk.ac.ceh.gateway.catalogue.model;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.http.MediaType;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 
 @Data
 @AllArgsConstructor

@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
+import jakarta.servlet.Filter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -15,8 +16,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import uk.ac.ceh.components.userstore.springsecurity.AnonymousUserAuthenticationFilter;
 import uk.ac.ceh.components.userstore.springsecurity.RestAuthenticationEntryPoint;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-
-import javax.servlet.Filter;
 
 @Slf4j
 @Profile("!auth:oidc")

@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
+import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.context.annotation.Configuration;
@@ -16,8 +17,6 @@ import uk.ac.ceh.gateway.catalogue.templateHelpers.GeminiExtractor;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 import uk.ac.ceh.gateway.catalogue.userdetails.SecurityUserInfo;
 import uk.ac.ceh.gateway.catalogue.wms.MapServerDetailsService;
-
-import javax.annotation.PostConstruct;
 
 @Configuration
 @AllArgsConstructor

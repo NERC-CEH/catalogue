@@ -1,12 +1,14 @@
 package uk.ac.ceh.gateway.catalogue.ef;
 
-import java.util.*;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.*;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlEnumValue;
+import jakarta.xml.bind.annotation.XmlType;
 import lombok.Data;
 import lombok.experimental.Accessors;
+
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @Accessors(chain = true)

@@ -1,8 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.ef;
 
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlType;
 import lombok.Data;
 import lombok.experimental.Accessors;
+
 import java.util.List;
 
 @Data

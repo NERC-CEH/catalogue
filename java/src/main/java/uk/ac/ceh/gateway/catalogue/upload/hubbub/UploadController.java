@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.upload.hubbub;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +23,6 @@ import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
 
 import static java.lang.String.format;

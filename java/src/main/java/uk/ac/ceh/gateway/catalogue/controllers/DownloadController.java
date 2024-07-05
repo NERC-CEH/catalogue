@@ -1,7 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.QueryParam;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,6 +8,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.services.MetricsService;
@@ -44,7 +44,7 @@ public class DownloadController {
     public String download(
         @ActiveUser CatalogueUser user,
         @PathVariable("uuid") String uuid,
-        @QueryParam("url") String url,
+        @RequestParam("url") String url,
         HttpServletRequest request
     ) {
         String redirectUrl = URLDecoder.decode(url, StandardCharsets.UTF_8);
