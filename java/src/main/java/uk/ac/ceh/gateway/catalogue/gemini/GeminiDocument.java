@@ -107,10 +107,10 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     public Date getPublicationDate() {
         return Optional.ofNullable(datasetReferenceDate)
                 .map(DatasetReferenceDate::getPublicationDate)
-                .map(date -> Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant()))
+                .map(date -> Date.from(date.atStartOfDay(ZoneId.of("UTC")).toInstant()))
                 .orElse(null);
     }
-    
+
     @Override
     public GeminiDocument setType(String type) {
         super.setType(type);

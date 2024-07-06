@@ -24,6 +24,7 @@ import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadService;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -94,7 +95,8 @@ class EidcApplicationContextTest {
         gemini.setTitle("Test");
         gemini.setType("dataset");
         val outputStream = new ByteArrayOutputStream();
-        val expected = "{\"type\":\"dataset\",\"title\":\"Test\",\"resourceType\":{\"value\":\"dataset\"},\"notGEMINI\":false,\"resourceStatus\":\"Unknown\",\"incomingCitationCount\":0}";
+        String now = LocalDate.now().toString();
+        val expected = "{\"type\":\"dataset\",\"title\":\"Test\",\"resourceType\":{\"value\":\"dataset\"},\"notGEMINI\":false,\"resourceStatus\":\"Unknown\",\"incomingCitationCount\":0,\"publicationDate\": \""+now+"\"}";
         //when
         val documentWritingService = applicationContext.getBean(DocumentWritingService.class);
         assertNotNull(documentWritingService);

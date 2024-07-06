@@ -9,6 +9,7 @@ export default _.template(`
                 <a data-toggle="collapse" title="Click for help" href="#help-<%= data.modelAttribute %>" data-parent="#editor"><i class="fa-regular fa-circle-question"></i></a>
             <% } %>
         </label>
+        <div id="template-add-on"></div>
         <div id="help-<%= data.modelAttribute %>" class="editor-help">
             <%= data.helpText %>
         </div>

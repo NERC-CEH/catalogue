@@ -11,7 +11,7 @@ export default Backbone.Model.extend({
 
     const errors = []
 
-    if (!organisationIdentifier?.match(rorRegEx)) {
+    if (organisationIdentifier && !organisationIdentifier?.match(rorRegEx)) {
       errors.push({ message: 'That RoR is invalid' })
     }
 
