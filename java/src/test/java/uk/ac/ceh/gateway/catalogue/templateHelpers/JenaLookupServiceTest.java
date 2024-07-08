@@ -43,6 +43,7 @@ public class JenaLookupServiceTest {
         val collection = "https://collection";
         val dataset1 = "http://dataset1";
         val dataset2 = "http://dataset2";
+        val other = "http://other";
         Model triples = jenaTdb.getDefaultModel();
         triples.add(createResource(dataset1), TITLE, "Dataset 1");
         triples.add(createResource(dataset1), METADATA_STATUS, "published");
@@ -52,7 +53,8 @@ public class JenaLookupServiceTest {
         triples.add(createResource(dataset2), METADATA_STATUS, "published");
         triples.add(createResource(dataset2), TYPE, "dataset");
         triples.add(createResource(dataset2), EIDC_MEMBER_OF, createResource(collection));
-        triples.add(createResource("http://other"), REFERENCES, createResource(collection));
+        triples.add(createResource(other), REFERENCES, createResource(collection));
+        triples.add(createResource(other), METADATA_STATUS, "published");
 
         //when
         List<Link> actual = service.incomingEidcRelations(collection);
@@ -225,6 +227,7 @@ public class JenaLookupServiceTest {
         triples.add(createResource("http://dataset1"), TITLE, "Dataset 1");
         triples.add(createResource("http://dataset1"), METADATA_STATUS, "published");
         triples.add(createResource("http://model"), REFERENCES, createResource("http://dataset1"));
+        triples.add(createResource("http://model"), METADATA_STATUS, "published");
         triples.add(createResource("http://dataset2"), TITLE, "Dataset 2");
         triples.add(createResource("http://dataset2"), METADATA_STATUS, "published");
         triples.add(createResource("http://dataset2"), TYPE, "dataset");
