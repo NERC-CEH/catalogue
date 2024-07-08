@@ -7,7 +7,7 @@
 		<h2>
 		This ${recordType} contains <#if rel_hasMember?size gt 1>these<#else>this</#if> resource<#if rel_hasMember?size gt 1>s</#if></h2>
 
-		<#list rel_hasMember?sort_by("title")>
+		<#list rel_hasMember>
 			<div class="cards">
 			<#items as item>
 				<#if item.associationType = 'dataset' ||  item.associationType = 'nonGeographicDataset' ||  item.associationType = 'signpost'>
