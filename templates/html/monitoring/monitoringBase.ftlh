@@ -1,5 +1,6 @@
 <#import "../skeleton.ftlh" as skeleton>
 <#import "../blocks.ftlh" as b>
+<#import "../../functions.ftlh" as func>
 
 <#macro base>
   <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) footer=true>
@@ -19,6 +20,14 @@
               </small>
               ${title}
             </h1>
+          </#if>
+
+          <#if permission.userCanEditRestrictedFields(metadata.catalogue)>
+            <div class="section">
+              <div class="container">
+                <#include "../document/_metadataqualityAlert.ftlh">
+              </div>
+            </div>
           </#if>
 
           <#if description?? && description?has_content>
@@ -92,6 +101,13 @@
           </div>
 
         </div>
+        <#if permission.userCanEditRestrictedFields(metadata.catalogue)>
+          <div class="section">
+            <div class="container">
+              <#include "../document/_metadataqualityReport.ftlh">
+            </div>
+          </div>
+        </#if>
       </div>
     </#if>
     </div>
