@@ -60,8 +60,8 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
                 toReturn.add(createStatement(me, EIDC_USES, createResource(r)))
             );
 
-        toReturn.add(createStatement(me, DATE_AVAILABLE, createTypedLiteral(document.getPublicationDate().toString())));
-        toReturn.add(createStatement(me, PUBLICATION_STATUS, createTypedLiteral(document.getResourceStatus())));
+        toReturn.add(createStatement(me, PUBLICATION_DATE, createTypedLiteral(document.getPublicationDate().toString())));
+        toReturn.add(createStatement(me, RESOURCE_STATUS, createTypedLiteral(document.getResourceStatus())));
 
         return toReturn;
     }
