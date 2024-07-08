@@ -8,15 +8,18 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
+import uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes;
 import uk.ac.ceh.gateway.catalogue.TimeConstants;
 import uk.ac.ceh.gateway.catalogue.exports.CatalogueExportService;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.nio.charset.StandardCharsets;
 
 import static uk.ac.ceh.gateway.catalogue.util.Headers.withBasicAuth;
 
@@ -76,7 +79,7 @@ public class FusekiExportService implements CatalogueExportService {
         try {
             // PUT the data - this works if there's no graph and if there's an existing graph, in which case it's updated
             HttpHeaders headers = withBasicAuth(fusekiUsername, fusekiPassword);
-            headers.add(HttpHeaders.CONTENT_TYPE, "text/turtle");
+            headers.setContentType(new MediaType(CatalogueMediaTypes.RDF_TTL, StandardCharsets.UTF_8));
             HttpEntity<String> request = new HttpEntity<>(data, headers);
             restTemplate.put(serverUrl, request);
         } catch (RestClientResponseException ex) {

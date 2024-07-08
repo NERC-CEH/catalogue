@@ -74,8 +74,9 @@ public class JenaIndexMetadataDocumentGeneratorTest {
         List<Statement> actual = generator.generateIndex(document);
 
         //Then
-        assertThat("Statement list should be empty", actual.size(), equalTo(1));
+        assertThat("Statement list should have 2 entries", actual.size(), equalTo(2));
         assertThat("Statement Object should be the identifier", actual.get(0).getLiteral().getString(), equalTo("1234-5678"));
+        assertThat("Statement Object should be the status", actual.get(1).getLiteral().getString(), equalTo("draft"));
     }
 
     @Test
@@ -92,6 +93,6 @@ public class JenaIndexMetadataDocumentGeneratorTest {
         log.info("statements: {}", actual);
 
         //then
-        assertThat(actual.size(), equalTo(2));
+        assertThat(actual.size(), equalTo(3));
     }
 }

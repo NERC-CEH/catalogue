@@ -4,7 +4,7 @@
   "type": "monitoringFacility",
   "title": "OSDP Monitoring Facility",
   "description": "Monitoring Facility description",
-  "facilityType": "A type of monitoring facility",
+  "facilityType": {"value": "A type of monitoring facility"},
   "keywords": [
     {"value": "Keyword 0", "uri": "http://example.com/keyword0"},
     {"value": "Keyword 1", "uri": "http://example.com/keyword1"},
