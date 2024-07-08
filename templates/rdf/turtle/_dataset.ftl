@@ -15,6 +15,8 @@ dct:type dcmitype:Dataset ;
     dct:bibliographicCitation "${citation.authors?join(' ,')} (${citation.year?string("0")}). ${citation.title}. ${citation.publisher}. ${citation.url?trim}" ;
 </#if>
 
+ <#include "_rights.ftl"> <#--rights at DATASET level-->
+
 <#if keywordsTheme?has_content>
   dct:theme <@keywordList keywordsTheme/> ;
 </#if>
@@ -27,7 +29,7 @@ dcat:distribution [
       <${download.url?trim}> <#sep>,
     </#items>
     ;
-    <#include "_rights.ftl">
+    <#include "_rights.ftl"> <#--rights at DISTRIBUTION level-->
     <#list distributionFormats>
     dct:format
       <#items as format>
