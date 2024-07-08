@@ -103,7 +103,7 @@ public class JenaLookupService {
     }
 
     public List<Link> datasets(String uri) {
-        return links(uri, "PREFIX dc: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> SELECT ?node ?title ?publicationStatus ?type ?rel WHERE {{{?me ?rel ?node; dc:references ?node.}UNION{?node ?rel ?me; dc:references ?me.} ?node dc:title ?title; dc:type ?type; dc:type 'dataset'.}UNION{?me ?rel ?node; dc:references ?node. ?node dc:source _:n . _:n dc:title ?title; pso:PublicationStatus ?publicationStatus; dc:type ?type; dc:type 'dataset'.}}");
+        return links(uri, "PREFIX dc: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> SELECT ?node ?title ?publicationStatus ?type ?rel WHERE {{{?me ?rel ?node; dc:references ?node.}UNION{?node ?rel ?me; dc:references ?me.} ?node dc:title ?title; pso:PublicationStatus ?publicationStatus; dc:type ?type; dc:type 'dataset'.}UNION{?me ?rel ?node; dc:references ?node. ?node dc:source _:n . _:n dc:title ?title; pso:PublicationStatus ?publicationStatus; dc:type ?type; dc:type 'dataset'.}}");
     }
 
     public List<Link> relationships(String uri, String relation) {
@@ -288,7 +288,7 @@ public class JenaLookupService {
                     "WHERE { " +
                     "  ?node ?rel ?me ; " +
                     "  <http://purl.org/dc/terms/title> ?title ; " +
-                    "  pso:PublicationStatus ?publicationStatus ; " +
+                    "  <http://purl.org/spar/pso/PublicationStatus> ?publicationStatus ; " +
                     "  <http://purl.org/dc/terms/type>  ?type . " +
                     "FILTER(strstarts(str(?rel), 'https://vocabs.ceh.ac.uk/eidc#'))" +
                     "}";

@@ -46,12 +46,15 @@ public class JenaLookupServiceTest {
         val other = "http://other";
         Model triples = jenaTdb.getDefaultModel();
         triples.add(createResource(dataset1), TITLE, "Dataset 1");
+        triples.add(createResource(dataset1), METADATA_STATUS, "published");
         triples.add(createResource(dataset1), TYPE, "dataset");
         triples.add(createResource(dataset1), EIDC_MEMBER_OF, createResource(collection));
         triples.add(createResource(dataset2), TITLE, "Dataset 2");
+        triples.add(createResource(dataset2), METADATA_STATUS, "published");
         triples.add(createResource(dataset2), TYPE, "dataset");
         triples.add(createResource(dataset2), EIDC_MEMBER_OF, createResource(collection));
         triples.add(createResource(other), REFERENCES, createResource(collection));
+        triples.add(createResource(other), METADATA_STATUS, "published");
 
         //when
         List<Link> actual = service.incomingEidcRelations(collection);
@@ -67,8 +70,8 @@ public class JenaLookupServiceTest {
         Model triples = jenaTdb.getDefaultModel();
         triples.add(createResource("http://dataset1"), TITLE, "Dataset 1");
         triples.add(createResource("http://dataset1"), METADATA_STATUS, "published");
-        triples.add(createResource("http://monitoringActivity"), OSDP_PRODUCES, createResource("http://dataset1"));
         triples.add(createResource("http://dataset1"), TYPE, "dataset");
+        triples.add(createResource("http://monitoringActivity"), OSDP_PRODUCES, createResource("http://dataset1"));
 
         //When
         List<Link> actual = service.relationships("http://monitoringActivity", OSDP_PRODUCES.toString());
@@ -222,8 +225,11 @@ public class JenaLookupServiceTest {
         //Given
         Model triples = jenaTdb.getDefaultModel();
         triples.add(createResource("http://dataset1"), TITLE, "Dataset 1");
+        triples.add(createResource("http://dataset1"), METADATA_STATUS, "published");
         triples.add(createResource("http://model"), REFERENCES, createResource("http://dataset1"));
+        triples.add(createResource("http://model"), METADATA_STATUS, "published");
         triples.add(createResource("http://dataset2"), TITLE, "Dataset 2");
+        triples.add(createResource("http://dataset2"), METADATA_STATUS, "published");
         triples.add(createResource("http://dataset2"), TYPE, "dataset");
         triples.add(createResource("http://dataset2"), REFERENCES, createResource("http://model"));
 
