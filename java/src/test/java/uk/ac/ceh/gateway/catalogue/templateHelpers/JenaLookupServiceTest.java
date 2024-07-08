@@ -248,6 +248,7 @@ public class JenaLookupServiceTest {
         triples.add(createResource("http://link1"), METADATA_STATUS, "published");
         triples.add(createResource("http://link1"), SOURCE, createResource("http://dataset1"));
         triples.add(createResource("http://model"), REFERENCES, createResource("http://link1"));
+        triples.add(createResource("http://model"), METADATA_STATUS, "published");
         triples.add(createResource("http://dataset1"), TITLE, "Dataset 1");
         triples.add(createResource("http://dataset1"), METADATA_STATUS, "published");
         triples.add(createResource("http://dataset1"), TYPE, "dataset");
