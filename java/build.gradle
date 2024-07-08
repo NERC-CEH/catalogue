@@ -20,6 +20,7 @@ bootJar {
 
 compileJava {
     options.compilerArgs.add '-Xlint:deprecation'
+    options.compilerArgs.add '-parameters'
     options.incremental = true
 }
 

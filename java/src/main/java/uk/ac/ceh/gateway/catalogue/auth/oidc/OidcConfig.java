@@ -1,7 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.auth.oidc;
 
 import com.nimbusds.jose.jwk.source.JWKSource;
-import com.nimbusds.jose.jwk.source.RemoteJWKSet;
+import com.nimbusds.jose.jwk.source.JWKSourceBuilder;
 import com.nimbusds.jose.proc.SecurityContext;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +20,8 @@ public class OidcConfig {
     @Bean
     @SneakyThrows
     public JWKSource<SecurityContext> keySource() {
-        return new RemoteJWKSet<>(new URI(remoteJwks).toURL());
+        return JWKSourceBuilder
+            .create(new URI(remoteJwks).toURL())
+            .build();
     }
 }

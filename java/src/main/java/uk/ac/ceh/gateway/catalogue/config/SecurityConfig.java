@@ -11,11 +11,13 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import uk.ac.ceh.components.userstore.springsecurity.AnonymousUserAuthenticationFilter;
-import uk.ac.ceh.components.userstore.springsecurity.RestAuthenticationEntryPoint;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @Slf4j
 @Profile("!auth:oidc")
@@ -31,25 +33,21 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-            .cors()
-            .and()
-            .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and()
+        return http
+            .cors(withDefaults())
+            .sessionManagement(sessionManagement ->
+                sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilter(filter)
-            .anonymous()
-                .authenticationFilter(new AnonymousUserAuthenticationFilter("NotSure", CatalogueUser.PUBLIC_USER, "ROLE_ANONYMOUS"))
-            .and()
-            .authorizeHttpRequests()
-                .requestMatchers(HttpMethod.POST, "/**").fullyAuthenticated()
-                .requestMatchers(HttpMethod.PUT, "/**").fullyAuthenticated()
-                .requestMatchers(HttpMethod.DELETE, "/**").fullyAuthenticated()
-            .and()
-            .csrf()
-                .disable()
-            .exceptionHandling()
-            .authenticationEntryPoint(new RestAuthenticationEntryPoint());
-        return http.build();
+            .anonymous(anonymous ->
+                anonymous.authenticationFilter(new AnonymousUserAuthenticationFilter("NotSure", CatalogueUser.PUBLIC_USER, "ROLE_ANONYMOUS"))
+            )
+            .authorizeHttpRequests(authorizeRequests -> {
+                authorizeRequests.requestMatchers(HttpMethod.POST, "/**").fullyAuthenticated();
+                authorizeRequests.requestMatchers(HttpMethod.PUT, "/**").fullyAuthenticated();
+                authorizeRequests.requestMatchers(HttpMethod.DELETE, "/**").fullyAuthenticated();
+                authorizeRequests.anyRequest().authenticated();
+            })
+            .csrf(AbstractHttpConfigurer::disable)
+            .build();
     }
 }
