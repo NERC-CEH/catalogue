@@ -4,6 +4,7 @@ import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
@@ -34,6 +35,8 @@ public class SearchController {
     private final CatalogueService catalogueService;
     private final Searcher searcher;
 
+    @Value("${documents.baseUri}") String baseUri;
+
     public SearchController(
         CatalogueService catalogueService,
         Searcher searcher
@@ -49,7 +52,7 @@ public class SearchController {
             HttpServletRequest request
     ) {
         val defaultCatalogueId = catalogueService.defaultCatalogue().getId();
-        val redirectUrl = String.format("/%s/documents", defaultCatalogueId);
+        val redirectUrl = String.format("%s/%s/documents", baseUri, defaultCatalogueId);
         log.info("Redirecting to {}", redirectUrl);
         return "redirect:" + redirectUrl;
     }

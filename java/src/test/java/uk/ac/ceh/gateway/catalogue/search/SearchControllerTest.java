@@ -13,6 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
@@ -48,6 +49,7 @@ import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.UNPR
     controllers=SearchController.class,
     properties="spring.freemarker.template-loader-path=file:../templates"
 )
+@TestPropertySource(locations="classpath:test.properties")
 class SearchControllerTest {
     @MockBean private SolrClient solrClient;
     @MockBean private CatalogueService catalogueService;
@@ -167,7 +169,7 @@ class SearchControllerTest {
         //when
         mvc.perform(get("/documents"))
             .andExpect(status().is3xxRedirection())
-            .andExpect(header().string("location", "/default/documents"));
+            .andExpect(header().string("location", "http://localhost:8080/default/documents"));
 
         //then
         verifyNoInteractions(solrClient, facetFactory);
