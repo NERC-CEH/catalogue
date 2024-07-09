@@ -6,11 +6,13 @@ import lombok.experimental.Accessors;
 import org.apache.solr.client.solrj.beans.Field;
 
 import java.util.List;
+import java.util.Date;
 
 @Data
 @Accessors(chain=true)
 public class SolrIndex {
     protected static final int MAX_DESCRIPTION_CHARACTER_LENGTH = 265;
+    private @Field Date publicationDate;
     private @Field List<String> altTitle;
     private @Field List<String> assistResearchThemes;
     private @Field List<String> assistTopics;

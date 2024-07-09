@@ -44,12 +44,11 @@ class JenaIndexGeminiDocumentGeneratorTest {
         List<Statement> actual = generator.generateIndex(document);
 
         //Then
-        assertThat("Should be two identifier statements", actual.size(), equalTo(5));
+        assertThat("Should be two identifier statements", actual.size(), equalTo(4));
         assertThat("Statement literal should be identifier", actual.get(0).getLiteral().getString(), equalTo("t"));
         assertThat("Statement literal should be status", actual.get(1).getLiteral().getString(), equalTo("draft"));
         assertThat("Statement literal should be identifier", actual.get(2).getLiteral().getString(), equalTo("t"));
-        assertThat("Statement literal should be available", actual.get(3).getLiteral().getString(), equalTo(LocalDate.now().toString()));
-        assertThat("Statement literal should be status", actual.get(4).getLiteral().getString(), equalTo("Unknown"));
+        assertThat("Statement literal should be status", actual.get(3).getLiteral().getString(), equalTo("Unknown"));
         // No resource identifiers added to statements
     }
 }
