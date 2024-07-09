@@ -35,18 +35,18 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
             .cors(withDefaults())
-            .sessionManagement(sessionManagement ->
-                sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .sessionManagement(sessionManagement -> sessionManagement
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilter(filter)
-            .anonymous(anonymous ->
-                anonymous.authenticationFilter(new AnonymousUserAuthenticationFilter("NotSure", CatalogueUser.PUBLIC_USER, "ROLE_ANONYMOUS"))
+            .anonymous(anonymous -> anonymous
+                .authenticationFilter(new AnonymousUserAuthenticationFilter("NotSure", CatalogueUser.PUBLIC_USER, "ROLE_ANONYMOUS"))
             )
-            .authorizeHttpRequests(authorizeRequests -> {
-                authorizeRequests.requestMatchers(HttpMethod.POST, "/**").fullyAuthenticated();
-                authorizeRequests.requestMatchers(HttpMethod.PUT, "/**").fullyAuthenticated();
-                authorizeRequests.requestMatchers(HttpMethod.DELETE, "/**").fullyAuthenticated();
-                authorizeRequests.anyRequest().authenticated();
-            })
+            .authorizeHttpRequests(authorizeRequests -> authorizeRequests
+                .requestMatchers(HttpMethod.POST, "/**").fullyAuthenticated()
+                .requestMatchers(HttpMethod.PUT, "/**").fullyAuthenticated()
+                .requestMatchers(HttpMethod.DELETE, "/**").fullyAuthenticated()
+                .anyRequest().permitAll()
+            )
             .csrf(AbstractHttpConfigurer::disable)
             .build();
     }

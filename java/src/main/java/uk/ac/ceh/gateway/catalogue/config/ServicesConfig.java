@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.jena.tdb.TDBFactory;
 import org.apache.solr.client.solrj.SolrClient;
-import org.apache.solr.client.solrj.impl.Http2SolrClient;
+import org.apache.solr.client.solrj.impl.HttpJdkSolrClient;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -251,6 +251,6 @@ public class ServicesConfig {
     public SolrClient solrClient(
         @Value("${solr.server.url}") String solrServerUrl
     ){
-        return new Http2SolrClient.Builder(solrServerUrl).build();
+        return new HttpJdkSolrClient.Builder(solrServerUrl).build();
     }
 }

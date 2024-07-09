@@ -41,7 +41,7 @@ RUN chown spring:spring -R /var/ceh-catalogue && chown spring:spring -R /var/upl
 VOLUME ["/var/ceh-catalogue/datastore", "/var/ceh-catalogue/dropbox", "/var/ceh-catalogue/mapfiles", "/var/upload/datastore", "/var/ceh-catalogue/metrics-db"]
 EXPOSE 8080 8081
 USER spring
-ENTRYPOINT ["java", "org.springframework.boot.loader.JarLauncher"]
+ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher"]
 HEALTHCHECK --start-period=30s CMD curl --no-progress-meter --output - --fail http://localhost:8081/actuator/health || exit 1
 
 # Create Datalabs image

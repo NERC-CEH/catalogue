@@ -34,13 +34,14 @@ public class SecurityConfigOidc {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
             .cors(withDefaults()) // Enable Cross-Origin Resource Sharing (CORS)
-            .anonymous(anonymous -> // Allow anonymous access
-                anonymous.authenticationFilter(new AnonymousUserAuthenticationFilter("NotSure", CatalogueUser.PUBLIC_USER, "ROLE_ANONYMOUS"))
+            .anonymous(anonymous -> anonymous
+                .authenticationFilter(new AnonymousUserAuthenticationFilter("NotSure", CatalogueUser.PUBLIC_USER, "ROLE_ANONYMOUS"))
             )
             .authorizeHttpRequests((authorizeRequests) -> authorizeRequests
                 .requestMatchers(HttpMethod.POST, "/**").fullyAuthenticated() // Require full authentication for POST requests
                 .requestMatchers(HttpMethod.PUT, "/**").fullyAuthenticated() // Require full authentication for PUT requests
                 .requestMatchers(HttpMethod.DELETE, "/**").fullyAuthenticated() // Require full authentication for DELETE requests
+                .anyRequest().permitAll()
             )
             .oauth2Login(oauth2 -> oauth2
                 .userInfoEndpoint(
