@@ -38,7 +38,19 @@
 							<#if contact.country?has_content>
 							<gmd:country><gco:CharacterString>${contact.country}</gco:CharacterString></gmd:country>
 							</#if>
-							<gmd:electronicMailAddress><gco:CharacterString>enquiries@ceh.ac.uk</gco:CharacterString></gmd:electronicMailAddress>
+							<gmd:electronicMailAddress><gco:CharacterString>
+                <#if contact.email?has_content>
+                  ${contact.email}
+                <#else>
+                  <#if contact.isRor() && contact.organisationIdentifier?ends_with("04xw4m193") >
+                    info@eidc.ac.uk
+                  <#elseif contact.isRor() && contact.organisationIdentifier?ends_with("00pggkr55") >
+                    enquiries@ceh.ac.uk
+                  <#else>
+                    EMAIL NOT PROVIDED
+                  </#if>
+                </#if>
+              </gco:CharacterString></gmd:electronicMailAddress>
 						</gmd:CI_Address>
 					</gmd:address>
 					<#if contact.isOrcid()>

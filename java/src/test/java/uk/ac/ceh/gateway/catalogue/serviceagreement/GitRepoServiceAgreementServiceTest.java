@@ -17,11 +17,15 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.publication.ServiceAgreementPublicationService;
+import uk.ac.ceh.gateway.catalogue.publication.State;
+import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.JiraService;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.HashSet;
 import java.util.List;
 
 import static java.lang.String.format;
@@ -44,12 +48,14 @@ public class GitRepoServiceAgreementServiceTest {
     private static final String ID = "7c60707c-80ee-4d67-bac2-3c9a93e61557";
     private static final String VERSION = "version";
     private static final String BASE_URI = "https://catalogue.ceh.ac.uk";
+    private static final String catalogueKey = "eidc";
 
     @Mock private DataRepository<CatalogueUser> repo;
     @Mock private DocumentInfoMapper<MetadataInfo> metadataInfoMapper;
     @Mock private DocumentInfoMapper<ServiceAgreement> serviceAgreementMapper;
     @Mock private DocumentRepository documentRepository;
     @Mock private JiraService jiraService;
+    @Mock private ServiceAgreementPublicationService publicationService;
 
     private ServiceAgreementService service;
     private ServiceAgreement serviceAgreement;
@@ -69,7 +75,8 @@ public class GitRepoServiceAgreementServiceTest {
             metadataInfoMapper,
             serviceAgreementMapper,
             documentRepository,
-            jiraService
+            jiraService,
+            publicationService
 
         );
         serviceAgreement = new ServiceAgreement();
@@ -85,7 +92,7 @@ public class GitRepoServiceAgreementServiceTest {
         givenPublishedServiceAgreement();
 
         //When
-        service.get(ID);
+        service.get(user, ID);
 
         //Then
     }
@@ -99,7 +106,7 @@ public class GitRepoServiceAgreementServiceTest {
 
         //When
         assertThrows(DataRepositoryException.class, () ->
-                service.get(ID)
+                service.get(user, ID)
         );
     }
 
@@ -116,7 +123,7 @@ public class GitRepoServiceAgreementServiceTest {
 
         //When
         assertThrows(DataRepositoryException.class, () ->
-                service.get(ID)
+                service.get(user, ID)
         );
     }
 
@@ -180,11 +187,6 @@ public class GitRepoServiceAgreementServiceTest {
         given(dataOngoingCommit.submitData(any(), any()))
             .willReturn(dataOngoingCommit);
 
-        given(dataOngoingCommit.commit(
-            any(CatalogueUser.class), eq("updating service agreement " + ID)
-        ))
-            .willReturn(mock(DataRevision.class));
-
         givenPublishedServiceAgreement();
 
         //When
@@ -231,7 +233,7 @@ public class GitRepoServiceAgreementServiceTest {
     @SneakyThrows
     public void canSubmitServiceAgreement() {
         //Given
-        givenDraftServiceAgreement();
+        givenSubmittedServiceAgreement();
 
         DataOngoingCommit dataOngoingCommit = mock(DataOngoingCommit.class);
         given(repo.submitData(any(), any())).willReturn(dataOngoingCommit);
@@ -244,7 +246,7 @@ public class GitRepoServiceAgreementServiceTest {
             serviceAgreement.getDepositReference(),
             format("Service Agreement (%s): %s submitted for review", ID, serviceAgreement.getTitle())
         );
-        verify(dataOngoingCommit, times(2)).commit(user, "updating service agreement metadata " + ID);
+        verify(dataOngoingCommit).commit(user, "updating service agreement metadata " + ID);
     }
 
     @Test
@@ -269,9 +271,12 @@ public class GitRepoServiceAgreementServiceTest {
     @SneakyThrows
     void cannotSubmitServiceAgreementJiraFail() {
         //given
-        givenDraftServiceAgreement();
+        givenSubmittedServiceAgreement();
         given(serviceAgreementMapper.readInfo(any()))
-                .willReturn(serviceAgreement);
+            .willReturn(serviceAgreement);
+
+        DataOngoingCommit dataOngoingCommit = mock(DataOngoingCommit.class);
+        given(repo.submitData(any(), any())).willReturn(dataOngoingCommit);
 
         RestClientResponseException restClientResponseException = mock(RestClientResponseException.class);
         doThrow(restClientResponseException).when(jiraService).comment(any(), any());
@@ -296,9 +301,6 @@ public class GitRepoServiceAgreementServiceTest {
 
         givenPendingPublicationServiceAgreement();
 
-        DataOngoingCommit dataOngoingCommit = mock(DataOngoingCommit.class);
-        given(repo.submitData(any(), any())).willReturn(dataOngoingCommit);
-
         //When
         service.publishServiceAgreement(user, ID);
 
@@ -310,7 +312,6 @@ public class GitRepoServiceAgreementServiceTest {
                     serviceAgreement.getTitle()
             )
         );
-        verify(dataOngoingCommit).commit(user, "updating service agreement metadata " + ID);
         verify(documentRepository).save(user, expected, "populated from service agreement");
     }
 
@@ -499,6 +500,25 @@ public class GitRepoServiceAgreementServiceTest {
         );
     }
 
+    @Test
+    @SneakyThrows
+    public void transitState() {
+        //Given
+        givenStateTransition();
+
+        //When
+        StateResource next = service.transitState(user, ID, "submitted");
+
+        //Then
+        assertThat("State should be submitted", next.getId(), equalTo("submitted"));
+    }
+
+    @SneakyThrows
+    private void givenStateTransition() {
+        val stateResource = new StateResource(new State("submitted", "Submit Service Agreement"), new HashSet<>(), ID, catalogueKey, "service-agreement");
+        given(publicationService.transition(eq(user), eq(ID), anyString()))
+            .willReturn(stateResource);
+    }
 
     @SneakyThrows
     private void givenPublishedServiceAgreement() {
@@ -557,6 +577,31 @@ public class GitRepoServiceAgreementServiceTest {
                 .willReturn(rawDocument);
         given(serviceAgreementMapper.readInfo(any()))
                 .willReturn(serviceAgreement);
+        serviceAgreement.setMetadata(metadata);
+        serviceAgreement.setTitle("this is a test");
+        serviceAgreement.setEndUserLicence(new ResourceConstraint("test", "test", "test"));
+        serviceAgreement.setDepositReference("test");
+        serviceAgreement.setDepositorContactDetails("test");
+    }
+
+    @SneakyThrows
+    private void givenSubmittedServiceAgreement() {
+        val metadataInfoDocument = mock(DataDocument.class);
+        given(repo.getData(FOLDER + ID + ".meta"))
+            .willReturn(metadataInfoDocument);
+
+        val metadata = MetadataInfo.builder()
+            .state("submitted")
+            .rawType(APPLICATION_JSON_VALUE)
+            .build();
+        given(metadataInfoMapper.readInfo(any()))
+            .willReturn(metadata);
+
+        val rawDocument = mock(DataDocument.class);
+        given(repo.getData(FOLDER + ID + ".raw"))
+            .willReturn(rawDocument);
+        given(serviceAgreementMapper.readInfo(any()))
+            .willReturn(serviceAgreement);
         serviceAgreement.setMetadata(metadata);
         serviceAgreement.setTitle("this is a test");
         serviceAgreement.setEndUserLicence(new ResourceConstraint("test", "test", "test"));

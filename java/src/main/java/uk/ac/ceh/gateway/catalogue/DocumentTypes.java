@@ -50,7 +50,7 @@ public class DocumentTypes {
 
     public static final String INFRASTRUCTURERECORD = "infrastructurerecord";
         public static DocumentType INFRASTRUCTURERECORD_TYPE = DocumentType.builder()
-            .title("Infrastructure record")
+            .title("Science infrastructure")
             .type(INFRASTRUCTURERECORD)
             .build();
 

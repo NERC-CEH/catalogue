@@ -81,10 +81,11 @@ public class ServiceAgreementController {
     @PreAuthorize("@permission.userCanViewServiceAgreement(#id)")
     @GetMapping("{id}")
     public ServiceAgreementModel get(
+            @ActiveUser CatalogueUser user,
             @PathVariable("id") String id
             ) {
         log.info("GET {}", id);
-        val serviceAgreement = serviceAgreementService.get(id);
+        val serviceAgreement = serviceAgreementService.get(user, id);
         return serviceAgreementModelAssembler.toModel(serviceAgreement);
             }
 
@@ -184,7 +185,7 @@ public class ServiceAgreementController {
         log.info("GETTING SERVICE AGREEMENT PERMISSIONS");
         return ResponseEntity.ok(
             new ServiceAgreementPermissionResource(
-                serviceAgreementService.get(id)
+                serviceAgreementService.get(user, id)
             )
         );
     }
@@ -198,14 +199,25 @@ public class ServiceAgreementController {
         @RequestBody ServiceAgreementPermissionResource permissionResource
     ) {
         log.info("UPDATING SERVICE AGREEMENT PERMISSIONS");
-        MetadataInfo original = serviceAgreementService.get(id).getMetadata();
+        MetadataInfo original = serviceAgreementService.get(user, id).getMetadata();
         MetadataInfo updated = permissionResource.updatePermissions(original);
         serviceAgreementService.updateMetadata(user, id, updated);
         return ResponseEntity.ok(
             new ServiceAgreementPermissionResource(
-                serviceAgreementService.get(id)
+                serviceAgreementService.get(user, id)
             )
         );
+    }
+
+    @PreAuthorize("@permission.userCanViewServiceAgreement(#id)")
+    @PostMapping("{id}/form-publication/{toState}")
+    public RedirectView formTransitionPublication(
+        @ActiveUser CatalogueUser user,
+        @PathVariable("id") String id,
+        @PathVariable("toState") String toState) {
+
+        val nextStateResource = serviceAgreementService.transitState(user, id, toState);
+        return new RedirectView("/service-agreement/" + id);
     }
 
 }

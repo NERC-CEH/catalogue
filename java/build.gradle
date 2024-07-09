@@ -45,6 +45,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.xerial:sqlite-jdbc:3.41.2.1'
+    implementation 'org.springframework:spring-jdbc:5.3.25'
     implementation "uk.ac.ceh.components:datastore-git:${cehComponentsVersion}"
     implementation "uk.ac.ceh.components:userstore-crowd:${cehComponentsVersion}"
     implementation "uk.ac.ceh.components:userstore-inmemory:${cehComponentsVersion}"
@@ -54,6 +56,7 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'org.xmlunit:xmlunit-core'
     testImplementation 'org.xmlunit:xmlunit-matchers'
+    testImplementation 'com.h2database:h2'
 }
 
 test {

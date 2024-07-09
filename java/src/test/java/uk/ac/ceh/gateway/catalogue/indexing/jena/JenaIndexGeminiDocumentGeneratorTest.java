@@ -12,6 +12,7 @@ import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -43,9 +44,11 @@ class JenaIndexGeminiDocumentGeneratorTest {
         List<Statement> actual = generator.generateIndex(document);
 
         //Then
-        assertThat("Should be two identifier statements", actual.size(), equalTo(2));
+        assertThat("Should be two identifier statements", actual.size(), equalTo(4));
         assertThat("Statement literal should be identifier", actual.get(0).getLiteral().getString(), equalTo("t"));
-        assertThat("Statement literal should be identifier", actual.get(1).getLiteral().getString(), equalTo("t"));
+        assertThat("Statement literal should be status", actual.get(1).getLiteral().getString(), equalTo("draft"));
+        assertThat("Statement literal should be identifier", actual.get(2).getLiteral().getString(), equalTo("t"));
+        assertThat("Statement literal should be status", actual.get(3).getLiteral().getString(), equalTo("Unknown"));
         // No resource identifiers added to statements
     }
 }

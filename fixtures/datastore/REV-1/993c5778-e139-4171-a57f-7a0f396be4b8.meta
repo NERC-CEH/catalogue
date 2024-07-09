@@ -1,12 +1,1 @@
-{
-  "rawType":"application/gemini+json",
-  "state":"published",
-  "documentType":"GEMINI_DOCUMENT",
-  "permissions":{
-    "EDIT":["phtr"],
-    "VIEW":["phtr"],
-    "DELETE":["phtr"],
-    "UPLOAD":["uploader"]
-  },
-  "catalogue":"eidc"
-}
+{"rawType":"application/gemini+json","state":"published","documentType":"GEMINI_DOCUMENT","permissions":{"EDIT":["phtr"],"VIEW":["phtr","public"],"DELETE":["phtr"],"UPLOAD":["uploader"]},"catalogue":"eidc"}

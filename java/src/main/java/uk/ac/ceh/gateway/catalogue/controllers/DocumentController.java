@@ -4,8 +4,10 @@ import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +23,9 @@ import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
+import uk.ac.ceh.gateway.catalogue.services.MetricsService;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
@@ -35,9 +39,17 @@ import static uk.ac.ceh.gateway.catalogue.model.Permission.VIEW;
 @Controller
 public class DocumentController extends AbstractDocumentController {
     public static final String MAINTENANCE_ROLE = "ROLE_CIG_SYSTEM_ADMIN";
+    private final MetricsService metricsService;
+    private final List<String> metricsExcludedUsers;
 
-    public DocumentController(DocumentRepository documentRepository) {
+    public DocumentController(
+        @Nullable MetricsService metricsService,
+        @Value("#{'${metrics.users.excluded}'.split(',')}") List<String> metricExcludedUsers,
+        DocumentRepository documentRepository
+    ) {
         super(documentRepository);
+        this.metricsService = metricsService;
+        this.metricsExcludedUsers = metricExcludedUsers;
         log.info("Creating {}", this);
     }
 
@@ -277,8 +289,12 @@ public class DocumentController extends AbstractDocumentController {
     @GetMapping("documents/{file}")
     public MetadataDocument readMetadata(
             @ActiveUser CatalogueUser user,
-            @PathVariable("file") String file
+            @PathVariable("file") String file,
+            HttpServletRequest request
             ) {
+        if(metricsService != null && !metricsExcludedUsers.contains(user.getUsername())){
+            metricsService.recordView(file, request.getRemoteAddr());
+        }
         return postProcessLinkDocument(documentRepository.read(file));
             }
 

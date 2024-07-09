@@ -1,5 +1,13 @@
 @import "theme";
 
+/***********
+ Import infrastructure stylesheet as a temporary measure
+ When infrastructure records are moved to the  UKCEH catalogue
+ the stylesheets can be merged
+************/
+@import "style-infrastructure";
+
+
 
 @fa-font-path: "../fonts";
 
@@ -27,4 +35,11 @@ html {
 .fa-spin-2x {
     -webkit-animation: fa-spin 1s infinite linear;
     animation: fa-spin 1s infinite linear;
+}
+
+
+#editor {
+    .option-ukceh {
+        display: initial !important;
+    }
 }

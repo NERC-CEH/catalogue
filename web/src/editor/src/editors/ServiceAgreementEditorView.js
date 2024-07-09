@@ -160,8 +160,7 @@ export default EditorView.extend({
           listAttribute: `
 <option value='Upload via EIDC catalogue (preferred)' />
 <option value='Cloud transfer e.g. via OneDrive' />
-`,
-          required: true
+`
         }),
 
         new TextOnlyView({
@@ -396,7 +395,8 @@ export default EditorView.extend({
           ObjectInputView: KeywordVocabularyView,
           multiline: true,
           helpText: 'Controlled keywords describing the observed properties/variables contained in this data resource',
-          required: true
+          required: true,
+          className: 'hidden'
         }),
         new ParentView({
           model: this.model,
@@ -404,6 +404,7 @@ export default EditorView.extend({
           label: 'Places',
           ObjectInputView: KeywordVocabularyView,
           multiline: true,
+          className: 'hidden',
           helpText: `\
         Controlled keywords describing geographic places pertinent to this resource.
         For example, named countries/regions in which the research was conducted.
@@ -417,7 +418,8 @@ export default EditorView.extend({
           ObjectInputView: KeywordVocabularyView,
           multiline: true,
           helpText: 'Controlled keywords describing projects that fund/support the creation of this resource',
-          required: true
+          required: true,
+          className: 'hidden'
         }),
         new ParentView({
           model: this.model,
@@ -426,7 +428,8 @@ export default EditorView.extend({
           ObjectInputView: KeywordVocabularyView,
           multiline: true,
           helpText: 'Controlled keywords describing instruments/sensors used to generate this data',
-          required: true
+          required: true,
+          className: 'hidden'
         }),
         new ParentView({
           model: this.model,

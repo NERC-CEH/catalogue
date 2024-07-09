@@ -8,6 +8,7 @@ import lombok.experimental.Accessors;
 import uk.ac.ceh.gateway.catalogue.gemini.*;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
+import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -44,6 +45,8 @@ public class ServiceAgreement extends AbstractMetadataDocument {
         keywordsPlace, keywordsProject, keywordsTheme, keywordsOther;
 
     private List<BoundingBox> boundingBoxes;
+
+    private StateResource currentStateResource;
 
     /*
      * FLAGS

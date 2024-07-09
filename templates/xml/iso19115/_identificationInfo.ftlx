@@ -108,7 +108,13 @@
 								<#if responsibleParty.country?has_content>
 								<gmd:country><gco:CharacterString>${responsibleParty.country}</gco:CharacterString></gmd:country>
 								</#if>
-								<gmd:electronicMailAddress><gco:CharacterString>enquiries@ceh.ac.uk</gco:CharacterString></gmd:electronicMailAddress>
+								<gmd:electronicMailAddress><gco:CharacterString>
+                  <#if responsibleParty.email?has_content>
+                    ${responsibleParty.email}
+                  <#else>
+                    EMAIL NOT PROVIDED
+                  </#if>
+                </gco:CharacterString></gmd:electronicMailAddress>
 							</gmd:CI_Address>
 						</gmd:address>
 					</gmd:CI_Contact>
@@ -119,7 +125,7 @@
 				<#else>
 					<#assign role=responsibleParty.role >
 				</#if>
-					<gmd:CI_RoleCode codeList="https://standards.iso.org/iso/19139/resources/gmxCodelists.xml##CI_RoleCode" codeListValue="${role}">${role}</gmd:CI_RoleCode>
+					<gmd:CI_RoleCode codeList="https://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_RoleCode" codeListValue="${role}">${role}</gmd:CI_RoleCode>
 				</gmd:role>
 			</gmd:CI_ResponsibleParty>
 		</gmd:pointOfContact>-->

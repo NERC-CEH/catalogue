@@ -12,6 +12,7 @@ export default _.template(`
                 <a data-toggle="collapse" title="Required" href="#required-<%= data.modelAttribute %>" data-parent="#editor"><i class="fa fa-pencil" aria-hidden="true"></i></a>
             <% } %>
         </label>
+        <div id="template-add-on"></div>
         <% if(data.helpText) { %>
             <div id="help-<%= data.modelAttribute %>" class="editor-help">
             <%= data.helpText %>

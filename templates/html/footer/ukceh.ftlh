@@ -1,10 +1,10 @@
 <div class="footer footer-ukceh hidden-print clearfix">
   <div class="container">
 
-    <div class="footer-logo">
-      <img src="/static/img/ukceh_logo_mono.png" alt="UKCEH logo" title="UKCEH" >
+    <div class="footer-logos">
+      <div><a href="https://www.ceh.ac.uk" target="_blank" target="_blank" rel="noopener noreferrer"><img src="/static/img/ukceh_logo_mono.png" alt="UKCEH logo" title="UKCEH"></a></div>
     </div>
-    <div class="footer-policies" role="contentinfo">
+    <div class="footer-links" role="contentinfo">
       <a href="https://www.ceh.ac.uk/privacy-notice">Privacy notice</a>
       <a href="https://www.ceh.ac.uk/terms-of-use">Terms of use</a>
       <a href="https://www.ceh.ac.uk/about-us/contact-us">Contact</a>
@@ -30,8 +30,8 @@
           <i class="fa-brands fa-xl fa-fw fa-youtube"></i>
       </a>
     </div>
-    <div class="footer-copy">
-      UKCEH &copy;
+    <div class="footer-terms">
+      UKCEH &copy; ${.now?datetime?string['yyyy']}
     </div>
 
   </div>

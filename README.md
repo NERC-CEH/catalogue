@@ -18,7 +18,8 @@ Browse to http://localhost:8080/eidc/documents to see the catalogue populated wi
 ### Standalone installation using published Docker images
 
 ```commandline
-mkdir datastore dropbox upload
+mkdir datastore dropbox upload metrics-db
+chmod a+w metrics-db
 cp fixtures/datastore/REV-1/* datastore
 cd datastore
 git init
@@ -134,6 +135,8 @@ The server profile e.g. `server:eidc` decides which catalogue you will use and w
 Select which algorithm Solr uses to search for documents.
 ##### service-agreement
 Allows the user to create online service agreements for datasets.
+##### metrics
+Creates the embedded sqlite database for the metric reporting.
 
 ### Developing LESS
 In the web directory run

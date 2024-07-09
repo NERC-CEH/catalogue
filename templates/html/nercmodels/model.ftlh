@@ -303,6 +303,5 @@
     </div>
 
   </div>
-  <#include "_footer.ftlh">
 
 </@skeleton.master>
