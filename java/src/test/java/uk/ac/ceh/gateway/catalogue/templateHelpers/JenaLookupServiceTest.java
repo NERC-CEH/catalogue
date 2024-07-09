@@ -229,10 +229,10 @@ public class JenaLookupServiceTest {
         triples.add(createResource("http://model"), TITLE, "Model 1");
         triples.add(createResource("http://model"), TYPE, "model");
         triples.add(createResource("http://model"), METADATA_STATUS, "published");
-        triples.add(createResource("http://model"), REFERENCES, createResource("http://dataset1"));
         triples.add(createResource("http://dataset2"), TITLE, "Dataset 2");
-        triples.add(createResource("http://dataset2"), METADATA_STATUS, "published");
         triples.add(createResource("http://dataset2"), TYPE, "dataset");
+        triples.add(createResource("http://dataset2"), METADATA_STATUS, "published");
+        triples.add(createResource("http://model"), REFERENCES, createResource("http://dataset1"));
         triples.add(createResource("http://dataset2"), REFERENCES, createResource("http://model"));
 
         //When

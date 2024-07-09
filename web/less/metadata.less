@@ -452,10 +452,9 @@ body {
             --_card-text-colour: black;
             --_card-link-colour: inherit;
             --_card-icon-colour: var(--_card-border-colour);
-            --_card-icon-background-colour: var(--_card-background);
 
             display: var(--_card-display);
-            flex:0 0 calc((100% - calc(var(--_card-repeat) * 1em) + 1em) / var(--_card-repeat));
+            flex: 0 0 calc((100% - calc(var(--_card-repeat) * 1em) + 1em) / var(--_card-repeat));
             padding: 1rem;
             grid-template-columns: 70px auto;
             background-color: var(--_card-background);
@@ -496,6 +495,16 @@ body {
                 color: var(--_card-text-colour);
             }
 
+            &:hover {
+                --_card-background: var(--primary-colour) !important;
+                --_card-text-colour: white !important;
+                --_card-icon-colour: white !important;
+
+                .fa-inverse {
+                    color: var(--_card-background) !important;
+                }
+            }
+
             &-hidden {
                 --_card-display: none;
             }
@@ -524,6 +533,15 @@ body {
                     span {
                         display: inline;
                     }
+                }
+            }
+
+            &-draft,
+            &-pending {
+                &:hover {
+                    --_card-background: lightgray !important;
+                    --_card-text-colour: gray !important;
+                    --_card-icon-colour: gray !important;
                 }
             }
         }
