@@ -43,14 +43,18 @@ public class JenaLookupServiceTest {
         val collection = "https://collection";
         val dataset1 = "http://dataset1";
         val dataset2 = "http://dataset2";
+        val other = "http://other";
         Model triples = jenaTdb.getDefaultModel();
         triples.add(createResource(dataset1), TITLE, "Dataset 1");
+        triples.add(createResource(dataset1), METADATA_STATUS, "published");
         triples.add(createResource(dataset1), TYPE, "dataset");
         triples.add(createResource(dataset1), EIDC_MEMBER_OF, createResource(collection));
         triples.add(createResource(dataset2), TITLE, "Dataset 2");
+        triples.add(createResource(dataset2), METADATA_STATUS, "published");
         triples.add(createResource(dataset2), TYPE, "dataset");
         triples.add(createResource(dataset2), EIDC_MEMBER_OF, createResource(collection));
-        triples.add(createResource("http://other"), REFERENCES, createResource(collection));
+        triples.add(createResource(other), REFERENCES, createResource(collection));
+        triples.add(createResource(other), METADATA_STATUS, "published");
 
         //when
         List<Link> actual = service.incomingEidcRelations(collection);
@@ -65,8 +69,9 @@ public class JenaLookupServiceTest {
         //Given
         Model triples = jenaTdb.getDefaultModel();
         triples.add(createResource("http://dataset1"), TITLE, "Dataset 1");
-        triples.add(createResource("http://monitoringActivity"), OSDP_PRODUCES, createResource("http://dataset1"));
+        triples.add(createResource("http://dataset1"), METADATA_STATUS, "published");
         triples.add(createResource("http://dataset1"), TYPE, "dataset");
+        triples.add(createResource("http://monitoringActivity"), OSDP_PRODUCES, createResource("http://dataset1"));
 
         //When
         List<Link> actual = service.relationships("http://monitoringActivity", OSDP_PRODUCES.toString());
@@ -81,6 +86,7 @@ public class JenaLookupServiceTest {
         //Given
         Model triples = jenaTdb.getDefaultModel();
         triples.add(createResource("http://monitoringActivity"), TITLE, "Monitoring Activity");
+        triples.add(createResource("http://monitoringActivity"), METADATA_STATUS, "published");
         triples.add(createResource("http://monitoringActivity"), OSDP_PRODUCES, createResource("http://dataset1"));
         triples.add(createResource("http://monitoringActivity"), TYPE, "dataset");
 
@@ -98,6 +104,7 @@ public class JenaLookupServiceTest {
         Model triples = jenaTdb.getDefaultModel();
         String geometryString = "{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[0,0]}}";
         triples.add(createResource("http://monitoringFacility"), TITLE, "Monitoring Facility");
+        triples.add(createResource("http://monitoringFacility"), METADATA_STATUS, "published");
         triples.add(createResource("http://monitoringFacility"), BELONGS_TO, createResource("http://network1"));
         triples.add(createResource("http://monitoringFacility"), TYPE, "Monitoring Facility");
         triples.add(createResource("http://monitoringFacility"), HAS_GEOMETRY, geometryString);
@@ -119,11 +126,12 @@ public class JenaLookupServiceTest {
         String geometryString2 = "{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point2\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[1,1]}}";
         String combinedGeometry = "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point\",\"title\":\"Monitoring Facility\",\"link\":\"http://monitoringFacility\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[0,0]}},{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point2\",\"title\":\"Monitoring Facility 2\",\"link\":\"http://monitoringFacility2\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[1,1]}}]}";
         triples.add(createResource("http://monitoringFacility"), TITLE, "Monitoring Facility");
+        triples.add(createResource("http://monitoringFacility"), METADATA_STATUS, "published");
         triples.add(createResource("http://monitoringFacility"), BELONGS_TO, createResource("http://network1"));
         triples.add(createResource("http://monitoringFacility"), TYPE, "Monitoring Facility");
         triples.add(createResource("http://monitoringFacility"), HAS_GEOMETRY, geometryString);
-
         triples.add(createResource("http://monitoringFacility2"), TITLE, "Monitoring Facility 2");
+        triples.add(createResource("http://monitoringFacility2"), METADATA_STATUS, "published");
         triples.add(createResource("http://monitoringFacility2"), BELONGS_TO, createResource("http://network1"));
         triples.add(createResource("http://monitoringFacility2"), TYPE, "Monitoring Facility");
         triples.add(createResource("http://monitoringFacility2"), HAS_GEOMETRY, geometryString2);
@@ -142,6 +150,7 @@ public class JenaLookupServiceTest {
         String id = "7e1c18b2-ff78-4979-9a90-f7ae20b9d75b";
         Model triples = jenaTdb.getDefaultModel();
         triples.add(createResource("http://model"), TITLE, "Model");
+        triples.add(createResource("http://model"), METADATA_STATUS, "published");
         triples.add(createResource("http://model"), IDENTIFIER, id);
         triples.add(createResource("http://model"), TYPE, "dataset");
 
@@ -160,6 +169,7 @@ public class JenaLookupServiceTest {
         String id = "7e1c18b2-ff78-4979-9a90-f7ae20b9d75b";
         Model triples = jenaTdb.getDefaultModel();
         triples.add(createResource("http://model"), TITLE, "Model");
+        triples.add(createResource("http://model"), METADATA_STATUS, "published");
         triples.add(createResource("http://model"), IDENTIFIER, id);
 
         //When
@@ -174,9 +184,11 @@ public class JenaLookupServiceTest {
         //Given
         Model triples = jenaTdb.getDefaultModel();
         triples.add(createResource("http://modelApplication1"), TITLE, "Model Application 1");
+        triples.add(createResource("http://modelApplication1"), METADATA_STATUS, "published");
         triples.add(createResource("http://modelApplication1"), TYPE, "modelApplication");
         triples.add(createResource("http://modelApplication1"), REFERENCES, createResource("http://model"));
         triples.add(createResource("http://modelApplication2"), TITLE, "Model Application 2");
+        triples.add(createResource("http://modelApplication2"), METADATA_STATUS, "published");
         triples.add(createResource("http://modelApplication2"), TYPE, "modelApplication");
         triples.add(createResource("http://modelApplication2"), REFERENCES, createResource("http://model"));
 
@@ -192,9 +204,11 @@ public class JenaLookupServiceTest {
         //Given
         Model triples = jenaTdb.getDefaultModel();
         triples.add(createResource("http://model1"), TITLE, "Model 1");
+        triples.add(createResource("http://model1"), METADATA_STATUS, "published");
         triples.add(createResource("http://model1"), TYPE, "model");
         triples.add(createResource("http://modelApplication"), REFERENCES, createResource("http://model1"));
         triples.add(createResource("http://model2"), TITLE, "Model 2");
+        triples.add(createResource("http://model2"), METADATA_STATUS, "published");
         triples.add(createResource("http://model2"), TYPE, "model");
         triples.add(createResource("http://modelApplication"), REFERENCES, createResource("http://model2"));
 
@@ -211,9 +225,14 @@ public class JenaLookupServiceTest {
         Model triples = jenaTdb.getDefaultModel();
         triples.add(createResource("http://dataset1"), TITLE, "Dataset 1");
         triples.add(createResource("http://dataset1"), TYPE, "dataset");
-        triples.add(createResource("http://model"), REFERENCES, createResource("http://dataset1"));
+        triples.add(createResource("http://dataset1"), METADATA_STATUS, "published");
+        triples.add(createResource("http://model"), TITLE, "Model 1");
+        triples.add(createResource("http://model"), TYPE, "model");
+        triples.add(createResource("http://model"), METADATA_STATUS, "published");
         triples.add(createResource("http://dataset2"), TITLE, "Dataset 2");
         triples.add(createResource("http://dataset2"), TYPE, "dataset");
+        triples.add(createResource("http://dataset2"), METADATA_STATUS, "published");
+        triples.add(createResource("http://model"), REFERENCES, createResource("http://dataset1"));
         triples.add(createResource("http://dataset2"), REFERENCES, createResource("http://model"));
 
         //When
@@ -228,9 +247,12 @@ public class JenaLookupServiceTest {
         //Given
         Model triples = jenaTdb.getDefaultModel();
         triples.add(createResource("http://link1"), TITLE, "Link 1");
+        triples.add(createResource("http://link1"), METADATA_STATUS, "published");
         triples.add(createResource("http://link1"), SOURCE, createResource("http://dataset1"));
         triples.add(createResource("http://model"), REFERENCES, createResource("http://link1"));
+        triples.add(createResource("http://model"), METADATA_STATUS, "published");
         triples.add(createResource("http://dataset1"), TITLE, "Dataset 1");
+        triples.add(createResource("http://dataset1"), METADATA_STATUS, "published");
         triples.add(createResource("http://dataset1"), TYPE, "dataset");
 
         //When

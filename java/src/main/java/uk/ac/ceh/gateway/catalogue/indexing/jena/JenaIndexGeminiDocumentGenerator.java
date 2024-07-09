@@ -62,11 +62,11 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
             );
 
         try {
-            toReturn.add(createStatement(me, DATE_AVAILABLE, createTypedLiteral(document.getPublicationDate().toInstant().atZone(ZoneId.of("UTC")).toLocalDate().toString())));
+            toReturn.add(createStatement(me, PUBLICATION_DATE, createTypedLiteral(document.getPublicationDate().toInstant().atZone(ZoneId.of("UTC")).toLocalDate().toString())));
         } catch(NullPointerException e) {
             log.info("No Publication Date");
         }
-        toReturn.add(createStatement(me, PUBLICATION_STATUS, createTypedLiteral(document.getResourceStatus())));
+        toReturn.add(createStatement(me, RESOURCE_STATUS, createTypedLiteral(document.getResourceStatus())));
 
         return toReturn;
     }
