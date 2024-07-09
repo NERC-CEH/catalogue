@@ -167,7 +167,7 @@ class SearchControllerTest {
         //when
         mvc.perform(get("/documents"))
             .andExpect(status().is3xxRedirection())
-            .andExpect(header().string("location", "http://localhost/default/documents"));
+            .andExpect(header().string("location", "/default/documents"));
 
         //then
         verifyNoInteractions(solrClient, facetFactory);

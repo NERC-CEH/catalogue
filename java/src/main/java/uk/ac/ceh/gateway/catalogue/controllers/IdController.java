@@ -6,9 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.servlet.view.RedirectView;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -27,10 +25,8 @@ public class IdController {
     }
 
     private RedirectView redirect(String path, HttpServletRequest request) {
-        UriComponentsBuilder url = ServletUriComponentsBuilder
-            .fromRequest(request)
-            .replacePath("documents/{path}");
-        val redirectView = new RedirectView(url.buildAndExpand(path).toUriString());
+        val requestParm = request.getQueryString() == null ? "" : "?" + request.getQueryString();
+        val redirectView = new RedirectView(String.format("/documents/%s%s", path, requestParm));
         redirectView.setStatusCode(HttpStatus.SEE_OTHER);
         return redirectView;
     }

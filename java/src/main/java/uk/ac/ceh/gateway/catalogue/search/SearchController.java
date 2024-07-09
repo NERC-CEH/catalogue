@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -50,11 +49,7 @@ public class SearchController {
             HttpServletRequest request
     ) {
         val defaultCatalogueId = catalogueService.defaultCatalogue().getId();
-        val redirectUrl = ServletUriComponentsBuilder
-            .fromRequest(request)
-            .replacePath("{catalogue}/documents")
-            .buildAndExpand(defaultCatalogueId)
-            .toUriString();
+        val redirectUrl = String.format("/%s/documents", defaultCatalogueId);
         log.info("Redirecting to {}", redirectUrl);
         return "redirect:" + redirectUrl;
     }
