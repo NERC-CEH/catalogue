@@ -10,12 +10,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.gateway.catalogue.document.DocumentListingService;
 import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
+import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.Geometry;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.indexing.jena.Ontology;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.Link;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.model.Relationship;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
@@ -32,7 +34,6 @@ import java.util.stream.Collectors;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.number.BigDecimalCloseTo.closeTo;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -69,12 +70,63 @@ class NetworkIndexingServiceTest {
     }
 
     @Test
+    void addFacilityOutsideNetwork() {
+        BigDecimal expectedNorth = BigDecimal.valueOf(200);
+        BigDecimal expectedSouth = BigDecimal.valueOf(0);
+        BigDecimal expectedEast = BigDecimal.valueOf(200);
+        BigDecimal expectedWest = BigDecimal.valueOf(0);
+        MonitoringFacility f1 = getMonitoringFacility("f1", expectedEast + "," + expectedNorth);
+        MonitoringNetwork n1 = getMonitoringNetwork("n1");
+        n1.setBoundingBox(BoundingBox.builder()
+                .northBoundLatitude("100")
+                .southBoundLatitude(expectedSouth+"")
+                .eastBoundLongitude("100")
+                .westBoundLongitude(expectedWest+"")
+                .build()
+        );
+        List<String> newFacility = Arrays.asList(f1.getId());
+
+        f1.setRelationships(
+            com.google.common.collect.Sets.newHashSet(
+                new Relationship(Ontology.BELONGS_TO.getURI(), n1.getUri())
+            )
+        );
+
+        // when
+        try {
+            when(bundledReader.readBundle(f1.getId())).thenReturn(f1);
+            when(bundledReader.readBundle(n1.getId())).thenReturn(n1);
+            service.indexDocuments(newFacility);
+            verify(documentRepository).save(userCaptor.capture(), networkDocCaptor.capture(), commitMessageCaptor.capture());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (PostProcessingException e) {
+            throw new RuntimeException(e);
+        } catch (DocumentIndexingException e) {
+            throw new RuntimeException(e);
+        } catch (DocumentRepositoryException e) {
+            throw new RuntimeException(e);
+        }
+
+        // then
+        BigDecimal precision = BigDecimal.valueOf((Geometry.POINT_PRECISION + 0.0000001));
+        BigDecimal actualNorth = networkDocCaptor.getValue().getBoundingBox().getNorthBoundLatitude();
+        BigDecimal actualSouth = networkDocCaptor.getValue().getBoundingBox().getSouthBoundLatitude();
+        BigDecimal actualEast = networkDocCaptor.getValue().getBoundingBox().getEastBoundLongitude();
+        BigDecimal actualWest = networkDocCaptor.getValue().getBoundingBox().getWestBoundLongitude();
+        assertThat(actualNorth, is(closeTo(expectedNorth, precision)));
+        assertThat(actualSouth, is(closeTo(expectedSouth, precision)));
+        assertThat(actualEast, is(closeTo(expectedEast, precision)));
+        assertThat(actualWest, is(closeTo(expectedWest, precision)));
+    }
+
+    @Test
     void unindexDocuments() {
         // given
-        BigDecimal expectedEast = BigDecimal.valueOf(10);
-        BigDecimal expectedWest = BigDecimal.valueOf(5);
         BigDecimal expectedNorth = BigDecimal.valueOf(60);
         BigDecimal expectedSouth = BigDecimal.valueOf(50);
+        BigDecimal expectedEast = BigDecimal.valueOf(10);
+        BigDecimal expectedWest = BigDecimal.valueOf(5);
         MonitoringFacility f1 = getMonitoringFacility("f1", "0,80");
         MonitoringFacility f2 = getMonitoringFacility("f2", expectedWest + "," + expectedSouth);
         MonitoringFacility f3 = getMonitoringFacility("f3", expectedEast + "," + expectedNorth);
