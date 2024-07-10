@@ -110,13 +110,13 @@ public class CatalogueToTurtleService implements DocumentsToTurtleService {
             case "dataset", "service", "signpost" ->
                 template(model, "rdf/ttlUnprefixed.ftl");
             case "monitoringActivity" ->
-                template(model, "rdf/monitoring/activity.ftl");
+                template(model, "rdf/monitoring/unprefixed/activity.ftl");
             case "monitoringFacility" ->
-                template(model, "rdf/monitoring/facility.ftl");
+                template(model, "rdf/monitoring/unprefixed/facility.ftl");
             case "monitoringNetwork" ->
-                template(model, "rdf/monitoring/network.ftl");
+                template(model, "rdf/monitoring/unprefixed/network.ftl");
             case "monitoringProgramme" ->
-                template(model, "rdf/monitoring/programme.ftl");
+                template(model, "rdf/monitoring/unprefixed/programme.ftl");
             default -> "";
         };
     }
