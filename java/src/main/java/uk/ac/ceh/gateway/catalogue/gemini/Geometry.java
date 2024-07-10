@@ -17,6 +17,8 @@ import static com.google.common.base.Strings.nullToEmpty;
 @Value
 @Slf4j
 public class Geometry {
+    public static double POINT_PRECISION = 0.0001;  //At a latitude of 60, a precision of 0.00001 is 5.5m along longitude and 11.1m along latitude
+
     private static final String TYPE_POINT = "point";
     private static final String TYPE_POLYGON = "polygon";
 
@@ -144,14 +146,13 @@ public class Geometry {
      * @return BoundingBox
      */
     private BoundingBox getPointBoundingBox(JsonNode coordinates) {
-        double smallDistance = 0.0001;  //At a latitude of 60, a precision of 0.00001 is 5.5m along longitude and 11.1m along latitude
         var lon = coordinates.get(0).asDouble();
         var lat = coordinates.get(1).asDouble();
         return BoundingBox.builder()
-            .northBoundLatitude((lat + smallDistance)+"")
-            .southBoundLatitude((lat - smallDistance)+"")
-            .eastBoundLongitude((lon + smallDistance)+"")
-            .westBoundLongitude((lon - smallDistance)+"")
+            .northBoundLatitude((lat + POINT_PRECISION)+"")
+            .southBoundLatitude((lat - POINT_PRECISION)+"")
+            .eastBoundLongitude((lon + POINT_PRECISION)+"")
+            .westBoundLongitude((lon - POINT_PRECISION)+"")
             .build();
     }
     /**
