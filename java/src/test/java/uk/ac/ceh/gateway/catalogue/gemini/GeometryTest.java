@@ -92,10 +92,15 @@ class GeometryTest {
         //given
         val geometryString = "{\"type\":\"Feature\",\"properties\":{},\"geometry\":{\"type\":\"Rectangle\",\"coordinates\":[[[1.0,2.0],[5.0,6.0],[8.0,9.0],[3.0,4.0],[-2.0,-4.0]]]}}";
         val geometry = Geometry.builder().geometryString(geometryString).build();
-        val expected = Optional.empty();
+        val expected = "There is not yet an implementation of getBoundingBox() for shapes of type: rectangle";
 
         //when
-        val actual = geometry.getBoundingBox();
+        String actual = "";
+        try {
+            geometry.getBoundingBox();
+        } catch (Exception e) {
+            actual = e.getMessage();
+        }
 
         //then
         assertThat(actual, equalTo(expected));

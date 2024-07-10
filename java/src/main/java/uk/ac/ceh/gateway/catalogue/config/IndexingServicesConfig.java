@@ -64,10 +64,13 @@ import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.GEMINI_XML;
 public class IndexingServicesConfig {
 
     @Bean @Qualifier("network-index")
-    public DocumentIndexingService networkIndexingService(
-            BundledReaderService<MetadataDocument> bundledReaderService
+    public NetworkIndexingService networkIndexingService(
+            DocumentListingService documentListingService,
+            BundledReaderService<MetadataDocument> bundledReaderService,
+            DocumentRepository documentRepository,
+            JenaLookupService lookupService
     ){
-        return new NetworkIndexingService(bundledReaderService);
+        return new NetworkIndexingService(documentListingService, bundledReaderService, documentRepository, lookupService);
     }
     @Bean @Qualifier("datacite-index")
     public DocumentIndexingService dataciteIndexingService(

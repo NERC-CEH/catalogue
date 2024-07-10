@@ -21,7 +21,6 @@ public class Geometry {
     private static final String TYPE_POLYGON = "polygon";
 
     private final String geometryString;
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Builder
     @JsonCreator
@@ -46,6 +45,7 @@ public class Geometry {
             return Optional.empty();
         }
         try {
+            ObjectMapper objectMapper = new ObjectMapper();
             JsonNode root = objectMapper.readTree(this.getGeometryString());
             String type = root.at("/geometry/type").asText().toLowerCase();
             JsonNode coordinates = root.at("/geometry/coordinates");
@@ -117,6 +117,7 @@ public class Geometry {
             return Optional.empty();
         }
         try {
+            ObjectMapper objectMapper = new ObjectMapper();
             JsonNode root = objectMapper.readTree(this.getGeometryString());
             String type = root.at("/geometry/type").asText().toLowerCase();
             JsonNode coordinates = root.at("/geometry/coordinates");

@@ -8,6 +8,7 @@ import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.TimePeriod;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
+import uk.ac.ceh.gateway.catalogue.indexing.solr.WellKnownText;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.model.Supplemental;
@@ -23,7 +24,7 @@ import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.RDF_TTL_VALUE;
     @Template(called="html/monitoring/network.ftlh", whenRequestedAs= MediaType.TEXT_HTML_VALUE),
     @Template(called="rdf/monitoring/network.ftl", whenRequestedAs=RDF_TTL_VALUE)
 })
-public class MonitoringNetwork extends AbstractMetadataDocument{
+public class MonitoringNetwork extends AbstractMetadataDocument implements WellKnownText {
     private List<String> alternateTitles;
     private String objectives;
     private List<ResponsibleParty> responsibleParties;
@@ -31,4 +32,13 @@ public class MonitoringNetwork extends AbstractMetadataDocument{
     private List<Keyword> environmentalDomain, keywordsParameters;
     private List<Supplemental> linksData, linksOther;
     private BoundingBox boundingBox;
+
+    @Override
+    public List<String> getWKTs() {
+        List<String> toReturn = new ArrayList<>();
+        if (boundingBox != null) {
+            toReturn.add(boundingBox.getWkt());
+        }
+        return toReturn;
+    }
 }

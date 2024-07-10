@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import static com.google.common.base.Strings.nullToEmpty;
 import java.math.BigDecimal;
-import java.util.Optional;
 
 import lombok.Value;
 import lombok.Builder;
