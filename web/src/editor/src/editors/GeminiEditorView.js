@@ -279,7 +279,6 @@ export default EditorView.extend({
           label: 'Science topic',
           ObjectInputView: KeywordThemeView,
           multiline: false,
-          className: 'component eidconly',
           helpText: 'These are used to populate the topic facet in the search interface - try to include at least one'
         }),
         new ParentView({

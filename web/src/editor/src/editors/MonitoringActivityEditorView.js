@@ -128,9 +128,7 @@ export default EditorView.extend({
               southBoundLatitude: -90.00,
               westBoundLongitude: -180.00
             }
-          },
-          helpText: `<p>If you do not wish to reveal the exact location publicly (for example, if locations are sensitive)
-            it is recommended that you generalise the location.</p>`
+          }
         })
       ]
     },
