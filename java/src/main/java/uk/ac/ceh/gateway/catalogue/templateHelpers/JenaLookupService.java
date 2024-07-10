@@ -178,7 +178,7 @@ public class JenaLookupService {
      * only the last in the chain
      */
     public List<Link> superseded(String uri) {
-        String sparql = "PREFIX dc: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> PREFIX : <https://vocabs.ceh.ac.uk/eidc#> SELECT DISTINCT ?node ?type ?title ?rel WHERE {?node :supersedes+ ?me; dc:title ?title; pso:PublicationStatus ?publicationStatus; dc:type ?type.BIND( :supersedes as ?rel)FILTER (!EXISTS {?x :supersedes ?node})}";
+        String sparql = "PREFIX dc: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> PREFIX : <https://vocabs.ceh.ac.uk/eidc#> SELECT DISTINCT ?node ?type ?title ?rel ?publicationStatus WHERE {?node :supersedes+ ?me; dc:title ?title; pso:PublicationStatus ?publicationStatus; dc:type ?type.BIND( :supersedes as ?rel)FILTER (!EXISTS {?x :supersedes ?node})}";
         ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
         pss.setIri("me", uri);
         return links(pss);
@@ -190,7 +190,7 @@ public class JenaLookupService {
      * and orders them by distance to the most recent version
      */
     public List<Link> supersedes(String uri) {
-        String sparql = "PREFIX dc: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> PREFIX : <https://vocabs.ceh.ac.uk/eidc#> SELECT ?node ?type ?title ?rel WHERE {?me (:supersedes)+ ?mid. ?mid(:supersedes)* ?node. ?node dc:title ?title; pso:PublicationStatus ?publicationStatus;  dc:type ?type. BIND( :supersededBy as ?rel) FILTER (!EXISTS {?x :supersedes ?me})} GROUP BY ?node ?type ?title ?rel HAVING (COUNT(?mid) > 0) ORDER BY COUNT(?mid)";
+        String sparql = "PREFIX dc: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> PREFIX : <https://vocabs.ceh.ac.uk/eidc#> SELECT ?node ?type ?title ?rel ?publicationStatus WHERE {?me (:supersedes)+ ?mid. ?mid(:supersedes)* ?node. ?node dc:title ?title; pso:PublicationStatus ?publicationStatus;  dc:type ?type. BIND( :supersededBy as ?rel) FILTER (!EXISTS {?x :supersedes ?me})} GROUP BY ?node ?type ?title ?rel ?publicationStatus HAVING (COUNT(?mid) > 0) ORDER BY COUNT(?mid)";
         ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
         pss.setIri("me", uri);
         return links(pss);
