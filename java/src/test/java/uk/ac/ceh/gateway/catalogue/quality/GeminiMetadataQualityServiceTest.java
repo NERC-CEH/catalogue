@@ -36,8 +36,8 @@ import static uk.ac.ceh.gateway.catalogue.quality.Results.Severity.WARNING;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
-public class MetadataQualityServiceTest {
-    private MetadataQualityService service;
+public class GeminiMetadataQualityServiceTest {
+    private GeminiMetadataQualityService service;
     // Keep ObjectMapper options same as ObjectMapper in config/ApplicationConfig.java
     private ObjectMapper objectMapper = new ObjectMapper()
         .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
@@ -57,7 +57,7 @@ public class MetadataQualityServiceTest {
 
     @BeforeEach
     public void setup() {
-        this.service = new MetadataQualityService(documentReader, objectMapper);
+        this.service = new GeminiMetadataQualityService(documentReader, objectMapper);
     }
 
     @Test

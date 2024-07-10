@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import uk.ac.ceh.gateway.catalogue.document.reading.DocumentReader;
 import uk.ac.ceh.gateway.catalogue.quality.MetadataCheck;
 import uk.ac.ceh.gateway.catalogue.quality.Results;
+import uk.ac.ceh.gateway.catalogue.quality.MetadataQualityService;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -31,7 +32,7 @@ import static uk.ac.ceh.gateway.catalogue.serviceagreement.GitRepoServiceAgreeme
 @Slf4j
 @ToString
 @Service
-public class ServiceAgreementQualityService {
+public class ServiceAgreementQualityService implements MetadataQualityService {
 
     private final DocumentReader documentReader;
     private final Configuration config;

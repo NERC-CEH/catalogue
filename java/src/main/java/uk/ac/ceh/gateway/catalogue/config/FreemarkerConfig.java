@@ -8,7 +8,7 @@ import org.springframework.lang.Nullable;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
-import uk.ac.ceh.gateway.catalogue.quality.MetadataQualityService;
+import uk.ac.ceh.gateway.catalogue.quality.MultiDocumentTypeMetadataQualityService;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreementQualityService;
 import uk.ac.ceh.gateway.catalogue.services.MetricsService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
@@ -28,7 +28,7 @@ public class FreemarkerConfig {
     private final GeminiExtractor geminiExtractor;
     private final JenaLookupService jenaLookupService;
     private final MapServerDetailsService mapServerDetailsService;
-    private final MetadataQualityService metadataQualityService;
+    private final MultiDocumentTypeMetadataQualityService metadataQualityService;
     private final PermissionService permissionService;
     private final ProfileService profileService;
     @Nullable private final ServiceAgreementQualityService serviceAgreementQualityService;
