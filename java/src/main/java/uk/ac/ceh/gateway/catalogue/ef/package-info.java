@@ -15,7 +15,10 @@
 @XmlAccessorType(XmlAccessType.FIELD)
 package uk.ac.ceh.gateway.catalogue.ef;
 
+import jakarta.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapters;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
-import javax.xml.bind.annotation.*;
-import javax.xml.bind.annotation.adapters.*;
-import java.time.*;

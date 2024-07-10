@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +12,6 @@ import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Slf4j

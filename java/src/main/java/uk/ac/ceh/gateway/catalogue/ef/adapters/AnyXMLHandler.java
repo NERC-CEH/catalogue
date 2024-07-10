@@ -1,11 +1,15 @@
 package uk.ac.ceh.gateway.catalogue.ef.adapters;
 
-import java.io.*;
-import javax.xml.bind.ValidationEventHandler;
-import javax.xml.bind.annotation.DomHandler;
+import jakarta.xml.bind.ValidationEventHandler;
+import jakarta.xml.bind.annotation.DomHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.xml.transform.Source;
-import javax.xml.transform.stream.*;
-import org.slf4j.*;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import java.io.StringReader;
+import java.io.StringWriter;
 
 /*
  * see http://blog.bdoughan.com/2011/04/xmlanyelement-and-non-dom-properties.html

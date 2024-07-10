@@ -107,9 +107,9 @@ public class SparqlKeywordVocabulary implements KeywordVocabulary {
                 solrClient.commit(COLLECTION);
             }
         } catch (HttpStatusCodeException ex) {
-            log.error(format("Cannot retrieve %s from vocab server, error: %s %s", vocabularyId, ex.getRawStatusCode(), ex.getResponseBodyAsString()));
+            log.error(format("Cannot retrieve %s from vocab server, error: %s %s", vocabularyId, ex.getStatusCode().value(), ex.getResponseBodyAsString()));
             throw new KeywordVocabularyException(
-                format("Cannot retrieve %s from vocab server, error: %s %s", vocabularyId, ex.getRawStatusCode(), ex.getResponseBodyAsString()),
+                format("Cannot retrieve %s from vocab server, error: %s %s", vocabularyId, ex.getStatusCode().value(), ex.getResponseBodyAsString()),
                 ex
             );
         } catch (IOException | SolrServerException ex) {

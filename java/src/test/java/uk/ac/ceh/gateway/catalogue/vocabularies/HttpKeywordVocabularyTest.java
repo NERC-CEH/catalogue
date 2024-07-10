@@ -1,21 +1,17 @@
 package uk.ac.ceh.gateway.catalogue.vocabularies;
 
-import java.util.Arrays;
-
 import lombok.SneakyThrows;
 import lombok.val;
-
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrServerException;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.Arrays;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -137,7 +133,6 @@ class HttpKeywordVocabularyTest {
     @SneakyThrows
     public void failToCommunicateWithVocabServer() {
         // Setup
-        String endpointUrl = getClass().getResource(CONCEPTS_JSON).toString();
         val catalogues = Arrays.asList("test-0", "test-1");
 
         vocabularyService = new HttpKeywordVocabulary(

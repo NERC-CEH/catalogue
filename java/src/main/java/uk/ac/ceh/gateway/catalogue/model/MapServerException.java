@@ -6,12 +6,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
+import java.io.Serial;
+
 /**
- * If an issue occurs when talking to the mapserver (for getfeatureinfo requests)
+ * If an issue occurs when talking to the mapserver (for getFeatureInfo requests)
  * we will want to proxy that error back to the end user.
  */
 public class MapServerException extends RuntimeException {
-    static final long serialVersionUID = 1L;
+    @Serial
+    private static final long serialVersionUID = 1L;
     @Getter private final MediaType contentType;
     @Getter private final HttpStatus statusCode;
 

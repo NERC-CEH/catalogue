@@ -1,10 +1,15 @@
 package uk.ac.ceh.gateway.catalogue.ef;
 
-import java.util.*;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlValue;
 import lombok.Data;
 import lombok.experimental.Accessors;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Accessors(chain = true)
