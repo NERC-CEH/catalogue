@@ -55,7 +55,7 @@
 
           <#if operatingPeriod?has_content>
             <@keyValue "Operating period" "">
-              <#list operatingPeriod?sort_by("begin")>
+              <#list operatingPeriod>
                 <#items as op>
                   <@displayPeriod op /><#sep><br></#sep>
                 </#items>
