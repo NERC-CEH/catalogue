@@ -34,8 +34,7 @@ import java.util.stream.Collectors;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.number.BigDecimalCloseTo.closeTo;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @DisplayName("NetworkIndexing")
 @ExtendWith(MockitoExtension.class)
@@ -78,11 +77,11 @@ class NetworkIndexingServiceTest {
         MonitoringFacility f1 = getMonitoringFacility("f1", expectedEast + "," + expectedNorth);
         MonitoringNetwork n1 = getMonitoringNetwork("n1");
         n1.setBoundingBox(BoundingBox.builder()
-                .northBoundLatitude("100")
-                .southBoundLatitude(expectedSouth+"")
-                .eastBoundLongitude("100")
-                .westBoundLongitude(expectedWest+"")
-                .build()
+            .northBoundLatitude("100")
+            .southBoundLatitude(expectedSouth+"")
+            .eastBoundLongitude("100")
+            .westBoundLongitude(expectedWest+"")
+            .build()
         );
         List<String> newFacility = Arrays.asList(f1.getId());
 
@@ -118,6 +117,48 @@ class NetworkIndexingServiceTest {
         assertThat(actualSouth, is(closeTo(expectedSouth, precision)));
         assertThat(actualEast, is(closeTo(expectedEast, precision)));
         assertThat(actualWest, is(closeTo(expectedWest, precision)));
+    }
+
+    @Test
+    void addFacilityInsideNetwork() {
+        BigDecimal expectedNorth = BigDecimal.valueOf(200);
+        BigDecimal expectedSouth = BigDecimal.valueOf(0);
+        BigDecimal expectedEast = BigDecimal.valueOf(200);
+        BigDecimal expectedWest = BigDecimal.valueOf(0);
+        MonitoringFacility f1 = getMonitoringFacility("f1", "50,50");
+        MonitoringNetwork n1 = getMonitoringNetwork("n1");
+        n1.setBoundingBox(BoundingBox.builder()
+            .northBoundLatitude(expectedNorth+"")
+            .southBoundLatitude(expectedSouth+"")
+            .eastBoundLongitude(expectedEast+"")
+            .westBoundLongitude(expectedWest+"")
+            .build()
+        );
+        List<String> newFacility = Arrays.asList(f1.getId());
+
+        f1.setRelationships(
+            com.google.common.collect.Sets.newHashSet(
+                new Relationship(Ontology.BELONGS_TO.getURI(), n1.getUri())
+            )
+        );
+
+        // when
+        try {
+            when(bundledReader.readBundle(f1.getId())).thenReturn(f1);
+            when(bundledReader.readBundle(n1.getId())).thenReturn(n1);
+            service.indexDocuments(newFacility);
+
+            // then
+            verify(documentRepository, never()).save(userCaptor.capture(), networkDocCaptor.capture(), commitMessageCaptor.capture());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (PostProcessingException e) {
+            throw new RuntimeException(e);
+        } catch (DocumentIndexingException e) {
+            throw new RuntimeException(e);
+        } catch (DocumentRepositoryException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
@@ -170,5 +211,47 @@ class NetworkIndexingServiceTest {
         assertThat(actualSouth, is(closeTo(expectedSouth, precision)));
         assertThat(actualEast, is(closeTo(expectedEast, precision)));
         assertThat(actualWest, is(closeTo(expectedWest, precision)));
+    }
+
+    @Test
+    void relationshipRemovedFromFacility() {
+        BigDecimal expectedNorth = BigDecimal.valueOf(200);
+        BigDecimal expectedSouth = BigDecimal.valueOf(0);
+        BigDecimal expectedEast = BigDecimal.valueOf(200);
+        BigDecimal expectedWest = BigDecimal.valueOf(0);
+        MonitoringFacility f1 = getMonitoringFacility("f1", "50,50");
+        MonitoringNetwork n1 = getMonitoringNetwork("n1");
+        n1.setBoundingBox(BoundingBox.builder()
+            .northBoundLatitude(expectedNorth+"")
+            .southBoundLatitude(expectedSouth+"")
+            .eastBoundLongitude(expectedEast+"")
+            .westBoundLongitude(expectedWest+"")
+            .build()
+        );
+        List<String> newFacility = Arrays.asList(f1.getId());
+
+        f1.setRelationships(
+            com.google.common.collect.Sets.newHashSet(
+                new Relationship(Ontology.BELONGS_TO.getURI(), n1.getUri())
+            )
+        );
+
+        // when
+        try {
+            when(bundledReader.readBundle(f1.getId())).thenReturn(f1);
+            when(bundledReader.readBundle(n1.getId())).thenReturn(n1);
+            service.indexDocuments(newFacility);
+
+            // then
+            verify(documentRepository, never()).save(userCaptor.capture(), networkDocCaptor.capture(), commitMessageCaptor.capture());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (PostProcessingException e) {
+            throw new RuntimeException(e);
+        } catch (DocumentIndexingException e) {
+            throw new RuntimeException(e);
+        } catch (DocumentRepositoryException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

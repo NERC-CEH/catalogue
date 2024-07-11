@@ -7,7 +7,7 @@ import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataSubmittedEvent;
 import uk.ac.ceh.gateway.catalogue.document.DocumentListingService;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
-import uk.ac.ceh.gateway.catalogue.repository.FacilityDeletedEvent;
+import uk.ac.ceh.gateway.catalogue.repository.FacilityBelongToRemovedEvent;
 
 import java.util.List;
 
@@ -32,7 +32,7 @@ public class NetworkFileEventListener {
     }
 
     @Subscribe
-    public void unindexDocument(FacilityDeletedEvent event) throws DocumentIndexingException {
+    public void unindexDocument(FacilityBelongToRemovedEvent event) throws DocumentIndexingException {
         log.debug("About to unindex: {}", event.getFacilityId());
         service.unindexDocuments(event.getFacilityId(), event.getBelongToFilenames());
     }
