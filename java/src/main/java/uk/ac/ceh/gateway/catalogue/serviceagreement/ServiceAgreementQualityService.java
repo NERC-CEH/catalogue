@@ -96,16 +96,36 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
     }
 
     List<MetadataCheck> checkBasics(DocumentContext parsedDoc) {
-        val requiredKeys = ImmutableSet.of("title", "depositorContactDetails", "eidcName", "transferMethod", "depositReference");
+        val requiredKeys = Map.ofEntries(
+            Map.entry("title", "Title"),
+            Map.entry("depositorContactDetails", "Depositor contact details"),
+            Map.entry("eidcName", "EIDC name"),
+            Map.entry("transferMethod", "Transfer method"),
+            Map.entry("depositReference", "Deposit reference"),
+            Map.entry("topicCategories", "ISO 19115 topic categories keywords"),
+            Map.entry("keywordsTheme", "Science topic keywords"),
+            Map.entry("keywordsObservedProperty","Observed properties keywords"),
+            Map.entry("keywordsPlace", "Places keywords"),
+            Map.entry("keywordsProject", "Project keywords"),
+            Map.entry("keywordsInstrument", "Instrument keywords"),
+            Map.entry("keywordsOther", "Other keywords"));
+
         val toReturn = new ArrayList<MetadataCheck>();
+
+        // Build string to check for missing fields
+        val keysToCheck = new StringJoiner(",");
+        requiredKeys.forEach((key, value) -> keysToCheck.add("'" + key + "'"));
+        String joinedKeysToCheck = keysToCheck.toString();
+        joinedKeysToCheck = "$.[" + joinedKeysToCheck + "]";
+
         val toCheck = parsedDoc.read(
-                "$.['title', 'depositorContactDetails', 'eidcName', 'transferMethod', 'depositReference']",
+                joinedKeysToCheck,
                 new TypeRef<Map<String, String>>() {}
         );
 
-        requiredKeys.forEach(key -> {
+        requiredKeys.forEach((key, value) -> {
             if (fieldIsMissing(toCheck, key)) {
-                toReturn.add(new MetadataCheck(key + " is missing", ERROR));
+                toReturn.add(new MetadataCheck(value + " is missing", ERROR));
             }
         });
 

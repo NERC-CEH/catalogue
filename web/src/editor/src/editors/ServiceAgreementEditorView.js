@@ -28,25 +28,29 @@ export default EditorView.extend({
         new InputView({
           model: this.model,
           modelAttribute: 'depositReference',
-          label: 'Deposit Reference'
+          label: 'Deposit Reference',
+          required: true
         }),
 
         new InputView({
           model: this.model,
           modelAttribute: 'depositorName',
-          label: 'Depositor Name'
+          label: 'Depositor Name',
+          required: true
         }),
 
         new InputView({
           model: this.model,
           modelAttribute: 'depositorContactDetails',
-          label: "Depositor's contact details"
+          label: "Depositor's contact details",
+          required: true
         }),
 
         new InputView({
           model: this.model,
           modelAttribute: 'eidcName',
-          label: 'EIDC contact name'
+          label: 'EIDC contact name',
+          required: true
         }),
 
         new TextOnlyView({
@@ -61,7 +65,8 @@ export default EditorView.extend({
           model: this.model,
           label: 'Title',
           text: `<p>Provide a brief title that best describes the data resource, <strong>not</strong> the project or activity from which the data were derived. Include references to the subject, spatial and temporal aspects of the data resource. <a href='https://eidc.ac.uk/deposit/metadata/guidance' target='_blank' rel='noopener noreferrer' >Further guidance is available on our website</a>.</p>
-`
+`,
+          required: true
         }),
 
         new InputView({
@@ -75,7 +80,8 @@ export default EditorView.extend({
           text: `<p>List authors below in the order in which they will appear in the citation.</p>
 <p>Author's names must be in the format <code>Surname &laquo;comma&raquo; Initial(s)</code>. For example, <code>Smith, K.P.</code> <strong>not</strong> <code>Kim P. Smith</code></p>
 <p>Authors' details will be published in a public data catalogue and held in EIDC systems.  UK law requires us to inform all individuals listed that they are being proposed as an author.  We therefore require a current, valid email address (or phone number) for all living authors.  Those without valid contact details are not eligible for authorship.  Please see our <a href='http://eidc.ceh.ac.uk/policies/privacy' target='_blank' rel='noopener noreferrer'>Privacy Notice</a> for further information</p>\
-`
+`,
+          required: true
         }),
 
         new ParentView({
@@ -108,7 +114,8 @@ export default EditorView.extend({
         new InputView({
           model: this.model,
           modelAttribute: 'fileNumber',
-          label: 'Number of files to be deposited'
+          label: 'Number of files to be deposited',
+          required: true
         }),
 
         new TextOnlyView({
@@ -160,13 +167,15 @@ export default EditorView.extend({
           model: this.model,
           label: 'Data Category',
           text: `<p>If the data are wholly or partly funded by NERC, the data must be categorised as either <strong>Environmental Data</strong> or <strong>Information Product</strong>.</p><p>Environmental data are '<i>individual items or records ... obtained by measurement, observation or modelling of the natural world... including all necessary calibration and quality control. This includes data generated through complex systems, such as ... models, including the model code used to produce the data.</i>' </p><p>Information Products are '<i>created by adding a level of intellectual input that refines or adds value to data through interpretation and/or combination with other data</i>'.</p>
-`
+`,
+          required: true
         }),
 
         new SingleObjectView({
           model: this.model,
           modelAttribute: 'dataCategory',
-          ObjectInputView: CategoryView
+          ObjectInputView: CategoryView,
+          required: true
         })
       ]
     },
@@ -180,7 +189,8 @@ export default EditorView.extend({
           label: 'Document(s) to be provided',
           text: `<p>Please provide the title and file extension of document(s) you will provide to enable re-use of the data (see <a href="https://eidc.ac.uk/deposit/supportingDocumentation">https://eidc.ac.uk/deposit/supportingDocumentation</a>).</p>
 <p>Describe the content of the documentation to be supplied. All mandatory elements must be provided across the supporting documents, but not necessarily all in the same one.</p>
-`
+`,
+          required: true
         }),
 
         new ParentView({
@@ -204,7 +214,8 @@ export default EditorView.extend({
           label: 'End user licence',
           text: `
 <p>Please state under which licence the data will be made available. the vast majority of NERC-funded data are provided under the Open Government Licence. We recommend that you seek guidance from your institution and/or funding agency as to the appropriate licence.</p>
-`
+`,
+          required: true
         }),
 
         new SingleObjectView({
@@ -219,7 +230,8 @@ export default EditorView.extend({
           modelAttribute: 'ownersOfIpr',
           label: 'Owner of IPR',
           ObjectInputView: RightsHolderView,
-          multiline: true
+          multiline: true,
+          required: true
         }),
 
         new TextOnlyView({
@@ -363,7 +375,8 @@ export default EditorView.extend({
           helpText: `\
 <p>Please note these are very broad themes required by the metadata standard and should not be confused with science topics.</p>
 <p>Multiple topic categories are allowed - please include all that are pertinent.  For example, "<i>Estimates of topsoil invertebrates</i>" = Biota <strong>and</strong> Environment <strong>and</strong> Geoscientific Information.</p>\
-`
+`,
+          required: true
         }),
         new ParentView({
           model: this.model,
@@ -372,7 +385,8 @@ export default EditorView.extend({
           label: 'Science topic',
           ObjectInputView: KeywordThemeView,
           multiline: false,
-          helpText: 'These are used to populate the topic facet in the search interface - try to include at least one'
+          helpText: 'These are used to populate the topic facet in the search interface - try to include at least one',
+          required: true
         }),
         new ParentView({
           model: this.model,
@@ -380,8 +394,9 @@ export default EditorView.extend({
           label: 'Observed properties',
           ObjectInputView: KeywordVocabularyView,
           multiline: true,
-          className: 'hidden',
-          helpText: 'Controlled keywords describing the observed properties/variables contained in this data resource'
+          helpText: 'Controlled keywords describing the observed properties/variables contained in this data resource',
+          required: true,
+          className: 'hidden'
         }),
         new ParentView({
           model: this.model,
@@ -393,7 +408,8 @@ export default EditorView.extend({
           helpText: `\
         Controlled keywords describing geographic places pertinent to this resource.
         For example, named countries/regions in which the research was conducted.
-        `
+        `,
+          required: true
         }),
         new ParentView({
           model: this.model,
@@ -401,8 +417,9 @@ export default EditorView.extend({
           label: 'Projects',
           ObjectInputView: KeywordVocabularyView,
           multiline: true,
-          className: 'hidden',
-          helpText: 'Controlled keywords describing projects that fund/support the creation of this resource'
+          helpText: 'Controlled keywords describing projects that fund/support the creation of this resource',
+          required: true,
+          className: 'hidden'
         }),
         new ParentView({
           model: this.model,
@@ -410,8 +427,9 @@ export default EditorView.extend({
           label: 'Instruments',
           ObjectInputView: KeywordVocabularyView,
           multiline: true,
-          className: 'hidden',
-          helpText: 'Controlled keywords describing instruments/sensors used to generate this data'
+          helpText: 'Controlled keywords describing instruments/sensors used to generate this data',
+          required: true,
+          className: 'hidden'
         }),
         new ParentView({
           model: this.model,
@@ -419,7 +437,8 @@ export default EditorView.extend({
           label: 'Other keywords',
           ObjectInputView: KeywordVocabularyView,
           multiline: true,
-          helpText: 'All other keywords not described elsewhere'
+          helpText: 'All other keywords not described elsewhere',
+          required: true
         })
       ]
     },
@@ -445,7 +464,8 @@ export default EditorView.extend({
 <p>The description should describe the data resource in question, NOT the project/activity which produced it.</p>
 <p>The description is an 'executive summary' that allows the reader to determine the relevance and usefulness of the resource.  The text should be concise but should contain sufficient detail to allow the reader to ascertain rapidly the scope and limitations of the resource.</p>
 <p>Write in plain English; in other words, write complete sentences rather than fragments.  It is recommended that the abstract is organised using the "What, Where, When, How, Why, Who" structure.</p>\
-`
+`,
+          required: true
         }),
 
         new TextareaView({
@@ -456,7 +476,8 @@ export default EditorView.extend({
           helpText: `\
 <p>Information about the source data used in the construction of this data resource.</p>
 <p>Quality assessments and enhancement processes applied to the data resource can also be noted and summarised here.</p>\
-`
+`,
+          required: true
         }),
 
         new PredefinedParentView({

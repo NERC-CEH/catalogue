@@ -8,11 +8,16 @@ export default _.template(`
             <% if(data.helpText) { %>
                 <a data-toggle="collapse" title="Click for help" href="#help-<%= data.modelAttribute %>" data-parent="#editor"><i class="fa-regular fa-circle-question"></i></a>
             <% } %>
+            <% if(data.required) { %>
+                <a data-toggle="collapse" title="Required" href="#required-<%= data.modelAttribute %>" data-parent="#editor"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+            <% } %>
         </label>
         <div id="template-add-on"></div>
-        <div id="help-<%= data.modelAttribute %>" class="editor-help">
+        <% if(data.helpText) { %>
+            <div id="help-<%= data.modelAttribute %>" class="editor-help">
             <%= data.helpText %>
-        </div>
+            </div>
+        <% } %>
     </div>
     <div id="dataentry" class="col-sm-9 dataentry"></div>
 </div>
