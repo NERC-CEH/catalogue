@@ -13,6 +13,8 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import static com.google.common.base.Strings.nullToEmpty;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 @Value
 @Slf4j
@@ -43,7 +45,7 @@ public class Geometry {
      */
     public Optional<String> getWkt() {
         log.debug("Geometry object: {}", this);
-        if(this.getGeometryString().isEmpty() || this.getGeometryString().isBlank()){
+        if(this.getGeometryString().isBlank()){
             return Optional.empty();
         }
         try {
@@ -115,7 +117,7 @@ public class Geometry {
      * @return an Optional<gemini.BoundingBox>
      */
     public Optional<BoundingBox> getBoundingBox() {
-        if(this.getGeometryString().isEmpty() || this.getGeometryString().isBlank()){
+        if(this.getGeometryString().isBlank()){
             return Optional.empty();
         }
         try {
@@ -126,10 +128,10 @@ public class Geometry {
             if(!coordinates.isArray()) {
                 throw new RuntimeException("In Geometry.getBoundingBox(), the expected array of coordinates in the property 'geometry' was not found.");
             }
-            if(type.equals(this.TYPE_POINT)){
+            if(type.equals(TYPE_POINT)){
                 return Optional.of(this.getPointBoundingBox(coordinates));
             }
-            else if(type.equals(this.TYPE_POLYGON)){
+            else if(type.equals(TYPE_POLYGON)){
                 return Optional.of(this.getPolygonBoundingBox(coordinates));
             } else {
                 throw new RuntimeException("There is not yet an implementation of getBoundingBox() for shapes of type: " + type);
@@ -149,10 +151,10 @@ public class Geometry {
         var lon = coordinates.get(0).asDouble();
         var lat = coordinates.get(1).asDouble();
         return BoundingBox.builder()
-            .northBoundLatitude((lat + POINT_PRECISION)+"")
-            .southBoundLatitude((lat - POINT_PRECISION)+"")
-            .eastBoundLongitude((lon + POINT_PRECISION)+"")
-            .westBoundLongitude((lon - POINT_PRECISION)+"")
+            .northBoundLatitude(Double.toString(lat + POINT_PRECISION))
+            .southBoundLatitude(Double.toString(lat - POINT_PRECISION))
+            .eastBoundLongitude(Double.toString(lon + POINT_PRECISION))
+            .westBoundLongitude(Double.toString(lon - POINT_PRECISION))
             .build();
     }
     /**
@@ -171,10 +173,10 @@ public class Geometry {
                 north = south = lat;
                 east = west = lon;
             } else {
-                north = (lat > north) ? lat : north;
-                south = (lat < south) ? lat : south;
-                east = (lon > east) ? lon : east;
-                west = (lon < west) ? lon : west;
+                north = max(lat, north);
+                south = min(lat, south);
+                east = max(lon, east);
+                west = min(lon, west);
             }
         }
         return BoundingBox.builder()

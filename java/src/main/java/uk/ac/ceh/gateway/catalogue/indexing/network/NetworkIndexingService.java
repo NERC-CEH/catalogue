@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.indexing.network;
 
+import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.gateway.catalogue.document.DocumentListingService;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
  */
 
 @Slf4j
+
 @ToString
 public class NetworkIndexingService {
     private final DocumentListingService listingService;
@@ -40,7 +42,7 @@ public class NetworkIndexingService {
     private final JenaLookupService lookupService;
 
     private final CatalogueUser user = new CatalogueUser("Network Indexing Service", "none@none.com");
-    private final String commitMessage = "Network bounding box update triggered by change in component facility: %s";
+    public static final String COMMIT_MESSAGE_TEMPLATE = "Network bounding box update triggered by change in component facility: %s";
 
     public NetworkIndexingService (
             DocumentListingService listingService,
@@ -60,16 +62,15 @@ public class NetworkIndexingService {
      * @param toIndex List of ids of documents that have been created or updated
      * @throws DocumentIndexingException
      */
+    @SneakyThrows
     public void indexDocuments(List<String> toIndex) throws DocumentIndexingException {
         toIndex.stream().forEach(id -> {
             try {
                 MetadataDocument document = bundledReader.readBundle(id);
                 if(document instanceof MonitoringFacility facility) {
-                    updateIndex(facility);
+                    updateRelatedNetworks(facility);
                 }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (PostProcessingException e) {
+            } catch (IOException | PostProcessingException e) {
                 throw new RuntimeException(e);
             }
         });
@@ -87,7 +88,7 @@ public class NetworkIndexingService {
             try {
                 MetadataDocument doc = bundledReader.readBundle(id);
                 if(doc instanceof MonitoringNetwork networkDoc){
-                    updateNetworkRemove(networkDoc, facilityId);
+                    updateBoundingBox(networkDoc, Optional.empty(), Optional.of(facilityId), facilityId);
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -100,60 +101,58 @@ public class NetworkIndexingService {
      * Pull out the parent networks of the facility and update their bounding box if required
      * @param facility The facility that has been created or edited
      */
-    private void updateIndex(MonitoringFacility facility){
-        facility.getRelationships().stream().forEach(r -> {
-            if(isBelongsTo(r)) {
+    private void updateRelatedNetworks(MonitoringFacility facility){
+        facility.getRelationships().stream()
+            .filter(this::isBelongsTo)
+            .forEach(r -> {
                 try {
                     MetadataDocument doc = bundledReader.readBundle(r.getTarget());
                     if(doc instanceof MonitoringNetwork networkDoc) {
-                        Optional<Geometry> facilityGeomOpt = Optional.ofNullable(facility.getGeometry());
-                        if(facilityGeomOpt.isPresent() && facilityGeomOpt.get().getBoundingBox().isPresent()) {
-                            updateNetworkAdd(networkDoc, facilityGeomOpt.get().getBoundingBox().get(), facility.getId());
-                        }
+                        this.updateBoundingBox(networkDoc, Optional.of(facility.getId()), Optional.empty(), facility.getId());
                     }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 } catch (PostProcessingException e) {
                     throw new RuntimeException(e);
                 }
-            }
-        });
+            });
     }
 
     /**
-     * This will update the MonitoringNetwork's bounding box under the following conditions:
-     * - if the MonitoringNetwork's bounding box is empty, it will be assigned that the facility's bbox
-     * - if the facility's bbox is not completely inside the network's bbox, then the network bbox will be
-     * set to the minimum bounding envelope of the intersection of both bboxes.
-     * @param doc the metadata document for the MonitoringNetwork
-     * @param facilityBbox the facility's bounding box
+     * This uses the Jena lookup service to find all the facilities that belong to a network in order to rebuild the
+     * envelope of the network.  There is a possibility that the Jena service may not have been updated with the change
+     * being processed, so the list of facilities returned by the inverseRelationship lookup is checked for either the
+     * presence or abscence of the facility we already know about and adjusted accordingly.
+     * @param networkDoc the network whose bounding box will be re-generated
+     * @param mustIncludeFacility a facility that belongs to the network as it has just been added and must be present
+     *                            in the list
+     * @param mustExcludeFacility a facility that does not belong in the network because it has just been removed and
+     *                            must not be present in the list
      */
-    private void updateNetworkAdd(MonitoringNetwork doc, BoundingBox facilityBbox, String facilityId) {
-        Optional<BoundingBox> networkBBoxOpt = Optional.ofNullable(doc.getBoundingBox());
+    @SneakyThrows
+    private void updateBoundingBox(MonitoringNetwork networkDoc, Optional<String> mustIncludeFacility, Optional<String> mustExcludeFacility, String intiatingFacility){
+        List<Link> linkedFacilities = lookupService.inverseRelationships(networkDoc.getUri(), Ontology.BELONGS_TO.getURI());
+        List<Optional<BoundingBox>> extantFacilityBBoxes = getBboxesWithoutExcluded(linkedFacilities, mustExcludeFacility);
+        addFacility(linkedFacilities, extantFacilityBBoxes, mustIncludeFacility);
+        Optional<BoundingBox> combinedBbox = getEnvelope(extantFacilityBBoxes);
+        // Update the network
+        networkDoc.setBoundingBox(combinedBbox.orElse(null));
         try {
-            if(networkBBoxOpt.isEmpty()){
-                doc.setBoundingBox(facilityBbox);
-                documentRepository.save(user, doc, String.format(commitMessage, facilityId));
-            } else if(!networkBBoxOpt.get().isSurrounding(facilityBbox)){
-                doc.setBoundingBox(networkBBoxOpt.get().intersectingBBox(facilityBbox));
-                documentRepository.save(user, doc, String.format(commitMessage, facilityId));
-            }
+            documentRepository.save(user, networkDoc, String.format(COMMIT_MESSAGE_TEMPLATE, intiatingFacility));
         } catch (DocumentRepositoryException e) {
             throw new RuntimeException(e);
         }
     }
 
     /**
-     * Find the child facilities for a network, excluding the facility that has been deleted already.  Generate
-     * the bounding box for that collection of facilities and update the network's bounding box.
-     * @param networkDoc the MetadataDocument of the network that needs updating
-     * @param deletedFacilityId the string id of the deleted facility that should be excluded from the collection of
-     * facilities that belong to the network
+     * Get a list of bounding boxes for the linkedFacilities and remove the one identified in mustExcludeFacility,
+     * which may or may not be in the list
+     * @param linkedFacilities the list of links that contain info needed for each bounding box
+     * @param mustExcludeFacility the id of a facility that must not occur in the list
      */
-    private void updateNetworkRemove(MonitoringNetwork networkDoc, String deletedFacilityId) {
-        List<Link> linkedFacilities = lookupService.inverseRelationships(networkDoc.getUri(), Ontology.BELONGS_TO.getURI());
+    private List<Optional<BoundingBox>> getBboxesWithoutExcluded(List<Link> linkedFacilities, Optional<String> mustExcludeFacility) {
         List<Optional<BoundingBox>> extantFacilityBBoxes = linkedFacilities.stream()
-            .filter(l -> !l.getHref().contains(deletedFacilityId)) //Make sure the deleted facility isn't included
+            .filter(l -> mustExcludeFacility.isEmpty() || !l.getHref().contains(mustExcludeFacility.get())) //Make sure deleted facility, or facility with removed relationship isn't included
             .map(l -> {
                 return Geometry.builder()
                     .geometryString(l.getGeometry())
@@ -161,28 +160,44 @@ public class NetworkIndexingService {
                     .getBoundingBox();
             })
             .collect(Collectors.toList());
-        BoundingBox combinedBbox = null;
-        for (Optional<BoundingBox> optVal : extantFacilityBBoxes) {
-            if (optVal.isPresent()) {
-                BoundingBox val = optVal.get();
-                if (combinedBbox == null) {
-                    combinedBbox = val;
-                } else {
-                    if (!combinedBbox.isSurrounding(val)) {
-                        combinedBbox = combinedBbox.intersectingBBox(val);
-                    }
-                }
+        return extantFacilityBBoxes;
+    }
+
+    @SneakyThrows
+    private void addFacility(List<Link> linkedFacilities, List<Optional<BoundingBox>> extantFacilityBBoxes, Optional<String> mustIncludeFacility) {
+        // Add a bounding box to the list if required by 'mustIncludeFacility' and it doesn't yet appear in the list
+        if(mustIncludeFacility.isPresent()) {
+            boolean hasFacility = false;
+            for (Link l : linkedFacilities) {
+                hasFacility = hasFacility || l.getHref().contains(mustIncludeFacility.get());
             }
-        }
-        networkDoc.setBoundingBox(combinedBbox);
-        try {
-            documentRepository.save(user, networkDoc, String.format(commitMessage, deletedFacilityId));
-        } catch (DocumentRepositoryException e) {
-            throw new RuntimeException(e);
+            if (!hasFacility) {
+                extantFacilityBBoxes.add(
+                    ((MonitoringFacility) bundledReader.readBundle(mustIncludeFacility.get())).getGeometry().getBoundingBox()
+                );
+            }
         }
     }
 
+    /**
+     * Get the envelope of all the component facility envelopes
+     * @param extantFacilityBboxes a list of bounding boxes to get combined envelope from
+     */
+    private Optional<BoundingBox> getEnvelope(List<Optional<BoundingBox>> extantFacilityBboxes) {
+        return extantFacilityBboxes.stream()
+            .reduce(Optional.empty(), (acc, bboxOpt) -> {
+                if (bboxOpt.isPresent()) {
+                    if (acc.isEmpty()) {
+                        acc = bboxOpt;
+                    } else {
+                        acc = Optional.of(acc.get().envelope(bboxOpt.get()));
+                    }
+                }
+                return acc;
+            });
+    }
+
     protected boolean isBelongsTo(Relationship r) {
-        return r.getRelation().equals(Ontology.BELONGS_TO.getURI());
+        return (r.getRelation() != null) && r.getRelation().equals(Ontology.BELONGS_TO.getURI());
     }
 }

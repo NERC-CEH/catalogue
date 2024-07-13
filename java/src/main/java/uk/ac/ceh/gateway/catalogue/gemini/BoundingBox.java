@@ -71,28 +71,29 @@ public class BoundingBox {
     }
 
     /**
-     * Tests to determine whether the incomming bounding box is completely within this bounding box
+     * Tests to determine whether the incoming bounding box is completely within this bounding box
      * @param thatBox the bounding box to be compared against this one
      * @return if thatBox is completely inside this bounding box then 'true' else 'false'
      */
     public boolean isSurrounding(BoundingBox thatBox){
-        return this.northBoundLatitude.compareTo(thatBox.northBoundLatitude) > 0
-            && this.southBoundLatitude.compareTo(thatBox.southBoundLatitude) < 0
-            && this.eastBoundLongitude.compareTo(thatBox.eastBoundLongitude) > 0
-            && this.westBoundLongitude.compareTo(thatBox.westBoundLongitude) < 0;
+        return this.northBoundLatitude.compareTo(thatBox.northBoundLatitude) >= 0
+            && this.southBoundLatitude.compareTo(thatBox.southBoundLatitude) <= 0
+            && this.eastBoundLongitude.compareTo(thatBox.eastBoundLongitude) >= 0
+            && this.westBoundLongitude.compareTo(thatBox.westBoundLongitude) <= 0;
     }
 
     /**
-     * This will return the minimum bounding box from the intersection of the incomming one to this one
-     * @param thatBox the incomming bounding box to compare against this one
-     * @return the minimum bounding box that contains the incomming bounding box and this one
+     * This will return the minimum bounding box from the intersection of the incoming one to this one
+     * @param thatBox the incoming bounding box to compare against this one
+     * @return the minimum bounding box that contains the incoming bounding box and this one
      */
-    public BoundingBox intersectingBBox(BoundingBox thatBox){
-        return BoundingBox.builder()
-            .northBoundLatitude((this.northBoundLatitude.compareTo(thatBox.northBoundLatitude) > 0 ? this.northBoundLatitude : thatBox.northBoundLatitude) + "")
-            .southBoundLatitude((this.southBoundLatitude.compareTo(thatBox.southBoundLatitude) < 0 ? this.southBoundLatitude : thatBox.southBoundLatitude) + "")
-            .eastBoundLongitude((this.eastBoundLongitude.compareTo(thatBox.eastBoundLongitude) > 0 ? this.eastBoundLongitude : thatBox.eastBoundLongitude) + "")
-            .westBoundLongitude((this.westBoundLongitude.compareTo(thatBox.westBoundLongitude) < 0 ? this.westBoundLongitude : thatBox.westBoundLongitude) + "")
+    public BoundingBox envelope(BoundingBox thatBox){
+        BoundingBox toReturn = BoundingBox.builder()
+            .northBoundLatitude(this.northBoundLatitude.max(thatBox.northBoundLatitude).toString())
+            .southBoundLatitude(this.southBoundLatitude.min(thatBox.southBoundLatitude).toString())
+            .eastBoundLongitude(this.eastBoundLongitude.max(thatBox.eastBoundLongitude).toString())
+            .westBoundLongitude(this.westBoundLongitude.min(thatBox.westBoundLongitude).toString())
             .build();
+        return toReturn;
     }
 }

@@ -1,11 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.repository;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Value;
 
 import java.util.List;
 
-@Data
+@Value
 @AllArgsConstructor
 /**
  * Facilities can cease belonging to a network when either the facility is deleted or has 'belongTo' relationships
