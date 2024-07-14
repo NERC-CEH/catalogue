@@ -3,10 +3,13 @@ import _ from 'underscore'
 export default _.template(`
 <div class="row">
     <div class="col-sm-3">
-        <label>
+        <label for="input-<%= data.modelAttribute %>">
             <%= data.label %>
             <% if(data.helpText) { %>
-            <a data-toggle="collapse" title="Click for help" href="#help-<%= data.modelAttribute %>" data-parent="#editor"><i class="fa-regular fa-circle-question"></i></a>
+                <a data-toggle="collapse" title="Click for help" href="#help-<%= data.modelAttribute %>" data-parent="#editor"><i class="fa-regular fa-circle-question"></i></a>
+            <% } %>
+            <% if(data.required) { %>
+                <a data-toggle="collapse" title="Required" href="#required-<%= data.modelAttribute %>" data-parent="#editor"><i class="fa fa-pencil" aria-hidden="true"></i></a>
             <% } %>
         </label>
         <button class="editor-button add" <%= data.disabled%>>Add <span class="fa-solid fa-plus" aria-hidden="true"></span></button>

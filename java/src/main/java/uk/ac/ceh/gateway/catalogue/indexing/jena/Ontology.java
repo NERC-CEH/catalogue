@@ -14,6 +14,9 @@ public class Ontology {
     public static final Property REPLACES = ResourceFactory.createProperty("http://purl.org/dc/terms/replaces");
     public static final Property REFERENCES = ResourceFactory.createProperty("http://purl.org/dc/terms/references");
     public static final Property SOURCE = ResourceFactory.createProperty("http://purl.org/dc/terms/source");
+    public static final Property PUBLICATION_DATE = ResourceFactory.createProperty("http://purl.org/dc/terms/available");
+    public static final Property METADATA_STATUS = ResourceFactory.createProperty("http://purl.org/spar/pso/PublicationStatus");
+    public static final Property RESOURCE_STATUS = ResourceFactory.createProperty("https://vocabs.ceh.ac.uk/eidc#resourceStatus");
 
     public static final Property ANYREL = ResourceFactory.createProperty("https://vocabs.ceh.ac.uk/eidc#");
     public static final Property EIDC_MEMBER_OF = ResourceFactory.createProperty("https://vocabs.ceh.ac.uk/eidc#memberOf");

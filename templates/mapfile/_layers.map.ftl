@@ -1,6 +1,5 @@
 [#ftl]
 [#import "blocks.map.ftl" as blocks]
-[#escape x as x?replace('"', '\\"')]
 [#list doc.mapDataDefinition.data as data]
   [#if data.attributes?has_content]
     [#list data.attributes as attr]
@@ -53,4 +52,3 @@
     [/@blocks.layer]
   [/#if]
 [/#list]
-[/#escape]

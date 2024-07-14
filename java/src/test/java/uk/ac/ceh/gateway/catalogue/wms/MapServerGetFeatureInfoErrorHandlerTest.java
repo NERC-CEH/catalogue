@@ -3,6 +3,8 @@ package uk.ac.ceh.gateway.catalogue.wms;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpResponse;
 import uk.ac.ceh.gateway.catalogue.model.MapServerException;
@@ -10,6 +12,7 @@ import uk.ac.ceh.gateway.catalogue.model.MapServerException;
 import java.io.ByteArrayInputStream;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.MAPSERVER_GML_VALUE;
 
@@ -52,9 +55,11 @@ public class MapServerGetFeatureInfoErrorHandlerTest {
     public void checkThatErrorThrowsException() {
         Assertions.assertThrows(MapServerException.class, () -> {
             //Given
-            ClientHttpResponse response = mock(ClientHttpResponse.class, RETURNS_DEEP_STUBS);
+            ClientHttpResponse response = mock(ClientHttpResponse.class);
+            given(response.getStatusCode()).willReturn(HttpStatusCode.valueOf(400));
+            given(response.getHeaders()).willReturn(HttpHeaders.EMPTY);
             ByteArrayInputStream inputStream = new ByteArrayInputStream("Danger!".getBytes());
-            doReturn(inputStream).when(response).getBody();
+            given(response.getBody()).willReturn(inputStream);
 
             //When
             handler.handleError(response);

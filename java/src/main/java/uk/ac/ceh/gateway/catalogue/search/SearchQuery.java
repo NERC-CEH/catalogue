@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -10,7 +11,6 @@ import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 
-import javax.validation.constraints.NotNull;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;

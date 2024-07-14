@@ -1,48 +1,6 @@
 <#compress>
 <#import "../functions.ftlh" as func>
 
-<#macro displayKeywords keywords>
-  <#list keywords as keyword>
-      <#if keyword.uri?has_content>
-
-        <#assign subjectScheme="" schemeURI="">
-        <#if keyword.uri?matches("^http[s]?://inspire.ec.europa.eu/\\S+$")>
-          <#assign subjectScheme="European Union INSPIRE registry" schemeURI="http://inspire.ec.europa.eu/registry/">
-        <#elseif keyword.uri?matches("^http[s]?://www.wikidata.org/entity/\\S+$")>
-          <#assign subjectScheme="Wikidata" schemeURI="https://www.wikidata.org/">
-        <#elseif keyword.uri?matches("^http[s]?://sws.geonames.org/\\S+$")>
-          <#assign subjectScheme="Geonames" schemeURI="https://www.geonames.org/">
-        <#elseif keyword.uri?matches("^http[s]?://www.eionet.europa.eu/gemet/concept/\\S+$")>
-          <#assign subjectScheme="GEMET concepts" schemeURI="https://www.eionet.europa.eu/gemet/">
-        </#if>
-        {
-          "@type": "DefinedTerm",
-          "@id": "${keyword.uri?trim}",
-          "name": "${keyword.value?trim}"
-           <#if subjectScheme?has_content>,"inDefinedTermSet": "${schemeURI}"</#if>
-        }
-      <#else>
-        "${keyword.value?trim}"
-      </#if>
-      <#sep>,</#sep>
-    </#list>
-</#macro>
-
-<#macro displayVariables keywords>
-  <#list keywords as keyword>
-      <#if keyword.uri?has_content>
-        {
-          "@type": "StatisticalVariable",
-          "@id": "${keyword.uri?trim}",
-          "name": "${keyword.value?trim}"
-        }
-      <#else>
-        "${keyword.value?trim}"
-      </#if>
-      <#sep>,</#sep>
-    </#list>
-</#macro>
-
 <#if useConstraints?has_content>
   <#assign licences = func.filter(useConstraints, "code", "license")>
 </#if>
@@ -55,6 +13,7 @@
     infoLinks = func.filter(onlineResources, "function", "information")
   >
 </#if>
+
 
 <#-- COMPILE KEYWORD LIST--->
   <#assign keywordList = [] >
@@ -105,6 +64,8 @@
     ],
   </#if>
 
+
+
   <#if datasetReferenceDate?? && datasetReferenceDate.creationDate?has_content>
     "dateCreated":"${datasetReferenceDate.creationDate}",
   </#if>
@@ -120,6 +81,7 @@
           "value": "${citation.url}"
         },
     "url": "${citation.url}",
+    "creditText":"${citation.authors?join(', ')} (${citation.year?string["0000"]}). ${citation.title}. ${citation.publisher}. (${codes.lookup('datacite.resourceTypeGeneral',citation.resourceTypeGeneral)}). ${citation.url}",
   <#else>
   "@id": "${uri?trim}",
   "url":"${uri?trim}",
@@ -258,3 +220,45 @@
 http://schema.org/isPartOf
 http://schema.org/hasPart
 -->
+
+<#macro displayKeywords keywords>
+  <#list keywords as keyword>
+      <#if keyword.uri?has_content>
+
+        <#assign subjectScheme="" schemeURI="">
+        <#if keyword.uri?matches("^http[s]?://inspire.ec.europa.eu/\\S+$")>
+          <#assign subjectScheme="European Union INSPIRE registry" schemeURI="http://inspire.ec.europa.eu/registry/">
+        <#elseif keyword.uri?matches("^http[s]?://www.wikidata.org/entity/\\S+$")>
+          <#assign subjectScheme="Wikidata" schemeURI="https://www.wikidata.org/">
+        <#elseif keyword.uri?matches("^http[s]?://sws.geonames.org/\\S+$")>
+          <#assign subjectScheme="Geonames" schemeURI="https://www.geonames.org/">
+        <#elseif keyword.uri?matches("^http[s]?://www.eionet.europa.eu/gemet/concept/\\S+$")>
+          <#assign subjectScheme="GEMET concepts" schemeURI="https://www.eionet.europa.eu/gemet/">
+        </#if>
+        {
+          "@type": "DefinedTerm",
+          "@id": "${keyword.uri?trim}",
+          "name": "${keyword.value?trim}"
+           <#if subjectScheme?has_content>,"inDefinedTermSet": "${schemeURI}"</#if>
+        }
+      <#else>
+        "${keyword.value?trim}"
+      </#if>
+      <#sep>,</#sep>
+    </#list>
+</#macro>
+
+<#macro displayVariables keywords>
+  <#list keywords as keyword>
+      <#if keyword.uri?has_content>
+        {
+          "@type": "StatisticalVariable",
+          "@id": "${keyword.uri?trim}",
+          "name": "${keyword.value?trim}"
+        }
+      <#else>
+        "${keyword.value?trim}"
+      </#if>
+      <#sep>,</#sep>
+    </#list>
+</#macro>

@@ -1,9 +1,11 @@
 package uk.ac.ceh.gateway.catalogue.ef.adapters;
 
-import java.time.LocalDateTime;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-import org.slf4j.*;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.ceh.gateway.catalogue.gemini.LocalDateFactory;
+
+import java.time.LocalDateTime;
 
 public class LocalDateTimeAdapter extends XmlAdapter<String, LocalDateTime>{
     private final Logger logger = LoggerFactory.getLogger(LocalDateTimeAdapter.class);

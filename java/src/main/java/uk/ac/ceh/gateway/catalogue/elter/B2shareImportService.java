@@ -29,7 +29,7 @@ import uk.ac.ceh.gateway.catalogue.model.Supplemental;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
 import java.io.IOException;
-import java.net.URL;
+import java.net.URI;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -385,11 +385,11 @@ public class B2shareImportService implements CatalogueImportService {
         // prep
         log.info("Running B2SHARE metadata import...");
         CatalogueUser importUser = new CatalogueUser("B2SHARE metadata import", "info@eudat.eu");
-        Map<String, String> localRecordList = null;
+        Map<String, String> localRecordList;
         int blacklistedRecords = 0;
         int newRecords = 0;
         int skippedRecords = 0;
-        int totalRecords = 0;
+        int totalRecords;
         int updatedRecords = 0;
 
         // get local records
@@ -405,7 +405,7 @@ public class B2shareImportService implements CatalogueImportService {
         String b2shareRecordsnextPageUrl = b2shareRecordsFirstPageUrl;
         while (!b2shareRecordsnextPageUrl.isEmpty()) {
             // get next page of records
-            b2shareRecordsPage = objectMapper.readTree(new URL(b2shareRecordsnextPageUrl));
+            b2shareRecordsPage = objectMapper.readTree(new URI(b2shareRecordsnextPageUrl).toURL());
 
             for (JsonNode record : b2shareRecordsPage.path("hits").path("hits")){
                 // process each record on page
@@ -442,6 +442,7 @@ public class B2shareImportService implements CatalogueImportService {
             }
             b2shareRecordsnextPageUrl = b2shareRecordsPage.path("links").path("next").asText();
         }
+        assert b2shareRecordsPage != null;
         totalRecords = b2shareRecordsPage.get("hits").get("total").asInt();
 
         // finished, log summary

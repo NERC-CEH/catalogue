@@ -67,7 +67,7 @@ public class JiraService {
         }catch (RestClientResponseException ex) {
             log.error(
                     "Error communicating with supplied URL: (statusCode={}, status={}, headers={}, body={})",
-                    ex.getRawStatusCode(),
+                    ex.getStatusCode().value(),
                     ex.getStatusText(),
                     ex.getResponseHeaders(),
                     ex.getResponseBodyAsString()

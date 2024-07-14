@@ -87,21 +87,8 @@ public class CatalogueServiceConfig {
                 .build(),
 
             Catalogue.builder()
-                .id("ceh")
-                .title("UK Centre for Ecology & Hydrology")
-                .url("https://www.ceh.ac.uk")
-                .contactUrl("https://www.ceh.ac.uk/contact-us")
-                .logo("ukceh.png")
-                .facetKey("topic")
-                .facetKey("resourceType")
-                .facetKey("licence")
-                .vocabularies(getCatalogueVocabularies(vocabularies, "ceh"))
-                .fileUpload(false)
-                .build(),
-
-            Catalogue.builder()
                 .id("ukceh")
-                .title("UK Centre for Ecology & Hydrology")
+                .title("UKCEH digital asset register")
                 .url("https://www.ceh.ac.uk")
                 .contactUrl("https://www.ceh.ac.uk/contact-us")
                 .logo("ukceh.png")

@@ -1,15 +1,15 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
 import com.google.common.eventbus.EventBus;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
+import uk.ac.ceh.gateway.catalogue.document.DocumentListingService;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.IndexingFileEventListener;
-import uk.ac.ceh.gateway.catalogue.document.DocumentListingService;
 import uk.ac.ceh.gateway.catalogue.indexing.network.NetworkFileEventListener;
 import uk.ac.ceh.gateway.catalogue.indexing.network.NetworkIndexingService;
 
-import javax.annotation.PostConstruct;
 
 @SuppressWarnings("UnstableApiUsage")
 @Configuration

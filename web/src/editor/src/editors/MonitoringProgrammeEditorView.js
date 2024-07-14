@@ -6,7 +6,7 @@ import {
   ParentStringView,
   PredefinedParentView,
   RelationshipView,
-  SingleObjectView,
+  PredefinedSingleObjectView,
   TemporalExtentView,
   TextareaView,
   EnvironmentalDomainView,
@@ -68,14 +68,68 @@ export default EditorView.extend({
       title: 'Spatial coverage of the programme',
       views: [
 
-        new SingleObjectView({
+        new PredefinedSingleObjectView({
           model: this.model,
           modelAttribute: 'boundingBox',
           ModelType: BoundingBox,
-          label: 'Bounding Box',
-          ObjectInputView: BoundingBoxView
+          label: 'Bounding box',
+          ObjectInputView: BoundingBoxView,
+          predefined: {
+            England: {
+              northBoundLatitude: 55.812,
+              eastBoundLongitude: 1.768,
+              southBoundLatitude: 49.864,
+              westBoundLongitude: -6.452,
+              extentName: 'England',
+              extentUri: 'http://sws.geonames.org/6269131'
+            },
+            'Great Britain': {
+              northBoundLatitude: 60.861,
+              eastBoundLongitude: 1.768,
+              southBoundLatitude: 49.864,
+              westBoundLongitude: -8.648,
+              extentName: 'Great Britain'
+            },
+            'Northern Ireland': {
+              northBoundLatitude: 55.313,
+              eastBoundLongitude: -5.432,
+              southBoundLatitude: 54.022,
+              westBoundLongitude: -8.178,
+              extentName: 'Northern Ireland',
+              extentUri: 'http://sws.geonames.org/2641364'
+            },
+            Scotland: {
+              northBoundLatitude: 60.861,
+              eastBoundLongitude: -0.728,
+              southBoundLatitude: 54.634,
+              westBoundLongitude: -8.648,
+              extentName: 'Scotland',
+              extentUri: 'http://sws.geonames.org/2638360'
+            },
+            'United Kingdom': {
+              northBoundLatitude: 60.861,
+              eastBoundLongitude: 1.768,
+              southBoundLatitude: 49.864,
+              westBoundLongitude: -8.648,
+              extentName: 'United Kingdom',
+              extentUri: 'http://sws.geonames.org/2635167'
+            },
+            Wales: {
+              northBoundLatitude: 53.434,
+              eastBoundLongitude: -2.654,
+              southBoundLatitude: 51.375,
+              westBoundLongitude: -5.473,
+              extentName: 'Wales',
+              extentUri: 'http://sws.geonames.org/2634895'
+            },
+            World: {
+              northBoundLatitude: 90.00,
+              eastBoundLongitude: 180.00,
+              southBoundLatitude: -90.00,
+              westBoundLongitude: -180.00
+            }
+          }
         })
-
       ]
     },
     {

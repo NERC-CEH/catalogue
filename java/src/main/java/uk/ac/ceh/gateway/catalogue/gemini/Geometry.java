@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -116,6 +117,7 @@ public class Geometry {
      * If there is no geometry or the geometry is not a POINT or POLYGON, then an empty Optional is returned
      * @return an Optional<gemini.BoundingBox>
      */
+    @JsonIgnore
     public Optional<BoundingBox> getBoundingBox() {
         if(this.getGeometryString().isBlank()){
             return Optional.empty();

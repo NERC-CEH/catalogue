@@ -3,7 +3,6 @@ package uk.ac.ceh.gateway.catalogue.controllers;
 import freemarker.template.Configuration;
 import lombok.SneakyThrows;
 import lombok.val;
-import org.apache.jena.ext.com.google.common.collect.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,6 +28,8 @@ import uk.ac.ceh.gateway.catalogue.permission.CataloguePermission;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
+
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -170,7 +171,7 @@ public class PermissionControllerTest {
         HttpEntity<CataloguePermission> actual = permissionController.permissions(publisher, null, file);
 
         //Then
-        CataloguePermission expected = CataloguePermission.builder().identity("publisher").catalogue("catalogue").id(file).groups(Lists.newArrayList()).build();
+        CataloguePermission expected = CataloguePermission.builder().identity("publisher").catalogue("catalogue").id(file).groups(Collections.emptyList()).build();
         assertThat(actual.getBody(), equalTo(expected));
     }
 

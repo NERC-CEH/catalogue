@@ -15,6 +15,7 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
+import uk.ac.ceh.gateway.catalogue.services.FacilityEventService;
 
 import java.io.OutputStream;
 
@@ -30,6 +31,7 @@ public class GitRepoWrapperTest {
     @Mock private DocumentInfoMapper<MetadataInfo> documentInfoMapper;
     @Mock private BundledReaderService<MetadataDocument> bundledReader;
     @Mock private EventBus eventBus;
+    @Mock private FacilityEventService facilityEventService;
 
     @InjectMocks private GitRepoWrapper repoWrapper;
 
