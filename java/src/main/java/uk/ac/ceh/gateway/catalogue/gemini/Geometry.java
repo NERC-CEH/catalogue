@@ -112,7 +112,7 @@ public class Geometry {
     /**
      * This gets a bounding box for the geometry.
      * If the geometry is a POINT, then a tiny bounding box is drawn around the point by adding and subtracting 0.0001
-     * from the latituded and the longitude.  At the UK's latitude, this will lead to a box around 5 to 10m square.
+     * from the latitude and the longitude.  At the UK's latitude, this will lead to a box around 5 to 10m square.
      * If the geometry is a POLYGON, then the minimum rectangle to encompass the points is returned.
      * If there is no geometry or the geometry is not a POINT or POLYGON, then an empty Optional is returned
      * @return an Optional<gemini.BoundingBox>
@@ -182,10 +182,10 @@ public class Geometry {
             }
         }
         return BoundingBox.builder()
-            .northBoundLatitude(north+"")
-            .southBoundLatitude(south+"")
-            .eastBoundLongitude(east+"")
-            .westBoundLongitude(west+"")
+            .northBoundLatitude(Double.toString(north))
+            .southBoundLatitude(Double.toString(south))
+            .eastBoundLongitude(Double.toString(east))
+            .westBoundLongitude(Double.toString(west))
             .build();
     }
 }

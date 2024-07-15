@@ -15,6 +15,7 @@ import uk.ac.ceh.gateway.catalogue.model.Supplemental;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.RDF_TTL_VALUE;
 
@@ -35,10 +36,6 @@ public class MonitoringNetwork extends AbstractMetadataDocument implements WellK
 
     @Override
     public List<String> getWKTs() {
-        List<String> toReturn = new ArrayList<>();
-        if (boundingBox != null) {
-            toReturn.add(boundingBox.getWkt());
-        }
-        return toReturn;
+        return Stream.ofNullable(boundingBox).map(BoundingBox::getWkt).toList();
     }
 }

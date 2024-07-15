@@ -11,10 +11,11 @@ import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.repository.FacilityBelongToRemovedEvent;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * This service is principally used by the GitRepoWrapper to orchestrate the firing of Events
@@ -50,7 +51,7 @@ public class FacilityEventService {
         } catch (IOException e) {
             // It is correct that the document may not yet exist,
             // if the exception is for any other reason then throw it
-            if(!"The file does not exist".equals(e.getMessage())) {
+            if(e instanceof FileNotFoundException) {
                 throw new RuntimeException(e);
             }
         } catch (PostProcessingException e) {
@@ -85,11 +86,14 @@ public class FacilityEventService {
         if(preUpdate.isPresent() && postUpdate.isPresent()) {
             List<String> preBelongToIds = getBelongToIds(preUpdate.get());
             List<String> postBelongToIds = getBelongToIds(postUpdate.get());
-            preBelongToIds.removeAll(postBelongToIds);
-            if(preBelongToIds.size() > 0 ) {
-                return Optional.of(new FacilityBelongToRemovedEvent(preUpdate.get().getId(), preBelongToIds));
+            List<String> networksToUpdate = preBelongToIds.stream()
+                .filter(element -> !postBelongToIds.contains(element))
+                .collect(Collectors.toList());
+            if(networksToUpdate.size() > 0 ) {
+                return Optional.of(new FacilityBelongToRemovedEvent(preUpdate.get().getId(), networksToUpdate));
             }
         }
+        System.out.println("returning empty");
         return Optional.empty();
     }
 
@@ -98,21 +102,10 @@ public class FacilityEventService {
      * @param facility the monitoring facility
      * @return a list of ids of documents that the facility 'belongsTo'
      */
-    private List<String> getBelongToIds(MonitoringFacility facility) {
-        List<String> belongingIds = new ArrayList<String>();
-        facility.getRelationships().stream().forEach(r -> {
-            if ((r.getRelation() != null) && r.getRelation().equals(Ontology.BELONGS_TO.getURI())) {
-                belongingIds.add(r.getTarget());
-            }
-        });
-        return belongingIds;
-    }
-// A better use of streams, except it doesn't yet handle the situation where
-//    private List<String> getBelongToIds(MonitoringFacility facility) {
-//        return facility.getRelationships().stream()
-//            .filter(r -> r.getRelation().equals(Ontology.BELONGS_TO.getURI()))
-//            .map(r -> r.getTarget())
-//            .toList();
-//    }
-
+    protected List<String> getBelongToIds(MonitoringFacility facility) {
+            return facility.getRelationships().stream()
+                .filter(r -> r.getRelation().equals(Ontology.BELONGS_TO.getURI()))
+                .map(r -> r.getTarget())
+                .toList();
+        }
 }

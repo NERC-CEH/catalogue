@@ -23,14 +23,17 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.number.BigDecimalCloseTo.closeTo;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 @DisplayName("NetworkIndexing")
@@ -88,12 +91,11 @@ class NetworkIndexingServiceTest {
         MonitoringFacility f4 = getMonitoringFacility("f4", "50," + expectedSouth, n1);
         List<String> toIndex = Arrays.asList(f1.getId(), f2.getId(), f3.getId(), f4.getId());
         List<Link> links = Arrays.asList(f1,f2,f3, f4).stream()
-            .map(f -> {
-                return Link.builder()
+            .map(f -> Link.builder()
                     .geometry(f.getGeometry().getGeometryString())
                     .href(f.getId())
-                    .build();
-            })
+                    .build()
+            )
             .collect(Collectors.toList());
         String expectedCommitMessage = String.format(commitMessageTemplate, toIndex.get(toIndex.size() - 1));
 
@@ -132,12 +134,11 @@ class NetworkIndexingServiceTest {
         MonitoringFacility f3 = getMonitoringFacility("f3", "50," + expectedNorth, n1);
         MonitoringFacility f4 = getMonitoringFacility("f4", "50," + unexpectedNorth, n1);
         List<Link> links = Arrays.asList(f1,f2,f3,f4).stream()
-            .map(f -> {
-                return Link.builder()
+            .map(f -> Link.builder()
                     .geometry(f.getGeometry().getGeometryString())
                     .href(f.getId())
-                    .build();
-            })
+                    .build()
+            )
             .collect(Collectors.toList());
         String expectedCommitMessage = String.format(commitMessageTemplate, f4.getId());
 
@@ -156,5 +157,41 @@ class NetworkIndexingServiceTest {
         assertThat(actualEnvelope.getEastBoundLongitude(), is(closeTo(expectedEast, precision)));
         assertThat(actualEnvelope.getWestBoundLongitude(), is(closeTo(expectedWest, precision)));
         assertThat(actualCommitMessage, equalTo(expectedCommitMessage));
+    }
+
+    @Test
+    public void getCorrectCombindedEnvelope() {
+        // given
+        BigDecimal expectedNorth = BigDecimal.valueOf(1000);
+        BigDecimal expectedSouth = BigDecimal.valueOf(10);
+        BigDecimal expectedEast = BigDecimal.valueOf(1000);
+        BigDecimal expectedWest = BigDecimal.valueOf(10);
+        List<BoundingBox> bboxes = Arrays.asList(
+            BoundingBox.builder().northBoundLatitude(expectedNorth.toPlainString()).southBoundLatitude("100").eastBoundLongitude("110").westBoundLongitude("100").build(),
+            BoundingBox.builder().northBoundLatitude("210").southBoundLatitude(expectedSouth.toPlainString()).eastBoundLongitude("110").westBoundLongitude("200").build(),
+            BoundingBox.builder().northBoundLatitude("310").southBoundLatitude("300").eastBoundLongitude(expectedEast.toPlainString()).westBoundLongitude("300").build(),
+            BoundingBox.builder().northBoundLatitude("410").southBoundLatitude("400").eastBoundLongitude("110").westBoundLongitude(expectedWest.toPlainString()).build()
+        );
+
+        // when
+        Optional<BoundingBox> actual = networkIndexingService.getEnvelope(bboxes);
+
+        // then
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getNorthBoundLatitude(), is(closeTo(expectedNorth, precision)));
+        assertThat(actual.get().getSouthBoundLatitude(), is(closeTo(expectedSouth, precision)));
+        assertThat(actual.get().getEastBoundLongitude(), is(closeTo(expectedEast, precision)));
+        assertThat(actual.get().getWestBoundLongitude(), is(closeTo(expectedWest, precision)));
+    }
+    @Test
+    public void getCorrectEmptyCombinedEnvelope() {
+        // given
+        List<BoundingBox> bboxes = new ArrayList<>();
+
+        // when
+        Optional<BoundingBox> actual = networkIndexingService.getEnvelope(bboxes);
+
+        // then
+        assertTrue(actual.isEmpty());
     }
 }
