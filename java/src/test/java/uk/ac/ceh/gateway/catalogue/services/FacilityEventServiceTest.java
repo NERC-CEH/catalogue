@@ -5,11 +5,10 @@ import lombok.SneakyThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.ac.ceh.components.datastore.DataRepositoryException;
+import uk.ac.ceh.components.datastore.git.GitFileNotFoundException;
 import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.gemini.Geometry;
 import uk.ac.ceh.gateway.catalogue.indexing.jena.Ontology;
@@ -17,8 +16,11 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.Relationship;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
+import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 import uk.ac.ceh.gateway.catalogue.repository.FacilityBelongToRemovedEvent;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -107,13 +109,16 @@ class FacilityEventServiceTest {
     }
 
     @Test
-    @SneakyThrows
-    void getMonitoringFacilityNoMatch() {
+    void getMonitoringFacilityGitFileNotFoundException() {
         // given
         String lookup = "f1";
 
         // when
-        when(bundledReader.readBundle(lookup)).thenReturn(null);
+        try {
+            when(bundledReader.readBundle(lookup)).thenThrow(GitFileNotFoundException.class);
+        } catch (PostProcessingException | IOException e) {
+            throw new RuntimeException(e);
+        }
         Optional<MonitoringFacility> actual = facilityEventService.getMonitoringFacility(lookup);
 
         // then
