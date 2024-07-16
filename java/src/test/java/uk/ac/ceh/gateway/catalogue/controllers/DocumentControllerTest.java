@@ -671,7 +671,7 @@ class DocumentControllerTest {
         HttpServletRequest request = mock(HttpServletRequest.class);
         CatalogueUser user = new CatalogueUser("any_old_user", "test@example.com");
         String file = "myFile";
-        MetadataInfo info = MetadataInfo.builder().build();
+        MetadataInfo info = MetadataInfo.builder().state("published").build();
         MetadataDocument document = new GeminiDocument();
         document.setMetadata(info);
         given(documentRepository.read(file))
@@ -684,4 +684,23 @@ class DocumentControllerTest {
         verify(metricsService).recordView(eq(file), any());
     }
 
+    @Test
+    @SneakyThrows
+    public void metricsServiceNotCalledOnDraftDocuments() {
+        //Given
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        CatalogueUser user = CatalogueUser.PUBLIC_USER;
+        String file = "myFile";
+        MetadataInfo info = MetadataInfo.builder().state("draft").build();
+        MetadataDocument document = new GeminiDocument();
+        document.setMetadata(info);
+        given(documentRepository.read(file))
+            .willReturn(document);
+
+        //When
+        controller.readMetadata(user, file, request);
+
+        //Then
+        verify(metricsService, never()).recordView(any(), any());
+    }
 }
