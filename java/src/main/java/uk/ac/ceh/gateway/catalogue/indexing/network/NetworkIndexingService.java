@@ -156,7 +156,7 @@ public class NetworkIndexingService {
                     .build()
                     .getBoundingBox().stream();
             })
-            .collect(Collectors.toList());
+            .toList();
         return extantFacilityBBoxes;
     }
 

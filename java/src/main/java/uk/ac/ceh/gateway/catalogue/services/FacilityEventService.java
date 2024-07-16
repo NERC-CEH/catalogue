@@ -4,6 +4,7 @@ import com.google.common.eventbus.EventBus;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import uk.ac.ceh.components.datastore.git.GitFileNotFoundException;
 import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.indexing.jena.Ontology;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
@@ -51,13 +52,13 @@ public class FacilityEventService {
         } catch (IOException e) {
             // It is correct that the document may not yet exist,
             // if the exception is for any other reason then throw it
-            if(e instanceof FileNotFoundException) {
+            if(!(e instanceof GitFileNotFoundException)) {
                 throw new RuntimeException(e);
             }
         } catch (PostProcessingException e) {
             throw new RuntimeException(e);
         }
-        if(document != null && document instanceof MonitoringFacility facility) {
+        if(document instanceof MonitoringFacility facility) {
             return Optional.of(facility);
         }
         return Optional.empty();
@@ -88,12 +89,11 @@ public class FacilityEventService {
             List<String> postBelongToIds = getBelongToIds(postUpdate.get());
             List<String> networksToUpdate = preBelongToIds.stream()
                 .filter(element -> !postBelongToIds.contains(element))
-                .collect(Collectors.toList());
+                .toList();
             if(networksToUpdate.size() > 0 ) {
                 return Optional.of(new FacilityBelongToRemovedEvent(preUpdate.get().getId(), networksToUpdate));
             }
         }
-        System.out.println("returning empty");
         return Optional.empty();
     }
 
