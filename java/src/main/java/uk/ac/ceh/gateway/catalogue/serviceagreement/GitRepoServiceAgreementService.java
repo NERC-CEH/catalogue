@@ -100,29 +100,25 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     @Override
     @SneakyThrows
     public void doTransitionAction(CatalogueUser user, String id, String transitionId) {
-        if (transitionId.equals(ServiceAgreementPublicationConfig.draftToSubmittedId)) {
-
-            submitServiceAgreement(user, id);
-
-        } else if (transitionId.equals(ServiceAgreementPublicationConfig.submittedToDraftId)
-            || transitionId.equals(ServiceAgreementPublicationConfig.underReviewToDraftId)) {
-
-            ServiceAgreement serviceAgreement = get(user, id);
-            addPermissionsForDepositor(user, id, serviceAgreement.getMetadata(), serviceAgreement);
-
-        } else if (transitionId.equals(ServiceAgreementPublicationConfig.readyForAgreementToAgreedId)) {
-
-            publishServiceAgreement(user, id);
-
-        } else if (transitionId.equals(ServiceAgreementPublicationConfig.readyForAgreementToDraftId)) {
-
-            ServiceAgreement serviceAgreement = get(user, id);
-            addPermissionsForDepositor(user, id, serviceAgreement.getMetadata(), serviceAgreement);
-            sendJiraComment(serviceAgreement, "Service Agreement (%s): %s is sent back to draft status for re-edit");
-
+        switch (transitionId) {
+            case ServiceAgreementPublicationConfig.draftToSubmittedId -> {
+                submitServiceAgreement(user, id);
+            }
+            case ServiceAgreementPublicationConfig.submittedToDraftId, ServiceAgreementPublicationConfig.underReviewToDraftId -> {
+                ServiceAgreement serviceAgreement = get(user, id);
+                addPermissionsForDepositor(user, id, serviceAgreement.getMetadata(), serviceAgreement);
+            }
+            case ServiceAgreementPublicationConfig.readyForAgreementToAgreedId -> {
+                publishServiceAgreement(user, id);
+            }
+            case ServiceAgreementPublicationConfig.readyForAgreementToDraftId -> {
+                ServiceAgreement serviceAgreement = get(user, id);
+                addPermissionsForDepositor(user, id, serviceAgreement.getMetadata(), serviceAgreement);
+                sendJiraComment(serviceAgreement, user, "sent back to draft status for re-edit");
+            }
+            default -> {}
         }
     }
-
 
     @SneakyThrows
     @Override
@@ -134,8 +130,8 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         );
         addPermissionsForDepositor(user, id, metadataInfo, serviceAgreement);
         repo
-            .submitData(FOLDER + id + ".meta", (o) -> metadataInfoMapper.writeInfo(metadataInfo, o))
-            .submitData(FOLDER + id + ".raw", (o) -> serviceAgreementMapper.writeInfo(serviceAgreement, o))
+            .submitData(FOLDER + id + ".meta", o -> metadataInfoMapper.writeInfo(metadataInfo, o))
+            .submitData(FOLDER + id + ".raw", o -> serviceAgreementMapper.writeInfo(serviceAgreement, o))
             .commit(user, "creating service agreement " + id);
         return get(user, id);
     }
@@ -148,8 +144,8 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         val metadataInfo = metadataInfoMapper.readInfo(fromDatastore.getInputStream());
         addPermissionsForDepositor(user, id, metadataInfo, serviceAgreement);
         repo
-            .submitData(FOLDER + id + ".meta", (o) -> metadataInfoMapper.writeInfo(metadataInfo, o))
-            .submitData(FOLDER + id + ".raw", (o) -> serviceAgreementMapper.writeInfo(serviceAgreement, o))
+            .submitData(FOLDER + id + ".meta", o -> metadataInfoMapper.writeInfo(metadataInfo, o))
+            .submitData(FOLDER + id + ".raw", o -> serviceAgreementMapper.writeInfo(serviceAgreement, o))
             .commit(user, "updating service agreement " + id);
         return get(user, id);
     }
@@ -158,7 +154,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     @Override
     public void updateMetadata(CatalogueUser user, String id, MetadataInfo metadataInfo) {
         repo
-            .submitData(FOLDER + id + ".meta", (o) -> metadataInfoMapper.writeInfo(metadataInfo, o))
+            .submitData(FOLDER + id + ".meta", o -> metadataInfoMapper.writeInfo(metadataInfo, o))
             .commit(user, "updating service agreement metadata " + id);
     }
 
@@ -173,8 +169,8 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     private void addPermissionsForDepositor(CatalogueUser user, String id, MetadataInfo metadataInfo, ServiceAgreement serviceAgreement) {
         val rawEmail = Optional.ofNullable(serviceAgreement.getDepositorContactDetails()).orElseThrow(() -> {
             val message = format(
-                    "No depositor contact details present, cannot add permissions for Service Agreement: %s",
-                    serviceAgreement.getId()
+                "No depositor contact details present, cannot add permissions for Service Agreement: %s",
+                serviceAgreement.getId()
             );
             return new ServiceAgreementException(message);
         });
@@ -188,11 +184,8 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     }
 
     private Multimap<Permission, String> getMetadataPermissions(MetadataInfo metadataInfo) {
-        Multimap<Permission, String> copy = ArrayListMultimap.create();
-        metadataInfo.getPermissions().forEach((key, value) -> copy.put(key, value));
-        return copy;
+        return ArrayListMultimap.create(metadataInfo.getPermissions());
     }
-
 
     private void removeEditPermissions(CatalogueUser user, String id, ServiceAgreement serviceAgreement) {
         val metadataInfo = serviceAgreement.getMetadata();
@@ -219,19 +212,20 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         return metadataInfo;
     }
 
-    private void sendJiraComment(ServiceAgreement serviceAgreement, String comment) {
+    private void sendJiraComment(ServiceAgreement serviceAgreement, CatalogueUser user, String comment) {
         try {
-            Optional.ofNullable(serviceAgreement.getDepositReference())
-                .ifPresent(depositReference ->
-                    jiraService.comment(
-                        depositReference,
-                        format(
-                            comment,
-                            serviceAgreement.getId(),
-                            serviceAgreement.getTitle()
-                        )
+            Optional.ofNullable(serviceAgreement.getDepositReference()).ifPresent(depositReference ->
+                jiraService.comment(
+                    depositReference,
+                    format(
+                        "Service Agreement (%s): %s was %s by %s",
+                        serviceAgreement.getId(),
+                        serviceAgreement.getTitle(),
+                        comment,
+                        user.getUsername()
                     )
-                );
+                )
+            );
         } catch (RestClientResponseException ex) {
             throw new ServiceAgreementException("Unable to comment on Jira issue");
         }
@@ -243,7 +237,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         String metadataRecordState = serviceAgreement.getState();
         if (metadataRecordState.equals(SUBMITTED)) {
             removeEditPermissions(user, id, serviceAgreement);
-            sendJiraComment(serviceAgreement, "Service Agreement (%s): %s submitted for review");
+            sendJiraComment(serviceAgreement, user, "submitted for review");
         } else {
             val message = format(
                 "Cannot submit ServiceAgreement %s as state is %s",
@@ -270,7 +264,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
                     "populated from service agreement"
             );
             log.info("Publishing Service Agreement: {}", id);
-            sendJiraComment(serviceAgreement, "Service Agreement (%s): %s has been agreed upon and published");
+            sendJiraComment(serviceAgreement, user, "agreed upon and published");
         } else {
             val message = format(
                     "Cannot publish Service Agreement %s as state is %s and GeminiDocument state is %s",
@@ -290,21 +284,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         val gemini = (GeminiDocument) documentRepository.read(id);
         val metadataRecordState = gemini.getState();
         if (metadataRecordState.equals(DRAFT) && serviceAgreementState.equals(PENDING_PUBLICATION)) {
-            try {
-                Optional.ofNullable(serviceAgreement.getDepositReference())
-                        .ifPresent(depositReference ->
-                                jiraService.comment(
-                                        depositReference,
-                                        format(
-                                                "Service Agreement (%s): %s has been sent back for further changes",
-                                                serviceAgreement.getId(),
-                                                serviceAgreement.getTitle()
-                                        )
-                                )
-                        );
-            } catch (RestClientResponseException ex) {
-                throw new ServiceAgreementException("Unable to comment on Jira issue");
-            }
+            sendJiraComment(serviceAgreement, user, "sent back for further changes");
             addPermissionsForDepositor(user, id, metadata, serviceAgreement);
         } else {
             val message = format(
@@ -323,7 +303,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
             val dataRevisions = repo.getRevisions(FOLDER + id + ".raw");
             return new History(baseUri, id, dataRevisions);
         } catch (DataRepositoryException ex) {
-            throw new ServiceAgreementException((ex.getMessage()));
+            throw new ServiceAgreementException(ex.getMessage());
         }
     }
 
