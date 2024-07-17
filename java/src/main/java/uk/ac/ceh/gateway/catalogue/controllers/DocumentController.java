@@ -25,6 +25,7 @@ import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.services.MetricsService;
+import uk.ac.ceh.gateway.catalogue.serviceagreement.GitRepoServiceAgreementService;
 
 import java.io.IOException;
 import java.util.List;
@@ -291,11 +292,12 @@ public class DocumentController extends AbstractDocumentController {
             @ActiveUser CatalogueUser user,
             @PathVariable("file") String file,
             HttpServletRequest request
-            ) {
-        if(metricsService != null && !metricsExcludedUsers.contains(user.getUsername())){
+        ) {
+        MetadataDocument document = documentRepository.read(file);
+        if(metricsService != null && !metricsExcludedUsers.contains(user.getUsername()) && !document.getState().equals(GitRepoServiceAgreementService.DRAFT)) {
             metricsService.recordView(file, request.getRemoteAddr());
         }
-        return postProcessLinkDocument(documentRepository.read(file));
+        return postProcessLinkDocument(document);
             }
 
     @CrossOrigin
