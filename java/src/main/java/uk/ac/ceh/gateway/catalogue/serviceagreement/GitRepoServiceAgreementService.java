@@ -100,26 +100,23 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     @Override
     @SneakyThrows
     public void doTransitionAction(CatalogueUser user, String id, String transitionId) {
-        if (transitionId.equals(ServiceAgreementPublicationConfig.draftToSubmittedId)) {
-
-            submitServiceAgreement(user, id);
-
-        } else if (transitionId.equals(ServiceAgreementPublicationConfig.submittedToDraftId)
-            || transitionId.equals(ServiceAgreementPublicationConfig.underReviewToDraftId)) {
-
-            ServiceAgreement serviceAgreement = get(user, id);
-            addPermissionsForDepositor(user, id, serviceAgreement.getMetadata(), serviceAgreement);
-
-        } else if (transitionId.equals(ServiceAgreementPublicationConfig.readyForAgreementToAgreedId)) {
-
-            publishServiceAgreement(user, id);
-
-        } else if (transitionId.equals(ServiceAgreementPublicationConfig.readyForAgreementToDraftId)) {
-
-            ServiceAgreement serviceAgreement = get(user, id);
-            addPermissionsForDepositor(user, id, serviceAgreement.getMetadata(), serviceAgreement);
-            sendJiraComment(serviceAgreement, "Service Agreement (%s): %s is sent back to draft status for re-edit");
-
+        switch (transitionId) {
+            case ServiceAgreementPublicationConfig.draftToSubmittedId -> {
+                submitServiceAgreement(user, id);
+            }
+            case ServiceAgreementPublicationConfig.submittedToDraftId, ServiceAgreementPublicationConfig.underReviewToDraftId -> {
+                ServiceAgreement serviceAgreement = get(user, id);
+                addPermissionsForDepositor(user, id, serviceAgreement.getMetadata(), serviceAgreement);
+            }
+            case ServiceAgreementPublicationConfig.readyForAgreementToAgreedId -> {
+                publishServiceAgreement(user, id);
+            }
+            case ServiceAgreementPublicationConfig.readyForAgreementToDraftId -> {
+                ServiceAgreement serviceAgreement = get(user, id);
+                addPermissionsForDepositor(user, id, serviceAgreement.getMetadata(), serviceAgreement);
+                sendJiraComment(serviceAgreement, "Service Agreement (%s): %s is sent back to draft status for re-edit");
+            }
+            default -> {}
         }
     }
 
