@@ -130,8 +130,8 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         );
         addPermissionsForDepositor(user, id, metadataInfo, serviceAgreement);
         repo
-            .submitData(FOLDER + id + ".meta", (o) -> metadataInfoMapper.writeInfo(metadataInfo, o))
-            .submitData(FOLDER + id + ".raw", (o) -> serviceAgreementMapper.writeInfo(serviceAgreement, o))
+            .submitData(FOLDER + id + ".meta", o -> metadataInfoMapper.writeInfo(metadataInfo, o))
+            .submitData(FOLDER + id + ".raw", o -> serviceAgreementMapper.writeInfo(serviceAgreement, o))
             .commit(user, "creating service agreement " + id);
         return get(user, id);
     }
@@ -144,8 +144,8 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         val metadataInfo = metadataInfoMapper.readInfo(fromDatastore.getInputStream());
         addPermissionsForDepositor(user, id, metadataInfo, serviceAgreement);
         repo
-            .submitData(FOLDER + id + ".meta", (o) -> metadataInfoMapper.writeInfo(metadataInfo, o))
-            .submitData(FOLDER + id + ".raw", (o) -> serviceAgreementMapper.writeInfo(serviceAgreement, o))
+            .submitData(FOLDER + id + ".meta", o -> metadataInfoMapper.writeInfo(metadataInfo, o))
+            .submitData(FOLDER + id + ".raw", o -> serviceAgreementMapper.writeInfo(serviceAgreement, o))
             .commit(user, "updating service agreement " + id);
         return get(user, id);
     }
@@ -154,7 +154,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     @Override
     public void updateMetadata(CatalogueUser user, String id, MetadataInfo metadataInfo) {
         repo
-            .submitData(FOLDER + id + ".meta", (o) -> metadataInfoMapper.writeInfo(metadataInfo, o))
+            .submitData(FOLDER + id + ".meta", o -> metadataInfoMapper.writeInfo(metadataInfo, o))
             .commit(user, "updating service agreement metadata " + id);
     }
 
@@ -169,8 +169,8 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     private void addPermissionsForDepositor(CatalogueUser user, String id, MetadataInfo metadataInfo, ServiceAgreement serviceAgreement) {
         val rawEmail = Optional.ofNullable(serviceAgreement.getDepositorContactDetails()).orElseThrow(() -> {
             val message = format(
-                    "No depositor contact details present, cannot add permissions for Service Agreement: %s",
-                    serviceAgreement.getId()
+                "No depositor contact details present, cannot add permissions for Service Agreement: %s",
+                serviceAgreement.getId()
             );
             return new ServiceAgreementException(message);
         });
@@ -184,9 +184,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     }
 
     private Multimap<Permission, String> getMetadataPermissions(MetadataInfo metadataInfo) {
-        Multimap<Permission, String> copy = ArrayListMultimap.create();
-        metadataInfo.getPermissions().forEach((key, value) -> copy.put(key, value));
-        return copy;
+        return ArrayListMultimap.create(metadataInfo.getPermissions());
     }
 
     private void removeEditPermissions(CatalogueUser user, String id, ServiceAgreement serviceAgreement) {
@@ -216,19 +214,18 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
 
     private void sendJiraComment(ServiceAgreement serviceAgreement, CatalogueUser user, String comment) {
         try {
-            Optional.ofNullable(serviceAgreement.getDepositReference())
-                .ifPresent(depositReference ->
-                    jiraService.comment(
-                        depositReference,
-                        format(
-                            "Service Agreement (%s): %s was %s by %s",
-                            serviceAgreement.getId(),
-                            serviceAgreement.getTitle(),
-                            comment,
-                            user.getUsername()
-                        )
+            Optional.ofNullable(serviceAgreement.getDepositReference()).ifPresent(depositReference ->
+                jiraService.comment(
+                    depositReference,
+                    format(
+                        "Service Agreement (%s): %s was %s by %s",
+                        serviceAgreement.getId(),
+                        serviceAgreement.getTitle(),
+                        comment,
+                        user.getUsername()
                     )
-                );
+                )
+            );
         } catch (RestClientResponseException ex) {
             throw new ServiceAgreementException("Unable to comment on Jira issue");
         }
@@ -306,7 +303,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
             val dataRevisions = repo.getRevisions(FOLDER + id + ".raw");
             return new History(baseUri, id, dataRevisions);
         } catch (DataRepositoryException ex) {
-            throw new ServiceAgreementException((ex.getMessage()));
+            throw new ServiceAgreementException(ex.getMessage());
         }
     }
 
