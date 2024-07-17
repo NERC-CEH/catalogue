@@ -672,7 +672,7 @@ class DocumentControllerTest {
         HttpServletRequest request = mock(HttpServletRequest.class);
         CatalogueUser user = new CatalogueUser("any_old_user", "test@example.com");
         String file = "myFile";
-        MetadataInfo info = MetadataInfo.builder().state("published").build();
+        MetadataInfo info = MetadataInfo.builder().state(GitRepoServiceAgreementService.PUBLISHED).build();
         MetadataDocument document = new GeminiDocument();
         document.setMetadata(info);
         given(documentRepository.read(file))
