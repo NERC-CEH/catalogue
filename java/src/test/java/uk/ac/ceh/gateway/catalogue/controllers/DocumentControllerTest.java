@@ -54,6 +54,7 @@ import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
+import uk.ac.ceh.gateway.catalogue.serviceagreement.GitRepoServiceAgreementService;
 import uk.ac.ceh.gateway.catalogue.services.MetricsService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
@@ -691,7 +692,7 @@ class DocumentControllerTest {
         HttpServletRequest request = mock(HttpServletRequest.class);
         CatalogueUser user = CatalogueUser.PUBLIC_USER;
         String file = "myFile";
-        MetadataInfo info = MetadataInfo.builder().state("draft").build();
+        MetadataInfo info = MetadataInfo.builder().state(GitRepoServiceAgreementService.DRAFT).build();
         MetadataDocument document = new GeminiDocument();
         document.setMetadata(info);
         given(documentRepository.read(file))
