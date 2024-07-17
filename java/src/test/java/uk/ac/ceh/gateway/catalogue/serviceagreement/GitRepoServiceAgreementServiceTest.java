@@ -77,7 +77,6 @@ public class GitRepoServiceAgreementServiceTest {
             documentRepository,
             jiraService,
             publicationService
-
         );
         serviceAgreement = new ServiceAgreement();
         serviceAgreement.setId(ID);
@@ -244,7 +243,12 @@ public class GitRepoServiceAgreementServiceTest {
         //Then
         verify(jiraService).comment(
             serviceAgreement.getDepositReference(),
-            format("Service Agreement (%s): %s submitted for review", ID, serviceAgreement.getTitle())
+            format(
+                "Service Agreement (%s): %s was submitted for review by %s",
+                ID,
+                serviceAgreement.getTitle(),
+                user.getUsername()
+            )
         );
         verify(dataOngoingCommit).commit(user, "updating service agreement metadata " + ID);
     }
@@ -307,9 +311,10 @@ public class GitRepoServiceAgreementServiceTest {
         //Then
         verify(jiraService).comment(
             serviceAgreement.getDepositReference(),
-            format("Service Agreement (%s): %s has been agreed upon and published",
-                    serviceAgreement.getId(),
-                    serviceAgreement.getTitle()
+            format("Service Agreement (%s): %s was agreed upon and published by %s",
+                serviceAgreement.getId(),
+                serviceAgreement.getTitle(),
+                user.getUsername()
             )
         );
         verify(documentRepository).save(user, expected, "populated from service agreement");
@@ -356,8 +361,7 @@ public class GitRepoServiceAgreementServiceTest {
         );
 
         // then
-        verify(jiraService, never()).comment(serviceAgreement.getDepositReference(),
-                format("Service Agreement: %s has been agreed upon and published", serviceAgreement.getTitle()));
+        verifyNoInteractions(jiraService);
     }
 
     @Test
@@ -376,11 +380,12 @@ public class GitRepoServiceAgreementServiceTest {
 
         //Then
         verify(jiraService).comment(
-                serviceAgreement.getDepositReference(),
-                format("Service Agreement (%s): %s has been sent back for further changes",
-                        serviceAgreement.getId(),
-                        serviceAgreement.getTitle()
-                )
+            serviceAgreement.getDepositReference(),
+            format("Service Agreement (%s): %s was sent back for further changes by %s",
+                serviceAgreement.getId(),
+                serviceAgreement.getTitle(),
+                user.getUsername()
+            )
         );
         verify(dataOngoingCommit).commit(user, "updating service agreement metadata " + ID);
         verify(documentRepository).read(ID);
@@ -402,9 +407,7 @@ public class GitRepoServiceAgreementServiceTest {
         );
 
         // then
-        verify(jiraService, never()).comment(serviceAgreement.getDepositReference(),
-                format("Service Agreement (%s): %s has been sent back for further changes", serviceAgreement.getId(),
-                        serviceAgreement.getTitle()));
+        verifyNoInteractions(jiraService);
     }
 
     @Test
