@@ -19,6 +19,7 @@ import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
 import uk.ac.ceh.gateway.catalogue.elter.ElterDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.indexing.network.NetworkIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.CodeDocument;
 import uk.ac.ceh.gateway.catalogue.infrastructure.InfrastructureRecord;
 import uk.ac.ceh.gateway.catalogue.indexing.ClassMap;
@@ -62,6 +63,15 @@ import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.GEMINI_XML;
 @Configuration
 public class IndexingServicesConfig {
 
+    @Bean @Qualifier("network-index")
+    public NetworkIndexingService networkIndexingService(
+            DocumentListingService documentListingService,
+            BundledReaderService<MetadataDocument> bundledReaderService,
+            DocumentRepository documentRepository,
+            JenaLookupService lookupService
+    ){
+        return new NetworkIndexingService(documentListingService, bundledReaderService, documentRepository, lookupService);
+    }
     @Bean @Qualifier("datacite-index")
     public DocumentIndexingService dataciteIndexingService(
             BundledReaderService<MetadataDocument> bundledReaderService,
