@@ -43,9 +43,9 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     private final DocumentRepository documentRepository;
     private final JiraService jiraService;
     private final ServiceAgreementPublicationService publicationService;
-    private final String PUBLISHED = "published";
+    public static final String PUBLISHED = "published";
     public static final String FOLDER = "service-agreement/";
-    private static final String DRAFT = "draft";
+    public static final String DRAFT = "draft";
     private static final String SUBMITTED = "submitted";
     private static final String PENDING_PUBLICATION = "pending publication";
 
