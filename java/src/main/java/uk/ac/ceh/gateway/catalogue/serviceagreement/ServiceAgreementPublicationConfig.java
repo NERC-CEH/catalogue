@@ -89,7 +89,7 @@ public class ServiceAgreementPublicationConfig {
         Transition agreedToDraft = Transition.builder()
             .toState(draft)
             .id(agreedToDraftId)
-            .title("Edits required- back to draft")
+            .title("Edits required")
             .helpText("Move service agreement back to draft state")
             .build();
 
