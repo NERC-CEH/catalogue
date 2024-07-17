@@ -111,7 +111,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
             case ServiceAgreementPublicationConfig.readyForAgreementToAgreedId -> {
                 publishServiceAgreement(user, id);
             }
-            case ServiceAgreementPublicationConfig.readyForAgreementToDraftId -> {
+            case ServiceAgreementPublicationConfig.readyForAgreementToDraftId, ServiceAgreementPublicationConfig.agreedToDraftId -> {
                 ServiceAgreement serviceAgreement = get(user, id);
                 addPermissionsForDepositor(user, id, serviceAgreement.getMetadata(), serviceAgreement);
                 sendJiraComment(serviceAgreement, user, "sent back to draft status for re-edit");
