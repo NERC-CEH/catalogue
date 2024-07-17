@@ -22,6 +22,7 @@ public class ServiceAgreementPublicationConfig {
     public static final String underReviewToDraftId = "l2leq";
     public static final String readyForAgreementToAgreedId = "g0r6d";
     public static final String readyForAgreementToDraftId = "7zirq";
+    public static final String agreedToDraftId = "r05ty";
 
     @Bean(name="serviceAgreementWorkflow")
     @Qualifier("service-agreement")
@@ -85,6 +86,13 @@ public class ServiceAgreementPublicationConfig {
             .helpText("Move service agreement back to draft state")
             .build();
 
+        Transition agreedToDraft = Transition.builder()
+            .toState(draft)
+            .id(agreedToDraftId)
+            .title("Edits required- back to draft")
+            .helpText("Move service agreement back to draft state")
+            .build();
+
         // Roles
         PublishingRole publisher, depositor;
         publisher = new PublishingRole("publisher");
@@ -93,6 +101,7 @@ public class ServiceAgreementPublicationConfig {
         // Add transitions to states
         submitted.addTransitions(publisher, ImmutableSet.of(submittedToUnderReview, submittedToDraft));
         underReview.addTransitions(publisher, ImmutableSet.of(underReviewToReadyForAgreement, underReviewToDraft));
+        agreed.addTransitions(publisher, ImmutableSet.of(agreedToDraft));
 
         draft.addTransitions(depositor, ImmutableSet.of(draftToSubmitted));
         readyForAgreement.addTransitions(depositor, ImmutableSet.of(readyForAgreementToAgreed, readyForAgreementToDraft));

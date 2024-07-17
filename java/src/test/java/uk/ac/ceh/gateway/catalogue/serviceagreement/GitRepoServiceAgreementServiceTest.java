@@ -1,5 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +19,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
+import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.publication.ServiceAgreementPublicationService;
 import uk.ac.ceh.gateway.catalogue.publication.State;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
@@ -83,6 +86,55 @@ public class GitRepoServiceAgreementServiceTest {
         serviceAgreement.setId(ID);
         serviceAgreement.setTitle("Test");
         serviceAgreement.setDepositorContactDetails("test@test.com");
+    }
+
+    @Test
+    @SneakyThrows
+    public void canDoDraftToSubmittedTransition() {
+        service = spy(service);
+        doNothing().when(service).submitServiceAgreement(any(), anyString());
+        //when
+        service.doTransitionAction(user, ID, "ttv9o");
+        //then
+        verify(service).submitServiceAgreement(user,ID);
+    }
+
+    @Test
+    @SneakyThrows
+    public void canDoReadyForAgreementToAgreedTransition() {
+        service = spy(service);
+        doNothing().when(service).publishServiceAgreement(any(), anyString());
+        //when
+        service.doTransitionAction(user, ID, "g0r6d");
+        //then
+        verify(service).publishServiceAgreement(user,ID);
+    }
+
+    @Test
+    @SneakyThrows
+    public void canDoToDraftTransitions() {
+        service = spy(service);
+        serviceAgreement = spy(serviceAgreement);
+        serviceAgreement.setDepositReference(null);
+        MetadataInfo metadata = spy(MetadataInfo.builder()
+            .state("published")
+            .rawType(APPLICATION_JSON_VALUE)
+            .build());
+
+        doReturn(serviceAgreement).when(service).get(user, ID);
+        doReturn(metadata).when(serviceAgreement).getMetadata();
+        doNothing().when(service).updateMetadata(any(), anyString(), any());
+
+        Multimap<Permission, String> mockPerms = ArrayListMultimap.create();
+        doReturn(mockPerms).when(metadata).getPermissions();
+
+        //when
+        service.doTransitionAction(user, ID, "r18oq");
+        service.doTransitionAction(user, ID, "r05ty");
+        //then
+        verify(service, times(2)).get(user,ID);
+        verify(service, times(2)).updateMetadata(eq(user),eq(ID), any());
+        verify(serviceAgreement).getDepositReference();
     }
 
     @Test
