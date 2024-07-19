@@ -222,6 +222,16 @@
 }
 
 @media only print {
+    header {
+        .container {
+            .toolbar {
+                .nav-toggle,
+                .navbar {
+                    display: none !important;
+                }
+            }
+        }
+    }
     @lineheight: 1.3em;
     .serviceAgreement {
         @page {
@@ -235,7 +245,6 @@
             page-break-inside: avoid;
         }
         h2 {
-            border: 2px solid gray;
             border-width: 2px 0;
             padding: (@lineheight / 2) 0;
         }
