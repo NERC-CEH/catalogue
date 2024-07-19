@@ -37,6 +37,18 @@
                         <#if permission.userCanEditServiceAgreement(id)>
                             <div class="btn-group btn-group-sm">
                                 <button type="button" class="btn btn-default edit-control btn-wide" data-document-type="service-agreement">Edit</button>
+                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+                                  <span class="caret"></span>
+                                  <span class="sr-only">Toggle Dropdown</span>
+                                </button>
+                              <ul class="dropdown-menu dropdown-menu-right">
+                                <li>
+                                  <a href="/service-agreement/${id}/permission">
+                                    <i class="fa-solid fa-users"></i>
+                                    Permissions
+                                  </a>
+                                </li>
+                              </ul>
                             </div>
                             <#list getModelLinks() as link>
                                 <#if link.rel == 'history'>
