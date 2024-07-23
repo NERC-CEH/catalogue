@@ -9,7 +9,7 @@ export default _.template(`
                 <a data-toggle="collapse" title="Click for help" href="#help-<%= data.modelAttribute %>" data-parent="#editor"><i class="fa-regular fa-circle-question"></i></a>
             <% } %>
             <% if(data.required) { %>
-                <a data-toggle="collapse" title="Required" href="#required-<%= data.modelAttribute %>" data-parent="#editor"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                <span class="required-field-icon" title="Required"><i class="fa fa-pencil" aria-hidden="true"></i></span>
             <% } %>
         </label>
         <div id="template-add-on"></div>

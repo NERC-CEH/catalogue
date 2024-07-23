@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.services;
+package uk.ac.ceh.gateway.catalogue.metrics;
 
 import lombok.val;
 import org.junit.jupiter.api.AfterEach;
