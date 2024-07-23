@@ -142,14 +142,17 @@ export default EditorView.extend({
           multiline: true
         }),
 
-        new TextareaView({
+        new TextOnlyView({
           model: this.model,
           label: 'Naming convention',
-          modelAttribute: 'fileNamingConvention',
-          rows: 5,
-          helpText: `
-<p>Specify a naming convention <strong>only</strong> if there are too many files to list individually.  Please also indicate the total size of the deposit (e.g. 500Gb).</p>
+          text: `<p>Specify a naming convention <strong>only</strong> if there are too many files to list individually.  Please also indicate the total size of the deposit (e.g. 500Gb).</p>
 `
+        }),
+
+        new TextareaView({
+          model: this.model,
+          modelAttribute: 'fileNamingConvention',
+          rows: 5
         }),
 
         new InputView({
@@ -366,15 +369,24 @@ export default EditorView.extend({
       label: 'Keywords',
       title: 'Keywords',
       views: [
+        new TextOnlyView({
+          model: this.model,
+          label: 'ISO 19115 topic categories',
+          text: `<p>Please note these are very broad themes required by the metadata standard and should not be confused with science topics.</p>
+<p>Multiple topic categories are allowed - please include all that are pertinent.  For example, "<i>Estimates of topsoil invertebrates</i>" = Biota <strong>and</strong> Environment <strong>and</strong> Geoscientific Information.</p>\
+`,
+          required: true
+        }),
         new ParentView({
           model: this.model,
           ModelType: TopicCategory,
           modelAttribute: 'topicCategories',
-          label: 'ISO 19115 topic categories',
-          ObjectInputView: TopicCategoryView,
-          helpText: `\
-<p>Please note these are very broad themes required by the metadata standard and should not be confused with science topics.</p>
-<p>Multiple topic categories are allowed - please include all that are pertinent.  For example, "<i>Estimates of topsoil invertebrates</i>" = Biota <strong>and</strong> Environment <strong>and</strong> Geoscientific Information.</p>\
+          ObjectInputView: TopicCategoryView
+        }),
+        new TextOnlyView({
+          model: this.model,
+          label: 'Science topic',
+          text: `<p>These are used to populate the topic facet in the search interface - try to include at least one.</p>\
 `,
           required: true
         }),
@@ -382,63 +394,82 @@ export default EditorView.extend({
           model: this.model,
           ModelType: KeywordTheme,
           modelAttribute: 'keywordsTheme',
-          label: 'Science topic',
           ObjectInputView: KeywordThemeView,
-          multiline: false,
-          helpText: 'These are used to populate the topic facet in the search interface - try to include at least one',
-          required: true
+          multiline: false
+        }),
+        new TextOnlyView({
+          model: this.model,
+          label: 'Observed properties',
+          text: `<p>Controlled keywords describing the observed properties/variables contained in this data resource.</p>\
+`,
+          required: true,
+          className: 'hidden'
         }),
         new ParentView({
           model: this.model,
           modelAttribute: 'keywordsObservedProperty',
-          label: 'Observed properties',
           ObjectInputView: KeywordVocabularyView,
           multiline: true,
-          helpText: 'Controlled keywords describing the observed properties/variables contained in this data resource',
+          className: 'hidden'
+        }),
+        new TextOnlyView({
+          model: this.model,
+          label: 'Places',
+          text: `<p>Controlled keywords describing geographic places pertinent to this resource.</p>
+<p>For example, named countries/regions in which the research was conducted.</p>\
+`,
           required: true,
           className: 'hidden'
         }),
         new ParentView({
           model: this.model,
           modelAttribute: 'keywordsPlace',
-          label: 'Places',
           ObjectInputView: KeywordVocabularyView,
           multiline: true,
-          className: 'hidden',
-          helpText: `\
-        Controlled keywords describing geographic places pertinent to this resource.
-        For example, named countries/regions in which the research was conducted.
-        `,
-          required: true
+          className: 'hidden'
+        }),
+        new TextOnlyView({
+          model: this.model,
+          label: 'Projects',
+          text: `<p>Controlled keywords describing projects that fund/support the creation of this resource.</p>\
+`,
+          required: true,
+          className: 'hidden'
         }),
         new ParentView({
           model: this.model,
           modelAttribute: 'keywordsProject',
-          label: 'Projects',
           ObjectInputView: KeywordVocabularyView,
           multiline: true,
-          helpText: 'Controlled keywords describing projects that fund/support the creation of this resource',
+          className: 'hidden'
+        }),
+        new TextOnlyView({
+          model: this.model,
+          label: 'Instruments',
+          text: `<p>Controlled keywords describing instruments/sensors used to generate this data.</p>\
+`,
           required: true,
           className: 'hidden'
         }),
         new ParentView({
           model: this.model,
           modelAttribute: 'keywordsInstrument',
-          label: 'Instruments',
           ObjectInputView: KeywordVocabularyView,
           multiline: true,
-          helpText: 'Controlled keywords describing instruments/sensors used to generate this data',
-          required: true,
           className: 'hidden'
+        }),
+        new TextOnlyView({
+          model: this.model,
+          label: 'Other keywords',
+          text: `<p>All other keywords not described elsewhere.</p>\
+`,
+          required: true
         }),
         new ParentView({
           model: this.model,
           modelAttribute: 'keywordsOther',
-          label: 'Other keywords',
           ObjectInputView: KeywordVocabularyView,
-          multiline: true,
-          helpText: 'All other keywords not described elsewhere',
-          required: true
+          multiline: true
         })
       ]
     },
@@ -449,18 +480,10 @@ export default EditorView.extend({
 
         new TextOnlyView({
           model: this.model,
+          label: 'Description (min 100 characters)',
           text: `\
 <p>Data resources deposited with the EIDC have an entry in the EIDC data catalogue, enabling users to find and access them. Please provide the following information to help complete the catalogue record. <a href='https://eidc.ac.uk/deposit/metadata/guidance' target='_blank' rel='noopener noreferrer' >Further guidance is available on our website</a>.</p>
-<p><em>Please note, this information is not fixed and may be subject to change and improvement over time</em></p>\
-`
-        }),
-
-        new TextareaView({
-          model: this.model,
-          modelAttribute: 'description',
-          label: 'Description (min 100 characters)',
-          rows: 12,
-          helpText: `\
+<p><em>Please note, this information is not fixed and may be subject to change and improvement over time</em></p>
 <p>The description should describe the data resource in question, NOT the project/activity which produced it.</p>
 <p>The description is an 'executive summary' that allows the reader to determine the relevance and usefulness of the resource.  The text should be concise but should contain sufficient detail to allow the reader to ascertain rapidly the scope and limitations of the resource.</p>
 <p>Write in plain English; in other words, write complete sentences rather than fragments.  It is recommended that the abstract is organised using the "What, Where, When, How, Why, Who" structure.</p>\
@@ -470,14 +493,23 @@ export default EditorView.extend({
 
         new TextareaView({
           model: this.model,
-          modelAttribute: 'lineage',
+          modelAttribute: 'description',
+          rows: 12,
+        }),
+
+        new TextOnlyView({
+          model: this.model,
           label: 'Lineage',
-          rows: 10,
-          helpText: `\
+          text: `\
 <p>Information about the source data used in the construction of this data resource.</p>
 <p>Quality assessments and enhancement processes applied to the data resource can also be noted and summarised here.</p>\
 `,
           required: true
+        }),
+        new TextareaView({
+          model: this.model,
+          modelAttribute: 'lineage',
+          rows: 10
         }),
 
         new PredefinedParentView({
