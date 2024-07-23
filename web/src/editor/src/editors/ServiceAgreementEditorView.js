@@ -22,7 +22,7 @@ export default EditorView.extend({
       views: [
         new TextOnlyView({
           model: this.model,
-          text: "<h1>EIDC service agreement</h1><p>For more information/guidance about this document see <a href='https://eidc.ac.uk/support/agreement' target='_blank' rel='noopener noreferrer'>https://eidc.ac.uk/deposit/agreement</a></p>"
+          text: "<h1>EIDC service agreement</h1><p>For more information/guidance about this document see <a href='https://eidc.ac.uk/support/agreement' target='_blank' rel='noopener noreferrer'>https://eidc.ac.uk/deposit/agreement</a></p><p>* Fields indicated by <i class='fa fa-pencil'></i> are required for agreement.</p>"
         }),
 
         new InputView({
@@ -160,7 +160,8 @@ export default EditorView.extend({
           listAttribute: `
 <option value='Upload via EIDC catalogue (preferred)' />
 <option value='Cloud transfer e.g. via OneDrive' />
-`
+`,
+          required: true
         }),
 
         new TextOnlyView({
@@ -174,8 +175,7 @@ export default EditorView.extend({
         new SingleObjectView({
           model: this.model,
           modelAttribute: 'dataCategory',
-          ObjectInputView: CategoryView,
-          required: true
+          ObjectInputView: CategoryView
         })
       ]
     },
@@ -199,7 +199,8 @@ export default EditorView.extend({
           label: 'Supporting documents',
           modelAttribute: 'supportingDocs',
           ObjectInputView: SupportingDocView,
-          multiline: true
+          multiline: true,
+          required: true
         })
 
       ]
@@ -437,8 +438,7 @@ export default EditorView.extend({
           label: 'Other keywords',
           ObjectInputView: KeywordVocabularyView,
           multiline: true,
-          helpText: 'All other keywords not described elsewhere',
-          required: true
+          helpText: 'All other keywords not described elsewhere'
         })
       ]
     },
