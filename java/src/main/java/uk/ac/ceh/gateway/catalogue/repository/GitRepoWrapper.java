@@ -37,16 +37,16 @@ public class GitRepoWrapper {
 
     @SneakyThrows
     public void save(CatalogueUser user, String id, String message, MetadataInfo metadataInfo, DataWriter dataWriter) {
-        Optional<MonitoringFacility> preUpdateFacility = facilityEventService.getMonitoringFacility(id);
+         Optional<MonitoringFacility> preUpdateFacility = facilityEventService.getMonitoringFacility(id);
         repo.submitData(String.format("%s.meta", id), (o)-> documentInfoMapper.writeInfo(metadataInfo, o))
             .submitData(String.format("%s.raw", id), dataWriter)
             .commit(user, message);
-        Optional<MonitoringFacility> postUpdateFacility = facilityEventService.getMonitoringFacility(id);
-        facilityEventService.postRemovedEvent(preUpdateFacility, postUpdateFacility);
+         Optional<MonitoringFacility> postUpdateFacility = facilityEventService.getMonitoringFacility(id);
+         facilityEventService.postRemovedEvent(preUpdateFacility, postUpdateFacility);
     }
 
     public DataRevision<CatalogueUser> delete(CatalogueUser user, String id) throws DataRepositoryException {
-        Optional<FacilityBelongToRemovedEvent> facilityDeletedEvent = facilityEventService.getFacilityDeletedEvent(id);
+         Optional<FacilityBelongToRemovedEvent> facilityDeletedEvent = facilityEventService.getFacilityDeletedEvent(id);
         DataRevision<CatalogueUser> revision = repo.deleteData(id + ".meta")
                 .deleteData(id + ".raw")
                 .commit(user, String.format("delete document: %s", id));

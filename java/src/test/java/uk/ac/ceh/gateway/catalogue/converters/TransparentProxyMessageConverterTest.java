@@ -1,9 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.converters;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,7 +49,7 @@ public class TransparentProxyMessageConverterTest {
         CloseableHttpResponse response = mock(CloseableHttpResponse.class);
 
         HttpEntity entity = mock(HttpEntity.class, RETURNS_DEEP_STUBS);
-        when(entity.getContentType().getValue()).thenReturn("content-type");
+        when(entity.getContentType()).thenReturn("content-type");
 
         when(response.getEntity()).thenReturn(entity);
         when(httpClient.execute(any(HttpGet.class))).thenReturn(response);
@@ -111,13 +111,10 @@ public class TransparentProxyMessageConverterTest {
             String requiredMediaType = "image/*";
             TransparentProxy request = mock(TransparentProxy.class);
             when(request.getDesiredMediaType()).thenReturn(MediaType.parseMediaType(requiredMediaType));
-
-            when(httpClient.execute(any(HttpGet.class)).getEntity().getContentType().getValue())
+            when(httpClient.execute(any(HttpGet.class)).getEntity().getContentType())
                     .thenReturn("incompatible/media");
-
             //When
             converter.write(request, null, null);
-
             //Then
             fail("Expected incompatible media types to throw exception");
         });
@@ -131,7 +128,7 @@ public class TransparentProxyMessageConverterTest {
         TransparentProxy request = mock(TransparentProxy.class);
         when(request.getDesiredMediaType()).thenReturn(MediaType.parseMediaType(requiredMediaType));
 
-        when(httpClient.execute(any(HttpGet.class)).getEntity().getContentType().getValue())
+        when(httpClient.execute(any(HttpGet.class)).getEntity().getContentType())
                 .thenReturn("image/png");
 
         HttpOutputMessage message = mock(HttpOutputMessage.class);
@@ -156,7 +153,7 @@ public class TransparentProxyMessageConverterTest {
             TransparentProxy request = mock(TransparentProxy.class);
             when(request.getDesiredMediaType()).thenReturn(MediaType.parseMediaType(requiredMediaType));
 
-            when(httpClient.execute(any(HttpGet.class)).getEntity().getContentType().getValue())
+            when(httpClient.execute(any(HttpGet.class)).getEntity().getContentType())
                     .thenReturn("WMS_TYPE");
 
             //When
