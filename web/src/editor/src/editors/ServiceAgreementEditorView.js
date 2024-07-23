@@ -386,7 +386,7 @@ export default EditorView.extend({
         new TextOnlyView({
           model: this.model,
           label: 'Science topic',
-          text: `These are used to populate the topic facet in the search interface - try to include at least one.`,
+          text: 'These are used to populate the topic facet in the search interface - try to include at least one.',
           required: true
         }),
         new ParentView({
@@ -399,7 +399,7 @@ export default EditorView.extend({
         new TextOnlyView({
           model: this.model,
           label: 'Observed properties',
-          text: `Controlled keywords describing the observed properties/variables contained in this data resource.`,
+          text: 'Controlled keywords describing the observed properties/variables contained in this data resource.',
           required: true,
           className: 'hidden'
         }),
@@ -429,7 +429,7 @@ export default EditorView.extend({
         new TextOnlyView({
           model: this.model,
           label: 'Projects',
-          text: `Controlled keywords describing projects that fund/support the creation of this resource.`,
+          text: 'Controlled keywords describing projects that fund/support the creation of this resource.',
           required: true,
           className: 'hidden'
         }),
@@ -443,7 +443,7 @@ export default EditorView.extend({
         new TextOnlyView({
           model: this.model,
           label: 'Instruments',
-          text: `Controlled keywords describing instruments/sensors used to generate this data.`,
+          text: 'Controlled keywords describing instruments/sensors used to generate this data.',
           required: true,
           className: 'hidden'
         }),
@@ -457,7 +457,7 @@ export default EditorView.extend({
         new TextOnlyView({
           model: this.model,
           label: 'Other keywords',
-          text: `All other keywords not described elsewhere.`,
+          text: 'All other keywords not described elsewhere.',
           required: true
         }),
         new ParentView({
