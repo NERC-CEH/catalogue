@@ -10,7 +10,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
-import uk.ac.ceh.gateway.catalogue.services.MetricsService;
+import uk.ac.ceh.gateway.catalogue.metrics.MetricsService;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
