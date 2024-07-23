@@ -20,6 +20,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
+import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.publication.ServiceAgreementPublicationService;
 import uk.ac.ceh.gateway.catalogue.publication.State;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
@@ -354,6 +355,7 @@ public class GitRepoServiceAgreementServiceTest {
         expected.setTitle("this is a test");
         expected.setMetadata(MetadataInfo.builder().state("draft").build());
         expected.setUseConstraints(List.of(serviceAgreement.getEndUserLicence()));
+        expected.setResponsibleParties(List.of(ResponsibleParty.builder().email("test").role("pointOfContact").build()));
 
         givenPendingPublicationServiceAgreement();
 
