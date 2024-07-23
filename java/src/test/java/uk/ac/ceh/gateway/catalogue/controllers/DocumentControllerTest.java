@@ -55,7 +55,7 @@ import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.GitRepoServiceAgreementService;
-import uk.ac.ceh.gateway.catalogue.services.MetricsService;
+import uk.ac.ceh.gateway.catalogue.metrics.MetricsService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 

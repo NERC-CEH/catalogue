@@ -24,7 +24,7 @@ import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
-import uk.ac.ceh.gateway.catalogue.services.MetricsService;
+import uk.ac.ceh.gateway.catalogue.metrics.MetricsService;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.GitRepoServiceAgreementService;
 
 import java.io.IOException;

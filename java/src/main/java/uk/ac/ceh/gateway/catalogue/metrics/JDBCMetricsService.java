@@ -1,7 +1,6 @@
-package uk.ac.ceh.gateway.catalogue.services;
+package uk.ac.ceh.gateway.catalogue.metrics;
 
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;

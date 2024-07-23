@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.services;
+package uk.ac.ceh.gateway.catalogue.metrics;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.lang.NonNull;
