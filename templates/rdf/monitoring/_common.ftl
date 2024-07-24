@@ -11,9 +11,9 @@ PREFIX geo: <http://www.opengis.net/ont/geosparql#>
 
 :${id}
   a ${rdftype} ;
-  dct:title "${title}" ;
+  dct:title "<@displayLiteral title />" ;
   <#if description?has_content>
-    dct:description '''${description}''' ; <#-- triple single quote handles multi-line strings -->
+    dct:description "<@displayLiteral description />" ;
   </#if>
   <#if boundingBox?has_content>
     ef:boundingBox "POLYGON${boundingBox.coordinates?replace('[[[','((')?replace(']]]','))')?replace('[^]], ',' ','r')?replace(']', '')?replace('[', '')}"^^geo:wktLiteral ;

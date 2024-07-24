@@ -5,7 +5,7 @@
       <${licence.uri?trim}>
     <#elseif licence.value?has_content>
       [ a dct:LicenseDocument;
-      rdfs:label "${licence.value}";
+      rdfs:label "<@displayLiteral licence.value />";
       ]
     </#if>
   <#sep>,</#sep>
@@ -14,7 +14,7 @@
 
 <#if accessLimitation?has_content>
     dct:accessRights [ a dct:RightsStatement ;
-      odrs:attributionText "${accessLimitation.value}" ;
+      odrs:attributionText "<@displayLiteral accessLimitation.value />" ;
       <#if accessLimitation.uri?has_content>odrs:attributionUrl <${accessLimitation.uri?trim}> </#if>
       ] ;
 </#if>
