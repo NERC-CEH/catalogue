@@ -16,6 +16,7 @@ import uk.ac.ceh.gateway.catalogue.model.Supplemental;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreement;
 
 import java.time.ZoneId;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -82,11 +83,51 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     public void populateFromServiceAgreement(ServiceAgreement serviceAgreement) {
         this.setTitle(serviceAgreement.getTitle());
         this.setDescription(serviceAgreement.getDescription());
-        this.responsibleParties = serviceAgreement.getAuthors();
-        this.useConstraints = List.of(serviceAgreement.getEndUserLicence());
+        this.useConstraints = Optional.ofNullable(serviceAgreement.getEndUserLicence())
+            .map(List::of)
+            .orElse(null);
         this.lineage = serviceAgreement.getLineage();
         this.boundingBoxes = serviceAgreement.getBoundingBoxes();
         this.funding = serviceAgreement.getFunding();
+        this.distributionFormats = Optional.ofNullable(serviceAgreement.getFiles())
+            .map(files -> files.stream()
+                .map(file -> DistributionInfo.builder()
+                    .name(file.getName())
+                    .type(file.getFormat())
+                    .build()
+                )
+                .toList()
+            )
+            .orElse(null);
+        val email = serviceAgreement.getDepositorContactDetails();
+        this.responsibleParties = new ArrayList<>();
+        this.responsibleParties.add(ResponsibleParty.builder()
+            .individualName(serviceAgreement.getDepositorName())
+            .email(email.endsWith("@ceh.ac.uk") ? "enquiries@ceh.ac.uk" : email)
+            .role("pointOfContact")
+            .build()
+        );
+        this.responsibleParties.addAll(
+            Optional.ofNullable(serviceAgreement.getAuthors())
+                .orElseGet(Collections::emptyList)
+        );
+        this.responsibleParties.addAll(
+            Optional.ofNullable(serviceAgreement.getOwnersOfIpr())
+                .orElseGet(Collections::emptyList)
+        );
+        Optional.ofNullable(serviceAgreement.getAvailability())
+            .ifPresent(availability -> {
+                this.datasetReferenceDate = DatasetReferenceDate.builder()
+                    .releasedDate(LocalDate.parse(availability))
+                    .build();
+        });
+        this.keywordsDiscipline = serviceAgreement.getKeywordsDiscipline();
+        this.keywordsInstrument = serviceAgreement.getKeywordsInstrument();
+        this.keywordsObservedProperty = serviceAgreement.getKeywordsObservedProperty();
+        this.keywordsPlace = serviceAgreement.getKeywordsPlace();
+        this.keywordsProject = serviceAgreement.getKeywordsProject();
+        this.keywordsTheme = serviceAgreement.getKeywordsTheme();
+        this.keywordsOther = serviceAgreement.getKeywordsOther();
     }
 
     @Override
