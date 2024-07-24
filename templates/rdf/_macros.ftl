@@ -6,7 +6,7 @@
 
 <#macro displayLiteral string>
   <#--Ensure literals do not contain " characters-->
-  <#t>${string?replace("\"","'")}
+  <#t>${string?replace("\"","'")?replace("\n"," ")}
 </#macro>
 
 <#macro contactList contacts prefix="c">

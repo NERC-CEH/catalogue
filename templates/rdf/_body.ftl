@@ -1,7 +1,7 @@
 <${id}>
   dct:title "<@displayLiteral title />" ;
   <#if description?has_content>
-    dct:description dct:description '''${description}''' ;
+    dct:description "<@displayLiteral description />" ;
   </#if>
 
   <#if lineage?has_content>
