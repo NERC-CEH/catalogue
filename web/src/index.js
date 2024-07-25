@@ -41,6 +41,7 @@ import { SimpleUploadView } from './simple-upload/src/App'
 import { MessageView } from './search/src/views'
 import { ServiceAgreement } from './editor/src/models'
 import { UploadModel, UploadView } from './hubbub/src/Upload'
+import { MetricsReportApp, MetricsReportForm, MetricsReportResults } from './metrics/src'
 
 const $catalogue = $('.catalogue-control')
 const $documentUpload = $('#document-upload')
@@ -90,6 +91,10 @@ if ($documentUpload.length) {
 
 if ($('#studyarea-map').length) {
   initStudyAreaMap()
+}
+
+if ($('#metrics-report').length) {
+  initMetricsReport()
 }
 
 Backbone.history.start()
@@ -365,4 +370,17 @@ function navbarToggle ($navbarItems) {
     $('.navigation').toggleClass('reveal')
     $('.nav-toggle').toggleClass('reveal')
   })
+}
+
+function initMetricsReport () {
+  const app = new MetricsReportApp()
+  new MetricsReportForm({
+    el: '#metrics-form',
+    model: app
+  })
+  new MetricsReportResults({
+    el: '#metrics-table',
+    model: app
+  })
+  new SearchRouter({ model: app, location: window.location })
 }

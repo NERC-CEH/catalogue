@@ -255,49 +255,49 @@ class JDBCMetricsServiceTest {
         Instant endDate = Instant.parse("2024-07-27T23:59:59.00Z");
         result = service.getMetricsReport(startDate, null, null, null, null, null, null).toString();
         assertThat(result, equalTo("[" +
-            "{document=abcd1, doc_title=test1, record_type=a, views=1, downloads=0}, " +
-            "{document=abcd2, doc_title=test2, record_type=b, views=2, downloads=1}, " +
-            "{document=abcd3, doc_title=test3, record_type=c, views=3, downloads=2}, " +
-            "{document=abcd4, doc_title=test4, record_type=d, views=0, downloads=3}]"));
+            "{document=abcd1, docTitle=test1, recordType=a, views=1, downloads=0}, " +
+            "{document=abcd2, docTitle=test2, recordType=b, views=2, downloads=1}, " +
+            "{document=abcd3, docTitle=test3, recordType=c, views=3, downloads=2}, " +
+            "{document=abcd4, docTitle=test4, recordType=d, views=0, downloads=3}]"));
 
         result = service.getMetricsReport(startDate, endDate, null, null, null, null, null).toString();
         assertThat(result, equalTo("[" +
-            "{document=abcd1, doc_title=test1, record_type=a, views=1, downloads=0}, " +
-            "{document=abcd2, doc_title=test2, record_type=b, views=2, downloads=1}, " +
-            "{document=abcd3, doc_title=test3, record_type=c, views=0, downloads=2}]"));
+            "{document=abcd1, docTitle=test1, recordType=a, views=1, downloads=0}, " +
+            "{document=abcd2, docTitle=test2, recordType=b, views=2, downloads=1}, " +
+            "{document=abcd3, docTitle=test3, recordType=c, views=0, downloads=2}]"));
 
         result = service.getMetricsReport(startDate, endDate, orderBy, null, null, null, null).toString();
         assertThat(result, equalTo("[" +
-            "{document=abcd3, doc_title=test3, record_type=c, views=0, downloads=2}, " +
-            "{document=abcd1, doc_title=test1, record_type=a, views=1, downloads=0}, " +
-            "{document=abcd2, doc_title=test2, record_type=b, views=2, downloads=1}]"));
+            "{document=abcd3, docTitle=test3, recordType=c, views=0, downloads=2}, " +
+            "{document=abcd1, docTitle=test1, recordType=a, views=1, downloads=0}, " +
+            "{document=abcd2, docTitle=test2, recordType=b, views=2, downloads=1}]"));
 
         result = service.getMetricsReport(startDate, endDate, orderBy, ordering, null, null, null).toString();
         assertThat(result, equalTo("[" +
-            "{document=abcd2, doc_title=test2, record_type=b, views=2, downloads=1}, " +
-            "{document=abcd1, doc_title=test1, record_type=a, views=1, downloads=0}, " +
-            "{document=abcd3, doc_title=test3, record_type=c, views=0, downloads=2}]"));
+            "{document=abcd2, docTitle=test2, recordType=b, views=2, downloads=1}, " +
+            "{document=abcd1, docTitle=test1, recordType=a, views=1, downloads=0}, " +
+            "{document=abcd3, docTitle=test3, recordType=c, views=0, downloads=2}]"));
 
         orderBy = "downloads";
         result = service.getMetricsReport(startDate, endDate, orderBy, ordering, null, null, null).toString();
         assertThat(result, equalTo("[" +
-            "{document=abcd3, doc_title=test3, record_type=c, views=0, downloads=2}, " +
-            "{document=abcd2, doc_title=test2, record_type=b, views=2, downloads=1}, " +
-            "{document=abcd1, doc_title=test1, record_type=a, views=1, downloads=0}]"));
+            "{document=abcd3, docTitle=test3, recordType=c, views=0, downloads=2}, " +
+            "{document=abcd2, docTitle=test2, recordType=b, views=2, downloads=1}, " +
+            "{document=abcd1, docTitle=test1, recordType=a, views=1, downloads=0}]"));
 
         result = service.getMetricsReport(startDate, endDate, orderBy, ordering, recordType, null, null).toString();
         assertThat(result, equalTo("[" +
-            "{document=abcd3, doc_title=test3, record_type=c, views=0, downloads=2}, " +
-            "{document=abcd1, doc_title=test1, record_type=a, views=1, downloads=0}]"));
+            "{document=abcd3, docTitle=test3, recordType=c, views=0, downloads=2}, " +
+            "{document=abcd1, docTitle=test1, recordType=a, views=1, downloads=0}]"));
 
         result = service.getMetricsReport(startDate, endDate, orderBy, ordering, recordType, docId, null).toString();
         assertThat(result, equalTo("[" +
-            "{document=abcd1, doc_title=test1, record_type=a, views=1, downloads=0}]"));
+            "{document=abcd1, docTitle=test1, recordType=a, views=1, downloads=0}]"));
 
         docId = "abcd";
         result = service.getMetricsReport(startDate, endDate, orderBy, ordering, recordType, docId, noOfRecords).toString();
         assertThat(result, equalTo("[" +
-            "{document=abcd3, doc_title=test3, record_type=c, views=0, downloads=2}]"));
+            "{document=abcd3, docTitle=test3, recordType=c, views=0, downloads=2}]"));
 
     }
 
