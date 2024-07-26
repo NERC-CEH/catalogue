@@ -169,22 +169,19 @@ public class JDBCMetricsService implements MetricsService {
             }
         }
         if (noOfRecords != null && noOfRecords >= 0) {
-            sql.append(" limit " + noOfRecords);
+            sql.append(" limit ").append(noOfRecords);
         }
 
-        log.info("Metrics report sql {}", sql.toString());
+        log.info("Metrics report sql {}", sql);
 
         return jdbcTemplate.query(
-            sql.toString(), new PreparedStatementSetter() {
-
-                public void setValues(PreparedStatement preparedStatement) throws SQLException {
-                    int index = 1;
-                    int valSize = whereVal.size();
-                    for (String val: whereVal) {
-                        preparedStatement.setString(index, val);
-                        preparedStatement.setString(valSize + index, val);
-                        index++;
-                    }
+            sql.toString(), preparedStatement -> {
+                int index = 1;
+                int valSize = whereVal.size();
+                for (String val: whereVal) {
+                    preparedStatement.setString(index, val);
+                    preparedStatement.setString(valSize + index, val);
+                    index++;
                 }
             },
             new ReportMapper()

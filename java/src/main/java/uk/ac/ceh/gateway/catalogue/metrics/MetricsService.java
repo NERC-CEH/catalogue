@@ -13,5 +13,5 @@ public interface MetricsService {
     void recordDownload(@NonNull String uuid, @NonNull String addr);
     int totalViews(@NonNull String uuid);
     int totalDownloads(@NonNull String uuid);
-    public List<Map<String,String>> getMetricsReport(Date startDate, Date endDate, String orderBy, String ordering, List<String> recordType, String docId, Integer noOfRecords);
+    List<Map<String,String>> getMetricsReport(Date startDate, Date endDate, String orderBy, String ordering, List<String> recordType, String docId, Integer noOfRecords);
 }
