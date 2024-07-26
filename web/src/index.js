@@ -13,6 +13,7 @@ import {
   ErammpDatacubeEditorView,
   ErammpModelEditorView,
   GeminiEditorView, InfrastructureRecordEditorView,
+  MethodRecordEditorView,
   LinkEditorView,
   ModelEditorView,
   MonitoringEditorView,
@@ -246,6 +247,11 @@ function initEditor () {
       View: InfrastructureRecordEditorView,
       Model: EditorMetadata,
       mediaType: 'application/vnd.infrastructure+json'
+    },
+    methodrecord: {
+      View: MethodRecordEditorView,
+      Model: EditorMetadata,
+      mediaType: 'application/vnd.method+json'
     }
   }
 

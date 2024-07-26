@@ -24,4 +24,5 @@ export { default as ServiceAgreementEditorView } from './ServiceAgreementEditorV
 export { default as UkemsDocumentEditorView } from './UkemsDocumentEditorView'
 export { default as GeminiEditorView } from './GeminiEditorView'
 export { default as InfrastructureRecordEditorView } from './InfrastructureRecordEditorView'
+export { default as MethodRecordEditorView } from './MethodRecordEditorView'
 export { default as CodeDocumentEditorView } from './CodeDocumentEditorView'
