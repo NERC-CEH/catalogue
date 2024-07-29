@@ -3,7 +3,6 @@ package uk.ac.ceh.gateway.catalogue.metrics;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -11,8 +10,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.TimeConstants;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.time.Instant;
 import java.util.*;
 import javax.sql.DataSource;
@@ -117,16 +114,16 @@ public class JDBCMetricsService implements MetricsService {
         return jdbcTemplate.queryForObject(TOTAL_STATEMENT.formatted(table), Integer.class, uuid);
     }
 
-    public List<Map<String,String>> getMetricsReport(Date startDate, Date endDate, String orderBy, String ordering, List<String> recordType, String docId, Integer noOfRecords) {
+    public List<Map<String,String>> getMetricsReport(Instant startDate, Instant endDate, String orderBy, String ordering, List<String> recordType, String docId, Integer noOfRecords) {
         ArrayList<String> whereVal = new ArrayList<>();
         StringBuilder where = new StringBuilder(" where 1=1");
         if (startDate != null) {
-            String start = Long.toString(startDate.getTime()/1000);
+            String start = Long.toString(startDate.getEpochSecond());
             whereVal.add(start);
             where.append(" and START_TIMESTAMP>=?");
         }
         if (endDate != null) {
-            String end = Long.toString(endDate.getTime()/1000);
+            String end = Long.toString(endDate.getEpochSecond());
             whereVal.add(end);
             where.append(" and END_TIMESTAMP<=?");
         }

@@ -10,7 +10,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.IntStream;
 
@@ -143,8 +143,6 @@ class JDBCMetricsServiceTest {
         statement.executeUpdate(String.format(sql, "downloads", "1722038400", "1722124799", "abcd3", 2, "test3", "c")); // 27July2024 timestsmp
         statement.executeUpdate(String.format(sql, "downloads", "1722124800", "1722211199", "abcd4", 3, "test4", "d")); // 28July2024 timestsmp
 
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        df.setTimeZone(TimeZone.getTimeZone("UTC"));
         List<String> recordType = Arrays.asList("a", "c");
         String orderBy = "views";
         String ordering = "descending";
@@ -152,12 +150,12 @@ class JDBCMetricsServiceTest {
         Integer noOfRecords = 1;
 
         //when
-        String result = service.getMetricsReport(df.parse("2024-07-29 00:00:00"), df.parse("2024-07-29 23:59:59"), orderBy, ordering, recordType, docId, noOfRecords).toString();
+        String result = service.getMetricsReport(Instant.parse("2024-07-29T00:00:00Z"), Instant.parse("2024-07-29T23:59:59.00Z"), orderBy, ordering, recordType, docId, noOfRecords).toString();
         //then
         assertThat(result, equalTo("[]"));  // no record in supply date
 
-        Date startDate = df.parse("2024-07-26 00:00:00");
-        Date endDate = df.parse("2024-07-27 23:59:59");
+        Instant startDate = Instant.parse("2024-07-26T00:00:00.00Z");
+        Instant endDate = Instant.parse("2024-07-27T23:59:59.00Z");
         result = service.getMetricsReport(startDate, null, null, null, null, null, null).toString();
         assertThat(result, equalTo("[" +
             "{document=abcd1, doc_title=test1, record_type=a, views=1, downloads=0}, " +
