@@ -9,7 +9,6 @@ import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.TimeConstants;
-import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
@@ -91,56 +90,15 @@ public class JDBCMetricsService implements MetricsService {
     @Scheduled(initialDelay=TimeConstants.ONE_MINUTE, fixedDelay=TimeConstants.ONE_MINUTE)
     public void syncDB() {
         log.info("Exporting metric counts");
-            syncDBHelper(viewed,viewInserter);
-            syncDBHelper(downloaded,downloadInserter);
-//        synchronized (viewed) {
-////            viewed.forEach((doc, viewers) ->
-////                viewInserter.execute(Map.of(
-////                    "start_timestamp", lastRun,
-////                    "end_timestamp", Instant.now().getEpochSecond(),
-////                    "amount", viewers.size(),
-////                    "document", doc,
-////                    "doc_title", "poopy",
-////                    "record_type", "beans"
-////                ))
-////            );
-//            for (Map.Entry<String, Set<String>> metricInfo : viewed.entrySet()) {
-//                String doc = metricInfo.getKey();
-//                Set<String> viewers = metricInfo.getValue();
-//                MetadataDocument document;
-//                try {
-//                    document = documentRepository.read(doc);
-//                    log.info("document title {}", document.getTitle());
-//                } catch (Exception e) {
-//                    log.error("Error reading document from repository {}", doc, e);
-//                    continue;
-//                }
-//                viewInserter.execute(Map.of(
-//                    "start_timestamp", lastRun,
-//                    "end_timestamp", Instant.now().getEpochSecond(),
-//                    "amount", viewers.size(),
-//                    "document", doc,
-//                    "doc_title", document.getTitle(),
-//                    "record_type", document.getType()
-//                ));
-//            }
-//            viewed.clear();
-//        }
+        synchronized (viewed) {
+            syncDBHelper(viewed, viewInserter);
+        }
+        viewed.clear();
 
-//        synchronized (downloaded) {
-//            downloaded.forEach((doc, downloaders) ->
-//                downloadInserter.execute(Map.of(
-//                    "start_timestamp", lastRun,
-//                    "end_timestamp", Instant.now().getEpochSecond(),
-//                    "amount", downloaders.size(),
-//                    "document", doc,
-//                    "doc_title", "doccy mcdocface",
-//                    "record_type", "choccy woccy doo da"
-//                ))
-//            );
-//            downloaded.clear();
-//        }
-
+        synchronized (downloaded) {
+            syncDBHelper(downloaded, downloadInserter);
+        }
+        downloaded.clear();
         lastRun = Instant.now().getEpochSecond();
     }
 
@@ -163,40 +121,37 @@ public class JDBCMetricsService implements MetricsService {
     private void updateDBHelper(String table) {
         List<String> distinctDocs = jdbcTemplate.queryForList(DISTINCT_DOCS_QUERY.formatted(table), String.class);
         distinctDocs.forEach((doc) -> {
-            MetadataDocument document = new GeminiDocument();
+            MetadataDocument document;
             try {
+                log.info("UPDATING title and type of document ID {} for {} table", doc, table);
                 document = documentRepository.read(doc);
+                jdbcTemplate.update(UPDATE_STATEMENT.formatted(table), document.getTitle(), document.getType(), doc);
             } catch (Exception e) {
                 log.error("Error reading document from repository {}", doc, e);
             }
-            log.info("DOING THE UPDATE ON {}", table);
-            jdbcTemplate.update(UPDATE_STATEMENT.formatted(table), document.getTitle(), document.getType(), doc);
         });
     }
 
     private void syncDBHelper(Map<String, Set<String>> tableMap, SimpleJdbcInsert inserter) {
-        synchronized (tableMap) {
-            for (Map.Entry<String, Set<String>> metricInfo : tableMap.entrySet()) {
-                String doc = metricInfo.getKey();
-                Set<String> viewers = metricInfo.getValue();
-                MetadataDocument document;
-                try {
-                    document = documentRepository.read(doc);
-                    log.info("document title {}", document.getTitle());
-                } catch (Exception e) {
-                    log.error("Error reading document from repository {}", doc, e);
-                    continue;
-                }
-                inserter.execute(Map.of(
-                    "start_timestamp", lastRun,
-                    "end_timestamp", Instant.now().getEpochSecond(),
-                    "amount", viewers.size(),
-                    "document", doc,
-                    "doc_title", document.getTitle(),
-                    "record_type", document.getType()
-                ));
+        for (Map.Entry<String, Set<String>> metricInfo : tableMap.entrySet()) {
+            String doc = metricInfo.getKey();
+            Set<String> viewers = metricInfo.getValue();
+            MetadataDocument document;
+            try {
+                document = documentRepository.read(doc);
+                log.info("document title {}", document.getTitle());
+            } catch (Exception e) {
+                log.error("Error reading document from repository {}", doc, e);
+                continue;
             }
-            tableMap.clear();
+            inserter.execute(Map.of(
+                "start_timestamp", lastRun,
+                "end_timestamp", Instant.now().getEpochSecond(),
+                "amount", viewers.size(),
+                "document", doc,
+                "doc_title", document.getTitle(),
+                "record_type", document.getType()
+            ));
         }
     }
 }

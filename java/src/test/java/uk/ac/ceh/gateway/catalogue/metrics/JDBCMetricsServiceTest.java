@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
@@ -22,7 +23,9 @@ import java.util.stream.IntStream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class JDBCMetricsServiceTest {
@@ -33,6 +36,7 @@ class JDBCMetricsServiceTest {
     private static final String TEST_IP1 = "192.0.2.1";
     private static final String TEST_IP2 = "192.0.2.2";
     @Mock private DocumentRepository documentRepository;
+    @Mock private JdbcTemplate jdbcTemplate;
     private final MetadataDocument doc = new GeminiDocument();
 
     @BeforeEach
@@ -42,9 +46,8 @@ class JDBCMetricsServiceTest {
             .generateUniqueName(true)
             .build();
         service = new JDBCMetricsService(db, documentRepository);
-
-        doc.setTitle("Test Title");
-        doc.setType("dataset");
+        doc.setTitle("default Test Title");
+        doc.setType("default dataset");
     }
 
     @AfterEach
@@ -138,12 +141,98 @@ class JDBCMetricsServiceTest {
         assertThat(amount, equalTo(2 * howMany));
     }
 
+    @SneakyThrows
+    @Test
+    void testUpdateView() {
+        //given
+        given(documentRepository.read(anyString())).willReturn(doc);
+
+        //when
+        service.recordView(TEST_DOCUMENT, TEST_IP1);
+        service.syncDB();
+        val preRows = getTitleAndType("views");
+        assertThat(preRows, contains(contains(doc.getTitle(), doc.getType())));
+
+        doc.setTitle("updated Test Title");
+        doc.setType("updated dataset");
+        service.updateDB();
+
+        //then
+        val postRows = getTitleAndType("views");
+        assertThat(postRows, contains(contains(doc.getTitle(), doc.getType())));
+    }
+
+    @SneakyThrows
+    @Test
+    void testUpdateDownload() {
+        //given
+        given(documentRepository.read(anyString())).willReturn(doc);
+
+        //when
+        service.recordDownload(TEST_DOCUMENT, TEST_IP1);
+        service.syncDB();
+        val preRows = getTitleAndType("downloads");
+        assertThat(preRows, contains(contains(doc.getTitle(), doc.getType())));
+
+        doc.setTitle("updated Test Title");
+        doc.setType("updated dataset");
+        service.updateDB();
+
+        //then
+        val postRows = getTitleAndType("downloads");
+        assertThat(postRows, contains(contains(doc.getTitle(), doc.getType())));
+    }
+
+    @SneakyThrows
+    @Test
+    void testUpdateViewThrows() {
+        //given
+        given(documentRepository.read(anyString())).willReturn(doc).willThrow(new RuntimeException("Oops"));
+
+        //when
+        service.recordView(TEST_DOCUMENT, TEST_IP1);
+        service.syncDB();
+        service.updateDB();
+
+        //then
+        verify(documentRepository, times(2)).read(anyString());
+        verify(jdbcTemplate, times(0)).update(anyString(), anyString(), anyString(), anyString());
+
+    }
+
+    @SneakyThrows
+    @Test
+    void testUpdateDownloadThrows() {
+        //given
+        given(documentRepository.read(anyString())).willReturn(doc);
+
+        //when
+        service.recordDownload(TEST_DOCUMENT, TEST_IP1);
+        service.syncDB();
+        service.updateDB();
+
+        //then
+        verify(documentRepository, times(2)).read(anyString());
+        verify(jdbcTemplate, times(0)).update(anyString(), anyString(), anyString(), anyString());
+
+    }
+
     List<List<Object>> getDocumentsAndAmounts(String table) throws SQLException {
         val stmt = db.getConnection().createStatement();
         val rs = stmt.executeQuery("SELECT document, amount FROM " + table);
         val rows = new ArrayList<List<Object>>();
         while (rs.next()) {
             rows.add(List.of(rs.getString(1), rs.getInt(2)));
+        }
+        return rows;
+    }
+
+    List<List<Object>> getTitleAndType(String table) throws SQLException {
+        val stmt = db.getConnection().createStatement();
+        val rs = stmt.executeQuery("SELECT doc_title, record_type FROM " + table);
+        val rows = new ArrayList<List<Object>>();
+        while (rs.next()) {
+            rows.add(List.of(rs.getString(1), rs.getString(2)));
         }
         return rows;
     }
