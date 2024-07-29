@@ -135,15 +135,16 @@ class JDBCMetricsServiceTest {
     void testGetMetricsReport() throws Exception {
         Statement statement = db.getConnection().createStatement();
         String sql = "insert into %s (start_timestamp, end_timestamp, document, amount, doc_title, record_type) values ('%s', '%s', '%s', %d, '%s', '%s')";
-        statement.executeUpdate(String.format(sql, "views", "1721948400", "1722034799", "abcd1", 1, "test1", "a")); // 26July2024 timestsmp
-        statement.executeUpdate(String.format(sql, "views", "1722034800", "1722121199", "abcd2", 2, "test2", "b")); // 27July2024 timestsmp
-        statement.executeUpdate(String.format(sql, "views", "1722121200", "1722207599", "abcd3", 3, "test3", "c")); // 28July2024 timestsmp
+        statement.executeUpdate(String.format(sql, "views", "1721952000", "1722038399", "abcd1", 1, "test1", "a")); // 26July2024 timestsmp
+        statement.executeUpdate(String.format(sql, "views", "1722038400", "1722124799", "abcd2", 2, "test2", "b")); // 27July2024 timestsmp
+        statement.executeUpdate(String.format(sql, "views", "1722124800", "1722211199", "abcd3", 3, "test3", "c")); // 28July2024 timestsmp
 
-        statement.executeUpdate(String.format(sql, "downloads", "1721948400", "1722034799", "abcd2", 1, "test2", "b")); // 26July2024 timestsmp
-        statement.executeUpdate(String.format(sql, "downloads", "1722034800", "1722121199", "abcd3", 2, "test3", "c")); // 27July2024 timestsmp
-        statement.executeUpdate(String.format(sql, "downloads", "1722121200", "1722207599", "abcd4", 3, "test4", "d")); // 28July2024 timestsmp
+        statement.executeUpdate(String.format(sql, "downloads", "1721952000", "1722038399", "abcd2", 1, "test2", "b")); // 26July2024 timestsmp
+        statement.executeUpdate(String.format(sql, "downloads", "1722038400", "1722124799", "abcd3", 2, "test3", "c")); // 27July2024 timestsmp
+        statement.executeUpdate(String.format(sql, "downloads", "1722124800", "1722211199", "abcd4", 3, "test4", "d")); // 28July2024 timestsmp
 
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        df.setTimeZone(TimeZone.getTimeZone("UTC"));
         List<String> recordType = Arrays.asList("a", "c");
         String orderBy = "views";
         String ordering = "descending";
