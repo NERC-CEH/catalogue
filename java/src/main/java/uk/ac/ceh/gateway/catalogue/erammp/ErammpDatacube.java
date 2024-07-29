@@ -14,7 +14,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.SpatialReferenceSystem;
 import uk.ac.ceh.gateway.catalogue.indexing.solr.WellKnownText;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.DataTypeSchema;
-import uk.ac.ceh.gateway.catalogue.model.OnlineLink;
+import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 
 import java.util.Collections;
@@ -34,7 +34,7 @@ public class ErammpDatacube extends AbstractMetadataDocument implements WellKnow
     private List<BoundingBox> boundingBoxes;
     private List<DataLocation> dataLocations;
     private List<ResponsibleParty> provider;
-    private List<OnlineLink> onlineResources;
+    private List<OnlineResource> onlineResources;
     private List<SpatialReferenceSystem> spatialReferenceSystems;
     private List<ResourceConstraint> useConstraints, accessConstraints;
     private List<DataTypeSchema> schema;

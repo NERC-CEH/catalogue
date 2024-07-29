@@ -1,6 +1,6 @@
 import EditorView from '../EditorView'
 import InputView from '../InputView'
-import { TextareaView, ParentView, PredefinedParentView, KeywordView, ReferenceView, ContactView, SingleObjectView, QaView, VersionHistoryView, ProjectUsageView, OnlineLinkView, DataTypeSchemaSimpleView } from '../views'
+import { TextareaView, ParentView, PredefinedParentView, KeywordView, ReferenceView, ContactView, SingleObjectView, QaView, VersionHistoryView, ProjectUsageView, OnlineResourceSimpleView, DataTypeSchemaSimpleView } from '../views'
 import { Contact, DataTypeSchema, Reference } from '../models'
 import BoundingBoxView from '../geometryMap/BoundingBoxView'
 import BoundingBox from '../geometryMap/BoundingBox'
@@ -112,7 +112,7 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'onlineResources',
           label: 'Online resources',
-          ObjectInputView: OnlineLinkView,
+          ObjectInputView: OnlineResourceSimpleView,
           multiline: true,
           listAttribute: `\
 <option value='code'>Location of the model code such as GitHub repository</option>

@@ -279,7 +279,7 @@ class DocumentControllerTest {
             Arguments.of(new InfrastructureRecord(), TEXT_HTML, HTML, null),
             Arguments.of(new InfrastructureRecord(), APPLICATION_JSON, JSON, null),
             Arguments.of(new MethodRecord(), TEXT_HTML, HTML, null),
-            Arguments.of(new IMethodRecord(), APPLICATION_JSON, JSON, null),
+            Arguments.of(new MethodRecord(), APPLICATION_JSON, JSON, null),
             Arguments.of(facility, TEXT_HTML, HTML, null),
             Arguments.of(facility, APPLICATION_JSON, JSON, null),
             Arguments.of(facility, EF_INSPIRE_XML, EF_INSPIRE_XML_SHORT, null),

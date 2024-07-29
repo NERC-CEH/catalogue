@@ -46,31 +46,7 @@
             <@displaykey "Contact">
                 <#if contacts?? >
                   <#list contacts as contact>
-                    <div class="contact">
-                      <div>
-                        <#if contact.individualName?has_content>
-                          <span class="fa-solid fa-user"></span>
-                        <#else>
-                          <span class="fa-solid fa-building"></span>
-                        </#if>
-                      </div>
-                      <div>
-                        <#if contact.individualName?has_content>
-                          <span>${contact.individualName}</span>
-                        </#if>
-                        <#if contact.organisationName?? && contact.organisationName?has_content>
-                          <span>${contact.organisationName}</span>
-                        </#if>
-                        <#if contact.address?? && contact.address?has_content>
-                          <#if contact.address.city?has_content>
-                            <span>${contact.address.city}</span>
-                          </#if>
-                        </#if>
-                        <#if contact.email?? && contact.email?has_content>
-                          <span><a href="mailto:${contact.email}"><span class="fa-solid fa-xs fa-envelope"></span> ${contact.email}</a></span>
-                        </#if>
-                      </div>
-                    </div>
+                    <@displayContact contact/>
                   </#list>
                 <#else>
                   <p class="text-danger">NO CONTACT IDENTIFIED</p>
@@ -89,6 +65,17 @@
                 </@displaykey>
             </#if>
 
+            <#if additionalInfo?? && additionalInfo?has_content >
+              <@displaykey "Additional information">
+              <dl class="dl-horizontal">
+                <#list additionalInfo as info>
+                   <dt>${info.key}</dt>
+                   <dd>${info.value}</dd>
+                </#list>
+              </dl>
+              </@displaykey>
+            </#if>
+
             <#if keywords?? >
               <#assign keywordLabel = "Keyword">
               <#if keywords?size gte 2>
@@ -96,7 +83,12 @@
               </#if>
                 <@displaykey keywordLabel>
                   <#list keywords as keyword>
-                    ${keyword.value}<#sep>, </#sep>
+                    <#if keyword.value?has_content>
+                      ${keyword.value}
+                    <#else>
+                      <span class="text-muted">Data missing</span>
+                    </#if>
+                    <#sep>, </#sep>
                   </#list>
                 </@displaykey>
             </#if>
@@ -137,10 +129,36 @@
 </#macro>
 
 <#macro displayLink link>
-  <#if link.name?has_content>
-    <#local linkDisplay = link.name>
-  <#else>
-    <#local linkDisplay = link.url>
-  </#if>
-  <p><a href="${link.url}" target="_blank" rel="noopener noreferrer">${linkDisplay} <i class="fa-solid fa-up-right-from-square fa-xs"></i></a></p>
+  <p>
+    <#if link.url?has_content>
+      <#local linkDisplay = link.url>
+      <#if link.name?has_content>
+        <#local linkDisplay = link.name>
+      </#if>
+      <a href="${link.url}" target="_blank" rel="noopener noreferrer">
+        ${linkDisplay}
+      </a>
+     <#else>
+      <span class="text-muted">Data missing</span>
+     </#if>
+  </p>
+</#macro>
+
+<#macro displayContact contact>
+  <div class="contact">
+    <#if contact.individualName?has_content>
+      <div>${contact.individualName}</div>
+    </#if>
+    <#if contact.organisationName?? && contact.organisationName?has_content>
+      <div>${contact.organisationName}</div>
+    </#if>
+    <#if contact.address?? && contact.address?has_content>
+      <#if contact.address.city?has_content>
+        <div>${contact.address.city}</div>
+      </#if>
+    </#if>
+    <#if contact.email?? && contact.email?has_content>
+      <div><a href="mailto:${contact.email}"><span class="fa-solid fa-xs fa-envelope"></span> ${contact.email}</a></div>
+    </#if>
+  </div>
 </#macro>

@@ -8,7 +8,7 @@ import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.Relationship;
-import uk.ac.ceh.gateway.catalogue.model.OnlineLink;
+import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.gemini.Funding;
 import uk.ac.ceh.gateway.catalogue.model.Supplemental;
@@ -35,7 +35,7 @@ public class NercModelUse extends AbstractMetadataDocument {
 
     private List<ModelInfo> modelInfos;
 
-    private List<OnlineLink> onlineResources;
+    private List<OnlineResource> onlineResources;
 
     private List<DataInfo>
         inputData,

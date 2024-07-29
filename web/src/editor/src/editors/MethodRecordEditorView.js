@@ -2,16 +2,16 @@ import { EditorView, InputView } from '../index'
 import {
   ContactView,
   KeywordView,
-  OnlineLinkView,
+  OnlineResourceSimpleView,
   ParentView,
   PredefinedParentView,
   RelationshipView,
-  TextareaView
+  TextareaView,
+  AdditionalInfoView
 } from '../views'
 import {
-  Contact,
+  Contact
 } from '../models'
-
 
 export default EditorView.extend({
 
@@ -33,7 +33,7 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'description',
           label: 'Description',
-          rows: 6
+          rows: 10
         }),
 
         new PredefinedParentView({
@@ -86,7 +86,7 @@ export default EditorView.extend({
         new ParentView({
           model: this.model,
           modelAttribute: 'keywords',
-          label: 'Other keywords',
+          label: 'Keywords',
           ObjectInputView: KeywordView
         }),
 
@@ -94,7 +94,7 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'onlineResources',
           label: 'Online resources',
-          ObjectInputView: OnlineLinkView,
+          ObjectInputView: OnlineResourceSimpleView,
           multiline: true
         }),
 
@@ -109,6 +109,17 @@ export default EditorView.extend({
             { value: 'http://onto.nerc.ac.uk/CEHMD/rels/produces', label: 'Produces' },
             { value: 'http://onto.nerc.ac.uk/CEHMD/rels/uses', label: 'Uses' }
           ]
+        }),
+
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'additionalInfo',
+          multiline: true,
+          label: 'Additional information',
+          ObjectInputView: AdditionalInfoView,
+          helpText: `\
+<p>Enter information as key-value pairs.</p>\
+`
         })
       ]
     }

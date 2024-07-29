@@ -351,9 +351,9 @@ export default EditorView.extend({
       views: [
         new PredefinedParentView({
           model: this.model,
-          modelAttribute: 'onlineResources',
+          modelAttribute: 'deliveryURLs',
           ModelType: OnlineResource,
-          label: 'Online availability',
+          label: 'Data access services/links',
           ObjectInputView: OnlineResourceView,
           multiline: true,
           predefined: {
@@ -374,8 +374,22 @@ export default EditorView.extend({
               name: 'Download the data',
               description: 'Download a copy of this data',
               function: 'download'
-            },
-            'Supporting documents': {
+            }
+          },
+          helpText: `\
+<p>Include addresses of web services <b>used to access the data</b>.</p>\
+`
+        }),
+
+        new PredefinedParentView({
+          model: this.model,
+          modelAttribute: 'documentationURLs',
+          ModelType: OnlineResource,
+          label: 'Supporting documentation',
+          ObjectInputView: OnlineResourceView,
+          multiline: true,
+          predefined: {
+            'EIDC supporting documents': {
               url: 'https://data-package.ceh.ac.uk/sd/{fileIdentifier}.zip',
               name: 'Supporting information',
               description: 'Supporting information available to assist in re-use of this dataset',
@@ -383,9 +397,17 @@ export default EditorView.extend({
             }
           },
           helpText: `\
-<p>Include addresses of web services used to access the data and supporting information.</p>
-<p>Other links such as project websites or papers should <b>NOT</b> be included here. You can add them to "Additional information"</p>\
+<p>Include addresses <b>used to access supporting metadata/documents</b>.</p>\
 `
+        }),
+
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'onlineResources',
+          ModelType: OnlineResource,
+          label: 'Online availability (old)',
+          ObjectInputView: OnlineResourceView,
+          multiline: true
         }),
 
         new PredefinedParentView({

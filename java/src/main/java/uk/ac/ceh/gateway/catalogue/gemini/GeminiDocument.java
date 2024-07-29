@@ -61,7 +61,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private List<BoundingBox> boundingBoxes;
     private List<ResponsibleParty> distributorContacts, responsibleParties;
     private List<TimePeriod> temporalExtents;
-    private List<OnlineResource> onlineResources;
+    private List<OnlineResource> deliveryURLs, documentationURLs, otherURLs, onlineResources;
     private List<SpatialReferenceSystem> spatialReferenceSystems;
     private List<Supplemental> incomingCitations, supplemental;
     @JsonIgnore

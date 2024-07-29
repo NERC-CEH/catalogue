@@ -27,6 +27,14 @@ public class MethodRecord extends AbstractMetadataDocument{
 
     private List<ResponsibleParty> contacts;
     private List<OnlineResource> onlineResources;
+    private List<AdditionalInfo> additionalInfo;
+
+    @Data
+    public static class AdditionalInfo {
+        private String
+            key,
+            value;
+    }
 }
 
 
