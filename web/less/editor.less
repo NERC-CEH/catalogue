@@ -60,6 +60,8 @@
 #editor {
     padding-bottom: 70px;
 
+    &:has(>*>select:disabled) {display:none;}
+
     .editor-input {
         .form-control;
         .input-sm;

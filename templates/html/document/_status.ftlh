@@ -5,7 +5,7 @@
     <#assign supersededContact="UK-SCAPE Programme Office">
 </#if>
 
-<#if resourceStatus == "Superseded" || resourceStatus == "Withdrawn">
+<#if resourceStatus == "Superseded" || resourceStatus == "Withdrawn" || resourceStatus == "Deleted">
     <p>
         <strong>THIS ${recordType?upper_case} HAS BEEN ${resourceStatus?upper_case}.</strong>
         <#if superseded?has_content>
@@ -15,8 +15,11 @@
     <#if reasonChanged??>
         <p><@blocks.linebreaksAndLinks reasonChanged/></p>
     </#if>
-    
-    <p>If you need access to this archived version, please <a href="${catalogue.contactUrl}" target="_blank" rel="noopener noreferrer">contact the ${supersededContact}</a></p>
+
+    <#if resourceStatus == "Superseded" || resourceStatus == "Withdrawn">
+      <p>If you need access to this archived version, please <a href="${catalogue.contactUrl}" target="_blank" rel="noopener noreferrer">contact the ${supersededContact}</a></p>
+    </#if>
+
 <#elseif resourceStatus == "Restricted">
     <span>ACCESS TO THIS ${recordType?upper_case} IS RESTRICTED</span>
     <br>${accessLimitation.description} If you need access, please <a href="${catalogue.contactUrl}" target="_blank" rel="noopener noreferrer">contact ${supersededContact}</a>
@@ -35,5 +38,7 @@
             and is expected to become available by ${datasetReferenceDate.releasedDate?date?string["d MMMM yyyy"]}
         </#if>
     </p>
+<#elseif resourceStatus == "Deleted">
+    <p><strong>This record has been deleted</strong></p>
 </#if>
 
