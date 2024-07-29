@@ -19,6 +19,11 @@
 
             <div class="text-right">
                 <div class="row hidden-print adminPanel" role="toolbar">
+                    <#if getState() == "agreed">
+                        <div class="btn-group btn-group-sm">
+                            <button type="button" class="btn btn-default btn-wide" onClick="window.print()">Print</button>
+                        </div>
+                    </#if>
                     <#if !isHistorical()>
                         <#assign canChangeState = true>
                         <#if serviceAgreementQuality??>
@@ -35,9 +40,6 @@
                             <#assign canChangeState = true>
                         </#if>
                         <#if permission.userCanEditServiceAgreement(id)>
-                            <div class="btn-group btn-group-sm">
-                                <button type="button" class="btn btn-default btn-wide" onClick="window.print()">Print</button>
-                            </div>
                             <div class="btn-group btn-group-sm">
                                 <button type="button" class="btn btn-default edit-control btn-wide" data-document-type="service-agreement">Edit</button>
                                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
