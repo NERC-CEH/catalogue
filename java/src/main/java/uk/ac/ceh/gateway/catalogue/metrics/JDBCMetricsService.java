@@ -87,7 +87,7 @@ public class JDBCMetricsService implements MetricsService {
         return totalAmount(DOWNLOAD_TABLE, uuid);
     }
 
-    @Scheduled(initialDelay=TimeConstants.ONE_MINUTE, fixedDelay=TimeConstants.ONE_MINUTE)
+    @Scheduled(initialDelay=TimeConstants.ONE_HOUR, fixedDelay=TimeConstants.ONE_HOUR)
     public void syncDB() {
         log.info("Exporting metric counts");
         synchronized (viewed) {
@@ -102,7 +102,7 @@ public class JDBCMetricsService implements MetricsService {
         lastRun = Instant.now().getEpochSecond();
     }
 
-    @Scheduled(initialDelay=120_000, fixedDelay=120_000)
+    @Scheduled(initialDelay=TimeConstants.ONE_DAY, fixedDelay=TimeConstants.ONE_DAY)
     public void updateDB() {
         log.info("Updating document titles and record types");
         updateDBHelper(VIEW_TABLE);
