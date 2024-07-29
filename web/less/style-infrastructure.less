@@ -2,16 +2,9 @@
 
 @fa-font-path: "../fonts";
 
-:root {
-    --primary-colour: var(--ukceh-colours-teal);
-    --tertiary-colour: var(--ukceh-colours-green);
-
-}
-
 #pageTitle {
     margin: 2em 0;
 }
-
 
 .fa-spin-2x {
     -webkit-animation: fa-spin 1s infinite linear;
@@ -43,6 +36,7 @@
     line-height: @line-height-base;
 
     >div {
+        text-wrap: balance;
         &:first-of-type {
             font-weight: bolder;
             font-size: 1.125em;

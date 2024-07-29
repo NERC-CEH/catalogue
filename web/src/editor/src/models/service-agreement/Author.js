@@ -17,7 +17,7 @@ export default Backbone.Model.extend({
       errors.push({ message: 'That email address is invalid' })
     }
 
-    if (!nameIdentifier?.match(orcidRegEx)) {
+    if (nameIdentifier && !nameIdentifier?.match(orcidRegEx)) {
       errors.push({ message: 'That ORCiD is invalid.  ORCiDs should be entered as https://orcid.org/0000-1234-5678-999X <b>not</b> 0000-1234-5678-999X' })
     }
 

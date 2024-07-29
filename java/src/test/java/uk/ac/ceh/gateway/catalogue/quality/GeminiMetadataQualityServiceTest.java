@@ -25,12 +25,9 @@ import uk.ac.ceh.gateway.catalogue.document.reading.DocumentReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.ac.ceh.gateway.catalogue.quality.Results.Severity.ERROR;
@@ -39,8 +36,8 @@ import static uk.ac.ceh.gateway.catalogue.quality.Results.Severity.WARNING;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
-public class MetadataQualityServiceTest {
-    private MetadataQualityService service;
+public class GeminiMetadataQualityServiceTest {
+    private GeminiMetadataQualityService service;
     // Keep ObjectMapper options same as ObjectMapper in config/ApplicationConfig.java
     private ObjectMapper objectMapper = new ObjectMapper()
         .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
@@ -60,7 +57,7 @@ public class MetadataQualityServiceTest {
 
     @BeforeEach
     public void setup() {
-        this.service = new MetadataQualityService(documentReader, objectMapper);
+        this.service = new GeminiMetadataQualityService(documentReader, objectMapper);
     }
 
     @Test
@@ -115,10 +112,10 @@ public class MetadataQualityServiceTest {
         ));
 
         //when
-        val actual = this.service.checkAddress(addresses, "Test").isPresent();
+        val actual = this.service.checkAddress(addresses, "Test");
 
         //then
-        assertFalse(actual);
+        assertThat(actual, empty());
     }
 
     @Test
@@ -131,10 +128,10 @@ public class MetadataQualityServiceTest {
         ));
 
         //when
-        val actual = this.service.checkAddress(addresses, "Test").isPresent();
+        val actual = this.service.checkAddress(addresses, "Test");
 
         //then
-        assertTrue(actual);
+        assertThat(actual, not(empty()));
     }
 
     @Test
@@ -143,10 +140,10 @@ public class MetadataQualityServiceTest {
         val parsed = JsonPath.parse(getClass().getResourceAsStream("nonGeographicRight.json"), this.config);
 
         //when
-        val actual = this.service.checkNonGeographicDatasets(parsed).isPresent();
+        val actual = this.service.checkNonGeographicDatasets(parsed);
 
         //then
-        assertFalse(actual);
+        assertThat(actual, empty());
     }
 
     @Test
@@ -155,10 +152,10 @@ public class MetadataQualityServiceTest {
         val parsed = JsonPath.parse(getClass().getResourceAsStream("nonGeographicWrong.json"), this.config);
 
         //when
-        val actual = this.service.checkNonGeographicDatasets(parsed).isPresent();
+        val actual = this.service.checkNonGeographicDatasets(parsed);
 
         //then
-        assertTrue(actual);
+        assertThat(actual, not(empty()));
     }
 
     //@Test
@@ -167,10 +164,10 @@ public class MetadataQualityServiceTest {
         val parsed = JsonPath.parse(getClass().getResourceAsStream("nercSignpostRight.json"), this.config);
 
         //when
-        val actual = this.service.checkNercSignpost(parsed).isPresent();
+        val actual = this.service.checkNercSignpost(parsed);
 
         //then
-        assertFalse(actual);
+        assertThat(actual, empty());
     }
 
     @Test
@@ -179,10 +176,10 @@ public class MetadataQualityServiceTest {
         val parsed = JsonPath.parse(getClass().getResourceAsStream("nercSignpostWrong.json"), this.config);
 
         //when
-        val actual = this.service.checkNercSignpost(parsed).isPresent();
+        val actual = this.service.checkNercSignpost(parsed);
 
         //then
-        assertTrue(actual);
+        assertThat(actual, not(empty()));
     }
 
     @Test
@@ -191,10 +188,10 @@ public class MetadataQualityServiceTest {
         val parsed = JsonPath.parse(getClass().getResourceAsStream("nercSignpostMissing.json"), this.config);
 
         //when
-        val actual = this.service.checkNercSignpost(parsed).isPresent();
+        val actual = this.service.checkNercSignpost(parsed);
 
         //then
-        assertTrue(actual);
+        assertThat(actual, not(empty()));
     }
 
     @Test
@@ -203,10 +200,10 @@ public class MetadataQualityServiceTest {
         val parsed = JsonPath.parse(getClass().getResourceAsStream("nercSignpostNotResourceType.json"), this.config);
 
         //when
-        val actual = this.service.checkNercSignpost(parsed).isPresent();
+        val actual = this.service.checkNercSignpost(parsed);
 
         //then
-        assertFalse(actual);
+        assertThat(actual, empty());
     }
 
     @Test
@@ -215,10 +212,10 @@ public class MetadataQualityServiceTest {
         val parsed = JsonPath.parse(getClass().getResourceAsStream("datasetCorrect.json"), this.config);
 
         //when
-        val actual = this.service.checkSpatialDataset(parsed).isPresent();
+        val actual = this.service.checkSpatialDataset(parsed);
 
         //then
-        assertFalse(actual);
+        assertThat(actual, empty());
     }
 
     @Test
@@ -227,10 +224,10 @@ public class MetadataQualityServiceTest {
         val parsed = JsonPath.parse(getClass().getResourceAsStream("datasetWrong.json"), this.config);
 
         //when
-        val actual = this.service.checkSpatialDataset(parsed).isPresent();
+        val actual = this.service.checkSpatialDataset(parsed);
 
         //then
-        assertTrue(actual);
+        assertThat(actual, not(empty()));
     }
 
     @Test
@@ -239,10 +236,10 @@ public class MetadataQualityServiceTest {
         val parsed = JsonPath.parse(getClass().getResourceAsStream("authorsRight.json"), this.config);
 
         //when
-        val actual = this.service.checkAuthors(parsed).isPresent();
+        val actual = this.service.checkAuthors(parsed);
 
         //then
-        assertFalse(actual);
+        assertThat(actual, empty());
     }
 
     @Test
@@ -251,10 +248,10 @@ public class MetadataQualityServiceTest {
         val parsed = JsonPath.parse(getClass().getResourceAsStream("authorsWrong.json"), this.config);
 
         //when
-        val actual = this.service.checkAuthors(parsed).isPresent();
+        val actual = this.service.checkAuthors(parsed);
 
         //then
-        assertTrue(actual);
+        assertThat(actual, not(empty()));
     }
 
     @Test
@@ -263,10 +260,10 @@ public class MetadataQualityServiceTest {
         val parsed = JsonPath.parse(getClass().getResourceAsStream("topicCategoriesRight.json"), this.config);
 
         //when
-        val actual = this.service.checkTopicCategories(parsed).isPresent();
+        val actual = this.service.checkTopicCategories(parsed);
 
         //then
-        assertFalse(actual);
+        assertThat(actual, empty());
     }
 
     @Test
@@ -275,10 +272,10 @@ public class MetadataQualityServiceTest {
         val parsed = JsonPath.parse(getClass().getResourceAsStream("topicCategoriesWrong.json"), this.config);
 
         //when
-        val actual = this.service.checkTopicCategories(parsed).isPresent();
+        val actual = this.service.checkTopicCategories(parsed);
 
         //then
-        assertTrue(actual);
+        assertThat(actual, not(empty()));
     }
 
     @Test
@@ -287,10 +284,10 @@ public class MetadataQualityServiceTest {
         val parsed = JsonPath.parse(getClass().getResourceAsStream("custodiansRight.json"), this.config);
 
         //when
-        val actual = this.service.checkCustodian(parsed).isPresent();
+        val actual = this.service.checkCustodian(parsed);
 
         //then
-        assertFalse(actual);
+        assertThat(actual, empty());
     }
 
     @Test
@@ -299,10 +296,10 @@ public class MetadataQualityServiceTest {
         val parsed = JsonPath.parse(getClass().getResourceAsStream("custodiansWrong.json"), this.config);
 
         //when
-        val actual = this.service.checkCustodian(parsed).isPresent();
+        val actual = this.service.checkCustodian(parsed);
 
         //then
-        assertTrue(actual);
+        assertThat(actual, not(empty()));
     }
 
     @Test
@@ -311,10 +308,10 @@ public class MetadataQualityServiceTest {
         val parsed = JsonPath.parse(getClass().getResourceAsStream("publishersRight.json"), this.config);
 
         //when
-        val actual = this.service.checkPublisher(parsed).isPresent();
+        val actual = this.service.checkPublisher(parsed);
 
         //then
-        assertFalse(actual);
+        assertThat(actual, empty());
     }
 
     @Test
@@ -323,10 +320,10 @@ public class MetadataQualityServiceTest {
         val parsed = JsonPath.parse(getClass().getResourceAsStream("publishersWrong.json"), this.config);
 
         //when
-        val actual = this.service.checkPublisher(parsed).isPresent();
+        val actual = this.service.checkPublisher(parsed);
 
         //then
-        assertTrue(actual);
+        assertThat(actual, not(empty()));
     }
 
     @Test
@@ -335,10 +332,10 @@ public class MetadataQualityServiceTest {
         val parsed = JsonPath.parse(getClass().getResourceAsStream("distributorsRight.json"), this.config);
 
         //when
-        val actual = this.service.checkDistributor(parsed).isPresent();
+        val actual = this.service.checkDistributor(parsed);
 
         //then
-        assertFalse(actual);
+        assertThat(actual, empty());
     }
 
     @Test
@@ -347,10 +344,10 @@ public class MetadataQualityServiceTest {
         val parsed = JsonPath.parse(getClass().getResourceAsStream("distributorsWrong.json"), this.config);
 
         //when
-        val actual = this.service.checkDistributor(parsed).isPresent();
+        val actual = this.service.checkDistributor(parsed);
 
         //then
-        assertTrue(actual);
+        assertThat(actual, not(empty()));
     }
 
     @Test
@@ -359,10 +356,10 @@ public class MetadataQualityServiceTest {
         val parsed = JsonPath.parse(getClass().getResourceAsStream("downloadOrdersRight.json"), this.config);
 
         //when
-        val actual = this.service.checkDownloadAndOrderLinks(parsed).isPresent();
+        val actual = this.service.checkDownloadAndOrderLinks(parsed);
 
         //then
-        assertFalse(actual);
+        assertThat(actual, empty());
     }
 
     @Test
@@ -371,10 +368,10 @@ public class MetadataQualityServiceTest {
         val parsed = JsonPath.parse(getClass().getResourceAsStream("downloadOrdersNotAvailable.json"), this.config);
 
         //when
-        val actual = this.service.checkDownloadAndOrderLinks(parsed).isPresent();
+        val actual = this.service.checkDownloadAndOrderLinks(parsed);
 
         //then
-        assertFalse(actual);
+        assertThat(actual, empty());
     }
 
     @Test
@@ -383,10 +380,10 @@ public class MetadataQualityServiceTest {
         val parsed = JsonPath.parse(getClass().getResourceAsStream("downloadOrdersWrong.json"), this.config);
 
         //when
-        val actual = this.service.checkDownloadAndOrderLinks(parsed).isPresent();
+        val actual = this.service.checkDownloadAndOrderLinks(parsed);
 
         //then
-        assertTrue(actual);
+        assertThat(actual, not(empty()));
     }
 
     @Test
@@ -395,10 +392,10 @@ public class MetadataQualityServiceTest {
         val parsed = JsonPath.parse(getClass().getResourceAsStream("dataFormatRight.json"), this.config);
 
         //when
-        val actual = this.service.checkDataFormat(parsed).isPresent();
+        val actual = this.service.checkDataFormat(parsed);
 
         //then
-        assertFalse(actual);
+        assertThat(actual, empty());
     }
 
     @Test
@@ -407,10 +404,10 @@ public class MetadataQualityServiceTest {
         val parsed = JsonPath.parse(getClass().getResourceAsStream("dataFormatWrong.json"), this.config);
 
         //when
-        val actual = this.service.checkDataFormat(parsed).isPresent();
+        val actual = this.service.checkDataFormat(parsed);
 
         //then
-        assertTrue(actual);
+        assertThat(actual, not(empty()));
     }
 
     @Test
@@ -419,10 +416,10 @@ public class MetadataQualityServiceTest {
         val parsed = JsonPath.parse(getClass().getResourceAsStream("basicsCorrect.json"), this.config);
 
         //when
-        val actual = this.service.checkBasics(parsed).isPresent();
+        val actual = this.service.checkBasics(parsed);
 
         //then
-        assertFalse(actual);
+        assertThat(actual, empty());
     }
 
     @Test
@@ -431,10 +428,10 @@ public class MetadataQualityServiceTest {
         val parsed = JsonPath.parse(getClass().getResourceAsStream("basicsWrong.json"), this.config);
 
         //when
-        val actual = this.service.checkBasics(parsed).isPresent();
+        val actual = this.service.checkBasics(parsed);
 
         //then
-        assertTrue(actual);
+        assertThat(actual, not(empty()));
     }
 
     @Test
@@ -446,7 +443,7 @@ public class MetadataQualityServiceTest {
         val actual = this.service.resourceStatusIsAvailable(parsed);
 
         //then
-        assertTrue(actual);
+        assertThat(actual, is(true));
     }
 
     @Test
@@ -458,7 +455,7 @@ public class MetadataQualityServiceTest {
         val actual = this.service.resourceStatusIsAvailable(parsed);
 
         //then
-        assertFalse(actual);
+        assertThat(actual, is(false));
     }
 
     @Test
@@ -467,10 +464,10 @@ public class MetadataQualityServiceTest {
         val parsed = JsonPath.parse(getClass().getResourceAsStream("boundingBoxWrong.json"), this.config);
 
         //when
-        val actual = this.service.checkBoundingBoxes(parsed).isPresent();
+        val actual = this.service.checkBoundingBoxes(parsed);
 
         //then
-        assertTrue(actual);
+        assertThat(actual, not(empty()));
     }
 
 
@@ -532,7 +529,7 @@ public class MetadataQualityServiceTest {
             .getProblems()
             .stream()
             .map(MetadataCheck::getSeverity)
-            .collect(Collectors.toList());
+            .toList();
 
         //then
         assertThat(actual, equalTo(expected));

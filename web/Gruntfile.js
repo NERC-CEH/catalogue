@@ -11,7 +11,7 @@ module.exports = function (grunt) {
       build: {
         files: [
           { src: 'less/style-assist.less', dest: 'css/style-assist.css' },
-          { src: 'less/style-ceh.less', dest: 'css/style-ceh.css' },
+          { src: 'less/style-ukceh.less', dest: 'css/style-ukceh.css' },
           { src: 'less/style-cmp.less', dest: 'css/style-cmp.css' },
           { src: 'less/style-datalabs.less', dest: 'css/style-datalabs.css' },
           { src: 'less/style-edge.less', dest: 'css/style-edge.css' },

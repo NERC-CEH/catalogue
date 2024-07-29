@@ -7,7 +7,7 @@ import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static org.apache.commons.io.output.NullOutputStream.NULL_OUTPUT_STREAM;
+import static org.apache.commons.io.output.NullOutputStream.INSTANCE;
 
 /**
  * This is an example of a validator. This should be removed
@@ -21,7 +21,7 @@ public class MediaTypeValidator extends AbstractDocumentValidator {
     @Override
     public ValidationResult validate(InputStream stream) {
         try {
-            IOUtils.copy(stream, NULL_OUTPUT_STREAM);
+            IOUtils.copy(stream, INSTANCE);
             return new ValidationResult();
         } catch (IOException ex) {
             return new ValidationResult().reject(ex.getMessage(), ValidationLevel.ERROR);

@@ -1,16 +1,16 @@
 import _ from 'underscore'
 import Backbone from 'backbone'
 import {
-  AuthorView, CategoryView, DescriptiveKeywordView, EndUserLicenceView,
-  FileView, FundingView,
+  AuthorView, CategoryView, EndUserLicenceView,
+  FileView, FundingView, KeywordThemeView, KeywordVocabularyView,
   ParentView,
   PredefinedParentView, RightsHolderView,
   SingleObjectView, SupportingDocView,
   TextareaView,
-  TextOnlyView
+  TextOnlyView, TopicCategoryView
 } from '../views'
 import { EditorView, InputView } from '../index'
-import { Author, DescriptiveKeyword, Funding, RightsHolder, SupportingDoc } from '../models'
+import { Author, Funding, KeywordTheme, RightsHolder, SupportingDoc, TopicCategory } from '../models'
 import { BoundingBox, BoundingBoxView } from '../geometryMap'
 
 export default EditorView.extend({
@@ -22,31 +22,35 @@ export default EditorView.extend({
       views: [
         new TextOnlyView({
           model: this.model,
-          text: "<h1>EIDC service agreement</h1><p>For more information/guidance about this document see <a href='https://eidc.ac.uk/support/agreement' target='_blank' rel='noopener noreferrer'>https://eidc.ac.uk/deposit/agreement</a></p>"
+          text: "<h1>EIDC service agreement</h1><p>For more information/guidance about this document see <a href='https://eidc.ac.uk/support/agreement' target='_blank' rel='noopener noreferrer'>https://eidc.ac.uk/deposit/agreement</a></p><p>* Fields indicated by <i class='fa fa-pencil'></i> are required for agreement.</p>"
         }),
 
         new InputView({
           model: this.model,
           modelAttribute: 'depositReference',
-          label: 'Deposit Reference'
+          label: 'Deposit Reference',
+          required: true
         }),
 
         new InputView({
           model: this.model,
           modelAttribute: 'depositorName',
-          label: 'Depositor Name'
+          label: 'Depositor Name',
+          required: true
         }),
 
         new InputView({
           model: this.model,
           modelAttribute: 'depositorContactDetails',
-          label: "Depositor's email"
+          label: "Depositor's email",
+          required: true
         }),
 
         new InputView({
           model: this.model,
           modelAttribute: 'eidcName',
-          label: 'EIDC contact name'
+          label: 'EIDC contact name',
+          required: true
         }),
 
         new TextOnlyView({
@@ -61,7 +65,8 @@ export default EditorView.extend({
           model: this.model,
           label: 'Title',
           text: `<p>Provide a brief title that best describes the data resource, <strong>not</strong> the project or activity from which the data were derived. Include references to the subject, spatial and temporal aspects of the data resource. <a href='https://eidc.ac.uk/deposit/metadata/guidance' target='_blank' rel='noopener noreferrer' >Further guidance is available on our website</a>.</p>
-`
+`,
+          required: true
         }),
 
         new InputView({
@@ -75,7 +80,8 @@ export default EditorView.extend({
           text: `<p>List authors below in the order in which they will appear in the citation.</p>
 <p>Author's names must be in the format <code>Surname &laquo;comma&raquo; Initial(s)</code>. For example, <code>Smith, K.P.</code> <strong>not</strong> <code>Kim P. Smith</code></p>
 <p>Authors' details will be published in a public data catalogue and held in EIDC systems.  UK law requires us to inform all individuals listed that they are being proposed as an author.  We therefore require a current, valid email address (or phone number) for all living authors.  Those without valid contact details are not eligible for authorship.  Please see our <a href='http://eidc.ceh.ac.uk/policies/privacy' target='_blank' rel='noopener noreferrer'>Privacy Notice</a> for further information</p>\
-`
+`,
+          required: true
         }),
 
         new ParentView({
@@ -108,7 +114,8 @@ export default EditorView.extend({
         new InputView({
           model: this.model,
           modelAttribute: 'fileNumber',
-          label: 'Number of files to be deposited'
+          label: 'Number of files to be deposited',
+          required: true
         }),
 
         new TextOnlyView({
@@ -135,14 +142,17 @@ export default EditorView.extend({
           multiline: true
         }),
 
-        new TextareaView({
+        new TextOnlyView({
           model: this.model,
           label: 'Naming convention',
-          modelAttribute: 'fileNamingConvention',
-          rows: 5,
-          helpText: `
-<p>Specify a naming convention <strong>only</strong> if there are too many files to list individually.  Please also indicate the total size of the deposit (e.g. 500Gb).</p>
+          text: `<p>Specify a naming convention <strong>only</strong> if there are too many files to list individually.  Please also indicate the total size of the deposit (e.g. 500Gb).</p>
 `
+        }),
+
+        new TextareaView({
+          model: this.model,
+          modelAttribute: 'fileNamingConvention',
+          rows: 5
         }),
 
         new TextOnlyView({
@@ -161,14 +171,16 @@ export default EditorView.extend({
           listAttribute: `
 <option value='Upload via EIDC catalogue (preferred)' />
 <option value='Cloud transfer e.g. via OneDrive' />
-`
+`,
+          required: true
         }),
 
         new TextOnlyView({
           model: this.model,
           label: 'Data Category',
           text: `<p>If the data are wholly or partly funded by NERC, the data must be categorised as either <strong>Environmental Data</strong> or <strong>Information Product</strong>.</p><p>Environmental data are '<i>individual items or records ... obtained by measurement, observation or modelling of the natural world... including all necessary calibration and quality control. This includes data generated through complex systems, such as ... models, including the model code used to produce the data.</i>' </p><p>Information Products are '<i>created by adding a level of intellectual input that refines or adds value to data through interpretation and/or combination with other data</i>'.</p>
-`
+`,
+          required: true
         }),
 
         new SingleObjectView({
@@ -188,7 +200,8 @@ export default EditorView.extend({
           label: 'Document(s) to be provided',
           text: `<p>Please provide the title and file extension of document(s) you will provide to enable re-use of the data (see <a href="https://eidc.ac.uk/deposit/supportingDocumentation">https://eidc.ac.uk/deposit/supportingDocumentation</a>).</p>
 <p>Describe the content of the documentation to be supplied. All mandatory elements must be provided across the supporting documents, but not necessarily all in the same one.</p>
-`
+`,
+          required: true
         }),
 
         new ParentView({
@@ -197,7 +210,8 @@ export default EditorView.extend({
           label: 'Supporting documents',
           modelAttribute: 'supportingDocs',
           ObjectInputView: SupportingDocView,
-          multiline: true
+          multiline: true,
+          required: true
         })
 
       ]
@@ -212,7 +226,8 @@ export default EditorView.extend({
           label: 'End user licence',
           text: `
 <p>Please state under which licence the data will be made available. the vast majority of NERC-funded data are provided under the Open Government Licence. We recommend that you seek guidance from your institution and/or funding agency as to the appropriate licence.</p>
-`
+`,
+          required: true
         }),
 
         new SingleObjectView({
@@ -227,7 +242,8 @@ export default EditorView.extend({
           modelAttribute: 'ownersOfIpr',
           label: 'Owner of IPR',
           ObjectInputView: RightsHolderView,
-          multiline: true
+          multiline: true,
+          required: true
         }),
 
         new TextOnlyView({
@@ -359,57 +375,145 @@ export default EditorView.extend({
       ]
     },
     {
+      label: 'Keywords',
+      title: 'Keywords',
+      views: [
+        new TextOnlyView({
+          model: this.model,
+          label: 'ISO 19115 topic categories',
+          text: `<p>Please note these are very broad themes required by the metadata standard and should not be confused with science topics.</p>
+<p>Multiple topic categories are allowed - please include all that are pertinent.  For example, "<i>Estimates of topsoil invertebrates</i>" = Biota <strong>and</strong> Environment <strong>and</strong> Geoscientific Information.</p>\
+`,
+          required: true
+        }),
+        new ParentView({
+          model: this.model,
+          ModelType: TopicCategory,
+          modelAttribute: 'topicCategories',
+          ObjectInputView: TopicCategoryView
+        }),
+        new TextOnlyView({
+          model: this.model,
+          label: 'Science topic',
+          text: 'These are used to populate the topic facet in the search interface - try to include at least one.',
+          required: true
+        }),
+        new ParentView({
+          model: this.model,
+          ModelType: KeywordTheme,
+          modelAttribute: 'keywordsTheme',
+          ObjectInputView: KeywordThemeView,
+          multiline: false
+        }),
+        new TextOnlyView({
+          model: this.model,
+          label: 'Observed properties',
+          text: 'Controlled keywords describing the observed properties/variables contained in this data resource.',
+          required: true,
+          className: 'hidden'
+        }),
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'keywordsObservedProperty',
+          ObjectInputView: KeywordVocabularyView,
+          multiline: true,
+          className: 'hidden'
+        }),
+        new TextOnlyView({
+          model: this.model,
+          label: 'Places',
+          text: `<p>Controlled keywords describing geographic places pertinent to this resource.</p>
+<p>For example, named countries/regions in which the research was conducted.</p>\
+`,
+          required: true,
+          className: 'hidden'
+        }),
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'keywordsPlace',
+          ObjectInputView: KeywordVocabularyView,
+          multiline: true,
+          className: 'hidden'
+        }),
+        new TextOnlyView({
+          model: this.model,
+          label: 'Projects',
+          text: 'Controlled keywords describing projects that fund/support the creation of this resource.',
+          required: true,
+          className: 'hidden'
+        }),
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'keywordsProject',
+          ObjectInputView: KeywordVocabularyView,
+          multiline: true,
+          className: 'hidden'
+        }),
+        new TextOnlyView({
+          model: this.model,
+          label: 'Instruments',
+          text: 'Controlled keywords describing instruments/sensors used to generate this data.',
+          required: true,
+          className: 'hidden'
+        }),
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'keywordsInstrument',
+          ObjectInputView: KeywordVocabularyView,
+          multiline: true,
+          className: 'hidden'
+        }),
+        new TextOnlyView({
+          model: this.model,
+          label: 'Other keywords',
+          text: 'All other keywords not described elsewhere.',
+          required: true
+        }),
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'keywordsOther',
+          ObjectInputView: KeywordVocabularyView,
+          multiline: true
+        })
+      ]
+    },
+    {
       label: 'Discovery metadata',
       title: 'Discovery metadata',
       views: [
 
         new TextOnlyView({
           model: this.model,
+          label: 'Description (min 100 characters)',
           text: `\
 <p>Data resources deposited with the EIDC have an entry in the EIDC data catalogue, enabling users to find and access them. Please provide the following information to help complete the catalogue record. <a href='https://eidc.ac.uk/deposit/metadata/guidance' target='_blank' rel='noopener noreferrer' >Further guidance is available on our website</a>.</p>
-<p><em>Please note, this information is not fixed and may be subject to change and improvement over time</em></p>\
-`
+<p><em>Please note, this information is not fixed and may be subject to change and improvement over time</em></p>
+<p>The description should describe the data resource in question, NOT the project/activity which produced it.</p>
+<p>The description is an 'executive summary' that allows the reader to determine the relevance and usefulness of the resource.  The text should be concise but should contain sufficient detail to allow the reader to ascertain rapidly the scope and limitations of the resource.</p>
+<p>Write in plain English; in other words, write complete sentences rather than fragments.  It is recommended that the abstract is organised using the "What, Where, When, How, Why, Who" structure.</p>\
+`,
+          required: true
         }),
 
         new TextareaView({
           model: this.model,
           modelAttribute: 'description',
-          label: 'Description (min 100 characters)',
-          rows: 12,
-          helpText: `\
-<p>The description should describe the data resource in question, NOT the project/activity which produced it.</p>
-<p>The description is an 'executive summary' that allows the reader to determine the relevance and usefulness of the resource.  The text should be concise but should contain sufficient detail to allow the reader to ascertain rapidly the scope and limitations of the resource.</p>
-<p>Write in plain English; in other words, write complete sentences rather than fragments.  It is recommended that the abstract is organised using the "What, Where, When, How, Why, Who" structure.</p>\
-`
+          rows: 12
         }),
 
+        new TextOnlyView({
+          model: this.model,
+          label: 'Lineage',
+          text: `\
+<p>Information about the source data used in the construction of this data resource.</p>
+<p>Quality assessments and enhancement processes applied to the data resource can also be noted and summarised here.</p>\
+`,
+          required: true
+        }),
         new TextareaView({
           model: this.model,
           modelAttribute: 'lineage',
-          label: 'Lineage',
-          rows: 10,
-          helpText: `\
-<p>Information about the source data used in the construction of this data resource.</p>
-<p>Quality assessments and enhancement processes applied to the data resource can also be noted and summarised here.</p>\
-`
-        }),
-
-        new PredefinedParentView({
-          model: this.model,
-          ModelType: DescriptiveKeyword,
-          modelAttribute: 'descriptiveKeywords',
-          label: 'Keywords',
-          ObjectInputView: DescriptiveKeywordView,
-          multiline: true,
-          predefined: {
-            'Catalogue topic': {
-              type: 'Catalogue topic'
-            }
-          },
-          helpText: `\
-<p>Keywords (preferably taken from a controlled vocabulary) categorising and describing the data resource.</p>
-<p>Good quality keywords help to improve the efficiency of search, making it easier to find relevant records.</p>\
-`
+          rows: 10
         }),
 
         new PredefinedParentView({

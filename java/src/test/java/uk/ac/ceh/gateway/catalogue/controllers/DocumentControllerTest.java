@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
 import freemarker.template.Configuration;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -31,13 +32,13 @@ import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.ef.*;
 import uk.ac.ceh.gateway.catalogue.erammp.ErammpDatacube;
 import uk.ac.ceh.gateway.catalogue.erammp.ErammpModel;
-import uk.ac.ceh.gateway.catalogue.infrastructure.InfrastructureRecord;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.imp.CaseStudy;
 import uk.ac.ceh.gateway.catalogue.imp.Model;
 import uk.ac.ceh.gateway.catalogue.imp.ModelApplication;
+import uk.ac.ceh.gateway.catalogue.infrastructure.InfrastructureRecord;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
@@ -45,11 +46,16 @@ import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringActivity;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
-import uk.ac.ceh.gateway.catalogue.osdp.*;
+import uk.ac.ceh.gateway.catalogue.osdp.Agent;
+import uk.ac.ceh.gateway.catalogue.osdp.Dataset;
+import uk.ac.ceh.gateway.catalogue.osdp.Publication;
+import uk.ac.ceh.gateway.catalogue.osdp.Sample;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
+import uk.ac.ceh.gateway.catalogue.serviceagreement.GitRepoServiceAgreementService;
+import uk.ac.ceh.gateway.catalogue.metrics.MetricsService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 
@@ -58,6 +64,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
@@ -67,8 +74,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.TEXT_HTML;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -90,7 +96,7 @@ import static uk.ac.ceh.gateway.catalogue.model.MetadataInfo.PUBLIC_GROUP;
 })
 @WebMvcTest(
     controllers=DocumentController.class,
-    properties="spring.freemarker.template-loader-path=file:../templates"
+    properties={"spring.freemarker.template-loader-path=file:../templates","metrics.users.excluded=i_am_excluded"}
 )
 class DocumentControllerTest {
     @MockBean private CatalogueService catalogueService;
@@ -99,6 +105,7 @@ class DocumentControllerTest {
     @MockBean private JenaLookupService jenaLookupService;
     @MockBean(name="permission") private PermissionService permissionService;
     @MockBean private ProfileService profileService;
+    @MockBean private MetricsService metricsService;
 
     @Autowired private MockMvc mvc;
     @Autowired private Configuration configuration;
@@ -107,12 +114,13 @@ class DocumentControllerTest {
     private final String linkedDocumentId = "0a6c7c4c-0515-40a8-b84e-7ffe622b2579";
     private final String id = "fe26bd48-0f81-4a37-8a28-58427b7e20bd";
     private final String catalogueKey = "eidc";
+    private List<String> metricsExcludedUsers = Arrays.asList("bob","alice","i_am_excluded");
     public static final String HTML = "html";
     public static final String JSON = "json";
 
     @BeforeEach
     void setup() {
-        controller = new DocumentController(documentRepository);
+        controller = new DocumentController(metricsService, metricsExcludedUsers, documentRepository);
     }
 
     private void givenUserIsPermittedToView() {
@@ -569,6 +577,7 @@ class DocumentControllerTest {
     @Test
     public void cannotViewNonPublicMetadataDocumentThroughLinkDocument() throws Exception {
         //given
+        HttpServletRequest request = mock(HttpServletRequest.class);
         MetadataDocument master = new GeminiDocument().setMetadata(
             MetadataInfo.builder().state("draft").build()
         );
@@ -576,7 +585,7 @@ class DocumentControllerTest {
         given(documentRepository.read("test")).willReturn(linkDocument);
 
         //when
-        MetadataDocument actual = controller.readMetadata(CatalogueUser.PUBLIC_USER, "test");
+        MetadataDocument actual = controller.readMetadata(CatalogueUser.PUBLIC_USER, "test", request);
 
         //then
         assertThat(
@@ -620,6 +629,7 @@ class DocumentControllerTest {
     @Test
     public void checkCanReadDocumentLatestRevision() throws Exception {
         //Given
+        HttpServletRequest request = mock(HttpServletRequest.class);
         CatalogueUser user = CatalogueUser.PUBLIC_USER;
         String file = "myFile";
         MetadataInfo info = MetadataInfo.builder().build();
@@ -629,9 +639,69 @@ class DocumentControllerTest {
             .willReturn(document);
 
         //When
-        controller.readMetadata(user, file);
+        controller.readMetadata(user, file, request);
 
         //Then
         verify(documentRepository).read(file);
+    }
+
+    @Test
+    @SneakyThrows
+    public void metricsServiceNotCalledWhenUserExcluded() {
+        //Given
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        CatalogueUser user = new CatalogueUser("i_am_excluded", "test@example.com");
+        String file = "myFile";
+        MetadataInfo info = MetadataInfo.builder().build();
+        MetadataDocument document = new GeminiDocument();
+        document.setMetadata(info);
+        given(documentRepository.read(file))
+            .willReturn(document);
+
+        //When
+        controller.readMetadata(user, file, request);
+
+        //then
+        verify(metricsService, never()).recordView(any(), any());
+    }
+
+    @Test
+    @SneakyThrows
+    public void metricsServiceNotCalledWhenNonExcludedUser() {
+        //Given
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        CatalogueUser user = new CatalogueUser("any_old_user", "test@example.com");
+        String file = "myFile";
+        MetadataInfo info = MetadataInfo.builder().state(GitRepoServiceAgreementService.PUBLISHED).build();
+        MetadataDocument document = new GeminiDocument();
+        document.setMetadata(info);
+        given(documentRepository.read(file))
+            .willReturn(document);
+
+        //When
+        controller.readMetadata(user, file, request);
+
+        //then
+        verify(metricsService).recordView(eq(file), any());
+    }
+
+    @Test
+    @SneakyThrows
+    public void metricsServiceNotCalledOnDraftDocuments() {
+        //Given
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        CatalogueUser user = CatalogueUser.PUBLIC_USER;
+        String file = "myFile";
+        MetadataInfo info = MetadataInfo.builder().state(GitRepoServiceAgreementService.DRAFT).build();
+        MetadataDocument document = new GeminiDocument();
+        document.setMetadata(info);
+        given(documentRepository.read(file))
+            .willReturn(document);
+
+        //When
+        controller.readMetadata(user, file, request);
+
+        //Then
+        verify(metricsService, never()).recordView(any(), any());
     }
 }

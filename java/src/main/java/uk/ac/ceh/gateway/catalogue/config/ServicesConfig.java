@@ -5,16 +5,14 @@ import com.google.common.eventbus.EventBus;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.jena.tdb.TDBFactory;
 import org.apache.solr.client.solrj.SolrClient;
-import org.apache.solr.client.solrj.impl.HttpSolrClient;
+import org.apache.solr.client.solrj.impl.HttpJdkSolrClient;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.components.datastore.DataRepository;
@@ -83,10 +81,9 @@ public class ServicesConfig {
 
     @Bean
     @Qualifier("normal")
-    public RestTemplate normalRestTemplate(CloseableHttpClient httpClient) {
+    public RestTemplate normalRestTemplate() {
         log.info("Creating Normal RestTemplate");
-        val requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
-        return new RestTemplate(requestFactory);
+        return new RestTemplate();
     }
 
     @Bean
@@ -215,7 +212,6 @@ public class ServicesConfig {
     }
 
     @Bean
-    @SuppressWarnings("UnstableApiUsage")
     @SneakyThrows
     public DataRepository<CatalogueUser> dataRepository(
         @Value("${data.repository.location}") String dataRepositoryLocation,
@@ -255,6 +251,6 @@ public class ServicesConfig {
     public SolrClient solrClient(
         @Value("${solr.server.url}") String solrServerUrl
     ){
-        return new HttpSolrClient.Builder(solrServerUrl).build();
+        return new HttpJdkSolrClient.Builder(solrServerUrl).build();
     }
 }

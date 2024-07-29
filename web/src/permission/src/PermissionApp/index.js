@@ -1,5 +1,5 @@
 export { default as Permission } from './Permission'
 export { default as PermissionApp } from './PermissionApp'
 export { default as PermissionRouter } from './PermissionRouter'
-export { default as PermissionView } from './PermissionView'
+export { default as PermissionView, documentsTemplate as DocumentsTemplate, serviceAgreementTemplate as ServiceAgreementTemplate } from './PermissionView'
 export { default as PermissionAppView } from './PermissionAppView'

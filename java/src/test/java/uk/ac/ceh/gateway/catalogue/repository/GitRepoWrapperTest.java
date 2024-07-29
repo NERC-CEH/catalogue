@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.repository;
 
+import com.google.common.eventbus.EventBus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -9,9 +10,12 @@ import uk.ac.ceh.components.datastore.DataOngoingCommit;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
 import uk.ac.ceh.components.datastore.DataWriter;
+import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
+import uk.ac.ceh.gateway.catalogue.services.FacilityEventService;
 
 import java.io.OutputStream;
 
@@ -25,6 +29,9 @@ import static org.mockito.Mockito.verify;
 public class GitRepoWrapperTest {
     @Mock private DataRepository<CatalogueUser> repo;
     @Mock private DocumentInfoMapper<MetadataInfo> documentInfoMapper;
+    @Mock private BundledReaderService<MetadataDocument> bundledReader;
+    @Mock private EventBus eventBus;
+    @Mock private FacilityEventService facilityEventService;
 
     @InjectMocks private GitRepoWrapper repoWrapper;
 

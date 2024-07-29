@@ -7,6 +7,13 @@
   "lineage": "lineage",
   "resourceStatus": "resourceStatus",
   "transferMethod": "transferMethod",
+  "topicCategories": "topicCategories",
+  "keywordsTheme": "keywordsTheme",
+  "keywordsObservedProperty": "keywordsObservedProperty",
+  "keywordsPlace": "keywordsPlace",
+  "keywordsProject": "keywordsProject",
+  "keywordsInstrument": "keywordsInstrument",
+  "keywordsOther": "keywordsOther",
   "useConstraints": [
     {
       "value": "This resource is made available under the terms of the Open Government Licence",

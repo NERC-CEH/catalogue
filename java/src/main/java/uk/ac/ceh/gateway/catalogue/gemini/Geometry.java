@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.gemini;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -13,11 +14,18 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import static com.google.common.base.Strings.nullToEmpty;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 @Value
 @Slf4j
 public class Geometry {
-    String geometryString;
+    public static double POINT_PRECISION = 0.0001;  //At a latitude of 60, a precision of 0.00001 is 5.5m along longitude and 11.1m along latitude
+
+    private static final String TYPE_POINT = "point";
+    private static final String TYPE_POLYGON = "polygon";
+
+    private final String geometryString;
 
     @Builder
     @JsonCreator
@@ -38,11 +46,11 @@ public class Geometry {
      */
     public Optional<String> getWkt() {
         log.debug("Geometry object: {}", this);
-        ObjectMapper objectMapper = new ObjectMapper();
-        if(this.getGeometryString().isEmpty() || this.getGeometryString().isBlank()){
+        if(this.getGeometryString().isBlank()){
             return Optional.empty();
         }
         try {
+            ObjectMapper objectMapper = new ObjectMapper();
             JsonNode root = objectMapper.readTree(this.getGeometryString());
             String type = root.at("/geometry/type").asText().toLowerCase();
             JsonNode coordinates = root.at("/geometry/coordinates");
@@ -99,5 +107,85 @@ public class Geometry {
      **/
     private void addPoint(JsonNode coordinate, StringBuilder wktFeature){
         wktFeature.append("POINT(").append(coordinate.get(0)).append(" ").append(coordinate.get(1)).append(")");
+    }
+
+    /**
+     * This gets a bounding box for the geometry.
+     * If the geometry is a POINT, then a tiny bounding box is drawn around the point by adding and subtracting 0.0001
+     * from the latitude and the longitude.  At the UK's latitude, this will lead to a box around 5 to 10m square.
+     * If the geometry is a POLYGON, then the minimum rectangle to encompass the points is returned.
+     * If there is no geometry or the geometry is not a POINT or POLYGON, then an empty Optional is returned
+     * @return an Optional<gemini.BoundingBox>
+     */
+    @JsonIgnore
+    public Optional<BoundingBox> getBoundingBox() {
+        if(this.getGeometryString().isBlank()){
+            return Optional.empty();
+        }
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode root = objectMapper.readTree(this.getGeometryString());
+            String type = root.at("/geometry/type").asText().toLowerCase();
+            JsonNode coordinates = root.at("/geometry/coordinates");
+            if(!coordinates.isArray()) {
+                throw new RuntimeException("In Geometry.getBoundingBox(), the expected array of coordinates in the property 'geometry' was not found.");
+            }
+            if(type.equals(TYPE_POINT)){
+                return Optional.of(this.getPointBoundingBox(coordinates));
+            }
+            else if(type.equals(TYPE_POLYGON)){
+                return Optional.of(this.getPolygonBoundingBox(coordinates));
+            } else {
+                throw new RuntimeException("There is not yet an implementation of getBoundingBox() for shapes of type: " + type);
+            }
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * This gets the bounding box for a POINT
+     * A tiny bounding box is drawn around the point by adding and subtracting 0.0001
+     * from the latituded and the longitude.  At the UK's latitude, this will lead to a box around 5 to 10m square.
+     * @return BoundingBox
+     */
+    private BoundingBox getPointBoundingBox(JsonNode coordinates) {
+        var lon = coordinates.get(0).asDouble();
+        var lat = coordinates.get(1).asDouble();
+        return BoundingBox.builder()
+            .northBoundLatitude(Double.toString(lat + POINT_PRECISION))
+            .southBoundLatitude(Double.toString(lat - POINT_PRECISION))
+            .eastBoundLongitude(Double.toString(lon + POINT_PRECISION))
+            .westBoundLongitude(Double.toString(lon - POINT_PRECISION))
+            .build();
+    }
+    /**
+     * This gets the bounding box for a POLYGON
+     * If the geometry is a POLYGON, then the minimum rectangle that encompasses the points is returned.
+     * @return BoundingBox
+     */
+    private BoundingBox getPolygonBoundingBox(JsonNode coordinates){
+        double north = 0, south = 0, east = 0, west = 0;
+        boolean first = true;
+        for (final JsonNode coordinate : coordinates.get(0)) {
+            double lon = coordinate.get(0).asDouble();
+            double lat = coordinate.get(1).asDouble();
+            if(first) {
+                first = false;
+                north = south = lat;
+                east = west = lon;
+            } else {
+                north = max(lat, north);
+                south = min(lat, south);
+                east = max(lon, east);
+                west = min(lon, west);
+            }
+        }
+        return BoundingBox.builder()
+            .northBoundLatitude(Double.toString(north))
+            .southBoundLatitude(Double.toString(south))
+            .eastBoundLongitude(Double.toString(east))
+            .westBoundLongitude(Double.toString(west))
+            .build();
     }
 }

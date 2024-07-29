@@ -33,6 +33,11 @@ Choice of:
 Enables Online Service Agreements functionality
 * `service-agreement`
 
+## Metric reporting
+Creates the embedded sqlite database used to store metric data, when working locally ensure you update the
+permissions of the ./metrics-db folder created using 'chmod a+w metrics-db' to allow writing to the sqlite db.
+* `metrics`
+
 ## Uploads
 Dataset upload functionality
 

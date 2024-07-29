@@ -3,7 +3,7 @@ package uk.ac.ceh.gateway.catalogue.config;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.CachingConfigurerSupport;
+import org.springframework.cache.annotation.CachingConfigurer;
 import org.springframework.cache.jcache.JCacheCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 @SuppressWarnings("DuplicatedCode")
 @Slf4j
 @Configuration
-public class CacheConfig extends CachingConfigurerSupport {
+public class CacheConfig implements CachingConfigurer {
 
     @Bean
     @Override

@@ -11,14 +11,15 @@ The CEH metadata catalogue project.
 The current code can be built and demoed
 
 ```commandline
-docker-compose up -d --build
+docker compose up -d --build
 ```
 Browse to http://localhost:8080/eidc/documents to see the catalogue populated with some demo records.
 
 ### Standalone installation using published Docker images
 
 ```commandline
-mkdir datastore dropbox upload
+mkdir datastore dropbox upload metrics-db
+chmod a+w metrics-db
 cp fixtures/datastore/REV-1/* datastore
 cd datastore
 git init
@@ -51,7 +52,7 @@ cd -
 
 ## Usernames and Passwords
 
-you will need to create a `secrets.env` file with the following
+You will need to create a `secrets.env` file with the following. Ask one of the team for access to Keypass to retrieve the jira password.
 
 ```
 jira.password=FindMeInK33Pa55
@@ -76,7 +77,7 @@ You will then need to log in to the Gitlab Docker Registry, nb. this uses your G
 
 Having installed these you can then build the catalogue code base by running:
 
-    docker-compose up -d --build
+    docker compose up -d --build
 
 the EIDC catalogue is then available on:
 
@@ -134,6 +135,8 @@ The server profile e.g. `server:eidc` decides which catalogue you will use and w
 Select which algorithm Solr uses to search for documents.
 ##### service-agreement
 Allows the user to create online service agreements for datasets.
+##### metrics
+Creates the embedded sqlite database for the metric reporting.
 
 ### Developing LESS
 In the web directory run
@@ -175,32 +178,40 @@ another catalogue using the Link document type.
 The catalogue is designed to sit behind a **Security Proxy**
 see [RequestHeaderAuthenticationFilter](http://docs.spring.io/autorepo/docs/spring-security/3.2.0.RELEASE/apidocs/org/springframework/security/web/authentication/preauth/RequestHeaderAuthenticationFilter.html) which acts as the authentication source for the application. Therefore, the catalogue will respond to the `Remote-User` header and handle requests as the specified user.
 
-To simplify development, the `DevelopmentUserStoreConfig` is applied by default. This creates some dummy users in various different groups which you can masquerade as. The simplest way to do this is use a browser extension which applies the `Remote-User` header. I recommend **ModHeader for Chrome**.
-
-Then set the request header:
-
-    Remote-User: superadmin
+To simplify development, the `DevelopmentUserStoreConfig` is applied by default. This creates some dummy users in various different groups which you can masquerade as using the Dev Bar at the top of the page.
 
 Other users are configured in [DevelopmentUserStoreConfig](java/src/main/java/uk/ac/ceh/gateway/catalogue/config/DevelopmentUserStoreConfig.java) for the different catalogues.
 
 ## Developing Upload - Hubbub API
 Getting everything running
 
-Minimum configuration needed in `docker-compose.override.yaml`
+Minimum configuration needed in `docker-compose.override.yml`
 ```yaml
 version: "3.7"
 services:
+  nginx:
+    image: nginx:latest
+    depends_on:
+      - web
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    restart: always
   web:
+    build: .
+    depends_on:
+      - solr
     volumes:
       - ./templates:/opt/ceh-catalogue/templates
       - ./web/scripts/dist/main.bundle.js:/opt/ceh-catalogue/static/scripts/main.bundle.js
     environment:
       - spring.profiles.active=development,upload:hubbub,server:eidc,search:basic
-      - jira.username=<your username>
 ```
 
 ```commandline
-docker-compose -f docker-compose.yml -f docker-compose.hubbub.yml -f docker-compose.override.yml up -d --build
+docker compose -f docker-compose.yml -f docker-compose.hubbub.yml -f docker-compose.override.yml up -d --build
 ```
 ### Populate the database
 

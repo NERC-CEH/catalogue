@@ -1,25 +1,4 @@
-<#macro card address icon type title external=false>
-	<#if address?has_content && address?matches("^http(|s)://.+")>
-		<#assign target="">
-		<#if external=true>	
-			<#assign target="target='_blank' rel='noopener noreferrer'">
-		</#if>
-		<a href="${address}" class="card" ${target}>
-			<div class="card-icon">
-				<span class="fa-stack fa-2x">
-					<i class="fa-solid fa-square fa-stack-2x"></i>
-					<i class="fa-solid ${icon} fa-stack-1x fa-inverse"></i>
-				</span>
-			</div>
-			<div>
-				<div class="card-type">${type}</div>
-				<div class="card-title">${title}</div>
-			</div>
-		</a>
-	</#if>
-</#macro>
-
-<#assign 
+<#assign
 	relatedDatasets = func.filter(supplemental, "function", "relatedDataset")
 	otherSupplemental = func.filter(supplemental, "function", "relatedDataset", true)
 	>
@@ -28,7 +7,7 @@
 		<h2>
 		This ${recordType} contains <#if rel_hasMember?size gt 1>these<#else>this</#if> resource<#if rel_hasMember?size gt 1>s</#if></h2>
 
-		<#list rel_hasMember?sort_by("title")>
+		<#list rel_hasMember>
 			<div class="cards">
 			<#items as item>
 				<#if item.associationType = 'dataset' ||  item.associationType = 'nonGeographicDataset' ||  item.associationType = 'signpost'>
@@ -43,8 +22,8 @@
 					<#assign type=item.associationType icon="" >
 				</#if>
 
-				<@card item.href icon type item.title/>
-				
+				<@card item.href item.publicationStatus icon type item.title/>
+
 			</#items>
 
 			<#assign relatedDatasets = func.filter(supplemental, "function", "relatedDataset")>
@@ -63,8 +42,8 @@
 	<h2>This ${recordType} is included in the following collection<#if rel_memberOf?size gt 1>s</#if></h2>
 	<div class="cards">
 		<#list rel_memberOf?sort_by("title") as item>
-			<@card item.href 'fa-layer-group' 'Data collection' item.title/>
-			
+			<@card item.href item.publicationStatus 'fa-layer-group' 'Data collection' item.title/>
+
 		</#list>
 	</div>
 </#if>
@@ -81,3 +60,29 @@
   </div>
 </#if>
 
+<#macro card address publicationStatus icon type title external=false>
+  <#assign target=""
+           cardClass=publicationStatus>
+
+	<#if address?has_content && address?matches("^http(|s)://.+")>
+		<#if external=true>
+			<#assign target="target='_blank' rel='noopener noreferrer'">
+		</#if>
+
+    <#if publicationStatus!="published" && !permission.userCanEdit(id)>
+      <#assign cardClass="hidden">
+    </#if>
+		<a href="${address}" class="card card-${cardClass}" ${target}>
+			<div class="card-icon">
+				<span class="fa-stack fa-2x">
+					<i class="fa-solid fa-square fa-stack-2x"></i>
+					<i class="fa-solid ${icon} fa-stack-1x fa-inverse"></i>
+				</span>
+			</div>
+			<div>
+				<div class="card-type"><span>${publicationStatus}</span>${type}</div>
+				<div class="card-title">${title}</div>
+			</div>
+		</a>
+	</#if>
+</#macro>

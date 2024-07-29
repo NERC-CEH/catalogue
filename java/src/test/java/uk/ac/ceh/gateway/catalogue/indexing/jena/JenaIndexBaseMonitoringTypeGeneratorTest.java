@@ -84,6 +84,6 @@ public class JenaIndexBaseMonitoringTypeGeneratorTest {
         List<Statement> statements = service.generateIndex(facility);
 
         //Then
-        assertThat(statements.size(), is(1));
+        assertThat(statements.size(), is(5));
     }
 }

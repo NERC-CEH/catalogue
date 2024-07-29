@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
+import jakarta.servlet.Filter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -13,8 +14,6 @@ import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.components.userstore.UserStore;
 import uk.ac.ceh.components.userstore.springsecurity.PreAuthenticatedUsernameAuthenticationProvider;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-
-import javax.servlet.Filter;
 
 @Slf4j
 @Configuration

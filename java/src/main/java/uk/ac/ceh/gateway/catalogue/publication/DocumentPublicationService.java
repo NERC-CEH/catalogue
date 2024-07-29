@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.publication;
 
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
@@ -16,14 +17,20 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@Qualifier("document")
 @Slf4j
 @ToString
-public class GitPublicationService implements PublicationService {
+public class DocumentPublicationService implements PublicationService {
     private final GroupStore<CatalogueUser> groupStore;
     private final Workflow workflow;
     private final DocumentRepository documentRepository;
+    private final String basePath = "documents";
 
-    public GitPublicationService(GroupStore<CatalogueUser> groupStore, Workflow workflow, DocumentRepository documentRepository) {
+    public DocumentPublicationService(
+        GroupStore<CatalogueUser> groupStore,
+        @Qualifier("document") Workflow workflow,
+        DocumentRepository documentRepository
+    ) {
         this.groupStore = groupStore;
         this.workflow = workflow;
         this.documentRepository = documentRepository;
@@ -42,7 +49,7 @@ public class GitPublicationService implements PublicationService {
 
     private StateResource current(CatalogueUser user, MetadataInfo metadataInfo, String metadataId) {
         final State currentState = workflow.currentState(metadataInfo);
-        return new StateResource(currentState, getPublishingRoles(user, metadataInfo), metadataId, metadataInfo.getCatalogue());
+        return new StateResource(currentState, getPublishingRoles(user, metadataInfo), metadataId, metadataInfo.getCatalogue(), basePath);
     }
 
     @Override

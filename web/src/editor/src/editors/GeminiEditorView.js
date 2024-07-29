@@ -4,16 +4,11 @@ import InputView from '../InputView'
 import {
   AccessLimitationView,
   AdditionalLinksView,
-  CheckboxView,
   ContactView,
   DatasetReferenceDateView,
-  DescriptiveKeywordView,
   DistributionFormatView,
   FundingView,
   SupplementalLinkView,
-  InspireThemeView,
-  KeywordThemeView,
-  KeywordVocabularyView,
   MapDataSourceView,
   OnlineResourceView,
   ParentStringView,
@@ -31,25 +26,20 @@ import {
   SpatialRepresentationTypeView,
   SpatialResolutionView,
   TemporalExtentView,
-  TextareaView,
-  TopicCategoryView
+  TextareaView, TopicCategoryView, KeywordThemeView, KeywordVocabularyView, InspireThemeView, CheckboxView
 } from '../views'
 import {
   AccessLimitation,
   Contact,
-  DescriptiveKeyword,
   DistributionFormat,
-  Funding,
-  InspireTheme,
-  KeywordTheme,
+  Funding, InspireTheme, KeywordTheme,
   MapDataSource,
   MultipleDate,
   OnlineResource,
   ResourceType,
   Service,
   SpatialResolution,
-  Supplemental,
-  TopicCategory
+  Supplemental, TopicCategory
 } from '../models'
 import { BoundingBox, BoundingBoxView } from '../geometryMap'
 
@@ -282,7 +272,6 @@ export default EditorView.extend({
 <p>Multiple topic categories are allowed - please include all that are pertinent.  For example, "<i>Estimates of topsoil invertebrates</i>" = Biota <strong>and</strong> Environment <strong>and</strong> Geoscientific Information.</p>\
 `
         }),
-
         new ParentView({
           model: this.model,
           ModelType: KeywordTheme,
@@ -292,7 +281,6 @@ export default EditorView.extend({
           multiline: false,
           helpText: 'These are used to populate the topic facet in the search interface - try to include at least one'
         }),
-
         new ParentView({
           model: this.model,
           modelAttribute: 'keywordsObservedProperty',
@@ -301,7 +289,6 @@ export default EditorView.extend({
           multiline: true,
           helpText: 'Controlled keywords describing the observed properties/variables contained in this data resource'
         }),
-
         new ParentView({
           model: this.model,
           modelAttribute: 'keywordsPlace',
@@ -309,11 +296,10 @@ export default EditorView.extend({
           ObjectInputView: KeywordVocabularyView,
           multiline: true,
           helpText: `\
-          Controlled keywords describing geographic places pertinent to this resource.
-          For example, named countries/regions in which the research was conducted.
-          `
+        Controlled keywords describing geographic places pertinent to this resource.
+        For example, named countries/regions in which the research was conducted.
+        `
         }),
-
         new ParentView({
           model: this.model,
           modelAttribute: 'keywordsProject',
@@ -322,7 +308,6 @@ export default EditorView.extend({
           multiline: true,
           helpText: 'Controlled keywords describing projects that fund/support the creation of this resource'
         }),
-
         new ParentView({
           model: this.model,
           modelAttribute: 'keywordsInstrument',
@@ -331,7 +316,6 @@ export default EditorView.extend({
           multiline: true,
           helpText: 'Controlled keywords describing instruments/sensors used to generate this data'
         }),
-
         new ParentView({
           model: this.model,
           modelAttribute: 'keywordsOther',
@@ -340,7 +324,6 @@ export default EditorView.extend({
           multiline: true,
           helpText: 'All other keywords not described elsewhere'
         }),
-
         new ParentView({
           model: this.model,
           ModelType: InspireTheme,
@@ -352,7 +335,6 @@ export default EditorView.extend({
 <p>Conformity is the degree to which the <i class='text-red'>data</i> conforms to the relevant INSPIRE data specification.</p>\
 `
         }),
-
         new CheckboxView({
           model: this.model,
           modelAttribute: 'notGEMINI',
@@ -800,20 +782,15 @@ This is only needed if you configure 'Styling=Classification' for your GeoTiff.<
       ]
     },
     {
-      label: '_old',
-      title: 'Unused properties that will soon be removed',
+      label: '_admin',
+      title: 'EIDC admin only',
       views: [
-        new ParentView({
+
+        new CheckboxView({
           model: this.model,
-          ModelType: DescriptiveKeyword,
-          modelAttribute: 'descriptiveKeywords',
-          label: 'Other keywords',
-          ObjectInputView: DescriptiveKeywordView,
-          multiline: true,
-          helpText: `
-<p>Keywords (preferably taken from a controlled vocabulary) categorising and describing the data resource.</p>
-<p>Good quality keywords help to improve the efficiency of search, making it easier to find relevant records.</p>\
-`
+          modelAttribute: 'hasOnlineServiceAgreement',
+          label: 'Does this record have an online service agreement?',
+          className: 'component eidconly'
         })
 
       ]

@@ -1,4 +1,3 @@
-import _ from 'underscore'
 import Backbone from 'backbone'
 
 export default Backbone.Model.extend({
@@ -15,34 +14,27 @@ export default Backbone.Model.extend({
     }
   },
 
-  initialize () {
-    if (arguments.length > 1) {
-      this.mediaType = arguments[1].mediaType
-      this.title = arguments[2]
-    } else {
-      this.mediaType = 'application/json'
-    }
+  initialize (data, { mediaType = 'application/json' } = {}, title) {
+    this.mediaType = mediaType
+    this.title = title
   },
 
   sync (method, model, options) {
     return Backbone.sync.call(this, method, model, {
       ...options,
-      accepts: {
-        json: this.mediaType
-      },
+      accepts: { json: this.mediaType },
       contentType: this.mediaType
     })
   },
 
   validate (attrs) {
     const errors = []
-    if (attrs.title == null) {
+
+    if (!attrs.title) {
       errors.push('A title is mandatory')
     }
 
-    if (_.isEmpty(errors)) {
-      // return nothing from Backbone.Model.validate because returning something signals a validation error.
-    } else {
+    if (errors.length) {
       return errors
     }
   }

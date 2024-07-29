@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.ef.adapters;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
+
 import java.util.UUID;
 
 public class UuidAdapter extends XmlAdapter<String, UUID>{

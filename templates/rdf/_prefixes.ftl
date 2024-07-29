@@ -9,3 +9,6 @@ PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
 PREFIX vcard: <http://www.w3.org/2006/vcard/ns#>
 PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX odrs: <http://schema.theodi.org/odrs#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX ef: <http://www.w3.org/2015/03/inspire/ef#>

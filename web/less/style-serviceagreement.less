@@ -1,8 +1,8 @@
 .serviceAgreement {
     .adminPanel {
         margin: 1em 0 !important;
-        .btn {
-            min-width: 150px;
+        .btn-wide {
+            min-width: 10em;
         }
         form {
             display: inline-block;
@@ -57,6 +57,9 @@
         margin: 1em 0;
         .key {
             font-weight: bolder;
+        }
+        dd {
+            margin-bottom: 1.5em;
         }
     }
 
@@ -170,9 +173,12 @@
         .keyvalue {
             grid-template-columns: 200px auto;
         }
-        .key {
+        .key, dt {
             text-align: right;
             margin-right: 1em;
+        }
+        dd {
+            margin-bottom: 1.5em;
         }
     }
 }
@@ -216,6 +222,16 @@
 }
 
 @media only print {
+    header {
+        .container {
+            .toolbar {
+                .nav-toggle,
+                .navbar {
+                    display: none !important;
+                }
+            }
+        }
+    }
     @lineheight: 1.3em;
     .serviceAgreement {
         @page {
@@ -229,7 +245,6 @@
             page-break-inside: avoid;
         }
         h2 {
-            border: 2px solid gray;
             border-width: 2px 0;
             padding: (@lineheight / 2) 0;
         }

@@ -14,35 +14,67 @@
 
             <div class="title">
                 <div class="logo"></div>
-                <h1>EIDC Deposit Agreement for ${title!"NOT PROVIDED"}</h1>
+                <h1>EIDC Deposit Agreement for ${title!"NOT PROVIDED"} (Status: ${getStateTitle()?upper_case})</h1>
             </div>
 
-            <#if permission.userCanEditServiceAgreement(id)>
             <div class="text-right">
                 <div class="row hidden-print adminPanel" role="toolbar">
                     <#if !isHistorical()>
-                        <#if getState() != "pending publication" && getState() != "published">
-                        <button type="button" class="btn btn-default edit-control" data-document-type="service-agreement">Edit</button>
-                        </#if>
-                        <#list getModelLinks() as link>
-                            <#if link.rel == 'history'>
-                                <a href="${link.href}" class="btn btn-default">${link.title}</a>
-                            <#else>
-                                <form action="${link.href}" method="post">
-                                    <input type="submit" class="btn btn-default" value="${link.title}">
-                                </form>
+                        <#assign canChangeState = true>
+                        <#if serviceAgreementQuality??>
+                            <#assign
+                                SA_checks = serviceAgreementQuality.check(id)
+                                problems = SA_checks.getProblems()
+                                errors = func.filter(problems, "severity", "ERROR")
+                            >
+                            <#if errors?? && errors?has_content>
+                                <#assign canChangeState = false>
                             </#if>
-                        </#list>
+                        </#if>
+                        <#if getState() != "draft">
+                            <#assign canChangeState = true>
+                        </#if>
+                        <#if permission.userCanEditServiceAgreement(id)>
+                            <div class="btn-group btn-group-sm">
+                                <button type="button" class="btn btn-default btn-wide" onClick="window.print()">Print</button>
+                            </div>
+                            <div class="btn-group btn-group-sm">
+                                <button type="button" class="btn btn-default edit-control btn-wide" data-document-type="service-agreement">Edit</button>
+                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+                                  <span class="caret"></span>
+                                  <span class="sr-only">Toggle Dropdown</span>
+                                </button>
+                              <ul class="dropdown-menu dropdown-menu-right">
+                                <li>
+                                  <a href="/service-agreement/${id}/permission">
+                                    <i class="fa-solid fa-users"></i>
+                                    Permissions
+                                  </a>
+                                </li>
+                              </ul>
+                            </div>
+                            <#list getModelLinks() as link>
+                                <#if link.rel == 'history'>
+                                    <a href="${link.href}" class="btn btn-default btn-wide btn-sm">${link.title}</a>
+                                </#if>
+                            </#list>
+                        </#if>
+                        <#if canChangeState>
+                            <#list transitions as transition>
+                                <form method="post" action="/service-agreement/${id}/form-publication/${transition.id}">
+                                    <p><button type="submit" class="btn btn-default btn-wide btn-sm" title="${transition.helpText}">${transition.title}</button></p>
+                                </form>
+                            </#list>
+                        </#if>
                     <#elseif  isHistorical()>
                         <#list getModelLinks() as link>
                             <#if link.title == 'History'>
-                                <a href="${link.href}" class="btn btn-default">${link.title}</a>
+                                <a href="${link.href}" class="btn btn-default btn-wide btn-sm">${link.title}</a>
                             </#if>
                         </#list>
                     </#if>
                 </div>
             </div>
-            </#if>
 
             <#if permission.userCanEditServiceAgreement(id) && !isHistorical()>
                 <#include "_serviceAgreementQualityReport.ftlh">
@@ -210,7 +242,7 @@
                 </div>
             </#if>
 
-            <#if description?has_content || lineage?has_content || allKeywords?has_content || boundingBoxes??>
+            <#if description?has_content || lineage?has_content || allKeywords?has_content || topicCategories?? ||  inspireTheme?? || boundingBoxes??>
                 <div class="section section--metadata">
                     <h2>Discovery metadata</h2>
                     <p><i>Information in this section will be used to create a record in the EIDC data catalogue.</i></p>
@@ -355,23 +387,9 @@
 
 
 <#macro displayKeywords>
-    <#if allKeywords?has_content>
-        <div class="keyvalue">
-            <div class="key">Keywords</div>
-            <div class="value">
-                <#list allKeywords?sort_by("value") as keyword>
-                    <span>
-                        <#if keyword.uri?has_content>
-                            <a href="${keyword.uri}" target="_blank"
-                            rel="noopener noreferrer">${keyword.value?trim}</a><#if keyword_has_next>,&nbsp;</#if>
-                        <#else>
-                            ${keyword.value?trim}<#if keyword_has_next>,&nbsp;</#if>
-                        </#if>
-                    </span>
-                </#list>
-            </div>
-        </div>
-    </#if>
+    <dl class="keyvalue">
+      <#include "../document/_tags.ftlh">
+    </dl>
 </#macro>
 
 <#macro displayArea>

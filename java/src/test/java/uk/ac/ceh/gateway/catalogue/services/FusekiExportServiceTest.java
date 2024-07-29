@@ -65,7 +65,7 @@ public class FusekiExportServiceTest {
         mockServer
             .expect(requestTo(equalTo(FUSEKI_URL + "?graph=" + BASE_URI)))
             .andExpect(method(HttpMethod.PUT))
-            .andExpect(header(HttpHeaders.CONTENT_TYPE, "text/turtle"))
+            .andExpect(header(HttpHeaders.CONTENT_TYPE, "text/turtle;charset=UTF-8"))
             .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic dXNlcm5hbWU6cGFzc3dvcmQ="))
             .andExpect(content().string(equalTo("ttl\nttl")))
             .andRespond(withSuccess());

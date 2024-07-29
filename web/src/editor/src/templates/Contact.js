@@ -9,15 +9,15 @@ export default _.template(`
         <select data-name="role" class="editor-input role" id="contacts0Role">
             <option value="" selected="">- Select Role -</option>
             <optgroup label="Frequently used">
-                <option class="option-nm option-eidc" value="author">Author</option>
+                <option class="option-nm option-eidc option-ukceh" value="author">Author</option>
                 <option class="option-eidc" value="custodian">Custodian</option>
                 <option class="option-eidc" value="depositor">Depositor</option>
                 <option class="option-eidc" value="distributor">Distributor</option>
                 <option class="option-ukeof" value="funder">Funder</option>
-                <option class="option-eidc option-nm" value="pointOfContact">Point of contact</option>
+                <option class="option-eidc option-ukceh option-nm" value="pointOfContact">Point of contact</option>
                 <option class="option-ukeof" value="pointOfContact">Lead organisation (point of contact)</option>
                 <option class="option-nm option-eidc" value="publisher">Publisher</option>
-                <option class="option-nm option-eidc" value="rightsHolder">Rights holder</option>
+                <option class="option-nm option-eidc option-ukceh" value="rightsHolder">Rights holder</option>
                 <option class="option-nm" value="owner">Senior Responsible Officer [SRO]</option>
                 <option class="option-ukeof" value="stakeholder">Stakeholder</option>
                 <option class="option-ukeof" value="user">User</option>

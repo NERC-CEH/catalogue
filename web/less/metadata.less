@@ -33,6 +33,7 @@ body {
 }
 
 #metadata {
+
     a {
         word-break: break-word;
     }
@@ -103,6 +104,7 @@ body {
         h1 {
             margin-top: 0;
             margin-bottom: 0.2em;
+            text-wrap: balance;
         }
 
         .authorList {
@@ -436,22 +438,30 @@ body {
     }
 
     .cards {
-        --card-background: hsl(0, 0%, 100%);
-        --card-inverse: var(--primary-colour);
         display: flex;
         justify-content: center;
         gap: 1em;
         flex-wrap: wrap;
 
         a.card {
-            display: grid;
-            width: 365px;
-            grid-template-columns: 70px auto;
-            border: 2px solid var(--card-inverse);
+            --_card-repeat: 3;
+            --_card-display: grid;
+            --_card-background: hsl(0, 0%, 100%);
+            --_card-border-colour: var(--primary-colour);
+            --_card-border-style: solid;
+            --_card-text-colour: black;
+            --_card-link-colour: inherit;
+            --_card-icon-colour: var(--_card-border-colour);
+
+            display: var(--_card-display);
+            flex: 0 0 calc((100% - calc(var(--_card-repeat) * 1em) + 1em) / var(--_card-repeat));
             padding: 1rem;
-            background-color: var(--card-background);
-            border-radius: 8px;
+            grid-template-columns: 70px auto;
+            background-color: var(--_card-background);
+            border: 2px var(--_card-border-style) var(--_card-border-colour);
+            border-radius: 6px;
             text-decoration: none;
+            text-wrap: balance;
 
             .content {
                 display: flex;
@@ -466,60 +476,75 @@ body {
                 width: 5rem;
                 height: 5rem;
                 border-radius: 8px;
-                background-color: var(--card-background);
-                color: var(--card-inverse);
+                color: var(--_card-icon-colour);
             }
 
             .card-type {
                 color: #999;
+
+                span {
+                    display: none;
+                    margin-right: 1em;
+                    text-transform: uppercase;
+                    font-size: 80%;
+                    font-weight: 600;
+                }
             }
 
             .card-title {
-                color: black;
+                color: var(--_card-text-colour);
             }
 
-            &:hover,
-            &:focus {
-                background-color: var(--card-inverse);
-
-                .card-type,
-                .card-title {
-                    color: var(--card-background);
-                }
-
-                .fa-stack-2x {
-                    display: none;
-                }
+            &:hover {
+                --_card-background: var(--primary-colour) !important;
+                --_card-text-colour: white !important;
+                --_card-icon-colour: white !important;
 
                 .fa-inverse {
-                    --fa-inverse: var(--card-inverse);
+                    color: var(--_card-background) !important;
+                }
+            }
+
+            &-hidden {
+                --_card-display: none;
+            }
+
+            &-draft {
+                --_card-background: hsl(0, 0%, 95%);
+                --_card-border-colour: #BBB;
+                --_card-text-colour: #BBB;
+                --_card-icon-colour: #BBB;
+                --_card-border-style: dashed;
+
+                .card-type {
+                    span {
+                        display: inline;
+                    }
+                }
+            }
+
+            &-pending {
+                --_card-border-colour: #444;
+                --_card-text-colour: #444;
+                --_card-icon-colour: #BBB;
+                --_card-border-style: dashed;
+
+                .card-type {
+                    span {
+                        display: inline;
+                    }
+                }
+            }
+
+            &-draft,
+            &-pending {
+                &:hover {
+                    --_card-background: lightgray !important;
+                    --_card-text-colour: gray !important;
+                    --_card-icon-colour: gray !important;
                 }
             }
         }
-    }
-
-    .list a.card {
-        display: block;
-        padding: 0.5em;
-        border-bottom: 1px solid #ddd;
-
-        .card-icon {
-            display: none;
-        }
-
-        .card-type {
-            display: inline-block;
-            margin-right: 1em;
-        }
-
-        .card-title {
-            display: inline-block;
-            font-weight: bold;
-        }
-    }
-
-    .toggleList {
-        text-align: right;
     }
 
     .panel-right {

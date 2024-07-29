@@ -198,23 +198,23 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .displayName("Topic")
                     .hierarchical(true)
                     .build();
-            case "ukscapeResearchProject" -> Facet.builder()
-                .fieldName("ukscapeResearchProject")
+            case "ukcehResearchProject" -> Facet.builder()
+                .fieldName("ukcehResearchProject")
                     .displayName("Research Project")
                     .hierarchical(false)
                     .build();
-            case "ukscapeResearchTheme" -> Facet.builder()
-                .fieldName("ukscapeResearchTheme")
+            case "ukcehResearchTheme" -> Facet.builder()
+                .fieldName("ukcehResearchTheme")
                     .displayName("Research Theme")
                     .hierarchical(false)
                     .build();
-            case "ukscapeScienceChallenge" -> Facet.builder()
-                .fieldName("ukscapeScienceChallenge")
+            case "ukcehScienceChallenge" -> Facet.builder()
+                .fieldName("ukcehScienceChallenge")
                     .displayName("Science Challenge")
                     .hierarchical(false)
                     .build();
-            case "ukscapeService" -> Facet.builder()
-                .fieldName("ukscapeService")
+            case "ukcehService" -> Facet.builder()
+                .fieldName("ukcehService")
                     .displayName("Service")
                     .hierarchical(false)
                     .build();

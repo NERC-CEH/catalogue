@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public class MetadataInfo {
     String rawType, state;
     String documentType, catalogue;
-    @Getter(AccessLevel.NONE)
+    @Getter(AccessLevel.PUBLIC)
     Multimap<Permission, String> permissions;
     public static final String PUBLIC_GROUP = "public";
     public static final String READONLY_GROUP = "ROLE_CIG_READONLY";
@@ -89,6 +89,16 @@ public class MetadataInfo {
             .documentType(this.documentType)
             .catalogue(this.catalogue)
             .permissions(this.permissions)
+            .build();
+    }
+
+    public MetadataInfo withPermissions(@NonNull Multimap<Permission, String> permissions) {
+        return MetadataInfo.builder()
+            .rawType(this.rawType)
+            .state(state)
+            .documentType(this.documentType)
+            .catalogue(this.catalogue)
+            .permissions(permissions)
             .build();
     }
 

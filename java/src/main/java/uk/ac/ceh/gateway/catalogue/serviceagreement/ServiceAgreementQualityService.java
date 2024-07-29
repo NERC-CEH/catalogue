@@ -16,9 +16,11 @@ import org.springframework.beans.factory.annotation.Value;
 import uk.ac.ceh.gateway.catalogue.document.reading.DocumentReader;
 import uk.ac.ceh.gateway.catalogue.quality.MetadataCheck;
 import uk.ac.ceh.gateway.catalogue.quality.Results;
+import uk.ac.ceh.gateway.catalogue.quality.MetadataQualityService;
 
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -30,7 +32,7 @@ import static uk.ac.ceh.gateway.catalogue.serviceagreement.GitRepoServiceAgreeme
 @Slf4j
 @ToString
 @Service
-public class ServiceAgreementQualityService {
+public class ServiceAgreementQualityService implements MetadataQualityService {
 
     private final DocumentReader documentReader;
     private final Configuration config;
@@ -74,14 +76,15 @@ public class ServiceAgreementQualityService {
             );
 
             if (isQualifyingDocument(parsedMeta)) {
-                val checks = new ArrayList<MetadataCheck>();
-                checkBasics(parsedDoc).ifPresent(checks::addAll);
-                checkDiscoveryMetadata(parsedDoc).ifPresent(checks::addAll);
-                checkAuthors(parsedDoc).ifPresent(checks::addAll);
-                checkSupportingDocs(parsedDoc).ifPresent(checks::addAll);
-                checkDepositorContactDetails(parsedDoc).ifPresent(checks::addAll);
-                checkOwnerOfIpr(parsedDoc).ifPresent(checks::addAll);
-                checkFiles(parsedDoc).ifPresent(checks::addAll);
+                val checks = Stream.of(
+                    checkBasics(parsedDoc).stream(),
+                    checkDiscoveryMetadata(parsedDoc).stream(),
+                    checkAuthors(parsedDoc).stream(),
+                    checkSupportingDocs(parsedDoc).stream(),
+                    checkDepositorContactDetails(parsedDoc).stream(),
+                    checkOwnerOfIpr(parsedDoc).stream(),
+                    checkFiles(parsedDoc).stream()
+                ).flatMap(s -> s).toList();
                 return new Results(checks, id);
             } else {
                 return new Results(Collections.emptyList(), id, "Not a qualifying document type");
@@ -92,116 +95,107 @@ public class ServiceAgreementQualityService {
         }
     }
 
-    Optional<List<MetadataCheck>> checkBasics(DocumentContext parsedDoc) {
-        val requiredKeys = ImmutableSet.of("title", "depositorContactDetails", "eidcName", "transferMethod", "depositReference");
+    List<MetadataCheck> checkBasics(DocumentContext parsedDoc) {
+        val requiredKeys = Map.ofEntries(
+            Map.entry("title", "Title"),
+            Map.entry("depositorContactDetails", "Depositor contact details"),
+            Map.entry("eidcName", "EIDC name"),
+            Map.entry("transferMethod", "Transfer method"),
+            Map.entry("depositReference", "Deposit reference"),
+            Map.entry("topicCategories", "ISO 19115 topic categories keywords"),
+            Map.entry("keywordsTheme", "Science topic keywords"),
+            Map.entry("keywordsObservedProperty","Observed properties keywords"),
+            Map.entry("keywordsPlace", "Places keywords"),
+            Map.entry("keywordsProject", "Project keywords"),
+            Map.entry("keywordsInstrument", "Instrument keywords"),
+            Map.entry("keywordsOther", "Other keywords"));
+
         val toReturn = new ArrayList<MetadataCheck>();
+
+        // Build string to check for missing fields
+        val keysToCheck = new StringJoiner(",");
+        requiredKeys.forEach((key, value) -> keysToCheck.add("'" + key + "'"));
+        String joinedKeysToCheck = keysToCheck.toString();
+        joinedKeysToCheck = "$.[" + joinedKeysToCheck + "]";
+
         val toCheck = parsedDoc.read(
-                "$.['title', 'depositorContactDetails', 'eidcName', 'transferMethod', 'depositReference']",
-                new TypeRef<Map<String, String>>() {
-                }
+                joinedKeysToCheck,
+                new TypeRef<Map<String, String>>() {}
         );
 
-        requiredKeys.forEach(key -> {
+        requiredKeys.forEach((key, value) -> {
             if (fieldIsMissing(toCheck, key)) {
-                toReturn.add(new MetadataCheck(key + " is missing", ERROR));
+                toReturn.add(new MetadataCheck(value + " is missing", ERROR));
             }
         });
 
-        try {
-            val depositReference = parsedDoc.read("$.depositReference", String.class).trim();
-            if (!depositReference.matches("^"+jiraPrefix+"\\d{1,9}$")) {
-                toReturn.add(new MetadataCheck("Deposit reference must be present and must match "+jiraPrefix+"XXXX", ERROR));
-            }
-        } catch (NullPointerException ex) {
+        val depositReference = parsedDoc.read("$.depositReference", String.class);
+        if (stringIsMissing(depositReference) || !depositReference.trim().matches("^"+jiraPrefix+"\\d{1,9}$")) {
             toReturn.add(new MetadataCheck("Deposit reference must be present and must match "+jiraPrefix+"XXXX", ERROR));
         }
 
-
-        if (toReturn.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(toReturn);
-        }
+        return toReturn;
     }
 
-    Optional<List<MetadataCheck>> checkDiscoveryMetadata(DocumentContext parsed) {
+    List<MetadataCheck> checkDiscoveryMetadata(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
         val boundingBoxes = parsed.read(
             "$.boundingBoxes[*]",
             typeRefStringString
         );
 
-        if (boundingBoxes.size() == 0 ) {
+        if (boundingBoxes.isEmpty()) {
             toReturn.add(new MetadataCheck("Area of study not included", INFO));
         }
 
-        try {
-            val lineage = parsed.read("$.lineage", String.class).trim();
-            if (stringIsMissing(lineage)) {
-                toReturn.add(new MetadataCheck("Lineage is incomplete", ERROR));
-            }
-        } catch (NullPointerException ex) {
+        if (stringIsMissing(parsed.read("$.lineage", String.class))) {
             toReturn.add(new MetadataCheck("Lineage is incomplete", ERROR));
         }
 
-        try {
-            val description = parsed.read("$.description", String.class).trim();
-            if (!stringIsMissing(description) && description.length() < 100)  {
-                toReturn.add(new MetadataCheck("Description is incomplete (minimum 100 characters)", ERROR));
-            }
-        } catch (NullPointerException ex) {
+        val description = parsed.read("$.description", String.class);
+        if (stringIsMissing(description) || description.length() < 100)  {
             toReturn.add(new MetadataCheck("Description is incomplete (minimum 100 characters)", ERROR));
         }
 
-        if (toReturn.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(toReturn);
-        }
+        return toReturn;
     }
 
-    Optional<List<MetadataCheck>> checkAuthors(DocumentContext parsed) {
+    List<MetadataCheck> checkAuthors(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
         val authors = parsed.read(
                 "$.authors[*][?(@.role == 'author')].['individualName', 'organisationName','email']",
                 typeRefStringString
         );
 
-        if (authors.size() == 0) {
+        if (authors.isEmpty()) {
             toReturn.add(new MetadataCheck("There are no authors", ERROR));
         }
 
-        if (authors.size() >= 1 ) {
-            if (authors.stream().anyMatch(author -> fieldIsMissing(author, "individualName"))) {
-                toReturn.add(new MetadataCheck("Author's name is missing", ERROR));
-            } else {
-                if (authors.stream().noneMatch(author -> AUTHOR_PATTERN.matcher(author.get("individualName")).matches())) {
-                    toReturn.add(new MetadataCheck("Author name format incorrect", ERROR));
-                }
-            }
-
-            if (authors.stream().anyMatch(author -> fieldIsMissing(author, "organisationName"))) {
-                toReturn.add(new MetadataCheck("Author's affiliation (organisation name) is missing", ERROR));
-            }
-
-            checkEmail(authors, "Author's email address is incorrect (%s)").ifPresent(toReturn::addAll);
+        if (authors.stream().anyMatch(author -> fieldIsMissing(author, "individualName"))) {
+            toReturn.add(new MetadataCheck("Author's name is missing", ERROR));
         }
 
-        if (toReturn.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(toReturn);
+        if (authors.stream().anyMatch(author -> !AUTHOR_PATTERN.matcher(author.get("individualName")).matches())) {
+            toReturn.add(new MetadataCheck("Author name format incorrect", ERROR));
         }
+
+        if (authors.stream().anyMatch(author -> fieldIsMissing(author, "organisationName"))) {
+            toReturn.add(new MetadataCheck("Author's affiliation (organisation name) is missing", ERROR));
+        }
+
+        toReturn.addAll(checkEmail(authors, "Author's email address is incorrect (%s)"));
+
+        return toReturn;
     }
 
-    Optional<List<MetadataCheck>> checkOwnerOfIpr(DocumentContext parsed) {
+    List<MetadataCheck> checkOwnerOfIpr(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
         val owners = parsed.read(
                 "$.ownersOfIpr[*].['individualName', 'organisationName','email']",
                 typeRefStringString
         );
 
-        if (owners.size() == 0) {
+        if (owners.isEmpty()) {
             toReturn.add(new MetadataCheck("There are no IPR owners", ERROR));
         }
 
@@ -209,19 +203,15 @@ public class ServiceAgreementQualityService {
             toReturn.add(new MetadataCheck("IPR owner's affiliation (organisation name) is missing", ERROR));
         }
 
-        if (toReturn.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(toReturn);
-        }
+        return toReturn;
     }
 
-    Optional<List<MetadataCheck>> checkDepositorContactDetails(DocumentContext parsed) {
+    List<MetadataCheck> checkDepositorContactDetails(DocumentContext parsed) {
 
         val toReturn = new ArrayList<MetadataCheck>();
-        val depositorContactDetails = parsed.read("$.depositorContactDetails", String.class).trim();
+        val depositorContactDetails = parsed.read("$.depositorContactDetails", String.class);
 
-        if (depositorContactDetails.isEmpty()) {
+        if (depositorContactDetails == null || depositorContactDetails.isBlank()) {
             toReturn.add(new MetadataCheck("Depositor's email address is missing", ERROR));
         }
 
@@ -229,14 +219,10 @@ public class ServiceAgreementQualityService {
             toReturn.add(new MetadataCheck(format("Depositor's email address is incorrect  (%s)", depositorContactDetails), ERROR));
         }
 
-        if (toReturn.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(toReturn);
-        }
+        return toReturn;
     }
 
-    Optional<List<MetadataCheck>> checkFiles(DocumentContext parsed) {
+    List<MetadataCheck> checkFiles(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
         val fileNamingConvention = parsed.read("$.fileNamingConvention", String.class);
         val fileNumber = parsed.read("$.fileNumber", String.class);
@@ -245,7 +231,7 @@ public class ServiceAgreementQualityService {
                 typeRefStringString
         );
 
-        if (files.size() == 0 && stringIsMissing(fileNamingConvention)) {
+        if (files.isEmpty() && stringIsMissing(fileNamingConvention)) {
             toReturn.add(new MetadataCheck("You must describe the files to be deposited (either a list of files or a naming convention)", ERROR));
         }
 
@@ -253,34 +239,26 @@ public class ServiceAgreementQualityService {
             toReturn.add(new MetadataCheck("Number of files to be deposited is missing", ERROR));
         }
 
-        if (files.size() >= 1 ) {
-            if (files.stream().anyMatch(file -> fieldIsMissing(file, "name"))) {
+        files.stream().forEach(file -> {
+            if (fieldIsMissing(file, "name")) {
                 toReturn.add(new MetadataCheck("File name is missing", ERROR));
-            } else {
-                if (files.stream().anyMatch(file -> file.get("name").contains(" "))) {
-                    toReturn.add(new MetadataCheck("File names should not contain any spaces", ERROR));
-                }
-                if (files.stream().noneMatch(file -> file.get("name").matches("^[\\w\\-\\_\\.]*$"))) {
-                    toReturn.add(new MetadataCheck("File names should only consist of alphanumeric characters, underscore and hyphens", ERROR));
-                }
+            } else if (!file.get("name").matches("^[\\w\\-\\_\\.]*$")) {
+                toReturn.add(new MetadataCheck("File names should only consist of alphanumeric characters, underscores, dots and hyphens", ERROR));
             }
 
-            if (files.stream().anyMatch(file -> fieldIsMissing(file, "format"))) {
+            if (fieldIsMissing(file, "format")) {
                 toReturn.add(new MetadataCheck("File format is missing", ERROR));
             }
-            if (files.stream().anyMatch(file -> fieldIsMissing(file, "size"))) {
+
+            if (fieldIsMissing(file, "size")) {
                 toReturn.add(new MetadataCheck("File size is missing", ERROR));
             }
-        }
+        });
 
-        if (toReturn.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(toReturn);
-        }
+        return toReturn;
     }
 
-    Optional<List<MetadataCheck>> checkSupportingDocs(DocumentContext parsed) {
+    List<MetadataCheck> checkSupportingDocs(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
 
         val supportingDocs = parsed.read(
@@ -288,7 +266,7 @@ public class ServiceAgreementQualityService {
                 new TypeRef<List<SupportingDoc>>(){}
         );
 
-        if (supportingDocs.size() == 0) {
+        if (supportingDocs.isEmpty()) {
             toReturn.add(new MetadataCheck("Supporting documentation is empty", ERROR));
         }
 
@@ -311,38 +289,31 @@ public class ServiceAgreementQualityService {
         });
 
         val allContentTypes = supportingDocs.stream()
-            .flatMap(doc -> Optional.ofNullable(doc.getContent()).orElseGet(ArrayList::new).stream())
+            .map(SupportingDoc::getContent)
+            .flatMap(Stream::ofNullable)
+            .flatMap(List::stream)
             .collect(Collectors.toSet());
 
         if (!allContentTypes.containsAll(mandatoryContentTypes)) {
             toReturn.add(new MetadataCheck("Supporting documents do not cover all mandatory fields", ERROR));
         }
 
-        if (toReturn.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(toReturn);
-        }
+        return toReturn;
     }
 
-    private Optional<List<MetadataCheck>> checkEmail(List<Map<String, String>> maps, String errorMessage) {
-        List<MetadataCheck> toReturn = new ArrayList<>();
-        maps.stream()
-                .filter(map -> map.containsKey("email"))
-                .map(map -> map.get("email"))
-                .filter(email -> isInvalidEmail(email))
-                .forEach(email -> toReturn.add(new MetadataCheck(format(errorMessage, email), ERROR)));
-        return Optional.of(toReturn);
+    private List<MetadataCheck> checkEmail(List<Map<String, String>> maps, String errorMessage) {
+        return maps.stream()
+            .map(map -> map.get("email"))
+            .flatMap(Stream::ofNullable)
+            .filter(this::isInvalidEmail)
+            .map(email -> new MetadataCheck(format(errorMessage, email), ERROR))
+            .toList();
     }
 
     private boolean isInvalidEmail(String email) {
-        if (EMAIL_PATTERN.matcher(email).matches()
-                && !email.equals("enquiries@ceh.ac.uk")
-                && !email.equals("info@eidc.ac.uk")) {
-            return false;
-        } else {
-            return true;
-        }
+        return !EMAIL_PATTERN.matcher(email).matches()
+            || email.equals("enquiries@ceh.ac.uk")
+            || email.equals("info@eidc.ac.uk");
     }
 
     private boolean isQualifyingDocument(DocumentContext parsedMeta) {
@@ -351,13 +322,12 @@ public class ServiceAgreementQualityService {
     }
 
     private boolean stringIsMissing(String key) {
-        return key == null || key.isEmpty();
+        return key == null || key.isBlank();
     }
 
     private boolean fieldIsMissing(Map<String, String> map, String key) {
         return map == null
-                || !map.containsKey(key)
-                || map.get(key) == null
-                || map.get(key).isEmpty();
+            || map.get(key) == null
+            || map.get(key).isBlank();
     }
 }

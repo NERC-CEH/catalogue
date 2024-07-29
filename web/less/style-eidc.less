@@ -22,11 +22,12 @@
     --header-link-hover-background-colour: color-mix(in lab, var(--header-link-background-colour), black 5%);
     --header-link-colour: var(--eidc-blue);
     --header-link-hover-colour: var(--link-hover-colour);
-    --header-link-weight:600;
-    --header-border-colour: var(--eidc-blue);
-    --header-border-width: 8px;
+    --header-link-weight: 600;
+    --header-border-bottom-colour: var(--eidc-blue);
+    --header-border-bottom-width: 8px;
     --header-logo-border: none;
     --nav-toggle-colour: var(--header-link-colour);
+    --ukceh-brand-display: none;
 
     --filter-background-colour: var(--eidc-blue);
     --filter-colour: white;
@@ -91,25 +92,65 @@ footer {
         }
     }
 
-    #document-metrics {
-        h2 {
-            margin: 0;
-            font-size: 1.25em;
-            border: none;
+}
 
-            i {
-                margin-right: 0.35em;
-                font-size: 1.85em;
-                color: @eidc-blue;
+.usage {
+    container-type: inline-size;
+    container-name: usage;
+
+    p {
+        text-align: center;
+        white-space: nowrap;
+        margin-top: .65em;
+    }
+
+    div.metrics {
+        display: flex;
+
+        .metric {
+            display: flex;
+            flex: 1;
+            align-items: center;
+            border-right: 1px solid lightgray;
+            padding: 0 1em;
+
+            &:last-of-type {
+                border: none;
             }
 
+            white-space:nowrap;
+
             span {
-                font-size: 1.85em;
-                color: @eidc-blue;
+                font-size: 1.3em;
+            }
+        }
+    }
+
+}
+
+@container usage (width >=340px) {
+    div.metrics {
+        .metric {
+            flex-direction: row;
+            justify-content: center !important;
+
+            span {
+                margin-right: 5px;
             }
         }
     }
 }
+
+@container usage (width < 340px) {
+    .metric {
+        flex-direction: column;
+
+        span {
+            font-size: 1.3em;
+        }
+    }
+}
+
 
 #document-upload-panel {
     a {
@@ -169,6 +210,10 @@ footer {
         display: initial !important;
     }
 
+    .component.eidconly {
+        visibility: visible;
+        height: auto;
+    }
 }
 
 
