@@ -110,11 +110,11 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
         );
         this.responsibleParties.addAll(
             Optional.ofNullable(serviceAgreement.getAuthors())
-                .orElseGet(Collections::emptyList)
+                .orElseGet(ArrayList::new)
         );
         this.responsibleParties.addAll(
             Optional.ofNullable(serviceAgreement.getOwnersOfIpr())
-                .orElseGet(Collections::emptyList)
+                .orElseGet(ArrayList::new)
         );
         Optional.ofNullable(serviceAgreement.getAvailability())
             .ifPresent(availability -> {
@@ -173,7 +173,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             Optional.ofNullable(keywordsOther).orElseGet(Collections::emptyList)
         )
             .flatMap(Collection::stream)
-            .collect(Collectors.toList());
+            .collect(Collectors.toCollection(ArrayList::new));
     }
 
     private List<Keyword> keywordsFromDescriptiveKeywords() {
@@ -181,7 +181,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             .orElseGet(Collections::emptyList)
             .stream()
             .flatMap(dk -> dk.getKeywords().stream())
-            .collect(Collectors.toList());
+            .collect(Collectors.toCollection(ArrayList::new));
     }
 
     @Override
@@ -211,7 +211,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
 
     public List<OnlineResource> getOnlineResources() {
         return Optional.ofNullable(onlineResources)
-            .orElseGet(Collections::emptyList);
+            .orElseGet(ArrayList::new);
     }
 
     @JsonIgnore
@@ -220,7 +220,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
         return getOnlineResources()
             .stream()
             .filter(onlineResource -> downloadRoles.contains(onlineResource.getFunction()))
-            .collect(Collectors.toList());
+            .collect(Collectors.toCollection(ArrayList::new));
     }
 
     /**
@@ -252,7 +252,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             .stream()
             .map(Keyword::getUri)
             .filter(uri -> uri.startsWith(TOPIC_PROJECT_URL))
-            .collect(Collectors.toList());
+            .collect(Collectors.toCollection(ArrayList::new));
     }
 
     public List<String> getCoupledResources() {
@@ -260,19 +260,19 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             .flatMap(s -> s.getCoupledResources().stream())
             .map(Service.CoupledResource::getIdentifier)
             .filter(cr -> !cr.isEmpty())
-            .collect(Collectors.toList());
+            .collect(Collectors.toCollection(ArrayList::new));
     }
 
     public List<ResponsibleParty> getResponsibleParties() {
         return Optional.ofNullable(responsibleParties)
-            .orElseGet(Collections::emptyList);
+            .orElseGet(ArrayList::new);
     }
 
     private List<ResponsibleParty> responsiblePartyByRole(String role) {
         return getResponsibleParties()
             .stream()
             .filter(responsibleParty -> responsibleParty.getRole().equalsIgnoreCase(role))
-            .collect(Collectors.toList());
+            .collect(Collectors.toCollection(ArrayList::new));
     }
 
     public List<ResponsibleParty> getAuthors() {
@@ -297,22 +297,22 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
 
     public List<DistributionInfo> getDistributionFormats() {
         return Optional.ofNullable(distributionFormats)
-            .orElseGet(Collections::emptyList);
+            .orElseGet(ArrayList::new);
     }
 
     public List<BoundingBox> getBoundingBoxes() {
         return Optional.ofNullable(boundingBoxes)
-            .orElseGet(Collections::emptyList);
+            .orElseGet(ArrayList::new);
     }
 
     public List<Funding> getFunding() {
         return Optional.ofNullable(funding)
-            .orElseGet(Collections::emptyList);
+            .orElseGet(ArrayList::new);
     }
 
     public List<Supplemental> getSupplemental() {
         return Optional.ofNullable(supplemental)
-            .orElseGet(Collections::emptyList);
+            .orElseGet(ArrayList::new);
     }
 
     @Override
@@ -321,7 +321,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             .orElseGet(Collections::emptyList)
             .stream()
             .map(BoundingBox::getWkt)
-            .collect(Collectors.toList());
+            .collect(Collectors.toCollection(ArrayList::new));
     }
 
     @JsonIgnore
@@ -330,7 +330,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             .orElseGet(Collections::emptyList)
             .stream()
             .map(BoundingBox::getBounds)
-            .collect(Collectors.toList());
+            .collect(Collectors.toCollection(ArrayList::new));
     }
     public long getIncomingCitationCount() {
         return Optional.ofNullable(incomingCitations)

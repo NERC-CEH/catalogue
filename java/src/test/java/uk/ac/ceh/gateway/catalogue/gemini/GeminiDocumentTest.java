@@ -276,13 +276,23 @@ public class GeminiDocumentTest {
         List<String> actualCoupledResources = document.getCoupledResources();
         List<String> actualTopics = document.getTopics();
         List<ResponsibleParty> actualAuthors = document.getAuthors();
+        List<Keyword> actualKeywords = document.getAllKeywords();
+        List<OnlineResource> actualOnlineResources = document.getOnlineResources();
+        List<ResponsibleParty> actualResponsibleParties = document.getResponsibleParties();
         actualCoupledResources.add("foo");
         actualTopics.add("foo");
         actualAuthors.add(ResponsibleParty.builder().role("author").build());
+        actualKeywords.add(Keyword.builder().value("foo").URI("https://foo.com").build());
+        actualOnlineResources.add(OnlineResource.builder().url("foo").build());
+        actualResponsibleParties.add(ResponsibleParty.builder().build());
+
 
         // then
         assertThat(actualCoupledResources.size(), equalTo(1));
         assertThat(actualTopics.size(), equalTo(1));
         assertThat(actualAuthors.size(), equalTo(1));
+        assertThat(actualKeywords.size(), equalTo(1));
+        assertThat(actualOnlineResources.size(), equalTo(1));
+        assertThat(actualResponsibleParties.size(), equalTo(1));
     }
 }
