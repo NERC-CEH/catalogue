@@ -9,6 +9,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.TimeConstants;
+import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
@@ -92,22 +93,20 @@ public class JDBCMetricsService implements MetricsService {
         log.info("Exporting metric counts");
         synchronized (viewed) {
             syncDBHelper(viewed, viewInserter);
+            viewed.clear();
         }
-        viewed.clear();
-
         synchronized (downloaded) {
             syncDBHelper(downloaded, downloadInserter);
+            downloaded.clear();
         }
-        downloaded.clear();
         lastRun = Instant.now().getEpochSecond();
     }
 
-    @Scheduled(initialDelay=TimeConstants.ONE_DAY, fixedDelay=TimeConstants.ONE_DAY)
+    @Scheduled(cron = "0 0 1 * * *")
     public void updateDB() {
         log.info("Updating document titles and record types");
         updateDBHelper(VIEW_TABLE);
         updateDBHelper(DOWNLOAD_TABLE);
-
     }
 
     private void recordMetric(@NonNull Map<String, Set<String>> map, @NonNull String uuid, @NonNull String addr) {
@@ -133,16 +132,12 @@ public class JDBCMetricsService implements MetricsService {
     }
 
     private void syncDBHelper(Map<String, Set<String>> tableMap, SimpleJdbcInsert inserter) {
-        for (Map.Entry<String, Set<String>> metricInfo : tableMap.entrySet()) {
-            String doc = metricInfo.getKey();
-            Set<String> viewers = metricInfo.getValue();
-            MetadataDocument document;
+        tableMap.forEach((doc, viewers) -> {
+            MetadataDocument document = new GeminiDocument();
             try {
                 document = documentRepository.read(doc);
-                log.info("document title {}", document.getTitle());
             } catch (Exception e) {
                 log.error("Error reading document from repository {}", doc, e);
-                continue;
             }
             inserter.execute(Map.of(
                 "start_timestamp", lastRun,
@@ -152,6 +147,6 @@ public class JDBCMetricsService implements MetricsService {
                 "doc_title", document.getTitle(),
                 "record_type", document.getType()
             ));
-        }
+        });
     }
 }
