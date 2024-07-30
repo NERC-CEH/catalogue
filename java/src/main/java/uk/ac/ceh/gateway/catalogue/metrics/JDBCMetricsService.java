@@ -115,8 +115,13 @@ public class JDBCMetricsService implements MetricsService {
     }
 
     public List<Map<String,String>> getMetricsReport(Instant startDate, Instant endDate, String orderBy, String ordering, List<String> recordType, String docId, Integer noOfRecords) {
+        String sql = "select t.DOCUMENT, ifnull(t.DOC_TITLE, '') as \"DOC_TITLE\", ifnull(t.RECORD_TYPE, '') as \"RECORD_TYPE\", sum(t.VIEWS) as \"VIEWS\", sum(t.DOWNLOADS) as \"DOWNLOADS\" " +
+            "from (select DOCUMENT, DOC_TITLE, RECORD_TYPE, AMOUNT as \"DOWNLOADS\", 0 as \"VIEWS\" from downloads where %s " +
+            "union select DOCUMENT, DOC_TITLE, RECORD_TYPE, 0 as \"DOWNLOADS\", AMOUNT as \"VIEWS\" from views where %s) t " +
+            "group by DOCUMENT,DOC_TITLE,RECORD_TYPE";
+
         ArrayList<String> whereVal = new ArrayList<>();
-        StringBuilder where = new StringBuilder(" where 1=1");
+        StringBuilder where = new StringBuilder(" 1=1");
         if (startDate != null) {
             String start = Long.toString(startDate.getEpochSecond());
             whereVal.add(start);
@@ -140,39 +145,33 @@ public class JDBCMetricsService implements MetricsService {
             where.deleteCharAt(where.length() - 1).append(")");
         }
 
-        StringBuilder sql = new StringBuilder("select t.DOCUMENT, ifnull(t.DOC_TITLE, '') as \"DOC_TITLE\", ifnull(t.RECORD_TYPE, '') as \"RECORD_TYPE\", sum(t.VIEWS) as \"VIEWS\", sum(t.DOWNLOADS) as \"DOWNLOADS\" \n" +
-            "from (select DOCUMENT, DOC_TITLE, RECORD_TYPE, AMOUNT as \"DOWNLOADS\", 0 as \"VIEWS\" from downloads");
-        sql.append(where);
-        sql.append(" union select DOCUMENT, DOC_TITLE, RECORD_TYPE, 0 as \"DOWNLOADS\", AMOUNT as \"VIEWS\" from views");
-        sql.append(where);
-        sql.append(") t group by DOCUMENT,DOC_TITLE,RECORD_TYPE");
-
+        StringBuilder sqlBuilder = new StringBuilder(sql.formatted(where, where));
         if (orderBy != null && !orderBy.isBlank()) {
             switch (orderBy) {
                 case "views":
-                    sql.append(" order by VIEWS");
+                    sqlBuilder.append(" order by VIEWS");
                     break;
                 case "downloads":
-                    sql.append(" order by DOWNLOADS");
+                    sqlBuilder.append(" order by DOWNLOADS");
                     break;
                 default:
-                    sql.append(" order by DOCUMENT");
+                    sqlBuilder.append(" order by DOCUMENT");
                     break;
             }
             if (ordering != null && !ordering.isBlank()) {
                 if (ordering.equals("descending")) {
-                    sql.append(" desc");
+                    sqlBuilder.append(" desc");
                 }
             }
         }
         if (noOfRecords != null && noOfRecords >= 0) {
-            sql.append(" limit ").append(noOfRecords);
+            sqlBuilder.append(" limit ").append(noOfRecords);
         }
 
-        log.info("Metrics report sql {}", sql);
+        log.info("Metrics report sql: {}", sqlBuilder);
 
         return jdbcTemplate.query(
-            sql.toString(), preparedStatement -> {
+            sqlBuilder.toString(), preparedStatement -> {
                 int index = 1;
                 int valSize = whereVal.size();
                 for (String val: whereVal) {
