@@ -197,7 +197,7 @@ export default EditorView.extend({
 
         new TextOnlyView({
           model: this.model,
-          label: 'Document(s) to be provided',
+          label: 'Supporting documents',
           text: `<p>Please provide the title and file extension of document(s) you will provide to enable re-use of the data (see <a href="https://eidc.ac.uk/deposit/supportingDocumentation">https://eidc.ac.uk/deposit/supportingDocumentation</a>).</p>
 <p>Describe the content of the documentation to be supplied. All mandatory elements must be provided across the supporting documents, but not necessarily all in the same one.</p>
 `,
@@ -207,11 +207,9 @@ export default EditorView.extend({
         new ParentView({
           model: this.model,
           ModelType: SupportingDoc,
-          label: 'Supporting documents',
           modelAttribute: 'supportingDocs',
           ObjectInputView: SupportingDocView,
-          multiline: true,
-          required: true
+          multiline: true
         })
 
       ]
