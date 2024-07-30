@@ -9,6 +9,8 @@ import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.TimeConstants;
+import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
 import java.time.Instant;
 import java.util.*;
@@ -24,6 +26,7 @@ public class JDBCMetricsService implements MetricsService {
     @NonNull private final SimpleJdbcInsert downloadInserter;
     @NonNull private final JdbcTemplate jdbcTemplate;
     @Nullable private long lastRun;
+    private final DocumentRepository documentRepository;
 
     // SQLite has no built-in datetime type, so we store dates as Unix timestamps (seconds since 1 Jan 1970)
     private static final String CREATE_STATEMENT = """
@@ -32,16 +35,20 @@ public class JDBCMetricsService implements MetricsService {
             end_timestamp integer NOT NULL,
             amount integer NOT NULL,
             document text NOT NULL,
-            doc_title text,
-            record_type text
+            doc_title text NOT NULL,
+            record_type text NOT NULL
         )
         """;
     private static final String TOTAL_STATEMENT = "SELECT coalesce(sum(amount), 0) FROM %s WHERE document = ?";
+    private static final String UPDATE_STATEMENT = "UPDATE %s SET doc_title = ?, record_type = ? WHERE document = ?";
+    private static final String DISTINCT_DOCS_QUERY = "SELECT DISTINCT document FROM %s";
     private static final String VIEW_TABLE = "views";
     private static final String DOWNLOAD_TABLE = "downloads";
 
-    public JDBCMetricsService(@NonNull DataSource dataSource) {
+    public JDBCMetricsService(@NonNull DataSource dataSource,
+                              DocumentRepository documentRepository) {
         log.info("Creating {}", this);
+        this.documentRepository = documentRepository;
         this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.viewInserter = new SimpleJdbcInsert(dataSource).withTableName(VIEW_TABLE);
         this.downloadInserter = new SimpleJdbcInsert(dataSource).withTableName(DOWNLOAD_TABLE);
@@ -78,32 +85,22 @@ public class JDBCMetricsService implements MetricsService {
     @Scheduled(initialDelay=TimeConstants.ONE_HOUR, fixedDelay=TimeConstants.ONE_HOUR)
     public void syncDB() {
         log.info("Exporting metric counts");
-
         synchronized (viewed) {
-            viewed.forEach((doc, viewers) ->
-                viewInserter.execute(Map.of(
-                    "start_timestamp", lastRun,
-                    "end_timestamp", Instant.now().getEpochSecond(),
-                    "amount", viewers.size(),
-                    "document", doc
-                ))
-            );
+            syncDBHelper(viewed, viewInserter);
             viewed.clear();
         }
-
         synchronized (downloaded) {
-            downloaded.forEach((doc, downloaders) ->
-                downloadInserter.execute(Map.of(
-                    "start_timestamp", lastRun,
-                    "end_timestamp", Instant.now().getEpochSecond(),
-                    "amount", downloaders.size(),
-                    "document", doc
-                ))
-            );
+            syncDBHelper(downloaded, downloadInserter);
             downloaded.clear();
         }
-
         lastRun = Instant.now().getEpochSecond();
+    }
+
+    @Scheduled(cron = "0 0 1 * * *")
+    public void updateDB() {
+        log.info("Updating document titles and record types");
+        updateDBHelper(VIEW_TABLE);
+        updateDBHelper(DOWNLOAD_TABLE);
     }
 
     private void recordMetric(@NonNull Map<String, Set<String>> map, @NonNull String uuid, @NonNull String addr) {
@@ -112,6 +109,39 @@ public class JDBCMetricsService implements MetricsService {
 
     private int totalAmount(@NonNull String table, @NonNull String uuid) {
         return jdbcTemplate.queryForObject(TOTAL_STATEMENT.formatted(table), Integer.class, uuid);
+    }
+
+    private void updateDBHelper(String table) {
+        List<String> distinctDocs = jdbcTemplate.queryForList(DISTINCT_DOCS_QUERY.formatted(table), String.class);
+        distinctDocs.forEach((doc) -> {
+            MetadataDocument document;
+            try {
+                log.info("UPDATING title and type of document ID {} for {} table", doc, table);
+                document = documentRepository.read(doc);
+                jdbcTemplate.update(UPDATE_STATEMENT.formatted(table), document.getTitle(), document.getType(), doc);
+            } catch (Exception e) {
+                log.error("Error reading document from repository {}", doc, e);
+            }
+        });
+    }
+
+    private void syncDBHelper(Map<String, Set<String>> tableMap, SimpleJdbcInsert inserter) {
+        tableMap.forEach((doc, viewers) -> {
+            MetadataDocument document;
+            try {
+                document = documentRepository.read(doc);
+                inserter.execute(Map.of(
+                    "start_timestamp", lastRun,
+                    "end_timestamp", Instant.now().getEpochSecond(),
+                    "amount", viewers.size(),
+                    "document", doc,
+                    "doc_title", document.getTitle(),
+                    "record_type", document.getType()
+                ));
+            } catch (Exception e) {
+                log.error("Error reading document from repository {}", doc, e);
+            }
+        });
     }
 
     public List<Map<String,String>> getMetricsReport(Instant startDate, Instant endDate, String orderBy, String ordering, List<String> recordType, String docId, Integer noOfRecords) {
