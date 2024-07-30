@@ -117,8 +117,8 @@ export default EditorView.extend({
           multiline: true,
           label: 'Additional information',
           ObjectInputView: AdditionalInfoView,
-          helpText: `\
-<p>Enter information as key-value pairs.</p>\
+          helpText: `
+<p>Enter information as key-value pairs.</p>
 `
         })
       ]
