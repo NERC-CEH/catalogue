@@ -9,7 +9,6 @@ import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.TimeConstants;
-import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
@@ -133,20 +132,20 @@ public class JDBCMetricsService implements MetricsService {
 
     private void syncDBHelper(Map<String, Set<String>> tableMap, SimpleJdbcInsert inserter) {
         tableMap.forEach((doc, viewers) -> {
-            MetadataDocument document = new GeminiDocument();
+            MetadataDocument document;
             try {
                 document = documentRepository.read(doc);
+                inserter.execute(Map.of(
+                    "start_timestamp", lastRun,
+                    "end_timestamp", Instant.now().getEpochSecond(),
+                    "amount", viewers.size(),
+                    "document", doc,
+                    "doc_title", document.getTitle(),
+                    "record_type", document.getType()
+                ));
             } catch (Exception e) {
                 log.error("Error reading document from repository {}", doc, e);
             }
-            inserter.execute(Map.of(
-                "start_timestamp", lastRun,
-                "end_timestamp", Instant.now().getEpochSecond(),
-                "amount", viewers.size(),
-                "document", doc,
-                "doc_title", document.getTitle(),
-                "record_type", document.getType()
-            ));
         });
     }
 }
