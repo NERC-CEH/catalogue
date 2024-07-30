@@ -19,6 +19,7 @@ import java.time.ZoneId;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.regex.Pattern.CASE_INSENSITIVE;
@@ -172,7 +173,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             Optional.ofNullable(keywordsOther).orElseGet(Collections::emptyList)
         )
             .flatMap(Collection::stream)
-            .toList();
+            .collect(Collectors.toList());
     }
 
     private List<Keyword> keywordsFromDescriptiveKeywords() {
@@ -180,7 +181,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             .orElseGet(Collections::emptyList)
             .stream()
             .flatMap(dk -> dk.getKeywords().stream())
-            .toList();
+            .collect(Collectors.toList());
     }
 
     @Override
@@ -219,7 +220,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
         return getOnlineResources()
             .stream()
             .filter(onlineResource -> downloadRoles.contains(onlineResource.getFunction()))
-            .toList();
+            .collect(Collectors.toList());
     }
 
     /**
@@ -251,7 +252,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             .stream()
             .map(Keyword::getUri)
             .filter(uri -> uri.startsWith(TOPIC_PROJECT_URL))
-            .toList();
+            .collect(Collectors.toList());
     }
 
     public List<String> getCoupledResources() {
@@ -259,7 +260,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             .flatMap(s -> s.getCoupledResources().stream())
             .map(Service.CoupledResource::getIdentifier)
             .filter(cr -> !cr.isEmpty())
-            .toList();
+            .collect(Collectors.toList());
     }
 
     public List<ResponsibleParty> getResponsibleParties() {
@@ -271,7 +272,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
         return getResponsibleParties()
             .stream()
             .filter(responsibleParty -> responsibleParty.getRole().equalsIgnoreCase(role))
-            .toList();
+            .collect(Collectors.toList());
     }
 
     public List<ResponsibleParty> getAuthors() {
@@ -320,7 +321,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             .orElseGet(Collections::emptyList)
             .stream()
             .map(BoundingBox::getWkt)
-            .toList();
+            .collect(Collectors.toList());
     }
 
     @JsonIgnore
@@ -329,7 +330,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             .orElseGet(Collections::emptyList)
             .stream()
             .map(BoundingBox::getBounds)
-            .toList();
+            .collect(Collectors.toList());
     }
     public long getIncomingCitationCount() {
         return Optional.ofNullable(incomingCitations)
