@@ -42,7 +42,7 @@ export default EditorView.extend({
         new InputView({
           model: this.model,
           modelAttribute: 'depositorContactDetails',
-          label: "Depositor's contact details",
+          label: "Depositor's email",
           required: true
         }),
 
@@ -153,6 +153,14 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'fileNamingConvention',
           rows: 5
+        }),
+
+        new TextOnlyView({
+          model: this.model,
+          text: `\
+<p>Data Transfer</p>
+\
+`
         }),
 
         new InputView({

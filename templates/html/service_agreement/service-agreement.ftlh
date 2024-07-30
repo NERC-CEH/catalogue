@@ -19,6 +19,11 @@
 
             <div class="text-right">
                 <div class="row hidden-print adminPanel" role="toolbar">
+                    <#if state == "agreed">
+                        <div class="btn-group btn-group-sm">
+                            <button type="button" class="btn btn-default btn-wide" onClick="window.print()">Print</button>
+                        </div>
+                    </#if>
                     <#if !isHistorical()>
                         <#assign canChangeState = true>
                         <#if serviceAgreementQuality??>
@@ -35,9 +40,6 @@
                             <#assign canChangeState = true>
                         </#if>
                         <#if permission.userCanEditServiceAgreement(id)>
-                            <div class="btn-group btn-group-sm">
-                                <button type="button" class="btn btn-default btn-wide" onClick="window.print()">Print</button>
-                            </div>
                             <div class="btn-group btn-group-sm">
                                 <button type="button" class="btn btn-default edit-control btn-wide" data-document-type="service-agreement">Edit</button>
                                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
@@ -154,7 +156,7 @@
 
                 <div class="authors">
                     <h3>Authors</h3>
-                    <p>This information will be used in discovery metadata for this dataset (the catalogue record).  <a href="#">See our policy on retention and use of personal data</a>.</p>
+                    <p>This information will be used in discovery metadata for this dataset (the catalogue record).  <a href="https://eidc.ac.uk/policies/retentionPersonalData">See our policy on retention and use of personal data</a>.</p>
 
                     <#if authors?has_content && authors?size gt 0 >
                         <@displayAuthors/>

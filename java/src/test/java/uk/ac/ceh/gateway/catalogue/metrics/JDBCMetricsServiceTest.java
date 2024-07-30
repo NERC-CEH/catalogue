@@ -17,8 +17,9 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.Statement;
+import java.time.Instant;
+import java.util.*;
 import java.util.stream.IntStream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -225,6 +226,79 @@ class JDBCMetricsServiceTest {
             rows.add(List.of(rs.getString(1), rs.getInt(2)));
         }
         return rows;
+    }
+
+    @Test
+    void testGetMetricsReport() throws Exception {
+        Statement statement = db.getConnection().createStatement();
+        String sql = "insert into %s (start_timestamp, end_timestamp, document, amount, doc_title, record_type) values ('%s', '%s', '%s', %d, '%s', '%s')";
+        statement.executeUpdate(String.format(sql, "views", "1721952000", "1722038399", "abcd1", 1, "test1", "a")); // 26July2024 timestsmp
+        statement.executeUpdate(String.format(sql, "views", "1722038400", "1722124799", "abcd2", 2, "test2", "b")); // 27July2024 timestsmp
+        statement.executeUpdate(String.format(sql, "views", "1722124800", "1722211199", "abcd3", 3, "test3", "c")); // 28July2024 timestsmp
+
+        statement.executeUpdate(String.format(sql, "downloads", "1721952000", "1722038399", "abcd2", 1, "test2", "b")); // 26July2024 timestsmp
+        statement.executeUpdate(String.format(sql, "downloads", "1722038400", "1722124799", "abcd3", 2, "test3", "c")); // 27July2024 timestsmp
+        statement.executeUpdate(String.format(sql, "downloads", "1722124800", "1722211199", "abcd4", 3, "test4", "d")); // 28July2024 timestsmp
+
+        List<String> recordType = Arrays.asList("a", "c");
+        String orderBy = "views";
+        String ordering = "descending";
+        String docId = "abcd1";
+        Integer noOfRecords = 1;
+
+        //when
+        String result = service.getMetricsReport(Instant.parse("2024-07-29T00:00:00Z"), Instant.parse("2024-07-29T23:59:59.00Z"), orderBy, ordering, recordType, docId, noOfRecords).toString();
+        //then
+        assertThat(result, equalTo("[]"));  // no record in supply date
+
+        Instant startDate = Instant.parse("2024-07-26T00:00:00.00Z");
+        Instant endDate = Instant.parse("2024-07-27T23:59:59.00Z");
+        result = service.getMetricsReport(startDate, null, null, null, null, null, null).toString();
+        assertThat(result, equalTo("[" +
+            "{document=abcd1, doc_title=test1, record_type=a, views=1, downloads=0}, " +
+            "{document=abcd2, doc_title=test2, record_type=b, views=2, downloads=1}, " +
+            "{document=abcd3, doc_title=test3, record_type=c, views=3, downloads=2}, " +
+            "{document=abcd4, doc_title=test4, record_type=d, views=0, downloads=3}]"));
+
+        result = service.getMetricsReport(startDate, endDate, null, null, null, null, null).toString();
+        assertThat(result, equalTo("[" +
+            "{document=abcd1, doc_title=test1, record_type=a, views=1, downloads=0}, " +
+            "{document=abcd2, doc_title=test2, record_type=b, views=2, downloads=1}, " +
+            "{document=abcd3, doc_title=test3, record_type=c, views=0, downloads=2}]"));
+
+        result = service.getMetricsReport(startDate, endDate, orderBy, null, null, null, null).toString();
+        assertThat(result, equalTo("[" +
+            "{document=abcd3, doc_title=test3, record_type=c, views=0, downloads=2}, " +
+            "{document=abcd1, doc_title=test1, record_type=a, views=1, downloads=0}, " +
+            "{document=abcd2, doc_title=test2, record_type=b, views=2, downloads=1}]"));
+
+        result = service.getMetricsReport(startDate, endDate, orderBy, ordering, null, null, null).toString();
+        assertThat(result, equalTo("[" +
+            "{document=abcd2, doc_title=test2, record_type=b, views=2, downloads=1}, " +
+            "{document=abcd1, doc_title=test1, record_type=a, views=1, downloads=0}, " +
+            "{document=abcd3, doc_title=test3, record_type=c, views=0, downloads=2}]"));
+
+        orderBy = "downloads";
+        result = service.getMetricsReport(startDate, endDate, orderBy, ordering, null, null, null).toString();
+        assertThat(result, equalTo("[" +
+            "{document=abcd3, doc_title=test3, record_type=c, views=0, downloads=2}, " +
+            "{document=abcd2, doc_title=test2, record_type=b, views=2, downloads=1}, " +
+            "{document=abcd1, doc_title=test1, record_type=a, views=1, downloads=0}]"));
+
+        result = service.getMetricsReport(startDate, endDate, orderBy, ordering, recordType, null, null).toString();
+        assertThat(result, equalTo("[" +
+            "{document=abcd3, doc_title=test3, record_type=c, views=0, downloads=2}, " +
+            "{document=abcd1, doc_title=test1, record_type=a, views=1, downloads=0}]"));
+
+        result = service.getMetricsReport(startDate, endDate, orderBy, ordering, recordType, docId, null).toString();
+        assertThat(result, equalTo("[" +
+            "{document=abcd1, doc_title=test1, record_type=a, views=1, downloads=0}]"));
+
+        docId = "abcd";
+        result = service.getMetricsReport(startDate, endDate, orderBy, ordering, recordType, docId, noOfRecords).toString();
+        assertThat(result, equalTo("[" +
+            "{document=abcd3, doc_title=test3, record_type=c, views=0, downloads=2}]"));
+
     }
 
     List<List<Object>> getTitleAndType(String table) throws SQLException {
