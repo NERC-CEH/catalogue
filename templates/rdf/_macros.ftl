@@ -4,6 +4,11 @@
     <#assign licences = func.filter(useConstraints, "code", "license")>
 </#if>
 
+<#macro displayLiteral string>
+  <#--Ensure literals do not contain " characters-->
+  <#t>${string?replace("\"","'")?replace("\n"," ")}
+</#macro>
+
 <#macro contactList contacts prefix="c">
   <#if contacts?has_content>
     <#list contacts as contact>
@@ -86,7 +91,7 @@
         <#assign fundIdentifier=fund.awardURI>
       </#if>
 
-      <${fundIdentifier?trim}> a prov:Activity ; <#if fund.awardTitle?has_content>rdfs:label "${fund.awardTitle}"</#if> .
+      <${fundIdentifier?trim}> a prov:Activity ; <#if fund.awardTitle?has_content>rdfs:label "<@displayLiteral fund.awardTitle />"</#if> .
     </#list>
   </#if>
 </#macro>
@@ -96,7 +101,7 @@
     <#if kw.uri?has_content>
       <#assign keyword ="\l" + kw.uri?trim+ "\g">
     <#else>
-      <#assign keyword ='"' + kw.value+ '"'>
+      <#assign keyword ='"' + kw.value?replace("\"", "") + '"'>
     </#if>
     ${keyword}<#sep>,</#sep>
   </#list>
@@ -105,7 +110,7 @@
 <#macro keywordDetail keywords>
   <#list keywords as kw>
     <#if kw.uri?has_content>
-      <${kw.uri?trim}> a skos:Concept; skos:prefLabel "${kw.value}"; rdfs:label "${kw.value}".
+      <${kw.uri?trim}> a skos:Concept; skos:prefLabel "<@displayLiteral kw.value />"; rdfs:label "<@displayLiteral kw.value />".
     </#if>
   </#list>
 </#macro>
@@ -133,7 +138,7 @@
           <#assign projectIdentifier=project.uri?trim>
         </#if>
 
-        <${projectIdentifier}> a prov:Activity ; <#if project.value?has_content>rdfs:label "${project.value}"</#if> .
+        <${projectIdentifier}> a prov:Activity ; <#if project.value?has_content>rdfs:label "<@displayLiteral project.value />"</#if> .
       </#list>
     </#if>
   </#macro>

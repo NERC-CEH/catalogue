@@ -6,13 +6,13 @@ dct:type dcmitype:Dataset ;
 </#list>
 
 <#if datasetReferenceDate?? && datasetReferenceDate.publicationDate?has_content>
-  dct:available "${datasetReferenceDate.publicationDate}" ;
+  dct:available "${datasetReferenceDate.publicationDate}"^^xsd:date ;
 </#if>
 
  dcat:landingPage <${uri}><#if datacitable?string=="true" && citation?has_content>, <${citation.url?trim}></#if> ;
 
 <#if datacitable?string=='true' && citation?has_content>
-    dct:bibliographicCitation "${citation.authors?join(' ,')} (${citation.year?string("0")}). ${citation.title}. ${citation.publisher}. ${citation.url?trim}" ;
+    dct:bibliographicCitation "${citation.authors?join(', ')} (${citation.year?string("0")}). <@displayLiteral citation.title />. ${citation.publisher}. ${citation.url?trim}" ;
 </#if>
 
  <#include "_rights.ftl"> <#--rights at DATASET level-->

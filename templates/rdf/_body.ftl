@@ -1,13 +1,13 @@
 <${id}>
-  dct:title "${title}" ;
+  dct:title "<@displayLiteral title />" ;
   <#if description?has_content>
-    dct:description '''${description}''' ;
+    dct:description "<@displayLiteral description />" ;
   </#if>
 
   <#if lineage?has_content>
     dct:provenance [
       a dct:ProvenanceStatement ;
-      rdfs:label '''${lineage}'''
+      rdfs:label "<@displayLiteral lineage />"
     ] ;
   </#if>
 

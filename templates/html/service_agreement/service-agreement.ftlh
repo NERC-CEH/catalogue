@@ -154,7 +154,7 @@
 
                 <div class="authors">
                     <h3>Authors</h3>
-                    <p>This information will be used in discovery metadata for this dataset (the catalogue record).  <a href="#">See our policy on retention and use of personal data</a>.</p>
+                    <p>This information will be used in discovery metadata for this dataset (the catalogue record).  <a href="https://eidc.ac.uk/policies/retentionPersonalData">See our policy on retention and use of personal data</a>.</p>
 
                     <#if authors?has_content && authors?size gt 0 >
                         <@displayAuthors/>
