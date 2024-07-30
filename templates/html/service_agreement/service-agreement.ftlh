@@ -19,7 +19,7 @@
 
             <div class="text-right">
                 <div class="row hidden-print adminPanel" role="toolbar">
-                    <#if getState() == "agreed">
+                    <#if state == "agreed">
                         <div class="btn-group btn-group-sm">
                             <button type="button" class="btn btn-default btn-wide" onClick="window.print()">Print</button>
                         </div>
