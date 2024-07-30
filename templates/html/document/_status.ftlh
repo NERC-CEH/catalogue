@@ -7,7 +7,7 @@
 
 <#if resourceStatus == "Superseded" || resourceStatus == "Withdrawn" || resourceStatus == "Deleted">
     <p>
-        <strong>THIS ${recordType?upper_case} HAS BEEN ${resourceStatus?upper_case}.</strong>
+        <strong>THIS ${recordType?upper_case} HAS BEEN ${resourceStatus?upper_case}</strong>
         <#if superseded?has_content>
             The latest version is <a href="${superseded?first.href}">${superseded?first.title}</a>
         </#if>

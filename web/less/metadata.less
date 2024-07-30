@@ -331,13 +331,10 @@ body {
     }
 
     .notice {
-        --notice-background-color: white;
-        --notice-border-color: @gray-light;
-        --notice-border-width: 2px;
-        border: var(--notice-border-width) solid var(--notice-border-color);
+        border: var(--_notice-border-width, 2px) solid var(--_notice-border-colour, #ddd);
         padding: 1em;
         margin: 1.4em 0;
-        background-color: var(--notice-background-color);
+        background-color: var(--_notice-background-colour, #fff);
         border-radius: 6px;
         z-index: 1000;
 
@@ -357,7 +354,12 @@ body {
         }
 
         &--restricted {
-            --notice-color: red;
+            --_notice-border-colour: red;
+        }
+
+        &--deleted {
+            --_notice-border-colour: red;
+            --_notice-background-colour: rgba(255, 0, 0, 0.05);
         }
 
         &-signpost {
