@@ -11,12 +11,7 @@ import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.TimeConstants;
 
 import java.time.Instant;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import javax.sql.DataSource;
 
 @Profile("metrics")
@@ -36,7 +31,9 @@ public class JDBCMetricsService implements MetricsService {
             start_timestamp integer NOT NULL,
             end_timestamp integer NOT NULL,
             amount integer NOT NULL,
-            document text NOT NULL
+            document text NOT NULL,
+            doc_title text,
+            record_type text
         )
         """;
     private static final String TOTAL_STATEMENT = "SELECT coalesce(sum(amount), 0) FROM %s WHERE document = ?";
@@ -115,5 +112,75 @@ public class JDBCMetricsService implements MetricsService {
 
     private int totalAmount(@NonNull String table, @NonNull String uuid) {
         return jdbcTemplate.queryForObject(TOTAL_STATEMENT.formatted(table), Integer.class, uuid);
+    }
+
+    public List<Map<String,String>> getMetricsReport(Instant startDate, Instant endDate, String orderBy, String ordering, List<String> recordType, String docId, Integer noOfRecords) {
+        String sql = "select t.DOCUMENT, ifnull(t.DOC_TITLE, '') as \"DOC_TITLE\", ifnull(t.RECORD_TYPE, '') as \"RECORD_TYPE\", sum(t.VIEWS) as \"VIEWS\", sum(t.DOWNLOADS) as \"DOWNLOADS\" " +
+            "from (select DOCUMENT, DOC_TITLE, RECORD_TYPE, AMOUNT as \"DOWNLOADS\", 0 as \"VIEWS\" from downloads where %s " +
+            "union select DOCUMENT, DOC_TITLE, RECORD_TYPE, 0 as \"DOWNLOADS\", AMOUNT as \"VIEWS\" from views where %s) t " +
+            "group by DOCUMENT,DOC_TITLE,RECORD_TYPE";
+
+        ArrayList<String> whereVal = new ArrayList<>();
+        StringBuilder where = new StringBuilder(" 1=1");
+        if (startDate != null) {
+            String start = Long.toString(startDate.getEpochSecond());
+            whereVal.add(start);
+            where.append(" and START_TIMESTAMP>=?");
+        }
+        if (endDate != null) {
+            String end = Long.toString(endDate.getEpochSecond());
+            whereVal.add(end);
+            where.append(" and END_TIMESTAMP<=?");
+        }
+        if (docId != null && !docId.isBlank()) {
+            whereVal.add(String.format("%%%s%%", docId));
+            where.append(" and DOCUMENT like ?");
+        }
+        if (recordType != null && !recordType.isEmpty()) {
+            where.append(" and RECORD_TYPE in (");
+            for (String type: recordType) {
+                whereVal.add(type);
+                where.append("?,");
+            }
+            where.deleteCharAt(where.length() - 1).append(")");
+        }
+
+        StringBuilder sqlBuilder = new StringBuilder(sql.formatted(where, where));
+        if (orderBy != null && !orderBy.isBlank()) {
+            switch (orderBy) {
+                case "views":
+                    sqlBuilder.append(" order by VIEWS");
+                    break;
+                case "downloads":
+                    sqlBuilder.append(" order by DOWNLOADS");
+                    break;
+                default:
+                    sqlBuilder.append(" order by DOCUMENT");
+                    break;
+            }
+            if (ordering != null && !ordering.isBlank()) {
+                if (ordering.equals("descending")) {
+                    sqlBuilder.append(" desc");
+                }
+            }
+        }
+        if (noOfRecords != null && noOfRecords >= 0) {
+            sqlBuilder.append(" limit ").append(noOfRecords);
+        }
+
+        log.info("Metrics report sql: {}", sqlBuilder);
+
+        return jdbcTemplate.query(
+            sqlBuilder.toString(), preparedStatement -> {
+                int index = 1;
+                int valSize = whereVal.size();
+                for (String val: whereVal) {
+                    preparedStatement.setString(index, val);
+                    preparedStatement.setString(valSize + index, val);
+                    index++;
+                }
+            },
+            new ReportMapper()
+        );
     }
 }
