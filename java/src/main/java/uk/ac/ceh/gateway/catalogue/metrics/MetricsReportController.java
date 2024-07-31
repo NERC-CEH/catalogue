@@ -9,6 +9,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Optional;
 
 @Profile("metrics")
 @RestController
@@ -22,11 +23,6 @@ public class MetricsReportController {
     }
 
     @GetMapping(produces = MediaType.TEXT_HTML_VALUE)
-    public MetricsReportModel showMetricsReportForm(@PathVariable("catalogue") String catalogue) {
-        return new MetricsReportModel(catalogue, null);
-    }
-
-    @PostMapping(produces = MediaType.TEXT_HTML_VALUE)
     public MetricsReportModel getMetricsReport(
         @RequestParam(required = false) String startDate,
         @RequestParam(required = false) String endDate,
@@ -35,7 +31,7 @@ public class MetricsReportController {
         @RequestParam(required = false) List<String> recordType,
         @RequestParam(required = false) String docId,
         @RequestParam(required = false) Integer noOfRecords,
-        @PathVariable("catalogue") String catalogue
+        @PathVariable String catalogue
     ) {
 
         Instant startInstant = parseDate(startDate);
@@ -49,6 +45,9 @@ public class MetricsReportController {
     }
 
     private Instant parseDate(String date) {
-        return (date != null && !date.isEmpty()) ? LocalDate.parse(date).atStartOfDay().toInstant(ZoneOffset.UTC) : null;
+        return Optional.ofNullable(date)
+            .filter(d -> !d.isBlank())
+            .map(d -> LocalDate.parse(d).atStartOfDay().toInstant(ZoneOffset.UTC))
+            .orElse(null);
     }
 }

@@ -196,6 +196,8 @@ public class JDBCMetricsService implements MetricsService {
         }
         if (noOfRecords != null && noOfRecords >= 0) {
             sqlBuilder.append(" limit ").append(noOfRecords);
+        } else {
+            sqlBuilder.append(" limit 100");
         }
 
         log.info("Metrics report sql: {}", sqlBuilder);
