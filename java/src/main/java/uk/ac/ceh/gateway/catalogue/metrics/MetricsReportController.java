@@ -26,7 +26,7 @@ public class MetricsReportController {
         return new MetricsReportModel(catalogue, null);
     }
 
-    @PostMapping(produces = MediaType.TEXT_HTML_VALUE)
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public MetricsReportModel getMetricsReport(
         @RequestParam(required = false) String startDate,
         @RequestParam(required = false) String endDate,

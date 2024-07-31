@@ -4,6 +4,7 @@ import './globals'
 import $ from 'jquery'
 import Backbone from 'backbone'
 import 'bootstrap'
+import './handleForm'
 import {
   CehModelApplicationEditorView,
   CehModelEditorView, CodeDocumentEditorView,

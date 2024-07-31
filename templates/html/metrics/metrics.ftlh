@@ -3,7 +3,7 @@
 <@skeleton.master title="Metrics Reports" catalogue=catalogues.defaultCatalogue()>
   <div class="container">
     <h1 class="text-center">${catalogue?upper_case} Metrics Reports</h1>
-    <form action="/${catalogue}/metrics" method="post" style="border: 1px solid black; padding: 1rem">
+    <form id="metricsForm" action="/${catalogue}/metrics" method="post" style="border: 1px solid black; padding: 1rem">
       <fieldset>
         <legend>Search Criteria</legend>
         <div class="row">
@@ -79,11 +79,12 @@
       </fieldset>
     </form>
 
-    <#if metricsReport??>
-      <fieldset style="margin-top: 2rem">
+
+    <div id="metricsResultsContainer" style="display: none;">
+      <fieldset id="metricsResult" style="margin-top: 2rem">
         <legend>Search Result</legend>
         <div class="table-responsive">
-          <table class="table table-striped table-bordered">
+          <table id="metricsTable" class="table table-striped table-bordered">
             <thead>
               <tr>
                 <th>Doc Id</th>
@@ -94,19 +95,12 @@
               </tr>
             </thead>
             <tbody>
-            <#list metricsReport as record>
-              <tr>
-                <td>${record["document"]}</td>
-                <td>${record["doc_title"]}</td>
-                <td>${record["record_type"]}</td>
-                <td>${record["views"]}</td>
-                <td>${record["downloads"]}</td>
-              </tr>
-            </#list>
+
             </tbody>
           </table>
         </div>
       </fieldset>
-    </#if>
+    </div>
+
   </div>
 </@skeleton.master>
