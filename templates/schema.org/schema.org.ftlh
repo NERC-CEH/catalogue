@@ -14,7 +14,6 @@
   >
 </#if>
 
-
 <#-- COMPILE KEYWORD LIST--->
   <#assign keywordList = [] >
 
@@ -54,24 +53,6 @@
 {
   "@type":"${docType}",
   "name":"${title}",
-  <#if description?has_content>"description":"${description}", </#if>
-
-  <#if alternateTitles?has_content>
-    "alternateName":[
-    <#list alternateTitles as altTitle>
-      "${altTitle}"<#sep>,</#sep>
-    </#list>
-    ],
-  </#if>
-
-
-
-  <#if datasetReferenceDate?? && datasetReferenceDate.creationDate?has_content>
-    "dateCreated":"${datasetReferenceDate.creationDate}",
-  </#if>
-  <#if datasetReferenceDate?? && datasetReferenceDate.publicationDate?has_content>
-    "datePublished":"${datasetReferenceDate.publicationDate}",
-  </#if>
 
   <#if datacitable?string == "true" && citation?has_content>
     "@id": "${citation.url}",
@@ -87,131 +68,154 @@
   "url":"${uri?trim}",
   </#if>
 
-  <#if keywordsObservedProperty?? && keywordsObservedProperty?has_content>
-    "variableMeasured": [ <@displayVariables keywordsObservedProperty/>],
-  </#if>
+    <#if resourceStatus != "Deleted">
+      <#if description?has_content>"description":"${description}", </#if>
 
-  <#if keywordList?has_content>
-  "keywords": [<@displayKeywords keywordList/>],
-  </#if>
+      <#if alternateTitles?has_content>
+        "alternateName":[
+        <#list alternateTitles as altTitle>
+          "${altTitle}"<#sep>,</#sep>
+        </#list>
+        ],
+      </#if>
 
-  <#if authors?has_content>
-    "creator":[
-    <#list authors as author>
-    <#if author.individualName?has_content>
-      {
-      "@type":"Person",
-      "name": "${author.individualName}"
-      <#if author.organisationName?has_content>
-      ,"email": "${author.email}"
+      <#if datasetReferenceDate?? && datasetReferenceDate.creationDate?has_content>
+        "dateCreated":"${datasetReferenceDate.creationDate}",
       </#if>
-      <#if author.nameIdentifier?has_content && author.nameIdentifier?matches("^http(|s)://orcid.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$")>
-        ,"identifier": {
-          "@type":"PropertyValue",
-          "propertyID": "orcid",
-          "value": "${author.nameIdentifier}"
-        }
+      <#if datasetReferenceDate?? && datasetReferenceDate.publicationDate?has_content>
+        "datePublished":"${datasetReferenceDate.publicationDate}",
       </#if>
-      <#if author.organisationName?has_content>
-        ,"affiliation":{
+
+      <#if keywordsObservedProperty?? && keywordsObservedProperty?has_content>
+        "variableMeasured": [ <@displayVariables keywordsObservedProperty/>],
+      </#if>
+
+      <#if keywordList?has_content>
+      "keywords": [<@displayKeywords keywordList/>],
+      </#if>
+
+      <#if authors?has_content>
+        "creator":[
+        <#list authors as author>
+        <#if author.individualName?has_content>
+          {
+          "@type":"Person",
+          "name": "${author.individualName}"
+          <#if author.organisationName?has_content>
+          ,"email": "${author.email}"
+          </#if>
+          <#if author.nameIdentifier?has_content && author.nameIdentifier?matches("^http(|s)://orcid.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$")>
+            ,"identifier": {
+              "@type":"PropertyValue",
+              "propertyID": "orcid",
+              "value": "${author.nameIdentifier}"
+            }
+          </#if>
+          <#if author.organisationName?has_content>
+            ,"affiliation":{
+              "@type":"Organization",
+              "name":"${author.organisationName}"
+              <#if author.organisationIdentifier?has_content>
+              ,"identifier":"${author.organisationIdentifier}"
+              </#if>
+            }
+          </#if>
+          }
+        <#else>
+          {
           "@type":"Organization",
-          "name":"${author.organisationName}"
+          "name": "${author.organisationName}"
+          <#if author.organisationName?has_content>
+          ,"email": "${author.email}"
+          </#if>
           <#if author.organisationIdentifier?has_content>
           ,"identifier":"${author.organisationIdentifier}"
           </#if>
-        }
+          }
+        </#if>
+        <#sep>,
+        </#list>
+        ]
+        ,
       </#if>
-      }
-    <#else>
-      {
-      "@type":"Organization",
-      "name": "${author.organisationName}"
-      <#if author.organisationName?has_content>
-      ,"email": "${author.email}"
-      </#if>
-      <#if author.organisationIdentifier?has_content>
-      ,"identifier":"${author.organisationIdentifier}"
-      </#if>
-      }
-    </#if>
-    <#sep>,
-    </#list>
-    ]
-    ,
-  </#if>
 
-  <#if temporalExtents?has_content>
-    "temporalCoverage":[
-    <#list temporalExtents as temporal>
-      <#if temporal.begin?has_content>
-        <#assign begin = temporal.begin>
-      <#else>
-        <#assign begin = "">
+      <#if temporalExtents?has_content>
+        "temporalCoverage":[
+        <#list temporalExtents as temporal>
+          <#if temporal.begin?has_content>
+            <#assign begin = temporal.begin>
+          <#else>
+            <#assign begin = "">
+          </#if>
+          <#if temporal.end?has_content>
+            <#assign end = temporal.end>
+          <#else>
+            <#assign end = "">
+          </#if>
+          "${begin}/${end}"<#sep>,
+        </#list>
+        ],
       </#if>
-      <#if temporal.end?has_content>
-        <#assign end = temporal.end>
-      <#else>
-        <#assign end = "">
-      </#if>
-      "${begin}/${end}"<#sep>,
-    </#list>
-    ],
-  </#if>
 
-  <#if boundingBoxes?has_content>
-   "spatialCoverage": [
-    <#list boundingBoxes as extent>
-      {
-        "@type":"Place",
-        "geo":{
-          "@type":"GeoShape",
-          "box":"${extent.westBoundLongitude} ${extent.southBoundLatitude}, ${extent.eastBoundLongitude} ${extent.northBoundLatitude}"
-        }
-      }<#sep>,
-    </#list>
-   ],
-  </#if>
-
-  <#if docType == "Dataset" || docType == "SoftwareSourceCode">
-    <#if licences?? && licences?has_content>
-      <#if licences?first.uri?? && licences?first.uri?has_content>
-        "license": "${licences?first.uri?trim}",
-      </#if>
-    </#if>
-
-    <#list downloads>
-      "distribution":[
-        <#items as download>
-        {
-          "@type":"DataDownload",
-          "contentUrl":"${download.url}"
-          <#if download.url?ends_with(".zip")>,"encodingFormat":"application/zip"</#if>
-          <#if download.url?ends_with(".csv")>,"encodingFormat":"text/csv"</#if>
-          <#if download.url?starts_with("https://data-package.ceh.ac.uk/data/")>,"encodingFormat":"application/zip"</#if>
-          <#if download.url?starts_with("https://catalogue.ceh.ac.uk/datastore")>,"encodingFormat":"text/directory"</#if>
-        }<#sep>,
-        </#items>
+      <#if boundingBoxes?has_content>
+      "spatialCoverage": [
+        <#list boundingBoxes as extent>
+          {
+            "@type":"Place",
+            "geo":{
+              "@type":"GeoShape",
+              "box":"${extent.westBoundLongitude} ${extent.southBoundLatitude}, ${extent.eastBoundLongitude} ${extent.northBoundLatitude}"
+            }
+          }<#sep>,
+        </#list>
       ],
-    </#list>
-  <#if publishers?has_content>
-    <#assign publisher = publishers?first>
-    "publisher":
-        {
-        "@type":"Organization","name":"${publisher.organisationName}"
-        <#if publisher.organisationIdentifier?has_content>
-        ,"identifier":"${publisher.organisationIdentifier}"
+      </#if>
+
+      <#if docType == "Dataset" || docType == "SoftwareSourceCode">
+        <#if licences?? && licences?has_content>
+          <#if licences?first.uri?? && licences?first.uri?has_content>
+            "license": "${licences?first.uri?trim}",
+          </#if>
         </#if>
-        <#if publisher.organisationName?has_content>
-        ,"email": "${publisher.email}"
+
+        <#list downloads>
+          "distribution":[
+            <#items as download>
+            {
+              "@type":"DataDownload",
+              "contentUrl":"${download.url}"
+              <#if download.url?ends_with(".zip")>,"encodingFormat":"application/zip"</#if>
+              <#if download.url?ends_with(".csv")>,"encodingFormat":"text/csv"</#if>
+              <#if download.url?starts_with("https://data-package.ceh.ac.uk/data/")>,"encodingFormat":"application/zip"</#if>
+              <#if download.url?starts_with("https://catalogue.ceh.ac.uk/datastore")>,"encodingFormat":"text/directory"</#if>
+            }<#sep>,
+            </#items>
+          ],
+        </#list>
+
+      <#if publishers?has_content>
+        <#assign publisher = publishers?first>
+        "publisher":
+            {
+            "@type":"Organization","name":"${publisher.organisationName}"
+            <#if publisher.organisationIdentifier?has_content>
+            ,"identifier":"${publisher.organisationIdentifier}"
+            </#if>
+            <#if publisher.organisationName?has_content>
+            ,"email": "${publisher.email}"
+            </#if>
+            },
         </#if>
-        },
+      "provider" : {"@type":"Organization","name":"Environmental Information Data Centre"},
+      "includedInDataCatalog":{"@type":"DataCatalog", "name":"Environmental Information Data Centre", "alternatename":"EIDC", "url":"https://catalogue.ceh.ac.uk/eidc/documents"},
+      </#if>
+    <#else>
+      "description": "This resource is no longer available please contact the Environmental Information Data Centre for more details",
+      "creativeWorkStatus": "Deleted",
     </#if>
-  "provider" : {"@type":"Organization","name":"Environmental Information Data Centre"},
-  "includedInDataCatalog":{"@type":"DataCatalog", "name":"Environmental Information Data Centre", "alternatename":"EIDC", "url":"https://catalogue.ceh.ac.uk/eidc/documents"},
+      "@context":"http://schema.org/"
+    }
   </#if>
-  "@context":"http://schema.org/"
-}
-</#if>
 </#compress>
 
 
