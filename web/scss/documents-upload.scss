@@ -81,7 +81,7 @@
             .buttons {
                 margin-left: auto;
                 .btn {
-                    .btn-sm;
+                    @extend .btn-sm;
                 }
             }
         }

@@ -1,0 +1,8 @@
+@import "theme";
+
+$datalab-green: hsl(174, 63%, 40%);
+$brand-success: $datalab-green;
+
+:root {
+    --datalab-green: @datalab-green;
+}

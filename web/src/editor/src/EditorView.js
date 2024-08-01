@@ -62,7 +62,7 @@ export default Backbone.View.extend({
     this.render()
     _.invoke(this.sections[0].views, 'show')
     this.sections.forEach(section => {
-      this.$('#editorNav').append($(`<li title='${section.title}'>${section.label}</li>`))
+      this.$('#editorNav').append($(`<li class="breadcrumb-item" title='${section.title}'>${section.label}</li>`))
     })
 
     this.$('#editorNav').find('li').first().addClass('active')

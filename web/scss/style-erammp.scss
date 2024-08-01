@@ -1,10 +1,10 @@
 @import "theme";
 
 
-@brand-success: #9fb025;
-@gray-lighter: @brand-success;
-@header-text: #ffffff;
-@panel-default-text: @header-text;
+$brand-success: #9fb025;
+$gray-lighter: $brand-success;
+$header-text: #ffffff;
+$panel-default-text: $header-text;
 
 .erammp-metadata {
     .row {
@@ -22,13 +22,13 @@
                 text-align: left ;
             }
         }
-    };
+    }
     h2 {
         margin: 3em 0 1em 0;
-    };
+    }
     .description {
         margin: 2em 0;
-    };
+    }
     .section {
         padding-bottom: 1em;
         .section-heading {
@@ -40,10 +40,10 @@
                 margin:0
             }
         }
-    };
+    }
 
     .table-schema {
-        .table-responsive;
+        @extend .table-responsive;
         td, th {
             padding:.3em 1em !important;
             .schema-constraints {
@@ -53,10 +53,10 @@
                     span {
                         display: table-cell;
                         padding-right: 1em;
-                    };
-                };
-            };
-        };
+                    }
+                }
+            }
+        }
         tr.unique {
             td:first-child {
                 font-weight:bold;
@@ -65,13 +65,13 @@
                 }
             }
         }
-    };
+    }
 
     .section-inputs, .section-outputs {
         table{
             margin-left: 3em;
-        };
-    };
+        }
+    }
 
     .section-metadata {
         .row{

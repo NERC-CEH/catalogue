@@ -97,7 +97,7 @@ body {
         padding: 1em 0;
 
         &:not(:has(.notice)) {
-            border-bottom: 1px solid @gray-light;
+            border-bottom: 1px solid $gray-light;
             margin-bottom: 1em;
         }
 
@@ -118,14 +118,14 @@ body {
 
         .alert-In-progress,
         .alert-Embargoed {
-            .alert;
-            .alert-info;
+            @extend .alert;
+            @extend .alert-info;
         }
 
         .alert-Superseded,
         .alert-Withdrawn {
-            .alert;
-            .alert-danger;
+            @extend .alert;
+            @extend .alert-danger;
         }
     }
 
@@ -182,10 +182,10 @@ body {
 
         .otherVersions {
             margin-left: 0.6em;
-            color: @link-color;
+            color: $link-color;
 
             &:hover {
-                color: @link-hover-color;
+                color: $link-hover-color;
                 text-decoration: underline;
                 cursor: pointer;
             }
@@ -206,9 +206,9 @@ body {
 
         a {
             margin-left: 1em;
-            .btn;
-            .btn-danger;
-            .btn-xs;
+            @extend .btn;
+            @extend .btn-danger;
+            @extend .btn-sm;
         }
     }
 
@@ -253,7 +253,7 @@ body {
         .licenceText {
             .ogl-logo {
                 margin-top: 0.3em;
-                .pull-right;
+                @extend .float-end;
             }
         }
     }
@@ -268,7 +268,7 @@ body {
 
             .licenceText {
                 margin-top: 3em;
-                .text-center;
+                @extend .text-center;
 
                 img {
                     display: block;
@@ -377,7 +377,7 @@ body {
 
         .divider {
             height: 1px;
-            background: @gray-light;
+            background: $gray-light;
             margin: 1.2em 0;
         }
 
@@ -398,23 +398,23 @@ body {
                 }
 
                 &-download {
-                    .btn-block;
+                    @extend .w-100;
                     font-weight: bold;
                     background-color: var(--primary-colour);
 
                     &:hover,
                     &:focus {
-                        background-color: lighten(@brand-success, 15%);
+                        background-color: lighten($brand-success, 15%);
                     }
                 }
 
                 &-supporting {
-                    .btn-block;
-                    background-color: lighten(@brand-success, 15%);
+                    @extend .w-100;
+                    background-color: lighten($brand-success, 15%);
 
                     &:hover,
                     &:focus {
-                        background-color: lighten(@brand-success, 30%);
+                        background-color: lighten($brand-success, 30%);
                     }
                 }
             }
@@ -433,7 +433,7 @@ body {
 
     h2 {
         margin-top: 2.5em;
-        border-bottom: 1px solid @gray-light;
+        border-bottom: 1px solid $gray-light;
         padding-bottom: 6px;
     }
 
@@ -794,7 +794,7 @@ body {
     }
 
     .browseGraphic {
-        .pull-right;
+        @extend .float-end;
         margin: 0 0 1em 2em;
         max-width: 30em;
         max-height: 30em;

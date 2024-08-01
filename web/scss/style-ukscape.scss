@@ -1,10 +1,9 @@
 @import "theme";
 
-@brand-success: #95C5E5;
+$fa-font-path: "../fonts";
 
 #editor {
-       .option-elter {
+    .option-assist {
         display: initial !important;
     }
-
 }

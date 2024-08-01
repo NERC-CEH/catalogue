@@ -1,9 +1,9 @@
 <#--
   This freemarker fragment generates the static view of the drawing control.
-  This will either be a button (for toggling drawing mode) or a anchor (for 
+  This will either be a button (for toggling drawing mode) or a anchor (for
   removing a bbox filter)
 
-  IMPORTANT: If you change the structure of this, please update the corresponding 
+  IMPORTANT: If you change the structure of this, please update the corresponding
   javascript template /web/src/scripts/templates/DrawingControl.tpl
 -->
 <#if withoutBbox?has_content>
@@ -22,12 +22,12 @@
     </ul>
   </div>
 
-  <a href="${withoutBbox}" class="btn btn-primary btn-xs">
-    Spatial Filter 
+  <a href="${withoutBbox}" class="btn btn-primary btn-sm">
+    Spatial Filter
     <span class="fa-solid fa-xmark"></span>
   </a>
 <#else>
-  <button id="drawing-toggle" type="button" class="btn btn-default btn-xs" aria-label="Draw a boundary in which to search">
-    <span class="fa-solid fa-pencil-alt"></span> 
+  <button id="drawing-toggle" type="button" class="btn btn-secondary btn-sm" aria-label="Draw a boundary in which to search">
+    <span class="fa-solid fa-pencil-alt"></span>
   </button>
 </#if>

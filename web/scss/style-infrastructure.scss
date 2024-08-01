@@ -1,6 +1,6 @@
 @import "theme";
 
-@fa-font-path: "../fonts";
+$fa-font-path: "../fonts";
 
 #pageTitle {
     margin: 2em 0;
@@ -33,7 +33,7 @@
 
 .key-value {
     margin: 2em 0;
-    line-height: @line-height-base;
+    line-height: $line-height-base;
 
     >div {
         text-wrap: balance;

@@ -9,6 +9,7 @@
 !web/dist
 !web/img
 !web/less
+!web/scss
 !web/src
 !web/Gruntfile.js
 !web/karma.conf.js

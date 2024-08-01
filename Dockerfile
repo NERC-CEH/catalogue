@@ -4,7 +4,7 @@ WORKDIR /web
 COPY web/Gruntfile.js web/package.json web/package-lock.json web/webpack.js ./
 RUN --mount=type=cache,target=/web/.npm npm ci --no-audit
 COPY web/img ./img
-COPY web/less ./less
+COPY web/scss ./scss
 COPY web/src ./src
 RUN npm run build-css
 RUN npm run build-prod

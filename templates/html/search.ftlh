@@ -8,16 +8,20 @@
       <!-- Nav tabs -->
       <div class="search-tabs">
         <ul class="nav nav-tabs" role="tablist">
-          <li role="presentation" class="search-tab active"><a href="#facet-tab" aria-controls="facet-tab" role="tab" data-toggle="tab">Filters</a></li>
-          <li role="presentation" class="search-tab map-tab"><a href="#spatial-tab" aria-controls="spatial-tab" role="tab" data-toggle="tab">Spatial search</a></li>
+          <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="facet-tab-link" data-bs-toggle="tab" href="#facet-tab" role="tab" aria-controls="facet-tab" aria-selected="true">Filters</a>
+          </li>
+          <li class="nav-item" role="presentation">
+            <a class="nav-link" id="spatial-tab-link" data-bs-toggle="tab" href="#spatial-tab" role="tab" aria-controls="spatial-tab" aria-selected="false">Spatial search</a>
+          </li>
         </ul>
 
         <!-- Tab panes -->
         <div class="tab-content">
-          <div role="tabpanel" class="tab-pane active" id="facet-tab">
+          <div class="tab-pane fade show active" id="facet-tab" role="tabpanel" aria-labelledby="facet-tab-link">
             <div class="facet-filter"><#include "search/_facets.ftlh"></div>
           </div>
-          <div role="tabpanel" class="tab-pane" id="spatial-tab">
+          <div class="tab-pane fade" id="spatial-tab" role="tabpanel" aria-labelledby="spatial-tab-link">
             <div class="mapsearch"></div>
           </div>
         </div>

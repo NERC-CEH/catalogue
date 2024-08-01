@@ -1,9 +1,9 @@
 #message-panel {
-    .panel();
+    @extend .card;
 
     position:  fixed;
     display:   none;
-    top:       @navbar-height + @navbar-border-width;
+    top:       $navbar-height + $navbar-border-width;
     right:     0;
     padding:   4px;
     font-size: 80%;

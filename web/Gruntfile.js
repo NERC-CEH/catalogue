@@ -1,46 +1,50 @@
+const sass = require('sass')
+
 module.exports = function (grunt) {
   grunt.initConfig({
     clean: {
       build: ['css/*']
     },
-    less: {
+    sass: {
       options: {
-        compress: true,
-        sourceMap: true
+        implementation: sass,
+        outputStyle: 'compressed',
+        sourceMap: true,
+        quietDeps: true
       },
       build: {
         files: [
-          { src: 'less/style-assist.less', dest: 'css/style-assist.css' },
-          { src: 'less/style-ukceh.less', dest: 'css/style-ukceh.css' },
-          { src: 'less/style-cmp.less', dest: 'css/style-cmp.css' },
-          { src: 'less/style-datalabs.less', dest: 'css/style-datalabs.css' },
-          { src: 'less/style-edge.less', dest: 'css/style-edge.css' },
-          { src: 'less/style-eidc.less', dest: 'css/style-eidc.css' },
-          { src: 'less/style-elter.less', dest: 'css/style-elter.css' },
-          { src: 'less/style-erammp.less', dest: 'css/style-erammp.css' },
-          { src: 'less/style-inlicensed.less', dest: 'css/style-inlicensed.css' },
-          { src: 'less/style-inms.less', dest: 'css/style-inms.css' },
-          { src: 'less/style-nc.less', dest: 'css/style-nc.css' },
-          { src: 'less/style-nm.less', dest: 'css/style-nm.css' },
-          { src: 'less/style-m.less', dest: 'css/style-m.css' },
-          { src: 'less/style-osdp.less', dest: 'css/style-osdp.css' },
-          { src: 'less/style-pimfe.less', dest: 'css/style-pimfe.css' },
-          { src: 'less/style-infrastructure.less', dest: 'css/style-infrastructure.css' },
-          { src: 'less/style-sa.less', dest: 'css/style-sa.css' },
-          { src: 'less/style-ukeof.less', dest: 'css/style-ukeof.css' },
-          { src: 'less/style-ukscape.less', dest: 'css/style-ukscape.css' }
+          { src: 'scss/style-assist.scss', dest: 'css/style-assist.css' },
+          { src: 'scss/style-ukceh.scss', dest: 'css/style-ukceh.css' },
+          { src: 'scss/style-cmp.scss', dest: 'css/style-cmp.css' },
+          { src: 'scss/style-datalabs.scss', dest: 'css/style-datalabs.css' },
+          { src: 'scss/style-edge.scss', dest: 'css/style-edge.css' },
+          { src: 'scss/style-eidc.scss', dest: 'css/style-eidc.css' },
+          { src: 'scss/style-elter.scss', dest: 'css/style-elter.css' },
+          { src: 'scss/style-erammp.scss', dest: 'css/style-erammp.css' },
+          { src: 'scss/style-inlicensed.scss', dest: 'css/style-inlicensed.css' },
+          { src: 'scss/style-inms.scss', dest: 'css/style-inms.css' },
+          { src: 'scss/style-nc.scss', dest: 'css/style-nc.css' },
+          { src: 'scss/style-nm.scss', dest: 'css/style-nm.css' },
+          { src: 'scss/style-m.scss', dest: 'css/style-m.css' },
+          { src: 'scss/style-osdp.scss', dest: 'css/style-osdp.css' },
+          { src: 'scss/style-pimfe.scss', dest: 'css/style-pimfe.css' },
+          { src: 'scss/style-infrastructure.scss', dest: 'css/style-infrastructure.css' },
+          { src: 'scss/style-sa.scss', dest: 'css/style-sa.css' },
+          { src: 'scss/style-ukeof.scss', dest: 'css/style-ukeof.css' },
+          { src: 'scss/style-ukscape.scss', dest: 'css/style-ukscape.css' }
         ]
       }
     },
     watch: {
-      less: {
-        files: 'less/*',
-        tasks: ['less']
+      sass: {
+        files: 'scss/*',
+        tasks: ['sass']
       }
     },
     concurrent: {
       watch: {
-        tasks: ['watch:less'],
+        tasks: ['watch:sass'],
         options: {
           logConcurrentOutput: true
         }
@@ -49,9 +53,9 @@ module.exports = function (grunt) {
   })
   grunt.loadNpmTasks('grunt-concurrent')
   grunt.loadNpmTasks('grunt-contrib-clean')
-  grunt.loadNpmTasks('grunt-contrib-less')
+  grunt.loadNpmTasks('grunt-sass')
   grunt.loadNpmTasks('grunt-contrib-watch')
-  grunt.registerTask('develop', ['less', 'concurrent'])
-  grunt.registerTask('build', ['clean', 'less'])
+  grunt.registerTask('develop', ['sass', 'concurrent'])
+  grunt.registerTask('build', ['clean', 'sass'])
   grunt.registerTask('default', ['build'])
 }

@@ -1,11 +1,11 @@
 @import "theme";
 @import "style-serviceagreement";
 
-@fa-font-path: "../fonts";
+$fa-font-path: "../fonts";
 
-@eidc-blue: hsl(195, 45%, 36%);
-@brand-success: @eidc-blue;
-@panel-default-text: #FFF;
+$eidc-blue: hsl(195, 45%, 36%);
+$brand-success: $eidc-blue;
+$panel-default-text: #FFF;
 
 /* CSS custom properties */
 :root {
@@ -161,7 +161,7 @@ footer {
 
         div {
             &:hover {
-                background-color: @eidc-blue;
+                background-color: $eidc-blue;
             }
         }
     }
@@ -181,7 +181,7 @@ footer {
     .section {
         &--schema {
             .table-schema {
-                .table-condensed;
+                @extend .table-sm;
             }
         }
 
