@@ -23,6 +23,7 @@ import uk.ac.ceh.gateway.catalogue.converters.Object2TemplatedMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.TransparentProxyMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.WmsFeatureInfo2XmlMessageConverter;
 import uk.ac.ceh.gateway.catalogue.datacite.DataciteResponse;
+import uk.ac.ceh.gateway.catalogue.metrics.MetricsReportModel;
 import uk.ac.ceh.gateway.catalogue.model.CodeDocument;
 import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.document.writing.MessageConverterWritingService;
@@ -92,6 +93,7 @@ public class WebConfig implements WebMvcConfigurer {
         val history = new Object2TemplatedMessageConverter<>(History.class, freemarkerConfiguration);
         val link = new Object2TemplatedMessageConverter<>(LinkDocument.class, freemarkerConfiguration);
         val maintenanceResponse = new Object2TemplatedMessageConverter<>(MaintenanceResponse.class, freemarkerConfiguration);
+        val metricsReportModel = new Object2TemplatedMessageConverter<>(MetricsReportModel.class, freemarkerConfiguration);
         val model = new Object2TemplatedMessageConverter<>(Model.class, freemarkerConfiguration);
         val modelApplication = new Object2TemplatedMessageConverter<>(ModelApplication.class, freemarkerConfiguration);
         val monitoringActivity = new Object2TemplatedMessageConverter<>(MonitoringActivity.class, freemarkerConfiguration);
@@ -140,6 +142,7 @@ public class WebConfig implements WebMvcConfigurer {
             history,
             link,
             maintenanceResponse,
+            metricsReportModel,
             model,
             modelApplication,
             monitoringActivity,

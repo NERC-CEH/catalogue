@@ -6,9 +6,11 @@ import lombok.val;
 import org.junit.jupiter.api.Test;
 import uk.ac.ceh.gateway.catalogue.elter.ElterDocument;
 import uk.ac.ceh.gateway.catalogue.model.Relationship;
+import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.model.Supplemental;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -220,4 +222,77 @@ public class GeminiDocumentTest {
         assertThat(actual, equalTo("Unknown"));
     }
 
+    private List<ResponsibleParty> getResponsibleParties(String role) {
+        ResponsibleParty responsibleParty = ResponsibleParty.builder()
+            .individualName("bob")
+            .role(role)
+            .build();
+        return Arrays.asList(new ResponsibleParty[] {responsibleParty});
+    }
+
+    @Test void mutablePrePopulatedListProperties(){
+        // given
+        GeminiDocument document = new GeminiDocument();
+
+        // one coupled service
+        Service.CoupledResource coupledResource = Service.CoupledResource.builder().operationName("COM").layerName("foo").identifier("https://bar.com").build();
+        document.setService(Service.builder().coupledResources(List.of(coupledResource)).build());
+
+        // two topics
+        document.setKeywordsTheme(List.of(
+            Keyword.builder().value("a").URI("http://onto.nerc.ac.uk/CEHMD/").build(),
+            Keyword.builder().value("b").URI("http://onto.nerc.ac.uk/CEHMD/").build()
+        ));
+
+        // three authors
+        String role = "author";
+        document.setResponsibleParties(
+            Arrays.asList(
+                ResponsibleParty.builder().role(role).build(),
+                ResponsibleParty.builder().role(role).build(),
+                ResponsibleParty.builder().role(role).build()
+            )
+        );
+
+        // when
+        List<String> actualCoupledResources = document.getCoupledResources();
+        List<String> actualTopics = document.getTopics();
+        List<ResponsibleParty> actualAuthors = document.getAuthors();
+        actualCoupledResources.add("foo");
+        actualTopics.add("foo");
+        actualAuthors.add(ResponsibleParty.builder().role(role).build());
+
+        // then
+        assertThat(actualCoupledResources.size(), equalTo(2));
+        assertThat(actualTopics.size(), equalTo(3));
+        assertThat(actualAuthors.size(), equalTo(4));
+    }
+
+    @Test void mutableEmptyListProperties(){
+        // given
+        GeminiDocument document = new GeminiDocument();
+
+        // when
+        List<String> actualCoupledResources = document.getCoupledResources();
+        List<String> actualTopics = document.getTopics();
+        List<ResponsibleParty> actualAuthors = document.getAuthors();
+        List<Keyword> actualKeywords = document.getAllKeywords();
+        List<OnlineResource> actualOnlineResources = document.getOnlineResources();
+        List<ResponsibleParty> actualResponsibleParties = document.getResponsibleParties();
+        actualCoupledResources.add("foo");
+        actualTopics.add("foo");
+        actualAuthors.add(ResponsibleParty.builder().role("author").build());
+        actualKeywords.add(Keyword.builder().value("foo").URI("https://foo.com").build());
+        actualOnlineResources.add(OnlineResource.builder().url("foo").build());
+        actualResponsibleParties.add(ResponsibleParty.builder().build());
+
+
+        // then
+        assertThat(actualCoupledResources.size(), equalTo(1));
+        assertThat(actualTopics.size(), equalTo(1));
+        assertThat(actualAuthors.size(), equalTo(1));
+        assertThat(actualKeywords.size(), equalTo(1));
+        assertThat(actualOnlineResources.size(), equalTo(1));
+        assertThat(actualResponsibleParties.size(), equalTo(1));
+    }
 }
