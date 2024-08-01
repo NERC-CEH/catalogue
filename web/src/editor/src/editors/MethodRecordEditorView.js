@@ -36,6 +36,17 @@ export default EditorView.extend({
           rows: 10
         }),
 
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'onlineResources',
+          label: 'Online links',
+          ObjectInputView: OnlineResourceSimpleView,
+          multiline: true,
+          helpText: `
+<p>Enter location of code/document repository here</p>
+`
+        }),
+
         new PredefinedParentView({
           model: this.model,
           ModelType: Contact,
@@ -88,14 +99,6 @@ export default EditorView.extend({
           modelAttribute: 'keywords',
           label: 'Keywords',
           ObjectInputView: KeywordView
-        }),
-
-        new ParentView({
-          model: this.model,
-          modelAttribute: 'onlineResources',
-          label: 'Online resources',
-          ObjectInputView: OnlineResourceSimpleView,
-          multiline: true
         }),
 
         new ParentView({

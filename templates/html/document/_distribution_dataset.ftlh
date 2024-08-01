@@ -34,7 +34,6 @@
                     <#assign onlineResourceLabel = onlineResource.name>
                   </#if>
 
-                  <#assign sizeLabel = "">
                   <#if onlineResource.size?has_content>
                     <#if onlineResource.size?number gt 1073741824>
                       <#assign sizeLabel = 'approx. ' + (onlineResource.size?number / 1073741824)?string["0.##"]  + 'Gb'>
@@ -48,16 +47,18 @@
                   <a href="/download/${id}?url=${onlineResourceUrl?url}" class="btn btn-download">
                     <span class="fa-solid fa-angles-down"></span>
                     ${onlineResourceLabel}
-                    <small>(${sizeLabel})</small>
+                    <#if sizeLabel??>
+                      <small>(${sizeLabel})</small>
+                    </#if>
                   </a>
 
                 </#list>
               </#if>
 
               <#if offlineOrders?? && offlineOrders?has_content >
-                  <#list offlineOrders as offlineOrder>
-                    <a class="btn btn-download" href="${offlineOrder.url}"><span class="fa-solid fa-file-signature"></span> <#if offlineOrder.description?has_content>${offlineOrder.description}<#elseif offlineOrder.name?has_content>${offlineOrder.name}<#else>Order data</#if></a>
-                  </#list>
+                <#list offlineOrders as offlineOrder>
+                  <a class="btn btn-download" href="${offlineOrder.url}"><span class="fa-solid fa-file-signature"></span> <#if offlineOrder.description?has_content>${offlineOrder.description}<#elseif offlineOrder.name?has_content>${offlineOrder.name}<#else>Order data</#if></a>
+                </#list>
               </#if>
 
             </#if>

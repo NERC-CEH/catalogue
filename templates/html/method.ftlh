@@ -13,7 +13,7 @@
 
         <#if title?? && title?has_content>
           <div id="pageTitle">
-            <h1>
+            <h1> <b class="small text-muted"><span class="small">METHOD</span></b><br>
             <#if (metadata.state == 'draft' || metadata.state == 'pending') >
               <small class="text-danger"><b>${codes.lookup('publication.state', metadata.state)?upper_case!''}</b></small>
             </#if>
@@ -65,12 +65,12 @@
                 </@displaykey>
             </#if>
 
-            <#if additionalInfo?? && additionalInfo?has_content >
+            <#if additionalInfo?? && additionalInfo?has_content>
               <@displaykey "Additional information">
               <dl class="dl-horizontal">
                 <#list additionalInfo as info>
-                   <dt>${info.key}</dt>
-                   <dd>${info.value}</dd>
+                   <dt><#if info.key?? && info.key?has_content>${info.key}<#else><span class="text-muted">missing</span></#if></dt>
+                   <dd><#if info.value?? && info.value?has_content>${info.value}<#else><span class="text-muted">missing</span></#if></dd>
                 </#list>
               </dl>
               </@displaykey>
