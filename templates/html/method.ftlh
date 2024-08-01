@@ -13,10 +13,10 @@
 
         <#if title?? && title?has_content>
           <div id="pageTitle">
-            <h1> <b class="small text-muted"><span class="small">METHOD</span></b><br>
+            <h1><small>
             <#if (metadata.state == 'draft' || metadata.state == 'pending') >
-              <small class="text-danger"><b>${codes.lookup('publication.state', metadata.state)?upper_case!''}</b></small>
-            </#if>
+              <b class="text-danger">${codes.lookup('publication.state', metadata.state)?upper_case!''}</b>
+            </#if>Method</small><br>
             ${title}
             </h1>
           </div>

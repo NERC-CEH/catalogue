@@ -99,10 +99,13 @@ public class CatalogueServiceConfig {
                 .facetKey("recordType")
                 .documentType(GEMINI_TYPE)
                 .documentType(METHODRECORD_TYPE)
+                .documentType(MONITORING_ACTIVITY_TYPE)
+                .documentType(MONITORING_FACILITY_TYPE)
+                .documentType(MONITORING_NETWORK_TYPE)
+                .documentType(MONITORING_PROGRAMME_TYPE)
                 .vocabularies(getCatalogueVocabularies(vocabularies, "ukceh"))
                 .fileUpload(false)
                 .build(),
-
 
             Catalogue.builder()
                 .id("edge")

@@ -399,13 +399,14 @@ body {
 
                 &-download {
                     .btn-block;
-                    font-weight: bold;
+                    font-weight: 600;
                     background-color: var(--primary-colour);
 
                     &:hover,
                     &:focus {
                         background-color: lighten(@brand-success, 15%);
                     }
+                    > small { font-weight: 200; margin-left:3px; }
                 }
 
                 &-supporting {
@@ -881,6 +882,32 @@ body {
         }
     }
 }
+
+
+.metadata-monitoring {
+
+    #studyarea-map,
+    #geometry-map {
+        height: 400px;
+        width: 400px;
+    }
+
+    .key-value {
+        >div {
+            padding: .5em 0;
+        }
+
+        .key {
+            font-weight: 600;
+        }
+    }
+
+    h2 {
+        clear: both;
+        padding-top: 2em;
+    }
+}
+
 
 #publication {
     div {
