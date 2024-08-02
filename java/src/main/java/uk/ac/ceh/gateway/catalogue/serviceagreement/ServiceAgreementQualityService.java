@@ -104,10 +104,6 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
             Map.entry("depositReference", "Deposit reference"),
             Map.entry("topicCategories", "ISO 19115 topic categories keywords"),
             Map.entry("keywordsTheme", "Science topic keywords"),
-            Map.entry("keywordsObservedProperty","Observed properties keywords"),
-            Map.entry("keywordsPlace", "Places keywords"),
-            Map.entry("keywordsProject", "Project keywords"),
-            Map.entry("keywordsInstrument", "Instrument keywords"),
             Map.entry("keywordsOther", "Other keywords"));
 
         val toReturn = new ArrayList<MetadataCheck>();
@@ -120,11 +116,11 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
 
         val toCheck = parsedDoc.read(
                 joinedKeysToCheck,
-                new TypeRef<Map<String, String>>() {}
+                new TypeRef<Map<String, Object>>() {}
         );
 
         requiredKeys.forEach((key, value) -> {
-            if (fieldIsMissing(toCheck, key)) {
+            if (fieldObjectIsMissing(toCheck, key)) {
                 toReturn.add(new MetadataCheck(value + " is missing", ERROR));
             }
         });
@@ -329,5 +325,20 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
         return map == null
             || map.get(key) == null
             || map.get(key).isBlank();
+    }
+
+    /**
+     * Checks for null fields, blank strings and zero length lists.
+     * NOTE: for now we just check for non-zero lists if it is a List object.  However, it could be
+     * done with much more granularity for keywords to check for specific contents eg see checkAuthors()
+     * @param map the map of values to check
+     * @param key the key to get the value to check
+     * @return false if the field is not missing according to the rules implemented, otherwise true
+     */
+    private boolean fieldObjectIsMissing(Map<String, Object> map, String key) {
+        return map == null
+            || map.get(key) == null
+            || ((map.get(key) instanceof String) ? ((String)map.get(key)).isBlank() : false)
+            || ((map.get(key) instanceof List) ? ((List)map.get(key)).size() == 0 : false);
     }
 }

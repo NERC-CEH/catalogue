@@ -41,8 +41,7 @@ public class ServiceAgreement extends AbstractMetadataDocument {
 
     private List<ResponsibleParty> ownersOfIpr;
 
-    private List<Keyword> topicCategories, keywordsDiscipline, keywordsInstrument, keywordsObservedProperty,
-        keywordsPlace, keywordsProject, keywordsTheme, keywordsOther;
+    private List<Keyword> topicCategories, keywordsDiscipline, keywordsTheme, keywordsOther;
 
     private List<BoundingBox> boundingBoxes;
 
@@ -59,10 +58,6 @@ public class ServiceAgreement extends AbstractMetadataDocument {
     public List<Keyword> getAllKeywords() {
         return Stream.of(
                 Optional.ofNullable(keywordsDiscipline).orElse(Collections.emptyList()),
-                Optional.ofNullable(keywordsInstrument).orElse(Collections.emptyList()),
-                Optional.ofNullable(keywordsObservedProperty).orElse(Collections.emptyList()),
-                Optional.ofNullable(keywordsPlace).orElse(Collections.emptyList()),
-                Optional.ofNullable(keywordsProject).orElse(Collections.emptyList()),
                 Optional.ofNullable(keywordsTheme).orElse(Collections.emptyList()),
                 Optional.ofNullable(keywordsOther).orElse(Collections.emptyList())
             )
