@@ -41,7 +41,7 @@ export default EditorView.extend({
 
         new TextOnlyView({
           model: this.model,
-          text: "<p>Please provide a current email address.</p>"
+          text: `<p>Please provide a current email address.</p>`
         }),
 
         new InputView({
@@ -98,9 +98,9 @@ export default EditorView.extend({
         })
       ]
     },
-      {
-        label: 'The Data',
-        title: 'The Data',
+    {
+      label: 'The Data',
+      title: 'The Data',
       views: [
 
         new TextOnlyView({
