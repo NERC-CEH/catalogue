@@ -1,6 +1,4 @@
-# CEH Catalogue
-
-The CEH metadata catalogue project.
+# UKCEH metadata catalogue
 
 [Introduction for developers](docs/introduction.md)
 

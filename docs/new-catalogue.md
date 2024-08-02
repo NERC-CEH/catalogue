@@ -37,7 +37,7 @@ Catalogue.builder()
   * you can have a chain of these e.g. `.documentType(documentTypeA).documentType(documentTypeB)`
 * *fileUpload*
   * if `true` then you can upload documents, you see this when you go to <http://location:8080/your-id/documents> and click `create` then select `file-upload`.
-  Most of the time it should be `false` 
+  Most of the time it should be `false`
 
 ### Search facets
 There are many fields already indexed in Solr that can be used as search facets.
@@ -49,12 +49,12 @@ There are many fields already indexed in Solr that can be used as search facets.
 
 If the existing index fields are not suitable a new index field can be added.
 
-The content of a search facet needs to come from a vocabulary,  [CEH Vocabularies](http://vocabs.ceh.ac.uk/) is a good home.
+The content of a search facet needs to come from a vocabulary,  [UKCEH Vocabularies](http://vocabs.ceh.ac.uk/) is a good home.
 The metadata records need to be tagged with the keywords.
 
 The facetKey needs to be added to the [Solr schema](../solr/config/documents/conf/schema.xml) and the  [SolrIndex](../java/src/main/java/uk/ac/ceh/gateway/catalogue/indexing/SolrIndex.java)
 
-The documents need to be indexed for each document type in the catalogue e.g. [SolrIndexGeminiDocumentGenerator](../java/src/main/java/uk/ac/ceh/gateway/catalogue/indexing/SolrIndexGeminiDocumentGenerator.java) for Gemini documents and [SolrIndexImpDocumentGenerator](../java/src/main/java/uk/ac/ceh/gateway/catalogue/indexing/SolrIndexImpDocumentGenerator.java) for models / model applications. 
+The documents need to be indexed for each document type in the catalogue e.g. [SolrIndexGeminiDocumentGenerator](../java/src/main/java/uk/ac/ceh/gateway/catalogue/indexing/SolrIndexGeminiDocumentGenerator.java) for Gemini documents and [SolrIndexImpDocumentGenerator](../java/src/main/java/uk/ac/ceh/gateway/catalogue/indexing/SolrIndexImpDocumentGenerator.java) for models / model applications.
 
 - Add the url of the vocabulary
 - Set the newly added field of the SolrIndex

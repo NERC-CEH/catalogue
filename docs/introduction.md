@@ -151,7 +151,7 @@ Lots of services that do stuff.
 Decoupling the work of actually doing something from the HTTP code to ease testing and developer comprehension.
 
 #### sparql
-Retrieve vocabularies from a SPARQL endpoint like the [CEH Vocabulary Service](https://vocabs.ceh.ac.uk)
+Retrieve vocabularies from a SPARQL endpoint like the [UKCEH Vocabulary Service](https://vocabs.ceh.ac.uk)
 
 #### upload
 Upload data to the Storage Area Network (SAN), interacts with Hubbub to specify where files should be moved to.
