@@ -41,7 +41,7 @@ export default EditorView.extend({
 
         new TextOnlyView({
           model: this.model,
-          text: `<p>Please provide a current email address.</p>`
+          text: 'Please provide a current email address.'
         }),
 
         new InputView({
@@ -283,9 +283,7 @@ export default EditorView.extend({
 
         new TextOnlyView({
           model: this.model,
-          text: `\
-<p>Please specify any additional constraints on use of the data resource required.</p>\
-`
+          text: 'Please specify any additional constraints on use of the data resource required.'
         }),
 
         new TextareaView({
