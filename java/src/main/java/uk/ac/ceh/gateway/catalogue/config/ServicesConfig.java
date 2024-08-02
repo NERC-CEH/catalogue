@@ -251,6 +251,6 @@ public class ServicesConfig {
     public SolrClient solrClient(
         @Value("${solr.server.url}") String solrServerUrl
     ){
-        return new HttpJdkSolrClient.Builder(solrServerUrl).build();
+        return new HttpJdkSolrClient.Builder(solrServerUrl).useHttp1_1(true).build();
     }
 }
