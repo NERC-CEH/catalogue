@@ -6,10 +6,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Value;
+import lombok.With;
 
 import static com.google.common.base.Strings.nullToEmpty;
 
 @Value
+@With
 @JsonIgnoreProperties({"roleDisplayName"})
 public class ResponsibleParty {
     String individualName, organisationName, organisationIdentifier, role, email, phone, nameIdentifier;
