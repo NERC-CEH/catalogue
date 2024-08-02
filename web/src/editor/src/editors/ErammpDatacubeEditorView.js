@@ -2,7 +2,7 @@ import {
   DataLocationView,
   DataTypeSchemaView,
   KeywordView,
-  OnlineLinkView,
+  OnlineResourceSimpleView,
   ParentView, PointOfContactView, PredefinedParentLargeView,
   PredefinedParentView, ProcessingStepView,
   ReadOnlyView, ResourceConstraintView,
@@ -317,7 +317,7 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'onlineResources',
           label: 'Additional links',
-          ObjectInputView: OnlineLinkView,
+          ObjectInputView: OnlineResourceSimpleView,
           helpText: `
 <p>A list of links to additional resources that may be of use to the user.</p>
 `

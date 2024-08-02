@@ -39,6 +39,7 @@ import uk.ac.ceh.gateway.catalogue.imp.CaseStudy;
 import uk.ac.ceh.gateway.catalogue.imp.Model;
 import uk.ac.ceh.gateway.catalogue.imp.ModelApplication;
 import uk.ac.ceh.gateway.catalogue.infrastructure.InfrastructureRecord;
+import uk.ac.ceh.gateway.catalogue.model.MethodRecord;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
@@ -277,6 +278,8 @@ class DocumentControllerTest {
             Arguments.of(new ErammpDatacube(), APPLICATION_JSON, JSON, null),
             Arguments.of(new InfrastructureRecord(), TEXT_HTML, HTML, null),
             Arguments.of(new InfrastructureRecord(), APPLICATION_JSON, JSON, null),
+            Arguments.of(new MethodRecord(), TEXT_HTML, HTML, null),
+            Arguments.of(new MethodRecord(), APPLICATION_JSON, JSON, null),
             Arguments.of(facility, TEXT_HTML, HTML, null),
             Arguments.of(facility, APPLICATION_JSON, JSON, null),
             Arguments.of(facility, EF_INSPIRE_XML, EF_INSPIRE_XML_SHORT, null),

@@ -88,7 +88,7 @@ public class CatalogueServiceConfig {
 
             Catalogue.builder()
                 .id("ukceh")
-                .title("UKCEH digital asset register")
+                .title("UKCEH digital assets")
                 .url("https://www.ceh.ac.uk")
                 .contactUrl("https://www.ceh.ac.uk/contact-us")
                 .logo("ukceh.png")
@@ -98,10 +98,14 @@ public class CatalogueServiceConfig {
                 .facetKey("ukcehService")
                 .facetKey("recordType")
                 .documentType(GEMINI_TYPE)
+                .documentType(METHODRECORD_TYPE)
+                .documentType(MONITORING_ACTIVITY_TYPE)
+                .documentType(MONITORING_FACILITY_TYPE)
+                .documentType(MONITORING_NETWORK_TYPE)
+                .documentType(MONITORING_PROGRAMME_TYPE)
                 .vocabularies(getCatalogueVocabularies(vocabularies, "ukceh"))
                 .fileUpload(false)
                 .build(),
-
 
             Catalogue.builder()
                 .id("edge")

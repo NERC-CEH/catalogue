@@ -13,7 +13,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.TimePeriod;
 import uk.ac.ceh.gateway.catalogue.indexing.solr.WellKnownText;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
-import uk.ac.ceh.gateway.catalogue.model.OnlineLink;
+import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 
 import java.util.Collections;
@@ -34,7 +34,7 @@ public class SampleArchive extends AbstractMetadataDocument implements WellKnown
     private TimePeriod temporalExtent;
     private List<BoundingBox> boundingBoxes;
     private List<ResponsibleParty> archiveLocations, archiveContacts, metadataContacts;
-    private List<OnlineLink> onlineResources;
+    private List<OnlineResource> onlineResources;
     private List<Funding> funding;
 
     @Override

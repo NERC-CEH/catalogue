@@ -8,12 +8,12 @@ export default Backbone.Model.extend({
   },
 
   validate ({ organisationName, email, individualName, nameIdentifier }) {
-    const emailRegEx = '[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?'
+    const emailRegEx = '^[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?'
     const orcidRegEx = '^https?:\\/\\/orcid.org\\/(\\d{4}-){3}\\d{3}[\\dX]$'
 
     const errors = []
 
-    if (!email?.match(emailRegEx)) {
+    if (email && !email?.match(emailRegEx)) {
       errors.push({ message: 'That email address is invalid' })
     }
 
