@@ -123,10 +123,6 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
                     .build();
         });
         this.keywordsDiscipline = serviceAgreement.getKeywordsDiscipline();
-        this.keywordsInstrument = serviceAgreement.getKeywordsInstrument();
-        this.keywordsObservedProperty = serviceAgreement.getKeywordsObservedProperty();
-        this.keywordsPlace = serviceAgreement.getKeywordsPlace();
-        this.keywordsProject = serviceAgreement.getKeywordsProject();
         this.keywordsTheme = serviceAgreement.getKeywordsTheme();
         this.keywordsOther = serviceAgreement.getKeywordsOther();
     }

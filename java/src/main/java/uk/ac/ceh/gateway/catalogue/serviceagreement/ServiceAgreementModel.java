@@ -85,10 +85,6 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
         this.otherInfo = serviceAgreement.getOtherInfo();
         this.topicCategories = serviceAgreement.getTopicCategories();
         this.keywordsDiscipline = serviceAgreement.getKeywordsDiscipline();
-        this.keywordsInstrument = serviceAgreement.getKeywordsInstrument();
-        this.keywordsObservedProperty = serviceAgreement.getKeywordsObservedProperty();
-        this.keywordsPlace = serviceAgreement.getKeywordsPlace();
-        this.keywordsProject = serviceAgreement.getKeywordsProject();
         this.keywordsTheme = serviceAgreement.getKeywordsTheme();
         this.keywordsOther = serviceAgreement.getKeywordsOther();
         this.allKeywords = serviceAgreement.getAllKeywords();

@@ -104,10 +104,6 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
             Map.entry("depositReference", "Deposit reference"),
             Map.entry("topicCategories", "ISO 19115 topic categories keywords"),
             Map.entry("keywordsTheme", "Science topic keywords"),
-            Map.entry("keywordsObservedProperty","Observed properties keywords"),
-            Map.entry("keywordsPlace", "Places keywords"),
-            Map.entry("keywordsProject", "Project keywords"),
-            Map.entry("keywordsInstrument", "Instrument keywords"),
             Map.entry("keywordsOther", "Other keywords"));
 
         val toReturn = new ArrayList<MetadataCheck>();
