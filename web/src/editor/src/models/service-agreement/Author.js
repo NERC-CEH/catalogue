@@ -13,7 +13,7 @@ export default Backbone.Model.extend({
 
     const errors = []
 
-    if (!email?.match(emailRegEx)) {
+    if (email && !email?.match(emailRegEx)) {
       errors.push({ message: 'That email address is invalid' })
     }
 
