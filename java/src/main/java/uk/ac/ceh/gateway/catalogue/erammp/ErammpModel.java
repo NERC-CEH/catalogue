@@ -12,7 +12,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.indexing.solr.WellKnownText;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
-import uk.ac.ceh.gateway.catalogue.model.OnlineLink;
+import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 
 import java.util.Collections;
@@ -33,7 +33,7 @@ public class ErammpModel extends AbstractMetadataDocument implements WellKnownTe
     private List<BoundingBox> boundingBoxes;
     private List<String> outputFormats, sectors, programmingLanguages, operatingSystems, timeSteps;
     private List<ResponsibleParty> contacts;
-    private List<OnlineLink> onlineResources;
+    private List<OnlineResource> onlineResources;
     private List<ErammpModelParameters> inputs;
     private List<ErammpModelParameters> outputs;
     private boolean spatiallyExplicit, calibratedForWales;

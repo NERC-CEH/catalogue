@@ -34,6 +34,8 @@ public class CatalogueMediaTypes {
 
     public static final String INFRASTRUCTURERECORD_JSON_VALUE = "application/vnd.infrastructure+json";
 
+    public static final String METHOD_JSON_VALUE = "application/vnd.method+json";
+
     public static final String GEMINI_XML_SHORT = "gemini";
     public static final String GEMINI_XML_VALUE = "application/x-gemini+xml";
     public static final MediaType GEMINI_XML = parseMediaType(GEMINI_XML_VALUE);

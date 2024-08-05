@@ -16,7 +16,7 @@ import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAP
 public class OnlineResource {
     private static final Pattern GET_CAPABILITIES_URL_PATTERN = Pattern.compile("[?&]request=getcapabilities", CASE_INSENSITIVE);
     private static final Pattern WMS_SERVICE_URL_PATTERN = Pattern.compile("[?&]service=wms", CASE_INSENSITIVE);
-    String url, name, description, function;
+    String url, name, description, function, size;
 
     public enum Type {
         WMS_GET_CAPABILITIES, OTHER
@@ -28,11 +28,13 @@ public class OnlineResource {
         @JsonProperty("url") String url,
         @JsonProperty("name") String name,
         @JsonProperty("description") String description,
-        @JsonProperty("function") String function) {
+        @JsonProperty("function") String function,
+        @JsonProperty("size") String size) {
         this.url = nullToEmpty(url);
         this.name = nullToEmpty(name);
         this.description = nullToEmpty(description);
         this.function = nullToEmpty(function);
+        this.size = nullToEmpty(size);
     }
 
     public Type getType() {

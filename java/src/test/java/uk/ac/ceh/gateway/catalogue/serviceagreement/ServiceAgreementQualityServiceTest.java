@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
-import com.google.common.collect.ImmutableMap;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
@@ -26,9 +25,7 @@ import uk.ac.ceh.gateway.catalogue.quality.CatalogueResults;
 import uk.ac.ceh.gateway.catalogue.quality.MetadataCheck;
 import uk.ac.ceh.gateway.catalogue.quality.Results;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -89,6 +86,20 @@ public class ServiceAgreementQualityServiceTest {
 
         //then
         assertThat(actual, not(empty()));
+    }
+
+    @Test
+    public void checkBasicsMissingTopicCategories() {
+        //given
+        val parsed = JsonPath.parse(getClass().getResourceAsStream("basicsMissingTopicCategories.json"), this.config);
+
+        //when
+        val actual = this.service.checkBasics(parsed);
+
+        //then
+        assertThat(actual, not(empty()));
+        assertThat(actual.size(), equalTo(1));
+        assertThat(actual.get(0).getTest(), containsString("topic categories"));
     }
 
     @Test

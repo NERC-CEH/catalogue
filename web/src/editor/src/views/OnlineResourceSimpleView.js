@@ -1,4 +1,4 @@
-import template from '../templates/OnlineLink'
+import template from '../templates/OnlineResourceSimple'
 import ObjectInputView from './ObjectInputView'
 
 export default ObjectInputView.extend({

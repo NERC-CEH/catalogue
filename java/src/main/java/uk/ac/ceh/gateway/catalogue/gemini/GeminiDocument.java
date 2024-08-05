@@ -90,43 +90,23 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
         this.lineage = serviceAgreement.getLineage();
         this.boundingBoxes = serviceAgreement.getBoundingBoxes();
         this.funding = serviceAgreement.getFunding();
-        this.distributionFormats = Optional.ofNullable(serviceAgreement.getFiles())
-            .map(files -> files.stream()
-                .map(file -> DistributionInfo.builder()
-                    .name(file.getName())
-                    .type(file.getFormat())
-                    .build()
-                )
-                .toList()
-            )
-            .orElse(null);
-        val email = serviceAgreement.getDepositorContactDetails();
         this.responsibleParties = new ArrayList<>();
         this.responsibleParties.add(ResponsibleParty.builder()
             .individualName(serviceAgreement.getDepositorName())
-            .email(email.endsWith("@ceh.ac.uk") ? "enquiries@ceh.ac.uk" : email)
+            .email(convertEmail(serviceAgreement.getDepositorContactDetails()))
             .role("pointOfContact")
             .build()
         );
-        this.responsibleParties.addAll(
-            Optional.ofNullable(serviceAgreement.getAuthors())
-                .orElseGet(ArrayList::new)
-        );
-        this.responsibleParties.addAll(
-            Optional.ofNullable(serviceAgreement.getOwnersOfIpr())
-                .orElseGet(ArrayList::new)
-        );
+        this.responsibleParties.addAll(convertEmails(serviceAgreement.getAuthors()));
+        this.responsibleParties.addAll(convertEmails(serviceAgreement.getOwnersOfIpr()));
         Optional.ofNullable(serviceAgreement.getAvailability())
             .ifPresent(availability -> {
                 this.datasetReferenceDate = DatasetReferenceDate.builder()
                     .releasedDate(LocalDate.parse(availability))
                     .build();
         });
+        this.topicCategories = serviceAgreement.getTopicCategories();
         this.keywordsDiscipline = serviceAgreement.getKeywordsDiscipline();
-        this.keywordsInstrument = serviceAgreement.getKeywordsInstrument();
-        this.keywordsObservedProperty = serviceAgreement.getKeywordsObservedProperty();
-        this.keywordsPlace = serviceAgreement.getKeywordsPlace();
-        this.keywordsProject = serviceAgreement.getKeywordsProject();
         this.keywordsTheme = serviceAgreement.getKeywordsTheme();
         this.keywordsOther = serviceAgreement.getKeywordsOther();
     }
@@ -338,4 +318,14 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             .orElse(0);
     }
 
+    private static @NonNull String convertEmail(@NonNull String email) {
+        return email.endsWith("@ceh.ac.uk") ? "enquiries@ceh.ac.uk" : email;
+    }
+
+    private static @NonNull List<ResponsibleParty> convertEmails(List<ResponsibleParty> parties) {
+        return Stream.ofNullable(parties)
+            .flatMap(List::stream)
+            .map(party -> party.withEmail(convertEmail(party.getEmail())))
+            .toList();
+    }
 }

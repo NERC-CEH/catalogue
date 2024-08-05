@@ -22,7 +22,7 @@ export default EditorView.extend({
       views: [
         new TextOnlyView({
           model: this.model,
-          text: "<h1>EIDC service agreement</h1><p>For more information/guidance about this document see <a href='https://eidc.ac.uk/support/agreement' target='_blank' rel='noopener noreferrer'>https://eidc.ac.uk/deposit/agreement</a></p><p>* Fields indicated by <i class='fa fa-pencil'></i> are required for agreement.</p>"
+          text: "<h1>EIDC service agreement</h1><p>For more information/guidance about this document see <a href='https://eidc.ac.uk/support/agreement' target='_blank' rel='noopener noreferrer'>https://eidc.ac.uk/deposit/agreement</a></p><p>* Fields indicated by <i class='fa fa-pencil'></i> are required for agreement.</p><p>If you have any questions or difficulties, please contact <a href=\"mailto:info@eidc.ac.uk\">info@eidc.ac.uk</a> quoting the Deposit Reference below  </p>"
         }),
 
         new InputView({
@@ -37,6 +37,11 @@ export default EditorView.extend({
           modelAttribute: 'depositorName',
           label: 'Depositor Name',
           required: true
+        }),
+
+        new TextOnlyView({
+          model: this.model,
+          text: 'Please provide a current email address.'
         }),
 
         new InputView({
@@ -64,7 +69,7 @@ export default EditorView.extend({
         new TextOnlyView({
           model: this.model,
           label: 'Title',
-          text: `<p>Provide a brief title that best describes the data resource, <strong>not</strong> the project or activity from which the data were derived. Include references to the subject, spatial and temporal aspects of the data resource. <a href='https://eidc.ac.uk/deposit/metadata/guidance' target='_blank' rel='noopener noreferrer' >Further guidance is available on our website</a>.</p>
+          text: `<p>Provide a brief title that best describes the data resource, <strong>not</strong> the project or activity from which the data were derived. Include references to the subject, spatial and temporal aspects of the data resource, if applicable. <a href='https://eidc.ac.uk/deposit/metadata/guidance' target='_blank' rel='noopener noreferrer' >Further guidance is available on our website</a>.</p>
 `,
           required: true
         }),
@@ -77,9 +82,9 @@ export default EditorView.extend({
         new TextOnlyView({
           model: this.model,
           label: 'Authors',
-          text: `<p>List authors below in the order in which they will appear in the citation.</p>
-<p>Author's names must be in the format <code>Surname &laquo;comma&raquo; Initial(s)</code>. For example, <code>Smith, K.P.</code> <strong>not</strong> <code>Kim P. Smith</code></p>
-<p>Authors' details will be published in a public data catalogue and held in EIDC systems.  UK law requires us to inform all individuals listed that they are being proposed as an author.  We therefore require a current, valid email address (or phone number) for all living authors.  Those without valid contact details are not eligible for authorship.  Please see our <a href='http://eidc.ceh.ac.uk/policies/privacy' target='_blank' rel='noopener noreferrer'>Privacy Notice</a> for further information</p>\
+          text: `<p>List authors of the dataset below in the order in which they will appear in the citation.</p>
+<p>Authors' names must be in the format <code>Surname, Initial(s)</code>. For example, <code>Smith, K.P.</code> <strong>not</strong> <code>Kim P. Smith</code></p>
+<p>Authors' details will be published in a public data catalogue and held in EIDC systems.  UK law requires us to inform all individuals listed that they are being proposed as an author.  We therefore require a current, valid email address for all living authors.  Those without valid contact details are not eligible for authorship.  Please see our <a href='http://eidc.ceh.ac.uk/policies/privacy' target='_blank' rel='noopener noreferrer'>Privacy Notice</a> for further information</p>\
 `,
           required: true
         }),
@@ -111,6 +116,12 @@ export default EditorView.extend({
           rows: 3
         }),
 
+        new TextOnlyView({
+          model: this.model,
+          text: `<p>This is the total number of <strong>data</strong> files being provided</p>
+`
+        }),
+
         new InputView({
           model: this.model,
           modelAttribute: 'fileNumber',
@@ -122,8 +133,8 @@ export default EditorView.extend({
           model: this.model,
           label: 'Files',
           text: `\
-<p>List the files to be deposited below - filenames must not include any spaces or special characters</p>
-<p>If there are a too many files to list separately, you can specify a naming convention below <strong>instead</strong>. (If doing so, please also indicate the total size of the deposit (e.g. 500Gb).)</p>\
+<p>List the files to be deposited below - filenames must not include any spaces or special characters other than hyphens or underscores.</p>
+<p>If there are a too many files to list separately, you can specify a naming convention below instead.</p>\
 `
         }),
 
@@ -145,7 +156,9 @@ export default EditorView.extend({
         new TextOnlyView({
           model: this.model,
           label: 'Naming convention',
-          text: `<p>Specify a naming convention <strong>only</strong> if there are too many files to list individually.  Please also indicate the total size of the deposit (e.g. 500Gb).</p>
+          text: `\
+<p>Please describe a convention, or multiple conventions, that cover any files to be deposited not described in the previous field. Indicate sizes (or a size range) for each file covered by the convention and also the total size of the files covered by the naming convention.</p>
+<p>Example: 200 files CP_&lt;REGION&gt;_MInv_&lt;determinandLabel&gt;Stats_&lt;startDate-endDate&gt;.csv. Where &lt;REGION&gt; is the Region code: &lt;startDate-endDate&gt; correspond to date format YYYYMMDD-YYYYMMDD and &lt;determinandlLabel&gt; is the chemical determinand name. Size range: 2-2.5 MB Total size: 443.1 MB</p>\
 `
         }),
 
@@ -159,6 +172,7 @@ export default EditorView.extend({
           model: this.model,
           text: `\
 <p>Data Transfer</p>
+<p>Deposits containing individual files larger than 2 GB or with a high total number of files (e.g. >2000) are not suitable for uploading via our catalogue tool, please indicate a cloud method of transfer.</p>
 \
 `
         }),
@@ -178,7 +192,7 @@ export default EditorView.extend({
         new TextOnlyView({
           model: this.model,
           label: 'Data Category',
-          text: `<p>If the data are wholly or partly funded by NERC, the data must be categorised as either <strong>Environmental Data</strong> or <strong>Information Product</strong>.</p><p>Environmental data are '<i>individual items or records ... obtained by measurement, observation or modelling of the natural world... including all necessary calibration and quality control. This includes data generated through complex systems, such as ... models, including the model code used to produce the data.</i>' </p><p>Information Products are '<i>created by adding a level of intellectual input that refines or adds value to data through interpretation and/or combination with other data</i>'.</p>
+          text: `<p>If the data are wholly or partly funded by NERC, the data must be categorised as either <strong>Environmental Data</strong> or <strong>Information Product</strong>.</p><p>Environmental data are '<i>individual items or records ... obtained by measurement, observation or modelling of the natural world. This includes data generated through complex systems, such as ... models, including the model code used to produce the data.</i>' </p><p>Information Products are '<i>created by adding a level of intellectual input that refines or adds value to data through interpretation and/or combination with other data</i>'.</p>
 `,
           required: true
         }),
@@ -198,8 +212,8 @@ export default EditorView.extend({
         new TextOnlyView({
           model: this.model,
           label: 'Supporting documents',
-          text: `<p>Please provide the title and file extension of document(s) you will provide to enable re-use of the data (see <a href="https://eidc.ac.uk/deposit/supportingDocumentation">https://eidc.ac.uk/deposit/supportingDocumentation</a>).</p>
-<p>Describe the content of the documentation to be supplied. All mandatory elements must be provided across the supporting documents, but not necessarily all in the same one.</p>
+          text: `<p>Please provide the title and file extension of document(s), ensuring names contain no special characters with the exception of hyphens or underscores, you will provide to enable re-use of the data (see <a href="https://eidc.ac.uk/deposit/supportingDocumentation">https://eidc.ac.uk/deposit/supportingDocumentation</a>).</p>
+<p>Describe the content of the documentation to be supplied. All mandatory elements must be provided, but not necessarily in a single document.</p>
 `,
           required: true
         }),
@@ -234,6 +248,14 @@ export default EditorView.extend({
           ObjectInputView: EndUserLicenceView
         }),
 
+        new TextOnlyView({
+          model: this.model,
+          text: `
+<p>Intellectual property rights.</p>
+<p>This is usually the organisation to which the grant is awarded and will be specified in the grant/funding conditions. If no other organisation is specified, IPR should default to the funder.</p>
+`
+        }),
+
         new ParentView({
           model: this.model,
           ModelType: RightsHolder,
@@ -259,6 +281,11 @@ export default EditorView.extend({
           typeAttribute: 'date'
         }),
 
+        new TextOnlyView({
+          model: this.model,
+          text: 'Please specify any additional constraints on use of the data resource required.'
+        }),
+
         new TextareaView({
           model: this.model,
           modelAttribute: 'useConstraints',
@@ -277,7 +304,7 @@ export default EditorView.extend({
           text: `<p>All environmental data deposited into the EIDC are subject to the requirements of the <a href='https://nerc.ukri.org/research/sites/environmental-data-service-eds/policy/' target='_blank' rel='noopener noreferrer'>NERC Data Policy.</a></p>
 <p>By depositing data, you confirm that the data is compliant with the provisions of UK data protection laws.</p>
 <p>Data and supporting documentation should not contain names, addresses or other personal information relating to 'identifiable natural persons'.  Discovery metadata (the catalogue record) may contain names and contact details of the authors of this data (<a href='https://eidc.ac.uk/policies/retentionPersonalData' target='_blank' rel='noopener noreferrer'>see our policy on retention and use of personal data</a>).</p>
-<p>If other policies/legislation applies, please specify below.</p>\
+<p>If other policies or legislation apply, please specify below.</p>\
 `
         }),
 
@@ -340,7 +367,8 @@ export default EditorView.extend({
           model: this.model,
           label: 'Superseding existing data',
           text: `
-<p>If the data is superseding an existing dataset held by the EIDC, please specify and explain why it is to be replaced. Include details of any errors found.</p>
+<p>Please note, superseding is only available where errors have been discovered in a datasets or a dataset is being extended with new data and the replacement duplicates the previous version entirely.</p>
+<p>e.g. Metadata ID of the dataset to be replaced: 2e3bec6e-1e62-42d5-a221-016d0ad447d9. Reason for superseding the dataset: incorrectly calibrated instrument Or Addition of two more years’ data.</p>
 `
         }),
 
@@ -350,10 +378,19 @@ export default EditorView.extend({
           rows: 5
         }),
 
+        new TextOnlyView({
+          model: this.model,
+          label: 'Related Data Holdings',
+          text: `
+<p>Please identify any related data resources already curated by, or being deposited with, the EIDC that you wish to link your data resource to, and the nature of the relationship.
+Details of relationships we can accommodate are available at: <a href='eidc.ac.uk/metadata/relationships' target='_blank' rel='noopener noreferrer'>eidc.ac.uk/metadata/relationships</a></p>
+<p>e.g. Related data resource: 2e3bec6e-1e62-42d5-a221-016d0ad447d9. Relationship: uses.</p>
+`
+        }),
+
         new TextareaView({
           model: this.model,
           modelAttribute: 'relatedDataHoldings',
-          label: 'Related Data Holdings',
           rows: 5
         }),
 
@@ -378,8 +415,15 @@ export default EditorView.extend({
       views: [
         new TextOnlyView({
           model: this.model,
+          text: `<p>A list of words/phrases that will help users to find your data.</p>
+<p>These may be discipline-specific but can also be geographical (e.g. 'hydrology', 'soil chemistry', 'Hampshire').</p>
+<p>You can add multiple keywords under each category using the add button.</p></br>\
+`
+        }),
+        new TextOnlyView({
+          model: this.model,
           label: 'ISO 19115 topic categories',
-          text: `<p>Please note these are very broad themes required by the metadata standard and should not be confused with science topics.</p>
+          text: `<p>Please note these are very broad themes required by the ISO 19115 metadata standard and should not be confused with science topics. If its not clear which category your dataset fits into, please choose the closest or contact EIDC.</p>
 <p>Multiple topic categories are allowed - please include all that are pertinent.  For example, "<i>Estimates of topsoil invertebrates</i>" = Biota <strong>and</strong> Environment <strong>and</strong> Geoscientific Information.</p>\
 `,
           required: true
@@ -393,7 +437,7 @@ export default EditorView.extend({
         new TextOnlyView({
           model: this.model,
           label: 'Science topic',
-          text: 'These are used to populate the topic facet in the search interface - try to include at least one.',
+          text: 'These are broad categories that are used to populate the catalogue\'s topic search filter. Try to include at least one ',
           required: true
         }),
         new ParentView({
@@ -420,8 +464,9 @@ export default EditorView.extend({
         new TextOnlyView({
           model: this.model,
           label: 'Places',
-          text: `<p>Controlled keywords describing geographic places pertinent to this resource.</p>
+          text: `<p>Keywords describing geographic places pertinent to this resource.</p>
 <p>For example, named countries/regions in which the research was conducted.</p>\
+<p>Please note our currently supported vocabularies do not include geographic locations, therefore please use the plain text keyword field.</p>\
 `,
           required: true,
           className: 'hidden'
@@ -463,6 +508,14 @@ export default EditorView.extend({
         }),
         new TextOnlyView({
           model: this.model,
+          text: `<p>Custom keywords can be added either as plain text or as controlled terms from a vocabulary.</p>
+<p><strong>Adding plain text:</strong>  Simply type the keyword in the box labelled "keyword".</p>\
+<p><strong>Adding controlled terms using the vocabulary lookup:</strong> We support lookup of terms from the vocabularies listed here. Tick the names of the vocabularies you want to search and then start typing a keyword in the search box (where it says “Start typing to search controlled vocabularies”). If there is a match for your search, a list of candidate terms will be displayed. You can then click on the term you want to add.</p>\
+<p><strong>Adding controlled terms without using the lookup:</strong> If you want to add a controlled term from a vocabulary that isn't included in the catalogue, add the keyword's uri and its label to the appropriate boxes.</p>\
+`
+        }),
+        new TextOnlyView({
+          model: this.model,
           label: 'Other keywords',
           text: 'All other keywords not described elsewhere.',
           required: true
@@ -487,7 +540,7 @@ export default EditorView.extend({
 <p>Data resources deposited with the EIDC have an entry in the EIDC data catalogue, enabling users to find and access them. Please provide the following information to help complete the catalogue record. <a href='https://eidc.ac.uk/deposit/metadata/guidance' target='_blank' rel='noopener noreferrer' >Further guidance is available on our website</a>.</p>
 <p><em>Please note, this information is not fixed and may be subject to change and improvement over time</em></p>
 <p>The description should describe the data resource in question, NOT the project/activity which produced it.</p>
-<p>The description is an 'executive summary' that allows the reader to determine the relevance and usefulness of the resource.  The text should be concise but should contain sufficient detail to allow the reader to ascertain rapidly the scope and limitations of the resource.</p>
+<p>The description is an 'executive summary' that allows the reader to determine the relevance and usefulness of the resource.  The text should be concise but contain sufficient detail to allow the reader to ascertain rapidly the scope and limitations of the resource.</p>
 <p>Write in plain English; in other words, write complete sentences rather than fragments.  It is recommended that the abstract is organised using the "What, Where, When, How, Why, Who" structure.</p>\
 `,
           required: true
@@ -503,8 +556,9 @@ export default EditorView.extend({
           model: this.model,
           label: 'Lineage',
           text: `\
-<p>Information about the source data used in the construction of this data resource.</p>
-<p>Quality assessments and enhancement processes applied to the data resource can also be noted and summarised here.</p>\
+<p>The lineage should describe how the data came into existence and the stages it has passed through before being provided to the data centre.</p>
+<p>Briefly describe how the data were generated and any QA steps</p>\
+<p><a href='https://eidc.ac.uk/deposit/metadata/guidance' target='_blank' rel='noopener noreferrer'>See further guidance</a></p>\
 `,
           required: true
         }),
@@ -514,11 +568,19 @@ export default EditorView.extend({
           rows: 10
         }),
 
+        new TextOnlyView({
+          model: this.model,
+          label: 'Area of Study (if relevant)',
+          text: `\
+<p>Please click Add and select the appropriate option. Once selected, the area can be customized by providing latitude and longitude coordinates defining a bounding box that encompasses the location of study.</p>
+<p>Clicking on the show/update map icon (little globe) will also allow you to manually draw a bounding box.</p>\
+`
+        }),
+
         new PredefinedParentView({
           model: this.model,
           modelAttribute: 'boundingBoxes',
           ModelType: BoundingBox,
-          label: 'Area of Study',
           ObjectInputView: BoundingBoxView,
           multiline: true,
           predefined: {

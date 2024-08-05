@@ -35,6 +35,7 @@ import uk.ac.ceh.gateway.catalogue.elter.ElterDocument;
 import uk.ac.ceh.gateway.catalogue.erammp.ErammpDatacube;
 import uk.ac.ceh.gateway.catalogue.erammp.ErammpModel;
 import uk.ac.ceh.gateway.catalogue.infrastructure.InfrastructureRecord;
+import uk.ac.ceh.gateway.catalogue.model.MethodRecord;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.imp.CaseStudy;
 import uk.ac.ceh.gateway.catalogue.imp.Model;
@@ -87,6 +88,7 @@ public class WebConfig implements WebMvcConfigurer {
         val erammpDatacube = new Object2TemplatedMessageConverter<>(ErammpDatacube.class, freemarkerConfiguration);
         val erammpModel = new Object2TemplatedMessageConverter<>(ErammpModel.class, freemarkerConfiguration);
         val infrastructureRecord = new Object2TemplatedMessageConverter<>(InfrastructureRecord.class, freemarkerConfiguration);
+        val methodRecord = new Object2TemplatedMessageConverter<>(MethodRecord.class, freemarkerConfiguration);
         val errorResponse = new Object2TemplatedMessageConverter<>(ErrorResponse.class, freemarkerConfiguration);
         val facility = new Object2TemplatedMessageConverter<>(Facility.class, freemarkerConfiguration);
         val gemini = new Object2TemplatedMessageConverter<>(GeminiDocument.class, freemarkerConfiguration);
@@ -137,6 +139,7 @@ public class WebConfig implements WebMvcConfigurer {
             erammpDatacube,
             erammpModel,
             infrastructureRecord,
+            methodRecord,
             errorResponse,
             facility,
             history,
