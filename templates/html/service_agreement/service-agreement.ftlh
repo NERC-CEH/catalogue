@@ -14,7 +14,7 @@
 
             <div class="title">
                 <div class="logo"></div>
-                <h1>EIDC Deposit Agreement for ${title!"NOT PROVIDED"} (Status: ${getStateTitle()?upper_case})</h1>
+                <h1>EIDC Service Agreement for ${title!"NOT PROVIDED"} (Status: ${getStateTitle()?upper_case})</h1>
             </div>
 
             <div class="text-right">
@@ -106,7 +106,8 @@
                     <h3>Your responsibilities:</h3>
                     <ul>
                         <li>You provide assurances that you are entitled to deposit the data resource in the EIDC and that the agreement of all parties who may have an interest in the resource has been obtained.</li>
-                        <li>You confirm that the resource is not already available elsewhere.</li>
+                        <li>You confirm that you have sufficient knowledge of the data resource to deposit it with the EIDC, being either a named author of the data resource, or with written confirmation from the lead author of the data resource of your suitability to act as depositor</li>
+                        <li>You confirm that this is the reference copy of the resource and that you will cite this resource including the NERC DOI it will be assigned in any subsequent publications</li>
                         <li>You agree to supply sufficient supporting information (metadata) to enable discovery, management and reuse of the data. </li>
                         <li>You ensure that in the case of research data with human subjects that consents collected are ethically and legally appropriate and sufficient to allow deposit of the resource.</li>
                         <li>You agree to notify the EIDC promptly of any copyright, confidentiality, privacy, data protection, defamation or similar issues pertaining to the data.</li>
