@@ -289,6 +289,11 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
             }
         });
         val licences = parsed.read("$.useConstraints[*][?(@.code == 'license')]", typeRefStringString);
+
+        if (resourceStatusIsUnknown(parsed)) {
+            toReturn.add(new MetadataCheck("Resource status is missing", ERROR));
+        }
+
         if (licences == null || licences.isEmpty()) {
             toReturn.add(new MetadataCheck("Licence is missing", ERROR));
         } else if (licences.size() > 1) {
@@ -679,6 +684,11 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
     boolean resourceStatusIsAvailable(DocumentContext parsed) {
         val resourceStatus = parsed.read("$.resourceStatus", String.class);
         return resourceStatus != null && resourceStatus.equals("Available");
+    }
+
+    boolean resourceStatusIsUnknown(DocumentContext parsed) {
+        val resourceStatus = parsed.read("$.resourceStatus", String.class);
+        return resourceStatus != null && resourceStatus.equals("Unknown");
     }
 
     boolean resourceStatusIsEmbargoed(DocumentContext parsed) {

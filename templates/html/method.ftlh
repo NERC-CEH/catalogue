@@ -110,14 +110,12 @@
 
           </div>
           <div class="col2">
-
-
           </div>
+        </div>
       </div>
     </div>
 
   </div>
-
 </@skeleton.master>
 
 <#--macros -->

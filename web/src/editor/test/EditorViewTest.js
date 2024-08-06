@@ -100,7 +100,7 @@ describe('EditorView', () => {
     view.delegateEvents()
 
     // when
-    view.$('#editorNav li').trigger('click')
+    view.$('.editor-nav span').trigger('click')
 
     // then
     expect(view.direct).toHaveBeenCalled()

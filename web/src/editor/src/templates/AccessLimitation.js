@@ -15,6 +15,7 @@ export default _.template(`
     <option value="in-progress">IN PROGRESS - This resource is not yet available as is still being completed</option>
     <option value="superseded">SUPERSEDED - This resource has been withdrawn and has been replaced by an updated version</option>
     <option value="withdrawn">WITHDRAWN - This resource has been withdrawn but has not been replaced</option>
+    <option value="deleted">DELETED - This resource has been permanently deleted</option>
 </optgroup>
 <optgroup label="Restricted">
     <option value="public access limited according to Article 13(1)(h) of the INSPIRE Directive">ACCESS RESTRICTED as release would adversely affect the protection of the environment (e.g. the location of rare species)</option>
