@@ -98,8 +98,8 @@
               <#list metricsReport![] as record>
                 <tr>
                   <td>${record["document"]}</td>
-                  <td>${record["doc_title"]}</td>
-                  <td>${record["record_type"]}</td>
+                  <td>${record["docTitle"]}</td>
+                  <td>${record["recordType"]}</td>
                   <td>${record["views"]}</td>
                   <td>${record["downloads"]}</td>
                 </tr>

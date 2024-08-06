@@ -22,7 +22,7 @@ public class MetricsReportController {
         this.metricsService = metricsService;
     }
 
-    @GetMapping(produces = MediaType.TEXT_HTML_VALUE)
+    @GetMapping(produces = {MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public MetricsReportModel getMetricsReport(
         @RequestParam(required = false) String startDate,
         @RequestParam(required = false) String endDate,
