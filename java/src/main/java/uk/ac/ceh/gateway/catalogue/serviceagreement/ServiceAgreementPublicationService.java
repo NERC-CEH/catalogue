@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.publication;
+package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -12,9 +12,11 @@ import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.model.PublicationServiceException;
-import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreement;
-import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreementException;
-import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreementService;
+import uk.ac.ceh.gateway.catalogue.publication.PublicationService;
+import uk.ac.ceh.gateway.catalogue.publication.StateResource;
+import uk.ac.ceh.gateway.catalogue.publication.Workflow;
+import uk.ac.ceh.gateway.catalogue.publication.Transition;
+import uk.ac.ceh.gateway.catalogue.publication.PublishingRole;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -27,6 +29,7 @@ public class ServiceAgreementPublicationService implements PublicationService {
     private final GroupStore<CatalogueUser> groupStore;
     private final Workflow workflow;
     private final String basePath = "service-agreement";
+    @ToString.Exclude
     private final ServiceAgreementService serviceAgreementService;
 
     public ServiceAgreementPublicationService(
