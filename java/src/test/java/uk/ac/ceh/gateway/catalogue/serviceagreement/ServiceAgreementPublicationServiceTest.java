@@ -12,7 +12,6 @@ import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.config.ServiceAgreementPublicationConfig;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.publication.*;
-import uk.ac.ceh.gateway.catalogue.publication.ServiceAgreementPublicationService;
 
 import java.io.IOException;
 import java.util.Collections;

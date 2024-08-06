@@ -41,7 +41,11 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
         WebRequest request
     ) {
         String message = (body != null) ? body.toString() : statusCode.toString();
-        logger.error(message, ex);
+        if(ex instanceof PermissionDeniedException) {
+            logger.error("Permission denied: " + ex.getMessage());
+        } else {
+            logger.error(message, ex);
+        }
         return new ResponseEntity<>(new ErrorResponse(message), headers, statusCode);
     }
 
