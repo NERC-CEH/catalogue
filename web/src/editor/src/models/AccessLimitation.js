@@ -8,9 +8,12 @@ export default Backbone.Model.extend({
   },
 
   uris: {
-    'Registration is required to access this data': 'https://www.eidc.ac.uk/help/faq/registration',
-    'no limitations to public access': 'http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/noLimitations',
-    embargoed: 'https://www.eidc.ac.uk/help/faq/embargos',
+    'Registration is required to access this data': 'http://purl.org/coar/access_right/c_16ec',
+    'no limitations to public access': 'http://purl.org/coar/access_right/c_abf2',
+    embargoed: 'http://purl.org/coar/access_right/c_f1cf',
+    superseded: 'http://purl.org/coar/access_right/c_14cb',
+    withdrawn: 'http://purl.org/coar/access_right/c_14cb',
+    deleted: 'http://purl.org/coar/access_right/c_14cb',
     'public access limited according to Article 13(1)(a) of the INSPIRE Directive': 'http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/INSPIRE_Directive_Article13_1a',
     'public access limited according to Article 13(1)(b) of the INSPIRE Directive': 'http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/INSPIRE_Directive_Article13_1b',
     'public access limited according to Article 13(1)(c) of the INSPIRE Directive': 'http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/INSPIRE_Directive_Article13_1c',

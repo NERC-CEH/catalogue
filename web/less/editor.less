@@ -40,6 +40,7 @@
 }
 
 .editor {
+    --_requiredIndicator: rgb(200, 0, 0);
     display: flex;
     flex-direction: column;
     min-height: 100dvh;
@@ -55,7 +56,7 @@
             padding-inline: 1em;
 
             span.active {
-               font-weight:600;
+                font-weight: 600;
             }
 
             span:not(.active) {
@@ -247,6 +248,25 @@
                 span:before {
                     content: "show " !important;
                 }
+            }
+        }
+
+        .requiredInfo {
+            color: var(--_requiredIndicator);
+            font-weight: 600;
+        }
+
+        .required:not(:has(.child)) {
+            label {
+                color: var(--_requiredIndicator);
+                &:before {
+                    content: "*"
+                }
+            }
+
+            input,
+            textarea {
+                border-bottom: 2px var(--_requiredIndicator) solid !important;
             }
         }
 

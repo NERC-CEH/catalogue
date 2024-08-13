@@ -13,8 +13,13 @@
         <div class="container" role="main">
 
             <div class="title">
-                <div class="logo"></div>
-                <h1>EIDC Service Agreement for ${title!"NOT PROVIDED"} (Status: ${getStateTitle()?upper_case})</h1>
+                <div class="eidcLogo">
+                  <img src="/static/img/cataloguelogo/eidc.png">
+                </div>
+                <h1>
+                  EIDC Service Agreement for ${title!"NOT PROVIDED"}
+                  <span class="saStatus saStatus-${getStateTitle()?lower_case}">${getStateTitle()?upper_case}</span>
+                </h1>
             </div>
 
             <div class="text-right">
@@ -162,7 +167,7 @@
                     <#if authors?has_content && authors?size gt 0 >
                         <@displayAuthors/>
                     <#else>
-                    <div class="alert alert--error">NO AUTHORS LISTED</div>
+                    <div class="text-danger">NO AUTHORS LISTED</div>
                     </#if>
                 </div>
             </div>
@@ -187,17 +192,17 @@
                                 <div class="supportingDoc">
                                     <div class="supportingDoc__name">
                                         <#if doc.name?? && doc.format??>
-                                            <i>${doc.name}.${doc.format}</i>
+                                          ${doc.name}.${doc.format}
                                         <#else>
-                                           <span class="alert alert--error">missing</span>
+                                          <span class="text-danger">missing</span>
                                         </#if>
                                     </div>
                                     <div class="supportingDoc__content">
                                         <ul>
                                             <#list doc.content![] as kind>
-                                                <li>${doc.contentTypeToText(kind)}</li>
+                                              <li>${doc.contentTypeToText(kind)}</li>
                                             <#else>
-                                                <span class="alert alert--error">missing</span>
+                                              <span class="text-danger">missing</span>
                                             </#list>
                                         </ul>
                                     </div>
@@ -291,9 +296,9 @@
                 <tbody>
                 <#items as author>
                     <tr>
-                        <td><#if author.individualName?has_content >${author.individualName}<#else><span class="alert alert--error">missing</span></#if></td>
-                        <td><#if author.organisationName?has_content >${author.organisationName}<#else><span class="alert alert--error">missing</span></#if></td>
-                        <td><#if author.email?has_content>${author.email}<#else><span class="alert alert--error">missing</span></#if></td>
+                        <td><#if author.individualName?has_content >${author.individualName}<#else><span class="text-danger">missing</span></#if></td>
+                        <td><#if author.organisationName?has_content >${author.organisationName}<#else><span class="text-danger">missing</span></#if></td>
+                        <td><#if author.email?has_content>${author.email}<#else><span class="text-danger">missing</span></#if></td>
                         <td><#if author.nameIdentifier?has_content >${author.nameIdentifier}<#else><small class="text-muted">Not provided</small></#if></td>
                     </tr>
                 </#items>
@@ -318,9 +323,9 @@
             <tbody>
             <#items as file>
                 <tr>
-                    <td><#if file.name?has_content>${file.name}<#else><span class="alert alert--error">missing</span></#if></td>
-                    <td><#if file.format?has_content>${file.format}<#else><span class="alert alert--error">missing</span></#if></td>
-                    <td><#if file.size?has_content>${file.size}<#else><span class="alert alert--error">missing</span></#if></td>
+                    <td><#if file.name?has_content>${file.name}<#else><span class="text-danger">missing</span></#if></td>
+                    <td><#if file.format?has_content>${file.format}<#else><span class="text-danger">missing</span></#if></td>
+                    <td><#if file.size?has_content>${file.size}<#else><span class="text-danger">missing</span></#if></td>
                 </tr>
             </#items>
             </tbody>

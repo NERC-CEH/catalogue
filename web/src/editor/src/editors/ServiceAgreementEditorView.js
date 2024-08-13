@@ -22,7 +22,7 @@ export default EditorView.extend({
       views: [
         new TextOnlyView({
           model: this.model,
-          text: "<h1>EIDC service agreement</h1><p>For more information/guidance about this document see <a href='https://eidc.ac.uk/support/agreement' target='_blank' rel='noopener noreferrer'>https://eidc.ac.uk/deposit/agreement</a></p><p>* Fields indicated by <i class='fa fa-pencil'></i> are required for agreement.</p><p>If you have any questions or difficulties, please contact <a href=\"mailto:info@eidc.ac.uk\">info@eidc.ac.uk</a> quoting the Deposit Reference below  </p>"
+          text: "<h1>EIDC service agreement</h1><p>For more information/guidance about this document see <a href='https://eidc.ac.uk/support/agreement' target='_blank' rel='noopener noreferrer'>https://eidc.ac.uk/deposit/agreement</a></p><p class='requiredInfo'>Required fields are indicated by *</p><p>If you have any questions or difficulties, please contact <a href=\"mailto:info@eidc.ac.uk\">info@eidc.ac.uk</a> quoting the Deposit Reference below  </p>"
         }),
 
         new InputView({
@@ -76,7 +76,8 @@ export default EditorView.extend({
 
         new InputView({
           model: this.model,
-          modelAttribute: 'title'
+          modelAttribute: 'title',
+          required: true
         }),
 
         new TextOnlyView({
@@ -200,7 +201,8 @@ export default EditorView.extend({
         new SingleObjectView({
           model: this.model,
           modelAttribute: 'dataCategory',
-          ObjectInputView: CategoryView
+          ObjectInputView: CategoryView,
+          required: true
         })
       ]
     },
@@ -549,7 +551,8 @@ Details of relationships we can accommodate are available at: <a href='eidc.ac.u
         new TextareaView({
           model: this.model,
           modelAttribute: 'description',
-          rows: 12
+          rows: 12,
+          required: true
         }),
 
         new TextOnlyView({
@@ -565,7 +568,8 @@ Details of relationships we can accommodate are available at: <a href='eidc.ac.u
         new TextareaView({
           model: this.model,
           modelAttribute: 'lineage',
-          rows: 10
+          rows: 10,
+          required: true
         }),
 
         new TextOnlyView({
