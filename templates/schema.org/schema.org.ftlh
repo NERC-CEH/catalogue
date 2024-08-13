@@ -69,7 +69,7 @@
     </#if>
 
       <#if resourceStatus != "Deleted">
-        <#if description?has_content>"description":"${description}", </#if>
+        <#if description?has_content>"description":"${description?replace("\n", " ")}", </#if>
 
         <#if alternateTitles?has_content>
           "alternateName":[
