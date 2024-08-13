@@ -2,10 +2,10 @@
 
 <@skeleton.master title="Metrics Report" catalogue=catalogues.defaultCatalogue()>
   <div id="metrics-report" class="container">
-    <h1 class="text-center">${catalogue?upper_case} Metrics Report</h1>
+    <h1>${catalogue?upper_case} Metrics Report</h1>
     <form id="metrics-form" action="/${catalogue}/metrics">
+      <h2>Search Criteria</h2>
       <fieldset>
-        <legend>Search Criteria</legend>
         <div class="row">
           <div class="col-md-6">
             <div class="form-group">
@@ -26,8 +26,8 @@
               <label for="orderBy">Order By</label>
               <select id="orderBy" name="orderBy" class="form-control">
                 <option value="docId">Document ID</option>
+                <option value="downloads" selected>Downloads</option>
                 <option value="views">Views</option>
-                <option value="downloads">Downloads</option>
               </select>
             </div>
           </div>
@@ -36,7 +36,7 @@
               <label for="ordering">Ordering</label>
               <select id="ordering" name="ordering" class="form-control">
                 <option value="ascending">Ascending</option>
-                <option value="descending">Descending</option>
+                <option value="descending" selected>Descending</option>
               </select>
             </div>
           </div>
@@ -70,44 +70,41 @@
               <input type="number" id="noOfRecords" name="noOfRecords" value="100" class="form-control"/>
             </div>
           </div>
-          <div class="col-md-6">
-            <div class="form-group">
-              <button type="submit" class="btn btn-primary">Submit</button>
-            </div>
+        </div>
+        <div class="row">
+          <div class="col-md-10">
+            <button type="submit" class="btn btn-primary">&nbsp; &nbsp; &nbsp;OK&nbsp; &nbsp; &nbsp;</button>
           </div>
         </div>
       </fieldset>
     </form>
 
-
     <div id="metrics-results-container">
-      <fieldset id="metrics-result">
-        <legend>Results</legend>
-        <div class="table-responsive">
-          <table id="metrics-table" class="table table-striped table-bordered">
-            <thead>
+      <h2>Results</h2>
+      <div class="table-responsive">
+        <table id="metrics-table" class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Document ID</th>
+              <th>Title</th>
+              <th>Type</th>
+              <th>Views</th>
+              <th>Downloads</th>
+            </tr>
+          </thead>
+          <tbody>
+            <#list metricsReport![] as record>
               <tr>
-                <th>Document ID</th>
-                <th>Title</th>
-                <th>Type</th>
-                <th>Views</th>
-                <th>Downloads</th>
+                <td>${record["document"]}</td>
+                <td>${record["docTitle"]}</td>
+                <td>${record["recordType"]}</td>
+                <td>${record["views"]}</td>
+                <td>${record["downloads"]}</td>
               </tr>
-            </thead>
-            <tbody>
-              <#list metricsReport![] as record>
-                <tr>
-                  <td>${record["document"]}</td>
-                  <td>${record["docTitle"]}</td>
-                  <td>${record["recordType"]}</td>
-                  <td>${record["views"]}</td>
-                  <td>${record["downloads"]}</td>
-                </tr>
-              </#list>
-            </tbody>
-          </table>
-        </div>
-      </fieldset>
-    </div>
+            </#list>
+          </tbody>
+        </table>
+      </div>
   </div>
+</div>
 </@skeleton.master>
