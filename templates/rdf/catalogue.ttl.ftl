@@ -1,7 +1,7 @@
 <#ftl output_format="plainText">
 <#compress>
 <#include "_prefixes.ftl">
-BASE <${baseUri}/id/>
+BASE <${baseUri}/>
 PREFIX : <${baseUri}/id/>
 
 <${catalogue}/documents>

@@ -32,8 +32,6 @@
             </span>
             download<#if totalDownloads != 1>s</#if>
           </div>
-        <#else>
-          <div class="metric"><span>83 <a href=".metricsInfo"data-toggle="collapse" aria-controls="metricsInfo" area-expanded="false" role="button">*</a></span>dowenloads</div>
         </#if>
         <#if totalViews?? && totalViews gt 0 >
           <div class="metric">
@@ -43,8 +41,6 @@
             </span>
             view<#if totalViews != 1>s</#if>
           </div>
-        <#else>
-          <div class="metric"><span>700 <a href=".metricsInfo"data-toggle="collapse" aria-controls="metricsInfo" area-expanded="false" role="button">*</a></span>views</div>
         </#if>
       </div>
 
