@@ -59,6 +59,7 @@ import uk.ac.ceh.gateway.catalogue.serviceagreement.GitRepoServiceAgreementServi
 import uk.ac.ceh.gateway.catalogue.metrics.MetricsService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.DownloadOrderDetailsService;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -108,6 +109,8 @@ class DocumentControllerTest {
     @MockBean private ProfileService profileService;
     @MockBean private MetricsService metricsService;
 
+    private DownloadOrderDetailsService downloadOrderDetailsService = new DownloadOrderDetailsService();
+
     @Autowired private MockMvc mvc;
     @Autowired private Configuration configuration;
 
@@ -136,6 +139,7 @@ class DocumentControllerTest {
         configuration.setSharedVariable("jena", jenaLookupService);
         configuration.setSharedVariable("permission", permissionService);
         configuration.setSharedVariable("profile", profileService);
+        configuration.setSharedVariable("downloadOrderDetails", downloadOrderDetailsService);
     }
 
     private void givenProfileNotActive() {
@@ -331,6 +335,7 @@ class DocumentControllerTest {
         givenUserIsPermittedToView();
         givenMetadataDocument(doc);
         givenCatalogue();
+        givenDefaultCatalogue();
         givenFreemarkerConfiguration();
         givenProfileNotActive();
         givenCodeLookup();
@@ -364,6 +369,7 @@ class DocumentControllerTest {
         givenUserIsPermittedToView();
         givenMetadataDocument(doc);
         givenCatalogue();
+        givenDefaultCatalogue();
         givenFreemarkerConfiguration();
         givenProfileNotActive();
         givenCodeLookup();
