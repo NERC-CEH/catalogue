@@ -36,11 +36,15 @@
 
                   <#if onlineResource.size?has_content>
                     <#if onlineResource.size?number gt 1073741824>
-                      <#assign sizeLabel = 'approx. ' + (onlineResource.size?number / 1073741824)?string["0.##"]  + 'Gb'>
+                      <#assign sizeLabel = 'approx. ' + (onlineResource.size?number / 1073741824)?string["0.#"]  + 'Gb'>
                     <#elseif onlineResource.size?number gt 10485760>
-                       <#assign sizeLabel = 'approx. ' + (onlineResource.size?number / 1048576)?string["0.##"]  + 'Mb'>
+                       <#assign sizeLabel = 'approx. ' + (onlineResource.size?number / 1048576)?string["0.#"]  + 'Mb'>
+                    <#elseif onlineResource.size?number lte 10485760 && onlineResource.size?number gt 5242880>
+                       <#assign sizeLabel = '< 10 Mb'>
+                    <#elseif onlineResource.size?number lte 5242880 && onlineResource.size?number gt 1048576>
+                       <#assign sizeLabel = '< 5 Mb'>
                     <#else>
-                      <#assign sizeLabel = '< 10 Mb'>
+                      <#assign sizeLabel = '< 1 Mb'>
                     </#if>
                   </#if>
 

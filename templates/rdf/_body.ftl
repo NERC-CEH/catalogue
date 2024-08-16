@@ -1,4 +1,4 @@
-<${id}>
+:${id}
   dct:title "<@displayLiteral title />" ;
 
   <#list resourceIdentifiers >
