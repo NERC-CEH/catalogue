@@ -50,7 +50,7 @@
       More information about the dates from which data were collected
       Start dates are different for order manager data and data packager data
       -->
-        <#if !(totalViews?? && totalViews gt 0 ) || (totalDownloads?? && totalDownloads gt 0 )>
+        <#if (totalViews?? && totalViews gt 0 ) || (totalDownloads?? && totalDownloads gt 0 )>
           <#assign
             viewsFrom = "2023-06-01"
             ordersFrom = "2021-11-11"
