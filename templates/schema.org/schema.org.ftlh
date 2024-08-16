@@ -199,10 +199,10 @@
               {
                 "@type":"DataDownload",
                 "contentUrl":"${download.url}"
-                <#if download.url?ends_with(".zip")>,"encodingFormat":"application/zip"</#if>
-                <#if download.url?ends_with(".csv")>,"encodingFormat":"text/csv"</#if>
-                <#if download.url?starts_with("https://data-package.ceh.ac.uk/data/")>,"encodingFormat":"application/zip"</#if>
-                <#if download.url?starts_with("https://catalogue.ceh.ac.uk/datastore")>,"encodingFormat":"text/directory"</#if>
+                <#if download.url?ends_with(".zip")>,"encodingFormat":"application/zip"
+                <#elseif download.url?ends_with(".csv")>,"encodingFormat":"text/csv"
+                <#elseif download.url?starts_with("https://data-package.ceh.ac.uk/data/")>,"encodingFormat":"application/zip"
+                <#elseif download.url?starts_with("https://catalogue.ceh.ac.uk/datastore")>,"encodingFormat":"text/directory"</#if>
               }<#sep>,
               </#items>
             ],
