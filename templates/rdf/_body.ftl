@@ -1,9 +1,7 @@
 :${id}
   dct:title "<@displayLiteral title />" ;
 
-  <#list resourceIdentifiers >
-    dct:identifier <#items as id><#if id.coupledResource?starts_with("http")><${id.coupledResource}><#else>"${id.coupledResource}"</#if><#sep>, </#items> ;
-  </#list>
+  <@identifiers resourceIdentifiers />
 
   <#if datacitable?string=='true' && citation?has_content>
       dct:bibliographicCitation "${citation.authors?join(', ')} (${citation.year?string("0")}). <@displayLiteral citation.title />. ${citation.publisher}. ${citation.url?trim}" ;
@@ -93,3 +91,17 @@
     dct:description "This resource is no longer available please contact the Environmental Information Data Centre for more details" ;
     .
   </#if>
+
+  <#macro identifiers resourceIdentifiers>
+    <#list resourceIdentifiers >
+    dct:identifier <#t>
+      <#items as id>
+        "<#t>
+        <#if id.codeSpace?starts_with("doi")>
+          https://doi.org/<#t>
+        </#if>
+          ${id.code}"<#t>
+      <#sep>,</#sep><#t>
+      </#items> ;<#t>
+    </#list>
+  </#macro>
