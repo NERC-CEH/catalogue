@@ -1,5 +1,9 @@
 <#if metadata.catalogue == "eidc">
 
+  <#assign
+    totalViews = 0
+    totalDownloads = 0>
+
   <#if metrics??>
     <#assign
       totalViews = metrics.totalViews(id)
@@ -14,7 +18,7 @@
     </#if>
   </#if>
 
-  <#if incomingCitations?has_content || (totalDownloads?? && totalDownloads gt 0) || (totalViews?? && totalViews gt 0)>
+  <#if incomingCitations?has_content || totalDownloads gt 0 || totalViews gt 0>
     <div class="usage">
       <div class="metrics">
         <#if incomingCitations?has_content && catalogue.id=="eidc">
@@ -24,7 +28,7 @@
           </div>
           </#if>
         </#if>
-        <#if totalDownloads?? && totalDownloads gt 0 >
+        <#if totalDownloads gt 0 >
           <div class="metric">
             <span>
               ${totalDownloads}
@@ -33,7 +37,7 @@
             download<#if totalDownloads != 1>s</#if>
           </div>
         </#if>
-        <#if totalViews?? && totalViews gt 0 >
+        <#if totalViews gt 0 >
           <div class="metric">
             <span>
               ${totalViews}
@@ -50,7 +54,7 @@
       More information about the dates from which data were collected
       Start dates are different for order manager data and data packager data
       -->
-        <#if (totalViews?? && totalViews gt 0 ) || (totalDownloads?? && totalDownloads gt 0 )>
+        <#if totalViews gt 0  || totalDownloads gt 0 >
           <#assign
             viewsFrom = "2023-06-01"
             ordersFrom = "2021-11-11"
@@ -71,14 +75,15 @@
               <#assign downloadsFrom=datasetReferenceDate.publicationDate >
             </#if>
           </#if>
+
           <div class="metricsInfo collapse">
-            <#if totalViews?? && totalViews gt 0 >
-              View numbers valid from ${viewsFrom?date?string['dd MMMM yyyy']}
+            <#if totalViews gt 0 >
+              <span>View numbers valid from ${viewsFrom?date?string['dd MMMM yyyy']}</span>
             </#if>
-            <#if totalDownloads?? && totalDownloads gt 0  >
-            Download numbers valid from ${downloadsFrom?date?string['dd MMMM yyyy']}
+            <#if totalDownloads gt 0 >
+              <span>Download numbers valid from ${downloadsFrom?date?string['dd MMMM yyyy']}</span>
             </#if>
-            <br>Information prior to this was not collected
+            <span class="small">(information prior to this was not collected)<span>
           </div>
         </#if>
         <#-- END OF more information about the dates -->
