@@ -174,7 +174,10 @@
 
                 <#if isLinkedDoc!="true">
                     <#include "document/_uploadData.ftlh">
-                    <#include "document/_metrics.ftlh">
+
+                    <#if metadata.catalogue == "eidc">
+                      <#include "document/_metrics.ftlh">
+                    </#if>
 
                     <#if resourceStatus?? && resourceStatus != "Unknown">
                       <#if resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'application'>
