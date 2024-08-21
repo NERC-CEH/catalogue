@@ -61,7 +61,7 @@
           ordersFrom = "2021-11-11"
           downloadsFrom = "2024-06-20">
 
-        <#if datasetReferenceDate.publicationDate??>
+        <#if datasetReferenceDate?? && datasetReferenceDate.publicationDate??>
           <#if (datasetReferenceDate.publicationDate)?date gt viewsFrom?date >
             <#assign viewsFrom=datasetReferenceDate.publicationDate >
           </#if>
