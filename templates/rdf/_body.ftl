@@ -47,14 +47,6 @@
     dct:subject <@keywordList allKeywords/> ;
     </#if>
 
-    <#if elterProject?has_content>
-    prov:wasGeneratedBy <@projectList /> ;
-    </#if>
-
-    <#if deimsSites?has_content>
-      prov:atLocation <@deimsList /> ;
-    </#if>
-
     <#if funding?has_content>
     prov:wasGeneratedBy <@fundingList /> ;
     </#if>
@@ -85,8 +77,6 @@
 
     <@keywordDetail allKeywords/>
     <@fundingDetail />
-    <@projectDetail />
-    <@deimsDetail />
   <#else>
     dct:description "This resource is no longer available please contact the Environmental Information Data Centre for more details" ;
     .

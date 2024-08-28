@@ -1,7 +1,7 @@
 import { EditorView, InputView } from '../index'
 import {
   ContactView,
-  KeywordView,
+  KeywordVocabularyView,
   OnlineResourceSimpleView,
   ParentView,
   PredefinedParentView,
@@ -98,7 +98,7 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'keywords',
           label: 'Keywords',
-          ObjectInputView: KeywordView
+          ObjectInputView: KeywordVocabularyView
         }),
 
         new ParentView({

@@ -64,7 +64,7 @@ public class KeywordVocabulariesConfig {
             SolrClient solrClient,
             @Value("${ukceh.sparql.endpoint}") String sparqlEndpoint
             ) {
-        val catalogueIds = List.of("assist", "eidc", "elter", "nm");
+        val catalogueIds = List.of("assist", "eidc", "ukceh", "nm");
         return new SparqlKeywordVocabulary(
                 restTemplate,
                 solrClient,
@@ -73,6 +73,28 @@ public class KeywordVocabulariesConfig {
                 "?uri skos:prefLabel ?label .",
                 "cast",
                 "CAST",
+                catalogueIds
+                );
+            }
+
+    @Profile("server:eidc")
+    @Bean
+    public KeywordVocabulary envThesVocabulary(
+            @Qualifier("sparql") RestTemplate restTemplate,
+            SolrClient solrClient,
+            @Value("${elter.sparql.endpoint}") String sparqlEndpoint
+            ) {
+        val catalogueIds = List.of("eidc", "ukceh");
+        // Filters out deprecated concepts
+        val where = "?uri skos:prefLabel ?label . FILTER NOT EXISTS { ?uri <http://www.w3.org/2002/07/owl#deprecated> true}";
+        return new SparqlKeywordVocabulary(
+                restTemplate,
+                solrClient,
+                sparqlEndpoint,
+                "<http://vocabs.lter-europe.net/EnvThes/>",
+                where,
+                "envThes",
+                "EnvThes",
                 catalogueIds
                 );
             }
@@ -115,28 +137,6 @@ public class KeywordVocabulariesConfig {
                 where,
                 "dukems-sector",
                 "Sectors",
-                catalogueIds
-                );
-            }
-
-    @Profile("server:elter")
-    @Bean
-    public KeywordVocabulary envThesVocabulary(
-            @Qualifier("sparql") RestTemplate restTemplate,
-            SolrClient solrClient,
-            @Value("${elter.sparql.endpoint}") String sparqlEndpoint
-            ) {
-        val catalogueIds = List.of("elter");
-        // Filters out deprecated concepts
-        val where = "?uri skos:prefLabel ?label . FILTER NOT EXISTS { ?uri <http://www.w3.org/2002/07/owl#deprecated> true}";
-        return new SparqlKeywordVocabulary(
-                restTemplate,
-                solrClient,
-                sparqlEndpoint,
-                "<http://vocabs.lter-europe.net/EnvThes/>",
-                where,
-                "envThes",
-                "EnvThes",
                 catalogueIds
                 );
             }
