@@ -9,5 +9,4 @@ export default ObjectInputView.extend({
     this.$('select').val(this.model.get('type'))
     return this
   }
-
- })
+})
