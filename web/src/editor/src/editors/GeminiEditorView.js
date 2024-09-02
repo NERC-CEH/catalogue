@@ -8,7 +8,7 @@ import {
   DatasetReferenceDateView,
   DistributionFormatView,
   FundingView,
-  SupplementalLinkView,
+  IncomingCitationView,
   MapDataSourceView,
   OnlineResourceView,
   ParentStringView,
@@ -681,7 +681,7 @@ export default EditorView.extend({
           ModelType: Supplemental,
           multiline: true,
           label: 'Citations <small>Publications in which these data are cited</small>',
-          ObjectInputView: SupplementalLinkView
+          ObjectInputView: IncomingCitationView
         }),
 
         new ParentView({
