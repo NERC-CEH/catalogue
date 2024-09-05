@@ -256,6 +256,13 @@ Operating period
       </span>
       <br>
     </#if>
+
+    <#if contact.email?has_content>
+      <span>
+        <a href="mailto:${contact.email}">${contact.email}</a>
+      </span>
+      <br>
+    </#if>
   </@keyValue>
 </#macro>
 
