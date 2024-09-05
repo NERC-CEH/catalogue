@@ -23,7 +23,6 @@ export default _.template(`
     </div>
     <div class="col-lg-11 col-sm-10">
         <select data-name='type' class="editor-input" id="supplemental<%= data.index %>Type">
-            <option value="">- Choose type -</option>
             <option value="academic">Academic</option>
             <option value="policy">Policy</option>
         </select>
