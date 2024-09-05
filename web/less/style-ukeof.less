@@ -40,9 +40,7 @@ header {
     }
 }
 
-
 #metadata {
-
     #studyarea-map,
     #geometry-map {
         height: 400px;
@@ -62,5 +60,33 @@ header {
     h2 {
         clear: both;
         padding-top: 2em;
+    }
+}
+
+footer {
+    .container {
+        .footer-socials {
+            a {
+                background-color: white;
+                color: black;
+
+                &:hover {
+                    background-color: transparent;
+                    color: white;
+                }
+            }
+        }
+    }
+}
+
+
+@media only screen and (min-width: 800px) {
+    footer {
+        .container {
+            .footer-links {
+                flex-direction: row;
+                gap: 0 2em;
+            }
+        }
     }
 }
