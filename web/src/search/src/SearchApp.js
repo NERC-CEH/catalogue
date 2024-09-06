@@ -24,7 +24,7 @@ export default Backbone.Model.extend({
     this.createSearchPage() // Create initial search page
     this.on('change', this.jumpToPageOne)
     this.on('change', this.disableDrawing)
-    this.on('change', this.performSearch)
+    this.on('change', _.debounce(this.performSearch, 250))
   },
 
   /*
