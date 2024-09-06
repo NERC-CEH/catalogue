@@ -8,7 +8,7 @@ import {
   DatasetReferenceDateView,
   DistributionFormatView,
   FundingView,
-  SupplementalLinkView,
+  IncomingCitationView,
   MapDataSourceView,
   OnlineResourceView,
   ParentStringView,
@@ -677,15 +677,6 @@ export default EditorView.extend({
       views: [
         new ParentView({
           model: this.model,
-          modelAttribute: 'incomingCitations',
-          ModelType: Supplemental,
-          multiline: true,
-          label: 'Citations <small>Publications in which these data are cited</small>',
-          ObjectInputView: SupplementalLinkView
-        }),
-
-        new ParentView({
-          model: this.model,
           modelAttribute: 'supplemental',
           ModelType: Supplemental,
           multiline: true,
@@ -791,6 +782,15 @@ This is only needed if you configure 'Styling=Classification' for your GeoTiff.<
           modelAttribute: 'hasOnlineServiceAgreement',
           label: 'Does this record have an online service agreement?',
           className: 'component eidconly'
+        }),
+
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'incomingCitations',
+          label: 'Citations<small>Publications in which these data are cited.<br><strong class="text-red">Only citations that have been corroborated should be added here.</strong></small>',
+          ModelType: Supplemental,
+          multiline: true,
+          ObjectInputView: IncomingCitationView
         })
 
       ]

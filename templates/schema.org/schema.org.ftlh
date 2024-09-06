@@ -186,7 +186,7 @@
                   "name": "Open Government Licence v3",
                   "alternateName":"OGL-UK-3.0",
                   "license": "https://spdx.org/licenses/OGL-UK-3.0.html"
-                }
+                },
               <#else>
               "license": "${licences?first.uri?trim}",
               </#if>
