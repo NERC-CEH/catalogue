@@ -74,7 +74,6 @@ public class SearchQuery {
                 .setParam("bf", "version")
                 .setParam("ps", "5")
                 .setParam("pf", "title^50 description^25 keyword^5 supplementalDescription")
-                .setParam("fq", "-resourceStatus:Deleted AND -resourceStatus:Superseded")
                 .setStart((page-1)*rows)
                 .setRows(rows);
         setSpatialFilter(query);
