@@ -35,9 +35,7 @@ cd -
 - **/schemas**    - XSD Schemas which are used to validate the various output xml files
 - **/solr**       - `Solr` web application, this handles the free-text indexing and searching of the application
 - **/templates**  - `Freemarker` templates which are used by the `java` application for generating the different metadata views
-- **/web**        - Location of the web component of the project, this is mainly `coffeescript` and `less` style sheets
-
-**NB:** `web/src/vendor/requirejs` needs to be left alone otherwise the build breaks
+- **/web**        - Location of the web component of the project, this is mainly `JavaScript` and `less` style sheets
 
 ## API
 [API documentation](docs/api.md)
@@ -50,10 +48,10 @@ cd -
 
 ## Usernames and Passwords
 
-You will need to create a `secrets.env` file with the following. Ask one of the team for access to Keypass to retrieve the jira password.
+You will need to create a `secrets.env` file with the following. Ask one of the dev team for access to Keypass to retrieve the jira password.
 
 ```
-jira.password=FindMeInK33Pa55
+jira.password=
 crowd.password=
 doi.password=
 hubbub.password=
@@ -104,7 +102,7 @@ Start up the catalogue with `docker-compose up --build` then connect to the dock
 IntelliJ. You might need to add your user to the docker user group before connecting to the service.
 Now you can make changes to the front end without restarting docker and rebuilding the backend.
 
-#### Note - there are many uses of Jquery's $(document).ready() function in the editor module of the frontend. Do not just remove them as they are there to prevent timing issues with views of existing documents in the editor. Unless of course you can find a better alternative.
+#### Note - there are many uses of JQuery's $(document).ready() function in the editor module of the frontend. Do not just remove them as they are there to prevent timing issues with views of existing documents in the editor. Unless of course you can find a better alternative.
 
 ### Test JavaScript using Karma
 
