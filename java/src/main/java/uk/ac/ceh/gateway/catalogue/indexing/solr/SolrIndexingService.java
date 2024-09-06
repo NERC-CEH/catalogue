@@ -77,6 +77,7 @@ public class SolrIndexingService extends AbstractIndexingService<MetadataDocumen
         }
     }
 
+    @SneakyThrows
     @Override
     protected boolean canIndex(MetadataDocument doc) {
         if (doc == null) {
@@ -84,7 +85,12 @@ public class SolrIndexingService extends AbstractIndexingService<MetadataDocumen
         }
         if (doc instanceof GeminiDocument) {
             val resourceStatus = ((GeminiDocument) doc).getResourceStatus();
-            return !UNINDEXED_RESOURCE_STATUS.contains(resourceStatus);
+            if (UNINDEXED_RESOURCE_STATUS.contains(resourceStatus)) {
+                unindexDocuments(List.of(doc.getId())); // Needed to remove existing superseded or deleted record from Solr
+                return false;
+            } else {
+                return true;
+            }
         }
         return !(doc instanceof ServiceAgreement);
     }

@@ -99,8 +99,10 @@ class SolrIndexingServiceTest {
         String revId = "Latest";
         List<String> documents = List.of("superseded", "deleted");
         val superseded = new GeminiDocument();
+        superseded.setId("1234");
         superseded.setAccessLimitation(AccessLimitation.builder().code("Superseded").build());
         val deleted = new GeminiDocument();
+        deleted.setId("5678");
         deleted.setAccessLimitation(AccessLimitation.builder().code("Deleted").build());
         given(reader.readBundle("superseded")).willReturn(superseded);
         given(reader.readBundle("deleted")).willReturn(deleted);
@@ -111,6 +113,7 @@ class SolrIndexingServiceTest {
         //then
         verify(indexGenerator, never()).generateIndex(any(GeminiDocument.class));
         verify(solrClient, never()).addBean(eq(DOCUMENTS), any(SolrIndex.class));
+        verify(solrClient, times(2)).deleteById(eq(DOCUMENTS), any(List.class));
     }
 
     @Test
