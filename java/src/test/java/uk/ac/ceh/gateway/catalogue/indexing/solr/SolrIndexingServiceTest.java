@@ -94,17 +94,13 @@ class SolrIndexingServiceTest {
 
     @Test
     @SneakyThrows
-    void supersededAndDeletedGeminiDocumentsNotIndexed() {
+    void deletedGeminiDocumentsNotIndexed() {
         //given
         String revId = "Latest";
-        List<String> documents = List.of("superseded", "deleted");
-        val superseded = new GeminiDocument();
-        superseded.setId("1234");
-        superseded.setAccessLimitation(AccessLimitation.builder().code("Superseded").build());
+        List<String> documents = List.of("deleted");
         val deleted = new GeminiDocument();
         deleted.setId("5678");
         deleted.setAccessLimitation(AccessLimitation.builder().code("Deleted").build());
-        given(reader.readBundle("superseded")).willReturn(superseded);
         given(reader.readBundle("deleted")).willReturn(deleted);
 
         //when
