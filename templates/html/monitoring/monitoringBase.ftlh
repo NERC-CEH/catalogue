@@ -23,11 +23,7 @@
           </#if>
 
           <#if permission.userCanEditRestrictedFields(metadata.catalogue)>
-            <div class="section">
-              <div class="container">
-                <#include "../document/_metadataqualityAlert.ftlh">
-              </div>
-            </div>
+            <#include "../document/_metadataqualityAlert.ftlh">
           </#if>
 
           <#if description?? && description?has_content>
