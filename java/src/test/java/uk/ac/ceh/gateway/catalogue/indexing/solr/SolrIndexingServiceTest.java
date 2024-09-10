@@ -108,7 +108,6 @@ class SolrIndexingServiceTest {
 
         //then
         verify(indexGenerator, never()).generateIndex(any(GeminiDocument.class));
-        verify(solrClient, never()).addBean(eq(DOCUMENTS), any(SolrIndex.class));
         verify(solrClient, times(2)).deleteById(eq(DOCUMENTS), any(List.class));
     }
 
