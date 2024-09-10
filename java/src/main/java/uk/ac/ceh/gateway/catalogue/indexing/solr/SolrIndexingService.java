@@ -38,7 +38,7 @@ public class SolrIndexingService extends AbstractIndexingService<MetadataDocumen
     private final DocumentIdentifierService identifierService;
     public static final String DOCUMENTS = "documents";
 
-    private static final Set<String> UNINDEXED_RESOURCE_STATUS = Set.of("Deleted", "Superseded");
+    private static final Set<String> UNINDEXED_RESOURCE_STATUS = Set.of("Deleted");
 
     public SolrIndexingService(
             BundledReaderService<MetadataDocument> reader,
