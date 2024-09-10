@@ -22,7 +22,7 @@ public class CatalogueToTurtleService implements DocumentsToTurtleService {
     private static final Set<String> REQUIRED_TYPES = ImmutableSet.of(
         "service",
         "dataset",
-        "signpost",
+        "aggregate",
         "monitoringActivity",
         "monitoringFacility",
         "monitoringNetwork",
@@ -107,7 +107,7 @@ public class CatalogueToTurtleService implements DocumentsToTurtleService {
     @SneakyThrows
     private String docToString(MetadataDocument model) {
         return switch (model.getType()) {
-            case "dataset", "service", "signpost" ->
+            case "dataset", "service", "aggregate" ->
                 template(model, "rdf/ttlUnprefixed.ftl");
             case "monitoringActivity" ->
                 template(model, "rdf/monitoring/unprefixed/activity.ftl");
