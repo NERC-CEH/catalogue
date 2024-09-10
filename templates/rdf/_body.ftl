@@ -39,8 +39,15 @@
       dct:publisher  <@contactList publishers "pub" /> ;
     </#if>
 
+    <#--Relationships-->
     <#list jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#memberOf")>
       dct:isPartOf <#items as item><${item.href}><#sep>, </#items> ;
+    </#list>
+    <#list jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#supersedes")>
+      dct:replaces <#items as item><${item.href}><#sep>, </#items> ;
+    </#list>
+    <#list jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#relatedTo")>
+      dct:relation <#items as item><${item.href}><#sep>, </#items> ;
     </#list>
 
     <#if allKeywords?has_content>
