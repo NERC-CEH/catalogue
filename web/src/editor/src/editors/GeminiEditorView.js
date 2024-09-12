@@ -287,7 +287,8 @@ export default EditorView.extend({
           label: 'Observed properties',
           ObjectInputView: KeywordVocabularyView,
           multiline: true,
-          helpText: 'Controlled keywords describing the observed properties/variables contained in this data resource'
+          helpText: 'Controlled keywords describing the observed properties/variables contained in this data resource',
+          fetchKeywords: true
         }),
         new ParentView({
           model: this.model,

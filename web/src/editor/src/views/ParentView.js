@@ -4,6 +4,7 @@ import SingleView from '../SingleView'
 import ChildView from './ChildView'
 import template from '../templates/Parent'
 import { Positionable } from '../collections'
+import { LegiloKeywords } from './index'
 
 export default SingleView.extend({
 
@@ -17,6 +18,13 @@ export default SingleView.extend({
     }
     SingleView.prototype.initialize.call(this, options)
     this.collection = new Positionable([], { model: this.data.ModelType })
+
+    if (this.data.fetchKeywords && this.model.get('id')) {
+      this.legiloKeywords = new LegiloKeywords({
+        collection: this.collection,
+        model: this.model
+      })
+    }
 
     this.listenTo(this.collection, 'add', this.addOne)
     this.listenTo(this.collection, 'reset', this.addAll)
@@ -33,6 +41,12 @@ export default SingleView.extend({
 
   render () {
     this.$el.html(this.template({ data: this.data }))
+
+    if (this.data.fetchKeywords && this.model.get('id')) {
+      this.$el.append(this.legiloKeywords.el)
+      this.legiloKeywords.render()
+      this.legiloKeywords.delegateEvents()
+    }
     return this
   },
 
