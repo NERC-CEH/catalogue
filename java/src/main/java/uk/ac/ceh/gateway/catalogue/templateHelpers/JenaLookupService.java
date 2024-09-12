@@ -108,7 +108,7 @@ public class JenaLookupService {
 
     public List<Link> relationships(String uri, String relation) {
         String publicationDate = "http://purl.org/dc/terms/available";
-        String sparql = "PREFIX dc: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> SELECT ?node ?title ?publicationStatus ?type ?rel WHERE {?me ?rel ?node; ?relation ?node . ?node dc:title ?title; pso:PublicationStatus ?publicationStatus;  dc:type ?type. OPTIONAL {?node <" + publicationDate + "> ?publicationDate}} ORDER BY DESC(?publicationDate) ?title";
+        String sparql = "PREFIX dc: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> SELECT DISTINCT ?node ?title ?publicationStatus ?type ?rel WHERE {?me ?rel ?node; ?relation ?node . ?node dc:title ?title; pso:PublicationStatus ?publicationStatus;  dc:type ?type. OPTIONAL {?node <" + publicationDate + "> ?publicationDate}} ORDER BY DESC(?publicationDate) ?title";
         ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
         pss.setIri("me", uri);
         pss.setIri("relation", relation);
@@ -118,7 +118,7 @@ public class JenaLookupService {
     public List<Link> inverseRelationships(String uri, String relation) {
         String hasGeometry = "http://www.opengis.net/ont/geosparql#hasGeometry";
         String publicationDate = "http://purl.org/dc/terms/available";
-        String sparql = "PREFIX dc: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> SELECT ?node ?title ?publicationStatus ?type ?rel ?geom ?publicationDate WHERE {?node ?rel ?me ; ?relation ?me. ?node dc:title ?title; pso:PublicationStatus ?publicationStatus; dc:type ?type. OPTIONAL {?node <" + hasGeometry + "> ?geom} OPTIONAL {?node <" + publicationDate + "> ?publicationDate}}ORDER BY DESC(?publicationDate) ?title";
+        String sparql = "PREFIX dc: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> SELECT DISTINCT ?node ?title ?publicationStatus ?type ?rel ?geom ?publicationDate WHERE {?node ?rel ?me ; ?relation ?me. ?node dc:title ?title; pso:PublicationStatus ?publicationStatus; dc:type ?type. OPTIONAL {?node <" + hasGeometry + "> ?geom} OPTIONAL {?node <" + publicationDate + "> ?publicationDate}}ORDER BY DESC(?publicationDate) ?title";
         ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
         pss.setIri("me", uri);
         pss.setIri("relation", relation);

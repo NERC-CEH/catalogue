@@ -773,7 +773,7 @@ This is only needed if you configure 'Styling=Classification' for your GeoTiff.<
       ]
     },
     {
-      label: '_admin',
+      label: 'Admin',
       title: 'EIDC admin only',
       views: [
 
