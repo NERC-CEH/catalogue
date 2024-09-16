@@ -69,7 +69,6 @@ public class CatalogueMediaTypes {
     public static final String ROCRATE_VALUE = "application/vnd.rocrate.ld+json";
     public static final MediaType ROCRATE_JSON = parseMediaType(ROCRATE_VALUE);
 
-
     public static final String CEDA_YAML_SHORT = "ceda";
     public static final String CEDA_YAML_VALUE = "application/ceda+json";
     public static final MediaType CEDA_YAML_JSON = parseMediaType(CEDA_YAML_VALUE);
