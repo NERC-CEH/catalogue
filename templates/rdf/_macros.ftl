@@ -24,7 +24,7 @@
         </#if>
       </#if>
 
-      ${contactIdentifier}<#sep>,</#sep>
+      ${contactIdentifier}<#sep>,</#sep><#t>
     </#list>
   </#if>
 </#macro>
@@ -77,7 +77,7 @@
       <#if fund.awardURI?has_content>
         <#assign fundIdentifier ="\l" + fund.awardURI?trim+ "\g">
       </#if>
-      ${fundIdentifier?trim}<#sep>,</#sep>
+      ${fundIdentifier?trim}<#sep>,</#sep><#t>
     </#list>
   </#if>
 </#macro>
@@ -103,7 +103,7 @@
     <#else>
       <#assign keyword ='"' + kw.value?replace("\"", "") + '"'>
     </#if>
-    ${keyword}<#sep>,</#sep>
+    ${keyword}<#sep>,</#sep><#t>
   </#list>
 </#macro>
 
@@ -113,4 +113,46 @@
       <${kw.uri?trim}> a skos:Concept; skos:prefLabel "<@displayLiteral kw.value />"; rdfs:label "<@displayLiteral kw.value />".
     </#if>
   </#list>
+</#macro>
+
+
+
+
+<#--
+ <#if incomingCitations?has_content>
+    dct:isReferencedBy <#t>
+    <#list incomingCitations as citation>
+      <${citation.url?trim}><#sep>,</#sep>
+    </#list>
+    ;
+  </#if>
+-->
+
+<#macro incomingCitationList>
+  <#if incomingCitations?has_content>
+    <#list incomingCitations as citation>
+
+      <#assign citationIdentifier= ":" + id + "_citation" + citation?index>
+      <#if citation.url?has_content>
+        <#assign citationIdentifier ="\l" + citation.url?trim + "\g">
+      </#if>
+      ${citationIdentifier?trim}<#sep>,</#sep><#t>
+    </#list>
+  </#if>
+</#macro>
+
+<#macro incomingCitationDetail>
+  <#if incomingCitations?has_content>
+    <#list incomingCitations as citation>
+
+      <#assign citationIdentifier= ":" + id + "_citation" + citation?index>
+      <#if citation.url?has_content>
+        <#assign citationIdentifier ="\l" + citation.url?trim + "\g">
+      </#if>
+
+      ${citationIdentifier?trim} a <http://purl.org/vocab/frbr/core#Work> ;
+        <#if citation.description?has_content>rdfs:label "<@displayLiteral citation.description />"; </#if>
+        .
+    </#list>
+  </#if>
 </#macro>
