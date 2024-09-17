@@ -15,8 +15,7 @@ export default Backbone.View.extend({
   },
 
   events: {
-    'click .legilo-fetch-btn': 'fetchKeywordsFromLegilo',
-    'click .legilo-cancel-btn': 'cancel',
+    'click .legilo-close-btn': 'close',
     'click .legilo-add-btn': 'addSelectedKeywords',
     'change .keyword-checkbox': 'toggleKeywordSelection',
     'click .legilo-load-more-btn': 'loadAllKeywords'
@@ -24,53 +23,12 @@ export default Backbone.View.extend({
 
   render () {
     this.$el.html(this.template())
-
     return this
   },
 
-  fetchKeywordsFromLegilo () {
-    const datasetId = this.model.get('id')
-    if (!datasetId) {
-      console.error('No dataset ID found')
-      return
-    }
+  renderKeywords (keywords) {
+    this.keywords = keywords
 
-    // const apiUrl = `/api/datasets/${datasetId}`
-
-    this.showLoader()
-
-    const mockData = {
-      summary: [
-        { name: 'temperature', uri: 'custom-uri1', confidence: 0.63 },
-        { name: 'trophic', uri: '', confidence: 0.35 },
-        { name: 'transect', uri: 'custom-uri2', confidence: 0.25 },
-        { name: 'pressure', uri: 'custom-uri3', confidence: 0.45 },
-        { name: 'salinity', uri: '', confidence: 0.50 },
-        { name: 'depth', uri: 'custom-uri4', confidence: 0.30 },
-        { name: 'oxygen', uri: '', confidence: 0.55 },
-        { name: 'chlorophyll', uri: 'custom-uri5', confidence: 0.60 },
-        { name: 'phosphate', uri: '', confidence: 0.20 },
-        { name: 'silicate', uri: 'custom-uri6', confidence: 0.15 },
-        { name: 'nitrate', uri: 'custom-uri7', confidence: 0.40 }
-      ]
-    }
-
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        this.keywords = mockData.summary.map(keywordData => new KeywordModel(keywordData))
-        this.renderKeywords(true)
-        this.showTableAndButtons()
-        this.hideFetchButton()
-        this.hideLoader()
-        resolve(mockData)
-      }, 1000)
-    }).catch(error => {
-      console.error('Error fetching keywords:', error)
-      this.hideLoader()
-    })
-  },
-
-  renderKeywords (initialLoad = false) {
     const filteredKeywords = this.keywords.filter(keyword => {
       return !this.collection.findWhere({ value: keyword.get('name') })
     })
@@ -80,31 +38,30 @@ export default Backbone.View.extend({
       return
     }
 
-    let keywordsToDisplay = filteredKeywords
-
-    if (initialLoad) {
-      keywordsToDisplay = filteredKeywords.slice(0, this.keywordsToShow)
-    }
+    const keywordsToDisplay = filteredKeywords.slice(0, this.keywordsToShow)
 
     const rowsHTML = keywordsToDisplay.map(keyword => {
       const uri = keyword.get('uri') || ''
+      const isChecked = this.selectedKeywords.some(selected => selected.value === keyword.get('name'))
       return `
-          <tr>
-            <td><input type="checkbox" class="keyword-checkbox" data-term="${keyword.get('name')}" data-uri="${uri}""></td>
-            <td>${keyword.get('name')}</td>
-            <td>${uri}</td>
-            <td>${keyword.get('confidence')}</td>
-          </tr>
-        `
+        <tr>
+          <td><input type="checkbox" class="keyword-checkbox" data-term="${keyword.get('name')}" data-uri="${uri}" ${isChecked ? 'checked' : ''}></td>
+          <td>${keyword.get('name')}</td>
+          <td>${uri}</td>
+          <td>${keyword.get('confidence')}</td>
+        </tr>
+      `
     }).join('')
 
     this.$('.keywords-table-body').html(rowsHTML)
 
-    if (initialLoad && filteredKeywords.length > this.keywordsToShow) {
-      this.$('.load-more-btn').show()
+    if (filteredKeywords.length > this.keywordsToShow) {
+      this.$('.legilo-load-more-btn').show()
     } else {
-      this.$('.load-more-btn').hide()
+      this.$('.legilo-load-more-btn').hide()
     }
+
+    this.showTableAndButtons()
   },
 
   toggleKeywordSelection (event) {
@@ -128,43 +85,26 @@ export default Backbone.View.extend({
     })
 
     this.selectedKeywords = []
-    this.renderKeywords(true)
-
-    if (this.keywords.length === 0) {
-      this.showNoKeywordsMessage()
-    }
+    this.renderKeywords(this.keywords)
   },
 
   showTableAndButtons () {
+    this.$('.keyword-table-header').show()
     this.$('.keywords-table').show()
     this.$('.keywords-buttons').show()
   },
 
-  cancel () {
+  close () {
     this.$('.keywords-table').hide()
     this.$('.keywords-buttons').hide()
+    this.$('.legilo-load-more-btn').hide()
+    this.$('.keyword-table-header').hide()
     this.selectedKeywords = []
-    this.showFetchButton()
   },
 
   loadAllKeywords () {
-    this.renderKeywords(false)
-  },
-
-  hideFetchButton () {
-    this.$('.legilo-fetch-btn').hide()
-  },
-
-  showFetchButton () {
-    this.$('.legilo-fetch-btn').show()
-  },
-
-  showLoader () {
-    this.$('.loader').show()
-  },
-
-  hideLoader () {
-    this.$('.loader').hide()
+    this.keywordsToShow = this.keywords.length
+    this.renderKeywords(this.keywords)
   },
 
   showNoKeywordsMessage () {
