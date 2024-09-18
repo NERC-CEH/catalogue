@@ -82,6 +82,16 @@
         }
     }
 
+    #air-datepicker-global-container {
+        .air-datepicker-overlay.-active- {
+            z-index: 1005;
+        }
+
+        .air-datepicker {
+            z-index: 1006;
+        }
+    }
+
     .editor-body {
         padding: 1em;
 
@@ -259,6 +269,7 @@
         .required:not(:has(.child)) {
             label {
                 color: var(--_requiredIndicator);
+
                 &:before {
                     content: "*"
                 }

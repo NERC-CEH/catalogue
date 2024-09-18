@@ -215,7 +215,7 @@ Operating period
 </#macro>
 
 <#macro map mapData>
-  <div id="studyarea-map">
+  <div id="studyarea-map" class="studyarea-map">
     <span content="${mapData}" dataType="geoJson"/>
   </div>
 </#macro>

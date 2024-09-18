@@ -405,7 +405,7 @@
         <div class="keyvalue">
             <div class="key">Area of study</div>
             <div class="key">
-                <div id="studyarea-map">
+                <div id="studyarea-map" class="studyarea-map">
                     <#list boundingBoxes as extent>
                         <span content="${extent.bounds}" datatype="geoJson"/>
                     </#list>

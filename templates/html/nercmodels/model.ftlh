@@ -143,7 +143,7 @@
 
                 <#if boundingBoxes?has_content>
                   <@m.key "Spatial extent">
-                    <div id="studyarea-map">
+                    <div id="studyarea-map" class="studyarea-map">
                       <#list boundingBoxes as extent>
                         <span content="${extent.bounds}" datatype="geoJson"/>
                       </#list>

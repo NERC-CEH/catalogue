@@ -66,7 +66,7 @@
               </div>
               <div class="col-md-3 col-sm-12">
               <#if boundingBoxes?? && boundingBoxes?has_content>
-                <div id="studyarea-map" title="Spatial coverage of the data">
+                <div id="studyarea-map" class="studyarea-map" title="Spatial coverage of the data">
                 <#list boundingBoxes as extent>
                   <span  content="${extent.bounds}" datatype="geoJson"/>
                 </#list>
