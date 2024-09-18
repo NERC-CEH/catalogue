@@ -2,7 +2,7 @@
 
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
 
-  <div id="metadata" class="datatype">
+  <div id="metadata" class="metadata datatype">
     <div class="section section-grey">
       <div class="container">
 

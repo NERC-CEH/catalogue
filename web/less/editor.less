@@ -15,7 +15,7 @@
         display: none;
     }
 
-    #metadata,
+    .metadata,
     #search {
         display: flex;
         flex-direction: column;
@@ -25,7 +25,18 @@
             width: 100%;
         }
     }
+
+    #air-datepicker-global-container {
+        .air-datepicker-overlay.-active- {
+            z-index: 1005;
+        }
+
+        .air-datepicker {
+            z-index: 1006;
+        }
+    }
 }
+
 
 #editorNav li {
     cursor: pointer;
@@ -79,16 +90,6 @@
                 gap: 0.25em;
                 padding-block: 1em;
             }
-        }
-    }
-
-    #air-datepicker-global-container {
-        .air-datepicker-overlay.-active- {
-            z-index: 1005;
-        }
-
-        .air-datepicker {
-            z-index: 1006;
         }
     }
 

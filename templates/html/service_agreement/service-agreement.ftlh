@@ -9,7 +9,7 @@
         <#assign mdclass="">
     </#if>
 
-    <div id="metadata" class="serviceAgreement ${mdclass}">
+    <div id="metadata" class="metadata serviceAgreement ${mdclass}">
         <div class="container" role="main">
 
             <div class="title">

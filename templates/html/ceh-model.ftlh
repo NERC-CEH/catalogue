@@ -17,7 +17,7 @@
 </#if>
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
 
-  <div id="metadata" class="ceh-model">
+  <div id="metadata" class="metadata ceh-model">
     <div class="section section-grey">
       <div class="container">
         <#if title?? && title?has_content>

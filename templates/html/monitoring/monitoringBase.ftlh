@@ -4,7 +4,7 @@
 
 <#macro base>
   <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) footer=true>
-    <div id="metadata" class="metadata-monitoring ${metadata.state?lower_case}">
+    <div id="metadata" class="metadata metadata-monitoring ${metadata.state?lower_case}">
     <#if !type??>
     <#else>
       <div class="section section-grey">
