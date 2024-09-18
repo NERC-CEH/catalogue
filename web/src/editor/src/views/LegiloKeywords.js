@@ -33,8 +33,13 @@ export default Backbone.View.extend({
       return !this.collection.findWhere({ value: keyword.get('name') })
     })
 
-    if (filteredKeywords.length === 0) {
-      this.showNoKeywordsMessage()
+    if (this.keywords.length > 0 && filteredKeywords.length === 0) {
+      this.showNoKeywordsMessage('All suggested keywords are already present or have been added.')
+      return
+    }
+
+    if (keywords.length === 0) {
+      this.showNoKeywordsMessage('No suggested keywords available.')
       return
     }
 
@@ -44,13 +49,13 @@ export default Backbone.View.extend({
       const uri = keyword.get('uri') || ''
       const isChecked = this.selectedKeywords.some(selected => selected.value === keyword.get('name'))
       return `
-        <tr>
-          <td><input type="checkbox" class="keyword-checkbox" data-term="${keyword.get('name')}" data-uri="${uri}" ${isChecked ? 'checked' : ''}></td>
-          <td>${keyword.get('name')}</td>
-          <td>${uri}</td>
-          <td>${keyword.get('confidence')}</td>
-        </tr>
-      `
+      <tr>
+        <td><input type="checkbox" class="keyword-checkbox" data-term="${keyword.get('name')}" data-uri="${uri}" ${isChecked ? 'checked' : ''}></td>
+        <td>${keyword.get('name')}</td>
+        <td>${uri}</td>
+        <td>${keyword.get('confidence')}</td>
+      </tr>
+    `
     }).join('')
 
     this.$('.keywords-table-body').html(rowsHTML)
@@ -62,6 +67,7 @@ export default Backbone.View.extend({
     }
 
     this.showTableAndButtons()
+    this.$('.no-keywords-message').hide()
   },
 
   toggleKeywordSelection (event) {
@@ -107,7 +113,10 @@ export default Backbone.View.extend({
     this.renderKeywords(this.keywords)
   },
 
-  showNoKeywordsMessage () {
-    this.$('.keywords-table-body').html('<tr><td colspan="4">No keywords available</td></tr>')
+  showNoKeywordsMessage (message) {
+    this.$('.no-keywords-message').text(message).show()
+    this.$('.keywords-table').hide()
+    this.$('.keywords-buttons').hide()
+    this.$('.keyword-table-header').hide()
   }
 })

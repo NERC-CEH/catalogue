@@ -6,6 +6,8 @@ export default _.template(`
     <div class="form-group">
       <h4 class="mb-3 keyword-table-header" style="display: none;"><strong>Suggested Keywords</strong></h4>
 
+      <div class="no-keywords-message" style="display: none;"></div>
+
       <table class="table table-bordered keywords-table" style="display: none;">
         <thead>
           <tr>
