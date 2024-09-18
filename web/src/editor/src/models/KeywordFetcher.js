@@ -1,5 +1,5 @@
 import $ from 'jquery'
-import { KeywordModel } from '../models'
+import { LegiloKeyword } from '../models'
 
 export default {
   fetchKeywordsFromLegilo (model) {
@@ -9,7 +9,7 @@ export default {
 
     return $.getJSON(apiUrl)
       .then(data => {
-        return data.map(keywordData => new KeywordModel({
+        return data.map(keywordData => new LegiloKeyword({
           name: keywordData.name,
           confidence: keywordData.confidence,
           uri: keywordData.url || ''

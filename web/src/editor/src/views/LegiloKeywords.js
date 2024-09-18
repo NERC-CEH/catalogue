@@ -1,7 +1,7 @@
 import Backbone from 'backbone'
 import $ from 'jquery'
 import template from '../templates/LegiloKeywords'
-import { KeywordModel } from '../models'
+import { LegiloKeyword } from '../models'
 
 export default Backbone.View.extend({
 
@@ -82,7 +82,7 @@ export default Backbone.View.extend({
 
   addSelectedKeywords () {
     this.selectedKeywords.forEach(keyword => {
-      const newKeywordModel = new KeywordModel({
+      const newKeywordModel = new LegiloKeyword({
         value: keyword.value,
         uri: keyword.uri || null
       })

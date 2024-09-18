@@ -31,5 +31,5 @@ export { default as ServiceAgreement } from './service-agreement/ServiceAgreemen
 export { default as SupportingDoc } from './service-agreement/SupportingDoc'
 export { default as InfrastructureCategory } from './InfrastructureCategory'
 export { default as InfrastructureChallenge } from './InfrastructureChallenge'
-export { default as KeywordModel } from './KeywordModel'
+export { default as LegiloKeyword } from './LegiloKeyword'
 export { default as KeywordFetcher } from './KeywordFetcher'
