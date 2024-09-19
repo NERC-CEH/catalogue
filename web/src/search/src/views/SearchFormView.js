@@ -28,10 +28,11 @@ export default Backbone.View.extend({
   },
 
   /*
-     * The search form has been submitted. We can update the search term right away
+     * The search form has been submitted.
+     * We thought we could update the search term right away, but that caused the search to retun nothing
+     * So instead, we just prevent the form being submitted and let the handleTyping() debounce handle it a few moments later
      */
   handleSubmit (e) {
-    this.updateTermOnModel()
     e.preventDefault()
   },
 
