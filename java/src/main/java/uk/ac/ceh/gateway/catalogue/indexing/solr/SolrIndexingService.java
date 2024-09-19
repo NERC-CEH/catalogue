@@ -3,7 +3,6 @@ package uk.ac.ceh.gateway.catalogue.indexing.solr;
 import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -83,10 +82,9 @@ public class SolrIndexingService extends AbstractIndexingService<MetadataDocumen
         if (doc == null) {
             return false;
         }
-        if (doc instanceof GeminiDocument) {
-            val resourceStatus = ((GeminiDocument) doc).getResourceStatus();
-            if (UNINDEXED_RESOURCE_STATUS.contains(resourceStatus)) {
-                unindexDocuments(List.of(doc.getId())); // Needed to remove existing superseded or deleted record from Solr
+        if (doc instanceof GeminiDocument gemini) {
+            if (UNINDEXED_RESOURCE_STATUS.contains(gemini.getResourceStatus())) {
+                unindexDocuments(List.of(gemini.getId())); // Needed to remove existing superseded or deleted record from Solr
                 return false;
             } else {
                 return true;
