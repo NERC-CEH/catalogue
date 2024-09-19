@@ -1,7 +1,7 @@
 import $ from 'jquery'
 import Backbone from 'backbone'
-import { LegiloKeywords } from '../src/views'
-import { LegiloKeyword, KeywordFetcher } from '../src/models'
+import { LegiloKeywords, fetchKeywordsFromLegilo } from '../src/views'
+import { LegiloKeyword } from '../src/models'
 
 describe('Test LegiloKeywords View', () => {
   let view = null
@@ -96,7 +96,7 @@ describe('Test LegiloKeywords View', () => {
 
     spyOn($, 'getJSON').and.returnValue(Promise.resolve(mockApiResponse))
 
-    KeywordFetcher.fetchKeywordsFromLegilo(view.model).then((keywords) => {
+    fetchKeywordsFromLegilo(view.model).then((keywords) => {
       expect($.getJSON).toHaveBeenCalledWith('/documents/123/suggestKeywords')
 
       expect(keywords.length).toBe(2)

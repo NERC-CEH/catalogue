@@ -4,8 +4,7 @@ import SingleView from '../SingleView'
 import ChildView from './ChildView'
 import template from '../templates/Parent'
 import { Positionable } from '../collections'
-import { LegiloKeywords } from './index'
-import { KeywordFetcher } from '../models'
+import { LegiloKeywords, fetchKeywordsFromLegilo } from './index'
 import FetchKeywordsButton from '../templates/FetchKeywordsButton'
 
 export default SingleView.extend({
@@ -64,7 +63,7 @@ export default SingleView.extend({
   fetchKeywords () {
     this.$('.loader').show()
 
-    KeywordFetcher.fetchKeywordsFromLegilo(this.model)
+    fetchKeywordsFromLegilo(this.model)
       .then(keywords => {
         this.model.set('fetchedKeywords', keywords)
         this.renderKeywords()
