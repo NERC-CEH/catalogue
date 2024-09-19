@@ -287,7 +287,9 @@ export default EditorView.extend({
           label: 'Observed properties',
           ObjectInputView: KeywordVocabularyView,
           multiline: true,
-          helpText: 'Controlled keywords describing the observed properties/variables contained in this data resource'
+          helpText: 'Controlled keywords describing the observed properties/variables contained in this data resource',
+          fetchKeywordsButton: true,
+          renderLegiloKeywords: true
         }),
         new ParentView({
           model: this.model,
@@ -306,7 +308,8 @@ export default EditorView.extend({
           label: 'Projects',
           ObjectInputView: KeywordVocabularyView,
           multiline: true,
-          helpText: 'Controlled keywords describing projects that fund/support the creation of this resource'
+          helpText: 'Controlled keywords describing projects that fund/support the creation of this resource',
+          renderLegiloKeywords: true
         }),
         new ParentView({
           model: this.model,
@@ -314,7 +317,8 @@ export default EditorView.extend({
           label: 'Instruments',
           ObjectInputView: KeywordVocabularyView,
           multiline: true,
-          helpText: 'Controlled keywords describing instruments/sensors used to generate this data'
+          helpText: 'Controlled keywords describing instruments/sensors used to generate this data',
+          renderLegiloKeywords: true
         }),
         new ParentView({
           model: this.model,
@@ -322,7 +326,8 @@ export default EditorView.extend({
           label: 'Other keywords',
           ObjectInputView: KeywordVocabularyView,
           multiline: true,
-          helpText: 'All other keywords not described elsewhere'
+          helpText: 'All other keywords not described elsewhere',
+          renderLegiloKeywords: true
         }),
         new ParentView({
           model: this.model,
