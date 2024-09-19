@@ -3,15 +3,43 @@ module.exports = function (grunt) {
     clean: {
       build: ['css/*']
     },
+    decomment: {
+      build: {
+        options: {
+          type: 'text',
+          ignore: /url\([\w:/.-]*\)/g // prevents removal of src:url() from css
+        },
+        files: {
+          'css/style-assist.css': 'css/style-assist.css',
+          'css/style-ukceh.css': 'css/style-ukceh.css',
+          'css/style-cmp.css': 'css/style-cmp.css',
+          'css/style-datalabs.css': 'css/style-datalabs.css',
+          'css/style-edge.css': 'css/style-edge.css',
+          'css/style-eidc.css': 'css/style-eidc.css',
+          'css/style-elter.css': 'css/style-elter.css',
+          'css/style-erammp.css': 'css/style-erammp.css',
+          'css/style-inlicensed.css': 'css/style-inlicensed.css',
+          'css/style-inms.css': 'css/style-inms.css',
+          'css/style-nc.css': 'css/style-nc.css',
+          'css/style-nm.css': 'css/style-nm.css',
+          'css/style-m.css': 'css/style-m.css',
+          'css/style-osdp.css': 'css/style-osdp.css',
+          'css/style-pimfe.css': 'css/style-pimfe.css',
+          'css/style-infrastructure.css': 'css/style-infrastructure.css',
+          'css/style-sa.css': 'css/style-sa.css',
+          'css/style-ukeof.css': 'css/style-ukeof.css',
+          'css/style-ukscape.css': 'css/style-ukscape.css'
+        }
+      }
+    },
     less: {
       options: {
-        compress: true,
-        sourceMap: true
+        compress: true
       },
       build: {
         files: [
           { src: 'less/style-assist.less', dest: 'css/style-assist.css' },
-          { src: 'less/style-ceh.less', dest: 'css/style-ceh.css' },
+          { src: 'less/style-ukceh.less', dest: 'css/style-ukceh.css' },
           { src: 'less/style-cmp.less', dest: 'css/style-cmp.css' },
           { src: 'less/style-datalabs.less', dest: 'css/style-datalabs.css' },
           { src: 'less/style-edge.less', dest: 'css/style-edge.css' },
@@ -51,7 +79,8 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-clean')
   grunt.loadNpmTasks('grunt-contrib-less')
   grunt.loadNpmTasks('grunt-contrib-watch')
+  grunt.loadNpmTasks('grunt-decomment')
   grunt.registerTask('develop', ['less', 'concurrent'])
-  grunt.registerTask('build', ['clean', 'less'])
+  grunt.registerTask('build', ['clean', 'less', 'decomment'])
   grunt.registerTask('default', ['build'])
 }

@@ -115,39 +115,38 @@
           </div>
           <div class="col2">
 
-
             <@displaykey "Contact">
-                <#if owners?? >
-                  <#list owners as owner>
-                    <div class="contact">
-                      <div>
-                        <#if owner.individualName?has_content>
-                          <span class="fa-solid fa-user"></span>
-                        <#else>
-                          <span class="fa-solid fa-building"></span>
-                        </#if>
-                      </div>
-                      <div>
-                        <#if owner.individualName?has_content>
-                          <span>${owner.individualName}</span>
-                        </#if>
-                        <#if owner.organisationName?? && owner.organisationName?has_content>
-                          <span>${owner.organisationName}</span>
-                        </#if>
-                        <#if owner.address?? && owner.address?has_content>
-                          <#if owner.address.city?has_content>
-                            <span>${owner.address.city}</span>
-                          </#if>
-                        </#if>
-                        <#if owner.email?? && owner.email?has_content>
-                          <span><a href="mailto:${owner.email}"><span class="fa-solid fa-xs fa-envelope"></span> ${owner.email}</a></span>
-                        </#if>
-                      </div>
+              <#if owners?? >
+                <#list owners as owner>
+                  <div class="contact">
+                    <div>
+                      <#if owner.individualName?has_content>
+                        <span class="fa-solid fa-user"></span>
+                      <#else>
+                        <span class="fa-solid fa-building"></span>
+                      </#if>
                     </div>
-                  </#list>
-                <#else>
-                  <p class="text-danger">NO CONTACT IDENTIFIED</p>
-                </#if>
+                    <div>
+                      <#if owner.individualName?has_content>
+                        <span>${owner.individualName}</span>
+                      </#if>
+                      <#if owner.organisationName?? && owner.organisationName?has_content>
+                        <span>${owner.organisationName}</span>
+                      </#if>
+                      <#if owner.address?? && owner.address?has_content>
+                        <#if owner.address.city?has_content>
+                          <span>${owner.address.city}</span>
+                        </#if>
+                      </#if>
+                      <#if owner.email?? && owner.email?has_content>
+                        <span><a href="mailto:${owner.email}"><span class="fa-solid fa-xs fa-envelope"></span> ${owner.email}</a></span>
+                      </#if>
+                    </div>
+                  </div>
+                </#list>
+              <#else>
+                <p class="text-danger">NO CONTACT IDENTIFIED</p>
+              </#if>
             </@displaykey>
 
             <#if weblinks?? && weblinks?has_content >
@@ -163,6 +162,7 @@
             </#if>
 
           </div>
+        </div>
       </div>
     </div>
 

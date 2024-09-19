@@ -6,7 +6,7 @@
 
 <#if resourceStatus?? && resourceStatus?has_content>
   <div class=" hidden-print" id="document-distribution">
-    
+
       <h2>Get the data</h2>
       <div class="distribution-dataset">
 
@@ -18,34 +18,53 @@
           <p class="licencePreamble">By accessing or using this dataset, you agree to the terms of the relevant licence agreement(s). You will ensure that this dataset is cited in any publication that describes research in which the data have been used.</p>
           <#include "_licence.ftlh">
         </#if>
-        
-        
         <div class="onlineResourceLinks">
           <#if resourceStatus == "Available" || resourceStatus == "Controlled" || resourceStatus == "Superseded">
             <#if offlineOrders?? || downloadOrder?? && ((downloadOrder.orderResources)?has_content || (downloadOrder.supportingDocumentsUrl)?has_content) || ((resourceType.value)?? && distributionFormats?? && distributionFormats?has_content) || mapViewable?? >
               <#if (downloadOrder.orderable)?? && downloadOrder.orderable>
                 <#list downloadOrder.orderResources as onlineResource>
+
+                  <#assign onlineResourceUrl = onlineResource.url>
                   <#if onlineResource.url?starts_with("https://data-package.ceh.ac.uk/data/") && !onlineResource.url?ends_with(".zip") && (permission.userInGroup("Gast") || permission.userInGroup("CEH"))>
-                    <#assign onlineResourceUrl = onlineResource.url + '.zip'>
-                  <#else>
-                    <#assign onlineResourceUrl = onlineResource.url>                    
+                    <#assign onlineResourceUrl = onlineResourceUrl + '.zip'>
                   </#if>
-                  <a href="${onlineResourceUrl}" class="btn btn-download"><span class="fa-solid fa-angles-down"></span>
-                    <#if onlineResource.name?has_content>
-                      ${onlineResource.name}
+
+                  <#assign onlineResourceLabel = "Order/download">
+                  <#if onlineResource.name?has_content>
+                    <#assign onlineResourceLabel = onlineResource.name>
+                  </#if>
+
+                  <#if onlineResource.size?has_content>
+                    <#if onlineResource.size?number gt 1073741824>
+                      <#assign sizeLabel = 'approx. ' + (onlineResource.size?number / 1073741824)?string["0.#"]  + 'Gb'>
+                    <#elseif onlineResource.size?number gt 10485760>
+                       <#assign sizeLabel = 'approx. ' + (onlineResource.size?number / 1048576)?string["0.#"]  + 'Mb'>
+                    <#elseif onlineResource.size?number lte 10485760 && onlineResource.size?number gt 5242880>
+                       <#assign sizeLabel = '< 10 Mb'>
+                    <#elseif onlineResource.size?number lte 5242880 && onlineResource.size?number gt 1048576>
+                       <#assign sizeLabel = '< 5 Mb'>
                     <#else>
-                      Order/download
+                      <#assign sizeLabel = '< 1 Mb'>
                     </#if>
-                    </a>
+                  </#if>
+
+                  <a href="/download/${id}?url=${onlineResourceUrl?url}" class="btn btn-download">
+                    <span class="fa-solid fa-angles-down"></span>
+                    ${onlineResourceLabel}
+                    <#if sizeLabel??>
+                      <small>(${sizeLabel})</small>
+                    </#if>
+                  </a>
+
                 </#list>
               </#if>
 
               <#if offlineOrders?? && offlineOrders?has_content >
-                  <#list offlineOrders as offlineOrder>
-                    <a  class="btn btn-download" href="${offlineOrder.url}"><span class="fa-solid fa-file-signature"></span> <#if offlineOrder.description?has_content>${offlineOrder.description}<#elseif offlineOrder.name?has_content>${offlineOrder.name}<#else>Order data</#if></a>
-                  </#list>
+                <#list offlineOrders as offlineOrder>
+                  <a class="btn btn-download" href="${offlineOrder.url}"><span class="fa-solid fa-file-signature"></span> <#if offlineOrder.description?has_content>${offlineOrder.description}<#elseif offlineOrder.name?has_content>${offlineOrder.name}<#else>Order data</#if></a>
+                </#list>
               </#if>
-        
+
             </#if>
           </#if>
 
@@ -57,6 +76,7 @@
         <#include "_citation.ftlh">
         <#include "_otherUseConstraints.ftlh">
       </div>
-    
+
     </div>
   </#if>
+

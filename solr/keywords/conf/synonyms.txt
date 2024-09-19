@@ -40,3 +40,4 @@ sulphur,sulfur
 sulphate,sulfate
 aluminium,aluminum
 environment,enviroment,enviromnent
+hedge,hedgerow

@@ -23,6 +23,7 @@ import uk.ac.ceh.gateway.catalogue.converters.Object2TemplatedMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.TransparentProxyMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.WmsFeatureInfo2XmlMessageConverter;
 import uk.ac.ceh.gateway.catalogue.datacite.DataciteResponse;
+import uk.ac.ceh.gateway.catalogue.metrics.MetricsReportModel;
 import uk.ac.ceh.gateway.catalogue.model.CodeDocument;
 import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.document.writing.MessageConverterWritingService;
@@ -34,6 +35,7 @@ import uk.ac.ceh.gateway.catalogue.elter.ElterDocument;
 import uk.ac.ceh.gateway.catalogue.erammp.ErammpDatacube;
 import uk.ac.ceh.gateway.catalogue.erammp.ErammpModel;
 import uk.ac.ceh.gateway.catalogue.infrastructure.InfrastructureRecord;
+import uk.ac.ceh.gateway.catalogue.model.MethodRecord;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.imp.CaseStudy;
 import uk.ac.ceh.gateway.catalogue.imp.Model;
@@ -53,6 +55,7 @@ import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.History;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreementModel;
+import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreementPermissionResource;
 import uk.ac.ceh.gateway.catalogue.sparql.SparqlResponse;
 import uk.ac.ceh.gateway.catalogue.ukems.UkemsDocument;
 import uk.ac.ceh.gateway.catalogue.wms.WmsFormatParameterFilter;
@@ -85,12 +88,14 @@ public class WebConfig implements WebMvcConfigurer {
         val erammpDatacube = new Object2TemplatedMessageConverter<>(ErammpDatacube.class, freemarkerConfiguration);
         val erammpModel = new Object2TemplatedMessageConverter<>(ErammpModel.class, freemarkerConfiguration);
         val infrastructureRecord = new Object2TemplatedMessageConverter<>(InfrastructureRecord.class, freemarkerConfiguration);
+        val methodRecord = new Object2TemplatedMessageConverter<>(MethodRecord.class, freemarkerConfiguration);
         val errorResponse = new Object2TemplatedMessageConverter<>(ErrorResponse.class, freemarkerConfiguration);
         val facility = new Object2TemplatedMessageConverter<>(Facility.class, freemarkerConfiguration);
         val gemini = new Object2TemplatedMessageConverter<>(GeminiDocument.class, freemarkerConfiguration);
         val history = new Object2TemplatedMessageConverter<>(History.class, freemarkerConfiguration);
         val link = new Object2TemplatedMessageConverter<>(LinkDocument.class, freemarkerConfiguration);
         val maintenanceResponse = new Object2TemplatedMessageConverter<>(MaintenanceResponse.class, freemarkerConfiguration);
+        val metricsReportModel = new Object2TemplatedMessageConverter<>(MetricsReportModel.class, freemarkerConfiguration);
         val model = new Object2TemplatedMessageConverter<>(Model.class, freemarkerConfiguration);
         val modelApplication = new Object2TemplatedMessageConverter<>(ModelApplication.class, freemarkerConfiguration);
         val monitoringActivity = new Object2TemplatedMessageConverter<>(MonitoringActivity.class, freemarkerConfiguration);
@@ -108,6 +113,7 @@ public class WebConfig implements WebMvcConfigurer {
         val sampleArchive = new Object2TemplatedMessageConverter<>(SampleArchive.class, freemarkerConfiguration);
         val searchResults = new Object2TemplatedMessageConverter<>(SearchResults.class, freemarkerConfiguration);
         val serviceAgreementModel = new Object2TemplatedMessageConverter<>(ServiceAgreementModel.class, freemarkerConfiguration);
+        val serviceAgreementPermissionResource = new Object2TemplatedMessageConverter<>(ServiceAgreementPermissionResource.class, freemarkerConfiguration);
         val sparqlResponse = new Object2TemplatedMessageConverter<>(SparqlResponse.class, freemarkerConfiguration);
         val stateResource = new Object2TemplatedMessageConverter<>(StateResource.class, freemarkerConfiguration);
         val ukems = new Object2TemplatedMessageConverter<>(UkemsDocument.class, freemarkerConfiguration);
@@ -133,11 +139,13 @@ public class WebConfig implements WebMvcConfigurer {
             erammpDatacube,
             erammpModel,
             infrastructureRecord,
+            methodRecord,
             errorResponse,
             facility,
             history,
             link,
             maintenanceResponse,
+            metricsReportModel,
             model,
             modelApplication,
             monitoringActivity,
@@ -155,6 +163,7 @@ public class WebConfig implements WebMvcConfigurer {
             sampleArchive,
             searchResults,
             serviceAgreementModel,
+            serviceAgreementPermissionResource,
             sparqlResponse,
             stateResource,
             ukems,

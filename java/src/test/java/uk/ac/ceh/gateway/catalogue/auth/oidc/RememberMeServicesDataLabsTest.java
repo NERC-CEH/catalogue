@@ -11,6 +11,7 @@ import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import com.nimbusds.jwt.proc.BadJWTException;
+import jakarta.servlet.http.Cookie;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.jupiter.api.Assertions;
@@ -24,7 +25,6 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 
-import javax.servlet.http.Cookie;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Date;

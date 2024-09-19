@@ -15,6 +15,8 @@ import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.model.Supplemental;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreement;
 
+import java.time.ZoneId;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -77,16 +79,36 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private Keyword resourceType;
     private AccessLimitation accessLimitation;
     private boolean notGEMINI;
-
+    private Boolean hasOnlineServiceAgreement;
 
     public void populateFromServiceAgreement(ServiceAgreement serviceAgreement) {
         this.setTitle(serviceAgreement.getTitle());
         this.setDescription(serviceAgreement.getDescription());
-        this.responsibleParties = serviceAgreement.getAuthors();
-        this.useConstraints = List.of(serviceAgreement.getEndUserLicence());
+        this.useConstraints = Optional.ofNullable(serviceAgreement.getEndUserLicence())
+            .map(List::of)
+            .orElse(null);
         this.lineage = serviceAgreement.getLineage();
         this.boundingBoxes = serviceAgreement.getBoundingBoxes();
         this.funding = serviceAgreement.getFunding();
+        this.responsibleParties = new ArrayList<>();
+        this.responsibleParties.add(ResponsibleParty.builder()
+            .individualName(serviceAgreement.getDepositorName())
+            .email(convertEmail(serviceAgreement.getDepositorContactDetails()))
+            .role("pointOfContact")
+            .build()
+        );
+        this.responsibleParties.addAll(convertEmails(serviceAgreement.getAuthors()));
+        this.responsibleParties.addAll(convertEmails(serviceAgreement.getOwnersOfIpr()));
+        Optional.ofNullable(serviceAgreement.getAvailability())
+            .ifPresent(availability -> {
+                this.datasetReferenceDate = DatasetReferenceDate.builder()
+                    .releasedDate(LocalDate.parse(availability))
+                    .build();
+        });
+        this.topicCategories = serviceAgreement.getTopicCategories();
+        this.keywordsDiscipline = serviceAgreement.getKeywordsDiscipline();
+        this.keywordsTheme = serviceAgreement.getKeywordsTheme();
+        this.keywordsOther = serviceAgreement.getKeywordsOther();
     }
 
     @Override
@@ -103,6 +125,13 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
                 .orElse("Unknown");
     }
 
+    public Date getPublicationDate() {
+        return Optional.ofNullable(datasetReferenceDate)
+                .map(DatasetReferenceDate::getPublicationDate)
+                .map(date -> Date.from(date.atStartOfDay(ZoneId.of("UTC")).toInstant()))
+                .orElse(null);
+    }
+
     @Override
     public GeminiDocument setType(String type) {
         super.setType(type);
@@ -115,30 +144,30 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     public List<Keyword> getAllKeywords() {
         return Stream.of(
             keywordsFromDescriptiveKeywords(),
-            Optional.ofNullable(keywordsDiscipline).orElse(Collections.emptyList()),
-            Optional.ofNullable(keywordsInstrument).orElse(Collections.emptyList()),
-            Optional.ofNullable(keywordsObservedProperty).orElse(Collections.emptyList()),
-            Optional.ofNullable(keywordsPlace).orElse(Collections.emptyList()),
-            Optional.ofNullable(keywordsProject).orElse(Collections.emptyList()),
-            Optional.ofNullable(keywordsTheme).orElse(Collections.emptyList()),
-            Optional.ofNullable(keywordsOther).orElse(Collections.emptyList())
+            Optional.ofNullable(keywordsDiscipline).orElseGet(Collections::emptyList),
+            Optional.ofNullable(keywordsInstrument).orElseGet(Collections::emptyList),
+            Optional.ofNullable(keywordsObservedProperty).orElseGet(Collections::emptyList),
+            Optional.ofNullable(keywordsPlace).orElseGet(Collections::emptyList),
+            Optional.ofNullable(keywordsProject).orElseGet(Collections::emptyList),
+            Optional.ofNullable(keywordsTheme).orElseGet(Collections::emptyList),
+            Optional.ofNullable(keywordsOther).orElseGet(Collections::emptyList)
         )
             .flatMap(Collection::stream)
-            .collect(Collectors.toList());
+            .collect(Collectors.toCollection(ArrayList::new));
     }
 
     private List<Keyword> keywordsFromDescriptiveKeywords() {
         return Optional.ofNullable(descriptiveKeywords)
-            .orElse(Collections.emptyList())
+            .orElseGet(Collections::emptyList)
             .stream()
             .flatMap(dk -> dk.getKeywords().stream())
-            .collect(Collectors.toList());
+            .collect(Collectors.toCollection(ArrayList::new));
     }
 
     @Override
     public GeminiDocument addAdditionalKeywords(List<Keyword> additionalKeywords) {
         descriptiveKeywords = Optional.ofNullable(descriptiveKeywords)
-                .orElse(new ArrayList<>());
+            .orElseGet(ArrayList::new);
 
         descriptiveKeywords.add(
                 DescriptiveKeywords
@@ -162,7 +191,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
 
     public List<OnlineResource> getOnlineResources() {
         return Optional.ofNullable(onlineResources)
-            .orElse(Collections.emptyList());
+            .orElseGet(ArrayList::new);
     }
 
     @JsonIgnore
@@ -171,7 +200,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
         return getOnlineResources()
             .stream()
             .filter(onlineResource -> downloadRoles.contains(onlineResource.getFunction()))
-            .collect(Collectors.toList());
+            .collect(Collectors.toCollection(ArrayList::new));
     }
 
     /**
@@ -182,22 +211,14 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
      */
     @JsonIgnore
     public String getMapViewerUrl() {
-        val possibleWms = Optional.ofNullable(onlineResources)
-                .orElse(Collections.emptyList())
-                .stream()
-                .filter(onlineResource -> onlineResource.getType().equals(WMS_GET_CAPABILITIES))
-                .filter(onlineResource -> WMS_ONLINE_RESOURCE.matcher(onlineResource.getUrl()).matches())
-                .findFirst();
-
-        if (possibleWms.isPresent()) {
-            val onlineResource = possibleWms.get();
-            log.debug(onlineResource.toString());
-            val matcher = WMS_ONLINE_RESOURCE.matcher(onlineResource.getUrl());
-            log.debug("matches {}, group 1: {}", matcher.matches(), matcher.group(1));
-            val id = matcher.group(1);
-            return "/maps#layers/" + id;
-        }
-        return null;
+        return Optional.ofNullable(onlineResources)
+            .orElseGet(Collections::emptyList)
+            .stream()
+            .filter(onlineResource -> onlineResource.getType().equals(WMS_GET_CAPABILITIES))
+            .flatMap(onlineResource -> WMS_ONLINE_RESOURCE.matcher(onlineResource.getUrl()).results())
+            .findFirst()
+            .map(matchResult -> "/maps#layers/" + matchResult.group(1))
+            .orElse(null);
     }
 
     @JsonIgnore
@@ -207,33 +228,31 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
 
     public List<String> getTopics() {
         return Optional.ofNullable(keywordsTheme)
-                .orElse(Collections.emptyList())
-                .stream()
-                .map(Keyword::getUri)
-                .filter(uri -> uri.startsWith(TOPIC_PROJECT_URL))
-                .collect(Collectors.toList());
+            .orElseGet(Collections::emptyList)
+            .stream()
+            .map(Keyword::getUri)
+            .filter(uri -> uri.startsWith(TOPIC_PROJECT_URL))
+            .collect(Collectors.toCollection(ArrayList::new));
     }
 
     public List<String> getCoupledResources() {
-        return Optional.ofNullable(service)
-                .map(Service::getCoupledResources)
-                .orElse(Collections.emptyList())
-                .stream()
-                .map(Service.CoupledResource::getIdentifier)
-                .filter(cr -> !cr.isEmpty())
-                .collect(Collectors.toList());
+        return Stream.ofNullable(service)
+            .flatMap(s -> s.getCoupledResources().stream())
+            .map(Service.CoupledResource::getIdentifier)
+            .filter(cr -> !cr.isEmpty())
+            .collect(Collectors.toCollection(ArrayList::new));
     }
 
     public List<ResponsibleParty> getResponsibleParties() {
         return Optional.ofNullable(responsibleParties)
-                .orElse(Collections.emptyList());
+            .orElseGet(ArrayList::new);
     }
 
-    private List<ResponsibleParty>responsiblePartyByRole(String role) {
+    private List<ResponsibleParty> responsiblePartyByRole(String role) {
         return getResponsibleParties()
             .stream()
-            .filter((responsibleParty) -> responsibleParty.getRole().equalsIgnoreCase(role))
-            .collect(Collectors.toList());
+            .filter(responsibleParty -> responsibleParty.getRole().equalsIgnoreCase(role))
+            .collect(Collectors.toCollection(ArrayList::new));
     }
 
     public List<ResponsibleParty> getAuthors() {
@@ -258,45 +277,55 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
 
     public List<DistributionInfo> getDistributionFormats() {
         return Optional.ofNullable(distributionFormats)
-            .orElse(Collections.emptyList());
+            .orElseGet(ArrayList::new);
     }
 
     public List<BoundingBox> getBoundingBoxes() {
         return Optional.ofNullable(boundingBoxes)
-            .orElse(Collections.emptyList());
+            .orElseGet(ArrayList::new);
     }
 
     public List<Funding> getFunding() {
         return Optional.ofNullable(funding)
-                .orElse(Collections.emptyList());
+            .orElseGet(ArrayList::new);
     }
 
     public List<Supplemental> getSupplemental() {
         return Optional.ofNullable(supplemental)
-                .orElse(Collections.emptyList());
+            .orElseGet(ArrayList::new);
     }
 
     @Override
     public @NonNull List<String> getWKTs() {
         return Optional.ofNullable(boundingBoxes)
-                .orElse(Collections.emptyList())
-                .stream()
-                .map(BoundingBox::getWkt)
-                .collect(Collectors.toList());
+            .orElseGet(Collections::emptyList)
+            .stream()
+            .map(BoundingBox::getWkt)
+            .collect(Collectors.toCollection(ArrayList::new));
     }
 
     @JsonIgnore
     public @NonNull List<String> getBounds() {
         return Optional.ofNullable(boundingBoxes)
-                .orElse(Collections.emptyList())
-                .stream()
-                .map(BoundingBox::getBounds)
-                .collect(Collectors.toList());
+            .orElseGet(Collections::emptyList)
+            .stream()
+            .map(BoundingBox::getBounds)
+            .collect(Collectors.toCollection(ArrayList::new));
     }
     public long getIncomingCitationCount() {
         return Optional.ofNullable(incomingCitations)
-            .orElse(Collections.emptyList())
-            .size();
+            .map(List::size)
+            .orElse(0);
     }
 
+    private static @NonNull String convertEmail(@NonNull String email) {
+        return email.endsWith("@ceh.ac.uk") ? "enquiries@ceh.ac.uk" : email;
+    }
+
+    private static @NonNull List<ResponsibleParty> convertEmails(List<ResponsibleParty> parties) {
+        return Stream.ofNullable(parties)
+            .flatMap(List::stream)
+            .map(party -> party.withEmail(convertEmail(party.getEmail())))
+            .toList();
+    }
 }

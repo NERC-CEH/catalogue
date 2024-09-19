@@ -50,8 +50,14 @@ public class DocumentTypes {
 
     public static final String INFRASTRUCTURERECORD = "infrastructurerecord";
         public static DocumentType INFRASTRUCTURERECORD_TYPE = DocumentType.builder()
-            .title("Infrastructure record")
+            .title("Science infrastructure")
             .type(INFRASTRUCTURERECORD)
+            .build();
+
+    public static final String METHODRECORD = "methodrecord";
+        public static DocumentType METHODRECORD_TYPE = DocumentType.builder()
+            .title("Method")
+            .type(METHODRECORD)
             .build();
 
     public static final String GEMINI = "GEMINI_DOCUMENT";

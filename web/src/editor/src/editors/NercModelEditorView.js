@@ -3,7 +3,7 @@ import {
   DataTypeSchemaSimpleView, FundingView, KeywordVocabularyView,
   ModelQAView,
   AdditionalInfoView,
-  ModelResolutionView, OnlineLinkView,
+  ModelResolutionView, OnlineResourceSimpleView,
   ParentView,
   PredefinedParentView,
   SupplementalView, TextareaView
@@ -178,7 +178,7 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'onlineResources',
           label: 'Online resources',
-          ObjectInputView: OnlineLinkView,
+          ObjectInputView: OnlineResourceSimpleView,
           multiline: true,
           listAttribute: `\
 <option value='code'>Link to location of the model code (e.g. GitHub repository)</option>

@@ -68,6 +68,7 @@
       multiValued="true"
     />
 
+    <field name="publicationDate" type="pdate"/>
     <field name="_text_" type="text_general" stored="false"/>
     <field name="_version_" type="plong" indexed="false" stored="false"/>
     <field name="altTitle" type="text_general"/>
@@ -131,10 +132,10 @@
     <field name="surname" type="names"/>
     <field name="title" type="text_general" required="true" multiValued="false"/>
     <field name="topic" type="keywords"/>
-    <field name="ukscapeResearchProject" type="keywords"/>
-    <field name="ukscapeResearchTheme" type="keywords"/>
-    <field name="ukscapeScienceChallenge" type="keywords"/>
-    <field name="ukscapeService" type="keywords"/>
+    <field name="ukcehResearchProject" type="keywords"/>
+    <field name="ukcehResearchTheme" type="keywords"/>
+    <field name="ukcehScienceChallenge" type="keywords"/>
+    <field name="ukcehService" type="keywords"/>
     <field name="version" type="pfloat" default="1"/>
     <field name="dataLevel" type="keywords" multiValued="false"/>
     <field name="view" type="keywords"/>

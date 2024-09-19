@@ -36,42 +36,15 @@
       "uri": "http://inspire.ec.europa.eu/metadata-codelist/TopicCategory/imageryBaseMapsEarthCover"
     }
   ],
+  "keywordsOther": [
+    {
+      "value": "Land cover"
+    }
+  ],
   "distributionFormats": [
     {
       "name": "geo-referenced TIFF image",
       "version": "unknown"
-    }
-  ],
-  "descriptiveKeywords": [
-    {
-      "keywords": [
-        {
-          "value": "Land cover"
-        }
-      ],
-      "type": "theme"
-    },
-    {
-      "keywords": [
-        {
-          "value": "Northern Ireland"
-        }
-      ],
-      "type": "place"
-    },
-    {
-      "keywords": [
-        {
-          "value": "Monitoring & Observing Systems"
-        }
-      ]
-    },
-    {
-      "keywords": [
-        {
-          "value": "Land cover"
-        }
-      ]
     }
   ],
   "boundingBoxes": [

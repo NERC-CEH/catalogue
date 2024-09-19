@@ -8,16 +8,16 @@ export default Backbone.Model.extend({
   },
 
   validate ({ organisationName, email, individualName, nameIdentifier }) {
-    const emailRegEx = '[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?'
+    const emailRegEx = '^[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?'
     const orcidRegEx = '^https?:\\/\\/orcid.org\\/(\\d{4}-){3}\\d{3}[\\dX]$'
 
     const errors = []
 
-    if (!email?.match(emailRegEx)) {
+    if (email && !email?.match(emailRegEx)) {
       errors.push({ message: 'That email address is invalid' })
     }
 
-    if (!nameIdentifier?.match(orcidRegEx)) {
+    if (nameIdentifier && !nameIdentifier?.match(orcidRegEx)) {
       errors.push({ message: 'That ORCiD is invalid.  ORCiDs should be entered as https://orcid.org/0000-1234-5678-999X <b>not</b> 0000-1234-5678-999X' })
     }
 

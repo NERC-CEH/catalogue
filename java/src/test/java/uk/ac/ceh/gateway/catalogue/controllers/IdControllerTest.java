@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
@@ -23,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("IdController")
 @Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
 @WebMvcTest(IdController.class)
+@TestPropertySource(locations="classpath:test.properties")
 class IdControllerTest {
 
     @Autowired private MockMvc mvc;
@@ -37,7 +39,7 @@ class IdControllerTest {
             get("/id/{id}.xml", id)
         )
             .andExpect(status().is3xxRedirection())
-            .andExpect(header().string("location", "http://localhost/documents/" + id +".xml"));
+            .andExpect(header().string("location", "http://localhost:8080/documents/" + id +".xml"));
     }
 
     @Test
@@ -50,6 +52,6 @@ class IdControllerTest {
             .queryParam("query", "string")
         )
             .andExpect(status().is3xxRedirection())
-            .andExpect(header().string("location", "http://localhost/documents/" + id + "?query=string"));
+            .andExpect(header().string("location", "http://localhost:8080/documents/" + id + "?query=string"));
     }
 }

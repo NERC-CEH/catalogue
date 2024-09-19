@@ -13,7 +13,7 @@ import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.indexing.solr.WellKnownText;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
-import uk.ac.ceh.gateway.catalogue.model.OnlineLink;
+import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.model.DataTypeSchema;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
@@ -52,7 +52,7 @@ public class NercModel extends AbstractMetadataDocument implements WellKnownText
     private List<String>
         organisations;
 
-    private List<OnlineLink> onlineResources;
+    private List<OnlineResource> onlineResources;
     private List<Supplemental> references;
     private List<ResponsibleParty> responsibleParties;
     private List<QA> qa;

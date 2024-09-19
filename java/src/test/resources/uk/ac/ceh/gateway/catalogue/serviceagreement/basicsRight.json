@@ -7,6 +7,28 @@
   "lineage": "lineage",
   "resourceStatus": "resourceStatus",
   "transferMethod": "transferMethod",
+  "keywordsObservedProperty": "keywordsObservedProperty",
+  "keywordsPlace": "keywordsPlace",
+  "keywordsProject": "keywordsProject",
+  "keywordsInstrument": "keywordsInstrument",
+    "topicCategories": [
+        {
+            "value": "boundaries",
+            "uri": "http://inspire.ec.europa.eu/metadata-codelist/TopicCategory/boundaries"
+        }
+    ],
+    "keywordsTheme": [
+        {
+            "value": "Soil",
+            "uri": "http://onto.nerc.ac.uk/CEHMD/topic/17"
+        }
+    ],
+    "keywordsOther": [
+        {
+            "value": "carbon",
+            "uri": "http://onto.nerc.ac.uk/CAST/270"
+        }
+    ],
   "useConstraints": [
     {
       "value": "This resource is made available under the terms of the Open Government Licence",

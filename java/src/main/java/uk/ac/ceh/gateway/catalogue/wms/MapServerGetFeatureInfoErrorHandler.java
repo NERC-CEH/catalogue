@@ -1,6 +1,8 @@
 package uk.ac.ceh.gateway.catalogue.wms;
 
+import lombok.val;
 import org.apache.commons.io.IOUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.ResponseErrorHandler;
 import uk.ac.ceh.gateway.catalogue.model.MapServerException;
@@ -22,7 +24,8 @@ public class MapServerGetFeatureInfoErrorHandler implements ResponseErrorHandler
 
     @Override
     public void handleError(ClientHttpResponse response) throws IOException {
-        String body = IOUtils.toString(response.getBody(), StandardCharsets.UTF_8);
-        throw new MapServerException(body, response.getStatusCode(), response.getHeaders().getContentType());
+        val body = IOUtils.toString(response.getBody(), StandardCharsets.UTF_8);
+        val httpStatus = HttpStatus.valueOf(response.getStatusCode().value());
+        throw new MapServerException(body, httpStatus, response.getHeaders().getContentType());
     }
 }

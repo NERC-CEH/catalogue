@@ -1,11 +1,16 @@
 package uk.ac.ceh.gateway.catalogue.ef;
 
-import java.util.Arrays;
-import java.util.Objects;
-import javax.xml.bind.annotation.*;
-import lombok.*;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlSeeAlso;
+import jakarta.xml.bind.annotation.XmlValue;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
+
+import java.util.Arrays;
+import java.util.Objects;
 
 @Data
 @EqualsAndHashCode(exclude = {"title","value"})

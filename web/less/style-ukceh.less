@@ -1,0 +1,59 @@
+@import "theme";
+
+/***********
+ Import infrastructure stylesheet as a temporary measure
+ When infrastructure records are moved to the  UKCEH catalogue
+ the stylesheets can be merged
+************/
+@import "style-infrastructure";
+
+@fa-font-path: "../fonts";
+
+html {
+    overflow-y: scroll;
+}
+
+.adminToolbar {
+    margin-top: 1em;
+}
+
+.input-group-addon {
+    background-color: #eee;
+}
+
+.modal-open {
+    padding: 0 !important;
+}
+
+.cy {
+    height: 550px;
+    width: 100%;
+}
+
+.fa-spin-2x {
+    -webkit-animation: fa-spin 1s infinite linear;
+    animation: fa-spin 1s infinite linear;
+}
+
+
+#editor {
+    .option-ukceh {
+        display: initial !important;
+    }
+}
+
+.method-metadata {
+
+    .key-value {
+        margin: 2em 0;
+
+        >div {
+            text-wrap: balance;
+
+            &:first-of-type {
+                font-weight: bolder;
+                font-size: 1.125em;
+            }
+        }
+    }
+}

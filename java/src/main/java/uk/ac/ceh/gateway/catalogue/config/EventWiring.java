@@ -1,13 +1,15 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
 import com.google.common.eventbus.EventBus;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
+import uk.ac.ceh.gateway.catalogue.document.DocumentListingService;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.IndexingFileEventListener;
-import uk.ac.ceh.gateway.catalogue.document.DocumentListingService;
+import uk.ac.ceh.gateway.catalogue.indexing.network.NetworkFileEventListener;
+import uk.ac.ceh.gateway.catalogue.indexing.network.NetworkIndexingService;
 
-import javax.annotation.PostConstruct;
 
 @SuppressWarnings("UnstableApiUsage")
 @Configuration
@@ -19,6 +21,7 @@ public class EventWiring {
     private final DocumentIndexingService dataciteIndex;
     private final DocumentIndexingService validationIndex;
     private final DocumentIndexingService mapserverIndex;
+    private final NetworkIndexingService networkIndex;
     private final DocumentListingService listing;
 
     public EventWiring(
@@ -28,6 +31,7 @@ public class EventWiring {
         @Qualifier("datacite-index") DocumentIndexingService dataciteIndex,
         @Qualifier("validation-index") DocumentIndexingService validationIndex,
         @Qualifier("mapserver-index") DocumentIndexingService mapserverIndex,
+        @Qualifier("network-index") NetworkIndexingService networkIndex,
         DocumentListingService listing
     ) {
         this.bus = bus;
@@ -36,6 +40,7 @@ public class EventWiring {
         this.dataciteIndex = dataciteIndex;
         this.validationIndex = validationIndex;
         this.mapserverIndex = mapserverIndex;
+        this.networkIndex = networkIndex;
         this.listing = listing;
     }
 
@@ -47,5 +52,6 @@ public class EventWiring {
         bus.register(new IndexingFileEventListener(dataciteIndex, listing));
         bus.register(new IndexingFileEventListener(validationIndex, listing));
         bus.register(new IndexingFileEventListener(mapserverIndex, listing));
+        bus.register(new NetworkFileEventListener(networkIndex, listing));
     }
 }

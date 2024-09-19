@@ -13,7 +13,7 @@
 			</gmd:DQ_Scope>
 		</gmd:scope>
 		<#--
-		Conformity (gmd:report) is mandatory for GEMINI 2.3 
+		Conformity (gmd:report) is mandatory for GEMINI 2.3
 		But we don't yet evaluate (or record) conformity so this is
 		a boilerplate statement specifying that conformity has not been evaluated
 		-->
@@ -60,7 +60,7 @@
 											<gco:Date>2011-03-21</gco:Date>
 										</gmd:date>
 										<gmd:dateType>
-											<gmd:CI_DateTypeCode codeList="https://standards.iso.org/iso/19139/resources/gmxCodelists.xml##CI_DateTypeCode" codeListValue="publication" >publication</gmd:CI_DateTypeCode>
+											<gmd:CI_DateTypeCode codeList="https://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication" >publication</gmd:CI_DateTypeCode>
 										</gmd:dateType>
 									</gmd:CI_Date>
 								</gmd:date>

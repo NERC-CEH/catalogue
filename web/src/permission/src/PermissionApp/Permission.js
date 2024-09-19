@@ -9,7 +9,7 @@ export default Backbone.Model.extend({
   },
 
   urlRoot () {
-    return `/documents/${this.id}/permission`
+    return `/${this.get('doctype')}/${this.id}/permission`
   },
 
   loadCollection () {

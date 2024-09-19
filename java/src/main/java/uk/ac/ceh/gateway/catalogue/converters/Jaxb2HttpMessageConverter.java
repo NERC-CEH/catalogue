@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.converters;
 
+import jakarta.xml.bind.*;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -10,7 +11,6 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter;
 import org.springframework.util.ClassUtils;
 
-import javax.xml.bind.*;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import java.io.IOException;

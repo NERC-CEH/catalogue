@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import uk.ac.ceh.gateway.catalogue.document.reading.DocumentReader;
 import uk.ac.ceh.gateway.catalogue.quality.MetadataCheck;
 import uk.ac.ceh.gateway.catalogue.quality.Results;
+import uk.ac.ceh.gateway.catalogue.quality.MetadataQualityService;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -31,7 +32,7 @@ import static uk.ac.ceh.gateway.catalogue.serviceagreement.GitRepoServiceAgreeme
 @Slf4j
 @ToString
 @Service
-public class ServiceAgreementQualityService {
+public class ServiceAgreementQualityService implements MetadataQualityService {
 
     private final DocumentReader documentReader;
     private final Configuration config;
@@ -95,16 +96,32 @@ public class ServiceAgreementQualityService {
     }
 
     List<MetadataCheck> checkBasics(DocumentContext parsedDoc) {
-        val requiredKeys = ImmutableSet.of("title", "depositorContactDetails", "eidcName", "transferMethod", "depositReference");
+        val requiredKeys = Map.ofEntries(
+            Map.entry("title", "Title"),
+            Map.entry("depositorContactDetails", "Depositor contact details"),
+            Map.entry("eidcName", "EIDC name"),
+            Map.entry("transferMethod", "Transfer method"),
+            Map.entry("depositReference", "Deposit reference"),
+            Map.entry("topicCategories", "ISO 19115 topic categories keywords"),
+            Map.entry("keywordsTheme", "Science topic keywords"),
+            Map.entry("keywordsOther", "Other keywords"));
+
         val toReturn = new ArrayList<MetadataCheck>();
+
+        // Build string to check for missing fields
+        val keysToCheck = new StringJoiner(",");
+        requiredKeys.forEach((key, value) -> keysToCheck.add("'" + key + "'"));
+        String joinedKeysToCheck = keysToCheck.toString();
+        joinedKeysToCheck = "$.[" + joinedKeysToCheck + "]";
+
         val toCheck = parsedDoc.read(
-                "$.['title', 'depositorContactDetails', 'eidcName', 'transferMethod', 'depositReference']",
-                new TypeRef<Map<String, String>>() {}
+                joinedKeysToCheck,
+                new TypeRef<Map<String, Object>>() {}
         );
 
-        requiredKeys.forEach(key -> {
-            if (fieldIsMissing(toCheck, key)) {
-                toReturn.add(new MetadataCheck(key + " is missing", ERROR));
+        requiredKeys.forEach((key, value) -> {
+            if (fieldObjectIsMissing(toCheck, key)) {
+                toReturn.add(new MetadataCheck(value + " is missing", ERROR));
             }
         });
 
@@ -308,5 +325,20 @@ public class ServiceAgreementQualityService {
         return map == null
             || map.get(key) == null
             || map.get(key).isBlank();
+    }
+
+    /**
+     * Checks for null fields, blank strings and zero length lists.
+     * NOTE: for now we just check for non-zero lists if it is a List object.  However, it could be
+     * done with much more granularity for keywords to check for specific contents eg see checkAuthors()
+     * @param map the map of values to check
+     * @param key the key to get the value to check
+     * @return false if the field is not missing according to the rules implemented, otherwise true
+     */
+    private boolean fieldObjectIsMissing(Map<String, Object> map, String key) {
+        return map == null
+            || map.get(key) == null
+            || ((map.get(key) instanceof String) ? ((String)map.get(key)).isBlank() : false)
+            || ((map.get(key) instanceof List) ? ((List)map.get(key)).size() == 0 : false);
     }
 }

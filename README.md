@@ -1,6 +1,4 @@
-# CEH Catalogue
-
-The CEH metadata catalogue project.
+# UKCEH metadata catalogue
 
 [Introduction for developers](docs/introduction.md)
 
@@ -18,7 +16,8 @@ Browse to http://localhost:8080/eidc/documents to see the catalogue populated wi
 ### Standalone installation using published Docker images
 
 ```commandline
-mkdir datastore dropbox upload
+mkdir datastore dropbox upload metrics-db
+chmod a+w metrics-db
 cp fixtures/datastore/REV-1/* datastore
 cd datastore
 git init
@@ -36,9 +35,7 @@ cd -
 - **/schemas**    - XSD Schemas which are used to validate the various output xml files
 - **/solr**       - `Solr` web application, this handles the free-text indexing and searching of the application
 - **/templates**  - `Freemarker` templates which are used by the `java` application for generating the different metadata views
-- **/web**        - Location of the web component of the project, this is mainly `coffeescript` and `less` style sheets
-
-**NB:** `web/src/vendor/requirejs` needs to be left alone otherwise the build breaks
+- **/web**        - Location of the web component of the project, this is mainly `JavaScript` and `less` style sheets
 
 ## API
 [API documentation](docs/api.md)
@@ -51,10 +48,10 @@ cd -
 
 ## Usernames and Passwords
 
-you will need to create a `secrets.env` file with the following
+You will need to create a `secrets.env` file with the following. Ask one of the dev team for access to Keypass to retrieve the jira password.
 
 ```
-jira.password=FindMeInK33Pa55
+jira.password=
 crowd.password=
 doi.password=
 hubbub.password=
@@ -105,7 +102,7 @@ Start up the catalogue with `docker-compose up --build` then connect to the dock
 IntelliJ. You might need to add your user to the docker user group before connecting to the service.
 Now you can make changes to the front end without restarting docker and rebuilding the backend.
 
-#### Note - there are many uses of Jquery's $(document).ready() function in the editor module of the frontend. Do not just remove them as they are there to prevent timing issues with views of existing documents in the editor. Unless of course you can find a better alternative.
+#### Note - there are many uses of JQuery's $(document).ready() function in the editor module of the frontend. Do not just remove them as they are there to prevent timing issues with views of existing documents in the editor. Unless of course you can find a better alternative.
 
 ### Test JavaScript using Karma
 
@@ -134,6 +131,8 @@ The server profile e.g. `server:eidc` decides which catalogue you will use and w
 Select which algorithm Solr uses to search for documents.
 ##### service-agreement
 Allows the user to create online service agreements for datasets.
+##### metrics
+Creates the embedded sqlite database for the metric reporting.
 
 ### Developing LESS
 In the web directory run
@@ -205,7 +204,6 @@ services:
       - ./web/scripts/dist/main.bundle.js:/opt/ceh-catalogue/static/scripts/main.bundle.js
     environment:
       - spring.profiles.active=development,upload:hubbub,server:eidc,search:basic
-      - jira.username=<your username>
 ```
 
 ```commandline

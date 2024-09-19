@@ -15,38 +15,20 @@
     --header-link-hover-background-colour: color-mix(in lab, var(--header-link-background-colour), black 5%);
     --header-link-colour: var(--primary-colour);
     --header-link-hover-colour: var(--link-hover-colour);
-    --header-border-colour: var(--primary-colour);
-    --header-border-width: 4px;
+    --header-border-bottom-colour: var(--primary-colour);
+    --header-border-bottom-width: 4px;
     --header-logo-height: calc(var(--header-height) - 50px);
     --header-logo-border: none;
-}
+    --ukceh-brand-display: none;
 
-footer {
-    text-align: center;
-
-    .footerLinks {
-        margin-top: .5em;
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-
-        a {
-            border-left: 1px solid;
-            padding: 0 1em;
-
-            &:first-child {
-                border: none;
-                padding-left: 0;
-            }
-        }
-    }
 }
 
 header {
     .toolbar {
         .brand {
             img {
-                max-height: calc(var(--header-height) - 45px);
+                max-height: calc(var(--header-height) - 60px);
+                margin-right: 1em;
             }
         }
     }
@@ -58,9 +40,7 @@ header {
     }
 }
 
-
 #metadata {
-
     #studyarea-map,
     #geometry-map {
         height: 400px;
@@ -76,5 +56,37 @@ header {
             font-weight: 600;
         }
     }
-    h2 { clear:both;  padding-top:2em;  }
+
+    h2 {
+        clear: both;
+        padding-top: 2em;
+    }
+}
+
+footer {
+    .container {
+        .footer-socials {
+            a {
+                background-color: white;
+                color: black;
+
+                &:hover {
+                    background-color: transparent;
+                    color: white;
+                }
+            }
+        }
+    }
+}
+
+
+@media only screen and (min-width: 800px) {
+    footer {
+        .container {
+            .footer-links {
+                flex-direction: row;
+                gap: 0 2em;
+            }
+        }
+    }
 }

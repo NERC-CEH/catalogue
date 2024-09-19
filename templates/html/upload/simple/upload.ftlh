@@ -1,6 +1,6 @@
 <#import "../../skeleton.ftlh" as skeleton>
 
-<@skeleton.master title=title catalogue=catalogues.retrieve(catalogueKey)>
+<@skeleton.master title=title catalogue=catalogues.retrieve(catalogueKey) footer=false>
 <div class="container" id="simple-upload">
   <h1>${title}</h1>
   <a href="/documents/${id}">Return to metadata</a>

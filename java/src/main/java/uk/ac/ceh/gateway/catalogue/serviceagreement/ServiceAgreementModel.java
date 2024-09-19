@@ -1,6 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.serviceagreement;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.hateoas.Link;
@@ -10,8 +10,12 @@ import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.gemini.*;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
+import uk.ac.ceh.gateway.catalogue.publication.StateResource;
+import uk.ac.ceh.gateway.catalogue.publication.TransitionResource;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -20,6 +24,7 @@ import java.util.stream.StreamSupport;
 @ConvertUsing({
         @Template(called = "html/service_agreement/service-agreement.ftlh", whenRequestedAs = MediaType.TEXT_HTML_VALUE),
 })
+@JsonIgnoreProperties(value = {"historical", "transitions", "stateTitle"})
 public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementModel> {
 
     private String id, title, depositReference, depositorName, depositorContactDetails, eidcName, eidcContactDetails,otherPoliciesOrLegislation, fileNumber,transferMethod, fileNamingConvention, policyExceptions, availability, useConstraints, supersededData, otherInfo, description, lineage;
@@ -49,8 +54,10 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
     /*
      * FLAGS
      */
-    @JsonIgnore
+    //@JsonIgnore
     private boolean historical;
+    private Set<TransitionResource> transitions;
+    private String stateTitle;
 
     public ServiceAgreementModel(ServiceAgreement serviceAgreement) {
         this.id = serviceAgreement.getId();
@@ -78,10 +85,6 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
         this.otherInfo = serviceAgreement.getOtherInfo();
         this.topicCategories = serviceAgreement.getTopicCategories();
         this.keywordsDiscipline = serviceAgreement.getKeywordsDiscipline();
-        this.keywordsInstrument = serviceAgreement.getKeywordsInstrument();
-        this.keywordsObservedProperty = serviceAgreement.getKeywordsObservedProperty();
-        this.keywordsPlace = serviceAgreement.getKeywordsPlace();
-        this.keywordsProject = serviceAgreement.getKeywordsProject();
         this.keywordsTheme = serviceAgreement.getKeywordsTheme();
         this.keywordsOther = serviceAgreement.getKeywordsOther();
         this.allKeywords = serviceAgreement.getAllKeywords();
@@ -90,6 +93,14 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
         this.boundingBoxes = serviceAgreement.getBoundingBoxes();
         this.historical = serviceAgreement.isHistorical();
         this.state = serviceAgreement.getState();
+        StateResource currentStateResource = serviceAgreement.getCurrentStateResource();
+        if (currentStateResource == null) {
+            this.stateTitle = serviceAgreement.getState();
+            this.transitions = Collections.emptySet();
+        } else {
+            this.stateTitle = currentStateResource.getTitle();
+            this.transitions = currentStateResource.getTransitions();
+        }
     }
 
     @SuppressWarnings("unused")

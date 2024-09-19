@@ -13,41 +13,66 @@
         <div class="container" role="main">
 
             <div class="title">
-                <div class="logo"></div>
-                <h1>EIDC Deposit Agreement for ${title!"NOT PROVIDED"} (Status: ${getState()?upper_case})</h1>
+                <div class="eidcLogo">
+                  <img src="/static/img/cataloguelogo/eidc.png">
+                </div>
+                <h1>
+                  EIDC Service Agreement for ${title!"NOT PROVIDED"}
+                  <span class="saStatus saStatus-${getStateTitle()?lower_case}">${getStateTitle()?upper_case}</span>
+                </h1>
             </div>
 
-            <#if permission.userCanEditServiceAgreement(id)>
             <div class="text-right">
                 <div class="row hidden-print adminPanel" role="toolbar">
+                    <#if state == "agreed">
+                        <div class="btn-group btn-group-sm">
+                            <button type="button" class="btn btn-default btn-wide" onClick="window.print()">Print</button>
+                        </div>
+                    </#if>
                     <#if !isHistorical()>
-                        <#if getState() != "pending publication" && getState() != "published">
-                           <div class="btn-group btn-group-sm">
-                             <button type="button" class="btn btn-default edit-control btn-wide" data-document-type="service-agreement">Edit</button>
-                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
-                               <span class="caret"></span>
-                               <span class="sr-only">Toggle Dropdown</span>
-                             </button>
-                             <ul class="dropdown-menu dropdown-menu-right">
-                               <li>
-                                 <a href="/service-agreement/${id}/publication">
-                                    <i class="fa-solid fa-file"></i>
-                                    Service agreement publication status
-                                 </a>
-                               </li>
-                             </ul>
-                           </div>
-                        </#if>
-
-                        <#list getModelLinks() as link>
-                            <#if link.rel == 'history'>
-                                <a href="${link.href}" class="btn btn-default btn-wide btn-sm">${link.title}</a>
-                            <#else>
-                                <form action="${link.href}" method="post">
-                                    <input type="submit" class="btn btn-default btn-wide btn-sm" value="${link.title}">
-                                </form>
+                        <#assign canChangeState = true>
+                        <#if serviceAgreementQuality??>
+                            <#assign
+                                SA_checks = serviceAgreementQuality.check(id)
+                                problems = SA_checks.getProblems()
+                                errors = func.filter(problems, "severity", "ERROR")
+                            >
+                            <#if errors?? && errors?has_content>
+                                <#assign canChangeState = false>
                             </#if>
-                        </#list>
+                        </#if>
+                        <#if getState() != "draft">
+                            <#assign canChangeState = true>
+                        </#if>
+                        <#if permission.userCanEditServiceAgreement(id)>
+                            <div class="btn-group btn-group-sm">
+                                <button type="button" class="btn btn-default edit-control btn-wide" data-document-type="service-agreement">Edit</button>
+                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+                                  <span class="caret"></span>
+                                  <span class="sr-only">Toggle Dropdown</span>
+                                </button>
+                              <ul class="dropdown-menu dropdown-menu-right">
+                                <li>
+                                  <a href="/service-agreement/${id}/permission">
+                                    <i class="fa-solid fa-users"></i>
+                                    Permissions
+                                  </a>
+                                </li>
+                              </ul>
+                            </div>
+                            <#list getModelLinks() as link>
+                                <#if link.rel == 'history'>
+                                    <a href="${link.href}" class="btn btn-default btn-wide btn-sm">${link.title}</a>
+                                </#if>
+                            </#list>
+                        </#if>
+                        <#if canChangeState>
+                            <#list transitions as transition>
+                                <form method="post" action="/service-agreement/${id}/form-publication/${transition.id}">
+                                    <p><button type="submit" class="btn btn-default btn-wide btn-sm" title="${transition.helpText}">${transition.title}</button></p>
+                                </form>
+                            </#list>
+                        </#if>
                     <#elseif  isHistorical()>
                         <#list getModelLinks() as link>
                             <#if link.title == 'History'>
@@ -57,7 +82,6 @@
                     </#if>
                 </div>
             </div>
-            </#if>
 
             <#if permission.userCanEditServiceAgreement(id) && !isHistorical()>
                 <#include "_serviceAgreementQualityReport.ftlh">
@@ -87,7 +111,8 @@
                     <h3>Your responsibilities:</h3>
                     <ul>
                         <li>You provide assurances that you are entitled to deposit the data resource in the EIDC and that the agreement of all parties who may have an interest in the resource has been obtained.</li>
-                        <li>You confirm that the resource is not already available elsewhere.</li>
+                        <li>You confirm that you have sufficient knowledge of the data resource to deposit it with the EIDC, being either a named author of the data resource, or with written confirmation from the lead author of the data resource of your suitability to act as depositor</li>
+                        <li>You confirm that this is the reference copy of the resource and that you will cite this resource including the NERC DOI it will be assigned in any subsequent publications</li>
                         <li>You agree to supply sufficient supporting information (metadata) to enable discovery, management and reuse of the data. </li>
                         <li>You ensure that in the case of research data with human subjects that consents collected are ethically and legally appropriate and sufficient to allow deposit of the resource.</li>
                         <li>You agree to notify the EIDC promptly of any copyright, confidentiality, privacy, data protection, defamation or similar issues pertaining to the data.</li>
@@ -137,12 +162,12 @@
 
                 <div class="authors">
                     <h3>Authors</h3>
-                    <p>This information will be used in discovery metadata for this dataset (the catalogue record).  <a href="#">See our policy on retention and use of personal data</a>.</p>
+                    <p>This information will be used in discovery metadata for this dataset (the catalogue record).  <a href="https://eidc.ac.uk/policies/retentionPersonalData">See our policy on retention and use of personal data</a>.</p>
 
                     <#if authors?has_content && authors?size gt 0 >
                         <@displayAuthors/>
                     <#else>
-                    <div class="alert alert--error">NO AUTHORS LISTED</div>
+                    <div class="text-danger">NO AUTHORS LISTED</div>
                     </#if>
                 </div>
             </div>
@@ -167,17 +192,17 @@
                                 <div class="supportingDoc">
                                     <div class="supportingDoc__name">
                                         <#if doc.name?? && doc.format??>
-                                            <i>${doc.name}.${doc.format}</i>
+                                          ${doc.name}.${doc.format}
                                         <#else>
-                                           <span class="alert alert--error">missing</span>
+                                          <span class="text-danger">missing</span>
                                         </#if>
                                     </div>
                                     <div class="supportingDoc__content">
                                         <ul>
                                             <#list doc.content![] as kind>
-                                                <li>${doc.contentTypeToText(kind)}</li>
+                                              <li>${doc.contentTypeToText(kind)}</li>
                                             <#else>
-                                                <span class="alert alert--error">missing</span>
+                                              <span class="text-danger">missing</span>
                                             </#list>
                                         </ul>
                                     </div>
@@ -271,9 +296,9 @@
                 <tbody>
                 <#items as author>
                     <tr>
-                        <td><#if author.individualName?has_content >${author.individualName}<#else><span class="alert alert--error">missing</span></#if></td>
-                        <td><#if author.organisationName?has_content >${author.organisationName}<#else><span class="alert alert--error">missing</span></#if></td>
-                        <td><#if author.email?has_content>${author.email}<#else><span class="alert alert--error">missing</span></#if></td>
+                        <td><#if author.individualName?has_content >${author.individualName}<#else><span class="text-danger">missing</span></#if></td>
+                        <td><#if author.organisationName?has_content >${author.organisationName}<#else><span class="text-danger">missing</span></#if></td>
+                        <td><#if author.email?has_content>${author.email}<#else><span class="text-danger">missing</span></#if></td>
                         <td><#if author.nameIdentifier?has_content >${author.nameIdentifier}<#else><small class="text-muted">Not provided</small></#if></td>
                     </tr>
                 </#items>
@@ -298,9 +323,9 @@
             <tbody>
             <#items as file>
                 <tr>
-                    <td><#if file.name?has_content>${file.name}<#else><span class="alert alert--error">missing</span></#if></td>
-                    <td><#if file.format?has_content>${file.format}<#else><span class="alert alert--error">missing</span></#if></td>
-                    <td><#if file.size?has_content>${file.size}<#else><span class="alert alert--error">missing</span></#if></td>
+                    <td><#if file.name?has_content>${file.name}<#else><span class="text-danger">missing</span></#if></td>
+                    <td><#if file.format?has_content>${file.format}<#else><span class="text-danger">missing</span></#if></td>
+                    <td><#if file.size?has_content>${file.size}<#else><span class="text-danger">missing</span></#if></td>
                 </tr>
             </#items>
             </tbody>

@@ -1,9 +1,10 @@
 <#import "../skeleton.ftlh" as skeleton>
 <#import "../blocks.ftlh" as b>
+<#import "../../functions.ftlh" as func>
 
 <#macro base>
   <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) footer=true>
-    <div id="metadata" class="${metadata.state?lower_case}">
+    <div id="metadata" class="metadata-monitoring ${metadata.state?lower_case}">
     <#if !type??>
     <#else>
       <div class="section section-grey">
@@ -19,6 +20,10 @@
               </small>
               ${title}
             </h1>
+          </#if>
+
+          <#if permission.userCanEditRestrictedFields(metadata.catalogue)>
+            <#include "../document/_metadataqualityAlert.ftlh">
           </#if>
 
           <#if description?? && description?has_content>
@@ -46,7 +51,7 @@
 
           <#if operatingPeriod?has_content>
             <@keyValue "Operating period" "">
-              <#list operatingPeriod?sort_by("begin")>
+              <#list operatingPeriod>
                 <#items as op>
                   <@displayPeriod op /><#sep><br></#sep>
                 </#items>
@@ -92,6 +97,13 @@
           </div>
 
         </div>
+        <#if permission.userCanEditRestrictedFields(metadata.catalogue)>
+          <div class="section">
+            <div class="container">
+              <#include "../document/_metadataqualityReport.ftlh">
+            </div>
+          </div>
+        </#if>
       </div>
     </#if>
     </div>
@@ -237,6 +249,13 @@ Operating period
             <img src="/static/img/ror_16x16.png" alt="RoR icon" title="Research Organisation Identifier">
           </a>
         </#if>
+      </span>
+      <br>
+    </#if>
+
+    <#if contact.email?has_content>
+      <span>
+        <a href="mailto:${contact.email}">${contact.email}</a>
       </span>
       <br>
     </#if>

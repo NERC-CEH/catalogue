@@ -1,7 +1,7 @@
 import EditorView from '../EditorView'
 import InputView from '../InputView'
 import {
-  CheckboxView, ContactView, ErammpModelInputView, ErammpModelOutputView, KeywordView, OnlineLinkView,
+  CheckboxView, ContactView, ErammpModelInputView, ErammpModelOutputView, KeywordView, OnlineResourceSimpleView,
   ParentStringView,
   ParentView, PredefinedParentView,
   TextareaView
@@ -300,7 +300,7 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'onlineResources',
           label: 'Additional Resources',
-          ObjectInputView: OnlineLinkView,
+          ObjectInputView: OnlineResourceSimpleView,
           helpText: `
 <p>A list of links to additional resources that may be of use to the user. These are in the form of name: url pairs.</p>
 `

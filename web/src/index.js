@@ -13,6 +13,7 @@ import {
   ErammpDatacubeEditorView,
   ErammpModelEditorView,
   GeminiEditorView, InfrastructureRecordEditorView,
+  MethodRecordEditorView,
   LinkEditorView,
   ModelEditorView,
   MonitoringEditorView,
@@ -29,8 +30,7 @@ import {
   OsdpSampleEditorView,
   SampleArchiveEditorView, ServiceAgreementEditorView, UkemsDocumentEditorView
 } from './editor/src/editors'
-import { EditorMetadata } from './editor/src'
-import LinkEditorMetadata from './editor/src/LinkEditorMetadata'
+import { EditorMetadata, LinkEditorMetadata, GeminiEditorMetadata } from './editor/src'
 import { Catalogue, CatalogueView } from './catalogue/src/CatalogueApp'
 import { StudyAreaView } from './study-area/src/View'
 import { PermissionApp, PermissionAppView, PermissionRouter } from './permission/src/PermissionApp'
@@ -41,6 +41,7 @@ import { SimpleUploadView } from './simple-upload/src/App'
 import { MessageView } from './search/src/views'
 import { ServiceAgreement } from './editor/src/models'
 import { UploadModel, UploadView } from './hubbub/src/Upload'
+import { MetricsReportApp, MetricsReportForm, MetricsReportResults } from './metrics/src'
 
 const $catalogue = $('.catalogue-control')
 const $documentUpload = $('#document-upload')
@@ -72,6 +73,10 @@ if ($('.permission').length) {
   initPermission()
 }
 
+if ($('.service-agreement-permission').length) {
+  initPermission()
+}
+
 if ($('#search').length) {
   initSearch()
 }
@@ -86,6 +91,10 @@ if ($documentUpload.length) {
 
 if ($('#studyarea-map').length) {
   initStudyAreaMap()
+}
+
+if ($('#metrics-report').length) {
+  initMetricsReport()
 }
 
 Backbone.history.start()
@@ -111,7 +120,7 @@ function initEditor () {
   const lookup = {
     GEMINI_DOCUMENT: {
       View: GeminiEditorView,
-      Model: EditorMetadata,
+      Model: GeminiEditorMetadata,
       mediaType: 'application/gemini+json'
     },
     EF_DOCUMENT: {
@@ -243,6 +252,11 @@ function initEditor () {
       View: InfrastructureRecordEditorView,
       Model: EditorMetadata,
       mediaType: 'application/vnd.infrastructure+json'
+    },
+    methodrecord: {
+      View: MethodRecordEditorView,
+      Model: EditorMetadata,
+      mediaType: 'application/vnd.method+json'
     }
   }
 
@@ -356,4 +370,17 @@ function navbarToggle ($navbarItems) {
     $('.navigation').toggleClass('reveal')
     $('.nav-toggle').toggleClass('reveal')
   })
+}
+
+function initMetricsReport () {
+  const app = new MetricsReportApp()
+  new MetricsReportForm({
+    el: '#metrics-form',
+    model: app
+  })
+  new MetricsReportResults({
+    el: '#metrics-table',
+    model: app
+  })
+  new SearchRouter({ model: app, location: window.location })
 }

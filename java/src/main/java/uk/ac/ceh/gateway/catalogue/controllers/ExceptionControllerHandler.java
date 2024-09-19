@@ -3,10 +3,7 @@ package uk.ac.ceh.gateway.catalogue.controllers;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -40,12 +37,16 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
         Exception ex,
         Object body,
         HttpHeaders headers,
-        HttpStatus status,
+        HttpStatusCode statusCode,
         WebRequest request
     ) {
-        String message = (body != null) ? body.toString() : status.getReasonPhrase();
-        logger.error(message, ex);
-        return new ResponseEntity<>(new ErrorResponse(message), headers, status);
+        String message = (body != null) ? body.toString() : statusCode.toString();
+        if(ex instanceof PermissionDeniedException) {
+            logger.error("Permission denied: " + ex.getMessage());
+        } else {
+            logger.error(message, ex);
+        }
+        return new ResponseEntity<>(new ErrorResponse(message), headers, statusCode);
     }
 
     private ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpStatus status) {

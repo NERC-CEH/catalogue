@@ -7,6 +7,7 @@ import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import uk.ac.ceh.components.datastore.DataRepository;
+import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.AbstractIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
@@ -20,6 +21,7 @@ import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -34,6 +36,8 @@ public class SolrIndexingService extends AbstractIndexingService<MetadataDocumen
     private final JenaLookupService lookupService;
     private final DocumentIdentifierService identifierService;
     public static final String DOCUMENTS = "documents";
+
+    private static final Set<String> UNINDEXED_RESOURCE_STATUS = Set.of("Deleted");
 
     public SolrIndexingService(
             BundledReaderService<MetadataDocument> reader,
@@ -72,10 +76,19 @@ public class SolrIndexingService extends AbstractIndexingService<MetadataDocumen
         }
     }
 
+    @SneakyThrows
     @Override
     protected boolean canIndex(MetadataDocument doc) {
         if (doc == null) {
             return false;
+        }
+        if (doc instanceof GeminiDocument gemini) {
+            if (UNINDEXED_RESOURCE_STATUS.contains(gemini.getResourceStatus())) {
+                unindexDocuments(List.of(gemini.getId())); // Needed to remove existing superseded or deleted record from Solr
+                return false;
+            } else {
+                return true;
+            }
         }
         return !(doc instanceof ServiceAgreement);
     }

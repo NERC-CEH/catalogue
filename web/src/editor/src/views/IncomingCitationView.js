@@ -1,13 +1,12 @@
-import template from '../templates/OnlineLink'
 import ObjectInputView from './ObjectInputView'
+import template from '../templates/incomingCitation'
 
 export default ObjectInputView.extend({
-  initialize (options) {
-    this.template = template
-    ObjectInputView.prototype.initialize.call(this, options)
-  },
+
   render () {
+    this.template = template
     ObjectInputView.prototype.render.apply(this)
+    this.$('select').val(this.model.get('type'))
     return this
   }
 })

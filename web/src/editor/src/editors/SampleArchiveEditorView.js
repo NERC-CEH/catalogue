@@ -3,7 +3,7 @@ import InputView from '../InputView'
 import {
   FundingView,
   KeywordView,
-  OnlineLinkView,
+  OnlineResourceSimpleView,
   ParentView,
   PointOfContactView,
   PredefinedParentView,
@@ -257,7 +257,7 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'onlineResources',
           label: 'Additional Resources',
-          ObjectInputView: OnlineLinkView,
+          ObjectInputView: OnlineResourceSimpleView,
           listAttribute: `\
 <option value='Website' />
 <option value='browseGraphic' />\

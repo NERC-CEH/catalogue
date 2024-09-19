@@ -16,13 +16,14 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
 
 public class ServiceAgreementWorkflowTest {
-    private final PublishingRole publisher;
+    private final PublishingRole publisher, depositor;
     private final Workflow workflow;
 
     public ServiceAgreementWorkflowTest() {
         //Given
         workflow = new ServiceAgreementPublicationConfig().workflow();
         publisher = new PublishingRole("publisher");
+        depositor = new PublishingRole("depositor");
     }
 
     @Test
@@ -43,10 +44,10 @@ public class ServiceAgreementWorkflowTest {
         MetadataInfo original = MetadataInfo.builder().state("draft").build();
 
         final State currentState = workflow.currentState(original);
-        final Transition toSubmitted = getTransitionTo(currentState.availableTransitions(ImmutableSet.of(publisher)), "submitted");
+        final Transition toSubmitted = getTransitionTo(currentState.availableTransitions(ImmutableSet.of(depositor)), "submitted");
 
         //When
-        MetadataInfo transitioned = workflow.transitionDocumentState(original, ImmutableSet.of(publisher), toSubmitted);
+        MetadataInfo transitioned = workflow.transitionDocumentState(original, ImmutableSet.of(depositor), toSubmitted);
 
         //Then
         assertThat("state should be submitted", transitioned.getState(), equalTo("submitted"));

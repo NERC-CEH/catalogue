@@ -2,6 +2,6 @@
 <#compress>
 <#include "_macros.ftl">
 <#include "_prefixes.ftl">
-BASE <${uri?replace(id,"")}>
+PREFIX : <${uri?replace(id,"")}>
 <#include "_body.ftl">
 </#compress>

@@ -4,11 +4,16 @@
     <#assign licences = func.filter(useConstraints, "code", "license")>
 </#if>
 
+<#macro displayLiteral string>
+  <#--Ensure literals do not contain " characters-->
+  <#t>${string?replace("\"","'")?replace("\n"," ")}
+</#macro>
+
 <#macro contactList contacts prefix="c">
   <#if contacts?has_content>
     <#list contacts as contact>
 
-      <#assign contactIdentifier= "<" + id + "_" + prefix +  contact?index + ">">
+      <#assign contactIdentifier= ":" + id + "_" + prefix +  contact?index>
       <#if contact.individualName?has_content>
         <#if contact.isOrcid()>
           <#assign contactIdentifier= "\l" + contact.nameIdentifier?trim + "\g">
@@ -28,7 +33,7 @@
   <#if contacts?has_content>
     <#list contacts as contact>
       <#if contact.individualName?has_content || contact.organisationIdentifier?has_content>
-        <#assign contactIdentifier= "<" + id + "_" + prefix + contact?index + ">">
+        <#assign contactIdentifier= ":" + id + "_" + prefix + contact?index >
         <#if contact.individualName?has_content>
           <#assign contactType="vcard:Individual">
           <#assign contactName=contact.individualName>
@@ -68,25 +73,25 @@
   <#if funding?has_content>
     <#list funding as fund>
 
-      <#assign fundIdentifier= id + "_fund" + fund?index>
+      <#assign fundIdentifier= ":" + id + "_fund" + fund?index>
       <#if fund.awardURI?has_content>
-        <#assign fundIdentifier=fund.awardURI>
+        <#assign fundIdentifier ="\l" + fund.awardURI?trim+ "\g">
       </#if>
-      <${fundIdentifier?trim}><#sep>,</#sep>
+      ${fundIdentifier?trim}<#sep>,</#sep>
     </#list>
   </#if>
 </#macro>
 
 <#macro fundingDetail>
-  <#if funding?has_content>
+  <#if  funding?has_content>
     <#list funding as fund>
 
-      <#assign fundIdentifier= id + "_proj" + fund?index>
+      <#assign fundIdentifier= ":" + id + "_proj" + fund?index>
       <#if fund.awardURI?has_content>
-        <#assign fundIdentifier=fund.awardURI>
+        <#assign fundIdentifier ="\l" + fund.awardURI?trim+ "\g">
       </#if>
 
-      <${fundIdentifier?trim}> a prov:Activity ; <#if fund.awardTitle?has_content>rdfs:label "${fund.awardTitle}"</#if> .
+      ${fundIdentifier?trim} a prov:Activity ; <#if fund.awardTitle?has_content>rdfs:label "<@displayLiteral fund.awardTitle />"</#if> .
     </#list>
   </#if>
 </#macro>
@@ -96,7 +101,7 @@
     <#if kw.uri?has_content>
       <#assign keyword ="\l" + kw.uri?trim+ "\g">
     <#else>
-      <#assign keyword ='"' + kw.value+ '"'>
+      <#assign keyword ='"' + kw.value?replace("\"", "") + '"'>
     </#if>
     ${keyword}<#sep>,</#sep>
   </#list>
@@ -105,63 +110,7 @@
 <#macro keywordDetail keywords>
   <#list keywords as kw>
     <#if kw.uri?has_content>
-      <${kw.uri?trim}> a skos:Concept; skos:prefLabel "${kw.value}"; rdfs:label "${kw.value}".
+      <${kw.uri?trim}> a skos:Concept; skos:prefLabel "<@displayLiteral kw.value />"; rdfs:label "<@displayLiteral kw.value />".
     </#if>
   </#list>
 </#macro>
-
-<#--ELTER -->
-  <#macro projectList>
-    <#if elterProject?has_content>
-      <#list elterProject as project>
-
-        <#assign projectIdentifier= id + "_proj" + project?index>
-        <#if project.uri?has_content>
-          <#assign projectIdentifier=project.uri?trim>
-        </#if>
-        <${projectIdentifier}><#sep>,</#sep>
-      </#list>
-    </#if>
-  </#macro>
-
-  <#macro projectDetail>
-    <#if elterProject?has_content>
-      <#list elterProject as project>
-
-        <#assign projectIdentifier= id + "_proj" + project?index>
-        <#if project.uri?has_content>
-          <#assign projectIdentifier=project.uri?trim>
-        </#if>
-
-        <${projectIdentifier}> a prov:Activity ; <#if project.value?has_content>rdfs:label "${project.value}"</#if> .
-      </#list>
-    </#if>
-  </#macro>
-
-  <#macro deimsList>
-    <#if deimsSites?has_content>
-      <#list deimsSites as deimsSite>
-
-        <#assign deimsID= id + "_site" + deimsSite?index>
-        <#if deimsSite.url?has_content>
-          <#assign deimsID=deimsSite.url>
-        </#if>
-        <${deimsID}><#sep>,</#sep>
-      </#list>
-    </#if>
-  </#macro>
-
-  <#macro deimsDetail>
-    <#if deimsSites?has_content>
-      <#list deimsSites as deimsSite>
-
-        <#assign deimsID= id + "_site" + deimsSite?index>
-        <#if deimsSite.url?has_content>
-          <#assign deimsID=deimsSite.url>
-        </#if>
-
-        <${deimsID}> a prov:Location; <#if deimsSite.title?has_content>rdfs:label "${deimsSite.title}"</#if> .
-      </#list>
-    </#if>
-  </#macro>
-<#--END ELTER-->

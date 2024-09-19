@@ -6,10 +6,9 @@ import {
   AdditionalLinksView,
   ContactView,
   DatasetReferenceDateView,
-  DescriptiveKeywordView,
   DistributionFormatView,
   FundingView,
-  SupplementalLinkView,
+  IncomingCitationView,
   MapDataSourceView,
   OnlineResourceView,
   ParentStringView,
@@ -32,7 +31,6 @@ import {
 import {
   AccessLimitation,
   Contact,
-  DescriptiveKeyword,
   DistributionFormat,
   Funding, InspireTheme, KeywordTheme,
   MapDataSource,
@@ -679,15 +677,6 @@ export default EditorView.extend({
       views: [
         new ParentView({
           model: this.model,
-          modelAttribute: 'incomingCitations',
-          ModelType: Supplemental,
-          multiline: true,
-          label: 'Citations <small>Publications in which these data are cited</small>',
-          ObjectInputView: SupplementalLinkView
-        }),
-
-        new ParentView({
-          model: this.model,
           modelAttribute: 'supplemental',
           ModelType: Supplemental,
           multiline: true,
@@ -784,20 +773,24 @@ This is only needed if you configure 'Styling=Classification' for your GeoTiff.<
       ]
     },
     {
-      label: '_old',
-      title: 'Unused properties that will soon be removed',
+      label: 'Admin',
+      title: 'EIDC admin only',
       views: [
+
+        new CheckboxView({
+          model: this.model,
+          modelAttribute: 'hasOnlineServiceAgreement',
+          label: 'Does this record have an online service agreement?',
+          className: 'component eidconly'
+        }),
+
         new ParentView({
           model: this.model,
-          ModelType: DescriptiveKeyword,
-          modelAttribute: 'descriptiveKeywords',
-          label: 'Other keywords',
-          ObjectInputView: DescriptiveKeywordView,
+          modelAttribute: 'incomingCitations',
+          label: 'Citations<small>Publications in which these data are cited.<br><strong class="text-red">Only citations that have been corroborated should be added here.</strong></small>',
+          ModelType: Supplemental,
           multiline: true,
-          helpText: `
-<p>Keywords (preferably taken from a controlled vocabulary) categorising and describing the data resource.</p>
-<p>Good quality keywords help to improve the efficiency of search, making it easier to find relevant records.</p>\
-`
+          ObjectInputView: IncomingCitationView
         })
 
       ]

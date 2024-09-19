@@ -3,6 +3,7 @@ import _ from 'underscore'
 import $ from 'jquery'
 import Backbone from 'backbone'
 import template from './editorTemplate'
+import { BoundingBox } from './geometryMap'
 
 export default Backbone.View.extend({
 
@@ -13,7 +14,7 @@ export default Backbone.View.extend({
     'click #editorSave': 'save',
     'click #editorBack': 'back',
     'click #editorNext': 'next',
-    'click #editorNav li': 'direct'
+    'click .editor-nav span': 'direct'
   },
 
   initialize () {
@@ -62,10 +63,10 @@ export default Backbone.View.extend({
     this.render()
     _.invoke(this.sections[0].views, 'show')
     this.sections.forEach(section => {
-      this.$('#editorNav').append($(`<li title='${section.title}'>${section.label}</li>`))
+      this.$('.editor-nav').append($(`<span title='${section.title}'>${section.label}</span>`))
     })
 
-    this.$('#editorNav').find('li').first().addClass('active')
+    this.$('.editor-nav').find('span').first().addClass('active')
   },
 
   attemptDelete () {
@@ -99,6 +100,10 @@ export default Backbone.View.extend({
   },
 
   save () {
+    const boundingBox = new BoundingBox(this.model.get('boundingBox'))
+    if (boundingBox && !boundingBox.hasBoundingBox()) {
+      this.model.unset('boundingBox')
+    }
     if (this.model.save()) {
       Swal.fire({
         title: 'Saved!',
@@ -162,7 +167,7 @@ export default Backbone.View.extend({
   },
 
   navigate (newStep) {
-    const $nav = this.$('#editorNav li')
+    const $nav = this.$('.editor-nav span')
     const maxStep = $nav.length
     this.currentStep = newStep
     if (this.currentStep < 1) { this.currentStep = 1 }

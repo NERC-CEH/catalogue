@@ -19,6 +19,7 @@ import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.document.DocumentListingService;
 import uk.ac.ceh.gateway.catalogue.document.UnknownContentTypeException;
 import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
+import uk.ac.ceh.gateway.catalogue.gemini.AccessLimitation;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
@@ -89,6 +90,26 @@ class SolrIndexingServiceTest {
         //then
         verify(indexGenerator, never()).generateIndex(any(GeminiDocument.class));
         verify(solrClient, never()).addBean(eq(DOCUMENTS), any(SolrIndex.class));
+    }
+
+    @Test
+    @SneakyThrows
+    void deletedGeminiDocumentsNotIndexed() {
+        //given
+        String revId = "Latest";
+        List<String> documents = List.of("deleted");
+        val deleted = new GeminiDocument();
+        deleted.setId("5678");
+        deleted.setAccessLimitation(AccessLimitation.builder().code("Deleted").build());
+        given(reader.readBundle("deleted")).willReturn(deleted);
+
+        //when
+        service.indexDocuments(documents, revId);
+
+        //then
+        verify(indexGenerator, never()).generateIndex(any(GeminiDocument.class));
+        verify(solrClient, never()).addBean(eq(DOCUMENTS), any(SolrIndex.class));
+        verify(solrClient).deleteById(eq(DOCUMENTS), any(List.class));
     }
 
     @Test
