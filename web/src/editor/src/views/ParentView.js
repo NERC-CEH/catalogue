@@ -4,11 +4,14 @@ import SingleView from '../SingleView'
 import ChildView from './ChildView'
 import template from '../templates/Parent'
 import { Positionable } from '../collections'
+import { LegiloKeywords, fetchKeywordsFromLegilo } from './index'
+import FetchKeywordsButton from '../templates/FetchKeywordsButton'
 
 export default SingleView.extend({
 
   events: {
-    'click button.add': 'add'
+    'click button.add': 'add',
+    'click .legilo-fetch-btn': 'fetchKeywords'
   },
 
   initialize (options) {
@@ -18,10 +21,21 @@ export default SingleView.extend({
     SingleView.prototype.initialize.call(this, options)
     this.collection = new Positionable([], { model: this.data.ModelType })
 
+    if (this.data.renderLegiloKeywords && this.model.get('id')) {
+      this.legiloKeywords = new LegiloKeywords({
+        collection: this.collection,
+        model: this.model
+      })
+    }
+
     this.listenTo(this.collection, 'add', this.addOne)
     this.listenTo(this.collection, 'reset', this.addAll)
     this.listenTo(this.collection, 'add remove change position', this.updateModel)
     this.listenTo(this.model, 'sync', this.updateCollection)
+
+    if (this.data.renderLegiloKeywords) {
+      this.listenTo(this.model, 'change:fetchedKeywords', this.renderKeywords)
+    }
 
     this.render()
     this.collection.reset(this.getModelData())
@@ -33,7 +47,39 @@ export default SingleView.extend({
 
   render () {
     this.$el.html(this.template({ data: this.data }))
+
+    if (this.data.fetchKeywordsButton && this.model.get('id')) {
+      this.$el.append(FetchKeywordsButton())
+    }
+
+    if (this.data.renderLegiloKeywords && this.model.get('id')) {
+      this.$el.append(this.legiloKeywords.el)
+      this.legiloKeywords.render()
+      this.legiloKeywords.delegateEvents()
+    }
     return this
+  },
+
+  fetchKeywords () {
+    this.$('.loader').show()
+
+    fetchKeywordsFromLegilo(this.model)
+      .then(keywords => {
+        this.model.set('fetchedKeywords', keywords)
+        this.renderKeywords()
+
+        this.$('.loader').hide()
+      })
+      .catch(error => {
+        console.error('Error fetching keywords:', error)
+      })
+  },
+
+  renderKeywords () {
+    if (this.legiloKeywords) {
+      const keywords = this.model.get('fetchedKeywords')
+      this.legiloKeywords.renderKeywords(keywords)
+    }
   },
 
   addOne (model) {

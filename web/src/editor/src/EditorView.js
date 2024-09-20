@@ -3,6 +3,7 @@ import _ from 'underscore'
 import $ from 'jquery'
 import Backbone from 'backbone'
 import template from './editorTemplate'
+import { BoundingBox } from './geometryMap'
 
 export default Backbone.View.extend({
 
@@ -99,7 +100,7 @@ export default Backbone.View.extend({
   },
 
   save () {
-    const boundingBox = this.model.get('boundingBox')
+    const boundingBox = new BoundingBox(this.model.get('boundingBox'))
     if (boundingBox && !boundingBox.hasBoundingBox()) {
       this.model.unset('boundingBox')
     }
