@@ -5,9 +5,9 @@
     <@m.keyValue "Type" "type of monitoring facility">${facilityType.value}</@m.keyValue>
   </#if>
 
-  <#if geometry?? && geometry?has_content>
+  <#if geometry.geometryString?? && geometry.geometryString?has_content>
   <div>
-    <@m.keyValue "Location">
+    <@m.keyValue "Location WOOO">
       <@m.map geometry.geometryString />
     </@m.keyValue>
 
