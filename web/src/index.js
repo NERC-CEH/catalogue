@@ -65,7 +65,7 @@ if ($serviceAgreement.length) {
   initServiceAgreement()
 }
 
-if ($('#geometry-map').length) {
+if ($('.geometry-map').length) {
   initGeometryMap()
 }
 

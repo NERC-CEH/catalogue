@@ -2,7 +2,7 @@
 <#import "skeleton.ftlh" as skeleton>
 
 <@skeleton.master title="Link Document" catalogue=catalogues.retrieve(metadata.catalogue)>
-  <div id="metadata">
+  <div id="metadata" class="metadata">
    <div class="container">
     <div id="section-Top">
       <@blocks.title title="Link Document" type="" />

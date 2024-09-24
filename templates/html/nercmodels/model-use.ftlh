@@ -9,7 +9,7 @@
 
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) footer=true>
 
- <div id="metadata" class= "nerc-model nerc-modeluse">
+ <div id="metadata" class= "metadata nerc-model nerc-modeluse">
     <div class="section section-grey">
       <div class="container">
 

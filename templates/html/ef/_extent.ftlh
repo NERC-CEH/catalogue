@@ -1,7 +1,7 @@
 <div id="section-extent">
 <h2 id="extent">Where/When</h2>
   <#if boundingBoxes?has_content || geometry?has_content>
-    <div id="studyarea-map">
+    <div id="studyarea-map" class="studyarea-map">
       <#list boundingBoxes as extent>
         <span content="${extent.bounds}" datatype="geoJson"/>
       </#list>

@@ -28,7 +28,7 @@
 
 <@skeleton.master title=title catalogue=catalogue>
 
-<div id="metadata">
+<div id="metadata" class="metadata">
   <div class="container">
     <#include "document/_admin.ftlh">
     <div id="section-Top">

@@ -14,7 +14,7 @@
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) footer=true>
 
 
- <div id="metadata" class="nerc-model nerc-modelcode">
+ <div id="metadata" class="metadata nerc-model nerc-modelcode">
     <div class="section section-grey">
       <div class="container">
 
@@ -143,7 +143,7 @@
 
                 <#if boundingBoxes?has_content>
                   <@m.key "Spatial extent">
-                    <div id="studyarea-map">
+                    <div id="studyarea-map" class="studyarea-map">
                       <#list boundingBoxes as extent>
                         <span content="${extent.bounds}" datatype="geoJson"/>
                       </#list>

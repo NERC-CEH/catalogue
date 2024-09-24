@@ -4,7 +4,7 @@
 
 <#macro base>
   <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) footer=true>
-    <div id="metadata" class="metadata-monitoring ${metadata.state?lower_case}">
+    <div id="metadata" class="metadata metadata-monitoring ${metadata.state?lower_case}">
     <#if !type??>
     <#else>
       <div class="section section-grey">
@@ -215,7 +215,7 @@ Operating period
 </#macro>
 
 <#macro map mapData>
-  <div id="studyarea-map">
+  <div id="studyarea-map" class="studyarea-map">
     <span content="${mapData}" dataType="geoJson"/>
   </div>
 </#macro>

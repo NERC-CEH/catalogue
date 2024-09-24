@@ -103,7 +103,7 @@
 
               <#if geometry?? >
                 <@displaykey "Location">
-                  <div id="studyarea-map">
+                  <div id="studyarea-map" class="studyarea-map">
                     <span content="${geometry.geometryString}" dataType="geoJson"/>
                   </div>
                 </@displaykey>

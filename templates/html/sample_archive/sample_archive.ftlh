@@ -14,20 +14,20 @@
     <div class="section section-grey">
       <div class="container">
         <@b.admin />
-    
+
         <div id="pageTitle">
           <#if title?? && title?has_content>
             <h1>${title}</h1>
           </#if>
         </div>
         <div class="description">
-          
+
           <#if description?? && description?has_content>
             <div class="description-text">
               <@b.linebreaks description />
             </div>
           </#if>
-          
+
           <div class="browseimage">
             <#if image?? && image?has_content>
               <#if image?first.url?matches("^.+(jpg|jpeg|gif|png)$")>
@@ -36,15 +36,15 @@
             </#if>
           </div>
         </div>
-        
+
       </div>
     </div>
-    
+
     <div class="section">
       <div class="container">
         <div class="metadata-grid">
           <div class="col1">
-            
+
             <#if archiveLocations?? && archiveLocations?has_content>
               <@key "Location${(archiveLocations?size > 1)?then('s', '')}">
                 <#list archiveLocations as contact>
@@ -58,7 +58,7 @@
             <#if website?? && website?has_content>
               <@key "Website"><a href="${website}">${website}</a></@key>
             </#if>
-          
+
             <#if availability?? && availability?has_content>
               <@key "Availability">${availability}</@key>
             </#if>
@@ -89,7 +89,7 @@
             <#if boundingBoxes?? && boundingBoxes?has_content>
               <@key "Geographic coverage${(boundingBoxes?size > 1)?then('s', '')}" >
                 <div id="section-extent">
-                  <div id="studyarea-map">
+                  <div id="studyarea-map" class="studyarea-map">
                   <#list boundingBoxes as extent>
                       <span content="${extent.bounds}" datatype="geoJson"/>
                   </#list>
@@ -181,7 +181,7 @@
 
       </div>
     </div>
-  
+
   </div>
 </@skeleton.master>
 

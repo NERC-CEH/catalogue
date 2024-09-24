@@ -129,7 +129,7 @@
             <#if boundingBoxes?has_content>
               <div>
                 <h3>Spatial extent</h3>
-                  <div id="studyarea-map">
+                  <div id="studyarea-map" class="studyarea-map">
                     <#list boundingBoxes as extent>
                       <span content="${extent.bounds}" datatype="geoJson"/>
                     </#list>
