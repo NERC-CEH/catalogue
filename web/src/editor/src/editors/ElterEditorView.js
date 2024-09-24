@@ -357,170 +357,145 @@ export default EditorView.extend({
               northBoundLatitude: 49.021,
               eastBoundLongitude: 17.161,
               southBoundLatitude: 46.372,
-              westBoundLongitude: 9.531,
-              extentName: 'Austria'
+              westBoundLongitude: 9.531
             },
             Belgium: {
               northBoundLatitude: 51.505,
               eastBoundLongitude: 6.407,
               southBoundLatitude: 49.497,
-              westBoundLongitude: 2.546,
-              extentName: 'Belgium'
+              westBoundLongitude: 2.546
             },
             Bulgaria: {
               northBoundLatitude: 44.216,
               eastBoundLongitude: 28.607,
               southBoundLatitude: 41.236,
-              westBoundLongitude: 22.357,
-              extentName: 'Bulgaria'
+              westBoundLongitude: 22.357
             },
             Czechia: {
               northBoundLatitude: 51.055,
               eastBoundLongitude: 18.859,
               southBoundLatitude: 48.552,
-              westBoundLongitude: 12.092,
-              extentName: 'Czech Republic'
+              westBoundLongitude: 12.092
             },
             Denmark: {
               northBoundLatitude: 57.752,
               eastBoundLongitude: 15.193,
               southBoundLatitude: 54.560,
-              westBoundLongitude: 8.076,
-              extentName: 'Denmark'
+              westBoundLongitude: 8.076
             },
             Finland: {
               northBoundLatitude: 70.092,
               eastBoundLongitude: 31.586,
               southBoundLatitude: 59.766,
-              westBoundLongitude: 19.312,
-              extentName: 'Finland'
+              westBoundLongitude: 19.312
             },
             France: {
               northBoundLatitude: 51.089,
               eastBoundLongitude: 8.233,
               southBoundLatitude: 42.333,
-              westBoundLongitude: -4.795,
-              extentName: 'France'
+              westBoundLongitude: -4.795
             },
             Germany: {
               northBoundLatitude: 55.058,
               eastBoundLongitude: 15.041,
               southBoundLatitude: 47.270,
-              westBoundLongitude: 5.868,
-              extentName: 'Germany'
+              westBoundLongitude: 5.868
             },
             Greece: {
               northBoundLatitude: 41.749,
               eastBoundLongitude: 29.645,
               southBoundLatitude: 34.802,
-              westBoundLongitude: 19.374,
-              extentName: 'Greece'
+              westBoundLongitude: 19.374
             },
             Hungary: {
               northBoundLatitude: 48.585,
               eastBoundLongitude: 22.896,
               southBoundLatitude: 45.738,
-              westBoundLongitude: 16.114,
-              extentName: 'Hungary'
+              westBoundLongitude: 16.114
             },
             Israel: {
               northBoundLatitude: 33.290,
               eastBoundLongitude: 35.684,
               southBoundLatitude: 29.493,
-              westBoundLongitude: 34.269,
-              extentName: 'Israel'
+              westBoundLongitude: 34.269
             },
             Italy: {
               northBoundLatitude: 47.92,
               eastBoundLongitude: 18.519,
               southBoundLatitude: 35.493,
-              westBoundLongitude: 6.627,
-              extentName: 'Italy'
+              westBoundLongitude: 6.627
             },
             Latvia: {
               northBoundLatitude: 58.084,
               eastBoundLongitude: 28.241,
               southBoundLatitude: 55.675,
-              westBoundLongitude: 20.971,
-              extentName: 'Latvia'
+              westBoundLongitude: 20.971
             },
             Norway: {
               northBoundLatitude: 71.184,
               eastBoundLongitude: 31.168,
               southBoundLatitude: 57.960,
-              westBoundLongitude: 4.503,
-              extentName: 'Norway'
+              westBoundLongitude: 4.503
             },
             Poland: {
               northBoundLatitude: 54.836,
               eastBoundLongitude: 24.145,
               southBoundLatitude: 49.003,
-              westBoundLongitude: 14.123,
-              extentName: 'Poland'
+              westBoundLongitude: 14.123
             },
             Portugal: {
               northBoundLatitude: 42.154,
               eastBoundLongitude: -6.189,
               southBoundLatitude: 36.970,
-              westBoundLongitude: -9.500,
-              extentName: 'Portugal'
+              westBoundLongitude: -9.500
             },
             Romania: {
               northBoundLatitude: 48.264,
               eastBoundLongitude: 29.713,
               southBoundLatitude: 43.620,
-              westBoundLongitude: 20.264,
-              extentName: 'Romania'
+              westBoundLongitude: 20.264
             },
             Serbia: {
               northBoundLatitude: 46.189,
               eastBoundLongitude: 23.006,
               southBoundLatitude: 41.858,
-              westBoundLongitude: 18.849,
-              extentName: 'Serbia'
+              westBoundLongitude: 18.849
             },
             Slovakia: {
               northBoundLatitude: 49.614,
               eastBoundLongitude: 22.567,
               southBoundLatitude: 47.731,
-              westBoundLongitude: 16.834,
-              extentName: 'Slovakia'
+              westBoundLongitude: 16.834
             },
             Slovenia: {
               northBoundLatitude: 46.876,
               eastBoundLongitude: 16.597,
               southBoundLatitude: 45.422,
-              westBoundLongitude: 13.375,
-              extentName: 'Slovenia'
+              westBoundLongitude: 13.375
             },
             Spain: {
               northBoundLatitude: 43.788,
               eastBoundLongitude: 3.321,
               southBoundLatitude: 36.008,
-              westBoundLongitude: -9.298,
-              extentName: 'Spain'
+              westBoundLongitude: -9.298
             },
             Sweden: {
               northBoundLatitude: 69.060,
               eastBoundLongitude: 24.167,
               southBoundLatitude: 55.338,
-              westBoundLongitude: 10.966,
-              extentName: 'Sweden'
+              westBoundLongitude: 10.966
             },
             Switzerland: {
               northBoundLatitude: 47.807,
               eastBoundLongitude: 10.492,
               southBoundLatitude: 45.818,
-              westBoundLongitude: 5.956,
-              extentName: 'Switzerland'
+              westBoundLongitude: 5.956
             },
             'United Kingdom': {
               northBoundLatitude: 60.86,
               eastBoundLongitude: 1.77,
               southBoundLatitude: 49.86,
-              westBoundLongitude: -8.65,
-              extentName: 'United Kingdom',
-              extentUri: 'http://sws.geonames.org/2635167'
+              westBoundLongitude: -8.65
             },
             World: {
               northBoundLatitude: 90.0,

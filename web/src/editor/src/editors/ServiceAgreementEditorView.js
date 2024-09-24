@@ -592,48 +592,37 @@ Details of relationships we can accommodate are available at: <a href='eidc.ac.u
               northBoundLatitude: 55.812,
               eastBoundLongitude: 1.768,
               southBoundLatitude: 49.864,
-              westBoundLongitude: -6.452,
-              extentName: 'England',
-              extentUri: 'http://sws.geonames.org/6269131'
+              westBoundLongitude: -6.452
             },
             'Great Britain': {
               northBoundLatitude: 60.861,
               eastBoundLongitude: 1.768,
               southBoundLatitude: 49.864,
-              westBoundLongitude: -8.648,
-              extentName: 'Great Britain'
+              westBoundLongitude: -8.648
             },
             'Northern Ireland': {
               northBoundLatitude: 55.313,
               eastBoundLongitude: -5.432,
               southBoundLatitude: 54.022,
-              westBoundLongitude: -8.178,
-              extentName: 'Northern Ireland',
-              extentUri: 'http://sws.geonames.org/2641364'
+              westBoundLongitude: -8.178
             },
             Scotland: {
               northBoundLatitude: 60.861,
               eastBoundLongitude: -0.728,
               southBoundLatitude: 54.634,
-              westBoundLongitude: -8.648,
-              extentName: 'Scotland',
-              extentUri: 'http://sws.geonames.org/2638360'
+              westBoundLongitude: -8.648
             },
             'United Kingdom': {
               northBoundLatitude: 60.861,
               eastBoundLongitude: 1.768,
               southBoundLatitude: 49.864,
-              westBoundLongitude: -8.648,
-              extentName: 'United Kingdom',
-              extentUri: 'http://sws.geonames.org/2635167'
+              westBoundLongitude: -8.648
             },
             Wales: {
               northBoundLatitude: 53.434,
               eastBoundLongitude: -2.654,
               southBoundLatitude: 51.375,
-              westBoundLongitude: -5.473,
-              extentName: 'Wales',
-              extentUri: 'http://sws.geonames.org/2634895'
+              westBoundLongitude: -5.473
             },
             World: {
               northBoundLatitude: 90.00,

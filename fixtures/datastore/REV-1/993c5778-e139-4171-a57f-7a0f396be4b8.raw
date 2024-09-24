@@ -505,7 +505,6 @@
       "eastBoundLongitude": 1.768,
       "southBoundLatitude": 49.864,
       "northBoundLatitude": 60.861,
-      "extentName": "Great Britain",
       "coordinates": "[[[-8.648, 49.864], [-8.648, 60.861], [1.768, 60.861], [1.768, 49.864], [-8.648, 49.864]]]",
       "bounds": "{\"type\": \"Feature\",      \"properties\": {},      \"geometry\": {        \"type\": \"Polygon\",        \"coordinates\": [[[-8.648, 49.864], [-8.648, 60.861], [1.768, 60.861], [1.768, 49.864], [-8.648, 49.864]]]      }}"
     }
