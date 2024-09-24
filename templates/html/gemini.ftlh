@@ -57,7 +57,7 @@
   <#if resourceType?has_content && resourceType.value !=''>
   <#assign recordType = func.recordTypeOrResourceType()>
 
-  <div id="metadata" class="${metadata.state?lower_case} ${linkedClass}">
+  <div id="metadata" class="metadata ${metadata.state?lower_case} ${linkedClass}">
     <#if resourceStatus = "Deleted">
       <div class="section">
         <#include "document/_tombstone.ftlh">

@@ -3,7 +3,7 @@
 <#import "skeleton.ftlh" as skeleton>
 
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue)>
-  <div id="metadata" class="container">
+  <div id="metadata" class="metadata container">
 
     <@blocks.title title type />
     <@blocks.description description />

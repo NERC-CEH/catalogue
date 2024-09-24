@@ -50,7 +50,7 @@ Create a box of links
 The basic wrapper container of a metadata document
 -->
 <#macro metadataContainer classes>
-  <div id="metadata" class="${classes}">
+  <div id="metadata" class="metadata ${classes}">
     <div class="container">
       <#nested>
     </div>

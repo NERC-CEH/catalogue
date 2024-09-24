@@ -30,7 +30,7 @@
 
         <#if boundingBoxes?? && boundingBoxes?has_content>
           <@simplerow "Coverage">
-            <div id="studyarea-map">
+            <div id="studyarea-map" class="studyarea-map">
               <#list boundingBoxes as extent>
               <span content="${extent.bounds}" datatype="geoJson"/>
               </#list>

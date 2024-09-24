@@ -179,13 +179,13 @@ Temporal Extent
 </#macro>
 
 <#macro boundingBox boundingBox>
-  <div id="studyarea-map">
+  <div id="studyarea-map" class="studyarea-map">
       <span content="${boundingBox.bounds}" datatype="geoJson"/>
   </div>
 </#macro>
 
 <#macro geometry geometry>
-  <div id="geometry-map">
+  <div id="geometry-map" class="geometry-map">
       <span content="${geometry}" datatype="geo:wktLiteral"/>
   </div>
 </#macro>

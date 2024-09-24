@@ -8,7 +8,7 @@ describe('Test StudyAreaView', function () {
 
   it('renders point', () => {
     // Given
-    const templatePoint = '<div id="studyarea-map"><span content="{&quot;type&quot;:&quot;Feature&quot;,&quot;properties&quot;:{},&quot;geometry&quot;:{&quot;type&quot;:&quot;Point&quot;,&quot;coordinates&quot;:[-2.64501,54.5261]}}" dataType="geoJson"/></div>'
+    const templatePoint = '<div id="studyarea-map" class="studyarea-map"><span content="{&quot;type&quot;:&quot;Feature&quot;,&quot;properties&quot;:{},&quot;geometry&quot;:{&quot;type&quot;:&quot;Point&quot;,&quot;coordinates&quot;:[-2.64501,54.5261]}}" dataType="geoJson"/></div>'
 
     // When
     el = $(templatePoint).appendTo($('body'))
@@ -23,7 +23,7 @@ describe('Test StudyAreaView', function () {
 
   it('renders polygon', () => {
     // Given
-    const templatePolygon = '<div id="studyarea-map"><span content="{&quot;type&quot;:&quot;Feature&quot;,&quot;properties&quot;:{},&quot;geometry&quot;:{&quot;type&quot;:&quot;Polygon&quot;,&quot;coordinates&quot;:[[[-2.64866,54.52705],[-2.64363,54.52698],[-2.64406,54.52419],[-2.64872,54.52449],[-2.64866,54.52705]]]}}" dataType="geoJson"/></div>'
+    const templatePolygon = '<div id="studyarea-map" class="studyarea-map"><span content="{&quot;type&quot;:&quot;Feature&quot;,&quot;properties&quot;:{},&quot;geometry&quot;:{&quot;type&quot;:&quot;Polygon&quot;,&quot;coordinates&quot;:[[[-2.64866,54.52705],[-2.64363,54.52698],[-2.64406,54.52419],[-2.64872,54.52449],[-2.64866,54.52705]]]}}" dataType="geoJson"/></div>'
 
     // When
     el = $(templatePolygon).appendTo($('body'))
@@ -38,7 +38,7 @@ describe('Test StudyAreaView', function () {
 
   it('renders feature collection', () => {
     // Given
-    const templateFeatureCollection = '<div id="studyarea-map"><span content="{&quot;type&quot;:&quot;FeatureCollection&quot;,&quot;features&quot;:[{&quot;type&quot;:&quot;Feature&quot;,&quot;properties&quot;:{},&quot;geometry&quot;:{&quot;type&quot;:&quot;Point&quot;,&quot;coordinates&quot;:[-2.64406,54.52601]}},{&quot;type&quot;:&quot;Feature&quot;,&quot;properties&quot;:{},&quot;geometry&quot;:{&quot;type&quot;:&quot;Point&quot;,&quot;coordinates&quot;:[-2.64501,54.5261]}}]}" dataType="geoJson"/></div>'
+    const templateFeatureCollection = '<div id="studyarea-map" class="studyarea-map"><span content="{&quot;type&quot;:&quot;FeatureCollection&quot;,&quot;features&quot;:[{&quot;type&quot;:&quot;Feature&quot;,&quot;properties&quot;:{},&quot;geometry&quot;:{&quot;type&quot;:&quot;Point&quot;,&quot;coordinates&quot;:[-2.64406,54.52601]}},{&quot;type&quot;:&quot;Feature&quot;,&quot;properties&quot;:{},&quot;geometry&quot;:{&quot;type&quot;:&quot;Point&quot;,&quot;coordinates&quot;:[-2.64501,54.5261]}}]}" dataType="geoJson"/></div>'
 
     // When
     el = $(templateFeatureCollection).appendTo($('body'))

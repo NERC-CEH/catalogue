@@ -1,7 +1,7 @@
 <#import "../skeleton.ftlh" as skeleton>
 
 <@skeleton.master title="Service Agreement History: " + historyOf catalogue=catalogues.defaultCatalogue()>
-    <div id="metadata">
+    <div id="metadata" class="metadata">
         <div class="container" role="main">
             <h4>Edit history for Service Agreement: ${historyOf}</h4>
             <ul>
