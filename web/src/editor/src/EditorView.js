@@ -100,7 +100,15 @@ export default Backbone.View.extend({
   },
 
   save () {
-    const boundingBox = new BoundingBox(this.model.get('boundingBox'))
+    const boundingBoxData = this.model.get('boundingBox')
+    if (boundingBoxData) {
+      boundingBoxData.northBoundLatitude = parseFloat(boundingBoxData.northBoundLatitude)
+      boundingBoxData.southBoundLatitude = parseFloat(boundingBoxData.southBoundLatitude)
+      boundingBoxData.eastBoundLongitude = parseFloat(boundingBoxData.eastBoundLongitude)
+      boundingBoxData.westBoundLongitude = parseFloat(boundingBoxData.westBoundLongitude)
+    }
+    console.log(boundingBoxData)
+    const boundingBox = new BoundingBox(boundingBoxData)
     if (boundingBox && !boundingBox.hasBoundingBox()) {
       this.model.unset('boundingBox')
     }
