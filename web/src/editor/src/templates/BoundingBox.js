@@ -22,10 +22,6 @@ export default _.template(`
         <div class="row">
             <div class="map" style="width: 400px; height: 400px;"></div>
         </div>
-        <div class="row">
-            <span class="extentName"><%= data.extentName %></span>
-            <span class="extentUri"><%= data.extentUri %></span>
-        </div>
     </div>
 </div>
 `)

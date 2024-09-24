@@ -15,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 @JsonIgnoreProperties({"wkt"})
 public class BoundingBox {
     private final BigDecimal westBoundLongitude, eastBoundLongitude, southBoundLatitude, northBoundLatitude;
-    private final String extentName, extentUri;
 
     @Builder
     @JsonCreator
@@ -23,16 +22,12 @@ public class BoundingBox {
             @JsonProperty("westBoundLongitude") String westBoundLongitude,
             @JsonProperty("eastBoundLongitude") String eastBoundLongitude,
             @JsonProperty("southBoundLatitude") String southBoundLatitude,
-            @JsonProperty("northBoundLatitude") String northBoundLatitude,
-            @JsonProperty("extentName") String extentName,
-            @JsonProperty("extentUri") String extentUri) {
+            @JsonProperty("northBoundLatitude") String northBoundLatitude) {
         log.debug("w: {}, e: {}, s: {}, n: {}", westBoundLongitude, eastBoundLongitude, southBoundLatitude, northBoundLatitude);
         this.westBoundLongitude = new BigDecimal(westBoundLongitude);
         this.eastBoundLongitude = new BigDecimal(eastBoundLongitude);
         this.southBoundLatitude = new BigDecimal(southBoundLatitude);
         this.northBoundLatitude = new BigDecimal(northBoundLatitude);
-        this.extentName = nullToEmpty(extentName);
-        this.extentUri = nullToEmpty(extentUri);
     }
 
     public String getWkt() {

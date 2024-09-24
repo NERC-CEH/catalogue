@@ -62,7 +62,7 @@ class GeometryTest {
         //given
         val geometryString = "{\"type\":\"Feature\",\"properties\":{},\"geometry\":{\"type\":\"Point\",\"coordinates\":[-1.12345,53.12345]}}";
         val geometry = Geometry.builder().geometryString(geometryString).build();
-        val expected = "BoundingBox(westBoundLongitude=-1.12355, eastBoundLongitude=-1.12335, southBoundLatitude=53.123349999999995, northBoundLatitude=53.12355, extentName=, extentUri=)";
+        val expected = "BoundingBox(westBoundLongitude=-1.12355, eastBoundLongitude=-1.12335, southBoundLatitude=53.123349999999995, northBoundLatitude=53.12355)";
 
         //when
         val actual = geometry.getBoundingBox().get().toString();
@@ -77,7 +77,7 @@ class GeometryTest {
         //given
         val geometryString = "{\"type\":\"Feature\",\"properties\":{},\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[1.0,2.0],[5.0,6.0],[8.0,9.0],[3.0,4.0],[-2.0,-4.0]]]}}";
         val geometry = Geometry.builder().geometryString(geometryString).build();
-        val expected = "BoundingBox(westBoundLongitude=-2.0, eastBoundLongitude=8.0, southBoundLatitude=-4.0, northBoundLatitude=9.0, extentName=, extentUri=)";
+        val expected = "BoundingBox(westBoundLongitude=-2.0, eastBoundLongitude=8.0, southBoundLatitude=-4.0, northBoundLatitude=9.0)";
 
         //when
         val actual = geometry.getBoundingBox().get().toString();
