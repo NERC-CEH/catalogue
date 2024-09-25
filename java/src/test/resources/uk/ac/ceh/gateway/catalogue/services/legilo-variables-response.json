@@ -1,0 +1,1064 @@
+{
+  "details": {
+    "bears.nc": {
+      "variables": {
+        "bears": {
+          "size": 6,
+          "dtype": "|S4",
+          "standard_name": null,
+          "long_name": null,
+          "units": null,
+          "standard_name_url": null
+        },
+        "order": {
+          "size": 6,
+          "dtype": "int16",
+          "standard_name": null,
+          "long_name": null,
+          "units": null,
+          "standard_name_url": null
+        },
+        "shot": {
+          "size": 6,
+          "dtype": "int32",
+          "standard_name": null,
+          "long_name": null,
+          "units": null,
+          "standard_name_url": null
+        },
+        "aloan": {
+          "size": 6,
+          "dtype": "float32",
+          "standard_name": null,
+          "long_name": null,
+          "units": null,
+          "standard_name_url": null
+        },
+        "cross": {
+          "size": 6,
+          "dtype": "float64",
+          "standard_name": null,
+          "long_name": null,
+          "units": null,
+          "standard_name_url": null
+        }
+      },
+      "coordinates": {
+        "i": {
+          "dtype": "int32",
+          "attr1": "1",
+          "attr2": "1\n2\n3\n4",
+          "i_1.attr3_1": "17"
+        },
+        "j": {
+          "dtype": "float32"
+        },
+        "l": {
+          "dtype": "int16"
+        }
+      },
+      "dimensions": {
+        "i": 2,
+        "j": 3,
+        "l": 3
+      },
+      "attributes": {
+        "history": "This is an example of a multi-line global\\012attribute.  It could be used for representing the\\012processing history of the data, for example.\n2017-12-12 15:55:12 GMT Hyrax-1.14.0 http://test.opendap.org/opendap/hyrax/data/nc/bears.nc.nc?",
+        "DODS_EXTRA.Unlimited_Dimension": "k"
+      }
+    },
+    "example_1.nc": {
+      "variables": {
+        "temp": {
+          "size": 200,
+          "dtype": "float32",
+          "standard_name": null,
+          "long_name": "temperature",
+          "units": "celsius",
+          "standard_name_url": null
+        },
+        "rh": {
+          "size": 50,
+          "dtype": "float32",
+          "standard_name": null,
+          "long_name": "relative humidity",
+          "units": null,
+          "standard_name_url": null
+        }
+      },
+      "coordinates": {
+        "lat": {
+          "dtype": "int32",
+          "units": "degrees_north"
+        },
+        "lon": {
+          "dtype": "int32",
+          "units": "degrees_east"
+        },
+        "level": {
+          "dtype": "int32",
+          "units": "millibars"
+        },
+        "time": {
+          "dtype": "datetime64[ns]"
+        }
+      },
+      "dimensions": {
+        "time": 1,
+        "level": 4,
+        "lat": 5,
+        "lon": 10
+      },
+      "attributes": {
+        "source": "Fictional Model Output"
+      }
+    },
+    "noxtotarea.nc": {
+      "variables": {
+        "noxtotarea": {
+          "size": 1118936,
+          "dtype": "float32",
+          "standard_name": null,
+          "long_name": null,
+          "units": "kg m-2 s-1",
+          "standard_name_url": null
+        }
+      },
+      "coordinates": {
+        "easting": {
+          "dtype": "float32",
+          "axis": "X",
+          "units": "m",
+          "standard_name": "projection_x_coordinate",
+          "long_name": "Easting",
+          "standard_name_url": "http://vocab.nerc.ac.uk/standard_name/projection_x_coordinate/"
+        },
+        "northing": {
+          "dtype": "float32",
+          "axis": "Y",
+          "units": "m",
+          "standard_name": "projection_y_coordinate",
+          "long_name": "Northing",
+          "standard_name_url": "http://vocab.nerc.ac.uk/standard_name/projection_y_coordinate/"
+        }
+      },
+      "dimensions": {
+        "easting": 812,
+        "northing": 1378
+      },
+      "attributes": {}
+    },
+    "noxtotals.csv": {
+      "variables": {
+        "Gas": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "NFR/CRF Group": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "Source": {
+          "size": 503,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "Activity": {
+          "size": 503,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "Units": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "1970": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "1971": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "1972": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "1973": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "1974": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "1975": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "1976": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "1977": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "1978": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "1979": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "1980": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "1981": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "1982": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "1983": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "1984": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "1985": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "1986": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "1987": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "1988": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "1989": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "1990": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "1991": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "1992": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "1993": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "1994": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "1995": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "1996": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "1997": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "1998": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "1999": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "2000": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "2001": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "2002": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "2003": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "2004": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "2005": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "2006": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "2007": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "2008": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "2009": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "2010": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "2011": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "2012": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "2013": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "2014": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "2015": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "2016": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        },
+        "2017": {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      },
+      "coordinates": null,
+      "dimensions": null,
+      "attributes": null
+    }
+  },
+  "summary": {
+    "dimensions": [
+      {
+        "i": 2,
+        "j": 3,
+        "l": 3
+      },
+      {
+        "time": 1,
+        "level": 4,
+        "lat": 5,
+        "lon": 10
+      },
+      {
+        "easting": 812,
+        "northing": 1378
+      }
+    ],
+    "coordinates": [
+      {
+        "i": {
+          "dtype": "int32",
+          "attr1": "1",
+          "attr2": "1\n2\n3\n4",
+          "i_1.attr3_1": "17"
+        },
+        "j": {
+          "dtype": "float32"
+        },
+        "l": {
+          "dtype": "int16"
+        }
+      },
+      {
+        "lat": {
+          "dtype": "int32",
+          "units": "degrees_north"
+        },
+        "lon": {
+          "dtype": "int32",
+          "units": "degrees_east"
+        },
+        "level": {
+          "dtype": "int32",
+          "units": "millibars"
+        },
+        "time": {
+          "dtype": "datetime64[ns]"
+        }
+      },
+      {
+        "easting": {
+          "dtype": "float32",
+          "axis": "X",
+          "units": "m",
+          "standard_name": "projection_x_coordinate",
+          "long_name": "Easting",
+          "standard_name_url": "http://vocab.nerc.ac.uk/standard_name/projection_x_coordinate/"
+        },
+        "northing": {
+          "dtype": "float32",
+          "axis": "Y",
+          "units": "m",
+          "standard_name": "projection_y_coordinate",
+          "long_name": "Northing",
+          "standard_name_url": "http://vocab.nerc.ac.uk/standard_name/projection_y_coordinate/"
+        }
+      }
+    ],
+    "attributes": {
+      "history": [
+        "This is an example of a multi-line global\\012attribute.  It could be used for representing the\\012processing history of the data, for example.\n2017-12-12 15:55:12 GMT Hyrax-1.14.0 http://test.opendap.org/opendap/hyrax/data/nc/bears.nc.nc?"
+      ],
+      "DODS_EXTRA.Unlimited_Dimension": [
+        "k"
+      ],
+      "source": [
+        "Fictional Model Output"
+      ]
+    },
+    "variables": {
+      "bears": [
+        {
+          "size": 6,
+          "dtype": "|S4",
+          "standard_name": null,
+          "long_name": null,
+          "units": null,
+          "standard_name_url": null
+        }
+      ],
+      "order": [
+        {
+          "size": 6,
+          "dtype": "int16",
+          "standard_name": null,
+          "long_name": null,
+          "units": null,
+          "standard_name_url": null
+        }
+      ],
+      "shot": [
+        {
+          "size": 6,
+          "dtype": "int32",
+          "standard_name": null,
+          "long_name": null,
+          "units": null,
+          "standard_name_url": null
+        }
+      ],
+      "aloan": [
+        {
+          "size": 6,
+          "dtype": "float32",
+          "standard_name": null,
+          "long_name": null,
+          "units": null,
+          "standard_name_url": null
+        }
+      ],
+      "cross": [
+        {
+          "size": 6,
+          "dtype": "float64",
+          "standard_name": null,
+          "long_name": null,
+          "units": null,
+          "standard_name_url": null
+        }
+      ],
+      "temp": [
+        {
+          "size": 200,
+          "dtype": "float32",
+          "standard_name": null,
+          "long_name": "temperature",
+          "units": "celsius",
+          "standard_name_url": null
+        }
+      ],
+      "rh": [
+        {
+          "size": 50,
+          "dtype": "float32",
+          "standard_name": null,
+          "long_name": "relative humidity",
+          "units": null,
+          "standard_name_url": null
+        }
+      ],
+      "noxtotarea": [
+        {
+          "size": 1118936,
+          "dtype": "float32",
+          "standard_name": null,
+          "long_name": null,
+          "units": "kg m-2 s-1",
+          "standard_name_url": null
+        }
+      ],
+      "Gas": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "NFR/CRF Group": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "Source": [
+        {
+          "size": 503,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "Activity": [
+        {
+          "size": 503,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "Units": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "1970": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "1971": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "1972": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "1973": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "1974": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "1975": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "1976": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "1977": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "1978": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "1979": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "1980": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "1981": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "1982": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "1983": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "1984": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "1985": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "1986": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "1987": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "1988": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "1989": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "1990": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "1991": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "1992": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "1993": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "1994": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "1995": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "1996": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "1997": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "1998": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "1999": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "2000": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "2001": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "2002": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "2003": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "2004": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "2005": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "2006": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "2007": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "2008": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "2009": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "2010": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "2011": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "2012": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "2013": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "2014": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "2015": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "2016": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ],
+      "2017": [
+        {
+          "size": 516,
+          "dtype": "object",
+          "min": null,
+          "max": null
+        }
+      ]
+    }
+  }
+}
