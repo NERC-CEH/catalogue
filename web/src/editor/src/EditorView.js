@@ -107,7 +107,7 @@ export default Backbone.View.extend({
       boundingBoxData.eastBoundLongitude = parseFloat(boundingBoxData.eastBoundLongitude)
       boundingBoxData.westBoundLongitude = parseFloat(boundingBoxData.westBoundLongitude)
     }
-    console.log(boundingBoxData)
+
     const boundingBox = new BoundingBox(boundingBoxData)
     if (boundingBox && !boundingBox.hasBoundingBox()) {
       this.model.unset('boundingBox')
