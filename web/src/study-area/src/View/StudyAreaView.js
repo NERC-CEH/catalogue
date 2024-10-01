@@ -100,12 +100,11 @@ export default Backbone.View.extend({
       }
     })
 
+    const markers = L.markerClusterGroup()
+    markers.addLayer(featureInPoints)
+    map.addLayer(markers)
     if (numberOfLayers === 1) {
       this.pointDisplay(feature, studyArea, map)
-    } else {
-      const markers = L.markerClusterGroup()
-      markers.addLayer(featureInPoints)
-      map.addLayer(markers)
     }
   },
 
