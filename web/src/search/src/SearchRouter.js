@@ -26,11 +26,12 @@ export default Backbone.Router.extend({
      */
   updateRoute () {
     if (typeof window.history.replaceState !== 'undefined') {
-      window.history.replaceState(
-        { catalogueSearch: 'update search url' },
-        '',
-        this.appUrl.concat('?', $.param(this.model.getState()))
-      )
+      let url = this.appUrl
+      const param = $.param(this.model.getState())
+      if (param) {
+        url = url.concat('?', param)
+      }
+      window.history.replaceState({ catalogueSearch: 'update search url' }, '', url)
     } else {
       this.navigate($.param(this.model.getState(), true), { replace: true })
     }
