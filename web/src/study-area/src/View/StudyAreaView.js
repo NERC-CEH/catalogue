@@ -82,7 +82,11 @@ export default Backbone.View.extend({
     const pointFeatureCollection = studyArea.features.map(feature => {
       if (feature.geometry.type === 'Polygon') {
         const polygon = L.geoJSON(feature.geometry)
-        return this.centerPointOfPolygon(polygon)
+        const centroid = this.centerPointOfPolygon(polygon)
+        return {
+          ...feature,
+          geometry: centroid.geometry
+        }
       } else {
         return feature
       }
