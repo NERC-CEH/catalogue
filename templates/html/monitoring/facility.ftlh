@@ -21,8 +21,12 @@
   </div>
   </#if>
 
-    <@m.inverseRelationships "Uses" "Used by these activities" "http://onto.nerc.ac.uk/CEHMD/rels/uses" />
-    <@m.relationships "Belongs To" "Belongs to these networks" "http://purl.org/voc/ef#belongsTo" />
-    <@m.relationships "Supersedes" "Supersedes" "http://purl.org/voc/ef#supersedes" />
-    <@m.inverseRelationships "Superseded by" "Superseded by" "http://purl.org/voc/ef#supersedes" />
+  <@m.inverseRelationships "Uses" "Uses" "http://onto.nerc.ac.uk/CEHMD/rels/uses" />
+
+  <@m.relationships "Belongs To" "Belongs to these networks" "http://purl.org/voc/ef#belongsTo" />
+  <@m.relationships "Supersedes" "Supersedes" "http://purl.org/voc/ef#supersedes" />
+
+  <@m.inverseRelationships "Superseded by" "Superseded by" "http://purl.org/voc/ef#supersedes" />
+
+
 </@m.base>

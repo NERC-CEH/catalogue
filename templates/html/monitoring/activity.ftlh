@@ -13,7 +13,9 @@
 
   <@m.relationships "Uses" "Uses these facilities/networks" "http://onto.nerc.ac.uk/CEHMD/rels/uses" />
   <@m.relationships "Setup for" "Set up for these programmes" "http://ontm.nerc.ac.uk/CEHMD/rels/setupFor" />
+
   <@m.inverseRelationships "Setup for" "Set up for these programmes" "http://onto.nerc.ac.uk/CEHMD/rels/triggers" />
+
 
 </@m.base>
 

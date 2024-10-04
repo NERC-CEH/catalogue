@@ -192,7 +192,7 @@ Operating period
   </#if>
 </#macro>
 
-<#macro relationships title description relation> <#--UPDATE-->
+<#macro relationships title description relation>
   <#local links=jena.relationships(uri, relation) />
   <#if links?has_content>
     <@keyValue description "">
@@ -203,10 +203,10 @@ Operating period
   </#if>
 </#macro>
 
-<#macro inverseRelationships title description relation> <#--UPDATE-->
+<#macro inverseRelationships title description relation>
   <#local links=jena.inverseRelationships(uri, relation) />
   <#if links?has_content>
-    <@keyValue description  "">
+    <@keyValue description "">
       <#list links as link>
         <@b.blockUrl link />
       </#list>
@@ -214,6 +214,14 @@ Operating period
   </#if>
 </#macro>
 
+<#macro inverseRelationships2 title relation>
+  <#local links=jena.inverseRelationships(uri, relation) />
+  <#if links?has_content>
+    <#list links as link>
+      <@b.blockUrl link />
+    </#list>
+  </#if>
+</#macro>
 <#macro map mapData>
   <div id="studyarea-map" class="studyarea-map">
     <span content="${mapData}" dataType="geoJson"/>
@@ -267,7 +275,11 @@ Operating period
     <@keyValue "${title}" "">
       <#items as link>
         <#if link.url?has_content>
-          <a href="${link.url}" target="_blank" rel="noopener noreferrer">${link.description}</a>
+            <#if link.description?has_content>
+              <a href="${link.url}" target="_blank" rel="noopener noreferrer">${link.description}</a>
+             <#else>
+              <a href="${link.url}" target="_blank" rel="noopener noreferrer">${link.url}</a>
+             </#if>
         <#else>
           ${link.description}
         </#if><#sep><br></#sep>

@@ -17,9 +17,6 @@
       <a target="_blank" href="https://eidc.ac.uk/contact" aria-label="Contact us" class="social">
           <i class="fa-solid fa-xl fa-fw fa-envelope"></i>
       </a>
-      <a class="social" target="_blank" href="https://twitter.com/EIDC_data" aria-label="Go to our X (Twitter) feed">
-          <i class="fa-brands fa-xl fa-fw fa-x-twitter"></i>
-      </a>
     </div>
     <div class="footer-terms">
       UKCEH &copy; ${.now?datetime?string['yyyy']}

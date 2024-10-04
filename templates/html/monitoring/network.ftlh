@@ -4,12 +4,16 @@
   <#assign inverseRelationshipCombinedGeometriesOutput>
     <@m.inverseRelationshipCombinedGeometries "http://purl.org/voc/ef#belongsTo" />
   </#assign>
-  <#if inverseRelationshipCombinedGeometriesOutput?has_content>
-    <@m.keyValue "Location" "Monitoring Network">
-      ${inverseRelationshipCombinedGeometriesOutput}
-    </@m.keyValue>
-  </#if>
 
-  <@m.inverseRelationships "Contains" "Contains" "http://purl.org/voc/ef#belongsTo" />
+  <div class="networkMap">
+    <#if inverseRelationshipCombinedGeometriesOutput?has_content>
+     <div>${inverseRelationshipCombinedGeometriesOutput}</div>
+    </#if>
+    <div class="facilitiesList">
+      <@m.inverseRelationships2 "Contains" "http://purl.org/voc/ef#belongsTo" />
+    </div>
+  </div>
+
   <@m.inverseRelationships "Used by" "Used by" "http://onto.nerc.ac.uk/CEHMD/rels/uses" />
+
 </@m.base>
