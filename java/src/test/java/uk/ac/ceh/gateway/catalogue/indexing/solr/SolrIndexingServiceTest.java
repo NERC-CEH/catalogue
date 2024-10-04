@@ -176,9 +176,6 @@ class SolrIndexingServiceTest {
             .willReturn(document1);
         given(reader.readBundle("doc2"))
             .willReturn(document2);
-        given(solrClient.addBean(any(Object.class)))
-            .willThrow(new SolrServerException("Please carry on"))
-            .willReturn(new UpdateResponse());
 
         //When
         try {
@@ -202,10 +199,6 @@ class SolrIndexingServiceTest {
             .willReturn(document1);
         given(reader.readBundle("doc2"))
             .willReturn(document2);
-
-        given(solrClient.addBean(eq(COLLECTION), any(SolrIndex.class)))
-            .willThrow(new SolrServerException("Please carry on"))
-            .willReturn(null);
 
         //When
         assertThrows(DocumentIndexingException.class, () ->
