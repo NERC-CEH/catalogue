@@ -182,7 +182,7 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
                 .stream()
                 .filter(k -> Arrays.stream(urlFragments).anyMatch(urlFragment -> k.getUri().startsWith(urlFragment)))
                 .collect(Collectors.toList());
-    }
+    }//here
 
     private List<Keyword> getKeywordsByVocabulary(MetadataDocument document, String broaderUrl) {
         return Optional.ofNullable(document.getAllKeywords())
