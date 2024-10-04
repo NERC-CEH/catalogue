@@ -1,0 +1,38 @@
+{
+    "id": "3ebb3a34-517d-4892-be5a-e020532e0298",
+    "uri": "https://catalogue-staging.ceh.ac.uk/id/3ebb3a34-517d-4892-be5a-e020532e0298",
+    "type": "monitoringFacility",
+    "title": "BT Tower London Atmospheric Pollution Observatory",
+    "metadataDate": "2024-09-24T12:49:47",
+    "resourceIdentifiers": [
+        {
+            "code": "https://catalogue-staging.ceh.ac.uk/id/3ebb3a34-517d-4892-be5a-e020532e0298"
+        }
+    ],
+    "relationships": [
+        {
+            "relation": "http://purl.org/voc/ef#belongsTo",
+            "target": "4d40c67c-2bd6-4461-a7c4-43058abf9a16"
+        }
+    ],
+    "keywords": [
+        {
+            "value": "Sentinel site"
+        }
+    ],
+    "geometry": {
+        "geometryString": "{\"type\":\"Feature\",\"properties\":{},\"geometry\":{\"type\":\"Point\",\"coordinates\":[-0.13879,51.52142]}}",
+        "wkt": "POINT(-0.13879 51.52142)"
+    },
+    "geometryRepresentative": false,
+    "mobile": false,
+    "responsibleParties": [
+        {
+            "individualName": "Carole Helfter",
+            "organisationName": "UK Centre for Ecology & Hydrology",
+            "organisationIdentifier": "https://ror.org/00pggkr55",
+            "role": "pointOfContact",
+            "email": "enquiries@ceh.ac.uk"
+        }
+    ]
+}
