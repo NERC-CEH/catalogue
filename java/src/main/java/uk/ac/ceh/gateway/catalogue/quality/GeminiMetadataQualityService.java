@@ -486,6 +486,10 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
     }
 
     List<MetadataCheck> checkSpatialResolutions(DocumentContext parsed) {
+        val spatialReferenceTypes = parsed.read("$.spatialReferenceTypes", new TypeRef<List<String>>() {});
+        if (spatialReferenceTypes != null && spatialReferenceTypes.stream().noneMatch(type -> type.equals("grid") || type.equals("vector"))) {
+            return Collections.emptyList();
+        }
         val spatialResolutions = parsed.read("$.spatialResolutions[*]", typeRefStringString);
         if (spatialResolutions.isEmpty()) {
             return Collections.singletonList(new MetadataCheck("Spatial resolutions is missing", WARNING));
