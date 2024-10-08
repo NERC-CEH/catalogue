@@ -1,3 +1,5 @@
+@use "sass:color";
+
 :root {
     --quality-success: hsl(120, 100%, 25%);
     --quality-success-fade: hsl(120, 50%, 85%);
@@ -7,7 +9,7 @@
     --quality-info-fade: hsl(240, 50%, 85%);
     --quality-error: hsl(0, 100%, 50%);
     --quality-error-fade: hsl(0, 50%, 85%);
-    --border_radius: 0.5em;
+    --border-radius: 0.5em;
 }
 
 body {
@@ -44,7 +46,6 @@ body {
         &-grey {
             background-color: hsl(0, 0%, 95%);
             border: 1px solid #ccc;
-            border-width: 1px 0;
 
             &:has(.notice) {
                 .disclaimer {
@@ -57,7 +58,6 @@ body {
 
     .disclaimer {
         border: 1px solid #bbb;
-        border-width: 1px 0;
         padding: 1em 0;
         margin: -1.1em 0 1em 0;
         font-style: italic;
@@ -97,7 +97,7 @@ body {
         padding: 1em 0;
 
         &:not(:has(.notice)) {
-            border-bottom: 1px solid @gray-light;
+            border-bottom: 1px solid $gray-light;
             margin-bottom: 1em;
         }
 
@@ -118,14 +118,14 @@ body {
 
         .alert-In-progress,
         .alert-Embargoed {
-            .alert;
-            .alert-info;
+            @extend .alert;
+            @extend .alert-info;
         }
 
         .alert-Superseded,
         .alert-Withdrawn {
-            .alert;
-            .alert-danger;
+            @extend .alert;
+            @extend .alert-danger;
         }
     }
 
@@ -142,7 +142,7 @@ body {
         }
 
         &:hover,
-        &:selected {
+        &.selected {
             background-color: rgba(0, 0, 0, 0.05);
         }
 
@@ -182,10 +182,10 @@ body {
 
         .otherVersions {
             margin-left: 0.6em;
-            color: @link-color;
+            color: $link-color;
 
             &:hover {
-                color: @link-hover-color;
+                color: $link-hover-color;
                 text-decoration: underline;
                 cursor: pointer;
             }
@@ -206,9 +206,9 @@ body {
 
         a {
             margin-left: 1em;
-            .btn;
-            .btn-danger;
-            .btn-xs;
+            @extend .btn;
+            @extend .btn-danger;
+            @extend .btn-sm;
         }
     }
 
@@ -253,7 +253,7 @@ body {
         .licenceText {
             .ogl-logo {
                 margin-top: 0.3em;
-                .pull-right;
+                @extend .float-end;
             }
         }
     }
@@ -268,7 +268,7 @@ body {
 
             .licenceText {
                 margin-top: 3em;
-                .text-center;
+                @extend .text-center;
 
                 img {
                     display: block;
@@ -379,7 +379,7 @@ body {
 
         .divider {
             height: 1px;
-            background: @gray-light;
+            background: $gray-light;
             margin: 1.2em 0;
         }
 
@@ -387,7 +387,7 @@ body {
             margin: 2em 0;
 
             .btn {
-                white-space: balance;
+                white-space: collapse;
                 margin: 0.8em 0;
                 color: white;
 
@@ -400,24 +400,24 @@ body {
                 }
 
                 &-download {
-                    .btn-block;
+                    @extend .w-100;
                     font-weight: 600;
                     background-color: var(--primary-colour);
 
                     &:hover,
                     &:focus {
-                        background-color: lighten(@brand-success, 15%);
+                        background-color: color.adjust($brand-success, $lightness: 15%, $space: hsl);
                     }
                     > small { font-weight: 200; margin-left:3px; }
                 }
 
                 &-supporting {
-                    .btn-block;
-                    background-color: lighten(@brand-success, 15%);
+                    @extend .w-100;
+                    background-color: color.adjust($brand-success, $lightness: 15%, $space: hsl);
 
                     &:hover,
                     &:focus {
-                        background-color: lighten(@brand-success, 30%);
+                        background-color: color.adjust($brand-success, $lightness: 30%, $space: hsl);
                     }
                 }
             }
@@ -436,7 +436,7 @@ body {
 
     h2 {
         margin-top: 2.5em;
-        border-bottom: 1px solid @gray-light;
+        border-bottom: 1px solid $gray-light;
         padding-bottom: 6px;
     }
 
@@ -711,10 +711,10 @@ body {
     }
 
     .panel {
-        border-radius: --var(border_radius);
+        border-radius: var(--border-radius);
 
         .panel-heading {
-            border-radius: --var(border_radius) --var(border_radius) 0 0;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
         }
     }
 
@@ -797,7 +797,7 @@ body {
     }
 
     .browseGraphic {
-        .pull-right;
+        @extend .float-end;
         margin: 0 0 1em 2em;
         max-width: 30em;
         max-height: 30em;

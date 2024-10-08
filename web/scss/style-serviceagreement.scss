@@ -137,7 +137,7 @@
 
     .tbl {
         &--collapse {
-            @border-color: lightgrey;
+            $border-color: lightgrey;
             margin: 1em 0;
 
             table {
@@ -149,7 +149,7 @@
                 td {
                     padding: 0.4em;
                     margin: 0;
-                    border: 1px solid @border-color;
+                    border: 1px solid $border-color;
                 }
 
                 thead {
@@ -164,7 +164,7 @@
             @media only screen and (max-width: 760px),
             (min-device-width: 768px) and (max-device-width: 1024px) {
                 // On small screens, force table to NOT display as a table //
-                @head-width: 200px;
+                $head-width: 200px;
 
                 table,
                 thead,
@@ -186,23 +186,23 @@
                 tr {
                     margin: 0 0 0.6em 0;
                     padding-bottom: 0.6em;
-                    border-bottom: 1px solid @border-color !important;
+                    border-bottom: 1px solid $border-color !important;
                 }
 
                 td {
                     border: none;
                     position: relative;
-                    margin-left: @head-width*1.2;
+                    margin-left: $head-width*1.2;
                     padding: 0.3em 5em !important;
 
                     &:before {
                         position: absolute;
                         padding: 0.3em;
                         top: 0;
-                        // left: @head-width*1.2;
-                        margin-left: -(@head-width) * 1.1;
+                        // left: $head-width*1.2;
+                        margin-left: -($head-width) * 1.1;
                         text-align: right;
-                        width: @head-width;
+                        width: $head-width;
                         font-weight: bolder;
                         white-space: nowrap;
                     }

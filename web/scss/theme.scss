@@ -7,14 +7,16 @@
  * This theme was built using the Themestrap Bootstrap Theme Kit.
  * https://github.com/divshot/themestrap
  */
-
+$fa-font-path: '../fonts';
 @import url("https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600&display=swap");
-@import "../node_modules/bootstrap/less/bootstrap";
-@import "../node_modules/@fortawesome/fontawesome-free/less/fontawesome";
-@import "../node_modules/@fortawesome/fontawesome-free/less/regular";
-@import "../node_modules/@fortawesome/fontawesome-free/less/solid";
-@import "../node_modules/@fortawesome/fontawesome-free/less/brands";
+@import "customProperties";
+@import "variables";
+@import "~bootstrap/scss/bootstrap";
+@import "~@fortawesome/fontawesome-free/scss/fontawesome";
+@import "~@fortawesome/fontawesome-free/scss/regular";
+@import "~@fortawesome/fontawesome-free/scss/solid";
+@import "~@fortawesome/fontawesome-free/scss/brands";
 @import "message-panel";
 @import "search";
 @import "metadata";
@@ -22,8 +24,6 @@
 @import "validation";
 @import "documents-upload";
 @import "upload-simple";
-@import "variables";
-@import "customProperties";
 // Add CSS Customizations to your theme here.
 
 
@@ -144,7 +144,6 @@ footer {
                 border-radius: 1000px;
 
                 &:hover {
-
                     border-color: white;
                 }
             }
@@ -172,7 +171,7 @@ h3,
 h4,
 h5,
 h6 {
-    font-family: var(--font-family-hreaders);
+    font-family: var(--font-family-headers);
 
     a {
         color: var(--link-colour);

@@ -8,12 +8,13 @@
 !web/css
 !web/dist
 !web/img
-!web/less
+!web/scss
 !web/src
 !web/Gruntfile.js
 !web/karma.conf.js
 !web/package.json
 !web/package-lock.json
 !web/webpack.js
+!web/webpack.scss.js
 
 

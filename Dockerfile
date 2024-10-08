@@ -1,10 +1,10 @@
 # Build webpack (javascript & css)
 FROM node:21.5.0-alpine3.19 AS build-web
 WORKDIR /web
-COPY web/Gruntfile.js web/package.json web/package-lock.json web/webpack.js ./
+COPY web/package.json web/package-lock.json web/webpack.js web/webpack.scss.js ./
 RUN --mount=type=cache,target=/web/.npm npm ci --no-audit
 COPY web/img ./img
-COPY web/less ./less
+COPY web/scss ./scss
 COPY web/src ./src
 RUN npm run build-css
 RUN npm run build-prod

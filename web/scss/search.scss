@@ -1,3 +1,5 @@
+@use "sass:color";
+
 // PAGE STRUCTURE
 html:has(.search),
 body:has(.search) {
@@ -217,7 +219,7 @@ main {
 
             &:hover {
                 background-color: rgba(0, 0, 0, 0.06);
-                outline: 2px solid @link-hover-color;
+                outline: 2px solid $link-hover-color;
                 text-decoration: none;
             }
 
@@ -254,7 +256,7 @@ main {
 
             &__citationCount {
                 text-align: right;
-                color: @gray;
+                color: $gray;
                 font-size: 1.1rem;
                 margin-top: -2px;
             }
@@ -266,7 +268,7 @@ main {
 
             &--draft {
                 border-left: darkred 10px solid;
-                background-color: lighten(@gray-light, 30%);
+                background-color: color.adjust($gray-light, $lightness: 30%, $space: hsl);
                 background-image: repeating-linear-gradient(315deg,
                         transparent,
                         transparent 18px,

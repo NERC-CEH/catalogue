@@ -1,13 +1,15 @@
+@use "sass:color";
+
 @import "theme";
 
 
-@fa-font-path: "../fonts";
+$fa-font-path: "../fonts";
 
 //colours
-@ukri-blue: hsla(241, 37%, 28%, 1);
-@nerc-blue: @ukri-blue;
+$ukri-blue: hsla(241, 37%, 28%, 1);
+$nerc-blue: $ukri-blue;
 
-@link-hover-color: @nerc-blue;
+$link-hover-color: $nerc-blue;
 
 :root {
     --ukri-blue: hsla(241, 37%, 28%, 1);
@@ -18,7 +20,7 @@
     --header-border-bottom-colour: #ddd;
     --header-border-bottom-width: 1px;
     --header-link-background-colour: var(--header-background-colour);
-    --header-link-hover-background-colour:color-mix(in lab, var(--header-link-background-colour), black 15px);
+    --header-link-hover-background-colour:color-mix(in lab, var(--header-link-background-colour), black);
     --header-link-colour: var(--nerc-darkgreen);
     --header-link-hover-colour: red;
     --header-logo-border: none;
@@ -89,7 +91,7 @@ a.navbar-brand {
 
     .btn {
         &-code {
-            background-color: lighten(@nerc-blue, 60%);
+            background-color: color.adjust($nerc-blue, $lightness: 60%, $space: hsl);
             color: black;
             border-color: lightgray;
             border-radius: 6px;
@@ -151,7 +153,7 @@ a.navbar-brand {
         @media only screen and (max-width: 760px),
             (min-device-width: 768px) and (max-device-width: 1024px) {
             // On small screens, force qa table to not display as a table
-            @head-width: 100px;
+            $head-width: 100px;
 
             table,
             thead,
@@ -177,7 +179,7 @@ a.navbar-brand {
             td {
                 border: none;
                 position: relative;
-                margin-left: @head-width*1.2;
+                margin-left: $head-width*1.2;
                 padding: 0.4em !important;
 
                 &:before {
@@ -185,9 +187,9 @@ a.navbar-brand {
                     padding: 0.4em 0.6em;
                     top: 0;
                     left: 3em;
-                    margin-left: -(@head-width*1.5);
+                    margin-left: -($head-width*1.5);
                     text-align: right;
-                    width: @head-width;
+                    width: $head-width;
                     font-weight: bolder;
                     white-space: nowrap;
                 }
