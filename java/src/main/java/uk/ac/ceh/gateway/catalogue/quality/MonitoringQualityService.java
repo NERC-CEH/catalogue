@@ -9,10 +9,13 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import uk.ac.ceh.gateway.catalogue.document.reading.DocumentReader;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream
-;
+import java.util.stream.Stream;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +29,9 @@ public class MonitoringQualityService implements MetadataQualityService {
     private final DocumentReader documentReader;
     private final Configuration config;
 
-    private final TypeRef<Map<String, String>> typeRefStringString = new TypeRef<>() {};
+    private static final TypeRef<Map<String, String>> typeRefStringString = new TypeRef<>() {};
+    private static final TypeRef<List<Map<String, String>>> typeRefListStringString = new TypeRef<>() {};
+    private static final DateFormat operatingPeriodFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     public MonitoringQualityService(
             @NonNull DocumentReader documentReader,
@@ -48,12 +53,11 @@ public class MonitoringQualityService implements MetadataQualityService {
             val parsedDoc = JsonPath.parse(documentReader.read(id, "raw"), config);
             val parsedMeta = JsonPath.parse(documentReader.read(id, "meta"), config);
 
-            val checks = Stream.of(
-                checkKeywords(parsedDoc),
-                checkOperatingPeriod(parsedMeta, parsedDoc)
-            ).flatMap(s -> s).collect(Collectors.toCollection(ArrayList::new));
+            val checks = checkKeywords(parsedDoc).collect(Collectors.toCollection(ArrayList::new));
 
-            checks.addAll(switch (parsedMeta.read("$.documentType", String.class)) {
+            val docType = parsedMeta.read("$.documentType", String.class);
+
+            checks.addAll(switch (docType) {
                 case MONITORING_FACILITY -> checkFacility(parsedDoc).toList();
                 case MONITORING_PROGRAMME, MONITORING_ACTIVITY -> checkProgrammeOrActivity(parsedDoc).toList();
                 default -> Collections.emptyList();
@@ -64,20 +68,6 @@ public class MonitoringQualityService implements MetadataQualityService {
             log.error("Error - could not check " + id, ex);
             return new Results(Collections.emptyList(), id, "Error - could not check this document");
         }
-    }
-
-    private Stream<MetadataCheck> checkKeywords(DocumentContext parsedDoc) {
-        val keywords = parsedDoc.read("$.keywords", List.class);
-        return checkNonEmptyIfPresent("Keywords", keywords);
-    }
-
-    private Stream<MetadataCheck> checkOperatingPeriod(DocumentContext parsedMeta, DocumentContext parsedDoc) {
-        if (parsedMeta.read("$.documentType", String.class).equals(MONITORING_NETWORK)) {
-            return Stream.empty();
-        }
-
-        val periods = parsedDoc.read("$.operatingPeriod", List.class);
-        return checkNonEmptyIfPresent("Operating period", periods);
     }
 
     private Stream<MetadataCheck> checkFacility(DocumentContext parsedDoc) {
@@ -93,23 +83,36 @@ public class MonitoringQualityService implements MetadataQualityService {
             toReturn.add(new MetadataCheck("Geometry is missing", ERROR));
         }
 
+        toReturn.addAll(checkOperatingPeriods(parsedDoc).toList());
+
         return toReturn.stream();
     }
 
     private Stream<MetadataCheck> checkProgrammeOrActivity(DocumentContext parsedDoc) {
-        return checkBoundingBox(parsedDoc);
+        return Stream.concat(
+            checkBoundingBox(parsedDoc),
+            checkOperatingPeriods(parsedDoc)
+        );
     }
 
-    private Stream<MetadataCheck> checkNonEmptyIfPresent(String field, List<?> list) {
-        return Optional.ofNullable(list)
-            .flatMap(l -> {
-                if (l.isEmpty()) {
-                    return Optional.of(new MetadataCheck(field + " is empty", ERROR));
-                } else {
-                    return Optional.empty();
-                }
-            })
-            .stream();
+    private Stream<MetadataCheck> checkKeywords(DocumentContext parsedDoc) {
+        val keywords = parsedDoc.read("$.keywords", typeRefListStringString);
+        return Stream.concat(
+            checkNonEmptyIfPresent("Keywords", keywords),
+            checkAllNonEmpty("Keyword", keywords)
+        );
+    }
+
+    private Stream<MetadataCheck> checkOperatingPeriods(DocumentContext parsedDoc) {
+        val periods = parsedDoc.read("$.operatingPeriod", typeRefListStringString);
+        return Stream.of(
+            checkNonEmptyIfPresent("Operating period", periods),
+            checkAllNonEmpty("Operating period", periods),
+            Stream.ofNullable(periods)
+                .flatMap(List::stream)
+                .flatMap(this::checkOperatingPeriod)
+                .limit(1)
+        ).flatMap(s -> s);
     }
 
     private Stream<MetadataCheck> checkBoundingBox(DocumentContext parsedDoc) {
@@ -157,5 +160,41 @@ public class MonitoringQualityService implements MetadataQualityService {
         });
 
         return toReturn.stream();
+    }
+
+    private Stream<MetadataCheck> checkOperatingPeriod(Map<String, String> period) {
+        val begin = parseDate(period.get("begin"));
+        val end = parseDate(period.get("end"));
+        if (begin.isEmpty() || end.isEmpty()) {
+            return Stream.empty();
+        }
+        if (begin.get().compareTo(end.get()) > 0) {
+            return Stream.of(new MetadataCheck("Begin date is after end date in operating period", ERROR));
+        }
+        return Stream.empty();
+    }
+
+    private <K, V> Stream<MetadataCheck> checkAllNonEmpty(String field, List<Map<K, V>> items) {
+        return Stream.ofNullable(items)
+            .flatMap(List::stream)
+            .filter(Map::isEmpty)
+            .map(_m -> new MetadataCheck(field + " is empty", ERROR))
+            .limit(1);
+    }
+
+    private Stream<MetadataCheck> checkNonEmptyIfPresent(String field, List<?> list) {
+        return Stream.ofNullable(list)
+            .filter(List::isEmpty)
+            .map(_l -> new MetadataCheck(field + " is empty", ERROR));
+    }
+
+    private Optional<Date> parseDate(String str) {
+        return Optional.ofNullable(str).flatMap(s -> {
+            try {
+                return Optional.ofNullable(operatingPeriodFormat.parse(s));
+            } catch (ParseException _e) {
+                return Optional.empty();
+            }
+        });
     }
 }
