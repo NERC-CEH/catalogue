@@ -31,7 +31,6 @@ class SolrIndexMonitoringFacilityGeneratorTest {
     @Test
     public void checkThatMonitoringFacilityDataTransferedToIndex() {
         //Given
-
         MonitoringFacility document = new MonitoringFacility();
         document.setFacilityType(SolrIndexMonitoringGeneratorData.facilityType);
         document.setEnvironmentalDomain(SolrIndexMonitoringGeneratorData.domainList);

@@ -140,7 +140,7 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .build();
             case "environmentalDomains" -> Facet.builder()
                 .fieldName("environmentalDomains")
-                    .displayName("Environmental domains")
+                    .displayName("Environmental domain")
                     .hierarchical(false)
                     .build();
             case "facilityType" -> Facet.builder()

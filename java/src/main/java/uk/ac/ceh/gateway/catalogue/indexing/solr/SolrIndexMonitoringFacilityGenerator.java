@@ -32,7 +32,7 @@ public class SolrIndexMonitoringFacilityGenerator implements IndexGenerator<Moni
             .setEnvironmentalDomains(grab(document.getEnvironmentalDomain(), Keyword::getValue))
             .setKeywordsParameters(grab(document.getKeywordsParameters(), Keyword::getValue))
             .setResponsibleParties(grab(document.getResponsibleParties(), ResponsibleParty::getOrganisationName))
-            .setOperatingPeriod(MonitoringDocumentUtil.getOperatingPeriod(document.getOperatingPeriod()))
+            .setOperatingPeriod(grab(document.getOperatingPeriod(), MonitoringDocumentUtil::getTimeRange))
             ;
     }
 
