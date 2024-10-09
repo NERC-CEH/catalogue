@@ -100,14 +100,15 @@
 
 
         .editor-input {
-            @extend .form-control;
-            @extend .form-control-sm;
+            @extend .form-control !optional;
+            @extend .form-control-sm !optional;
             color: #000;
+            appearance: auto;
         }
 
         .editor-textarea {
-            @extend .form-control;
-            @extend .form-control-sm;
+            @extend .form-control !optional;
+            @extend .form-control-sm !optional;
             height: auto;
             color: #000;
         }
@@ -141,29 +142,32 @@
         }
 
         .editor-button {
-            @extend .btn;
-            @extend .btn-light;
-            @extend .btn-sm;
-            @extend .float-end;
+            @extend .btn !optional;
+            @extend .btn-light !optional;
+            @extend .border !optional;
+            @extend .btn-sm !optional;
+            @extend .float-end !optional;
         }
 
         .editor-button-xs {
-            @extend .btn;
-            @extend .btn-light;
-            @extend .btn-sm;
-            @extend .float-end;
+            @extend .btn !optional;
+            @extend .btn-light !optional;
+            @extend .border !optional;
+            @extend .btn-sm !optional;
+            @extend .float-end !optional;
         }
 
         .editor-button-remove {
-            @extend .btn;
-            @extend .btn-light;
-            @extend .btn-sm;
+            @extend .btn !optional;
+            @extend .btn-light !optional;
+            @extend .border !optional;
+            @extend .btn-sm !optional;
         }
 
         .editor-help {
-            @extend .form-text;
-            @extend .d-print-none;
-            @extend .collapse;
+            @extend .form-text !optional;
+            @extend .d-print-none !optional;
+            @extend .collapse !optional;
             font-size: 12px;
             line-height: 1.5;
         }
@@ -171,7 +175,7 @@
         .component {
             border-bottom: 1px solid color.adjust($gray-light, $lightness: 25%, $space: hsl);
             padding-bottom: 1.25em;
-            @extend .mb-3;
+            @extend .mb3 !optional;
             display: none;
 
             &.visible {
@@ -247,9 +251,10 @@
             }
 
             .btnSchemaDetail {
-                @extend .btn;
-                @extend .btn-light;
-                @extend .btn-sm;
+                @extend .btn !optional;
+                @extend .btn-light !optional;
+                @extend .border !optional;
+                @extend .btn-sm !optional;;
                 text-align: right;
 
                 span:before {
@@ -293,7 +298,7 @@
         }
 
         .dropdown {
-            @extend .float-end;
+            @extend .float-end !optional;
             display: inline-block;
         }
 
@@ -310,7 +315,7 @@
 
         .keyword-add {
             display: inline-block;
-            @extend .float-start;
+            @extend .float-start !optional;
         }
 
         .keywords {

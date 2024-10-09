@@ -29,12 +29,16 @@ module.exports = {
     path: path.resolve(__dirname, 'css'),
     filename: '[name].js'
   },
+
+  // Define module rules for how to handle SCSS files
   module: {
     rules: [
       {
         test: /\.scss$/,
         use: [
+          // Extract CSS into separate files instead of embedding them in JavaScript
           MiniCssExtractPlugin.loader,
+          // Loads css from node_modules
           {
             loader: 'css-loader',
             options: {
@@ -42,12 +46,14 @@ module.exports = {
               url: false
             }
           },
+          // Postcss-loader adds browser-specific prefixes for cross-browser compatibility.
           {
             loader: 'postcss-loader',
             options: {
               sourceMap: true
             }
           },
+          // Compiles SCSS to CSS
           {
             loader: 'sass-loader',
             options: {
@@ -70,6 +76,7 @@ module.exports = {
       new CssMinimizerPlugin()
     ]
   },
+  // Plugins for extracting CSS and removing empty JS files
   plugins: [
     new MiniCssExtractPlugin({
       filename: '[name].css'

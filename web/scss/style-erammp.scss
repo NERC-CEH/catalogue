@@ -43,7 +43,7 @@ $panel-default-text: $header-text;
     };
 
     .table-schema {
-        @extend .table-sm;
+        @extend .table-sm !optional;
         td, th {
             padding:.3em 1em !important;
             .schema-constraints {

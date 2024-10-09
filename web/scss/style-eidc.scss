@@ -193,7 +193,7 @@ footer {
     .section {
         &--schema {
             .table-schema {
-                @extend .table-sm;
+                @extend .table-sm !optional;
             }
         }
 
