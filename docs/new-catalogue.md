@@ -114,43 +114,27 @@ Use a browser plugin like [ModHeaders](https://bewisse.com/modheader/) to modify
 
 ## Step 3: Add style
 
-In the `Gruntfile.js` you need to add the following in the `less` task
+In the `webpack.scss.js` you need to add the following in the `entry`
 
 ```js
-less: {
-  youId: {
-    files: {
-      'src/css/style-youId.css': 'src/less/style-youId.less'
-    }
-  }
+entry: {
+      'style-youId': './scss/style-youId.scss'
 }
 ```
 
-and in the `cssmin` task
+You need to create the file `src/scss/style-youId.scss`
 
-```js
-cssmin: {
-  youId: {
-    files: {
-      'src/css/style-youId.css': 'src/css/style-youId.css'
-    }
-  }
-}
-```
+your `scss` files will look like this
 
-You need to create the file `src/less/style-youId.less`
-
-your `less` files will look like this
-
-```less
+```scss
 @import "style-ceh";
 ```
 
 but if you want your own colors you can add something like this
 
-```less
-@brand-success: #3498DB;
-@header-text: #ECF0F1;
+```scss
+$brand-success: #3498DB;
+$header-text: #ECF0F1;
 .text-red {color:#E74C3C;}
 ```
 

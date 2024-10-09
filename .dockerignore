@@ -10,7 +10,6 @@
 !web/img
 !web/scss
 !web/src
-!web/Gruntfile.js
 !web/karma.conf.js
 !web/package.json
 !web/package-lock.json
