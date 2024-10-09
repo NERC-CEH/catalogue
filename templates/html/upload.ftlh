@@ -12,14 +12,14 @@
         <h3 class="text-center">Metadata File Upload</h3>
       </div>
       <form class="form-horizontal" method="POST" enctype="multipart/form-data" action="/documents">
-        <div class="form-group">
-          <label for="fileUpload" class="col-sm-3 control-label">File to upload:</label>
+        <div class="mb-3">
+          <label for="fileUpload" class="col-sm-3 ">File to upload:</label>
           <div class="col-sm-9">
             <input id="fileUpload" type="file" name="file" class="form-control" accept="text/xml, application/xml">
           </div>
         </div>
-        <div class="form-group">
-          <label for="metadataType" class="col-sm-3 control-label">Metadata Type:</label>
+        <div class="mb-3">
+          <label for="metadataType" class="col-sm-3 ">Metadata Type:</label>
           <div class="col-sm-9">
             <select id="metadataType" name="type" class="form-control">
               <option value="EF_DOCUMENT">EF</option>
@@ -27,8 +27,8 @@
             </select>
           </div>
         </div>
-        <div class="form-group">
-          <label for="catalogue" class="col-sm-3 control-label">Catalogue:</label>
+        <div class="mb-3">
+          <label for="catalogue" class="col-sm-3 ">Catalogue:</label>
           <div class="col-sm-9">
             <select id="catalogue" name="catalogue" class="form-control">
               <#list catalogues.retrieveAll() as catalogue>
@@ -37,9 +37,9 @@
             </select>
           </div>
         </div>
-        <div class="form-group">
+        <div class="mb-3">
           <div class="col-sm-offset-2 col-sm-10">
-            <input class="btn btn-default" type="submit" value="Upload">
+            <input class="btn btn-light border" type="submit" value="Upload">
           </div>
         </div>
       </form>

@@ -3,7 +3,7 @@ import _ from 'underscore'
 export default _.template(`
 <div class="row">
     <div class="col-sm-2 required">
-        <label class="control-label" for="contacts<%= data.index %>Name">
+        <label for="contacts<%= data.index %>Name">
           Name
         </label>
     </div>
@@ -11,7 +11,7 @@ export default _.template(`
         <input data-name='individualName' class="editor-input" id="contacts<%= data.index %>Name" value="<%= data.individualName %>">
     </div>
     <div class="col-sm-2 required">
-        <label class="control-label" for="contacts<%= data.index %>Email">
+        <label for="contacts<%= data.index %>Email">
           Email
         </label>
     </div>
@@ -21,7 +21,7 @@ export default _.template(`
 </div>
 <div class="row">
     <div class="col-sm-2 required">
-        <label class="control-label" for="contacts<%= data.index %>Organisation">
+        <label for="contacts<%= data.index %>Organisation">
           Affiliation
         </label>
     </div>
@@ -30,7 +30,7 @@ export default _.template(`
     </div>
 
     <div class="col-sm-2">
-        <label class="control-label" for="contacts<%= data.index %>nameIdentifier">ORCID</label>
+        <label for="contacts<%= data.index %>nameIdentifier">ORCID</label>
     </div>
     <div class="col-sm-4">
         <input data-name='nameIdentifier' placeholder='https://orcid.org/0000-0000-0000-0000' class="editor-input" id="contacts<%= data.index %>nameIdentifier" value="<%= data.nameIdentifier %>">

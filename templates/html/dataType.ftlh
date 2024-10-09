@@ -7,19 +7,18 @@
       <div class="container">
 
         <#if permission.userCanEdit(id)>
-          <div class="admin hidden-print">
-            <div class="text-right">
+          <div class="admin d-print-none">
+            <div class="text-end">
               <div class="btn-group">
-                <a type="button" class="btn btn-default edit-control" href="#" data-document-type="${metadata.documentType}">Edit</a>
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  <span class="caret"></span>
-                  <span class="sr-only">Toggle Dropdown</span>
+                <a type="button" class="btn btn-light border edit-control" href="#" data-document-type="${metadata.documentType}">Edit</a>
+                <button type="button" class="btn btn-light border dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <span class="visually-hidden">Toggle Dropdown</span>
                 </button>
-                <ul class="dropdown-menu dropdown-menu-right">
-                  <li><a href="/documents/${id}/permission" ><i class="fa-solid fa-users"></i> Permissions</a></li>
-                  <li><a href="/documents/${id}/publication" ><i class="fa-solid fa-eye"></i> Publication status</a></li>
-                  <li role="separator" class="divider"></li>
-                  <li><a href="/documents/${id}/catalogue" class="catalogue-control"><i class="fa-solid fa-right-from-bracket"></i> Move to a different catalogue</a></li>
+                <ul class="dropdown-menu dropdown-menu-end">
+                  <li><a class="dropdown-item" href="/documents/${id}/permission" ><i class="fa-solid fa-users"></i> Permissions</a></li>
+                  <li><a class="dropdown-item" href="/documents/${id}/publication" ><i class="fa-solid fa-eye"></i> Publication status</a></li>
+                  <li class="dropdown-divider"></li>
+                  <li><a href="/documents/${id}/catalogue" class="dropdown-item catalogue-control"><i class="fa-solid fa-right-from-bracket"></i> Move to a different catalogue</a></li>
                 </ul>
               </div>
             </div>

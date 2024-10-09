@@ -16,10 +16,9 @@
     <#elseif infos gte 1 >
         <#assign alertclass="info" alerticon="info-circle">
     </#if>
-    <div class="qualityAlert hidden-print">
-        <div class="alert alert-MDquality_${alertclass} alert-dismissible" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close" title="dismiss"><span aria-hidden="true">
-                <i class="fa-solid fa-xmark"></i>
+    <div class="qualityAlert d-print-none">
+        <div class="alert alert-MDquality_${alertclass} alert-dismissible fade show" role="alert">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" title="dismiss"><span aria-hidden="true">
             </span></button>
             <i class="fa-solid fa-${alerticon}"></i> <b>METADATA QUALITY</b>
             <#if errors gte 1>

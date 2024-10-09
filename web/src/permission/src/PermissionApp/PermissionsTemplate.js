@@ -4,7 +4,7 @@ export default _.template(`
         <% if(typeof doctype === "undefined"){doctype = "documents"} %>
         <h2><% if(doctype === "service-agreement"){ %>Service Agreement <% } %>Permissions</h2>
 <div>
-    <p><i class="fa-solid fa-info-circle fa-2x pull-right"></i>Amend permissions for users or groups. For external users, the username is the email address with which they registered an account.<br>For UKCEH staff it is their login username <b>not</b> their email address.</p>
+    <p><i class="fa-solid fa-info-circle fa-2x float-end"></i>Amend permissions for users or groups. For external users, the username is the email address with which they registered an account.<br>For UKCEH staff it is their login username <b>not</b> their email address.</p>
     <p><b>NOTE</b>: Catalogue administrators have permission to add and edit all records regardless of permissions defined here.</p>
 </div>
 <table class="table table-striped">
@@ -38,7 +38,7 @@ export default _.template(`
 <div class="navbar navbar-default navbar-fixed-bottom">
     <div class="container">
         <div class="navbar-right">
-            <a href="/<%= doctype %>/<%= id %>/permission" class="btn btn-default navbar-btn">Cancel</a>
+            <a href="/<%= doctype %>/<%= id %>/permission" class="btn btn-light border navbar-btn">Cancel</a>
             <button id="permissionSave" class="btn btn-primary navbar-btn"><i class="fa-regular fa-save"></i> Save</button>
         </div>
     </div>

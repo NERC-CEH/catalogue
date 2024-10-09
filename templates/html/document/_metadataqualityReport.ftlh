@@ -1,4 +1,4 @@
-<div id="section-metadataQuality" class="clearfix hidden-print">
+<div id="section-metadataQuality" class="clearfix d-print-none">
     <h2>Metadata quality report</h2>
     <#if problems?? && problems?has_content>
         <#assign errors = func.filter(problems, "severity", "ERROR")>
@@ -10,7 +10,7 @@
                 <div class="panel-heading MDquality_error">
                     <div class="row">
                         <div class="col-sm-3 col-xs-12"> <i class="fa-solid fa-triangle-exclamation" > </i> ERRORS<br></div>
-                        <div class="col-sm-9 hidden-xs"><small>These should always be fixed</small></div>
+                        <div class="col-sm-9 d-none d-sm-block"><small>These should always be fixed</small></div>
                     </div>
                 </div>
                 <ul class="list-group MDquality_error">
@@ -23,7 +23,7 @@
                 <div class="panel-heading MDquality_warning">
                     <div class="row">
                         <div class="col-sm-3 col-xs-12"><i class="fa-solid fa-exclamation" > </i> WARNINGS</div>
-                        <div class="col-sm-9 hidden-xs"><small>These are usually problems but in some circumstances they <i><b><u>MAY</u></b></i> be acceptable - please check carefully</small></div>
+                        <div class="col-sm-9 d-none d-sm-block"><small>These are usually problems but in some circumstances they <i><b><u>MAY</u></b></i> be acceptable - please check carefully</small></div>
                     </div>
                 </div>
                 <ul class="list-group MDquality_warning">
@@ -36,7 +36,7 @@
                 <div class="panel-heading MDquality_info">
                     <div class="row">
                         <div class="col-sm-3 col-xs-12"><i class="fa-solid fa-circle-info"> </i> OTHER ISSUES</div>
-                        <div class="col-sm-9 hidden-xs"><small>For absolute best practice, these issues should be addressed</small></div>
+                        <div class="col-sm-9 d-none d-sm-block"><small>For absolute best practice, these issues should be addressed</small></div>
                     </div>
                 </div>
                 <ul class="list-group MDquality_info">

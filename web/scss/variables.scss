@@ -56,6 +56,8 @@ $font-size-h4:            ceil(($font-size-base * 1.2));
 $font-size-h5:            $font-size-base;
 $font-size-h6:            ceil(($font-size-base * 0.85)); // ~12px
 
+$fa-font-path: '../fonts';
+
 //** Unit-less `line-height` for use in components like buttons.
 $line-height-base:        1.6;
 //** Computed "line-height" (`font-size` * `line-height`) for use with `margin`, `padding`, etc.
@@ -140,9 +142,9 @@ $table-border-color:            #cdc;
 
 $btn-font-weight:                normal;
 
-$btn-default-color:              #333;
-$btn-default-bg:                 #fff;
-$btn-default-border:             #ccc;
+$btn-secondary-color:              #333;
+$btn-secondary-bg:                 #fff;
+$btn-secondary-border:             #ccc;
 
 $btn-primary-color:              #fff;
 $btn-primary-bg:                 $brand-primary;

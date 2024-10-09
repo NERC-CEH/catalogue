@@ -27,16 +27,17 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, 'css'),
+    // Output JavaScript file names, though in this case these will be empty files removed by the RemoveEmptyScriptsPlugin
     filename: '[name].js'
   },
 
-  // Define module rules for how to handle SCSS files
+  // rules for how to handle SCSS files
   module: {
     rules: [
       {
         test: /\.scss$/,
         use: [
-          // Extract CSS into separate files instead of embedding them in JavaScript
+          // Extracts CSS into separate files instead of embedding them in JavaScript
           MiniCssExtractPlugin.loader,
           // Loads css from node_modules
           {
@@ -46,7 +47,7 @@ module.exports = {
               url: false
             }
           },
-          // Postcss-loader adds browser-specific prefixes for cross-browser compatibility.
+          // Postcss-loader adds browser specific prefixes for cross-browser compatibility.
           {
             loader: 'postcss-loader',
             options: {
@@ -61,6 +62,7 @@ module.exports = {
               sassOptions: {
                 quietDeps: true,
                 includePaths: [
+                  // Include paths for resolving SCSS imports from node_modules and local SCSS folder
                   path.resolve(__dirname, 'node_modules'),
                   path.resolve(__dirname, 'scss')
                 ]

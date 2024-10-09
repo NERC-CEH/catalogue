@@ -1,4 +1,4 @@
-<div class="footer footer-ukeof hidden-print clearfix">
+<div class="footer footer-ukeof d-print-none clearfix">
   <div class="container">
 
     <div class="footer-logos">

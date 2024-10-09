@@ -141,11 +141,6 @@ body {
             cursor: pointer;
         }
 
-        &:hover,
-        &.selected {
-            background-color: rgba(0, 0, 0, 0.05);
-        }
-
         &.open {
             .dropdown-toggle {
                 box-shadow: none;

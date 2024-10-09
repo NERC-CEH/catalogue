@@ -33,7 +33,7 @@
       <#if authors?size gt authorMaxSize >
         <p class="responsiblePartyCollapse trigger">
           <small>
-            <a href=".responsiblePartyCollapse" class="moreAuthors" data-toggle="collapse"
+            <a href=".responsiblePartyCollapse" class="moreAuthors" data-bs-toggle="collapse"
             aria-controls="responsiblePartyCollapse" area-expanded="false" role="button">
               <span>${moreAuthors} more authors. </span>Show
             </a>

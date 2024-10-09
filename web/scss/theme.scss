@@ -7,7 +7,7 @@
  * This theme was built using the Themestrap Bootstrap Theme Kit.
  * https://github.com/divshot/themestrap
  */
-$fa-font-path: '../fonts';
+
 @import url("https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600&display=swap");
 @import "customProperties";
@@ -33,6 +33,14 @@ body {
     min-height: 100vh;
     font-family: var(--font-family-body);
     text-wrap: pretty;
+}
+
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
 }
 
 header {

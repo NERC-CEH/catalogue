@@ -104,21 +104,23 @@
           </#if>
 
           <#if resourceType.value != 'aggregate' && resourceType.value != 'collection'>
-            <div class="pull-right btn-group alternativeViews">
-              <span aria-expanded="false" aria-haspopup="true" data-toggle="dropdown" class="dropdown-toggle " type="button">
-                  View record as <span class="caret"></span>
-              </span>
-              <ul class="dropdown-menu dropdown-menu-right">
-                <li><a href="${uri}?format=json">json</a></li>
-                <#if resourceType?? && (resourceType.value == 'dataset' || resourceType.value == 'application' || resourceType.value == 'service' )>
-                  <#if citation??>
-                    <li><a href="${uri?replace("/id/", "/documents/")}/datacite.xml">Datacite xml</a></li>
+            <div class="d-flex justify-content-end alternativeViews">
+              <div class="btn-group">
+                <button aria-expanded="false" aria-haspopup="true" data-bs-toggle="dropdown" class="dropdown-toggle btn btn-light border" type="button">
+                  View record as
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                  <li><a class="dropdown-item" href="${uri}?format=json">json</a></li>
+                  <#if resourceType?? && (resourceType.value == 'dataset' || resourceType.value == 'application' || resourceType.value == 'service' )>
+                    <#if citation??>
+                      <li><a class="dropdown-item" href="${uri?replace("/id/", "/documents/")}/datacite.xml">Datacite xml</a></li>
+                    </#if>
+                    <li><a class="dropdown-item" href="${uri}.xml?format=gemini">ISO 19115 (XML)</a></li>
+                    <li><a class="dropdown-item" href="${uri}?format=schema.org">schema.org (json-LD)</a></li>
+                    <li><a class="dropdown-item" href="${uri}?format=ttl">RDF (Turtle)</a></li>
                   </#if>
-                  <li><a href="${uri}.xml?format=gemini">ISO 19115 (XML)</a></li>
-                  <li><a href="${uri}?format=schema.org">schema.org (json-LD)</a></li>
-                  <li><a href="${uri}?format=ttl">RDF (Turtle)</a></li>
-                </#if>
-              </ul>
+                </ul>
+              </div>
             </div>
           </#if>
 

@@ -5,7 +5,7 @@
 
 
 <#if resourceStatus?? && resourceStatus?has_content>
-  <div class=" hidden-print" id="document-distribution">
+  <div class=" d-print-none" id="document-distribution">
 
       <h2>Get the data</h2>
       <div class="distribution-dataset">

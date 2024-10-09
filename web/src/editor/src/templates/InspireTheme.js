@@ -3,7 +3,7 @@ import _ from 'underscore'
 export default _.template(`
 <div class="row">
     <div class="col-sm-1">
-        <label class="control-label" for="inspireThemes<%= data.index %>Theme">Theme</label>
+        <label for="inspireThemes<%= data.index %>Theme">Theme</label>
     </div>
     <div class="col-sm-6">
         <select class="editor-input theme"  data-name="theme" id="inspireThemes<%= data.index %>Theme">
@@ -45,7 +45,7 @@ export default _.template(`
         </select>
     </div>
     <div class="col-sm-2">
-        <label class="control-label" for="inspireThemes<%= data.index %>Conformity">Conformity</label>
+        <label for="inspireThemes<%= data.index %>Conformity">Conformity</label>
     </div>
     <div class="col-sm-3">
         <select class="editor-input conformity"  data-name="conformity" id="inspireThemes<%= data.index %>Conformity">

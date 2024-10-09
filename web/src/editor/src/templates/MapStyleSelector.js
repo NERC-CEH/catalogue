@@ -4,14 +4,14 @@ export default _.template(`
 <div class="input-group">
   <input type="text" class="form-control" value="<%= data.type %>" <%= data.disabled%>/>
   <div class="input-group-btn">
-    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" <%= data.disabled%>>
+    <button type="button" class="btn btn-light border dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" <%= data.disabled%>>
       <span class="selected icon"></span>
     </span></button>
-    <ul class="dropdown-menu dropdown-menu-right">
-      <li><a href="#" data-symbol="blank">Polygon</a></li>
-      <li role="separator" class="divider"></li>
+    <ul class="dropdown-menu dropdown-menu-end">
+      <li><a class="dropdown-item" href="#" data-symbol="blank">Polygon</a></li>
+      <li class="dropdown-divider"></li>
       <% _.chain(data.symbols).each(function(s, id){%>
-        <li><a href="#" data-symbol="<%=id%>"><span class="icon"><%=s.icon%></span> <%=s.label%></a></li>
+        <li><a class="dropdown-item" href="#" data-symbol="<%=id%>"><span class="icon"><%=s.icon%></span> <%=s.label%></a></li>
       <%})%>
     </ul>
   </div>

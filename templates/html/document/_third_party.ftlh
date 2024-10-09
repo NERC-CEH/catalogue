@@ -6,7 +6,7 @@
 </#if>
 
 <div id="document-thirdParty">
-    <div class="panel panel-default hidden-print" id="document-distribution">
+    <div class="panel panel-default d-print-none" id="document-distribution">
         <div class="panel-body">
             <#assign distributor = "a third party">
             <#if dataDistributors?has_content>

@@ -15,7 +15,7 @@
           </#if>
 
           <#if rp.postalAddress?has_content>
-            <address class="hidden-xs">
+            <address class="d-none d-sm-block">
               <#if rp.postalAddress.street?has_content>${rp.postalAddress.street}<br></#if>
               <#list rp.postalAddress.postalArea as area >
                 ${area}<br>

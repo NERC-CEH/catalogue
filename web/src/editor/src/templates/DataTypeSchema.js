@@ -34,7 +34,7 @@ export default _.template(`
             <input list="typeList" data-name="type" id="schema-type<%= data.index %>" class="editor-input" value="<%= data.type %>" placeholder="" />
         </div>
         <div class="col-sm-2 col-xs-12">
-            <div class="hidden-xs text-right">
+            <div class="d-none d-sm-block text-right">
                 <label for="schema-format<%= data.index %>">Format</label>
             </div>
             <div class="visible-xs-inline">

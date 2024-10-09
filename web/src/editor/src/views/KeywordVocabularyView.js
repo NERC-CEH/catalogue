@@ -51,7 +51,7 @@ export default ObjectInputView.extend({
         this.$('.value').val(ui.item.value)
         this.model.set('uri', ui.item.url)
         this.$('.uri').val(ui.item.url)
-        this.$('.keywordPicker').addClass('hidden')
+        this.$('.keywordPicker').addClass('d-none')
         this.$('.uri').attr('disabled', true)
         this.$('.value').attr('disabled', true)
       }

@@ -3,7 +3,7 @@ import _ from 'underscore'
 export default _.template(`
 <div class="row">
   <div class="col-lg-9 col-md-10 col-sm-12 col-xs-12 col-lg-offset-3">
-    <div class="form-group">
+    <div class="mb-3">
       <h4 class="mb-3 keyword-table-header text-center" style="display: none;"><strong>Suggested Keywords</strong></h4>
 
       <div class="no-keywords-message text-center" style="display: none;"></div>
@@ -25,9 +25,9 @@ export default _.template(`
     </div>
 
     <div class="keywords-buttons text-center" style="display: none;">
-      <button class="btn btn-default legilo-add-btn">Add</button>
-      <button class="btn btn-default legilo-close-btn">Close</button>
-      <button class="btn btn-default legilo-load-more-btn">Load More</button>
+      <button class="btn btn-light border legilo-add-btn">Add</button>
+      <button class="btn btn-light border legilo-close-btn">Close</button>
+      <button class="btn btn-light border legilo-load-more-btn">Load More</button>
     </div>
   </div>
 </div>

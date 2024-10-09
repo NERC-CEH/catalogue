@@ -175,7 +175,7 @@
         .component {
             border-bottom: 1px solid color.adjust($gray-light, $lightness: 25%, $space: hsl);
             padding-bottom: 1.25em;
-            @extend .mb3 !optional;
+            @extend .mb-3 !optional;
             display: none;
 
             &.visible {

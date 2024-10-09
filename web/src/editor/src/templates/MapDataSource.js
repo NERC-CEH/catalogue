@@ -9,7 +9,7 @@ export default _.template(`
         <div class="input-group">
             <input data-name='epsgCode' class="editor-input" value="<%= data.epsgCode %>"  <%= data.disabled%>>
             <span class="input-group-btn">
-                <button class="btn btn-default btn-sm addReprojection" type="button"  <%= data.disabled%>><span class="fa-solid fa-plus" aria-hidden="true"></span></button>
+                <button class="btn btn-light border btn-sm addReprojection" type="button"  <%= data.disabled%>><span class="fa-solid fa-plus" aria-hidden="true"></span></button>
             </span>
         </div>
     </div>
@@ -41,8 +41,8 @@ export default _.template(`
     </div>
     <div class="col-sm-5 col-lg-5">
         <div class="btn-group" role="group">
-            <button type="button" class="btn btn-sm btn-default" styleMode="features"  <%= data.disabled%>>Simple</button>
-            <button type="button" class="btn btn-sm btn-default" styleMode="attributes"  <%= data.disabled%>>Classification</button>
+            <button type="button" class="btn btn-sm btn-light border" styleMode="features"  <%= data.disabled%>>Simple</button>
+            <button type="button" class="btn btn-sm btn-light border" styleMode="attributes"  <%= data.disabled%>>Classification</button>
         </div>
         <button class="editor-button-xs addAttribute" type="button"  <%= data.disabled%>>Define Attribute <span class="fa-solid fa-plus" aria-hidden="true"></span></button>
     </div>

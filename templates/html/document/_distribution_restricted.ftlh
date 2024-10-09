@@ -1,4 +1,4 @@
-<div class="panel panel-danger hidden-print" id="document-restricted">
+<div class="panel panel-danger d-print-none" id="document-restricted">
 
 <div class="panel-body">
     <span class="text-red">

@@ -3,7 +3,7 @@ import _ from 'underscore'
 export default _.template(`
 <div class="row">
     <div class="col-sm-2 col-lg-2">
-        <label class="control-label" for="serviceOperation<%= data.index %>OperationName">Operation Name</label>
+        <label for="serviceOperation<%= data.index %>OperationName">Operation Name</label>
     </div>
     <div class="col-sm-4 col-lg-4">
         <select data-name='operationName' class="editor-input operationName" id="serviceOperation<%= data.index %>OperationName" <%= data.disabled%>>
@@ -45,7 +45,7 @@ export default _.template(`
         </select>
     </div>
     <div class="col-sm-2 col-lg-2">
-        <label class="control-label" for="serviceOperation<%= data.index %>Platform">Platform</label>
+        <label for="serviceOperation<%= data.index %>Platform">Platform</label>
     </div>
     <div class="col-sm-4 col-lg-4">
         <select data-name='platform' class="editor-input platform" id="serviceOperation<%= data.index %>Platform" <%= data.disabled%>>
@@ -64,7 +64,7 @@ export default _.template(`
 </div>
 <div class="row">
     <div class="col-sm-2 col-lg-2">
-        <label class="control-label" for="serviceOperation<%= data.index %>Url">URL</label>
+        <label for="serviceOperation<%= data.index %>Url">URL</label>
     </div>
     <div class="col-sm-10 col-lg-10">
         <input data-name='url' class="editor-input" id="serviceOperation<%= data.index %>Url" value="<%= data.url %>" <%= data.disabled%>>
