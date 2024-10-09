@@ -61,6 +61,8 @@ import uk.ac.ceh.gateway.catalogue.repository.GitDocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.GitRepoWrapper;
 import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreement;
+import uk.ac.ceh.gateway.catalogue.sparql.SparqlVocabularyRetriever;
+import uk.ac.ceh.gateway.catalogue.sparql.SparqlVocabularyService;
 import uk.ac.ceh.gateway.catalogue.sparql.VocabularyService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.ukems.UkemsDocument;
@@ -202,12 +204,20 @@ public class ServicesConfig {
         );
     }
 
-    @Bean
-    public VocabularyService vocabularyService() {
-        return (broader, keyword) -> false;
-    }
+//    @Bean//here
+//    public VocabularyService vocabularyService() {
+//        return (broader, keyword) -> false;
+//    }
 
     @Bean
+    public VocabularyService vocabularyService(
+        @Qualifier("sparql") RestTemplate restTemplate,
+        @Value("${ukceh.sparql.endpoint}") String sparqlEndpoint
+    ) {
+        return new SparqlVocabularyService(new SparqlVocabularyRetriever(restTemplate, sparqlEndpoint).retrieve());
+    }
+
+        @Bean
     @SuppressWarnings("UnstableApiUsage") // Because EventBus is still @Beta!
     public EventBus communicationBus() {
         return new EventBus();
