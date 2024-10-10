@@ -11,7 +11,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.adapters.LocalDateSerializer;
 @Value
 public class TimePeriod {
     @JsonSerialize(using = LocalDateSerializer.class)
-    public final LocalDate begin, end;
+    LocalDate begin, end;
 
     @Builder
     @JsonCreator
