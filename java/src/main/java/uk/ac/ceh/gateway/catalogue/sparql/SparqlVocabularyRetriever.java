@@ -2,10 +2,8 @@ package uk.ac.ceh.gateway.catalogue.sparql;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import lombok.Data;
 import lombok.SneakyThrows;
 import lombok.ToString;
-import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.web.client.RestTemplate;
@@ -13,7 +11,6 @@ import org.springframework.web.client.RestTemplate;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 import java.util.Objects;
 
 @Slf4j
@@ -41,8 +38,7 @@ public class SparqlVocabularyRetriever implements VocabularyRetriever {
     @SneakyThrows
     public Multimap<String, String> retrieve() {
         Multimap<String, String> toReturn = ArrayListMultimap.create();
-
-            log.info("Retrieving Vocabulary Facets ");
+            log.info("Retrieving Vocabulary Facets");
             for (VocabularyFacet vocabularyFacet : VocabularyFacet.values()) {
                 String facet = vocabularyFacet.getFacetName();
                 try {
@@ -54,29 +50,14 @@ public class SparqlVocabularyRetriever implements VocabularyRetriever {
 
                 val response = template.getForEntity(query, SparqlQueryResponse.class);
                 Objects.requireNonNull(response.getBody()).getResults().getBindings().forEach(binding -> toReturn.put(facet, binding.getUri().getValue()));
-
-                log.info("The query has run with facet " + facet);
                 } catch (Exception ex) {
                     log.info("Failed to retrieve vocabulary - status: {}", ex.getMessage());
                 }
             }
-            //remove this logging before PR
-        log.info("Printing out the contents of toReturn object which forms the vocabulary should appear as Key : value");
-        for (Map.Entry<String, String> entry : toReturn.entries()) {
-            String key = entry.getKey(), value = entry.getValue();
-            log.info( key + " : " + value);
-        }
         return toReturn;
     }
 
-    @Data
-    @Accessors(chain = true)
-    public static class Concept {
-        String concept, topConcept;
-    }
-
-    public URI queryBuilderUnion(String sparqlEndpoint, String facet){
-
+    private URI queryBuilderUnion(String sparqlEndpoint, String facet){
         return URI.create(sparqlEndpoint +
             "?query=" +
             URLEncoder.encode("PREFIX skos:<http://www.w3.org/2004/02/skos/core#> ", StandardCharsets.UTF_8) +
@@ -92,8 +73,7 @@ public class SparqlVocabularyRetriever implements VocabularyRetriever {
         );
     }
 
-    public URI queryBuilderInms(String sparqlEndpoint, String facet, String vocab){
-
+    private URI queryBuilderInms(String sparqlEndpoint, String facet, String vocab){
         return URI.create(sparqlEndpoint +
             "?query=" +
             URLEncoder.encode("PREFIX skos:<http://www.w3.org/2004/02/skos/core#> ", StandardCharsets.UTF_8) +
@@ -104,7 +84,7 @@ public class SparqlVocabularyRetriever implements VocabularyRetriever {
         );
     }
 
-    public URI queryBuilderOther(String sparqlEndpoint, String facet, String vocab){
+    private URI queryBuilderOther(String sparqlEndpoint, String facet, String vocab){
         String narrow;
         switch (facet) {
             case "assist-research-themes", "assist-topics", "dt" -> narrow = "narrower+";
@@ -141,7 +121,7 @@ public class SparqlVocabularyRetriever implements VocabularyRetriever {
         };
     }
 
-    public String vocabSelector(VocabularyFacet facet){
+    private String vocabSelector(VocabularyFacet facet){
         return switch (facet) {
             case ASSIST_RESEARCH_THEMES, ASSIST_TOPICS                                                -> "<http://onto.nerc.ac.uk/CEHMD/>";
             case IMP_DATE_TYPE                                                                        -> "<http://vocabs.ceh.ac.uk/imp/>";
