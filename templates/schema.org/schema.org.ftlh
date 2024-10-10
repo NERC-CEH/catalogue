@@ -54,6 +54,14 @@
     "@type":"${docType}",
     "name":"${title}",
 
+    <#if docType == "Dataset">
+      <#if isAttached?? && isAttached>
+        <@displayParts fileDetails.from(id, true)/>
+      <#else>
+        <@displayParts fileDetails.from(id, false)/>
+      </#if>
+    </#if>
+
     <#if datacitable?string == "true" && citation?has_content>
       "@id": "${citation.url}",
       "identifier": {
@@ -293,4 +301,25 @@
       </#if>
       <#sep>,</#sep>
     </#list>
+</#macro>
+
+<#macro displayParts parts>
+  <#if parts?size gt 0>
+    "hasPart": [
+    <#list parts as part>
+      <#if part.id?has_content>
+        {
+          <#t>"@id": "${part.id}",
+          <#t>"@type": "${part.type}",
+          <#t>"name": "${part.id}",
+          <#t>"encodingFormat": "${part.encodingFormat}",
+          <#t>"lastModified": "${part.lastModified}",
+          <#t>"bytes": ${part.bytes?long?c},
+          <#t>"contentUrl": "${part.contentUrl}"
+        }
+      </#if>
+      <#sep>,</#sep><#t>
+    </#list>
+    ],
+  </#if>
 </#macro>
