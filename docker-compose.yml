@@ -21,6 +21,8 @@ services:
       # Uncomment to see Hubbub Upload uploaded files
       - dropbox:/var/ceh-catalogue/dropbox
       - mapfiles:/var/ceh-catalogue/mapfiles
+      # Uncomment to load vocabularies from local file like gemet
+      - ./fixtures/vocabs:/var/ceh-catalogue/vocabs
       # Uncomment to see Simple Upload uploaded files
       #- ./upload:/var/upload/datastore
       # Uncomment to work on XML schema validation in Docker container
