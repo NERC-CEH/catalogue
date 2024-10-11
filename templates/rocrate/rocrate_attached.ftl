@@ -1,2 +1,2 @@
 <#assign isAttached=true>
-<#include "rocrate.ftlh">
+<#include "rocrate.ftl">

@@ -8,6 +8,7 @@ import uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadService;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class uses the Hubbub endpoint to get dataset information for the ro-crate metadata.
@@ -15,13 +16,13 @@ import java.util.ArrayList;
 
 @Service
 @Slf4j
-public class RoCrateService {
+public class FileDetailsService {
     private final UploadService uploadService;
     private final String datastore;
     private final String baseUri;
     private final int pageSize;
 
-    public RoCrateService(
+    public FileDetailsService(
         UploadService uploadService,
         @Value("${hubbub.datastore:eidchub}") String datastore,
         @Value("${documents.baseUri}") String baseUri,
@@ -34,10 +35,10 @@ public class RoCrateService {
         log.info("Creating {}", this);
     }
 
-    public ArrayList<Part> from(String fileId, boolean isAttached){
+    public List<Part> getDetailsFor(String fileId, boolean isAttached){
         int currentPage = 0;
         HubbubResponse resp;
-        ArrayList<RoCrateService.Part> parts = new ArrayList<>();
+        ArrayList<Part> parts = new ArrayList<>();
         try {
             do {
                 currentPage++;
@@ -51,7 +52,7 @@ public class RoCrateService {
         return parts;
     }
 
-    private void updateParts(HubbubResponse resp, ArrayList<RoCrateService.Part> parts, String fileId, boolean isAttached) {
+    private void updateParts(HubbubResponse resp, ArrayList<Part> parts, String fileId, boolean isAttached) {
         resp.getData().forEach(file -> {
             String[] pathBits = file.getPath().split("/");
             String id = pathBits[pathBits.length - 1];

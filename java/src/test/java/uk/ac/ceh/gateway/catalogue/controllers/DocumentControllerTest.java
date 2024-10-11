@@ -60,7 +60,7 @@ import uk.ac.ceh.gateway.catalogue.metrics.MetricsService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.DownloadOrderDetailsService;
-import uk.ac.ceh.gateway.catalogue.templateHelpers.RoCrateService;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.FileDetailsService;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -109,7 +109,7 @@ class DocumentControllerTest {
     @MockBean(name="permission") private PermissionService permissionService;
     @MockBean private ProfileService profileService;
     @MockBean private MetricsService metricsService;
-    @MockBean private RoCrateService roCrateService;
+    @MockBean private FileDetailsService fileDetailsService;
 
     private DownloadOrderDetailsService downloadOrderDetailsService = new DownloadOrderDetailsService();
 
@@ -142,7 +142,7 @@ class DocumentControllerTest {
         configuration.setSharedVariable("permission", permissionService);
         configuration.setSharedVariable("profile", profileService);
         configuration.setSharedVariable("downloadOrderDetails", downloadOrderDetailsService);
-        configuration.setSharedVariable("fileDetails", roCrateService);
+        configuration.setSharedVariable("fileDetails", fileDetailsService);
     }
 
     private void givenProfileNotActive() {
@@ -208,7 +208,7 @@ class DocumentControllerTest {
     }
 
     private void givenRoCrateServiceFrom() {
-        given(roCrateService.from(anyString(), anyBoolean()))
+        given(fileDetailsService.getDetailsFor(anyString(), anyBoolean()))
             .willReturn(new ArrayList<>());
     }
 

@@ -28,7 +28,7 @@ public class FreemarkerConfig {
     private final MultiDocumentTypeMetadataQualityService metadataQualityService;
     private final PermissionService permissionService;
     private final ProfileService profileService;
-    private final RoCrateService roCrateService;
+    private final FileDetailsService fileDetailsService;
     @Nullable private final ServiceAgreementQualityService serviceAgreementQualityService;
     @Nullable private final MetricsService metricsService;
 
@@ -45,7 +45,7 @@ public class FreemarkerConfig {
         freemarkerConfiguration.setSharedVariable("permission", permissionService);
         freemarkerConfiguration.setSharedVariable("profile", profileService);
         freemarkerConfiguration.setSharedVariable("userInfo", new SecurityUserInfo());
-        freemarkerConfiguration.setSharedVariable("fileDetails", roCrateService);
+        freemarkerConfiguration.setSharedVariable("fileDetails", fileDetailsService);
 
         if (serviceAgreementQualityService != null) {
             freemarkerConfiguration.setSharedVariable("serviceAgreementQuality", serviceAgreementQualityService);

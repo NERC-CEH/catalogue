@@ -55,10 +55,10 @@
     "name":"${title}",
 
     <#if docType == "Dataset">
-      <#if isAttached?? && isAttached>
-        <@displayParts fileDetails.from(id, true)/>
+      <#if isAttached!false>
+        <@displayParts fileDetails.getDetailsFor(id, true)/>
       <#else>
-        <@displayParts fileDetails.from(id, false)/>
+        <@displayParts fileDetails.getDetailsFor(id, false)/>
       </#if>
     </#if>
 

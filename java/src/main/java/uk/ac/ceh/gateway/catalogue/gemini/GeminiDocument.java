@@ -36,8 +36,8 @@ import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAP
         @Template(called = "xml/gemini.ftlx", whenRequestedAs = GEMINI_XML_VALUE),
         @Template(called = "rdf/ttl.ftl", whenRequestedAs = RDF_TTL_VALUE),
         @Template(called = "schema.org/schema.org.ftlh", whenRequestedAs = RDF_SCHEMAORG_VALUE),
-        @Template(called = "rocrate/rocrate.ftlh", whenRequestedAs = ROCRATE_VALUE),
-        @Template(called = "rocrate/rocrate_attached.ftlh", whenRequestedAs = ROCRATE_ATTACHED_VALUE),
+        @Template(called = "rocrate/rocrate.ftl", whenRequestedAs = ROCRATE_VALUE),
+        @Template(called = "rocrate/rocrate_attached.ftl", whenRequestedAs = ROCRATE_ATTACHED_VALUE),
         @Template(called = "ceda/ceda.ftlh", whenRequestedAs = CEDA_YAML_VALUE)
 })
 public class GeminiDocument extends AbstractMetadataDocument implements WellKnownText {

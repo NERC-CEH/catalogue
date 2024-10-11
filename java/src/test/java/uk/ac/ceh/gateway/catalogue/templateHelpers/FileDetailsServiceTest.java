@@ -16,7 +16,7 @@ import static org.mockito.Mockito.verify;
 import org.junit.jupiter.api.Test;
 
 @ExtendWith(MockitoExtension.class)
-class RoCrateServiceTest {
+class FileDetailsServiceTest {
     @Mock
     private UploadService uploadService;
 
@@ -44,7 +44,7 @@ class RoCrateServiceTest {
     @Test
     @SneakyThrows
     /**
-     * This ensures that the RoCrateService correctly handles the paging of the UploadService responses and produces
+     * This ensures that the FileDetailsService correctly handles the paging of the UploadService responses and produces
      * the expected list of Parts ready for a downstream Freemarker template (see templates/schema.org/schema.org.ftlh).
      * It also checks that the Path has a contentUrl based on the 'detached' ro-crate definition.
      */
@@ -56,10 +56,10 @@ class RoCrateServiceTest {
             .willReturn(getHubbubResponse(1, lastPage, pageSize, totalFiles, 5));
         given(uploadService.get(fileId, datastore, 2, pageSize))
             .willReturn(getHubbubResponse(2, lastPage, pageSize, totalFiles, 3));
-        RoCrateService roCrateService = new RoCrateService(uploadService, datastore, baseUri, pageSize);
+        FileDetailsService fileDetailsService = new FileDetailsService(uploadService, datastore, baseUri, pageSize);
 
         //when
-        var actual = roCrateService.from(fileId, isAttached);
+        var actual = fileDetailsService.getDetailsFor(fileId, isAttached);
 
         //then
         verify(uploadService).get(fileId, datastore, 1, 5);
@@ -71,7 +71,7 @@ class RoCrateServiceTest {
     @Test
     @SneakyThrows
     /**
-     * This ensures that the RoCrateService correctly handles the paging of the UploadService responses and produces
+     * This ensures that the FileDetailsService correctly handles the paging of the UploadService responses and produces
      * the expected list of Parts ready for a downstream Freemarker template (see templates/schema.org/schema.org.ftlh).
      * It also checks that the Path has a contentUrl based on the 'attached' ro-crate definition.
      */
@@ -83,10 +83,10 @@ class RoCrateServiceTest {
             .willReturn(getHubbubResponse(1, lastPage, pageSize, totalFiles, 5));
         given(uploadService.get(fileId, datastore, 2, pageSize))
             .willReturn(getHubbubResponse(2, lastPage, pageSize, totalFiles, 3));
-        RoCrateService roCrateService = new RoCrateService(uploadService, datastore, baseUri, pageSize);
+        FileDetailsService fileDetailsService = new FileDetailsService(uploadService, datastore, baseUri, pageSize);
 
         //when
-        var actual = roCrateService.from(fileId, isAttached);
+        var actual = fileDetailsService.getDetailsFor(fileId, isAttached);
 
         //then
         verify(uploadService).get(fileId, datastore, 1, 5);
