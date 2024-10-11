@@ -204,11 +204,6 @@ public class ServicesConfig {
         );
     }
 
-//    @Bean//here
-//    public VocabularyService vocabularyService() {
-//        return (broader, keyword) -> false;
-//    }
-
     @Bean
     public VocabularyService vocabularyService(
         @Qualifier("sparql") RestTemplate restTemplate,
@@ -217,7 +212,7 @@ public class ServicesConfig {
         return new SparqlVocabularyService(new SparqlVocabularyRetriever(restTemplate, sparqlEndpoint).retrieve());
     }
 
-        @Bean
+    @Bean
     @SuppressWarnings("UnstableApiUsage") // Because EventBus is still @Beta!
     public EventBus communicationBus() {
         return new EventBus();
