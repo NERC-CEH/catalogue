@@ -30,6 +30,8 @@
     </fieldType>
     <fieldType name="pdate" class="solr.DatePointField" docValues="true"/>
     <fieldType name="pdates" class="solr.DatePointField" docValues="true" multiValued="true"/>
+    <fieldType name="pdaterange" class="solr.DateRangeField"/>
+    <fieldType name="pdateranges" class="solr.DateRangeField" multiValued="true"/>
     <fieldType name="pdouble" class="solr.DoublePointField" docValues="true"/>
     <fieldType name="pdoubles" class="solr.DoublePointField" docValues="true" multiValued="true"/>
     <fieldType name="pfloat" class="solr.FloatPointField" docValues="true"/>
@@ -121,6 +123,12 @@
     <field name="resourceIdentifier" type="keywords"/>
     <field name="resourceStatus" type="keywords" multiValued="false"/>
     <field name="resourceType" type="keywords" multiValued="false"/>
+    <field name="environmentalDomains" type="keywords"/>
+    <field name="facilityType" type="keywords" multiValued="false"/>
+    <field name="keywordsParameters" type="keywords"/>
+    <field name="operatingPeriod" type="pdateranges"/>
+    <field name="objectives" type="text_general" multiValued="false"/>
+    <field name="responsibleParties" type="keywords"/>
     <field name="ror" type="rors"/>
     <field name="saPhysicalState" type="keywords"/>
     <field name="saSpecimenType" type="keywords"/>

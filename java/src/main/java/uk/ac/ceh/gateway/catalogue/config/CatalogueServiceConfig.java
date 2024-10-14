@@ -287,6 +287,8 @@ public class CatalogueServiceConfig {
                 .contactUrl("https://www.ukeof.org.uk/contact")
                 .logo("ukeof.png")
                 .facetKey("resourceType")
+                .facetKey("environmentalDomains")
+                .facetKey("facilityType")
                 .documentType(MONITORING_ACTIVITY_TYPE)
                 .documentType(MONITORING_FACILITY_TYPE)
                 .documentType(MONITORING_NETWORK_TYPE)
