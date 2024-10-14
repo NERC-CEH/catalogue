@@ -2,7 +2,7 @@
 
 <@m.base>
   <#assign inverseRelationshipCombinedGeometriesOutput>
-    <@m.inverseRelationshipCombinedGeometries "http://purl.org/voc/ef#belongsTo" />
+    <@m.inverseRelationshipCombinedGeometries "http://onto.ceh.ac.uk/EF#belongsTo" />
   </#assign>
 
   <div class="networkMap">
@@ -10,10 +10,18 @@
      <div>${inverseRelationshipCombinedGeometriesOutput}</div>
     </#if>
     <div class="facilitiesList">
-      <@m.inverseRelationships2 "Contains" "http://purl.org/voc/ef#belongsTo" />
+      <@m.inverseRelationships "Contains" "http://onto.ceh.ac.uk/EF#belongsTo"/>
     </div>
   </div>
 
-  <@m.inverseRelationships "Used by" "Used by" "http://onto.nerc.ac.uk/CEHMD/rels/uses" />
+  <div class="relationships">
+    <@m.inverseRelationships "http://onto.nerc.ac.uk/CEHMD/rels/uses" "Used by"/>
+    <@m.inverseRelationships "http://onto.nerc.ac.uk/CEHMD/rels/uses" "Used by" />
+
+    <@m.relationships "http://onto.ceh.ac.uk/EF#supersedes" "Supersedes" />
+    <@m.inverseRelationships "http://onto.ceh.ac.uk/EF#supersedes" "Superseded by"  />
+
+    <@m.symmetricRelationships "http://onto.ceh.ac.uk/EF#associatedWith" "Related"/>
+  </div>
 
 </@m.base>

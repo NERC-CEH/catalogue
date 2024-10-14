@@ -7,7 +7,15 @@
     </@m.keyValue>
   </#if>
 
-  <@m.relationships "Triggers" "Activities set up for this programme" "http://onto.nerc.ac.uk/CEHMD/rels/triggers" />
 
+  <div class="relationships">
+    <@m.relationships "http://onto.ceh.ac.uk/EF#utilises" "Utilises"/>
 
+    <@m.symmetricRelationships "http://onto.ceh.ac.uk/EF#associatedWith" "Related"/>
+
+    <@m.relationships  "http://onto.ceh.ac.uk/EF#supersedes" "Supersedes" />
+    <@m.inverseRelationships  "http://onto.ceh.ac.uk/EF#supersedes" "Superseded by"/>
+
+    <@m.relationships "http://onto.nerc.ac.uk/CEHMD/rels/triggers" "Activities set up for this programme"  />
+  </div>
 </@m.base>

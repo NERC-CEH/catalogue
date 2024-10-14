@@ -63,7 +63,7 @@
 
   <#if otherContacts?has_content>
     <#list otherContacts as otherContact>
-      <dt>${otherContact.roleDisplayName}</dt>
+      <dt>${otherContact.roleDisplayName?cap_first}</dt>
       <dd>
         <div class="responsibleParty">
           <@func.displayContact otherContact false true false />

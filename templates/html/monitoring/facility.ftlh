@@ -21,12 +21,15 @@
   </div>
   </#if>
 
-  <@m.inverseRelationships "Uses" "Uses" "http://onto.nerc.ac.uk/CEHMD/rels/uses" />
+  <div class="relationships">
+    <@m.inverseRelationships "http://onto.nerc.ac.uk/CEHMD/rels/uses" "Used by" />
+    <@m.inverseRelationships "http://onto.nerc.ac.uk/CEHMD/rels/uses" "Used by" />
 
-  <@m.relationships "Belongs To" "Belongs to these networks" "http://purl.org/voc/ef#belongsTo" />
-  <@m.relationships "Supersedes" "Supersedes" "http://purl.org/voc/ef#supersedes" />
+    <@m.relationships "http://onto.ceh.ac.uk/EF#belongsTo" "Belongs to these networks"/>
 
-  <@m.inverseRelationships "Superseded by" "Superseded by" "http://purl.org/voc/ef#supersedes" />
+    <@m.relationships  "http://onto.ceh.ac.uk/EF#supersedes" "Superseded by"/>
+    <@m.inverseRelationships "http://onto.ceh.ac.uk/EF#supersedes" "Superseded by"/>
 
-
+    <@m.symmetricRelationships "http://onto.ceh.ac.uk/EF#associatedWith" "Related"/>
+  </div>
 </@m.base>

@@ -1,7 +1,7 @@
 import EditorView from '../EditorView'
 import InputView from '../InputView'
-import {
-  KeywordVocabularyView,
+import SelectView from '../SelectView'
+import {KeywordVocabularyView,
   ParentView,
   PredefinedParentView,
   RelationshipView,
@@ -66,6 +66,17 @@ export default EditorView.extend({
           ModelType: MultipleDate,
           label: 'Operating period',
           ObjectInputView: TemporalExtentView
+        }),
+
+        new SelectView({
+          model: this.model,
+          modelAttribute: 'operationalStatus',
+          label: 'Status',
+          options: [
+            { value: 'Unknown', label: 'Unknown' },
+            { value: 'Active', label: 'Active' },
+            { value: 'Inactive', label: 'Inactive' }
+          ]
         }),
 
         new SingleObjectView({
@@ -199,11 +210,12 @@ export default EditorView.extend({
           ObjectInputView: RelationshipView,
           multiline: true,
           options: [
-            { value: 'http://purl.org/voc/ef#belongsTo', label: 'Belongs To' },
-            { value: 'http://purl.org/voc/ef#supersedes', label: 'Supersedes' }
+            { value: 'http://onto.ceh.ac.uk/EF#belongsTo', label: 'Belongs to' },
+            { value: 'http://onto.ceh.ac.uk/EF#associatedWith', label: 'Related to' },
+            { value: 'http://onto.ceh.ac.uk/EF#supersedes', label: 'Supersedes' }
           ],
           helpText: `
-<p>Relationships to other document types</p>
+<p>Relationships to other records</p>
 `
         })
       ]

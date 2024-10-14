@@ -13,10 +13,11 @@
           <#if title?? && title?has_content>
             <h1>
                <small>
+                ${codes.lookup('metadata.resourceType', type)!''}
                 <#if (metadata.state == 'draft' || metadata.state == 'pending') >
                   <span class="text-danger"><b>${codes.lookup('publication.state', metadata.state)?upper_case!''}</b></span>
                 </#if>
-               ${codes.lookup('metadata.resourceType', type)!''}<br>
+               <br>
               </small>
               ${title}
             </h1>
@@ -192,10 +193,10 @@ Operating period
   </#if>
 </#macro>
 
-<#macro relationships title description relation>
+<#macro relationships relation title="">
   <#local links=jena.relationships(uri, relation) />
   <#if links?has_content>
-    <@keyValue description "">
+    <@keyValue title "">
       <#list links as link>
         <@b.blockUrl link />
       </#list>
@@ -203,25 +204,42 @@ Operating period
   </#if>
 </#macro>
 
-<#macro inverseRelationships title description relation>
+<#macro inverseRelationships relation title="">
   <#local links=jena.inverseRelationships(uri, relation) />
   <#if links?has_content>
-    <@keyValue description "">
+    <#if title?has_content>
+      <@keyValue title "">
+        <#list links as link>
+          <@b.blockUrl link />
+        </#list>
+      </@keyValue>
+    <#else>
       <#list links as link>
         <@b.blockUrl link />
       </#list>
-    </@keyValue>
+    </#if>
   </#if>
 </#macro>
 
-<#macro inverseRelationships2 title relation>
-  <#local links=jena.inverseRelationships(uri, relation) />
+<#macro symmetricRelationships relation title="">
+  <#local links = jena.inverseRelationships(uri, relation) />
+  <#local links = links + jena.relationships(uri, relation) />
+
   <#if links?has_content>
-    <#list links as link>
-      <@b.blockUrl link />
-    </#list>
+    <#if title?has_content>
+      <@keyValue title "">
+        <#list links as link>
+          <@b.blockUrl link />
+        </#list>
+      </@keyValue>
+    <#else>
+      <#list links as link>
+        <@b.blockUrl link />
+      </#list>
+    </#if>
   </#if>
 </#macro>
+
 <#macro map mapData>
   <div id="studyarea-map" class="studyarea-map">
     <span content="${mapData}" dataType="geoJson"/>
@@ -236,7 +254,7 @@ Operating period
 </#macro>
 
 <#macro contactDetails contact>
- <@keyValue contact.role?capitalize "">
+ <@keyValue contact.roleDisplayName?cap_first "">
     <#if contact.individualName?has_content>
       <span>
         ${contact.individualName}

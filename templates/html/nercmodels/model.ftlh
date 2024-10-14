@@ -284,7 +284,7 @@
               <div>
                 <h2>Contacts</h2>
                   <#list responsibleParties as responsibleParty>
-                    <dt>${responsibleParty.roleDisplayName}</dt>
+                    <dt>${responsibleParty.roleDisplayName?cap_first}</dt>
                     <dd>
                       <div class="responsibleParty">
                         <@m.displayContact responsibleParty, true />

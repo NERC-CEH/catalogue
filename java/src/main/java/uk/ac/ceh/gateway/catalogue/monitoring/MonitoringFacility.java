@@ -26,6 +26,7 @@ import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.RDF_TTL_VALUE;
     @Template(called="rdf/monitoring/facility.ftl", whenRequestedAs=RDF_TTL_VALUE)
 })
 public class MonitoringFacility extends AbstractMetadataDocument implements WellKnownText {
+    private String operationalStatus;
     private List<String> alternateTitles;
     private Keyword facilityType;
     private Geometry geometry;

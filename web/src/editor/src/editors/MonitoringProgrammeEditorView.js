@@ -1,7 +1,7 @@
 import EditorView from '../EditorView'
 import InputView from '../InputView'
-import {
-  KeywordVocabularyView,
+import SelectView from '../SelectView'
+import { KeywordVocabularyView,
   ParentView,
   ParentStringView,
   PredefinedParentView,
@@ -60,6 +60,17 @@ export default EditorView.extend({
           ModelType: MultipleDate,
           label: 'Operating period',
           ObjectInputView: TemporalExtentView
+        }),
+
+        new SelectView({
+          model: this.model,
+          modelAttribute: 'operationalStatus',
+          label: 'Status',
+          options: [
+            { value: 'Unknown', label: 'Unknown' },
+            { value: 'Active', label: 'Active' },
+            { value: 'Inactive', label: 'Inactive' }
+          ]
         })
       ]
     },
@@ -238,10 +249,13 @@ export default EditorView.extend({
           ObjectInputView: RelationshipView,
           multiline: true,
           options: [
-            { value: 'http://onto.nerc.ac.uk/CEHMD/rels/triggers', label: 'Triggers' }
+            { value: 'http://onto.ceh.ac.uk/EF#utilises', label: 'Uses (facility or network)' },
+            { value: 'http://onto.ceh.ac.uk/EF#associatedWith', label: 'Related to' },
+            { value: 'http://onto.ceh.ac.uk/EF#supersedes', label: 'Supersedes' },
+            { value: 'http://onto.ceh.ac.uk/EF#triggers', label: 'Triggers (activity)' }
           ],
           helpText: `
-<p>Activities triggered by this programme</p>
+<p>Links to other records</p>
 `
         }),
 

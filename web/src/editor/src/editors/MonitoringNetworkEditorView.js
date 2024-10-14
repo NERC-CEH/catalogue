@@ -1,10 +1,11 @@
 import EditorView from '../EditorView'
 import InputView from '../InputView'
-import {
-  KeywordVocabularyView,
+import SelectView from '../SelectView'
+import {KeywordVocabularyView,
   ParentView,
   ParentStringView,
   PredefinedParentView,
+  RelationshipView,
   TextareaView,
   ContactView,
   ResourceIdentifierView,
@@ -46,6 +47,17 @@ export default EditorView.extend({
           modelAttribute: 'objectives',
           label: 'Objectives',
           rows: 7
+        }),
+
+        new SelectView({
+          model: this.model,
+          modelAttribute: 'operationalStatus',
+          label: 'Status',
+          options: [
+            { value: 'Unknown', label: 'Unknown' },
+            { value: 'Active', label: 'Active' },
+            { value: 'Inactive', label: 'Inactive' }
+          ]
         })
       ]
     },
@@ -149,6 +161,21 @@ export default EditorView.extend({
           modelAttribute: 'resourceIdentifiers',
           label: 'Identifiers',
           ObjectInputView: ResourceIdentifierView
+        }),
+
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'relationships',
+          label: 'Relationships',
+          ObjectInputView: RelationshipView,
+          multiline: true,
+          options: [
+            { value: 'http://onto.ceh.ac.uk/EF#associatedWith', label: 'Related to' },
+            { value: 'http://onto.ceh.ac.uk/EF#supersedes', label: 'Supersedes' }
+          ],
+          helpText: `
+<p>Relationships to other records</p>
+`
         }),
 
         new ParentView({
