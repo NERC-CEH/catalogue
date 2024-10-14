@@ -36,7 +36,10 @@ import uk.ac.ceh.gateway.catalogue.indexing.validation.ValidationIndexingService
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.LinkDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
+import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringActivity;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
+import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
+import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
@@ -154,6 +157,10 @@ public class IndexingServicesConfig {
             .register(ElterDocument.class, new SolrIndexElterDocumentGenerator(metadataDocumentGenerator))
             .register(SampleArchive.class, new SampleArchiveIndexGenerator(metadataDocumentGenerator))
             .register(InfrastructureRecord.class, new InfrastructureRecordIndexGenerator(metadataDocumentGenerator))
+            .register(MonitoringFacility.class, new SolrIndexMonitoringFacilityGenerator(metadataDocumentGenerator))
+            .register(MonitoringActivity.class, new SolrIndexMonitoringActivityGenerator(metadataDocumentGenerator))
+            .register(MonitoringNetwork.class, new SolrIndexMonitoringNetworkGenerator(metadataDocumentGenerator))
+            .register(MonitoringProgramme.class, new SolrIndexMonitoringProgrammeGenerator(metadataDocumentGenerator))
             .register(LinkDocument.class, linkDocumentGenerator)
             .register(MetadataDocument.class, metadataDocumentGenerator);
 

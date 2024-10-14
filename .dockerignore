@@ -1,5 +1,6 @@
 *
 !fixtures/datastore/REV-1
+!fixtures/vocabs/
 !java/src
 !java/build.gradle
 !java/lombok.config

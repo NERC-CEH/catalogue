@@ -138,6 +138,16 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .displayName("Resource type")
                     .hierarchical(false)
                     .build();
+            case "environmentalDomains" -> Facet.builder()
+                .fieldName("environmentalDomains")
+                    .displayName("Environmental domain")
+                    .hierarchical(false)
+                    .build();
+            case "facilityType" -> Facet.builder()
+                .fieldName("facilityType")
+                    .displayName("Facility type")
+                    .hierarchical(false)
+                    .build();
             case "rightsHolder" -> Facet.builder()
                 .fieldName("rightsHolder")
                     .displayName("Rights holder")

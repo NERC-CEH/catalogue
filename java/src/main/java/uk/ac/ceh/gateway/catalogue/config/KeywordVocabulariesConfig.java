@@ -9,8 +9,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.gateway.catalogue.vocabularies.KeywordVocabulary;
+import uk.ac.ceh.gateway.catalogue.vocabularies.LocalKeywordVocabulary;
 import uk.ac.ceh.gateway.catalogue.vocabularies.SparqlKeywordVocabulary;
-import uk.ac.ceh.gateway.catalogue.vocabularies.HttpKeywordVocabulary;
 
 import java.util.List;
 
@@ -167,7 +167,7 @@ public class KeywordVocabulariesConfig {
     @Bean
     public KeywordVocabulary gemetVocabulary(
             SolrClient solrClient,
-            @Value("${gemet.concepturl}") String gemetConceptUrl
+            @Value("${gemet.local}") String gemetLocalPath
             ) {
         /* GEMET is the GEneral Multilingual Environmental Thesaurus
          *
@@ -180,10 +180,10 @@ public class KeywordVocabulariesConfig {
          * See EMC-6 in Jira for details.
          */
         val catalogueIds = List.of("eidc","ukeof");
-        return new HttpKeywordVocabulary(
+        return new LocalKeywordVocabulary(
                 "gemet",
                 "GEMET",
-                gemetConceptUrl,
+                gemetLocalPath,
                 "",
                 "/uri",
                 "/preferredLabel/string",
