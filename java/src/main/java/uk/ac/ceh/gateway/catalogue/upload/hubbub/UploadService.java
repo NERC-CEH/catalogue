@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -22,7 +21,6 @@ import static java.lang.String.format;
 import static org.springframework.http.HttpMethod.*;
 import static uk.ac.ceh.gateway.catalogue.util.Headers.withBasicAuth;
 
-@Profile("upload:hubbub")
 @Slf4j
 @ToString(onlyExplicitlyIncluded = true)
 @Service

@@ -1,5 +1,5 @@
 <#if licences?has_content>
-  dct:license
+  dct:license <#t>
   <#list licences as licence>
     <#if licence.uri?has_content>
       <${licence.uri?trim}>
