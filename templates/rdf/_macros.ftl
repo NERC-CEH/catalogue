@@ -51,12 +51,6 @@
             <#assign contactIdentifier="\l" + contact.organisationIdentifier?trim + "\g">
           </#if>
         </#if>
-
-
-          <#--
-          UKCEH and EIDC organisations are defined at the catalogue level so don't need to be included here
-          Only return data for organisations other than UKCEH or EIDC
-          -->
           <#if !contactIdentifier?matches("^\lhttp(|s)://ror.org/04xw4m193\g$") && !contactIdentifier?matches("^\lhttp(|s)://ror.org/00pggkr55\g$")>
             ${contactIdentifier} a ${contactType} ;
             vcard:fn "${contactName?trim}" ;
@@ -114,19 +108,6 @@
     </#if>
   </#list>
 </#macro>
-
-
-
-
-<#--
- <#if incomingCitations?has_content>
-    dct:isReferencedBy <#t>
-    <#list incomingCitations as citation>
-      <${citation.url?trim}><#sep>,</#sep>
-    </#list>
-    ;
-  </#if>
--->
 
 <#macro incomingCitationList>
   <#if incomingCitations?has_content>
