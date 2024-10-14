@@ -11,6 +11,7 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
+import uk.ac.ceh.gateway.catalogue.sparql.VocabularyFacet;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.sparql.VocabularyService;
@@ -28,35 +29,13 @@ import java.util.stream.Collectors;
 @ToString
 public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<MetadataDocument, SolrIndex> {
 
-    public static final String ASSIST_RESEARCH_THEMES_URL = "http://onto.nerc.ac.uk/CEHMD/assist-research-themes";
-    public static final String ASSIST_TOPICS_URL = "http://onto.nerc.ac.uk/CEHMD/assist-topics";
-
     public static final String IMP_CAMMP_ISSUES_URL = "http://vocabs.ceh.ac.uk/imp/ci/";
-    public static final String IMP_DATA_TYPE_URL = "http://vocabs.ceh.ac.uk/imp/dt/";
     public static final String IMP_SCALE_URL = "http://vocabs.ceh.ac.uk/imp/scale/";
-    public static final String IMP_TOPIC_URL = "http://vocabs.ceh.ac.uk/imp/topic/";
-    public static final String IMP_WATER_POLLUTANT_URL = "http://vocabs.ceh.ac.uk/imp/wp/";
 
     public static final String INMS_SCALE_URL = "http://vocabs.ceh.ac.uk/inms/scale/";
-    public static final String INMS_TOPIC_URL = "http://vocabs.ceh.ac.uk/inms/topic/";
-    public static final String INMS_MODEL_TYPE_URL = "http://vocabs.ceh.ac.uk/inms/model_type";
-    public static final String INMS_WATER_POLLUTANT_URL = "http://vocabs.ceh.ac.uk/inms/wp/";
-    public static final String INMS_REGION_URL = "http://vocabs.ceh.ac.uk/inms/region";
-    public static final String INMS_PROJECT_URL = "http://vocabs.ceh.ac.uk/inms/project";
-
-    public static final String NC_ASSETS_URL = "http://vocabs.ceh.ac.uk/ncterms/asset";
-    public static final String NC_CASE_STUDY_URL = "http://vocabs.ceh.ac.uk/ncterms/caseStudy";
-    public static final String NC_DRIVERS_URL = "http://vocabs.ceh.ac.uk/ncterms/driver";
-    public static final String NC_ECOSYSTEM_SERVICES_URL = "http://vocabs.ceh.ac.uk/ncterms/ecosystemService";
-    public static final String NC_GEOGRAPHICAL_SCALE_URL = "http://vocabs.ceh.ac.uk/ncterms/geographical_scale";
 
     @SuppressWarnings("unused")
     public static final String SA_TAXON_URL = "http://vocabs.ceh.ac.uk/esb/taxon";
-
-    private static final String UKCEH_RESEARCH_PROJECT_URL = "http://vocabs.ceh.ac.uk/ukscape/research-project";
-    private static final String UKCEH_RESEARCH_THEME_URL = "http://vocabs.ceh.ac.uk/ukscape/research-theme";
-    private static final String UKCEH_SCIENCE_CHALLENGE_URL = "http://vocabs.ceh.ac.uk/ukscape/science-challenge";
-    private static final String UKCEH_SERVICE_URL = "http://vocabs.ceh.ac.uk/ukscape/service";
 
     private final CodeLookupService codeLookupService;
     private final DocumentIdentifierService identifierService;
@@ -77,36 +56,31 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
     public SolrIndex generateIndex(MetadataDocument document) {
         log.info("{} is a {}, {}", document.getId(), codeLookupService.lookup("metadata.resourceType", document.getType()), codeLookupService.lookup("metadata.recordType", document.getType()));
         return new SolrIndex()
-            .setAssistResearchThemes(grab(getKeywordsFilteredByUrlFragment(document, ASSIST_RESEARCH_THEMES_URL), Keyword::getValue))
-            .setAssistTopics(grab(getKeywordsFilteredByUrlFragment(document, ASSIST_TOPICS_URL), Keyword::getValue))
+            .setAssistResearchThemes(grab(getKeywordsByVocabulary(document, VocabularyFacet.ASSIST_RESEARCH_THEMES.getFacetName()), Keyword::getValue))
+            .setAssistTopics(grab(getKeywordsByVocabulary(document, VocabularyFacet.ASSIST_TOPICS.getFacetName()), Keyword::getValue))
             .setCatalogue(document.getCatalogue())
             .setCondition(getCondition(document))
             .setDescription(document.getDescription())
             .setDocumentType(getDocumentType(document))
             .setIdentifier(identifierService.generateFileId(document.getId()))
             .setImpCaMMPIssues(grab(getKeywordsFilteredByUrlFragment(document, IMP_CAMMP_ISSUES_URL), Keyword::getValue))
-            .setImpDataType(grab(getKeywordsFilteredByUrlFragment(document, IMP_DATA_TYPE_URL), Keyword::getValue))
+            .setImpDataType(grab(getKeywordsByVocabulary(document, VocabularyFacet.IMP_DATE_TYPE.getFacetName()), Keyword::getValue))
             .setImpScale(impScale(document))
-            .setImpTopic(grab(getKeywordsFilteredByUrlFragment(document, IMP_TOPIC_URL, INMS_TOPIC_URL), Keyword::getValue))
-            .setImpWaterPollutant(grab(getKeywordsFilteredByUrlFragment(document, IMP_WATER_POLLUTANT_URL, INMS_WATER_POLLUTANT_URL), Keyword::getValue))
-            .setInmsDemonstrationRegion(grab(getKeywordsFilteredByUrlFragment(document, INMS_REGION_URL), Keyword::getValue))
-            .setInmsProject(grab(getKeywordsFilteredByUrlFragment(document, INMS_PROJECT_URL), Keyword::getValue))
+            .setImpTopic(grab(getKeywordsByVocabulary(document, VocabularyFacet.TOPIC.getFacetName()), Keyword::getValue))
+            .setImpWaterPollutant(grab(getKeywordsByVocabulary(document, VocabularyFacet.WATER_POLLUTANT.getFacetName()), Keyword::getValue))
+            .setInmsDemonstrationRegion(grab(getKeywordsByVocabulary(document, VocabularyFacet.INMS_DEMONSTRATION_REGION.getFacetName()), Keyword::getValue))
+            .setInmsProject(grab(getKeywordsByVocabulary(document, VocabularyFacet.INMS_PROJECT.getFacetName()), Keyword::getValue))
             .setKeyword(grab(document.getAllKeywords(), Keyword::getValue))
             .setLocations(getLocations(document))
-            .setModelType(grab(getKeywordsFilteredByUrlFragment(document, INMS_MODEL_TYPE_URL), Keyword::getValue))
-            .setNcAssets(grab(getKeywordsByVocabulary(document, NC_ASSETS_URL), Keyword::getValue))
-            .setNcCaseStudy(grab(getKeywordsByVocabulary(document, NC_CASE_STUDY_URL), Keyword::getValue))
-            .setNcDrivers(grab(getKeywordsByVocabulary(document, NC_DRIVERS_URL), Keyword::getValue))
-            .setNcEcosystemServices(grab(getKeywordsByVocabulary(document, NC_ECOSYSTEM_SERVICES_URL), Keyword::getValue))
-            .setNcGeographicalScale(grab(getKeywordsByVocabulary(document, NC_GEOGRAPHICAL_SCALE_URL), Keyword::getValue))
+            .setModelType(grab(getKeywordsByVocabulary(document, VocabularyFacet.MODEL_TYPE.getFacetName()), Keyword::getValue))
             .setRecordType(getRecordType(document))
             .setResourceType(codeLookupService.lookup("metadata.resourceType", document.getType()))
             .setState(getState(document))
             .setTitle(document.getTitle())
-            .setUkcehResearchTheme(grab(getKeywordsFilteredByUrlFragment(document, UKCEH_RESEARCH_THEME_URL), Keyword::getValue))
-            .setUkcehResearchProject(grab(getKeywordsFilteredByUrlFragment(document, UKCEH_RESEARCH_PROJECT_URL), Keyword::getValue))
-            .setUkcehScienceChallenge(grab(getKeywordsFilteredByUrlFragment(document, UKCEH_SCIENCE_CHALLENGE_URL), Keyword::getValue))
-            .setUkcehService(grab(getKeywordsFilteredByUrlFragment(document, UKCEH_SERVICE_URL), Keyword::getValue))
+            .setUkcehResearchTheme(grab(getKeywordsByVocabulary(document, VocabularyFacet.UKCEH_RESEARCH_THEME.getFacetName()), Keyword::getValue))
+            .setUkcehResearchProject(grab(getKeywordsByVocabulary(document, VocabularyFacet.UKCEH_RESEARCH_PROJECT.getFacetName()), Keyword::getValue))
+            .setUkcehScienceChallenge(grab(getKeywordsByVocabulary(document, VocabularyFacet.UKCEH_SCIENCE_CHALLENGE.getFacetName()), Keyword::getValue))
+            .setUkcehService(grab(getKeywordsByVocabulary(document, VocabularyFacet.UKCEH_SERVICE.getFacetName()), Keyword::getValue))
             .setView(getViews(document))
             ;
     }
@@ -184,11 +158,11 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
                 .collect(Collectors.toList());
     }
 
-    private List<Keyword> getKeywordsByVocabulary(MetadataDocument document, String broaderUrl) {
+    private List<Keyword> getKeywordsByVocabulary(MetadataDocument document, String vocabularyFacet) {
         return Optional.ofNullable(document.getAllKeywords())
             .orElse(Collections.emptyList())
             .stream()
-            .filter(k -> this.vocabularyService.isMember(broaderUrl, k.getUri()))
+            .filter(k -> this.vocabularyService.isMember(vocabularyFacet, k.getUri()))
             .collect(Collectors.toList());
     }
 
