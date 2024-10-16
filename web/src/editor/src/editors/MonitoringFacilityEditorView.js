@@ -1,7 +1,8 @@
 import EditorView from '../EditorView'
 import InputView from '../InputView'
 import SelectView from '../SelectView'
-import {KeywordVocabularyView,
+import {
+  KeywordVocabularyView,
   ParentView,
   PredefinedParentView,
   RelationshipView,
@@ -212,7 +213,8 @@ export default EditorView.extend({
           options: [
             { value: 'http://onto.ceh.ac.uk/EF#belongsTo', label: 'Belongs to' },
             { value: 'http://onto.ceh.ac.uk/EF#associatedWith', label: 'Related to' },
-            { value: 'http://onto.ceh.ac.uk/EF#supersedes', label: 'Supersedes' }
+            { value: 'http://onto.ceh.ac.uk/EF#supersedes', label: 'Supersedes' },
+            { value: 'http://onto.ceh.ac.uk/EF#narrower', label: 'Has child facility' }
           ],
           helpText: `
 <p>Relationships to other records</p>

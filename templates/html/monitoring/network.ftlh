@@ -15,11 +15,15 @@
   </div>
 
   <div class="relationships">
-    <@m.inverseRelationships "http://onto.nerc.ac.uk/CEHMD/rels/uses" "Used by"/>
-    <@m.inverseRelationships "http://onto.nerc.ac.uk/CEHMD/rels/uses" "Used by" />
+
+    <@m.inverseRelationships "http://onto.ceh.ac.uk/EF#uses" "Used by"  />
+    <@m.inverseRelationships "http://onto.ceh.ac.uk/EF#utilises" "Used by"  />
 
     <@m.relationships "http://onto.ceh.ac.uk/EF#supersedes" "Supersedes" />
     <@m.inverseRelationships "http://onto.ceh.ac.uk/EF#supersedes" "Superseded by"  />
+
+    <@m.relationships "http://onto.ceh.ac.uk/EF#narrower" "Child networks" />
+    <@m.inverseRelationships "http://onto.ceh.ac.uk/EF#narrower" "Parent networks"  />
 
     <@m.symmetricRelationships "http://onto.ceh.ac.uk/EF#associatedWith" "Related"/>
   </div>

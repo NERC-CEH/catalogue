@@ -1,7 +1,8 @@
 import EditorView from '../EditorView'
 import InputView from '../InputView'
 import SelectView from '../SelectView'
-import { KeywordVocabularyView,
+import {
+  KeywordVocabularyView,
   ParentView,
   ParentStringView,
   PredefinedParentView,
@@ -250,6 +251,7 @@ export default EditorView.extend({
           multiline: true,
           options: [
             { value: 'http://onto.ceh.ac.uk/EF#utilises', label: 'Uses (facility or network)' },
+            { value: 'http://onto.ceh.ac.uk/EF#hasChild', label: 'Has child programme' },
             { value: 'http://onto.ceh.ac.uk/EF#associatedWith', label: 'Related to' },
             { value: 'http://onto.ceh.ac.uk/EF#supersedes', label: 'Supersedes' },
             { value: 'http://onto.ceh.ac.uk/EF#triggers', label: 'Triggers (activity)' }

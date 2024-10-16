@@ -22,14 +22,18 @@
   </#if>
 
   <div class="relationships">
-    <@m.inverseRelationships "http://onto.nerc.ac.uk/CEHMD/rels/uses" "Used by" />
-    <@m.inverseRelationships "http://onto.nerc.ac.uk/CEHMD/rels/uses" "Used by" />
-
     <@m.relationships "http://onto.ceh.ac.uk/EF#belongsTo" "Belongs to these networks"/>
 
-    <@m.relationships  "http://onto.ceh.ac.uk/EF#supersedes" "Superseded by"/>
-    <@m.inverseRelationships "http://onto.ceh.ac.uk/EF#supersedes" "Superseded by"/>
+    <@m.inverseRelationships "http://onto.ceh.ac.uk/EF#uses" "Used by"  />
+    <@m.inverseRelationships "http://onto.ceh.ac.uk/EF#utilises" "Used by"  />
+
+    <@m.relationships "http://onto.ceh.ac.uk/EF#supersedes" "Supersedes" />
+    <@m.inverseRelationships "http://onto.ceh.ac.uk/EF#supersedes" "Superseded by"  />
+
+    <@m.relationships "http://onto.ceh.ac.uk/EF#narrower" "Child facilities" />
+    <@m.inverseRelationships "http://onto.ceh.ac.uk/EF#narrower" "Parent facilities"  />
 
     <@m.symmetricRelationships "http://onto.ceh.ac.uk/EF#associatedWith" "Related"/>
   </div>
+
 </@m.base>
