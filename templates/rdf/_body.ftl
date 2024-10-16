@@ -36,7 +36,7 @@
 
     <#--Publisher-->
     <#if publishers?has_content>
-      dct:publisher  <@contactList publishers "pub" /> ;
+      dct:publisher <@contactList publishers "pub" /> ;
     </#if>
 
     <#--Relationships-->
@@ -50,6 +50,20 @@
       dct:relation <#items as item><${item.href}><#sep>, </#items> ;
     </#list>
 
+    <#--Citations-->
+    <#--
+    <#if incomingCitations?has_content>
+      dct:isReferencedBy <#t>
+      <#list incomingCitations as citation>
+        <${citation.url?trim}><#sep>,</#sep>
+      </#list>
+      ;
+    </#if>
+    -->
+
+    <#if incomingCitations?has_content>
+      dct:isReferencedBy <@incomingCitationList /> ;
+    </#if>
 
     <#if allKeywords?has_content>
     dct:subject <@keywordList allKeywords/> ;
@@ -81,6 +95,10 @@
 
     <#if authors?has_content>
       <@contactDetail authors "a" />
+    </#if>
+
+    <#if incomingCitations?has_content>
+      <@incomingCitationDetail />
     </#if>
 
     <@keywordDetail allKeywords/>

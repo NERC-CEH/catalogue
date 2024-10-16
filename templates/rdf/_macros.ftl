@@ -24,7 +24,7 @@
         </#if>
       </#if>
 
-      ${contactIdentifier}<#sep>,</#sep>
+      ${contactIdentifier}<#sep>,</#sep><#t>
     </#list>
   </#if>
 </#macro>
@@ -51,12 +51,6 @@
             <#assign contactIdentifier="\l" + contact.organisationIdentifier?trim + "\g">
           </#if>
         </#if>
-
-
-          <#--
-          UKCEH and EIDC organisations are defined at the catalogue level so don't need to be included here
-          Only return data for organisations other than UKCEH or EIDC
-          -->
           <#if !contactIdentifier?matches("^\lhttp(|s)://ror.org/04xw4m193\g$") && !contactIdentifier?matches("^\lhttp(|s)://ror.org/00pggkr55\g$")>
             ${contactIdentifier} a ${contactType} ;
             vcard:fn "${contactName?trim}" ;
@@ -77,7 +71,7 @@
       <#if fund.awardURI?has_content>
         <#assign fundIdentifier ="\l" + fund.awardURI?trim+ "\g">
       </#if>
-      ${fundIdentifier?trim}<#sep>,</#sep>
+      ${fundIdentifier?trim}<#sep>,</#sep><#t>
     </#list>
   </#if>
 </#macro>
@@ -103,7 +97,7 @@
     <#else>
       <#assign keyword ='"' + kw.value?replace("\"", "") + '"'>
     </#if>
-    ${keyword}<#sep>,</#sep>
+    ${keyword}<#sep>,</#sep><#t>
   </#list>
 </#macro>
 
@@ -113,4 +107,33 @@
       <${kw.uri?trim}> a skos:Concept; skos:prefLabel "<@displayLiteral kw.value />"; rdfs:label "<@displayLiteral kw.value />".
     </#if>
   </#list>
+</#macro>
+
+<#macro incomingCitationList>
+  <#if incomingCitations?has_content>
+    <#list incomingCitations as citation>
+
+      <#assign citationIdentifier= ":" + id + "_citation" + citation?index>
+      <#if citation.url?has_content>
+        <#assign citationIdentifier ="\l" + citation.url?trim + "\g">
+      </#if>
+      ${citationIdentifier?trim}<#sep>,</#sep><#t>
+    </#list>
+  </#if>
+</#macro>
+
+<#macro incomingCitationDetail>
+  <#if incomingCitations?has_content>
+    <#list incomingCitations as citation>
+
+      <#assign citationIdentifier= ":" + id + "_citation" + citation?index>
+      <#if citation.url?has_content>
+        <#assign citationIdentifier ="\l" + citation.url?trim + "\g">
+      </#if>
+
+      ${citationIdentifier?trim} a <http://purl.org/vocab/frbr/core#Work> ;
+        <#if citation.description?has_content>rdfs:label "<@displayLiteral citation.description />"; </#if>
+        .
+    </#list>
+  </#if>
 </#macro>

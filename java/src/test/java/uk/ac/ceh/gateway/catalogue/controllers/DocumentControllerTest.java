@@ -60,6 +60,7 @@ import uk.ac.ceh.gateway.catalogue.metrics.MetricsService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.DownloadOrderDetailsService;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.FileDetailsService;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -108,6 +109,7 @@ class DocumentControllerTest {
     @MockBean(name="permission") private PermissionService permissionService;
     @MockBean private ProfileService profileService;
     @MockBean private MetricsService metricsService;
+    @MockBean private FileDetailsService fileDetailsService;
 
     private DownloadOrderDetailsService downloadOrderDetailsService = new DownloadOrderDetailsService();
 
@@ -140,6 +142,7 @@ class DocumentControllerTest {
         configuration.setSharedVariable("permission", permissionService);
         configuration.setSharedVariable("profile", profileService);
         configuration.setSharedVariable("downloadOrderDetails", downloadOrderDetailsService);
+        configuration.setSharedVariable("fileDetails", fileDetailsService);
     }
 
     private void givenProfileNotActive() {
@@ -202,6 +205,11 @@ class DocumentControllerTest {
             .build());
         given(documentRepository.read(id))
             .willReturn(doc);
+    }
+
+    private void givenRoCrateServiceFrom() {
+        given(fileDetailsService.getDetailsFor(anyString(), anyBoolean()))
+            .willReturn(new ArrayList<>());
     }
 
     @SuppressWarnings("unused")
@@ -291,6 +299,8 @@ class DocumentControllerTest {
             Arguments.of(gemini, APPLICATION_JSON, JSON, "gemini.json"),
             Arguments.of(gemini, GEMINI_XML, GEMINI_XML_SHORT,  "gemini.xml"),
             Arguments.of(gemini, RDF_SCHEMAORG_JSON, RDF_SCHEMAORG_SHORT, "gemini-schema-org.json"),
+            Arguments.of(gemini, ROCRATE_JSON, ROCRATE_SHORT, "rocrate.json"),
+            Arguments.of(gemini, ROCRATE_ATTACHED_JSON, ROCRATE_ATTACHED_SHORT, "rocrate-attached.json"),
             Arguments.of(gemini, CEDA_YAML_JSON, CEDA_YAML_SHORT, "gemini-ceda-yaml.json"),
             Arguments.of(gemini, RDF_TTL, RDF_TTL_SHORT, "gemini.ttl"),
             Arguments.of(caseStudy, TEXT_HTML, HTML, null),
@@ -339,6 +349,7 @@ class DocumentControllerTest {
         givenFreemarkerConfiguration();
         givenProfileNotActive();
         givenCodeLookup();
+        givenRoCrateServiceFrom();
 
         //when
         val result = mvc.perform(
@@ -373,7 +384,7 @@ class DocumentControllerTest {
         givenFreemarkerConfiguration();
         givenProfileNotActive();
         givenCodeLookup();
-
+        givenRoCrateServiceFrom();
 
         //when
         val result = mvc.perform(
