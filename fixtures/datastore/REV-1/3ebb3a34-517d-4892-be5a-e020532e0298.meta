@@ -4,14 +4,14 @@
     "documentType": "monitoring-facility",
     "permissions": {
         "EDIT": [
-            "phtr"
+            "superadmin"
         ],
         "VIEW": [
-            "phtr",
+            "superadmin",
             "public"
         ],
         "DELETE": [
-            "phtr"
+            "superadmin"
         ]
     },
     "catalogue": "ukceh"
