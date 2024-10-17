@@ -25,7 +25,7 @@ public class KeywordSuggestionsService {
     private static final double VARIABLE_CONFIDENCE = 0.75;
     private RestClient restClient;
 
-    public record Suggestion(String name, double confidence, String url) { }
+    public record Suggestion(String name, double confidence, String matched_url) { }
     record KeywordsResponse(List<Suggestion> summary) { }
     record VariablesResponse(VariablesSummary summary) { }
     record VariablesSummary(Map<String, Object> variables) { }
