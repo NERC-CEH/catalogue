@@ -145,29 +145,32 @@ public class JDBCMetricsService implements MetricsService {
     }
 
     public List<Map<String,String>> getMetricsReport(Instant startDate, Instant endDate, String orderBy, String ordering, List<String> recordType, String docId, Integer noOfRecords) {
-        String sql = "select t.DOCUMENT, ifnull(t.DOC_TITLE, '') as \"DOC_TITLE\", ifnull(t.RECORD_TYPE, '') as \"RECORD_TYPE\", sum(t.VIEWS) as \"VIEWS\", sum(t.DOWNLOADS) as \"DOWNLOADS\" " +
-            "from (select DOCUMENT, DOC_TITLE, RECORD_TYPE, AMOUNT as \"DOWNLOADS\", 0 as \"VIEWS\" from downloads where %s " +
-            "union select DOCUMENT, DOC_TITLE, RECORD_TYPE, 0 as \"DOWNLOADS\", AMOUNT as \"VIEWS\" from views where %s) t " +
-            "group by DOCUMENT,DOC_TITLE,RECORD_TYPE";
+        String sql = "SELECT t.document, IFNULL(t.doc_title, '') AS \"doc_title\", IFNULL(t.record_type, '') AS \"record_type\", SUM(t.views) AS \"views\", SUM(t.downloads) AS \"downloads\" " +
+            "FROM (" +
+            "    SELECT document, doc_title, record_type, amount AS \"downloads\", 0 AS \"views\" FROM downloads WHERE %s " +
+            "    UNION ALL " +
+            "    SELECT document, doc_title, record_type, 0 AS \"downloads\", AMOUNT AS \"views\" FROM views WHERE %s" +
+            ") t " +
+            "GROUP BY t.document, t.doc_title, t.record_type";
 
         ArrayList<String> whereVal = new ArrayList<>();
         StringBuilder where = new StringBuilder(" 1=1");
         if (startDate != null) {
             String start = Long.toString(startDate.getEpochSecond());
             whereVal.add(start);
-            where.append(" and START_TIMESTAMP>=?");
+            where.append(" AND start_timestamp>=?");
         }
         if (endDate != null) {
             String end = Long.toString(endDate.getEpochSecond());
             whereVal.add(end);
-            where.append(" and END_TIMESTAMP<=?");
+            where.append(" AND end_timestamp<=?");
         }
         if (docId != null && !docId.isBlank()) {
             whereVal.add(String.format("%%%s%%", docId));
-            where.append(" and DOCUMENT like ?");
+            where.append(" AND DOCUMENT LIKE ?");
         }
         if (recordType != null && !recordType.isEmpty()) {
-            where.append(" and RECORD_TYPE in (");
+            where.append(" AND record_type IN (");
             for (String type: recordType) {
                 whereVal.add(type);
                 where.append("?,");
@@ -179,25 +182,25 @@ public class JDBCMetricsService implements MetricsService {
         if (orderBy != null && !orderBy.isBlank()) {
             switch (orderBy) {
                 case "views":
-                    sqlBuilder.append(" order by VIEWS");
+                    sqlBuilder.append(" ORDER BY views");
                     break;
                 case "downloads":
-                    sqlBuilder.append(" order by DOWNLOADS");
+                    sqlBuilder.append(" ORDER BY downloads");
                     break;
                 default:
-                    sqlBuilder.append(" order by DOCUMENT");
+                    sqlBuilder.append(" ORDER BY document");
                     break;
             }
             if (ordering != null && !ordering.isBlank()) {
                 if (ordering.equals("descending")) {
-                    sqlBuilder.append(" desc");
+                    sqlBuilder.append(" DESC");
                 }
             }
         }
         if (noOfRecords != null && noOfRecords >= 0) {
-            sqlBuilder.append(" limit ").append(noOfRecords);
+            sqlBuilder.append(" LIMIT ").append(noOfRecords);
         } else {
-            sqlBuilder.append(" limit 100");
+            sqlBuilder.append(" LIMIT 100");
         }
 
         log.info("Metrics report sql: {}", sqlBuilder);
