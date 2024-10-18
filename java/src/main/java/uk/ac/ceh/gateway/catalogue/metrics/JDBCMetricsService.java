@@ -147,7 +147,7 @@ public class JDBCMetricsService implements MetricsService {
     public List<Map<String,String>> getMetricsReport(Instant startDate, Instant endDate, String orderBy, String ordering, List<String> recordType, String docId, Integer noOfRecords) {
         String sql = "select t.DOCUMENT, ifnull(t.DOC_TITLE, '') as \"DOC_TITLE\", ifnull(t.RECORD_TYPE, '') as \"RECORD_TYPE\", sum(t.VIEWS) as \"VIEWS\", sum(t.DOWNLOADS) as \"DOWNLOADS\" " +
             "from (select DOCUMENT, DOC_TITLE, RECORD_TYPE, AMOUNT as \"DOWNLOADS\", 0 as \"VIEWS\" from downloads where %s " +
-            "union select DOCUMENT, DOC_TITLE, RECORD_TYPE, 0 as \"DOWNLOADS\", AMOUNT as \"VIEWS\" from views where %s) t " +
+            "union all select DOCUMENT, DOC_TITLE, RECORD_TYPE, 0 as \"DOWNLOADS\", AMOUNT as \"VIEWS\" from views where %s) t " +
             "group by DOCUMENT,DOC_TITLE,RECORD_TYPE";
 
         ArrayList<String> whereVal = new ArrayList<>();

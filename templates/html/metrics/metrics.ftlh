@@ -55,10 +55,10 @@
                 <label><input type="checkbox" name="recordType" value="dataset">dataset</label>
               </div>
               <div class="checkbox">
-                <label><input type="checkbox" name="recordType" value="datasetNonGeographic">dataset (non geographic)</label>
+                <label><input type="checkbox" name="recordType" value="nonGeographicDataset">dataset (non geographic)</label>
               </div>
               <div class="checkbox">
-                <label><input type="checkbox" name="recordType" value="modelCodeApplication">model code (application)</label>
+                <label><input type="checkbox" name="recordType" value="application">model code (application)</label>
               </div>
             </div>
           </div>
