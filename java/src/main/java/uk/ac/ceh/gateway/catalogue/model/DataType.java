@@ -25,7 +25,7 @@ import java.util.List;
 )
 public class DataType extends AbstractMetadataDocument {
     private final String type = "dataType";
-    private List<DataTypeSchema> schema;
+    private List<ObservedProperties> schema;
     private Provenance provenance;
 
     @Data

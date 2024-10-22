@@ -9,48 +9,59 @@ export default _.template(`
         <input data-name="name" id="schema-name<%= data.index %>" class="editor-input" value="<%= data.name %>" placeholder="name of field/column" />
     </div>
 </div>
-<div class="extended hidden" id="schemaDetail<%= data.index %>">
-    <div class="row">
-        <div class="col-sm-2">
-            <label for="schema-title<%= data.index %>">Title</label>
+<div class="row">
+    <div class="col-sm-2">
+        <label for="schema-title<%= data.index %>">Title</label>
+    </div>
+    <div class="col-sm-10">
+        <input data-name="title" id="schema-title<%= data.index %>" class="editor-input" value="<%= data.title %>" placeholder="A nicer human readable label for the field (optional)" />
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-2 col-xs-12">
+        <label for="schema-type<%= data.index %>">Type</label>
+    </div>
+    <div class="col-sm-4 col-xs-12">
+        <input list="typeList" data-name="type" id="schema-type<%= data.index %>" class="editor-input" value="<%= data.type %>" placeholder="" />
+    </div>
+    <div class="col-sm-2 col-xs-12">
+        <div class="hidden-xs text-right">
+            <label for="schema-format<%= data.index %>">Format</label>
         </div>
-        <div class="col-sm-10">
-            <input data-name="title" id="schema-title<%= data.index %>" class="editor-input" value="<%= data.title %>" placeholder="A nicer human readable label for the field (optional)" />
+        <div class="visible-xs-inline">
+            <label for="schema-format<%= data.index %>">Format</label>
         </div>
     </div>
+    <div class="col-sm-4 col-xs-12">
+        <input list="formatList" data-name="format" id="schema-format<%= data.index %>" class="editor-input" value="<%= data.format %>" placeholder="recommended for dates and times" />
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-2">
+        <label for="schema-units<%= data.index %>">Unit</label>
+    </div>
+    <div class="col-sm-4">
+        <input data-name="units" id="schema-units<%= data.index %>" class="editor-input" value="<%= data.units %>"/>
+    </div>
+    <div class="col-sm-2">
+        <div class="hidden-xs text-right">
+            <label for="schema-unitsUri<%= data.index %>">>Unit uri</label>
+        </div>
+        <div class="visible-xs-inline">
+            <label for="schema-unitsUri<%= data.index %>">>Unit uri</label>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <input data-name="unitsUri" id="schema-unitsUri<%= data.index %>" class="editor-input" value="<%= data.unitsUri %>"/>
+    </div>
+</div>
+<div class="extended hidden" id="schemaDetail<%= data.index %>">
     <div class="row">
         <div class="col-sm-2">
             <label for="schema-description<%= data.index %>">Description</label>
         </div>
         <div class="col-sm-10">
             <textarea data-name="description" id="schema-description<%= data.index %>" class="editor-textarea" rows="3"><%= data.description %></textarea>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-2 col-xs-12">
-            <label for="schema-type<%= data.index %>">Type</label>
-        </div>
-        <div class="col-sm-4 col-xs-12">
-            <input list="typeList" data-name="type" id="schema-type<%= data.index %>" class="editor-input" value="<%= data.type %>" placeholder="" />
-        </div>
-        <div class="col-sm-2 col-xs-12">
-            <div class="hidden-xs text-right">
-                <label for="schema-format<%= data.index %>">Format</label>
-            </div>
-            <div class="visible-xs-inline">
-                <label for="schema-format<%= data.index %>">Format</label>
-            </div>
-        </div>
-        <div class="col-sm-4 col-xs-12">
-            <input list="formatList" data-name="format" id="schema-format<%= data.index %>" class="editor-input" value="<%= data.format %>" placeholder="recommended for dates and times" />
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-2">
-            <label for="schema-units<%= data.index %>">Units</label>
-        </div>
-        <div class="col-sm-10">
-            <input data-name="units" id="schema-units<%= data.index %>" class="editor-input" value="<%= data.units %>"/>
         </div>
     </div>
     <div class="row">

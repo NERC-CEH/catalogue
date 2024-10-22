@@ -1,7 +1,7 @@
 import _ from 'underscore'
 import $ from 'jquery'
 import ObjectInputView from './ObjectInputView'
-import template from '../templates/DataTypeSchema'
+import template from '../templates/ObservedPropertiesSimple'
 
 export default ObjectInputView.extend({
 

@@ -13,7 +13,7 @@ import {
   OnlineResourceView,
   ParentStringView,
   ParentView,
-  PredefinedParentView,
+  PredefinedParentView, PredefinedParentLargeView,
   ReadOnlyView,
   RelationshipView,
   ResourceConstraintView,
@@ -25,7 +25,7 @@ import {
   SpatialReferenceSystemView,
   SpatialRepresentationTypeView,
   SpatialResolutionView,
-  TemporalExtentView,
+  TemporalExtentView, ObservedPropertiesView,
   TextareaView, TopicCategoryView, KeywordThemeView, KeywordVocabularyView, InspireThemeView, CheckboxView
 } from '../views'
 import {
@@ -37,7 +37,7 @@ import {
   MultipleDate,
   OnlineResource,
   ResourceType,
-  Service,
+  Service, ObservedProperties,
   SpatialResolution,
   Supplemental, TopicCategory
 } from '../models'
@@ -283,16 +283,6 @@ export default EditorView.extend({
         }),
         new ParentView({
           model: this.model,
-          modelAttribute: 'keywordsObservedProperty',
-          label: 'Observed properties',
-          ObjectInputView: KeywordVocabularyView,
-          multiline: true,
-          helpText: 'Controlled keywords describing the observed properties/variables contained in this data resource',
-          fetchKeywordsButton: true,
-          renderLegiloKeywords: true
-        }),
-        new ParentView({
-          model: this.model,
           modelAttribute: 'keywordsPlace',
           label: 'Places',
           ObjectInputView: KeywordVocabularyView,
@@ -309,6 +299,7 @@ export default EditorView.extend({
           ObjectInputView: KeywordVocabularyView,
           multiline: true,
           helpText: 'Controlled keywords describing projects that fund/support the creation of this resource',
+          fetchKeywordsButton: true,
           renderLegiloKeywords: true
         }),
         new ParentView({
@@ -785,7 +776,74 @@ This is only needed if you configure 'Styling=Classification' for your GeoTiff.<
           ModelType: Supplemental,
           multiline: true,
           ObjectInputView: IncomingCitationView
-        })
+        }),
+
+        new PredefinedParentLargeView({
+          model: this.model,
+          ModelType: ObservedProperties,
+          modelAttribute: 'observedProperties',
+          multiline: true,
+          label: 'Observed properties',
+          ObjectInputView: ObservedPropertiesView,
+          predefined: {
+            'Boolean (true/false)': {
+              type: 'boolean'
+            },
+            Date: {
+              type: 'date',
+              format: 'YYYY-MM-DD'
+            },
+            'Date & time': {
+              type: 'datetime',
+              format: 'YYYY-MM-DDThh:mm:ss'
+            },
+            'Decimal number': {
+              type: 'number'
+            },
+            Email: {
+              type: 'string',
+              format: 'email'
+            },
+            'Geographic point': {
+              type: 'geopoint',
+              format: 'lon, lat'
+            },
+            Integer: {
+              type: 'integer'
+            },
+            Text: {
+              type: 'string'
+            },
+            Time: {
+              type: 'time',
+              format: 'hh:mm:ss'
+            },
+            URI: {
+              type: 'string',
+              format: 'uri'
+            },
+            UUID: {
+              type: 'string',
+              format: 'uuid'
+            },
+            Year: {
+              type: 'year',
+              format: 'YYYY'
+            },
+            'Year & month': {
+              type: 'yearmonth',
+              format: 'YYYY-MM'
+            }
+          }
+        }),
+
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'keywordsObservedProperty',
+          label: 'OLD Observed properties DO NOT USE',
+          ObjectInputView: KeywordVocabularyView,
+          multiline: true
+        }),
 
       ]
     }

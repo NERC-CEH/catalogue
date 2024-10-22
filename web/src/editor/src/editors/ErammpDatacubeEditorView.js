@@ -1,6 +1,6 @@
 import {
   DataLocationView,
-  DataTypeSchemaView,
+  ObservedPropertiesView,
   KeywordView,
   OnlineResourceSimpleView,
   ParentView, PointOfContactView, PredefinedParentLargeView,
@@ -11,7 +11,7 @@ import {
 import EditorView from '../EditorView'
 import InputView from '../InputView'
 import SelectView from '../SelectView'
-import { DataTypeSchema, PointOfContact } from '../models'
+import { ObservedProperties, PointOfContact } from '../models'
 import BoundingBoxView from '../geometryMap/BoundingBoxView'
 import BoundingBox from '../geometryMap/BoundingBox'
 
@@ -143,11 +143,11 @@ export default EditorView.extend({
 
         new PredefinedParentLargeView({
           model: this.model,
-          ModelType: DataTypeSchema,
+          ModelType: ObservedProperties,
           modelAttribute: 'schema',
           multiline: true,
           label: 'Schema',
-          ObjectInputView: DataTypeSchemaView,
+          ObjectInputView: ObservedPropertiesView,
           predefined: {
             'Boolean (true/false)': {
               type: 'boolean'
