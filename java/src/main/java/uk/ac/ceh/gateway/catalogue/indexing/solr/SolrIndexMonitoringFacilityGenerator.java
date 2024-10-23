@@ -26,14 +26,17 @@ public class SolrIndexMonitoringFacilityGenerator implements IndexGenerator<Moni
 
     @Override
     public SolrIndex generateIndex(MonitoringFacility document) {
-        return metadataDocumentSolrIndex
-            .generateIndex(document)
-            .setFacilityType(document.getFacilityType().getValue())
+        SolrIndex index = metadataDocumentSolrIndex.generateIndex(document);
+
+        if (document.getFacilityType() != null) {
+            index.setFacilityType(document.getFacilityType().getValue());
+        }
+
+        return index
             .setEnvironmentalDomains(grab(document.getEnvironmentalDomain(), Keyword::getValue))
             .setKeywordsParameters(grab(document.getKeywordsParameters(), Keyword::getValue))
             .setResponsibleParties(grab(document.getResponsibleParties(), ResponsibleParty::getOrganisationName))
-            .setOperatingPeriod(grab(document.getOperatingPeriod(), MonitoringDocumentUtil::getTimeRange))
-            ;
+            .setOperatingPeriod(grab(document.getOperatingPeriod(), MonitoringDocumentUtil::getTimeRange));
     }
 
 }
