@@ -283,6 +283,16 @@ export default EditorView.extend({
         }),
         new ParentView({
           model: this.model,
+          modelAttribute: 'keywordsObservedProperty',
+          label: 'Observed properties',
+          ObjectInputView: KeywordVocabularyView,
+          multiline: true,
+          helpText: 'Controlled keywords describing the observed properties/variables contained in this data resource',
+          fetchKeywordsButton: true,
+          renderLegiloKeywords: true
+        }),
+        new ParentView({
+          model: this.model,
           modelAttribute: 'keywordsPlace',
           label: 'Places',
           ObjectInputView: KeywordVocabularyView,
@@ -299,7 +309,6 @@ export default EditorView.extend({
           ObjectInputView: KeywordVocabularyView,
           multiline: true,
           helpText: 'Controlled keywords describing projects that fund/support the creation of this resource',
-          fetchKeywordsButton: true,
           renderLegiloKeywords: true
         }),
         new ParentView({
