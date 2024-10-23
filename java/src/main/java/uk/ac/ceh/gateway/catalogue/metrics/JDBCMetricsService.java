@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.metrics;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -15,6 +16,8 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import java.time.Instant;
 import java.util.*;
 import javax.sql.DataSource;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 @Profile("metrics")
 @Slf4j
@@ -145,60 +148,55 @@ public class JDBCMetricsService implements MetricsService {
     }
 
     public List<Map<String,String>> getMetricsReport(Instant startDate, Instant endDate, String orderBy, String ordering, List<String> recordType, String docId, Integer noOfRecords) {
-        String sql = "select t.DOCUMENT, ifnull(t.DOC_TITLE, '') as \"DOC_TITLE\", ifnull(t.RECORD_TYPE, '') as \"RECORD_TYPE\", sum(t.VIEWS) as \"VIEWS\", sum(t.DOWNLOADS) as \"DOWNLOADS\" " +
-            "from (select DOCUMENT, DOC_TITLE, RECORD_TYPE, AMOUNT as \"DOWNLOADS\", 0 as \"VIEWS\" from downloads where %s " +
-            "union all select DOCUMENT, DOC_TITLE, RECORD_TYPE, 0 as \"DOWNLOADS\", AMOUNT as \"VIEWS\" from views where %s) t " +
-            "group by DOCUMENT,DOC_TITLE,RECORD_TYPE";
+        String sql = """
+            SELECT t.document, coalesce(t.doc_title, '') AS doc_title, coalesce(t.record_type, '') AS record_type, sum(t.views) AS views, sum(t.downloads) AS downloads
+            FROM (
+                SELECT document, doc_title, record_type, amount AS downloads, 0 AS views FROM downloads WHERE %s
+                UNION ALL
+                SELECT document, doc_title, record_type, 0 AS downloads, amount AS views FROM views WHERE %s
+            ) t
+            GROUP BY document, doc_title, record_type
+        """;
 
         ArrayList<String> whereVal = new ArrayList<>();
-        StringBuilder where = new StringBuilder(" 1=1");
+        StringBuilder where = new StringBuilder("1=1");
         if (startDate != null) {
             String start = Long.toString(startDate.getEpochSecond());
             whereVal.add(start);
-            where.append(" and START_TIMESTAMP>=?");
+            where.append(" AND start_timestamp >= ?");
         }
         if (endDate != null) {
             String end = Long.toString(endDate.getEpochSecond());
             whereVal.add(end);
-            where.append(" and END_TIMESTAMP<=?");
+            where.append(" AND end_timestamp <= ?");
         }
         if (docId != null && !docId.isBlank()) {
-            whereVal.add(String.format("%%%s%%", docId));
-            where.append(" and DOCUMENT like ?");
+            whereVal.add("%" + docId + "%");
+            where.append(" AND document LIKE ?");
         }
         if (recordType != null && !recordType.isEmpty()) {
-            where.append(" and RECORD_TYPE in (");
-            for (String type: recordType) {
+            where.append(" AND record_type IN (");
+            for (String type : recordType) {
                 whereVal.add(type);
                 where.append("?,");
             }
-            where.deleteCharAt(where.length() - 1).append(")");
+            where.setCharAt(where.length() - 1, ')');
         }
 
         StringBuilder sqlBuilder = new StringBuilder(sql.formatted(where, where));
         if (orderBy != null && !orderBy.isBlank()) {
-            switch (orderBy) {
-                case "views":
-                    sqlBuilder.append(" order by VIEWS");
-                    break;
-                case "downloads":
-                    sqlBuilder.append(" order by DOWNLOADS");
-                    break;
-                default:
-                    sqlBuilder.append(" order by DOCUMENT");
-                    break;
-            }
-            if (ordering != null && !ordering.isBlank()) {
-                if (ordering.equals("descending")) {
-                    sqlBuilder.append(" desc");
-                }
+            sqlBuilder.append(" ORDER BY ");
+            sqlBuilder.append(switch (orderBy) {
+                case "views", "downloads" -> orderBy;
+                default -> "document";
+            });
+            if (ordering != null && ordering.equals("descending")) {
+                sqlBuilder.append(" DESC");
             }
         }
-        if (noOfRecords != null && noOfRecords >= 0) {
-            sqlBuilder.append(" limit ").append(noOfRecords);
-        } else {
-            sqlBuilder.append(" limit 100");
-        }
+
+        sqlBuilder.append(" LIMIT ");
+        sqlBuilder.append(noOfRecords != null && noOfRecords >= 0 ? noOfRecords : 100);
 
         log.info("Metrics report sql: {}", sqlBuilder);
 
@@ -206,7 +204,7 @@ public class JDBCMetricsService implements MetricsService {
             sqlBuilder.toString(), preparedStatement -> {
                 int index = 1;
                 int valSize = whereVal.size();
-                for (String val: whereVal) {
+                for (String val : whereVal) {
                     preparedStatement.setString(index, val);
                     preparedStatement.setString(valSize + index, val);
                     index++;
@@ -214,5 +212,18 @@ public class JDBCMetricsService implements MetricsService {
             },
             new ReportMapper()
         );
+    }
+
+    static class ReportMapper implements RowMapper<Map<String, String>> {
+        @Override
+        public Map<String, String> mapRow(ResultSet rs, int map) throws SQLException {
+            LinkedHashMap<String, String> row = new LinkedHashMap<>();
+            row.put("document", rs.getString("document"));
+            row.put("docTitle", rs.getString("doc_title"));
+            row.put("recordType", rs.getString("record_type"));
+            row.put("views", String.valueOf(rs.getInt("views")));
+            row.put("downloads", String.valueOf(rs.getInt("downloads")));
+            return row;
+        }
     }
 }
