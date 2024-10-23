@@ -13,6 +13,7 @@ import uk.ac.ceh.gateway.catalogue.indexing.solr.WellKnownText;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.model.Supplemental;
+import uk.ac.ceh.gateway.catalogue.model.ObservedProperty;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreement;
 
 import java.time.ZoneId;
@@ -56,6 +57,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private List<Keyword> topicCategories, keywordsDiscipline, keywordsInstrument, keywordsObservedProperty,
             keywordsPlace, keywordsProject, keywordsTheme, keywordsOther;
     private List<Geometry> geometries;
+    private List<ObservedProperty> ObservedProperty;
     private List<DistributionInfo> distributionFormats;
     private List<DescriptiveKeywords> descriptiveKeywords;
     private List<InspireTheme> inspireThemes;

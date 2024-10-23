@@ -15,7 +15,7 @@ import uk.ac.ceh.gateway.catalogue.indexing.solr.WellKnownText;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
-import uk.ac.ceh.gateway.catalogue.model.DataTypeSchema;
+import uk.ac.ceh.gateway.catalogue.model.ObservedProperty;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.model.Supplemental;
 import uk.ac.ceh.gateway.catalogue.gemini.Funding;
@@ -45,7 +45,7 @@ public class NercModel extends AbstractMetadataDocument implements WellKnownText
 
     private List<Funding> funding;
 
-    private List<DataTypeSchema>
+    private List<ObservedProperty>
         inputParameters,
         outputParameters;
 

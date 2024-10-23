@@ -4,23 +4,24 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import static com.google.common.base.Strings.nullToEmpty;
-import com.google.common.collect.Lists;
+
 import lombok.Value;
 import lombok.Builder;
 
 @Value
-public class DataTypeSchema {
-    private final String name, title, description, type, units, format;
+public class ObservedProperty {
+    private final String name, title, description, type, units, unitsUri, format;
     private final Constraints constraints;
 
     @Builder
     @JsonCreator
-    private DataTypeSchema(
+    private ObservedProperty(
         @JsonProperty("name") String name,
         @JsonProperty("title") String title,
         @JsonProperty("description") String description,
         @JsonProperty("type") String type,
         @JsonProperty("units") String units,
+        @JsonProperty("unitsUri") String unitsUri,
         @JsonProperty("format") String format,
         @JsonProperty("constraints") Constraints constraints) {
         this.name =  nullToEmpty(name);
@@ -28,6 +29,7 @@ public class DataTypeSchema {
         this.description =  nullToEmpty(description);
         this.type =  nullToEmpty(type);
         this.units =  nullToEmpty(units);
+        this.unitsUri =  nullToEmpty(unitsUri);
         this.format =  nullToEmpty(format);
         this.constraints = constraints;
     }

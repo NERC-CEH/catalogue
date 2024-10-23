@@ -1,6 +1,6 @@
 export { default as AccessLimitation } from './AccessLimitation'
 export { default as Contact } from './Contact'
-export { default as DataTypeSchema } from './DataTypeSchema'
+export { default as ObservedProperty } from './ObservedProperty'
 export { default as DescriptiveKeyword } from './DescriptiveKeyword'
 export { default as DistributionFormat } from './DistributionFormat'
 export { default as Funding } from './Funding'

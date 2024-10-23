@@ -2,12 +2,12 @@ import EditorView from '../EditorView'
 import InputView from '../InputView'
 import {
   DataTypeProvenanceView,
-  DataTypeSchemaView,
+  ObservedPropertyView,
   PredefinedParentLargeView,
   SingleObjectView,
   TextareaView
 } from '../views'
-import { DataTypeSchema } from '../models'
+import { ObservedProperty } from '../models'
 
 export default EditorView.extend({
 
@@ -31,11 +31,11 @@ export default EditorView.extend({
 
         new PredefinedParentLargeView({
           model: this.model,
-          ModelType: DataTypeSchema,
+          ModelType: ObservedProperty,
           modelAttribute: 'schema',
           multiline: true,
           label: 'Schema',
-          ObjectInputView: DataTypeSchemaView,
+          ObjectInputView: ObservedPropertyView,
           predefined: {
             'Boolean (true/false)': {
               type: 'boolean'

@@ -1,7 +1,7 @@
 import EditorView from '../EditorView'
 import InputView from '../InputView'
-import { TextareaView, ParentView, PredefinedParentView, KeywordView, ReferenceView, ContactView, SingleObjectView, QaView, VersionHistoryView, ProjectUsageView, OnlineResourceSimpleView, DataTypeSchemaSimpleView } from '../views'
-import { Contact, DataTypeSchema, Reference } from '../models'
+import { TextareaView, ParentView, PredefinedParentView, KeywordView, ReferenceView, ContactView, SingleObjectView, QaView, VersionHistoryView, ProjectUsageView, OnlineResourceSimpleView, ObservedPropertySimpleView } from '../views'
+import { Contact, ObservedProperty, Reference } from '../models'
 import BoundingBoxView from '../geometryMap/BoundingBoxView'
 import BoundingBox from '../geometryMap/BoundingBox'
 
@@ -148,11 +148,11 @@ export default EditorView.extend({
       views: [
         new PredefinedParentView({
           model: this.model,
-          ModelType: DataTypeSchema,
+          ModelType: ObservedProperty,
           modelAttribute: 'inputVariables',
           multiline: true,
           label: 'Input variables',
-          ObjectInputView: DataTypeSchemaSimpleView,
+          ObjectInputView: ObservedPropertySimpleView,
           predefined: {
             'Boolean (true/false)': {
               type: 'boolean'
@@ -197,11 +197,11 @@ export default EditorView.extend({
       views: [
         new PredefinedParentView({
           model: this.model,
-          ModelType: DataTypeSchema,
+          ModelType: ObservedProperty,
           modelAttribute: 'outputVariables',
           multiline: true,
           label: 'Output variables',
-          ObjectInputView: DataTypeSchemaSimpleView,
+          ObjectInputView: ObservedPropertySimpleView,
           predefined: {
             'Boolean (true/false)': {
               type: 'boolean'
