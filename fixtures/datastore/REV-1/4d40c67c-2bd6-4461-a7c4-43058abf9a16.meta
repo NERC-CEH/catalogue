@@ -1,0 +1,18 @@
+{
+    "rawType": "application/vnd.monitoring-network+json",
+    "state": "published",
+    "documentType": "monitoring-network",
+    "permissions": {
+        "EDIT": [
+            "superadmin"
+        ],
+        "VIEW": [
+            "superadmin",
+            "public"
+        ],
+        "DELETE": [
+            "superadmin"
+        ]
+    },
+    "catalogue": "ukceh"
+}

@@ -11,9 +11,8 @@
 
   </#if>
 
-  <@m.relationships "Uses" "Uses these facilities/networks" "http://onto.nerc.ac.uk/CEHMD/rels/uses" />
-  <@m.relationships "Setup for" "Set up for these programmes" "http://ontm.nerc.ac.uk/CEHMD/rels/setupFor" />
-  <@m.inverseRelationships "Setup for" "Set up for these programmes" "http://onto.nerc.ac.uk/CEHMD/rels/triggers" />
+  <@m.relationships "http://onto.ceh.ac.uk/EF#uses" "Uses these facilities/networks"/>
+  <@m.inverseRelationships  "http://onto.ceh.ac.uk/EF#triggers"  "Set up for these programmes"/>
 
 </@m.base>
 

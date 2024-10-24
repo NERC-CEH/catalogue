@@ -1,0 +1,33 @@
+{
+    "id": "5d4fd6ea-18a1-44b7-a845-8c29e34bbb46",
+    "uri": "https://catalogue-staging.ceh.ac.uk/id/5d4fd6ea-18a1-44b7-a845-8c29e34bbb46",
+    "type": "monitoringFacility",
+    "title": "Wallingford Meteorological Site",
+    "metadataDate": "2024-09-24T12:50:00",
+    "resourceIdentifiers": [
+        {
+            "code": "https://catalogue-staging.ceh.ac.uk/id/5d4fd6ea-18a1-44b7-a845-8c29e34bbb46"
+        }
+    ],
+    "relationships": [
+        {
+            "relation": "http://onto.ceh.ac.uk/EF#belongsTo",
+            "target": "4d40c67c-2bd6-4461-a7c4-43058abf9a16"
+        }
+    ],
+    "keywords": [
+        {
+            "value": "Sentinel site"
+        }
+    ],
+    "facilityType": {
+        "value": "site",
+        "uri": "http://ex.com/facilityType/site"
+    },
+    "geometry": {
+        "geometryString": "{\"type\":\"Feature\",\"properties\":{},\"geometry\":{\"type\":\"Point\",\"coordinates\":[-1.11087,51.60266]}}",
+        "wkt": "POINT(-1.11087 51.60266)"
+    },
+    "geometryRepresentative": false,
+    "mobile": false
+}

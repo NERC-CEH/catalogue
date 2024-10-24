@@ -67,15 +67,12 @@ body {
         }
     }
 
-
-
-
-
     .description {
         display: grid;
         grid-template-columns: auto fit-content(450px);
 
         .browseimage {
+            mix-blend-mode: multiply;
             display: none;
 
             img {
@@ -408,7 +405,11 @@ body {
                     &:focus {
                         background-color: lighten(@brand-success, 15%);
                     }
-                    > small { font-weight: 200; margin-left:3px; }
+
+                    >small {
+                        font-weight: 200;
+                        margin-left: 3px;
+                    }
                 }
 
                 &-supporting {
@@ -560,7 +561,7 @@ body {
     }
 
     #adminPanel {
-        margin-block:1em;
+        margin-block: 1em;
 
         #adminToolbar,
         .adminToolbar {
@@ -885,32 +886,6 @@ body {
     }
 }
 
-
-.metadata-monitoring {
-
-    .studyarea-map,
-    .geometry-map {
-        height: 500px;
-        width: 700px;
-    }
-
-    .key-value {
-        >div {
-            padding: .5em 0;
-        }
-
-        .key {
-            font-weight: 600;
-        }
-    }
-
-    h2 {
-        clear: both;
-        padding-top: 2em;
-    }
-}
-
-
 #publication {
     div {
         margin: 4em auto;
@@ -1023,8 +998,51 @@ dl.dl-horizontal {
     }
 }
 
-//MEDIA
+/********** Monitoring Records *************/
+.metadata-monitoring {
+    .key-value {
+        >div {
+            padding: .5em 0;
+        }
+
+        .key {
+            font-weight: 600;
+        }
+    }
+
+    h2 {
+        clear: both;
+        padding-top: 2em;
+    }
+
+    .studyarea-map,
+    .geometry-map {
+        min-height: 500px;
+        width: 100%;
+    }
+
+    .networkMap {
+        display: grid;
+        gap: 1em;
+        grid-template-columns: 1fr;
+        margin: 0 1em 1em 0;
+
+        .facilitiesList {
+            max-height: 500px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scrollbar-gutter: stable;
+            scrollbar-width: thin;
+
+            &::-webkit-scrollbar {
+                width: 8px;
+            }
+        }
+    }
+}
+
 @media only screen and (min-width: 1020px) {
+
     .metadata-grid {
         gap: 0 2em;
         grid-template-areas: "col1 col2";
@@ -1032,6 +1050,13 @@ dl.dl-horizontal {
         .col2:has(*) {
             border-left: 1px solid lightgray;
             padding-left: 2em;
+        }
+    }
+
+    .metadata-monitoring {
+
+        .networkMap {
+            grid-template-columns: auto 35ch;
         }
     }
 }

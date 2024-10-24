@@ -13,7 +13,7 @@ public class ResponsiblePartyTest {
     public void authorIsHumanReadable() {
         //Given
         ResponsibleParty author = ResponsibleParty.builder().role("author").build();
-        String expected = "Author";
+        String expected = "author";
 
         //When
         String actual = author.getRoleDisplayName();
@@ -26,7 +26,7 @@ public class ResponsiblePartyTest {
     public void resourceProviderIsHumanReadable() {
         //Given
         ResponsibleParty author = ResponsibleParty.builder().role("resourceProvider").build();
-        String expected = "Resource Provider";
+        String expected = "resource provider";
 
         //When
         String actual = author.getRoleDisplayName();

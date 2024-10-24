@@ -1,0 +1,18 @@
+{
+    "rawType": "application/vnd.monitoring-facility+json",
+    "state": "published",
+    "documentType": "monitoring-facility",
+    "permissions": {
+        "EDIT": [
+            "superadmin"
+        ],
+        "VIEW": [
+            "superadmin",
+            "public"
+        ],
+        "DELETE": [
+            "superadmin"
+        ]
+    },
+    "catalogue": "ukceh"
+}

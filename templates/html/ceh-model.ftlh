@@ -89,7 +89,7 @@
             <#if otherContacts?? && otherContacts?has_content>
               <@m.key "Other contacts">
               <#list otherContacts as otherContact>
-                <dt>${otherContact.roleDisplayName}</dt>
+                <dt>${otherContact.roleDisplayName?cap_first}</dt>
                 <dd>
                   <div class="responsibleParty">
                     <@func.displayContact otherContact, true, true, false />
