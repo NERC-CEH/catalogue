@@ -10,13 +10,14 @@ import lombok.Builder;
 
 @Value
 public class ObservedProperty {
-    private final String name, title, description, type, units, unitsUri, format;
+    private final String value, uri, title, description, type, units, unitsUri, format;
     private final Constraints constraints;
 
     @Builder
     @JsonCreator
     private ObservedProperty(
-        @JsonProperty("name") String name,
+        @JsonProperty("value") String value,
+        @JsonProperty("uri") String uri,
         @JsonProperty("title") String title,
         @JsonProperty("description") String description,
         @JsonProperty("type") String type,
@@ -24,7 +25,8 @@ public class ObservedProperty {
         @JsonProperty("unitsUri") String unitsUri,
         @JsonProperty("format") String format,
         @JsonProperty("constraints") Constraints constraints) {
-        this.name =  nullToEmpty(name);
+        this.value =  nullToEmpty(value);
+        this.uri =  nullToEmpty(uri);
         this.title =  nullToEmpty(title);
         this.description =  nullToEmpty(description);
         this.type =  nullToEmpty(type);

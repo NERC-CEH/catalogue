@@ -785,27 +785,8 @@ This is only needed if you configure 'Styling=Classification' for your GeoTiff.<
           label: 'Observed properties',
           ObjectInputView: ObservedPropertyView,
           predefined: {
-            'Boolean (true/false)': {
-              type: 'boolean'
-            },
-            Date: {
-              type: 'date',
-              format: 'YYYY-MM-DD'
-            },
-            'Date & time': {
-              type: 'datetime',
-              format: 'YYYY-MM-DDThh:mm:ss'
-            },
-            'Decimal number': {
+            'Number (decimal/float)': {
               type: 'number'
-            },
-            Email: {
-              type: 'string',
-              format: 'email'
-            },
-            'Geographic point': {
-              type: 'geopoint',
-              format: 'lon, lat'
             },
             Integer: {
               type: 'integer'
@@ -813,25 +794,20 @@ This is only needed if you configure 'Styling=Classification' for your GeoTiff.<
             Text: {
               type: 'string'
             },
+            'Boolean (true/false)': {
+              type: 'boolean'
+            },
+            Date: {
+              type: 'date',
+              format: 'YYYY-MM-DD'
+            },
             Time: {
               type: 'time',
               format: 'hh:mm:ss'
             },
-            URI: {
-              type: 'string',
-              format: 'uri'
-            },
-            UUID: {
-              type: 'string',
-              format: 'uuid'
-            },
-            Year: {
-              type: 'year',
-              format: 'YYYY'
-            },
-            'Year & month': {
-              type: 'yearmonth',
-              format: 'YYYY-MM'
+            'Date & time': {
+              type: 'datetime',
+              format: 'YYYY-MM-DDThh:mm:ss'
             }
           }
         }),

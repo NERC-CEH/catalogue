@@ -3,10 +3,18 @@ import _ from 'underscore'
 export default _.template(`
 <div class="row">
     <div class="col-sm-2">
-        <label for="schema-name<%= data.index %>">Field</label>
+        <label for="schema-value<%= data.index %>">Name</label>
     </div>
     <div class="col-sm-10">
-        <input data-name="name" id="schema-name<%= data.index %>" class="editor-input" value="<%= data.name %>" placeholder="name of field/column" />
+        <input data-name="value" id="schema-value<%= data.index %>" class="editor-input" value="<%= data.value %>" placeholder="name of field/column" />
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-2">
+        <label for="schema-uri<%= data.index %>">URI</label>
+    </div>
+    <div class="col-sm-10">
+        <input data-name="uri" id="schema-uri<%= data.index %>" class="editor-input" value="<%= data.uri %>" placeholder="uri of controlled term" />
     </div>
 </div>
 <div class="row">
@@ -33,7 +41,7 @@ export default _.template(`
         </div>
     </div>
     <div class="col-sm-4 col-xs-12">
-        <input list="formatList" data-name="format" id="schema-format<%= data.index %>" class="editor-input" value="<%= data.format %>" placeholder="recommended for dates and times" />
+        <input list="formatList" data-name="format" id="schema-format<%= data.index %>" class="editor-input" value="<%= data.format %>" placeholder="optional (recommended for dates and times)" />
     </div>
 </div>
 <div class="row">
@@ -45,10 +53,10 @@ export default _.template(`
     </div>
     <div class="col-sm-2">
         <div class="hidden-xs text-right">
-            <label for="schema-unitsUri<%= data.index %>">>Unit uri</label>
+            <label for="schema-unitsUri<%= data.index %>">Unit uri</label>
         </div>
         <div class="visible-xs-inline">
-            <label for="schema-unitsUri<%= data.index %>">>Unit uri</label>
+            <label for="schema-unitsUri<%= data.index %>">Unit uri</label>
         </div>
     </div>
     <div class="col-sm-4">
