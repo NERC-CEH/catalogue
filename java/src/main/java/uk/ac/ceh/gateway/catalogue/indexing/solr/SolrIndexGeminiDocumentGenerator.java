@@ -6,6 +6,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.Funding;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
+import uk.ac.ceh.gateway.catalogue.model.ObservedProperty;
 import uk.ac.ceh.gateway.catalogue.model.Supplemental;
 import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
@@ -54,6 +55,7 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
             .setAuthorRor(grab(document.getAuthors(), ResponsibleParty::getOrganisationIdentifier))
             .setKeywordsInstrument(grab(document.getKeywordsInstrument(), Keyword::getValue))
             .setKeywordsObservedProperty(grab(document.getKeywordsObservedProperty(), Keyword::getValue))
+            .setObservedProperties(grab(document.getObservedProperty(), ObservedProperty::getValue))
             .setKeywordsPlace(grab(document.getKeywordsPlace(), Keyword::getValue))
             .setKeywordsProject(grab(document.getKeywordsProject(), Keyword::getValue))
             .setKeywordsTheme(grab(document.getKeywordsTheme(), Keyword::getValue))
