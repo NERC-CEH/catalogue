@@ -8,6 +8,7 @@ export default Backbone.View.extend({
   initialize () {
     this.listenTo(this.model, 'results-sync', this.render)
   },
+
   /*
      * Render the facet results panel as long as we have some results currently set.
      *

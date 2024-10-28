@@ -1,9 +1,9 @@
 import $ from 'jquery'
 
-export function createFacetSearch(facets) {
+export function createFacetSearch (facets) {
   facets.forEach(facet => {
-    const id = "#search-facet-" + facet.displayName.replaceAll(' ', '-')
-    if (typeof facet.results !== "undefined") {
+    const id = '#search-facet-' + facet.displayName.replaceAll(' ', '-')
+    if (typeof facet.results !== 'undefined') {
       const data = facet.results
         .filter(item => !item.active)
         .map(item => ({
@@ -13,11 +13,11 @@ export function createFacetSearch(facets) {
       $(id).autocomplete({
         minLength: 1,
         source: data,
-        appendTo: "#search",
+        appendTo: '#search',
         select: (event, ui) => {
           $(id).val(ui.item.label)
-          $("a[href='" + ui.item.url +"']").first().trigger("click")
-          return false;
+          $('a[href="' + ui.item.url + '"]').first().trigger('click')
+          return false
         }
       })
     }

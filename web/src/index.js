@@ -388,7 +388,10 @@ function initMetricsReport () {
   new SearchRouter({ model: app, location: window.location })
 }
 
-// Page data is fetched on page load, any js function for Freemarker template can be initialized here.
+/*
+  Page data is fetched on page load,
+  any js function for Freemarker template can be initialized here.
+*/
 function initWithFetchingData () {
   $.getJSON(window.location.href, data => {
     createFacetSearch(data.facets)
