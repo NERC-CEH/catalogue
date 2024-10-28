@@ -218,6 +218,7 @@ public class SearchQueryTest {
         assertThat(solrQuery.getRows(), is(equalTo(DEFAULT_ROWS)));
         assertThat(solrQuery.getFacetMinCount(), is(equalTo(1)));
         assertThat(solrQuery.getSorts().get(0).getItem().substring(0, 6), is(equalTo("random")));
+        assertThat("Facets should have a default limit of -1 (ie infinite)", solrQuery.getFacetLimit(), equalTo(-1));
     }
 
     @Test
