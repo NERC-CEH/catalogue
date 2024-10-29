@@ -38,6 +38,24 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
         Resource me = generator.resource(document.getId());
         toReturn.add(createStatement(me, IDENTIFIER, createPlainLiteral(me.getURI()))); //Add as an identifier of itself
 
+        Optional.ofNullable(document.getObservedProperty())
+            .orElse(Collections.emptyList())
+            .forEach(op -> {
+                Resource observedPropertyResource = generator.resource(op.getUri().trim());
+
+                toReturn.add(createStatement(me, HAS_OBSERVED_PROPERTY, observedPropertyResource));
+                toReturn.add(createStatement(observedPropertyResource, RDFS_LABEL, createPlainLiteral(op.getValue())));
+
+                if (op.getUnitsUri() != null) {
+                    Resource unitResource = generator.resource(op.getUnitsUri().trim());
+                    toReturn.add(createStatement(observedPropertyResource, HAS_UNIT, unitResource));
+
+                    if (op.getUnits() != null) {
+                        toReturn.add(createStatement(unitResource, RDFS_LABEL, createPlainLiteral(op.getUnits())));
+                    }
+                }
+            });
+
         Optional.ofNullable(document.getBoundingBoxes())
             .orElse(Collections.emptyList())
             .forEach(b ->
@@ -52,7 +70,6 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
                 toReturn.add(createStatement(me, IDENTIFIER, createPlainLiteral(r.getCoupledResource())))
             );
 
-
         Optional.ofNullable(document.getCoupledResources())
             .orElse(Collections.emptyList())
             .stream()
@@ -61,11 +78,15 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
                 toReturn.add(createStatement(me, EIDC_USES, createResource(r)))
             );
 
-        try {
-            toReturn.add(createStatement(me, PUBLICATION_DATE, createTypedLiteral(document.getPublicationDate().toInstant().atZone(ZoneId.of("UTC")).toLocalDate().toString())));
-        } catch(NullPointerException e) {
-            log.info("No Publication Date");
-        }
+        Optional.ofNullable(document.getPublicationDate())
+            .ifPresent(publicationDate -> {
+                toReturn.add(createStatement(
+                    me,
+                    PUBLICATION_DATE,
+                    createTypedLiteral(publicationDate.toInstant().atZone(ZoneId.of("UTC")).toLocalDate().toString())
+                ));
+            });
+
         toReturn.add(createStatement(me, RESOURCE_STATUS, createTypedLiteral(document.getResourceStatus())));
 
         return toReturn;

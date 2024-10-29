@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
+import uk.ac.ceh.gateway.catalogue.model.ObservedProperty;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -50,5 +51,32 @@ class JenaIndexGeminiDocumentGeneratorTest {
         assertThat("Statement literal should be identifier", actual.get(2).getLiteral().getString(), equalTo("t"));
         assertThat("Statement literal should be status", actual.get(3).getLiteral().getString(), equalTo("Unknown"));
         // No resource identifiers added to statements
+    }
+
+    @Test
+    void observedPropertiesAreIndexedCorrectly() {
+        //Given
+        val document = new GeminiDocument();
+        document.setId("t");
+        document.setObservedProperty(List.of(
+            ObservedProperty.builder()
+                .value("Temperature")
+                .uri("https://example.org/properties/temperature")
+                .build()
+        ));
+        given(service.generateUri("t")).willReturn("https://example.com/t");
+
+        // When
+        List<Statement> actual = generator.generateIndex(document);
+
+        // Then
+        boolean hasObservedProperty = actual.stream()
+            .anyMatch(statement ->
+                statement.getSubject().getURI().equals("https://example.com/t") &&
+                    statement.getObject().isResource() &&
+                    statement.getObject().asResource().getURI().equals("https://example.org/properties/temperature")
+            );
+
+        assertThat("ObservedProperty should be indexed with correct URI", hasObservedProperty);
     }
 }

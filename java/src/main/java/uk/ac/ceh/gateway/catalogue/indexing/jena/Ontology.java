@@ -41,4 +41,7 @@ public class Ontology {
     public static final Property HAS_GEOMETRY = ResourceFactory.createProperty("http://www.opengis.net/ont/geosparql#hasGeometry");
     public static final RDFDatatype WKT_LITERAL = new BaseDatatype("http://www.opengis.net/ont/geosparql#wktLiteral");
     public static final RDFDatatype GEOJSON_LITERAL = new BaseDatatype("http://www.opengis.net/ont/geosparql#geoJSONLiteral");
+    public static final Property HAS_OBSERVED_PROPERTY = ResourceFactory.createProperty("http://schema.org/variableMeasured");
+    public static final Property HAS_UNIT = ResourceFactory.createProperty("http://qudt.org/schema/qudt/applicableUnit");
+    public static final Property RDFS_LABEL = ResourceFactory.createProperty("http://www.w3.org/2000/01/rdf-schema#label");
 }
