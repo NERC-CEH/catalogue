@@ -57,7 +57,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private List<Keyword> topicCategories, keywordsDiscipline, keywordsInstrument, keywordsObservedProperty,
             keywordsPlace, keywordsProject, keywordsTheme, keywordsOther;
     private List<Geometry> geometries;
-    private List<ObservedProperty> ObservedProperty;
+    private List<ObservedProperty> observedProperty;
     private List<DistributionInfo> distributionFormats;
     private List<DescriptiveKeywords> descriptiveKeywords;
     private List<InspireTheme> inspireThemes;
@@ -150,7 +150,6 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             keywordsFromDescriptiveKeywords(),
             Optional.ofNullable(keywordsDiscipline).orElseGet(Collections::emptyList),
             Optional.ofNullable(keywordsInstrument).orElseGet(Collections::emptyList),
-            Optional.ofNullable(keywordsObservedProperty).orElseGet(Collections::emptyList),
             Optional.ofNullable(keywordsPlace).orElseGet(Collections::emptyList),
             Optional.ofNullable(keywordsProject).orElseGet(Collections::emptyList),
             Optional.ofNullable(keywordsTheme).orElseGet(Collections::emptyList),

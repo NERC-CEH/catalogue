@@ -456,13 +456,6 @@ Details of relationships we can accommodate are available at: <a href='eidc.ac.u
           required: true,
           className: 'hidden'
         }),
-        new ParentView({
-          model: this.model,
-          modelAttribute: 'keywordsObservedProperty',
-          ObjectInputView: KeywordVocabularyView,
-          multiline: true,
-          className: 'hidden'
-        }),
         new TextOnlyView({
           model: this.model,
           label: 'Places',

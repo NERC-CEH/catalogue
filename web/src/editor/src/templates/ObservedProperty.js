@@ -2,18 +2,21 @@ import _ from 'underscore'
 
 export default _.template(`
 <div class="row">
-    <div class="col-sm-2">
+    <div class="col-sm-2 col-xs-12">
         <label for="schema-value<%= data.index %>">Name</label>
     </div>
-    <div class="col-sm-10">
+    <div class="col-sm-4 col-xs-12">
         <input data-name="value" id="schema-value<%= data.index %>" class="editor-input" value="<%= data.value %>" placeholder="name of field/column" />
     </div>
-</div>
-<div class="row">
-    <div class="col-sm-2">
-        <label for="schema-uri<%= data.index %>">URI</label>
+    <div class="col-sm-2 col-xs-12">
+      <div class="hidden-xs text-right">
+          <label for="schema-uri<%= data.index %>">URI</label>
+      </div>
+      <div class="visible-xs-inline">
+          <label for="schema-uri<%= data.index %>">URI</label>
+      </div>
     </div>
-    <div class="col-sm-10">
+    <div class="col-sm-4 col-xs-12">
         <input data-name="uri" id="schema-uri<%= data.index %>" class="editor-input" value="<%= data.uri %>" placeholder="uri of controlled term" />
     </div>
 </div>
@@ -117,19 +120,13 @@ export default _.template(`
 </div>
 
 <datalist id="typeList"><!-- -->
-    <option value="boolean">True or false</option>
-    <option value="date">Date (without time)</option>
-    <option value="datetime">Date AND time</option>
-    <option value="number">Decimal number </option>
-    <option value="email">Email address</option>
-    <option value="geopoint">Geographic point (e.g. lon, lat)</option>
+    <option value="number">Decimal number/float</option>
     <option value="integer">Integer</option>
     <option value="string">Text string</option>
+    <option value="boolean">True or false</option>
+    <option value="date">Date (without time)</option>
     <option value="time">Time</option>
-    <option value="uri">URI such as a web address or urn</option>
-    <option value="uuid">UUID/GUID</option>
-    <option value="year">Four digit year</option>
-    <option value="yearmonth">Year and month (e.g. 2015-07)</option>
+    <option value="datetime">Date AND time</option>
 </datalist>
 <datalist id="formatList">
     <option value="YYYY">Four digit year e.g. 2018</option>

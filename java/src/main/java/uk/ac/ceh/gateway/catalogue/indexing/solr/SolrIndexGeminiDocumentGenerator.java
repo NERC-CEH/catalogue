@@ -53,7 +53,6 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
             .setAuthorOrcid(grab(document.getAuthors(), ResponsibleParty::getNameIdentifier))
             .setAuthorRor(grab(document.getAuthors(), ResponsibleParty::getOrganisationIdentifier))
             .setKeywordsInstrument(grab(document.getKeywordsInstrument(), Keyword::getValue))
-            .setKeywordsObservedProperty(grab(document.getKeywordsObservedProperty(), Keyword::getValue))
             .setKeywordsPlace(grab(document.getKeywordsPlace(), Keyword::getValue))
             .setKeywordsProject(grab(document.getKeywordsProject(), Keyword::getValue))
             .setKeywordsTheme(grab(document.getKeywordsTheme(), Keyword::getValue))
