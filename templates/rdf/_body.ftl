@@ -69,6 +69,10 @@
     dct:subject <@keywordList allKeywords/> ;
     </#if>
 
+    <#if observedProperty?has_content>
+      <https://schema.org/variableMeasured> <@keywordList observedProperty/> ;
+    </#if>
+
     <#if funding?has_content>
     prov:wasGeneratedBy <@fundingList /> ;
     </#if>
@@ -101,7 +105,8 @@
       <@incomingCitationDetail />
     </#if>
 
-    <@keywordDetail allKeywords/>
+    <@keywordDetail allKeywords />
+    <@keywordDetail observedProperty />
     <@fundingDetail />
   <#else>
     dct:description "This resource is no longer available please contact the Environmental Information Data Centre for more details" ;

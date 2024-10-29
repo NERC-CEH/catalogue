@@ -99,8 +99,8 @@
         "datePublished":"${datasetReferenceDate.publicationDate}",
       </#if>
 
-      <#if keywordsObservedProperty?? && keywordsObservedProperty?has_content>
-        "variableMeasured": [ <@displayVariables keywordsObservedProperty/>],
+      <#if observedProperty?? && observedProperty?has_content>
+        "variableMeasured": [ <@displayObservedProperties observedProperty/>],
       </#if>
 
       <#if keywordList?has_content>
@@ -288,16 +288,18 @@
     </#list>
 </#macro>
 
-<#macro displayVariables keywords>
-  <#list keywords as keyword>
-      <#if keyword.uri?has_content>
+<#macro displayObservedProperties props>
+  <#list props as op>
+      <#if op.uri?has_content>
         {
           "@type": "StatisticalVariable",
-          "@id": "${keyword.uri?trim}",
-          "name": "${keyword.value?trim}"
+          "@id": "${op.uri?trim}",
+          "name": "${op.value?trim}"
+          <#if op.unitsUri?has_content>,"unitCode": "${op.unitsUri?trim}"</#if>
+          <#if op.units?has_content>,"unitText": "${op.units?trim}"</#if>
         }
       <#else>
-        "${keyword.value?trim}"
+        "${op.value?trim}"
       </#if>
       <#sep>,</#sep>
     </#list>

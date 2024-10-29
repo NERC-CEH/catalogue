@@ -5,20 +5,22 @@
     <@m.keyValue "Type" "type of monitoring facility">${facilityType.value}</@m.keyValue>
   </#if>
 
-  <#if geometry.geometryString?? && geometry.geometryString?has_content>
-  <div>
-    <@m.keyValue "Location">
-      <@m.map geometry.geometryString />
-    </@m.keyValue>
+  <#if geometry?? && geometry?has_content>
+    <div>
+    <#if geometry.geometryString?? && geometry.geometryString?has_content>
+      <@m.keyValue "Location">
+        <@m.map geometry.geometryString />
+      </@m.keyValue>
 
-    <#if mobile>
-       <@m.keyValue "Mobile?">Yes</@m.keyValue>
+      <#if geometryRepresentative>
+        Geometry is representative
+      </#if>
     </#if>
+    </div>
+  </#if>
 
-    <#if geometryRepresentative>
-      Geometry is representative
-    </#if>
-  </div>
+  <#if mobile>
+    <@m.keyValue "Mobile?">Yes</@m.keyValue>
   </#if>
 
   <div class="relationships">
