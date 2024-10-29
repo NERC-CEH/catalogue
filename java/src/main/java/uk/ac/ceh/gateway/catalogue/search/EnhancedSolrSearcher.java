@@ -50,9 +50,11 @@ public class EnhancedSolrSearcher extends SolrSearcher {
         int page,
         int rows,
         List<FacetFilter> facetFilters,
-        String catalogueKey
+        String catalogueKey,
+        String sortField,
+        SolrQuery.ORDER sortOrder
     ) {
-        val basicResults= super.search(
+        val basicResults = super.search(
             endpoint,
             user,
             term,
@@ -61,7 +63,9 @@ public class EnhancedSolrSearcher extends SolrSearcher {
             page,
             rows,
             facetFilters,
-            catalogueKey
+            catalogueKey,
+            sortField,
+            sortOrder
         );
         val relatedSearches = relatedSearches(endpoint, term);
         log.debug(relatedSearches.toString());

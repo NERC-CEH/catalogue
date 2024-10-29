@@ -3,6 +3,7 @@ package uk.ac.ceh.gateway.catalogue.search;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.apache.solr.client.solrj.SolrClient;
+import org.apache.solr.client.solrj.SolrQuery;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.components.userstore.GroupStore;
@@ -45,7 +46,9 @@ public class SolrSearcher implements Searcher {
         int page,
         int rows,
         List<FacetFilter> facetFilters,
-        String catalogueKey
+        String catalogueKey,
+        String sortField,
+        SolrQuery.ORDER sortOrder
     ) {
         val catalogue = catalogueService.retrieve(catalogueKey);
 
@@ -60,7 +63,9 @@ public class SolrSearcher implements Searcher {
             facetFilters,
             groupStore,
             catalogue,
-            facetFactory.newInstances(catalogue.getFacetKeys())
+            facetFactory.newInstances(catalogue.getFacetKeys()),
+            sortField,
+            sortOrder
         );
         val response = solrClient.query(
             "documents",

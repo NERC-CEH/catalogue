@@ -145,6 +145,8 @@ class SearchControllerTest {
             anyInt(),
             anyInt(),
             any(),
+            any(),
+            any(),
             any()
         )).willReturn(searchResults);
 

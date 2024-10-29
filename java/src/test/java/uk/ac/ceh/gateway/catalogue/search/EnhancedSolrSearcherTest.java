@@ -4,6 +4,7 @@ import lombok.SneakyThrows;
 import lombok.val;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrRequest;
+import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.params.SolrParams;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,6 +45,8 @@ class EnhancedSolrSearcherTest {
     private final int rows = 20;
     private final List<FacetFilter> facetFilters = List.of(new FacetFilter("filter|test"));
     private final String catalogueKey = "green";
+    private final String sortField = "publishedDate";
+    private final ORDER sortOrder = ORDER.desc;
 
     @BeforeEach
     void setup() {
@@ -75,7 +78,9 @@ class EnhancedSolrSearcherTest {
             page,
             rows,
             facetFilters,
-            catalogueKey
+            catalogueKey,
+            sortField,
+            sortOrder
         );
 
         //then

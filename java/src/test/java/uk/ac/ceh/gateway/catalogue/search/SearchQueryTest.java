@@ -34,6 +34,8 @@ public class SearchQueryTest {
     static final List<Facet> DEFAULT_FACETS = FACET_FACTORY.newInstances(
             Arrays.asList("resourceType","licence")
             );
+    private static final String sortField = "publicationDate";
+    private static final SolrQuery.ORDER sortOrder = SolrQuery.ORDER.desc;
 
     @Test
     public void queryHasCatalogueAsViewFilter() {
@@ -56,7 +58,9 @@ public class SearchQueryTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-                DEFAULT_FACETS
+                DEFAULT_FACETS,
+                sortField,
+                sortOrder
                 );
 
         //When
@@ -89,7 +93,9 @@ public class SearchQueryTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-                DEFAULT_FACETS
+                DEFAULT_FACETS,
+                sortField,
+                sortOrder
                 );
 
         //When
@@ -123,7 +129,9 @@ public class SearchQueryTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-                DEFAULT_FACETS
+                DEFAULT_FACETS,
+                sortField,
+                sortOrder
                 );
 
         //When
@@ -157,7 +165,9 @@ public class SearchQueryTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-                DEFAULT_FACETS
+                DEFAULT_FACETS,
+                sortField,
+                sortOrder
                 );
 
         //When
@@ -203,7 +213,9 @@ public class SearchQueryTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-                DEFAULT_FACETS
+                DEFAULT_FACETS,
+                null,
+                null
                 );
         //When
         SolrQuery solrQuery = query.build();
@@ -242,7 +254,9 @@ public class SearchQueryTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-                DEFAULT_FACETS
+                DEFAULT_FACETS,
+                sortField,
+                sortOrder
                 );
 
         //When
@@ -275,7 +289,9 @@ public class SearchQueryTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-                DEFAULT_FACETS
+                DEFAULT_FACETS,
+                null,
+                null
                 );
         //When
         SolrQuery solrQuery = query.build();
@@ -307,7 +323,9 @@ public class SearchQueryTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-                DEFAULT_FACETS
+                DEFAULT_FACETS,
+                sortField,
+                sortOrder
                 );
         //When
         SolrQuery solrQuery = query.build();
@@ -340,7 +358,9 @@ public class SearchQueryTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-                DEFAULT_FACETS
+                DEFAULT_FACETS,
+                sortField,
+                sortOrder
                 );
 
         //When
@@ -373,7 +393,9 @@ public class SearchQueryTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-                DEFAULT_FACETS
+                DEFAULT_FACETS,
+                sortField,
+                sortOrder
                 );
 
         //When
@@ -404,7 +426,9 @@ public class SearchQueryTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-                DEFAULT_FACETS
+                DEFAULT_FACETS,
+                sortField,
+                sortOrder
                 );
 
         //When
@@ -437,7 +461,9 @@ public class SearchQueryTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-                DEFAULT_FACETS
+                DEFAULT_FACETS,
+                sortField,
+                sortOrder
                 );
 
         //When
@@ -469,7 +495,9 @@ public class SearchQueryTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-                DEFAULT_FACETS
+                DEFAULT_FACETS,
+                sortField,
+                sortOrder
                 );
 
         //When
@@ -501,7 +529,9 @@ public class SearchQueryTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-                DEFAULT_FACETS
+                DEFAULT_FACETS,
+                sortField,
+                sortOrder
                 );
 
         //When
@@ -533,7 +563,9 @@ public class SearchQueryTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-                DEFAULT_FACETS
+                DEFAULT_FACETS,
+                sortField,
+                sortOrder
                 );
 
         FacetFilter filter = new FacetFilter("hey", "lo");
@@ -566,7 +598,9 @@ public class SearchQueryTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-                DEFAULT_FACETS
+                DEFAULT_FACETS,
+                sortField,
+                sortOrder
                 );
 
         //When
@@ -603,7 +637,9 @@ public class SearchQueryTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-                DEFAULT_FACETS
+                DEFAULT_FACETS,
+                null,
+                null
                 );
 
         //When
@@ -634,7 +670,9 @@ public class SearchQueryTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-                DEFAULT_FACETS
+                DEFAULT_FACETS,
+                null,
+                null
                 );
 
         //When
@@ -667,7 +705,9 @@ public class SearchQueryTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-                DEFAULT_FACETS
+                DEFAULT_FACETS,
+                sortField,
+                sortOrder
                 );
 
         //When
@@ -698,7 +738,9 @@ public class SearchQueryTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-                DEFAULT_FACETS
+                DEFAULT_FACETS,
+                sortField,
+                sortOrder
                 );
 
         //When
@@ -735,7 +777,9 @@ public class SearchQueryTest {
                 DEFAULT_FILTERS,
                 groupStore,
                 catalogue,
-                FACET_FACTORY.newInstances(catalogue.getFacetKeys())
+                FACET_FACTORY.newInstances(catalogue.getFacetKeys()),
+                sortField,
+                sortOrder
                 );
 
         //When
@@ -754,5 +798,39 @@ public class SearchQueryTest {
         assertThat(actual.contains("impWaterPollutant"), is(true));
         assertThat(actual.contains("resourceType"), is(true));
 
+    }
+
+    @Test
+    public void checkSortParameters() {
+        //Given
+        SearchQuery interestingQuery = new SearchQuery(
+                "http://my.endpo.int",
+                CatalogueUser.PUBLIC_USER,
+                "My Search Term",
+                "1,2,3,4",
+                SpatialOperation.ISWITHIN,
+                24,
+                30,
+                List.of(new FacetFilter("licence", "b")),
+                groupStore,
+                Catalogue
+                .builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("https://eidc-catalogue.ceh.ac.uk")
+                .contactUrl("")
+                .logo("")
+                .build(),
+                DEFAULT_FACETS,
+                sortField,
+                sortOrder
+                );
+
+        //When
+        String url = interestingQuery.toUrl();
+
+        //Then
+        assertThat("sort field parameter should be present", url, containsString("sortField=publicationDate"));
+        assertThat("sort order parameter should be present", url, containsString("order=desc"));
     }
 }

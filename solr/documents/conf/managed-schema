@@ -155,6 +155,22 @@
     <field name="infrastructureChallenge" type="keywords"/>
     <field name="infrastructureClass" type="keywords"/>
 
+    <!--
+        Single-valued fields with a non-trivial tokenizer need to be
+        copied to be sortable.  Make sure to keep this in sync with
+        SearchQuery's RAW_SORT_FIELDS.
+    -->
+    <field name="title_raw" type="string"/>
+    <copyField source="title" dest="title_raw"/>
+    <field name="description_raw" type="string"/>
+    <copyField source="description" dest="description_raw"/>
+    <field name="lineage_raw" type="string"/>
+    <copyField source="lineage" dest="lineage_raw"/>
+    <field name="objectives_raw" type="string"/>
+    <copyField source="objectives" dest="objectives_raw"/>
+    <field name="infrastructureCapabilities_raw" type="string"/>
+    <copyField source="infrastructureCapabilities" dest="infrastructureCapabilities_raw"/>
+
     <copyField source="individual" dest="surname" multiValued="true"/>
     <dynamicField name="random*" type="random"/>
 </schema>

@@ -46,7 +46,9 @@ public class SearchResultsTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-            SearchQueryTest.DEFAULT_FACETS
+            SearchQueryTest.DEFAULT_FACETS,
+            null,
+            null
         );
 
         QueryResponse response = mock(QueryResponse.class);
@@ -81,7 +83,9 @@ public class SearchResultsTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-            SearchQueryTest.DEFAULT_FACETS
+            SearchQueryTest.DEFAULT_FACETS,
+            null,
+            null
         );
 
         QueryResponse response = mock(QueryResponse.class);
@@ -124,7 +128,9 @@ public class SearchResultsTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-            SearchQueryTest.DEFAULT_FACETS
+            SearchQueryTest.DEFAULT_FACETS,
+            null,
+            null
         );
 
         QueryResponse response = mock(QueryResponse.class);
@@ -158,7 +164,9 @@ public class SearchResultsTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-            SearchQueryTest.DEFAULT_FACETS
+            SearchQueryTest.DEFAULT_FACETS,
+            null,
+            null
         );
 
         QueryResponse response = mock(QueryResponse.class);
@@ -192,7 +200,9 @@ public class SearchResultsTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-            SearchQueryTest.DEFAULT_FACETS
+            SearchQueryTest.DEFAULT_FACETS,
+            null,
+            null
         );
 
         QueryResponse response = mock(QueryResponse.class);
@@ -228,7 +238,9 @@ public class SearchResultsTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-            SearchQueryTest.DEFAULT_FACETS
+            SearchQueryTest.DEFAULT_FACETS,
+            null,
+            null
         );
 
         QueryResponse response = mock(QueryResponse.class);
@@ -265,7 +277,9 @@ public class SearchResultsTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-            SearchQueryTest.DEFAULT_FACETS
+            SearchQueryTest.DEFAULT_FACETS,
+            null,
+            null
         );
 
         //When
@@ -298,7 +312,9 @@ public class SearchResultsTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-            SearchQueryTest.DEFAULT_FACETS
+            SearchQueryTest.DEFAULT_FACETS,
+            null,
+            null
         );
 
         //When
@@ -332,7 +348,9 @@ public class SearchResultsTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-            SearchQueryTest.DEFAULT_FACETS
+            SearchQueryTest.DEFAULT_FACETS,
+            null,
+            null
         );
 
 
@@ -367,7 +385,9 @@ public class SearchResultsTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-            SearchQueryTest.DEFAULT_FACETS
+            SearchQueryTest.DEFAULT_FACETS,
+            null,
+            null
         );
 
 
@@ -401,7 +421,9 @@ public class SearchResultsTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-            SearchQueryTest.DEFAULT_FACETS
+            SearchQueryTest.DEFAULT_FACETS,
+            null,
+            null
         );
 
 
@@ -436,7 +458,9 @@ public class SearchResultsTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-            SearchQueryTest.DEFAULT_FACETS
+            SearchQueryTest.DEFAULT_FACETS,
+            null,
+            null
         );
 
 
@@ -471,7 +495,9 @@ public class SearchResultsTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-            SearchQueryTest.DEFAULT_FACETS
+            SearchQueryTest.DEFAULT_FACETS,
+            null,
+            null
         );
 
         //When
@@ -502,7 +528,9 @@ public class SearchResultsTest {
                 .contactUrl("")
                 .logo("")
                 .build(),
-            SearchQueryTest.DEFAULT_FACETS
+            SearchQueryTest.DEFAULT_FACETS,
+            null,
+            null
         );
 
         QueryResponse response = mock(QueryResponse.class);
