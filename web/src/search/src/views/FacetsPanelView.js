@@ -1,6 +1,7 @@
 import Backbone from 'backbone'
 import panelTpl from '../templates/facetsPanelTemplate'
 import resultsTpl from '../templates/facetResultsTemplate'
+import { createFacetSearch } from '../SearchFacets.js'
 
 export default Backbone.View.extend({
 
@@ -15,10 +16,14 @@ export default Backbone.View.extend({
      * results set.
      */
   render () {
+    const facets = this.model.getResults().attributes.facets
     this.$el.html(panelTpl({
-      facets: this.model.getResults().attributes.facets,
+      facets: facets,
       template: resultsTpl
     }))
+
+    createFacetSearch(facets)
+
     return this
   }
 })

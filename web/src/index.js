@@ -2,6 +2,7 @@
 /* eslint no-new: "off" */
 import './globals'
 import $ from 'jquery'
+import { createFacetSearch } from './search/src/SearchFacets.js'
 import Backbone from 'backbone'
 import 'bootstrap'
 import {
@@ -48,6 +49,8 @@ const $documentUpload = $('#document-upload')
 const $edit = $('.edit-control')
 const $serviceAgreement = $('.service-agreement')
 const $navbarToggle = $('.nav-toggle')
+
+initWithFetchingData()
 
 if ($catalogue.length) {
   initCatalogue()
@@ -383,4 +386,14 @@ function initMetricsReport () {
     model: app
   })
   new SearchRouter({ model: app, location: window.location })
+}
+
+/*
+  Page data is fetched on page load,
+  any js function for Freemarker template can be initialized here.
+*/
+function initWithFetchingData () {
+  $.getJSON(window.location.href, data => {
+    createFacetSearch(data.facets)
+  })
 }
