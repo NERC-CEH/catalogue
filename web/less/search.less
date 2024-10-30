@@ -65,24 +65,7 @@ main {
             padding: 1em;
         }
 
-        .search-facet {
-            width: 90%;
-            border-radius: 10px;
-        }
-
-        .ui-autocomplete {
-            font-size: 18px !important;
-            border-radius: 4px;
-
-            .ui-menu-item {
-                .ui-menu-item-wrapper {
-                    padding: 3px 1em 3px 1em;
-                }
-                .ui-menu-item-wrapper.ui-state-active {
-                    background-color: var(--ukceh-colours-green);
-                    border-color: var(--ukceh-colours-green);
-                }
-            }
+        .form-control.search-facet { opacity: 85%;position:sticky; top:0;
         }
     }
 }
@@ -121,9 +104,9 @@ main {
 
                 margin: 2em 0;
                 max-height: 600px;
-                overflow-y: auto;
+                overflow-y: scroll;
                 overflow-x: hidden;
-                scrollbar-width: thin;
+                scrollbar-width: none;
 
                 ul {
                     padding: 0;
@@ -145,17 +128,9 @@ main {
                 }
 
                 &::-webkit-scrollbar {
-                    width: 0.25em;
+                    display: none;
                 }
 
-                &::-webkit-scrollbar-track {
-                    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-                }
-
-                &::-webkit-scrollbar-thumb {
-                    background-color: darkgrey;
-                    outline: 1px solid slategrey;
-                }
             }
         }
 

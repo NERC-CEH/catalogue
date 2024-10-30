@@ -29,7 +29,7 @@
   <#if facet.results?size gt 0>
     <div class="facet">
       <div class="facet-header">${facet.displayName}</div>
-      <input placeholder="search ${facet.displayName?lower_case}" id="search-facet-${facet.displayName?replace(' ', '-')}" class="form-control search-facet">
+      <input placeholder="search ${facet.displayName?lower_case}" id="search-facet-${facet.displayName?replace(' ', '-')}" class="form-control search-facet input-sm">
       <@facetResults facet.results/>
     </div>
   </#if>
