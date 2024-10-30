@@ -16,7 +16,8 @@ export function createFacetSearch (facets) {
         appendTo: '#search',
         select: (event, ui) => {
           $(id).val(ui.item.label)
-          $('a[href="' + ui.item.url + '"]').first().trigger('click')
+          const url = ui.item.url.replace('http:', location.protocol)
+          $('a[href="' + url + '"]').first().trigger('click')
           return false
         }
       })
