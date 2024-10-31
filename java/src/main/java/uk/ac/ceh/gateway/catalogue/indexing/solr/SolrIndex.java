@@ -46,6 +46,7 @@ public class SolrIndex {
     private @Field List<String> keywordsProject;
     private @Field List<String> keywordsTheme;
     private @Field List<String> keywordsOther;
+    private @Field List<String> observedProperties;
     private @Field String licence;
     private @Field String lineage;
     private @Field String dataLevel;
