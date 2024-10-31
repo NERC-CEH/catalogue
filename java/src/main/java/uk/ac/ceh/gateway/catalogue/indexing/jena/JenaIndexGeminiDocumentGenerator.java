@@ -7,6 +7,7 @@ import org.apache.jena.rdf.model.Statement;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
 
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
@@ -77,18 +78,16 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
             .forEach(r ->
                 toReturn.add(createStatement(me, EIDC_USES, createResource(r)))
             );
-
         Optional.ofNullable(document.getPublicationDate())
             .ifPresent(publicationDate -> {
                 toReturn.add(createStatement(
                     me,
                     PUBLICATION_DATE,
-                    createTypedLiteral(publicationDate.toInstant().atZone(ZoneId.of("UTC")).toLocalDate().toString())
+                    createTypedLiteral(LocalDate.ofInstant(publicationDate.toInstant(), ZoneId.of("UTC")).toString())
                 ));
             });
 
         toReturn.add(createStatement(me, RESOURCE_STATUS, createTypedLiteral(document.getResourceStatus())));
-
         return toReturn;
     }
 }
