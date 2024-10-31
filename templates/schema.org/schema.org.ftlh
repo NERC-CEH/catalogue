@@ -160,7 +160,7 @@
           <#list incomingCitations as citation>
             {
             "@type": "CreativeWork"
-            <#if citation.description?has_content>,"creditText": "${citation.description?trim}"</#if>
+            <#if citation.description?has_content>,"creditText": "${citation.description?replace("\n", " ")?trim}"</#if>
             <#if citation.url?has_content>,"url": "${citation.url?trim}"</#if>
             }<#sep>,</#sep>
           </#list>

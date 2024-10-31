@@ -70,7 +70,7 @@
     </#if>
 
     <#if observedProperty?has_content>
-      <https://schema.org/variableMeasured> <@keywordList observedProperty/> ;
+      sdo:variableMeasured <@keywordList observedProperty/> ;
     </#if>
 
     <#if funding?has_content>
