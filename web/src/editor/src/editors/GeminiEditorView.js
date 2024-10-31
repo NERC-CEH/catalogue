@@ -785,7 +785,7 @@ This is only needed if you configure 'Styling=Classification' for your GeoTiff.<
           label: 'Observed properties',
           ObjectInputView: ObservedPropertyView,
           predefined: {
-            'Number (decimal/float)': {
+            'Decimal number/float': {
               type: 'number'
             },
             Integer: {
