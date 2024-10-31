@@ -1,0 +1,20 @@
+{
+    "id": "4d40c67c-2bd6-4461-a7c4-43058abf9a16",
+    "uri": "https://catalogue-staging.ceh.ac.uk/id/4d40c67c-2bd6-4461-a7c4-43058abf9a16",
+    "type": "monitoringNetwork",
+    "title": "UKCEH Sentinel sites",
+    "metadataDate": "2024-09-24T12:50:00",
+    "resourceIdentifiers": [
+        {
+            "code": "https://catalogue-staging.ceh.ac.uk/id/4d40c67c-2bd6-4461-a7c4-43058abf9a16"
+        }
+    ],
+    "boundingBox": {
+        "westBoundLongitude": -1.11097,
+        "eastBoundLongitude": -0.13869,
+        "southBoundLatitude": 51.521319999999996,
+        "northBoundLatitude": 51.60276,
+        "coordinates": "[[[-1.11097, 51.521319999999996], [-1.11097, 51.60276], [-0.13869, 51.60276], [-0.13869, 51.521319999999996], [-1.11097, 51.521319999999996]]]",
+        "bounds": "{\"type\": \"Feature\",      \"properties\": {},      \"geometry\": {        \"type\": \"Polygon\",        \"coordinates\": [[[-1.11097, 51.521319999999996], [-1.11097, 51.60276], [-0.13869, 51.60276], [-0.13869, 51.521319999999996], [-1.11097, 51.521319999999996]]]      }}"
+    }
+}

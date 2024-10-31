@@ -88,7 +88,7 @@ public class RdfTurtleTest {
                     createStatement(
                         createResource("https://example.com/id/9371"),
                         createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
-                        createResource("http://www.w3.org/2015/03/inspire/ef#EnvironmentalMonitoringActivity")
+                        createResource("http://onto.ceh.ac.uk/EF#Activity")
                     )
                 )
             );
@@ -111,7 +111,7 @@ public class RdfTurtleTest {
                     createStatement(
                         createResource("https://example.com/id/1234"),
                         createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
-                        createResource("http://www.w3.org/2015/03/inspire/ef#EnvironmentalMonitoringFacility")
+                        createResource("http://onto.ceh.ac.uk/EF#Facility")
                     )
                 )
             );
@@ -134,7 +134,7 @@ public class RdfTurtleTest {
                     createStatement(
                         createResource("https://example.com/id/7453"),
                         createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
-                        createResource("http://www.w3.org/2015/03/inspire/ef#EnvironmentalMonitoringNetwork")
+                        createResource("http://onto.ceh.ac.uk/EF#Network")
                     )
                 )
             );

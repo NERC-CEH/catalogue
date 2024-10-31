@@ -26,7 +26,7 @@ import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.RDF_TTL_VALUE;
 })
 public class MonitoringProgramme extends AbstractMetadataDocument implements WellKnownText {
     private List<String> alternateTitles;
-    private String objectives;
+    private String objectives, operationalStatus;
     private BoundingBox boundingBox;
     private List<ResponsibleParty> responsibleParties;
     private List<TimePeriod> operatingPeriod;

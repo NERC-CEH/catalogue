@@ -22,19 +22,22 @@ public class Ontology {
     public static final Property EIDC_MEMBER_OF = ResourceFactory.createProperty("https://vocabs.ceh.ac.uk/eidc#memberOf");
     public static final Property EIDC_USES = ResourceFactory.createProperty("https://vocabs.ceh.ac.uk/eidc#uses");
 
-    public static final Property SET_UP_FOR = ResourceFactory.createProperty("http://purl.org/voc/ef#setUpFor");
-    public static final Property USES = ResourceFactory.createProperty("http://purl.org/voc/ef#uses");
-    public static final Property INVOLVED_IN = ResourceFactory.createProperty("http://purl.org/voc/ef#involvedIn");
-    public static final Property SUPERSEDES = ResourceFactory.createProperty("http://purl.org/voc/ef#supersedes");
-    public static final Property SUPERSEDED_BY = ResourceFactory.createProperty("http://purl.org/voc/ef#supersededBy");
-    public static final Property BROADER = ResourceFactory.createProperty("http://purl.org/voc/ef#broader");
-    public static final Property NARROWER = ResourceFactory.createProperty("http://purl.org/voc/ef#narrower");
-    public static final Property BELONGS_TO = ResourceFactory.createProperty("http://purl.org/voc/ef#belongsTo");
-    public static final Property RELATED_TO = ResourceFactory.createProperty("http://purl.org/voc/ef#relatedTo");
-    public static final Property CONTAINS = ResourceFactory.createProperty("http://purl.org/voc/ef#contains");
-    public static final Property TRIGGERS = ResourceFactory.createProperty("http://purl.org/voc/ef#triggers");
+    public static final Property SET_UP_FOR = ResourceFactory.createProperty("http://onto.ceh.ac.uk/EF#setUpFor");
+    public static final Property USES = ResourceFactory.createProperty("http://onto.ceh.ac.uk/EF#uses");
+    public static final Property INVOLVED_IN = ResourceFactory.createProperty("http://onto.ceh.ac.uk/EF#involvedIn");
+    public static final Property SUPERSEDES = ResourceFactory.createProperty("http://onto.ceh.ac.uk/EF#supersedes");
+    public static final Property SUPERSEDED_BY = ResourceFactory.createProperty("http://onto.ceh.ac.uk/EF#supersededBy");
+    public static final Property BROADER = ResourceFactory.createProperty("http://onto.ceh.ac.uk/EF#broader");
+    public static final Property NARROWER = ResourceFactory.createProperty("http://onto.ceh.ac.uk/EF#narrower");
+    public static final Property HASCHILD = ResourceFactory.createProperty("http://onto.ceh.ac.uk/EF#hasChild");
+    public static final Property BELONGS_TO = ResourceFactory.createProperty("http://onto.ceh.ac.uk/EF#belongsTo");
+    public static final Property RELATED_TO = ResourceFactory.createProperty("http://onto.ceh.ac.uk/EF#relatedTo");
+    public static final Property UTILISES = ResourceFactory.createProperty("http://onto.ceh.ac.uk/EF#utilises");
+    public static final Property ASSOCIATED_WITH = ResourceFactory.createProperty("http://onto.ceh.ac.uk/EF#associatedWith");
+    public static final Property CONTAINS = ResourceFactory.createProperty("http://onto.ceh.ac.uk/EF#contains");
+    public static final Property TRIGGERS = ResourceFactory.createProperty("http://onto.ceh.ac.uk/EF#triggers");
 
-    public static final Property LINKING_TIME = ResourceFactory.createProperty("http://purl.org/voc/ef#linkingTime");
+    public static final Property LINKING_TIME = ResourceFactory.createProperty("http://onto.ceh.ac.uk/EF#linkingTime");
     public static final Property TEMPORAL_BEGIN = ResourceFactory.createProperty("http://def.seegrid.csiro.au/isotc211/iso19108/2002/temporal#begin");
     public static final Property TEMPORAL_END = ResourceFactory.createProperty("http://def.seegrid.csiro.au/isotc211/iso19108/2002/temporal#end");
 

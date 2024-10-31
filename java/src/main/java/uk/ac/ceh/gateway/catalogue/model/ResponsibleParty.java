@@ -69,13 +69,13 @@ public class ResponsibleParty {
             char c = camelCase.charAt(i);
             if( prevChar == ' ')
             {
-                result.append(Character.toUpperCase(c));
+                result.append(Character.toLowerCase(c));
             }
             else if(Character.isUpperCase(c) && !Character.isUpperCase(prevChar))
             {
                 // insert space before start of word if camel case
                 result.append( ' ' );
-                result.append(Character.toUpperCase( c ));
+                result.append(Character.toLowerCase( c ));
             }
             else
             {

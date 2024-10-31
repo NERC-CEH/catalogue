@@ -103,7 +103,6 @@
     <field name="inmsProject" type="keywords"/>
     <field name="keyword" type="keywords_lowercase"/>
     <field name="keywordsInstrument" type="keywords_lowercase"/>
-    <field name="keywordsObservedProperty" type="keywords_lowercase"/>
     <field name="keywordsPlace" type="keywords_lowercase"/>
     <field name="keywordsProject" type="keywords_lowercase"/>
     <field name="keywordsTheme" type="keywords_lowercase"/>

@@ -329,6 +329,7 @@ public class SearchQuery {
     private void setFacetFields(SolrQuery query){
         query.setFacet(true);
         query.setFacetMinCount(1);
+        query.setFacetLimit(-1);
         query.setFacetSort("index");
         facets.forEach((facet) ->
             query.addFacetField(facet.getFieldName())

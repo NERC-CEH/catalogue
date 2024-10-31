@@ -1,5 +1,6 @@
 import EditorView from '../EditorView'
 import InputView from '../InputView'
+import SelectView from '../SelectView'
 import {
   KeywordVocabularyView,
   ParentView,
@@ -60,8 +61,18 @@ export default EditorView.extend({
           ModelType: MultipleDate,
           label: 'Operating period',
           ObjectInputView: TemporalExtentView
-        })
+        }),
 
+        new SelectView({
+          model: this.model,
+          modelAttribute: 'operationalStatus',
+          label: 'Status',
+          options: [
+            { value: 'Unknown', label: 'Unknown' },
+            { value: 'Active', label: 'Active' },
+            { value: 'Inactive', label: 'Inactive' }
+          ]
+        })
       ]
     },
     {
@@ -237,7 +248,7 @@ export default EditorView.extend({
           ObjectInputView: RelationshipView,
           multiline: true,
           options: [
-            { value: 'http://onto.nerc.ac.uk/CEHMD/rels/uses', label: 'Uses' }
+            { value: 'http://onto.ceh.ac.uk/EF#uses', label: 'Uses' }
           ],
           helpText: `
 <p>Facilities and networks used by this activity</p>

@@ -538,14 +538,12 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
 
     List<MetadataCheck> checkKeywords(DocumentContext parsed) {
         val keywordsInstrument = parsed.read("$.keywordsInstrument[*]", typeRefStringString);
-        val keywordsObservedProperty = parsed.read("$.keywordsObservedProperty[*]", typeRefStringString);
         val keywordsPlace = parsed.read("$.keywordsPlace[*]", typeRefStringString);
         val keywordsProject = parsed.read("$.keywordsProject[*]", typeRefStringString);
         val keywordsTheme = parsed.read("$.keywordTheme[*]", typeRefStringString);
         val keywordsOther = parsed.read("$.keywordsOther[*]", typeRefStringString);
         val allKeywords = new ArrayList<Map<String, String>>();
         allKeywords.addAll(keywordsInstrument);
-        allKeywords.addAll(keywordsObservedProperty);
         allKeywords.addAll(keywordsPlace);
         allKeywords.addAll(keywordsProject);
         allKeywords.addAll(keywordsTheme);

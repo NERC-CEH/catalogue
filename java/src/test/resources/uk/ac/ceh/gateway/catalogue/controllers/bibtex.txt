@@ -1,7 +1,7 @@
 @misc{1234:45553,
         doi = {1234:45553},
         url = {https://doi.org/1234:45553},
-     author = {Foo;Bar},
+     author = {Foo AND Bar},
   publisher = {BOB},
       title = {Land and Water},
        year = {2020}
