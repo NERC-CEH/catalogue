@@ -27,6 +27,16 @@ public class SearchQuery {
     public static final String DEFAULT_SEARCH_TERM = "*";
     private static final String RANDOM_DYNAMIC_FIELD_NAME = "random";
 
+    // Fields which need to have _raw appended before they can be used
+    // as a Solr sort option.  Keep in sync with managed-schema.
+    private static final List<String> RAW_SORT_FIELDS = List.of(
+        "title",
+        "description",
+        "lineage",
+        "objectives",
+        "infrastructureCapabilities"
+    );
+
     String endpoint;
     CatalogueUser user;
     @NotNull String term;
@@ -38,6 +48,8 @@ public class SearchQuery {
     GroupStore<CatalogueUser> groupStore;
     Catalogue catalogue;
     List<Facet> facets;
+    String sortField;
+    SolrQuery.ORDER sortOrder;
 
     public SearchQuery(
             String endpoint,
@@ -50,7 +62,9 @@ public class SearchQuery {
             List<FacetFilter> facetFilters,
             GroupStore<CatalogueUser> groupStore,
             Catalogue catalogue,
-            List<Facet> facets
+            List<Facet> facets,
+            String sortField,
+            SolrQuery.ORDER sortOrder
     ) {
         this.endpoint = endpoint;
         this.user = user;
@@ -63,6 +77,8 @@ public class SearchQuery {
         this.groupStore = groupStore;
         this.facets = facets;
         this.catalogue = catalogue;
+        this.sortField = sortField;
+        this.sortOrder = sortOrder;
     }
 
     public SolrQuery build(){
@@ -103,7 +119,9 @@ public class SearchQuery {
                 facetFilters,
                 groupStore,
                 catalogue,
-                facets
+                facets,
+                sortField,
+                sortOrder
             );
         }
         else {
@@ -130,7 +148,9 @@ public class SearchQuery {
                 facetFilters,
                 groupStore,
                 catalogue,
-                facets
+                facets,
+                sortField,
+                sortOrder
             );
         }
         else {
@@ -158,7 +178,9 @@ public class SearchQuery {
                 facetFilters,
                 groupStore,
                 catalogue,
-                facets
+                facets,
+                sortField,
+                sortOrder
             );
         }
         else {
@@ -192,7 +214,9 @@ public class SearchQuery {
                 newFacetFilters,
                 groupStore,
                 catalogue,
-                facets
+                facets,
+                sortField,
+                sortOrder
             );
         }
         else {
@@ -223,7 +247,9 @@ public class SearchQuery {
                 newFacetFilters,
                 groupStore,
                 catalogue,
-                facets
+                facets,
+                sortField,
+                sortOrder
             );
         }
         else {
@@ -265,6 +291,13 @@ public class SearchQuery {
 
         if(!facetFilters.isEmpty()) {
             facetFilters.forEach((f)-> builder.queryParam(FACET_QUERY_PARAM, f.asURIContent()));
+        }
+
+        if(sortField != null) {
+            builder.queryParam(SORT_FIELD_PARAM, sortField);
+            if (sortOrder != null) {
+                builder.queryParam(SORT_ORDER_PARAM, sortOrder);
+            }
         }
 
         return builder.build().toUriString();
@@ -342,8 +375,11 @@ public class SearchQuery {
         );
     }
 
-    private void setSortOrder(SolrQuery query){
-        if(DEFAULT_SEARCH_TERM.equals(term)){
+    private void setSortOrder(SolrQuery query) {
+        if (sortField != null) {
+            final String maybeRawSuffix = RAW_SORT_FIELDS.contains(sortField) ? "_raw" : "";
+            query.setSort(sortField + maybeRawSuffix, sortOrder);
+        } else if (DEFAULT_SEARCH_TERM.equals(term)) {
             query.setSort(getRandomFieldName(), SolrQuery.ORDER.asc);
         }
     }

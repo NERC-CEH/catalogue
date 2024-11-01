@@ -1,6 +1,7 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
+import org.apache.solr.client.solrj.SolrQuery;
 
 import java.util.List;
 
@@ -14,6 +15,8 @@ public interface Searcher {
         int page,
         int rows,
         List<FacetFilter> facetFilters,
-        String catalogueKey
+        String catalogueKey,
+        String sortField,
+        SolrQuery.ORDER sortOrder
     );
 }
