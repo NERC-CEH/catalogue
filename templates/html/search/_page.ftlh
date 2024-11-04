@@ -54,13 +54,13 @@
 </div>
 
 <div class="results__footer">
-<ul class="pager">
+<ul class="pagination">
   <#if prevPage?has_content>
-    <li class="previous"><a href="${prevPage}">&larr; Previous</a></li>
+    <li class="page-item previous-item"><a class="page-link" href="${prevPage}">&larr; Previous</a></li>
   </#if>
-  <li>Page ${page}</li>
+  <li class="page-item center-item">Page ${page}</li>
   <#if nextPage?has_content>
-    <li class="next"><a href="${nextPage}">Next &rarr;</a></li>
+    <li class="page-item next-item"><a class="page-link" href="${nextPage}">Next &rarr;</a></li>
   </#if>
 </ul>
 </div>
