@@ -54,8 +54,8 @@ export default ObjectInputView.extend({
         this.$('.identifier').val(ui.item.value)
         this.$('.read-only-identifier').val(infoString)
 
-        this.$('.relationshipSearch').addClass('hidden')
-        this.$('.relationshipRecord').removeClass('hidden')
+        this.$('.relationshipSearch').addClass('d-none')
+        this.$('.relationshipRecord').removeClass('d-none')
       }
     })
 
@@ -72,8 +72,8 @@ export default ObjectInputView.extend({
     if (this.existingRecord) {
       const infoString = await generateInformationString(this.model.get('target'))
       this.$('.read-only-identifier').val(infoString)
-      this.$('.relationshipRecord').removeClass('hidden')
-      this.$('.relationshipSearch').addClass('hidden')
+      this.$('.relationshipRecord').removeClass('d-none')
+      this.$('.relationshipSearch').addClass('d-none')
     }
 
     // If there is no relationship, add an option that's used to indicate that the user needs to choose a relationship

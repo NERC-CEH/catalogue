@@ -36,7 +36,7 @@ export default Backbone.View.extend({
   },
 
   showHide () {
-    this.$('.extended').toggleClass('hidden')
+    this.$('.extended').toggleClass('d-none')
     this.$('.showhide span').toggleClass('fa-chevron-down')
     this.$('.showhide span').toggleClass('fa-chevron-up')
   }
