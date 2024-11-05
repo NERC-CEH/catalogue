@@ -3,7 +3,6 @@
 @import "~bootstrap-colorpicker/dist/css/bootstrap-colorpicker.css";
 @import "~leaflet-draw/dist/leaflet.draw.css";
 @import "~leaflet/dist/leaflet.css";
-@import "~air-datepicker/air-datepicker.css";
 @import "~jquery-ui/dist/themes/base/jquery-ui.min.css";
 @import "~leaflet.markercluster/dist/MarkerCluster.css";
 @import "~leaflet.markercluster/dist/MarkerCluster.Default.css";
@@ -25,16 +24,6 @@
 
         .container-fluid {
             width: 100%;
-        }
-    }
-
-    #air-datepicker-global-container {
-        .air-datepicker-overlay.-active- {
-            z-index: 1005;
-        }
-
-        .air-datepicker {
-            z-index: 1006;
         }
     }
 }

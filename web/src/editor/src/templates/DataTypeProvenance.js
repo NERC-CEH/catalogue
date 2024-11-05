@@ -6,7 +6,7 @@ export default _.template(`
         <label for="input-creationDate">Created</label>
     </div>
     <div class="col-md-9">
-        <input data-name="creationDate" id="input-creationDate" class="editor-input" value="<%= data.creationDate %>">
+        <input type="date" data-name="creationDate" id="input-creationDate" class="editor-input">
     </div>
 </div>
 <div class="row">
@@ -14,7 +14,7 @@ export default _.template(`
         <label for="input-modificationDate">Modification Date</label>
     </div>
     <div class="col-md-9">
-        <input data-name="modificationDate" id="input-modificationDate" class="editor-input" value="<%= data.modificationDate %>">
+        <input type="date" data-name="modificationDate" id="input-modificationDate" class="editor-input">
     </div>
 </div>
 <div id="provenanceContributors"></div>

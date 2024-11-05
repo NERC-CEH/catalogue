@@ -1,14 +1,11 @@
 /* eslint no-new: "off" */
 import ObjectInputView from './ObjectInputView'
 import template from '../templates/temporalExtent'
-import AirDatepicker from 'air-datepicker'
-import localeEn from 'air-datepicker/locale/en'
 
-const datepickerOptions = {
-  dateFormat: 'yyyy-MM-dd',
-  locale: localeEn,
-  isMobile: true,
-  autoClose: true
+function formatDateForInput (date) {
+  if (!date) return ''
+  const d = new Date(date)
+  return d.toISOString().split('T')[0]
 }
 
 export default ObjectInputView.extend({
@@ -19,13 +16,17 @@ export default ObjectInputView.extend({
 
   render () {
     ObjectInputView.prototype.render.call(this)
-    new AirDatepicker(this.$('#input-begin')[0], {
-      ...datepickerOptions,
-      onSelect: ({ formattedDate }) => this.model.set('begin', formattedDate)
+
+    const beginDate = formatDateForInput(this.model.get('begin'))
+    const endDate = formatDateForInput(this.model.get('end'))
+    this.$('#input-begin').val(beginDate)
+    this.$('#input-end').val(endDate)
+
+    this.$('#input-begin').on('input', (event) => {
+      this.model.set('begin', this.value)
     })
-    new AirDatepicker(this.$('#input-end')[0], {
-      ...datepickerOptions,
-      onSelect: ({ formattedDate }) => this.model.set('end', formattedDate)
+    this.$('#input-end').on('input', (event) => {
+      this.model.set('end', this.value)
     })
   }
 })
