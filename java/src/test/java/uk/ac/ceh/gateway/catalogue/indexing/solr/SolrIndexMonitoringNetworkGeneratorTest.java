@@ -36,6 +36,7 @@ class SolrIndexMonitoringNetworkGeneratorTest {
         document.setEnvironmentalDomain(SolrIndexMonitoringGeneratorData.domainList);
         document.setKeywordsParameters(SolrIndexMonitoringGeneratorData.paramList);
         document.setResponsibleParties(SolrIndexMonitoringGeneratorData.orgList);
+        document.setOperationalStatus(SolrIndexMonitoringGeneratorData.operationalStatus);
 
         //When
         SolrIndex index = generator.generateIndex(document);
@@ -45,6 +46,8 @@ class SolrIndexMonitoringNetworkGeneratorTest {
         assertThat(SolrIndexMonitoringGeneratorData.expectedDomainList, equalTo(index.getEnvironmentalDomains()));
         assertThat(SolrIndexMonitoringGeneratorData.expectedParamList, equalTo(index.getKeywordsParameters()));
         assertThat(SolrIndexMonitoringGeneratorData.expectedOrgList, equalTo(index.getResponsibleParties()));
+        assertThat(SolrIndexMonitoringGeneratorData.expectedPointOfContactList, equalTo(index.getPointOfContact()));
+        assertThat(SolrIndexMonitoringGeneratorData.expectedOperationalStatus, equalTo(index.getOperationalStatus()));
 
     }
 }

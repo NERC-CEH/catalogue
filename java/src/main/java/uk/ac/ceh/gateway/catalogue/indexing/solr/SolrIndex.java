@@ -68,6 +68,8 @@ public class SolrIndex {
     private @Field List<String> keywordsParameters;
     private @Field List<String> operatingPeriod;
     private @Field String objectives;
+    private @Field List<String> pointOfContact;
+    private @Field String operationalStatus;
     private @Field List<String> responsibleParties;
     private @Field List<String> rightsHolder;
     private @Field List<String> ror;
