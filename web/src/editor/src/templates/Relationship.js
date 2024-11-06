@@ -17,7 +17,7 @@ export default _.template(`
             <input data-name="target" value="<%= data.target %>" id="relationship<%= data.index %>Target" class="form-control editor-input autocomplete" placeholder="Search the catalogue...">
         </div>
     </div>
-    <div class="relationshipRecord hidden">
+    <div class="relationshipRecord d-none">
         <div class="col-md-7">
             <input data-name="target" id="relationship<%= data.index %>Target" class="editor-input read-only-identifier" value="<%= data.target %>" disabled>
         </div>

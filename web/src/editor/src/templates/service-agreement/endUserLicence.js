@@ -11,7 +11,7 @@ export default _.template(`
         Other
     </label>
 </div>
-<div class="resourceConstraint hidden">
+<div class="resourceConstraint d-none">
     <textarea data-name="value" class="value editor-textarea" rows="2" placeholder="Please specify the licence"></textarea>
 </div>
 `)

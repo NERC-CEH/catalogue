@@ -9,7 +9,7 @@ export default _.template(`
         <input data-name="name" id="schema-name<%= data.index %>" class="editor-input" value="<%= data.name %>" placeholder="name of field/column" />
     </div>
 </div>
-<div class="extended hidden" id="schemaDetail<%= data.index %>">
+<div class="extended d-none" id="schemaDetail<%= data.index %>">
     <div class="row">
         <div class="col-sm-2">
             <label for="schema-title<%= data.index %>">Title</label>

@@ -22,7 +22,7 @@ export default ObjectInputView.extend({
         this.$('input.ogl').prop('checked', true)
       } else {
         this.$('input.other').prop('checked', true)
-        this.$resourceConstraint.removeClass('hidden')
+        this.$resourceConstraint.removeClass('d-none')
         if (hasValue) {
           this.$('.value').val(this.model.get('value'))
         }
@@ -33,7 +33,7 @@ export default ObjectInputView.extend({
   },
 
   setOgl () {
-    this.$resourceConstraint.addClass('hidden')
+    this.$resourceConstraint.addClass('d-none')
     this.model.set({
       value: 'This resource is available under the terms of the Open Government Licence',
       code: 'license',
@@ -42,7 +42,7 @@ export default ObjectInputView.extend({
   },
 
   setOther () {
-    this.$resourceConstraint.removeClass('hidden')
+    this.$resourceConstraint.removeClass('d-none')
     this.model.unset('uri')
     this.model.unset('value')
   },
