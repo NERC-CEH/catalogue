@@ -51,8 +51,8 @@
 
 <#if docType?has_content>
   {
-    "@type":"${docType}",
-    "name":"${title}",
+    "@type":<@displayLiteral docType/>,
+    "name":<@displayLiteral title/>,
 
     <#if docType == "Dataset">
       <#if isAttached!false>
@@ -77,12 +77,12 @@
     </#if>
 
     <#if resourceStatus != "Deleted">
-      <#if description?has_content>"description":"${description?replace("\n", " ")}", </#if>
+      <#if description?has_content>"description":<@displayLiteral description/>, </#if>
 
       <#if alternateTitles?has_content>
         "alternateName":[
         <#list alternateTitles as altTitle>
-          "${altTitle}"<#sep>,</#sep>
+          <@displayLiteral altTitle/><#sep>,</#sep>
         </#list>
         ],
       </#if>
@@ -160,7 +160,7 @@
           <#list incomingCitations as citation>
             {
             "@type": "CreativeWork"
-            <#if citation.description?has_content>,"creditText": "${citation.description?replace("\n", " ")?trim}"</#if>
+            <#if citation.description?has_content>,"creditText": <@displayLiteral citation.description/></#if>
             <#if citation.url?has_content>,"url": "${citation.url?trim}"</#if>
             }<#sep>,</#sep>
           </#list>
@@ -278,7 +278,7 @@
         <#t>{
            <#t>"@type": "DefinedTerm",
            <#t>"@id": "${keyword.uri?trim}",
-           <#t>"name": "${keyword.value?trim}"
+           <#t>"name": <@displayLiteral keyword.value/>
            <#t><#if subjectScheme?has_content>,"inDefinedTermSet": "${schemeURI}"</#if>
         }
       <#else>
@@ -290,16 +290,23 @@
 
 <#macro displayObservedProperties props>
   <#list props as op>
+      <#assign opLabel ="unknown">
+      <#if op.title?has_content>
+        <#assign opLabel = op.title?trim>
+      <#elseif op.value?has_content>
+        <#assign opLabel = op.value?trim>
+      </#if>
+
       <#if op.uri?has_content>
         {
           "@type": "StatisticalVariable",
           "@id": "${op.uri?trim}",
-          "name": "${op.value?trim}"
+          "name": "${opLabel}"
           <#if op.unitsUri?has_content>,"unitCode": "${op.unitsUri?trim}"</#if>
           <#if op.units?has_content>,"unitText": "${op.units?trim}"</#if>
         }
       <#else>
-        "${op.value?trim}"
+      <@displayLiteral opLabel/>
       </#if>
       <#sep>,</#sep>
     </#list>
@@ -325,3 +332,9 @@
     ],
   </#if>
 </#macro>
+
+<#macro displayLiteral string>
+  <#--Ensure literals do not contain " characters or line breaks-->
+  <#t>"${string?trim?replace("\"","'")?replace("\n"," ")}"
+</#macro>
+

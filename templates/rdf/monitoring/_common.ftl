@@ -3,7 +3,7 @@
 
 <#macro displayLiteral string>
   <#--Ensure literals do not contain " characters-->
-  <#t>${string?replace("\"","'")?replace("\n"," ")}
+  <#t>"${string?trim?replace("\"","'")?replace("\n"," ")}"
 </#macro>
 
 <#macro common rdftype="" other="" prefixed=true>
@@ -20,7 +20,7 @@
     a ${rdftype} ;
     dct:title "${title}" ;
     <#if description?has_content>
-      dct:description "<@displayLiteral description />" ;
+      dct:description <@displayLiteral description /> ;
     </#if>
     <#if boundingBox?has_content>
       ef:boundingBox "POLYGON${boundingBox.coordinates?replace('[[[','((')?replace(']]]','))')?replace('[^]], ',' ','r')?replace(']', '')?replace('[', '')}"^^geo:wktLiteral ;

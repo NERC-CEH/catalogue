@@ -14,7 +14,7 @@
 
 <#if accessLimitation?has_content>
     dct:accessRights [ a dct:RightsStatement ;
-      odrs:attributionText "<@displayLiteral accessLimitation.value />" ;
+      odrs:attributionText <@displayLiteral accessLimitation.value /> ;
       <#if accessLimitation.uri?has_content>odrs:attributionUrl <${accessLimitation.uri?trim}> </#if>
       ] ;
 </#if>

@@ -17,7 +17,24 @@
 </#if>
 
 <#if observedProperty?has_content>
-  <@keywordList observedProperty "Observed properties" true/>
+  <dt>Observed properties</dt>
+  <dd>
+    <#list observedProperty?sort_by("value") as item>
+      <#assign opLabel="unknown">
+      <#if item.title?has_content>
+        <#assign opLabel=item.title?trim>
+      <#elseif item.value?has_content>
+        <#assign opLabel=item.value?trim>
+      </#if>
+
+      <#if item.uri?has_content>
+        <span><abbr title="${item.uri?trim}">${opLabel}</abbr></span>
+        <a href="${item.uri?trim}" target="_blank" rel="noopener noreferrer" class="externalVocabularyLink"><sup class="fa-solid fa-xs fa-arrow-up-right-from-square"></sup></a>
+      <#else>
+        <span>${opLabel}</span>
+      </#if>
+      <#sep><br></#sep>
+    </#list>
 </#if>
 
 <#macro keywordList list listTitle="Keywords" commaseparated=false>
@@ -31,9 +48,9 @@
 
 <#macro displayLinkedKeyword value="" uri="">
   <#if uri?has_content>
-    <span class="bob"><abbr title="${uri?trim}">${value?trim}</abbr></span>
+    <span><abbr title="${uri?trim}">${value?trim}</abbr></span>
     <a href="${uri?trim}" target="_blank" rel="noopener noreferrer" class="externalVocabularyLink"><sup class="fa-solid fa-xs fa-arrow-up-right-from-square"></sup></a>
   <#else>
-    <span class="bob">${value?trim}</span>
+    <span>${value?trim}</span>
   </#if>
 </#macro>
