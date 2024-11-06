@@ -1,12 +1,7 @@
 /* eslint no-new: "off" */
 import ObjectInputView from './ObjectInputView'
 import template from '../templates/DatasetReferenceDate'
-
-function formatDateForInput (date) {
-  if (!date) return ''
-  const d = new Date(date)
-  return d.toISOString().split('T')[0]
-}
+import { formatDateForInput } from '../utils'
 
 export default ObjectInputView.extend({
 
