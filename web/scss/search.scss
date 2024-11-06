@@ -309,5 +309,20 @@ main {
 
     .results__footer {
         margin-top: auto;
+
+        .pagination {
+            .previous-item, .next-item{
+                width: max-content;
+                white-space: nowrap;
+            }
+            .center-item {
+                width: 100%;
+                text-align: center;
+            }
+            .page-link {
+                padding: 6px 20px;
+                border-radius: 18px;
+            }
+        }
     }
 }
