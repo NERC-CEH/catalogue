@@ -11,7 +11,7 @@
         <#include "imp/_admin.ftlh">
       </div>
       <div class="col-sm-8 col-sm-pull-4">
-        <dl class="dl-horizontal">
+        <dl class="dl-row">
         <#if caseStudy?? >
           <dt>Link</dt><dd><a href="${caseStudy.href}">${caseStudy.title}</a></dd>
         </#if>

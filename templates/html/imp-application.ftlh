@@ -14,7 +14,7 @@
         <@blocks.links jena.models(uri) "Models" />
       </div>
       <div class="col-sm-8 col-sm-pull-4">
-        <dl class="dl-horizontal">
+        <dl class="dl-row">
           <#if relevanceToCaMMP?has_content>
           <dt>Relevance to CaMMP</dt><dd>${relevanceToCaMMP}</dd>
           </#if>
@@ -70,7 +70,7 @@
         <#if models?? >
           <h2>Models</h2>
           <#list models as model>
-          <dl class="dl-horizontal">
+          <dl class="dl-row">
             <#if model.name?has_content>
             <dt>Name</dt><dd>${model.name}</dd>
             </#if>

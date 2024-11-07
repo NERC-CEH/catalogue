@@ -13,7 +13,7 @@
         <@blocks.links jena.modelApplications(uri) "Model uses" />
       </div>
       <div class="col-sm-8 col-sm-pull-4">
-        <dl class="dl-horizontal">
+        <dl class="dl-row">
           <#if version?has_content>
           <dt>Version</dt><dd>${version}</dd>
           </#if>
@@ -116,7 +116,7 @@
         </#if>
 
         <h2>Quality Assurance</h2>
-        <dl class="dl-horizontal">
+        <dl class="dl-row">
           <dt>Developer Testing</dt><dd><#if developerTesting?has_content>${developerTesting?then('Yes', 'No')}<#else>Unknown</#if></dd>
           <dt>Internal Peer Review</dt><dd><#if internalPeerReview?has_content>${internalPeerReview?then('Yes', 'No')}<#else>Unknown</#if></dd>
           <dt>External Peer Review</dt><dd><#if externalPeerReview?has_content>${externalPeerReview?then('Yes', 'No')}<#else>Unknown</#if></dd>
