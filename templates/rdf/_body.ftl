@@ -1,21 +1,22 @@
 :${id}
-  dct:title "<@displayLiteral title />" ;
+  dct:title <@displayLiteral title /> ;
 
   <@identifiers resourceIdentifiers />
 
   <#if datacitable?string=='true' && citation?has_content>
-      dct:bibliographicCitation "${citation.authors?join(', ')} (${citation.year?string("0")}). <@displayLiteral citation.title />. ${citation.publisher}. ${citation.url?trim}" ;
+      <#assign citationString =  citation.authors?join(', ') + " (" + citation.year?string("0") +"}. " + citation.title + ". " + citation.publisher + ". " + citation.url?trim>
+      dct:bibliographicCitation <@displayLiteral citationString/>
   </#if>
 
   <#if resourceStatus != "Deleted">
     <#if description?has_content>
-      dct:description "<@displayLiteral description />" ;
+      dct:description <@displayLiteral description /> ;
     </#if>
 
     <#if lineage?has_content>
       dct:provenance [
         a dct:ProvenanceStatement ;
-        rdfs:label "<@displayLiteral lineage />"
+        rdfs:label <@displayLiteral lineage />
       ] ;
     </#if>
 
@@ -70,7 +71,7 @@
     </#if>
 
     <#if observedProperty?has_content>
-      sdo:variableMeasured <@keywordList observedProperty/> ;
+      sdo:variableMeasured <@opList /> ;
     </#if>
 
     <#if funding?has_content>
@@ -110,7 +111,7 @@
     </#if>
 
     <#if observedProperty?has_content>
-      <@keywordDetail observedProperty />
+      <@opDetail />
     </#if>
 
     <@fundingDetail />

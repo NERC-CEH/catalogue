@@ -5,8 +5,8 @@
 </#if>
 
 <#macro displayLiteral string>
-  <#--Ensure literals do not contain " characters-->
-  <#t>${string?replace("\"","'")?replace("\n"," ")}
+  <#--Ensure literals do not contain " characters or line breaks-->
+  <#t>"${string?trim?replace("\"","'")?replace("\n"," ")}"
 </#macro>
 
 <#macro contactList contacts prefix="c">
@@ -85,7 +85,7 @@
         <#assign fundIdentifier ="\l" + fund.awardURI?trim+ "\g">
       </#if>
 
-      ${fundIdentifier?trim} a prov:Activity ; <#if fund.awardTitle?has_content>rdfs:label "<@displayLiteral fund.awardTitle />"</#if> .
+      ${fundIdentifier?trim} a prov:Activity ; <#if fund.awardTitle?has_content>rdfs:label <@displayLiteral fund.awardTitle /></#if> .
     </#list>
   </#if>
 </#macro>
@@ -104,7 +104,35 @@
 <#macro keywordDetail keywords>
   <#list keywords as kw>
     <#if kw.uri?has_content>
-      <${kw.uri?trim}> a skos:Concept; skos:prefLabel "<@displayLiteral kw.value />"; rdfs:label "<@displayLiteral kw.value />".
+      <${kw.uri?trim}> a skos:Concept; skos:prefLabel <@displayLiteral kw.value />; rdfs:label <@displayLiteral kw.value />.
+    </#if>
+  </#list>
+</#macro>
+
+<#macro opList >
+  <#list observedProperty as op>
+    <#if op.uri?has_content>
+      <#assign keyword ="\l" + op.uri?trim+ "\g">
+    <#elseif op.title?has_content>
+      <#assign keyword ='"' + op.title?replace("\"", "") + '"'>
+    <#else>
+      <#assign keyword ='"' + op.value?replace("\"", "") + '"'>
+    </#if>
+    ${keyword}<#sep>,</#sep><#t>
+  </#list>
+</#macro>
+
+<#macro opDetail>
+  <#list observedProperty as op>
+    <#assign opLabel = "unknown">
+    <#if op.title?has_content>
+      <#assign opLabel = op.title>
+    <#elseif op.value?has_content>
+      <#assign opLabel = op.value>
+    </#if>
+
+    <#if op.uri?has_content>
+      <${op.uri?trim}> a skos:Concept;skos:prefLabel <@displayLiteral opLabel />; rdfs:label <@displayLiteral opLabel />.
     </#if>
   </#list>
 </#macro>
@@ -132,7 +160,7 @@
       </#if>
 
       ${citationIdentifier?trim} a <http://purl.org/vocab/frbr/core#Work> ;
-        <#if citation.description?has_content>rdfs:label "<@displayLiteral citation.description />"; </#if>
+        <#if citation.description?has_content>rdfs:label <@displayLiteral citation.description />; </#if>
         .
     </#list>
   </#if>
