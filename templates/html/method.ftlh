@@ -67,7 +67,7 @@
 
             <#if additionalInfo?? && additionalInfo?has_content>
               <@displaykey "Additional information">
-              <dl class="dl-horizontal">
+              <dl class="dl-row">
                 <#list additionalInfo as info>
                    <dt><#if info.key?? && info.key?has_content>${info.key}<#else><span class="text-muted">missing</span></#if></dt>
                    <dd><#if info.value?? && info.value?has_content>${info.value}<#else><span class="text-muted">missing</span></#if></dd>

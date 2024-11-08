@@ -111,7 +111,7 @@
 
                   <#if topicCategories?? || descriptiveKeywords?? || keywords?? ||  inspireTheme?? || funding??>
                     <h2>Additional metadata</h2>
-                    <dl id="otherInfo" class="dl-horizontal">
+                    <dl id="otherInfo" class="dl-row">
                       <#include "document/_tags.ftlh">
                       <#include "document/_funding.ftlh">
                         <#if metadataDateTime?has_content>

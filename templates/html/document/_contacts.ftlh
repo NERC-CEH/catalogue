@@ -48,7 +48,7 @@
 <#if otherContacts?has_content || rightsHolders?has_content>
   <div id="document-otherContacts">
   <h2><a id="otherContacts"></a>Other contacts</h2>
-  <dl class="dl-horizontal">
+  <dl class="dl-row">
 
   <#if rightsHolders?has_content>
     <dt>Rights holder<#if rightsHolders?size gt 1>s</#if></dt>

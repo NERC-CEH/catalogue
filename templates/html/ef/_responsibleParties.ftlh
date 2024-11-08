@@ -1,7 +1,7 @@
 <#if responsibleParties?has_content>
   <div id="document-responsibleParties">
     <h2><a id="responsibleParties"></a>Responsible Parties</h2>
-    <dl class="dl-horizontal">
+    <dl class="dl-row">
 
     <#if responsibleParties?has_content>
       <#list responsibleParties as rp>
