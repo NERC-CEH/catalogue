@@ -1,7 +1,7 @@
 <#if boundingBoxes?has_content || spatialRepresentationTypes?? || spatialReferenceSystems??>
   <div id="spatial">
   <h2>Spatial information</h2>
-    <dl class="dl-horizontal">
+    <dl class="dl-row">
 
       <#if boundingBoxes?has_content>
         <dt>Study area</dt>

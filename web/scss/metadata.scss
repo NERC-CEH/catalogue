@@ -420,7 +420,7 @@ body {
     }
 
     #document-otherContacts {
-        dl.dl-horizontal {
+        dl.dl-row {
 
             dd,
             dt {
@@ -587,7 +587,7 @@ body {
     }
 
     // Prevent definition lists from wrapping the term
-    .dl-horizontal dt {
+    .dl-row dt {
         white-space: normal;
     }
 
@@ -714,23 +714,13 @@ body {
     }
 
     @media (min-width: 768px) {
-        .dl-horizontal dt {
-            width: 15em;
-            white-space: normal;
-        }
-
-        .dl-horizontal dd {
-            margin-left: 16em;
-            margin-bottom: 0.3em;
-        }
-
         .alert--linked-eidc {
             grid-template-columns: 240px auto;
         }
     }
 
     @media (min-width: 468px) {
-        .dl-horizontal dd {
+        .dl-row dd {
             margin-bottom: 1em;
         }
     }
@@ -917,24 +907,50 @@ body {
     }
 }
 
-dl.dl-horizontal {
-    &--compact {
-        margin-left: 5rem;
+dl.dl-row {
+    display: flex;
+    flex-wrap: wrap;
 
-        dt {
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+    dt, dd {
+        margin: 0;
+        padding: 0.5rem 0;
+    }
 
-        dd {
-            margin-bottom: 0.3rem !important;
+    dt {
+        flex: 0 0 40%;
+        max-width: 40%;
+        text-align: right;
+        font-weight: bold;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        padding-right: 2rem;
+    }
+
+    dd {
+        flex: 0 0 60%;
+        max-width: 60%;
+        text-align: left;
+        margin-left: 0;
+    }
+}
+
+@media screen and (max-width: 767px) {
+    dl.dl-row {
+        margin-left: 0;
+        flex-direction: column;
+        justify-content: flex-start;
+        dt, dd {
+            width: 100%;
+            text-align: left;
+            padding-right: 0;
         }
     }
 }
 
 @media screen and (min-width: 768px) {
     .ceh-model {
-        dl.dl-horizontal {
+        dl.dl-row {
             &--compact {
                 margin-left: 0;
             }
