@@ -1,7 +1,7 @@
 import _ from 'underscore'
 
 export default _.template(`
-<div class="input-group">
+<div id="map-style-selector" class="input-group">
   <input type="text" class="form-control" value="<%= data.type %>" <%= data.disabled%>/>
   <div class="input-group-btn">
     <button type="button" class="btn btn-light border dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" <%= data.disabled%>>
@@ -17,6 +17,6 @@ export default _.template(`
   </div>
 </div>
 <div class="input-group">
-  <input type="color" id="picker" style="background-color: white;float: right;width: 150px;">
+  <input type="color" id="picker" class="form-control form-control-color">
 </div>
 `)

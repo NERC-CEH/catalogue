@@ -1,6 +1,5 @@
 @use "sass:color";
 
-@import "~bootstrap-colorpicker/dist/css/bootstrap-colorpicker.css";
 @import "~leaflet-draw/dist/leaflet.draw.css";
 @import "~leaflet/dist/leaflet.css";
 @import "~air-datepicker/air-datepicker.css";
@@ -35,6 +34,12 @@
 
         .air-datepicker {
             z-index: 1006;
+        }
+    }
+
+    #map-style-selector {
+        button.dropdown-toggle::after {
+            content: none;
         }
     }
 }

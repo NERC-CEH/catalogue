@@ -93,7 +93,6 @@
         "air-datepicker": "^3.4.0",
         "backbone": "^1.5.0",
         "bootstrap": "^5.3.3",
-        "bootstrap-colorpicker": "^2.5.3",
         "deparam.js": "^3.0.16",
         "dropzone": "^6.0.0-beta.2",
         "filesize": "^10.0.12",
