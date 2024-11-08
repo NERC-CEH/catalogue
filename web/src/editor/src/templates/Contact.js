@@ -49,7 +49,7 @@ export default _.template(`
     </div>
 </div>
 
-<div class="col-sm-10 col-sm-offset-2 d-none d-sm-block"><hr></div>
+<div class="col-sm-10 offset-sm-2 d-none d-sm-block"><hr></div>
 
 <div class="row">
     <div class="col-sm-2">
@@ -66,7 +66,7 @@ export default _.template(`
     </div>
 </div>
 
-<div class="col-sm-10 col-sm-offset-2 d-none d-sm-block"><hr></div>
+<div class="col-sm-10 offset-sm-2 d-none d-sm-block"><hr></div>
 
 <div class="row">
     <div class="col-sm-2">
@@ -77,7 +77,7 @@ export default _.template(`
     </div>
 </div>
 
-<div class="col-sm-10 col-sm-offset-2 d-none d-sm-block"><hr></div>
+<div class="col-sm-10 offset-sm-2 d-none d-sm-block"><hr></div>
 
 <div class="row">
     <div class="col-sm-2">

@@ -13,6 +13,10 @@
         display: none;
     }
 
+    hr {
+        opacity: 1;
+    }
+
     footer {
         display: none;
     }
@@ -115,7 +119,7 @@
 
         .editor-remove {
             display: grid;
-            grid-template-columns: auto 50px;
+            grid-template-columns: auto 38px;
             gap: 0.6em;
 
             >div {

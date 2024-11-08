@@ -1,6 +1,7 @@
 import _ from 'underscore'
 
 export default _.template(`
+<div class="row mx-1">
     <div class="col-xs-2 col-lg-1">
         <label for="input-creationDate">Created</label><br>
     </div>
@@ -31,4 +32,5 @@ export default _.template(`
     <div class="col-xs-10 col-md-4 col-lg-3">
         <input data-name="supersededDate" id="input-supersededDate" class="editor-input" autocomplete="off" value="<%= data.supersededDate %>">
     </div>
+</div>
 `)
