@@ -130,6 +130,8 @@
     <field name="operatingPeriod" type="pdateranges"/>
     <field name="objectives" type="text_general" multiValued="false"/>
     <field name="responsibleParties" type="keywords"/>
+    <field name="pointOfContact" type="keywords"/>
+    <field name="operationalStatus" type="keywords_lowercase" multiValued="false"/>
     <field name="ror" type="rors"/>
     <field name="saPhysicalState" type="keywords"/>
     <field name="saSpecimenType" type="keywords"/>

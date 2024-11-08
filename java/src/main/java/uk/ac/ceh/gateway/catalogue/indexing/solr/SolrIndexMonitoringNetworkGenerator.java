@@ -32,6 +32,8 @@ public class SolrIndexMonitoringNetworkGenerator implements IndexGenerator<Monit
             .setEnvironmentalDomains(grab(document.getEnvironmentalDomain(), Keyword::getValue))
             .setKeywordsParameters(grab(document.getKeywordsParameters(), Keyword::getValue))
             .setResponsibleParties(grab(document.getResponsibleParties(), ResponsibleParty::getOrganisationName))
+            .setPointOfContact(grab(document.getResponsibleParties(), ResponsibleParty::getPointOfContact))
+            .setOperationalStatus(document.getOperationalStatus() == null? "Unknown" : document.getOperationalStatus())
             ;
     }
 }

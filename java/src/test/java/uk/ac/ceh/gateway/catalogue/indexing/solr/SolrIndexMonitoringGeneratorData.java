@@ -11,6 +11,9 @@ public class SolrIndexMonitoringGeneratorData {
     static String objectives = "objective";
     static String expectedObjectives = "objective";
 
+    static String operationalStatus = "Active";
+    static String expectedOperationalStatus = "Active";
+
     static Keyword facilityType = Keyword.builder().value("facility_type").build();
     static String expectedFacilityType = "facility_type";
 
@@ -33,12 +36,15 @@ public class SolrIndexMonitoringGeneratorData {
     );
 
     static List<ResponsibleParty> orgList = Arrays.asList(
-        ResponsibleParty.builder().organisationName("org_1").build(),
-        ResponsibleParty.builder().organisationName("org_2").build()
+        ResponsibleParty.builder().organisationName("org_1").role("pointOfContact").build(),
+        ResponsibleParty.builder().organisationName("org_2").role("funder").build()
     );
     static List<String> expectedOrgList = Arrays.asList(
         "org_1",
         "org_2"
+    );
+    static List<String> expectedPointOfContactList = Arrays.asList(
+        "org_1"
     );
 
     static List<TimePeriod> periodList = Arrays.asList(

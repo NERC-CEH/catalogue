@@ -289,6 +289,8 @@ public class CatalogueServiceConfig {
                 .facetKey("resourceType")
                 .facetKey("environmentalDomains")
                 .facetKey("facilityType")
+                .facetKey("pointOfContact")
+                .facetKey("operationalStatus")
                 .documentType(MONITORING_ACTIVITY_TYPE)
                 .documentType(MONITORING_FACILITY_TYPE)
                 .documentType(MONITORING_NETWORK_TYPE)

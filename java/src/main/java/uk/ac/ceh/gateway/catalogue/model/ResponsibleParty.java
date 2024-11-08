@@ -57,6 +57,10 @@ public class ResponsibleParty {
         return toTitlecase(role);
     }
 
+    public String getPointOfContact() {
+        return role.equals("pointOfContact")? organisationName : "";
+    }
+
     private String toTitlecase(String camelCase) {
         StringBuilder result = new StringBuilder();
 

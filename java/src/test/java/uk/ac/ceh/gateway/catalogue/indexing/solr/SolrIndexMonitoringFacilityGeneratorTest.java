@@ -37,6 +37,7 @@ class SolrIndexMonitoringFacilityGeneratorTest {
         document.setKeywordsParameters(SolrIndexMonitoringGeneratorData.paramList);
         document.setResponsibleParties(SolrIndexMonitoringGeneratorData.orgList);
         document.setOperatingPeriod(SolrIndexMonitoringGeneratorData.periodList);
+        document.setOperationalStatus(SolrIndexMonitoringGeneratorData.operationalStatus);
 
         //When
         SolrIndex index = generator.generateIndex(document);
@@ -47,6 +48,8 @@ class SolrIndexMonitoringFacilityGeneratorTest {
         assertThat(SolrIndexMonitoringGeneratorData.expectedParamList, equalTo(index.getKeywordsParameters()));
         assertThat(SolrIndexMonitoringGeneratorData.expectedOrgList, equalTo(index.getResponsibleParties()));
         assertThat(SolrIndexMonitoringGeneratorData.expectedPeriodList, equalTo(index.getOperatingPeriod()));
+        assertThat(SolrIndexMonitoringGeneratorData.expectedPointOfContactList, equalTo(index.getPointOfContact()));
+        assertThat(SolrIndexMonitoringGeneratorData.expectedOperationalStatus, equalTo(index.getOperationalStatus()));
 
     }
 }
