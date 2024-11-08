@@ -2,7 +2,7 @@ import _ from 'underscore'
 
 export default _.template(`
 <div class="row">
-    <div class="col-sm-3 datalabel">
+    <div class="col-md-3 datalabel">
       <% if(data.label) { %>
       <label for="input-<%= data.modelAttribute %>">
             <%= data.label %>
@@ -15,6 +15,6 @@ export default _.template(`
             <%= data.helpText %>
         </div>
     </div>
-    <div class="col-sm-9 dataentry"></div>
+    <div class="col-md-9 dataentry"></div>
 </div>
 `)

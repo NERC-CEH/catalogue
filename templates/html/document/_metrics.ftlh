@@ -86,7 +86,7 @@
           <#if totalDownloads gt 0 >
             <span>Download numbers valid from ${downloadsFrom?date?string['dd MMMM yyyy']}</span>
           </#if>
-          <span class="small">(information prior to this was not collected)<span>
+          <span class="small">(information prior to this was not collected)</span>
         </div>
       </#if>
       <#-- END OF more information about the dates -->

@@ -27,13 +27,13 @@ export default _.template(`
         </div>
     </div>
     <div class="row">
-        <div class="col-sm-2 col-xs-12">
+        <div class="col-sm-2 col-12">
             <label for="schema-type<%= data.index %>">Type</label>
         </div>
-        <div class="col-sm-4 col-xs-12">
+        <div class="col-sm-4 col-12">
             <input list="typeList" data-name="type" id="schema-type<%= data.index %>" class="editor-input" value="<%= data.type %>" placeholder="" />
         </div>
-        <div class="col-sm-2 col-xs-12">
+        <div class="col-sm-2 col-12">
             <div class="d-none d-sm-block text-right">
                 <label for="schema-format<%= data.index %>">Format</label>
             </div>
@@ -41,7 +41,7 @@ export default _.template(`
                 <label for="schema-format<%= data.index %>">Format</label>
             </div>
         </div>
-        <div class="col-sm-4 col-xs-12">
+        <div class="col-sm-4 col-12">
             <input list="formatList" data-name="format" id="schema-format<%= data.index %>" class="editor-input" value="<%= data.format %>" placeholder="recommended for dates and times" />
         </div>
     </div>

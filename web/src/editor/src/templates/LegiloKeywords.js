@@ -2,7 +2,7 @@ import _ from 'underscore'
 
 export default _.template(`
 <div class="row">
-  <div class="col-lg-9 col-md-10 col-sm-12 col-xs-12 col-lg-offset-3">
+  <div class="col-lg-9 col-md-10 col-sm-12 col-12 col-lg-offset-3">
     <div class="mb-3">
       <h4 class="mb-3 keyword-table-header text-center" style="display: none;"><strong>Suggested Keywords</strong></h4>
 
@@ -12,10 +12,10 @@ export default _.template(`
         <table class="table table-bordered table-striped keywords-table" style="display: none;">
           <thead>
             <tr>
-              <th class="col-xs-1">Select</th>
-              <th class="col-xs-2">Term</th>
-              <th class="col-xs-6">URI</th>
-              <th class="col-xs-1">Confidence</th>
+              <th class="col-1">Select</th>
+              <th class="col-2">Term</th>
+              <th class="col-6">URI</th>
+              <th class="col-1">Confidence</th>
             </tr>
           </thead>
           <tbody class="keywords-table-body">

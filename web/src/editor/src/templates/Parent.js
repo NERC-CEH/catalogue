@@ -8,7 +8,7 @@ export default _.template(`
     class='row'
   <% } %>
 >
-    <div class="col-sm-3">
+    <div class="col-md-3">
       <label for="input-<%= data.modelAttribute %>">
           <%= data.label %>
           <% if(data.helpText) { %>
@@ -20,7 +20,7 @@ export default _.template(`
           <%= data.helpText %>
       </div>
     </div>
-    <div class="col-sm-9">
+    <div class="col-md-9">
       <div class="existing container-fluid"></div>
     </div>
 </div>
