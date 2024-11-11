@@ -12,13 +12,13 @@ export default _.template(`
     <div class="col-md-1">
         <label for="relationship<%= data.index %>Target">Target</label>
     </div>
-    <div class="relationshipSearch">
-        <div class="col-md-7">
+    <div class="relationshipSearch col-md-7">
+        <div>
             <input data-name="target" value="<%= data.target %>" id="relationship<%= data.index %>Target" class="form-control editor-input autocomplete" placeholder="Search the catalogue...">
         </div>
     </div>
-    <div class="relationshipRecord d-none">
-        <div class="col-md-7">
+    <div class="relationshipRecord col-md-7 d-none">
+        <div>
             <input data-name="target" id="relationship<%= data.index %>Target" class="editor-input read-only-identifier" value="<%= data.target %>" disabled>
         </div>
     </div>
