@@ -1,10 +1,10 @@
 import _ from 'underscore'
 
 export default _.template(`
-<div class="row">
-  <div class="col-lg-9 col-md-10 col-sm-12 col-12 col-lg-offset-3">
-    <div class="mb-3">
-      <h4 class="mb-3 keyword-table-header text-center" style="display: none;"><strong>Suggested Keywords</strong></h4>
+<div class="row justify-content-center mt-3">
+  <div class="col-lg-8 col-12">
+    <div class="mb-2">
+      <h4 class="mb-2 keyword-table-header text-center" style="display: none;"><strong>Suggested Keywords</strong></h4>
 
       <div class="no-keywords-message text-center" style="display: none;"></div>
 
