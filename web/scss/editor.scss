@@ -1,6 +1,5 @@
 @use "sass:color";
 
-@import "~bootstrap-colorpicker/dist/css/bootstrap-colorpicker.css";
 @import "~leaflet-draw/dist/leaflet.draw.css";
 @import "~leaflet/dist/leaflet.css";
 @import "~jquery-ui/dist/themes/base/jquery-ui.min.css";
@@ -24,6 +23,12 @@
 
         .container-fluid {
             width: 100%;
+        }
+    }
+
+    #map-style-selector {
+        button.dropdown-toggle::after {
+            content: none;
         }
     }
 }
