@@ -401,7 +401,7 @@ class UploadControllerTest {
         //given
         givenUserHasPermissionToUpload();
         MockMultipartFile multipartFile = dataCsv();
-        doThrow(new FileExitsException(ID, multipartFile.getOriginalFilename()))
+        doThrow(new FileExistsException(ID, multipartFile.getOriginalFilename()))
             .when(storageService)
             .store(ID, multipartFile);
 

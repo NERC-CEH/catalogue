@@ -50,7 +50,7 @@ public class FileSystemStorageServiceStoreTest {
     @SneakyThrows
     @Test
     public void fileAlreadyExists() {
-        Assertions.assertThrows(FileExitsException.class, () -> {
+        Assertions.assertThrows(FileExistsException.class, () -> {
             //given
             Path newFolder = Files.createDirectory(directory.resolve(ID));
             Path file = newFolder.resolve(filename);
