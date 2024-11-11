@@ -16,6 +16,11 @@ export default Backbone.View.extend({
       options.files.add(new File({ name: file.name }))
     })
     dropzone.on('error', (file, errorMessage) => options.messages.add(new Backbone.Model(errorMessage)))
+    dropzone.on('sending', (file, _xhr, data) => {
+      if (file.fullPath) {
+        data.append('filename', file.fullPath)
+      }
+    })
     dropzone.on('complete', file => dropzone.removeFile(file))
   }
 })

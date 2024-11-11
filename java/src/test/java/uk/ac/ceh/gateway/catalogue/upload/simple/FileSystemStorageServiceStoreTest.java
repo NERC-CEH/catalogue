@@ -36,7 +36,8 @@ public class FileSystemStorageServiceStoreTest {
         //given
 
         //when
-        service.store(ID, dataCsv(getClass()));
+        val file = dataCsv(getClass());
+        service.store(ID, file, file.getOriginalFilename());
 
         //then
         assertTrue(Files.exists(expected));
@@ -56,7 +57,8 @@ public class FileSystemStorageServiceStoreTest {
             Path file = newFolder.resolve(filename);
             Files.createFile(file);
 
-            service.store(ID, dataCsv(getClass()));
+            val csvFile = dataCsv(getClass());
+            service.store(ID, csvFile, csvFile.getOriginalFilename());
 
             //then
             fail("Should throw FileExistsException");
@@ -70,8 +72,10 @@ public class FileSystemStorageServiceStoreTest {
         assertFalse(Files.exists(directory.resolve(ID)));
 
         //when
-        service.store(ID, dataCsv(getClass()));
-        service.store(ID, fileWithSpacesCsv(getClass()));
+        val fileCsv = dataCsv(getClass());
+        val withSpaces = fileWithSpacesCsv(getClass());
+        service.store(ID, fileCsv, fileCsv.getOriginalFilename());
+        service.store(ID, withSpaces, withSpaces.getOriginalFilename());
 
         //then
         assertTrue(Files.exists(expected));
