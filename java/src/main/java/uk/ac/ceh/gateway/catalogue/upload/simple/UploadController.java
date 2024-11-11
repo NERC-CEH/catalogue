@@ -111,7 +111,7 @@ public class UploadController {
     @ExceptionHandler
     @ResponseBody
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorMessage handleFileAlreadyExists(FileExitsException ex) {
+    public ErrorMessage handleFileAlreadyExists(FileExistsException ex) {
         return handleException(ex);
     }
 

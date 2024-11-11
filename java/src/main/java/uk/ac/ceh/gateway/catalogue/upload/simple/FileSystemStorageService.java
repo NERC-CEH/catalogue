@@ -44,11 +44,11 @@ public class FileSystemStorageService implements StorageService {
 
             val uploadFile = Paths.get(datastore, id, file.getOriginalFilename());
             if (Files.exists(uploadFile)) {
-                throw new FileExitsException(id, file.getOriginalFilename());
+                throw new FileExistsException(id, file.getOriginalFilename());
             }
 
             file.transferTo(uploadFile.toFile());
-        } catch (FileExitsException ex) {
+        } catch (FileExistsException ex) {
             throw ex;
         } catch (Exception ex) {
             throw new StorageServiceException(id, ex.getMessage(), ex);
