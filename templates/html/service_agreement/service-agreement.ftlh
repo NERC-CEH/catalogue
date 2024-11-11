@@ -22,65 +22,63 @@
                 </h1>
             </div>
 
-            <div class="text-end">
-                <div class="row d-print-none adminPanel" role="toolbar">
-                    <#if state == "agreed">
-                        <div class="btn-group btn-group-sm">
-                            <button type="button" class="btn btn-light border btn-wide" onClick="window.print()">Print</button>
-                        </div>
+            <div class="text-end d-print-none adminPanel" role="toolbar">
+                <#if state == "agreed">
+                    <div class="btn-group btn-group-sm">
+                        <button type="button" class="btn btn-light border btn-wide" onClick="window.print()">Print</button>
+                    </div>
+                </#if>
+                <#if !isHistorical()>
+                    <#assign canChangeState = true>
+                    <#if serviceAgreementQuality??>
+                        <#assign
+                            SA_checks = serviceAgreementQuality.check(id)
+                            problems = SA_checks.getProblems()
+                            errors = func.filter(problems, "severity", "ERROR")
+                        >
+                        <#if errors?? && errors?has_content>
+                            <#assign canChangeState = false>
+                        </#if>
                     </#if>
-                    <#if !isHistorical()>
+                    <#if getState() != "draft">
                         <#assign canChangeState = true>
-                        <#if serviceAgreementQuality??>
-                            <#assign
-                                SA_checks = serviceAgreementQuality.check(id)
-                                problems = SA_checks.getProblems()
-                                errors = func.filter(problems, "severity", "ERROR")
-                            >
-                            <#if errors?? && errors?has_content>
-                                <#assign canChangeState = false>
-                            </#if>
-                        </#if>
-                        <#if getState() != "draft">
-                            <#assign canChangeState = true>
-                        </#if>
-                        <#if permission.userCanEditServiceAgreement(id)>
-                            <div class="btn-group btn-group-sm">
-                                <button type="button" class="btn btn-light border edit-control btn-wide" data-document-type="service-agreement">Edit</button>
-                                <button type="button" class="btn btn-light border dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
-                                  <span class="caret"></span>
-                                  <span class="visually-hidden">Toggle Dropdown</span>
-                                </button>
-                              <ul class="dropdown-menu dropdown-menu-end">
-                                <li>
-                                  <a class="dropdown-item" href="/service-agreement/${id}/permission">
-                                    <i class="fa-solid fa-users"></i>
-                                    Permissions
-                                  </a>
-                                </li>
-                              </ul>
-                            </div>
-                            <#list getModelLinks() as link>
-                                <#if link.rel == 'history'>
-                                    <a href="${link.href}" class="btn btn-light border btn-wide btn-sm">${link.title}</a>
-                                </#if>
-                            </#list>
-                        </#if>
-                        <#if canChangeState>
-                            <#list transitions as transition>
-                                <form method="post" action="/service-agreement/${id}/form-publication/${transition.id}">
-                                    <p><button type="submit" class="btn btn-light border btn-wide btn-sm" title="${transition.helpText}">${transition.title}</button></p>
-                                </form>
-                            </#list>
-                        </#if>
-                    <#elseif  isHistorical()>
+                    </#if>
+                    <#if permission.userCanEditServiceAgreement(id)>
+                        <div class="btn-group btn-group-sm">
+                            <button type="button" class="btn btn-light border edit-control btn-wide" data-document-type="service-agreement">Edit</button>
+                            <button type="button" class="btn btn-light border dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+                              <span class="caret"></span>
+                              <span class="visually-hidden">Toggle Dropdown</span>
+                            </button>
+                          <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                              <a class="dropdown-item" href="/service-agreement/${id}/permission">
+                                <i class="fa-solid fa-users"></i>
+                                Permissions
+                              </a>
+                            </li>
+                          </ul>
+                        </div>
                         <#list getModelLinks() as link>
-                            <#if link.title == 'History'>
+                            <#if link.rel == 'history'>
                                 <a href="${link.href}" class="btn btn-light border btn-wide btn-sm">${link.title}</a>
                             </#if>
                         </#list>
                     </#if>
-                </div>
+                    <#if canChangeState>
+                        <#list transitions as transition>
+                            <form method="post" action="/service-agreement/${id}/form-publication/${transition.id}">
+                                <p><button type="submit" class="btn btn-light border btn-wide btn-sm" title="${transition.helpText}">${transition.title}</button></p>
+                            </form>
+                        </#list>
+                    </#if>
+                <#elseif  isHistorical()>
+                    <#list getModelLinks() as link>
+                        <#if link.title == 'History'>
+                            <a href="${link.href}" class="btn btn-light border btn-wide btn-sm">${link.title}</a>
+                        </#if>
+                    </#list>
+                </#if>
             </div>
 
             <#if permission.userCanEditServiceAgreement(id) && !isHistorical()>

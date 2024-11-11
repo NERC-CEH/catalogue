@@ -102,7 +102,7 @@
 
             <#if review?? && review?has_content>
               <h3>Review</h3>
-              <dl class="dl-horizontal">
+              <dl class="dl-row">
               <#list review as r>
                 <#if (r.reviewDate?? && r.reviewDate?has_content) || (r.reviewProcess?? && r.reviewProcess?has_content)>
                   <dt>
@@ -241,7 +241,7 @@
 </#macro>
 
 <#macro displayRelations key label>
-  <dl class="dl-horizontal"><dt>${label}</dt><dd>
+  <dl class="dl-row"><dt>${label}</dt><dd>
   <#list key as item>
       <a href=" ${item.href}">${item.title}</a>
     <#sep><br></#sep>

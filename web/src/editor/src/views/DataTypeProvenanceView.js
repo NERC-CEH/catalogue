@@ -1,35 +1,31 @@
 /* eslint no-new: "off" */
-import _ from 'underscore'
 import ObjectInputView from './ObjectInputView'
 import template from '../templates/DataTypeProvenance'
 import ParentStringView from './ParentStringView'
-import AirDatepicker from 'air-datepicker'
-import localeEn from 'air-datepicker/locale/en'
+import { formatDateForInput } from '../utils'
 
-const datepickerOptions = {
-  dateFormat: 'yyyy-MM-dd',
-  locale: localeEn,
-  position: 'top left'
-}
 export default ObjectInputView.extend({
 
   initialize (options) {
     this.template = template
     ObjectInputView.prototype.initialize.call(this, options)
-    const that = this
-    new AirDatepicker('#input-creationDate', _.extend({}, datepickerOptions, {
-      onSelect ({ formattedDate }) {
-        that.model.set('creationDate', formattedDate)
-      }
-    }))
-    new AirDatepicker('#input-modificationDate', _.extend({}, datepickerOptions, {
-      onSelect ({ formattedDate }) {
-        that.model.set('modificationDate', formattedDate)
-      }
-    }))
+
+    const creationDate = formatDateForInput(this.model.get('creationDate'))
+    const modificationDate = formatDateForInput(this.model.get('modificationDate'))
+    this.$('#input-creationDate').val(creationDate)
+    this.$('#input-modificationDate').val(modificationDate)
+
+    this.$('#input-creationDate').on('input', (event) => {
+      this.model.set('creationDate', event.target.value)
+    })
+
+    this.$('#input-modificationDate').on('input', (event) => {
+      this.model.set('modificationDate', event.value)
+    })
+
     new ParentStringView({
       el: this.$('#provenanceContributors'),
-      model: that.model,
+      model: this.model,
       modelAttribute: 'contributors',
       label: 'Contributors'
     })
