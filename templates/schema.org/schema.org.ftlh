@@ -321,7 +321,7 @@
           <#t>"@id": "${part.id}",
           <#t>"@type": "${part.type}",
           <#t>"name": "${part.id}",
-          <#t>"encodingFormat": "${part.encodingFormat}",
+          <#if part.encodingFormat?? && part.encodingFormat?has_content><#t>"encodingFormat": "${part.encodingFormat}",</#if>
           <#t>"lastModified": "${part.lastModified}",
           <#t>"bytes": ${part.bytes?long?c},
           <#t>"contentUrl": "${part.contentUrl}"
