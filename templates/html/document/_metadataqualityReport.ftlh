@@ -5,9 +5,9 @@
         <#assign warnings = func.filter(problems, "severity", "WARNING")>
         <#assign infos = func.filter(problems, "severity", "INFO")>
 
-        <div class="panel panel-info">
+        <div class="card card-info">
             <#if errors?? && errors?has_content>
-                <div class="panel-heading MDquality_error">
+                <div class="card-header MDquality_error">
                     <div class="row">
                         <div class="col-sm-3 col-xs-12"> <i class="fa-solid fa-triangle-exclamation" > </i> ERRORS<br></div>
                         <div class="col-sm-9 d-none d-sm-block"><small>These should always be fixed</small></div>
@@ -20,7 +20,7 @@
                 </ul>
             </#if>
             <#if warnings?? && warnings?has_content>
-                <div class="panel-heading MDquality_warning">
+                <div class="card-header MDquality_warning">
                     <div class="row">
                         <div class="col-sm-3 col-xs-12"><i class="fa-solid fa-exclamation" > </i> WARNINGS</div>
                         <div class="col-sm-9 d-none d-sm-block"><small>These are usually problems but in some circumstances they <i><b><u>MAY</u></b></i> be acceptable - please check carefully</small></div>
@@ -33,7 +33,7 @@
                 </ul>
             </#if>
             <#if infos?? && infos?has_content>
-                <div class="panel-heading MDquality_info">
+                <div class="card-header MDquality_info">
                     <div class="row">
                         <div class="col-sm-3 col-xs-12"><i class="fa-solid fa-circle-info"> </i> OTHER ISSUES</div>
                         <div class="col-sm-9 d-none d-sm-block"><small>For absolute best practice, these issues should be addressed</small></div>

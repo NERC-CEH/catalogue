@@ -43,11 +43,11 @@
           </div>
         </div>
       </form>
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title">File Upload Information</h3>
+      <div class="card card-default">
+        <div class="card-header">
+          <h3 class="card-title">File Upload Information</h3>
         </div>
-        <div class="panel-body">
+        <div class="card-body">
           Supported File Types:
           <ul>
             <li>GEMINI XML</li>
