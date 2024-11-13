@@ -118,14 +118,14 @@ body {
 
         .alert-In-progress,
         .alert-Embargoed {
-            @extend .alert !optional;
-            @extend .alert-info !optional;
+            @include alert;
+            @include alert-info;
         }
 
         .alert-Superseded,
         .alert-Withdrawn {
-            @extend .alert !optional;
-            @extend .alert-danger !optional;
+            @include alert;
+            @include alert-danger;
         }
     }
 
@@ -201,9 +201,9 @@ body {
 
         a {
             margin-left: 1em;
-            @extend .btn !optional;
-            @extend .btn-danger !optional;
-            @extend .btn-sm !optional;
+            @include btn;
+            @include btn-danger;
+            @include btn-sm;
         }
     }
 
@@ -248,7 +248,7 @@ body {
         .licenceText {
             .ogl-logo {
                 margin-top: 0.3em;
-                @extend .float-end !optional;
+                float: right;
             }
         }
     }
@@ -263,7 +263,7 @@ body {
 
             .licenceText {
                 margin-top: 3em;
-                @extend .text-center !optional;
+                text-align: center;
 
                 img {
                     display: block;
@@ -395,7 +395,7 @@ body {
                 }
 
                 &-download {
-                    @extend .w-100 !optional;
+                    width: 100%;
                     font-weight: 600;
                     background-color: var(--primary-colour);
 
@@ -407,7 +407,7 @@ body {
                 }
 
                 &-supporting {
-                    @extend .w-100 !optional;
+                    width: 100%;
                     background-color: color.adjust($brand-success, $lightness: 15%, $space: hsl);
 
                     &:hover,
@@ -782,7 +782,7 @@ body {
     }
 
     .browseGraphic {
-        @extend .float-end !optional;
+        float: right;
         margin: 0 0 1em 2em;
         max-width: 30em;
         max-height: 30em;

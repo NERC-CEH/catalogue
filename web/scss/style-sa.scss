@@ -1,3 +1,4 @@
+@import "theme";
 
 .editor-textarea {
     height: 100%;
@@ -11,8 +12,8 @@
     .browseGraphic {
         max-width:350px;
         max-height:250px;
-        margin:0 0 2em 2em ;
-        @extend .float-end !optional;
+        margin:0 0 2em 2em;
+        float: right;
     }
 
     .key-value {

@@ -1,11 +1,5 @@
 @use "sass:color";
 
-@import "~leaflet-draw/dist/leaflet.draw.css";
-@import "~leaflet/dist/leaflet.css";
-@import "~jquery-ui/dist/themes/base/jquery-ui.min.css";
-@import "~leaflet.markercluster/dist/MarkerCluster.css";
-@import "~leaflet.markercluster/dist/MarkerCluster.Default.css";
-
 .edit-mode {
     a#atlwdg-trigger {
         display: none;
@@ -98,15 +92,15 @@
 
 
         .editor-input {
-            @extend .form-control !optional;
-            @extend .form-control-sm !optional;
+            @include form-control;
+            @include form-control-sm;
             color: #000;
             appearance: auto;
         }
 
         .editor-textarea {
-            @extend .form-control !optional;
-            @extend .form-control-sm !optional;
+            @include form-control;
+            @include form-control-sm;
             height: auto;
             color: #000;
         }
@@ -140,32 +134,32 @@
         }
 
         .editor-button {
-            @extend .btn !optional;
-            @extend .btn-light !optional;
-            @extend .border !optional;
-            @extend .btn-sm !optional;
-            @extend .float-end !optional;
+            @include btn;
+            @include btn-light;
+            border: 1px solid #dee2e6;
+            @include btn-sm;
+            float: right;
         }
 
         .editor-button-xs {
-            @extend .btn !optional;
-            @extend .btn-light !optional;
-            @extend .border !optional;
-            @extend .btn-sm !optional;
-            @extend .float-end !optional;
+            @include btn;
+            @include btn-light;
+            border: 1px solid #dee2e6;
+            @include btn-sm;
+            float: right;
         }
 
         .editor-button-remove {
-            @extend .btn !optional;
-            @extend .btn-light !optional;
-            @extend .border !optional;
-            @extend .btn-sm !optional;
+            @include btn;
+            @include btn-light;
+            border: 1px solid #dee2e6;
+            @include btn-sm;
         }
 
         .editor-help {
-            @extend .form-text !optional;
-            @extend .d-print-none !optional;
-            @extend .collapse !optional;
+            @include form-text;
+            display: none;
+            @include collapse;
             font-size: 12px;
             line-height: 1.5;
         }
@@ -173,7 +167,7 @@
         .component {
             border-bottom: 1px solid color.adjust($gray-light, $lightness: 25%, $space: hsl);
             padding-bottom: 1.25em;
-            @extend .mb-3 !optional;
+            margin-bottom: 1rem;
             display: none;
 
             &.visible {
@@ -249,10 +243,10 @@
             }
 
             .btnSchemaDetail {
-                @extend .btn !optional;
-                @extend .btn-light !optional;
-                @extend .border !optional;
-                @extend .btn-sm !optional;
+                @include btn;
+                @include btn-light;
+                border: 1px solid #dee2e6;
+                @include btn-sm;
                 text-align: right;
 
                 span:before {
@@ -297,7 +291,7 @@
         }
 
         .dropdown {
-            @extend .float-end !optional;
+            float: right;
             display: inline-block;
         }
 
@@ -314,7 +308,7 @@
 
         .keyword-add {
             display: inline-block;
-            @extend .float-start !optional;
+            float: left;
         }
 
         .keywords {
