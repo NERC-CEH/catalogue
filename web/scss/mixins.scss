@@ -1,3 +1,4 @@
+@use 'sass:color';
 
 @mixin btn {
     display: inline-block;
@@ -14,14 +15,14 @@
     transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out;
 
     &:hover {
-        background-color: darken(#f8f9fa, 10%);
-        border-color: darken(#f8f9fa, 10%);
+        background-color: color.adjust(#f8f9fa, $lightness: -10%);
+        border-color: color.adjust(#f8f9fa, $lightness: -10%);
     }
 
     &:focus,
     &:active {
-        background-color: darken(#f8f9fa, 10%);
-        border-color: darken(#f8f9fa, 10%);
+        background-color: color.adjust(#f8f9fa, $lightness: -10%);
+        border-color: color.adjust(#f8f9fa, $lightness: -10%);
     }
 
 }
