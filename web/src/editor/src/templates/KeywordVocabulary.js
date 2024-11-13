@@ -2,10 +2,10 @@ import _ from 'underscore'
 
 export default _.template(`
 <div class="row keywordPicker">
-    <div class="col-sm-6 col-xs-12">
+    <div class="col-sm-6 col-12">
         <input class="form-control editor-input autocomplete" placeholder="Start typing to search controlled vocabularies">
     </div>
-    <div class="col-sm-6 col-xs-12 vocabularyPicker"></div>
+    <div class="col-sm-6 col-12 vocabularyPicker"></div>
 </div>
 <div class="row">
     <div class="col-sm-7">

@@ -143,8 +143,8 @@
 
 <#macro simplerow label>
   <div class="row">
-    <div class="col-sm-3 col-xs-12"><div class="view-label">${label}</div></div>
-    <div class="col-sm-9 col-xs-12">
+    <div class="col-sm-3 col-12"><div class="view-label">${label}</div></div>
+    <div class="col-sm-9 col-12">
       <#nested>
     </div>
   </div>

@@ -293,6 +293,7 @@
             border-color: color.adjust($gray-light, $lightness: 15%, $space: hsl);
             border-radius: 5px;
             padding: 4px;
+            margin: 0.5rem 0;
         }
 
         .dropdown {
@@ -394,7 +395,7 @@
 
         .editor-menu {
             min-height: 0;
-            flex: 0 0 250px;
+            flex: 0 0 clamp(200px, 20vw, 300px);
 
             >div {
                 position: sticky;
