@@ -66,7 +66,7 @@ main {
         }
 
         .form-control.search-facet {
-            display:none;
+            display: none;
             opacity: 85%;
             position: sticky;
             top: 0;
@@ -257,10 +257,7 @@ main {
                 margin-top: -2px;
             }
 
-            &--pending {
-                border-left: darkorange 10px solid;
-                background-color: rgba(0, 0, 0, 0.1);
-            }
+            /*
 
             &--draft {
                 border-left: darkred 10px solid;
@@ -273,6 +270,29 @@ main {
                 .result__description {
                     color: #999;
                 }
+            }
+            */
+
+            &--pending,
+            &--draft {
+                margin-inline-start: 3em;
+                transform: scale(.95);
+                opacity: 0.9;
+            }
+
+            &--draft {
+                opacity: 0.7;
+                outline:2px gray dashed;
+            }
+            .opstatus {display:none;}
+
+            &.opstatus-Inactive {
+                background-color: lighten(@gray-light, 30%);
+                background-image: repeating-linear-gradient(315deg,
+                        transparent,
+                        transparent 18px,
+                        rgba(0, 0, 0, 0.15) 20px);
+            .opstatus {display: inline-block;}
             }
 
             &--Available,

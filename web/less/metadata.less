@@ -1000,13 +1000,28 @@ dl.dl-horizontal {
 
 /********** Monitoring Records *************/
 .metadata-monitoring {
-    .key-value {
-        >div {
-            padding: .5em 0;
+
+    &.status-inactive {
+        --_inactiveColor: orange;
+        outline: 11px solid var(--_inactiveColor);
+        outline-offset: -11px;
+        h1:after {
+            content: "(INACTIVE)";
+            font-size: 70%;
+            font-weight: 600;
+            color: var(--_inactiveColor);
+            margin-inline-start: 0.25em;
         }
 
-        .key {
-            font-weight: 600;
+    }
+
+    .key-value-container {
+        container-name: key-value-container;
+        container-type: inline-size;
+
+        .key-value {
+            display: grid;
+            grid-template-columns: 1fr;
         }
     }
 
@@ -1021,7 +1036,7 @@ dl.dl-horizontal {
         width: 100%;
     }
 
-    .networkMap {
+    .childFeatures {
         display: grid;
         gap: 1em;
         grid-template-columns: 1fr;
@@ -1054,9 +1069,18 @@ dl.dl-horizontal {
     }
 
     .metadata-monitoring {
-
-        .networkMap {
+        .childFeatures {
             grid-template-columns: auto 35ch;
+        }
+    }
+}
+
+@container key-value-container (width > 35ch) {
+    .metadata-monitoring {
+        .key-value-container {
+            .key-value {
+                grid-template-columns: 20ch 1fr;
+            }
         }
     }
 }

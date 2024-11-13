@@ -20,29 +20,36 @@
 
 <div class="results__list">
 <#list results as result>
-  <a href="/${docroot}/${result.identifier}" class="result result--${result.state} <#if (result.resourceStatus??)>result--${result.resourceStatus}</#if>" data-location="${(result.locations?join('|'))!}" id="${result.identifier}">
+  <a href="/${docroot}/${result.identifier}"
+    class="result result--${result.state}
+    <#if (result.operationalStatus??)>opstatus-${result.operationalStatus}</#if>
+    <#if (result.resourceStatus??)>result--${result.resourceStatus?lower_case}</#if>" data-location="${(result.locations?join('|'))!}" id="${result.identifier}">
 
     <div class="result__tags">
+      <div class="state">${(codes.lookup("publication.state", result.state)!)!?upper_case!''}</div>
+
+      <div class="opstatus">
+        <#if (result.operationalStatus??)>
+          ${result.operationalStatus}
+        </#if>
+      </div>
+
       <div class="recordType">
-      <#if result.documentType?? && result.documentType == "LINK_DOCUMENT" >
-        <i class="fa-solid fa-link"></i> Linked
-      </#if>
-      ${result.recordType!""}
+        <#if result.documentType?? && result.documentType == "LINK_DOCUMENT" >
+          <i class="fa-solid fa-link"></i> Linked
+        </#if>
+        ${result.recordType!""}
       </div>
 
       <#if result.resourceStatus?? >
           <div class="resourceStatus">${result.resourceStatus}</div>
       </#if>
-
-      <div class="state">${(codes.lookup("publication.state", result.state)!)!?upper_case!''}</div>
-
-      <#if result.condition?? >
-        <div class="condition">${result.condition}</div>
-      </#if>
-
     </div>
 
-    <div class="result__title">${result.title}</div>
+    <div class="result__title">
+      ${result.title}
+    </div>
+
     <div class="result__description">${result.shortenedDescription}</div>
 
     <#if result.incomingCitationCount gt 0 >

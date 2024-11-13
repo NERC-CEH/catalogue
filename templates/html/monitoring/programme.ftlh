@@ -7,10 +7,21 @@
     </@m.keyValue>
   </#if>
 
+  <#assign CombinedGeometriesOutput>
+    <@m.programmeCombinedGeometries "http://onto.ceh.ac.uk/EF#utilises" />
+  </#assign>
+
+  <div class="childFeatures">
+    <#if CombinedGeometriesOutput?has_content>
+     <div class="featureMap">${CombinedGeometriesOutput}</div>
+    </#if>
+    <div class="featureList">
+      <@m.relationships "http://onto.ceh.ac.uk/EF#utilises" "Uses"  />
+    </div>
+  </div>
+
 
   <div class="relationships">
-    <@m.relationships "http://onto.ceh.ac.uk/EF#utilises" "Uses"/>
-
     <@m.relationships  "http://onto.ceh.ac.uk/EF#supersedes" "Supersedes" />
     <@m.inverseRelationships  "http://onto.ceh.ac.uk/EF#supersedes" "Superseded by"/>
 

@@ -5,12 +5,12 @@
     <@m.inverseRelationshipCombinedGeometries "http://onto.ceh.ac.uk/EF#belongsTo" />
   </#assign>
 
-  <div class="networkMap">
+  <div class="childFeatures">
     <#if inverseRelationshipCombinedGeometriesOutput?has_content>
-     <div>${inverseRelationshipCombinedGeometriesOutput}</div>
+     <div class="featureMap">${inverseRelationshipCombinedGeometriesOutput}</div>
     </#if>
     <div class="facilitiesList">
-      <@m.inverseRelationships "Contains" "http://onto.ceh.ac.uk/EF#belongsTo"/>
+      <@m.inverseRelationships "http://onto.ceh.ac.uk/EF#belongsTo" "Members"  />
     </div>
   </div>
 

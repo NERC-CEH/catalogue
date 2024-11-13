@@ -16,9 +16,21 @@ export default _.template(`
 <div class="results__list">
 <% _.each(results, function(result) { %>
 
-    <a class="result result--<%=result.state%> <% if (result.resourceStatus != '') { %>result--<%=result.resourceStatus%><% } %>" id="<%=result.identifier%>" href="/documents/<%=result.identifier%>">
+    <a class="result result--<%=result.state%> <% if (result.operationalStatus != '') { %>opstatus-<%=result.operationalStatus%><% } %> <% if (result.resourceStatus != '') { %>result--<%=result.resourceStatus%><% } %>" id="<%=result.identifier%>" href="/documents/<%=result.identifier%>">
 
         <div class="result__tags">
+            <div class="state">
+                <% if(result.state == 'draft') { %>
+                    <span class="text-draft"><b>DRAFT</b></span>
+                <% } else if(result.state == 'pending') { %>
+                    <span class="text-pending"><b>PENDING PUBLICATION</b></span>
+                <% } %>
+            </div>
+
+            <% if (result.operationalStatus != '') {  %>
+                <div class="opstatus"><%=result.operationalStatus%></div>
+            <% } %>
+
             <div class="recordType">
             <% if (result.documentType != '' && result.documentType == "LINK_DOCUMENT") {  %>
             <i class="fa-solid fa-link"></i> Linked
@@ -30,20 +42,12 @@ export default _.template(`
                 <div class="resourceStatus"><%=result.resourceStatus%></div>
             <% } %>
 
-            <div class="state">
-                <% if(result.state == 'draft') { %>
-                    <span class="text-draft"><b>DRAFT</b></span>
-                <% } else if(result.state == 'pending') { %>
-                    <span class="text-pending"><b>PENDING PUBLICATION</b></span>
-                <% } %>
-            </div>
-
-            <% if (typeof result.condition != "undefined" && result.condition != '') {  %>
-                <div class="condition"><%=result.condition%></div>
-            <% } %>
         </div>
 
-        <div class="result__title"><%=result.title%></div>
+        <div class="result__title">
+          <%=result.title%>
+        </div>
+
         <div class="result__description"><%=result.shortenedDescription%></div>
 
         <% if(result.incomingCitationCount != 0) { %>
