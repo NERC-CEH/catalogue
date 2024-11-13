@@ -37,7 +37,7 @@
         <meta name="og.description" content="${description?replace("\n", " ")}">
       </#if>
       <title>${title}<#if catalogue?has_content> - ${catalogue.title}</#if></title>
-      <link rel="stylesheet" type="text/css" href="/static/css/style-<#if catalogue?has_content>${catalogue.id}<#else>${catalogues.defaultCatalogue().id}</#if>.css">
+      <link rel="stylesheet" type="text/css" href="/static/css/main.css">
       <#if canonical?has_content>
         <link rel="canonical" href="${canonical}"/>
       </#if>

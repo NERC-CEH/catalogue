@@ -113,7 +113,7 @@
 
         .editor-remove {
             display: grid;
-            grid-template-columns: auto 38px;
+            grid-template-columns: auto 50px;
             gap: 0.6em;
 
             >div {
@@ -252,7 +252,7 @@
                 @extend .btn !optional;
                 @extend .btn-light !optional;
                 @extend .border !optional;
-                @extend .btn-sm !optional;;
+                @extend .btn-sm !optional;
                 text-align: right;
 
                 span:before {
