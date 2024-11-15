@@ -6,8 +6,8 @@
 </#if>
 
 <div id="document-thirdParty">
-    <div class="panel panel-default d-print-none" id="document-distribution">
-        <div class="panel-body">
+    <div class="card card-default d-print-none" id="document-distribution">
+        <div class="card-body">
             <#assign distributor = "a third party">
             <#if dataDistributors?has_content>
                 <#if dataDistributors?first.organisationName?has_content>
@@ -18,7 +18,7 @@
                     <#assign distributor = " <a href='mailto:" + dataDistributors?first.email + "' title='" + dataDistributors?first.email + "'>" + distributor + "</a>" >
                 </#if>
             </#if>
-            <p class="panel-title"> <i class="fa-solid fa-circle-info"> </i> This is a dataset managed by ${distributor}</p>
+            <p class="card-title"> <i class="fa-solid fa-circle-info"> </i> This is a dataset managed by ${distributor}</p>
 
             <#if distributionURLs?has_content>
                 <div class="signpost-url">To access the data visit <a href="${distributionURLs?first.url}">${distributionURLs?first.url}</a></div>

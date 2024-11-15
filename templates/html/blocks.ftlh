@@ -33,9 +33,9 @@ Create a box of links
 -->
 <#macro links links title>
   <#list links>
-    <div class="panel panel-default" id="document-order">
-      <div class="panel-heading"><p class="panel-title">${title}</p></div>
-      <div class="panel-body">
+    <div class="card card-default" id="document-order">
+      <div class="card-header"><p class="card-title">${title}</p></div>
+      <div class="card-body">
         <ul class="list-unstyled">
           <#items as link>
             <li><a href="${link.href}">${link.title}</a></li>
