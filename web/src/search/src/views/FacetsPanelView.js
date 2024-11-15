@@ -16,7 +16,10 @@ export default Backbone.View.extend({
     if (!searchFacets.data('select2')) {
       searchFacets.select2({
         theme: 'bootstrap-5',
-        width: '100%',
+        width: () => {
+          const userAgent = navigator.userAgent.toLowerCase()
+          return (userAgent.indexOf('firefox') > -1) ? '97%' : '99%'
+        },
         selectionCssClass: 'select2--large',
         dropdownCssClass: 'select2--large',
         templateSelection: e => { return e.text.split(' (')[0] }
