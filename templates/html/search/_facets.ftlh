@@ -5,32 +5,21 @@
   Where as the rest of the template matches up with
     /web/src/scripts/templates/facetsPanelTemplate.js
 -->
-<#macro facetResults results>
-  <ul>
-    <#list results as facet>
-      <#if facet.name?has_content && facet.name != 'Unknown' >
-        <li>
-          <a href="${facet.url}" title="${facet.name} (${facet.count})">${facet.name} <small class="facet-count">(${facet.count})</small></a>
-          <#if facet.active >
-            <a href="${facet.url}" title="${facet.name} (${facet.count})">
-              <span class="fa-solid fa-xmark"></span>
-            </a>
-          </#if>
-          <#if facet.subFacetResults?has_content>
-            <@facetResults facet.subFacetResults/>
-          </#if>
-        </li>
+<#macro facetResults facet>
+  <select style="display: none;" class="form-select search-facet" multiple="multiple" data-placeholder="search ${facet.displayName?lower_case}">
+    <#list facet.results as facetItem>
+      <#if facetItem.name?has_content && facetItem.name != 'Unknown' >
+        <option <#if facetItem.active> selected="selected"</#if> value="${facetItem.url}">${facetItem.name} (${facetItem.count})</option>
       </#if>
     </#list>
-  </ul>
+  </select>
 </#macro>
 
 <#list facets as facet>
   <#if facet.results?size gt 0>
     <div class="facet">
       <div class="facet-header">${facet.displayName}</div>
-      <input placeholder="search ${facet.displayName?lower_case}" id="search-facet-${facet.displayName?replace(' ', '-')}" class="form-control search-facet input-sm">
-      <@facetResults facet.results/>
+      <@facetResults facet/>
     </div>
   </#if>
 </#list>
