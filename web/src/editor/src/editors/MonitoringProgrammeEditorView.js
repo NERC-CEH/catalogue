@@ -14,8 +14,7 @@ import {
   ResourceIdentifierView,
   ContactView,
   PurposeOfCollectionView,
-  SupplementalLinkView,
-  DeploymentView
+  SupplementalLinkView
 } from '../views'
 import { MultipleDate, EnvironmentalDomain, PurposeOfCollection, Contact, Supplemental } from '../models'
 import { BoundingBox, BoundingBoxView } from '../geometryMap'
@@ -278,15 +277,6 @@ export default EditorView.extend({
           helpText: `
 <p>Links to other records</p>
 `
-        }),
-
-        new ParentView({
-          model: this.model,
-          modelAttribute: 'deployments',
-          ModelType: Supplemental,
-          multiline: true,
-          label: 'Deployments',
-          ObjectInputView: DeploymentView
         })
       ]
     }

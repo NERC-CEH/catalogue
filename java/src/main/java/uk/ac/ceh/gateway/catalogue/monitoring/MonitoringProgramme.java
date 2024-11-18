@@ -32,7 +32,6 @@ public class MonitoringProgramme extends AbstractMetadataDocument implements Wel
     private List<TimePeriod> operatingPeriod;
     private List<Keyword> environmentalDomain, purposeOfCollection, keywordsParameters;
     private List<Supplemental> linksData, linksOther;
-    private List<MonitoringDeployment> deployments;
 
     @Override
     public List<String> getWKTs() {
