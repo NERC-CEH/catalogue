@@ -106,7 +106,7 @@
           <#if resourceType.value != 'aggregate' && resourceType.value != 'collection'>
             <div class="d-flex justify-content-end alternativeViews">
               <div class="btn-group">
-                <button aria-expanded="false" aria-haspopup="true" data-bs-toggle="dropdown" class="dropdown-toggle btn btn-light border" type="button">
+                <button aria-expanded="false" aria-haspopup="true" data-bs-toggle="dropdown" class="dropdown-toggle btn" type="button">
                   View record as
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
@@ -162,13 +162,16 @@
 
                 <#if topicCategories?? || descriptiveKeywords?? || inspireTheme?? || funding?? >
                   <h2>Additional metadata</h2>
-                  <dl id="otherInfo" class="dl-row">
+                  <div>
                     <#include "document/_tags.ftlh">
                     <#include "document/_funding.ftlh">
                     <#if metadataDateTime?has_content>
-                      <dt>Last updated</dt><dd>${metadataDateTime?datetime.iso?datetime?string['dd MMMM yyyy  HH:mm']}</dd>
+                      <div class="row key-value">
+                        <div class="col-sm-3 key">Last updated</div>
+                        <div class="col-sm-9 value">${metadataDateTime?datetime.iso?datetime?string['dd MMMM yyyy  HH:mm']}</div>
+                      </div>
                     </#if>
-                  </dl>
+                  </div>
                 </#if>
 
               </div>

@@ -21,18 +21,12 @@
         }
     }
 
-
-
-    .keyvalue {
+    .key-value {
         display: grid;
         margin: 1em 0;
 
         .key {
             font-weight: bolder;
-        }
-
-        dd {
-            margin-bottom: 1.5em;
         }
     }
 
@@ -68,7 +62,7 @@
     .contactDetails {
         margin-top: 3em;
 
-        .keyvalue {
+        .key-value {
             gap: 0;
             grid-template-columns: 1fr;
             margin: 0;
@@ -212,7 +206,7 @@
     }
 
     @media (min-width: 600px) {
-        .keyvalue {
+        .key-value {
             grid-template-columns: 200px auto;
         }
 

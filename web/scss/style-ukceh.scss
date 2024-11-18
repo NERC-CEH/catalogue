@@ -40,18 +40,3 @@ html {
     }
 }
 
-.method-metadata {
-
-    .key-value {
-        margin: 2em 0;
-
-        >div {
-            text-wrap: balance;
-
-            &:first-of-type {
-                font-weight: bolder;
-                font-size: 1.125em;
-            }
-        }
-    }
-}

@@ -67,12 +67,12 @@
 
             <#if additionalInfo?? && additionalInfo?has_content>
               <@displaykey "Additional information">
-              <dl class="dl-row">
+              <div class="row key-value">
                 <#list additionalInfo as info>
-                   <dt><#if info.key?? && info.key?has_content>${info.key}<#else><span class="text-muted">missing</span></#if></dt>
-                   <dd><#if info.value?? && info.value?has_content>${info.value}<#else><span class="text-muted">missing</span></#if></dd>
+                   <div class="key col-sm-3"><#if info.key?? && info.key?has_content>${info.key}<#else><span class="text-muted">missing</span></#if></div>
+                   <div class="value col-sm-0"d><#if info.value?? && info.value?has_content>${info.value}<#else><span class="text-muted">missing</span></#if></div>
                 </#list>
-              </dl>
+              </div>
               </@displaykey>
             </#if>
 
@@ -120,9 +120,9 @@
 
 <#--macros -->
 <#macro displaykey label>
-  <div class="key-value">
-    <div>${label}</div>
-    <div><#nested></div>
+  <div class="row key-value">
+    <div class="key">${label}</div>
+    <div class="value"><#nested></div>
   </div>
 </#macro>
 

@@ -1,10 +1,10 @@
 <#if temporalExtents?? || temporalResolution?? >
   <div id="temporal">
   <h2>Temporal information</h2>
-    <dl class="dl-row">
+    <div class="row key-value">
       <#if temporalExtents?has_content>
-        <dt>Temporal extent</dt>
-        <dd id="section-temporalExtents">
+        <div class="col-sm-3 key">Temporal extent</div>
+        <div class="col-sm-9 value" id="section-temporalExtents">
           <#list temporalExtents as extent>
             <div class="temporalExtent">
               <#if extent.begin?has_content>
@@ -20,15 +20,15 @@
               </#if>
             </div>
           </#list>
-        </dd>
+        </div>
       </#if>
 
       <#if temporalResolution?has_content>
-        <dt>Temporal resolution</dt>
-        <dd>
+        <div class="col-sm-3 key">Temporal resolution</div>
+        <div class="col-sm-9 value">
           <#list temporalResolution as tr>${tr}<#sep>, </#sep></#list>
         </dd>
       </#if>
-    </dl>
+    </div>
   </div>
 </#if>

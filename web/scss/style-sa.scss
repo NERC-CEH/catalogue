@@ -16,24 +16,10 @@
         @include float-end;
     }
 
-    .key-value {
-        margin:1em 0;
-        margin-top:1.25em;
-        .key {
-            font-weight:bold;
-            text-align:right;
-        }
-    }
-
     .record-metadata {
         margin-top:6em;
         background-color:#EEE;
         padding:1em;
         font-size:.9em;
-        .key-value {
-            margin:.35em 0;
-            padding:0;
-            border:none;
-        };
     }
 }

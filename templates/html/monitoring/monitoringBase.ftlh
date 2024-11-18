@@ -112,7 +112,7 @@
 </#macro>
 
 <#macro keyValue key description="" auto_esc=false>
-  <div class="key-value" title="${description}">
+  <div class="row key-value" title="${description}">
     <div class="col-sm-3 key">
      ${key}
     </div>

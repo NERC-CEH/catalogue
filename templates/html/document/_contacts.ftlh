@@ -47,30 +47,29 @@
 
 <#if otherContacts?has_content || rightsHolders?has_content>
   <div id="document-otherContacts">
-  <h2><a id="otherContacts"></a>Other contacts</h2>
-  <dl class="dl-row">
-
-  <#if rightsHolders?has_content>
-    <dt>Rights holder<#if rightsHolders?size gt 1>s</#if></dt>
-    <dd>
-      <div class="responsibleParty">
-      <#list rightsHolders as rh>
-          ${rh.organisationName}<sep>,<#sep>
-      </#list>
-      </div>
-    </dd>
-  </#if>
-
-  <#if otherContacts?has_content>
-    <#list otherContacts as otherContact>
-      <dt>${otherContact.roleDisplayName?cap_first}</dt>
-      <dd>
-        <div class="responsibleParty">
-          <@func.displayContact otherContact false true false />
+    <h2><a id="otherContacts"></a>Other contacts</h2>
+    <div class="row key-value">
+      <#if rightsHolders?has_content>
+        <div class="col-sm-3 key">Rights holder<#if rightsHolders?size gt 1>s</#if></div>
+        <div class="col-sm-9 value">
+          <div class="responsibleParty">
+          <#list rightsHolders as rh>
+              ${rh.organisationName}<sep>,<#sep>
+          </#list>
+          </div>
         </div>
-  	 </dd>
-    </#list>
-  </#if>
-  </dl>
+      </#if>
+
+      <#if otherContacts?has_content>
+        <#list otherContacts as otherContact>
+          <div class="col-sm-3 key">${otherContact.roleDisplayName?cap_first}</div>
+          <div class="col-sm-9 value">
+            <div class="responsibleParty">
+              <@func.displayContact otherContact false true false />
+            </div>
+        </div>
+        </#list>
+      </#if>
+    </div>
   </div>
 </#if>

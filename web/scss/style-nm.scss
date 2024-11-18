@@ -54,15 +54,6 @@ a.navbar-brand {
     margin-bottom: 2em;
 }
 
-.key-value {
-    display: grid;
-    margin: 1.1em 0;
-
-    .key {
-        font-weight: bold;
-    }
-}
-
 .references {
     .reference {
         margin: 1em 0 1.6em 0;
@@ -215,23 +206,6 @@ a.navbar-brand {
         &--url {
             font-weight: bolder;
             margin-left: 1.6em;
-        }
-    }
-}
-
-//media query for screens wider than 600px
-@media only screen and (min-width: 600px) {
-    .nerc-model {
-        .hideLarge {display:none}
-        .container {
-            .key-value {
-                grid-template-columns: 13em auto;
-                gap: 1em;
-            }
-
-            .key {
-                text-align: right;
-            }
         }
     }
 }

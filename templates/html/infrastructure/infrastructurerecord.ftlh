@@ -172,7 +172,7 @@
 
 <#--macros -->
 <#macro displaykey label>
-  <div class="key-value">
+  <div class="row key-value">
     <div>${label}</div>
     <div><#nested></div>
   </div>

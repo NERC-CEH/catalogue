@@ -40,6 +40,17 @@ body {
         word-break: break-word;
     }
 
+    .key-value {
+        margin-block-end: 1.6em;
+        .key {
+          font-weight: 600;
+          text-align: left;
+          @media only screen and (min-width: 576px) {
+            text-align: right;
+          }
+        }
+      }
+
     .section {
         padding: 2em 0;
 
@@ -49,12 +60,11 @@ body {
 
             &:has(.notice) {
                 .disclaimer {
-                    margin-top: -2.5em
+                    margin-block-start: -2.5em
                 }
             }
         }
     }
-
 
     .disclaimer {
         border: 1px solid #bbb;
@@ -380,7 +390,6 @@ body {
 
             .btn {
                 white-space: collapse;
-                margin: 0.8em 0;
                 color: white;
 
                 &:active {
@@ -398,7 +407,7 @@ body {
 
                     &:hover,
                     &:focus {
-                        background-color: color.adjust($brand-success, $lightness: 15%, $space: hsl);
+                        background-color: color-mix(in hsl, var(--primary-colour), white 10%);
                     }
 
                     >small {
@@ -409,23 +418,13 @@ body {
 
                 &-supporting {
                     width: 100%;
-                    background-color: color.adjust($brand-success, $lightness: 15%, $space: hsl);
+                    background-color: color-mix(in hsl, var(--primary-colour), white 10%);
 
                     &:hover,
                     &:focus {
-                        background-color: color.adjust($brand-success, $lightness: 30%, $space: hsl);
+                        background-color: color-mix(in hsl, var(--primary-colour), white 20%);
                     }
                 }
-            }
-        }
-    }
-
-    #document-otherContacts {
-        dl.dl-row {
-
-            dd,
-            dt {
-                margin-bottom: 0;
             }
         }
     }
@@ -587,10 +586,7 @@ body {
         margin: 0 1em;
     }
 
-    // Prevent definition lists from wrapping the term
-    .dl-row dt {
-        white-space: normal;
-    }
+
 
     .card {
         overflow-wrap: break-word;
@@ -717,12 +713,6 @@ body {
     @media (min-width: 768px) {
         .alert--linked-eidc {
             grid-template-columns: 240px auto;
-        }
-    }
-
-    @media (min-width: 468px) {
-        .dl-row dd {
-            margin-bottom: 1em;
         }
     }
 
@@ -882,57 +872,6 @@ body {
     }
 }
 
-dl.dl-row {
-    display: flex;
-    flex-wrap: wrap;
-
-    dt, dd {
-        margin: 0;
-        padding: 0.5rem 0;
-    }
-
-    dt {
-        flex: 0 0 40%;
-        max-width: 40%;
-        text-align: right;
-        font-weight: bold;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        padding-right: 2rem;
-    }
-
-    dd {
-        flex: 0 0 60%;
-        max-width: 60%;
-        text-align: left;
-        margin-left: 0;
-    }
-}
-
-@media screen and (max-width: 767px) {
-    dl.dl-row {
-        margin-left: 0;
-        flex-direction: column;
-        justify-content: flex-start;
-        dt, dd {
-            width: 100%;
-            text-align: left;
-            padding-right: 0;
-        }
-    }
-}
-
-@media screen and (min-width: 768px) {
-    .ceh-model {
-        dl.dl-row {
-            &--compact {
-                margin-left: 0;
-            }
-        }
-    }
-}
-
 .ceh-model {
     .description {
         margin-bottom: 2em;
@@ -943,22 +882,6 @@ dl.dl-row {
             color: gray;
             margin-top: 4em;
             border: none;
-        }
-    }
-
-    .key-value {
-        padding: 1.5em 0;
-        border-top: 1px solid lightgray;
-
-        &:first-of-type {
-            border: none;
-        }
-
-        .key {
-            .key-name {
-                font-size: 1.1em;
-                font-weight: bold;
-            }
         }
     }
 }
@@ -1011,16 +934,6 @@ dl.dl-row {
 
 /********** Monitoring Records *************/
 .metadata-monitoring {
-    .key-value {
-        >div {
-            padding: .5em 0;
-        }
-
-        .key {
-            font-weight: 600;
-        }
-    }
-
     h2 {
         clear: both;
         padding-top: 2em;

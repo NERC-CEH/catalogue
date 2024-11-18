@@ -102,26 +102,26 @@
 
             <#if review?? && review?has_content>
               <h3>Review</h3>
-              <dl class="dl-row">
+              <div class="row key-value">
               <#list review as r>
                 <#if (r.reviewDate?? && r.reviewDate?has_content) || (r.reviewProcess?? && r.reviewProcess?has_content)>
-                  <dt>
+                  <div class="col-sm-3 key">
                     <#if r.reviewDate?? && r.reviewDate?has_content>
                       ${r.reviewDate?date?string['dd MMMM yyyy']}
                     <#else>
                       ---
                     </#if>
-                  </dt>
-                  <dd>
+                  </div>
+                  <div class="col-sm-9 value">
                     <#if r.reviewProcess?? && r.reviewProcess?has_content>
                       ${r.reviewProcess}
                     <#else>
                       ---
                     </#if>
-                  </dd>
+                  </div>
                 </#if>
               </#list>
-              </dl>
+              </div>
             </#if>
 
 
@@ -241,11 +241,11 @@
 </#macro>
 
 <#macro displayRelations key label>
-  <dl class="dl-row"><dt>${label}</dt><dd>
+  <div class="key-value row"><div class="key col-sm-3">${label}</div><div class="value col-sm-9">
   <#list key as item>
       <a href=" ${item.href}">${item.title}</a>
     <#sep><br></#sep>
-  </#list></dd></dl>
+  </#list></div></div>
 </#macro>
 
 <#macro linebreaks value>
