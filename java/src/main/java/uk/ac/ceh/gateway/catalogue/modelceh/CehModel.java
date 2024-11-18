@@ -15,7 +15,7 @@ import uk.ac.ceh.gateway.catalogue.indexing.solr.WellKnownText;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
-import uk.ac.ceh.gateway.catalogue.model.DataTypeSchema;
+import uk.ac.ceh.gateway.catalogue.model.ObservedProperty;
 import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 
 @Data
@@ -47,7 +47,7 @@ public class CehModel extends AbstractMetadataDocument implements WellKnownText 
 
     private List<BoundingBox> boundingBoxes;
 
-    private List<DataTypeSchema>
+    private List<ObservedProperty>
         inputVariables,
         outputVariables;
 

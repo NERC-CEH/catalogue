@@ -1,21 +1,22 @@
 :${id}
-  dct:title "<@displayLiteral title />" ;
+  dct:title <@displayLiteral title /> ;
 
   <@identifiers resourceIdentifiers />
 
   <#if datacitable?string=='true' && citation?has_content>
-      dct:bibliographicCitation "${citation.authors?join(', ')} (${citation.year?string("0")}). <@displayLiteral citation.title />. ${citation.publisher}. ${citation.url?trim}" ;
+      <#assign citationString =  citation.authors?join(', ') + " (" + citation.year?string("0") +"}. " + citation.title + ". " + citation.publisher + ". " + citation.url?trim>
+      dct:bibliographicCitation <@displayLiteral citationString/>
   </#if>
 
   <#if resourceStatus != "Deleted">
     <#if description?has_content>
-      dct:description "<@displayLiteral description />" ;
+      dct:description <@displayLiteral description /> ;
     </#if>
 
     <#if lineage?has_content>
       dct:provenance [
         a dct:ProvenanceStatement ;
-        rdfs:label "<@displayLiteral lineage />"
+        rdfs:label <@displayLiteral lineage />
       ] ;
     </#if>
 
@@ -36,7 +37,7 @@
 
     <#--Publisher-->
     <#if publishers?has_content>
-      dct:publisher  <@contactList publishers "pub" /> ;
+      dct:publisher <@contactList publishers "pub" /> ;
     </#if>
 
     <#--Relationships-->
@@ -50,9 +51,27 @@
       dct:relation <#items as item><${item.href}><#sep>, </#items> ;
     </#list>
 
+    <#--Citations-->
+    <#--
+    <#if incomingCitations?has_content>
+      dct:isReferencedBy <#t>
+      <#list incomingCitations as citation>
+        <${citation.url?trim}><#sep>,</#sep>
+      </#list>
+      ;
+    </#if>
+    -->
+
+    <#if incomingCitations?has_content>
+      dct:isReferencedBy <@incomingCitationList /> ;
+    </#if>
 
     <#if allKeywords?has_content>
-    dct:subject <@keywordList allKeywords/> ;
+      dct:subject <@keywordList allKeywords/> ;
+    </#if>
+
+    <#if observedProperty?has_content>
+      sdo:variableMeasured <@opList /> ;
     </#if>
 
     <#if funding?has_content>
@@ -83,7 +102,18 @@
       <@contactDetail authors "a" />
     </#if>
 
-    <@keywordDetail allKeywords/>
+    <#if incomingCitations?has_content>
+      <@incomingCitationDetail />
+    </#if>
+
+    <#if allKeywords?has_content>
+      <@keywordDetail allKeywords />
+    </#if>
+
+    <#if observedProperty?has_content>
+      <@opDetail />
+    </#if>
+
     <@fundingDetail />
   <#else>
     dct:description "This resource is no longer available please contact the Environmental Information Data Centre for more details" ;

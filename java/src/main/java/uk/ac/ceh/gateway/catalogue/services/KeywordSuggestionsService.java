@@ -22,10 +22,10 @@ public class KeywordSuggestionsService {
     // files.  For now, it's completely plucked from thin air to give
     // variables a reasonably high confidence as compared to keywords
     // extracted from supporting documents by text mining.
-    private static final double VARIABLE_CONFIDENCE = 0.75;
+    private static final double VARIABLE_CONFIDENCE = 0.2;
     private RestClient restClient;
 
-    public record Suggestion(String name, double confidence, String url) { }
+    public record Suggestion(String name, double confidence, String matched_url) { }
     record KeywordsResponse(List<Suggestion> summary) { }
     record VariablesResponse(VariablesSummary summary) { }
     record VariablesSummary(Map<String, Object> variables) { }
@@ -73,6 +73,8 @@ public class KeywordSuggestionsService {
             )
             .orElseGet(Collections::emptyList);
 
-        return Stream.concat(keywordSuggestions.stream(), variables.stream()).toList();
+        return Stream.concat(keywordSuggestions.stream(), variables.stream())
+            .sorted(Comparator.comparing(Suggestion::confidence).reversed())
+            .toList();
     }
 }

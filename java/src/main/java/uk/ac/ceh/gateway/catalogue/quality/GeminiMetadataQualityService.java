@@ -486,6 +486,10 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
     }
 
     List<MetadataCheck> checkSpatialResolutions(DocumentContext parsed) {
+        val spatialRepresentationTypes = parsed.read("$.spatialRepresentationTypes", new TypeRef<List<String>>() {});
+        if (spatialRepresentationTypes != null && spatialRepresentationTypes.stream().noneMatch(type -> type.equals("grid") || type.equals("vector"))) {
+            return Collections.emptyList();
+        }
         val spatialResolutions = parsed.read("$.spatialResolutions[*]", typeRefStringString);
         if (spatialResolutions.isEmpty()) {
             return Collections.singletonList(new MetadataCheck("Spatial resolutions is missing", WARNING));
@@ -534,14 +538,12 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
 
     List<MetadataCheck> checkKeywords(DocumentContext parsed) {
         val keywordsInstrument = parsed.read("$.keywordsInstrument[*]", typeRefStringString);
-        val keywordsObservedProperty = parsed.read("$.keywordsObservedProperty[*]", typeRefStringString);
         val keywordsPlace = parsed.read("$.keywordsPlace[*]", typeRefStringString);
         val keywordsProject = parsed.read("$.keywordsProject[*]", typeRefStringString);
         val keywordsTheme = parsed.read("$.keywordTheme[*]", typeRefStringString);
         val keywordsOther = parsed.read("$.keywordsOther[*]", typeRefStringString);
         val allKeywords = new ArrayList<Map<String, String>>();
         allKeywords.addAll(keywordsInstrument);
-        allKeywords.addAll(keywordsObservedProperty);
         allKeywords.addAll(keywordsPlace);
         allKeywords.addAll(keywordsProject);
         allKeywords.addAll(keywordsTheme);

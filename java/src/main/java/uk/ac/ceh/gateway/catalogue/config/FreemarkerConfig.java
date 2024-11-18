@@ -11,10 +11,7 @@ import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
 import uk.ac.ceh.gateway.catalogue.quality.MultiDocumentTypeMetadataQualityService;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreementQualityService;
 import uk.ac.ceh.gateway.catalogue.metrics.MetricsService;
-import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
-import uk.ac.ceh.gateway.catalogue.templateHelpers.DownloadOrderDetailsService;
-import uk.ac.ceh.gateway.catalogue.templateHelpers.GeminiExtractor;
-import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.*;
 import uk.ac.ceh.gateway.catalogue.userdetails.SecurityUserInfo;
 import uk.ac.ceh.gateway.catalogue.wms.MapServerDetailsService;
 
@@ -31,6 +28,7 @@ public class FreemarkerConfig {
     private final MultiDocumentTypeMetadataQualityService metadataQualityService;
     private final PermissionService permissionService;
     private final ProfileService profileService;
+    private final FileDetailsService fileDetailsService;
     @Nullable private final ServiceAgreementQualityService serviceAgreementQualityService;
     @Nullable private final MetricsService metricsService;
 
@@ -47,6 +45,7 @@ public class FreemarkerConfig {
         freemarkerConfiguration.setSharedVariable("permission", permissionService);
         freemarkerConfiguration.setSharedVariable("profile", profileService);
         freemarkerConfiguration.setSharedVariable("userInfo", new SecurityUserInfo());
+        freemarkerConfiguration.setSharedVariable("fileDetails", fileDetailsService);
 
         if (serviceAgreementQualityService != null) {
             freemarkerConfiguration.setSharedVariable("serviceAgreementQuality", serviceAgreementQualityService);

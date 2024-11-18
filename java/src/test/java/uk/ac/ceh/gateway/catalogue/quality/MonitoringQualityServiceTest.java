@@ -196,6 +196,77 @@ public class MonitoringQualityServiceTest {
             );
         given(documentReader.read("monitoringActivityBoundingBox", "meta"))
             .willReturn(
+                ResourceUtils.getFile(getClass().getResource("ukeof/monitoringActivityRight.meta"))
+            );
+
+        //when
+        val results = this.service.check("monitoringActivityBoundingBox");
+
+        //then
+        verify(documentReader).read("monitoringActivityBoundingBox", "raw");
+        verify(documentReader).read("monitoringActivityBoundingBox", "meta");
+        val problems = results.getProblems().stream().map(check -> check.getTest()).toList();
+        assertThat(problems, containsInAnyOrder(
+            "westBoundLongitude is out of range",
+            "eastBoundLongitude is missing from bounding box",
+            "southBoundLatitude should be less than northBoundLatitude",
+            "southBoundLatitude is out of range"
+        ));
+    }
+
+    @Test
+    @SneakyThrows
+    public void checkNetworkEmptyKeywords() {
+        given(documentReader.read("monitoringNetworkEmptyKeywords", "raw"))
+            .willReturn(
+                ResourceUtils.getFile(getClass().getResource("ukeof/monitoringNetworkEmptyKeywords.raw"))
+            );
+        given(documentReader.read("monitoringNetworkEmptyKeywords", "meta"))
+            .willReturn(
+                ResourceUtils.getFile(getClass().getResource("ukeof/monitoringNetworkRight.meta"))
+            );
+
+        //when
+        val results = this.service.check("monitoringNetworkEmptyKeywords");
+
+        //then
+        verify(documentReader).read("monitoringNetworkEmptyKeywords", "raw");
+        verify(documentReader).read("monitoringNetworkEmptyKeywords", "meta");
+        val problems = results.getProblems().stream().map(check -> check.getTest()).toList();
+        assertThat(problems, contains("Keyword is empty"));
+    }
+
+    @Test
+    @SneakyThrows
+    public void checkProgrammeEmptyOperatingPeriod() {
+        given(documentReader.read("monitoringProgrammeEmptyOperatingPeriod", "raw"))
+            .willReturn(
+                ResourceUtils.getFile(getClass().getResource("ukeof/monitoringProgrammeEmptyOperatingPeriod.raw"))
+            );
+        given(documentReader.read("monitoringProgrammeEmptyOperatingPeriod", "meta"))
+            .willReturn(
+                ResourceUtils.getFile(getClass().getResource("ukeof/monitoringProgrammeRight.meta"))
+            );
+
+        //when
+        val results = this.service.check("monitoringProgrammeEmptyOperatingPeriod");
+
+        //then
+        verify(documentReader).read("monitoringProgrammeEmptyOperatingPeriod", "raw");
+        verify(documentReader).read("monitoringProgrammeEmptyOperatingPeriod", "meta");
+        val problems = results.getProblems().stream().map(check -> check.getTest()).toList();
+        assertThat(problems, contains("Operating period is empty"));
+    }
+
+    @Test
+    @SneakyThrows
+    public void checkProgrammeBadOperatingPeriod() {
+        given(documentReader.read("monitoringActivityBoundingBox", "raw"))
+            .willReturn(
+                ResourceUtils.getFile(getClass().getResource("ukeof/monitoringActivityBoundingBox.raw"))
+            );
+        given(documentReader.read("monitoringActivityBoundingBox", "meta"))
+            .willReturn(
                 ResourceUtils.getFile(getClass().getResource("ukeof/monitoringProgrammeRight.meta"))
             );
 

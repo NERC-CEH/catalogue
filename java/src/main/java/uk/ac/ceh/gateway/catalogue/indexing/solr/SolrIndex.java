@@ -42,11 +42,12 @@ public class SolrIndex {
     private @Field List<String> inmsProject;
     private @Field List<String> keyword;
     private @Field List<String> keywordsInstrument;
-    private @Field List<String> keywordsObservedProperty;
     private @Field List<String> keywordsPlace;
     private @Field List<String> keywordsProject;
     private @Field List<String> keywordsTheme;
     private @Field List<String> keywordsOther;
+    private @Field List<String> observedPropertyValue;
+    private @Field List<String> observedPropertyTitle;
     private @Field String licence;
     private @Field String lineage;
     private @Field String dataLevel;
@@ -63,6 +64,14 @@ public class SolrIndex {
     private @Field List<String> resourceIdentifier;
     private @Field String resourceStatus;
     private @Field String resourceType;
+    private @Field List<String> environmentalDomains;
+    private @Field String facilityType;
+    private @Field List<String> keywordsParameters;
+    private @Field List<String> operatingPeriod;
+    private @Field String objectives;
+    private @Field List<String> pointOfContact;
+    private @Field String operationalStatus;
+    private @Field List<String> responsibleParties;
     private @Field List<String> rightsHolder;
     private @Field List<String> ror;
     private @Field List<String> saPhysicalState;

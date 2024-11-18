@@ -51,8 +51,16 @@
 
 <#if docType?has_content>
   {
-    "@type":"${docType}",
-    "name":"${title}",
+    "@type":<@displayLiteral docType/>,
+    "name":<@displayLiteral title/>,
+
+    <#if docType == "Dataset">
+      <#if isAttached!false>
+        <@displayParts fileDetails.getDetailsFor(id, true)/>
+      <#else>
+        <@displayParts fileDetails.getDetailsFor(id, false)/>
+      </#if>
+    </#if>
 
     <#if datacitable?string == "true" && citation?has_content>
       "@id": "${citation.url}",
@@ -68,145 +76,162 @@
       "url":"${uri?trim}",
     </#if>
 
-      <#if resourceStatus != "Deleted">
-        <#if description?has_content>"description":"${description?replace("\n", " ")}", </#if>
+    <#if resourceStatus != "Deleted">
+      <#if description?has_content>"description":<@displayLiteral description/>, </#if>
 
-        <#if alternateTitles?has_content>
-          "alternateName":[
-          <#list alternateTitles as altTitle>
-            "${altTitle}"<#sep>,</#sep>
-          </#list>
-          ],
-        </#if>
+      <#if alternateTitles?has_content>
+        "alternateName":[
+        <#list alternateTitles as altTitle>
+          <@displayLiteral altTitle/><#sep>,</#sep>
+        </#list>
+        ],
+      </#if>
 
-        <#if resourceStatus == "Available">
-             "isAccessibleForFree": true,
-        </#if>
+      <#if resourceStatus == "Available">
+        "isAccessibleForFree": true,
+      </#if>
 
-        <#if datasetReferenceDate?? && datasetReferenceDate.creationDate?has_content>
-          "dateCreated":"${datasetReferenceDate.creationDate}",
-        </#if>
-        <#if datasetReferenceDate?? && datasetReferenceDate.publicationDate?has_content>
-          "datePublished":"${datasetReferenceDate.publicationDate}",
-        </#if>
+      <#if datasetReferenceDate?? && datasetReferenceDate.creationDate?has_content>
+        "dateCreated":"${datasetReferenceDate.creationDate}",
+      </#if>
 
-        <#if keywordsObservedProperty?? && keywordsObservedProperty?has_content>
-          "variableMeasured": [ <@displayVariables keywordsObservedProperty/>],
-        </#if>
+      <#if datasetReferenceDate?? && datasetReferenceDate.publicationDate?has_content>
+        "datePublished":"${datasetReferenceDate.publicationDate}",
+      </#if>
 
-        <#if keywordList?has_content>
+      <#if observedProperty?? && observedProperty?has_content>
+        "variableMeasured": [ <@displayObservedProperties observedProperty/>],
+      </#if>
+
+      <#if keywordList?has_content>
         "keywords": [<@displayKeywords keywordList/>],
-        </#if>
+      </#if>
 
-        <#if authors?has_content>
-          "creator":[
-          <#list authors as author>
-          <#if author.individualName?has_content>
-            {
-            "@type":"Person",
-            "name": "${author.individualName}"
-            <#if author.organisationName?has_content>
-            ,"email": "${author.email}"
-            </#if>
-            <#if author.nameIdentifier?has_content && author.nameIdentifier?matches("^http(|s)://orcid.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$")>
-              ,"identifier": {
-                "@type":"PropertyValue",
-                "propertyID": "orcid",
-                "value": "${author.nameIdentifier}"
-              }
-            </#if>
-            <#if author.organisationName?has_content>
-              ,"affiliation":{
-                "@type":"Organization",
-                "name":"${author.organisationName}"
-                <#if author.organisationIdentifier?has_content>
-                ,"identifier":"${author.organisationIdentifier}"
-                </#if>
-              }
-            </#if>
-            }
-          <#else>
-            {
-            "@type":"Organization",
-            "name": "${author.organisationName}"
-            <#if author.organisationName?has_content>
-            ,"email": "${author.email}"
-            </#if>
-            <#if author.organisationIdentifier?has_content>
-            ,"identifier":"${author.organisationIdentifier}"
-            </#if>
+      <#--Authors-->
+      <#if authors?has_content>
+        "creator":[
+        <#list authors as author>
+        <#if author.individualName?has_content>
+          {
+          "@type":"Person",
+          "name": "${author.individualName}"
+          <#if author.organisationName?has_content>
+          ,"email": "${author.email}"
+          </#if>
+          <#if author.nameIdentifier?has_content && author.nameIdentifier?matches("^http(|s)://orcid.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$")>
+            ,"identifier": {
+              "@type":"PropertyValue",
+              "propertyID": "orcid",
+              "value": "${author.nameIdentifier}"
             }
           </#if>
-          <#sep>,
+          <#if author.organisationName?has_content>
+            ,"affiliation":{
+              "@type":"Organization",
+              "name":"${author.organisationName}"
+              <#if author.organisationIdentifier?has_content>
+              ,"identifier":"${author.organisationIdentifier}"
+              </#if>
+            }
+          </#if>
+          }
+        <#else>
+          {
+          "@type":"Organization",
+          "name": "${author.organisationName}"
+          <#if author.organisationName?has_content>
+          ,"email": "${author.email}"
+          </#if>
+          <#if author.organisationIdentifier?has_content>
+          ,"identifier":"${author.organisationIdentifier}"
+          </#if>
+          }
+        </#if>
+        <#sep>,
+        </#list>
+        ]
+        ,
+      </#if>
+
+      <#--Citations-->
+      <#if incomingCitations?has_content>
+        "@reverse": {
+          "citation":[
+          <#list incomingCitations as citation>
+            {
+            "@type": "CreativeWork"
+            <#if citation.description?has_content>,"creditText": <@displayLiteral citation.description/></#if>
+            <#if citation.url?has_content>,"url": "${citation.url?trim}"</#if>
+            }<#sep>,</#sep>
           </#list>
           ]
-          ,
-        </#if>
+        },
+      </#if>
 
-        <#if temporalExtents?has_content>
-          "temporalCoverage":[
-          <#list temporalExtents as temporal>
-            <#if temporal.begin?has_content>
-              <#assign begin = temporal.begin>
-            <#else>
-              <#assign begin = "">
-            </#if>
-            <#if temporal.end?has_content>
-              <#assign end = temporal.end>
-            <#else>
-              <#assign end = "">
-            </#if>
-            "${begin}/${end}"<#sep>,
-          </#list>
-          ],
-        </#if>
-
-        <#if boundingBoxes?has_content>
-        "spatialCoverage": [
-          <#list boundingBoxes as extent>
-            {
-              "@type":"Place",
-              "geo":{
-                "@type":"GeoShape",
-                "box":"${extent.westBoundLongitude} ${extent.southBoundLatitude}, ${extent.eastBoundLongitude} ${extent.northBoundLatitude}"
-              }
-            }<#sep>,
-          </#list>
+      <#if temporalExtents?has_content>
+        "temporalCoverage":[
+        <#list temporalExtents as temporal>
+          <#if temporal.begin?has_content>
+            <#assign begin = temporal.begin>
+          <#else>
+            <#assign begin = "">
+          </#if>
+          <#if temporal.end?has_content>
+            <#assign end = temporal.end>
+          <#else>
+            <#assign end = "">
+          </#if>
+          "${begin}/${end}"<#sep>,
+        </#list>
         ],
-        </#if>
+      </#if>
 
-        <#if docType == "Dataset" || docType == "SoftwareSourceCode">
+      <#if boundingBoxes?has_content>
+        "spatialCoverage": [
+        <#list boundingBoxes as extent>
+          {
+            "@type":"Place",
+            "geo":{
+              "@type":"GeoShape",
+              "box":"${extent.westBoundLongitude} ${extent.southBoundLatitude}, ${extent.eastBoundLongitude} ${extent.northBoundLatitude}"
+            }
+          }<#sep>,
+        </#list>
+        ],
+      </#if>
 
+      <#if docType == "Dataset" || docType == "SoftwareSourceCode">
 
-          <#if licences?? && licences?has_content>
-            <#if licences?first.uri?? && licences?first.uri?has_content>
-            <#if licences?first.uri?matches("^http[s]?://eidc.ceh.ac.uk/licences/OGL.+$")>
-              "license": {
-                  "@type": "CreativeWork",
-                  "name": "Open Government Licence v3",
-                  "alternateName":"OGL-UK-3.0",
-                  "license": "https://spdx.org/licenses/OGL-UK-3.0.html"
-                },
-              <#else>
-              "license": "${licences?first.uri?trim}",
-              </#if>
+        <#if licences?? && licences?has_content>
+          <#if licences?first.uri?? && licences?first.uri?has_content>
+          <#if licences?first.uri?matches("^http[s]?://eidc.ceh.ac.uk/licences/OGL.+$")>
+            "license": {
+                "@type": "CreativeWork",
+                "name": "Open Government Licence v3",
+                "alternateName":"OGL-UK-3.0",
+                "license": "https://spdx.org/licenses/OGL-UK-3.0.html"
+              },
+            <#else>
+            "license": "${licences?first.uri?trim}",
             </#if>
           </#if>
+        </#if>
 
-          <#list downloads>
-            "distribution":[
-              <#items as download>
-              {
-                "@type":"DataDownload",
-                "contentUrl":"${download.url}"
-                <#if download.url?ends_with(".zip")>,"encodingFormat":"application/zip"
-                <#elseif download.url?ends_with(".csv")>,"encodingFormat":"text/csv"
-                <#elseif download.url?starts_with("https://data-package.ceh.ac.uk/data/")>,"encodingFormat":"application/zip"
-                <#elseif download.url?starts_with("https://catalogue.ceh.ac.uk/datastore")>,"encodingFormat":"text/directory"</#if>
-              }<#sep>,
-              </#items>
-            ],
-          </#list>
+        <#--Distributions-->
+        <#list downloads>
+          "distribution":[
+            <#items as download>
+            {
+              "@type":"DataDownload",
+              "contentUrl":"${download.url}"
+              <#if download.url?ends_with(".zip")>,"encodingFormat":"application/zip"
+              <#elseif download.url?ends_with(".csv")>,"encodingFormat":"text/csv"
+              <#elseif download.url?starts_with("https://data-package.ceh.ac.uk/data/")>,"encodingFormat":"application/zip"
+              <#elseif download.url?starts_with("https://catalogue.ceh.ac.uk/datastore")>,"encodingFormat":"text/directory"</#if>
+            }<#sep>,
+            </#items>
+          ],
+        </#list>
 
         <#if publishers?has_content>
           <#assign publisher = publishers?first>
@@ -220,24 +245,22 @@
               ,"email": "${publisher.email}"
               </#if>
               },
-          </#if>
-        "provider" : {"@type":"Organization","name":"Environmental Information Data Centre"},
-        "includedInDataCatalog":{"@type":"DataCatalog", "name":"Environmental Information Data Centre", "alternatename":"EIDC", "url":"https://catalogue.ceh.ac.uk/eidc/documents"},
         </#if>
-      <#else>
-        "description": "This resource is no longer available please contact the Environmental Information Data Centre for more details",
-        "creativeWorkStatus": "Deleted",
       </#if>
-        "@context":"http://schema.org/"
+
+      "provider" : {"@type":"Organization","name":"Environmental Information Data Centre"},
+      "includedInDataCatalog":{"@type":"DataCatalog", "name":"Environmental Information Data Centre", "alternatename":"EIDC", "url":"https://catalogue.ceh.ac.uk/eidc/documents"},
+
+    <#else>
+    <#-- information to include if the dataset has been permanently deleted -->
+      "description": "This resource is no longer available please contact the Environmental Information Data Centre for more details",
+      "creativeWorkStatus": "Deleted",
+    </#if>
+
+    "@context":"http://schema.org/"
     }
 </#if>
 </#compress>
-
-<#-- NEEDS UPDATING  -->
-<#-- Parent/child resources  NEED ADDING?
-http://schema.org/isPartOf
-http://schema.org/hasPart
--->
 
 <#macro displayKeywords keywords>
   <#list keywords as keyword>
@@ -255,7 +278,7 @@ http://schema.org/hasPart
         <#t>{
            <#t>"@type": "DefinedTerm",
            <#t>"@id": "${keyword.uri?trim}",
-           <#t>"name": "${keyword.value?trim}"
+           <#t>"name": <@displayLiteral keyword.value/>
            <#t><#if subjectScheme?has_content>,"inDefinedTermSet": "${schemeURI}"</#if>
         }
       <#else>
@@ -265,17 +288,53 @@ http://schema.org/hasPart
     </#list>
 </#macro>
 
-<#macro displayVariables keywords>
-  <#list keywords as keyword>
-      <#if keyword.uri?has_content>
+<#macro displayObservedProperties props>
+  <#list props as op>
+      <#assign opLabel ="unknown">
+      <#if op.title?has_content>
+        <#assign opLabel = op.title?trim>
+      <#elseif op.value?has_content>
+        <#assign opLabel = op.value?trim>
+      </#if>
+
+      <#if op.uri?has_content>
         {
           "@type": "StatisticalVariable",
-          "@id": "${keyword.uri?trim}",
-          "name": "${keyword.value?trim}"
+          "@id": "${op.uri?trim}",
+          "name": "${opLabel}"
+          <#if op.unitsUri?has_content>,"unitCode": "${op.unitsUri?trim}"</#if>
+          <#if op.units?has_content>,"unitText": "${op.units?trim}"</#if>
         }
       <#else>
-        "${keyword.value?trim}"
+      <@displayLiteral opLabel/>
       </#if>
       <#sep>,</#sep>
     </#list>
 </#macro>
+
+<#macro displayParts parts>
+  <#if parts?size gt 0>
+    "hasPart": [
+    <#list parts as part>
+      <#if part.id?has_content>
+        {
+          <#t>"@id": "${part.id}",
+          <#t>"@type": "${part.type}",
+          <#t>"name": "${part.id}",
+          <#if part.encodingFormat?? && part.encodingFormat?has_content><#t>"encodingFormat": "${part.encodingFormat}",</#if>
+          <#t>"lastModified": "${part.lastModified}",
+          <#t>"bytes": ${part.bytes?long?c},
+          <#t>"contentUrl": "${part.contentUrl}"
+        }
+      </#if>
+      <#sep>,</#sep><#t>
+    </#list>
+    ],
+  </#if>
+</#macro>
+
+<#macro displayLiteral string>
+  <#--Ensure literals do not contain " characters or line breaks-->
+  <#t>"${string?trim?replace("\"","'")?replace("\n"," ")}"
+</#macro>
+

@@ -11,6 +11,7 @@ import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.update.UpdateExecutionFactory;
 import uk.ac.ceh.components.datastore.DataRepository;
+import uk.ac.ceh.components.datastore.git.GitFileNotFoundException;
 import uk.ac.ceh.gateway.catalogue.indexing.AbstractIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingSupplier;
@@ -88,6 +89,15 @@ public class JenaIndexingService extends AbstractIndexingService<MetadataDocumen
                     try {
                         return canIndex(readDocument(document));
                     } catch (Exception e) {
+                        log.info("Error: " + e);
+                        //A warning will appear here but due to earlier @SneakyThrows in readDocument the
+                        // GitFileNotFoundException is hidden, but this exception CAN occur.
+                        //This case occurs when a file has been deleted and needs to be removed from the SparQL.
+                        if(e instanceof GitFileNotFoundException){
+                            log.info("Unindexing process continues for non existing document: {}", document);
+                            return true;
+                        }
+
                         return false;
                     }
                 })

@@ -13,6 +13,7 @@ import uk.ac.ceh.gateway.catalogue.indexing.solr.WellKnownText;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.model.Supplemental;
+import uk.ac.ceh.gateway.catalogue.model.ObservedProperty;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreement;
 
 import java.time.ZoneId;
@@ -36,6 +37,8 @@ import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAP
         @Template(called = "xml/gemini.ftlx", whenRequestedAs = GEMINI_XML_VALUE),
         @Template(called = "rdf/ttl.ftl", whenRequestedAs = RDF_TTL_VALUE),
         @Template(called = "schema.org/schema.org.ftlh", whenRequestedAs = RDF_SCHEMAORG_VALUE),
+        @Template(called = "rocrate/rocrate.ftl", whenRequestedAs = ROCRATE_VALUE),
+        @Template(called = "rocrate/rocrate_attached.ftl", whenRequestedAs = ROCRATE_ATTACHED_VALUE),
         @Template(called = "ceda/ceda.ftlh", whenRequestedAs = CEDA_YAML_VALUE)
 })
 public class GeminiDocument extends AbstractMetadataDocument implements WellKnownText {
@@ -54,6 +57,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private List<Keyword> topicCategories, keywordsDiscipline, keywordsInstrument, keywordsObservedProperty,
             keywordsPlace, keywordsProject, keywordsTheme, keywordsOther;
     private List<Geometry> geometries;
+    private List<ObservedProperty> observedProperty;
     private List<DistributionInfo> distributionFormats;
     private List<DescriptiveKeywords> descriptiveKeywords;
     private List<InspireTheme> inspireThemes;
@@ -146,7 +150,6 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             keywordsFromDescriptiveKeywords(),
             Optional.ofNullable(keywordsDiscipline).orElseGet(Collections::emptyList),
             Optional.ofNullable(keywordsInstrument).orElseGet(Collections::emptyList),
-            Optional.ofNullable(keywordsObservedProperty).orElseGet(Collections::emptyList),
             Optional.ofNullable(keywordsPlace).orElseGet(Collections::emptyList),
             Optional.ofNullable(keywordsProject).orElseGet(Collections::emptyList),
             Optional.ofNullable(keywordsTheme).orElseGet(Collections::emptyList),

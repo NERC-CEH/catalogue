@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.search;
 
 import lombok.SneakyThrows;
 import org.apache.solr.client.solrj.SolrClient;
+import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.SolrRequest;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.params.SolrParams;
@@ -42,6 +43,8 @@ class SolrSearcherTest {
     private final int rows = 20;
     private final List<FacetFilter> facetFilters = List.of(new FacetFilter("filter|test"));
     private final String catalogueKey = "green";
+    private final String sortField = "publicationDate";
+    private final ORDER sortOrder = ORDER.desc;
 
     @BeforeEach
     void setup() {
@@ -70,7 +73,9 @@ class SolrSearcherTest {
             page,
             rows,
             facetFilters,
-            catalogueKey
+            catalogueKey,
+            sortField,
+            sortOrder
         );
 
         //then

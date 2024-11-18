@@ -46,7 +46,6 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
     private List<Keyword> topicCategories, keywordsDiscipline, keywordsInstrument, keywordsObservedProperty,
         keywordsPlace, keywordsProject, keywordsTheme, keywordsOther, allKeywords;
 
-
     private List<BoundingBox> boundingBoxes;
 
     private String state;

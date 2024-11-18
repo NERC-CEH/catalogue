@@ -13,10 +13,11 @@
           <#if title?? && title?has_content>
             <h1>
                <small>
+                ${codes.lookup('metadata.resourceType', type)!''}
                 <#if (metadata.state == 'draft' || metadata.state == 'pending') >
                   <span class="text-danger"><b>${codes.lookup('publication.state', metadata.state)?upper_case!''}</b></span>
                 </#if>
-               ${codes.lookup('metadata.resourceType', type)!''}<br>
+               <br>
               </small>
               ${title}
             </h1>
@@ -192,10 +193,10 @@ Operating period
   </#if>
 </#macro>
 
-<#macro relationships title description relation> <#--UPDATE-->
+<#macro relationships relation title="">
   <#local links=jena.relationships(uri, relation) />
   <#if links?has_content>
-    <@keyValue description "">
+    <@keyValue title "">
       <#list links as link>
         <@b.blockUrl link />
       </#list>
@@ -203,14 +204,39 @@ Operating period
   </#if>
 </#macro>
 
-<#macro inverseRelationships title description relation> <#--UPDATE-->
+<#macro inverseRelationships relation title="">
   <#local links=jena.inverseRelationships(uri, relation) />
   <#if links?has_content>
-    <@keyValue description  "">
+    <#if title?has_content>
+      <@keyValue title "">
+        <#list links as link>
+          <@b.blockUrl link />
+        </#list>
+      </@keyValue>
+    <#else>
       <#list links as link>
         <@b.blockUrl link />
       </#list>
-    </@keyValue>
+    </#if>
+  </#if>
+</#macro>
+
+<#macro symmetricRelationships relation title="">
+  <#local links = jena.inverseRelationships(uri, relation) />
+  <#local links = links + jena.relationships(uri, relation) />
+
+  <#if links?has_content>
+    <#if title?has_content>
+      <@keyValue title "">
+        <#list links as link>
+          <@b.blockUrl link />
+        </#list>
+      </@keyValue>
+    <#else>
+      <#list links as link>
+        <@b.blockUrl link />
+      </#list>
+    </#if>
   </#if>
 </#macro>
 
@@ -228,7 +254,7 @@ Operating period
 </#macro>
 
 <#macro contactDetails contact>
- <@keyValue contact.role?capitalize "">
+ <@keyValue contact.roleDisplayName?cap_first "">
     <#if contact.individualName?has_content>
       <span>
         ${contact.individualName}
@@ -267,7 +293,11 @@ Operating period
     <@keyValue "${title}" "">
       <#items as link>
         <#if link.url?has_content>
-          <a href="${link.url}" target="_blank" rel="noopener noreferrer">${link.description}</a>
+            <#if link.description?has_content>
+              <a href="${link.url}" target="_blank" rel="noopener noreferrer">${link.description}</a>
+             <#else>
+              <a href="${link.url}" target="_blank" rel="noopener noreferrer">${link.url}</a>
+             </#if>
         <#else>
           ${link.description}
         </#if><#sep><br></#sep>

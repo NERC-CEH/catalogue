@@ -9,6 +9,7 @@ export default Backbone.Router.extend({
 
   initialize (options) {
     this.model = options.model
+    this.appUrl = options.location.href.split('#')[0].split('?')[0]
 
     // If there is no hash component, we can use the query string to update the
     // model to represent the state of the document which is already loaded
@@ -24,7 +25,16 @@ export default Backbone.Router.extend({
      * router will be able to parse and process at a later time
      */
   updateRoute () {
-    this.navigate($.param(this.model.getState(), true), { replace: true })
+    if (typeof window.history.replaceState !== 'undefined') {
+      let url = this.appUrl
+      const param = $.param(this.model.getState())
+      if (param) {
+        url = url.concat('?', param)
+      }
+      window.history.replaceState({ catalogueSearch: 'update search url' }, '', url)
+    } else {
+      this.navigate($.param(this.model.getState(), true), { replace: true })
+    }
   },
 
   /*

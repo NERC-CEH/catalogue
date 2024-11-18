@@ -1,6 +1,6 @@
 import {
   ContactView,
-  DataTypeSchemaSimpleView, FundingView, KeywordVocabularyView,
+  ObservedPropertySimpleView, FundingView, KeywordVocabularyView,
   ModelQAView,
   AdditionalInfoView,
   ModelResolutionView, OnlineResourceSimpleView,
@@ -8,7 +8,7 @@ import {
   PredefinedParentView,
   SupplementalView, TextareaView
 } from '../views'
-import { Contact, DataTypeSchema, Funding } from '../models'
+import { Contact, ObservedProperty, Funding } from '../models'
 import EditorView from '../EditorView'
 import InputView from '../InputView'
 import BoundingBox from '../geometryMap/BoundingBox'
@@ -398,11 +398,11 @@ export default EditorView.extend({
       views: [
         new PredefinedParentView({
           model: this.model,
-          ModelType: DataTypeSchema,
+          ModelType: ObservedProperty,
           modelAttribute: 'inputParameters',
           multiline: true,
           label: 'Input parameters',
-          ObjectInputView: DataTypeSchemaSimpleView,
+          ObjectInputView: ObservedPropertySimpleView,
           predefined: {
             'Boolean (true/false)': {
               type: 'boolean'
@@ -447,11 +447,11 @@ export default EditorView.extend({
       views: [
         new PredefinedParentView({
           model: this.model,
-          ModelType: DataTypeSchema,
+          ModelType: ObservedProperty,
           modelAttribute: 'outputParameters',
           multiline: true,
           label: 'Output parameters',
-          ObjectInputView: DataTypeSchemaSimpleView,
+          ObjectInputView: ObservedPropertySimpleView,
           predefined: {
             'Boolean (true/false)': {
               type: 'boolean'

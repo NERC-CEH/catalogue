@@ -166,7 +166,8 @@ class UploadControllerTest {
                 lastModified,
                 lastValidated,
                 path,
-                "VALID"
+                "VALID",
+                "text/csv"
             )
         );
         given(uploadService.get(datasetId, DATASTORE, 1, 20))
@@ -185,7 +186,8 @@ class UploadControllerTest {
                 lastModified,
                 lastValidated,
                 path,
-                "VALID"
+                "VALID",
+                "text/csv"
             )
         );
         given(uploadService.get(datasetId, DROPBOX, path))
@@ -204,7 +206,8 @@ class UploadControllerTest {
                 lastModified,
                 lastValidated,
                 path,
-                "VALID"
+                "VALID",
+                "text/csv"
             )
         );
         given(uploadService.get(datasetId, DROPBOX, 1, 20))
@@ -223,7 +226,8 @@ class UploadControllerTest {
                 lastModified,
                 lastValidated,
                 path,
-                "VALID"
+                "VALID",
+                "text/csv"
             )
         );
         given(uploadService.get(datasetId, METADATA, 1, 20))

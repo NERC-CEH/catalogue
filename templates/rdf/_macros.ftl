@@ -5,15 +5,15 @@
 </#if>
 
 <#macro displayLiteral string>
-  <#--Ensure literals do not contain " characters-->
-  <#t>${string?replace("\"","'")?replace("\n"," ")}
+  <#--Ensure literals do not contain " characters or line breaks-->
+  <#t>"${string?trim?replace("\"","'")?replace("\n"," ")}"
 </#macro>
 
 <#macro contactList contacts prefix="c">
   <#if contacts?has_content>
     <#list contacts as contact>
 
-      <#assign contactIdentifier= ":" + id + "_" + prefix +  contact?index>
+      <#assign contactIdentifier= "_:" + prefix +  contact?index>
       <#if contact.individualName?has_content>
         <#if contact.isOrcid()>
           <#assign contactIdentifier= "\l" + contact.nameIdentifier?trim + "\g">
@@ -24,7 +24,7 @@
         </#if>
       </#if>
 
-      ${contactIdentifier}<#sep>,</#sep>
+      ${contactIdentifier}<#sep>,</#sep><#t>
     </#list>
   </#if>
 </#macro>
@@ -33,7 +33,7 @@
   <#if contacts?has_content>
     <#list contacts as contact>
       <#if contact.individualName?has_content || contact.organisationIdentifier?has_content>
-        <#assign contactIdentifier= ":" + id + "_" + prefix + contact?index >
+        <#assign contactIdentifier= "_:" + prefix + contact?index >
         <#if contact.individualName?has_content>
           <#assign contactType="vcard:Individual">
           <#assign contactName=contact.individualName>
@@ -51,12 +51,6 @@
             <#assign contactIdentifier="\l" + contact.organisationIdentifier?trim + "\g">
           </#if>
         </#if>
-
-
-          <#--
-          UKCEH and EIDC organisations are defined at the catalogue level so don't need to be included here
-          Only return data for organisations other than UKCEH or EIDC
-          -->
           <#if !contactIdentifier?matches("^\lhttp(|s)://ror.org/04xw4m193\g$") && !contactIdentifier?matches("^\lhttp(|s)://ror.org/00pggkr55\g$")>
             ${contactIdentifier} a ${contactType} ;
             vcard:fn "${contactName?trim}" ;
@@ -73,11 +67,11 @@
   <#if funding?has_content>
     <#list funding as fund>
 
-      <#assign fundIdentifier= ":" + id + "_fund" + fund?index>
+      <#assign fundIdentifier= "_:fund" + fund?index>
       <#if fund.awardURI?has_content>
         <#assign fundIdentifier ="\l" + fund.awardURI?trim+ "\g">
       </#if>
-      ${fundIdentifier?trim}<#sep>,</#sep>
+      ${fundIdentifier?trim}<#sep>,</#sep><#t>
     </#list>
   </#if>
 </#macro>
@@ -86,12 +80,12 @@
   <#if  funding?has_content>
     <#list funding as fund>
 
-      <#assign fundIdentifier= ":" + id + "_proj" + fund?index>
+      <#assign fundIdentifier= "_:proj" + fund?index>
       <#if fund.awardURI?has_content>
         <#assign fundIdentifier ="\l" + fund.awardURI?trim+ "\g">
       </#if>
 
-      ${fundIdentifier?trim} a prov:Activity ; <#if fund.awardTitle?has_content>rdfs:label "<@displayLiteral fund.awardTitle />"</#if> .
+      ${fundIdentifier?trim} a prov:Activity ; <#if fund.awardTitle?has_content>rdfs:label <@displayLiteral fund.awardTitle /></#if> .
     </#list>
   </#if>
 </#macro>
@@ -103,14 +97,71 @@
     <#else>
       <#assign keyword ='"' + kw.value?replace("\"", "") + '"'>
     </#if>
-    ${keyword}<#sep>,</#sep>
+    ${keyword}<#sep>,</#sep><#t>
   </#list>
 </#macro>
 
 <#macro keywordDetail keywords>
   <#list keywords as kw>
     <#if kw.uri?has_content>
-      <${kw.uri?trim}> a skos:Concept; skos:prefLabel "<@displayLiteral kw.value />"; rdfs:label "<@displayLiteral kw.value />".
+      <${kw.uri?trim}> a skos:Concept; skos:prefLabel <@displayLiteral kw.value />; rdfs:label <@displayLiteral kw.value />.
     </#if>
   </#list>
+</#macro>
+
+<#macro opList >
+  <#list observedProperty as op>
+    <#if op.uri?has_content>
+      <#assign keyword ="\l" + op.uri?trim+ "\g">
+    <#elseif op.title?has_content>
+      <#assign keyword ='"' + op.title?replace("\"", "") + '"'>
+    <#else>
+      <#assign keyword ='"' + op.value?replace("\"", "") + '"'>
+    </#if>
+    ${keyword}<#sep>,</#sep><#t>
+  </#list>
+</#macro>
+
+<#macro opDetail>
+  <#list observedProperty as op>
+    <#assign opLabel = "unknown">
+    <#if op.title?has_content>
+      <#assign opLabel = op.title>
+    <#elseif op.value?has_content>
+      <#assign opLabel = op.value>
+    </#if>
+
+    <#if op.uri?has_content>
+      <${op.uri?trim}> a skos:Concept;skos:prefLabel <@displayLiteral opLabel />; rdfs:label <@displayLiteral opLabel />.
+    </#if>
+  </#list>
+</#macro>
+
+<#macro incomingCitationList>
+  <#if incomingCitations?has_content>
+    <#list incomingCitations as citation>
+
+      <#assign citationIdentifier= "_:citation" + citation?index>
+      <#if citation.url?has_content>
+        <#assign citationIdentifier ="\l" + citation.url?trim + "\g">
+      </#if>
+      ${citationIdentifier?trim}<#sep>,</#sep><#t>
+    </#list>
+  </#if>
+</#macro>
+
+<#macro incomingCitationDetail>
+  <#if incomingCitations?has_content>
+    <#list incomingCitations as citation>
+
+      <#assign citationIdentifier= "_:citation" + citation?index>
+      <#if citation.url?has_content>
+        <#assign citationIdentifier ="\l" + citation.url?trim + "\g">
+      </#if>
+
+      ${citationIdentifier?trim} a <http://purl.org/vocab/frbr/core#Work> ;
+        <#if citation.description?has_content>rdfs:label <@displayLiteral citation.description />; </#if>
+        .
+    </#list>
+  </#if>
 </#macro>

@@ -36,6 +36,7 @@ public class HubbubResponse {
         LocalDateTime lastValidated;
         String path;
         String status;
+        String mimeType;
 
         @JsonCreator
         public FileInfo(
@@ -48,7 +49,8 @@ public class HubbubResponse {
             @JsonProperty("lastModified") LocalDateTime lastModified,
             @JsonProperty("lastValidated") LocalDateTime lastValidated,
             @JsonProperty("path") String path,
-            @JsonProperty("status") String status
+            @JsonProperty("status") String status,
+            @JsonProperty("mimeType") String mimeType
         ) {
             this.bytes = bytes;
             this.datasetId = datasetId;
@@ -60,6 +62,7 @@ public class HubbubResponse {
             this.lastValidated = lastValidated;
             this.path = path;
             this.status = status;
+            this.mimeType = mimeType;
         }
     }
 

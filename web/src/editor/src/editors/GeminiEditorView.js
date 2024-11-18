@@ -13,7 +13,7 @@ import {
   OnlineResourceView,
   ParentStringView,
   ParentView,
-  PredefinedParentView,
+  PredefinedParentView, PredefinedParentLargeView,
   ReadOnlyView,
   RelationshipView,
   ResourceConstraintView,
@@ -25,7 +25,7 @@ import {
   SpatialReferenceSystemView,
   SpatialRepresentationTypeView,
   SpatialResolutionView,
-  TemporalExtentView,
+  TemporalExtentView, ObservedPropertyView,
   TextareaView, TopicCategoryView, KeywordThemeView, KeywordVocabularyView, InspireThemeView, CheckboxView
 } from '../views'
 import {
@@ -37,7 +37,7 @@ import {
   MultipleDate,
   OnlineResource,
   ResourceType,
-  Service,
+  Service, ObservedProperty,
   SpatialResolution,
   Supplemental, TopicCategory
 } from '../models'
@@ -283,16 +283,6 @@ export default EditorView.extend({
         }),
         new ParentView({
           model: this.model,
-          modelAttribute: 'keywordsObservedProperty',
-          label: 'Observed properties',
-          ObjectInputView: KeywordVocabularyView,
-          multiline: true,
-          helpText: 'Controlled keywords describing the observed properties/variables contained in this data resource',
-          fetchKeywordsButton: true,
-          renderLegiloKeywords: true
-        }),
-        new ParentView({
-          model: this.model,
           modelAttribute: 'keywordsPlace',
           label: 'Places',
           ObjectInputView: KeywordVocabularyView,
@@ -309,6 +299,7 @@ export default EditorView.extend({
           ObjectInputView: KeywordVocabularyView,
           multiline: true,
           helpText: 'Controlled keywords describing projects that fund/support the creation of this resource',
+          fetchKeywordsButton: true,
           renderLegiloKeywords: true
         }),
         new ParentView({
@@ -785,8 +776,48 @@ This is only needed if you configure 'Styling=Classification' for your GeoTiff.<
           ModelType: Supplemental,
           multiline: true,
           ObjectInputView: IncomingCitationView
+        }),
+        new PredefinedParentLargeView({
+          model: this.model,
+          ModelType: ObservedProperty,
+          modelAttribute: 'observedProperty',
+          multiline: true,
+          label: 'Observed properties',
+          ObjectInputView: ObservedPropertyView,
+          predefined: {
+            'Decimal number/float': {
+              type: 'number'
+            },
+            Integer: {
+              type: 'integer'
+            },
+            Text: {
+              type: 'string'
+            },
+            'Boolean (true/false)': {
+              type: 'boolean'
+            },
+            Date: {
+              type: 'date',
+              format: 'YYYY-MM-DD'
+            },
+            Time: {
+              type: 'time',
+              format: 'hh:mm:ss'
+            },
+            'Date & time': {
+              type: 'datetime',
+              format: 'YYYY-MM-DDThh:mm:ss'
+            }
+          }
+        }),
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'keywordsObservedProperty',
+          label: 'OLD Observed properties DO NOT USE',
+          ObjectInputView: KeywordVocabularyView,
+          multiline: true
         })
-
       ]
     }
     ]

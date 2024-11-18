@@ -5,6 +5,7 @@ import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.apache.solr.client.solrj.SolrQuery;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +29,8 @@ public class SearchController {
     public static final String PAGE_QUERY_PARAM = "page";
     public static final String ROWS_QUERY_PARAM = "rows";
     public static final String FACET_QUERY_PARAM = "facet";
+    public static final String SORT_FIELD_PARAM = "sortField";
+    public static final String SORT_ORDER_PARAM = "order";
 
     public static final int PAGE_DEFAULT = Integer.parseInt(PAGE_DEFAULT_STRING);
     public static final int ROWS_DEFAULT = Integer.parseInt(ROWS_DEFAULT_STRING);
@@ -78,6 +81,10 @@ public class SearchController {
         int rows,
         @RequestParam(value=FACET_QUERY_PARAM, defaultValue = "")
         List<FacetFilter> facetFilters,
+        @RequestParam(value=SORT_FIELD_PARAM, required = false)
+        String sortField,
+        @RequestParam(value=SORT_ORDER_PARAM, defaultValue = "asc")
+        String sortOrder,
         HttpServletRequest request
     ) {
         return searcher.search(
@@ -89,7 +96,9 @@ public class SearchController {
             page,
             rows,
             facetFilters,
-            catalogueKey
+            catalogueKey,
+            sortField,
+            "desc".equals(sortOrder) ? SolrQuery.ORDER.desc : SolrQuery.ORDER.asc
         );
     }
 }

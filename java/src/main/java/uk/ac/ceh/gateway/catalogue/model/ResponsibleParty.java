@@ -57,6 +57,10 @@ public class ResponsibleParty {
         return toTitlecase(role);
     }
 
+    public String getPointOfContact() {
+        return role.equals("pointOfContact")? organisationName : "";
+    }
+
     private String toTitlecase(String camelCase) {
         StringBuilder result = new StringBuilder();
 
@@ -69,13 +73,13 @@ public class ResponsibleParty {
             char c = camelCase.charAt(i);
             if( prevChar == ' ')
             {
-                result.append(Character.toUpperCase(c));
+                result.append(Character.toLowerCase(c));
             }
             else if(Character.isUpperCase(c) && !Character.isUpperCase(prevChar))
             {
                 // insert space before start of word if camel case
                 result.append( ' ' );
-                result.append(Character.toUpperCase( c ));
+                result.append(Character.toLowerCase( c ));
             }
             else
             {

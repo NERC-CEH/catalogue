@@ -90,8 +90,8 @@ describe('Test LegiloKeywords View', () => {
 
   it('fetchKeywordsFromLegilo should fetch keywords from the API', (done) => {
     const mockApiResponse = [
-      { name: 'temperature', confidence: 0.9, url: 'custom-url1' },
-      { name: 'pressure', confidence: 0.8, url: 'custom-url2' }
+      { name: 'temperature', confidence: 0.9, matched_url: 'custom-url1' },
+      { name: 'pressure', confidence: 0.8, matched_url: 'custom-url2' }
     ]
 
     spyOn($, 'getJSON').and.returnValue(Promise.resolve(mockApiResponse))

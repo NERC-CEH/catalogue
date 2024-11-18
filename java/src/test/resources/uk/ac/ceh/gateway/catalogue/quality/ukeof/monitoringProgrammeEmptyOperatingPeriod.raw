@@ -1,0 +1,35 @@
+{
+  "id": "fa04fd09-2b28-49a4-b9bb-76957392b612",
+  "uri": "http://localhost:8080/id/fa04fd09-2b28-49a4-b9bb-76957392b612",
+  "type": "monitoringProgramme",
+  "title": "test programme",
+  "metadataDate": "2024-07-10T14:04:45.543426745",
+  "resourceIdentifiers": [
+    {
+      "code": "http://localhost:8080/id/fa04fd09-2b28-49a4-b9bb-76957392b612"
+    }
+  ],
+  "keywords": [
+    {
+      "value": "keyword 1",
+      "uri": "http://example.com/keyword1"
+    },
+    {
+      "value": "keyword 2",
+      "uri": "http://example.com/keyword2"
+    },
+    {
+      "value": "keyword 3",
+      "uri": "http://example.com/keyword3"
+    }
+  ],
+  "boundingBox": {
+    "westBoundLongitude": -6.680,
+    "eastBoundLongitude": 3.955,
+    "southBoundLatitude": 49.417,
+    "northBoundLatitude": 58.886,
+    "coordinates": "[[[-6.680, 49.417], [-6.680, 58.886], [3.955, 58.886], [3.955, 49.417], [-6.680, 49.417]]]",
+    "bounds": "{\"type\": \"Feature\",      \"properties\": {},      \"geometry\": {        \"type\": \"Polygon\",        \"coordinates\": [[[-6.680, 49.417], [-6.680, 58.886], [3.955, 58.886], [3.955, 49.417], [-6.680, 49.417]]]      }}"
+  },
+  "operatingPeriod": [{}]
+}

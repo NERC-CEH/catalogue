@@ -15,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.components.datastore.DataRepository;
+import uk.ac.ceh.components.datastore.git.GitFileNotFoundException;
 import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.document.DocumentListingService;
 import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
@@ -158,6 +159,27 @@ public class JenaIndexingServiceTest {
 
         //Then
         assertFalse(service.isIndexEmpty());
+    }
+
+    @Test
+    void checkThatCanUnindexObjectTriplesThrownGitFileNotFoundEx() throws Exception {
+        //Given
+        val subjectUri = "https://www.ceh.ac.uk/removeMe";
+        val subject = ResourceFactory.createResource(subjectUri);
+        val predicate = ResourceFactory.createProperty("https://ceh.ac.uk/property");
+        val object = ResourceFactory.createResource("https://ceh.ac.uk/linkedId");
+        service.index(List.of(ResourceFactory.createStatement(subject, predicate, object)));
+
+        given(documentIdentifierService.generateUri("removeMe"))
+            .willReturn(subjectUri);
+
+        given(reader.readBundle("removeMe")).willThrow(GitFileNotFoundException.class);
+
+        //When
+        service.unindexDocuments(List.of("removeMe"));
+
+        //Then
+        assertTrue(service.isIndexEmpty());
     }
 
     @Test

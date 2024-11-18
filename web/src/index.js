@@ -334,7 +334,8 @@ function initPermission () {
 
 function initSearch () {
   const app = new SearchApp()
-  new SearchAppView({ model: app })
+  const searchAppView = new SearchAppView({ model: app })
+  searchAppView.facetsPanelView.createFacetSearch(app)
   new SearchRouter({ model: app, location: window.location })
   new MessageView({ model: app })
 }

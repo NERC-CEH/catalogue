@@ -8,7 +8,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
-import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.DescriptiveKeywords;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Geometry;
@@ -29,6 +28,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -187,12 +187,17 @@ class SolrIndexMetadataDocumentGeneratorTest {
         //Given
         CehModelApplication application = new CehModelApplication();
         application.setKeywords(Arrays.asList(
-            Keyword.builder().URI("http://vocabs.ceh.ac.uk/inms/topic/nitrogen").value("nitrogen").build(),
-            Keyword.builder().URI("http://vocabs.ceh.ac.uk/inms/topic/management").value("management").build(),
-            Keyword.builder().URI("http://vocabs.ceh.ac.uk/inms/scale/plot").value("plot").build()
+            Keyword.builder().URI("http://vocabs.ceh.ac.uk/inms/topic/geology").value("nitrogen").build(),
+            Keyword.builder().URI("http://vocabs.ceh.ac.uk/inms/topic/soil").value("management").build(),
+            Keyword.builder().URI("http://vocabs.ceh.ac.uk/inms/topic/weather").value("plot").build()
         ));
 
         //When
+        when(vocabularyService.isMember(anyString(), anyString())).thenReturn(false);
+        when(vocabularyService.isMember("topic", "http://vocabs.ceh.ac.uk/inms/topic/geology")).thenReturn(true);
+        when(vocabularyService.isMember("topic", "http://vocabs.ceh.ac.uk/inms/topic/soil")).thenReturn(true);
+
+
         SolrIndex index = generator.generateIndex(application);
         List<String> actual = index.getImpTopic();
 
@@ -337,11 +342,11 @@ class SolrIndexMetadataDocumentGeneratorTest {
             .keywords(Arrays.asList(
                 Keyword.builder()
                     .value("farm")
-                    .URI("http://vocabs.ceh.ac.uk/ncterms/farm")
+                    .URI("http://vocabs.ceh.ac.uk/imp/wp/nitrogen")
                     .build(),
                 Keyword.builder()
                     .value("field")
-                    .URI("http://vocabs.ceh.ac.uk/ncterms/field")
+                    .URI("http://vocabs.ceh.ac.uk/inms/wp/pm")
                     .build()
                 )
             ).build();
@@ -367,15 +372,15 @@ class SolrIndexMetadataDocumentGeneratorTest {
 
         //Then
         verify(vocabularyService).isMember(
-            "http://vocabs.ceh.ac.uk/ncterms/geographical_scale",
-            "http://vocabs.ceh.ac.uk/ncterms/farm"
+            "wp",
+            "http://vocabs.ceh.ac.uk/imp/wp/nitrogen"
         );
         verify(vocabularyService).isMember(
-            "http://vocabs.ceh.ac.uk/ncterms/geographical_scale",
-            "http://vocabs.ceh.ac.uk/ncterms/field"
+            "wp",
+            "http://vocabs.ceh.ac.uk/inms/wp/pm"
         );
         verify(vocabularyService).isMember(
-            "http://vocabs.ceh.ac.uk/ncterms/geographical_scale",
+            "wp",
             "https://example.com/blue"
         );
     }
@@ -494,12 +499,21 @@ class SolrIndexMetadataDocumentGeneratorTest {
 
         GeminiDocument document = new GeminiDocument();
         document.setDescriptiveKeywords(Arrays.asList(imp, other));
-
+        document.setId("TestID");
 
         //When
+        when(vocabularyService.isMember(anyString(), anyString())).thenReturn(false);
+        when(vocabularyService.isMember("wp", "http://vocabs.ceh.ac.uk/imp/wp/nitrogen")).thenReturn(true);
+        when(vocabularyService.isMember("wp", "http://vocabs.ceh.ac.uk/imp/wp/phosphorous")).thenReturn(true);
+
         SolrIndex index = generator.generateIndex(document);
 
         //Then
+        verify(vocabularyService).isMember(
+            "wp",
+            "http://vocabs.ceh.ac.uk/imp/wp/nitrogen"
+        );
+        assertTrue(vocabularyService.isMember("wp","http://vocabs.ceh.ac.uk/imp/wp/nitrogen"));
         assertThat(index.getImpWaterPollutant().contains("Nitrogen"), is(true));
         assertThat(index.getImpWaterPollutant().contains("Phosphorous"), is(true));
         assertThat(index.getImpWaterPollutant().contains("Blue"), is(false));
