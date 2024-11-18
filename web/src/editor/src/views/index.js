@@ -17,7 +17,6 @@ export { default as ObservedPropertySimpleView } from './ObservedPropertySimpleV
 export { default as FundingView } from './FundingView'
 export { default as SupplementalView } from './SupplementalView'
 export { default as SupplementalTextView } from './SupplementalTextView'
-export { default as DeploymentView } from './DeploymentView'
 export { default as ServiceView } from './ServiceView'
 export { default as MapDataSourceView } from './MapDataSourceView'
 export { default as DescriptiveKeywordView } from './DescriptiveKeywordView'
