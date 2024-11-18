@@ -5,6 +5,8 @@
 @import (inline) "../node_modules/jquery-ui/dist/themes/base/jquery-ui.min.css";
 @import (inline) "../node_modules/leaflet.markercluster/dist/MarkerCluster.css";
 @import (inline) "../node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css";
+@import (inline) "../node_modules/select2/dist/css/select2.min.css";
+@import (inline) "../node_modules/select2-bootstrap-5-theme/dist/select2-bootstrap-5-theme.min.css";
 
 .edit-mode {
     a#atlwdg-trigger {
@@ -476,5 +478,40 @@ ul.ui-autocomplete {
 
     &:-webkit-scrollbar-thumb {
         background: #999;
+    }
+}
+
+.select2-container {
+    .select2--large {
+        font-size: 1.7rem !important;
+
+        .select2-selection__rendered {
+            li {
+                font-size: 1.7rem !important;
+            }
+
+            .select2-selection__choice {
+                flex-direction: row-reverse !important;
+
+               .select2-selection__choice__remove {
+                    margin-left: 8px;
+                    margin-top: 4px;
+               }
+            }
+        }
+
+        .select2-results__options {
+            max-height: 290px !important;
+
+            li {
+                font-size: 1.7rem !important;
+                padding-left: 24px !important;
+            }
+
+            .select2-results__option--selected {
+                color: darkgray !important;
+                background-color: inherit !important;
+            }
+        }
     }
 }

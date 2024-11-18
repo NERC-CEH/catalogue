@@ -8,10 +8,11 @@ import _ from 'underscore'
  */
 export default _.template(`
 <% _.each(facets, function(facet) { %>
-  <div class="facet">
-    <div class="facet-header"><%= facet.displayName %></div>
-    <input placeholder="search <%= facet.displayName.toLowerCase() %>" id="search-facet-<%= facet.displayName.replaceAll(' ', '-') %>" class="form-control search-facet input-sm">
-    <%= template({"results": facet.results, "template": template}) %>
-  </div>
+  <% if(facet.results) { %>
+    <div class="facet">
+      <div class="facet-header"><%= facet.displayName %></div>
+      <%= template({"facet": facet, "template": template}) %>
+    </div>
+  <% } %>
 <% }); %>
 `)
