@@ -136,23 +136,23 @@
         .editor-button {
             @include btn;
             @include btn-light;
-            border: 1px solid #dee2e6;
+            @include border;
             @include btn-sm;
-            float: right;
+            @include float-end;
         }
 
         .editor-button-xs {
             @include btn;
             @include btn-light;
-            border: 1px solid #dee2e6;
+            @include border;
             @include btn-sm;
-            float: right;
+            @include float-end;
         }
 
         .editor-button-remove {
             @include btn;
             @include btn-light;
-            border: 1px solid #dee2e6;
+            @include border;
             @include btn-sm;
         }
 
@@ -245,7 +245,7 @@
             .btnSchemaDetail {
                 @include btn;
                 @include btn-light;
-                border: 1px solid #dee2e6;
+                @include border;
                 @include btn-sm;
                 text-align: right;
 
@@ -291,7 +291,7 @@
         }
 
         .dropdown {
-            float: right;
+            @include float-end;
             display: inline-block;
         }
 

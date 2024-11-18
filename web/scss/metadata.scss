@@ -248,7 +248,7 @@ body {
         .licenceText {
             .ogl-logo {
                 margin-top: 0.3em;
-                float: right;
+                @include float-end;
             }
         }
     }
@@ -782,7 +782,7 @@ body {
     }
 
     .browseGraphic {
-        float: right;
+        @include float-end;
         margin: 0 0 1em 2em;
         max-width: 30em;
         max-height: 30em;
