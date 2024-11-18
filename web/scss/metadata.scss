@@ -118,14 +118,14 @@ body {
 
         .alert-In-progress,
         .alert-Embargoed {
-            @extend .alert !optional;
-            @extend .alert-info !optional;
+            @include alert;
+            @include alert-info;
         }
 
         .alert-Superseded,
         .alert-Withdrawn {
-            @extend .alert !optional;
-            @extend .alert-danger !optional;
+            @include alert;
+            @include alert-danger;
         }
     }
 
@@ -201,9 +201,9 @@ body {
 
         a {
             margin-left: 1em;
-            @extend .btn !optional;
-            @extend .btn-danger !optional;
-            @extend .btn-sm !optional;
+            @include btn;
+            @include btn-danger;
+            @include btn-sm;
         }
     }
 
@@ -248,7 +248,7 @@ body {
         .licenceText {
             .ogl-logo {
                 margin-top: 0.3em;
-                @extend .float-end !optional;
+                @include float-end;
             }
         }
     }
@@ -263,7 +263,7 @@ body {
 
             .licenceText {
                 margin-top: 3em;
-                @extend .text-center !optional;
+                text-align: center;
 
                 img {
                     display: block;
@@ -395,7 +395,7 @@ body {
                 }
 
                 &-download {
-                    @extend .w-100 !optional;
+                    width: 100%;
                     font-weight: 600;
                     background-color: var(--primary-colour);
 
@@ -407,7 +407,7 @@ body {
                 }
 
                 &-supporting {
-                    @extend .w-100 !optional;
+                    width: 100%;
                     background-color: color.adjust($brand-success, $lightness: 15%, $space: hsl);
 
                     &:hover,
@@ -545,8 +545,8 @@ body {
         }
     }
 
-    .panel-right {
-        .panel-title {
+    .card-right {
+        .card-title {
             font-size: 1.4em;
             font-weight: normal;
             color: #bb4c1a;
@@ -591,16 +591,16 @@ body {
         white-space: normal;
     }
 
-    .panel {
+    .card {
         overflow-wrap: break-word;
     }
 
-    .panel,
-    .panel-heading {
+    .card,
+    .card-header {
         border-radius: 0;
     }
 
-    .panel-heading {
+    .card-header {
         padding: 0.5em 1em;
     }
 
@@ -670,7 +670,7 @@ body {
     #document-upload-panel {
         border-radius: 0;
 
-        .panel-body {
+        .card-body {
             padding: 1em;
 
             p {
@@ -705,10 +705,10 @@ body {
         }
     }
 
-    .panel {
+    .card {
         border-radius: var(--border-radius);
 
-        .panel-heading {
+        .card-header {
             border-radius: var(--border-radius) var(--border-radius) 0 0;
         }
     }
@@ -726,7 +726,7 @@ body {
     }
 
     #section-metadataQuality {
-        .panel-heading {
+        .card-header {
             color: #fff;
 
             .col-sm-9 {
@@ -734,15 +734,15 @@ body {
             }
         }
 
-        .panel-heading.MDquality_error {
+        .card-header.MDquality_error {
             background-color: var(--quality-error);
         }
 
-        .panel-heading.MDquality_warning {
+        .card-header.MDquality_warning {
             background-color: var(--quality-warning);
         }
 
-        .panel-heading.MDquality_info {
+        .card-header.MDquality_info {
             background-color: var(--quality-info);
         }
 
@@ -782,7 +782,7 @@ body {
     }
 
     .browseGraphic {
-        @extend .float-end !optional;
+        @include float-end;
         margin: 0 0 1em 2em;
         max-width: 30em;
         max-height: 30em;

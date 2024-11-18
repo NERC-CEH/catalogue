@@ -56,7 +56,6 @@ $font-size-h4:            ceil(($font-size-base * 1.2));
 $font-size-h5:            $font-size-base;
 $font-size-h6:            ceil(($font-size-base * 0.85)); // ~12px
 
-$fa-font-path: '../fonts';
 
 //** Unit-less `line-height` for use in components like buttons.
 $line-height-base:        1.6;
@@ -678,39 +677,39 @@ $list-group-link-heading-color: #333;
 //
 //##
 
-$panel-bg:                    #fff;
-$panel-body-padding:          15px;
-$panel-heading-padding:       10px 15px;
-$panel-footer-padding:        $panel-heading-padding;
-$panel-border-radius:         $border-radius-base;
+$card-bg:                    #fff;
+$card-body-padding:          15px;
+$card-header-padding:       10px 15px;
+$card-footer-padding:        $card-header-padding;
+$card-border-radius:         $border-radius-base;
 
 //** Border color for elements within panels
-$panel-inner-border:          #ddd;
-$panel-footer-bg:             #f5f5f5;
+$card-inner-border:          #ddd;
+$card-footer-bg:             #f5f5f5;
 
-$panel-default-text:          $gray-dark;
-$panel-default-border:        #ddd;
-$panel-default-heading-bg:    $gray-lighter;
+$card-default-text:          $gray-dark;
+$card-default-border:        #ddd;
+$card-default-heading-bg:    $gray-lighter;
 
-$panel-primary-text:          #fff;
-$panel-primary-border:        $brand-primary;
-$panel-primary-heading-bg:    $brand-primary;
+$card-primary-text:          #fff;
+$card-primary-border:        $brand-primary;
+$card-primary-heading-bg:    $brand-primary;
 
-$panel-success-text:          $state-success-text;
-$panel-success-border:        $state-success-border;
-$panel-success-heading-bg:    $state-success-bg;
+$card-success-text:          $state-success-text;
+$card-success-border:        $state-success-border;
+$card-success-heading-bg:    $state-success-bg;
 
-$panel-info-text:             $state-info-text;
-$panel-info-border:           $state-info-border;
-$panel-info-heading-bg:       $state-info-bg;
+$card-info-text:             $state-info-text;
+$card-info-border:           $state-info-border;
+$card-info-heading-bg:       $state-info-bg;
 
-$panel-warning-text:          $state-warning-text;
-$panel-warning-border:        $state-warning-border;
-$panel-warning-heading-bg:    $state-warning-bg;
+$card-warning-text:          $state-warning-text;
+$card-warning-border:        $state-warning-border;
+$card-warning-heading-bg:    $state-warning-bg;
 
-$panel-danger-text:           $state-danger-text;
-$panel-danger-border:         $state-danger-border;
-$panel-danger-heading-bg:     $state-danger-bg;
+$card-danger-text:           $state-danger-text;
+$card-danger-border:         $state-danger-border;
+$card-danger-heading-bg:     $state-danger-bg;
 
 
 //== Thumbnails

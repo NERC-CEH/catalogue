@@ -2,13 +2,16 @@ const path = require('path')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const RemoveEmptyScriptsPlugin = require('webpack-remove-empty-scripts')
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 
 module.exports = {
   entry: {
+    'shared-styles': './scss/shared-styles.scss',
     'style-assist': './scss/style-assist.scss',
     'style-ukceh': './scss/style-ukceh.scss',
     'style-cmp': './scss/style-cmp.scss',
     'style-datalabs': './scss/style-datalabs.scss',
+    'style-eidc': './scss/style-eidc.scss',
     'style-edge': './scss/style-edge.scss',
     'style-elter': './scss/style-elter.scss',
     'style-erammp': './scss/style-erammp.scss',
@@ -22,8 +25,7 @@ module.exports = {
     'style-infrastructure': './scss/style-infrastructure.scss',
     'style-sa': './scss/style-sa.scss',
     'style-ukeof': './scss/style-ukeof.scss',
-    'style-ukscape': './scss/style-ukscape.scss',
-    'style-eidc': './scss/style-eidc.scss'
+    'style-ukscape': './scss/style-ukscape.scss'
   },
   output: {
     path: path.resolve(__dirname, 'css'),
@@ -45,13 +47,6 @@ module.exports = {
             options: {
               sourceMap: true,
               url: false
-            }
-          },
-          // Postcss-loader adds browser specific prefixes for cross-browser compatibility.
-          {
-            loader: 'postcss-loader',
-            options: {
-              sourceMap: true
             }
           },
           // Compiles SCSS to CSS
@@ -80,6 +75,7 @@ module.exports = {
   },
   // Plugins for extracting CSS and removing empty JS files
   plugins: [
+    new CleanWebpackPlugin(),
     new MiniCssExtractPlugin({
       filename: '[name].css'
     }),

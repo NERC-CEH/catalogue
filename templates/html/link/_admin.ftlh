@@ -1,7 +1,7 @@
 <#if permission.userCanEdit(id)>
-  <div id="adminPanel" class="panel d-print-none">
-    <div class="panel-heading"><p class="panel-title">Admin</p></div>
-    <div class="panel-body">
+  <div id="adminPanel" class="card d-print-none">
+    <div class="card-header"><p class="card-title">Admin</p></div>
+    <div class="card-body">
       <div class="btn-group btn-group-sm btn-group-justified" role="group">
         <a href="#" class="btn btn-light border edit-control" data-document-type="${metadata.documentType}">Edit</a>
         <div class="btn-group btn-group-sm" role="group">

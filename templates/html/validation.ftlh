@@ -35,9 +35,9 @@
 
     <#if failed?has_content>
       <hr>
-      <div class="panel panel-danger">
-        <div class="panel-heading">Records which completely failed</div>
-        <div class="panel-body">
+      <div class="card card-danger">
+        <div class="card-header">Records which completely failed</div>
+        <div class="card-body">
           <#list failed as document>
             <p><a href="/documents/${document}">${document}</a></p>
           </#list>

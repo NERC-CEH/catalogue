@@ -5,7 +5,7 @@ import template from './template'
 export default Backbone.View.extend({
 
   events: {
-    'click .panel-heading': 'expand',
+    'click .card-header': 'expand',
     'click .accept': 'accept',
     'click .cancel': 'cancel',
     'click .delete': 'delete',

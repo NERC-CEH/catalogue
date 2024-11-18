@@ -1,10 +1,9 @@
 @import "theme";
 
-
 $brand-success: #9fb025;
 $gray-lighter: $brand-success;
 $header-text: #ffffff;
-$panel-default-text: $header-text;
+$card-default-text: $header-text;
 
 .erammp-metadata {
     .row {
@@ -19,7 +18,7 @@ $panel-default-text: $header-text;
         }
         .col-xs-12 {
             .view-label {
-                text-align: left ;
+                text-align: left;
             }
         }
     };
@@ -43,7 +42,7 @@ $panel-default-text: $header-text;
     };
 
     .table-schema {
-        @extend .table-sm !optional;
+        @include table-sm;
         td, th {
             padding:.3em 1em !important;
             .schema-constraints {

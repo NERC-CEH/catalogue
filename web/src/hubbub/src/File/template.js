@@ -1,21 +1,21 @@
 import _ from 'underscore'
 
 export default _.template(`
-<div class="panel panel-file <%= classes %>">
-    <div class="panel-heading">
+<div class="card card-file <%= classes %>">
+    <div class="card-header">
         <% if (errorType === 'file') { %>
             <i class="file-icon fa-solid fa-exclamation-circle"></i>
         <% } else { %>
             <% if (status === 'MOVING_FROM' || status === 'MOVING_TO') { %>
-                <span class="panel-heading-type"><%= size %></span>
+                <span class="card-header-type"><%= size %></span>
             <% } %>
         <% } %>
         <span><strong><%= status %></strong>&nbsp;</span>
         <span>&nbsp;<%= path %></span>
 
-        <i class="panel-heading-chevron fa-solid fa-chevron-down"></i>
+        <i class="card-header-chevron fa-solid fa-chevron-down"></i>
     </div>
-    <div class="panel-body">
+    <div class="card-body">
         <p>
             <b>Path: </b> <span><%= path %></span>
         </p>
@@ -33,15 +33,15 @@ export default _.template(`
         </div>
 
         <% if (message) { %>
-            <div class="panel-file-message">
+            <div class="card-file-message">
                 <% if (message.title) { %>
-                <span class="panel-file-message-title"><%= message.title %></span>
+                <span class="card-file-message-title"><%= message.title %></span>
                 <% } %>
-                <p class="panel-file-message-body"><%= message.content %></p>
+                <p class="card-file-message-body"><%= message.content %></p>
             </div>
         <% } %>
     </div>
-    <div class="panel-footer">
+    <div class="card-footer">
         <div class="buttons">
             <% if (datastore === 'dropbox' && moving) { %>
                 <button class="cancel btn btn-success">
