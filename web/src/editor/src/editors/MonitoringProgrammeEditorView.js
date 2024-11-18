@@ -14,7 +14,8 @@ import {
   ResourceIdentifierView,
   ContactView,
   PurposeOfCollectionView,
-  SupplementalLinkView
+  SupplementalLinkView,
+  DeploymentView
 } from '../views'
 import { MultipleDate, EnvironmentalDomain, PurposeOfCollection, Contact, Supplemental } from '../models'
 import { BoundingBox, BoundingBoxView } from '../geometryMap'
@@ -245,6 +246,24 @@ export default EditorView.extend({
 
         new ParentView({
           model: this.model,
+          modelAttribute: 'linksData',
+          ModelType: Supplemental,
+          multiline: true,
+          label: 'Links to data',
+          ObjectInputView: SupplementalLinkView
+        }),
+
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'linksOther',
+          ModelType: Supplemental,
+          multiline: true,
+          label: 'Other links',
+          ObjectInputView: SupplementalLinkView
+        }),
+
+        new ParentView({
+          model: this.model,
           modelAttribute: 'relationships',
           label: 'Relationships',
           ObjectInputView: RelationshipView,
@@ -263,20 +282,11 @@ export default EditorView.extend({
 
         new ParentView({
           model: this.model,
-          modelAttribute: 'linksData',
+          modelAttribute: 'deployments',
           ModelType: Supplemental,
           multiline: true,
-          label: 'Links to data',
-          ObjectInputView: SupplementalLinkView
-        }),
-
-        new ParentView({
-          model: this.model,
-          modelAttribute: 'linksOther',
-          ModelType: Supplemental,
-          multiline: true,
-          label: 'Other links',
-          ObjectInputView: SupplementalLinkView
+          label: 'Deployments',
+          ObjectInputView: DeploymentView
         })
       ]
     }
