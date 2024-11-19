@@ -143,6 +143,61 @@ public class JenaLookupServiceTest {
         assertThat("Generates correct combined GeoJSON", actual, equalTo(combinedGeometry));
     }
 
+    @Test
+    public void lookupProgrammeFeatures() {
+        // Given
+        Model triples = jenaTdb.getDefaultModel();
+        String geometryString = "{\"type\":\"Feature\",\"properties\":{\"name\":\"Facility 1\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[0,0]}}";
+        String geometryString2 = "{\"type\":\"Feature\",\"properties\":{\"name\":\"Facility 2\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[1,1]}}";
+        triples.add(createResource("http://facility1"), TITLE, "Facility 1");
+        triples.add(createResource("http://facility1"), METADATA_STATUS, "published");
+        triples.add(createResource("http://facility1"), TYPE, "facility");
+        triples.add(createResource("http://facility1"), HAS_GEOMETRY, geometryString);
+        triples.add(createResource("http://facility2"), TITLE, "Facility 2");
+        triples.add(createResource("http://facility2"), METADATA_STATUS, "published");
+        triples.add(createResource("http://facility2"), TYPE, "facility");
+        triples.add(createResource("http://facility2"), HAS_GEOMETRY, geometryString2);
+        triples.add(createResource("http://programme"), createProperty("http://onto.ceh.ac.uk/EF#utilises"), createResource("http://facility1"));
+        triples.add(createResource("http://programme"), createProperty("http://onto.ceh.ac.uk/EF#utilises"), createResource("http://facility2"));
+
+        // When
+        List<Link> actual = service.programmeFeatures("http://programme");
+
+        // Then
+        assertThat("Should be 2 Links", actual.size(), equalTo(2));
+        assertThat("First title should be Facility 1", actual.get(0).getTitle(), equalTo("Facility 1"));
+        assertThat("Second title should be Facility 2", actual.get(1).getTitle(), equalTo("Facility 2"));
+    }
+
+    @Test
+    public void programmeCombinedGeometries() throws JsonProcessingException {
+        // Given
+        Model triples = jenaTdb.getDefaultModel();
+        String geometryString = "{\"type\":\"Feature\",\"properties\":{\"name\":\"Facility 1\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[0,0]}}";
+        String geometryString2 = "{\"type\":\"Feature\",\"properties\":{\"name\":\"Facility 2\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[1,1]}}";
+        String combinedGeometry = "{\"type\":\"FeatureCollection\",\"features\":["
+            + "{\"type\":\"Feature\",\"properties\":{\"name\":\"Facility 1\",\"title\":\"Facility 1\",\"link\":\"http://facility1\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[0,0]}},"
+            + "{\"type\":\"Feature\",\"properties\":{\"name\":\"Facility 2\",\"title\":\"Facility 2\",\"link\":\"http://facility2\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[1,1]}}"
+            + "]}";
+        triples.add(createResource("http://facility1"), TITLE, "Facility 1");
+        triples.add(createResource("http://facility1"), METADATA_STATUS, "published");
+        triples.add(createResource("http://facility1"), TYPE, "facility");
+        triples.add(createResource("http://facility1"), HAS_GEOMETRY, geometryString);
+        triples.add(createResource("http://facility2"), TITLE, "Facility 2");
+        triples.add(createResource("http://facility2"), METADATA_STATUS, "published");
+        triples.add(createResource("http://facility2"), TYPE, "facility");
+        triples.add(createResource("http://facility2"), HAS_GEOMETRY, geometryString2);
+        triples.add(createResource("http://programme"), createProperty("http://onto.ceh.ac.uk/EF#utilises"), createResource("http://facility1"));
+        triples.add(createResource("http://programme"), createProperty("http://onto.ceh.ac.uk/EF#utilises"), createResource("http://facility2"));
+
+        // When
+        String actual = service.programmeCombinedGeometries("http://programme");
+
+        // Then
+        assertThat("Generates correct combined GeoJSON", actual, equalTo(combinedGeometry));
+    }
+
+
 
     @Test
     public void lookupMetadata() {
