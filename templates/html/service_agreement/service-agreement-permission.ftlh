@@ -28,7 +28,7 @@
       </#list>
       </tbody>
     </table>
-    <div class="navbar fixed-bottom p-3">
+    <div class="navbar fixed-bottom p-3 bg-secondary">
       <div class="container">
         <div class="d-flex ms-auto">
           <a class="btn btn-light border me-2" href="/service-agreement/${id}">Return to service agreement</a>

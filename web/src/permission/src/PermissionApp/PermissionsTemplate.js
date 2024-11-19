@@ -35,7 +35,7 @@ export default _.template(`
     <tbody>
     </tbody>
 </table>
-<div class="navbar fixed-bottom p-3">
+<div class="navbar fixed-bottom p-3 bg-secondary">
     <div class="container">
         <div class="d-flex ms-auto">
             <a href="/<%= doctype %>/<%= id %>/permission" class="btn btn-light border me-2">Cancel</a>

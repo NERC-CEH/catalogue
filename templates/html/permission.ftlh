@@ -32,7 +32,7 @@
         </#list>
       </tbody>
     </table>
-    <nav class="navbar fixed-bottom p-3">
+    <nav class="navbar fixed-bottom p-3 bg-secondary">
     <div class="container">
       <div class="d-flex ms-auto">
         <a class="btn btn-light border me-2" href="/documents/${id}">Return to metadata</a>
