@@ -479,38 +479,3 @@ ul.ui-autocomplete {
         background: #999;
     }
 }
-
-.select2-container {
-    .select2--large {
-        font-size: 1.7rem !important;
-
-        .select2-selection__rendered {
-            li {
-                font-size: 1.7rem !important;
-            }
-
-            .select2-selection__choice {
-                flex-direction: row-reverse !important;
-
-               .select2-selection__choice__remove {
-                    margin-left: 8px;
-                    margin-top: 4px;
-               }
-            }
-        }
-
-        .select2-results__options {
-            max-height: 290px !important;
-
-            li {
-                font-size: 1.7rem !important;
-                padding-left: 24px !important;
-            }
-
-            .select2-results__option--selected {
-                color: darkgray !important;
-                background-color: inherit !important;
-            }
-        }
-    }
-}
