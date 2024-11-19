@@ -27,7 +27,7 @@
         <div class="col-sm-3 key">Temporal resolution</div>
         <div class="col-sm-9 value">
           <#list temporalResolution as tr>${tr}<#sep>, </#sep></#list>
-        </dd>
+        </div>
       </#if>
     </div>
   </div>
