@@ -14,89 +14,89 @@
         <@blocks.links jena.models(uri) "Models" />
       </div>
       <div class="col-sm-8 col-sm-pull-4">
-        <dl class="dl-row">
+        <div class="row key-value">
           <#if relevanceToCaMMP?has_content>
-          <dt>Relevance to CaMMP</dt><dd>${relevanceToCaMMP}</dd>
+          <div class="key col-sm-3">Relevance to CaMMPdd</div><div class="value col-sm-9">${relevanceToCaMMP}</div>
           </#if>
           <#if date?has_content>
-          <dt>Date</dt><dd>${date}</dd>
+          <div class="key col-sm-3">Datedd</div><div class="value col-sm-9">${date}</div>
           </#if>
           <#if studySite?has_content>
-          <dt>Study Site</dt><dd>${studySite}</dd>
+          <div class="key col-sm-3">Study Sitedd</div><div class="value col-sm-9">${studySite}</div>
           </#if>
           <#if objective?has_content>
-          <dt>Objective</dt><dd>${objective}</dd>
+          <div class="key col-sm-3">Objectivedd</div><div class="value col-sm-9">${objective}</div>
           </#if>
           <#if funderDetails?has_content>
-          <dt>Funder Details</dt><dd>${funderDetails}</dd>
+          <div class="key col-sm-3">Funder Detailsdd</div><div class="value col-sm-9">${funderDetails}</div>
           </#if>
           <#if contact??>
-            <dt>Contact</dt>
-            <dd>
+            <div class="key col-sm-3">Contactdd</div>
+            <div class="value col-sm-9">
               <#if contact.individualName?has_content>${contact.individualName}</#if><#if contact.organisationName?has_content>, ${contact.organisationName}</#if>
-            </dd>
+            </div>
           </#if>
           <#if keywords??>
-          <dt>Keywords</dt><dd><@blocks.keywords keywords/></dd>
+          <div class="key col-sm-3">Keywordsdd</div><div class="value col-sm-9"><@blocks.keywords keywords/></div>
           </#if>
           <#if multipleModelsUsed?has_content>
-          <dt>Multiple Models Used</dt><dd>${multipleModelsUsed}</dd>
+          <div class="key col-sm-3">Multiple Models Useddd</div><div class="value col-sm-9">${multipleModelsUsed}</div>
           </#if>
           <#if multipleModelLinkages?has_content>
-          <dt>Multiple Model Linkages</dt><dd>${multipleModelLinkages}</dd>
+          <div class="key col-sm-3">Multiple Model Linkagesdd</div><div class="value col-sm-9">${multipleModelLinkages}</div>
           </#if>
           <#if sensitivity?has_content>
-          <dt>Sensitivity</dt><dd>${sensitivity}</dd>
+          <div class="key col-sm-3">Sensitivitydd</div><div class="value col-sm-9">${sensitivity}</div>
           </#if>
           <#if uncertainty?has_content>
-          <dt>Uncertainty</dt><dd>${uncertainty}</dd>
+          <div class="key col-sm-3">Uncertaintydd</div><div class="value col-sm-9">${uncertainty}</div>
           </#if>
           <#if validation?has_content>
-          <dt>Validation</dt><dd>${validation}</dd>
+          <div class="key col-sm-3">Validationdd</div><div class="value col-sm-9">${validation}</div>
           </#if>
           <#if modelEasyToUse?has_content>
-          <dt>Model Easy To Use</dt><dd>${modelEasyToUse}</dd>
+          <div class="key col-sm-3">Model Easy To Usedd</div><div class="value col-sm-9">${modelEasyToUse}</div>
           </#if>
           <#if userManualUseful?has_content>
-          <dt>User Manual Useful</dt><dd>${userManualUseful}</dd>
+          <div class="key col-sm-3">User Manual Usefuldd</div><div class="value col-sm-9">${userManualUseful}</div>
           </#if>
           <#if dataObtainable?has_content>
-          <dt>Data Obtainable</dt><dd>${dataObtainable}</dd>
+          <div class="key col-sm-3">Data Obtainabledd</div><div class="value col-sm-9">${dataObtainable}</div>
           </#if>
           <#if modelUnderstandable?has_content>
-          <dt>Model Understandable</dt><dd>${modelUnderstandable}</dd>
+          <div class="key col-sm-3">Model Understandabledd</div><div class="value col-sm-9">${modelUnderstandable}</div>
           </#if>
         </dl>
         <#if models?? >
           <h2>Models</h2>
           <#list models as model>
-          <dl class="dl-row">
+          <div class="row key-value">
             <#if model.name?has_content>
-            <dt>Name</dt><dd>${model.name}</dd>
+            <div class="key col-sm-3">Namedd</div><div class="value col-sm-9">${model.name}</div>
             </#if>
             <#if model.version?has_content>
-            <dt>Version</dt><dd>${model.version}</dd>
+            <div class="key col-sm-3">Versiondd</div><div class="value col-sm-9">${model.version}</div>
             </#if>
             <#if model.primaryPurpose?has_content>
-            <dt>Primary Purpose</dt><dd>${model.primaryPurpose}</dd>
+            <div class="key col-sm-3">Primary Purposedd</div><div class="value col-sm-9">${model.primaryPurpose}</div>
             </#if>
             <#if model.applicationScale?has_content>
-            <dt>Application Scale</dt><dd>${model.applicationScale}</dd>
+            <div class="key col-sm-3">Application Scaledd</div><div class="value col-sm-9">${model.applicationScale}</div>
             </#if>
             <#if model.keyOutputVariables?has_content>
-            <dt>Key Output Variables</dt><dd>${model.keyOutputVariables}</dd>
+            <div class="key col-sm-3">Key Output Variablesdd</div><div class="value col-sm-9">${model.keyOutputVariables}</div>
             </#if>
             <#if model.keyInputVariables?has_content>
-            <dt>Key Input Variables</dt><dd>${model.keyInputVariables}</dd>
+            <div class="key col-sm-3">Key Input Variablesdd</div><div class="value col-sm-9">${model.keyInputVariables}</div>
             </#if>
             <#if model.temporalResolution?has_content>
-            <dt>Temporal Resolution</dt><dd>${model.temporalResolution}</dd>
+            <div class="key col-sm-3">Temporal Resolutiondd</div><div class="value col-sm-9">${model.temporalResolution}</div>
             </#if>
             <#if model.spatialResolution?has_content>
-            <dt>Spatial Resolution</dt><dd>${model.spatialResolution}</dd>
+            <div class="key col-sm-3">Spatial Resolutiondd</div><div class="value col-sm-9">${model.spatialResolution}</div>
             </#if>
             <#if model.inputDataAvailableInDataCatalogue?has_content>
-            <dt>Input Data Available in Data Catalogue</dt><dd>${model.inputDataAvailableInDataCatalogue}</dd>
+            <div class="key col-sm-3">Input Data Available in Data Cataloguedd</div><div class="value col-sm-9">${model.inputDataAvailableInDataCatalogue}</div>
             </#if>
           </dl>
           </#list>

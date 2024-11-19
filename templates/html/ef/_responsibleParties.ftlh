@@ -1,12 +1,12 @@
 <#if responsibleParties?has_content>
   <div id="document-responsibleParties">
     <h2><a id="responsibleParties"></a>Responsible Parties</h2>
-    <dl class="dl-row">
+    <div class="row key-value">
 
     <#if responsibleParties?has_content>
       <#list responsibleParties as rp>
-        <dt>${rp.role.title!rp.role.value}</dt>
-        <dd>
+        <div class="col-sm-3 key">${rp.role.title!rp.role.value}</div>
+        <div class="col-sm-9 value">
           <#if rp.individualName?has_content>
             <span>${rp.individualName}</span><br>
           </#if>
@@ -33,9 +33,9 @@
           <#if (rp.onlineResource.href)?has_content>
             <address><a href="${rp.onlineResource.href}" target="_blank" rel="noopener noreferrer">${rp.onlineResource.href}</a></address>
           </#if>
-        </dd>
+        </div>
       </#list>
     </#if>
-    </dl>
+    </div>
   </div>
 </#if>

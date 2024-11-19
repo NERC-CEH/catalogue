@@ -130,7 +130,7 @@
 
                 <#if resolution?? && resolution?has_content>
                   <#list resolution as item>
-                    <div class="key-value">
+                    <div class="row key-value">
                       <#if item.category?has_content><div class="key">${item.category?cap_first}</div></#if>
                       <div class="value">
                         <#if item.min?has_content>Min: ${item.min}</#if>

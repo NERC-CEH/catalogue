@@ -2,7 +2,7 @@ import _ from 'underscore'
 
 export default _.template(`
 <div class="row">
-    <div class="col-sm-3 col-lg-3">
+    <div class="col-sm-3">
         <label for="modelInfo<%= data.index %>Name">Name</label>
     </div>
     <div class="col-sm-9 col-lg-9">
@@ -13,7 +13,7 @@ export default _.template(`
     </div>
 </div>
 <div class="row">
-    <div class="col-sm-3 col-lg-3">
+    <div class="col-sm-3">
         <label for="modelInfo<%= data.index %>Id">Id</label>
     </div>
     <div class="col-sm-9 col-lg-9">
@@ -21,7 +21,7 @@ export default _.template(`
     </div>
 </div>
 <div class="row">
-    <div class="col-sm-3 col-lg-3">
+    <div class="col-sm-3">
         <label for="modelInfo<%= data.index %>Notes">Notes</label>
     </div>
     <div class="col-sm-9 col-lg-9">
@@ -29,7 +29,7 @@ export default _.template(`
     </div>
 </div>
 <div class="row">
-    <div class="col-sm-3 col-lg-3">
+    <div class="col-sm-3">
         <label for="modelInfo<%= data.index %>spatialExtentOfApplication">Spatial extent of application</label>
     </div>
     <div class="col-sm-9 col-lg-9">
@@ -48,7 +48,7 @@ export default _.template(`
     </div>
 </div>
 <div class="row">
-    <div class="col-sm-3 col-lg-3">
+    <div class="col-sm-3">
         <label for="modelInfo<%= data.index %>AvailableSpatialData">Available spatial data</label>
     </div>
     <div class="col-sm-9 col-lg-9">
@@ -60,7 +60,7 @@ export default _.template(`
     </div>
 </div>
 <div class="row">
-    <div class="col-sm-3 col-lg-3">
+    <div class="col-sm-3">
         <label for="modelInfo<%= data.index %>SpatialResolutionOfApplication">Spatial resolution of application</label>
     </div>
     <div class="col-sm-9 col-lg-9">
@@ -68,7 +68,7 @@ export default _.template(`
     </div>
 </div>
 <div class="row">
-    <div class="col-sm-3 col-lg-3">
+    <div class="col-sm-3">
         <label for="modelInfo<%= data.index %>TemporalExtentOfApplicationStartDate">Temporal extent of application (start date)</label>
     </div>
     <div class="col-sm-9 col-lg-9">
@@ -76,7 +76,7 @@ export default _.template(`
     </div>
 </div>
 <div class="row">
-    <div class="col-sm-3 col-lg-3">
+    <div class="col-sm-3">
         <label for="modelInfo<%= data.index %>TemporalExtentOfApplicationEndDate">Temporal extent of application (end date)</label>
     </div>
     <div class="col-sm-9 col-lg-9">
@@ -84,7 +84,7 @@ export default _.template(`
     </div>
 </div>
 <div class="row">
-    <div class="col-sm-3 col-lg-3">
+    <div class="col-sm-3">
         <label for="modelInfo<%= data.index %>TemporalResolutionOfApplication">Temporal resolution of application</label>
     </div>
     <div class="col-sm-9 col-lg-9">
@@ -92,7 +92,7 @@ export default _.template(`
     </div>
 </div>
 <div class="row">
-    <div class="col-sm-3 col-lg-3">
+    <div class="col-sm-3">
         <label for="modelInfo<%= data.index %>CalibrationConditions">Calibration</label>
     </div>
     <div class="col-sm-9 col-lg-9">

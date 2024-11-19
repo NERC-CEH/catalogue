@@ -18,7 +18,7 @@
           <p class="licencePreamble">By accessing or using this dataset, you agree to the terms of the relevant licence agreement(s). You will ensure that this dataset is cited in any publication that describes research in which the data have been used.</p>
           <#include "_licence.ftlh">
         </#if>
-        <div class="onlineResourceLinks">
+        <div class="onlineResourceLinks d-grid gap-2">
           <#if resourceStatus == "Available" || resourceStatus == "Controlled" || resourceStatus == "Superseded">
             <#if offlineOrders?? || downloadOrder?? && ((downloadOrder.orderResources)?has_content || (downloadOrder.supportingDocumentsUrl)?has_content) || ((resourceType.value)?? && distributionFormats?? && distributionFormats?has_content) || mapViewable?? >
               <#if (downloadOrder.orderable)?? && downloadOrder.orderable>

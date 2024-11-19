@@ -129,12 +129,12 @@
             </div>
 
             <div class="contactDetails">
-                <div class="keyvalue">
+                <div class="row key-value">
                     <div class="key">Deposit reference</div>
                     <div class="value"><span>${depositReference!"NOT PROVIDED"}</span></div>
                 </div>
                 <#if depositorName?? && depositorName!=''>
-                    <div class="keyvalue">
+                    <div class="row key-value">
                         <div class="key">Depositor</div>
                         <div class="value">
                             ${depositorName}
@@ -143,7 +143,7 @@
                     </div>
                 </#if>
                 <#if eidcName?? && eidcName!=''>
-                    <div class="keyvalue">
+                    <div class="row key-value">
                         <div class="key">For the EIDC</div>
                         <div class="value">
                             ${eidcName}
@@ -183,7 +183,7 @@
                 <@displayData "Number of files to be deposited" fileNumber/>
 
                 <#if supportingDocs?has_content && supportingDocs?size gt 0 >
-                    <div class="keyvalue">
+                    <div class="row key-value">
                         <div class="key">Supporting documents</div>
                         <div class="value">
                             <#list supportingDocs as doc>
@@ -221,7 +221,7 @@
 
             <div class="section section--6">
                 <h2>Availability, access and licensing</h2>
-                <div class="keyvalue">
+                <div class="row key-value">
                     <div class="key">Availability</div>
                     <div class="value">
                         <#if availability??>
@@ -267,7 +267,7 @@
 <#-- Freemarker macros -->
 <#macro displayData key value=''>
     <#if value!=''>
-    <div class="keyvalue">
+    <div class="row key-value">
         <div class="key">${key}</div>
         <div class="value">${value}</div>
     </div>
@@ -333,7 +333,7 @@
 </#macro>
 
 <#macro displaySupportingDocuments>
-    <div class="keyvalue">
+    <div class="row key-value">
         <div class="key">Supporting documents</div>
         <div class="value">
             <#list supportingDocumentNames as name>
@@ -344,7 +344,7 @@
 </#macro>
 
 <#macro displayEndUserLicence>
-    <div class="keyvalue">
+    <div class="row key-value">
         <div class="key">Licence</div>
         <div class="value">
             <#if endUserLicence?has_content && endUserLicence.code == 'license'>
@@ -361,7 +361,7 @@
 
 <#macro displayOwnerOfIpr>
     <#if ownersOfIpr?has_content && ownersOfIpr?size gt 0 >
-     <div class="keyvalue">
+     <div class="row key-value">
         <div class="key">Owner<#if ownersOfIpr?size gt 1>s</#if> of IPR</div>
         <div class="value">
             <#list ownersOfIpr>
@@ -378,7 +378,7 @@
 
 <#macro displayGrants>
     <#if funding?has_content && funding?size gt 0 >
-     <div class="keyvalue">
+     <div class="row key-value">
         <div class="key">Funding</div>
         <div class="value">
             <#list funding>
@@ -393,14 +393,14 @@
 
 
 <#macro displayKeywords>
-    <dl class="keyvalue">
+    <div>
       <#include "../document/_tags.ftlh">
-    </dl>
+    </div>
 </#macro>
 
 <#macro displayArea>
     <#if boundingBoxes??>
-        <div class="keyvalue">
+        <div class="row key-value">
             <div class="key">Area of study</div>
             <div class="key">
                 <div id="studyarea-map" class="studyarea-map">
