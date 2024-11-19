@@ -32,15 +32,15 @@
         </#list>
       </tbody>
     </table>
-    <div class="navbar navbar-default navbar-fixed-bottom">
+    <nav class="navbar fixed-bottom p-3">
     <div class="container">
-      <div class="navbar-right">
-        <a class="btn btn-light border navbar-btn" href="/documents/${id}">Return to metadata</a>
+      <div class="d-flex ms-auto">
+        <a class="btn btn-light border me-2" href="/documents/${id}">Return to metadata</a>
         <#if canEdit>
-          <a class="btn btn-primary navbar-btn" href="#permission/${id}"><i class="fa-regular fa-edit"></i> Edit</a>
+          <a class="btn btn-primary" href="#permission/${id}"><i class="fa-regular fa-edit"></i> Edit</a>
         </#if>
       </div>
     </div>
-  </div>
+  </nav>
   </div>
 </@skeleton.master>

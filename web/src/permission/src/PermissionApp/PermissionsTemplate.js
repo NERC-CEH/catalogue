@@ -35,11 +35,11 @@ export default _.template(`
     <tbody>
     </tbody>
 </table>
-<div class="navbar navbar-default navbar-fixed-bottom">
+<div class="navbar fixed-bottom p-3">
     <div class="container">
-        <div class="navbar-right">
-            <a href="/<%= doctype %>/<%= id %>/permission" class="btn btn-light border navbar-btn">Cancel</a>
-            <button id="permissionSave" class="btn btn-primary navbar-btn"><i class="fa-regular fa-save"></i> Save</button>
+        <div class="d-flex ms-auto">
+            <a href="/<%= doctype %>/<%= id %>/permission" class="btn btn-light border me-2">Cancel</a>
+            <button id="permissionSave" class="btn btn-primary"><i class="fa-regular fa-save"></i> Save</button>
         </div>
     </div>
 </div>
