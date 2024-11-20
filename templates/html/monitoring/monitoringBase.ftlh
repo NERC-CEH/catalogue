@@ -28,7 +28,7 @@
           </#if>
 
           <#if description?? && description?has_content>
-            <div><@b.linebreaksAndLinks description /></div>
+            <div class="mt-3"><@b.linebreaksAndLinks description /></div>
           </#if>
 
         </div>
