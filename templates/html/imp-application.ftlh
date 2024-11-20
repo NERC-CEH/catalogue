@@ -66,7 +66,7 @@
           <#if modelUnderstandable?has_content>
           <div class="key col-sm-3">Model Understandabledd</div><div class="value col-sm-9">${modelUnderstandable}</div>
           </#if>
-        </dl>
+        </div>
         <#if models?? >
           <h2>Models</h2>
           <#list models as model>
@@ -98,7 +98,7 @@
             <#if model.inputDataAvailableInDataCatalogue?has_content>
             <div class="key col-sm-3">Input Data Available in Data Cataloguedd</div><div class="value col-sm-9">${model.inputDataAvailableInDataCatalogue}</div>
             </#if>
-          </dl>
+          </div>
           </#list>
         </#if>
         <#if inputData?? >

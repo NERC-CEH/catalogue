@@ -42,7 +42,7 @@ export default _.template(`
         <% } %>
     </div>
     <div class="card-footer">
-        <div class="buttons">
+        <div class="d-inline-flex gap-2 buttons">
             <% if (datastore === 'dropbox' && moving) { %>
                 <button class="cancel btn btn-success">
                     <i class="btn-icon fa-solid fa-ban"></i>

@@ -1,5 +1,15 @@
 .document-upload {
-    margin-top: 32px;
+    margin-block: 1em;
+
+    .page-header {
+        margin-block: 1.6em;
+    }
+
+    .total-files {
+        font-size: 0.6em;
+        margin-inline-start: 1em;
+        color: #999;
+    }
 
     .return {
         font-size: 18px;
@@ -25,7 +35,7 @@
         }
 
         &:last-child {
-            margin-bottom: 16px;
+            margin-block-end: 16px;
         }
 
         &.card-default .card-header {
@@ -51,17 +61,17 @@
 
             &-chevron {
                 transition: transform ease-in-out 0.2s;
-                margin-left: auto;
+                margin-inline-start: auto;
                 line-height: 22px;
             }
 
             &-type {
-                margin-left: 12px;
+                margin-inline-start: 12px;
             }
         }
 
         .card-file-message {
-            margin-top: 16px;
+            margin-block-start: 16px;
 
             &-title {
                 font-size: 16px;
@@ -79,7 +89,6 @@
             display: flex;
 
             .buttons {
-                margin-left: auto;
                 .btn {
                     @include btn-sm;
                 }
@@ -92,21 +101,15 @@
         padding: 16px;
         border: 2px dashed #c4c4c4;
         width: 100%;
-        margin-bottom: 16px;
+        margin-block-end: 16px;
     }
 
     .dropzone-files {
-        margin-bottom: 32px;
+        margin-block-end: 32px;
     }
 
     .dz-default {
         display: none;
-    }
-
-    .finish,
-    .fileinput-button,
-    .load {
-        width: 100%;
     }
 
     .no-issue {
@@ -114,7 +117,7 @@
     }
 
     &-section {
-        margin-bottom: 96px;
+        margin-block-end: 96px;
     }
 
     .file-head {
@@ -147,7 +150,7 @@
     .file-message {
         font-size: 13px;
         color: #808080;
-        margin-top: -8px;
+        margin-block-start: -8px;
     }
 
     .file-warning {
@@ -164,24 +167,15 @@
     }
 
     .file-icon {
-        margin-right: 4px;
+        margin-inline-end: 4px;
     }
 
     .btn-icon {
-        margin-right: 8px;
+        margin-inline-end: 8px;
     }
 
     .file-actions {
         display: flex;
-    }
-
-    .file-action {
-        width: 50%;
-        margin-left: 8px;
-    }
-
-    .file-action:first-child {
-        margin-left: 0;
     }
 
     .hash-dropbox,
@@ -189,7 +183,7 @@
     .schedule,
     .reschedule,
     .move-all {
-        margin-top: 16px;
+        margin-inline-start: 16px;
         width: 100%;
     }
 

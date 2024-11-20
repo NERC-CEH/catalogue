@@ -29,29 +29,21 @@ main {
                 min-height: calc(100vh - var(--header-height));
 
                 .nav-tabs {
-
-                    padding-top: 3px;
-
                     >li {
                         >a {
-                            cursor: pointer;
-                            background-color: var(--filter-background-colour);
-                            color: var(--filter-link-colour);
-                            display: block;
-                            padding: .3em .6em;
-                            font-size: 1.3em;
-                            border-bottom: 1px solid var(--filter-tab-border-colour);
+                            position: relative;
+                            color: white;
+                            text-decoration: none;
+                            font-size: 1.1em;
 
                             &:hover {
-                                background-color: color-mix(in lab, var(--filter-background-colour), black 20%);
+                                background-color: color-mix(in hsl, var(--filter-background-colour), black 10%)
                             }
-                        }
 
-                        &.active {
-                            top: 1px;
-
-                            a {
-                                border-bottom: none;
+                            &.active {
+                                border-block-end: none;
+                                top: 1px;
+                                background: var(--filter-background-colour);
                             }
                         }
                     }
@@ -229,7 +221,7 @@ main {
                 .condition,
                 .state {
                     font-weight: bold;
-                    font-size: 1.1rem;
+                    font-size: 0.9rem;
                     padding-top: 3px;
                 }
             }
@@ -244,7 +236,7 @@ main {
             &__citationCount {
                 text-align: right;
                 color: $gray;
-                font-size: 1.1rem;
+                font-size: 0.9rem;
                 margin-top: -2px;
             }
 
@@ -298,14 +290,18 @@ main {
         margin-top: auto;
 
         .pagination {
-            .previous-item, .next-item{
+
+            .previous-item,
+            .next-item {
                 width: max-content;
                 white-space: nowrap;
             }
+
             .center-item {
                 width: 100%;
                 text-align: center;
             }
+
             .page-link {
                 padding: 6px 20px;
                 border-radius: 18px;
