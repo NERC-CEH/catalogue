@@ -9,7 +9,7 @@
  */
 
 @import url("https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap');
 @import "customProperties";
 @import "mixins";
 @import "variables";
@@ -29,6 +29,7 @@ body {
     min-height: 100vh;
     font-family: var(--font-family-body);
     text-wrap: pretty;
+    line-height: $line-height-base;
 }
 
 a {

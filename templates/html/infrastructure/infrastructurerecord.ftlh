@@ -62,24 +62,19 @@
 
             <#if users?? >
                 <@displaykey "Users">
-                  <dl>
-                    <#list users as user>
-                      <dd>${user}</dd>
-                    </#list>
-                  </dl>
+                  <#list users as user>
+                    <div>${user}</div>
+                  </#list>
                 </@displaykey>
             </#if>
 
             <#if rel_all?has_content && rel_all?size gt 0 >
-
                 <@displaykey "Related">
-                  <dl>
                   <#list rel_all as item>
-                    <dd>
+                    <div>
                     <a href="${item.href}">${item.title}</a>
-                    </dd>
+                    </div>
                   </#list>
-                </dl>
                 </@displaykey>
             </#if>
 
@@ -173,8 +168,8 @@
 <#--macros -->
 <#macro displaykey label>
   <div class="row key-value">
-    <div>${label}</div>
-    <div><#nested></div>
+    <div class="col-md-3 key">${label}</div>
+    <div class="col-md-9 value"><#nested></div>
   </div>
 </#macro>
 
