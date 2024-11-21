@@ -2,6 +2,7 @@ import _ from 'underscore'
 
 export default _.template(`
         <% if(typeof doctype === "undefined"){doctype = "documents"} %>
+        <div class="container">
         <h2><% if(doctype === "service-agreement"){ %>Service Agreement <% } %>Permissions</h2>
 <div>
     <p><i class="fa-solid fa-info-circle fa-2x float-end"></i>Amend permissions for users or groups. For external users, the username is the email address with which they registered an account.<br>For UKCEH staff it is their login username <b>not</b> their email address.</p>
@@ -29,12 +30,13 @@ export default _.template(`
             <td><input id="canDelete" type="checkbox"></td>
             <td><input id="canUpload" type="checkbox"></td>
             <% } %>
-            <td><button id="permissionAdd" class="editor-button-xs" title="remove permissions for this user">Add</button></td>
+            <td><button id="permissionAdd" class="btn btn-light border btn-sm" title="remove permissions for this user">Add</button></td>
         </tr>
     </tfoot>
     <tbody>
     </tbody>
-</table>
+  </table>
+</div>
 <div class="navbar fixed-bottom p-3 bg-secondary">
     <div class="container">
         <div class="d-flex ms-auto">
