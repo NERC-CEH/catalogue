@@ -67,20 +67,20 @@
             </@documentUploadSection>
         </#if>
 
-        <@documentUploadSection "" "" "">
-            <@row>
-                <#if isAdmin>
-                    <div class="d-inline-flex gap-2 file-actions">
-                        <@validateAllButton/>
-                        <@downloadChecksumButton/>
-                    </div>
-                <#else>
-                    <div class="d-inline-flex gap-2">
-                        <@downloadChecksumButton/>
-                    </div>
-                </#if>
-            </@row>
-        </@documentUploadSection>
+
+        <@row>
+            <#if isAdmin>
+                <div class="d-inline-flex gap-2 file-actions">
+                    <@validateAllButton/>
+                    <@downloadChecksumButton/>
+                </div>
+            <#else>
+                <div class="d-inline-flex gap-2">
+                    <@downloadChecksumButton/>
+                </div>
+            </#if>
+        </@row>
+
     </@documentContainer>
     <#if datastore??>
         <@data "datastore" datastore/>
@@ -149,18 +149,17 @@
                 </div>
             </@row>
         </div>
-        <@row>
-            <div class="col-md-2 col-md-offset-7">
-                <@addFilesButton/>
-            </div>
-            <div class="col-md-3">
-                <@finishUploadingButton/>
-            </div>
+        <@row "d-inline-flex gap-2">
+            <@addFilesButton/>
+            <@finishUploadingButton/>
         </@row>
         <@row>
-            <div class="col-md-2 col-md-offset-7">
-                <p>Maximum individual file size is ${maxFileSize}</p>
+          <div class="alert alert-warning d-flex align-items-center" role="alert">
+            <i class="fa-solid fa-fw fa-info-circle"></i>
+            <div>
+              Maximum individual file size is ${maxFileSize}
             </div>
+          </div>
         </@row>
     </div>
 </#macro>

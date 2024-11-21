@@ -1,6 +1,10 @@
 .document-upload {
     margin-block: 1em;
 
+    .row {
+        margin-block: .6em;
+    }
+
     .page-header {
         margin-block: 1.6em;
     }
@@ -117,7 +121,13 @@
     }
 
     &-section {
-        margin-block-end: 96px;
+        border-top: 2px solid #666;
+        margin-block: 3em;
+        padding-block: 3em;
+    }
+
+    .alert {
+        margin: 1em;
     }
 
     .file-head {
@@ -171,20 +181,7 @@
     }
 
     .btn-icon {
-        margin-inline-end: 8px;
-    }
-
-    .file-actions {
-        display: flex;
-    }
-
-    .hash-dropbox,
-    .register-dropbox,
-    .schedule,
-    .reschedule,
-    .move-all {
-        margin-inline-start: 16px;
-        width: 100%;
+        @include fa-fw;
     }
 
     .no-documents {
