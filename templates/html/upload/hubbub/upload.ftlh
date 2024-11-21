@@ -110,7 +110,7 @@
 <#macro returnToDocument>
     <div class="return">
         <a href="/documents/${id}">
-            <i class="btn-icon fa-solid fa-arrow-left"></i>
+            <i class="btn-icon fa-fw fa-solid fa-arrow-left"></i>
             <span>RETURN TO DOCUMENT: ${id}</span>
         </a>
     </div>
@@ -126,7 +126,7 @@
     <section class="document-upload-section ${name}">
         <#if title?has_content && icon?has_content>
             <div class="page-header">
-                <h3><i class="btn-icon ${iconClass} fa-${icon}"></i> ${title} <span class="total-files"></span></h3>
+                <h3><i class="btn-icon fa-fw ${iconClass} fa-${icon}"></i> ${title} <span class="total-files"></span></h3>
             </div>
         </#if>
         <#nested>
@@ -186,7 +186,7 @@
 
 <#macro button text button icon iconClass="fa-solid">
     <button class="btn btn-outline-dark ${button}">
-        <i class="btn-icon fa-${icon} ${iconClass}"></i>
+        <i class="btn-icon fa-fw fa-${icon} ${iconClass}"></i>
         <span>${text}</span>
     </button>
 </#macro>
@@ -233,7 +233,7 @@
         href="/upload/${id}?format=csv"
         download="checksums_${id}.csv"
     >
-        <i class="btn-icon fa-regular fa-file-code"></i>
+        <i class="btn-icon fa-fw fa-regular fa-file-code"></i>
         <span>Download Checksum Report</span>
     </a>
 </#macro>

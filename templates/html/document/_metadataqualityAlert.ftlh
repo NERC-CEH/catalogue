@@ -16,8 +16,8 @@
     <#elseif infos gte 1 >
         <#assign alertclass="info" alerticon="info-circle">
     </#if>
-    <div class="qualityAlert d-print-none">
-        <div class="alert alert-MDquality_${alertclass} alert-dismissible fade show" role="alert">
+    <div class="metadataQuality metadataQuality-alert metadataQuality_${alertclass} d-print-none">
+        <div class="alert alert-dismissible fade show" role="alert">
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" title="dismiss"><span aria-hidden="true">
             </span></button>
             <i class="fa-solid fa-${alerticon}"></i> <b>METADATA QUALITY</b>
