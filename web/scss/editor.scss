@@ -118,14 +118,14 @@
         .ui-sortable {
             .row {
                 .provenance {
-                    border-bottom: 1px solid #eee;
+                    border-block-end: 1px solid #eee;
                     margin-block-end: 0.25em;
                     padding: 0.5em 0;
                 }
 
                 &:last-child {
                     .provenance {
-                        border-bottom: none;
+                        border-block-end: none;
                         padding-bottom: 0;
                     }
                 }
@@ -157,21 +157,24 @@
 
         .editor-help {
             @include form-text;
-            display: none;
             @include collapse;
-            font-size: 12px;
-            line-height: 1.5;
+            display: none;
+            padding: 1em;
+            margin-block-start: 1em;
+            background-color: #eee;
+            border-radius: .75em;
         }
 
         .legilo {
             margin-inline-start: 0.6em;
+
             .loader {
                 margin-inline-start: 0.6em;
             }
         }
 
         .component {
-            border-bottom: 1px solid color.adjust($gray-light, $lightness: 25%, $space: hsl);
+            border-block-end: 1px solid color.adjust($gray-light, $lightness: 25%, $space: hsl);
             padding-bottom: 1.25em;
             margin-bottom: 1rem;
             display: none;
@@ -186,7 +189,7 @@
             }
 
             &--textonly {
-                border-bottom: none !important;
+                border-block-end: none !important;
                 margin-block-end: 0 !important;
                 padding-bottom: 0 !important;
             }
@@ -201,12 +204,7 @@
             }
 
             .row {
-                $spacer: 3px;
-                margin-block-end: $spacer;
-
                 label {
-                    padding-top: $spacer;
-
                     small {
                         font-weight: normal;
                         color: gray;
@@ -227,7 +225,8 @@
                 }
 
                 label {
-                    font-size: 12px;
+                    font-size: 85%;
+                    font-weight:600;
 
                     a {
                         margin-inline-start: 0.5em;
@@ -283,7 +282,7 @@
 
             input,
             textarea {
-                border-bottom: 2px var(--_requiredIndicator) solid !important;
+                border-block-end: 2px var(--_requiredIndicator) solid !important;
             }
         }
 
@@ -340,7 +339,7 @@
 
         .dataentry.child:has(.keywordPicker):not(:has(.d-none)) {
             padding-bottom: 1.2em;
-            padding-top: 1.2em;
+            padding-block-start: 1.2em;
         }
 
         input.autocomplete::placeholder {

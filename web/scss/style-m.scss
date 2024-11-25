@@ -2,9 +2,9 @@
 
 .projectList {
     &__project {
-        font-weight: bolder;
+        font-weight: 600;
     }
     &__date {
-        padding-right: 1em;
+        padding-inline-end: 1em;
     }
 }

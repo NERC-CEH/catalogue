@@ -13,7 +13,7 @@
     .contact {
         display: grid;
         grid-template-columns: 30px auto;
-        margin-bottom: 3em;
+        margin-block-end: 3em;
 
         div {
             >span {
@@ -70,7 +70,7 @@
                 .menu {
                     a {
                         color: white;
-                        margin-right: 1em;
+                        margin-inline-end: 1em;
                     }
                 }
 

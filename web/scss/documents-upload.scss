@@ -26,7 +26,7 @@
 
         &.is-collapsed {
             margin: 0 0 -2px;
-            border-bottom: 0;
+            border-block-end: 0;
 
             .card-header-chevron {
                 transform: rotate(180deg);
@@ -117,11 +117,11 @@
     }
 
     .no-issue {
-        margin-top: 16px;
+        margin-block-start: 16px;
     }
 
     &-section {
-        border-top: 2px solid #666;
+        border-block-start: 2px solid #666;
         margin-block: 3em;
         padding-block: 3em;
     }
@@ -132,16 +132,16 @@
 
     .file-head {
         font-size: 16px;
-        padding-bottom: 16px;
+        padding-block-end: 16px;
         margin: 0;
-        border-bottom: solid 2px #aaa;
+        border-block-end: solid 2px #aaa;
     }
 
     .file-row {
         margin: 0;
-        padding-top: 8px;
-        padding-bottom: 8px;
-        border-bottom: solid 1px #ccc;
+        padding-block-start: 8px;
+        padding-block-end: 8px;
+        border-block-end: solid 1px #ccc;
     }
 
     .file-name,

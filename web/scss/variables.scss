@@ -336,7 +336,7 @@ $container-lg:                 $container-large-desktop;
 
 // Basics of a navbar
 $navbar-height:                    76px;
-$navbar-margin-bottom:             $line-height-computed;
+$navbar-margin-block-end:             $line-height-computed;
 $navbar-border-width:              1px;
 $navbar-border-radius:             $border-radius-base;
 $navbar-padding-horizontal:        floor(($grid-gutter-width * 0.5));

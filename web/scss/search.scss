@@ -22,7 +22,7 @@ main {
         .filters {
             display: none;
             flex: 0 0 var(--filter-width);
-            border-right: var(--filter-border);
+            border-inline-end: var(--filter-border);
 
             .search-tabs {
                 background-color: var(--filter-background-colour);
@@ -79,7 +79,7 @@ main {
             overflow-x: hidden;
             scrollbar-gutter: stable;
             scrollbar-width: thin; // Firefox only
-            padding-left: 1em;
+            padding-inline-start: 1em;
 
             .facet {
 
@@ -103,7 +103,7 @@ main {
                         list-style: none;
 
                         .facet-count {
-                            margin-left: 0.5em;
+                            margin-inline-start: 0.5em;
                             opacity: 75%;
                         }
 
@@ -205,12 +205,12 @@ main {
             &__tags {
                 display: flex;
                 flex-direction: row;
-                border-bottom: 1px solid lightgray;
-                padding-bottom: 5px;
-                margin-bottom: 5px;
+                border-block-end: 1px solid lightgray;
+                padding-block-end: 5px;
+                margin-block-end: 5px;
 
                 div {
-                    margin-right: 1em;
+                    margin-inline-end: 1em;
                 }
 
                 .recordType {
@@ -222,7 +222,7 @@ main {
                 .state {
                     font-weight: bold;
                     font-size: 0.9rem;
-                    padding-top: 3px;
+                    padding-block-start: 3px;
                 }
             }
 
@@ -237,16 +237,16 @@ main {
                 text-align: right;
                 color: $gray;
                 font-size: 0.9rem;
-                margin-top: -2px;
+                margin-block-start: -2px;
             }
 
             &--pending {
-                border-left: darkorange 10px solid;
+                border-inline-start: darkorange 10px solid;
                 background-color: rgba(0, 0, 0, 0.1);
             }
 
             &--draft {
-                border-left: darkred 10px solid;
+                border-inline-start: darkred 10px solid;
                 background-color: color.adjust($gray-light, $lightness: 30%, $space: hsl);
                 background-image: repeating-linear-gradient(315deg,
                         transparent,
@@ -287,7 +287,7 @@ main {
     }
 
     .results__footer {
-        margin-top: auto;
+        margin-block-start: auto;
 
         .pagination {
 
