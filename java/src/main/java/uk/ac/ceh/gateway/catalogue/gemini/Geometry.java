@@ -24,6 +24,7 @@ public class Geometry {
 
     private static final String TYPE_POINT = "point";
     private static final String TYPE_POLYGON = "polygon";
+    private static final String TYPE_MULTIPOLYGON = "multipolygon";
 
     private final String geometryString;
 
@@ -72,16 +73,54 @@ public class Geometry {
      * @return String: the incoming coordinates translated to Well Known Text
      */
     private String buildWkt(JsonNode coordinates, String type){
-        if(!Arrays.asList("polygon","point").contains(type)){
+        if(!Arrays.asList("polygon","multipolygon","point").contains(type)){
             throw new RuntimeException("A polygon or point was not found in the geojson in Geometry.getWkt");
         }
         StringBuilder wktFeature = new StringBuilder();
-        if(type.equals("polygon")){
+        if(type.equals(TYPE_POLYGON)){
             addPolygon(coordinates, wktFeature);
+        } else if(type.equals(TYPE_MULTIPOLYGON)) {
+            addMultiPolygon(coordinates, wktFeature);
         } else {
             addPoint(coordinates, wktFeature);
         }
         return wktFeature.toString();
+    }
+
+    /**
+     * This translates a geojson multipolygon to Well Known Text (WKT) and adds it to the incoming wktFeature.
+     * @param coordinates JsonNode: the geojson multipolygon coordinates to be parsed.
+     * @param wktFeature  StringBuilder: the WKT string being built.
+     */
+    private void addMultiPolygon(JsonNode coordinates, StringBuilder wktFeature) {
+        wktFeature.append("MULTIPOLYGON(");
+
+        for (int i = 0; i < coordinates.size(); i++) {
+            JsonNode polygon = coordinates.get(i);
+            wktFeature.append("(");
+
+            for (int j = 0; j < polygon.size(); j++) {
+                JsonNode ring = polygon.get(j);
+                wktFeature.append("(");
+
+                for (int k = 0; k < ring.size(); k++) {
+                    JsonNode point = ring.get(k);
+                    wktFeature.append(point.get(0).asDouble())
+                        .append(" ")
+                        .append(point.get(1).asDouble())
+                        .append(", ");
+                }
+
+                wktFeature.setLength(wktFeature.length() - 2);
+                wktFeature.append("), ");
+            }
+
+            wktFeature.setLength(wktFeature.length() - 2);
+            wktFeature.append("), ");
+        }
+
+        wktFeature.setLength(wktFeature.length() - 2);
+        wktFeature.append(")");
     }
 
     /**
@@ -113,8 +152,8 @@ public class Geometry {
      * This gets a bounding box for the geometry.
      * If the geometry is a POINT, then a tiny bounding box is drawn around the point by adding and subtracting 0.0001
      * from the latitude and the longitude.  At the UK's latitude, this will lead to a box around 5 to 10m square.
-     * If the geometry is a POLYGON, then the minimum rectangle to encompass the points is returned.
-     * If there is no geometry or the geometry is not a POINT or POLYGON, then an empty Optional is returned
+     * If the geometry is a POLYGON or MULTIPOLYGON, then the minimum rectangle to encompass the points is returned.
+     * If there is no geometry or the geometry is not a POINT or POLYGON or MULTIPOLYGON, then an empty Optional is returned
      * @return an Optional<gemini.BoundingBox>
      */
     @JsonIgnore
@@ -130,14 +169,13 @@ public class Geometry {
             if(!coordinates.isArray()) {
                 throw new RuntimeException("In Geometry.getBoundingBox(), the expected array of coordinates in the property 'geometry' was not found.");
             }
-            if(type.equals(TYPE_POINT)){
-                return Optional.of(this.getPointBoundingBox(coordinates));
-            }
-            else if(type.equals(TYPE_POLYGON)){
-                return Optional.of(this.getPolygonBoundingBox(coordinates));
-            } else {
-                throw new RuntimeException("There is not yet an implementation of getBoundingBox() for shapes of type: " + type);
-            }
+            return switch (type) {
+                case TYPE_POINT -> Optional.of(this.getPointBoundingBox(coordinates));
+                case TYPE_POLYGON -> Optional.of(this.getPolygonBoundingBox(coordinates));
+                case TYPE_MULTIPOLYGON -> Optional.of(this.getMultiPolygonBoundingBox(coordinates));
+                default ->
+                    throw new RuntimeException("There is not yet an implementation of getBoundingBox() for shapes of type: " + type);
+            };
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -181,6 +219,40 @@ public class Geometry {
                 west = min(lon, west);
             }
         }
+        return BoundingBox.builder()
+            .northBoundLatitude(Double.toString(north))
+            .southBoundLatitude(Double.toString(south))
+            .eastBoundLongitude(Double.toString(east))
+            .westBoundLongitude(Double.toString(west))
+            .build();
+    }
+
+    /**
+     * This calculates the bounding box for a MULTIPOLYGON.
+     * The bounding box is the minimum rectangle that encompasses all polygons and their points.
+     * @param coordinates JsonNode: the geojson multipolygon coordinates to be parsed.
+     * @return BoundingBox: the bounding box that encompasses all polygons in the multipolygon.
+     */
+    private BoundingBox getMultiPolygonBoundingBox(JsonNode coordinates) {
+        double north = Double.NEGATIVE_INFINITY;
+        double south = Double.POSITIVE_INFINITY;
+        double east = Double.NEGATIVE_INFINITY;
+        double west = Double.POSITIVE_INFINITY;
+
+        for (final JsonNode polygon : coordinates) {
+            for (final JsonNode ring : polygon) {
+                for (final JsonNode point : ring) {
+                    double lon = point.get(0).asDouble();
+                    double lat = point.get(1).asDouble();
+
+                    north = max(north, lat);
+                    south = min(south, lat);
+                    east = max(east, lon);
+                    west = min(west, lon);
+                }
+            }
+        }
+
         return BoundingBox.builder()
             .northBoundLatitude(Double.toString(north))
             .southBoundLatitude(Double.toString(south))
