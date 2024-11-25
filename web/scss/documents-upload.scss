@@ -94,7 +94,7 @@
 
             .buttons {
                 .btn {
-                    @include btn-sm;
+                    @extend .btn-sm !optional;
                 }
             }
         }

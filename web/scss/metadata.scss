@@ -115,14 +115,14 @@ body {
 
         .alert-In-progress,
         .alert-Embargoed {
-            @include alert;
-            @include alert-info;
+            @extend .alert !optional;
+            @extend .alert-info !optional;
         }
 
         .alert-Superseded,
         .alert-Withdrawn {
-            @include alert;
-            @include alert-danger;
+            @extend .alert !optional;
+            @extend .alert-danger !optional;
         }
     }
 
@@ -198,9 +198,9 @@ body {
 
         a {
             margin-left: 1em;
-            @include btn;
-            @include btn-danger;
-            @include btn-sm;
+            @extend .btn !optional;
+            @extend .btn-danger !optional;
+            @extend .btn-sm !optional;
         }
     }
 
@@ -212,7 +212,7 @@ body {
         .licenceText {
             .ogl-logo {
                 margin-top: 0.3em;
-                @include float-end;
+                @extend .float-end !optional;
             }
         }
     }
@@ -735,7 +735,7 @@ body {
 
 
     .browseGraphic {
-        @include float-end;
+        @extend .float-end !optional;
         margin: 0 0 1em 2em;
         max-width: 30em;
         max-height: 30em;
