@@ -392,31 +392,31 @@ body {
         padding-bottom: 6px;
     }
 
-    .cards {
+    .ukcehcards {
         display: flex;
         justify-content: center;
         gap: 1em;
         flex-wrap: wrap;
 
-        a.card {
-            --_card-repeat: 3;
-            --_card-display: grid;
-            --_card-background: hsl(0, 0%, 100%);
-            --_card-border-colour: var(--primary-colour);
-            --_card-border-style: solid;
-            --_card-text-colour: black;
-            --_card-link-colour: inherit;
-            --_card-icon-colour: var(--_card-border-colour);
+        a.ukcehcard {
+            --_ukcehcard-repeat: 3;
+            --_ukcehcard-display: grid;
+            --_ukcehcard-background: hsl(0, 0%, 100%);
+            --_ukcehcard-border-colour: var(--primary-colour);
+            --_ukcehcard-border-style: solid;
+            --_ukcehcard-text-colour: black;
+            --_ukcehcard-link-colour: inherit;
+            --_ukcehcard-icon-colour: var(--_ukcehcard-border-colour);
 
-            display: var(--_card-display);
-            flex: 0 0 calc((100% - calc(var(--_card-repeat) * 1em) + 1em) / var(--_card-repeat));
-            padding: 1rem;
+            display: var(--_ukcehcard-display);
+            flex: 0 0 calc((100% - calc(var(--_ukcehcard-repeat) * 1em) + 1em) / var(--_ukcehcard-repeat));
             grid-template-columns: 70px auto;
-            background-color: var(--_card-background);
-            border: 2px var(--_card-border-style) var(--_card-border-colour);
+            background-color: var(--_ukcehcard-background);
+            border: 2px var(--_ukcehcard-border-style) var(--_ukcehcard-border-colour);
             border-radius: 6px;
             text-decoration: none;
             text-wrap: balance;
+            color: var(--_ukcehcard-text-colour);
 
             .content {
                 display: flex;
@@ -424,17 +424,15 @@ body {
                 flex-direction: row;
             }
 
-            .card-icon {
+            .ukcehcard-icon {
                 display: grid;
                 justify-content: center;
                 align-content: center;
-                width: 5rem;
-                height: 5rem;
                 border-radius: 8px;
-                color: var(--_card-icon-colour);
+                color: var(--_ukcehcard-icon-colour);
             }
 
-            .card-type {
+            .ukcehcard-type {
                 color: #999;
 
                 span {
@@ -446,32 +444,22 @@ body {
                 }
             }
 
-            .card-title {
-                color: var(--_card-text-colour);
-            }
-
-            &:hover {
-                --_card-background: var(--primary-colour) !important;
-                --_card-text-colour: white !important;
-                --_card-icon-colour: white !important;
-
-                .fa-inverse {
-                    color: var(--_card-background) !important;
-                }
+            .ukcehcard-title {
+                color: var(--_ukcehcard-text-colour);
             }
 
             &-hidden {
-                --_card-display: none;
+                --_ukcehcard-display: none;
             }
 
             &-draft {
-                --_card-background: hsl(0, 0%, 95%);
-                --_card-border-colour: #BBB;
-                --_card-text-colour: #BBB;
-                --_card-icon-colour: #BBB;
-                --_card-border-style: dashed;
+                --_ukcehcard-background: hsl(0, 0%, 95%);
+                --_ukcehcard-border-colour: #BBB;
+                --_ukcehcard-text-colour: #BBB;
+                --_ukcehcard-icon-colour: #BBB;
+                --_ukcehcard-border-style: dashed;
 
-                .card-type {
+                .ukcehcard-type {
                     span {
                         display: inline;
                     }
@@ -479,12 +467,12 @@ body {
             }
 
             &-pending {
-                --_card-border-colour: #444;
-                --_card-text-colour: #444;
-                --_card-icon-colour: #BBB;
-                --_card-border-style: dashed;
+                --_ukcehcard-border-colour: #444;
+                --_ukcehcard-text-colour: #444;
+                --_ukcehcard-icon-colour: #BBB;
+                --_ukcehcard-border-style: dashed;
 
-                .card-type {
+                .ukcehcard-type {
                     span {
                         display: inline;
                     }
@@ -494,21 +482,29 @@ body {
             &-draft,
             &-pending {
                 &:hover {
-                    --_card-background: lightgray !important;
-                    --_card-text-colour: gray !important;
-                    --_card-icon-colour: gray !important;
+                    --_ukcehcard-background: lightgray;
+                    --_ukcehcard-text-colour: gray;
+                    --_ukcehcard-icon-colour: gray;
                 }
             }
         }
-    }
 
-    .card-right {
-        .card-title {
-            font-size: 1.4em;
-            font-weight: normal;
-            color: #bb4c1a;
-            margin-bottom: 0.5em;
+        a.ukcehcard:hover {
+            --_ukcehcard-background: var(--primary-colour);
+            --_ukcehcard-text-colour: white;
+            --_ukcehcard-icon-colour: white;
+
+            text-decoration: none;
+
+            .fa-inverse {
+                color: var(--_ukcehcard-background);
+            }
+
+            .ukcehcard-type {
+                color: var(--_ukcehcard-text-colour);
+            }
         }
+
     }
 
     #adminPanel {
@@ -696,18 +692,18 @@ body {
             --_qualityColor: var(--_quality-info);
         }
 
-            .alert {
-                margin: 1em 0 -0.5em 0;
-                background-color: transparent;
-                border: 2px solid #aaa;
-                border-radius: 10px;
-                border-color: var(--_qualityColor);
-                color: var(--_qualityColor);
-            }
+        .alert {
+            margin: 1em 0 -0.5em 0;
+            background-color: transparent;
+            border: 2px solid #aaa;
+            border-radius: 10px;
+            border-color: var(--_qualityColor);
+            color: var(--_qualityColor);
+        }
 
-            span {
-                margin: 0 1.2em;
-            }
+        span {
+            margin: 0 1.2em;
+        }
 
 
         &-report {
