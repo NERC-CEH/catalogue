@@ -190,7 +190,7 @@ footer {
     .section {
         &--schema {
             .table-schema {
-                @include table-sm;
+                @extend .table-sm !optional;
             }
         }
 

@@ -6,7 +6,6 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 
 module.exports = {
   entry: {
-    'shared-styles': './scss/shared-styles.scss',
     'style-assist': './scss/style-assist.scss',
     'style-ukceh': './scss/style-ukceh.scss',
     'style-cmp': './scss/style-cmp.scss',
