@@ -205,8 +205,7 @@ body {
             }
         }
     }
-
-    .modal-citation {
+    .modal:has(.modal-citation) {
         --bs-modal-zindex: 2001;
         --bs-modal-width: 600px;
     }
