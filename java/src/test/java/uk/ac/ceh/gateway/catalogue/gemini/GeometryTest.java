@@ -57,6 +57,20 @@ class GeometryTest {
     }
 
     @Test
+    @DisplayName("has multipolygon")
+    void getMultiPolygonWkt() {
+        val geometryString = "{\"type\":\"Feature\",\"properties\":{},\"geometry\":{\"type\":\"MultiPolygon\",\"coordinates\":[[[[-4.0,55.0],[-3.0,54.0],[-2.0,53.0],[-4.0,55.0]]],[[[-6.0,50.0],[-5.0,49.0],[-7.0,51.0],[-6.0,50.0]]]]}}";
+        val geometry = Geometry.builder().geometryString(geometryString).build();
+        val expected = "MULTIPOLYGON(((-4.0 55.0, -3.0 54.0, -2.0 53.0, -4.0 55.0)), ((-6.0 50.0, -5.0 49.0, -7.0 51.0, -6.0 50.0)))";
+
+        //when
+        val actual = geometry.getWkt().get();
+
+        //then
+        assertThat(actual, equalTo(expected));
+    }
+
+    @Test
     @DisplayName("point has a bounding box")
     void getBoundingBoxFromPoint() {
         //given
@@ -78,6 +92,21 @@ class GeometryTest {
         val geometryString = "{\"type\":\"Feature\",\"properties\":{},\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[1.0,2.0],[5.0,6.0],[8.0,9.0],[3.0,4.0],[-2.0,-4.0]]]}}";
         val geometry = Geometry.builder().geometryString(geometryString).build();
         val expected = "BoundingBox(westBoundLongitude=-2.0, eastBoundLongitude=8.0, southBoundLatitude=-4.0, northBoundLatitude=9.0)";
+
+        //when
+        val actual = geometry.getBoundingBox().get().toString();
+
+        //then
+        assertThat(actual, equalTo(expected));
+    }
+
+    @Test
+    @DisplayName("multipolygon has a bounding box")
+    void getBoundingBoxFromMultiPolygon(){
+        //given
+        val geometryString = "{\"type\":\"Feature\",\"properties\":{},\"geometry\":{\"type\":\"MultiPolygon\",\"coordinates\":[[[[-4.0,55.0],[-3.0,54.0],[-2.0,53.0],[-4.0,55.0]]],[[[-6.0,50.0],[-5.0,49.0],[-7.0,51.0],[-6.0,50.0]]]]}}";
+        val geometry = Geometry.builder().geometryString(geometryString).build();
+        val expected = "BoundingBox(westBoundLongitude=-7.0, eastBoundLongitude=-2.0, southBoundLatitude=49.0, northBoundLatitude=55.0)";
 
         //when
         val actual = geometry.getBoundingBox().get().toString();
