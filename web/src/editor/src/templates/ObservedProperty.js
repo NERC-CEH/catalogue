@@ -2,21 +2,16 @@ import _ from 'underscore'
 
 export default _.template(`
 <div class="row">
-    <div class="col-sm-2 col-xs-12">
+    <div class="col-sm-2">
         <label for="schema-value<%= data.index %>">Name</label>
     </div>
-    <div class="col-sm-4 col-xs-12">
+    <div class="col-sm-4">
         <input data-name="value" id="schema-value<%= data.index %>" class="editor-input" value="<%= data.value %>" placeholder="name of field/column" />
     </div>
-    <div class="col-sm-2 col-xs-12">
-      <div class="hidden-xs text-right">
-          <label for="schema-uri<%= data.index %>">URI</label>
-      </div>
-      <div class="visible-xs-inline">
-          <label for="schema-uri<%= data.index %>">URI</label>
-      </div>
+    <div class="col-sm-2">
+        <label for="schema-uri<%= data.index %>">URI</label>
     </div>
-    <div class="col-sm-4 col-xs-12">
+    <div class="col-sm-4">
         <input data-name="uri" id="schema-uri<%= data.index %>" class="editor-input" value="<%= data.uri %>" placeholder="uri of controlled term" />
     </div>
 </div>
@@ -29,21 +24,18 @@ export default _.template(`
     </div>
 </div>
 <div class="row">
-    <div class="col-sm-2 col-xs-12">
+    <div class="col-sm-2">
         <label for="schema-type<%= data.index %>">Type</label>
     </div>
-    <div class="col-sm-4 col-xs-12">
+    <div class="col-sm-4">
         <input list="typeList" data-name="type" id="schema-type<%= data.index %>" class="editor-input" value="<%= data.type %>" placeholder="" />
     </div>
-    <div class="col-sm-2 col-xs-12">
-        <div class="hidden-xs text-right">
-            <label for="schema-format<%= data.index %>">Format</label>
-        </div>
-        <div class="visible-xs-inline">
+    <div class="col-sm-2">
+        <div class="d-none d-sm-block">
             <label for="schema-format<%= data.index %>">Format</label>
         </div>
     </div>
-    <div class="col-sm-4 col-xs-12">
+    <div class="col-sm-4">
         <input list="formatList" data-name="format" id="schema-format<%= data.index %>" class="editor-input" value="<%= data.format %>" placeholder="optional (recommended for dates and times)" />
     </div>
 </div>
@@ -56,9 +48,6 @@ export default _.template(`
     </div>
     <div class="col-sm-2">
         <div class="hidden-xs text-right">
-            <label for="schema-unitsUri<%= data.index %>">Unit uri</label>
-        </div>
-        <div class="visible-xs-inline">
             <label for="schema-unitsUri<%= data.index %>">Unit uri</label>
         </div>
     </div>

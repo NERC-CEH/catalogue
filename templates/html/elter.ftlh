@@ -111,7 +111,7 @@
 
                   <#if topicCategories?? || descriptiveKeywords?? || keywords?? ||  inspireTheme?? || funding??>
                     <h2>Additional metadata</h2>
-                    <dl id="otherInfo" class="dl-horizontal">
+                    <dl id="otherInfo" class="dl-row">
                       <#include "document/_tags.ftlh">
                       <#include "document/_funding.ftlh">
                         <#if metadataDateTime?has_content>
@@ -150,7 +150,7 @@
 <#else>
   <div class="alert alert-danger missingResourceType" id="metadata" >
     <p class="clearfix"><i class="fa-solid fa-triangle-exclamation"></i> <b>WARNING: </b> resource type is missing from this record
-    <a class="btn btn-default btn-sm edit-control" data-document-type="${metadata.documentType}">Edit</a></p>
+    <a class="btn btn-light border btn-sm edit-control" data-document-type="${metadata.documentType}">Edit</a></p>
   </div>
 </#if>
 

@@ -11,7 +11,7 @@
                 <@dropZoneContainer/>
             </@documentUploadSection>
         </#if>
-        <@documentUploadSection "Data" "dropbox" "archive">
+        <@documentUploadSection "Arrivals" "dropbox" "archive">
             <@loadingContainer "data"/>
             <@loadMoreRow "data"/>
             <#if isAdmin && isInProgress>
@@ -46,13 +46,9 @@
                 </@row>
             <#elseif isAdmin>
                 <@row>
-                    <div class="col-md-3 col-md-offset-3">
+                    <div class="d-inline-flex gap-2">
                         <@moveAllDatastoreButton/>
-                    </div>
-                    <div class="col-md-3">
                         <@hashDropboxButton/>
-                    </div>
-                    <div class="col-md-3">
                         <@registerDropboxButton/>
                     </div>
                 </@row>
@@ -61,7 +57,7 @@
 
         <#if isAdmin>
             <#assign metadataTitle>Metadata <small>Supporting Documents</small></#assign>
-            <@documentUploadSection title=metadataTitle name="metadata" icon="copy" iconClass="far">
+            <@documentUploadSection title=metadataTitle name="metadata" icon="copy" iconClass="fa-regular">
                 <@loadingContainer "metadata"/>
                 <@loadMoreRow "metadata"/>
             </@documentUploadSection>
@@ -71,20 +67,20 @@
             </@documentUploadSection>
         </#if>
 
-        <@documentUploadSection "" "" "">
-            <@row>
-                <#if isAdmin>
-                    <div class="col-md-6 col-md-offset-6 file-actions">
-                        <@validateAllButton/>
-                        <@downloadChecksumButton/>
-                    </div>
-                <#else>
-                    <div class="col-md-3 col-md-offset-9">
-                        <@downloadChecksumButton/>
-                    </div>
-                </#if>
-            </@row>
-        </@documentUploadSection>
+
+        <@row>
+            <#if isAdmin>
+                <div class="d-inline-flex gap-2 file-actions">
+                    <@validateAllButton/>
+                    <@downloadChecksumButton/>
+                </div>
+            <#else>
+                <div class="d-inline-flex gap-2">
+                    <@downloadChecksumButton/>
+                </div>
+            </#if>
+        </@row>
+
     </@documentContainer>
     <#if datastore??>
         <@data "datastore" datastore/>
@@ -114,7 +110,7 @@
 <#macro returnToDocument>
     <div class="return">
         <a href="/documents/${id}">
-            <i class="btn-icon fa-solid fa-arrow-left"></i>
+            <i class="btn-icon fa-fw fa-solid fa-arrow-left"></i>
             <span>RETURN TO DOCUMENT: ${id}</span>
         </a>
     </div>
@@ -126,11 +122,11 @@
     </div>
 </#macro>
 
-<#macro documentUploadSection title name icon iconClass="fas">
+<#macro documentUploadSection title name icon iconClass="fa-solid">
     <section class="document-upload-section ${name}">
         <#if title?has_content && icon?has_content>
             <div class="page-header">
-                <h3><i class="btn-icon ${iconClass} fa-${icon}"></i> ${title} <small class="total-files"></small></h3>
+                <h3><i class="btn-icon fa-fw ${iconClass} fa-${icon}"></i> ${title} <span class="total-files"></span></h3>
             </div>
         </#if>
         <#nested>
@@ -153,18 +149,17 @@
                 </div>
             </@row>
         </div>
-        <@row>
-            <div class="col-md-2 col-md-offset-7">
-                <@addFilesButton/>
-            </div>
-            <div class="col-md-3">
-                <@finishUploadingButton/>
-            </div>
+        <@row "d-inline-flex gap-2">
+            <@addFilesButton/>
+            <@finishUploadingButton/>
         </@row>
         <@row>
-            <div class="col-md-2 col-md-offset-7">
-                <p>Maximum individual file size is ${maxFileSize}</p>
+          <div class="alert alert-warning d-flex align-items-center" role="alert">
+            <i class="fa-solid fa-fw fa-info-circle"></i>
+            <div>
+              Maximum individual file size is ${maxFileSize}
             </div>
+          </div>
         </@row>
     </div>
 </#macro>
@@ -189,56 +184,56 @@
     </@row>
 </#macro>
 
-<#macro button text button icon btnClass="success" iconClass="fas">
-    <button class="btn btn-${btnClass} ${button}">
-        <i class="btn-icon ${iconClass} fa-${icon}"></i>
+<#macro button text button icon iconClass="fa-solid">
+    <button class="btn btn-outline-dark ${button}">
+        <i class="btn-icon fa-fw fa-${icon} ${iconClass}"></i>
         <span>${text}</span>
     </button>
 </#macro>
 
 <#macro addFilesButton>
-    <@button "Add Files…" "fileinput-button" "file-upload"/>
+    <@button text="Add Files…" button="fileinput-button" icon="file-upload"/>
 </#macro>
 
 <#macro finishUploadingButton>
-    <@button "Finish Uploading" "finish" "check" "primary"/>
+    <@button text="Finish Uploading" button="finish" icon="check"/>
 </#macro>
 
 <#macro hashDropboxButton>
-    <@button "Generate checksums" "data-action hash-dropbox" "wave-square"/>
+    <@button text="Generate checksums" button="data-action hash-dropbox" icon="wave-square"/>
 </#macro>
 
 <#macro loadMoreButton storage>
-    <@button "View More" "load ${storage}" "angle-double-down"/>
+    <@button text="View More" button="load ${storage}" icon="angle-double-down"/>
 </#macro>
 
 <#macro registerDropboxButton>
-    <@button "Register files" "data-action register-dropbox" "folder-plus"/>
+    <@button text="Register files" button="data-action register-dropbox" icon="folder-plus"/>
 </#macro>
 
 <#macro scheduleButton>
-    <@button text="Schedule" button="data-action schedule" icon="calendar-check" iconClass="far"/>
+    <@button text="Schedule" button="data-action schedule" icon="calendar-check" iconClass="fa-regular"/>
 </#macro>
 
 <#macro rescheduleButton>
-    <@button "Reschedule" "data-action reschedule" "redo"/>
+    <@button text="Reschedule" button="data-action reschedule" icon="redo"/>
 </#macro>
 
 <#macro moveAllDatastoreButton>
-    <@button "Move files to datastore" "data-action move-all" "level-down-alt"/>
+    <@button text="Move files to datastore" button="data-action move-all" icon="level-down-alt"/>
 </#macro>
 
 <#macro validateAllButton>
-    <@button "Validate All" "file-action validate-all" "check" "primary"/>
+    <@button text="Validate All" button="file-action validate-all" icon="check"/>
 </#macro>
 
 <#macro downloadChecksumButton>
     <a
-        class="btn btn-success downloadChecksum"
+        class="btn btn-outline-dark downloadChecksum"
         href="/upload/${id}?format=csv"
         download="checksums_${id}.csv"
     >
-        <i class="btn-icon fa-regular fa-file-code"></i>
+        <i class="btn-icon fa-fw fa-regular fa-file-code"></i>
         <span>Download Checksum Report</span>
     </a>
 </#macro>

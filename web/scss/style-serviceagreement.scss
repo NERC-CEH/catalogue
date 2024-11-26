@@ -21,18 +21,12 @@
         }
     }
 
-
-
-    .keyvalue {
+    .key-value {
         display: grid;
         margin: 1em 0;
 
         .key {
-            font-weight: bolder;
-        }
-
-        dd {
-            margin-bottom: 1.5em;
+            font-weight: 600;
         }
     }
 
@@ -48,11 +42,11 @@
 
     .indent {
         &--1 {
-            margin-left: 2em;
+            margin-inline-start: 2em;
         }
 
         &--2 {
-            margin-left: 4em;
+            margin-inline-start: 4em;
         }
     }
 
@@ -60,15 +54,15 @@
         border: 14px solid red;
 
         h1.text-red {
-            border-bottom: 1px solid gray;
-            padding-bottom: 0.4em;
+            border-block-end: 1px solid gray;
+            padding-block-end: 0.4em;
         }
     }
 
     .contactDetails {
-        margin-top: 3em;
+        margin-block-start: 3em;
 
-        .keyvalue {
+        .key-value {
             gap: 0;
             grid-template-columns: 1fr;
             margin: 0;
@@ -94,8 +88,8 @@
 
         .qualityItem {
             background-color: var(--bgcolour);
-            font-weight: bolder;
-            border-bottom: 1px solid white;
+            font-weight: 600;
+            border-block-end: 1px solid white;
             padding: 0.5em;
             display: grid;
             grid-template-columns: 50px auto;
@@ -137,7 +131,7 @@
 
     .tbl {
         &--collapse {
-            @border-color: lightgrey;
+            $border-color: lightgrey;
             margin: 1em 0;
 
             table {
@@ -149,7 +143,7 @@
                 td {
                     padding: 0.4em;
                     margin: 0;
-                    border: 1px solid @border-color;
+                    border: 1px solid $border-color;
                 }
 
                 thead {
@@ -164,7 +158,7 @@
             @media only screen and (max-width: 760px),
             (min-device-width: 768px) and (max-device-width: 1024px) {
                 // On small screens, force table to NOT display as a table //
-                @head-width: 200px;
+                $head-width: 200px;
 
                 table,
                 thead,
@@ -185,25 +179,25 @@
 
                 tr {
                     margin: 0 0 0.6em 0;
-                    padding-bottom: 0.6em;
-                    border-bottom: 1px solid @border-color !important;
+                    padding-block-end: 0.6em;
+                    border-block-end: 1px solid $border-color !important;
                 }
 
                 td {
                     border: none;
                     position: relative;
-                    margin-left: @head-width*1.2;
+                    margin-inline-start: $head-width*1.2;
                     padding: 0.3em 5em !important;
 
                     &:before {
                         position: absolute;
                         padding: 0.3em;
                         top: 0;
-                        // left: @head-width*1.2;
-                        margin-left: -(@head-width) * 1.1;
+                        // left: $head-width*1.2;
+                        margin-inline-start: -($head-width) * 1.1;
                         text-align: right;
-                        width: @head-width;
-                        font-weight: bolder;
+                        width: $head-width;
+                        font-weight: 600;
                         white-space: nowrap;
                     }
                 }
@@ -212,18 +206,13 @@
     }
 
     @media (min-width: 600px) {
-        .keyvalue {
+        .key-value {
             grid-template-columns: 200px auto;
         }
 
-        .key,
-        dt {
+        .key {
             text-align: right;
-            margin-right: 1em;
-        }
-
-        dd {
-            margin-bottom: 1.5em;
+            margin-inline-end: 1em;
         }
     }
 }
@@ -232,7 +221,7 @@
 (min-device-width: 768px) and (max-device-width: 1024px) {
     .serviceAgreement {
         .tbl {
-            margin-left: 10em;
+            margin-inline-start: 10em;
 
             &--authors {
                 td {

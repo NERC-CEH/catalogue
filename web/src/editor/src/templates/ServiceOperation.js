@@ -2,10 +2,10 @@ import _ from 'underscore'
 
 export default _.template(`
 <div class="row">
-    <div class="col-sm-2 col-lg-2">
-        <label class="control-label" for="serviceOperation<%= data.index %>OperationName">Operation Name</label>
+    <div class="col-lg-2">
+        <label for="serviceOperation<%= data.index %>OperationName">Operation Name</label>
     </div>
-    <div class="col-sm-4 col-lg-4">
+    <div class="col-lg-4">
         <select data-name='operationName' class="editor-input operationName" id="serviceOperation<%= data.index %>OperationName" <%= data.disabled%>>
             <option value="">- Select Operation Name -</option>
             <option>Cancel</option>
@@ -44,10 +44,10 @@ export default _.template(`
             <option>Update</option>
         </select>
     </div>
-    <div class="col-sm-2 col-lg-2">
-        <label class="control-label" for="serviceOperation<%= data.index %>Platform">Platform</label>
+    <div class="col-lg-2">
+        <label for="serviceOperation<%= data.index %>Platform">Platform</label>
     </div>
-    <div class="col-sm-4 col-lg-4">
+    <div class="col-lg-4">
         <select data-name='platform' class="editor-input platform" id="serviceOperation<%= data.index %>Platform" <%= data.disabled%>>
             <option value="">- Select Platform -</option>
             <option>COM</option>
@@ -63,10 +63,10 @@ export default _.template(`
     </div>
 </div>
 <div class="row">
-    <div class="col-sm-2 col-lg-2">
-        <label class="control-label" for="serviceOperation<%= data.index %>Url">URL</label>
+    <div class="col-lg-2">
+        <label for="serviceOperation<%= data.index %>Url">URL</label>
     </div>
-    <div class="col-sm-10 col-lg-10">
+    <div class="col-lg-10">
         <input data-name='url' class="editor-input" id="serviceOperation<%= data.index %>Url" value="<%= data.url %>" <%= data.disabled%>>
     </div>
 </div>

@@ -1,7 +1,5 @@
 @import "theme";
 
-@fa-font-path: "../fonts";
-
 :root {
     --primary-colour: hsl(84, 55%, 48%);
     --secondary-colour: hsl(84, 55%, 48%);
@@ -28,7 +26,7 @@ header {
         .brand {
             img {
                 max-height: calc(var(--header-height) - 60px);
-                margin-right: 1em;
+                margin-inline-end: 1em;
             }
         }
     }
@@ -47,19 +45,9 @@ header {
         width: 700px;
     }
 
-    .key-value {
-        >div {
-            padding: .5em 0;
-        }
-
-        .key {
-            font-weight: 600;
-        }
-    }
-
     h2 {
         clear: both;
-        padding-top: 2em;
+        padding-block-start: 2em;
     }
 }
 

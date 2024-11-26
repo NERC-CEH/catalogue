@@ -13,74 +13,74 @@
         <@blocks.links jena.modelApplications(uri) "Model uses" />
       </div>
       <div class="col-sm-8 col-sm-pull-4">
-        <dl class="dl-horizontal">
+        <div class="key-value row">
           <#if version?has_content>
-          <dt>Version</dt><dd>${version}</dd>
+          <div class="key col-sm-3">Version</div><div class="value col-sm-9">${version}</dd>
           </#if>
           <#if contact??>
-            <dt>Contact</dt>
-            <dd>
+            <div class="key col-sm-3">Contact</div>
+            <div class="value col-sm-9">
               <#if contact.individualName?has_content>${contact.individualName}</#if><#if contact.organisationName?has_content>, ${contact.organisationName}</#if>
             </dd>
           </#if>
           <#if keywords??>
-          <dt>Keywords</dt><dd><@blocks.keywords keywords/></dd>
+          <div class="key col-sm-3">Keywords</div><div class="value col-sm-9"><@blocks.keywords keywords/></div>
           </#if>
           <#if releaseDate?has_content>
-          <dt>Release Date</dt><dd>${releaseDate}</dd>
+          <div class="key col-sm-3">Release Date</div><div class="value col-sm-9">${releaseDate}</div>
           </#if>
           <#if license?has_content>
-          <dt>License</dt><dd>${license}</dd>
+          <div class="key col-sm-3">License</div><div class="value col-sm-9">${license}</div>
           </#if>
           <#if operatingRequirements?has_content>
-          <dt>Operating Requirements</dt><dd>${operatingRequirements}</dd>
+          <div class="key col-sm-3">Operating Requirements</div><div class="value col-sm-9">${operatingRequirements}</div>
           </#if>
           <#if applicationType?has_content>
-          <dt>Application Type</dt><dd>${applicationType}</dd>
+          <div class="key col-sm-3">Application Type</div><div class="value col-sm-9">${applicationType}</div>
           </#if>
           <#if userInterface?has_content>
-          <dt>User Interface</dt><dd>${userInterface}</dd>
+          <div class="key col-sm-3">User Interface</div><div class="value col-sm-9">${userInterface}</div>
           </#if>
           <#if supportAvailable?has_content>
-          <dt>Support Available</dt><dd>${supportAvailable}</dd>
+          <div class="key col-sm-3">Support Available</div><div class="value col-sm-9">${supportAvailable}</div>
           </#if>
           <#if applicationScale?has_content>
-          <dt>Application Scale</dt><dd>${applicationScale}</dd>
+          <div class="key col-sm-3">Application Scale</div><div class="value col-sm-9">${applicationScale}</div>
           </#if>
           <#if geographicalRestrictions?has_content>
-          <dt>Geographical Restrictions</dt><dd>${geographicalRestrictions}</dd>
+          <div class="key col-sm-3">Geographical Restrictions</div><div class="value col-sm-9">${geographicalRestrictions}</div>
           </#if>
           <#if temporalResolution?has_content>
-          <dt>Temporal Resolution</dt><dd>${temporalResolution}</dd>
+          <div class="key col-sm-3">Temporal Resolution</div><div class="value col-sm-9">${temporalResolution}</div>
           </#if>
           <#if spatialResolution?has_content>
-          <dt>Spatial Resolution</dt><dd>${spatialResolution}</dd>
+          <div class="key col-sm-3">Spatial Resolution</div><div class="value col-sm-9">${spatialResolution}</div>
           </#if>
           <#if primaryPurpose?has_content>
-          <dt>Primary Purpose</dt><dd>${primaryPurpose}</dd>
+          <div class="key col-sm-3">Primary Purpose</div><div class="value col-sm-9">${primaryPurpose}</div>
           </#if>
           <#if keyOutputVariables?has_content>
-          <dt>Key Output Variables</dt><dd>${keyOutputVariables}</dd>
+          <div class="key col-sm-3">Key Output Variables</div><div class="value col-sm-9">${keyOutputVariables}</div>
           </#if>
           <#if keyInputVariables?has_content>
-          <dt>Key Input Variables</dt><dd>${keyInputVariables}</dd>
+          <div class="key col-sm-3">Key Input Variables</div><div class="value col-sm-9">${keyInputVariables}</div>
           </#if>
           <#if calibrationRequired?has_content>
-          <dt>Calibration Required</dt><dd>${calibrationRequired}</dd>
+          <div class="key col-sm-3">Calibration Required</div><div class="value col-sm-9">${calibrationRequired}</div>
           </#if>
           <#if modelStructure?has_content>
-          <dt>Model Structure</dt><dd>${modelStructure}</dd>
+          <div class="key col-sm-3">Model Structure</div><div class="value col-sm-9">${modelStructure}</div>
           </#if>
           <#if modelParameterisation?has_content>
-          <dt>Model Parameterisation</dt><dd>${modelParameterisation}</dd>
+          <div class="key col-sm-3">Model Parameterisation</div><div class="value col-sm-9">${modelParameterisation}</div>
           </#if>
           <#if inputDataAvailableOnCatalogue?has_content>
-          <dt>Input Data Available on CaMMP Catalogue</dt><dd>${inputDataAvailableOnCatalogue}</dd>
+          <div class="key col-sm-3">Input Data Available on CaMMP Catalogue</div><div class="value col-sm-9">${inputDataAvailableOnCatalogue}</div>
           </#if>
           <#if (documentation?? && documentation.href??) >
-          <dt>Documentation</dt><dd><a href="${documentation.href!}">${documentation.value!documentation.href}</a></dd>
+          <div class="key col-sm-3">Documentation</div><div class="value col-sm-9"><a href="${documentation.href!}">${documentation.value!documentation.href}</a></div>
           </#if>
-        </dl>
+        </div>
 
         <#if keyReferences?? >
           <#list keyReferences>
@@ -116,18 +116,18 @@
         </#if>
 
         <h2>Quality Assurance</h2>
-        <dl class="dl-horizontal">
-          <dt>Developer Testing</dt><dd><#if developerTesting?has_content>${developerTesting?then('Yes', 'No')}<#else>Unknown</#if></dd>
-          <dt>Internal Peer Review</dt><dd><#if internalPeerReview?has_content>${internalPeerReview?then('Yes', 'No')}<#else>Unknown</#if></dd>
-          <dt>External Peer Review</dt><dd><#if externalPeerReview?has_content>${externalPeerReview?then('Yes', 'No')}<#else>Unknown</#if></dd>
-          <dt>Use of Version Control</dt><dd><#if useOfVersionControl?has_content>${useOfVersionControl?then('Yes', 'No')}<#else>Unknown</#if></dd>
-          <dt>Internal Model Audit</dt><dd><#if internalModelAudit?has_content>${internalModelAudit?then('Yes', 'No')}<#else>Unknown</#if></dd>
-          <dt>External Model Audit</dt><dd><#if externalModelAudit?has_content>${externalModelAudit?then('Yes', 'No')}<#else>Unknown</#if></dd>
-          <dt>Quality Assurance Guidelines and Checklists</dt><dd><#if qualityAssuranceGuidelinesAndChecklists?has_content>${qualityAssuranceGuidelinesAndChecklists?then('Yes', 'No')}<#else>Unknown</#if></dd>
-          <dt>Governance</dt><dd><#if governance?has_content>${governance?then('Yes', 'No')}<#else>Unknown</#if></dd>
-          <dt>Transparency</dt><dd><#if transparency?has_content>${transparency?then('Yes', 'No')}<#else>Unknown</#if></dd>
-          <dt>Periodic Review</dt><dd><#if periodicReview?has_content>${periodicReview?then('Yes', 'No')}<#else>Unknown</#if></dd>
-        </dl>
+        <div class="key-value row">
+          <div class="key col-sm-3">Developer Testing</div><div class="value col-sm-9"><#if developerTesting?has_content>${developerTesting?then('Yes', 'No')}<#else>Unknown</#if></div>
+          <div class="key col-sm-3">Internal Peer Review</div><div class="value col-sm-9"><#if internalPeerReview?has_content>${internalPeerReview?then('Yes', 'No')}<#else>Unknown</#if></div>
+          <div class="key col-sm-3">External Peer Review</div><div class="value col-sm-9"><#if externalPeerReview?has_content>${externalPeerReview?then('Yes', 'No')}<#else>Unknown</#if></div>
+          <div class="key col-sm-3">Use of Version Control</div><div class="value col-sm-9"><#if useOfVersionControl?has_content>${useOfVersionControl?then('Yes', 'No')}<#else>Unknown</#if></div>
+          <div class="key col-sm-3">Internal Model Audit</div><div class="value col-sm-9"><#if internalModelAudit?has_content>${internalModelAudit?then('Yes', 'No')}<#else>Unknown</#if></div>
+          <div class="key col-sm-3">External Model Audit</div><div class="value col-sm-9"><#if externalModelAudit?has_content>${externalModelAudit?then('Yes', 'No')}<#else>Unknown</#if></div>
+          <div class="key col-sm-3">Quality Assurance Guidelines and Checklists</div><div class="value col-sm-9"><#if qualityAssuranceGuidelinesAndChecklists?has_content>${qualityAssuranceGuidelinesAndChecklists?then('Yes', 'No')}<#else>Unknown</#if></div>
+          <div class="key col-sm-3">Governance</div><div class="value col-sm-9"><#if governance?has_content>${governance?then('Yes', 'No')}<#else>Unknown</#if></div>
+          <div class="key col-sm-3">Transparency</div><div class="value col-sm-9"><#if transparency?has_content>${transparency?then('Yes', 'No')}<#else>Unknown</#if></div>
+          <div class="key col-sm-3">Periodic Review</div><div class="value col-sm-9"><#if periodicReview?has_content>${periodicReview?then('Yes', 'No')}<#else>Unknown</#if></div>
+        </div>
       </div>
     </div>
   </div>

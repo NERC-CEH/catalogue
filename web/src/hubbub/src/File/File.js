@@ -19,11 +19,11 @@ export default Backbone.Model.extend({
     const open = !validTypes.has(status)
 
     if (open && (errorType !== 'valid')) {
-      classes = 'panel-danger'
+      classes = 'card-danger'
     } else if (open) {
-      classes = 'panel-default'
+      classes = 'card-default'
     } else {
-      classes = 'panel-default is-collapsed'
+      classes = 'card-default is-collapsed'
     }
 
     if (errorType === 'valid') {

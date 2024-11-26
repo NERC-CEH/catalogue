@@ -11,17 +11,17 @@
         <#include "imp/_admin.ftlh">
       </div>
       <div class="col-sm-8 col-sm-pull-4">
-        <dl class="dl-horizontal">
+        <div class="row key-value">
         <#if caseStudy?? >
-          <dt>Link</dt><dd><a href="${caseStudy.href}">${caseStudy.title}</a></dd>
+          <div class="key col-sm-3">Link</div><div class="value col-sm-9"><a href="${caseStudy.href}">${caseStudy.title}</a></div>
         </#if>
         <#if contact??>
-          <dt>Contact</dt>
-          <dd>
+          <div class="key col-sm-3">Contact</div>
+          <div class="value col-sm-9">
             <#if contact.individualName?has_content>${contact.individualName}</#if><#if contact.organisationName?has_content>, ${contact.organisationName}</#if>
-          </dd>
+          </div>
         </#if>
-        </dl>
+        </div>
       </div>
     </div>
   </div>

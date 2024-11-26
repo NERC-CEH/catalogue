@@ -13,7 +13,7 @@
           <ul class="nav nav-tabs" role="tabs">
             <#list result.states as state>
               <li role="presentation" <#if state_index = 0>class="active"</#if>>
-                <a href="#${result.name}_${state.level}" role="tab" data-toggle="tab">
+                <a href="#${result.name}_${state.level}" role="tab" data-bs-toggle="tab">
                   <span class="badge badge-${state.level}">${state.documents?size}</span> <span class="legend-label">${state.level.label}</span>
                 </a>
               </li>
@@ -35,9 +35,9 @@
 
     <#if failed?has_content>
       <hr>
-      <div class="panel panel-danger">
-        <div class="panel-heading">Records which completely failed</div>
-        <div class="panel-body">
+      <div class="card card-danger">
+        <div class="card-header">Records which completely failed</div>
+        <div class="card-body">
           <#list failed as document>
             <p><a href="/documents/${document}">${document}</a></p>
           </#list>

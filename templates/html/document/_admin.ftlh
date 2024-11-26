@@ -33,42 +33,42 @@
 </#if>
 
 <#if resourceType?? && permission.userCanEdit(id)>
-  <div class="row hidden-print" id="adminPanel">
-    <div class="text-right" id="adminToolbar" role="toolbar">
+  <div class="row d-print-block" id="adminPanel">
+    <div class="text-end" id="adminToolbar" role="toolbar">
       <div class="btn-group btn-group-sm">
-        <button type="button" class="btn btn-default btn-wide edit-control" data-document-type="${metadata.documentType}">
+        <button type="button" class="btn btn-light border btn-wide edit-control" data-document-type="${metadata.documentType}">
           Edit
         </button>
         <#if isRestrictedFieldsEditor>
-          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+          <button type="button" class="btn btn-light border dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
             <span class="caret"></span>
-            <span class="sr-only">Toggle Dropdown</span>
+            <span class="visually-hidden">Toggle Dropdown</span>
           </button>
-          <ul class="dropdown-menu dropdown-menu-right">
+          <ul class="dropdown-menu dropdown-menu-end">
             <li>
-              <a href="/documents/${id}/permission">
+              <a class="dropdown-item" href="/documents/${id}/permission">
                 <i class="fa-solid fa-users"></i>
                 Permissions
               </a>
             </li>
             <li>
-              <a href="/documents/${id}/publication">
+              <a class="dropdown-item" href="/documents/${id}/publication">
                 <i class="fa-solid fa-eye"></i>
                 Publication status
               </a>
             </li>
             <#if hasOnlineServiceAgreement!false>
               <li class="service-agreement" data-id="${id}" id="service-agreement-gemini">
-                <a href="/service-agreement/${id}">
+                <a class="dropdown-item" href="/service-agreement/${id}">
                   <i class="fa-solid fa-file"></i>
                   Service agreement
                 </a>
               </li>
             </#if>
-            <li role="separator" class="divider"></li>
+            <li class="dropdown-divider"></li>
             <li>
               <a href="/documents/${id}/catalogue"
-                class="catalogue-control"
+                class="catalogue-control dropdown-item"
               >
                 <i class="fa-solid fa-right-from-bracket"></i>
                 Move to a different catalogue
@@ -85,18 +85,17 @@
           <#if hasCitation = 0>
             <#if isEidcWithResourceType>
               <div class="btn-group btn-group-sm" role="group">
-                <button type="button" class="btn btn-default btn-wide dropdown-toggle" data-toggle="dropdown">
+                <button type="button" class="btn btn-light border btn-wide dropdown-toggle" data-bs-toggle="dropdown">
                   <#if !datacitable>
-                    <i class='fa-solid fa-triangle-exclamation text-red'></i>
+                    <i class="fa-solid fa-triangle-exclamation text-danger"></i>
                   </#if>
                   DOI <span class="caret"></span>
                 </button>
-                <ul class="dropdown-menu dropdown-menu-right">
+                <ul class="dropdown-menu dropdown-menu-end">
                   <#if dataciteMintable>
                     <li>
                       <div class="msg text-success">
-                        <i class="fa-solid fa-check text-success"></i>
-                        There is enough information<br>to assign a DOI to this resource
+                        <i class="fa-solid fa-check text-success"></i> There is enough information<br>to assign a DOI to this resource
                       </div>
                     </li>
                     <#if permission.userCanDatacite()>
@@ -104,16 +103,17 @@
                           <button type="submit" class="btn btn-success" value="Mint DOI">Mint DOI</button>
                       </form>
                     </#if>
-                    <li class="divider"></li>
+                    <li>
+                      <hr class="dropdown-divider">
+                    </li>
                   <#elseif !datacitable>
                     <li>
-                      <div class="msg text-red">
-                        <i class="fa-solid fa-exclamation"></i>
-                        Conditions for assigning a <br>DOI have not been met
+                      <div class="msg text-danger">
+                        <i class="fa-solid fa-exclamation"></i> Conditions for assigning a <br>DOI have not been met
                       </div>
                     </li>
                     <li>
-                      <a href="https://eidc.ceh.ac.uk/admin/guidance/mintADOId" target="_blank" rel="noopener noreferrer" >
+                      <a class="dropdown-item" href="https://eidc.ceh.ac.uk/admin/guidance/mintADOId" target="_blank" rel="noopener noreferrer">
                         Help
                       </a>
                     </li>
@@ -126,41 +126,35 @@
           <#-- 'More' button -->
           <#if isSimpleUpload || hasOrders || isEidcCustodian || isEidcWithResourceType>
             <div class="btn-group btn-group-sm" role="group">
-              <button type="button"  class="btn btn-default btn-wide dropdown-toggle" data-toggle="dropdown">
+              <button type="button" class="btn btn-light border btn-wide dropdown-toggle" data-bs-toggle="dropdown">
                 More <span class="caret"></span>
               </button>
-              <ul class="dropdown-menu dropdown-menu-right">
+              <ul class="dropdown-menu dropdown-menu-end">
                 <#if isSimpleUpload || isEidcWithResourceType>
                   <li>
-                    <a href="/upload/${id}">Manage data</a>
+                    <a class="dropdown-item" href="/upload/${id}">Manage data</a>
                   </li>
                   <li>
-                    <a href="${uri}?format=ceda">CEDA Archive yaml file</a>
+                    <a class="dropdown-item" href="${uri}?format=ceda">CEDA Archive yaml file</a>
                   </li>
                 </#if>
                 <#list orders>
                   <#items as testLink>
                     <#if testLink.function == "order">
                       <li>
-                        <a href="${testLink.url}?test=true">Test order</a>
+                        <a class="dropdown-item" href="${testLink.url}?test=true">Test order</a>
                       </li>
                     </#if>
                   </#items>
                 </#list>
                 <#if isEidcCatalogue && (isDraft || isEidcCustodian)>
                   <li>
-                    <a href="https://jira.ceh.ac.uk/issues/?jql=cf%5B13250%5D%3D%22${id}%22"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
+                    <a class="dropdown-item" href="https://jira.ceh.ac.uk/issues/?jql=cf%5B13250%5D%3D%22${id}%22" target="_blank" rel="noopener noreferrer">
                       Jira issues for this resource
                     </a>
                   </li>
                   <li>
-                    <a href="https://eidc.ceh.ac.uk/metadata/${id}/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
+                    <a class="dropdown-item" href="https://eidc.ceh.ac.uk/metadata/${id}/" target="_blank" rel="noopener noreferrer">
                       DRH admin folder
                     </a>
                   </li>

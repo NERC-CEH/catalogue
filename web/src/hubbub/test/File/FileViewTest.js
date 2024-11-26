@@ -471,7 +471,7 @@ describe('FileView', function () {
   it('expand should be triggered', function () {
     // given
     view.render()
-    const $panelHeading = view.$('.panel-heading')
+    const $panelHeading = view.$('.card-header')
     spyOn(view, 'expand')
     view.delegateEvents()
 

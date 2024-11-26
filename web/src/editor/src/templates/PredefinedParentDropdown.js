@@ -1,5 +1,5 @@
 import _ from 'underscore'
 
 export default _.template(`
-<li><a href="#"><%= predefined %></a></li>
+<li><a class="dropdown-item" href="#"><%= predefined %></a></li>
 `)

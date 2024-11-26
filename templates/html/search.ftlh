@@ -8,8 +8,10 @@
       <!-- Nav tabs -->
       <div class="search-tabs">
         <ul class="nav nav-tabs" role="tablist">
-          <li role="presentation" class="search-tab active"><a href="#facet-tab" aria-controls="facet-tab" role="tab" data-toggle="tab">Filters</a></li>
-          <li role="presentation" class="search-tab map-tab"><a href="#spatial-tab" aria-controls="spatial-tab" role="tab" data-toggle="tab">Spatial search</a></li>
+          <li class="nav-item" role="presentation">
+            <a class="nav-link active" href="#facet-tab" aria-controls="facet-tab" role="tab" data-bs-toggle="tab">Filters</a>
+          </li>
+          <li role="presentation" class="nav-item search-tab map-tab"><a class="nav-link" href="#spatial-tab" aria-controls="spatial-tab" role="tab" data-bs-toggle="tab">Spatial search</a></li>
         </ul>
 
         <!-- Tab panes -->

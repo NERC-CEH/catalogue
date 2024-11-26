@@ -6,7 +6,7 @@
     /web/src/scripts/templates/facetsPanelTemplate.js
 -->
 <#macro facetResults facet>
-  <select style="display: none;" class="form-select search-facet" multiple="multiple" data-placeholder="search ${facet.displayName?lower_case}">
+  <select style="display: none;" class="form-select search-facet" multiple="multiple" data-placeholder="filter ${facet.displayName?lower_case}">
     <#list facet.results as facetItem>
       <#if facetItem.name?has_content && facetItem.name != 'Unknown' >
         <option <#if facetItem.active> selected="selected"</#if> value="${facetItem.url}">${facetItem.name} (${facetItem.count})</option>

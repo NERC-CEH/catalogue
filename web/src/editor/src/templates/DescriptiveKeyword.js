@@ -3,7 +3,7 @@ import _ from 'underscore'
 export default _.template(`
 <div class="row">
     <div class="col-sm-1">
-        <label class="control-label" for="descriptiveKeyword<%= data.index %>type">Type</label>
+        <label for="descriptiveKeyword<%= data.index %>type">Type</label>
     </div>
     <div class="col-sm-11">
         <select data-name="type" class="editor-input type" id="descriptiveKeyword<%= data.index %>type">

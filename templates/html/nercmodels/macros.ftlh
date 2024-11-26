@@ -1,5 +1,5 @@
 <#macro key key alt="" auto_esc=false>
-  <div class="key-value">
+  <div class="row key-value">
     <div class="key">
       ${key}
     </div>

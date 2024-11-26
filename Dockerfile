@@ -1,10 +1,10 @@
 # Build webpack (javascript & css)
 FROM node:21.5.0-alpine3.19 AS build-web
 WORKDIR /web
-COPY web/Gruntfile.js web/package.json web/package-lock.json web/webpack.js ./
+COPY web/package.json web/package-lock.json web/webpack.js web/webpack.scss.js ./
 RUN --mount=type=cache,target=/web/.npm npm ci --no-audit
 COPY web/img ./img
-COPY web/less ./less
+COPY web/scss ./scss
 COPY web/src ./src
 RUN npm run build-css
 RUN npm run build-prod
@@ -36,7 +36,7 @@ COPY --chown=spring:spring --from=build-web /web/img /opt/ceh-catalogue/static/i
 COPY --chown=spring:spring --from=build-web /web/dist /opt/ceh-catalogue/static/scripts
 COPY --chown=spring:spring --from=build-web /web/css /opt/ceh-catalogue/static/css
 COPY --chown=spring:spring --from=build-web /web/node_modules/leaflet-draw/dist/images /opt/ceh-catalogue/static/css/images
-COPY --chown=spring:spring --from=build-web /web/node_modules/@fortawesome/fontawesome-free/webfonts /opt/ceh-catalogue/static/fonts
+COPY --chown=spring:spring --from=build-web /web/node_modules/@fortawesome/fontawesome-free/webfonts /opt/ceh-catalogue/static/webfonts
 RUN chown spring:spring -R /var/ceh-catalogue && chown spring:spring -R /var/upload
 VOLUME ["/var/ceh-catalogue/datastore", "/var/ceh-catalogue/dropbox", "/var/ceh-catalogue/mapfiles", "/var/upload/datastore", "/var/ceh-catalogue/metrics-db"]
 EXPOSE 8080 8081

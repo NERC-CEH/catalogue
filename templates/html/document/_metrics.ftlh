@@ -33,7 +33,7 @@
         <div class="metric">
           <span>
             ${totalDownloads}
-            <a href=".metricsInfo" data-toggle="collapse" aria-controls="metricsInfo" area-expanded="false" role="button">*</a>
+            <a href=".metricsInfo" data-bs-toggle="collapse" aria-controls="metricsInfo" area-expanded="false" role="button">*</a>
           </span>
           download<#if totalDownloads != 1>s</#if>
         </div>
@@ -42,7 +42,7 @@
         <div class="metric">
           <span>
             ${totalViews}
-            <a href=".metricsInfo" data-toggle="collapse" aria-controls="metricsInfo" area-expanded="false" role="button">*</a>
+            <a href=".metricsInfo" data-bs-toggle="collapse" aria-controls="metricsInfo" area-expanded="false" role="button">*</a>
           </span>
           view<#if totalViews != 1>s</#if>
         </div>
@@ -86,7 +86,7 @@
           <#if totalDownloads gt 0 >
             <span>Download numbers valid from ${downloadsFrom?date?string['dd MMMM yyyy']}</span>
           </#if>
-          <span class="small">(information prior to this was not collected)<span>
+          <span class="small">(information prior to this was not collected)</span>
         </div>
       </#if>
       <#-- END OF more information about the dates -->

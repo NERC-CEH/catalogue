@@ -152,7 +152,7 @@
         <#if processingSteps??>
           <div class="section section-schema">
             <div class="section-heading">
-              <h2><a data-toggle="collapse" href="#steps-collapse" aria-expanded="false" aria-controls="steps-collapse">Data processing steps <span class="caret" ></span></a></h2>
+              <h2><a data-bs-toggle="collapse" href="#steps-collapse" aria-expanded="false" aria-controls="steps-collapse">Data processing steps <span class="caret" ></span></a></h2>
             </div>
             <div class="section-content collapse" id="steps-collapse">
               <#list processingSteps as step>
@@ -194,8 +194,8 @@
 <#----------MACROS ---------->
 <#macro simplerow label>
   <div class="row">
-    <div class="col-sm-2 col-xs-12"><div class="view-label">${label}</div></div>
-    <div class="col-sm-10 col-xs-12">
+    <div class="col-sm-2 col-12"><div class="view-label">${label}</div></div>
+    <div class="col-sm-10 col-12">
       <#nested>
     </div>
   </div>

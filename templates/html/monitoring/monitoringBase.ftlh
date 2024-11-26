@@ -43,7 +43,7 @@
           </#if>
 
           <#if description?? && description?has_content>
-            <div><@b.linebreaksAndLinks description /></div>
+            <div class="mt-3"><@b.linebreaksAndLinks description /></div>
           </#if>
 
         </div>
@@ -127,10 +127,12 @@
 </#macro>
 
 <#macro keyValue key description="" auto_esc=false>
-  <div class="key-value-container">
-    <div class="key-value" title="${description}">
-      <div class="key">${key}</div>
-      <div class="value"><#nested></div>
+  <div class="row key-value" title="${description}">
+    <div class="col-sm-3 key">
+     ${key}
+    </div>
+    <div class="col-sm-9 value">
+      <#nested>
     </div>
   </div>
 </#macro>

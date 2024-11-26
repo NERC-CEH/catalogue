@@ -2,13 +2,13 @@ import _ from 'underscore'
 
 export default _.template(`
 <div class="form-inline" style="margin-top: 6px">
-    <div class="form-group">
+    <div class="mb-3">
         <label for="linkedDocumentId">Linked Document Identifier</label>
         <input data-name="<%= data.modelAttribute %>" class="form-control" readonly id="linkedDocumentId" value="<%= data.value %>">
     </div>
 </div>
 <div class="form-inline" style="margin-top: 6px">
-    <div class="form-group">
+    <div class="mb-3">
         <label for="catalogue">Catalogue</label>
         <select id="catalogue" class="form-control"></select>
     </div>
