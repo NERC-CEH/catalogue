@@ -8,7 +8,7 @@
 		This ${recordType} contains <#if rel_hasMember?size gt 1>these<#else>this</#if> resource<#if rel_hasMember?size gt 1>s</#if></h2>
 
 		<#list rel_hasMember>
-			<div class="cards">
+			<div class="ukcehcards">
 			<#items as item>
 				<#if item.associationType = 'dataset' ||  item.associationType = 'nonGeographicDataset' ||  item.associationType = 'signpost'>
 					<#assign type="Dataset" icon="fa-solid fa-chart-column" >
@@ -40,7 +40,7 @@
 
 <#if rel_memberOf?has_content && rel_memberOf?size gt 0 >
 	<h2>This ${recordType} is included in the following collection<#if rel_memberOf?size gt 1>s</#if></h2>
-	<div class="cards">
+	<div class="ukcehcards">
 		<#list rel_memberOf?sort_by("title") as item>
 			<@card item.href item.publicationStatus 'fa-layer-group' 'Data collection' item.title/>
 
@@ -72,16 +72,17 @@
     <#if publicationStatus!="published" && !permission.userCanEdit(id)>
       <#assign cardClass="hidden">
     </#if>
-		<a href="${address}" class="card card-${cardClass}" ${target}>
-			<div class="card-icon">
+		<a class="ukcehcard ukcehcard-${cardClass}" href="${address}" ${target}>
+
+			<div class="ukcehcard-icon">
 				<span class="fa-stack fa-2x">
 					<i class="fa-solid fa-square fa-stack-2x"></i>
 					<i class="fa-solid ${icon} fa-stack-1x fa-inverse"></i>
 				</span>
 			</div>
 			<div>
-				<div class="card-type"><span>${publicationStatus}</span>${type}</div>
-				<div class="card-title">${title}</div>
+				<div class="ukcehcard-type"><small><span>${publicationStatus}</span>${type}</small></div>
+				<div class="ukcehcard-content">${title}</div>
 			</div>
 		</a>
 	</#if>

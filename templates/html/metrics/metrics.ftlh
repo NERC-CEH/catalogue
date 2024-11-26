@@ -8,13 +8,13 @@
       <fieldset>
         <div class="row">
           <div class="col-md-6">
-            <div class="form-group">
+            <div class="mb-3">
               <label for="startDate">From</label>
               <input type="date" id="startDate" name="startDate" class="form-control"/>
             </div>
           </div>
           <div class="col-md-6">
-            <div class="form-group">
+            <div class="mb-3">
               <label for="endDate">To</label>
               <input type="date" id="endDate" name="endDate" class="form-control"/>
             </div>
@@ -22,7 +22,7 @@
         </div>
         <div class="row">
           <div class="col-md-6">
-            <div class="form-group">
+            <div class="mb-3">
               <label for="orderBy">Order By</label>
               <select id="orderBy" name="orderBy" class="form-control">
                 <option value="docId">Document ID</option>
@@ -32,7 +32,7 @@
             </div>
           </div>
           <div class="col-md-6">
-            <div class="form-group">
+            <div class="mb-3">
               <label for="ordering">Ordering</label>
               <select id="ordering" name="ordering" class="form-control">
                 <option value="ascending">Ascending</option>
@@ -43,13 +43,13 @@
         </div>
         <div class="row">
           <div class="col-md-6">
-            <div class="form-group">
+            <div class="mb-3">
               <label for="docId">Document ID</label>
               <input type="text" id="docId" name="docId" class="form-control"/>
             </div>
           </div>
           <div class="col-md-6">
-            <div class="form-group">
+            <div class="mb-3">
               <label for="recordType">Type</label>
               <div class="checkbox">
                 <label><input type="checkbox" name="recordType" value="dataset">dataset</label>
@@ -65,7 +65,7 @@
         </div>
         <div class="row">
           <div class="col-md-6">
-            <div class="form-group">
+            <div class="mb-3">
               <label for="noOfRecords">Maximum number of documents to show</label>
               <input type="number" id="noOfRecords" name="noOfRecords" value="100" class="form-control"/>
             </div>

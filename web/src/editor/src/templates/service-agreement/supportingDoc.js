@@ -3,7 +3,7 @@ import _ from 'underscore'
 export default _.template(`
 <div class="row">
     <div class="col-sm-1 required">
-        <label class="control-label" for="supportingDocs<%= data.index %>Name">
+        <label for="supportingDocs<%= data.index %>Name">
             Name
         </label>
     </div>
@@ -11,7 +11,7 @@ export default _.template(`
         <input data-name="name" class="editor-input" id="supportingDocs<%= data.index %>Name" value="<%= data.name %>">
     </div>
     <div class="col-sm-1 required">
-        <label class="control-label" for="supportingDocs<%= data.index %>Format">
+        <label for="supportingDocs<%= data.index %>Format">
           Format
         </label>
     </div>

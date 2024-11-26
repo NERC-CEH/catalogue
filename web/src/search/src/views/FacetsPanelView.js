@@ -20,8 +20,8 @@ export default Backbone.View.extend({
           const userAgent = navigator.userAgent.toLowerCase()
           return (userAgent.indexOf('firefox') > -1) ? '97%' : '99%'
         },
-        selectionCssClass: 'select2--large',
-        dropdownCssClass: 'select2--large',
+        selectionCssClass: 'select2',
+        dropdownCssClass: 'select2',
         templateSelection: e => { return e.text.split(' (')[0] }
       })
       this.$('.select2-selection__choice').removeAttr('title')

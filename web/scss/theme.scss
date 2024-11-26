@@ -9,12 +9,14 @@
  */
 
 @import url("https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600&display=swap");
-@import "../node_modules/bootstrap/less/bootstrap";
-@import "../node_modules/@fortawesome/fontawesome-free/less/fontawesome";
-@import "../node_modules/@fortawesome/fontawesome-free/less/regular";
-@import "../node_modules/@fortawesome/fontawesome-free/less/solid";
-@import "../node_modules/@fortawesome/fontawesome-free/less/brands";
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap');
+@import "customProperties";
+@import "variables";
+@import "~bootstrap/scss/bootstrap";
+@import "~@fortawesome/fontawesome-free/scss/fontawesome";
+@import "~@fortawesome/fontawesome-free/scss/regular";
+@import "~@fortawesome/fontawesome-free/scss/solid";
+@import "~@fortawesome/fontawesome-free/scss/brands";
 @import "message-panel";
 @import "search";
 @import "metadata";
@@ -22,8 +24,6 @@
 @import "validation";
 @import "documents-upload";
 @import "upload-simple";
-@import "variables";
-@import "customProperties";
 // Add CSS Customizations to your theme here.
 
 
@@ -33,6 +33,15 @@ body {
     min-height: 100vh;
     font-family: var(--font-family-body);
     text-wrap: pretty;
+    line-height: $line-height-base;
+}
+
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
 }
 
 header {
@@ -40,7 +49,7 @@ header {
     top: 0;
     z-index: 2000;
     background-color: var(--header-background-colour);
-    border-bottom: solid var(--header-border-bottom-colour) var(--header-border-bottom-width);
+    border-block-end: solid var(--header-border-bottom-colour) var(--header-border-bottom-width);
 
     .ukcehBrand {
         display: var(--ukceh-brand-display);
@@ -84,9 +93,8 @@ header {
     }
 }
 
-
 footer {
-    margin-top: auto;
+    margin-block-start: auto;
     background-color: var(--footer-background-colour);
     color: var(--footer-colour);
 
@@ -144,14 +152,13 @@ footer {
                 border-radius: 1000px;
 
                 &:hover {
-
                     border-color: white;
                 }
             }
         }
 
         .footer-terms {
-            border-top: 1px solid white;
+            border-block-start: 1px solid white;
             text-align: center;
             grid-column-start: 1;
             grid-column-end: 3;
@@ -159,6 +166,10 @@ footer {
     }
 }
 
+.modal-open {
+    padding: 0 !important;
+    header {z-index:1050}
+}
 
 @media only screen and (max-width: 600px) {
     .footer-logos {
@@ -172,7 +183,7 @@ h3,
 h4,
 h5,
 h6 {
-    font-family: var(--font-family-hreaders);
+    font-family: var(--font-family-headers);
 
     a {
         color: var(--link-colour);
@@ -203,7 +214,7 @@ header {
 
             img {
                 max-height: var(--header-logo-height);
-                border-right: var(--header-logo-border);
+                border-inline-end: var(--header-logo-border);
             }
         }
 
@@ -238,7 +249,7 @@ header {
             }
 
             .navbar-right {
-                margin-left: auto;
+                margin-inline-start: auto;
                 align-items: center;
 
                 li {
@@ -256,7 +267,7 @@ header {
 
                     li {
                         list-style: none;
-                        border-bottom: 1px solid lightgray;
+                        border-block-end: 1px solid lightgray;
 
                         &:last-child {
                             border: none;
@@ -299,7 +310,7 @@ header {
 
             .brand {
                 img {
-                    border-right: none;
+                    border-inline-end: none;
                 }
             }
 
@@ -335,11 +346,11 @@ header {
                 }
 
                 .navbar-right {
-                    margin-left: 0;
+                    margin-inline-start: 0;
                 }
 
                 &.reveal {
-                    border-bottom: solid var(--header-border-bottom-colour) var(--header-border-bottom-width);
+                    border-block-end: solid var(--header-border-bottom-colour) var(--header-border-bottom-width);
 
                     .navbar {
                         display: flex;
@@ -382,7 +393,7 @@ i.fa-brands {
         margin: 0.5em 0;
 
         .result--title {
-            font-weight: bolder;
+            font-weight: 600;
         }
     }
 }

@@ -5,7 +5,6 @@ import ChildView from './ChildView'
 import template from '../templates/Parent'
 import { Positionable } from '../collections'
 import { LegiloKeywords, fetchKeywordsFromLegilo } from './index'
-import FetchKeywordsButton from '../templates/FetchKeywordsButton'
 
 export default SingleView.extend({
 
@@ -48,10 +47,6 @@ export default SingleView.extend({
   render () {
     this.$el.html(this.template({ data: this.data }))
 
-    if (this.data.fetchKeywordsButton && this.model.get('id')) {
-      this.$el.append(FetchKeywordsButton())
-    }
-
     if (this.data.renderLegiloKeywords && this.model.get('id')) {
       this.$el.append(this.legiloKeywords.el)
       this.legiloKeywords.render()
@@ -72,6 +67,10 @@ export default SingleView.extend({
       })
       .catch(error => {
         console.error('Error fetching keywords:', error)
+        this.$('.loader')
+          .removeClass('spinner-border')
+          .addClass('text-danger')
+          .text('Something went wrong while fetching keywords')
       })
   },
 

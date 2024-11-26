@@ -2,6 +2,7 @@
 vendor
 src/*-out.js
 css
+fonts
 dist
 
 # Ignore the node_modules

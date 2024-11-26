@@ -115,6 +115,6 @@ export default SingleView.extend({
 
   hide () {
     SingleView.prototype.hide.apply(this)
-    this.collection.trigger('hidden')
+    this.collection.trigger('d-none')
   }
 })

@@ -1,46 +1,41 @@
 /* eslint no-new: "off" */
-import _ from 'underscore'
-import AirDatepicker from 'air-datepicker'
-import localeEn from 'air-datepicker/locale/en'
 import ObjectInputView from './ObjectInputView'
 import template from '../templates/DatasetReferenceDate'
-
-const datepickerOptions = {
-  dateFormat: 'yyyy-MM-dd',
-  locale: localeEn,
-  position: 'top left'
-}
+import { formatDateForInput } from '../utils'
 
 export default ObjectInputView.extend({
 
   initialize (options) {
     this.template = template
     ObjectInputView.prototype.initialize.call(this, options)
-    const that = this
-    new AirDatepicker('#input-creationDate', _.extend({}, datepickerOptions, {
-      onSelect ({ formattedDate }) {
-        that.model.set('creationDate', formattedDate)
-      }
-    }))
-    new AirDatepicker('#input-publicationDate', _.extend({}, datepickerOptions, {
-      onSelect ({ formattedDate }) {
-        that.model.set('publicationDate', formattedDate)
-      }
-    }))
-    new AirDatepicker('#input-unavailableDate', _.extend({}, datepickerOptions, {
-      onSelect ({ formattedDate }) {
-        that.model.set('unavailableDate', formattedDate)
-      }
-    }))
-    new AirDatepicker('#input-releasedDate', _.extend({}, datepickerOptions, {
-      onSelect ({ formattedDate }) {
-        that.model.set('releasedDate', formattedDate)
-      }
-    }))
-    new AirDatepicker('#input-supersededDate', _.extend({}, datepickerOptions, {
-      onSelect ({ formattedDate }) {
-        that.model.set('supersededDate', formattedDate)
-      }
-    }))
+
+    const creationDate = formatDateForInput(this.model.get('creationDate'))
+    const publicationDate = formatDateForInput(this.model.get('publicationDate'))
+    const unavailableDate = formatDateForInput(this.model.get('unavailableDate'))
+    const releasedDate = formatDateForInput(this.model.get('releasedDate'))
+    const supersededDate = formatDateForInput(this.model.get('supersededDate'))
+
+    this.$('#input-creationDate').val(creationDate)
+    this.$('#input-creationDate').val(creationDate)
+    this.$('#input-publicationDate').val(publicationDate)
+    this.$('#input-unavailableDate').val(unavailableDate)
+    this.$('#input-releasedDate').val(releasedDate)
+    this.$('#input-supersededDate').val(supersededDate)
+
+    this.$('#input-creationDate').on('input', (event) => {
+      this.model.set('creationDate', this.value)
+    })
+    this.$('#input-publicationDate').on('input', (event) => {
+      this.model.set('publicationDate', event.value)
+    })
+    this.$('#input-unavailableDate').on('input', (event) => {
+      this.model.set('unavailableDate', event.value)
+    })
+    this.$('#input-releasedDate').on('input', (event) => {
+      this.model.set('releasedDate', event.value)
+    })
+    this.$('#input-supersededDate').on('input', (event) => {
+      this.model.set('supersededDate', event.value)
+    })
   }
 })

@@ -27,18 +27,18 @@ describe('Test RelationshipView', function () {
     expect(view.$('.relationshipSearch')).toBeDefined()
   })
 
-  it('should set relationshipSearch to hidden if target exists', async () => {
+  it('should set relationshipSearch to d-none if target exists', async () => {
     model = new EditorMetadata({ target: 'target' })
     view = new RelationshipView({ model, options })
     await view.render()
-    expect(view.$('.relationshipSearch').hasClass('hidden')).toBeTrue()
+    expect(view.$('.relationshipSearch').hasClass('d-none')).toBeTrue()
   })
 
-  it('should set relationshipRecord to hidden if target does not exist', async () => {
+  it('should set relationshipRecord to d-none if target does not exist', async () => {
     model = new EditorMetadata({ target: '' })
     view = new RelationshipView({ model, options })
     await view.render()
-    expect(view.$('.relationshipRecord').hasClass('hidden')).toBeTrue()
+    expect(view.$('.relationshipRecord').hasClass('d-none')).toBeTrue()
   })
 
   it('should do correct http call for uid', async () => {

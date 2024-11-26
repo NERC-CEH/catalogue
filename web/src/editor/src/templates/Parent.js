@@ -8,20 +8,29 @@ export default _.template(`
     class='row'
   <% } %>
 >
-    <div class="col-sm-3">
+    <div class="col-md-3">
       <label for="input-<%= data.modelAttribute %>">
           <%= data.label %>
           <% if(data.helpText) { %>
-              <a data-toggle="collapse" title="Click for help" href="#help-<%= data.modelAttribute %>" data-parent="#editor"><i class="fa-regular fa-circle-question"></i></a>
+              <a data-bs-toggle="collapse" title="Click for help" href="#help-<%= data.modelAttribute %>" data-parent="#editor"><i class="fa-regular fa-circle-question"></i></a>
           <% } %>
       </label>
       <button class="editor-button add" <%= data.disabled%>>Add <span class="fa-solid fa-plus" aria-hidden="true"></span></button>
-      <div id="help-<%= data.modelAttribute %>" class="editor-help">
+      <% if (data.fetchKeywordsButton) { %>
+        <button class="editor-button legilo-fetch-btn mx-lg-1">Suggest Keywords</button>
+      <% } %>
+      <div id="help-<%= data.modelAttribute %>" class="editor-help w-100">
           <%= data.helpText %>
       </div>
     </div>
-    <div class="col-sm-9">
+    <div class="col-md-9">
       <div class="existing container-fluid"></div>
+      <% if (data.fetchKeywordsButton) { %>
+      <div class="d-flex justify-content-center">
+        <div class="spinner-border text-secondary loader" role="status" style="display: none;">
+        </div>
+      </div>
+    <% } %>
     </div>
 </div>
 `)

@@ -1,20 +1,11 @@
 <#if citation?has_content>
   <div class="modal fade" tabindex="-1" role="dialog" id="citationModal">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-fullscreen-sm-down modal-dialog-centered modal-citation" role="document">
       <div class="modal-content">
         <div class="modal-body">
-          <button type="button" class="close" data-dismiss="modal" aria-label="CLose"><i aria-hidden="true" class="fa-solid fa-xmark"></i></button>
-          <p><strong>Cite this dataset as</strong></p>
-          <p id="citation-text">
-            ${citation.authors?join(', ')} (${citation.year?string["0000"]}). <b>${citation.title}</b>. ${citation.publisher}.  (${codes.lookup('datacite.resourceTypeGeneral',citation.resourceTypeGeneral)}). ${citation.url}
-          </p>
-          <p><small>
-            Import this citation into your reference management software:<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<a href="${citation.bibtex}">BibTeX</a>&nbsp;&nbsp;|
-            &nbsp;&nbsp;<a href="${citation.ris}">Reference Manager (RIS)</a>&nbsp;&nbsp;|
-            &nbsp;&nbsp;<a href="${citation.ris}">Endnote</a>
-          </small></p>
-          <p><#include "_licence.ftlh"></p>
+          <button type="button" class="btn-close position-relative top-0 start-100 translate-middle" data-bs-dismiss="modal" aria-label="Close"></button>
+          <#include "_citation.ftlh">
+          <#include "_licence.ftlh">
         </div>
       </div>
     </div>
@@ -52,7 +43,7 @@
   <#if citation?has_content>
     <div class="doi">
       <a href="${citation.url}">${citation.url}</a>
-      <a class="pull-right" href="#" data-toggle="modal" data-target="#citationModal"><small><i class="fa-solid fa-quote-left fa-xs"></i> <i class="fa-solid fa-quote-right fa-xs"></i></small> Cite this ${recordType?lower_case!''}</a>
+      <a class="float-end" href="#" data-bs-toggle="modal" data-bs-target="#citationModal"><small><i class="fa-solid fa-quote-left fa-xs"></i> <i class="fa-solid fa-quote-right fa-xs"></i></small> Cite this ${recordType?lower_case!''}</a>
     </div>
   </#if>
 

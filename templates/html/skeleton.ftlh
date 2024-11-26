@@ -87,16 +87,16 @@
 
                 <#if searching && catalogue?has_content && permission.userCanCreate(catalogue.id)>
                     <div id="editorCreate" class="dropdown">
-                      <button class="btn btn-default dropdown-toggle" type="button" id="createMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                      <button class="btn btn-light border dropdown-toggle" type="button" id="createMenu" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                         Create
                         <span class="caret"></span>
                       </button>
-                      <ul class="dropdown-menu" aria-labelledby="createMenu">
+                      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="createMenu">
                         <#list catalogue.documentTypes as docType>
-                          <li><a class="edit-control" data-document-type="${docType.type}" href="#">${docType.title}</a></li>
+                          <li><a class="dropdown-item edit-control" data-document-type="${docType.type}" href="#">${docType.title}</a></li>
                         </#list>
                         <#if catalogue.fileUpload>
-                          <li role="separator" class="divider"></li>
+                          <li class="dropdown-divider"></li>
                           <li><a href="/documents/upload">File Upload</a></li>
                         </#if>
                       </ul>

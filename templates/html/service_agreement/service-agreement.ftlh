@@ -22,65 +22,63 @@
                 </h1>
             </div>
 
-            <div class="text-right">
-                <div class="row hidden-print adminPanel" role="toolbar">
-                    <#if state == "agreed">
-                        <div class="btn-group btn-group-sm">
-                            <button type="button" class="btn btn-default btn-wide" onClick="window.print()">Print</button>
-                        </div>
+            <div class="text-end d-print-none adminPanel" role="toolbar">
+                <#if state == "agreed">
+                    <div class="btn-group btn-group-sm">
+                        <button type="button" class="btn btn-light border btn-wide" onClick="window.print()">Print</button>
+                    </div>
+                </#if>
+                <#if !isHistorical()>
+                    <#assign canChangeState = true>
+                    <#if serviceAgreementQuality??>
+                        <#assign
+                            SA_checks = serviceAgreementQuality.check(id)
+                            problems = SA_checks.getProblems()
+                            errors = func.filter(problems, "severity", "ERROR")
+                        >
+                        <#if errors?? && errors?has_content>
+                            <#assign canChangeState = false>
+                        </#if>
                     </#if>
-                    <#if !isHistorical()>
+                    <#if getState() != "draft">
                         <#assign canChangeState = true>
-                        <#if serviceAgreementQuality??>
-                            <#assign
-                                SA_checks = serviceAgreementQuality.check(id)
-                                problems = SA_checks.getProblems()
-                                errors = func.filter(problems, "severity", "ERROR")
-                            >
-                            <#if errors?? && errors?has_content>
-                                <#assign canChangeState = false>
-                            </#if>
-                        </#if>
-                        <#if getState() != "draft">
-                            <#assign canChangeState = true>
-                        </#if>
-                        <#if permission.userCanEditServiceAgreement(id)>
-                            <div class="btn-group btn-group-sm">
-                                <button type="button" class="btn btn-default edit-control btn-wide" data-document-type="service-agreement">Edit</button>
-                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
-                                  <span class="caret"></span>
-                                  <span class="sr-only">Toggle Dropdown</span>
-                                </button>
-                              <ul class="dropdown-menu dropdown-menu-right">
-                                <li>
-                                  <a href="/service-agreement/${id}/permission">
-                                    <i class="fa-solid fa-users"></i>
-                                    Permissions
-                                  </a>
-                                </li>
-                              </ul>
-                            </div>
-                            <#list getModelLinks() as link>
-                                <#if link.rel == 'history'>
-                                    <a href="${link.href}" class="btn btn-default btn-wide btn-sm">${link.title}</a>
-                                </#if>
-                            </#list>
-                        </#if>
-                        <#if canChangeState>
-                            <#list transitions as transition>
-                                <form method="post" action="/service-agreement/${id}/form-publication/${transition.id}">
-                                    <p><button type="submit" class="btn btn-default btn-wide btn-sm" title="${transition.helpText}">${transition.title}</button></p>
-                                </form>
-                            </#list>
-                        </#if>
-                    <#elseif  isHistorical()>
+                    </#if>
+                    <#if permission.userCanEditServiceAgreement(id)>
+                        <div class="btn-group btn-group-sm">
+                            <button type="button" class="btn btn-light border edit-control btn-wide" data-document-type="service-agreement">Edit</button>
+                            <button type="button" class="btn btn-light border dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+                              <span class="caret"></span>
+                              <span class="visually-hidden">Toggle Dropdown</span>
+                            </button>
+                          <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                              <a class="dropdown-item" href="/service-agreement/${id}/permission">
+                                <i class="fa-solid fa-users"></i>
+                                Permissions
+                              </a>
+                            </li>
+                          </ul>
+                        </div>
                         <#list getModelLinks() as link>
-                            <#if link.title == 'History'>
-                                <a href="${link.href}" class="btn btn-default btn-wide btn-sm">${link.title}</a>
+                            <#if link.rel == 'history'>
+                                <a href="${link.href}" class="btn btn-light border btn-wide btn-sm">${link.title}</a>
                             </#if>
                         </#list>
                     </#if>
-                </div>
+                    <#if canChangeState>
+                        <#list transitions as transition>
+                            <form method="post" action="/service-agreement/${id}/form-publication/${transition.id}">
+                                <p><button type="submit" class="btn btn-light border btn-wide btn-sm" title="${transition.helpText}">${transition.title}</button></p>
+                            </form>
+                        </#list>
+                    </#if>
+                <#elseif  isHistorical()>
+                    <#list getModelLinks() as link>
+                        <#if link.title == 'History'>
+                            <a href="${link.href}" class="btn btn-light border btn-wide btn-sm">${link.title}</a>
+                        </#if>
+                    </#list>
+                </#if>
             </div>
 
             <#if permission.userCanEditServiceAgreement(id) && !isHistorical()>
@@ -131,12 +129,12 @@
             </div>
 
             <div class="contactDetails">
-                <div class="keyvalue">
+                <div class="row key-value">
                     <div class="key">Deposit reference</div>
                     <div class="value"><span>${depositReference!"NOT PROVIDED"}</span></div>
                 </div>
                 <#if depositorName?? && depositorName!=''>
-                    <div class="keyvalue">
+                    <div class="row key-value">
                         <div class="key">Depositor</div>
                         <div class="value">
                             ${depositorName}
@@ -145,7 +143,7 @@
                     </div>
                 </#if>
                 <#if eidcName?? && eidcName!=''>
-                    <div class="keyvalue">
+                    <div class="row key-value">
                         <div class="key">For the EIDC</div>
                         <div class="value">
                             ${eidcName}
@@ -185,7 +183,7 @@
                 <@displayData "Number of files to be deposited" fileNumber/>
 
                 <#if supportingDocs?has_content && supportingDocs?size gt 0 >
-                    <div class="keyvalue">
+                    <div class="row key-value">
                         <div class="key">Supporting documents</div>
                         <div class="value">
                             <#list supportingDocs as doc>
@@ -223,7 +221,7 @@
 
             <div class="section section--6">
                 <h2>Availability, access and licensing</h2>
-                <div class="keyvalue">
+                <div class="row key-value">
                     <div class="key">Availability</div>
                     <div class="value">
                         <#if availability??>
@@ -269,7 +267,7 @@
 <#-- Freemarker macros -->
 <#macro displayData key value=''>
     <#if value!=''>
-    <div class="keyvalue">
+    <div class="row key-value">
         <div class="key">${key}</div>
         <div class="value">${value}</div>
     </div>
@@ -335,7 +333,7 @@
 </#macro>
 
 <#macro displaySupportingDocuments>
-    <div class="keyvalue">
+    <div class="row key-value">
         <div class="key">Supporting documents</div>
         <div class="value">
             <#list supportingDocumentNames as name>
@@ -346,7 +344,7 @@
 </#macro>
 
 <#macro displayEndUserLicence>
-    <div class="keyvalue">
+    <div class="row key-value">
         <div class="key">Licence</div>
         <div class="value">
             <#if endUserLicence?has_content && endUserLicence.code == 'license'>
@@ -363,7 +361,7 @@
 
 <#macro displayOwnerOfIpr>
     <#if ownersOfIpr?has_content && ownersOfIpr?size gt 0 >
-     <div class="keyvalue">
+     <div class="row key-value">
         <div class="key">Owner<#if ownersOfIpr?size gt 1>s</#if> of IPR</div>
         <div class="value">
             <#list ownersOfIpr>
@@ -380,7 +378,7 @@
 
 <#macro displayGrants>
     <#if funding?has_content && funding?size gt 0 >
-     <div class="keyvalue">
+     <div class="row key-value">
         <div class="key">Funding</div>
         <div class="value">
             <#list funding>
@@ -395,14 +393,14 @@
 
 
 <#macro displayKeywords>
-    <dl class="keyvalue">
+    <div>
       <#include "../document/_tags.ftlh">
-    </dl>
+    </div>
 </#macro>
 
 <#macro displayArea>
     <#if boundingBoxes??>
-        <div class="keyvalue">
+        <div class="row key-value">
             <div class="key">Area of study</div>
             <div class="key">
                 <div id="studyarea-map" class="studyarea-map">

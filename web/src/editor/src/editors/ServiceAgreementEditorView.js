@@ -454,7 +454,7 @@ Details of relationships we can accommodate are available at: <a href='eidc.ac.u
           label: 'Observed properties',
           text: 'Controlled keywords describing the observed properties/variables contained in this data resource.',
           required: true,
-          className: 'hidden'
+          className: 'd-none'
         }),
         new TextOnlyView({
           model: this.model,
@@ -464,42 +464,42 @@ Details of relationships we can accommodate are available at: <a href='eidc.ac.u
 <p>Please note our currently supported vocabularies do not include geographic locations, therefore please use the plain text keyword field.</p>\
 `,
           required: true,
-          className: 'hidden'
+          className: 'd-none'
         }),
         new ParentView({
           model: this.model,
           modelAttribute: 'keywordsPlace',
           ObjectInputView: KeywordVocabularyView,
           multiline: true,
-          className: 'hidden'
+          className: 'd-none'
         }),
         new TextOnlyView({
           model: this.model,
           label: 'Projects',
           text: 'Controlled keywords describing projects that fund/support the creation of this resource.',
           required: true,
-          className: 'hidden'
+          className: 'd-none'
         }),
         new ParentView({
           model: this.model,
           modelAttribute: 'keywordsProject',
           ObjectInputView: KeywordVocabularyView,
           multiline: true,
-          className: 'hidden'
+          className: 'd-none'
         }),
         new TextOnlyView({
           model: this.model,
           label: 'Instruments',
           text: 'Controlled keywords describing instruments/sensors used to generate this data.',
           required: true,
-          className: 'hidden'
+          className: 'd-none'
         }),
         new ParentView({
           model: this.model,
           modelAttribute: 'keywordsInstrument',
           ObjectInputView: KeywordVocabularyView,
           multiline: true,
-          className: 'hidden'
+          className: 'd-none'
         }),
         new TextOnlyView({
           model: this.model,

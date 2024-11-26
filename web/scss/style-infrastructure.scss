@@ -1,7 +1,5 @@
 @import "theme";
 
-@fa-font-path: "../fonts";
-
 .infrastructure-metadata {
     #pageTitle {
         margin: 2em 0;
@@ -15,7 +13,7 @@
     .contact {
         display: grid;
         grid-template-columns: 30px auto;
-        margin-bottom: 3em;
+        margin-block-end: 3em;
 
         div {
             >span {
@@ -29,20 +27,6 @@
 
         img {
             max-width: 100%;
-        }
-    }
-
-    .key-value {
-        margin: 2em 0;
-        line-height: @line-height-base;
-
-        >div {
-            text-wrap: balance;
-
-            &:first-of-type {
-                font-weight: bolder;
-                font-size: 1.125em;
-            }
         }
     }
 
@@ -86,7 +70,7 @@
                 .menu {
                     a {
                         color: white;
-                        margin-right: 1em;
+                        margin-inline-end: 1em;
                     }
                 }
 

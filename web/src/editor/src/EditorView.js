@@ -63,7 +63,7 @@ export default Backbone.View.extend({
     this.render()
     _.invoke(this.sections[0].views, 'show')
     this.sections.forEach(section => {
-      this.$('.editor-nav').append($(`<span title='${section.title}'>${section.label}</span>`))
+      this.$('.editor-nav').append($(`<span role="button" title='${section.title}'>${section.label}</span>`))
     })
 
     this.$('.editor-nav').find('span').first().addClass('active')

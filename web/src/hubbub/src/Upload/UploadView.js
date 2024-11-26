@@ -177,7 +177,7 @@ export default Backbone.View.extend({
     $el.attr('disabled', true)
     const $icon = $('i', $el)
     const current = $icon.attr('class')
-    $icon.attr('class', 'btn-icon fa-solid fa-sync fa-spin')
+    $icon.attr('class', 'btn-icon fa-fw fa-solid fa-sync fa-spin')
     return current
   },
 
@@ -192,7 +192,7 @@ export default Backbone.View.extend({
     const $el = $(event.currentTarget)
     $el.attr('disabled', true)
     const $icon = $('i', $el)
-    $icon.attr('class', 'btn-icon fa fa-exclamation-triangle')
+    $icon.attr('class', 'btn-icon fa-fw fa fa-exclamation-triangle')
   },
 
   finish (event) {

@@ -22,11 +22,11 @@ export default ObjectInputView.extend({
     const kwurl = this.model.get('uri')
     const kwvalue = this.model.get('value')
     if (kwurl != null && kwvalue != null) {
-      this.$('.keywordPicker').addClass('hidden')
+      this.$('.keywordPicker').addClass('d-none')
       this.$('.uri').attr('disabled', true)
       this.$('.value').attr('disabled', true)
     } else if (kwvalue != null) {
-      this.$('.keywordPicker').addClass('hidden')
+      this.$('.keywordPicker').addClass('d-none')
     }
 
     this.$('.autocomplete').autocomplete({
@@ -51,7 +51,7 @@ export default ObjectInputView.extend({
         this.$('.value').val(ui.item.value)
         this.model.set('uri', ui.item.url)
         this.$('.uri').val(ui.item.url)
-        this.$('.keywordPicker').addClass('hidden')
+        this.$('.keywordPicker').addClass('d-none')
         this.$('.uri').attr('disabled', true)
         this.$('.value').attr('disabled', true)
       }

@@ -1,0 +1,25 @@
+@import "theme";
+
+.editor-textarea {
+    height: 100%;
+}
+
+.editor-description {
+    margin-block-end: 20px;
+}
+
+.sampleArchive-metadata {
+    .browseGraphic {
+        max-width:350px;
+        max-height:250px;
+        margin:0 0 2em 2em;
+        @extend .float-end !optional;
+    }
+
+    .record-metadata {
+        margin-block-start:6em;
+        background-color:#EEE;
+        padding:1em;
+        font-size:.9em;
+    }
+}

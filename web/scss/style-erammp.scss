@@ -1,14 +1,13 @@
 @import "theme";
 
-
-@brand-success: #9fb025;
-@gray-lighter: @brand-success;
-@header-text: #ffffff;
-@panel-default-text: @header-text;
+$brand-success: #9fb025;
+$gray-lighter: $brand-success;
+$header-text: #ffffff;
+$card-default-text: $header-text;
 
 .erammp-metadata {
     .row {
-        margin-bottom:1.25em;
+        margin-block-end:1.25em;
         .view-label {
             font-weight: bold;
         }
@@ -19,7 +18,7 @@
         }
         .col-xs-12 {
             .view-label {
-                text-align: left ;
+                text-align: left;
             }
         }
     };
@@ -30,12 +29,12 @@
         margin: 2em 0;
     };
     .section {
-        padding-bottom: 1em;
+        padding-block-end: 1em;
         .section-heading {
-            border-bottom:1px solid #CCC;
-            padding-top:1.25em;
-            padding-bottom:.75em;
-            margin-bottom:2em;
+            border-block-end:1px solid #CCC;
+            padding-block-start:1.25em;
+            padding-block-end:.75em;
+            margin-block-end:2em;
             h2{
                 margin:0
             }
@@ -43,7 +42,7 @@
     };
 
     .table-schema {
-        .table-responsive;
+        @extend .table-sm !optional;
         td, th {
             padding:.3em 1em !important;
             .schema-constraints {
@@ -52,7 +51,7 @@
                     display: table-row;
                     span {
                         display: table-cell;
-                        padding-right: 1em;
+                        padding-inline-end: 1em;
                     };
                 };
             };
@@ -69,13 +68,13 @@
 
     .section-inputs, .section-outputs {
         table{
-            margin-left: 3em;
+            margin-inline-start: 3em;
         };
     };
 
     .section-metadata {
         .row{
-        margin-bottom: 0;
+        margin-block-end: 0;
         }
     }
 

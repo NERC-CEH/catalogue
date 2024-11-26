@@ -1,0 +1,10 @@
+@use "sass:color";
+
+span.badge {
+    &-VALID          { background-color: $brand-success; }
+    &-WARNING        { background-color: $brand-warning; }
+    &-ERROR          { background-color: color.adjust($brand-danger, $lightness: 10%, $space: hsl); }
+    &-FAILED_TO_READ { background-color: $brand-danger; }
+}
+
+.validation-results { height: 300px; overflow-y: auto;}

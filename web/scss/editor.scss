@@ -1,16 +1,20 @@
-@import (inline) "../node_modules/bootstrap-colorpicker/dist/css/bootstrap-colorpicker.css";
-@import (inline) "../node_modules/leaflet-draw/dist/leaflet.draw.css";
-@import (inline) "../node_modules/leaflet/dist/leaflet.css";
-@import (inline) "../node_modules/air-datepicker/air-datepicker.css";
-@import (inline) "../node_modules/jquery-ui/dist/themes/base/jquery-ui.min.css";
-@import (inline) "../node_modules/leaflet.markercluster/dist/MarkerCluster.css";
-@import (inline) "../node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css";
-@import (inline) "../node_modules/select2/dist/css/select2.min.css";
-@import (inline) "../node_modules/select2-bootstrap-5-theme/dist/select2-bootstrap-5-theme.min.css";
+@use "sass:color";
+
+@import "~leaflet-draw/dist/leaflet.draw.css";
+@import "~leaflet/dist/leaflet.css";
+@import "~jquery-ui/dist/themes/base/jquery-ui.min.css";
+@import "~leaflet.markercluster/dist/MarkerCluster.css";
+@import "~leaflet.markercluster/dist/MarkerCluster.Default.css";
+@import "~select2/dist/css/select2.min.css";
+@import "~select2-bootstrap-5-theme/dist/select2-bootstrap-5-theme.min.css";
 
 .edit-mode {
     a#atlwdg-trigger {
         display: none;
+    }
+
+    hr {
+        opacity: 1;
     }
 
     footer {
@@ -28,16 +32,13 @@
         }
     }
 
-    #air-datepicker-global-container {
-        .air-datepicker-overlay.-active- {
-            z-index: 1005;
-        }
-
-        .air-datepicker {
-            z-index: 1006;
+    #map-style-selector {
+        button.dropdown-toggle::after {
+            content: none;
         }
     }
 }
+
 
 #editorNav li {
     cursor: pointer;
@@ -98,14 +99,15 @@
         padding: 1em;
 
         .editor-input {
-            .form-control;
-            .input-sm;
+            @extend .form-control !optional;
+            @extend .form-control-sm !optional;
             color: #000;
+            appearance: auto;
         }
 
         .editor-textarea {
-            .form-control;
-            .input-sm;
+            @extend .form-control !optional;
+            @extend .form-control-sm !optional;
             height: auto;
             color: #000;
         }
@@ -124,14 +126,14 @@
         .ui-sortable {
             .row {
                 .provenance {
-                    border-bottom: 1px solid #eee;
+                    border-block-end: 1px solid #eee;
                     margin-block-end: 0.25em;
                     padding: 0.5em 0;
                 }
 
                 &:last-child {
                     .provenance {
-                        border-bottom: none;
+                        border-block-end: none;
                         padding-bottom: 0;
                     }
                 }
@@ -139,44 +141,52 @@
         }
 
         .editor-button {
-            .btn;
-            .btn-default;
-            .btn-sm;
-            .pull-right;
+            @extend .btn !optional;
+            @extend .btn-light !optional;
+            @extend .border !optional;
+            @extend .btn-sm !optional;
+            @extend .float-end !optional;
         }
 
         .editor-button-xs {
-            .btn;
-            .btn-default;
-            .btn-xs;
-            .pull-right;
+            @extend .btn !optional;
+            @extend .btn-light !optional;
+            @extend .border !optional;
+            @extend .btn-sm !optional;
+            @extend .float-end !optional;
         }
 
         .editor-button-remove {
-            .btn;
-            .btn-default;
-            .btn-xs;
+            @extend .btn !optional;
+            @extend .btn-light !optional;
+            @extend .border !optional;
+            @extend .btn-sm !optional;
         }
 
         .editor-help {
-            .help-block;
-            .hidden-print;
-            .collapse;
+            @extend .form-text !optional;
+            @extend .d-print-none !optional;
+            @extend .collapse !optional;
+            padding: 1em;
+            margin-block-start: 1em;
+            background-color: #eee;
+            border-radius: .75em;
             font-size: 12px;
             line-height: 1.5;
         }
 
         .legilo {
             margin-inline-start: 0.6em;
+
             .loader {
                 margin-inline-start: 0.6em;
             }
         }
 
         .component {
-            border-bottom: 1px solid lighten(@gray-light, 25%);
+            border-block-end: 1px solid color.adjust($gray-light, $lightness: 25%, $space: hsl);
             padding-bottom: 1.25em;
-            .form-group;
+            margin-bottom: 1rem;
             display: none;
 
             &.visible {
@@ -189,7 +199,7 @@
             }
 
             &--textonly {
-                border-bottom: none !important;
+                border-block-end: none !important;
                 margin-block-end: 0 !important;
                 padding-bottom: 0 !important;
             }
@@ -197,19 +207,14 @@
             .component {
                 border-style: solid;
                 border-width: 1px;
-                border-color: lighten(@gray-light, 15%);
+                border-color: color.adjust($gray-light, $lightness: 15%, $space: hsl);
                 border-radius: 5px;
                 padding: 0.5em;
                 margin-block-end: 1.25em;
             }
 
             .row {
-                @spacer: 3px;
-                margin-block-end: @spacer;
-
                 label {
-                    padding-top: @spacer;
-
                     small {
                         font-weight: normal;
                         color: gray;
@@ -230,7 +235,8 @@
                 }
 
                 label {
-                    font-size: 12px;
+                    font-size: 85%;
+                    font-weight:600;
 
                     a {
                         margin-inline-start: 0.5em;
@@ -252,9 +258,10 @@
             }
 
             .btnSchemaDetail {
-                .btn;
-                .btn-default;
-                .btn-xs;
+                @extend .btn !optional;
+                @extend .btn-light !optional;
+                @extend .border !optional;
+                @extend .btn-sm !optional;
                 text-align: right;
 
                 span:before {
@@ -285,20 +292,21 @@
 
             input,
             textarea {
-                border-bottom: 2px var(--_requiredIndicator) solid !important;
+                border-block-end: 2px var(--_requiredIndicator) solid !important;
             }
         }
 
         .multiline .existing>.row {
             border-style: solid;
             border-width: 1px;
-            border-color: lighten(@gray-light, 15%);
+            border-color: color.adjust($gray-light, $lightness: 15%, $space: hsl);
             border-radius: 5px;
             padding: 4px;
+            margin: 0.5rem 0;
         }
 
         .dropdown {
-            .pull-right;
+            @extend .float-end !optional;
             display: inline-block;
         }
 
@@ -315,7 +323,7 @@
 
         .keyword-add {
             display: inline-block;
-            .pull-left;
+            float: left;
         }
 
         .keywords {
@@ -339,9 +347,9 @@
             }
         }
 
-        .dataentry.child:has(.keywordPicker):not(:has(.hidden)) {
+        .dataentry.child:has(.keywordPicker):not(:has(.d-none)) {
             padding-bottom: 1.2em;
-            padding-top: 1.2em;
+            padding-block-start: 1.2em;
         }
 
         input.autocomplete::placeholder {
@@ -396,7 +404,7 @@
 
         .editor-menu {
             min-height: 0;
-            flex: 0 0 250px;
+            flex: 0 0 clamp(200px, 20vw, 300px);
 
             >div {
                 position: sticky;
@@ -441,8 +449,8 @@
 
     &[readonly],
     &[disabled] {
-        background-color: lighten(@gray-light, 30%);
-        color: @gray;
+        background-color: color.adjust($gray-light, $lightness: 30%, $space: hsl);
+        color: $gray;
     }
 }
 
@@ -456,7 +464,7 @@
 ul.ui-autocomplete {
     li.ui-menu-item {
         font-size: 0.8em;
-        font-family: var(--font-family-sans-serif);
+        font-family: var(--font-family-sans-serif), serif;
     }
 }
 
@@ -476,42 +484,7 @@ ul.ui-autocomplete {
         background: #f1f1f1;
     }
 
-    &:-webkit-scrollbar-thumb {
+    &::-webkit-scrollbar-thumb {
         background: #999;
-    }
-}
-
-.select2-container {
-    .select2--large {
-        font-size: 1.7rem !important;
-
-        .select2-selection__rendered {
-            li {
-                font-size: 1.7rem !important;
-            }
-
-            .select2-selection__choice {
-                flex-direction: row-reverse !important;
-
-               .select2-selection__choice__remove {
-                    margin-left: 8px;
-                    margin-top: 4px;
-               }
-            }
-        }
-
-        .select2-results__options {
-            max-height: 290px !important;
-
-            li {
-                font-size: 1.7rem !important;
-                padding-left: 24px !important;
-            }
-
-            .select2-results__option--selected {
-                color: darkgray !important;
-                background-color: inherit !important;
-            }
-        }
     }
 }

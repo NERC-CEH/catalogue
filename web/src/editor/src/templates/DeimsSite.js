@@ -26,7 +26,7 @@ export default _.template(`
     </div>
 </div>
 
-<div class="hidden">
+<div class="d-none">
     <input data-name="id" id="deims<%= data.index %>Id" class="editor-input id" value="<%= data.id %>">
 </div>
 `)

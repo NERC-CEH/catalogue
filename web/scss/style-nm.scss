@@ -1,13 +1,12 @@
+@use "sass:color";
+
 @import "theme";
 
-
-@fa-font-path: "../fonts";
-
 //colours
-@ukri-blue: hsla(241, 37%, 28%, 1);
-@nerc-blue: @ukri-blue;
+$ukri-blue: hsla(241, 37%, 28%, 1);
+$nerc-blue: $ukri-blue;
 
-@link-hover-color: @nerc-blue;
+$link-hover-color: $nerc-blue;
 
 :root {
     --ukri-blue: hsla(241, 37%, 28%, 1);
@@ -18,7 +17,7 @@
     --header-border-bottom-colour: #ddd;
     --header-border-bottom-width: 1px;
     --header-link-background-colour: var(--header-background-colour);
-    --header-link-hover-background-colour:color-mix(in lab, var(--header-link-background-colour), black 15px);
+    --header-link-hover-background-colour:color-mix(in lab, var(--header-link-background-colour), black);
     --header-link-colour: var(--nerc-darkgreen);
     --header-link-hover-colour: red;
     --header-logo-border: none;
@@ -30,12 +29,12 @@ html {
 
 .models {
     &--modelinfo {
-        margin-bottom: 2em;
+        margin-block-end: 2em;
     }
 }
 
 .adminToolbar {
-    margin-top: 1em;
+    margin-block-start: 1em;
 }
 
 
@@ -52,16 +51,7 @@ a.navbar-brand {
 }
 
 .description {
-    margin-bottom: 2em;
-}
-
-.key-value {
-    display: grid;
-    margin: 1.1em 0;
-
-    .key {
-        font-weight: bold;
-    }
+    margin-block-end: 2em;
 }
 
 .references {
@@ -83,13 +73,13 @@ a.navbar-brand {
     }
 
     p.text-danger {
-        font-weight: bolder;
+        font-weight: 600;
         color: red;
     }
 
     .btn {
         &-code {
-            background-color: lighten(@nerc-blue, 60%);
+            background-color: color.adjust($nerc-blue, $lightness: 60%, $space: hsl);
             color: black;
             border-color: lightgray;
             border-radius: 6px;
@@ -151,7 +141,7 @@ a.navbar-brand {
         @media only screen and (max-width: 760px),
             (min-device-width: 768px) and (max-device-width: 1024px) {
             // On small screens, force qa table to not display as a table
-            @head-width: 100px;
+            $head-width: 100px;
 
             table,
             thead,
@@ -177,7 +167,7 @@ a.navbar-brand {
             td {
                 border: none;
                 position: relative;
-                margin-left: @head-width*1.2;
+                margin-inline-start: $head-width*1.2;
                 padding: 0.4em !important;
 
                 &:before {
@@ -185,10 +175,10 @@ a.navbar-brand {
                     padding: 0.4em 0.6em;
                     top: 0;
                     left: 3em;
-                    margin-left: -(@head-width*1.5);
+                    margin-inline-start: -($head-width*1.5);
                     text-align: right;
-                    width: @head-width;
-                    font-weight: bolder;
+                    width: $head-width;
+                    font-weight: 600;
                     white-space: nowrap;
                 }
 
@@ -214,25 +204,8 @@ a.navbar-brand {
 
     &--link {
         &--url {
-            font-weight: bolder;
-            margin-left: 1.6em;
-        }
-    }
-}
-
-//media query for screens wider than 600px
-@media only screen and (min-width: 600px) {
-    .nerc-model {
-        .hideLarge {display:none}
-        .container {
-            .key-value {
-                grid-template-columns: 13em auto;
-                gap: 1em;
-            }
-
-            .key {
-                text-align: right;
-            }
+            font-weight: 600;
+            margin-inline-start: 1.6em;
         }
     }
 }

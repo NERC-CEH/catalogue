@@ -2,7 +2,7 @@
 <@skeleton.master title="Sparql Tester" catalogue=catalogues.defaultCatalogue()>
     <div class="container-fluid">
       <form method="POST" action="/maintenance/sparql">
-        <div class="form-group">
+        <div class="mb-3">
           <label for="query">SPARQL Query</label>
           <textarea id="query" class="form-control" rows="14" name="query">
             <#if query??>
@@ -14,7 +14,7 @@
             </#if>
           </textarea>
         </div>
-        <button type="submit" class="btn btn-default">Execute</button>
+        <button type="submit" class="btn btn-light border">Execute</button>
       </form>
 
       <#if error??><div class="alert alert-danger">${error}</div></#if>

@@ -16,14 +16,14 @@
     <#if errors?? && errors?has_content>
         <div>This service agreement is incomplete and cannot be submitted until all errors are cleared</div>
     </#if>
-    <div id="section-serviceAgreementQuality" class="clearfix hidden-print qualityReport">
+    <div id="section-serviceAgreementQuality" class="clearfix d-print-none qualityReport">
         <#if errors?? && errors?has_content>
             <#list errors as error>
                 <div class="qualityItem qualityItem--error">
                     <div class="fa-solid fa-triangle-exclamation"> </div>
                     <div>${error.test}</div>
                 </div>
-            </#list>       
+            </#list>
         </#if>
         <#if warnings?? && warnings?has_content>
             <#list warnings as warning>
