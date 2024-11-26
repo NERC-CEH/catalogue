@@ -71,24 +71,16 @@ build_solr:
     - docker tag $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_REF_NAME-datalabs
     - docker push $CI_REGISTRY_IMAGE/solr --all-tags
 
-deploy_staging:
+deploy_production:
   image: ruby:2
   stage: deploy
-  variables:
-    SERVER: cig-staging.nerc-lancaster.ac.uk
-  environment:
-    name: staging
-    url: https://catalogue-staging.ceh.ac.uk/eidc/documents
-  script:
-    - curl $DEPLOYMENT_SCRIPT | bash
-  only:
-    - tags
-
-deploy_production:
-  extends: deploy_staging
   variables:
     SERVER: cig-prod.nerc-lancaster.ac.uk
   environment:
     name: production
     url:  https://catalogue.ceh.ac.uk/eidc/documents
+  script:
+    - curl $DEPLOYMENT_SCRIPT | bash
+  only:
+    - tags
   when: manual
