@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.gemini;
+package uk.ac.ceh.gateway.catalogue.geometry;
 
 import lombok.val;
 import org.junit.jupiter.api.DisplayName;
@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DisplayName("Geometry")
@@ -117,22 +118,19 @@ class GeometryTest {
 
     @Test
     @DisplayName("wrong geometry type for bounding box")
-    void wrongGeometryTypeForBoundingBox(){
-        //given
+    void wrongGeometryTypeForBoundingBox() {
+        // Given
         val geometryString = "{\"type\":\"Feature\",\"properties\":{},\"geometry\":{\"type\":\"Rectangle\",\"coordinates\":[[[1.0,2.0],[5.0,6.0],[8.0,9.0],[3.0,4.0],[-2.0,-4.0]]]}}";
-        val geometry = Geometry.builder().geometryString(geometryString).build();
-        val expected = "There is not yet an implementation of getBoundingBox() for shapes of type: rectangle";
+        val expectedMessage = "There is not yet an implementation of getBoundingBox() for shapes of type: rectangle";
 
-        //when
-        String actual = "";
-        try {
-            geometry.getBoundingBox();
-        } catch (Exception e) {
-            actual = e.getMessage();
-        }
+        // When & Then
+        UnsupportedOperationException exception = assertThrows(
+            UnsupportedOperationException.class,
+            () -> Geometry.builder().geometryString(geometryString).build()
+        );
 
-        //then
-        assertThat(actual, equalTo(expected));
+        // Verify
+        assertThat(exception.getMessage(), equalTo(expectedMessage));
     }
 
     @Test

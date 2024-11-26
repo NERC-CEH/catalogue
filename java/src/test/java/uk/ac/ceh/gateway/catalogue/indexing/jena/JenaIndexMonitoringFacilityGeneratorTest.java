@@ -8,7 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.ac.ceh.gateway.catalogue.gemini.Geometry;
+import uk.ac.ceh.gateway.catalogue.geometry.Geometry;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
 
 import java.util.List;

@@ -8,14 +8,12 @@ import com.vividsolutions.jts.io.WKTReader;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
+import uk.ac.ceh.gateway.catalogue.geometry.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.DescriptiveKeywords;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 
-import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 

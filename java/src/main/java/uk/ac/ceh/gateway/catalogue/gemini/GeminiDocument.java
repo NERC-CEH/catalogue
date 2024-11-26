@@ -9,6 +9,8 @@ import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.citation.Citation;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
+import uk.ac.ceh.gateway.catalogue.geometry.BoundingBox;
+import uk.ac.ceh.gateway.catalogue.geometry.Geometry;
 import uk.ac.ceh.gateway.catalogue.indexing.solr.WellKnownText;
 import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;

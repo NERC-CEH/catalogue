@@ -1,4 +1,4 @@
-package uk.ac.ceh.gateway.catalogue.gemini;
+package uk.ac.ceh.gateway.catalogue.geometry;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;

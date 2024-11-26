@@ -35,7 +35,7 @@ export default Backbone.View.extend({
         } else if (geometryType === 'polygon') {
           this.polygonDisplay(feature, studyArea, map)
         } else if (geometryType === 'multipolygon') {
-          this.multiPolygonDisplay(feature, studyArea, map);
+          this.multiPolygonDisplay(feature, studyArea, map)
         }
         break
       }
@@ -76,12 +76,12 @@ export default Backbone.View.extend({
     })
   },
 
-  multiPolygonDisplay(feature, studyArea, map) {
+  multiPolygonDisplay (feature, studyArea, map) {
     map.fitBounds(feature.getBounds())
 
-    let zoomThreshold = map.getBoundsZoom(feature.getBounds()) - 3;
-    zoomThreshold = zoomThreshold < 0 ? 0 : zoomThreshold;
-    const centroid = L.geoJson(this.centerPointOfPolygon(feature));
+    let zoomThreshold = map.getBoundsZoom(feature.getBounds()) - 3
+    zoomThreshold = zoomThreshold < 0 ? 0 : zoomThreshold
+    const centroid = L.geoJson(this.centerPointOfPolygon(feature))
 
     map.on('zoomend', function () {
       if (map.getZoom() < zoomThreshold) {

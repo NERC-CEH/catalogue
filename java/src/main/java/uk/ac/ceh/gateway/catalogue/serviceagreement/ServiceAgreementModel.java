@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
 import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.gemini.*;
+import uk.ac.ceh.gateway.catalogue.geometry.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.publication.TransitionResource;

@@ -10,8 +10,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
-import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
-import uk.ac.ceh.gateway.catalogue.gemini.Geometry;
+import uk.ac.ceh.gateway.catalogue.geometry.BoundingBox;
+import uk.ac.ceh.gateway.catalogue.geometry.Geometry;
+import uk.ac.ceh.gateway.catalogue.geometry.PointGeometry;
 import uk.ac.ceh.gateway.catalogue.indexing.jena.Ontology;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.Link;
@@ -48,7 +49,7 @@ class NetworkIndexingServiceTest {
 
     @InjectMocks
     private NetworkIndexingService networkIndexingService;
-    private final BigDecimal precision = BigDecimal.valueOf((Geometry.POINT_PRECISION + 0.0000001));
+    private final BigDecimal precision = BigDecimal.valueOf((PointGeometry.POINT_PRECISION + 0.0000001));
     private final String commitMessageTemplate = NetworkIndexingService.COMMIT_MESSAGE_TEMPLATE;
 
     private MonitoringFacility getMonitoringFacility(String id, String coords, MonitoringNetwork network) {

@@ -5,8 +5,8 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.gateway.catalogue.document.DocumentListingService;
 import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
-import uk.ac.ceh.gateway.catalogue.gemini.BoundingBox;
-import uk.ac.ceh.gateway.catalogue.gemini.Geometry;
+import uk.ac.ceh.gateway.catalogue.geometry.BoundingBox;
+import uk.ac.ceh.gateway.catalogue.geometry.Geometry;
 import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.indexing.jena.Ontology;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -23,7 +23,6 @@ import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * The following NetworkIndexingService detects when a Facility record 'Belongs to'
