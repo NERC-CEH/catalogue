@@ -155,7 +155,7 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .build();
             case "operationalStatus" -> Facet.builder()
                 .fieldName("operationalStatus")
-                    .displayName("Operational status")
+                    .displayName("Status")
                     .hierarchical(false)
                     .build();
             case "rightsHolder" -> Facet.builder()

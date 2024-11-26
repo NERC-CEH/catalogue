@@ -28,6 +28,7 @@ public class SolrIndexMonitoringNetworkGenerator implements IndexGenerator<Monit
     public SolrIndex generateIndex(MonitoringNetwork document) {
         return metadataDocumentSolrIndex
             .generateIndex(document)
+            .setAltTitle(document.getAlternateTitles())
             .setObjectives(document.getObjectives())
             .setEnvironmentalDomains(grab(document.getEnvironmentalDomain(), Keyword::getValue))
             .setKeywordsParameters(grab(document.getKeywordsParameters(), Keyword::getValue))

@@ -32,7 +32,7 @@ main {
                     >li {
                         >a {
                             position: relative;
-                            color: white;
+                            color: var(--filter-colour);
                             text-decoration: none;
                             font-size: 1.1em;
 
@@ -164,12 +164,13 @@ main {
 
             .leaflet-control-layers-list {
                 overflow: hidden;
-                font-size: 1.2rem;
+                padding:0.5em;
+                font-size: 1em;
             }
 
             .leaflet-control-attribution {
                 background-color: #999;
-                font-size: 1.2rem;
+                font-size: 1em;
                 padding: .5rem;
             }
         }

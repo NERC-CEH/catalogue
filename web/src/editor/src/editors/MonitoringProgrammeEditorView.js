@@ -245,24 +245,6 @@ export default EditorView.extend({
 
         new ParentView({
           model: this.model,
-          modelAttribute: 'relationships',
-          label: 'Relationships',
-          ObjectInputView: RelationshipView,
-          multiline: true,
-          options: [
-            { value: 'http://onto.ceh.ac.uk/EF#utilises', label: 'Uses (facility or network)' },
-            { value: 'http://onto.ceh.ac.uk/EF#hasChild', label: 'Has child programme' },
-            { value: 'http://onto.ceh.ac.uk/EF#associatedWith', label: 'Related to' },
-            { value: 'http://onto.ceh.ac.uk/EF#supersedes', label: 'Supersedes' },
-            { value: 'http://onto.ceh.ac.uk/EF#triggers', label: 'Triggers (activity)' }
-          ],
-          helpText: `
-<p>Links to other records</p>
-`
-        }),
-
-        new ParentView({
-          model: this.model,
           modelAttribute: 'linksData',
           ModelType: Supplemental,
           multiline: true,
@@ -277,6 +259,24 @@ export default EditorView.extend({
           multiline: true,
           label: 'Other links',
           ObjectInputView: SupplementalLinkView
+        }),
+
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'relationships',
+          label: 'Relationships',
+          ObjectInputView: RelationshipView,
+          multiline: true,
+          options: [
+            { value: 'http://onto.ceh.ac.uk/EF#utilises', label: 'Uses (facility or network)' },
+            { value: 'http://onto.ceh.ac.uk/EF#hasChild', label: 'Has child programme' },
+            { value: 'http://onto.ceh.ac.uk/EF#associatedWith', label: 'Related to' },
+            { value: 'http://onto.ceh.ac.uk/EF#supersedes', label: 'Supersedes' },
+            { value: 'http://onto.ceh.ac.uk/EF#triggers', label: 'Triggers (activity)' }
+          ],
+          helpText: `
+<p>Links to other records</p>
+`
         })
       ]
     }

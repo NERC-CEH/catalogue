@@ -4,12 +4,20 @@
 
 <#macro base>
   <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) footer=true>
-    <div id="metadata" class="metadata metadata-monitoring ${metadata.state?lower_case}">
+    <div id="metadata" class="metadata metadata-monitoring ${metadata.state?lower_case} <#if operationalStatus?? && operationalStatus == "Inactive">inactive</#if>">
     <#if !type??>
     <#else>
       <div class="section section-grey">
         <div class="container">
           <div ><@b.admin /></div>
+
+          <#if operationalStatus?? && operationalStatus == "Inactive">
+            <div class="card"><div class="card-body">
+              <i class="fa-solid fa-ban fa-lg"></i>
+              <strong>This ${codes.lookup('metadata.resourceType', type)?lower_case!''} is inactive</strong>
+            </div></div>
+          </#if>
+
           <#if title?? && title?has_content>
             <h1>
                <small>
@@ -20,9 +28,16 @@
                <br>
               </small>
               ${title}
+
+              <#if alternateTitles?? && alternateTitles?has_content>
+                <br><small>
+                  <#list alternateTitles as alt>
+                  ${alt}<#sep>, </#sep>
+                  </#list>
+                </small>
+              </#if>
             </h1>
           </#if>
-
           <#if permission.userCanEditRestrictedFields(metadata.catalogue)>
             <#include "../document/_metadataqualityAlert.ftlh">
           </#if>
@@ -252,6 +267,14 @@ Operating period
     <@map combinedGeometry />
   </#if>
 </#macro>
+
+<#macro programmeCombinedGeometries relation>
+  <#local combinedGeometry=jena.programmeCombinedGeometries(uri) />
+  <#if combinedGeometry?has_content>
+    <@map combinedGeometry />
+  </#if>
+</#macro>
+
 
 <#macro contactDetails contact>
  <@keyValue contact.roleDisplayName?cap_first "">

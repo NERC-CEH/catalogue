@@ -125,6 +125,53 @@ public class JenaLookupService {
         return links(pss);
     }
 
+    public List<Link> programmeFeatures(String uri) {
+        String hasGeometry = "http://www.opengis.net/ont/geosparql#hasGeometry";
+        String sparql = "PREFIX dc: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> PREFIX ef: <http://onto.ceh.ac.uk/EF#> SELECT DISTINCT ?node ?title ?publicationStatus ?type ?rel ?geom WHERE {{?me ef:utilises ?node. ?node dc:title ?title; pso:PublicationStatus ?publicationStatus;  dc:type ?type; <" + hasGeometry + "> ?geom} UNION {?me ef:utilises ?network. ?node ef:belongsTo ?network; dc:title ?title; pso:PublicationStatus ?publicationStatus; dc:type ?type; <" + hasGeometry + "> ?geom.}BIND(ef:utilises as ?rel)}";
+        ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
+        pss.setIri("me", uri);
+        return links(pss);
+    }
+    /**
+     * Function to compile a FeatureCollection for programmes - directly linked facilities and child facilities of networks
+     */
+    public String programmeCombinedGeometries(String uri) throws JsonProcessingException {
+        List<Link> links = programmeFeatures(uri);
+        // Return if no links found
+        if (links.isEmpty()) {
+            return "";
+        }
+
+        List<JsonNode> features = new ArrayList<>();
+        ObjectMapper mapper = new ObjectMapper();
+
+        for (Link link : links) {
+            if (!link.getGeometry().isEmpty()) {
+                JsonNode jsonNode = mapper.readTree(link.getGeometry());
+                ObjectNode propertiesNode;
+                if(jsonNode.has("properties")) {
+                    propertiesNode = (ObjectNode)jsonNode.get("properties");
+                } else {
+                    propertiesNode = mapper.createObjectNode();
+                    ((ObjectNode)jsonNode).set("properties", propertiesNode);
+                }
+                propertiesNode.put("title", link.getTitle());
+                propertiesNode.put("link", link.getHref());
+                features.add(jsonNode);
+            }
+        }
+
+        // Prevent output (and hence plotting map) if no Geometry information found
+        if (features.isEmpty()) {
+            return "";
+        }
+
+        ObjectNode featureCollection = mapper.createObjectNode();
+        featureCollection.put("type", "FeatureCollection");
+        featureCollection.set("features", mapper.valueToTree(features));
+        return mapper.writeValueAsString(featureCollection);
+    }
+
     /**
      * Function to compile a FeatureCollection from Geometries found in inversely related records
      */

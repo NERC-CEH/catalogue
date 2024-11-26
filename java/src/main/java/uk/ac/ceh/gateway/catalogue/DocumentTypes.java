@@ -86,25 +86,25 @@ public class DocumentTypes {
 
     public static final String MONITORING_ACTIVITY = "monitoring-activity";
     public static DocumentType MONITORING_ACTIVITY_TYPE = DocumentType.builder()
-        .title("Monitoring Activity")
+        .title("Monitoring activity")
         .type(MONITORING_ACTIVITY)
         .build();
 
     public static final String MONITORING_FACILITY = "monitoring-facility";
     public static DocumentType MONITORING_FACILITY_TYPE = DocumentType.builder()
-        .title("Monitoring Facility")
+        .title("Monitoring facility")
         .type(MONITORING_FACILITY)
         .build();
 
     public static final String MONITORING_NETWORK = "monitoring-network";
     public static DocumentType MONITORING_NETWORK_TYPE = DocumentType.builder()
-        .title("Monitoring Network")
+        .title("Monitoring network")
         .type(MONITORING_NETWORK)
         .build();
 
     public static final String MONITORING_PROGRAMME = "monitoring-programme";
     public static DocumentType MONITORING_PROGRAMME_TYPE = DocumentType.builder()
-        .title("Monitoring Programme")
+        .title("Monitoring programme")
         .type(MONITORING_PROGRAMME)
         .build();
 
