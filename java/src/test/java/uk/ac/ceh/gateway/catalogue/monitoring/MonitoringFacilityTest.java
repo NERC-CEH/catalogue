@@ -3,7 +3,7 @@ package uk.ac.ceh.gateway.catalogue.monitoring;
 import lombok.val;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import uk.ac.ceh.gateway.catalogue.gemini.Geometry;
+import uk.ac.ceh.gateway.catalogue.geometry.Geometry;
 
 import java.util.Collections;
 

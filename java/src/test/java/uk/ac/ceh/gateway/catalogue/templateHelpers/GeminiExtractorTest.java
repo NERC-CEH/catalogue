@@ -6,8 +6,8 @@ import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.ac.ceh.gateway.catalogue.gemini.*;
+import uk.ac.ceh.gateway.catalogue.geometry.BoundingBox;
 
-import java.time.LocalDate;
 import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.equalTo;

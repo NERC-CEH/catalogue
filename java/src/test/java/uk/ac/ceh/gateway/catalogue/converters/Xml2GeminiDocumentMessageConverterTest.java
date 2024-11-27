@@ -7,6 +7,7 @@ import org.springframework.http.HttpInputMessage;
 import uk.ac.ceh.gateway.catalogue.gemini.*;
 import uk.ac.ceh.gateway.catalogue.gemini.Service.CoupledResource;
 import uk.ac.ceh.gateway.catalogue.gemini.Service.OperationMetadata;
+import uk.ac.ceh.gateway.catalogue.geometry.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty.Address;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;

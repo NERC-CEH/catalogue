@@ -34,6 +34,8 @@ export default Backbone.View.extend({
           this.pointDisplay(feature, studyArea, map)
         } else if (geometryType === 'polygon') {
           this.polygonDisplay(feature, studyArea, map)
+        } else if (geometryType === 'multipolygon') {
+          this.multiPolygonDisplay(feature, studyArea, map)
         }
         break
       }
@@ -74,13 +76,33 @@ export default Backbone.View.extend({
     })
   },
 
+  multiPolygonDisplay (feature, studyArea, map) {
+    map.fitBounds(feature.getBounds())
+
+    let zoomThreshold = map.getBoundsZoom(feature.getBounds()) - 3
+    zoomThreshold = zoomThreshold < 0 ? 0 : zoomThreshold
+    const centroid = L.geoJson(this.centerPointOfPolygon(feature))
+
+    map.on('zoomend', function () {
+      if (map.getZoom() < zoomThreshold) {
+        if (map.hasLayer(feature)) feature.remove()
+        if (!map.hasLayer(centroid)) centroid.addTo(map)
+      } else {
+        if (!map.hasLayer(feature)) feature.addTo(map)
+        if (map.hasLayer(centroid)) centroid.remove()
+      }
+    })
+
+    feature.addTo(map)
+  },
+
   featureCollectionDisplay (feature, studyArea, map) {
     const numberOfLayers = Object.keys(feature._layers).length
 
     // Convert all features in feature collection to points in order to play
     // nicely with Leaflet.ClusterMap library
     const pointFeatureCollection = studyArea.features.map(feature => {
-      if (feature.geometry.type === 'Polygon') {
+      if (feature.geometry.type === 'Polygon' || feature.geometry.type === 'MultiPolygon') {
         const polygon = L.geoJSON(feature.geometry)
         const centroid = this.centerPointOfPolygon(polygon)
         return {
