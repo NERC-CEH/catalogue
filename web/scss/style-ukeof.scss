@@ -39,6 +39,7 @@ header {
 }
 
 .metadata {
+
     .studyarea-map,
     .geometry-map {
         height: 500px;
@@ -49,6 +50,25 @@ header {
         clear: both;
         padding-block-start: 2em;
     }
+
+    .childFeatures {
+        margin-block-end: 1em;
+        display: flex;
+        flex-wrap: wrap;
+
+        .featureList {
+            padding-inline: 1em;
+            overflow-y: scroll;
+            max-height: 500px;
+            flex: 1 1 400px;
+
+            .key {
+                display: none;
+            }
+        }
+    }
+
+
 }
 
 footer {

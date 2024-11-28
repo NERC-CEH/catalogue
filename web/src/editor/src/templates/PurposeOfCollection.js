@@ -15,7 +15,7 @@ export default _.template(`
   <option value="modelling">Modelling</option>
   <option value="moral">Moral obligation</option>
   <option value="policy">Policy</option>
-  <option value="statuoryAdvice">Statuory advice</option>
+  <option value="statutoryAdvice">Statutory advice</option>
   <option value="strategic">Strategic goals</option>
 </select>
 `)

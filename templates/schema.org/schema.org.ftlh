@@ -315,20 +315,29 @@
 <#macro displayParts parts>
   <#if parts?size gt 0>
     "hasPart": [
-    <#list parts as part>
-      <#if part.id?has_content>
-        {
-          <#t>"@id": "${part.id}",
-          <#t>"@type": "${part.type}",
-          <#t>"name": "${part.id}",
-          <#if part.encodingFormat?? && part.encodingFormat?has_content><#t>"encodingFormat": "${part.encodingFormat}",</#if>
-          <#t>"lastModified": "${part.lastModified}",
-          <#t>"bytes": ${part.bytes?long?c},
-          <#t>"contentUrl": "${part.contentUrl}"
-        }
-      </#if>
-      <#sep>,</#sep><#t>
-    </#list>
+     <#if parts?size lt 60000>
+      <#list parts as part>
+        <#if part.id?has_content>
+          {
+            <#t>"@id": "${part.id}",
+            <#t>"@type": "${part.type}",
+            <#t>"name": "${part.id}",
+            <#if part.encodingFormat?? && part.encodingFormat?has_content><#t>"encodingFormat": "${part.encodingFormat}",</#if>
+            <#t>"lastModified": "${part.lastModified}",
+            <#t>"bytes": ${part.bytes?long?c},
+            <#t>"contentUrl": "${part.contentUrl}"
+          }
+        </#if>
+        <#sep>,</#sep><#t>
+      </#list>
+    <#else>
+      {
+      "@id": "${id}-files",
+      "@type": "Dataset",
+      "name": "Files",
+      "description": "This dataset contains ${parts?size} files"
+      }
+    </#if>
     ],
   </#if>
 </#macro>
@@ -337,4 +346,3 @@
   <#--Ensure literals do not contain " characters or line breaks-->
   <#t>"${string?trim?replace("\"","'")?replace("\n"," ")}"
 </#macro>
-
