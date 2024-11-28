@@ -20,7 +20,7 @@ export default Backbone.Model.extend({
     modelling: 'http://ex.org/domain/modelling',
     moral: 'http://ex.org/domain/moral',
     policy: 'http://ex.org/domain/policy',
-    statuoryAdvice: 'http://ex.org/domain/statuoryAdvice',
+    statuoryAdvice: 'http://ex.org/domain/statutoryAdvice',
     strategic: 'http://ex.org/domain/strategic'
   },
 
