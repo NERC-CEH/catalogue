@@ -13,10 +13,7 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static uk.ac.ceh.gateway.catalogue.search.SearchController.*;
@@ -354,14 +351,23 @@ public class SearchQuery {
     }
 
     private void setFacetFilters(SolrQuery query){
-        facetFilters.forEach((filter) ->
-            query.addFilterQuery(filter.asSolrFilterQuery())
-        );
+        Map<String, List<FacetFilter>> groupedFilters = facetFilters.stream()
+            .collect(Collectors.groupingBy(FacetFilter::getField));
+        groupedFilters.forEach((field, filters) -> {
+            if (filters.size() > 1) {
+                String combinedFilters = filters.stream()
+                    .map(f -> "\"" + f.getValue() + "\"")
+                    .collect(Collectors.joining(" OR "));
+
+                query.addFilterQuery(String.format("%s:(%s)", field, combinedFilters));
+            } else {
+                query.addFilterQuery(filters.get(0).asSolrFilterQuery());
+            }
+        });
     }
 
     private void setFacetFields(SolrQuery query){
         query.setFacet(true);
-        query.setFacetMinCount(1);
         query.setFacetLimit(-1);
         query.setFacetSort("index");
         facets.forEach((facet) ->
