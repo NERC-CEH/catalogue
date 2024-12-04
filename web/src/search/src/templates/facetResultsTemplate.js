@@ -11,7 +11,7 @@ export default _.template(`
     <select style="display: none;" class="form-select search-facet" multiple="multiple" data-placeholder="filter <%=facet.displayName.toLowerCase() %>">
         <% _.each(facet.results, function(facetItem) { %>
             <% if(facetItem.name != 'Unknown') { %>
-                <option <% if(facetItem.active) { %> selected="selected" <% } %> value="<%=facetItem.url%>"><%=facetItem.name%> (<%=facetItem.count%>)</option>
+                <option <% if(facetItem.active) { %> selected="selected" <% } %> value="<%=facetItem.url%>"><%=facetItem.name%></option>
             <% } %>
         <% }); %>
     </select>
