@@ -1,5 +1,5 @@
 <#compress>
-
+<#include "../schema.org/_base.org.ftlh">
 <#if type=='dataset' || type=='nonGeographicDataset' || type=='signpost'>
   <#assign docType = "Dataset">
 <#elseif type=='aggregate' || type=='series'>
@@ -20,7 +20,7 @@
           "@id": "${uri?trim}"
         }
       },
-      <#include "../schema.org/schema.org.ftlh">
+      <@schemaDocument showFiles=true/>
     ]
   }
 </#if>
