@@ -27,8 +27,8 @@ export default _.template(`
       <div class="existing container-fluid"></div>
       <% if (data.fetchKeywordsButton) { %>
       <div class="d-flex justify-content-center">
-        <div class="spinner-border text-secondary loader" role="status" style="display: none;">
-        </div>
+        <span class="spinner-border text-secondary loader mx-3" role="status" style="display: none;"></span>
+        <span class="loader-msg"></span>
       </div>
     <% } %>
     </div>
