@@ -56,7 +56,11 @@ export default SingleView.extend({
   },
 
   fetchKeywords () {
+    this.$('.legilo-fetch-btn').prop('disabled', true)
     this.$('.loader').show()
+    this.$('.loader-msg')
+      .removeClass('text-primary')
+      .text('It may take a while.')
 
     fetchKeywordsFromLegilo(this.model)
       .then(keywords => {
@@ -64,13 +68,33 @@ export default SingleView.extend({
         this.renderKeywords()
 
         this.$('.loader').hide()
+        this.$('.loader-msg').text('')
+        this.$('.legilo-fetch-btn').prop('disabled', false)
       })
       .catch(error => {
         console.error('Error fetching keywords:', error)
-        this.$('.loader')
-          .removeClass('spinner-border')
-          .addClass('text-danger')
-          .text('Something went wrong while fetching keywords')
+        let errText = 'Something went wrong while fetching keywords.'
+        if (error.status == 500) {
+          errText = 'Service not reachable, please try again later.'
+        } else if (error.status == 422) {
+          errText = 'Upload document not found for keyword processing.'
+        } else if (error.status == 404) {
+          errText = 'Keyword suggestion not available.'
+        } else {
+          if (error.responseJSON) {
+            const response = error.responseJSON
+            if (response.error) {
+              errText = response.error
+            } else if (response.message) {
+              errText = response.message
+            }
+          }
+        }
+        this.$('.loader').hide()
+        this.$('.loader-msg')
+          .addClass('text-primary')
+          .text(errText)
+        this.$('.legilo-fetch-btn').prop('disabled', false)
       })
   },
 

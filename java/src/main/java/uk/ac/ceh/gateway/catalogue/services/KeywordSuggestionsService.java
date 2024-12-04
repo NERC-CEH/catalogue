@@ -5,10 +5,12 @@ import lombok.val;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.*;
 
+import org.springframework.web.server.ResponseStatusException;
 import uk.ac.ceh.gateway.catalogue.util.Headers;
 
 import java.util.*;
@@ -45,11 +47,15 @@ public class KeywordSuggestionsService {
     }
 
     public List<Suggestion> getSuggestions(String file) {
+        Map<String, Map<String, Object>> status = new HashMap<>();
         List<Suggestion> keywordSuggestions = Optional.ofNullable(
             restClient
                 .get()
                 .uri("/{file}/keywords", file)
                 .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
+                    status.put("keyword", Map.of("statusCode", response.getStatusCode().value(), "statusTxt", response.getStatusText()));
+                })
                 .toEntity(KeywordsResponse.class)
                 .getBody()
         )
@@ -61,6 +67,9 @@ public class KeywordSuggestionsService {
                 .get()
                 .uri("/{file}/variables", file)
                 .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
+                    status.put("variable", Map.of("statusCode", response.getStatusCode().value(), "statusTxt", response.getStatusText()));
+                })
                 .toEntity(VariablesResponse.class)
                 .getBody()
         )
@@ -73,6 +82,25 @@ public class KeywordSuggestionsService {
             )
             .orElseGet(Collections::emptyList);
 
+        if (keywordSuggestions.isEmpty() && variables.isEmpty()) {
+            int statusCode = 0;
+            StringJoiner statusTxt = new StringJoiner(", ");
+            if (status.containsKey("keyword")) {
+                statusCode = (int) (status.get("keyword").get("statusCode"));
+                statusTxt.add((String) (status.get("keyword").get("statusTxt")));
+            }
+            if (status.containsKey("variable")) {
+                statusCode = (int) (status.get("variable").get("statusCode"));
+                statusTxt.add((String) (status.get("variable").get("statusTxt")));
+            }
+            if (statusCode != 0) {
+                if (statusCode == 404) {
+                    statusCode = 422;
+                    statusTxt.add("Document not found");
+                }
+                throw new ResponseStatusException(HttpStatus.valueOf(statusCode), statusTxt.toString());
+            }
+        }
         return Stream.concat(keywordSuggestions.stream(), variables.stream())
             .sorted(Comparator.comparing(Suggestion::confidence).reversed())
             .toList();
