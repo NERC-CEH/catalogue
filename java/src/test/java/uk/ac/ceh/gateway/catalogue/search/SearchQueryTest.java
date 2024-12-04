@@ -833,4 +833,51 @@ public class SearchQueryTest {
         assertThat("sort field parameter should be present", url, containsString("sortField=publicationDate"));
         assertThat("sort order parameter should be present", url, containsString("order=desc"));
     }
+
+    @Test
+    public void testFacetFiltersCombinedWithOr() {
+        // Given
+        List<FacetFilter> facetFilters = List.of(
+            new FacetFilter("topic", "Agriculture"),
+            new FacetFilter("topic", "Biodiversity"),
+            new FacetFilter("dataType", "Dataset"),
+            new FacetFilter("dataType", "Data Collection")
+        );
+
+        SearchQuery query = new SearchQuery(
+            ENDPOINT,
+            CatalogueUser.PUBLIC_USER,
+            SearchQuery.DEFAULT_SEARCH_TERM,
+            DEFAULT_BBOX,
+            SpatialOperation.ISWITHIN,
+            DEFAULT_PAGE,
+            DEFAULT_ROWS,
+            facetFilters,
+            groupStore,
+            Catalogue
+            .builder()
+            .id("eidc")
+            .title("Environmental Information Data Centre")
+            .url("https://eidc-catalogue.ceh.ac.uk")
+            .contactUrl("")
+            .logo("")
+            .build(),
+            DEFAULT_FACETS,
+            null,
+            null
+        );
+
+        // When
+        SolrQuery solrQuery = query.build();
+
+        // Then
+        assertThat(
+            Arrays.asList(solrQuery.getFilterQueries()),
+            allOf(
+                hasItem("topic:(\"Agriculture\" OR \"Biodiversity\")"),
+                hasItem("dataType:(\"Dataset\" OR \"Data Collection\")")
+            )
+        );
+    }
+
 }
