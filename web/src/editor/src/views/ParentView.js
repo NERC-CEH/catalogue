@@ -74,11 +74,11 @@ export default SingleView.extend({
       .catch(error => {
         console.error('Error fetching keywords:', error)
         let errText = 'Something went wrong while fetching keywords.'
-        if (error.status == 500) {
+        if (error.status === 500) {
           errText = 'Service not reachable, please try again later.'
-        } else if (error.status == 422) {
+        } else if (error.status === 422) {
           errText = 'Upload document not found for keyword processing.'
-        } else if (error.status == 404) {
+        } else if (error.status === 404) {
           errText = 'Keyword suggestion not available.'
         } else {
           if (error.responseJSON) {
