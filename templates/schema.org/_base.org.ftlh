@@ -148,18 +148,17 @@
         ],
       </#if>
 
+
       <#if boundingBoxes?has_content>
         "spatialCoverage": [
-        <#list boundingBoxes as extent>
-          {
-            "@type":"Place",
-            "geo":{
-              "@type":"GeoShape",
-              "box":"${extent.westBoundLongitude} ${extent.southBoundLatitude}, ${extent.eastBoundLongitude} ${extent.northBoundLatitude}"
-            }
-          }<#sep>,
-        </#list>
-        ],
+            <@itemList boundingBoxes "bbox"/>
+          ],
+      </#if>
+
+      <#if funding?has_content>
+        "funder": [
+            <@itemList funding "fund"/>
+          ],
       </#if>
 
       <#if docType == "Dataset" || docType == "SoftwareSourceCode">
@@ -175,7 +174,7 @@
         </#if>
 
         <#if downloads?has_content>
-          "distribution": [<@distributionList downloads />],
+          "distribution": [<@itemList downloads "distribution" />],
         </#if>
 
         <#if publishers?has_content>
@@ -187,7 +186,7 @@
       </#if>
 
       "provider" : {"@id":"https://ror.org/04xw4m193"},
-      "includedInDataCatalog":{"@type":"DataCatalog", "name":"Environmental Information Data Centre", "alternatename":"EIDC", "url":"https://catalogue.ceh.ac.uk/eidc/documents"},
+      "includedInDataCatalog":{ "@id": "#eidc-dataCatalogue"},
 
     <#else>
     <#-- information to include if the dataset has been permanently deleted -->
@@ -197,7 +196,14 @@
     "@context":"http://schema.org/"
     },
     {
-      "id": "https://ror.org/04xw4m193",
+      "@id": "#eidc-dataCatalogue",
+      "@type":"DataCatalog",
+      "name":"Environmental Information Data Centre",
+      "alternatename":"EIDC",
+      "url":"https://catalogue.ceh.ac.uk/eidc/documents"
+    },
+    {
+      "@id": "https://ror.org/04xw4m193",
       "@type":"Organization",
       "name":"NERC EDS Environmental Information Data Centre",
       "email": "info@eidc.ac.uk"
@@ -217,6 +223,10 @@
       </#if>
     </#if>
 
+    <#if boundingBoxes?has_content>
+      ,<@bboxDetails boundingBoxes />
+    </#if>
+
     <#if authors?has_content>
       ,<@contactDetails authors "author" />
     </#if>
@@ -227,6 +237,10 @@
 
     <#if incomingCitations?has_content>
       ,<@citationDetails incomingCitations />
+    </#if>
+
+    <#if funding?has_content>
+      ,<@fundDetails funding />
     </#if>
 
     <#if showFiles>
@@ -332,9 +346,16 @@
   </#if>
 </#macro>
 
-<#macro contactList contacts prefix="contact">
+<#macro itemList list idlabel="item">
+  <#list list as item>
+    <#assign itemid = "#" + idlabel + item?index>
+    {"@id": "${itemid}"}<#sep>,</#sep>
+  </#list>
+</#macro>
+
+<#macro contactList contacts idlabel="contact">
   <#list contacts as contact>
-    <#assign contactid = "#" + prefix + contact?index>
+    <#assign contactid = "#" + idlabel + contact?index>
     <#if contact.individualName?has_content>
       <#if contact.nameIdentifier?has_content && contact.nameIdentifier?matches("^http(|s)://orcid.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$")>
         <#assign contactid = contact.nameIdentifier>
@@ -348,9 +369,9 @@
   </#list>
 </#macro>
 
-<#macro contactDetails contacts prefix="contact">
+<#macro contactDetails contacts idlabel="contact">
   <#list contacts as contact>
-      <#assign contactid = "#" + prefix + contact?index>
+      <#assign contactid = "#" + idlabel + contact?index>
       <#if contact.individualName?has_content>
         <#if contact.nameIdentifier?has_content && contact.nameIdentifier?matches("^http(|s)://orcid.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$")>
           <#assign contactid = contact.nameIdentifier>
@@ -414,10 +435,17 @@
   </#list>
 </#macro>
 
-<#macro distributionList distributions>
-  <#list downloads as distribution>
-    <#assign distributionid = "#distribution" + distribution?index>
-    {"@id": "${distributionid}"}<#sep>,</#sep>
+<#macro bboxDetails boundingBoxes>
+  <#list boundingBoxes as bbox>
+    <#assign bboxid = "#bbox" + bbox?index>
+    {
+    "@id": "${bboxid}",
+     "@type":"Place",
+     "geo":{
+        "@type":"GeoShape",
+         "box":"${bbox.westBoundLongitude} ${bbox.southBoundLatitude}, ${bbox.eastBoundLongitude} ${bbox.northBoundLatitude}"
+          }
+    }<#sep>,</#sep>
   </#list>
 </#macro>
 
@@ -433,6 +461,17 @@
     <#elseif distribution.url?starts_with("https://data-package.ceh.ac.uk/data/")>,"encodingFormat":"application/zip"
     <#elseif distribution.url?starts_with("https://catalogue.ceh.ac.uk/datastore")>,"encodingFormat":"text/directory"
     </#if>
+    }<#sep>,</#sep>
+  </#list>
+</#macro>
+
+<#macro fundDetails funding>
+  <#list funding as fund>
+    <#assign fundid = "#fund" + fund?index>
+    {
+    "@id": "${fundid}",
+    "@type":"Organization"
+    <#if fund.funderName?? && fund.funderName?has_content>,<#t>"name":"${fund.funderName}" </#if>
     }<#sep>,</#sep>
   </#list>
 </#macro>
