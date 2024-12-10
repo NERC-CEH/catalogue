@@ -6,7 +6,12 @@
   javascript template /web/src/scripts/templates/searchPage.js
 -->
 <div class="row justify-content-between results__header">
-  <div class="col-sm-4"><span id="num-records">${numFound}</span> records found</div>
+  <div class="col-sm-4">
+    <span id="num-records">${numFound}</span> records found
+    <span class="mx-2">
+      <i id="searchShareIcon" class="fas fa-share-square" data-bs-toggle="tooltip" data-bs-placement="right" role="button" title="copy to clipboard"></i>
+    </span>
+  </div>
   <div class="col-sm-4">
     <select class="form-select sort-search" aria-label="Select Dropdown for Sorting Search results">
       <option value="">Relevance</option>
