@@ -9,6 +9,9 @@ import _ from 'underscore'
 export default _.template(`
 <div class="results__header">
     <span id="num-records"><%=numFound%></span> records found
+    <span class="mx-2">
+      <i id="searchShareIcon" class="fas fa-share-square" data-bs-toggle="tooltip" data-bs-placement="right" role="button" title="copy to clipboard"></i>
+    </span>
 </div>
 
 <div class="results__related_searches"></div>

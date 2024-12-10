@@ -2,6 +2,7 @@ import _ from 'underscore'
 import $ from 'jquery'
 import Backbone from 'backbone'
 import template from '../templates/searchPage'
+import { Tooltip } from 'bootstrap'
 
 export default Backbone.View.extend({
 
@@ -12,6 +13,8 @@ export default Backbone.View.extend({
     this.listenTo(this.model, 'cleared:results', this.clear)
     this.listenTo(this.model, 'results-sync', this.render)
     this.listenTo(this.model, 'results-change:selected', this.updateSelected)
+
+    this.initSearchShareIcon()
   },
 
   /*
@@ -68,11 +71,31 @@ export default Backbone.View.extend({
           prefix = ''
         }
         $relatedSearches.append(
-                    `${prefix}<a href="${relatedSearch.href}">${relatedSearch.title}</a>`
+          `${prefix}<a href="${relatedSearch.href}">${relatedSearch.title}</a>`
         )
       })
     }
 
+    this.initSearchShareIcon()
+
     return this
+  },
+
+  initSearchShareIcon () {
+    const el = this.$('#searchShareIcon')
+    const tooltip = new Tooltip(el)
+    el.click(() => {
+      const url = window.location.href
+        .split('&')
+        .filter(p => !p.includes('page=') && !p.includes('rows='))
+        .join('&')
+      navigator.clipboard.writeText(url)
+
+      const config = tooltip._config
+      const orgText = config.title
+      config.title = 'copied'
+      tooltip.show()
+      config.title = orgText
+    })
   }
 })
