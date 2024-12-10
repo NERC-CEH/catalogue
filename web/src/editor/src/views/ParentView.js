@@ -77,7 +77,7 @@ export default SingleView.extend({
         if (error.status === 500) {
           errText = 'Service not reachable, please try again later.'
         } else if (error.status === 422) {
-          errText = 'Upload document not found for keyword processing.'
+          errText = 'No documents available for this dataset to extract keywords.'
         } else if (error.status === 404) {
           errText = 'Keyword suggestion not available.'
         } else {
