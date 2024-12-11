@@ -13,6 +13,14 @@ docker compose up -d --build
 ```
 Browse to http://localhost:8080/eidc/documents to see the catalogue populated with some demo records.
 
+If you want to use the Hubbub uploader, enable it in the Catalogue [profiles](docs/profiles.md) and start it with the hubbub docker compose profile:
+
+```commandline
+docker compose --profile hubbub up -d --build
+```
+
+Alternatively, set the `COMPOSE_PROFILES` environment variable to `hubbub` and run docker compose as above.
+
 ### Standalone installation using published Docker images
 
 ```commandline

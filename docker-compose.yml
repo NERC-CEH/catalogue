@@ -8,7 +8,6 @@ services:
       - "8081:8081"
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
-    restart: always
   web:
     build: .
     depends_on:
@@ -57,6 +56,30 @@ services:
     volumes:
       - mapfiles:/mapserver/maps
       - ./fixtures/mapserver-data:/mapserver/data
+  db:
+    image: postgres:14.1-alpine
+    environment:
+      POSTGRES_PASSWORD: &db_password cabbages
+      POSTGRES_USER: &db_user gardener
+      POSTGRES_DB: hubbub
+    ports:
+      - "5432:5432"
+    profiles: [hubbub]
+  hubbub:
+    image: registry.gitlab.ceh.ac.uk/eip/hubbub:7.7.0
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_PASSWORD: *db_password
+      DB_USER: *db_user
+    ports:
+      - '8082:8080'
+    volumes:
+      - dropbox:/mnt/dropbox
+      - ./fixtures/upload/eidchub:/mnt/eidchub
+      - ./fixtures/upload/supporting-documents:/mnt/supporting-documents
+    profiles: [hubbub]
 
 volumes:
   dropbox:
