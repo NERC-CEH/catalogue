@@ -14,7 +14,7 @@ export default Backbone.View.extend({
     this.listenTo(this.model, 'results-sync', this.render)
     this.listenTo(this.model, 'results-change:selected', this.updateSelected)
 
-    this.initSearchShareIcon()
+    $(document).ready(() => { this.initSearchShareIcon() })
   },
 
   /*
@@ -82,9 +82,9 @@ export default Backbone.View.extend({
   },
 
   initSearchShareIcon () {
-    const el = document.querySelector('#searchShareIcon')
+    const el = this.$('#searchShareIcon')
     const tooltip = new Tooltip(el)
-    this.$(el).click(() => {
+    el.click(() => {
       const url = window.location.href
         .split('&')
         .filter(p => !p.includes('page=') && !p.includes('rows='))
