@@ -90,7 +90,7 @@ export default Backbone.View.extend({
 
       const config = tooltip._config
       const orgText = config.title
-      config.title = 'copied'
+      config.title = 'Search URL Copied'
       tooltip.show()
       config.title = orgText
     })
