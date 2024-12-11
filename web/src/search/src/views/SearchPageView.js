@@ -106,9 +106,9 @@ export default Backbone.View.extend({
   },
 
   initSearchShareIcon () {
-    const el = this.$('#searchShareIcon')
+    const el = document.querySelector('#searchShareIcon')
     const tooltip = new Tooltip(el)
-    el.click(() => {
+    this.$(el).click(() => {
       const url = window.location.href
         .split('&')
         .filter(p => !p.includes('page=') && !p.includes('rows='))
