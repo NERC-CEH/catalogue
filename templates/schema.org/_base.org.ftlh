@@ -3,43 +3,20 @@
 <#if useConstraints?has_content>
   <#assign licences = func.filter(useConstraints, "code", "license")>
 </#if>
-<#if responsibleParties?has_content>
-  <#assign  authors = func.filter(responsibleParties, "role", "author")
-            pocs = func.filter(responsibleParties, "role", "pointOfContact")
-            publishers = func.filter(responsibleParties, "role", "publisher") >
-</#if>
 <#if onlineResources?has_content>
   <#assign
     infoLinks = func.filter(onlineResources, "function", "information")
   >
 </#if>
 
-<#-- COMPILE KEYWORD LIST--->
-  <#assign keywordList = [] >
-
-  <#if descriptiveKeywords?has_content>
-    <#list descriptiveKeywords as descriptiveKeyword>
-      <#list descriptiveKeyword.keywords as keyword>
-      <#assign keywordList = keywordList + [keyword] >
-      </#list>
-    </#list>
-  </#if>
-
-  <#if allKeywords?has_content>
-    <#list allKeywords as keyword>
-        <#assign keywordList = keywordList + [keyword]>
-    </#list>
-  </#if>
-
   <#--DE-DUPLICATE KEYWORD LIST -->
   <#assign deDup = [] />
-  <#list keywordList as originalList>
-    <#if ! deDup?seq_contains(originalList)>
-        <#assign deDup = deDup + [originalList] />
+  <#list allKeywords as keywords>
+    <#if ! deDup?seq_contains(keywords)>
+        <#assign deDup = deDup + [keywords] />
     </#if>
   </#list>
   <#assign keywordList = deDup?sort_by("value")?sort_by("uri") />
-<#-- END KEYWORD LIST--->
 
 <#if type=='dataset' || type=='nonGeographicDataset' || type=='signpost'>
   <#assign docType = "Dataset">
@@ -117,8 +94,8 @@
         "author": [<@contactList authors "author" />],
       </#if>
 
-      <#if pocs?has_content>
-        "contactPoint": [<@contactList pocs />],
+      <#if pointsOfContact ?has_content>
+        "contactPoint": [<@contactList pointsOfContact  />],
       </#if>
 
       <#--Citations-->
