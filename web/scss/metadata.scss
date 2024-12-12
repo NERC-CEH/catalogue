@@ -26,7 +26,7 @@ body {
         }
     }
 
-    #tableOfContents {
+    .tableOfContents {
         top: 8em;
 
         a:focus {
@@ -38,6 +38,10 @@ body {
             color: black;
             font-weight: 600;
             border: 0;
+        }
+
+        a:empty {
+            display:none;
         }
     }
 
@@ -174,12 +178,19 @@ body {
         .btn-download {
             --bs-btn-bg: var(--eidc-blue);
             --bs-btn-color: var(--bs-white);
+            --bs-btn-hover-bg: color-mix(in oklab, lightgray 40%, var(--eidc-blue));
+            --bs-btn-hover-color: var(--bs-white);
+            --bs-btn-hover-border-color: var(--eidc-orange);
         }
 
         .btn-access {
             --bs-btn-bg: color-mix(in oklab, lightgray 30%, var(--eidc-blue));
             --bs-btn-color: var(--bs-white);
+            --bs-btn-hover-bg: color-mix(in oklab, lightgray 80%, var(--eidc-blue));
+            --bs-btn-hover-color: var(--bs-white);
+            --bs-btn-hover-border-color: var(--eidc-orange);
         }
+
     }
 
     .offcanvas-access {

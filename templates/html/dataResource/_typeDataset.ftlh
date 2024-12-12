@@ -59,11 +59,11 @@
       <#if resourceType.value !='nonGeographicDataset'><#include "_spatial.ftlh"></#if>
       <#include "_temporal.ftlh">
       <#include "_dataquality.ftlh">
+      <#include "_constraints.ftlh">
       <#include "_related.ftlh">
       <#include "_citation_list.ftlh">
       <#include "_supplemental.ftlh">
       <#include "_contacts.ftlh">
-      <#include "_constraints.ftlh">
 
       <#if topicCategories?? || descriptiveKeywords?? || inspireTheme?? || funding?? >
         <div id="segment-additional">

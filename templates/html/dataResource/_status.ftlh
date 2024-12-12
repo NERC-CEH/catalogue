@@ -17,7 +17,7 @@
     </#if>
 
     <#if resourceStatus == "Superseded" || resourceStatus == "Withdrawn">
-      <p>If you need access to this archived version, please <a href="${catalogue.contactUrl}" target="_blank" rel="noopener noreferrer">contact the ${supersededContact}</a></p>
+      <p>If you need access to the archived version, please <a href="${catalogue.contactUrl}" target="_blank" rel="noopener noreferrer">contact the ${supersededContact}</a></p>
     </#if>
 
 <#elseif resourceStatus == "Restricted">

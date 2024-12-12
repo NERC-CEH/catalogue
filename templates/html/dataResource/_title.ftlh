@@ -1,4 +1,4 @@
-<div id="segment-title">
+<div id="segment-title" class="border-bottom border-2">
   <#if citation?has_content>
     <div class="authorList text-body-secondary">
       <#if citation.authors?size gte 8>
@@ -9,7 +9,7 @@
     </div>
   </#if>
 
-  <h1 class="pb-4 border-bottom border-2">
+  <h1 class="pb-4">
     <#if (metadata.state == 'draft' || metadata.state == 'pending') >
       <span class="fs-6 badge text-bg-danger">${codes.lookup('publication.state', metadata.state)?upper_case!''}</span>
     </#if>

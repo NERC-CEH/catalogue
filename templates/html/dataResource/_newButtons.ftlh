@@ -1,6 +1,5 @@
 <#if onlineResources?? >
   <#assign downloadOrder=downloadOrderDetails.from(onlineResources) >
-  <#assign offlineOrders=func.filter(onlineResources, "function", "offlineAccess") >
 </#if>
 
 <div class="p-3 accessButtons">
@@ -46,73 +45,79 @@
   </div>
 </#if>
 
-<div class="offcanvas offcanvas-start offcanvas-access" tabindex="-1" id="access" aria-labelledby="accessLabel">
-  <div class="offcanvas-header">
-    <h5 class="offcanvas-title" id="accessLabel">Download</h5>
-    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-  </div>
-  <div class="offcanvas-body">
+<@offcanvasDownload />
 
-    <#if resourceStatus == "Available" || resourceStatus == "Controlled" || resourceStatus == "Embargoed">
-      <div class="my-3">By accessing or using this dataset, you agree to the terms of the relevant licence agreement(s). You will ensure that this dataset is cited in any publication that describes research in which the data have been used.</div>
-      <#include "_licence.ftlh">
+
+<#macro offcanvasDownload>
+  <div class="offcanvas offcanvas-start offcanvas-access" tabindex="-1" id="access" aria-labelledby="accessLabel">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="accessLabel">Download</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+
+      <#assign statusMessage = "By accessing or using this " + recordType?lower_case + ", you agree to the terms of the relevant licence agreement(s). You will ensure that this " + recordType?lower_case + " is cited in any publication that describes research in which the data have been used." />
+      <#if metadata.catalogue == "eidc" && resourceType.value=="application">
+        <#assign statusMessage += "<br><br>"?no_esc + "Publication of this " + recordType?lower_case + " by the EIDC does not signify any endorsement or approval. By accessing and using the resource, you acknowledge that it is entirely at your own risk and you are solely responsible for any loss or liability that may arise" />
+      </#if>
+
+      <#if resourceStatus == "Available">
+        <div class="alert alert-secondary"><strong>PLEASE NOTE:</strong> ${statusMessage}</div>
+        <#include "_licence.ftlh">
+
+        <#if downloadOrder?? && ((downloadOrder.orderResources)?has_content || (downloadOrder.supportingDocumentsUrl)?has_content) || ((resourceType.value)?? && distributionFormats?? && distributionFormats?has_content) || mapViewable?? >
+
+          <#list downloadOrder.orderResources as item>
+            <@downloadButton item/>
+          </#list>
+
+        </#if>
+      </#if>
+
+      <#include "_status.ftlh">
+
+    </div>
+  </div>
+</#macro>
+
+<#macro downloadButton onlineResource>
+
+  <#assign onlineResourceUrl = onlineResource.url>
+
+    <#if onlineResourceUrl?matches(".+datastore\\/eidchub\\/[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}(.?)+", "i")>
+      <#assign downloadType="direct"/>
+    <#elseif onlineResourceUrl?starts_with("https://data-package.ceh.ac.uk/data/")>
+      <#assign downloadType="package"/>
+      <#assign onlineResourceUrl = onlineResourceUrl + '.zip'>
+    <#elseif onlineResourceUrl?matches("https:\\/\\/order-eidc.ceh.ac.uk\\/resources\\/\\w{8}\\/order", "i")>
+      <#assign downloadType="order"/>
     </#if>
 
-    <#if resourceType.value=="application" && metadata.catalogue == "eidc">
-      <div class="alert alert-dark">
-        <strong>PLEASE NOTE:</strong> Publication of this ${recordType?lower_case!''} by the EIDC does not signify any endorsement or approval. By accessing and using the resource, you acknowledge that it is entirely at your own risk and you are solely responsible for any loss or liability that may arise.
-      </div>
+    <#assign onlineResourceLabel = "Order/download">
+    <#if onlineResource.name?has_content>
+      <#assign onlineResourceLabel = onlineResource.name>
     </#if>
 
+    <#if onlineResource.size?has_content>
+      <#if onlineResource.size?number gt 1073741824>
+        <#assign sizeLabel = 'approx. ' + (onlineResource.size?number / 1073741824)?string["0.#"]  + 'Gb'>
+      <#elseif onlineResource.size?number gt 10485760>
+          <#assign sizeLabel = 'approx. ' + (onlineResource.size?number / 1048576)?string["0.#"]  + 'Mb'>
+      <#elseif onlineResource.size?number lte 10485760 && onlineResource.size?number gt 5242880>
+          <#assign sizeLabel = '< 10 Mb'>
+      <#elseif onlineResource.size?number lte 5242880 && onlineResource.size?number gt 1048576>
+          <#assign sizeLabel = '< 5 Mb'>
+      <#else>
+        <#assign sizeLabel = '< 1 Mb'>
+      </#if>
+    </#if>
 
-          <#if resourceStatus == "Available" || resourceStatus == "Controlled" || resourceStatus == "Superseded">
-            <#if offlineOrders?? || downloadOrder?? && ((downloadOrder.orderResources)?has_content || (downloadOrder.supportingDocumentsUrl)?has_content) || ((resourceType.value)?? && distributionFormats?? && distributionFormats?has_content) || mapViewable?? >
-              <#if (downloadOrder.orderable)?? && downloadOrder.orderable>
-                <#list downloadOrder.orderResources as onlineResource>
+    <a href="/download/${id}?url=${onlineResourceUrl?url}" class="btn btn-primary">
+      <span class="fa-solid fa-angles-down"></span>
+      ${onlineResourceLabel}
+      <#if sizeLabel??>
+        <small>(${sizeLabel})</small>
+      </#if>
+    </a>
 
-                  <#assign onlineResourceUrl = onlineResource.url>
-                  <#if onlineResource.url?starts_with("https://data-package.ceh.ac.uk/data/") && !onlineResource.url?ends_with(".zip") && (permission.userInGroup("Gast") || permission.userInGroup("CEH"))>
-                    <#assign onlineResourceUrl = onlineResourceUrl + '.zip'>
-                  </#if>
-
-                  <#assign onlineResourceLabel = "Order/download">
-                  <#if onlineResource.name?has_content>
-                    <#assign onlineResourceLabel = onlineResource.name>
-                  </#if>
-
-                  <#if onlineResource.size?has_content>
-                    <#if onlineResource.size?number gt 1073741824>
-                      <#assign sizeLabel = 'approx. ' + (onlineResource.size?number / 1073741824)?string["0.#"]  + 'Gb'>
-                    <#elseif onlineResource.size?number gt 10485760>
-                       <#assign sizeLabel = 'approx. ' + (onlineResource.size?number / 1048576)?string["0.#"]  + 'Mb'>
-                    <#elseif onlineResource.size?number lte 10485760 && onlineResource.size?number gt 5242880>
-                       <#assign sizeLabel = '< 10 Mb'>
-                    <#elseif onlineResource.size?number lte 5242880 && onlineResource.size?number gt 1048576>
-                       <#assign sizeLabel = '< 5 Mb'>
-                    <#else>
-                      <#assign sizeLabel = '< 1 Mb'>
-                    </#if>
-                  </#if>
-
-                  <a href="/download/${id}?url=${onlineResourceUrl?url}" class="btn btn-download">
-                    <span class="fa-solid fa-angles-down"></span>
-                    ${onlineResourceLabel}
-                    <#if sizeLabel??>
-                      <small>(${sizeLabel})</small>
-                    </#if>
-                  </a>
-
-                </#list>
-              </#if>
-
-              <#if offlineOrders?? && offlineOrders?has_content >
-                <#list offlineOrders as offlineOrder>
-                  <a class="btn btn-download" href="${offlineOrder.url}"><span class="fa-solid fa-file-signature"></span> <#if offlineOrder.description?has_content>${offlineOrder.description}<#elseif offlineOrder.name?has_content>${offlineOrder.name}<#else>Order data</#if></a>
-                </#list>
-              </#if>
-
-            </#if>
-          </#if>
-
-  </div>
-</div>
+</#macro>
