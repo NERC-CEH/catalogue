@@ -1,4 +1,4 @@
-<div id="section-metadataQuality" class="clearfix d-print-none metadataQuality metadataQuality-report">
+<div id="segment-metadataQuality" class="clearfix d-print-none metadataQuality metadataQuality-report my-3">
     <h2>Metadata quality report</h2>
     <#if problems?? && problems?has_content>
         <#assign errors = func.filter(problems, "severity", "ERROR")>

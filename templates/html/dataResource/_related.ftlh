@@ -12,7 +12,7 @@
       </#if>
     </#macro>
 
-    <div id="associations">
+    <div id="segment-associations">
       <h2>Related</h2>
       <#-- Outputs of this model-->
       <#if resourceType.value=="application">

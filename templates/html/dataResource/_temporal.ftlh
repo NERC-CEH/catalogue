@@ -1,10 +1,10 @@
 <#if temporalExtents?? || temporalResolution?? >
-  <div id="temporal">
+  <div id="segment-temporal">
   <h2>Temporal information</h2>
     <div class="row key-value">
       <#if temporalExtents?has_content>
         <div class="col-sm-3 key">Temporal extent</div>
-        <div class="col-sm-9 value" id="section-temporalExtents">
+        <div class="col-sm-9 value">
           <#list temporalExtents as extent>
             <div class="temporalExtent">
               <#if extent.begin?has_content>

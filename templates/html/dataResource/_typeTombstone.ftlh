@@ -1,6 +1,5 @@
 
 <div class="container">
-  <#include "_admin.ftlh">
 
   <div class="clearfix">
     <#if citation?has_content>
@@ -11,7 +10,7 @@
     </#if>
   </div>
 
-  <div class="notice notice--${resourceStatus?lower_case} clearfix" role="alert">
+  <div class="alert alert-danger" role="alert">
     <#include "_status.ftlh">
   </div>
 

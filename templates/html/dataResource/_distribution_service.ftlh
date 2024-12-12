@@ -1,7 +1,7 @@
 <#if onlineResources?? >
   <#assign mapservices = func.filterRegex(onlineResources, "url", "https://catalogue.ceh.ac.uk/maps/")>
 </#if>
-<div  id="document-distribution">
+<div  id="segment-distribution">
     <h2>Use this service</h2>
     <div class="distribution-service">
       <#if mapservices??>

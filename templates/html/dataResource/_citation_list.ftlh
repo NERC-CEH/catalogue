@@ -1,5 +1,5 @@
 <#if incomingCitations?has_content>
-  <div id="section-citations">
+  <div id="segment-citations">
     <h2>Citations</h2>
 
     <#list incomingCitations as ic>
@@ -13,6 +13,6 @@
         </#if>
       </div>
     </#list>
-      
+
   </div>
 </#if>

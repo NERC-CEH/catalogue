@@ -20,12 +20,12 @@
 </#if>
 
 <#if incomingCitations?has_content || totalDownloads gt 0 || totalViews gt 0>
-  <div class="usage">
+  <div class="usage" id="segment-usage">
     <div class="metrics">
       <#if incomingCitations?has_content && catalogue.id=="eidc">
         <#if incomingCitationCount gt 0 >
         <div class="metric">
-          <span><a href="#section-citations">${incomingCitationCount}</a></span> <a href="#section-citations">citation<#if incomingCitationCount gt 1>s</#if></a>
+          <span><a href="#segment-citations">${incomingCitationCount}</a></span> <a href="#segment-citations">citation<#if incomingCitationCount gt 1>s</#if></a>
         </div>
         </#if>
       </#if>

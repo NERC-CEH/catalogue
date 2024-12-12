@@ -88,7 +88,7 @@
             </#if>
             <#if boundingBoxes?? && boundingBoxes?has_content>
               <@key "Geographic coverage${(boundingBoxes?size > 1)?then('s', '')}" >
-                <div id="section-extent">
+                <div id="segment-extent">
                   <div id="studyarea-map" class="studyarea-map">
                   <#list boundingBoxes as extent>
                       <span content="${extent.bounds}" datatype="geoJson"/>

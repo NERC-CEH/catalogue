@@ -7,7 +7,7 @@ draft or is pending publication
   <div class="visible-print-block text-center"><img src="/static/img/cataloguelogo/ukceh.png"></div>
 
   <#if title?has_content>
-    <h1 id="document-title">
+    <h1>
       <#if type?has_content>
         <small id="resource-type">${codes.lookup('metadata.resourceType', type)!''}</small><br>
       </#if>

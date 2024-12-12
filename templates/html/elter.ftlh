@@ -15,7 +15,7 @@
     resourceProviders = func.filter(responsibleParties, "role", "resourceProvider")
     otherContacts = custodians + publishers + depositors + originators + owners + resourceProviders + rightsHolders
     catalogue = catalogues.retrieve(metadata.catalogue)
-    isLinkedDoc = "false"
+    isLinkedDoc = false
 
     rel_all=jena.allRelatedRecords(uri)
     rel_related=jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#relatedTo") + jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#relatedTo")
@@ -57,13 +57,13 @@
 
     <div class="section section-grey">
           <div class="container">
-            <#include "document/_admin.ftlh">
+            <#include "dataResource/_admin.ftlh">
             <#if title?? && title?has_content>
-              <#include "document/_title.ftlh">
+              <#include "dataResource/_title.ftlh">
             </#if>
 
             <#if rel_supersedes?has_content && rel_supersedes?size gt 0>
-                <#include "document/_latestVersion.ftlh">
+                <#include "dataResource/_latestVersion.ftlh">
             </#if>
 
             <#if description??>
@@ -82,7 +82,7 @@
 
                 </div>
                 <div class="browseimage">
-                  <#include "document/_browseGraphic.ftlh">
+                  <#include "dataResource/_browseGraphic.ftlh">
                 </div>
               </div>
             </#if>
@@ -91,7 +91,7 @@
         <#if resourceType.value == 'aggregate' || resourceType.value == 'collection'>
           <div class="section">
             <div class="container">
-              <#include "document/_aggregate.ftlh">
+              <#include "dataResource/_aggregate.ftlh">
             </div>
           </div>
         <#else>
@@ -99,21 +99,21 @@
             <div class="container">
               <div class="metadata-grid">
                 <div class="col1">
-                  <#include "document/_elterSpecific.ftlh">
-                  <#include "document/_formats.ftlh">
-                  <#include "document/_dataquality.ftlh">
-                  <#if resourceType?has_content && resourceType.value !='nonGeographicDataset'><#include "document/_spatial.ftlh"></#if>
-                  <#include "document/_temporal.ftlh">
-                  <#include "document/_related.ftlh">
-                  <#include "document/_citation_list.ftlh">
-                  <#include "document/_supplemental.ftlh">
-                  <#include "document/_contacts.ftlh">
+                  <#include "dataResource/_elterSpecific.ftlh">
+                  <#include "dataResource/_formats.ftlh">
+                  <#include "dataResource/_dataquality.ftlh">
+                  <#if resourceType?has_content && resourceType.value !='nonGeographicDataset'><#include "dataResource/_spatial.ftlh"></#if>
+                  <#include "dataResource/_temporal.ftlh">
+                  <#include "dataResource/_related.ftlh">
+                  <#include "dataResource/_citation_list.ftlh">
+                  <#include "dataResource/_supplemental.ftlh">
+                  <#include "dataResource/_contacts.ftlh">
 
                   <#if topicCategories?? || descriptiveKeywords?? || keywords?? ||  inspireTheme?? || funding??>
                     <h2>Additional metadata</h2>
                     <dl id="otherInfo" class="dl-row">
-                      <#include "document/_tags.ftlh">
-                      <#include "document/_funding.ftlh">
+                      <#include "dataResource/_tags.ftlh">
+                      <#include "dataResource/_funding.ftlh">
                         <#if metadataDateTime?has_content>
                         <dt>Last updated</dt><dd>${metadataDateTime?datetime.iso?datetime?string['dd MMMM yyyy  HH:mm']}</dd>
                         </#if>
@@ -122,20 +122,20 @@
                 </div>
                 <div class="col2">
 
-                  <#if isLinkedDoc="true">
-                    <#include "document/_linked.ftlh">
+                  <#if isLinkedDoc>
+                    <#include "dataResource/_linked.ftlh">
                   <#else>
-                      <#include "document/_uploadData.ftlh">
-                      <#include "document/_metrics.ftlh">
+                      <#include "dataResource/_uploadData.ftlh">
+                      <#include "dataResource/_metrics.ftlh">
 
 
                       <#if resourceStatus?? && resourceStatus != "Unknown">
                         <#if resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'application'>
-                          <#include "document/_distribution_dataset.ftlh">
+                          <#include "dataResource/_distribution_dataset.ftlh">
                         <#elseif resourceType.value == 'service' && mapViewable>
-                          <#include "document/_distribution_service.ftlh">
+                          <#include "dataResource/_distribution_service.ftlh">
                         <#elseif resourceType.value == 'signpost'>
-                          <#include "document/_distribution_signpost.ftlh">
+                          <#include "dataResource/_distribution_signpost.ftlh">
                         </#if>
                       </#if>
 
@@ -155,7 +155,7 @@
 </#if>
 
   <div id="footer">
-	 <#include "document/_footer.ftlh">
+	 <#include "dataResource/_footer.ftlh">
 	</div>
 
   <script type="application/ld+json">

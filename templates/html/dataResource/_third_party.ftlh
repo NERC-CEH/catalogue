@@ -6,7 +6,7 @@
 </#if>
 
 <div id="document-thirdParty">
-    <div class="card card-default d-print-none" id="document-distribution">
+    <div class="card card-default d-print-none" id="segment-distribution">
         <div class="card-body">
             <#assign distributor = "a third party">
             <#if dataDistributors?has_content>

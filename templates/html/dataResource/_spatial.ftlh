@@ -1,5 +1,5 @@
 <#if boundingBoxes?has_content || spatialRepresentationTypes?? || spatialReferenceSystems??>
-  <div id="spatial">
+  <div id="segment-spatial">
   <h2>Spatial information</h2>
 
       <#if boundingBoxes?has_content>

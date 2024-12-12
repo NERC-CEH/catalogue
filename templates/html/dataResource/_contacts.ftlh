@@ -1,5 +1,5 @@
 <#if pocs?size gt 0 >
-  <div id="document-pointOfContact">
+  <div id="segment-pointOfContact">
   <h2 id="pointOfContact">Correspondence/contact details</h2>
       <#list pocs>
         <#items as poc>
@@ -12,7 +12,7 @@
 </#if>
 
 <#if authors?size gt 0 >
-  <div id="document-authors">
+  <div id="segment-authors">
   <h2 id="authors">Author<#if authors?size gt 1>s</#if></h2>
 
       <#list authors>
@@ -46,7 +46,7 @@
 </#if>
 
 <#if otherContacts?has_content || rightsHolders?has_content>
-  <div id="document-otherContacts">
+  <div id="segment-otherContacts">
     <h2><a id="otherContacts"></a>Other contacts</h2>
     <div class="row key-value">
       <#if rightsHolders?has_content>

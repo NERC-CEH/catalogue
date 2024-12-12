@@ -1,5 +1,5 @@
 <#if distributionFormats?has_content>
-	<div class="dataFormats" id="section-formats">
+	<div class="dataFormats" id="segment-formats">
 		<h2>
 			Format<#if distributionFormats?size gt 1>s</#if>
 		</h2>

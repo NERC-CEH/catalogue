@@ -4,7 +4,7 @@
 
 <#assign
   catalogue = catalogues.retrieve(metadata.catalogue)
-  isLinkedDoc="false"
+  isLinkedDoc=false
   linkedClass=""
 >
 
@@ -30,9 +30,9 @@
 
 <div id="metadata" class="metadata">
   <div class="container">
-    <#include "document/_admin.ftlh">
-    <div id="section-Top">
-      <#include "document/_title.ftlh">
+    <#include "dataResource/_admin.ftlh">
+    <div id="top">
+      <#include "dataResource/_title.ftlh">
     </div>
     <#if description?? && description?has_content>
       <div id="document-description">
@@ -44,12 +44,12 @@
       </div>
     </#if>
 
-    <#include "document/_supplemental.ftlh">
+    <#include "dataResource/_supplemental.ftlh">
 
     <h2>Additional metadata</h2>
     <dl id="otherInfo" class="dl-row">
-      <#include "document/_tags.ftlh">
-      <#include "document/_spatial.ftlh">
+      <#include "dataResource/_tags.ftlh">
+      <#include "dataResource/_spatial.ftlh">
     </dl>
 
 

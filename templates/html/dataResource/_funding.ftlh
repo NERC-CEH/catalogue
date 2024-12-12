@@ -1,6 +1,7 @@
 <#if funding?has_content>
-    <dt>Funding</dt>
-    <dd class="funding">
+  <div class="row key-value" id="segment-funding">
+    <div class="key col-sm-3">Funding</div>
+    <div class="value col-sm-9">
       <#list funding as fund>
         <span class="award">
           <#if fund.funderName?has_content >
@@ -18,5 +19,6 @@
         </span>
         <#sep><br></#sep>
       </#list>
-    </dd>
+    </div>
+    </div>
 </#if>

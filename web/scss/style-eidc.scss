@@ -187,7 +187,7 @@ footer {
         padding: 0.5em;
     }
 
-    .section {
+    section {
         &--schema {
             .table-schema {
                 @extend .table-sm !optional;

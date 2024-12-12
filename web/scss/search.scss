@@ -24,7 +24,15 @@ main {
             flex: 0 0 var(--filter-width);
             border-inline-end: var(--filter-border);
 
-            .search-tabs {
+            .select2-selection {
+                opacity: 0.7;
+
+                &:focus-within, &:has(.select2-selection__choice__display) {
+                    opacity: 1
+                }
+            }
+
+            .filter-tabs {
                 background-color: var(--filter-background-colour);
                 min-height: calc(100vh - var(--header-height));
 

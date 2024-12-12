@@ -13,7 +13,7 @@
 
 <@skeleton.master title=title catalogue=catalogues.retrieve(metadata.catalogue) footer=true>
   <div id="metadata" class="metadata infrastructure-metadata">
-    <div class="section section-grey">
+    <section class="section section-grey">
       <div class="container">
         <#include "_admin.ftlh">
 
@@ -42,9 +42,9 @@
         </#if>
 
       </div>
-    </div>
+    </section>
 
-    <div class="section">
+    <section class="section">
       <div class="container">
         <div class="metadata-grid">
           <div class="col1">
@@ -159,7 +159,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </section>
 
   </div>
 

@@ -153,7 +153,7 @@
                 </#if>
             </div>
 
-            <div class="section section--1">
+            <section class="section section--1">
                 <h2>Data identification and citation</h2>
                 <p><strong class="text-red"><i class="fa-solid fa-triangle-exclamation" ></i> PLEASE NOTE: ONCE A DOI HAS BEEN ISSUED, THE INFORMATION PROVIDED IN THIS SECTION CANNOT BE CHANGED</strong><br>&nbsp;</p>
                 <h4><strong>Title of data resource:</strong> ${title}</h4>
@@ -168,9 +168,9 @@
                     <div class="text-danger">NO AUTHORS LISTED</div>
                     </#if>
                 </div>
-            </div>
+            </section>
 
-            <div class="section section--3">
+            <section class="section section--3">
                 <h2>Data and supporting documentation</h2>
                 <p>Data and supporting documentation should not contain names, addresses or other personal information relating to 'identifiable natural persons' (<a href="#">see our policy on retention and use of personal data</a>).</p>
 
@@ -216,10 +216,9 @@
 
                 <@displayData "Agreed transfer method for data and supporting documents" transferMethod/>
 
-            </div>
+            </section>
 
-
-            <div class="section section--6">
+            <section class="section section--6">
                 <h2>Availability, access and licensing</h2>
                 <div class="row key-value">
                     <div class="key">Availability</div>
@@ -235,28 +234,27 @@
                 <@displayEndUserLicence/>
                 <@displayOwnerOfIpr/>
                 <@displayData "Use constraints" useConstraints/>
-            </div>
-
+            </section>
 
             <#if otherInfo?? || supersededData?? || relatedDataHoldings?? || funding?has_content>
-                <div class="section section--9">
+                <section class="section section--9">
                     <h2>Miscellaneous</h2>
                     <@displayData "Superseding dataset" supersededData/>
                     <@displayData "Related data" relatedDataHoldings/>
                     <@displayData "Other information" otherInfo/>
                     <@displayGrants/>
-                </div>
+                </section>
             </#if>
 
             <#if description?has_content || lineage?has_content || allKeywords?has_content || topicCategories?? ||  inspireTheme?? || boundingBoxes??>
-                <div class="section section--metadata">
+                <section class="section section--metadata">
                     <h2>Discovery metadata</h2>
                     <p><i>Information in this section will be used to create a record in the EIDC data catalogue.</i></p>
                     <@displayData "Description" description/>
                     <@displayData "Lineage" lineage/>
                     <@displayKeywords/>
                     <@displayArea/>
-                </div>
+                </section>
             </#if>
 
         </div>

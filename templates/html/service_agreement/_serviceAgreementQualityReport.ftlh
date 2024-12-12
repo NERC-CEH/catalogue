@@ -16,7 +16,7 @@
     <#if errors?? && errors?has_content>
         <div>This service agreement is incomplete and cannot be submitted until all errors are cleared</div>
     </#if>
-    <div id="section-serviceAgreementQuality" class="clearfix d-print-none qualityReport">
+    <div id="segment-serviceAgreementQuality" class="clearfix d-print-none qualityReport">
         <#if errors?? && errors?has_content>
             <#list errors as error>
                 <div class="qualityItem qualityItem--error">

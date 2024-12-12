@@ -7,7 +7,7 @@
     <div id="metadata" class="metadata metadata-monitoring ${metadata.state?lower_case} <#if operationalStatus?? && operationalStatus == "Inactive">inactive</#if>">
     <#if !type??>
     <#else>
-      <div class="section section-grey">
+      <section class="section section-grey">
         <div class="container">
           <div ><@b.admin /></div>
 
@@ -47,8 +47,8 @@
           </#if>
 
         </div>
-      </div>
-      <div class="section">
+      </section>
+      <section class="section">
         <div class="container">
           <#nested>
 
@@ -113,14 +113,16 @@
           </div>
 
         </div>
-        <#if permission.userCanEditRestrictedFields(metadata.catalogue)>
-          <div class="section">
-            <div class="container">
-              <#include "../document/_metadataqualityReport.ftlh">
-            </div>
+      </section>
+
+      <#if permission.userCanEditRestrictedFields(metadata.catalogue)>
+        <section class="section">
+          <div class="container">
+            <#include "../document/_metadataqualityReport.ftlh">
           </div>
-        </#if>
-      </div>
+        </section>
+      </#if>
+
     </#if>
     </div>
   </@skeleton.master>
