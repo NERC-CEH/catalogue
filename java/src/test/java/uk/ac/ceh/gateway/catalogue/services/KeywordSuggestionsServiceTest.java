@@ -8,16 +8,21 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 public class KeywordSuggestionsServiceTest {
@@ -69,6 +74,28 @@ public class KeywordSuggestionsServiceTest {
             hasItem(name(is("temp"))),
             hasItem(name(is("absorbance")))
         ));
+    }
+
+    @Test
+    @SneakyThrows
+    void getSuggestionsWithException() {
+        //given
+        mockServer
+            .expect(requestTo(equalTo(LEGILO_URL + FILE_ID + "/keywords")))
+            .andExpect(method(HttpMethod.GET))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic dXNlcm5hbWU6cGFzc3dvcmQ="))
+            .andRespond(withStatus(HttpStatus.UNPROCESSABLE_ENTITY));
+        mockServer
+            .expect(requestTo(equalTo(LEGILO_URL + FILE_ID + "/variables")))
+            .andExpect(method(HttpMethod.GET))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic dXNlcm5hbWU6cGFzc3dvcmQ="))
+            .andRespond(withStatus(HttpStatus.NOT_FOUND));
+
+        //when
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> service.getSuggestions(FILE_ID));
+
+        //then
+        assertEquals("422 UNPROCESSABLE_ENTITY \"Unprocessable Entity, Not Found, Document not found\"", exception.getMessage());
     }
 
     private FeatureMatcher<KeywordSuggestionsService.Suggestion, String> name(Matcher<String> matcher) {
