@@ -323,6 +323,21 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             .orElse(0);
     }
 
+    public List<ResourceConstraint> getLicences() {
+        return Optional.ofNullable(useConstraints)
+            .orElseGet(Collections::emptyList)
+            .stream().filter(resourceConstraint -> resourceConstraint.getCode().equalsIgnoreCase("license"))
+            .collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    public List<OnlineResource> getInfoLinks() {
+        return Optional.ofNullable(onlineResources)
+            .orElseGet(Collections::emptyList)
+            .stream()
+            .filter(onlineResource -> onlineResource.getFunction().equalsIgnoreCase("information"))
+            .collect(Collectors.toCollection(ArrayList::new));
+    }
+
     private static @NonNull String convertEmail(@NonNull String email) {
         return email.endsWith("@ceh.ac.uk") ? "enquiries@ceh.ac.uk" : email;
     }

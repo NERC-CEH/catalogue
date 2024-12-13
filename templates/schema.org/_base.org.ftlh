@@ -1,23 +1,3 @@
-<#import "../functions.ftlh" as func>
-
-<#if useConstraints?has_content>
-  <#assign licences = func.filter(useConstraints, "code", "license")>
-</#if>
-<#if onlineResources?has_content>
-  <#assign
-    infoLinks = func.filter(onlineResources, "function", "information")
-  >
-</#if>
-
-  <#--DE-DUPLICATE KEYWORD LIST -->
-  <#assign deDup = [] />
-  <#list allKeywords as keywords>
-    <#if ! deDup?seq_contains(keywords)>
-        <#assign deDup = deDup + [keywords] />
-    </#if>
-  </#list>
-  <#assign keywordList = deDup?sort_by("value")?sort_by("uri") />
-
 <#if type=='dataset' || type=='nonGeographicDataset' || type=='signpost'>
   <#assign docType = "Dataset">
 <#elseif type=='aggregate' || type=='series'>
@@ -27,77 +7,30 @@
 </#if>
 
 <#macro schemaDocument showFiles=false>
+  <#if showFiles && docType == "Dataset">
+    <#if isAttached!false>
+      <#assign  parts = fileDetails.getDetailsFor(id, true)>
+    <#else>
+      <#assign  parts = fileDetails.getDetailsFor(id, false)>
+    </#if>
+  </#if>
   {
     "@type":<@displayLiteral docType/>,
     "name":<@displayLiteral title/>,
-
-    <#if showFiles>
-      <#if parts?? && parts?size gt 0>
-        <#if docType == "Dataset">
-          "hasPart": [
-            <#if isAttached!false>
-              <@partList fileDetails.getDetailsFor(id, true)/>
-            <#else>
-              <@partList fileDetails.getDetailsFor(id, false)/>
-            </#if>
-          ],
-        </#if>
-      </#if>
-    </#if>
-
     "@id": "${uri?trim}",
-    <#if datacitable?string == "true" && citation?has_content>
-      "identifier": {
-            "@type":"PropertyValue",
-            "propertyID": "https://registry.identifiers.org/registry/doi",
-            "value": "doi:${citation.doi}",
-            "url": "${citation.url}"
-          },
-      "url": "${citation.url}",
-      "creditText":"${citation.authors?join(', ')} (${citation.year?string["0000"]}). ${citation.title}. ${citation.publisher}. (${codes.lookup('datacite.resourceTypeGeneral',citation.resourceTypeGeneral)}). ${citation.url}",
-    <#else>
-      "url":"${uri?trim}",
-    </#if>
-
+    <@partsList/>
+    <@datacite/>
     <#if resourceStatus != "Deleted">
-      <#if description?has_content>"description":<@displayLiteral description/>, </#if>
-
-      <#if alternateTitles?has_content>
-        "alternateName":[
-        <#list alternateTitles as altTitle>
-          <@displayLiteral altTitle/><#sep>,</#sep>
-        </#list>
-        ],
-      </#if>
-
-      <#if resourceStatus == "Available">
-        "isAccessibleForFree": true,
-      </#if>
-
-      <#if datasetReferenceDate?? && datasetReferenceDate.creationDate?has_content>
-        "dateCreated":"${datasetReferenceDate.creationDate}",
-      </#if>
-
-      <#if datasetReferenceDate?? && datasetReferenceDate.publicationDate?has_content>
-        "datePublished":"${datasetReferenceDate.publicationDate}",
-      </#if>
-
-      <#if observedProperty?? && observedProperty?has_content>
-        "variableMeasured": [ <@observedPropertiesList observedProperty/>],
-      </#if>
-
-      <#if keywordList?has_content>
-        "keywords": [<@keywordsList keywordList/>],
-      </#if>
-
-      <#if authors?has_content>
-        "author": [<@contactList authors "author" />],
-      </#if>
-
-      <#if pointsOfContact ?has_content>
-        "contactPoint": [<@contactList pointsOfContact  />],
-      </#if>
-
+      <#if description?has_content>"description":<@displayLiteral description/>,</#if>
+      <@alternateTitlesList/>
+      <#if resourceStatus == "Available">"isAccessibleForFree": true,</#if>
+      <@creationDate/>
+      <@publicationDate/>
+      <@observedPropertiesList/>
+      <@keywordsList/>
+      <#if authors?has_content>"author": [<@contactList authors "author" />],</#if>
+      <#if pointsOfContact?has_content>"contactPoint": [<@contactList pointsOfContact  />],</#if>
+      <#-- Got to this point -->
       <#--Citations-->
       <#if incomingCitations?has_content>
         "@reverse": {
@@ -164,9 +97,8 @@
 
       "provider" : {"@id":"https://ror.org/04xw4m193"},
       "includedInDataCatalog":{ "@id": "#eidc-dataCatalogue"},
-
     <#else>
-    <#-- information to include if the dataset has been permanently deleted -->
+      <#-- information to include if the dataset has been permanently deleted -->
       "description": "This resource is no longer available please contact the Environmental Information Data Centre for more details",
       "creativeWorkStatus": "Deleted",
     </#if>
@@ -176,7 +108,7 @@
       "@id": "#eidc-dataCatalogue",
       "@type":"DataCatalog",
       "name":"Environmental Information Data Centre",
-      "alternatename":"EIDC",
+      "alternateName":"EIDC",
       "url":"https://catalogue.ceh.ac.uk/eidc/documents"
     },
     {
@@ -220,16 +152,8 @@
       ,<@fundDetails funding />
     </#if>
 
-    <#if showFiles>
-      <#if parts?? && parts?size gt 0>
-        <#if docType == "Dataset">
-          <#if isAttached!false>
-            ,<@partDetails fileDetails.getDetailsFor(id, true)/>
-          <#else>
-            ,<@partDetails fileDetails.getDetailsFor(id, false)/>
-          </#if>
-        </#if>
-      </#if>
+    <#if parts?? && parts?size gt 0>
+      ,<@partDetails parts/>
     </#if>
 
     <#if downloads?has_content>
@@ -237,34 +161,80 @@
     </#if>
 </#macro>
 
-<#macro keywordsList keywords>
-  <#list keywords as keyword>
-      <#if keyword.uri?has_content>
-        <#assign subjectScheme="" schemeURI="">
-        <#if keyword.uri?matches("^http[s]?://inspire.ec.europa.eu/\\S+$")>
-          <#assign subjectScheme="European Union INSPIRE registry" schemeURI="http://inspire.ec.europa.eu/registry/">
-        <#elseif keyword.uri?matches("^http[s]?://www.wikidata.org/entity/\\S+$")>
-          <#assign subjectScheme="Wikidata" schemeURI="https://www.wikidata.org/">
-        <#elseif keyword.uri?matches("^http[s]?://sws.geonames.org/\\S+$")>
-          <#assign subjectScheme="Geonames" schemeURI="https://www.geonames.org/">
-        <#elseif keyword.uri?matches("^http[s]?://www.eionet.europa.eu/gemet/concept/\\S+$")>
-          <#assign subjectScheme="GEMET concepts" schemeURI="https://www.eionet.europa.eu/gemet/">
-        </#if>
-        <#t>{
-           <#t>"@type": "DefinedTerm",
-           <#t>"@id": "${keyword.uri?trim}",
-           <#t>"name": <@displayLiteral keyword.value/>
-           <#t><#if subjectScheme?has_content>,"inDefinedTermSet": "${schemeURI}"</#if>
-        }
-      <#else>
-        "${keyword.value?trim}"
-      </#if>
-      <#sep>,</#sep><#t>
+<#macro alternateTitlesList>
+  <#if alternateTitles??>
+    <#list alternateTitles>
+      "alternateName":[
+      <#items as altTitle>
+        <@displayLiteral altTitle/><#sep>,</#sep>
+      </#items>
+      ],
     </#list>
+  </#if>
 </#macro>
 
-<#macro observedPropertiesList props>
-  <#list props as op>
+<#macro creationDate>
+  <#if datasetReferenceDate?? && datasetReferenceDate.creationDate?has_content>
+    "dateCreated":"${datasetReferenceDate.creationDate}",
+  </#if>
+</#macro>
+
+<#macro publicationDate>
+  <#if datasetReferenceDate?? && datasetReferenceDate.publicationDate?has_content>
+    "datePublished":"${datasetReferenceDate.publicationDate}",
+  </#if>
+</#macro>
+
+<#macro datacite>
+  <#if datacitable && citation?has_content>
+    "identifier": {
+          "@type":"PropertyValue",
+          "propertyID": "https://registry.identifiers.org/registry/doi",
+          "value": "doi:${citation.doi}",
+          "url": "${citation.url}"
+        },
+    "url": "${citation.url}",
+    "creditText":"${citation.authors?join(', ')} (${citation.year?string["0000"]}). ${citation.title}. ${citation.publisher}. (${codes.lookup('datacite.resourceTypeGeneral',citation.resourceTypeGeneral)}). ${citation.url}",
+  <#else>
+    "url":"${uri?trim}",
+  </#if>
+</#macro>
+
+<#macro keywordsList>
+  <#if allKeywords??>
+    <#list allKeywords?sort_by("value")?sort_by("uri")>
+      "keywords": [
+      <#items as keyword>
+        <#if keyword.uri?has_content>
+          <#assign subjectScheme="" schemeURI="">
+          <#if keyword.uri?matches("^http[s]?://inspire.ec.europa.eu/\\S+$")>
+            <#assign subjectScheme="European Union INSPIRE registry" schemeURI="http://inspire.ec.europa.eu/registry/">
+          <#elseif keyword.uri?matches("^http[s]?://www.wikidata.org/entity/\\S+$")>
+            <#assign subjectScheme="Wikidata" schemeURI="https://www.wikidata.org/">
+          <#elseif keyword.uri?matches("^http[s]?://sws.geonames.org/\\S+$")>
+            <#assign subjectScheme="Geonames" schemeURI="https://www.geonames.org/">
+          <#elseif keyword.uri?matches("^http[s]?://www.eionet.europa.eu/gemet/concept/\\S+$")>
+            <#assign subjectScheme="GEMET concepts" schemeURI="https://www.eionet.europa.eu/gemet/">
+          </#if>
+          <#t>{
+             <#t>"@type": "DefinedTerm",
+             <#t>"@id": "${keyword.uri?trim}",
+             <#t>"name": <@displayLiteral keyword.value/>
+             <#t><#if subjectScheme?has_content>,"inDefinedTermSet": "${schemeURI}"</#if>
+          }
+        <#else>
+          "${keyword.value?trim}"
+        </#if>
+        <#sep>,
+      </#items>],
+    </#list>
+  </#if>
+</#macro>
+
+<#macro observedPropertiesList>
+<#if observedProperty?? && observedProperty?has_content>
+"variableMeasured": [
+  <#list observedProperty as op>
       <#assign opLabel ="unknown">
       <#if op.title?has_content>
         <#assign opLabel = op.title?trim>
@@ -281,23 +251,29 @@
           <#if op.units?has_content>,"unitText": "${op.units?trim}"</#if>
         }
       <#else>
-      <@displayLiteral opLabel/>
+        <@displayLiteral opLabel/>
       </#if>
-      <#sep>,</#sep>
+      <#sep>,
     </#list>
+    ],
+</#if>
 </#macro>
 
-<#macro partList parts>
-  <#if parts?size lt 60000>
-    <#list parts as part>
-      <#if part.id?has_content>{"@id": "${part.id}"}</#if> <#sep>,</#sep>
+<#macro partsList>
+  <#if parts?? && parts?size lt 60000>
+    <#list parts>
+      "hasPart": [
+      <#items as part>
+        <#if part.id?has_content>{"@id": "${part.id}"}</#if><#sep>,
+      </#items>
+      ],
     </#list>
   <#else>
-    {"@id": "${id}-files"}
+    {"@id": "${id}-files"},
   </#if>
 </#macro>
 
-<#macro partDeails parts>
+<#macro partDetails parts>
   <#if parts?size lt 60000>
     <#list parts as part>
       <#if part.id?has_content>

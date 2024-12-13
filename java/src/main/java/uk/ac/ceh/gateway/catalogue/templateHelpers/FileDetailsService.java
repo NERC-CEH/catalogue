@@ -92,7 +92,7 @@ public class FileDetailsService {
     }
 
     @lombok.Value
-    public class Part {
+    public static class Part {
         String id, type, name, encodingFormat, contentUrl;
         Long bytes;
         LocalDateTime lastModified;

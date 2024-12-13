@@ -6,14 +6,14 @@
             "@id": "ro-crate-metadata.json",
             "conformsTo": { "@id": "https://w3id.org/ro/crate/1.1" },
             "about": {
-                "@id": "https://example.org/id/123456789"
+                "@id": "https://example.org/id/09837382"
             }
         },
         {
             "@type":"Dataset",
             "name":"Title",
-            "@id": "https://example.org/id/123456789",
-            "url":"https://example.org/id/123456789",
+            "@id": "https://example.org/id/09837382",
+            "url":"https://example.org/id/09837382",
             "provider" : {"@id":"https://ror.org/04xw4m193"},
             "includedInDataCatalog":{ "@id": "#eidc-dataCatalogue"},
             "@context":"http://schema.org/"
@@ -22,7 +22,7 @@
             "@id": "#eidc-dataCatalogue",
             "@type":"DataCatalog",
             "name":"Environmental Information Data Centre",
-            "alternatename":"EIDC",
+            "alternateName":"EIDC",
             "url":"https://catalogue.ceh.ac.uk/eidc/documents"
         },
         {

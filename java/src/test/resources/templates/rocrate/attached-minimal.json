@@ -22,7 +22,7 @@
             "@id": "#eidc-dataCatalogue",
             "@type":"DataCatalog",
             "name":"Environmental Information Data Centre",
-            "alternatename":"EIDC",
+            "alternateName":"EIDC",
             "url":"https://catalogue.ceh.ac.uk/eidc/documents"
         },
         {
