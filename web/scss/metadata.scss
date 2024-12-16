@@ -27,7 +27,9 @@ body {
     }
 
     .tableOfContents {
-        top: 8em;
+        >div {
+            top: 8em;
+        }
 
         a:focus {
             background-color: transparent;
@@ -156,13 +158,11 @@ body {
     }
 
     .topDOI {
-        .citationString {
-            @extend .py-3 !optional;
-            @extend .border !optional;
-            @extend .border-2 !optional;
-            @extend .border-end-0 !optional;
-            @extend .border-start-0 !optional;
-        }
+        @extend .py-3 !optional;
+        @extend .border !optional;
+        @extend .border-2 !optional;
+        @extend .border-end-0 !optional;
+        @extend .border-start-0 !optional;
     }
 
     .accessButtons {

@@ -1,5 +1,5 @@
 <div class="col-xl-3 col-lg-4 col-md-5 d-none d-md-block py-3 tableOfContents" id="tableOfContents">
-    <div class="list-group list-group-flush sticky-top">
+    <div class="list-group list-group-flush  sticky-top">
       <a class="list-group-item list-group-item-action text-body-tertiary" href="#top"><i class="fa-solid fa-angle-up fa-xs"></i> Top</a>
       <#if permission.userCanEditRestrictedFields(metadata.catalogue) && metadata.catalogue == "eidc"><a class="list-group-item list-group-admin list-group-item-action" href="#segment-metadataQuality"><#include "_metadataqualityAlert.ftlh"></a></#if>
       <#if description?? && description?has_content><a class="list-group-item list-group-item-action" href="#segment-description">Description</a></#if>

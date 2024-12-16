@@ -45,7 +45,7 @@
         <div class="modal-body">
           <button type="button" class="btn-close position-relative top-0 start-100 translate-middle" data-bs-dismiss="modal" aria-label="Close"></button>
           <#include "_citation.ftlh">
-          <#include "_licence.ftlh">
+          <div class="mt-3"><#include "_licence.ftlh"></div>
         </div>
       </div>
     </div>

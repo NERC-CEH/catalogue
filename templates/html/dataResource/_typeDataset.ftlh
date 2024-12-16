@@ -10,7 +10,7 @@
 
 <#macro displayDataResource toc=false>
 
-  <div class="row" data-bs-spy="scroll" data-bs-root-margin="0px 0px -25%" data-bs-target="#tableOfContents" data-bs-smooth-scroll="true">
+  <div class="row" data-bs-spy="scroll" data-bs-target="#tableOfContents" data-bs-smooth-scroll="true">
 
     <#assign mainColClasses="">
 
@@ -27,7 +27,9 @@
 
       <#include "_accessButtons.ftlh">
 
-      <div class="topDOI"><#include "_citation.ftlh"></div>
+      <#if citation?has_content>
+         <div class="topDOI">${citation.url}</div>
+      </#if>
 
       <#if rel_supersedes?has_content && rel_supersedes?size gt 0>
         <#include "_latestVersion.ftlh">
