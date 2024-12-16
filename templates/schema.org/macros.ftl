@@ -1,26 +1,41 @@
-<#if type=='dataset' || type=='nonGeographicDataset' || type=='signpost'>
-  <#assign docType = "Dataset">
-<#elseif type=='aggregate' || type=='series'>
-  <#assign docType = "Series">
-<#elseif type=='application'>
-  <#assign docType = "SoftwareSourceCode">
-</#if>
+<#-- Top-level entry macros either 'rocrate' or 'schemaDotOrg' -->
 
-<#macro schemaDocument showFiles=false>
-  <#if showFiles && docType == "Dataset">
-    <#if isAttached!false>
-      <#assign  parts = fileDetails.getDetailsFor(id, true)>
-    <#else>
-      <#assign  parts = fileDetails.getDetailsFor(id, false)>
-    </#if>
+<#macro rocrate docType="" parts=[]>
+  <#if docType?has_content>
+    {
+    "@context": "https://w3id.org/ro/crate/1.1/context",
+      "@graph": [
+        {
+          "@type": "CreativeWork",
+          "@id": "ro-crate-metadata.json",
+          "conformsTo": { "@id": "https://w3id.org/ro/crate/1.1" },
+          "about": { "@id": "${uri?trim}" }
+        },
+        <@schemaDocument docType parts/>
+      ]
+    }
   </#if>
+</#macro>
+
+<#macro schemaDotOrg docType="", parts=[]>
+  <#if docType?has_content>
+    {
+      "@context":"http://schema.org/",
+      "@graph": [
+        <@m.schemaDocument docType parts/>
+      ]
+    }
+  </#if>
+</#macro>
+
+<#macro schemaDocument docType parts>
   {
     "@type":<@displayLiteral docType/>,
     "name":<@displayLiteral title/>,
     "@id": "${uri?trim}",
-    <@partsList/>
+    <@partsList parts/>
     <@datacite/>
-    <#if resourceStatus != "Deleted">
+    <#if resourceStatus?lower_case != "deleted">
       <#if description?has_content>"description":<@displayLiteral description/>,</#if>
       <@alternateTitlesList/>
       <#if resourceStatus == "Available">"isAccessibleForFree": true,</#if>
@@ -28,137 +43,46 @@
       <@publicationDate/>
       <@observedPropertiesList/>
       <@keywordsList/>
-      <#if authors?has_content>"author": [<@contactList authors "author" />],</#if>
-      <#if pointsOfContact?has_content>"contactPoint": [<@contactList pointsOfContact  />],</#if>
-      <#-- Got to this point -->
-      <#--Citations-->
-      <#if incomingCitations?has_content>
-        "@reverse": {
-          "citation":[
-            <@citationList incomingCitations />
-          ]
-        },
-      </#if>
-
-      <#if temporalExtents?has_content>
-        "temporalCoverage":[
-        <#list temporalExtents as temporal>
-          <#if temporal.begin?has_content>
-            <#assign begin = temporal.begin>
-          <#else>
-            <#assign begin = "">
-          </#if>
-          <#if temporal.end?has_content>
-            <#assign end = temporal.end>
-          <#else>
-            <#assign end = "">
-          </#if>
-          "${begin}/${end}"<#sep>,
-        </#list>
-        ],
-      </#if>
-
-
-      <#if boundingBoxes?has_content>
-        "spatialCoverage": [
-            <@itemList boundingBoxes "bbox"/>
-          ],
-      </#if>
-
-      <#if funding?has_content>
-        "funder": [
-            <@itemList funding "fund"/>
-          ],
-      </#if>
-
+      <#if authors?has_content>"author": [<@contactList authors "author"/>],</#if>
+      <#if pointsOfContact?has_content>"contactPoint": [<@contactList pointsOfContact/>],</#if>
+      <@citationList/>
+      <@temporalExtentsList/>
+      <#if boundingBoxes?has_content>"spatialCoverage": [<@itemList boundingBoxes "bbox"/>],</#if>
+      <#if funding?has_content>"funder": [<@itemList funding "fund"/>],</#if>
       <#if docType == "Dataset" || docType == "SoftwareSourceCode">
-
-        <#if licences?? && licences?has_content>
-          <#if licences?first.uri?? && licences?first.uri?has_content>
-            <#if licences?first.uri?matches("^http[s]?://eidc.ceh.ac.uk/licences/OGL.+$")>
-              "license": {"@id": "oglLicence"},
-            <#else>
-              "license": "${licences?first.uri?trim}",
-            </#if>
-          </#if>
-        </#if>
-
-        <#if downloads?has_content>
-          "distribution": [<@itemList downloads "distribution" />],
-        </#if>
-
-        <#if publishers?has_content>
-          <#assign publisher = publishers?first>
-          <#if publisher.organisationIdentifier?has_content>
-            "publisher":{"@id":"${publisher.organisationIdentifier}"},
-          </#if>
-        </#if>
+        <@licencesLink/>
+        <#if downloads?has_content>"distribution": [<@itemList downloads "distribution" />],</#if>
+        <@publisherLink/>
       </#if>
-
       "provider" : {"@id":"https://ror.org/04xw4m193"},
-      "includedInDataCatalog":{ "@id": "#eidc-dataCatalogue"},
+      "includedInDataCatalog":{ "@id": "#eidc-dataCatalogue"}
     <#else>
       <#-- information to include if the dataset has been permanently deleted -->
       "description": "This resource is no longer available please contact the Environmental Information Data Centre for more details",
-      "creativeWorkStatus": "Deleted",
+      "creativeWorkStatus": "Deleted"
     </#if>
-    "@context":"http://schema.org/"
-    },
-    {
-      "@id": "#eidc-dataCatalogue",
-      "@type":"DataCatalog",
-      "name":"Environmental Information Data Centre",
-      "alternateName":"EIDC",
-      "url":"https://catalogue.ceh.ac.uk/eidc/documents"
-    },
-    {
-      "@id": "https://ror.org/04xw4m193",
-      "@type":"Organization",
-      "name":"NERC EDS Environmental Information Data Centre",
-      "email": "info@eidc.ac.uk"
-    }
-
-    <#if licences?? && licences?has_content>
-      <#if licences?first.uri?? && licences?first.uri?has_content>
-      <#if licences?first.uri?matches("^http[s]?://eidc.ceh.ac.uk/licences/OGL.+$")>
-        ,{
-            "@id": "oglLicence",
-            "@type": "CreativeWork",
-            "name": "Open Government Licence v3",
-            "alternateName":"OGL-UK-3.0",
-            "license": "https://spdx.org/licenses/OGL-UK-3.0.html"
-          }
-        </#if>
-      </#if>
-    </#if>
-
-    <#if boundingBoxes?has_content>
-      ,<@bboxDetails boundingBoxes />
-    </#if>
-
-    <#if authors?has_content>
-      ,<@contactDetails authors "author" />
-    </#if>
-
-    <#if pocs?has_content>
-      ,<@contactDetails pocs />
-    </#if>
-
-    <#if incomingCitations?has_content>
-      ,<@citationDetails incomingCitations />
-    </#if>
-
-    <#if funding?has_content>
-      ,<@fundDetails funding />
-    </#if>
-
-    <#if parts?? && parts?size gt 0>
-      ,<@partDetails parts/>
-    </#if>
-
-    <#if downloads?has_content>
-      ,<@distributionDetails downloads />
-    </#if>
+  },
+  {
+    "@id": "#eidc-dataCatalogue",
+    "@type":"DataCatalog",
+    "name":"Environmental Information Data Centre",
+    "alternateName":"EIDC",
+    "url":"https://catalogue.ceh.ac.uk/eidc/documents"
+  },
+  {
+    "@id": "https://ror.org/04xw4m193",
+    "@type":"Organization",
+    "name":"NERC EDS Environmental Information Data Centre",
+    "email": "info@eidc.ac.uk"
+  }
+  <@licencesDetail/>
+  <#if boundingBoxes?has_content>,<@bboxDetails/></#if>
+  <#if authors?has_content>,<@contactDetails authors "author"/></#if>
+  <#if pointsOfContact?has_content>,<@contactDetails pointsOfContact/></#if>
+  <#if incomingCitations?has_content>,<@citationDetails/></#if>
+  <#if funding?has_content>,<@fundDetails/></#if>
+  <#if parts?has_content>,<@partDetails parts/></#if>
+  <#if downloads?has_content>,<@distributionDetails/></#if>
 </#macro>
 
 <#macro alternateTitlesList>
@@ -171,6 +95,19 @@
       ],
     </#list>
   </#if>
+</#macro>
+
+<#macro bboxDetails>
+  <#list boundingBoxes as bbox>
+    {
+      "@id": "#bbox${bbox?index}",
+      "@type":"Place",
+      "geo":{
+        "@type":"GeoShape",
+        "box":"${bbox.westBoundLongitude} ${bbox.southBoundLatitude}, ${bbox.eastBoundLongitude} ${bbox.northBoundLatitude}"
+      }
+    }<#sep>,
+  </#list>
 </#macro>
 
 <#macro creationDate>
@@ -231,6 +168,34 @@
   </#if>
 </#macro>
 
+<#macro licencesLink>
+  <#if licences?? && licences?has_content>
+    <#if licences?first.uri?? && licences?first.uri?has_content>
+      <#if licences?first.uri?matches("^http[s]?://eidc.ceh.ac.uk/licences/OGL/plain")>
+        "license": {"@id": "#oglLicence"},
+      <#else>
+        "license": "${licences?first.uri?trim}",
+      </#if>
+    </#if>
+  </#if>
+</#macro>
+
+<#macro licencesDetail>
+  <#if licences?? && licences?has_content>
+    <#if licences?first.uri?? && licences?first.uri?has_content>
+      <#if licences?first.uri?matches("^http[s]?://eidc.ceh.ac.uk/licences/OGL.+$")>
+        ,{
+          "@id": "#oglLicence",
+          "@type": "CreativeWork",
+          "name": "Open Government Licence v3",
+          "alternateName":"OGL-UK-3.0",
+          "license": "https://spdx.org/licenses/OGL-UK-3.0.html"
+        }
+        </#if>
+    </#if>
+  </#if>
+</#macro>
+
 <#macro observedPropertiesList>
 <#if observedProperty?? && observedProperty?has_content>
 "variableMeasured": [
@@ -259,12 +224,12 @@
 </#if>
 </#macro>
 
-<#macro partsList>
-  <#if parts?? && parts?size lt 60000>
+<#macro partsList parts>
+  <#if parts?size lt 60000>
     <#list parts>
       "hasPart": [
       <#items as part>
-        <#if part.id?has_content>{"@id": "${part.id}"}</#if><#sep>,
+        <#if part.id?has_content>{"@id": "#part${part.id}"}</#if><#sep>,
       </#items>
       ],
     </#list>
@@ -278,7 +243,7 @@
     <#list parts as part>
       <#if part.id?has_content>
         {
-          <#t>"@id": "${part.id}",
+          <#t>"@id": "#part${part.id}",
           <#t>"name": "${part.id}"
           <#if part.type?? && part.type?has_content><#t>,"@type": "${part.type}"</#if>
           <#if part.encodingFormat?? && part.encodingFormat?has_content>,<#t>"encodingFormat": "${part.encodingFormat}"</#if>
@@ -299,10 +264,18 @@
   </#if>
 </#macro>
 
+<#macro publisherLink>
+  <#if publishers?has_content>
+    <#assign publisher = publishers?first>
+    <#if publisher.organisationIdentifier?has_content>
+      "publisher":{"@id":"${publisher.organisationIdentifier}"},
+    </#if>
+  </#if>
+</#macro>
+
 <#macro itemList list idlabel="item">
   <#list list as item>
-    <#assign itemid = "#" + idlabel + item?index>
-    {"@id": "${itemid}"}<#sep>,</#sep>
+    {"@id": "#${idlabel}${item?index}"}<#sep>,
   </#list>
 </#macro>
 
@@ -334,7 +307,6 @@
           <#assign contactid = contact.organisationIdentifier>
         </#if>
       </#if>
-
       {
         "@id": "${contactid}",
         <#if contact.individualName?has_content>
@@ -363,19 +335,25 @@
           <#if contact.email?has_content>,"email": "${contact.email}"</#if>
           <#if contact.organisationIdentifier?has_content>,"identifier":"${contact.organisationIdentifier}"</#if>
         </#if>
-        }<#sep>,</#sep>
+        }<#sep>,
   </#list>
 </#macro>
 
-<#macro citationList citations>
-  <#list incomingCitations as citation>
-    <#assign citationid = "#citation" + citation?index>
-    <#if citation.url?has_content><#assign citationid = citation.url></#if>
-    {"@id": "${citationid}"}<#sep>,</#sep>
-  </#list>
+<#macro citationList>
+  <#if incomingCitations?has_content>
+    "@reverse": {
+      "citation":[
+        <#list incomingCitations as citation>
+          <#assign citationid = "#citation" + citation?index>
+          <#if citation.url?has_content><#assign citationid = citation.url></#if>
+          {"@id": "${citationid}"}<#sep>,</#sep>
+        </#list>
+       ]
+    },
+  </#if>
 </#macro>
 
-<#macro citationDetails citations>
+<#macro citationDetails>
   <#list incomingCitations as citation>
     <#assign citationid = "#citation" + citation?index>
     <#if citation.url?has_content><#assign citationid = citation.url></#if>
@@ -384,52 +362,46 @@
     "@type": "CreativeWork"
     <#if citation.description?has_content>,"creditText": <@displayLiteral citation.description/></#if>
     <#if citation.url?has_content>,"url": "${citation.url?trim}"</#if>
-    }<#sep>,</#sep>
+    }<#sep>,
   </#list>
 </#macro>
 
-<#macro bboxDetails boundingBoxes>
-  <#list boundingBoxes as bbox>
-    <#assign bboxid = "#bbox" + bbox?index>
-    {
-    "@id": "${bboxid}",
-     "@type":"Place",
-     "geo":{
-        "@type":"GeoShape",
-         "box":"${bbox.westBoundLongitude} ${bbox.southBoundLatitude}, ${bbox.eastBoundLongitude} ${bbox.northBoundLatitude}"
-          }
-    }<#sep>,</#sep>
-  </#list>
-</#macro>
-
-<#macro distributionDetails distributions>
+<#macro distributionDetails>
   <#list downloads as distribution>
-    <#assign distributionid = "#distribution" + distribution?index>
     {
-    "@id": "${distributionid}",
-    "@type":"DataDownload",
-    "contentUrl":"${distribution.url}"
-    <#if distribution.url?ends_with(".zip")>,"encodingFormat":"application/zip"
-    <#elseif distribution.url?ends_with(".csv")>,"encodingFormat":"text/csv"
-    <#elseif distribution.url?starts_with("https://data-package.ceh.ac.uk/data/")>,"encodingFormat":"application/zip"
-    <#elseif distribution.url?starts_with("https://catalogue.ceh.ac.uk/datastore")>,"encodingFormat":"text/directory"
-    </#if>
-    }<#sep>,</#sep>
+      "@id": "#distribution${distribution?index}",
+      "@type":"DataDownload",
+      "contentUrl":"${distribution.url}"
+      <#if distribution.url?ends_with(".zip")>,"encodingFormat":"application/zip"
+      <#elseif distribution.url?ends_with(".csv")>,"encodingFormat":"text/csv"
+      <#elseif distribution.url?starts_with("https://data-package.ceh.ac.uk/data/")>,"encodingFormat":"application/zip"
+      <#elseif distribution.url?starts_with("https://catalogue.ceh.ac.uk/datastore")>,"encodingFormat":"text/directory"
+      </#if>
+    }<#sep>,
   </#list>
 </#macro>
 
-<#macro fundDetails funding>
+<#macro fundDetails>
   <#list funding as fund>
-    <#assign fundid = "#fund" + fund?index>
     {
-    "@id": "${fundid}",
-    "@type":"Organization"
-    <#if fund.funderName?? && fund.funderName?has_content>,<#t>"name":"${fund.funderName}" </#if>
-    }<#sep>,</#sep>
+      "@id": "#fund${fund?index}",
+      "@type":"Organization"
+      <#if fund.funderName?? && fund.funderName?has_content>,<#t>"name":"${fund.funderName}"</#if>
+    }<#sep>,
   </#list>
 </#macro>
 
 <#macro displayLiteral string>
   <#--Ensure literals do not contain " characters or line breaks-->
   <#t>"${string?trim?replace("\"","'")?replace("\n"," ")}"
+</#macro>
+
+<#macro temporalExtentsList>
+  <#if temporalExtents?has_content>
+    "temporalCoverage":[
+    <#list temporalExtents as temporal>
+      "${temporal.begin!""}/${temporal.end!""}"<#sep>,
+    </#list>
+    ],
+  </#if>
 </#macro>

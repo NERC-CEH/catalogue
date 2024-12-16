@@ -15,12 +15,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import uk.ac.ceh.gateway.catalogue.citation.Citation;
-import uk.ac.ceh.gateway.catalogue.gemini.AccessLimitation;
-import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
-import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
+import uk.ac.ceh.gateway.catalogue.gemini.*;
+import uk.ac.ceh.gateway.catalogue.geometry.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.model.ObservedProperty;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
+import uk.ac.ceh.gateway.catalogue.model.Supplemental;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.FileDetailsService;
 
@@ -51,11 +50,19 @@ public class RoCrateTest {
             .willReturn("Resource Type");
     }
 
-    private void givenFileDetailsService(String fileId) {
+    private void givenFileDetailsServiceDetached(String fileId) {
         given(fileDetailsService.getDetailsFor(fileId, false))
             .willReturn(List.of(
                 new FileDetailsService.Part(fileId, "File", "name1", "text/csv", "https://example.com/name1", 12L, LocalDateTime.of(2024,12,9,15, 34)),
                 new FileDetailsService.Part(fileId, "File", "name2", "text/csv", "https://example.com/name2", 9832L, LocalDateTime.of(2020,5,6,23, 59))
+            ));
+    }
+
+    private void givenFileDetailsServiceAttached(String fileId) {
+        given(fileDetailsService.getDetailsFor(fileId, true))
+            .willReturn(List.of(
+                new FileDetailsService.Part(fileId, "File", "name1", "text/csv", "data/name4", 542L, LocalDateTime.of(2024,12,9,15, 34)),
+                new FileDetailsService.Part(fileId, "File", "name2", "text/csv", "data/name5", 32L, LocalDateTime.of(2020,5,6,23, 59))
             ));
     }
 
@@ -85,7 +92,7 @@ public class RoCrateTest {
     @SneakyThrows
     @BeforeEach
     void init() {
-        configuration = new Configuration(Configuration.VERSION_2_3_23);
+        configuration = new Configuration(Configuration.VERSION_2_3_33);
         configuration.setDirectoryForTemplateLoading(new File("../templates"));
         configuration.setSharedVariable("codes", codeLookupService);
         configuration.setSharedVariable("fileDetails", fileDetailsService);
@@ -99,14 +106,17 @@ public class RoCrateTest {
         @Test
         void rocrateAttachedMinimal() {
             //given
-            gemini = createGeminiDocument("123456789");
             val expected = expected("rocrate/attached-minimal.json");
+            val fileId = "123456789";
+            gemini = createGeminiDocument(fileId);
+            givenFileDetailsServiceAttached(fileId);
 
             //when
             val actual = template("rocrate/rocrate_attached.ftl");
 
             //then
             JSONAssert.assertEquals(expected, actual, true);
+            verify(fileDetailsService).getDetailsFor(fileId, true);
         }
     }
 
@@ -118,14 +128,17 @@ public class RoCrateTest {
         @Test
         void rocrateMinimal() {
             //given
-            gemini = createGeminiDocument("09837382");
             val expected = expected("rocrate/minimal.json");
+            val fileId = "09837382";
+            gemini = createGeminiDocument(fileId);
+            givenFileDetailsServiceDetached(fileId);
 
             //when
             val actual = template("rocrate/rocrate.ftl");
 
             //then
             JSONAssert.assertEquals(expected, actual, true);
+            verify(fileDetailsService).getDetailsFor(fileId, false);
         }
 
         @SneakyThrows
@@ -138,7 +151,7 @@ public class RoCrateTest {
             gemini = createGeminiDocument(fileId);
 
             // partsList & partDetails
-            givenFileDetailsService(fileId);
+            givenFileDetailsServiceDetached(fileId);
 
             // datacite
             givenCodeLookupService();
@@ -179,13 +192,48 @@ public class RoCrateTest {
 
             // authors and points of contact
             gemini.setResponsibleParties(List.of(
-                ResponsibleParty.builder().role("author").individualName("Donald").nameIdentifier("https://orcid.org/0000-1234-5678-9101").build(),
-                ResponsibleParty.builder().role("pointOfContact").organisationName("TMSP").organisationIdentifier("https://example.com/TMSP").build()
+                ResponsibleParty.builder().role("author").individualName("Donald").email("donald@example.com").nameIdentifier("https://orcid.org/0000-1234-5678-9101").build(),
+                ResponsibleParty.builder().role("pointOfContact").organisationName("TMSP").email("pocs@example.com").organisationIdentifier("https://example.com/TMSP").build()
+            ));
+
+            // incoming citations
+            gemini.setIncomingCitations(List.of(
+                Supplemental.builder().url("https://example.com/citations/0").description("description").build(),
+                Supplemental.builder().url("https://example.com/citations/1").build(),
+                Supplemental.builder().name("something else").build()
+            ));
+
+            // temporal extents
+            gemini.setTemporalExtents(List.of(
+                TimePeriod.builder().begin("2024-02-01").end("2024-10-28").build(),
+                TimePeriod.builder().begin("2019-08-22").build(),
+                TimePeriod.builder().end("2018-11-30").build()
+            ));
+
+            // bounding boxes
+            gemini.setBoundingBoxes(List.of(
+                BoundingBox.builder().northBoundLatitude("46.2").eastBoundLongitude("2.3").southBoundLatitude("45.7").westBoundLongitude("0.4").build(),
+                BoundingBox.builder().northBoundLatitude("36.8").eastBoundLongitude("48.7").southBoundLatitude("-11.6").westBoundLongitude("-120.5").build()
+            ));
+
+            gemini.setFunding(List.of(
+                Funding.builder().funderName("UKRI").build(),
+                Funding.builder().funderName("University of Oxford").build()
+            ));
+
+            // OGL licences
+            gemini.setUseConstraints(List.of(
+                ResourceConstraint.builder().code("license").uri("https://eidc.ceh.ac.uk/licences/OGL/plain").build()
+            ));
+
+            // downloads
+            gemini.setOnlineResources(List.of(
+                OnlineResource.builder().function("download").url("https://example.com/download/0").build(),
+                OnlineResource.builder().function("order").url("https://example.com/order/1").build()
             ));
 
             //when
             val actual = template("rocrate/rocrate.ftl");
-            log.info(actual);
 
             //then
             JSONAssert.assertEquals(expected, actual, true);

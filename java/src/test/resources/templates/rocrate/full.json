@@ -17,10 +17,10 @@
             "@id": "https://example.org/id/882739943",
             "hasPart": [
                 {
-                    "@id": "882739943"
+                    "@id": "#part882739943"
                 },
                 {
-                    "@id": "882739943"
+                    "@id": "#part882739943"
                 }
             ],
             "identifier": {
@@ -71,13 +71,57 @@
                     "@id": "https://example.com/TMSP"
                 }
             ],
+            "@reverse": {
+                "citation": [
+                    {
+                        "@id": "https://example.com/citations/0"
+                    },
+                    {
+                        "@id": "https://example.com/citations/1"
+                    },
+                    {
+                        "@id": "#citation2"
+                    }
+                ]
+            },
+            "temporalCoverage": [
+                "2024-02-01/2024-10-28",
+                "2019-08-22/",
+                "/2018-11-30"
+            ],
+            "spatialCoverage": [
+                {
+                    "@id": "#bbox0"
+                },
+                {
+                    "@id": "#bbox1"
+                }
+            ],
+            "funder": [
+                {
+                    "@id": "#fund0"
+                },
+                {
+                    "@id": "#fund1"
+                }
+            ],
+            "license": {
+                "@id": "#oglLicence"
+            },
+            "distribution": [
+                {
+                    "@id": "#distribution0"
+                },
+                {
+                    "@id": "#distribution1"
+                }
+            ],
             "provider": {
                 "@id": "https://ror.org/04xw4m193"
             },
             "includedInDataCatalog": {
                 "@id": "#eidc-dataCatalogue"
-            },
-            "@context": "http://schema.org/"
+            }
         },
         {
             "@id": "#eidc-dataCatalogue",
@@ -93,9 +137,33 @@
             "email": "info@eidc.ac.uk"
         },
         {
+            "@id": "#oglLicence",
+            "@type": "CreativeWork",
+            "name": "Open Government Licence v3",
+            "alternateName": "OGL-UK-3.0",
+            "license": "https://spdx.org/licenses/OGL-UK-3.0.html"
+        },
+        {
+            "@id": "#bbox0",
+            "@type": "Place",
+            "geo": {
+                "@type": "GeoShape",
+                "box": "0.4 45.7, 2.3 46.2"
+            }
+        },
+        {
+            "@id": "#bbox1",
+            "@type": "Place",
+            "geo": {
+                "@type": "GeoShape",
+                "box": "-120.5 -11.6, 48.7 36.8"
+            }
+        },
+        {
             "@id": "https://orcid.org/0000-1234-5678-9101",
             "@type": "Person",
             "name": "Donald",
+            "email": "donald@example.com",
             "identifier": {
                 "@type": "PropertyValue",
                 "propertyID": "orcid",
@@ -103,7 +171,39 @@
             }
         },
         {
-            "@id": "882739943",
+            "@id": "https://example.com/TMSP",
+            "@type": "Organization",
+            "name": "TMSP",
+            "email": "pocs@example.com",
+            "identifier": "https://example.com/TMSP"
+        },
+        {
+            "@id": "https://example.com/citations/0",
+            "@type": "CreativeWork",
+            "creditText": "description",
+            "url": "https://example.com/citations/0"
+        },
+        {
+            "@id": "https://example.com/citations/1",
+            "@type": "CreativeWork",
+            "url": "https://example.com/citations/1"
+        },
+        {
+            "@id": "#citation2",
+            "@type": "CreativeWork"
+        },
+        {
+            "@id": "#fund0",
+            "@type": "Organization",
+            "name": "UKRI"
+        },
+        {
+            "@id": "#fund1",
+            "@type": "Organization",
+            "name": "University of Oxford"
+        },
+        {
+            "@id": "#part882739943",
             "name": "882739943",
             "@type": "File",
             "encodingFormat": "text/csv",
@@ -112,13 +212,23 @@
             "contentUrl": "https://example.com/name1"
         },
         {
-            "@id": "882739943",
+            "@id": "#part882739943",
             "name": "882739943",
             "@type": "File",
             "encodingFormat": "text/csv",
             "lastModified": "2020-05-06T23:59",
             "bytes": 9832,
             "contentUrl": "https://example.com/name2"
+        },
+        {
+            "@id": "#distribution0",
+            "@type": "DataDownload",
+            "contentUrl": "https://example.com/download/0"
+        },
+        {
+            "@id": "#distribution1",
+            "@type": "DataDownload",
+            "contentUrl": "https://example.com/order/1"
         }
     ]
 }

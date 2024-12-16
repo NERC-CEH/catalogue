@@ -1,8 +1,4 @@
-<#import "../functions.ftlh" as func>
 <#setting date_format = 'yyyy-MM-dd'>
-<#if useConstraints?has_content>
-    <#assign licences = func.filter(useConstraints, "code", "license")>
-</#if>
 
 <#macro displayLiteral string>
   <#--Ensure literals do not contain " characters or line breaks-->
