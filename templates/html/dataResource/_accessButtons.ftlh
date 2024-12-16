@@ -3,7 +3,14 @@
 </#if>
 
 <div class="p-3 accessButtons">
-  <a class="btn btn-download" data-bs-toggle="offcanvas" href="#access" role="button" aria-controls="access"><i class="fa-solid fa-download fa-fw"></i> Download data</a>
+  <#if (resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'application') && (resourceStatus == "Available" || resourceStatus == "Controlled") >
+    <a class="btn btn-download" data-bs-toggle="offcanvas" href="#access" role="button" aria-controls="access"><i class="fa-solid fa-download fa-fw"></i> Download data</a>
+  </#if>
+
+  <#if resourceType.value == 'service' && mapViewable >
+    <a class="btn btn-download" data-bs-toggle="offcanvas" href="#access" role="button" aria-controls="access"><i class="fa-solid fa-arrows-rotate fa-fw"></i> Access</a>
+  </#if>
+
 
   <#if (downloadOrder.supportingDocumentsUrl)?has_content>
     <a class="btn btn-access" href="${downloadOrder.supportingDocumentsUrl}" title="Supporting information important for the re-use of this dataset"><i class="fa-solid fa-file-arrow-down fa-fw"></i></span> Supporting docs</a>
@@ -27,7 +34,7 @@
   </div>
 
   <#if citation?has_content>
-    <a href="#" class="btn btn-access" data-bs-toggle="modal" data-bs-target="#citationModal"><small><i class="fa-solid fa-quote-left fa-xs"></i> <i class="fa-solid fa-quote-right fa-xs"></i></small> Cite this ${recordType?lower_case!''}</a>
+    <a href="#" class="btn btn-access" data-bs-toggle="modal" data-bs-target="#citationModal"><small><i class="fa-solid fa-quote-left fa-2xs"></i> <i class="fa-solid fa-quote-right fa-2xs"></i></small> Cite this ${recordType?lower_case!''}</a>
   </#if>
 </div>
 
@@ -45,13 +52,12 @@
   </div>
 </#if>
 
-<@offcanvasDownload />
+<@offcanvasAccess />
 
-
-<#macro offcanvasDownload>
+<#macro offcanvasAccess title="Download/Access">
   <div class="offcanvas offcanvas-start offcanvas-access" tabindex="-1" id="access" aria-labelledby="accessLabel">
     <div class="offcanvas-header">
-      <h5 class="offcanvas-title" id="accessLabel">Download</h5>
+      <h5 class="offcanvas-title" id="accessLabel">${title}</h5>
       <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body">
@@ -65,7 +71,7 @@
         <div class="alert alert-secondary"><strong>PLEASE NOTE:</strong> ${statusMessage}</div>
         <#include "_licence.ftlh">
 
-        <#if downloadOrder?? && ((downloadOrder.orderResources)?has_content || (downloadOrder.supportingDocumentsUrl)?has_content) || ((resourceType.value)?? && distributionFormats?? && distributionFormats?has_content) || mapViewable?? >
+        <#if downloadOrder?? && ((downloadOrder.orderResources)?has_content || (downloadOrder.supportingDocumentsUrl)?has_content) || ((resourceType.value)?? && distributionFormats?? && distributionFormats?has_content)>
 
           <#list downloadOrder.orderResources as item>
             <@downloadButton item/>
@@ -75,6 +81,23 @@
       </#if>
 
       <#include "_status.ftlh">
+
+      <#if mapViewable?? >
+
+        <#if onlineResources?? >
+          <#assign mapservices = func.filterRegex(onlineResources, "url", "https://catalogue.ceh.ac.uk/maps/")>
+        </#if>
+
+        <#if mapservices??>
+        <div class="mb-1">Add to your GIS application:</div>
+        <div class="ms-3">
+          <#list mapservices as wms>
+            ${wms.url}<#sep><br></#sep>
+          </#list>
+        </div>
+        </#if>
+
+      </#if>
 
     </div>
   </div>
@@ -119,5 +142,16 @@
         <small>(${sizeLabel})</small>
       </#if>
     </a>
+
+    <#if downloadType=="direct">
+      <div class="py-3">
+        <hr>
+        <h5 class="my-3">Bulk download options</h5>
+        <p>You can use WGET to download data. For example<br>
+          <code> wget --user=YOUR_USERNAME --password=YOUR_PASSWORD --auth-no-challenge ${onlineResourceUrl}</code>
+        </p>
+        <p><a href="https://eidc.ac.uk/help/getdata/downloadData#programmaticAccess" rel="nofollow noreferrer" target="_blank">Further information and help &raquo;</a></p>
+      </div>
+    </#if>
 
 </#macro>

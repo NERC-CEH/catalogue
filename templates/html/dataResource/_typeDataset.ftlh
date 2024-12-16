@@ -15,7 +15,7 @@
     <#assign mainColClasses="">
 
     <#if toc>
-      <#assign mainColClasses="col-xl-9 col-lg-8 col-md-7 ms-4-md">
+      <#assign mainColClasses="content">
       <#include "_toc.ftlh">
     </#if>
 
@@ -25,7 +25,7 @@
         <#include "_title.ftlh">
       </#if>
 
-      <#include "_newButtons.ftlh">
+      <#include "_accessButtons.ftlh">
 
       <div class="topDOI"><#include "_citation.ftlh"></div>
 
@@ -40,13 +40,11 @@
       <#if !isLinkedDoc>
         <#include "_uploadData.ftlh">
 
-        <#if metadata.catalogue == "eidc">
+        <#--  <#if metadata.catalogue == "eidc">
           <#include "_metrics.ftlh">
-        </#if>
+        </#if>  -->
 
-        <#if resourceType.value == 'service' && mapViewable>
-          <#include "_distribution_service.ftlh">
-        <#elseif resourceType.value == 'nercSignpost' || resourceType.value == 'signpost'>
+        <#if resourceType.value == 'nercSignpost' || resourceType.value == 'signpost'>
           <#include "_distribution_signpost.ftlh">
         </#if>
 

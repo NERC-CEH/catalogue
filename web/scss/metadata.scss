@@ -41,7 +41,18 @@ body {
         }
 
         a:empty {
-            display:none;
+            display: none;
+        }
+    }
+
+    .content {
+        @extend .col-xl-9 !optional;
+        @extend .col-lg-8 !optional;
+        @extend .col-md-7 !optional;
+        @extend .ms-4-md !optional;
+
+        >div {
+            scroll-margin-top: 120px
         }
     }
 
@@ -157,16 +168,18 @@ body {
     .accessButtons {
         display: flex;
         flex-direction: row;
+        flex-wrap: wrap;
         gap: .5em 1em;
         justify-content: space-evenly;
+        --btn_width: 170px;
 
         >.btn {
-            flex: 0 0 25%;
+            flex: 0 1 var(--btn_width);
             text-wrap: nowrap;
         }
 
         >div {
-            flex: 0 0 25%;
+            flex: 0 1 var(--btn_width);
             text-wrap: nowrap;
 
             .btn,
@@ -576,15 +589,85 @@ body {
                 }
             }
         }
-
-
     }
 
-    .browseGraphic {
-        @extend .float-end !optional;
-        margin: 0 0 1em 2em;
-        max-width: 30em;
-        max-height: 30em;
+    .description {
+        >div {
+            display: grid;
+            gap: 2em;
+        }
+
+        .browseGraphic {
+            @extend .float-end !optional;
+            margin: 0 0 1em 2em;
+            max-width: 350px;
+            max-height: 197px;
+        }
+
+        .usage {
+            >div {
+                background-color: #eee;
+                border-radius: 6px;
+                padding: 1em 0.5em;
+
+                .metrics {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 1em;
+
+                    .metric {
+                        line-height: 1.1;
+                        text-align: center;
+                        --size: 1.6rem;
+                        font-size: var(--size);
+
+                        span {
+                            font-size: calc(var(--size) / 1.75);
+                            display: block;
+                        }
+                    }
+                }
+
+                p {
+                    line-height: 1.2;
+                    text-align: center;
+                    min-width: 16ch;
+                    margin-block-start: 1.25em;
+                    margin-block-end: 0;
+                }
+
+                .metricsInfo {
+                    font-size: 0.8rem;
+                    margin-block-start: 1.25em;
+                    margin-block-end: 0;
+
+                    span {
+                        display: block;
+                        margin-block-end: 0.65em;
+                        text-align: center;
+                        ;
+                    }
+                }
+            }
+        }
+    }
+
+    @media only screen and (min-width: 1001px) {
+        .description {
+            >div {
+                grid-template-columns: auto fit-content(0);
+            }
+
+            .usage {
+                >div {
+                    .metrics {
+                        flex-direction: column;
+                    }
+                }
+            }
+        }
     }
 
     /*SIGNPOST*/

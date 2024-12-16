@@ -3,7 +3,7 @@
 	otherSupplemental = func.filter(supplemental, "function", "relatedDataset", true)
 	>
 
-<div class="container">
+<div class="py-3">
 
   <#if title?? && title?has_content>
     <#include "_title.ftlh">
