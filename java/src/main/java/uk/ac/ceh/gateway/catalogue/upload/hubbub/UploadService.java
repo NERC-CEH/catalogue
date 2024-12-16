@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.PrintWriter;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -162,23 +162,22 @@ public class UploadService {
     }
 
     @SneakyThrows
-    public void upload(String datasetId, String username, MultipartFile multipartFile) {
-        val filename = Optional.ofNullable(multipartFile.getOriginalFilename())
-            .orElseThrow(() -> new UploadException(format("Missing filename in upload to %s", datasetId)))
+    public void upload(String datasetId, String username, MultipartFile multipartFile, String filename) {
+        if (filename == null) {
+            throw new UploadException(format("Missing filename in upload to %s", datasetId));
+        }
+        val sanitisedFilename = filename
             .toLowerCase(Locale.ROOT)
             .replace(' ', '-');
-        if (filename.isBlank()) {
+        if (sanitisedFilename.isBlank()) {
             throw new UploadException(format("Filename is blank in upload to %s", datasetId));
         }
-        log.debug("Adding {} to {}", filename, datasetId);
-        val directory = Paths.get(uploadLocation, datasetId);
-        if ( !Files.isDirectory(directory)) {
-            val created = directory.toFile().mkdirs();
-            log.debug("created directory: {} {}", directory, created);
-        }
-        val file = Paths.get(directory.toString(), filename).toFile();
+        log.debug("Adding {} to {}", sanitisedFilename, datasetId);
+        val path = Path.of(uploadLocation, datasetId, sanitisedFilename);
+        Files.createDirectories(path.getParent());
+        val file = path.toFile();
         log.debug("new file {}", file);
-        register(datasetId, filename, username, multipartFile.getSize());
+        register(datasetId, sanitisedFilename, username, multipartFile.getSize());
         multipartFile.transferTo(file);
     }
 

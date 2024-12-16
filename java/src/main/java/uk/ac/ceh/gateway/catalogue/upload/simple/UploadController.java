@@ -1,5 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.upload.simple;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.Value;
@@ -19,6 +20,9 @@ import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 
@@ -84,21 +88,28 @@ public class UploadController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void upload(
             @PathVariable("id") String id,
-            @RequestParam("file") MultipartFile file
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("filename") String filename
     ) {
-        storageService.store(id, file);
-        log.info("Successfully uploaded {} for {}", file.getOriginalFilename(), id);
+        storageService.store(id, file, filename);
+        log.info("Successfully uploaded {} for {} to {}", file.getOriginalFilename(), id, filename);
     }
 
-    @DeleteMapping(value = "{id}/{filename:.+}")
+    @DeleteMapping(value = "{id}/**")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("@permission.userCanUpload(#id)")
     public void delete(
-            @PathVariable("id") String id,
-            @PathVariable("filename") String filename
+        @PathVariable("id") String id,
+        HttpServletRequest request
     ) {
-        storageService.delete(id, filename);
-        log.info("Successfully deleted {} for {}", filename, id);
+        // /upload/id/<path we want>
+        val fullPath = Path.of(URLDecoder.decode(request.getRequestURI(), StandardCharsets.UTF_8));
+        val elts = fullPath.getNameCount();
+        val filePath = fullPath.subpath(2, elts);
+        log.info("fullPath is {}, filePath is {}", fullPath, filePath);
+
+        storageService.delete(id, filePath.toString());
+        log.info("Successfully deleted {} for {}", filePath, id);
     }
 
     @ExceptionHandler
@@ -111,7 +122,7 @@ public class UploadController {
     @ExceptionHandler
     @ResponseBody
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorMessage handleFileAlreadyExists(FileExitsException ex) {
+    public ErrorMessage handleFileAlreadyExists(FileExistsException ex) {
         return handleException(ex);
     }
 
