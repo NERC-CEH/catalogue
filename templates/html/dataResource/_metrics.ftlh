@@ -19,19 +19,19 @@
   </#if>
 </#if>
 
-<#if incomingCitations?has_content || totalDownloads gte 0 || totalViews gte 0>
+<#if incomingCitations?has_content || totalDownloads gt 0 || totalViews gt 0>
   <div class="usage" id="segment-usage">
     <div>
       <div class="metrics">
         <#if incomingCitations?has_content && catalogue.id=="eidc">
-          <#if incomingCitationCount gte 0 >
+          <#if incomingCitationCount gt 0 >
           <div class="metric">
           <a href="#segment-citations">${incomingCitationCount}
-            <span class="small">citation<#if incomingCitationCount gte 1>s</#if></span></a>
+            <span class="small">citation<#if incomingCitationCount gt 1>s</#if></span></a>
           </div>
           </#if>
         </#if>
-        <#if totalDownloads gte 0 >
+        <#if totalDownloads gt 0 >
           <div class="metric">
             ${totalDownloads}
             <span>
@@ -40,7 +40,7 @@
             </span>
           </div>
         </#if>
-        <#if totalViews gte 0 >
+        <#if totalViews gt 0 >
           <div class="metric">
               ${totalViews}
               <span>
@@ -57,35 +57,35 @@
       More information about the dates from which data were collected
       Start dates are different for order manager data and data packager data
       -->
-        <#if totalViews gte 0 || totalDownloads gte 0 >
+        <#if totalViews gt 0 || totalDownloads gt 0 >
           <#assign
             viewsFrom = "2023-06-01"
             ordersFrom = "2021-11-11"
             downloadsFrom = "2024-06-20">
 
           <#if datasetReferenceDate?? && datasetReferenceDate.publicationDate??>
-            <#if (datasetReferenceDate.publicationDate)?date gte viewsFrom?date >
+            <#if (datasetReferenceDate.publicationDate)?date gt viewsFrom?date >
               <#assign viewsFrom=datasetReferenceDate.publicationDate >
             </#if>
 
             <#if downloadUrl?contains("order-eidc")>
-              <#if (datasetReferenceDate.publicationDate)?date gte ordersFrom?date >
+              <#if (datasetReferenceDate.publicationDate)?date gt ordersFrom?date >
                 <#assign downloadsFrom=datasetReferenceDate.publicationDate >
               <#else>
                 <#assign downloadsFrom=ordersFrom >
               </#if>
             <#else>
-              <#if (datasetReferenceDate.publicationDate)?date gte downloadsFrom?date >
+              <#if (datasetReferenceDate.publicationDate)?date gt downloadsFrom?date >
                 <#assign downloadsFrom=datasetReferenceDate.publicationDate >
               </#if>
             </#if>
           </#if>
 
           <div class="metricsInfo collapse">
-            <#if totalViews gte 0 >
+            <#if totalViews gt 0 >
               <span>View numbers valid from ${viewsFrom?date?string['dd MMMM yyyy']}</span>
             </#if>
-            <#if totalDownloads gte 0 >
+            <#if totalDownloads gt 0 >
               <span>Download numbers valid from ${downloadsFrom?date?string['dd MMMM yyyy']}</span>
             </#if>
             <span class="small">(information prior to this was not collected)</span>
