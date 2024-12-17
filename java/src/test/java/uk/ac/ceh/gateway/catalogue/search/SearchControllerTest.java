@@ -134,7 +134,9 @@ class SearchControllerTest {
             results,
             Collections.emptyList(),
             eidc,
-            relatedSearches
+            relatedSearches,
+            "publicationDate",
+            "desc"
         );
         given(searcher.search(
             any(),
