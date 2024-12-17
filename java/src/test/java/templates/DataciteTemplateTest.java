@@ -87,7 +87,7 @@ public class DataciteTemplateTest {
             gemini.setUri(uri);
             val jena = mock(JenaLookupService.class);
             configuration.setSharedVariable("jena", jena);
-            val expected = expected("related-full.xml");
+            val expected = expected("datacite/related-full.xml");
 
             given(jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#supersedes")).willReturn(List.of(
                 Link.builder().href("https://catalogue.ceh.ac.uk/id/847463839").build()
@@ -140,7 +140,7 @@ public class DataciteTemplateTest {
                     .build()
             ));
 
-            val expected = expected("subjects-full.xml");
+            val expected = expected("datacite/subjects-full.xml");
 
             //when
             val actual = template("_subjects.ftlx");
@@ -195,7 +195,7 @@ public class DataciteTemplateTest {
                 custodian
             ));
 
-            val expected = expected("contributors-full.xml");
+            val expected = expected("datacite/contributors-full.xml");
 
             //when
             val actual = template("_contributors.ftlx");

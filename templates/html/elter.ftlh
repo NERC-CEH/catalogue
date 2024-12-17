@@ -159,7 +159,7 @@
 	</div>
 
   <script type="application/ld+json">
-	  <#include "../schema.org/schema.org.ftlh">
+	  <#include "../schema.org/schema.org.ftl">
   </script>
 
 </@skeleton.master>

@@ -38,7 +38,7 @@ import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAP
         @Template(called = "html/gemini.ftlh", whenRequestedAs = MediaType.TEXT_HTML_VALUE),
         @Template(called = "xml/gemini.ftlx", whenRequestedAs = GEMINI_XML_VALUE),
         @Template(called = "rdf/ttl.ftl", whenRequestedAs = RDF_TTL_VALUE),
-        @Template(called = "schema.org/schema.org.ftlh", whenRequestedAs = RDF_SCHEMAORG_VALUE),
+        @Template(called = "schema.org/schema.org.ftl", whenRequestedAs = RDF_SCHEMAORG_VALUE),
         @Template(called = "rocrate/rocrate.ftl", whenRequestedAs = ROCRATE_VALUE),
         @Template(called = "rocrate/rocrate_attached.ftl", whenRequestedAs = ROCRATE_ATTACHED_VALUE),
         @Template(called = "ceda/ceda.ftlh", whenRequestedAs = CEDA_YAML_VALUE)
@@ -321,6 +321,21 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
         return Optional.ofNullable(incomingCitations)
             .map(List::size)
             .orElse(0);
+    }
+
+    public List<ResourceConstraint> getLicences() {
+        return Optional.ofNullable(useConstraints)
+            .orElseGet(Collections::emptyList)
+            .stream().filter(resourceConstraint -> resourceConstraint.getCode().equalsIgnoreCase("license"))
+            .collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    public List<OnlineResource> getInfoLinks() {
+        return Optional.ofNullable(onlineResources)
+            .orElseGet(Collections::emptyList)
+            .stream()
+            .filter(onlineResource -> onlineResource.getFunction().equalsIgnoreCase("information"))
+            .collect(Collectors.toCollection(ArrayList::new));
     }
 
     private static @NonNull String convertEmail(@NonNull String email) {

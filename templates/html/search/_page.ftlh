@@ -37,7 +37,7 @@
   <a href="/${docroot}/${result.identifier}"
     class="result result--${result.state}
     <#if (result.operationalStatus??)>opstatus-${result.operationalStatus}</#if>
-    <#if (result.resourceStatus??)>result--${result.resourceStatus?lower_case}</#if>" data-location="${(result.locations?join('|'))!}" id="${result.identifier}">
+    <#if (result.resourceStatus??)>result--${result.resourceStatus}</#if>" data-location="${(result.locations?join('|'))!}" id="${result.identifier}">
 
     <div class="result__tags">
       <div class="state">${(codes.lookup("publication.state", result.state)!)!?upper_case!''}</div>
