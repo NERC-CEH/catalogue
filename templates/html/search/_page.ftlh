@@ -5,11 +5,22 @@
   IMPORTANT: If you change the structure of this, please update the corresponding
   javascript template /web/src/scripts/templates/searchPage.js
 -->
-<div class="results__header">
-  <span id="num-records">${numFound}</span> records found
-  <span class="mx-2">
-    <i id="searchShareIcon" class="fas fa-share-square" data-bs-toggle="tooltip" data-bs-placement="right" role="button" title="Copy search URL to clipboard"></i>
-  </span>
+<div class="row justify-content-between results__header">
+  <div class="col-sm-4">
+    <span id="num-records">${numFound}</span> records found
+    <span class="mx-2">
+      <i id="searchShareIcon" class="fas fa-share-square" data-bs-toggle="tooltip" data-bs-placement="right" role="button" title="Copy search URL to clipboard"></i>
+    </span>
+  </div>
+  <div class="col-sm-4">
+    <select class="form-select sort-search" aria-label="Select Dropdown for Sorting Search results">
+      <option value="">Relevance</option>
+      <option value="publicationDate-desc">Published Date (Newest First)</option>
+      <option value="publicationDate-asc">Published Date (Oldest First)</option>
+      <option value="title-asc">Title (A-Z)</option>
+      <option value="title-desc">Title (Z-A)</option>
+    </select>
+  </div>
 </div>
 
 <#list relatedSearches>

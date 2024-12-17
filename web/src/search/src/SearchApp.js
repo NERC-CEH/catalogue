@@ -12,13 +12,15 @@ export default Backbone.Model.extend({
     facet: [],
     term: undefined,
     page: 1,
-    rows: undefined
+    rows: undefined,
+    sortField: null,
+    order: null
   },
 
   /*
      * Define the set of fields which contribute to searching
      */
-  searchFields: ['term', 'page', 'rows', 'facet', 'bbox', 'op'],
+  searchFields: ['term', 'page', 'rows', 'facet', 'bbox', 'op', 'sortField', 'order'],
 
   initialize () {
     this.createSearchPage() // Create initial search page
