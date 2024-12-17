@@ -85,7 +85,7 @@
       </#if>
 
       <script type="application/ld+json">
-        <#include "../schema.org/schema.org.ftlh">
+        <#include "../schema.org/schema.org.ftl">
       </script>
     </div>
   </div>
