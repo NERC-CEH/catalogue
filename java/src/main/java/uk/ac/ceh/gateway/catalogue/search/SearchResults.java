@@ -44,6 +44,8 @@ public class SearchResults {
     @JsonIgnore
     Catalogue catalogue;
     List<Link> relatedSearches;
+    String sortField;
+    String order;
 
     public SearchResults(QueryResponse response, SearchQuery query, List<Link> relatedSearches) {
         checkNotNull(response);
@@ -62,6 +64,8 @@ public class SearchResults {
         this.facets = populateFacets(response, query);
         this.catalogue = query.getCatalogue();
         this.relatedSearches = relatedSearches;
+        this.sortField = query.getSortField();
+        this.order = query.getSortOrder().name().toLowerCase();
         log.debug("Creating: {}", this);
     }
 
@@ -80,6 +84,8 @@ public class SearchResults {
         this.facets = searchResults.facets;
         this.catalogue = searchResults.catalogue;
         this.relatedSearches = relatedSearches;
+        this.sortField = searchResults.sortField;
+        this.order = searchResults.order;
     }
 
     SearchResults(
@@ -96,7 +102,9 @@ public class SearchResults {
             List<SolrIndex> results,
             List<Facet> facets,
             Catalogue catalogue,
-            List<Link> relatedSearches
+            List<Link> relatedSearches,
+            String sortField,
+            String order
             ) {
         this.numFound = numFound;
         this.term = term;
@@ -112,6 +120,8 @@ public class SearchResults {
         this.facets = facets;
         this.catalogue = catalogue;
         this.relatedSearches = relatedSearches;
+        this.sortField = sortField;
+        this.order = order;
         log.debug("Creating: {}", this);
             }
 

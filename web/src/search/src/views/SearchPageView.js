@@ -5,6 +5,10 @@ import template from '../templates/searchPage'
 
 export default Backbone.View.extend({
 
+  events: {
+    'change .sort-search': 'handleSortChange'
+  },
+
   initialize () {
     this.template = template
     this.readModelFromHTML()
@@ -12,6 +16,21 @@ export default Backbone.View.extend({
     this.listenTo(this.model, 'cleared:results', this.clear)
     this.listenTo(this.model, 'results-sync', this.render)
     this.listenTo(this.model, 'results-change:selected', this.updateSelected)
+  },
+
+  handleSortChange (e) {
+    const value = e.currentTarget.value
+    let sortField = null
+    let order = null
+
+    if (value) {
+      const parts = value.split('-')
+      sortField = parts[0]
+      if (parts.length > 1) {
+        order = parts[1]
+      }
+    }
+    this.model.set({ sortField, order })
   },
 
   /*
@@ -52,7 +71,12 @@ export default Backbone.View.extend({
      * Draw in the new content
      */
   render () {
-    this.$el.html(this.template(this.model.getResults().attributes))
+    const modelAttributes = this.model.getResults().attributes
+
+    modelAttributes.sortField = this.model.get('sortField') || null
+    modelAttributes.order = this.model.get('order') || 'asc'
+
+    this.$el.html(this.template(modelAttributes))
     const $relatedSearches = this.$('.results__related_searches')
     const relatedSearches = this.model.getResults().get('relatedSearches')
     if (relatedSearches != null) {

@@ -7,8 +7,17 @@ import _ from 'underscore'
  * corresponding freemarker template /templates/search/_page.ftl
  */
 export default _.template(`
-<div class="results__header">
-    <span id="num-records"><%=numFound%></span> records found
+<div class="row justify-content-between results__header">
+    <div class="col-sm-4"><span id="num-records"><%=numFound%></span> records found</div>
+    <div class="col-sm-4">
+        <select class="form-select sort-search" aria-label="Select Dropdown for Sorting Search results">
+            <option value="" <%= !sortField ? 'selected' : '' %>>Relevance</option>
+            <option value="publicationDate-desc" <%= sortField === 'publicationDate' && order === 'desc' ? 'selected' : '' %>>Published Date (Newest First)</option>
+            <option value="publicationDate-asc" <%= sortField === 'publicationDate' && order === 'asc' ? 'selected' : '' %>>Published Date (Oldest First)</option>
+            <option value="title-asc" <%= sortField === 'title' && order === 'asc' ? 'selected' : '' %>>Title (A-Z)</option>
+            <option value="title-desc" <%= sortField === 'title' && order === 'desc' ? 'selected' : '' %>>Title (Z-A)</option>
+        </select>
+    </div>
 </div>
 
 <div class="results__related_searches"></div>
