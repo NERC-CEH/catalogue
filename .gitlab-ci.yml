@@ -28,7 +28,7 @@ test_web:
   image: registry.gitlab.ceh.ac.uk/eip/headless_chrome:0.1
   script:
     - cd web/
-    - npm install -g npm
+    - npm install -g npm@10.8.2
     - npm ci --no-audit
     - npm run standard
     - npm test
