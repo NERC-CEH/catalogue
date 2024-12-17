@@ -159,9 +159,10 @@ public class UploadController {
     public void upload(
         @ActiveUser CatalogueUser user,
         @PathVariable("datasetId") String datasetId,
-        @RequestParam("file") MultipartFile multipartFile
+        @RequestParam("file") MultipartFile multipartFile,
+        @RequestParam("filename") String filename
     ) {
-        uploadService.upload(datasetId, user.getUsername(), multipartFile);
+        uploadService.upload(datasetId, user.getUsername(), multipartFile, filename);
     }
 
     @PreAuthorize("@permission.userCanUpload(#datasetId)")

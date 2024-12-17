@@ -1,0 +1,66 @@
+{
+    "@context": "https://w3id.org/ro/crate/1.1/context",
+    "@graph": [
+        {
+            "@type": "CreativeWork",
+            "@id": "ro-crate-metadata.json",
+            "conformsTo": {
+                "@id": "https://w3id.org/ro/crate/1.1"
+            },
+            "about": {
+                "@id": "https://example.org/id/09837382"
+            }
+        },
+        {
+            "@type": "Dataset",
+            "name": "Title",
+            "@id": "https://example.org/id/09837382",
+            "hasPart": [
+                {
+                    "@id": "#part09837382"
+                },
+                {
+                    "@id": "#part09837382"
+                }
+            ],
+            "url": "https://example.org/id/09837382",
+            "provider": {
+                "@id": "https://ror.org/04xw4m193"
+            },
+            "includedInDataCatalog": {
+                "@id": "#eidc-dataCatalogue"
+            }
+        },
+        {
+            "@id": "#eidc-dataCatalogue",
+            "@type": "DataCatalog",
+            "name": "Environmental Information Data Centre",
+            "alternateName": "EIDC",
+            "url": "https://catalogue.ceh.ac.uk/eidc/documents"
+        },
+        {
+            "@id": "https://ror.org/04xw4m193",
+            "@type": "Organization",
+            "name": "NERC EDS Environmental Information Data Centre",
+            "email": "info@eidc.ac.uk"
+        },
+        {
+            "@id": "#part09837382",
+            "name": "09837382",
+            "@type": "File",
+            "encodingFormat": "text/csv",
+            "lastModified": "2024-12-09T15:34",
+            "bytes": 12,
+            "contentUrl": "https://example.com/name1"
+        },
+        {
+            "@id": "#part09837382",
+            "name": "09837382",
+            "@type": "File",
+            "encodingFormat": "text/csv",
+            "lastModified": "2020-05-06T23:59",
+            "bytes": 9832,
+            "contentUrl": "https://example.com/name2"
+        }
+    ]
+}

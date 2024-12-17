@@ -369,17 +369,18 @@ class UploadControllerTest {
             "text/csv",
             "some data".getBytes(UTF_8)
         );
+        val fullPath = "some-directory/subdir/foo.txt";
 
         //when
         mvc.perform(
-            multipart("/upload/{datasetId}", datasetId)
+            multipart("/upload/{datasetId}?filename={fullPath}", datasetId, fullPath)
                 .file(multipartFile)
                 .header("remote-user", UPLOADER_USERNAME)
         )
             .andExpect(status().is2xxSuccessful());
 
         //then
-        verify(uploadService).upload(datasetId, UPLOADER_USERNAME, multipartFile);
+        verify(uploadService).upload(datasetId, UPLOADER_USERNAME, multipartFile, fullPath);
     }
 
     @Test

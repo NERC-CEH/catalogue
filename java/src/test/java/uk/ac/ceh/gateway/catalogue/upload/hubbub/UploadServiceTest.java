@@ -247,7 +247,7 @@ class UploadServiceTest {
         );
 
         //when
-        service.upload(datasetId, username, multipartFile);
+        service.upload(datasetId, username, multipartFile, path);
 
         //then
         mockServer.verify();
@@ -267,7 +267,7 @@ class UploadServiceTest {
 
         //when
         assertThrows(UploadException.class, () ->
-            service.upload(datasetId, username, multipartFile)
+            service.upload(datasetId, username, multipartFile, null)
         );
 
         //then
@@ -294,7 +294,7 @@ class UploadServiceTest {
         );
 
         //when
-        service.upload(datasetId, username, multipartFile);
+        service.upload(datasetId, username, multipartFile, filename);
 
         //then
         mockServer.verify();

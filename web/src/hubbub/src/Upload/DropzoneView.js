@@ -39,6 +39,14 @@ export default Backbone.View.extend({
 
         this.on('success', success)
 
+        this.on('sending', (file, _xhr, data) => {
+          if (file.fullPath) {
+            data.append('filename', file.fullPath)
+          } else {
+            data.append('filename', file.name)
+          }
+        })
+
         this.on('error', function (file, error, xhr) {
           let message
           const $file = $(file.previewElement)

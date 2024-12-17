@@ -358,17 +358,18 @@ class UploadControllerTest {
         //given
         givenUserHasPermissionToUpload();
         MockMultipartFile multipartFile = dataCsv();
+        val filename = multipartFile.getOriginalFilename();
 
         //when
         mvc.perform(
-            multipart("/upload/{id}", ID)
+            multipart("/upload/{id}?filename={filename}", ID, filename)
                 .file(multipartFile)
                 .header("remote-user", UPLOADER_USERNAME)
         )
             .andExpect(status().isNoContent());
 
         //then
-        verify(storageService).store(ID, multipartFile);
+        verify(storageService).store(ID, multipartFile, filename);
     }
 
     @Test
@@ -383,7 +384,7 @@ class UploadControllerTest {
 
         //when
         mvc.perform(
-            multipart("/upload/{id}", ID)
+            multipart("/upload/{id}?filename={filename}", ID, multipartFile.getOriginalFilename())
                 .file(multipartFile)
                 .header("remote-user", UNPRIVILEGED_USERNAME)
         )
@@ -401,13 +402,14 @@ class UploadControllerTest {
         //given
         givenUserHasPermissionToUpload();
         MockMultipartFile multipartFile = dataCsv();
-        doThrow(new FileExitsException(ID, multipartFile.getOriginalFilename()))
+        val filename = multipartFile.getOriginalFilename();
+        doThrow(new FileExistsException(ID, filename))
             .when(storageService)
-            .store(ID, multipartFile);
+            .store(ID, multipartFile, filename);
 
         //when
         mvc.perform(
-            multipart("http://example.com/upload/{id}", ID)
+            multipart("http://example.com/upload/{id}?filename={filename}", ID, filename)
                 .file(multipartFile)
                 .header("remote-user", UPLOADER_USERNAME)
         )
@@ -425,11 +427,11 @@ class UploadControllerTest {
         MockMultipartFile multipartFile = dataCsv();
         doThrow(new StorageServiceException(ID, "Could not upload data.csv"))
             .when(storageService)
-            .store(ID, multipartFile);
+            .store(ID, multipartFile, multipartFile.getOriginalFilename());
 
         //when
         mvc.perform(
-            multipart("http://example.com/upload/{id}", ID)
+            multipart("http://example.com/upload/{id}?filename={name}", ID, multipartFile.getOriginalFilename())
                 .file(multipartFile)
                 .header("remote-user", UPLOADER_USERNAME)
         )
@@ -446,17 +448,18 @@ class UploadControllerTest {
         //given
         givenUserHasPermissionToUpload();
         val fileWithSpaces = fileWithSpacesCsv();
+        val filename = fileWithSpaces.getOriginalFilename();
 
         //when
         mvc.perform(
-            multipart("http://example.com/upload/{id}", ID)
+            multipart("http://example.com/upload/{id}?filename={filename}", ID, filename)
                 .file(fileWithSpaces)
                 .header("remote-user", UPLOADER_USERNAME)
         )
             .andExpect(status().isNoContent());
 
         //then
-        verify(storageService).store(ID, fileWithSpaces);
+        verify(storageService).store(ID, fileWithSpaces, filename);
     }
 
     private final String filename = "test.csv";

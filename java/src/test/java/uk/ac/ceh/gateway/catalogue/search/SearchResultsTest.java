@@ -1,10 +1,13 @@
 package uk.ac.ceh.gateway.catalogue.search;
 
 import lombok.val;
+import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.util.NamedList;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
@@ -48,7 +51,7 @@ public class SearchResultsTest {
                 .build(),
             SearchQueryTest.DEFAULT_FACETS,
             null,
-            null
+            SolrQuery.ORDER.asc
         );
 
         QueryResponse response = mock(QueryResponse.class);
@@ -84,8 +87,8 @@ public class SearchResultsTest {
                 .logo("")
                 .build(),
             SearchQueryTest.DEFAULT_FACETS,
-            null,
-            null
+            "title",
+            SolrQuery.ORDER.asc
         );
 
         QueryResponse response = mock(QueryResponse.class);
@@ -105,6 +108,8 @@ public class SearchResultsTest {
         assertThat("Page is wrong in results", searchResults.getPage(), equalTo(SearchQueryTest.DEFAULT_PAGE));
         assertThat("Rows is wrong in results", searchResults.getRows(), equalTo(SearchQueryTest.DEFAULT_ROWS));
         assertThat("Number of search results is wrong in results", searchResults.getNumFound(), equalTo(resultFound));
+        assertThat("Sort field should be 'title'", searchResults.getSortField(), equalTo("title"));
+        assertThat("Sort order should be 'asc'", searchResults.getOrder(), equalTo("asc"));
     }
 
     @Test
@@ -130,7 +135,7 @@ public class SearchResultsTest {
                 .build(),
             SearchQueryTest.DEFAULT_FACETS,
             null,
-            null
+            SolrQuery.ORDER.asc
         );
 
         QueryResponse response = mock(QueryResponse.class);
@@ -166,7 +171,7 @@ public class SearchResultsTest {
                 .build(),
             SearchQueryTest.DEFAULT_FACETS,
             null,
-            null
+            SolrQuery.ORDER.asc
         );
 
         QueryResponse response = mock(QueryResponse.class);
@@ -202,7 +207,7 @@ public class SearchResultsTest {
                 .build(),
             SearchQueryTest.DEFAULT_FACETS,
             null,
-            null
+            SolrQuery.ORDER.asc
         );
 
         QueryResponse response = mock(QueryResponse.class);
@@ -240,7 +245,7 @@ public class SearchResultsTest {
                 .build(),
             SearchQueryTest.DEFAULT_FACETS,
             null,
-            null
+            SolrQuery.ORDER.asc
         );
 
         QueryResponse response = mock(QueryResponse.class);
@@ -279,7 +284,7 @@ public class SearchResultsTest {
                 .build(),
             SearchQueryTest.DEFAULT_FACETS,
             null,
-            null
+            SolrQuery.ORDER.asc
         );
 
         //When
@@ -314,7 +319,7 @@ public class SearchResultsTest {
                 .build(),
             SearchQueryTest.DEFAULT_FACETS,
             null,
-            null
+            SolrQuery.ORDER.asc
         );
 
         //When
@@ -350,7 +355,7 @@ public class SearchResultsTest {
                 .build(),
             SearchQueryTest.DEFAULT_FACETS,
             null,
-            null
+            SolrQuery.ORDER.asc
         );
 
 
@@ -387,7 +392,7 @@ public class SearchResultsTest {
                 .build(),
             SearchQueryTest.DEFAULT_FACETS,
             null,
-            null
+            SolrQuery.ORDER.asc
         );
 
 
@@ -423,7 +428,7 @@ public class SearchResultsTest {
                 .build(),
             SearchQueryTest.DEFAULT_FACETS,
             null,
-            null
+            SolrQuery.ORDER.asc
         );
 
 
@@ -460,7 +465,7 @@ public class SearchResultsTest {
                 .build(),
             SearchQueryTest.DEFAULT_FACETS,
             null,
-            null
+            SolrQuery.ORDER.asc
         );
 
 
@@ -530,7 +535,7 @@ public class SearchResultsTest {
                 .build(),
             SearchQueryTest.DEFAULT_FACETS,
             null,
-            null
+            SolrQuery.ORDER.asc
         );
 
         QueryResponse response = mock(QueryResponse.class);
@@ -545,5 +550,47 @@ public class SearchResultsTest {
 
         //Then
         assertThat(relatedSearches, not(nullValue()));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "publicationDate, asc",
+        "publicationDate, desc",
+        "title, asc",
+        "title, desc"
+    })
+    public void testSortFieldsAreSetCorrectly(String sortField, String sortOrder) {
+        // Given
+        SearchQuery query = new SearchQuery(
+            SearchQueryTest.ENDPOINT,
+            CatalogueUser.PUBLIC_USER,
+            SearchQuery.DEFAULT_SEARCH_TERM,
+            SearchQueryTest.DEFAULT_BBOX,
+            SpatialOperation.ISWITHIN,
+            SearchQueryTest.DEFAULT_PAGE,
+            SearchQueryTest.DEFAULT_ROWS,
+            SearchQueryTest.DEFAULT_FILTERS,
+            groupStore,
+            Catalogue.builder()
+                .id("eidc")
+                .title("Environmental Information Data Centre")
+                .url("https://eidc-catalogue.ceh.ac.uk")
+                .contactUrl("")
+                .logo("")
+                .build(),
+            SearchQueryTest.DEFAULT_FACETS,
+            sortField,
+            SolrQuery.ORDER.valueOf(sortOrder)
+        );
+
+        QueryResponse response = mock(QueryResponse.class);
+        List<Link> relatedSearches = Collections.emptyList();
+
+        // When
+        SearchResults searchResults = new SearchResults(response, query, relatedSearches);
+
+        // Then
+        assertThat("Sort field should match input", searchResults.getSortField(), equalTo(sortField));
+        assertThat("Sort order should match input", searchResults.getOrder(), equalTo(sortOrder));
     }
 }
