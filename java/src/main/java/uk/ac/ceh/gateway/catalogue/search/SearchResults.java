@@ -65,7 +65,7 @@ public class SearchResults {
         this.catalogue = query.getCatalogue();
         this.relatedSearches = relatedSearches;
         this.sortField = query.getSortField();
-        this.order = query.getSortOrder().name().toLowerCase();
+        this.order = query.getSortOrder().name();
         log.debug("Creating: {}", this);
     }
 

@@ -6,6 +6,8 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.util.NamedList;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import uk.ac.ceh.components.userstore.GroupStore;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
@@ -550,8 +552,14 @@ public class SearchResultsTest {
         assertThat(relatedSearches, not(nullValue()));
     }
 
-    @Test
-    public void testSortFieldsAreSetCorrectly() {
+    @ParameterizedTest
+    @CsvSource({
+        "publicationDate, asc",
+        "publicationDate, desc",
+        "title, asc",
+        "title, desc"
+    })
+    public void testSortFieldsAreSetCorrectly(String sortField, String sortOrder) {
         // Given
         SearchQuery query = new SearchQuery(
             SearchQueryTest.ENDPOINT,
@@ -571,8 +579,8 @@ public class SearchResultsTest {
                 .logo("")
                 .build(),
             SearchQueryTest.DEFAULT_FACETS,
-            "publicationDate",
-            SolrQuery.ORDER.desc
+            sortField,
+            SolrQuery.ORDER.valueOf(sortOrder)
         );
 
         QueryResponse response = mock(QueryResponse.class);
@@ -582,7 +590,7 @@ public class SearchResultsTest {
         SearchResults searchResults = new SearchResults(response, query, relatedSearches);
 
         // Then
-        assertThat("Sort field should be 'publicationDate'", searchResults.getSortField(), equalTo("publicationDate"));
-        assertThat("Sort order should be 'desc'", searchResults.getOrder(), equalTo("desc"));
+        assertThat("Sort field should match input", searchResults.getSortField(), equalTo(sortField));
+        assertThat("Sort order should match input", searchResults.getOrder(), equalTo(sortOrder));
     }
 }
