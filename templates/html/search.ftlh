@@ -6,7 +6,7 @@
     <div class="filters">
 
       <!-- Nav tabs -->
-      <div class="search-tabs">
+      <div class="filter-tabs">
         <ul class="nav nav-tabs" role="tablist">
           <li class="nav-item" role="presentation">
             <a class="nav-link active" href="#facet-tab" aria-controls="facet-tab" role="tab" data-bs-toggle="tab">Filters</a>

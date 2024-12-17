@@ -4,7 +4,7 @@
 <@skeleton.master title="Link Document" catalogue=catalogues.retrieve(metadata.catalogue)>
   <div id="metadata" class="metadata">
    <div class="container">
-    <div id="section-Top">
+    <div id="top">
       <@blocks.title title="Link Document" type="" />
     </div>
       <div class="row">

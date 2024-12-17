@@ -151,15 +151,12 @@
         </div>
         <@row "d-inline-flex gap-2">
             <@addFilesButton/>
-            <@finishUploadingButton/>
-        </@row>
-        <@row>
-          <div class="alert alert-warning d-flex align-items-center" role="alert">
-            <i class="fa-solid fa-fw fa-info-circle"></i>
             <div>
-              Maximum individual file size is ${maxFileSize}
+              <i class="fa-solid fa-fw fa-info-circle"></i> Maximum individual file size is ${maxFileSize}
             </div>
-          </div>
+        </@row>
+        <@row "p-3">
+            <@finishUploadingButton/>
         </@row>
     </div>
 </#macro>

@@ -90,77 +90,6 @@ footer {
 
 }
 
-.usage {
-    container-type: inline-size;
-    container-name: usage;
-
-    p {
-        text-align: center;
-        white-space: nowrap;
-        margin-block-start: .65em;
-    }
-
-    .metricsInfo {
-        font-size: 90%;
-        color: gray;
-        text-align: center;
-        span {
-            display: block;
-        }
-    }
-
-    div.metrics {
-        display: flex;
-
-        .metric {
-            display: flex;
-            flex: 1;
-            align-items: center;
-            border-inline-end: 1px solid lightgray;
-            padding: 0 1em;
-
-            &:last-of-type {
-                border: none;
-            }
-
-            white-space:nowrap;
-
-            span {
-                font-size: 1.3em;
-            }
-
-            a {
-                cursor: pointer;
-            }
-        }
-    }
-
-}
-
-@container usage (width >=340px) {
-    div.metrics {
-        .metric {
-            flex-direction: row;
-            justify-content: center !important;
-
-            span {
-                margin-inline-end: 5px;
-            }
-        }
-    }
-}
-
-@container usage (width < 340px) {
-    .metric {
-        flex-direction: column;
-
-        span {
-            font-size: 1.3em;
-        }
-    }
-}
-
-
 #document-upload-panel {
     a {
         &:hover {
@@ -187,7 +116,7 @@ footer {
         padding: 0.5em;
     }
 
-    .section {
+    section {
         &--schema {
             .table-schema {
                 @extend .table-sm !optional;

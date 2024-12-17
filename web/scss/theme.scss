@@ -47,7 +47,7 @@ a:hover {
 header {
     position: sticky;
     top: 0;
-    z-index: 2000;
+    z-index: 1025;
     background-color: var(--header-background-colour);
     border-block-end: solid var(--header-border-bottom-colour) var(--header-border-bottom-width);
 
@@ -164,11 +164,6 @@ footer {
             grid-column-end: 3;
         }
     }
-}
-
-.modal-open {
-    padding: 0 !important;
-    header {z-index:1050}
 }
 
 @media only screen and (max-width: 600px) {

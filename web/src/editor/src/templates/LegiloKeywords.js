@@ -9,16 +9,16 @@ export default _.template(`
       <div class="no-keywords-message text-center" style="display: none;"></div>
 
       <div class="table-responsive">
-        <table class="table table-bordered table-striped keywords-table" style="display: none;">
+        <table class="table table-bordered table-sm keywords-table" style="display: none;">
           <thead>
             <tr>
-              <th class="col-1">Select</th>
-              <th class="col-2">Term</th>
-              <th class="col-6">URI</th>
-              <th class="col-1">Confidence</th>
+              <th scope="col" class="col-1">Select</th>
+              <th scope="col">Term</th>
+              <th scope="col">URI</th>
+              <th scope="col">Confidence</th>
             </tr>
           </thead>
-          <tbody class="keywords-table-body">
+          <tbody class="keywords-table-body table-group-divider">
           </tbody>
         </table>
       </div>

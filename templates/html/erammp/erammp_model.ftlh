@@ -126,7 +126,7 @@
         </div>
         </#if>
 
-        <div id="section-metadata">
+        <div id="segment-metadata">
           <h2>Metadata</h2>
             <@simplerow "Record ID">${id}</@simplerow>
             <@simplerow "URL">${uri}</@simplerow>
