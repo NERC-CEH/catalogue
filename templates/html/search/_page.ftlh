@@ -5,22 +5,26 @@
   IMPORTANT: If you change the structure of this, please update the corresponding
   javascript template /web/src/scripts/templates/searchPage.js
 -->
-<div class="row justify-content-between results__header">
-  <div class="col-sm-4">
-    <span id="num-records">${numFound}</span> records found
-    <span class="mx-2">
-      <i id="searchShareIcon" class="fas fa-share-square" data-bs-toggle="tooltip" data-bs-placement="right" role="button" title="Copy search URL to clipboard"></i>
-    </span>
-  </div>
-  <div class="col-sm-4">
-    <select class="form-select sort-search" aria-label="Select Dropdown for Sorting Search results">
-      <option value="">Relevance</option>
-      <option value="publicationDate-desc">Published Date (Newest First)</option>
-      <option value="publicationDate-asc">Published Date (Oldest First)</option>
-      <option value="title-asc">Title (A-Z)</option>
-      <option value="title-desc">Title (Z-A)</option>
-    </select>
-  </div>
+<div class="d-flex p-1 mx-3 results__header align-items-center justify-content-between">
+  <#if numFound gt 0>
+    <div class="small">
+      <span id="num-records">${numFound}</span> record<#if numFound gt 1>s</#if> found
+      <i id="searchShareIcon" class="fa-solid fa-fw fa-share-square mx-1" data-bs-toggle="tooltip" data-bs-placement="right" role="button" title="Copy search URL to clipboard"></i>
+    </div>
+    <div class="small">
+      <label>Sort by
+        <select class="sort-search" aria-label="Select dropdown for sorting serch results">
+          <option value="">Relevance</option>
+          <option value="publicationDate-desc">Published date (newest first)</option>
+          <option value="publicationDate-asc">Published date (oldest first)</option>
+          <option value="title-asc">Title (A-Z)</option>
+          <option value="title-desc">Title (Z-A)</option>
+        </select>
+      </label>
+    </div>
+  <#else>
+    <div>No results found. Try <a href="./documents">clearing all search filters</a></div>
+  </#if>
 </div>
 
 <#list relatedSearches>

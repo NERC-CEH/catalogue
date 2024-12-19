@@ -27,7 +27,8 @@ main {
             .select2-selection {
                 opacity: 0.7;
 
-                &:focus-within, &:has(.select2-selection__choice__display) {
+                &:focus-within,
+                &:has(.select2-selection__choice__display) {
                     opacity: 1
                 }
             }
@@ -194,6 +195,12 @@ main {
 
     >* {
         padding: 1em;
+    }
+
+    .results__related_searches {
+        &:empty {
+            display: none;
+        }
     }
 
     .results__list {
