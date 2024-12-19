@@ -7,23 +7,29 @@ import _ from 'underscore'
  * corresponding freemarker template /templates/search/_page.ftl
  */
 export default _.template(`
-<div class="row justify-content-between results__header">
-    <div class="col-sm-4">
-      <span id="num-records"><%=numFound%></span> records found
-      <span class="mx-2">
-        <i id="searchShareIcon" class="fas fa-share-square" data-bs-toggle="tooltip" data-bs-placement="right" role="button" title="Copy search URL to clipboard"></i>
-      </span>
+
+<div class="d-flex p-1 mx-3 results__header align-items-center justify-content-between">
+   <% if(numFound > 0) { %>
+    <div class="small">
+      <span id="num-records"><%=numFound%></span> record <% if(numFound > 1) { %>s<% } %> found
+      <i id="searchShareIcon" class="fa-solid fa-fw fa-share-square mx-1" data-bs-toggle="tooltip" data-bs-placement="right" role="button" title="Copy search URL to clipboard"></i>
     </div>
-    <div class="col-sm-4">
-        <select class="form-select sort-search" aria-label="Select Dropdown for Sorting Search results">
+    <div class="small">
+      <label>Sort by
+        <select class="sort-search" aria-label="Select dropdown for sorting serch results">
             <option value="" <%= !sortField ? 'selected' : '' %>>Relevance</option>
-            <option value="publicationDate-desc" <%= sortField === 'publicationDate' && order === 'desc' ? 'selected' : '' %>>Published Date (Newest First)</option>
-            <option value="publicationDate-asc" <%= sortField === 'publicationDate' && order === 'asc' ? 'selected' : '' %>>Published Date (Oldest First)</option>
+            <option value="publicationDate-desc" <%= sortField === 'publicationDate' && order === 'desc' ? 'selected' : '' %>>Published date (newest first)</option>
+            <option value="publicationDate-asc" <%= sortField === 'publicationDate' && order === 'asc' ? 'selected' : '' %>>Published date (oldest first)</option>
             <option value="title-asc" <%= sortField === 'title' && order === 'asc' ? 'selected' : '' %>>Title (A-Z)</option>
             <option value="title-desc" <%= sortField === 'title' && order === 'desc' ? 'selected' : '' %>>Title (Z-A)</option>
         </select>
+      </label>
     </div>
+  <% } else { %>
+    <div>No results found. Try <a href="./documents">clearing all search filters</a></div>
+  <% } %>
 </div>
+
 
 <div class="results__related_searches"></div>
 
