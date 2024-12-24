@@ -92,3 +92,6 @@ deploy_production:
     name: production
     url:  https://catalogue.ceh.ac.uk/eidc/documents
   when: manual
+
+include:
+- template: Jobs/Container-Scanning.gitlab-ci.yml
