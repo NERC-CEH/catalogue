@@ -1,10 +1,12 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
@@ -34,6 +36,10 @@ import static org.hamcrest.core.IsEqual.equalTo;
 )
 
 public class DownloadControllerTest {
+
+    @NotNull @Value("${download.url.regexOrder}") private String orderUrlRegex;
+    @NotNull @Value("${download.url.regexPackage}") private String packageUrlRegex;
+    @NotNull @Value("${download.url.regexDatastore}") private String datastoreUrlRegex;
 
     @MockBean
     private MetricsService metricsService;
@@ -88,7 +94,7 @@ public class DownloadControllerTest {
             "https://order-eidc.ceh.ac.uk/resources/KBAHWTRW/order"
         );
         List<String> users = List.of("foo", "bar");
-        DownloadController controller = new DownloadController(metricsService, users);
+        DownloadController controller = new DownloadController(metricsService, users, orderUrlRegex, packageUrlRegex, datastoreUrlRegex);
 
         //when
         List<String> actual = validUrls.stream().filter(url -> controller.valid(url)).collect(Collectors.toList());
@@ -106,7 +112,7 @@ public class DownloadControllerTest {
             "https://invalid.com"
         );
         List<String> users = List.of("foo", "bar");
-        DownloadController controller = new DownloadController(metricsService, users);
+        DownloadController controller = new DownloadController(metricsService, users, orderUrlRegex, packageUrlRegex, datastoreUrlRegex);
 
         //when
         List<String> actual = validUrls.stream().filter(url -> controller.valid(url)).collect(Collectors.toList());
