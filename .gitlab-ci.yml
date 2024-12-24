@@ -1,3 +1,6 @@
+include:
+- template: Jobs/Container-Scanning.gitlab-ci.yml
+
 variables:
   DOCKER_DAEMON_ARGS: -g /cache/docker
   DOCKER_DRIVER: overlay2
@@ -7,6 +10,7 @@ variables:
 
 stages:
   - test
+  - scan
   - build
   - deploy
 
@@ -45,6 +49,11 @@ test_application:
       alias: docker
   script:
     - docker build --target prod -t $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA .
+
+container_scanning:
+  stage: scan
+  variables:
+    CS_IMAGE: $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA
 
 build_application:
   stage: build
