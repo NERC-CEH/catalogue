@@ -1,3 +1,6 @@
+include:
+- template: Jobs/Container-Scanning.gitlab-ci.yml
+
 variables:
   DOCKER_DAEMON_ARGS: -g /cache/docker
   DOCKER_DRIVER: overlay2
@@ -7,6 +10,7 @@ variables:
 
 stages:
   - test
+  - scan
   - build
   - deploy
 
@@ -40,11 +44,36 @@ test_web:
 test_application:
   stage: test
   image: docker:20.10.5
+  before_script:
+    - set -euo pipefail
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   services:
     - name: docker:20.10.5-dind
       alias: docker
   script:
     - docker build --target prod -t $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA .
+    - docker push $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA
+
+container_scanning:
+  stage: scan
+  allow_failure: false
+  variables:
+    CS_IMAGE: $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA
+    CS_REGISTRY_USER: gitlab-ci-token
+    CS_REGISTRY_PASSWORD: $CI_JOB_TOKEN
+    CS_SEVERITY_THRESHOLD: 'high'
+  before_script:
+  - sudo apt-get update -y && sudo apt-get install -y jq
+  script:
+    - gtcs scan
+    - SEVERITY_COUNT=$(jq '.vulnerabilities | map(select(.severity=="High" or .severity=="Critical")) | length' gl-container-scanning-report.json )
+    - > 
+      if [[ $SEVERITY_COUNT -gt 0 ]]
+      then
+        echo "High/critical severity found"; exit 1
+      else
+        echo "No vulnerabilities found"
+      fi
 
 build_application:
   stage: build
