@@ -52,6 +52,7 @@ test_application:
 
 container_scanning:
   stage: scan
+  needs: ["test"]
   variables:
     CS_IMAGE: $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA
 
