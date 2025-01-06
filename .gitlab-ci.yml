@@ -44,6 +44,9 @@ test_web:
 test_application:
   stage: test
   image: docker:20.10.5
+  before_script:
+    - set -euo pipefail
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   services:
     - name: docker:20.10.5-dind
       alias: docker
