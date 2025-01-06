@@ -67,7 +67,7 @@ container_scanning:
   script:
     - gtcs scan
     - SEVERITY_COUNT=$(jq '.vulnerabilities | map(select(.severity=="High" or .severity=="Critical")) | length' gl-container-scanning-report.json )
-    - > 
+    - >
       if [[ $SEVERITY_COUNT -gt 0 ]]
       then
         echo "High/critical severity found"; exit 1
@@ -85,9 +85,8 @@ build_application:
     - set -euo pipefail
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   script:
-    - docker build --target prod -t $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA .
+    - docker build --target prod -t $CI_REGISTRY_IMAGE/app:$CI_COMMIT_REF_NAME .
     - docker build --target datalabs -t $CI_REGISTRY_IMAGE/app:$CI_COMMIT_REF_NAME-datalabs .
-    - docker tag $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/app:$CI_COMMIT_REF_NAME
     - docker push $CI_REGISTRY_IMAGE/app --all-tags
   only:
     - tags
@@ -95,9 +94,8 @@ build_application:
 build_solr:
   extends: build_application
   script:
-    - docker build -t $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_SHA solr
-    - docker tag $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_REF_NAME
-    - docker tag $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_REF_NAME-datalabs
+    - docker build -t $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_REF_NAME solr
+    - docker tag $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_REF_NAME $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_REF_NAME-datalabs
     - docker push $CI_REGISTRY_IMAGE/solr --all-tags
 
 deploy_production:
