@@ -27,7 +27,27 @@
     rel_hasMember = jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#memberOf")
     rel_supersedes = jena.supersedes(uri)
     rel_source = jena.relationships(uri, "http://purl.org/dc/terms/source")
+
+    MD_checks = metadataQuality.check(id)
+    problems = MD_checks.getProblems()
+    errors = MD_checks.getErrors()
+    infos =  MD_checks.getInfo()
+    warnings = MD_checks.getWarnings()
+    totalIssues = errors + infos +  warnings
+    metadataClass="warning"
 >
+
+<#if totalIssues?? && totalIssues gte 1>
+  <#if errors gte 1 >
+      <#assign metadataClass="danger">
+  <#elseif warnings gte 1 >
+      <#assign metadataClass="warning" >
+  <#elseif infos gte 1 >
+      <#assign metadataClass="primary">
+  </#if>
+</#if>
+
+
 <#if useConstraints?has_content>
   <#assign
     licences = func.filter(useConstraints, "code", "license")
@@ -64,18 +84,16 @@
           <#if resourceStatus = "Deleted">
             <#include "dataResource/_typeTombstone.ftlh">
           <#else>
+              <#if resourceType.value == 'aggregate' || resourceType.value == 'collection'>
+                <#include "dataResource/_typeAggregate.ftlh">
+              <#else>
+                <#include "dataResource/_typeDataset.ftlh">
+              </#if>
 
-            <#if resourceType.value == 'aggregate' || resourceType.value == 'collection'>
-              <#include "dataResource/_typeAggregate.ftlh">
-            <#else>
-              <#include "dataResource/_typeDataset.ftlh">
-            </#if>
-
-            <#if permission.userCanEditRestrictedFields(metadata.catalogue) && metadata.catalogue == "eidc">
-              <#include "dataResource/_metadataqualityReport.ftlh">
-            </#if>
+              <#if permission.userCanEditRestrictedFields(metadata.catalogue) && metadata.catalogue == "eidc">
+                <#include "dataResource/_metadataqualityReport.ftlh">
+              </#if>
           </#if>
-
 
       <#else>
         <div class="alert alert-danger missingResourceType" id="metadata">

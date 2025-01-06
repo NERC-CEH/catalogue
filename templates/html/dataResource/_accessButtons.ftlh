@@ -2,7 +2,7 @@
   <#assign downloadOrder=downloadOrderDetails.from(onlineResources) >
 </#if>
 
-<div class="p-3 accessButtons">
+<div class="py-3 d-flex flex-row align-items-center flex-wrap accessButtons d-print-none">
   <#if (resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'application') && (resourceStatus == "Available" || resourceStatus == "Controlled") >
     <a class="btn btn-download" data-bs-toggle="offcanvas" href="#access" role="button" aria-controls="access"><i class="fa-solid fa-download fa-fw"></i> Download data</a>
   </#if>
@@ -88,7 +88,7 @@
           <#assign mapservices = func.filterRegex(onlineResources, "url", "https://catalogue.ceh.ac.uk/maps/")>
         </#if>
 
-        <#if mapservices??>
+        <#if mapservices?? && mapservices?has_content>
         <div class="mb-1">Add to your GIS application:</div>
         <div class="ms-3">
           <#list mapservices as wms>
@@ -143,7 +143,7 @@
       </#if>
     </a>
 
-    <#if downloadType=="direct">
+    <#if downloadType?? && downloadType=="direct">
       <div class="py-3">
         <hr>
         <h5 class="my-3">Bulk download options</h5>
