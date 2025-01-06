@@ -58,6 +58,8 @@ test_application:
 container_scanning:
   stage: scan
   allow_failure: false
+  before_script:
+    - sudo apt-get update -y && sudo apt-get install -y jq
   script:
     - gtcs scan --input image/app.tar
     - SEVERITY_COUNT=$(jq '.vulnerabilities | map(select(.severity=="High" or .severity=="Critical")) | length' gl-container-scanning-report.json )
