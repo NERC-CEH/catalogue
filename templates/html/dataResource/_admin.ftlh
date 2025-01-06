@@ -109,9 +109,8 @@
       </#if>
 
       <#if isEidcCatalogue>
-        <li class="dropdown-divider"></li>
-        <@menuLink "/upload/${id}">Manage data</@menuLink>
         <#if hasOnlineServiceAgreement!false>
+         <li class="dropdown-divider"></li>
          <li class="service-agreement" data-id="${id}" id="service-agreement-gemini"><a class="dropdown-item" href="/service-agreement/${id}">Service agreement</a></li>
         </#if>
       </#if>
