@@ -54,6 +54,9 @@ test_application:
 container_scanning:
   stage: scan
   allow_failure: false
+  before_script:
+    - set -euo pipefail
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   variables:
     CS_IMAGE: $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA
   script:
