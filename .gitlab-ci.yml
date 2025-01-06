@@ -10,8 +10,8 @@ variables:
 
 stages:
   - test
-  - build
   - scan
+  - build
   - deploy
 
 default:
@@ -50,6 +50,23 @@ test_application:
   script:
     - docker build --target prod -t $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA .
 
+container_scanning:
+  stage: scan
+  variables:
+    CS_IMAGE: $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA
+  allow_failure: false
+  before_script: docker build --target prod -t $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA .
+  script:
+    - gtcs scan
+    - SEVERITY_COUNT=$(jq '.vulnerabilities | map(select(.severity=="High" or .severity=="Critical")) | length' gl-container-scanning-report.json )
+    - > 
+      if [[ $SEVERITY_COUNT -gt 0 ]]
+      then
+        echo "High/critical severity found"; exit 1
+      else
+        echo "No vulnerabilities found"
+      fi
+
 build_application:
   stage: build
   image: docker:20.10.5
@@ -74,24 +91,6 @@ build_solr:
     - docker tag $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_REF_NAME
     - docker tag $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/solr:$CI_COMMIT_REF_NAME-datalabs
     - docker push $CI_REGISTRY_IMAGE/solr --all-tags
-
-container_scanning:
-  stage: scan
-  rules:
-    - if: $CI_COMMIT_TAG
-  variables:
-    CS_IMAGE: $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA
-  allow_failure: false
-  script:
-    - gtcs scan
-    - SEVERITY_COUNT=$(jq '.vulnerabilities | map(select(.severity=="High" or .severity=="Critical")) | length' gl-container-scanning-report.json )
-    - > 
-      if [[ $SEVERITY_COUNT -gt 0 ]]
-      then
-        echo "High/critical severity found"; exit 1
-      else
-        echo "No vulnerabilities found"
-      fi
 
 deploy_production:
   image: ruby:2
