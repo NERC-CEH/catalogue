@@ -32,14 +32,14 @@ import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.ef.*;
 import uk.ac.ceh.gateway.catalogue.erammp.ErammpDatacube;
 import uk.ac.ceh.gateway.catalogue.erammp.ErammpModel;
-import uk.ac.ceh.gateway.catalogue.geometry.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
+import uk.ac.ceh.gateway.catalogue.geometry.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.imp.CaseStudy;
 import uk.ac.ceh.gateway.catalogue.imp.Model;
 import uk.ac.ceh.gateway.catalogue.imp.ModelApplication;
 import uk.ac.ceh.gateway.catalogue.infrastructure.InfrastructureRecord;
-import uk.ac.ceh.gateway.catalogue.model.MethodRecord;
+import uk.ac.ceh.gateway.catalogue.metrics.MetricsService;
 import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
@@ -53,14 +53,15 @@ import uk.ac.ceh.gateway.catalogue.osdp.Publication;
 import uk.ac.ceh.gateway.catalogue.osdp.Sample;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
+import uk.ac.ceh.gateway.catalogue.quality.MetadataQualityService;
+import uk.ac.ceh.gateway.catalogue.quality.Results;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.GitRepoServiceAgreementService;
-import uk.ac.ceh.gateway.catalogue.metrics.MetricsService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
-import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.DownloadOrderDetailsService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.FileDetailsService;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -110,8 +111,13 @@ class DocumentControllerTest {
     @MockBean private ProfileService profileService;
     @MockBean private MetricsService metricsService;
     @MockBean private FileDetailsService fileDetailsService;
+    @MockBean private MetadataQualityService metadataQualityService;
 
-    private DownloadOrderDetailsService downloadOrderDetailsService = new DownloadOrderDetailsService();
+    /*
+     Cannot make this a MockBean because DownloadOrder cannot be instantiated independently
+     of the DownloadOrderDetailsService. It is needed in the given() method of the mock.
+    */
+    private final DownloadOrderDetailsService downloadOrderDetailsService = new DownloadOrderDetailsService();
 
     @Autowired private MockMvc mvc;
     @Autowired private Configuration configuration;
@@ -120,7 +126,7 @@ class DocumentControllerTest {
     private final String linkedDocumentId = "0a6c7c4c-0515-40a8-b84e-7ffe622b2579";
     private final String id = "fe26bd48-0f81-4a37-8a28-58427b7e20bd";
     private final String catalogueKey = "eidc";
-    private List<String> metricsExcludedUsers = Arrays.asList("bob","alice","i_am_excluded");
+    private final List<String> metricsExcludedUsers = Arrays.asList("bob","alice","i_am_excluded");
     public static final String HTML = "html";
     public static final String JSON = "json";
 
@@ -143,6 +149,7 @@ class DocumentControllerTest {
         configuration.setSharedVariable("profile", profileService);
         configuration.setSharedVariable("downloadOrderDetails", downloadOrderDetailsService);
         configuration.setSharedVariable("fileDetails", fileDetailsService);
+        configuration.setSharedVariable("metadataQuality", metadataQualityService);
     }
 
     private void givenProfileNotActive() {
@@ -181,6 +188,11 @@ class DocumentControllerTest {
             .willReturn("Dataset");
         given(codeLookupService.lookup("publication.state", "public"))
             .willReturn("Public");
+    }
+
+    private void givenMetadataQuality() {
+        given(metadataQualityService.check(id))
+            .willReturn(new Results(Collections.emptyList(), id));
     }
 
     @SneakyThrows
@@ -350,6 +362,7 @@ class DocumentControllerTest {
         givenProfileNotActive();
         givenCodeLookup();
         givenRoCrateServiceFrom();
+        givenMetadataQuality();
 
         //when
         val result = mvc.perform(
@@ -385,6 +398,7 @@ class DocumentControllerTest {
         givenProfileNotActive();
         givenCodeLookup();
         givenRoCrateServiceFrom();
+        givenMetadataQuality();
 
         //when
         val result = mvc.perform(

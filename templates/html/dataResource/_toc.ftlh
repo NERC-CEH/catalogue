@@ -1,7 +1,6 @@
 <div class="col-xl-3 col-lg-4 col-md-5 d-none d-md-block py-3 tableOfContents" id="tableOfContents">
-    <div class="list-group list-group-flush  sticky-top">
+    <div class="list-group list-group-flush sticky-top">
       <a class="list-group-item list-group-item-action text-body-tertiary" href="#top"><i class="fa-solid fa-angle-up fa-xs"></i> Top</a>
-      <#if permission.userCanEditRestrictedFields(metadata.catalogue) && metadata.catalogue == "eidc"><a class="list-group-item list-group-admin list-group-item-action" href="#segment-metadataQuality"><#include "_metadataqualityAlert.ftlh"></a></#if>
       <#if description?? && description?has_content><a class="list-group-item list-group-item-action" href="#segment-description">Description</a></#if>
       <#if distributionFormats?? && distributionFormats?has_content><a class="list-group-item list-group-item-action" href="#segment-formats">Format</a></#if>
       <#if boundingBoxes?has_content || spatialRepresentationTypes?? || spatialReferenceSystems??><a class="list-group-item list-group-item-action" href="#segment-spatial">Spatial information</a></#if>
@@ -16,8 +15,11 @@
       <a class="list-group-item list-group-item-action" href="#segment-additional">Additional metadata</a>
       <#if funding?has_content><a class="list-group-item list-group-item-action" href="#segment-funding">Funding</a></#if>
       <a class="list-group-item list-group-item-action" data-bs-toggle="offcanvas" href="#access" role="button" aria-controls="access">Download/Access</a>
+      <#if permission.userCanEdit(id) && totalIssues?? && totalIssues gte 1><a class="list-group-item list-group-item-action link-${metadataClass}" href="#segment-metadataQuality"><span class="badge rounded-pill bg-${metadataClass}" title="Metadata issues">${totalIssues}</span> Metadata issues</a></#if>
     </div>
 </div>
+
+
 
 
 

@@ -2,7 +2,6 @@ import _ from 'underscore'
 import $ from 'jquery'
 import Backbone from 'backbone'
 import template from '../templates/searchPage'
-import { Tooltip } from 'bootstrap'
 
 export default Backbone.View.extend({
 
@@ -104,19 +103,12 @@ export default Backbone.View.extend({
   },
 
   initSearchShareIcon (el) {
-    const tooltip = new Tooltip(el)
     el.click(() => {
       const url = window.location.href
         .split('&')
         .filter(p => !p.includes('page=') && !p.includes('rows='))
         .join('&')
-      navigator.clipboard.writeText(url)
-
-      const config = tooltip._config
-      const orgText = config.title
-      config.title = 'Search URL Copied'
-      tooltip.show()
-      config.title = orgText
+      window.location.href = 'mailto:?body=' + url
     })
   }
 })

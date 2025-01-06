@@ -39,7 +39,7 @@
             </h1>
           </#if>
           <#if permission.userCanEditRestrictedFields(metadata.catalogue)>
-            <#include "../document/_metadataqualityAlert.ftlh">
+            <#include "../dataResource/_metadataqualityAlert.ftlh">
           </#if>
 
           <#if description?? && description?has_content>
@@ -118,7 +118,7 @@
       <#if permission.userCanEditRestrictedFields(metadata.catalogue)>
         <section class="section">
           <div class="container">
-            <#include "../document/_metadataqualityReport.ftlh">
+            <#include "../dataResource/_metadataqualityReport.ftlh">
           </div>
         </section>
       </#if>

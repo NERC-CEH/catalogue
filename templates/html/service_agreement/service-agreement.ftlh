@@ -392,7 +392,7 @@
 
 <#macro displayKeywords>
     <div>
-      <#include "../document/_tags.ftlh">
+      <#include "../dataResource/_tags.ftlh">
     </div>
 </#macro>
 

@@ -166,11 +166,8 @@ body {
     }
 
     .accessButtons {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
+
         gap: .5em 1em;
-        justify-content: space-evenly;
         --btn_width: 170px;
 
         >.btn {

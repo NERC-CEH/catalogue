@@ -83,6 +83,16 @@ main {
 //Filters formatting
 main {
     .search {
+
+        .sort-search {
+            option {
+                &:checked
+                {
+                    display: none;
+                }
+            }
+        }
+
         .facet-filter {
             overflow-y: auto;
             overflow-x: hidden;
@@ -208,13 +218,14 @@ main {
         gap: 1em;
 
         .result {
-            padding: 1.3em;
-            background-color: rgba(0, 0, 0, 0.03);
+            padding: 0.85em;
+            border:1px solid #ccc;
+            border-radius: 5px;
             color: var(--text-default-color);
 
             &:hover {
                 background-color: rgba(0, 0, 0, 0.06);
-                outline: 2px solid $link-hover-color;
+                outline: 2px solid var(--link-hover-colour);
                 text-decoration: none;
             }
 

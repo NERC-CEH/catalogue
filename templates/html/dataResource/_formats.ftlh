@@ -5,7 +5,7 @@
 		</h2>
 		<p>
 		<#list distributionFormats as format>
-			${format.name}<#sep><br></#sep>
+			${format.name}<#sep>, </#sep>
 		</#list>
 		</p>
 	</div>
