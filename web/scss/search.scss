@@ -215,7 +215,7 @@ main {
 
     .results__list {
         display: grid;
-        gap: 1em;
+        gap: 1.2em;
 
         .result {
             padding: 0.85em;
@@ -232,16 +232,8 @@ main {
             &__tags {
                 display: flex;
                 flex-direction: row;
-                border-block-end: 1px solid lightgray;
-                padding-block-end: 5px;
-                margin-block-end: 5px;
-
                 div {
                     margin-inline-end: 1em;
-                }
-
-                .recordType {
-                    color: #337085;
                 }
 
                 .resourceStatus,

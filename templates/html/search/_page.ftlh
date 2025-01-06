@@ -52,7 +52,7 @@
         </#if>
       </div>
 
-      <div class="recordType">
+      <div class="recordType small text-body-tertiary">
         <#if result.documentType?? && result.documentType == "LINK_DOCUMENT" >
           <i class="fa-solid fa-link"></i> Linked
         </#if>
