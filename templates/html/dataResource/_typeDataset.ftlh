@@ -10,7 +10,7 @@
 
 <#macro displayDataResource toc=false>
 
-  <div class="row" data-bs-spy="scroll" data-bs-target="#tableOfContents" data-bs-smooth-scroll="true">
+  <div class="row" data-bs-spy="scroll" data-bs-target="#tableOfContents"  data-bs-root-margin="0px 0px -70% 0px" data-bs-smooth-scroll="true">
 
     <#assign mainColClasses="">
 
@@ -41,10 +41,6 @@
 
       <#if !isLinkedDoc>
         <#include "_uploadData.ftlh">
-
-        <#--  <#if metadata.catalogue == "eidc">
-          <#include "_metrics.ftlh">
-        </#if>  -->
 
         <#if resourceType.value == 'nercSignpost' || resourceType.value == 'signpost'>
           <#include "_distribution_signpost.ftlh">
