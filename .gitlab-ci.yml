@@ -61,6 +61,9 @@ container_scanning:
     CS_IMAGE: $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA
     CS_REGISTRY_USER: gitlab-ci-token
     CS_REGISTRY_PASSWORD: $CI_JOB_TOKEN
+    CS_SEVERITY_THRESHOLD: 'high'
+  before_script:
+  - sudo apt-get update -y && sudo apt-get install -y jq
   script:
     - gtcs scan
     - SEVERITY_COUNT=$(jq '.vulnerabilities | map(select(.severity=="High" or .severity=="Critical")) | length' gl-container-scanning-report.json )
