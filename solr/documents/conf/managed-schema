@@ -69,6 +69,12 @@
       distanceUnits="degrees"
       multiValued="true"
     />
+    <fieldType name="text_sort_ignore_case" class="solr.TextField" sortMissingLast="true" omitNorms="true">
+    <analyzer>
+        <tokenizer class="solr.KeywordTokenizerFactory"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+    </fieldType>
 
     <field name="publicationDate" type="pdate"/>
     <field name="_text_" type="text_general" stored="false"/>
@@ -151,6 +157,7 @@
     <field name="dataLevel" type="keywords" multiValued="false"/>
     <field name="view" type="keywords"/>
 
+
     <field name="infrastructureCategory" type="keywords" multiValued="false"/>
     <field name="scienceArea" type="keywords" multiValued="false"/>
     <field name="infrastructureScale" type="keywords" multiValued="false"/>
@@ -163,7 +170,7 @@
         copied to be sortable.  Make sure to keep this in sync with
         SearchQuery's RAW_SORT_FIELDS.
     -->
-    <field name="title_raw" type="string"/>
+    <field name="title_raw" type="text_sort_ignore_case" indexed="true" stored="false" multiValued="false"/>
     <copyField source="title" dest="title_raw"/>
     <field name="description_raw" type="string"/>
     <copyField source="description" dest="description_raw"/>
