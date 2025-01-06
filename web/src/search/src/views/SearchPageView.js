@@ -2,7 +2,6 @@ import _ from 'underscore'
 import $ from 'jquery'
 import Backbone from 'backbone'
 import template from '../templates/searchPage'
-import { Tooltip } from 'bootstrap'
 
 export default Backbone.View.extend({
 
@@ -110,7 +109,6 @@ export default Backbone.View.extend({
         .filter(p => !p.includes('page=') && !p.includes('rows='))
         .join('&')
       window.location.href = 'mailto:?body=' + url
-
     })
   }
 })
