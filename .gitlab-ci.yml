@@ -49,19 +49,15 @@ test_application:
       alias: docker
   script:
     - docker build --target prod -t $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA .
-    - mkdir image && docker save $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA > image/app.tar
-  artifacts:
-    paths:
-      - image
-    expire_in: 1 day
+    - docker push $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA
 
 container_scanning:
   stage: scan
   allow_failure: false
-  before_script:
-    - sudo apt-get update -y && sudo apt-get install -y jq
+  variables:
+    CS_IMAGE: $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA
   script:
-    - gtcs scan --input image/app.tar
+    - gtcs scan
     - SEVERITY_COUNT=$(jq '.vulnerabilities | map(select(.severity=="High" or .severity=="Critical")) | length' gl-container-scanning-report.json )
     - > 
       if [[ $SEVERITY_COUNT -gt 0 ]]
