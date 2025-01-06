@@ -82,7 +82,8 @@
 
         <#if totalIssues gte 1>
           <@menuLink "#segment-metadataQuality">
-            <span class="badge rounded-pill bg-${metadataClass}">${totalIssues}</span> metadata issue<#if totalIssues gt 1>s</#if>
+            <span class="badge rounded-pill bg-${metadataClass}">${totalIssues}</span>
+            <span class="text-${metadataClass}">metadata issue<#if totalIssues gt 1>s</#if></span>
           </@menuLink>
           <li class="dropdown-divider"></li>
          </#if>

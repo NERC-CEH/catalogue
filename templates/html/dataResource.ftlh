@@ -74,7 +74,7 @@
 </#macro>
 
 <@skeleton.master title=title catalogue=catalogue rdf="${uri}?format=ttl" schemaorg="${uri}?format=schema.org" canonical="${uri}" can_edit_restricted=permission.userCanEditRestrictedFields(metadata.catalogue) footer=true>
-  <div id="metadata" class="mt-3 metadata ${metadata.state?lower_case} ${linkedClass}">
+  <div id="metadata" class="metadata ${metadata.state?lower_case} ${linkedClass}">
     <div class="container">
       <#if resourceType?has_content && resourceType.value !=''>
         <#assign recordType = func.recordTypeOrResourceType()>

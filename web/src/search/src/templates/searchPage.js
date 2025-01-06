@@ -51,7 +51,7 @@ export default _.template(`
                 <div class="opstatus"><%=result.operationalStatus%></div>
             <% } %>
 
-            <div class="recordType">
+            <div class="recordType small text-body-tertiary">
             <% if (result.documentType != '' && result.documentType == "LINK_DOCUMENT") {  %>
             <i class="fa-solid fa-link"></i> Linked
             <% } %>
