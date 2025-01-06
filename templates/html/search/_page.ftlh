@@ -9,7 +9,7 @@
   <#if numFound gt 0>
     <div class="small">
       <span id="num-records">${numFound}</span> record<#if numFound gt 1>s</#if> found
-      <i id="searchShareIcon" class="fa-solid fa-fw fa-share-square mx-1" data-bs-toggle="tooltip" data-bs-placement="right" role="button"  title="Email  search results"></i>
+      <i id="searchShareIcon" class="fa-solid fa-fw fa-share-square mx-1" data-bs-toggle="tooltip" data-bs-placement="right" role="button"  title="Email search results"></i>
     </div>
     <div class="small">
       <label>Sort by

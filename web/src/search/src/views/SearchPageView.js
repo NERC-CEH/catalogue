@@ -108,7 +108,7 @@ export default Backbone.View.extend({
         .split('&')
         .filter(p => !p.includes('page=') && !p.includes('rows='))
         .join('&')
-      window.location.href = 'mailto:?body=' + url
+      window.location.href = 'mailto:?body=' + encodeURIComponent(url)
     })
   }
 })
