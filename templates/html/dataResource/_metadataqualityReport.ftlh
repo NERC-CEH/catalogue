@@ -7,9 +7,9 @@
 
       <#if errors?? && errors?has_content>
         <div class="metadataQuality_error">
-          <div class="row qualityHeader">
-            <div class="col-auto me-auto"> <i class="fa-solid fa-triangle-exclamation" > </i> ERRORS</div>
-            <div class="col-auto"><small>These should always be fixed</small></div>
+          <div class="qualityHeader d-flex justify-content-between">
+            <div> <i class="fa-solid fa-triangle-exclamation" > </i> ERRORS</div>
+            <div><small>These should always be fixed</small></div>
           </div>
           <ul class="list-group list-group-flush">
               <#list errors as error>
@@ -20,9 +20,9 @@
       </#if>
       <#if warnings?? && warnings?has_content>
         <div class="metadataQuality_warning ">
-          <div class="row qualityHeader">
-            <div class="col-auto me-auto"><i class="fa-solid fa-exclamation" > </i> WARNINGS</div>
-            <div class="col-auto"><small>These are usually problems but in some circumstances they <i><b><u>MAY</u></b></i> be acceptable - please check carefully</small></div>
+          <div class="qualityHeader d-flex justify-content-between">
+            <div><i class="fa-solid fa-exclamation" > </i> WARNINGS</div>
+            <div><small>These are usually problems but in some circumstances they <i><b><u>MAY</u></b></i> be acceptable - please check carefully</small></div>
           </div>
           <ul class="list-group list-group-flush">
               <#list warnings as warning>
@@ -33,9 +33,9 @@
       </#if>
       <#if infos?? && infos?has_content>
         <div class="metadataQuality_info">
-          <div class="row qualityHeader">
-            <div class="col-auto me-auto"><i class="fa-solid fa-circle-info"> </i> OTHER ISSUES</div>
-            <div class="col-auto"><small>For absolute best practice, these issues should be addressed</small></div>
+          <div class="qualityHeader d-flex justify-content-between">
+            <div><i class="fa-solid fa-circle-info"> </i> OTHER ISSUES</div>
+            <div><small>For absolute best practice, these issues should be addressed</small></div>
           </div>
           <ul class="list-group list-group-flush">
               <#list infos as info>
