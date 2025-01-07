@@ -46,44 +46,42 @@ cd "$TOP" || die
 
 if [[ $build_web = true ]]; then
     echo 'Building web assets...'
-    (
-        cd web || die
-        npm run build-dev || die
-        npm run build-css || die
-    ) || die
+    (cd web && npm run build-dev && npm run build-css) || die
     echo 'Built web assets.'
 fi
 
 echo 'Setting up static directory...'
-mkdir -p static
-[[ -d static/img ]] || ln -sr web/img static/ || die
-[[ -d static/css ]] || ln -sr web/css static/ || die
-[[ -d static/scripts ]] || ln -sr web/dist static/scripts || die
-[[ -d static/css/images ]] || ln -sr web/node_modules/leaflet-draw/dist/images static/css/ || die
-[[ -d static/webfonts ]] || ln -sr web/node_modules/@fortawesome/fontawesome-free/webfonts static/ || die
+# shellcheck disable=SC2015 # && and || interaction is intended in this case
+mkdir -p static &&
+{ [[ -d static/img ]] || ln -sr web/img static/; } &&
+{ [[ -d static/css ]] || ln -sr web/css static/; } &&
+{ [[ -d static/scripts ]] || ln -sr web/dist static/scripts; } &&
+{ [[ -d static/css/images ]] || ln -sr web/node_modules/leaflet-draw/dist/images static/css/; } &&
+{ [[ -d static/webfonts ]] || ln -sr web/node_modules/@fortawesome/fontawesome-free/webfonts static/; } || die
 echo 'Static directory configured.'
 
 echo 'Setting up datastore git repo...'
+# shellcheck disable=SC2015
+mkdir -p datastore &&
 (
-    mkdir -p datastore
-    cd datastore || die
+    cd datastore &&
     if [[ -d .git ]]; then
         echo 'Datastore git repo already exists, continuing.'
         exit
-    fi
-    cp ../fixtures/datastore/REV-1/* . || die
-    git init --initial-branch=main || die
-    git add --all || die
-    git commit --author='Dummy User <info@eidc.ac.uk>' --allow-empty-message --message='' || die
+    fi &&
+    cp ../fixtures/datastore/REV-1/* . &&
+    git init --initial-branch=main &&
+    git add --all &&
+    git commit --author='Dummy User <info@eidc.ac.uk>' --allow-empty-message --message='' &&
     echo 'Datastore configured.'
 ) || die
 
 echo 'Starting dependent services...'
 if [[ $with_hubbub = true ]]; then
-    docker compose --profile hubbub up --wait --detach || die
+    docker compose --profile hubbub up --wait --detach
 else
-    docker compose up --wait --detach || die
-fi
+    docker compose up --wait --detach
+fi || die
 
 readarray -t secrets < <(grep -E -v '^$|^#' secrets.env 2>/dev/null)
 if (( ${#secrets[@]} > 0 )); then
