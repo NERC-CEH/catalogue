@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.controllers;
 
 import freemarker.template.Configuration;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.NotNull;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -12,6 +13,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
@@ -113,11 +115,14 @@ class DocumentControllerTest {
     @MockBean private FileDetailsService fileDetailsService;
     @MockBean private MetadataQualityService metadataQualityService;
 
+    @NotNull @Value("${download.url.regexSupportingDocs}") private String supportingDocsRegex;
+
     /*
-     Cannot make this a MockBean because DownloadOrder cannot be instantiated independently
-     of the DownloadOrderDetailsService. It is needed in the given() method of the mock.
-    */
-    private final DownloadOrderDetailsService downloadOrderDetailsService = new DownloadOrderDetailsService();
+         Cannot make this a MockBean because DownloadOrder cannot be instantiated independently
+         of the DownloadOrderDetailsService. It is needed in the given() method of the mock.
+        */
+    private DownloadOrderDetailsService downloadOrderDetailsService;
+
 
     @Autowired private MockMvc mvc;
     @Autowired private Configuration configuration;
@@ -133,6 +138,7 @@ class DocumentControllerTest {
     @BeforeEach
     void setup() {
         controller = new DocumentController(metricsService, metricsExcludedUsers, documentRepository);
+        this.downloadOrderDetailsService = new DownloadOrderDetailsService(supportingDocsRegex);
     }
 
     private void givenUserIsPermittedToView() {

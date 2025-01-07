@@ -19,7 +19,8 @@ public class DownloadOrderDetailsServiceTest {
 
     @BeforeEach
     public void init() {
-        service = new DownloadOrderDetailsService();
+        String supportingDocsRegex = "https://data-package\\.ceh\\.ac\\.uk/sd/.*";
+        service = new DownloadOrderDetailsService(supportingDocsRegex);
     }
 
     @Test

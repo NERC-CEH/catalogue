@@ -107,12 +107,12 @@
 
   <#assign onlineResourceUrl = onlineResource.url>
 
-    <#if onlineResourceUrl?matches(".+datastore\\/eidchub\\/[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}(.?)+", "i")>
+    <#if onlineResourceUrl?matches(datastoreUrlRegex, "i")>
       <#assign downloadType="direct"/>
-    <#elseif onlineResourceUrl?starts_with("https://data-package.ceh.ac.uk/data/")>
+    <#elseif onlineResourceUrl?matches(packageUrlRegex, "i")>
       <#assign downloadType="package"/>
       <#assign onlineResourceUrl = onlineResourceUrl + '.zip'>
-    <#elseif onlineResourceUrl?matches("https:\\/\\/order-eidc.ceh.ac.uk\\/resources\\/\\w{8}\\/order", "i")>
+    <#elseif onlineResourceUrl?matches(orderUrlRegex, "i")>
       <#assign downloadType="order"/>
     </#if>
 

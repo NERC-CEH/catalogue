@@ -2,8 +2,9 @@ package uk.ac.ceh.gateway.catalogue.templateHelpers;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import lombok.ToString;
-import lombok.Value;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
+import org.springframework.beans.factory.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
@@ -33,8 +34,10 @@ public class DownloadOrderDetailsService {
     private final Pattern supportingDocUrlPattern;
     private final List<Pattern> orderManagerUrlPatterns;
 
-    public DownloadOrderDetailsService() {
-        this.supportingDocUrlPattern = Pattern.compile("https://data-package\\.ceh\\.ac\\.uk/sd/.*");
+    public DownloadOrderDetailsService(
+        @NotNull @Value("${download.url.regexSupportingDocs}") String supportingDocsRegex
+    ) {
+        this.supportingDocUrlPattern = Pattern.compile(supportingDocsRegex);
         this.orderManagerUrlPatterns = List.of(
             Pattern.compile("http(s?)://catalogue\\.ceh\\.ac\\.uk/download\\?fileIdentifier=.*"),
             Pattern.compile("https://order-eidc\\.ceh\\.ac\\.uk/resources/.{8}/order\\?*.*")
@@ -46,7 +49,7 @@ public class DownloadOrderDetailsService {
         return new DownloadOrder(onlineResources);
     }
 
-    @Value
+    @lombok.Value
     public class DownloadOrder {
         String supportingDocumentsUrl;
         List<OnlineResource> orderResources;
