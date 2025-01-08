@@ -74,7 +74,7 @@ mkdir -p datastore &&
         echo 'Datastore git repo already exists, continuing.'
         exit
     fi &&
-    cp ../fixtures/datastore/REV-1/* . &&
+    cp -r ../fixtures/datastore/REV-1/* . &&
     git init --initial-branch=main &&
     git add --all &&
     git commit --author='Dummy User <info@eidc.ac.uk>' --allow-empty-message --message='' &&
