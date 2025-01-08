@@ -116,8 +116,8 @@ class DocumentControllerTest {
     @MockBean private MetadataQualityService metadataQualityService;
 
     @NotNull @Value("${download.url.regexSupportingDocs}") private String supportingDocsRegex;
-    @NotNull @Value("${download.url.regexOrder}") String orderManDownloadRegex;
-    @NotNull @Value("${download.url.regexOrderManDownload}") String orderManResourceRegex;
+    @NotNull @Value("${download.url.regexOrder}") private String orderManDownloadRegex;
+    @NotNull @Value("${download.url.regexOrderManDownload}") private String orderManResourceRegex;
 
     /*
          Cannot make this a MockBean because DownloadOrder cannot be instantiated independently

@@ -20,6 +20,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.util.ResourceUtils;
+import uk.ac.ceh.gateway.catalogue.config.DownloadUrlProperties;
 import uk.ac.ceh.gateway.catalogue.document.reading.DocumentReader;
 
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.ac.ceh.gateway.catalogue.quality.Results.Severity.ERROR;
 import static uk.ac.ceh.gateway.catalogue.quality.Results.Severity.WARNING;
 
@@ -54,10 +56,12 @@ public class GeminiMetadataQualityServiceTest {
 
     @Mock
     private DocumentReader documentReader;
+    @Mock
+    private DownloadUrlProperties downloadUrlProperties;
 
     @BeforeEach
     public void setup() {
-        this.service = new GeminiMetadataQualityService(documentReader, objectMapper);
+        this.service = new GeminiMetadataQualityService(documentReader, objectMapper, downloadUrlProperties);
     }
 
     @Test
@@ -356,6 +360,7 @@ public class GeminiMetadataQualityServiceTest {
         val parsed = JsonPath.parse(getClass().getResourceAsStream("downloadOrdersRight.json"), this.config);
 
         //when
+        when(downloadUrlProperties.getRegexDatastore()).thenReturn("https://catalogue\\.ceh\\.ac\\.uk/datastore/eidchub/.*");
         val actual = this.service.checkDownloadAndOrderLinks(parsed);
 
         //then
@@ -380,6 +385,9 @@ public class GeminiMetadataQualityServiceTest {
         val parsed = JsonPath.parse(getClass().getResourceAsStream("downloadOrdersWrong.json"), this.config);
 
         //when
+        when(downloadUrlProperties.getRegexDatastore()).thenReturn("https://catalogue\\.ceh\\.ac\\.uk/datastore/eidchub/.*");
+        when(downloadUrlProperties.getRegexOrder()).thenReturn("https://order-eidc\\.ceh\\.ac\\.uk/resources/.{8}/order\\?*.*");
+        when(downloadUrlProperties.getRegexPackage()).thenReturn("https://data-package\\.ceh\\.ac\\.uk/.*");
         val actual = this.service.checkDownloadAndOrderLinks(parsed);
 
         //then
