@@ -116,6 +116,8 @@ class DocumentControllerTest {
     @MockBean private MetadataQualityService metadataQualityService;
 
     @NotNull @Value("${download.url.regexSupportingDocs}") private String supportingDocsRegex;
+    @NotNull @Value("${download.url.regexOrder}") String orderManDownloadRegex;
+    @NotNull @Value("${download.url.regexOrderManDownload}") String orderManResourceRegex;
 
     /*
          Cannot make this a MockBean because DownloadOrder cannot be instantiated independently
@@ -138,7 +140,8 @@ class DocumentControllerTest {
     @BeforeEach
     void setup() {
         controller = new DocumentController(metricsService, metricsExcludedUsers, documentRepository);
-        this.downloadOrderDetailsService = new DownloadOrderDetailsService(supportingDocsRegex);
+        this.downloadOrderDetailsService =
+            new DownloadOrderDetailsService(supportingDocsRegex, orderManDownloadRegex, orderManResourceRegex);
     }
 
     private void givenUserIsPermittedToView() {

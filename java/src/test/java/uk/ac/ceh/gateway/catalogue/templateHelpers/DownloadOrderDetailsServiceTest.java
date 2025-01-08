@@ -20,7 +20,9 @@ public class DownloadOrderDetailsServiceTest {
     @BeforeEach
     public void init() {
         String supportingDocsRegex = "https://data-package\\.ceh\\.ac\\.uk/sd/.*";
-        service = new DownloadOrderDetailsService(supportingDocsRegex);
+        String orderManDownloadRegex = "http(s?)://catalogue\\.ceh\\.ac\\.uk/download\\?fileIdentifier=.*";
+        String orderManResourceRegex = "https://order-eidc\\.ceh\\.ac\\.uk/resources/.{8}/order\\?*.*";
+        service = new DownloadOrderDetailsService(supportingDocsRegex, orderManDownloadRegex, orderManResourceRegex);
     }
 
     @Test

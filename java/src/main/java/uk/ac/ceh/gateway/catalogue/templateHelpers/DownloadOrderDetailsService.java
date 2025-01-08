@@ -35,12 +35,14 @@ public class DownloadOrderDetailsService {
     private final List<Pattern> orderManagerUrlPatterns;
 
     public DownloadOrderDetailsService(
-        @NotNull @Value("${download.url.regexSupportingDocs}") String supportingDocsRegex
+        @NotNull @Value("${download.url.regexSupportingDocs}") String supportingDocsRegex,
+        @NotNull @Value("${download.url.regexOrderManDownload}") String orderManDownloadRegex,
+        @NotNull @Value("${download.url.regexOrder}") String orderManResourceRegex
     ) {
         this.supportingDocUrlPattern = Pattern.compile(supportingDocsRegex);
         this.orderManagerUrlPatterns = List.of(
-            Pattern.compile("http(s?)://catalogue\\.ceh\\.ac\\.uk/download\\?fileIdentifier=.*"),
-            Pattern.compile("https://order-eidc\\.ceh\\.ac\\.uk/resources/.{8}/order\\?*.*")
+            Pattern.compile(orderManDownloadRegex),
+            Pattern.compile(orderManResourceRegex)
         );
         log.info("Creating {}", this);
     }
