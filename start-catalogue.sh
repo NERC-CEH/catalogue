@@ -6,12 +6,16 @@ die () { exit 1; }
 
 usage () {
     cat <<EOF
-Usage: ${0##*/} [-hwb]
+Usage: ${0##*/} [-hwb] [[--] args ...]
 Rebuild and start a catalogue instance.
 
 	-h	Show this help and exit
 	-w	Don't build the web assets
 	-b	Start Hubbub docker service and enable its profile
+
+Any remaining arguments are passed on to ./gradlew bootRun.  Use
+-- to separate them if they start with something that looks like
+another option.
 
 This script sets Spring environment variables before starting the
 catalogue, but will not override them if they are already set.  It may
@@ -40,6 +44,7 @@ while getopts hwb opt; do
             ;;
     esac
 done
+shift "$((OPTIND - 1))"
 
 TOP=$(git rev-parse --show-toplevel) || die
 cd "$TOP" || die
@@ -120,4 +125,4 @@ fi
 
 echo 'Building and starting Java application...'
 
-exec ./gradlew bootRun
+exec ./gradlew bootRun "$@"
