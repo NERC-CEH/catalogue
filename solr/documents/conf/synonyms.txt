@@ -30,11 +30,43 @@ bacterium,bacteria
 crustacean,crustacea
 dormouse,dormice
 fungus,fungi
-genera,genus
 goose,geese
 isopod,isopoda
 louse,lice
+ethology,animal behaviour
+leptidopteran,butterfly,moth
 mouse,mice
 stratum,strata
 synthesis,syntheses
-
+sulphur,sulfur
+sulphate,sulfate
+aluminium,aluminum
+centre,center
+biodiversity,biological variety,species richness
+invasive species,alien species,non-indigenous species
+meter,metre
+ecosystem services,eco-services,natural capital
+hedge,hedgerow
+ceh,ukceh
+great britain,uk,united kingdom
+renewable energy,sustainable energy,green energy
+carbon footprint,carbon emissions
+carbon dioxide,CO2
+ozone,O3
+agriculture,agribusiness,agriculture,farming,farm,harvest,livestock
+climate change,global warming
+enviroment,enviromnent => environment
+teh => the
+governmnet => government
+supercede => supersede
+catagory => category
+guage => gauge
+license,lisence => licence
+occurrance,occurence => occurrence
+flourescent => fluorescent
+heirarchy => hierarchy
+proffesor => professor
+publically => publicly
+referance,refrence => reference
+relevent,revelant => relevant
+vaccuum,vaccum,vacume => vacuum

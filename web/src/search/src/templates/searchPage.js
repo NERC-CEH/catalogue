@@ -11,7 +11,7 @@ export default _.template(`
 <div class="d-flex p-1 mx-3 results__header align-items-center justify-content-between">
    <% if(numFound > 0) { %>
     <div class="small">
-      <span id="num-records"><%=numFound%></span> record <% if(numFound > 1) { %>s<% } %> found
+      <span id="num-records"><%=numFound%></span> record<% if(numFound > 1) { %>s<% } %> found
       <i id="searchShareIcon" class="fa-solid fa-fw fa-share-square mx-1" data-bs-toggle="tooltip" data-bs-placement="right" role="button" title="Email search results"></i>
     </div>
     <div class="small">
