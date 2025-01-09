@@ -67,7 +67,7 @@
         <#assign statusMessage += "<br><br>"?no_esc + "Publication of this " + recordType?lower_case + " by the EIDC does not signify any endorsement or approval. By accessing and using the resource, you acknowledge that it is entirely at your own risk and you are solely responsible for any loss or liability that may arise" />
       </#if>
 
-      <#if resourceStatus == "Available">
+      <#if resourceStatus == "Available" || resourceStatus == "Controlled">
         <div class="alert alert-secondary"><strong>PLEASE NOTE:</strong> ${statusMessage}</div>
         <#include "_licence.ftlh">
 
