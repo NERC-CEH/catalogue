@@ -189,7 +189,8 @@
           "@type": "CreativeWork",
           "name": "Open Government Licence v3",
           "alternateName":"OGL-UK-3.0",
-          "license": "https://spdx.org/licenses/OGL-UK-3.0.html"
+          "description", "This resource is available under the Open Government Licence v3 (OGL) You must always use the following attribution statement to acknowledge the source of the information: 'Contains data supplied by UK Centre for Ecology & Hydrology'.  You must include any copyright notice identified in the metadata record for the Data on all copies of the Data, publications and reports, including but not limited to, use in presentations to any audience.  You will ensure that citation of any relevant key publications, Digital Object Identifiers and any other required acknowledgments identified in the metadata record for the Data are included in full in the reference list of any reports or publications that describe any research in which the Data have been used."
+          "license": "https://spdx.org/licenses/OGL-UK-3.0.json"
         }
         </#if>
     </#if>

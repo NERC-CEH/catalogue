@@ -2,7 +2,11 @@
   dct:license <#t>
   <#list licences as licence>
     <#if licence.uri?has_content>
-      <${licence.uri?trim}>
+      <#if icence.uri?contains("/licences/OGL/")>
+        <https://spdx.org/licenses/OGL-UK-3.0.ttl>
+      <#else>
+        <${licence.uri?trim}>
+      </#if>
     <#elseif licence.value?has_content>
       [ a dct:LicenseDocument;
       rdfs:label "<@displayLiteral licence.value />";
@@ -18,3 +22,4 @@
       <#if accessLimitation.uri?has_content>odrs:attributionUrl <${accessLimitation.uri?trim}> </#if>
       ] ;
 </#if>
+
