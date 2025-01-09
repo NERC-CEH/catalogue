@@ -13,6 +13,7 @@ import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.xmlunit.builder.DiffBuilder;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
+import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
 import uk.ac.ceh.gateway.catalogue.model.Link;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
@@ -68,10 +69,51 @@ public class DataciteTemplateTest {
     @BeforeEach
     void init() {
         configuration = new Configuration(Configuration.VERSION_2_3_23);
-        configuration.setDirectoryForTemplateLoading(new File("../templates/datacite"));
+        configuration.setDirectoryForTemplateLoading(new File("../templates"));
         gemini = new GeminiDocument();
         model = new HashMap<>();
         model.put("doc", gemini);
+    }
+
+    @Nested
+    @DisplayName("rights")
+    class Rights {
+
+        @Test
+        @DisplayName("with OGL licence")
+        void withOglLicence() {
+            // given
+            val expected = expected("datacite/rights-ogl.xml");
+            gemini.setUseConstraints(List.of(
+                ResourceConstraint.builder().code("license").uri("https://eidc.ceh.ac.uk/licences/OGL/plain").build()
+            ));
+
+            // when
+            val actual = template("datacite/_rights.ftlx");
+
+            //then
+            compare(expected, actual);
+        }
+
+        @Test
+        @DisplayName("with other licence")
+        void withOtherLicence() {
+            // given
+            val expected = expected("datacite/rights-other.xml");
+            gemini.setUseConstraints(List.of(
+                ResourceConstraint.builder()
+                    .code("license")
+                    .uri("https://example.com/licences/1")
+                    .value("license")
+                    .build()
+            ));
+
+            // when
+            val actual = template("datacite/_rights.ftlx");
+
+            //then
+            compare(expected, actual);
+        }
     }
 
     @Nested
@@ -97,7 +139,7 @@ public class DataciteTemplateTest {
             ));
 
             //when
-            val actual = template("_related.ftlx");
+            val actual = template("datacite/_related.ftlx");
 
             //then
             compare(expected, actual);
@@ -115,7 +157,7 @@ public class DataciteTemplateTest {
             val expected = "";
 
             //when
-            val actual = template("_subjects.ftlx");
+            val actual = template("datacite/_subjects.ftlx");
 
             //then
             assertThat(actual, equalTo(expected));
@@ -143,7 +185,7 @@ public class DataciteTemplateTest {
             val expected = expected("datacite/subjects-full.xml");
 
             //when
-            val actual = template("_subjects.ftlx");
+            val actual = template("datacite/_subjects.ftlx");
 
             //then
             compare(expected, actual);
@@ -161,7 +203,7 @@ public class DataciteTemplateTest {
             val expected = "";
 
             //when
-            val actual = template("_contributors.ftlx");
+            val actual = template("datacite/_contributors.ftlx");
 
             //then
             assertThat(actual, equalTo(expected));
@@ -198,7 +240,7 @@ public class DataciteTemplateTest {
             val expected = expected("datacite/contributors-full.xml");
 
             //when
-            val actual = template("_contributors.ftlx");
+            val actual = template("datacite/_contributors.ftlx");
 
             //then
             compare(expected, actual);
