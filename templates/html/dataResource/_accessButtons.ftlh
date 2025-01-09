@@ -107,12 +107,12 @@
 
   <#assign onlineResourceUrl = onlineResource.url>
 
-    <#if onlineResourceUrl?matches(datastoreUrlRegex, "i")>
+    <#if onlineResourceUrl?matches(downloadUrlRegexes.getRegexDatastore(), "i")>
       <#assign downloadType="direct"/>
-    <#elseif onlineResourceUrl?matches(packageUrlRegex, "i")>
+    <#elseif onlineResourceUrl?matches(downloadUrlRegexes.getRegexPackage(), "i")>
       <#assign downloadType="package"/>
       <#assign onlineResourceUrl = onlineResourceUrl + '.zip'>
-    <#elseif onlineResourceUrl?matches(orderUrlRegex, "i")>
+    <#elseif onlineResourceUrl?matches(downloadUrlRegexes.getRegexOrder(), "i")>
       <#assign downloadType="order"/>
     </#if>
 

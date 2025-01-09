@@ -4,9 +4,9 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import org.springframework.beans.factory.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import uk.ac.ceh.gateway.catalogue.config.DownloadUrlProperties;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 
 import java.util.List;
@@ -35,14 +35,12 @@ public class DownloadOrderDetailsService {
     private final List<Pattern> orderManagerUrlPatterns;
 
     public DownloadOrderDetailsService(
-        @NotNull @Value("${download.url.regexSupportingDocs}") String supportingDocsRegex,
-        @NotNull @Value("${download.url.regexOrderManDownload}") String orderManDownloadRegex,
-        @NotNull @Value("${download.url.regexOrder}") String orderManResourceRegex
-    ) {
-        this.supportingDocUrlPattern = Pattern.compile(supportingDocsRegex);
+        @NotNull DownloadUrlProperties downloadUrlProperties
+        ) {
+        this.supportingDocUrlPattern = Pattern.compile(downloadUrlProperties.getRegexSupportingDocs());
         this.orderManagerUrlPatterns = List.of(
-            Pattern.compile(orderManDownloadRegex),
-            Pattern.compile(orderManResourceRegex)
+            Pattern.compile(downloadUrlProperties.getRegexOrderManDownload()),
+            Pattern.compile(downloadUrlProperties.getRegexOrder())
         );
         log.info("Creating {}", this);
     }

@@ -47,9 +47,7 @@ public class FreemarkerConfig {
         freemarkerConfiguration.setSharedVariable("profile", profileService);
         freemarkerConfiguration.setSharedVariable("userInfo", new SecurityUserInfo());
         freemarkerConfiguration.setSharedVariable("fileDetails", fileDetailsService);
-        freemarkerConfiguration.setSharedVariable("orderUrlRegex", downloadUrlProperties.getRegexOrder());
-        freemarkerConfiguration.setSharedVariable("packageUrlRegex", downloadUrlProperties.getRegexPackage());
-        freemarkerConfiguration.setSharedVariable("datastoreUrlRegex", downloadUrlProperties.getRegexDatastore());
+        freemarkerConfiguration.setSharedVariable("downloadUrlRegexes", downloadUrlProperties);
 
         if (serviceAgreementQualityService != null) {
             freemarkerConfiguration.setSharedVariable("serviceAgreementQuality", serviceAgreementQualityService);

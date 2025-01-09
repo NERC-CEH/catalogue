@@ -13,7 +13,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
@@ -29,6 +28,7 @@ import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
+import uk.ac.ceh.gateway.catalogue.config.DownloadUrlProperties;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.ef.*;
@@ -115,9 +115,7 @@ class DocumentControllerTest {
     @MockBean private FileDetailsService fileDetailsService;
     @MockBean private MetadataQualityService metadataQualityService;
 
-    @NotNull @Value("${download.url.regexSupportingDocs}") private String supportingDocsRegex;
-    @NotNull @Value("${download.url.regexOrder}") private String orderManDownloadRegex;
-    @NotNull @Value("${download.url.regexOrderManDownload}") private String orderManResourceRegex;
+    @NotNull DownloadUrlProperties downloadUrlProperties;
 
     /*
          Cannot make this a MockBean because DownloadOrder cannot be instantiated independently
@@ -140,8 +138,14 @@ class DocumentControllerTest {
     @BeforeEach
     void setup() {
         controller = new DocumentController(metricsService, metricsExcludedUsers, documentRepository);
+        DownloadUrlProperties downloadUrlProperties = mock(DownloadUrlProperties.class);
+        when(downloadUrlProperties.getRegexOrder()).thenReturn("https://order-eidc\\.ceh\\.ac\\.uk/resources/.{8}/order\\?*.*");
+        when(downloadUrlProperties.getRegexPackage()).thenReturn("https://data-package\\.ceh\\.ac\\.uk/.*");
+        when(downloadUrlProperties.getRegexDatastore()).thenReturn("https://catalogue\\.ceh\\.ac\\.uk/datastore/eidchub/.*");
+        when(downloadUrlProperties.getRegexSupportingDocs()).thenReturn("https://data-package\\.ceh\\.ac\\.uk/sd/.*");
+        when(downloadUrlProperties.getRegexOrderManDownload()).thenReturn("http(s?)://catalogue\\.ceh\\.ac\\.uk/download\\?fileIdentifier=.*");
         this.downloadOrderDetailsService =
-            new DownloadOrderDetailsService(supportingDocsRegex, orderManDownloadRegex, orderManResourceRegex);
+            new DownloadOrderDetailsService(downloadUrlProperties);
     }
 
     private void givenUserIsPermittedToView() {
@@ -159,6 +163,7 @@ class DocumentControllerTest {
         configuration.setSharedVariable("downloadOrderDetails", downloadOrderDetailsService);
         configuration.setSharedVariable("fileDetails", fileDetailsService);
         configuration.setSharedVariable("metadataQuality", metadataQualityService);
+        configuration.setSharedVariable("downloadUrlRegexes", downloadUrlProperties);
     }
 
     private void givenProfileNotActive() {

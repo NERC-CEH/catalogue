@@ -45,7 +45,7 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
     public GeminiMetadataQualityService(
             @NonNull DocumentReader documentReader,
             @NonNull ObjectMapper objectMapper,
-            DownloadUrlProperties downloadUrlProperties
+            @NonNull DownloadUrlProperties downloadUrlProperties
     ) {
         this.documentReader = documentReader;
         this.config = Configuration.defaultConfiguration()

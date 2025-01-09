@@ -17,4 +17,8 @@ public class DownloadUrlProperties {
     private String regexPackage;
     @NotNull
     private String regexDatastore;
+    @NotNull
+    private String regexSupportingDocs;
+    @NotNull
+    private String regexOrderManDownload;
 }

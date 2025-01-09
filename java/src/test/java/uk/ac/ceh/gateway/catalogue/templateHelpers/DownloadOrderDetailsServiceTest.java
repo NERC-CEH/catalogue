@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.templateHelpers;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import uk.ac.ceh.gateway.catalogue.config.DownloadUrlProperties;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.DownloadOrderDetailsService.DownloadOrder;
 
@@ -12,6 +13,8 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 
 public class DownloadOrderDetailsServiceTest {
@@ -19,10 +22,13 @@ public class DownloadOrderDetailsServiceTest {
 
     @BeforeEach
     public void init() {
-        String supportingDocsRegex = "https://data-package\\.ceh\\.ac\\.uk/sd/.*";
-        String orderManDownloadRegex = "http(s?)://catalogue\\.ceh\\.ac\\.uk/download\\?fileIdentifier=.*";
-        String orderManResourceRegex = "https://order-eidc\\.ceh\\.ac\\.uk/resources/.{8}/order\\?*.*";
-        service = new DownloadOrderDetailsService(supportingDocsRegex, orderManDownloadRegex, orderManResourceRegex);
+        DownloadUrlProperties downloadUrlProperties = mock(DownloadUrlProperties.class);
+        when(downloadUrlProperties.getRegexOrder()).thenReturn("https://order-eidc\\.ceh\\.ac\\.uk/resources/.{8}/order\\?*.*");
+        when(downloadUrlProperties.getRegexPackage()).thenReturn("https://data-package\\.ceh\\.ac\\.uk/.*");
+        when(downloadUrlProperties.getRegexDatastore()).thenReturn("https://catalogue\\.ceh\\.ac\\.uk/datastore/eidchub/.*");
+        when(downloadUrlProperties.getRegexSupportingDocs()).thenReturn("https://data-package\\.ceh\\.ac\\.uk/sd/.*");
+        when(downloadUrlProperties.getRegexOrderManDownload()).thenReturn("http(s?)://catalogue\\.ceh\\.ac\\.uk/download\\?fileIdentifier=.*");
+        service = new DownloadOrderDetailsService(downloadUrlProperties);
     }
 
     @Test
