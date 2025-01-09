@@ -13,6 +13,7 @@ import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.xmlunit.builder.DiffBuilder;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
+import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
 import uk.ac.ceh.gateway.catalogue.model.Link;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
@@ -126,7 +127,15 @@ public class DataciteTemplateTest {
         void related() {
             //given
             val uri = "https://example.org/id/123456789";
-            gemini.setUri(uri);
+            gemini
+                .setOnlineResources(List.of(
+                    OnlineResource.builder()
+                        .function("information")
+                        .url("https://data-package.ceh.ac.uk/sd/123456789")
+                        .build()
+                ))
+                .setUri(uri);
+
             val jena = mock(JenaLookupService.class);
             configuration.setSharedVariable("jena", jena);
             val expected = expected("datacite/related-full.xml");
