@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.controllers;
 
 import freemarker.template.Configuration;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.NotNull;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -27,6 +28,7 @@ import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
+import uk.ac.ceh.gateway.catalogue.config.DownloadUrlProperties;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.ef.*;
@@ -113,11 +115,14 @@ class DocumentControllerTest {
     @MockBean private FileDetailsService fileDetailsService;
     @MockBean private MetadataQualityService metadataQualityService;
 
+    @NotNull DownloadUrlProperties downloadUrlProperties;
+
     /*
-     Cannot make this a MockBean because DownloadOrder cannot be instantiated independently
-     of the DownloadOrderDetailsService. It is needed in the given() method of the mock.
-    */
-    private final DownloadOrderDetailsService downloadOrderDetailsService = new DownloadOrderDetailsService();
+         Cannot make this a MockBean because DownloadOrder cannot be instantiated independently
+         of the DownloadOrderDetailsService. It is needed in the given() method of the mock.
+        */
+    private DownloadOrderDetailsService downloadOrderDetailsService;
+
 
     @Autowired private MockMvc mvc;
     @Autowired private Configuration configuration;
@@ -133,6 +138,14 @@ class DocumentControllerTest {
     @BeforeEach
     void setup() {
         controller = new DocumentController(metricsService, metricsExcludedUsers, documentRepository);
+        DownloadUrlProperties downloadUrlProperties = mock(DownloadUrlProperties.class);
+        when(downloadUrlProperties.getRegexOrder()).thenReturn("https://order-eidc\\.ceh\\.ac\\.uk/resources/.{8}/order\\?*.*");
+        when(downloadUrlProperties.getRegexPackage()).thenReturn("https://data-package\\.ceh\\.ac\\.uk/.*");
+        when(downloadUrlProperties.getRegexDatastore()).thenReturn("https://catalogue\\.ceh\\.ac\\.uk/datastore/eidchub/.*");
+        when(downloadUrlProperties.getRegexSupportingDocs()).thenReturn("https://data-package\\.ceh\\.ac\\.uk/sd/.*");
+        when(downloadUrlProperties.getRegexOrderManDownload()).thenReturn("http(s?)://catalogue\\.ceh\\.ac\\.uk/download\\?fileIdentifier=.*");
+        this.downloadOrderDetailsService =
+            new DownloadOrderDetailsService(downloadUrlProperties);
     }
 
     private void givenUserIsPermittedToView() {
@@ -150,6 +163,7 @@ class DocumentControllerTest {
         configuration.setSharedVariable("downloadOrderDetails", downloadOrderDetailsService);
         configuration.setSharedVariable("fileDetails", fileDetailsService);
         configuration.setSharedVariable("metadataQuality", metadataQualityService);
+        configuration.setSharedVariable("downloadUrlRegexes", downloadUrlProperties);
     }
 
     private void givenProfileNotActive() {

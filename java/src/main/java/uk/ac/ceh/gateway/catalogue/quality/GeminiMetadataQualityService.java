@@ -11,6 +11,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.stereotype.Service;
+import uk.ac.ceh.gateway.catalogue.config.DownloadUrlProperties;
 import uk.ac.ceh.gateway.catalogue.document.reading.DocumentReader;
 
 import java.math.BigDecimal;
@@ -39,16 +40,19 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
             "info@eidc.ac.uk"
     );
     private final TypeRef<List<Map<String, String>>> typeRefStringString = new TypeRef<>() {};
+    private final DownloadUrlProperties downloadUrlProperties;
 
     public GeminiMetadataQualityService(
             @NonNull DocumentReader documentReader,
-            @NonNull ObjectMapper objectMapper
+            @NonNull ObjectMapper objectMapper,
+            @NonNull DownloadUrlProperties downloadUrlProperties
     ) {
         this.documentReader = documentReader;
         this.config = Configuration.defaultConfiguration()
             .jsonProvider(new JacksonJsonProvider(objectMapper))
             .mappingProvider(new JacksonMappingProvider(objectMapper))
             .addOptions(Option.DEFAULT_PATH_LEAF_TO_NULL, Option.SUPPRESS_EXCEPTIONS);
+        this.downloadUrlProperties = downloadUrlProperties;
         log.info("Creating");
     }
 
@@ -643,13 +647,13 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
         }
 
         if (orders.stream().anyMatch(order ->
-            fieldNotStartingWith(order, "url", "https://order-eidc.ceh.ac.uk/resources")
+            fieldNotMatching(order, "url", downloadUrlProperties.getRegexOrder())
         )) {
             toReturn.add(new MetadataCheck("Orders do not have a valid EIDC url", INFO));
         }
 
         if (downloads.stream().anyMatch(order ->
-            fieldNotStartingWith(order, "url", "https://catalogue.ceh.ac.uk/datastore/eidchub/") && fieldNotStartingWith(order, "url", "https://data-package.ceh.ac.uk/data")
+            fieldNotMatching(order, "url", downloadUrlProperties.getRegexDatastore()) && fieldNotMatching(order, "url", downloadUrlProperties.getRegexPackage())
         )) {
             toReturn.add(new MetadataCheck("Downloads do not have a valid EIDC url", INFO));
         }
@@ -678,9 +682,9 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
         return Collections.emptyList();
     }
 
-    private boolean fieldNotStartingWith(Map<String, String> map, String key, String value) {
+    private boolean fieldNotMatching(Map<String, String> map, String key, String value) {
         return map.get(key) == null
-            || !map.get(key).startsWith(value);
+            || !map.get(key).matches(value);
     }
 
     boolean resourceStatusIsAvailable(DocumentContext parsed) {

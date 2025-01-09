@@ -22,6 +22,7 @@ public class FreemarkerConfig {
     private final CodeLookupService codeLookupService;
     private final DownloadOrderDetailsService downloadOrderDetailsService;
     private final freemarker.template.Configuration freemarkerConfiguration;
+    private final DownloadUrlProperties downloadUrlProperties;
     private final GeminiExtractor geminiExtractor;
     private final JenaLookupService jenaLookupService;
     private final MapServerDetailsService mapServerDetailsService;
@@ -46,6 +47,7 @@ public class FreemarkerConfig {
         freemarkerConfiguration.setSharedVariable("profile", profileService);
         freemarkerConfiguration.setSharedVariable("userInfo", new SecurityUserInfo());
         freemarkerConfiguration.setSharedVariable("fileDetails", fileDetailsService);
+        freemarkerConfiguration.setSharedVariable("downloadUrlRegexes", downloadUrlProperties);
 
         if (serviceAgreementQualityService != null) {
             freemarkerConfiguration.setSharedVariable("serviceAgreementQuality", serviceAgreementQualityService);
