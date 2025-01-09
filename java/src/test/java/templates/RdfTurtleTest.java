@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.model.Link;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringActivity;
@@ -298,6 +299,39 @@ public class RdfTurtleTest {
                     )
                 )
             );
+        }
+
+        @Nested
+        class Rights {
+
+            @Test
+            void rights() {
+                //given
+                val uri = "https://example.com/id/9837";
+                val document = new GeminiDocument()
+                    .setType("dataset")
+                    .setUseConstraints(List.of(
+                        ResourceConstraint.builder().code("license").uri("https://example.com/licences/OGL/plain").value("OGL").build(),
+                        ResourceConstraint.builder().code("other").uri("https://example.com/other").build()
+                    ))
+                    .setUri(uri)
+                    .setId("9837")
+                    .setTitle("Test");
+
+                //when
+                template("rdf/ttl.ftl", document);
+
+                //then
+                assertTrue(
+                    model.contains(
+                        createStatement(
+                            createResource(uri),
+                            createProperty("http://purl.org/dc/terms/license"),
+                            createResource("https://spdx.org/licenses/OGL-UK-3.0.ttl")
+                        )
+                    )
+                );
+            }
         }
     }
 }
