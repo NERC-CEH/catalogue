@@ -1,4 +1,5 @@
 <#if doc.useConstraints?has_content>
+    <#import "../functions.ftlh" as func>
     <#assign licences = func.filter(doc.useConstraints, "code", "license")>
     <#if licences?has_content>
     <rightsList>
