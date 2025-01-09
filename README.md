@@ -6,34 +6,16 @@
 
 ### Demo current development
 
-The current code can be built and demoed
+The current code can be built and demoed with the following script:
 
 ```commandline
-docker compose up -d --build
+./start-catalogue.sh
 ```
 Browse to http://localhost:8080/eidc/documents to see the catalogue populated with some demo records.
 
-If you want to use the Hubbub uploader, enable it in the Catalogue [profiles](docs/profiles.md) and start it with the hubbub docker compose profile:
-
-```commandline
-docker compose --profile hubbub up -d --build
-```
-
-Alternatively, set the `COMPOSE_PROFILES` environment variable to `hubbub` and run docker compose as above.
-
-### Standalone installation using published Docker images
-
-```commandline
-mkdir datastore dropbox upload metrics-db
-chmod a+w metrics-db
-cp fixtures/datastore/REV-1/* datastore
-cd datastore
-git init
-git add -A
-git commit -m "loading example data"
-cd -
-
-```
+The `start-catalogue.sh` script accepts options and environment variables to control some of the build and run options.  These include:
+- `-b` to enable and launch Hubbub
+- `-w` to skip building the web components
 
 ## Project Structure
 
@@ -59,11 +41,11 @@ cd -
 You will need to create a `secrets.env` file with the following. Ask one of the dev team for access to Keypass to retrieve the jira password.
 
 ```
-jira.password=
-crowd.password=
-doi.password=
-hubbub.password=
-fuseki.password=
+JIRA_PASSWORD=
+CROWD_PASSWORD=
+DOI_PASSWORD=
+HUBBUB_PASSWORD=
+FUSEKI_PASSWORD=
 ```
 
 ## Getting started
