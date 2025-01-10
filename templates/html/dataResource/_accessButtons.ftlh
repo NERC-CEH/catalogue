@@ -4,7 +4,9 @@
 
 <div class="py-3 d-flex flex-row align-items-center flex-wrap accessButtons d-print-none">
   <#if (resourceType.value == 'dataset' || resourceType.value == 'nonGeographicDataset' || resourceType.value == 'application') && (resourceStatus == "Available" || resourceStatus == "Controlled") >
-    <a class="btn btn-download" data-bs-toggle="offcanvas" href="#access" role="button" aria-controls="access"><i class="fa-solid fa-download fa-fw"></i> Download data</a>
+    <#if downloadOrder?? && downloadOrder?string?contains("isOrderable=true") >
+      <a class="btn btn-download" data-bs-toggle="offcanvas" href="#access" role="button" aria-controls="access"><i class="fa-solid fa-download fa-fw"></i> Download data</a>
+    </#if>
   </#if>
 
   <#if resourceType.value == 'service' && mapViewable >
