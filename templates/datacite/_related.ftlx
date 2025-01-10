@@ -1,6 +1,6 @@
-<#if doc.onlineResources?has_content>
+<#if doc.infoLinks?has_content>
   <#import "../functions.ftlh" as func>
-  <#assign infoResources = func.filterRegex(func.filter(doc.onlineResources, "function", "information"), "url", "https://data-package.ceh.ac.uk/sd/")>
+  <#assign infoResources = func.filterRegex(doc.infoLinks, "url", "https://data-package.ceh.ac.uk/sd/")>
 </#if>
 <#assign
   rel_supersedes = jena.relationships(doc.uri, "https://vocabs.ceh.ac.uk/eidc#supersedes")
