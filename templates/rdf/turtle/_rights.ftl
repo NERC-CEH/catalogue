@@ -9,7 +9,7 @@
       </#if>
     <#elseif licence.value?has_content>
       [ a dct:LicenseDocument;
-      rdfs:label "<@displayLiteral licence.value />";
+      rdfs:label <@displayLiteral licence.value />;
       ]
     </#if>
   <#sep>,</#sep>
