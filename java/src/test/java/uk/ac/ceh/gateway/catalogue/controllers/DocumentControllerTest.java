@@ -327,7 +327,6 @@ class DocumentControllerTest {
             Arguments.of(gemini, RDF_SCHEMAORG_JSON, RDF_SCHEMAORG_SHORT, "gemini-schema-org.json"),
             Arguments.of(gemini, ROCRATE_JSON, ROCRATE_SHORT, "rocrate.json"),
             Arguments.of(gemini, ROCRATE_ATTACHED_JSON, ROCRATE_ATTACHED_SHORT, "rocrate-attached.json"),
-            Arguments.of(gemini, CEDA_YAML_JSON, CEDA_YAML_SHORT, "gemini-ceda-yaml.json"),
             Arguments.of(gemini, RDF_TTL, RDF_TTL_SHORT, "gemini.ttl"),
             Arguments.of(caseStudy, TEXT_HTML, HTML, null),
             Arguments.of(caseStudy, APPLICATION_JSON, JSON, null),

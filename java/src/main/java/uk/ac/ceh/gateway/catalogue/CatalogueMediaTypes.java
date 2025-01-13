@@ -73,10 +73,6 @@ public class CatalogueMediaTypes {
     public static final String ROCRATE_ATTACHED_VALUE = "application/vnd.rocrate-attached.ld+json";
     public static final MediaType ROCRATE_ATTACHED_JSON = parseMediaType(ROCRATE_ATTACHED_VALUE);
 
-    public static final String CEDA_YAML_SHORT = "ceda";
-    public static final String CEDA_YAML_VALUE = "application/ceda+json";
-    public static final MediaType CEDA_YAML_JSON = parseMediaType(CEDA_YAML_VALUE);
-
     public static final String RDF_TTL_SHORT = "ttl";
     public static final String RDF_TTL_VALUE = "text/turtle";
     public static final MediaType RDF_TTL = parseMediaType(RDF_TTL_VALUE);

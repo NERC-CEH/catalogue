@@ -251,7 +251,6 @@ public class WebConfig implements WebMvcConfigurer {
             .mediaType(RDF_SCHEMAORG_SHORT, RDF_SCHEMAORG_JSON)
             .mediaType(ROCRATE_SHORT, ROCRATE_JSON)
             .mediaType(ROCRATE_ATTACHED_SHORT, ROCRATE_ATTACHED_JSON)
-            .mediaType(CEDA_YAML_SHORT, CEDA_YAML_JSON)
             .mediaType(RDF_TTL_SHORT, RDF_TTL)
             .mediaType(RESEARCH_INFO_SYSTEMS_SHORT, RESEARCH_INFO_SYSTEMS);
     }
