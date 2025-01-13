@@ -41,7 +41,6 @@ import static uk.ac.ceh.gateway.catalogue.gemini.OnlineResource.Type.WMS_GET_CAP
         @Template(called = "schema.org/schema.org.ftl", whenRequestedAs = RDF_SCHEMAORG_VALUE),
         @Template(called = "rocrate/rocrate.ftl", whenRequestedAs = ROCRATE_VALUE),
         @Template(called = "rocrate/rocrate_attached.ftl", whenRequestedAs = ROCRATE_ATTACHED_VALUE),
-        @Template(called = "ceda/ceda.ftlh", whenRequestedAs = CEDA_YAML_VALUE)
 })
 public class GeminiDocument extends AbstractMetadataDocument implements WellKnownText {
     private static final Set<String> ALLOWED_CITATION_FUNCTIONS = Set.of("isReferencedBy", "isSupplementTo");
