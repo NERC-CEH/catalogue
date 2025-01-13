@@ -1,7 +1,7 @@
 # Build webpack (javascript & css)
 FROM node:21.5.0-alpine3.19 AS build-web
 WORKDIR /web
-COPY web/package.json web/package-lock.json web/webpack.js web/webpack.scss.js ./
+COPY web/package.json web/package-lock.json web/webpack.js web/gulpfile.js ./
 RUN --mount=type=cache,target=/web/.npm npm ci --no-audit
 COPY web/img ./img
 COPY web/scss ./scss

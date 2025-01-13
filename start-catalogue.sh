@@ -46,7 +46,7 @@ cd "$TOP" || die
 
 if [[ $build_web = true ]]; then
     echo 'Building web assets...'
-    (cd web && npm run build-dev && npm run build-css) || die
+    (cd web && npm run build-dev && npm run build-css-dev) || die
     echo 'Built web assets.'
 fi
 

@@ -15,6 +15,6 @@
 !web/package.json
 !web/package-lock.json
 !web/webpack.js
-!web/webpack.scss.js
+!web/gulpfile.js
 
 
