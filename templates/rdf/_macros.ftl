@@ -88,22 +88,25 @@
 
 <#macro keywordList keywords>
   <#list keywords as kw>
+
     <#if kw.uri?has_content>
       <#assign keyword ="\l" + kw.uri?trim+ "\g">
-    <#elseif kw.value?has_content>
+    <#else>
       <#assign keyword ='"' + kw.value?replace("\"", "") + '"'>
     </#if>
 
-    <#if keyword?has_content>
-      ${keyword}<#sep>,</#sep><#t>
-    </#if>
+    ${keyword}<#sep>,</#sep><#t>
   </#list>
 </#macro>
 
 <#macro keywordDetail keywords>
   <#list keywords as kw>
     <#if kw.uri?has_content>
-      <${kw.uri?trim}> a skos:Concept; skos:prefLabel <@displayLiteral kw.value />; rdfs:label <@displayLiteral kw.value />.
+      <${kw.uri?trim}> a skos:Concept;
+        <#if kw.value?has_content >
+          skos:prefLabel <@displayLiteral kw.value />; rdfs:label <@displayLiteral kw.value />
+        </#if>
+        .<#t>
     </#if>
   </#list>
 </#macro>
