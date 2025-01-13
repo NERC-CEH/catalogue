@@ -53,6 +53,8 @@ dependencies {
     implementation "uk.ac.ceh.components:userstore-inmemory:${cehComponentsVersion}"
     implementation "uk.ac.ceh.components:springsecurity-userstore:${cehComponentsVersion}"
 
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'org.xmlunit:xmlunit-core'
