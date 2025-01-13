@@ -114,17 +114,13 @@ Use a browser plugin like [ModHeaders](https://bewisse.com/modheader/) to modify
 
 ## Step 3: Add style
 
-In the `webpack.scss.js` you need to add the following in the `entry`
+You need to create an `scss` file in the `scss` folder with a name starting with `style-`. For example:
 
-```js
-entry: {
-      'style-youId': './scss/style-youId.scss'
-}
-```
+`src/scss/style-youId.scss`
 
-You need to create the file `src/scss/style-youId.scss`
+Gulp will automatically detect and compile it when you run npm run build-css-dev.
 
-your `scss` files will look like this
+Your `scss` files will look like this
 
 ```scss
 @import "style-ceh";

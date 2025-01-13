@@ -1,5 +1,5 @@
-@import "theme";
-@import "style-serviceagreement";
+@use "theme";
+@use "style-serviceagreement";
 
 $eidc-blue: hsl(195, 45%, 36%);
 $brand-success: $eidc-blue;
