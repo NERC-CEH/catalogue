@@ -90,10 +90,13 @@
   <#list keywords as kw>
     <#if kw.uri?has_content>
       <#assign keyword ="\l" + kw.uri?trim+ "\g">
-    <#else>
+    <#elseif kw.value?has_content>
       <#assign keyword ='"' + kw.value?replace("\"", "") + '"'>
     </#if>
-    ${keyword}<#sep>,</#sep><#t>
+
+    <#if keyword?has_content>
+      ${keyword}<#sep>,</#sep><#t>
+    </#if>
   </#list>
 </#macro>
 
