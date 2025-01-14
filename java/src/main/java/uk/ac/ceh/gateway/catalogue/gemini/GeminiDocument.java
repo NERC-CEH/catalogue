@@ -337,6 +337,23 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
             .collect(Collectors.toCollection(ArrayList::new));
     }
 
+    @JsonIgnore
+    public List<ResponsibleParty> getAuthorPointOfContactWithRORs() {
+        val seenRORs = new HashSet<String>();
+        return getResponsibleParties()
+            .stream()
+            .filter(party -> {
+                val role = party.getRole();
+                val authorOrPOC = role.equalsIgnoreCase("author") || role.equalsIgnoreCase("pointOfContact");
+                if (!authorOrPOC || !party.isRor()) return false;
+                val ror = party.getOrganisationIdentifier();
+                if (seenRORs.contains(ror)) return false;
+                seenRORs.add(ror);
+                return true;
+            })
+            .toList();
+    }
+
     private static @NonNull String convertEmail(@NonNull String email) {
         return email.endsWith("@ceh.ac.uk") ? "enquiries@ceh.ac.uk" : email;
     }

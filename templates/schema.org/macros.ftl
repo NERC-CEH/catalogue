@@ -83,6 +83,7 @@
   <#if funding?has_content>,<@fundDetails/></#if>
   <#if parts?has_content>,<@partDetails parts/></#if>
   <#if downloads?has_content>,<@distributionDetails/></#if>
+  <#if authorPointOfContactWithRORs?has_content>,<@organisationRORs/></#if>
 </#macro>
 
 <#macro alternateTitlesList>
@@ -322,10 +323,14 @@
           </#if>
           <#if contact.organisationName?has_content>
             ,"affiliation":{
+              <#if contact.organisationIdentifier?matches("^https://ror\\.org/\\w{8,10}$")>
+              "@id": "${contact.organisationIdentifier}"
+              <#else>
               "@type":"Organization",
               "name":"${contact.organisationName}"
               <#if contact.organisationIdentifier?has_content>
               ,"identifier":"${contact.organisationIdentifier}"
+              </#if>
               </#if>
             }
           </#if>
@@ -404,4 +409,15 @@
     </#list>
     ],
   </#if>
+</#macro>
+
+<#macro organisationRORs>
+  <#list authorPointOfContactWithRORs as contact>
+  {
+    "@id": "${contact.organisationIdentifier}",
+    "@type": "Organization",
+    "name": "${contact.organisationName}",
+    "identifier": "${contact.organisationIdentifier}"
+  }<#sep>,
+  </#list>
 </#macro>
