@@ -7,13 +7,12 @@ describe('Test LegiloVariables View', () => {
   let view = null
   const mockVariables = [
     new LegiloVariable({ name: 'test1', standardName: 'shortName1', longName: 'longName1', units: 'unit1' }),
-    new LegiloVariable({ name: 'test2', standardName: 'shortName2', longName: 'longName2', units: 'unit2' }),
+    new LegiloVariable({ name: 'test2', standardName: 'shortName2', longName: 'longName2', units: 'unit2' })
   ]
 
   beforeEach(() => {
     const model = new Backbone.Model({ id: '123' })
     const collection = new Backbone.Collection()
-    const modelType =
     view = new LegiloVariables({
       model,
       collection,

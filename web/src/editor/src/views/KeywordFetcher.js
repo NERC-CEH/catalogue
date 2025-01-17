@@ -26,7 +26,7 @@ export function fetchVariablesFromLegilo (model) {
       name: variableData.name,
       standardName: variableData.standardName,
       longName: variableData.longName,
-      units: variableData.units,
+      units: variableData.units
     })))
     .catch(error => {
       console.error('Error fetching variaqbles:', error)

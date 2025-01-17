@@ -57,7 +57,7 @@ export default SingleView.extend({
   },
 
   fetchKeywords () {
-    let legiloButtonClass = 'legilo-fetch-btn';
+    const legiloButtonClass = 'legilo-fetch-btn'
     legiloUtil.fetchStartDisplay(legiloButtonClass)
 
     fetchKeywordsFromLegilo(this.model)

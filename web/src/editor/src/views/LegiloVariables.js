@@ -6,7 +6,7 @@ export default Backbone.View.extend({
 
   initialize (options) {
     this.model = options.model
-    this.modelType = options.modelType
+    this.ModelType = options.modelType
     this.collection = options.collection
     this.template = template
     this.selectedVariables = []
@@ -90,14 +90,14 @@ export default Backbone.View.extend({
     const units = $(event.target).data('units')
     const description = $(event.target).data('description')
     if (event.target.checked) {
-      this.selectedVariables.push({ value: value, title: title, units: units, description: description })
+      this.selectedVariables.push({ value, title, units, description })
     } else {
       this.selectedVariables = this.selectedVariables.filter(kw => kw.value !== value)
     }
   },
 
   addSelectedVariables () {
-    this.selectedVariables.forEach(keyword => this.collection.add(new this.modelType(keyword)))
+    this.selectedVariables.forEach(keyword => this.collection.add(new this.ModelType(keyword)))
 
     this.selectedVariables = []
     this.renderVariables(this.variables)
