@@ -49,7 +49,7 @@ public class KeywordSuggestionsServiceTest {
 
     @Test
     @SneakyThrows
-    void getSuggestions() {
+    void getKeywordsSuggestions() {
         //given
         String keywordsResponse = IOUtils.toString(getClass().getResource("legilo-keywords-response.json"), UTF_8);
         String variablesResponse = IOUtils.toString(getClass().getResource("legilo-variables-response.json"), UTF_8);
@@ -65,11 +65,11 @@ public class KeywordSuggestionsServiceTest {
             .andRespond(withSuccess(variablesResponse, MediaType.APPLICATION_JSON));
 
         //when
-        List<KeywordSuggestionsService.Suggestion> suggestions = service.getSuggestions(FILE_ID);
+        List<KeywordSuggestionsService.KeywordsSuggestion> keywordsSuggestions = service.getKeywordsSuggestions(FILE_ID);
 
         //then
         mockServer.verify();
-        assertThat(suggestions, allOf(
+        assertThat(keywordsSuggestions, allOf(
             hasItem(name(is("bears"))),
             hasItem(name(is("temp"))),
             hasItem(name(is("absorbance")))
@@ -92,16 +92,65 @@ public class KeywordSuggestionsServiceTest {
             .andRespond(withStatus(HttpStatus.NOT_FOUND));
 
         //when
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> service.getSuggestions(FILE_ID));
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> service.getKeywordsSuggestions(FILE_ID));
 
         //then
-        assertEquals("422 UNPROCESSABLE_ENTITY \"Unprocessable Entity, Not Found, Document not found\"", exception.getMessage());
+        assertEquals("422 UNPROCESSABLE_ENTITY \"Unprocessable Entity, Not Found\"", exception.getMessage());
     }
 
-    private FeatureMatcher<KeywordSuggestionsService.Suggestion, String> name(Matcher<String> matcher) {
+    @Test
+    @SneakyThrows
+    void getVariablesSuggestions() {
+        //given
+        String variablesResponse = IOUtils.toString(getClass().getResource("legilo-variables-response.json"), UTF_8);
+        mockServer
+            .expect(requestTo(equalTo(LEGILO_URL + FILE_ID + "/variables")))
+            .andExpect(method(HttpMethod.GET))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic dXNlcm5hbWU6cGFzc3dvcmQ="))
+            .andRespond(withSuccess(variablesResponse, MediaType.APPLICATION_JSON));
+
+        //when
+        List<KeywordSuggestionsService.VariablesSuggestion> variablesSuggestions = service.getVariablesSuggestions(FILE_ID);
+
+        //then
+        mockServer.verify();
+        assertThat(variablesSuggestions, allOf(
+            hasItem(variableName(is("bears"))),
+            hasItem(variableName(is("temp"))),
+            hasItem(variableName(is("Units")))
+        ));
+    }
+
+    @Test
+    @SneakyThrows
+    void getVariablesSuggestionsWithException() {
+        //given
+        mockServer
+            .expect(requestTo(equalTo(LEGILO_URL + FILE_ID + "/variables")))
+            .andExpect(method(HttpMethod.GET))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic dXNlcm5hbWU6cGFzc3dvcmQ="))
+            .andRespond(withStatus(HttpStatus.NOT_FOUND));
+
+        //when
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> service.getVariablesSuggestions(FILE_ID));
+
+        //then
+        assertEquals("422 UNPROCESSABLE_ENTITY \"Not Found\"", exception.getMessage());
+    }
+
+    private FeatureMatcher<KeywordSuggestionsService.KeywordsSuggestion, String> name(Matcher<String> matcher) {
         return new FeatureMatcher<>(matcher, "name", "name") {
             @Override
-            protected String featureValueOf(KeywordSuggestionsService.Suggestion actual) {
+            protected String featureValueOf(KeywordSuggestionsService.KeywordsSuggestion actual) {
+                return actual.name();
+            }
+        };
+    }
+
+    private FeatureMatcher<KeywordSuggestionsService.VariablesSuggestion, String> variableName(Matcher<String> matcher) {
+        return new FeatureMatcher<>(matcher, "variableName", "variableName") {
+            @Override
+            protected String featureValueOf(KeywordSuggestionsService.VariablesSuggestion actual) {
                 return actual.name();
             }
         };

@@ -1,5 +1,5 @@
 import $ from 'jquery'
-import { LegiloKeyword } from '../models'
+import { LegiloKeyword, LegiloVariable } from '../models'
 
 export function fetchKeywordsFromLegilo (model) {
   const datasetId = model.get('id')
@@ -13,6 +13,23 @@ export function fetchKeywordsFromLegilo (model) {
     })))
     .catch(error => {
       console.error('Error fetching keywords:', error)
+      throw error
+    })
+}
+
+export function fetchVariablesFromLegilo (model) {
+  const datasetId = model.get('id')
+  const apiUrl = `/documents/${datasetId}/suggestVariables`
+
+  return $.getJSON(apiUrl)
+    .then(data => data.map(variableData => new LegiloVariable({
+      name: variableData.name,
+      standardName: variableData.standardName,
+      longName: variableData.longName,
+      units: variableData.units,
+    })))
+    .catch(error => {
+      console.error('Error fetching variaqbles:', error)
       throw error
     })
 }

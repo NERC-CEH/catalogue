@@ -809,7 +809,8 @@ This is only needed if you configure 'Styling=Classification' for your GeoTiff.<
               type: 'datetime',
               format: 'YYYY-MM-DDThh:mm:ss'
             }
-          }
+          },
+          fetchVariablesButton: true
         }),
         new ParentView({
           model: this.model,

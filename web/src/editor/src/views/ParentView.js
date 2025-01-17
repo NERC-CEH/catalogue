@@ -5,6 +5,7 @@ import ChildView from './ChildView'
 import template from '../templates/Parent'
 import { Positionable } from '../collections'
 import { LegiloKeywords, fetchKeywordsFromLegilo } from './index'
+import * as legiloUtil from './LegiloFetcherUtil'
 
 export default SingleView.extend({
 
@@ -56,45 +57,18 @@ export default SingleView.extend({
   },
 
   fetchKeywords () {
-    this.$('.legilo-fetch-btn').prop('disabled', true)
-    this.$('.loader').show()
-    this.$('.loader-msg')
-      .removeClass('text-primary')
-      .text('It may take a while.')
+    let legiloButtonClass = 'legilo-fetch-btn';
+    legiloUtil.fetchStartDisplay(legiloButtonClass)
 
     fetchKeywordsFromLegilo(this.model)
       .then(keywords => {
         this.model.set('fetchedKeywords', keywords)
         this.renderKeywords()
-
-        this.$('.loader').hide()
-        this.$('.loader-msg').text('')
-        this.$('.legilo-fetch-btn').prop('disabled', false)
+        legiloUtil.fetchSuccessDisplay(legiloButtonClass)
       })
       .catch(error => {
         console.error('Error fetching keywords:', error)
-        let errText = 'Something went wrong while fetching keywords.'
-        if (error.status === 500) {
-          errText = 'Service not reachable, please try again later.'
-        } else if (error.status === 422) {
-          errText = 'No documents available for this dataset to extract keywords.'
-        } else if (error.status === 404) {
-          errText = 'Keyword suggestion not available.'
-        } else {
-          if (error.responseJSON) {
-            const response = error.responseJSON
-            if (response.error) {
-              errText = response.error
-            } else if (response.message) {
-              errText = response.message
-            }
-          }
-        }
-        this.$('.loader').hide()
-        this.$('.loader-msg')
-          .addClass('text-primary')
-          .text(errText)
-        this.$('.legilo-fetch-btn').prop('disabled', false)
+        legiloUtil.fetchFailDisplay(legiloButtonClass, error)
       })
   },
 

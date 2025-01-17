@@ -19,13 +19,16 @@ export default _.template(`
       <% if (data.fetchKeywordsButton) { %>
         <button class="editor-button legilo-fetch-btn mx-lg-1">Suggest Keywords</button>
       <% } %>
+      <% if (data.fetchVariablesButton) { %>
+        <button class="editor-button legilo-fetch-variables-btn mx-lg-1">Suggest Variables</button>
+      <% } %>
       <div id="help-<%= data.modelAttribute %>" class="editor-help w-100">
           <%= data.helpText %>
       </div>
     </div>
     <div class="col-md-9">
       <div class="existing container-fluid"></div>
-      <% if (data.fetchKeywordsButton) { %>
+      <% if (data.fetchKeywordsButton || data.fetchVariablesButton) { %>
       <div class="d-flex justify-content-center">
         <span class="spinner-border text-secondary loader mx-3" role="status" style="display: none;"></span>
         <span class="loader-msg"></span>

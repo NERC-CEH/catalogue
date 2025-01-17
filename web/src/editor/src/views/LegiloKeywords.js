@@ -58,6 +58,15 @@ export default Backbone.View.extend({
     `
     }).join('')
 
+    const tableHead = `
+      <tr>
+        <th scope="col" class="col-1">Select</th>
+        <th scope="col">Term</th>
+        <th scope="col">URI</th>
+        <th scope="col">Confidence</th>
+      </tr>
+    `
+    this.$('.keywords-table-head').html(tableHead)
     this.$('.keywords-table-body').html(rowsHTML)
 
     if (filteredKeywords.length > this.keywordsToShow) {

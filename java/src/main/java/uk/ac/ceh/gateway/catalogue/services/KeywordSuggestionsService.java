@@ -27,8 +27,9 @@ public class KeywordSuggestionsService {
     private static final double VARIABLE_CONFIDENCE = 0.2;
     private RestClient restClient;
 
-    public record Suggestion(String name, double confidence, String matched_url) { }
-    record KeywordsResponse(List<Suggestion> summary) { }
+    public record KeywordsSuggestion(String name, double confidence, String matched_url) { }
+    public record VariablesSuggestion(String name, String standardName, String longName, String units) { }
+    record KeywordsResponse(List<KeywordsSuggestion> summary) { }
     record VariablesResponse(VariablesSummary summary) { }
     record VariablesSummary(Map<String, Object> variables) { }
 
@@ -46,63 +47,95 @@ public class KeywordSuggestionsService {
         log.info("Creating");
     }
 
-    public List<Suggestion> getSuggestions(String file) {
-        Map<String, Map<String, Object>> status = new HashMap<>();
-        List<Suggestion> keywordSuggestions = Optional.ofNullable(
+    public List<KeywordsSuggestion> getKeywordsSuggestions(String file) {
+        List<Map<String, Object>> errorList = new ArrayList<>();
+
+        List<KeywordsSuggestion> keywords = getKeywords(restClient, file, errorList)
+            .flatMap(kw -> Optional.ofNullable(kw.summary()))
+            .orElseGet(Collections::emptyList);
+
+        List<KeywordsSuggestion> variables = getVariables(restClient, file, errorList)
+            .flatMap(r -> Optional.ofNullable(r.summary()))
+            .flatMap(s -> Optional.ofNullable(s.variables()))
+            .map(vars ->
+                vars.keySet().stream()
+                    .map(varName -> new KeywordsSuggestion(varName, VARIABLE_CONFIDENCE, null))
+                    .toList()
+            )
+            .orElseGet(Collections::emptyList);
+
+        if (keywords.isEmpty() && variables.isEmpty()) {
+            if (!errorList.isEmpty()) {
+                int statusCode = (int) errorList.get(errorList.size() - 1).get("statusCode");
+                StringJoiner statusTxt = new StringJoiner(", ");
+                for (Map<String, Object> status : errorList) {
+                    statusTxt.add((String) status.get("statusTxt"));
+                }
+                throw new ResponseStatusException(HttpStatus.valueOf(statusCode), statusTxt.toString());
+            }
+        }
+        return Stream.concat(keywords.stream(), variables.stream())
+            .sorted(Comparator.comparing(KeywordsSuggestion::confidence).reversed())
+            .toList();
+    }
+
+    public List<VariablesSuggestion> getVariablesSuggestions(String file) {
+        List<Map<String, Object>> errorList = new ArrayList<>();
+
+        Optional<VariablesResponse> variablesResponse = getVariables(restClient, file, errorList);
+        if (!errorList.isEmpty()) {
+            int statusCode = (int) errorList.get(0).get("statusCode");
+            String statusTxt = (String) errorList.get(0).get("statusTxt");
+            throw new ResponseStatusException(HttpStatus.valueOf(statusCode), statusTxt);
+        }
+
+        return variablesResponse
+            .flatMap(r -> Optional.ofNullable(r.summary()))
+            .flatMap(s -> Optional.ofNullable(s.variables()))
+            .map(vars ->
+                vars.keySet().stream()
+                    .map(varName -> {
+                        ArrayList<Object> dataArray = (ArrayList) vars.get(varName);
+                        Map<String, Object> dataMap = (Map) dataArray.get(0);
+                        String standardName = dataMap.containsKey("standard_name")? (String) dataMap.get("standard_name"): "";
+                        String longName = dataMap.containsKey("long_name")? (String) dataMap.get("long_name"): "";
+                        String units = dataMap.containsKey("units")? (String) dataMap.get("units"): "";
+                        return new VariablesSuggestion(varName, standardName, longName, units);
+                    })
+                    .toList()
+            )
+            .orElseGet(Collections::emptyList);
+    }
+
+    private Optional<KeywordsResponse> getKeywords(RestClient restClient, String file, List<Map<String, Object>> errorList) {
+        return Optional.ofNullable(
             restClient
                 .get()
                 .uri("/{file}/keywords", file)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
-                    status.put("keyword", Map.of("statusCode", response.getStatusCode().value(), "statusTxt", response.getStatusText()));
+                    int code = response.getStatusCode().value();
+                    if (code == 404) code = 422;
+                    errorList.add(Map.of("statusCode", code, "statusTxt", response.getStatusText()));
                 })
                 .toEntity(KeywordsResponse.class)
                 .getBody()
-        )
-            .flatMap(kw -> Optional.ofNullable(kw.summary()))
-            .orElseGet(Collections::emptyList);
+        );
+    }
 
-        List<Suggestion> variables = Optional.ofNullable(
+    private Optional<VariablesResponse> getVariables(RestClient restClient, String file, List<Map<String, Object>> errorList) {
+        return Optional.ofNullable(
             restClient
                 .get()
                 .uri("/{file}/variables", file)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
-                    status.put("variable", Map.of("statusCode", response.getStatusCode().value(), "statusTxt", response.getStatusText()));
+                    int code = response.getStatusCode().value();
+                    if (code == 404) code = 422;
+                    errorList.add(Map.of("statusCode", code, "statusTxt", response.getStatusText()));
                 })
                 .toEntity(VariablesResponse.class)
                 .getBody()
-        )
-            .flatMap(r -> Optional.ofNullable(r.summary()))
-            .flatMap(s -> Optional.ofNullable(s.variables()))
-            .map(vars ->
-                vars.keySet().stream()
-                    .map(varName -> new Suggestion(varName, VARIABLE_CONFIDENCE, null))
-                    .toList()
-            )
-            .orElseGet(Collections::emptyList);
-
-        if (keywordSuggestions.isEmpty() && variables.isEmpty()) {
-            int statusCode = 0;
-            StringJoiner statusTxt = new StringJoiner(", ");
-            if (status.containsKey("keyword")) {
-                statusCode = (int) (status.get("keyword").get("statusCode"));
-                statusTxt.add((String) (status.get("keyword").get("statusTxt")));
-            }
-            if (status.containsKey("variable")) {
-                statusCode = (int) (status.get("variable").get("statusCode"));
-                statusTxt.add((String) (status.get("variable").get("statusTxt")));
-            }
-            if (statusCode != 0) {
-                if (statusCode == 404) {
-                    statusCode = 422;
-                    statusTxt.add("Document not found");
-                }
-                throw new ResponseStatusException(HttpStatus.valueOf(statusCode), statusTxt.toString());
-            }
-        }
-        return Stream.concat(keywordSuggestions.stream(), variables.stream())
-            .sorted(Comparator.comparing(Suggestion::confidence).reversed())
-            .toList();
+        );
     }
 }
