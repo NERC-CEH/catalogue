@@ -64,7 +64,7 @@ public class DocumentIdentifierService {
     }
 
     /**
-     * Generates a uri for a document at a paricular revision.
+     * Generates a uri for a document at a particular revision.
      * @param identifier the identifier of the document
      * @param revision the revision which the document is being read from
      * @return a string representation of a document from history

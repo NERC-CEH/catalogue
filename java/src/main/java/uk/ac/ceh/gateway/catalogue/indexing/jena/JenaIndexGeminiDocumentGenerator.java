@@ -12,6 +12,7 @@ import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.apache.jena.rdf.model.ResourceFactory.*;
 import static uk.ac.ceh.gateway.catalogue.indexing.jena.Ontology.*;
@@ -42,8 +43,13 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
         Optional.ofNullable(document.getObservedProperty())
             .orElse(Collections.emptyList())
             .forEach(op -> {
-                Resource observedPropertyResource = generator.resource(op.getUri().trim());
-
+                Resource observedPropertyResource = generator.resourceObservedProperty(
+                    Stream.of(op.getUri(), op.getTitle(), op.getValue())
+                        .filter(value -> value != null && !value.trim().isEmpty())
+                        .map(String::trim)
+                        .findFirst()
+                        .orElse("")
+                );
                 toReturn.add(createStatement(me, HAS_OBSERVED_PROPERTY, observedPropertyResource));
                 toReturn.add(createStatement(observedPropertyResource, RDFS_LABEL, createPlainLiteral(op.getValue())));
 
