@@ -24,9 +24,10 @@ export function fetchVariablesFromLegilo (model) {
   return $.getJSON(apiUrl)
     .then(data => data.map(variableData => new LegiloVariable({
       name: variableData.name,
-      standardName: variableData.standardName,
       longName: variableData.longName,
-      units: variableData.units
+      units: variableData.units,
+      meaning: variableData.meaning,
+      confidence: variableData.confidence
     })))
     .catch(error => {
       console.error('Error fetching variaqbles:', error)

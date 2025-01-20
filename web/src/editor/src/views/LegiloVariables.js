@@ -29,8 +29,8 @@ export default Backbone.View.extend({
   renderVariables (variables) {
     this.variables = variables
 
-    const filteredVariables = this.variables.filter(keyword => {
-      return !this.collection.findWhere({ value: keyword.get('name') })
+    const filteredVariables = this.variables.filter(variable => {
+      return !this.collection.findWhere({ value: variable.get('name') })
     })
 
     if (this.variables.length > 0 && filteredVariables.length === 0) {
@@ -45,11 +45,13 @@ export default Backbone.View.extend({
 
     const variablesToDisplay = filteredVariables.slice(0, this.variablesToShow)
 
-    const rowsHTML = variablesToDisplay.map(keyword => {
-      const name = keyword.get('name')
-      const title = keyword.get('standardName')
-      const units = keyword.get('units')
-      const description = keyword.get('longName')
+    const rowsHTML = variablesToDisplay.map(variable => {
+      const name = variable.get('name')
+      const title = variable.get('longName')
+      const units = variable.get('units')
+      const description = variable.get('meaning')
+      const confidence = variable.get('confidence')
+
       const isChecked = this.selectedVariables.some(selected => selected.value === name)
       return `
       <tr>
@@ -58,6 +60,7 @@ export default Backbone.View.extend({
         <td>${title}</td>
         <td>${units}</td>
         <td>${description}</td>
+        <td>${confidence}</td>
       </tr>
     `
     }).join('')
@@ -69,6 +72,7 @@ export default Backbone.View.extend({
         <th scope="col">Title</th>
         <th scope="col">Unit</th>
         <th scope="col">Description</th>
+        <th scope="col">Confidence</th>
       </tr>
     `
     this.$('.keywords-table-head').html(tableHead)
@@ -97,7 +101,7 @@ export default Backbone.View.extend({
   },
 
   addSelectedVariables () {
-    this.selectedVariables.forEach(keyword => this.collection.add(new this.ModelType(keyword)))
+    this.selectedVariables.forEach(variable => this.collection.add(new this.ModelType(variable)))
 
     this.selectedVariables = []
     this.renderVariables(this.variables)

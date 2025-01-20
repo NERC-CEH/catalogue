@@ -3,8 +3,9 @@ import Backbone from 'backbone'
 export default Backbone.Model.extend({
   defaults: {
     name: '',
-    standardName: '',
     longName: '',
-    units: ''
+    units: '',
+    meaning: '',
+    confidence: 0.0
   }
 })

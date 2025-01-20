@@ -6,8 +6,8 @@ import { LegiloVariable, ObservedProperty } from '../src/models'
 describe('Test LegiloVariables View', () => {
   let view = null
   const mockVariables = [
-    new LegiloVariable({ name: 'test1', standardName: 'shortName1', longName: 'longName1', units: 'unit1' }),
-    new LegiloVariable({ name: 'test2', standardName: 'shortName2', longName: 'longName2', units: 'unit2' })
+    new LegiloVariable({ name: 'test1', longName: 'longName1', units: 'unit1', meaning: 'meaning1', confidence: 0.7 }),
+    new LegiloVariable({ name: 'test2', longName: 'longName2', units: 'unit2', meaning: 'meaning1', confidence: 0.8 })
   ]
 
   beforeEach(() => {
@@ -81,8 +81,8 @@ describe('Test LegiloVariables View', () => {
 
   it('fetchVariablesFromLegilo should fetch variables from the API', (done) => {
     const mockApiResponse = [
-      { name: 'test1', standardName: 'shortName1', longName: 'longName1', units: 'unit1' },
-      { name: 'test2', standardName: 'shortName2', longName: 'longName2', units: 'unit2' }
+      { name: 'test1', longName: 'longName1', units: 'unit1', meaning: 'meaning1', confidence: 0.7 },
+      { name: 'test2', longName: 'longName2', units: 'unit2', meaning: 'meaning2', confidence: 0.8 }
     ]
 
     spyOn($, 'getJSON').and.returnValue(Promise.resolve(mockApiResponse))
@@ -92,9 +92,10 @@ describe('Test LegiloVariables View', () => {
 
       expect(variables.length).toBe(2)
       expect(variables[0].get('name')).toBe('test1')
-      expect(variables[0].get('standardName')).toBe('shortName1')
       expect(variables[0].get('longName')).toBe('longName1')
       expect(variables[0].get('units')).toBe('unit1')
+      expect(variables[0].get('meaning')).toBe('meaning1')
+      expect(variables[0].get('confidence')).toBe(0.7)
 
       done()
     })

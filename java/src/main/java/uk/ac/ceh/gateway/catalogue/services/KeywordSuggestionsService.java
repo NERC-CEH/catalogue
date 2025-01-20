@@ -28,7 +28,7 @@ public class KeywordSuggestionsService {
     private RestClient restClient;
 
     public record KeywordsSuggestion(String name, double confidence, String matched_url) { }
-    public record VariablesSuggestion(String name, String standardName, String longName, String units) { }
+    public record VariablesSuggestion(String name, String longName, String units, String meaning, double confidence) { }
     record KeywordsResponse(List<KeywordsSuggestion> summary) { }
     record VariablesResponse(VariablesSummary summary) { }
     record VariablesSummary(Map<String, Object> variables) { }
@@ -97,11 +97,14 @@ public class KeywordSuggestionsService {
                     .map(varName -> {
                         ArrayList<Object> dataArray = (ArrayList) vars.get(varName);
                         Map<String, Object> dataMap = (Map) dataArray.get(0);
-                        String standardName = dataMap.containsKey("standard_name")? (String) dataMap.get("standard_name"): "";
                         String longName = dataMap.containsKey("long_name")? (String) dataMap.get("long_name"): "";
                         String units = dataMap.containsKey("units")? (String) dataMap.get("units"): "";
-                        return new VariablesSuggestion(varName, standardName, longName, units);
+                        String meaning = dataMap.containsKey("meaning")? (String) dataMap.get("meaning"): "";
+                        double confidence = dataMap.containsKey("confidence")? (double) dataMap.get("confidence"): 0.0;
+
+                        return new VariablesSuggestion(varName, longName, units, meaning, confidence);
                     })
+                    .sorted(Comparator.comparing(VariablesSuggestion::confidence).reversed())
                     .toList()
             )
             .orElseGet(Collections::emptyList);
