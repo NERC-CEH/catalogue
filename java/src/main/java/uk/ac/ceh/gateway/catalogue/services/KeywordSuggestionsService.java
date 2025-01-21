@@ -82,10 +82,10 @@ public class KeywordSuggestionsService {
                     .map(varName -> {
                         ArrayList<Object> dataArray = (ArrayList) vars.get(varName);
                         Map<String, Object> dataMap = (Map) dataArray.get(0);
-                        String longName = dataMap.containsKey("long_name")? (String) dataMap.get("long_name"): "";
-                        String units = dataMap.containsKey("units")? (String) dataMap.get("units"): "";
-                        String meaning = dataMap.containsKey("meaning")? (String) dataMap.get("meaning"): "";
-                        double confidence = dataMap.containsKey("confidence")? (double) dataMap.get("confidence"): 0.0;
+                        String longName = (String) dataMap.getOrDefault("long_name", "");
+                        String units = (String) dataMap.getOrDefault("units", "");
+                        String meaning = (String) dataMap.getOrDefault("meaning", "");
+                        double confidence = getDoubleValue(dataMap, "confidence");
 
                         return new VariablesSuggestion(varName, longName, units, meaning, confidence);
                     })
@@ -125,5 +125,15 @@ public class KeywordSuggestionsService {
                 .toEntity(VariablesResponse.class)
                 .getBody()
         );
+    }
+
+    private double getDoubleValue(Map map, String key) {
+        double value = 0.0;
+        if (map.containsKey(key)) {
+            Object v = map.get(key);
+            if (v != null) value = (double) v;
+        }
+
+        return value;
     }
 }
