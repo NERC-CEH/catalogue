@@ -62,7 +62,7 @@ export default SingleView.extend({
   },
 
   fetchVariables () {
-    const legiloButtonClass = 'legilo-fetch-variables-btn'
+    const legiloButtonClass = 'legilo-fetch-variables'
     legiloUtil.fetchStartDisplay(legiloButtonClass)
 
     fetchVariablesFromLegilo(this.model)

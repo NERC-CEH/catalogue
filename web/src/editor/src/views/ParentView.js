@@ -11,7 +11,7 @@ export default SingleView.extend({
 
   events: {
     'click button.add': 'add',
-    'click .legilo-fetch-btn': 'fetchKeywords'
+    'click .legilo-fetch-keywords-btn': 'fetchKeywords'
   },
 
   initialize (options) {
@@ -57,7 +57,7 @@ export default SingleView.extend({
   },
 
   fetchKeywords () {
-    const legiloButtonClass = 'legilo-fetch-btn'
+    const legiloButtonClass = 'legilo-fetch-keywords'
     legiloUtil.fetchStartDisplay(legiloButtonClass)
 
     fetchKeywordsFromLegilo(this.model)

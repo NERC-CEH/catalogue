@@ -33,18 +33,18 @@ describe('Test LegiloVariables View', () => {
   it('should render variables and make table visible', () => {
     view.renderVariables(mockVariables)
 
-    expect(view.$('.keyword-table-header').css('display')).not.toBe('none')
-    expect(view.$('.keywords-table').css('display')).not.toBe('none')
-    expect(view.$('.keywords-buttons').css('display')).not.toBe('none')
+    expect(view.$('.variable-table-header').css('display')).not.toBe('none')
+    expect(view.$('.variables-table').css('display')).not.toBe('none')
+    expect(view.$('.variables-buttons').css('display')).not.toBe('none')
 
-    expect(view.$('.keywords-table-body').children().length).toBe(2)
+    expect(view.$('.variables-table-body').children().length).toBe(2)
   })
 
   it('showNoVariablesMessage should display the message when no variables are available', () => {
     view.renderVariables([])
 
-    expect(view.$('.no-keywords-message').text()).toContain('No suggested variables available.')
-    expect(view.$('.keywords-table').is(':visible')).toBeFalse()
+    expect(view.$('.no-variables-message').text()).toContain('No suggested variables available.')
+    expect(view.$('.variables-table').is(':visible')).toBeFalse()
   })
 
   it('close should hide the table and buttons', () => {
@@ -52,9 +52,9 @@ describe('Test LegiloVariables View', () => {
     view.showTableAndButtons()
 
     view.close()
-    expect(view.$('.keywords-table').is(':visible')).toBeFalse()
-    expect(view.$('.keywords-buttons').is(':visible')).toBeFalse()
-    expect(view.$('.keyword-table-header').is(':visible')).toBeFalse()
+    expect(view.$('.variables-table').is(':visible')).toBeFalse()
+    expect(view.$('.variables-buttons').is(':visible')).toBeFalse()
+    expect(view.$('.variable-table-header').is(':visible')).toBeFalse()
   })
 
   it('toggleVariableSelection should add and remove variables from selectedVariables', () => {

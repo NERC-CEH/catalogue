@@ -14,7 +14,6 @@ import org.springframework.web.server.ResponseStatusException;
 import uk.ac.ceh.gateway.catalogue.util.Headers;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -54,27 +53,13 @@ public class KeywordSuggestionsService {
             .flatMap(kw -> Optional.ofNullable(kw.summary()))
             .orElseGet(Collections::emptyList);
 
-        List<KeywordsSuggestion> variables = getVariables(restClient, file, errorList)
-            .flatMap(r -> Optional.ofNullable(r.summary()))
-            .flatMap(s -> Optional.ofNullable(s.variables()))
-            .map(vars ->
-                vars.keySet().stream()
-                    .map(varName -> new KeywordsSuggestion(varName, VARIABLE_CONFIDENCE, null))
-                    .toList()
-            )
-            .orElseGet(Collections::emptyList);
-
-        if (keywords.isEmpty() && variables.isEmpty()) {
-            if (!errorList.isEmpty()) {
-                int statusCode = (int) errorList.get(errorList.size() - 1).get("statusCode");
-                StringJoiner statusTxt = new StringJoiner(", ");
-                for (Map<String, Object> status : errorList) {
-                    statusTxt.add((String) status.get("statusTxt"));
-                }
-                throw new ResponseStatusException(HttpStatus.valueOf(statusCode), statusTxt.toString());
-            }
+        if (!errorList.isEmpty()) {
+            int statusCode = (int) errorList.get(0).get("statusCode");
+            String statusTxt = (String) errorList.get(0).get("statusTxt");
+            throw new ResponseStatusException(HttpStatus.valueOf(statusCode), statusTxt);
         }
-        return Stream.concat(keywords.stream(), variables.stream())
+
+        return keywords.stream()
             .sorted(Comparator.comparing(KeywordsSuggestion::confidence).reversed())
             .toList();
     }

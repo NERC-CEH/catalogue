@@ -1,17 +1,17 @@
 import $ from 'jquery'
 
 export function fetchStartDisplay (classId) {
-  $('.' + classId).prop('disabled', true)
-  $('.loader').show()
-  $('.loader-msg')
+  $('.' + classId + '-btn').prop('disabled', true)
+  $('.' + classId + '-loader').show()
+  $('.' + classId + '-loader-msg')
     .removeClass('text-primary')
     .text('It may take a while.')
 }
 
 export function fetchSuccessDisplay (classId) {
-  $('.loader').hide()
-  $('.loader-msg').text('')
-  $('.' + classId).prop('disabled', false)
+  $('.' + classId + '-loader').hide()
+  $('.' + classId + '-loader-msg').text('')
+  $('.' + classId + '-btn').prop('disabled', false)
 }
 
 export function fetchFailDisplay (classId, error) {
@@ -32,9 +32,9 @@ export function fetchFailDisplay (classId, error) {
       }
     }
   }
-  $('.loader').hide()
-  $('.loader-msg')
+  $('.' + classId + '-loader').hide()
+  $('.' + classId + '-loader-msg')
     .addClass('text-primary')
     .text(errText)
-  $('.' + classId).prop('disabled', false)
+  $('.' + classId + '-btn').prop('disabled', false)
 }

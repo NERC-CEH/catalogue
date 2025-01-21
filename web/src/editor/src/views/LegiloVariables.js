@@ -1,6 +1,6 @@
 import Backbone from 'backbone'
 import $ from 'jquery'
-import template from '../templates/LegiloKeywords'
+import template from '../templates/LegiloVariables'
 
 export default Backbone.View.extend({
 
@@ -15,10 +15,10 @@ export default Backbone.View.extend({
   },
 
   events: {
-    'click .legilo-close-btn': 'close',
-    'click .legilo-add-btn': 'addSelectedVariables',
+    'click .legilo-variable-close-btn': 'close',
+    'click .legilo-variable-add-btn': 'addSelectedVariables',
     'change .variable-checkbox': 'toggleVariableSelection',
-    'click .legilo-load-more-btn': 'loadAllVariables'
+    'click .legilo-variable-load-more-btn': 'loadAllVariables'
   },
 
   render () {
@@ -65,27 +65,16 @@ export default Backbone.View.extend({
     `
     }).join('')
 
-    const tableHead = `
-      <tr>
-        <th scope="col" class="col-1">Select</th>
-        <th scope="col">Name</th>
-        <th scope="col">Title</th>
-        <th scope="col">Unit</th>
-        <th scope="col">Description</th>
-        <th scope="col">Confidence</th>
-      </tr>
-    `
-    this.$('.keywords-table-head').html(tableHead)
-    this.$('.keywords-table-body').html(rowsHTML)
+    this.$('.variables-table-body').html(rowsHTML)
 
     if (filteredVariables.length > this.variablesToShow) {
-      this.$('.legilo-load-more-btn').show()
+      this.$('.legilo-variable-load-more-btn').show()
     } else {
-      this.$('.legilo-load-more-btn').hide()
+      this.$('.legilo-variable-load-more-btn').hide()
     }
 
     this.showTableAndButtons()
-    this.$('.no-keywords-message').hide()
+    this.$('.no-variables-message').hide()
   },
 
   toggleVariableSelection (event) {
@@ -108,16 +97,16 @@ export default Backbone.View.extend({
   },
 
   showTableAndButtons () {
-    this.$('.keyword-table-header').show()
-    this.$('.keywords-table').show()
-    this.$('.keywords-buttons').show()
+    this.$('.variable-table-header').show()
+    this.$('.variables-table').show()
+    this.$('.variables-buttons').show()
   },
 
   close () {
-    this.$('.keywords-table').hide()
-    this.$('.keywords-buttons').hide()
-    this.$('.legilo-load-more-btn').hide()
-    this.$('.keyword-table-header').hide()
+    this.$('.variables-table').hide()
+    this.$('.variables-buttons').hide()
+    this.$('.legilo-variable-load-more-btn').hide()
+    this.$('.variable-table-header').hide()
     this.selectedVariables = []
   },
 
@@ -127,9 +116,9 @@ export default Backbone.View.extend({
   },
 
   showNoVariablesMessage (message) {
-    this.$('.no-keywords-message').text(message).show()
-    this.$('.keywords-table').hide()
-    this.$('.keywords-buttons').hide()
-    this.$('.keyword-table-header').hide()
+    this.$('.no-variables-message').text(message).show()
+    this.$('.variables-table').hide()
+    this.$('.variables-buttons').hide()
+    this.$('.variable-table-header').hide()
   }
 })

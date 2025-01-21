@@ -52,17 +52,11 @@ public class KeywordSuggestionsServiceTest {
     void getKeywordsSuggestions() {
         //given
         String keywordsResponse = IOUtils.toString(getClass().getResource("legilo-keywords-response.json"), UTF_8);
-        String variablesResponse = IOUtils.toString(getClass().getResource("legilo-variables-response.json"), UTF_8);
         mockServer
             .expect(requestTo(equalTo(LEGILO_URL + FILE_ID + "/keywords")))
             .andExpect(method(HttpMethod.GET))
             .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic dXNlcm5hbWU6cGFzc3dvcmQ="))
             .andRespond(withSuccess(keywordsResponse, MediaType.APPLICATION_JSON));
-        mockServer
-            .expect(requestTo(equalTo(LEGILO_URL + FILE_ID + "/variables")))
-            .andExpect(method(HttpMethod.GET))
-            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic dXNlcm5hbWU6cGFzc3dvcmQ="))
-            .andRespond(withSuccess(variablesResponse, MediaType.APPLICATION_JSON));
 
         //when
         List<KeywordSuggestionsService.KeywordsSuggestion> keywordsSuggestions = service.getKeywordsSuggestions(FILE_ID);
@@ -70,8 +64,8 @@ public class KeywordSuggestionsServiceTest {
         //then
         mockServer.verify();
         assertThat(keywordsSuggestions, allOf(
-            hasItem(name(is("bears"))),
-            hasItem(name(is("temp"))),
+            hasItem(name(is("pools"))),
+            hasItem(name(is("sample collection"))),
             hasItem(name(is("absorbance")))
         ));
     }
@@ -85,17 +79,12 @@ public class KeywordSuggestionsServiceTest {
             .andExpect(method(HttpMethod.GET))
             .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic dXNlcm5hbWU6cGFzc3dvcmQ="))
             .andRespond(withStatus(HttpStatus.UNPROCESSABLE_ENTITY));
-        mockServer
-            .expect(requestTo(equalTo(LEGILO_URL + FILE_ID + "/variables")))
-            .andExpect(method(HttpMethod.GET))
-            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic dXNlcm5hbWU6cGFzc3dvcmQ="))
-            .andRespond(withStatus(HttpStatus.NOT_FOUND));
 
         //when
         ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> service.getKeywordsSuggestions(FILE_ID));
 
         //then
-        assertEquals("422 UNPROCESSABLE_ENTITY \"Unprocessable Entity, Not Found\"", exception.getMessage());
+        assertEquals("422 UNPROCESSABLE_ENTITY \"Unprocessable Entity\"", exception.getMessage());
     }
 
     @Test
