@@ -43,17 +43,25 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
         Optional.ofNullable(document.getObservedProperty())
             .orElse(Collections.emptyList())
             .forEach(op -> {
-                Resource observedPropertyResource = generator.resourceObservedProperty(
+
+                Resource observedPropertyResource = createResource(
                     Stream.of(op.getUri(), op.getTitle(), op.getValue())
                         .filter(value -> value != null && !value.trim().isEmpty())
                         .map(String::trim)
                         .findFirst()
                         .orElse("")
                 );
-                toReturn.add(createStatement(me, HAS_OBSERVED_PROPERTY, observedPropertyResource));
+
+                if (op.getUri() !=null && !op.getUri().isEmpty()) {
+                    toReturn.add(createStatement(me, HAS_OBSERVED_PROPERTY, observedPropertyResource));
+                } else {
+                    toReturn.add(createStatement(me, HAS_OBSERVED_PROPERTY, createPlainLiteral(String.valueOf(observedPropertyResource))));
+                    observedPropertyResource = generator.resourceObservedProperty(observedPropertyResource, document.getId());
+                }
+
                 toReturn.add(createStatement(observedPropertyResource, RDFS_LABEL, createPlainLiteral(op.getValue())));
 
-                if (op.getUnitsUri() != null) {
+                if (op.getUnitsUri() != null && !op.getUnitsUri().isEmpty()) {
                     Resource unitResource = generator.resource(op.getUnitsUri().trim());
                     toReturn.add(createStatement(observedPropertyResource, HAS_UNIT, unitResource));
 
