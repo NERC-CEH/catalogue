@@ -91,6 +91,7 @@ class JenaIndexGeminiDocumentGeneratorTest {
                 .build()
         ));
         given(service.generateUri("t")).willReturn("https://example.com/t");
+        given(service.generateObservedPropertyUri("Temperature", "t")).willReturn("https://example.com/id/t/Temperature");
 
         // When
         List<Statement> actual = generator.generateIndex(document);
@@ -99,8 +100,8 @@ class JenaIndexGeminiDocumentGeneratorTest {
         boolean hasObservedProperty = actual.stream()
             .anyMatch(statement ->
                 statement.getSubject().getURI().equals("https://example.com/t") &&
-                    statement.getObject().isResource() &&
-                    statement.getObject().asResource().getURI().equals("Temperature")
+                    statement.getObject().isLiteral() &&
+                    statement.getObject().asLiteral().getString().equals("Temperature")
             );
 
         assertThat("ObservedProperty should fallback to title when URI is missing", hasObservedProperty);
@@ -117,6 +118,7 @@ class JenaIndexGeminiDocumentGeneratorTest {
                 .build()
         ));
         given(service.generateUri("t")).willReturn("https://example.com/t");
+        given(service.generateObservedPropertyUri("Temp", "t")).willReturn("https://example.com/id/t/Temp");
 
         // When
         List<Statement> actual = generator.generateIndex(document);
@@ -125,8 +127,8 @@ class JenaIndexGeminiDocumentGeneratorTest {
         boolean hasObservedProperty = actual.stream()
             .anyMatch(statement ->
                 statement.getSubject().getURI().equals("https://example.com/t") &&
-                    statement.getObject().isResource() &&
-                    statement.getObject().asResource().getURI().equals("Temp")
+                    statement.getObject().isLiteral() &&
+                    statement.getObject().asLiteral().getString().equals("Temp")
             );
 
         assertThat("ObservedProperty should fallback to value when URI and title are missing", hasObservedProperty);
@@ -149,9 +151,8 @@ class JenaIndexGeminiDocumentGeneratorTest {
         boolean hasObservedProperty = actual.stream()
             .anyMatch(statement ->
                 statement.getSubject().getURI().equals("https://example.com/t") &&
-                    statement.getObject().isResource() &&
-                    (statement.getObject().asResource().getURI() == null ||
-                        statement.getObject().asResource().getURI().isEmpty())
+                    statement.getObject().isLiteral() &&
+                    (statement.getObject().asLiteral().getString().isEmpty())
             );
 
         assertThat("ObservedProperty should handle empty fields", hasObservedProperty);
