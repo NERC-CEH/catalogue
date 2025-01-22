@@ -13,7 +13,6 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.model.ObservedProperty;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -78,5 +77,84 @@ class JenaIndexGeminiDocumentGeneratorTest {
             );
 
         assertThat("ObservedProperty should be indexed with correct URI", hasObservedProperty);
+    }
+
+    @Test
+    void observedPropertiesFallbackToTitleWhenUriIsMissing() {
+        // Given
+        val document = new GeminiDocument();
+        document.setId("t");
+        document.setObservedProperty(List.of(
+            ObservedProperty.builder()
+                .title("Temperature")
+                .value("Temp")
+                .build()
+        ));
+        given(service.generateUri("t")).willReturn("https://example.com/t");
+        given(service.generateObservedPropertyUri("Temperature", "t")).willReturn("https://example.com/id/t/Temperature");
+
+        // When
+        List<Statement> actual = generator.generateIndex(document);
+
+        // Then
+        boolean hasObservedProperty = actual.stream()
+            .anyMatch(statement ->
+                statement.getSubject().getURI().equals("https://example.com/t") &&
+                    statement.getObject().isLiteral() &&
+                    statement.getObject().asLiteral().getString().equals("Temperature")
+            );
+
+        assertThat("ObservedProperty should fallback to title when URI is missing", hasObservedProperty);
+    }
+
+    @Test
+    void observedPropertiesFallbackToValueWhenUriAndTitleAreMissing() {
+        // Given
+        val document = new GeminiDocument();
+        document.setId("t");
+        document.setObservedProperty(List.of(
+            ObservedProperty.builder()
+                .value("Temp")
+                .build()
+        ));
+        given(service.generateUri("t")).willReturn("https://example.com/t");
+        given(service.generateObservedPropertyUri("Temp", "t")).willReturn("https://example.com/id/t/Temp");
+
+        // When
+        List<Statement> actual = generator.generateIndex(document);
+
+        // Then
+        boolean hasObservedProperty = actual.stream()
+            .anyMatch(statement ->
+                statement.getSubject().getURI().equals("https://example.com/t") &&
+                    statement.getObject().isLiteral() &&
+                    statement.getObject().asLiteral().getString().equals("Temp")
+            );
+
+        assertThat("ObservedProperty should fallback to value when URI and title are missing", hasObservedProperty);
+    }
+
+    @Test
+    void observedPropertiesHandleEmptyFields() {
+        // Given
+        val document = new GeminiDocument();
+        document.setId("t");
+        document.setObservedProperty(List.of(
+            ObservedProperty.builder().build()
+        ));
+        given(service.generateUri("t")).willReturn("https://example.com/t");
+
+        // When
+        List<Statement> actual = generator.generateIndex(document);
+
+        // Then
+        boolean hasObservedProperty = actual.stream()
+            .anyMatch(statement ->
+                statement.getSubject().getURI().equals("https://example.com/t") &&
+                    statement.getObject().isLiteral() &&
+                    (statement.getObject().asLiteral().getString().isEmpty())
+            );
+
+        assertThat("ObservedProperty should handle empty fields", hasObservedProperty);
     }
 }

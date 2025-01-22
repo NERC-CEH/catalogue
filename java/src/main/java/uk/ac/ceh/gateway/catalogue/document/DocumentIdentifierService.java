@@ -64,7 +64,7 @@ public class DocumentIdentifierService {
     }
 
     /**
-     * Generates a uri for a document at a paricular revision.
+     * Generates a uri for a document at a particular revision.
      * @param identifier the identifier of the document
      * @param revision the revision which the document is being read from
      * @return a string representation of a document from history
@@ -86,5 +86,20 @@ public class DocumentIdentifierService {
      */
     public String generateFileId() {
         return UUID.randomUUID().toString();
+    }
+
+    /**
+     * Generates a uri for an observed property as it is lacking one already.
+     * @param resourceString the identifier of the document
+     * @param datasetId the document id of the observed property
+     * @return a constructed string representation of an uri for an observed property lacking an uri
+     */
+    public String generateObservedPropertyUri(@NonNull String resourceString, @NonNull String datasetId) {
+        return String.format(
+            "%s/id/%s/%s",
+            baseUri,
+            datasetId,
+            resourceString.replace(" ", "-")
+        );
     }
 }
