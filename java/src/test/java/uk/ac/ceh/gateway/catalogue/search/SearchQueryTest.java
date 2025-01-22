@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.jupiter.api.Assertions.*;
@@ -224,8 +225,10 @@ public class SearchQueryTest {
         assertThat("Solr query should be the 'default text'", solrQuery.getQuery(), equalTo(SearchQuery.DEFAULT_SEARCH_TERM));
         assertThat(Arrays.asList(solrQuery.getFilterQueries()).contains("{!term f=view}public"), is(true));
         assertThat(Arrays.asList(solrQuery.getFilterQueries()).contains("{!term f=state}published"),is(true));
-        assertThat(Arrays.asList(solrQuery.getFacetFields()).contains("licence"), is(true));
-        assertThat(Arrays.asList(solrQuery.getFacetFields()).contains("resourceType"), is(true));
+        assertThat(Arrays.asList(solrQuery.getFacetFields())
+            .contains("{!ex=resourceType,licence}resourceType"), is(true));
+        assertThat(Arrays.asList(solrQuery.getFacetFields())
+            .contains("{!ex=resourceType,licence}licence"), is(true));
         assertThat(solrQuery.getStart(), is(equalTo(0)));
         assertThat(solrQuery.getRows(), is(equalTo(DEFAULT_ROWS)));
         assertThat(solrQuery.getFacetMinCount(), is(equalTo(1)));
@@ -332,7 +335,7 @@ public class SearchQueryTest {
 
         //Then
         assertThat(solrQuery.getQuery(), equalTo(SearchQuery.DEFAULT_SEARCH_TERM));
-        assertTrue(List.of(solrQuery.getFilterQueries()).contains("{!term f=resourceType}dataset"));
+        assertTrue(List.of(solrQuery.getFilterQueries()).contains("{!tag=resourceType}resourceType:\"dataset\""));
     }
 
     @Test
@@ -874,10 +877,65 @@ public class SearchQueryTest {
         assertThat(
             Arrays.asList(solrQuery.getFilterQueries()),
             allOf(
-                hasItem("topic:(\"Agriculture\" OR \"Biodiversity\")"),
-                hasItem("dataType:(\"Dataset\" OR \"Data Collection\")")
+                hasItem(containsString("topic:(\"Agriculture\" OR \"Biodiversity\")")),
+                hasItem(containsString("dataType:(\"Dataset\" OR \"Data\\ Collection\")"))
             )
         );
     }
 
+    @Test
+    public void testFacetExclusionTagsAppliedCorrectly() {
+        // Given
+
+        List<FacetFilter> facetFilters = List.of(
+            new FacetFilter("topic", "Agriculture"),
+            new FacetFilter("recordType", "Dataset")
+        );
+
+        SearchQuery query = new SearchQuery(
+            ENDPOINT,
+            CatalogueUser.PUBLIC_USER,
+            SearchQuery.DEFAULT_SEARCH_TERM,
+            DEFAULT_BBOX,
+            SpatialOperation.ISWITHIN,
+            DEFAULT_PAGE,
+            DEFAULT_ROWS,
+            facetFilters,
+            groupStore,
+            Catalogue
+            .builder()
+            .id("eidc")
+            .title("Environmental Information Data Centre")
+            .url("https://eidc-catalogue.ceh.ac.uk")
+            .contactUrl("")
+            .logo("")
+            .build(),
+            DEFAULT_FACETS,
+            null,
+            null
+        );
+
+        // When
+        SolrQuery solrQuery = query.build();
+
+        List<String> expectedFacetFields = List.of(
+            "{!ex=resourceType,licence}resourceType",
+            "{!ex=resourceType,licence}licence"
+        );
+
+        // Then
+        assertThat(
+            Arrays.asList(solrQuery.getFacetFields()),
+            containsInAnyOrder(expectedFacetFields.toArray())
+        );
+
+        assertThat(
+            Arrays.asList(solrQuery.getFilterQueries()),
+            allOf(
+                hasItem(containsString("{!tag=topic}topic:\"Agriculture\"")),
+                hasItem(containsString("{!tag=recordType}recordType:\"Dataset\"")),
+                hasItem(containsString("{!term f=catalogue}eidc"))
+            )
+        );
+    }
 }
