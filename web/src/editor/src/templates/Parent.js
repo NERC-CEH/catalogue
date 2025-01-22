@@ -28,17 +28,17 @@ export default _.template(`
     </div>
     <div class="col-md-9">
       <div class="existing container-fluid"></div>
-      <% if (data.fetchKeywordsButton ) { %>
-      <div class="d-flex justify-content-center">
-        <span class="legilo-fetch-keywords-loader spinner-border text-secondary loader mx-3" role="status" style="display: none;"></span>
-        <span class="legilo-fetch-keywords-loader-msg"></span>
-      </div>
+      <% if (data.fetchKeywordsButton) { %>
+        <div class="d-flex justify-content-center">
+          <span class="legilo-fetch-keywords-loader spinner-border text-secondary loader mx-3" role="status" style="display: none;"></span>
+          <span class="legilo-fetch-keywords-loader-msg"></span>
+        </div>
       <% } %>
       <% if (data.fetchVariablesButton) { %>
-      <div class="d-flex justify-content-center">
-        <span class="legilo-fetch-variables-loader spinner-border text-secondary loader mx-3" role="status" style="display: none;"></span>
-        <span class="legilo-fetch-variables-loader-msg"></span>
-      </div>
+        <div class="d-flex justify-content-center">
+          <span class="legilo-fetch-variables-loader spinner-border text-secondary loader mx-3" role="status" style="display: none;"></span>
+          <span class="legilo-fetch-variables-loader-msg"></span>
+        </div>
       <% } %>
     </div>
 </div>
