@@ -21,11 +21,11 @@ export default ObjectInputView.extend({
     if (('vocabs' in this.data) && (catalogue in this.data.vocabs)) {
       this.vocabularies.reset(
         this.data.vocabs[catalogue]
-        .filter(vocab => vocabsList.has(vocab))
-        .map(vocab => vocabsList.get(vocab))
+          .filter(vocab => vocabsList.has(vocab))
+          .map(vocab => vocabsList.get(vocab))
       )
     }
-    if ((this.vocabularies.length == 0) && (catalogue in vocabsPredefined)) {
+    if ((this.vocabularies.length === 0) && (catalogue in vocabsPredefined)) {
       const vocabs = vocabsPredefined[catalogue]
       this.vocabularies.reset(
         Object.keys(vocabs).map(vocab => vocabs[vocab])
@@ -42,7 +42,7 @@ export default ObjectInputView.extend({
       this.$('.keywordPicker').addClass('d-none')
     }
 
-    if (this.vocabularies.length == 0) {
+    if (this.vocabularies.length === 0) {
       this.$('.keywordPicker').addClass('d-none')
     } else {
       this.$('.autocomplete').autocomplete({

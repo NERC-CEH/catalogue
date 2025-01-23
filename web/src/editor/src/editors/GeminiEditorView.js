@@ -287,7 +287,7 @@ export default EditorView.extend({
           label: 'Places',
           ObjectInputView: KeywordVocabularyView,
           vocabs: {
-            eidc: [ 'cast' ]
+            eidc: ['cast']
           },
           multiline: true,
           helpText: `\
@@ -301,7 +301,7 @@ export default EditorView.extend({
           label: 'Projects',
           ObjectInputView: KeywordVocabularyView,
           vocabs: {
-            eidc: [ 'cast' ]
+            eidc: ['cast']
           },
           multiline: true,
           helpText: 'Controlled keywords describing projects that fund/support the creation of this resource',

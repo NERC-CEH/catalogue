@@ -18,45 +18,45 @@ export const vocabsPredefined = {
   assist: { // eidc profile
     'assist-topics': vocabsList.get('assist-topics'),
     'assist-research-themes': vocabsList.get('assist-research-themes'),
-    'cast': vocabsList.get('cast')
+    cast: vocabsList.get('cast')
   },
   eidc: {
-    'cast': vocabsList.get('cast'),
-    'envThes': vocabsList.get('envThes'),
-    'gemet': vocabsList.get('gemet')
+    cast: vocabsList.get('cast'),
+    envThes: vocabsList.get('envThes'),
+    gemet: vocabsList.get('gemet')
   },
   ukceh: {
-    'cast': vocabsList.get('cast'),
-    'envThes': vocabsList.get('envThes'),
+    cast: vocabsList.get('cast'),
+    envThes: vocabsList.get('envThes'),
     'research-project': vocabsList.get('research-project'),
     'research-theme': vocabsList.get('research-theme'),
     'science-challenge': vocabsList.get('science-challenge'),
-    'service': vocabsList.get('service')
+    service: vocabsList.get('service')
   },
   nm: {
-    'cast': vocabsList.get('cast')
+    cast: vocabsList.get('cast')
   },
   ukeof: {
-    'gemet': vocabsList.get('gemet')
+    gemet: vocabsList.get('gemet')
   },
   ukscape: {
     'research-project': vocabsList.get('research-project'),
     'research-theme': vocabsList.get('research-theme'),
     'science-challenge': vocabsList.get('science-challenge'),
-    'service': vocabsList.get('service')
+    service: vocabsList.get('service')
   },
   datalabs: { // datalabs profile
     'dukems-pollutant': vocabsList.get('dukems-pollutant'),
     'dukems-sector': vocabsList.get('dukems-sector')
   },
   elter: { // elter profile
-    'elterCL': vocabsList.get('elterCL')
+    elterCL: vocabsList.get('elterCL')
   },
   inms: { // inms profile
-    'inms': vocabsList.get('inms')
+    inms: vocabsList.get('inms')
   },
   pimfe: { // pimfe profile
-    'cast': vocabsList.get('cast'),
+    cast: vocabsList.get('cast'),
     'research-theme': vocabsList.get('research-theme')
   }
 }

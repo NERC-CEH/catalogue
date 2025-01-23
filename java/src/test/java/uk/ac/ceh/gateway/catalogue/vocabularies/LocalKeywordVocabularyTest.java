@@ -44,8 +44,7 @@ class LocalKeywordVocabularyTest {
             "",
             "/uri",
             "/preferredLabel/string",
-            solrClient,
-            catalogues
+            solrClient
         );
 
         // When
@@ -74,8 +73,7 @@ class LocalKeywordVocabularyTest {
             "",
             "/uri",
             "/preferredLabel/string",
-            solrClient,
-            catalogues
+            solrClient
         );
 
         // Given
@@ -93,27 +91,5 @@ class LocalKeywordVocabularyTest {
         verify(solrClient, never()).commit(COLLECTION);
     }
 
-
-    @Test
-    void getCatalogueIds() {
-        // Setup
-        String filePath = Objects.requireNonNull(getClass().getResource(LOCAL_JSON_FILE)).getFile();
-        val catalogues = Arrays.asList("test-0", "test-1");
-
-        vocabularyService = new LocalKeywordVocabulary(
-            VOCABULARY_ID,
-            VOCABULARY_NAME,
-            filePath,
-            "",
-            "/uri",
-            "/preferredLabel/string",
-            solrClient,
-            catalogues
-        );
-
-        // When
-        assertTrue(vocabularyService.usedInCatalogue("test-0"));
-        assertFalse(vocabularyService.usedInCatalogue("not"));
-    }
 }
 
