@@ -286,7 +286,9 @@ export default EditorView.extend({
           modelAttribute: 'keywordsPlace',
           label: 'Places',
           ObjectInputView: KeywordVocabularyView,
-          vocabs: [ 'cast', 'envthes', 'gemet' ],
+          vocabs: {
+            eidc: [ 'cast' ]
+          },
           multiline: true,
           helpText: `\
         Controlled keywords describing geographic places pertinent to this resource.
@@ -298,7 +300,9 @@ export default EditorView.extend({
           modelAttribute: 'keywordsProject',
           label: 'Projects',
           ObjectInputView: KeywordVocabularyView,
-          vocabs: [ 'cast', 'envthes', 'gemet' ],
+          vocabs: {
+            eidc: [ 'cast' ]
+          },
           multiline: true,
           helpText: 'Controlled keywords describing projects that fund/support the creation of this resource',
           fetchKeywordsButton: true,
@@ -309,7 +313,6 @@ export default EditorView.extend({
           modelAttribute: 'keywordsInstrument',
           label: 'Instruments',
           ObjectInputView: KeywordVocabularyView,
-          vocabs: [ 'cast', 'envthes', 'gemet' ],
           multiline: true,
           helpText: 'Controlled keywords describing instruments/sensors used to generate this data',
           renderLegiloKeywords: true
@@ -319,7 +322,6 @@ export default EditorView.extend({
           modelAttribute: 'keywordsOther',
           label: 'Other keywords',
           ObjectInputView: KeywordVocabularyView,
-          vocabs: [ 'cast', 'envthes', 'gemet' ],
           multiline: true,
           helpText: 'All other keywords not described elsewhere',
           renderLegiloKeywords: true

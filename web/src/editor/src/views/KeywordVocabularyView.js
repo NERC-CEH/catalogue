@@ -4,6 +4,7 @@ import Backbone from 'backbone'
 import ObjectInputView from './ObjectInputView'
 import template from '../templates/KeywordVocabulary'
 import KeywordCheckboxView from './KeywordCheckboxView'
+import { vocabsPredefined, vocabsList } from './KeywordVocabularyConfig'
 
 export default ObjectInputView.extend({
 
@@ -16,33 +17,18 @@ export default ObjectInputView.extend({
     this.listenTo(this.vocabularies, 'add', this.addOne)
     this.listenTo(this.vocabularies, 'reset', this.addAll)
     this.data = options
-    const vocabsList = new Map([
-      ['assist-topics', { id: 'assist-topics', name: 'Topics' }],
-      ['assist-research-themes', { id: 'assist-research-themes', name: 'Research Themes' }],
-      ['cast', { id: 'cast', name: 'CAST' }],
-      ['envthes', { id: 'envThes', name: 'EnvThes' }],
-      ['dukems-pollutant', { id: 'dukems-pollutant', name: 'Pollutants' }],
-      ['dukems-sector', { id: 'dukems-sector', name: 'Sectors' }],
-      ['elterCL', { id: 'elterCL', name: 'elterCL' }],
-      ['gemet', { id: 'gemet', name: 'GEMET' }],
-      ['inms', { id: 'inms', name: 'INMS' }],
-      ['research-theme', { id: 'research-theme', name: 'Research themes' }],
-      ['research-project', { id: 'research-project', name: 'Research projects' }],
-      ['science-challenge', { id: 'science-challenge', name: 'Science challenges' }],
-      ['service', { id: 'service', name: 'Services' }]
-    ])
-    if ('vocabs' in this.data) {
+
+    if (('vocabs' in this.data) && (catalogue in this.data.vocabs)) {
       this.vocabularies.reset(
-        this.data.vocabs
-          .filter(vocab => {
-            if (vocab.indexOf(':') > 0) {
-              if (vocab.split(':')[0] != catalogue) {
-                return false
-              }
-            }
-            return true
-          })
-          .map(vocab => vocabsList.get(vocab.replace(/^\w+:/, '')))
+        this.data.vocabs[catalogue]
+        .filter(vocab => vocabsList.has(vocab))
+        .map(vocab => vocabsList.get(vocab))
+      )
+    }
+    if ((this.vocabularies.length == 0) && (catalogue in vocabsPredefined)) {
+      const vocabs = vocabsPredefined[catalogue]
+      this.vocabularies.reset(
+        Object.keys(vocabs).map(vocab => vocabs[vocab])
       )
     }
 
@@ -56,7 +42,7 @@ export default ObjectInputView.extend({
       this.$('.keywordPicker').addClass('d-none')
     }
 
-    if (this.vocabularies.length <= 0) {
+    if (this.vocabularies.length == 0) {
       this.$('.keywordPicker').addClass('d-none')
     } else {
       this.$('.autocomplete').autocomplete({
