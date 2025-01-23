@@ -30,7 +30,6 @@ public class SparqlKeywordVocabulary implements KeywordVocabulary {
     private final String vocabularyId;
     private final String vocabularyName;
     private final String graph;
-    private final List<String> catalogueIds;
     private final RestTemplate restTemplate;
     private final SolrClient solrClient;
     private final URI queryUrl;
@@ -47,13 +46,11 @@ public class SparqlKeywordVocabulary implements KeywordVocabulary {
             String graph,
             String where,
             String vocabularyId,
-            String vocabularyName,
-            List<String> catalogueIds
+            String vocabularyName
     ) {
         this.restTemplate = restTemplate;
         this.solrClient = solrClient;
         this.vocabularyId = vocabularyId;
-        this.catalogueIds = catalogueIds;
         this.vocabularyName = vocabularyName;
         this.graph = graph;
         this.queryUrl = createQueryUrl(sparqlEndpoint, graph, where);
@@ -133,11 +130,6 @@ public class SparqlKeywordVocabulary implements KeywordVocabulary {
     @Override
     public String getGraph() {
         return graph;
-    }
-
-    @Override
-    public boolean usedInCatalogue(String catalogueId) {
-        return catalogueIds.contains(catalogueId);
     }
 }
 

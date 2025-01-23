@@ -6,5 +6,4 @@ public interface KeywordVocabulary {
     String getName();
     String getId();
     String getGraph();
-    boolean usedInCatalogue(String catalogueId);
 }
