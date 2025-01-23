@@ -24,7 +24,14 @@ public class KeywordSuggestionsController {
 
     @GetMapping("/documents/{file}/suggestKeywords")
     @PreAuthorize("@permission.userCanEdit(#file)")
-    public List<KeywordSuggestionsService.Suggestion> getSuggestions(@PathVariable String file) {
-        return service.getSuggestions(file);
+    public List<KeywordSuggestionsService.KeywordsSuggestion> getKeywordsSuggestions(@PathVariable String file) {
+        return service.getKeywordsSuggestions(file);
     }
+
+    @GetMapping("/documents/{file}/suggestVariables")
+    @PreAuthorize("@permission.userCanEdit(#file)")
+    public List<KeywordSuggestionsService.VariablesSuggestion> getVariablesSuggestions(@PathVariable String file) {
+        return service.getVariablesSuggestions(file);
+    }
+
 }

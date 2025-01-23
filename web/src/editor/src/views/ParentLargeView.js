@@ -4,17 +4,28 @@ import { Positionable } from '../collections'
 import SingleView from '../SingleView'
 import ChildLargeView from './ChildLargeView'
 import template from '../templates/Parent'
+import { LegiloVariables, fetchVariablesFromLegilo } from './index'
+import * as legiloUtil from './LegiloFetcherUtil'
 
 export default SingleView.extend({
 
   events: {
-    'click button.add': 'add'
+    'click button.add': 'add',
+    'click .legilo-fetch-variables-btn': 'fetchVariables'
   },
 
   initialize (options) {
     this.template = template
     SingleView.prototype.initialize.call(this, options)
     this.collection = new Positionable([], { model: this.data.ModelType })
+
+    if (this.data.fetchVariablesButton && this.model.get('id')) {
+      this.legiloVariables = new LegiloVariables({
+        collection: this.collection,
+        model: this.model,
+        modelType: this.data.ModelType
+      })
+    }
 
     this.listenTo(this.collection, 'add', this.addOne)
     this.listenTo(this.collection, 'reset', this.addAll)
@@ -42,7 +53,35 @@ export default SingleView.extend({
 
   render () {
     this.$el.html(this.template({ data: this.data }))
+    if (this.data.fetchVariablesButton && this.model.get('id')) {
+      this.$el.append(this.legiloVariables.el)
+      this.legiloVariables.render()
+      this.legiloVariables.delegateEvents()
+    }
     return this
+  },
+
+  fetchVariables () {
+    const legiloButtonClass = 'legilo-fetch-variables'
+    legiloUtil.fetchStartDisplay(legiloButtonClass)
+
+    fetchVariablesFromLegilo(this.model)
+      .then(variables => {
+        this.model.set('fetchedVariables', variables)
+        this.renderVariables()
+        legiloUtil.fetchSuccessDisplay(legiloButtonClass)
+      })
+      .catch(error => {
+        console.error('Error fetching variables:', error)
+        legiloUtil.fetchFailDisplay(legiloButtonClass, error)
+      })
+  },
+
+  renderVariables () {
+    if (this.legiloVariables) {
+      const variables = this.model.get('fetchedVariables')
+      this.legiloVariables.renderVariables(variables)
+    }
   },
 
   addOne (model) {
