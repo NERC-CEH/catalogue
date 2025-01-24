@@ -17,10 +17,10 @@ export default _.template(`
       </label>
       <button class="editor-button add" <%= data.disabled%>>Add <span class="fa-solid fa-plus" aria-hidden="true"></span></button>
       <% if (data.fetchKeywordsButton) { %>
-        <button class="editor-button legilo-fetch-keywords-btn mx-lg-1">Suggest Keywords</button>
+        <button class="editor-button legilo-fetch-keywords-btn mx-lg-1 px-3"><i class="fa-solid fa-wand-magic-sparkles"></i> Suggest</button>
       <% } %>
       <% if (data.fetchVariablesButton) { %>
-        <button class="editor-button legilo-fetch-variables-btn mx-lg-1">Suggest Variables</button>
+        <button class="editor-button legilo-fetch-variables-btn mx-lg-1 px-3"><i class="fa-solid fa-wand-magic-sparkles"></i> Suggest</button>
       <% } %>
       <div id="help-<%= data.modelAttribute %>" class="editor-help w-100">
           <%= data.helpText %>
