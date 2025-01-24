@@ -56,7 +56,7 @@ describe('Test KeywordVocabularyView', () => {
     expect(view.$('.vocabularyPicker').html()).toContain('GEMET')
   })
 
-  it('predefined keyword option should be shown if vocabs is defined for running catalogue', () => {
+  it('predefined keyword option should be shown if vocabs is not defined for running catalogue', () => {
     $('html').data('catalogue', 'eidc')
     view = new KeywordVocabularyView({
       model,
