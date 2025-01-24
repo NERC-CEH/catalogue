@@ -18,18 +18,24 @@ export default ObjectInputView.extend({
     this.listenTo(this.vocabularies, 'reset', this.addAll)
     this.data = options
 
-    if (('vocabs' in this.data) && (catalogue in this.data.vocabs)) {
-      this.vocabularies.reset(
-        this.data.vocabs[catalogue]
-          .filter(vocab => vocabsList.has(vocab))
-          .map(vocab => vocabsList.get(vocab))
-      )
-    }
-    if ((this.vocabularies.length === 0) && (catalogue in vocabsPredefined)) {
-      const vocabs = vocabsPredefined[catalogue]
-      this.vocabularies.reset(
-        Object.keys(vocabs).map(vocab => vocabs[vocab])
-      )
+    if ('vocabs' in this.data) {
+      if (catalogue in this.data.vocabs) {
+        this.vocabularies.reset(
+          this.data.vocabs[catalogue]
+            .filter(vocab => vocabsList.has(vocab))
+            .map(vocab => vocabsList.get(vocab))
+        )
+      } else {
+        if (catalogue in vocabsPredefined) {
+          const vocabs = vocabsPredefined[catalogue]
+          this.vocabularies.reset(Object.keys(vocabs).map(vocab => vocabs[vocab]))
+        }
+      }
+    } else {
+      if (catalogue in vocabsPredefined) {
+        const vocabs = vocabsPredefined[catalogue]
+        this.vocabularies.reset(Object.keys(vocabs).map(vocab => vocabs[vocab]))
+      }
     }
 
     const kwurl = this.model.get('uri')
