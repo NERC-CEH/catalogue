@@ -811,13 +811,6 @@ This is only needed if you configure 'Styling=Classification' for your GeoTiff.<
             }
           },
           fetchVariablesButton: true
-        }),
-        new ParentView({
-          model: this.model,
-          modelAttribute: 'keywordsObservedProperty',
-          label: 'OLD Observed properties DO NOT USE',
-          ObjectInputView: KeywordVocabularyView,
-          multiline: true
         })
       ]
     }

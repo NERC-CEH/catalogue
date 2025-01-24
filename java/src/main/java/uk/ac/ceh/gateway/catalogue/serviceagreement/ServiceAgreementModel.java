@@ -44,7 +44,7 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
 
     private List<ResponsibleParty> ownersOfIpr;
 
-    private List<Keyword> topicCategories, keywordsDiscipline, keywordsInstrument, keywordsObservedProperty,
+    private List<Keyword> topicCategories, keywordsDiscipline, keywordsInstrument,
         keywordsPlace, keywordsProject, keywordsTheme, keywordsOther, allKeywords;
 
     private List<BoundingBox> boundingBoxes;
