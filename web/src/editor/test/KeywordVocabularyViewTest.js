@@ -22,7 +22,7 @@ describe('Test KeywordVocabularyView', () => {
     })
     expect(view.$('.keywordPicker').css('display')).not.toBe('none')
     expect(view.$('.vocabularyPicker').children().length).toBe(1)
-    expect(view.$('.vocabularyPicker').html()).toContain('CAST')
+    expect(view.$('.vocab SPAN').toArray().map(item => item.innerHTML)).toEqual(['CAST'])
   })
 
   it('no keyword option should be shown if vocabs is defined empty', () => {
@@ -51,9 +51,7 @@ describe('Test KeywordVocabularyView', () => {
     })
     expect(view.$('.keywordPicker').css('display')).not.toBe('none')
     expect(view.$('.vocabularyPicker').children().length).toBe(3)
-    expect(view.$('.vocabularyPicker').html()).toContain('CAST')
-    expect(view.$('.vocabularyPicker').html()).toContain('EnvThes')
-    expect(view.$('.vocabularyPicker').html()).toContain('GEMET')
+    expect(view.$('.vocab SPAN').toArray().map(item => item.innerHTML)).toEqual(['CAST', 'EnvThes', 'GEMET'])
   })
 
   it('predefined keyword option should be shown if vocabs is not defined for running catalogue', () => {
@@ -64,8 +62,6 @@ describe('Test KeywordVocabularyView', () => {
     })
     expect(view.$('.keywordPicker').css('display')).not.toBe('none')
     expect(view.$('.vocabularyPicker').children().length).toBe(3)
-    expect(view.$('.vocabularyPicker').html()).toContain('CAST')
-    expect(view.$('.vocabularyPicker').html()).toContain('EnvThes')
-    expect(view.$('.vocabularyPicker').html()).toContain('GEMET')
+    expect(view.$('.vocab SPAN').toArray().map(item => item.innerHTML)).toEqual(['CAST', 'EnvThes', 'GEMET'])
   })
 })
