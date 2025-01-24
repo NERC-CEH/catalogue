@@ -26,16 +26,10 @@ export default ObjectInputView.extend({
             .map(vocab => vocabsList.get(vocab))
         )
       } else {
-        if (catalogue in vocabsPredefined) {
-          const vocabs = vocabsPredefined[catalogue]
-          this.vocabularies.reset(Object.keys(vocabs).map(vocab => vocabs[vocab]))
-        }
+        this.setPredefinedVocabs(catalogue, this.vocabularies)
       }
     } else {
-      if (catalogue in vocabsPredefined) {
-        const vocabs = vocabsPredefined[catalogue]
-        this.vocabularies.reset(Object.keys(vocabs).map(vocab => vocabs[vocab]))
-      }
+      this.setPredefinedVocabs(catalogue, this.vocabularies)
     }
 
     const kwurl = this.model.get('uri')
@@ -89,5 +83,12 @@ export default ObjectInputView.extend({
     vocabulary.set({ toSearch: true })
     const view = new KeywordCheckboxView({ model: vocabulary })
     this.$vocabularies.append(view.render().el)
+  },
+
+  setPredefinedVocabs (catalogue, vocabularies) {
+    if (catalogue in vocabsPredefined) {
+      const vocabs = vocabsPredefined[catalogue]
+      vocabularies.reset(Object.keys(vocabs).map(vocab => vocabs[vocab]))
+    }
   }
 })
