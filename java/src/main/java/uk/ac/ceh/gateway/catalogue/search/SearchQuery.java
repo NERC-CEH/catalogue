@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.util.ClientUtils;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.ac.ceh.components.userstore.Group;
 import uk.ac.ceh.components.userstore.GroupStore;
@@ -353,15 +354,19 @@ public class SearchQuery {
     private void setFacetFilters(SolrQuery query){
         Map<String, List<FacetFilter>> groupedFilters = facetFilters.stream()
             .collect(Collectors.groupingBy(FacetFilter::getField));
+
         groupedFilters.forEach((field, filters) -> {
             if (filters.size() > 1) {
+                // Combine multiple filters for the same field using "OR"
                 String combinedFilters = filters.stream()
-                    .map(f -> "\"" + f.getValue() + "\"")
+                    .map(f -> "\"" + ClientUtils.escapeQueryChars(f.getValue()) + "\"")
                     .collect(Collectors.joining(" OR "));
 
-                query.addFilterQuery(String.format("%s:(%s)", field, combinedFilters));
+                // Add tag to avoid excluding facet counts for facets
+                query.addFilterQuery(String.format("{!tag=%s}%s:(%s)", field, field, combinedFilters));
             } else {
-                query.addFilterQuery(filters.get(0).asSolrFilterQuery());
+                query.addFilterQuery(String.format("{!tag=%s}%s:\"%s\"", field, field,
+                    ClientUtils.escapeQueryChars(filters.get(0).getValue())));
             }
         });
     }
@@ -370,9 +375,18 @@ public class SearchQuery {
         query.setFacet(true);
         query.setFacetLimit(-1);
         query.setFacetSort("index");
-        facets.forEach((facet) ->
-            query.addFacetField(facet.getFieldName())
-        );
+        query.setFacetMinCount(1);
+
+        // Exclude other facets from affecting facet counts
+        facets.forEach(currentFacet -> {
+            String fieldName = currentFacet.getFieldName();
+
+            String excludeTags = facets.stream()
+                .map(Facet::getFieldName)
+                .collect(Collectors.joining(","));
+
+            query.addFacetField(String.format("{!ex=%s}%s", excludeTags, fieldName));
+        });
     }
 
     private void setCatalogueFilter(SolrQuery query) {
