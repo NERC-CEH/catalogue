@@ -30,7 +30,6 @@ public class LocalKeywordVocabulary implements KeywordVocabulary {
     private final String vocabularyId;
     private final String vocabularyName;
     private final String filePath;
-    private final List<String> catalogueIds;
     private final SolrClient solrClient;
     private final ObjectMapper objectMapper;
     private final JsonPointer resultsArrayPointer;
@@ -46,13 +45,11 @@ public class LocalKeywordVocabulary implements KeywordVocabulary {
         String resultsPath,
         String uriPath,
         String labelPath,
-        SolrClient solrClient,
-        List<String> catalogueIds
+        SolrClient solrClient
     ) {
         this.vocabularyId = vocabularyId;
         this.vocabularyName = vocabularyName;
         this.filePath = filePath;
-        this.catalogueIds = catalogueIds;
         this.solrClient = solrClient;
         this.objectMapper = new ObjectMapper();
         resultsArrayPointer = JsonPointer.compile(resultsPath);
@@ -132,10 +129,5 @@ public class LocalKeywordVocabulary implements KeywordVocabulary {
     @Override
     public String getGraph() {
         return "N/A";
-    }
-
-    @Override
-    public boolean usedInCatalogue(String catalogueId) {
-        return catalogueIds.contains(catalogueId);
     }
 }

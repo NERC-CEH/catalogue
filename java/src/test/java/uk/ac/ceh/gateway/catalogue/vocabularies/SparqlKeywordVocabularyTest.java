@@ -50,9 +50,8 @@ class SparqlKeywordVocabularyTest {
     @BeforeEach
     public void init() {
         val restTemplate = new RestTemplate();
-        val catalogues = Arrays.asList("test-0", "test-1");
         target = new SparqlKeywordVocabulary(restTemplate, solrClient, SPARQL_ENDPOINT,GRAPH,WHERE,
-                VOCABULARY_ID, "vocabularyName", catalogues);
+                VOCABULARY_ID, "vocabularyName");
         mockServer = MockRestServiceServer.createServer(restTemplate);
     }
 
@@ -126,18 +125,6 @@ class SparqlKeywordVocabularyTest {
 
         //then
         verifyNoInteractions(solrClient);
-    }
-
-    @Test
-    void getCatalogueIds() {
-        //given
-
-
-        ///when
-        assertTrue(target.usedInCatalogue("test-0"));
-        assertFalse(target.usedInCatalogue("not"));
-
-        //then
     }
 
     @SuppressWarnings({"SameParameterValue"})

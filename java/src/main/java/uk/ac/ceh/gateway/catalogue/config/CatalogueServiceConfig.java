@@ -37,7 +37,6 @@ public class CatalogueServiceConfig {
                 .documentType(CEH_MODEL_APPLICATION_TYPE)
                 .documentType(CODE_TYPE)
                 .documentType(UKEMS_TYPE)
-                .vocabularies(getCatalogueVocabularies(vocabularies, defaultCatalogueKey))
                 .fileUpload(false)
                 .build()
         );
@@ -63,7 +62,6 @@ public class CatalogueServiceConfig {
                 .documentType(CEH_MODEL_TYPE)
                 .documentType(CEH_MODEL_APPLICATION_TYPE)
                 .documentType(LINK_TYPE)
-                .vocabularies(getCatalogueVocabularies(vocabularies, "assist"))
                 .fileUpload(false)
                 .build(),
 
@@ -82,7 +80,6 @@ public class CatalogueServiceConfig {
                 .documentType(GEMINI_TYPE)
                 .documentType(IMP_TYPE)
                 .documentType(LINK_TYPE)
-                .vocabularies(getCatalogueVocabularies(vocabularies, "cmp"))
                 .fileUpload(true)
                 .build(),
 
@@ -102,7 +99,6 @@ public class CatalogueServiceConfig {
                 .documentType(MONITORING_FACILITY_TYPE)
                 .documentType(MONITORING_NETWORK_TYPE)
                 .documentType(MONITORING_PROGRAMME_TYPE)
-                .vocabularies(getCatalogueVocabularies(vocabularies, "ukceh"))
                 .fileUpload(false)
                 .build(),
 
@@ -115,7 +111,6 @@ public class CatalogueServiceConfig {
                 .facetKey("recordType")
                 .documentType(GEMINI_TYPE)
                 .documentType(LINK_TYPE)
-                .vocabularies(getCatalogueVocabularies(vocabularies, "edge"))
                 .fileUpload(true)
                 .build(),
 
@@ -132,7 +127,6 @@ public class CatalogueServiceConfig {
                 .facetKey("funder")
                 .documentType(GEMINI_TYPE)
                 .documentType(DATA_TYPE_TYPE)
-                .vocabularies(getCatalogueVocabularies(vocabularies, defaultCatalogueKey))
                 .fileUpload(false)
                 .build(),
 
@@ -162,7 +156,6 @@ public class CatalogueServiceConfig {
                 .documentType(ERAMMP_MODEL_TYPE)
                 .documentType(ERAMMP_DATACUBE_TYPE)
                 .documentType(LINK_TYPE)
-                .vocabularies(getCatalogueVocabularies(vocabularies, "erammp"))
                 .fileUpload(false)
                 .build(),
 
@@ -174,7 +167,6 @@ public class CatalogueServiceConfig {
                 .logo("ukceh.png")
                 .facetKey("resourceType")
                 .documentType(GEMINI_TYPE)
-                .vocabularies(getCatalogueVocabularies(vocabularies, "inlicensed"))
                 .fileUpload(false)
                 .build(),
 
@@ -187,7 +179,6 @@ public class CatalogueServiceConfig {
                 .facetKey("resourceType")
                 .documentType(CEH_MODEL_TYPE)
                 .documentType(CEH_MODEL_APPLICATION_TYPE)
-                .vocabularies(getCatalogueVocabularies(vocabularies, "m"))
                 .fileUpload(false)
                 .build(),
 
@@ -206,7 +197,6 @@ public class CatalogueServiceConfig {
                 .documentType(CEH_MODEL_TYPE)
                 .documentType(CEH_MODEL_APPLICATION_TYPE)
                 .documentType(LINK_TYPE)
-                .vocabularies(getCatalogueVocabularies(vocabularies, "nc"))
                 .fileUpload(false)
                 .build(),
 
@@ -221,7 +211,6 @@ public class CatalogueServiceConfig {
                 .facetKey("licence")
                 .documentType(NERC_MODEL_TYPE)
                 .documentType(NERC_MODEL_USE_TYPE)
-                .vocabularies(getCatalogueVocabularies(vocabularies, "nm"))
                 .fileUpload(false)
                 .build(),
 
@@ -240,7 +229,6 @@ public class CatalogueServiceConfig {
                 .documentType(OSDP_PUBLICATION_TYPE)
                 .documentType(OSDP_SAMPLE_TYPE)
                 .facetKey("resourceType")
-                .vocabularies(getCatalogueVocabularies(vocabularies, "osdp"))
                 .fileUpload(false)
                 .build(),
 
@@ -256,7 +244,6 @@ public class CatalogueServiceConfig {
                 .facetKey("saTissue")
                 .documentType(SAMPLE_ARCHIVE_TYPE)
                 .fileUpload(false)
-                .vocabularies(getCatalogueVocabularies(vocabularies, "sa"))
                 .build(),
 
             Catalogue.builder()
@@ -276,7 +263,6 @@ public class CatalogueServiceConfig {
                 .documentType(CEH_MODEL_APPLICATION_TYPE)
                 .documentType(LINK_TYPE)
                 .fileUpload(false)
-                .vocabularies(getCatalogueVocabularies(vocabularies, "ukceh"))
                 .build(),
 
             Catalogue.builder()
@@ -293,7 +279,6 @@ public class CatalogueServiceConfig {
                 .documentType(MONITORING_FACILITY_TYPE)
                 .documentType(MONITORING_NETWORK_TYPE)
                 .documentType(MONITORING_PROGRAMME_TYPE)
-                .vocabularies(getCatalogueVocabularies(vocabularies,"ukeof"))
                 .fileUpload(false)
                 .build()
         );
@@ -320,7 +305,6 @@ public class CatalogueServiceConfig {
                 .documentType(ELTER_TYPE)
                 .documentType(CODE_TYPE)
                 .documentType(LINKED_ELTER_TYPE)
-                .vocabularies(getCatalogueVocabularies(vocabularies, defaultCatalogueKey))
                 .fileUpload(false)
                 .build()
         );
@@ -351,7 +335,6 @@ public class CatalogueServiceConfig {
                 .documentType(CEH_MODEL_TYPE)
                 .documentType(CEH_MODEL_APPLICATION_TYPE)
                 .documentType(LINK_TYPE)
-                .vocabularies(getCatalogueVocabularies(vocabularies, defaultCatalogueKey))
                 .fileUpload(true)
                 .build()
         );
@@ -376,16 +359,8 @@ public class CatalogueServiceConfig {
                 .documentType(CODE_TYPE)
                 .documentType(NERC_MODEL_TYPE)
                 .documentType(NERC_MODEL_USE_TYPE)
-                .vocabularies(getCatalogueVocabularies(vocabularies, defaultCatalogueKey))
                 .fileUpload(true)
                 .build()
         );
-    }
-
-    private List<KeywordVocabulary> getCatalogueVocabularies(List<KeywordVocabulary> vocabularies, String catalogueId) {
-        return vocabularies
-            .stream()
-            .filter(vocabulary -> vocabulary.usedInCatalogue(catalogueId))
-            .collect(Collectors.toList());
     }
 }
