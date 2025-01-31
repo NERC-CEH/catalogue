@@ -21,12 +21,20 @@
     </#if>
 
     <#list boundingBoxes as extent>
-      dct:spatial "${extent.wkt}"^^geo:wktLiteral ;
+      dct:bbox "${extent.wkt}"^^geo:wktLiteral ;
     </#list>
 
     <#if temporalExtents?has_content>
       <#list temporalExtents as extent>
-        dct:temporal "${(extent.begin?date)!''}/${(extent.end?date)!''}"^^dct:PeriodOfTime ;
+        dct:temporal
+            [ a dct:PeriodOfTime ;
+              <#if extent.begin?? && extent.begin?has_content>
+                dcat:startDate "${extent.begin?date}"^^xsd:date ;
+              </#if>
+              <#if extent.end?? && extent.begin?has_content>
+                dcat:endDate "${extent.end?date}"^^xsd:date ;
+              </#if>
+            ] ;
       </#list>
     </#if>
 
@@ -88,7 +96,7 @@
       <#include "turtle/_application.ftl">
     </#if>
 
-    dct:language "eng" . <#-- leave here to close all the statements about the dataset -->
+    dct:language <http://id.loc.gov/vocabulary/iso639-1/en> . <#-- leave here to close all the statements about the dataset -->
 
     <#if pointsOfContact?has_content>
       <@contactDetail pointsOfContact "c" />

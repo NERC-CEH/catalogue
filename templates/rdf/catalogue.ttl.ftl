@@ -17,11 +17,11 @@ PREFIX : <${baseUri}/id/>
 
 <#if catalogue=="eidc" >
 <https://ror.org/04xw4m193>
-  a vcard:Organization ;
-  vcard:fn "NERC EDS Environmental Information Data Centre" .
+  a foaf:Organization ;
+  foaf:name "NERC EDS Environmental Information Data Centre" .
 
 <https://ror.org/00pggkr55>
-  a vcard:Organization ;
-  vcard:fn "UK Centre for Ecology & Hydrology" .
+  a foaf:Organization ;
+  foaf:name "UK Centre for Ecology & Hydrology" .
 </#if>
 </#compress>

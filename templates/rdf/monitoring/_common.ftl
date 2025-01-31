@@ -28,7 +28,7 @@
 
     <#nested>
 
-    dct:language "eng";
+    dct:language <http://id.loc.gov/vocabulary/iso639-1/en>;
     <#-- other triples not about <id>, e.g. authors, organisations -->
     ${other}
 

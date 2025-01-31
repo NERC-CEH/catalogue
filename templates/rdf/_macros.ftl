@@ -31,7 +31,7 @@
       <#if contact.individualName?has_content || contact.organisationIdentifier?has_content>
         <#assign contactIdentifier= "_:" + prefix + contact?index >
         <#if contact.individualName?has_content>
-          <#assign contactType="vcard:Individual">
+          <#assign contactType="foaf:Person">
           <#assign contactName=contact.individualName>
           <#if contact.organisationName?has_content>
             <#assign orgName=contact.organisationName>
@@ -40,7 +40,7 @@
             <#assign contactIdentifier="\l" + contact.nameIdentifier?trim + "\g">
           </#if>
         <#elseif contact.organisationName?has_content >
-          <#assign contactType="vcard:Organization">
+          <#assign contactType="foaf:Organization">
           <#assign contactName=contact.organisationName>
           <#assign orgName="">
            <#if contact.isRor()>
@@ -49,7 +49,7 @@
         </#if>
           <#if !contactIdentifier?matches("^\lhttp(|s)://ror.org/04xw4m193\g$") && !contactIdentifier?matches("^\lhttp(|s)://ror.org/00pggkr55\g$")>
             ${contactIdentifier} a ${contactType} ;
-            vcard:fn "${contactName?trim}" ;
+            foaf:name "${contactName?trim}" ;
             <#if orgName?has_content>vcard:organization-name "${orgName?trim}" ;</#if>
             <#if contact.email?has_content>vcard:hasEmail "${contact.email?trim}" ;</#if>
             .

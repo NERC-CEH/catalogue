@@ -37,5 +37,5 @@ dcat:distribution [
 
 <#--Authors-->
 <#if authors?has_content>
-  dct:contributor <@contactList authors "a" /> ;
+  dct:creator <@contactList authors "a" /> ;
 </#if>
