@@ -115,6 +115,18 @@ public class JenaLookupService {
         return links(pss);
     }
 
+    public List<Link> relationshipsWithOwner(String uri, String relation) {
+        String sparql = "PREFIX dc: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> PREFIX hasGeometry: <http://www.opengis.net/ont/geosparql#hasGeometry> " +
+            "SELECT DISTINCT ?node ?title ?publicationStatus ?type ?rel ?geom " +
+            "WHERE {{?me dc:title ?title; pso:PublicationStatus ?publicationStatus; dc:type ?type; hasGeometry: ?geom. BIND(?me as ?node)} " +
+            "UNION {?me ?relation ?node. ?node dc:title ?title; pso:PublicationStatus ?publicationStatus; dc:type ?type; hasGeometry: ?geom. BIND(?relation as ?rel)}} " +
+            "ORDER BY ?title";
+        ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
+        pss.setIri("me", uri);
+        pss.setIri("relation", relation);
+        return links(pss);
+    }
+
     public List<Link> inverseRelationships(String uri, String relation) {
         String hasGeometry = "http://www.opengis.net/ont/geosparql#hasGeometry";
         String publicationDate = "http://purl.org/dc/terms/available";
@@ -177,6 +189,15 @@ public class JenaLookupService {
      */
     public String inverseRelationshipCombinedGeometries(String uri, String relation) throws JsonProcessingException {
         List<Link> links = inverseRelationships(uri, relation);
+        return getCombinedGeometriesString(links, uri);
+    }
+
+    public String relationshipCombinedGeometriesWithOwner(String uri, String relation) throws JsonProcessingException {
+        List<Link> links = relationshipsWithOwner(uri, relation);
+        return getCombinedGeometriesString(links, uri);
+    }
+
+    private String getCombinedGeometriesString(List<Link> links, String uri) throws JsonProcessingException {
         // Return if no links found
         if (links.isEmpty()) {
             return "";
@@ -196,7 +217,11 @@ public class JenaLookupService {
                     ((ObjectNode)jsonNode).set("properties", propertiesNode);
                 }
                 propertiesNode.put("title", link.getTitle());
-                propertiesNode.put("link", link.getHref());
+                if (link.getHref().equals(uri)) {
+                    propertiesNode.put("showPolygon", true);
+                } else {
+                    propertiesNode.put("link", link.getHref());
+                }
                 features.add(jsonNode);
             }
         }
@@ -267,7 +292,7 @@ public class JenaLookupService {
                     .publicationStatus(s.getLiteral("publicationStatus").getString())
                     .href(s.getResource("node").getURI())
                     .associationType(s.getLiteral("type").getString())
-                    .rel(s.getResource("rel").getURI())
+                    .rel(s.getResource("rel") != null ? s.getResource("rel").getURI() : "")
                     .geometry(s.getLiteral("geom") != null ? s.getLiteral("geom").getString() : "")
                     .build()
             ));

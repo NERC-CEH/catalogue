@@ -30,6 +30,7 @@ public class JenaLookupServiceTest {
 
     private static final Property OSDP_PRODUCES = ResourceFactory.createProperty("http://onto.nerc.ac.uk/CEHMD/rels/produces");
     private static final Property BELONGS_TO = ResourceFactory.createProperty("http://purl.org/voc/ef#belongsTo");
+    private static final Property NARROWER = ResourceFactory.createProperty("http://onto.ceh.ac.uk/EF#narrower");
 
     @BeforeEach
     void init() {
@@ -141,6 +142,30 @@ public class JenaLookupServiceTest {
 
         //Then
         assertThat("Generates correct combined GeoJSON", actual, equalTo(combinedGeometry));
+    }
+
+    @Test
+    public void relationshipCombinedGeometriesWithOwner() throws JsonProcessingException {
+        //Given
+        Model triples = jenaTdb.getDefaultModel();
+        String geometryString = "{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[0,0]}}";
+        String geometryString2 = "{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point2\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[1,1]}}";
+        String combinedGeometry = "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point\",\"title\":\"Monitoring Facility\",\"link\":\"http://monitoringFacility\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[0,0]}},{\"type\":\"Feature\",\"properties\":{\"name\":\"Sample Point2\",\"title\":\"Monitoring Facility 2\",\"showPolygon\":true},\"geometry\":{\"type\":\"Point\",\"coordinates\":[1,1]}}]}";
+        triples.add(createResource("http://monitoringFacility"), TITLE, "Monitoring Facility");
+        triples.add(createResource("http://monitoringFacility"), METADATA_STATUS, "published");
+        triples.add(createResource("http://monitoringFacility"), TYPE, "Monitoring Facility");
+        triples.add(createResource("http://monitoringFacility"), HAS_GEOMETRY, geometryString);
+        triples.add(createResource("http://monitoringFacility2"), TITLE, "Monitoring Facility 2");
+        triples.add(createResource("http://monitoringFacility2"), METADATA_STATUS, "published");
+        triples.add(createResource("http://monitoringFacility2"), NARROWER, createResource("http://monitoringFacility"));
+        triples.add(createResource("http://monitoringFacility2"), TYPE, "Monitoring Facility");
+        triples.add(createResource("http://monitoringFacility2"), HAS_GEOMETRY, geometryString2);
+
+        //When
+        String actual = service.relationshipCombinedGeometriesWithOwner("http://monitoringFacility2", NARROWER.toString());
+
+        //Then
+        assertThat("Generates correct combined GeoJSON with owner", actual, equalTo(combinedGeometry));
     }
 
     @Test
