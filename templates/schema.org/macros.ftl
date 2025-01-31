@@ -22,7 +22,7 @@
     {
       "@context":"http://schema.org/",
       "@graph": [
-        <@m.schemaDocument docType parts/>
+        <@schemaDocument docType parts/>
       ]
     }
   </#if>
