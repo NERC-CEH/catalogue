@@ -167,3 +167,19 @@
     </#list>
   </#if>
 </#macro>
+
+<#macro temporal>
+  <#list temporalExtents as extent>
+    <#if extent.begin?has_content || extent.end?has_content>
+      dct:temporal
+        [ a dct:PeriodOfTime ;
+          <#if extent.begin?has_content>
+            dcat:startDate "${extent.begin?date}"^^xsd:date ;
+          </#if>
+          <#if extent.end?has_content>
+            dcat:endDate "${extent.end?date}"^^xsd:date ;
+          </#if>
+        ] ;
+    </#if>
+  </#list>
+</#macro>

@@ -25,17 +25,7 @@
     </#list>
 
     <#if temporalExtents?has_content>
-      <#list temporalExtents as extent>
-        dct:temporal
-            [ a dct:PeriodOfTime ;
-              <#if extent.begin?? && extent.begin?has_content>
-                dcat:startDate "${extent.begin?date}"^^xsd:date ;
-              </#if>
-              <#if extent.end?? && extent.begin?has_content>
-                dcat:endDate "${extent.end?date}"^^xsd:date ;
-              </#if>
-            ] ;
-      </#list>
+      <@temporal />
     </#if>
 
     <#--Points of contact-->
@@ -60,16 +50,6 @@
     </#list>
 
     <#--Citations-->
-    <#--
-    <#if incomingCitations?has_content>
-      dct:isReferencedBy <#t>
-      <#list incomingCitations as citation>
-        <${citation.url?trim}><#sep>,</#sep>
-      </#list>
-      ;
-    </#if>
-    -->
-
     <#if incomingCitations?has_content>
       dct:isReferencedBy <@incomingCitationList /> ;
     </#if>
