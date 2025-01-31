@@ -40,17 +40,17 @@ public class ResponsibleParty {
 
     @JsonIgnore
     public boolean isOrcid() {
-        return nameIdentifier.matches("^http(|s)://orcid.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$");
+        return nameIdentifier.matches("^https?://orcid\\.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$");
     }
 
     @JsonIgnore
     public boolean isIsni() {
-        return nameIdentifier.matches("^https://isni.org/isni/\\d{15}(X|\\d)$");
+        return nameIdentifier.matches("^https://isni\\.org/isni/\\d{15}(X|\\d)$");
     }
 
     @JsonIgnore
     public boolean isRor() {
-        return organisationIdentifier.matches("^https://ror.org/\\w{8,10}$");
+        return organisationIdentifier.matches("^https://ror\\.org/\\w{8,10}$");
     }
 
     public String getRoleDisplayName() {
