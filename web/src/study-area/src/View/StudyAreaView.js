@@ -102,7 +102,8 @@ export default Backbone.View.extend({
     // Convert all features in feature collection to points in order to play
     // nicely with Leaflet.ClusterMap library
     const pointFeatureCollection = studyArea.features.map(feature => {
-      if (feature.geometry.type === 'Polygon' || feature.geometry.type === 'MultiPolygon') {
+      if ((feature.geometry.type === 'Polygon' || feature.geometry.type === 'MultiPolygon') &&
+          (typeof feature.properties.showPolygon === 'undefined' || !feature.properties.showPolygon)) {
         const polygon = L.geoJSON(feature.geometry)
         const centroid = this.centerPointOfPolygon(polygon)
         return {
@@ -116,8 +117,11 @@ export default Backbone.View.extend({
     const featureInPoints = L.geoJson(pointFeatureCollection, {
       onEachFeature: (feature, layer) => {
         const title = feature.properties.title
-        const link = feature.properties.link
-        const content = `<h5><a href=${link}>${title}</a></h5>`
+        let content = `<h5>${title}</h5>`
+        if (typeof feature.properties.link !== 'undefined') {
+          const link = feature.properties.link
+          content = `<h5><a href=${link}>${title}</a></h5>`
+        }
         layer.bindPopup(content)
       }
     })
