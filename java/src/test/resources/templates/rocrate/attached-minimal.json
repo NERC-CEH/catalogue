@@ -49,6 +49,7 @@
             "name": "123456789",
             "@type": "File",
             "encodingFormat": "text/csv",
+            "sha256": "testHash",
             "lastModified": "2024-12-09T15:34",
             "bytes": 542,
             "contentUrl": "data/name4"
@@ -58,6 +59,7 @@
             "name": "123456789",
             "@type": "File",
             "encodingFormat": "text/csv",
+            "sha256": "testHash",
             "lastModified": "2020-05-06T23:59",
             "bytes": 32,
             "contentUrl": "data/name5"
