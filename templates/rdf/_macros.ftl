@@ -25,11 +25,14 @@
   </#if>
 </#macro>
 
+
+<#-- foaf:member -->
 <#macro contactDetail contacts prefix="c">
   <#if contacts?has_content>
     <#list contacts as contact>
       <#if contact.individualName?has_content || contact.organisationIdentifier?has_content>
         <#assign contactIdentifier= "_:" + prefix + contact?index >
+
         <#if contact.individualName?has_content>
           <#assign contactType="foaf:Person">
           <#assign contactName=contact.individualName>
@@ -47,13 +50,21 @@
             <#assign contactIdentifier="\l" + contact.organisationIdentifier?trim + "\g">
           </#if>
         </#if>
-          <#if !contactIdentifier?matches("^\lhttp(|s)://ror.org/04xw4m193\g$") && !contactIdentifier?matches("^\lhttp(|s)://ror.org/00pggkr55\g$")>
-            ${contactIdentifier} a ${contactType} ;
-            foaf:name "${contactName?trim}" ;
-            <#if orgName?has_content>vcard:organization-name "${orgName?trim}" ;</#if>
-            <#if contact.email?has_content>vcard:hasEmail "${contact.email?trim}" ;</#if>
-            .
+
+        <#if !contactIdentifier?matches("^\lhttp(|s)://ror.org/04xw4m193\g$") && !contactIdentifier?matches("^\lhttp(|s)://ror.org/00pggkr55\g$")>
+          ${contactIdentifier} a ${contactType} ;
+          foaf:name "${contactName?trim}" ;
+          <#if contact.email?has_content>vcard:hasEmail "${contact.email?trim}" ;</#if>
+
+          foaf:member <#t/>
+          <#if contact.isRor()>
+           <${contact.organisationIdentifier?trim}> ;
+          <#else>
+            <#if orgName?has_content>[foaf:name <@displayLiteral orgName />];</#if>
           </#if>
+          .
+        </#if>
+
       </#if>
     </#list>
   </#if>
@@ -183,3 +194,12 @@
     </#if>
   </#list>
 </#macro>
+
+<#macro organisationRORs>
+  <#list authorPointOfContactWithRORs as contact>
+  <${contact.organisationIdentifier}> a foaf:Organization ;
+    foaf:name "${contact.organisationName}" .
+  </#list>
+</#macro>
+
+

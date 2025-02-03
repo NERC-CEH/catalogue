@@ -102,6 +102,10 @@
       <@opDetail />
     </#if>
 
+    <#if authorPointOfContactWithRORs?has_content>
+      <@organisationRORs />
+    </#if>
+
     <@fundingDetail />
   <#else>
     dct:description "This resource is no longer available please contact the Environmental Information Data Centre for more details" ;
