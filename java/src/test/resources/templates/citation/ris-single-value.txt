@@ -1,0 +1,7 @@
+TY  - DATA
+T1  - This is a test
+AU  - Tester A
+PY  - 2025
+PB  - NERC Environmental Information Data Centre
+UR  - https://doi.org/10.1234/12345678-abcd-abcd-abcd-123456789abc
+ER  -

@@ -1,0 +1,8 @@
+@misc{10.1234/12345678-abcd-abcd-abcd-123456789abc,
+        doi = {10.1234/12345678-abcd-abcd-abcd-123456789abc},
+        url = {https://doi.org/10.1234/12345678-abcd-abcd-abcd-123456789abc},
+     author = {Tester A AND Tester B},
+  publisher = {NERC Environmental Information Data Centre},
+      title = {This is a test},
+       year = {2025}
+}
