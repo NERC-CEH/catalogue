@@ -53,16 +53,16 @@ public class RoCrateTest {
     private void givenFileDetailsServiceDetached(String fileId) {
         given(fileDetailsService.getDetailsFor(fileId, false))
             .willReturn(List.of(
-                new FileDetailsService.Part(fileId, "File", "name1", "text/csv", "https://example.com/name1", 12L, LocalDateTime.of(2024,12,9,15, 34)),
-                new FileDetailsService.Part(fileId, "File", "name2", "text/csv", "https://example.com/name2", 9832L, LocalDateTime.of(2020,5,6,23, 59))
+                new FileDetailsService.Part(fileId, "File", "name1", "text/csv", "testHash", "https://example.com/name1", 12L, LocalDateTime.of(2024,12,9,15, 34)),
+                new FileDetailsService.Part(fileId, "File", "name2", "text/csv", "testHash", "https://example.com/name2", 9832L, LocalDateTime.of(2020,5,6,23, 59))
             ));
     }
 
     private void givenFileDetailsServiceAttached(String fileId) {
         given(fileDetailsService.getDetailsFor(fileId, true))
             .willReturn(List.of(
-                new FileDetailsService.Part(fileId, "File", "name1", "text/csv", "data/name4", 542L, LocalDateTime.of(2024,12,9,15, 34)),
-                new FileDetailsService.Part(fileId, "File", "name2", "text/csv", "data/name5", 32L, LocalDateTime.of(2020,5,6,23, 59))
+                new FileDetailsService.Part(fileId, "File", "name1", "text/csv", "testHash", "data/name4", 542L, LocalDateTime.of(2024,12,9,15, 34)),
+                new FileDetailsService.Part(fileId, "File", "name2", "text/csv", "testHash", "data/name5", 32L, LocalDateTime.of(2020,5,6,23, 59))
             ));
     }
 
