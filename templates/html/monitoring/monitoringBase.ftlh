@@ -270,6 +270,13 @@ Operating period
   </#if>
 </#macro>
 
+<#macro relationshipCombinedGeometriesWithOwner relation>
+  <#local combinedGeometry=jena.relationshipCombinedGeometriesWithOwner(uri, relation) />
+  <#if combinedGeometry?has_content>
+    <@map combinedGeometry />
+  </#if>
+</#macro>
+
 <#macro programmeCombinedGeometries relation>
   <#local combinedGeometry=jena.programmeCombinedGeometries(uri) />
   <#if combinedGeometry?has_content>

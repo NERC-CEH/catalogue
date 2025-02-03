@@ -22,7 +22,7 @@
     {
       "@context":"http://schema.org/",
       "@graph": [
-        <@m.schemaDocument docType parts/>
+        <@schemaDocument docType parts/>
       ]
     }
   </#if>
@@ -83,6 +83,7 @@
   <#if funding?has_content>,<@fundDetails/></#if>
   <#if parts?has_content>,<@partDetails parts/></#if>
   <#if downloads?has_content>,<@distributionDetails/></#if>
+  <#if authorPointOfContactWithRORs?has_content>,<@organisationRORs/></#if>
 </#macro>
 
 <#macro alternateTitlesList>
@@ -247,6 +248,7 @@
           <#t>"name": "${part.id}"
           <#if part.type?? && part.type?has_content><#t>,"@type": "${part.type}"</#if>
           <#if part.encodingFormat?? && part.encodingFormat?has_content>,<#t>"encodingFormat": "${part.encodingFormat}"</#if>
+          <#if part.sha256?? && part.sha256?has_content>,<#t>"sha256": "${part.sha256}"</#if>
           <#if part.lastModified?? && part.lastModified?has_content>,<#t>"lastModified": "${part.lastModified}"</#if>
           <#if part.bytes?? && part.bytes?has_content>,<#t>"bytes": ${part.bytes?long?c}</#if>
           <#if part.contentUrl?? && part.contentUrl?has_content>,<#t>"contentUrl": "${part.contentUrl}"</#if>
@@ -322,10 +324,14 @@
           </#if>
           <#if contact.organisationName?has_content>
             ,"affiliation":{
+              <#if contact.organisationIdentifier?matches("^https://ror\\.org/\\w{8,10}$")>
+              "@id": "${contact.organisationIdentifier}"
+              <#else>
               "@type":"Organization",
               "name":"${contact.organisationName}"
               <#if contact.organisationIdentifier?has_content>
               ,"identifier":"${contact.organisationIdentifier}"
+              </#if>
               </#if>
             }
           </#if>
@@ -404,4 +410,15 @@
     </#list>
     ],
   </#if>
+</#macro>
+
+<#macro organisationRORs>
+  <#list authorPointOfContactWithRORs as contact>
+  {
+    "@id": "${contact.organisationIdentifier}",
+    "@type": "Organization",
+    "name": "${contact.organisationName}",
+    "identifier": "${contact.organisationIdentifier}"
+  }<#sep>,
+  </#list>
 </#macro>

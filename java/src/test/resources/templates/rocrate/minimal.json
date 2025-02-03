@@ -49,6 +49,7 @@
             "name": "09837382",
             "@type": "File",
             "encodingFormat": "text/csv",
+            "sha256": "testHash",
             "lastModified": "2024-12-09T15:34",
             "bytes": 12,
             "contentUrl": "https://example.com/name1"
@@ -58,6 +59,7 @@
             "name": "09837382",
             "@type": "File",
             "encodingFormat": "text/csv",
+            "sha256": "testHash",
             "lastModified": "2020-05-06T23:59",
             "bytes": 9832,
             "contentUrl": "https://example.com/name2"

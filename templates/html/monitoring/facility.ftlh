@@ -5,20 +5,20 @@
     <@m.keyValue "Type" "type of monitoring facility">${facilityType.value}</@m.keyValue>
   </#if>
 
-  <#if geometry?? && geometry?has_content>
-    <div>
-    <#if geometry.geometryString?? && geometry.geometryString?has_content>
-      <@m.keyValue "Location">
-        <@m.map geometry.geometryString />
-      </@m.keyValue>
-
-      <#if geometryRepresentative>
-        Geometry is representative
-      </#if>
-    </#if>
-    </div>
+  <#assign relationshipCombinedGeometriesOutput>
+    <@m.relationshipCombinedGeometriesWithOwner "http://onto.ceh.ac.uk/EF#narrower" />
+  </#assign>
+  <#if relationshipCombinedGeometriesOutput?has_content>
+    <@m.keyValue "Location">
+      <div class="childFeatures">
+         <div class="featureMap">${relationshipCombinedGeometriesOutput}</div>
+      </div>
+    </@m.keyValue>
   </#if>
 
+  <#if geometryRepresentative>
+    <@m.keyValue "">Geometry is representative</@m.keyValue>
+  </#if>
   <#if mobile>
     <@m.keyValue "Mobile?">Yes</@m.keyValue>
   </#if>

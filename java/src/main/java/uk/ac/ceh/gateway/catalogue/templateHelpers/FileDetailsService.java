@@ -63,6 +63,7 @@ public class FileDetailsService {
                     "File",
                     id,
                     file.getMimeType(),
+                    file.getHash(),
                     path,
                     file.getBytes(),
                     file.getLastModified()
@@ -93,7 +94,7 @@ public class FileDetailsService {
 
     @lombok.Value
     public static class Part {
-        String id, type, name, encodingFormat, contentUrl;
+        String id, type, name, encodingFormat, sha256, contentUrl;
         Long bytes;
         LocalDateTime lastModified;
     }
