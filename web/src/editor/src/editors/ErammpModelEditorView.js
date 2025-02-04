@@ -1,7 +1,7 @@
 import EditorView from '../EditorView'
 import InputView from '../InputView'
 import {
-  CheckboxView, ContactView, ErammpModelInputView, ErammpModelOutputView, KeywordView, OnlineResourceSimpleView,
+  CheckboxView, ContactView, ErammpModelInputView, ErammpModelOutputView, KeywordVocabularyView, OnlineResourceSimpleView,
   ParentStringView,
   ParentView, PredefinedParentView,
   TextareaView
@@ -290,7 +290,7 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'keywords',
           label: 'Keywords',
-          ObjectInputView: KeywordView,
+          ObjectInputView: KeywordVocabularyView,
           helpText: `
 <p>A list of keywords that help to identify and describe the model - used to improve search results and filtering. A keyword may be an entry from a vocabulary (with a uri) or just plain text.</p>
 `

@@ -2,7 +2,7 @@ import EditorView from '../EditorView'
 import InputView from '../InputView'
 import SelectView from '../SelectView'
 import {
-  CheckboxView, KeywordView, LinkView,
+  CheckboxView, KeywordVocabularyView, LinkView,
   ModelApplicationModelView,
   ParentStringView,
   ParentView, RelationshipView, ResourceIdentifierView, ShortContactView,
@@ -74,7 +74,7 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'keywords',
           label: 'Keywords',
-          ObjectInputView: KeywordView
+          ObjectInputView: KeywordVocabularyView
         })
 
       ]

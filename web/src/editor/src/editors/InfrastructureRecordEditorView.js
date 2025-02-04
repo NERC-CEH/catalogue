@@ -4,7 +4,7 @@ import {
   InfrastructureCategoryView,
   InfrastructureChallengeView,
   InfrastructureOnlineLinkView,
-  KeywordView,
+  KeywordVocabularyView,
   ParentStringView,
   ParentView,
   PredefinedParentView,
@@ -142,7 +142,7 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'keywords',
           label: 'Other keywords',
-          ObjectInputView: KeywordView
+          ObjectInputView: KeywordVocabularyView
         })
 
       ]

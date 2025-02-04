@@ -12,8 +12,6 @@ import uk.ac.ceh.gateway.catalogue.vocabularies.KeywordVocabulary;
 import uk.ac.ceh.gateway.catalogue.vocabularies.LocalKeywordVocabulary;
 import uk.ac.ceh.gateway.catalogue.vocabularies.SparqlKeywordVocabulary;
 
-import java.util.List;
-
 @Configuration
 public class KeywordVocabulariesConfig {
 

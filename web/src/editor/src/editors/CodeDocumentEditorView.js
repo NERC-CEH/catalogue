@@ -3,7 +3,7 @@ import {
   ContactView,
   DatasetReferenceDateView,
   InspireThemeView,
-  KeywordView,
+  KeywordVocabularyView,
   ParentStringView,
   ParentView,
   PredefinedParentView,
@@ -274,7 +274,7 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'keywords',
           label: 'Keywords',
-          ObjectInputView: KeywordView
+          ObjectInputView: KeywordVocabularyView
         }),
 
         new ParentView({
