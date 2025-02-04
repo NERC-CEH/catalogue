@@ -11,20 +11,15 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.xmlunit.builder.DiffBuilder;
-import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
-import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
-import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
+import uk.ac.ceh.gateway.catalogue.gemini.*;
 import uk.ac.ceh.gateway.catalogue.model.Link;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.time.LocalDate;
+import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -195,6 +190,111 @@ public class DataciteTemplateTest {
 
             //when
             val actual = template("datacite/_subjects.ftlx");
+
+            //then
+            compare(expected, actual);
+        }
+    }
+
+    @Nested
+    @DisplayName("base")
+    class Base {
+
+        @SneakyThrows
+        @Test
+        @DisplayName("with everything else")
+        void full() {
+            //given
+            val uri = "https://example.org/id/123456789";
+            val jena = mock(JenaLookupService.class);
+            configuration.setSharedVariable("jena", jena);
+
+            given(jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#supersedes")).willReturn(Collections.emptyList());
+            given(jena.inverseRelationships(uri, "https://vocabs.ceh.ac.uk/eidc#supersedes")).willReturn(Collections.emptyList());
+
+            model.put("doi", "doi:123123");
+            gemini
+                .setResponsibleParties(List.of(
+                    ResponsibleParty.builder().role("publisher").organisationIdentifier("https://ror.org/1234542").organisationName("EIDC").build(),
+                    ResponsibleParty.builder().role("publisher").organisationName("OTHER").build()
+                ))
+                .setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.of(2025, 2, 3)).build())
+                .setTitle("Test")
+                .setDescription("Description")
+                .setUri(uri);
+
+            val expected = expected("datacite/datacite-full.xml");
+
+            //when
+            val actual = template("datacite/datacite.ftlx");
+
+            //then
+            compare(expected, actual);
+        }
+
+    }
+
+    @Nested
+    @DisplayName("formats")
+    class Formats {
+
+        @Test
+        @DisplayName("with creators")
+        void full() {
+            //given
+            gemini.setDistributionFormats(List.of(
+                DistributionInfo.builder().name("csv").type("text").build(),
+                DistributionInfo.builder().name("nc").type("binary").build(),
+                DistributionInfo.builder().name("sdf").version("2.0").build()
+            ));
+
+            val expected = expected("datacite/formats-full.xml");
+
+            //when
+            val actual = template("datacite/_formats.ftlx");
+
+            //then
+            compare(expected, actual);
+        }
+    }
+
+    @Nested
+    @DisplayName("creators")
+    class Creators {
+        @Test
+        @DisplayName("with creators")
+        void full() {
+            //given
+            val author1 = ResponsibleParty
+                .builder()
+                .role("author")
+                .individualName("Bob")
+                .organisationName("Example Inc.")
+                .build();
+            val author2 = ResponsibleParty
+                .builder()
+                .role("author")
+                .individualName("George")
+                .organisationName("Science Inc.")
+                .organisationIdentifier("https://ror.org/00pggkr55")
+                .build();
+            val author3 = ResponsibleParty
+                .builder()
+                .role("author")
+                .individualName("Helen")
+                .organisationName("EIDC")
+                .organisationIdentifier("https://ror.org/04xw4m193")
+                .build();
+            gemini.setResponsibleParties(List.of(
+                author1,
+                author2,
+                author3
+            ));
+
+            val expected = expected("datacite/creators-full.xml");
+
+            //when
+            val actual = template("datacite/_creators.ftlx");
 
             //then
             compare(expected, actual);

@@ -1,0 +1,5 @@
+<formats>
+    <format>text csv</format>
+    <format>binary nc</format>
+    <format>sdf</format>
+</formats>

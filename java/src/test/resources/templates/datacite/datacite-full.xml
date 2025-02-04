@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://datacite.org/schema/kernel-4" xsi:schemaLocation="http://datacite.org/schema/kernel-4 http://schema.datacite.org/meta/kernel-4.2/metadata.xsd">
+    <identifier identifierType="DOI">doi:123123</identifier>
+    <titles>
+        <title>Test</title>
+    </titles>
+    <publisher>EIDC</publisher>
+    <publicationYear>2025</publicationYear>
+    <dates>
+        <date dateType="Submitted">2025-02-03</date>
+    </dates>
+    <language>en</language>
+    <descriptions>
+        <description descriptionType="Abstract">Description</description>
+    </descriptions>
+</resource>

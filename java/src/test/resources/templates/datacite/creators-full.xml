@@ -1,0 +1,14 @@
+<creators>
+    <creator>
+        <creatorName>Bob</creatorName>
+        <affiliation>Example Inc.</affiliation>
+    </creator>
+    <creator>
+        <creatorName>George</creatorName>
+        <affiliation affiliationIdentifier="https://ror.org/00pggkr55" affiliationIdentifierScheme="ROR" SchemeURI="https://ror.org/">Science Inc.</affiliation>
+    </creator>
+    <creator>
+        <creatorName>Helen</creatorName>
+        <affiliation affiliationIdentifier="https://ror.org/04xw4m193" affiliationIdentifierScheme="ROR" SchemeURI="https://ror.org/">EIDC</affiliation>
+    </creator>
+</creators>
