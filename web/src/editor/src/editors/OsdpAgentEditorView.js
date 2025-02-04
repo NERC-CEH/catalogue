@@ -1,6 +1,6 @@
 import EditorView from '../EditorView'
 import InputView from '../InputView'
-import { KeywordView, ParentView, RelationshipView, TextareaView } from '../views'
+import { KeywordVocabularyView, ParentView, RelationshipView, TextareaView } from '../views'
 
 export default EditorView.extend({
 
@@ -35,7 +35,7 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'keywords',
           label: 'Keywords',
-          ObjectInputView: KeywordView,
+          ObjectInputView: KeywordVocabularyView,
           helpText: `
 <p>Keywords for discovery</p>
 `

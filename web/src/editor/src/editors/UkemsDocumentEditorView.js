@@ -2,7 +2,7 @@ import EditorView from '../EditorView'
 import InputView from '../InputView'
 import {
   DatasetReferenceDateView,
-  DistributionFormatView, KeywordView,
+  DistributionFormatView, KeywordVocabularyView,
   ParentView,
   PredefinedParentView, SingleObjectView, SpatialReferenceSystemView, SpatialRepresentationTypeView,
   SpatialResolutionView,
@@ -48,7 +48,7 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'keywords',
           label: 'Keywords',
-          ObjectInputView: KeywordView
+          ObjectInputView: KeywordVocabularyView
         })
       ]
     },

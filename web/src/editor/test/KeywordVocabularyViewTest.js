@@ -44,24 +44,26 @@ describe('Test KeywordVocabularyView', () => {
     expect(view.$('.vocabularyPicker').children().length).toBe(0)
   })
 
-  it('predefined keyword option should be shown if vocabs is not defined', () => {
+  it('no keyword option should be shown if vocabs is not defined', () => {
     $('html').data('catalogue', 'eidc')
-    view = new KeywordVocabularyView({
-      model
-    })
-    expect(view.$('.keywordPicker').css('display')).not.toBe('none')
-    expect(view.$('.vocabularyPicker').children().length).toBe(3)
-    expect(view.$('.vocab SPAN').toArray().map(item => item.innerHTML)).toEqual(['CAST', 'EnvThes', 'GEMET'])
+    view = new KeywordVocabularyView({ model })
+    view.render()
+
+    expect(view.$('.keywordPicker').length).toBe(1)
+    expect(view.$('.keywordPicker').is(':visible')).toBe(false)
+    expect(view.$('.vocabularyPicker').children().length).toBe(0)
   })
 
-  it('predefined keyword option should be shown if vocabs is not defined for running catalogue', () => {
+  it('no keyword option should be shown if vocabs is not defined for running catalogue', () => {
     $('html').data('catalogue', 'eidc')
     view = new KeywordVocabularyView({
       model,
       vocabs: { ukeof: ['gemet'] }
     })
-    expect(view.$('.keywordPicker').css('display')).not.toBe('none')
-    expect(view.$('.vocabularyPicker').children().length).toBe(3)
-    expect(view.$('.vocab SPAN').toArray().map(item => item.innerHTML)).toEqual(['CAST', 'EnvThes', 'GEMET'])
+    view.render()
+
+    expect(view.$('.keywordPicker').length).toBe(1)
+    expect(view.$('.keywordPicker').is(':visible')).toBe(false)
+    expect(view.$('.vocabularyPicker').children().length).toBe(0)
   })
 })

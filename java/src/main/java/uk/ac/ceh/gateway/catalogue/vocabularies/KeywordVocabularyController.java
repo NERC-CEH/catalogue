@@ -28,7 +28,6 @@ public class KeywordVocabularyController {
     public List<Keyword> getKeywords(
             @RequestParam(value = "query", defaultValue = "*") String query,
             @RequestParam(value = "vocab") Optional<List<String>> possibleVocabs
-
     ) throws SolrServerException {
         val vocabs = possibleVocabs.orElseGet(Collections::emptyList);
         return keywordService.query(query, vocabs);
