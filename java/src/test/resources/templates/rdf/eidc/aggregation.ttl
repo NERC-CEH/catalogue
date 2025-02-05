@@ -1,0 +1,2 @@
+a dcmitype:Collection ;
+  dct:hasPart <https://catalogue.ceh.ac.uk/id/000012345>, <https://catalogue.ceh.ac.uk/id/000054321>;

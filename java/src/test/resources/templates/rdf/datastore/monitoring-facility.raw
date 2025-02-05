@@ -1,0 +1,96 @@
+{
+  "id": "de64ac2e-4fd4-4dcb-9e83-1464219bb1c2",
+  "uri": "http://localhost:8080/id/de64ac2e-4fd4-4dcb-9e83-1464219bb1c2",
+  "type": "monitoringFacility",
+  "title": "Test facility name",
+  "description": "Test facitlity description",
+  "metadataDate": "2025-02-05T09:02:01.466032293",
+  "resourceIdentifiers": [
+    {
+      "code": "123456",
+      "codeSpace": "1234",
+      "version": "1.2"
+    },
+    {
+      "code": "http://localhost:8080/id/de64ac2e-4fd4-4dcb-9e83-1464219bb1c2"
+    }
+  ],
+  "relationships": [
+    {
+      "relation": "http://onto.ceh.ac.uk/EF#associatedWith",
+      "target": "0246d1a0-3077-4578-8746-34c08c48bdf6"
+    },
+    {
+      "relation": "http://onto.ceh.ac.uk/EF#supersedes",
+      "target": "0246d1a0-3077-4578-8746-34c08c48bdf6"
+    },
+    {
+      "relation": "http://onto.ceh.ac.uk/EF#narrower",
+      "target": "b1a617c6-5f20-4384-af3c-069b2ff79e61"
+    },
+    {
+      "relation": "http://onto.ceh.ac.uk/EF#belongsTo",
+      "target": "0246d1a0-3077-4578-8746-34c08c48bdf6"
+    }
+  ],
+  "keywords": [
+    {
+      "value": "landform",
+      "uri": "http://www.eionet.europa.eu/gemet/concept/4629"
+    }
+  ],
+  "operationalStatus": "Active",
+  "alternateTitles": [
+    "Test alternative  name"
+  ],
+  "facilityType": {
+    "value": "platform",
+    "uri": "http://ex.com/facilityType/platform"
+  },
+  "geometry": {
+    "geometryString": "{\"type\":\"Feature\",\"properties\":{},\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[-3.27393,56.84071],[0.68115,54.61423],[-0.37354,52.47358],[-5.03174,52.25891],[-5.64697,54.76663],[-3.27393,56.84071]]]}}",
+    "wkt": "POLYGON((-3.27393 56.84071, 0.68115 54.61423, -0.37354 52.47358, -5.03174 52.25891, -5.64697 54.76663, -3.27393 56.84071))"
+  },
+  "geometryRepresentative": true,
+  "mobile": true,
+  "responsibleParties": [
+    {
+      "individualName": "Test contact person",
+      "organisationName": "Environment Agency",
+      "organisationIdentifier": "https://ror.org/01zewfb16",
+      "role": "pointOfContact",
+      "email": "enquiries@environment-agency.gov.uk",
+      "nameIdentifier": "https://orcid.org/0000-0001-2345-6789",
+      "address": {
+        "deliveryPoint": "Test contact address",
+        "city": "Test contact City",
+        "administrativeArea": "Test contact County",
+        "postalCode": "1234",
+        "country": "UK"
+      },
+      "pointOfContact": "Environment Agency"
+    }
+  ],
+  "operatingPeriod": [
+    {
+      "begin": "2025-02-05",
+      "end": "2025-02-28"
+    }
+  ],
+  "environmentalDomain": [
+    {
+      "value": "Atmosphere",
+      "uri": "http://ex.org/domain/atmosphere"
+    }
+  ],
+  "keywordsParameters": [
+    {
+      "value": "land",
+      "uri": "http://www.eionet.europa.eu/gemet/concept/4599"
+    },
+    {
+      "value": "landfill",
+      "uri": "http://www.eionet.europa.eu/gemet/concept/4621"
+    }
+  ]
+}

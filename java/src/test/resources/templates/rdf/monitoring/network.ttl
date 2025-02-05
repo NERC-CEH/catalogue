@@ -1,0 +1,15 @@
+PREFIX : <http://localhost:8080/id/>
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX skos: <http://www.w3.org/2008/05/skos#>
+PREFIX ef: <http://onto.ceh.ac.uk/EF#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+:09b6b7f5-1bc3-4d21-864a-adf249e86618
+a ef:Network ;
+dct:title "Test network name" ;
+dct:description "Test network description" ;
+dct:language "eng";
+ef:associatedWith <https://catalogue.ceh.ac.uk/id/000000001>, <https://catalogue.ceh.ac.uk/id/000000002>;
+ef:narrower <https://catalogue.ceh.ac.uk/id/000000003>;
+ef:supersedes <https://catalogue.ceh.ac.uk/id/000000004>;
+.

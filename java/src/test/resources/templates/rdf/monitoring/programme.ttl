@@ -1,0 +1,18 @@
+PREFIX : <http://localhost:8080/id/>
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX skos: <http://www.w3.org/2008/05/skos#>
+PREFIX ef: <http://onto.ceh.ac.uk/EF#>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+:43414cbf-03ab-4f5a-a581-b01ce145d312
+a ef:Programme ;
+dct:title "Test programme name" ;
+dct:description "Test programme description" ;
+ef:boundingBox "POLYGON((-8.64 54.634, -8.64 60.861, -0.72 60.861, -0.72 54.634, -8.64 54.634))"^^geo:wktLiteral ;
+dct:language "eng";
+ef:associatedWith <https://catalogue.ceh.ac.uk/id/000000001>, <https://catalogue.ceh.ac.uk/id/000000002>;
+ef:supersedes <https://catalogue.ceh.ac.uk/id/000000003>;
+ef:utilises <https://catalogue.ceh.ac.uk/id/000000004>;
+ef:hasChild <https://catalogue.ceh.ac.uk/id/000000005>;
+ef:triggers <https://catalogue.ceh.ac.uk/id/000000006>;
+.

@@ -1,0 +1,95 @@
+{
+  "id": "09b6b7f5-1bc3-4d21-864a-adf249e86618",
+  "uri": "http://localhost:8080/id/09b6b7f5-1bc3-4d21-864a-adf249e86618",
+  "type": "monitoringNetwork",
+  "title": "Test network name",
+  "description": "Test network description",
+  "metadataDate": "2025-02-05T10:06:13.190218907",
+  "resourceIdentifiers": [
+    {
+      "code": "http://localhost:8080/id/09b6b7f5-1bc3-4d21-864a-adf249e86618",
+      "codeSpace": "1234",
+      "version": "1.7"
+    },
+    {
+      "code": "http://localhost:8080/id/09b6b7f5-1bc3-4d21-864a-adf249e86618"
+    }
+  ],
+  "relationships": [
+    {
+      "relation": "http://onto.ceh.ac.uk/EF#narrower",
+      "target": "0246d1a0-3077-4578-8746-34c08c48bdf6"
+    },
+    {
+      "relation": "http://onto.ceh.ac.uk/EF#associatedWith",
+      "target": "09b6b7f5-1bc3-4d21-864a-adf249e86618"
+    },
+    {
+      "relation": "http://onto.ceh.ac.uk/EF#supersedes",
+      "target": "09b6b7f5-1bc3-4d21-864a-adf249e86618"
+    }
+  ],
+  "keywords": [
+    {
+      "value": "landform",
+      "uri": "http://www.eionet.europa.eu/gemet/concept/4629"
+    },
+    {
+      "value": "landscape",
+      "uri": "http://www.eionet.europa.eu/gemet/concept/4648"
+    }
+  ],
+  "alternateTitles": [
+    "Test network alternative name"
+  ],
+  "objectives": "Test network objectives",
+  "operationalStatus": "Active",
+  "responsibleParties": [
+    {
+      "individualName": "Test contact person",
+      "organisationName": "Defra",
+      "organisationIdentifier": "https://ror.org/00tnppw48",
+      "role": "funder",
+      "email": "defra.helpline@defra.gsi.gov.uk",
+      "address": {
+        "deliveryPoint": "Test contact address",
+        "city": "Test contact City",
+        "administrativeArea": "Test contact County",
+        "postalCode": "1234",
+        "country": "UK"
+      }
+    }
+  ],
+  "environmentalDomain": [
+    {
+      "value": "Atmosphere",
+      "uri": "http://ex.org/domain/atmosphere"
+    },
+    {
+      "value": "Biosphere",
+      "uri": "http://ex.org/domain/biosphere"
+    }
+  ],
+  "keywordsParameters": [
+    {
+      "value": "land",
+      "uri": "http://www.eionet.europa.eu/gemet/concept/4599"
+    },
+    {
+      "value": "landfill",
+      "uri": "http://www.eionet.europa.eu/gemet/concept/4621"
+    }
+  ],
+  "linksData": [
+    {
+      "description": "Test link data description",
+      "url": "https://testurl.ac.uk"
+    }
+  ],
+  "linksOther": [
+    {
+      "description": "Test other links description",
+      "url": "https://test.ac.uk"
+    }
+  ]
+}
