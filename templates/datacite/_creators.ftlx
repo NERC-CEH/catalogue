@@ -1,6 +1,6 @@
 <#list doc.authors>
   <creators>
-  <#items  as author>
+  <#items as author>
     <#if author.individualName?has_content>
       <creator>
         <creatorName>${author.individualName}</creatorName>
