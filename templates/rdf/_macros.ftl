@@ -25,8 +25,6 @@
   </#if>
 </#macro>
 
-
-<#-- foaf:member -->
 <#macro contactDetail contacts prefix="c">
   <#if contacts?has_content>
     <#list contacts as contact>
