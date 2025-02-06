@@ -9,7 +9,7 @@ a ef:Programme ;
 dct:title "Test programme name" ;
 dct:description "Test programme description" ;
 ef:boundingBox "POLYGON((-8.64 54.634, -8.64 60.861, -0.72 60.861, -0.72 54.634, -8.64 54.634))"^^geo:wktLiteral ;
-dct:language "eng";
+dct:language <http://id.loc.gov/vocabulary/iso639-1/en>;
 ef:associatedWith <https://catalogue.ceh.ac.uk/id/000000001>, <https://catalogue.ceh.ac.uk/id/000000002>;
 ef:supersedes <https://catalogue.ceh.ac.uk/id/000000003>;
 ef:utilises <https://catalogue.ceh.ac.uk/id/000000004>;
