@@ -45,7 +45,7 @@ public class KeywordVocabularySolrQueryService {
     private String generateVocabQuery(List<String> vocabIds) {
 
         if(vocabIds.isEmpty())
-            return "";
+            return "vocabId:__NO_MATCH__";
 
         StringBuilder toReturn = new StringBuilder("vocabId:(" + vocabIds.get(0));
         if(vocabIds.size() > 1) {

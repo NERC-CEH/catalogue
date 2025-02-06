@@ -2,7 +2,7 @@ import EditorView from '../EditorView'
 import InputView from '../InputView'
 import {
   FundingView,
-  KeywordView,
+  KeywordVocabularyView,
   OnlineResourceSimpleView,
   ParentView,
   PointOfContactView,
@@ -310,7 +310,7 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'keywords',
           label: 'Other keywords',
-          ObjectInputView: KeywordView,
+          ObjectInputView: KeywordVocabularyView,
           helpText: `
 <p>A list of words and phrases that help to identify and describe the archive - useful for improving search results</p>
 `

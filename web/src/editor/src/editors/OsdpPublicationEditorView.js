@@ -1,7 +1,7 @@
 import EditorView from '../EditorView'
 import InputView from '../InputView'
 import {
-  DatasetReferenceDateView, KeywordView,
+  DatasetReferenceDateView, KeywordVocabularyView,
   LinkView,
   ParentView, RelationshipView, ResourceIdentifierView,
   SingleObjectView,
@@ -75,7 +75,7 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'keywords',
           label: 'Keywords',
-          ObjectInputView: KeywordView,
+          ObjectInputView: KeywordVocabularyView,
           helpText: `
 <p>Keywords for discovery</p>
 `

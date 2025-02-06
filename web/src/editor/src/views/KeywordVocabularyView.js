@@ -4,7 +4,7 @@ import Backbone from 'backbone'
 import ObjectInputView from './ObjectInputView'
 import template from '../templates/KeywordVocabulary'
 import KeywordCheckboxView from './KeywordCheckboxView'
-import { vocabsPredefined, vocabsList } from './KeywordVocabularyConfig'
+import { vocabsList } from './KeywordVocabularyConfig'
 
 export default ObjectInputView.extend({
 
@@ -17,19 +17,14 @@ export default ObjectInputView.extend({
     this.listenTo(this.vocabularies, 'add', this.addOne)
     this.listenTo(this.vocabularies, 'reset', this.addAll)
     this.data = options
-
-    if ('vocabs' in this.data) {
-      if (catalogue in this.data.vocabs) {
-        this.vocabularies.reset(
-          this.data.vocabs[catalogue]
-            .filter(vocab => vocabsList.has(vocab))
-            .map(vocab => vocabsList.get(vocab))
-        )
-      } else {
-        this.setPredefinedVocabs(catalogue, this.vocabularies)
-      }
+    if ('vocabs' in this.data && catalogue in this.data.vocabs) {
+      this.vocabularies.reset(
+        this.data.vocabs[catalogue]
+          .filter(vocab => vocabsList.has(vocab))
+          .map(vocab => vocabsList.get(vocab))
+      )
     } else {
-      this.setPredefinedVocabs(catalogue, this.vocabularies)
+      this.vocabularies.reset([])
     }
 
     const kwurl = this.model.get('uri')
@@ -83,12 +78,5 @@ export default ObjectInputView.extend({
     vocabulary.set({ toSearch: true })
     const view = new KeywordCheckboxView({ model: vocabulary })
     this.$vocabularies.append(view.render().el)
-  },
-
-  setPredefinedVocabs (catalogue, vocabularies) {
-    if (catalogue in vocabsPredefined) {
-      const vocabs = vocabsPredefined[catalogue]
-      vocabularies.reset(Object.keys(vocabs).map(vocab => vocabs[vocab]))
-    }
   }
 })

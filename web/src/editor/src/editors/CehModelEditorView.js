@@ -1,6 +1,6 @@
 import EditorView from '../EditorView'
 import InputView from '../InputView'
-import { TextareaView, ParentView, PredefinedParentView, KeywordView, ReferenceView, ContactView, SingleObjectView, QaView, VersionHistoryView, ProjectUsageView, OnlineResourceSimpleView, ObservedPropertySimpleView } from '../views'
+import { TextareaView, ParentView, PredefinedParentView, KeywordVocabularyView, ReferenceView, ContactView, SingleObjectView, QaView, VersionHistoryView, ProjectUsageView, OnlineResourceSimpleView, ObservedPropertySimpleView } from '../views'
 import { Contact, ObservedProperty, Reference } from '../models'
 import BoundingBoxView from '../geometryMap/BoundingBoxView'
 import BoundingBox from '../geometryMap/BoundingBox'
@@ -102,7 +102,7 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'keywords',
           label: 'Keywords',
-          ObjectInputView: KeywordView,
+          ObjectInputView: KeywordVocabularyView,
           helpText: `
 <p>Keywords for model discovery e.g. rainfall; species distribution; nitrogen deposition; global circulation model</p>
 `
