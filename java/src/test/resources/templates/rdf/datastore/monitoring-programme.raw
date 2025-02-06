@@ -1,0 +1,128 @@
+{
+  "id": "43414cbf-03ab-4f5a-a581-b01ce145d312",
+  "uri": "http://localhost:8080/id/43414cbf-03ab-4f5a-a581-b01ce145d312",
+  "type": "monitoringProgramme",
+  "title": "Test programme name",
+  "description": "Test programme description",
+  "metadataDate": "2025-02-05T10:21:49.361880949",
+  "resourceIdentifiers": [
+    {
+      "code": "http://localhost:8080/id/43414cbf-03ab-4f5a-a581-b01ce145d312",
+      "codeSpace": "1234",
+      "version": "1.9"
+    },
+    {
+      "code": "http://localhost:8080/id/43414cbf-03ab-4f5a-a581-b01ce145d312"
+    }
+  ],
+  "relationships": [
+    {
+      "relation": "http://onto.ceh.ac.uk/EF#hasChild",
+      "target": "de64ac2e-4fd4-4dcb-9e83-1464219bb1c2"
+    },
+    {
+      "relation": "http://onto.ceh.ac.uk/EF#triggers",
+      "target": "09b6b7f5-1bc3-4d21-864a-adf249e86618"
+    },
+    {
+      "relation": "http://onto.ceh.ac.uk/EF#associatedWith",
+      "target": "cfa36a6b-1aa5-48c8-86f4-862558c41f43"
+    },
+    {
+      "relation": "http://onto.ceh.ac.uk/EF#supersedes",
+      "target": "09b6b7f5-1bc3-4d21-864a-adf249e86618"
+    },
+    {
+      "relation": "http://onto.ceh.ac.uk/EF#utilises",
+      "target": "09b6b7f5-1bc3-4d21-864a-adf249e86618"
+    }
+  ],
+  "keywords": [
+    {
+      "value": "airborne noise",
+      "uri": "http://www.eionet.europa.eu/gemet/concept/11918"
+    },
+    {
+      "value": "air movement",
+      "uri": "http://www.eionet.europa.eu/gemet/concept/262"
+    }
+  ],
+  "alternateTitles": [
+    "Test alternative programme name"
+  ],
+  "objectives": "Test programme objectives",
+  "operationalStatus": "Inactive",
+  "boundingBox": {
+    "westBoundLongitude": -8.648,
+    "eastBoundLongitude": -0.728,
+    "southBoundLatitude": 54.634,
+    "northBoundLatitude": 60.861,
+    "bounds": "{\"type\": \"Feature\",      \"properties\": {},      \"geometry\": {        \"type\": \"Polygon\",        \"coordinates\": [[[-8.648, 54.634], [-8.648, 60.861], [-0.728, 60.861], [-0.728, 54.634], [-8.648, 54.634]]]      }}",
+    "coordinates": "[[[-8.648, 54.634], [-8.648, 60.861], [-0.728, 60.861], [-0.728, 54.634], [-8.648, 54.634]]]"
+  },
+  "responsibleParties": [
+    {
+      "individualName": "Test contact person",
+      "organisationName": "Scottish Government",
+      "organisationIdentifier": "https://ror.org/04v2xmd71",
+      "role": "funder",
+      "email": "info@eidc.ac.uk",
+      "nameIdentifier": "https://orcid.org/0000-0001-2345-6789",
+      "address": {
+        "deliveryPoint": "Test contact address",
+        "city": "Test contact City",
+        "administrativeArea": "Test contact County",
+        "postalCode": "1234",
+        "country": "UK"
+      }
+    }
+  ],
+  "operatingPeriod": [
+    {
+      "begin": "2025-02-08",
+      "end": "2025-03-22"
+    }
+  ],
+  "environmentalDomain": [
+    {
+      "value": "Cryosphere",
+      "uri": "http://ex.org/domain/cryosphere"
+    },
+    {
+      "value": "Marine",
+      "uri": "http://ex.org/domain/marine"
+    }
+  ],
+  "purposeOfCollection": [
+    {
+      "value": "dataSeries",
+      "uri": "http://ex.org/domain/dataSeries"
+    },
+    {
+      "value": "dataCollection",
+      "uri": "http://ex.org/domain/dataCollection"
+    }
+  ],
+  "keywordsParameters": [
+    {
+      "value": "air",
+      "uri": "http://www.eionet.europa.eu/gemet/concept/245"
+    },
+    {
+      "value": "aircraft",
+      "uri": "http://www.eionet.europa.eu/gemet/concept/253"
+    }
+  ],
+  "linksData": [
+    {
+      "description": "Test programme  links to data description",
+      "url": "https://testurl.ac.uk"
+    }
+  ],
+  "linksOther": [
+    {
+      "description": "Test programme  other links",
+      "url": "https://test.ac.uk"
+    }
+  ]
+}

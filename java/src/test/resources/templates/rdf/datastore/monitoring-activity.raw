@@ -1,0 +1,113 @@
+{
+  "id": "6b9a9875-5077-4641-b4b4-1a4c6e48988d",
+  "uri": "http://localhost:8080/id/6b9a9875-5077-4641-b4b4-1a4c6e48988d",
+  "type": "monitoringActivity",
+  "title": "Test activity name",
+  "description": "Test activity description",
+  "metadataDate": "2025-02-05T12:00:11.579103632",
+  "resourceIdentifiers": [
+    {
+      "code": "http://localhost:8080/id/6b9a9875-5077-4641-b4b4-1a4c6e48988d",
+      "codeSpace": "1234",
+      "version": "1.2"
+    },
+    {
+      "code": "http://localhost:8080/id/6b9a9875-5077-4641-b4b4-1a4c6e48988d"
+    }
+  ],
+  "relationships": [
+    {
+      "relation": "http://onto.ceh.ac.uk/EF#uses",
+      "target": "09b6b7f5-1bc3-4d21-864a-adf249e86618"
+    }
+  ],
+  "keywords": [
+    {
+      "value": "point",
+      "uri": "http://www.eionet.europa.eu/gemet/concept/14919"
+    },
+    {
+      "value": "poison",
+      "uri": "http://www.eionet.europa.eu/gemet/concept/6358"
+    }
+  ],
+  "alternateTitles": [
+    "Test activity alternative name"
+  ],
+  "objectives": "Test activity objectives",
+  "operationalStatus": "Inactive",
+  "boundingBox": {
+    "westBoundLongitude": -6.452,
+    "eastBoundLongitude": 1.768,
+    "southBoundLatitude": 49.864,
+    "northBoundLatitude": 55.812,
+    "bounds": "{\"type\": \"Feature\",      \"properties\": {},      \"geometry\": {        \"type\": \"Polygon\",        \"coordinates\": [[[-6.452, 49.864], [-6.452, 55.812], [1.768, 55.812], [1.768, 49.864], [-6.452, 49.864]]]      }}",
+    "coordinates": "[[[-6.452, 49.864], [-6.452, 55.812], [1.768, 55.812], [1.768, 49.864], [-6.452, 49.864]]]"
+  },
+  "responsibleParties": [
+    {
+      "individualName": "Test contact person",
+      "organisationName": "Natural Resources Wales",
+      "organisationIdentifier": "https://ror.org/04x65hs26",
+      "role": "pointOfContact",
+      "email": "enquiries@naturalresourceswales.gov.uk",
+      "nameIdentifier": "https://orcid.org/0000-0001-2345-6789",
+      "address": {
+        "deliveryPoint": "Test contact address",
+        "city": "Test contact City",
+        "administrativeArea": "Test contact County",
+        "postalCode": "1234",
+        "country": "UK"
+      },
+      "pointOfContact": "Natural Resources Wales"
+    }
+  ],
+  "operatingPeriod": [
+    {
+      "begin": "2025-02-08",
+      "end": "2025-03-04"
+    }
+  ],
+  "environmentalDomain": [
+    {
+      "value": "Groundwater",
+      "uri": "http://ex.org/domain/groundwater"
+    },
+    {
+      "value": "Marine",
+      "uri": "http://ex.org/domain/marine"
+    }
+  ],
+  "purposeOfCollection": [
+    {
+      "value": "legislative",
+      "uri": "http://ex.org/domain/legislative"
+    },
+    {
+      "value": "modelling",
+      "uri": "http://ex.org/domain/modelling"
+    }
+  ],
+  "keywordsParameters": [
+    {
+      "value": "polder",
+      "uri": "http://www.eionet.europa.eu/gemet/concept/6365"
+    },
+    {
+      "value": "political power",
+      "uri": "http://www.eionet.europa.eu/gemet/concept/6388"
+    }
+  ],
+  "linksData": [
+    {
+      "description": "Test activity  links to data description",
+      "url": "https://testurl.ac.uk"
+    }
+  ],
+  "linksOther": [
+    {
+      "description": "Test activity other links description",
+      "url": "https://test.ac.uk"
+    }
+  ]
+}
