@@ -29,7 +29,7 @@ public class MapDataDefinition {
         private String layer;
         private List<Projection> reprojections;
         private List<Attribute> attributes; // Style the layer up based upon attributes
-        private Features features;          // Style all features in a layer irregardless of attribute
+        private Features features;          // Style all features in a layer regardless of attribute
         private Boolean bytetype = false; //For tifs we need to know if it is byte, since this affects how we scale buckets
 
         public enum AttributeType {

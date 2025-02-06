@@ -59,4 +59,79 @@ METADATA
 "wms_getfeatureinfo_formatlist" "text/xml,application/json"
 END
 END
+LAYER
+PROJECTION "init=epsg:EPSG:3857" END
+PROCESSING "POLYLINE_NO_CLIP=True"
+NAME "Attribute1"
+TYPE Vector
+TEMPLATE "dummy"
+STATUS ON
+METADATA
+"wms_title" "Attribute Label"
+"wms_style" "inspire_common:DEFAULT"
+"gml_include_items" "all"
+"wms_include_items" "all"
+END
+CONNECTIONTYPE OGR
+CONNECTION "/mapserver/data//datasource/path1"
+DATA "Layer1"
+CLASSITEM "AttrID1"
+CLASS
+NAME "Bucket Label"
+EXPRESSION (0 < [AttrID1] AND [AttrID1] <= 100)
+STYLE
+COLOR "#FF0000"
+SYMBOL "circle"
+SIZE 6
+END
+END
+CLASS
+NAME "Value Label"
+EXPRESSION "Setting1"
+STYLE
+COLOR "#FF0000"
+SYMBOL "circle"
+SIZE 6
+END
+END
+END
+LAYER
+PROJECTION "init=epsg:EPSG:32633" END
+PROCESSING "POLYLINE_NO_CLIP=True"
+NAME "Attribute1"
+TYPE Raster
+TEMPLATE "dummy"
+STATUS ON
+METADATA
+"wms_title" "Attribute Label"
+"wms_style" "inspire_common:DEFAULT"
+"gml_include_items" "all"
+"wms_include_items" "all"
+END
+CONNECTIONTYPE OGR
+CONNECTION "/mapserver/data//datasource/path2"
+DATA "Layer2"
+PROCESSING "BANDS=AttrID1"
+PROCESSING "RESAMPLE=NEAREST"
+PROCESSING "SCALE=0,100"
+PROCESSING "SCALE_BUCKETS=1"
+CLASS
+NAME "Bucket Label"
+EXPRESSION (0 < [pixel] AND [pixel] <= 100)
+STYLE
+COLOR "#FF0000"
+SYMBOL "circle"
+SIZE 6
+END
+END
+CLASS
+NAME "Value Label"
+EXPRESSION "Setting1"
+STYLE
+COLOR "#FF0000"
+SYMBOL "circle"
+SIZE 6
+END
+END
+END
 END
