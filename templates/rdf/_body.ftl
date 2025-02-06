@@ -21,13 +21,11 @@
     </#if>
 
     <#list boundingBoxes as extent>
-      dct:spatial "${extent.wkt}"^^geo:wktLiteral ;
+      dct:bbox "${extent.wkt}"^^geo:wktLiteral ;
     </#list>
 
     <#if temporalExtents?has_content>
-      <#list temporalExtents as extent>
-        dct:temporal "${(extent.begin?date)!''}/${(extent.end?date)!''}"^^dct:PeriodOfTime ;
-      </#list>
+      <@temporal />
     </#if>
 
     <#--Points of contact-->
@@ -52,16 +50,6 @@
     </#list>
 
     <#--Citations-->
-    <#--
-    <#if incomingCitations?has_content>
-      dct:isReferencedBy <#t>
-      <#list incomingCitations as citation>
-        <${citation.url?trim}><#sep>,</#sep>
-      </#list>
-      ;
-    </#if>
-    -->
-
     <#if incomingCitations?has_content>
       dct:isReferencedBy <@incomingCitationList /> ;
     </#if>
@@ -88,7 +76,7 @@
       <#include "turtle/_application.ftl">
     </#if>
 
-    dct:language "eng" . <#-- leave here to close all the statements about the dataset -->
+    dct:language <http://id.loc.gov/vocabulary/iso639-1/en> . <#-- leave here to close all the statements about the dataset -->
 
     <#if pointsOfContact?has_content>
       <@contactDetail pointsOfContact "c" />
@@ -112,6 +100,10 @@
 
     <#if observedProperty?has_content>
       <@opDetail />
+    </#if>
+
+    <#if authorPointOfContactWithRORs?has_content>
+      <@organisationRORs />
     </#if>
 
     <@fundingDetail />
