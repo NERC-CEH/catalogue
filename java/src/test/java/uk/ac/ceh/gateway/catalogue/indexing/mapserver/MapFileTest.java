@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StreamUtils;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.MapDataDefinition;
@@ -33,12 +32,9 @@ import static org.mockito.BDDMockito.given;
 @ExtendWith(MockitoExtension.class)
 class MapFileTest {
     @Mock private GeminiExtractor geminiExtractor;
-    @Mock private MapServerDetailsService mapServerDetailsService;
-    @Autowired private MapServerDetailsService mapServerDetailsServiceBean;
     private Configuration config;
     private GeminiDocument doc;
     private GeminiDocument doc2;
-    private final String id = "908b8dc5-505a-4531-8a14-bd54bfee2417";
 
     @BeforeEach
     @SneakyThrows
@@ -46,6 +42,7 @@ class MapFileTest {
         doc = new GeminiDocument();
         doc2 = new GeminiDocument();
 
+        String id = "908b8dc5-505a-4531-8a14-bd54bfee2417";
         doc.setId(id);
         doc.setUri("https://example.com/documents/" + id);
         doc.setTitle("Foo");
@@ -54,7 +51,7 @@ class MapFileTest {
         doc2.setUri("https://example.com/documents/" + id);
         doc2.setTitle("Foo");
 
-        mapServerDetailsServiceBean = new MapServerDetailsService("https://example.com");
+        MapServerDetailsService mapServerDetailsService = new MapServerDetailsService("https://example.com");
         val mapDataDefinition = new MapDataDefinition();
 
         MapDataDefinition.Projection projection = new MapDataDefinition.Projection();
@@ -112,17 +109,13 @@ class MapFileTest {
         config = new Configuration(Configuration.VERSION_2_3_30);
         config.setDirectoryForTemplateLoading(new File("../templates"));
         config.setSharedVariable("geminiHelper", geminiExtractor);
+        config.setSharedVariable("mapServerDetails", mapServerDetailsService);
     }
 
     @SneakyThrows
     void givenExtent(GeminiDocument doc) {
         given(geminiExtractor.getExtent(doc))
             .willReturn(new Envelope(20, 30, 40, 50));
-    }
-
-    void givenWmsUrl() {
-        given(mapServerDetailsService.getWmsUrl(id))
-            .willReturn("https://example.com/" + id);
     }
 
     @SneakyThrows
@@ -137,13 +130,11 @@ class MapFileTest {
     @SneakyThrows
     void writeMapFileToWriter() {
         //given
-        config.setSharedVariable("mapServerDetails", mapServerDetailsService);
         val templateName = "mapfile/service.map.ftl";
         val epsgCodes = Arrays.asList("27700", "4326");
         val mapfile = new MapFile(config, templateName, epsgCodes, doc);
         val writer = new StringWriter();
         givenExtent(doc);
-        givenWmsUrl();
         val expected = expectedResponse("mapfile.map");
 
         //when
@@ -158,7 +149,6 @@ class MapFileTest {
     @SneakyThrows
     void writeMapFileToWriterFullyPopulatedMapDefinition() {
         //given
-        config.setSharedVariable("mapServerDetails", mapServerDetailsServiceBean);
         val templateName = "mapfile/service.map.ftl";
         val epsgCodes = Arrays.asList("27700", "4326");
         val mapfile = new MapFile(config, templateName, epsgCodes, doc2);
@@ -167,7 +157,6 @@ class MapFileTest {
         val expected = expectedResponse("mapfile2.map");
         //when
         mapfile.writeTo("27700", writer);
-        log.info("actual mapfile ================ \n"+writer);
         //then
         assertThat(writer.toString(), equalToCompressingWhiteSpace(expected));
     }

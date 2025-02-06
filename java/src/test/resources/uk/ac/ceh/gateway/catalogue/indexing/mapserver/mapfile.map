@@ -25,7 +25,7 @@ WEB
 IMAGEPATH "/ms4w/tmp/ms_tmp/"
 IMAGEURL "/ms_tmp/"
 METADATA
-"wms_onlineresource" "https://example.com/908b8dc5-505a-4531-8a14-bd54bfee2417"
+"wms_onlineresource" "https://example.com/maps/908b8dc5-505a-4531-8a14-bd54bfee2417?"
 "wms_inspire_capabilities" "url"
 "wms_languages" "eng"
 "wms_inspire_metadataurl_href" "https://example.com/documents/908b8dc5-505a-4531-8a14-bd54bfee2417"
