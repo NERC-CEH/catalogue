@@ -10,7 +10,7 @@ dct:title "Test facility name" ;
 dct:description "Test facitlity description" ;
 dct:geometry "POLYGON((-3.27393 56.84071, 0.68115 54.61423, -0.37354 52.47358, -5.03174 52.25891, -5.64697 54.76663, -3.27393 56.84071))"^^geo:wktLiteral ;
 ef:mediaMonitored <http://ex.org/domain/atmosphere> ;
-dct:language "eng";
+dct:language <http://id.loc.gov/vocabulary/iso639-1/en>;
 ef:associatedWith <https://catalogue.ceh.ac.uk/id/000000001>, <https://catalogue.ceh.ac.uk/id/000000002>;
 ef:narrower <https://catalogue.ceh.ac.uk/id/000000003>;
 ef:supersedes <https://catalogue.ceh.ac.uk/id/000000004>;

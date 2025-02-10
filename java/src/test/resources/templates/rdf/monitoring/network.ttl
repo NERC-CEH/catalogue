@@ -8,7 +8,7 @@ PREFIX geo: <http://www.opengis.net/ont/geosparql#>
 a ef:Network ;
 dct:title "Test network name" ;
 dct:description "Test network description" ;
-dct:language "eng";
+dct:language <http://id.loc.gov/vocabulary/iso639-1/en>;
 ef:associatedWith <https://catalogue.ceh.ac.uk/id/000000001>, <https://catalogue.ceh.ac.uk/id/000000002>;
 ef:narrower <https://catalogue.ceh.ac.uk/id/000000003>;
 ef:supersedes <https://catalogue.ceh.ac.uk/id/000000004>;
