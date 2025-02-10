@@ -17,6 +17,27 @@
   </#if>
 </#macro>
 
+<#macro croissant docType="" parts=[]>
+  <#if docType?has_content>
+    {
+    "@context": {
+        "@language": "en",
+        "@vocab": "https://schema.org/"
+      },
+      "@graph": [
+        {
+          "@type": "CreativeWork",
+          "@id": "ro-crate-metadata.json",
+          "conformsTo": { "@id": "http://mlcommons.org/croissant/1.0" },
+          "about": { "@id": "${uri?trim}" }
+        },
+        <@schemaDocument docType parts/>
+      ]
+    }
+  </#if>
+</#macro>
+
+
 <#macro schemaDotOrg docType="", parts=[]>
   <#if docType?has_content>
     {
@@ -198,31 +219,31 @@
 </#macro>
 
 <#macro observedPropertiesList>
-<#if observedProperty?? && observedProperty?has_content>
-"variableMeasured": [
-  <#list observedProperty as op>
-      <#assign opLabel ="unknown">
-      <#if op.title?has_content>
-        <#assign opLabel = op.title?trim>
-      <#elseif op.value?has_content>
-        <#assign opLabel = op.value?trim>
-      </#if>
+  <#if observedProperty?? && observedProperty?has_content>
+  "variableMeasured": [
+    <#list observedProperty as op>
+        <#assign opLabel ="unknown">
+        <#if op.title?has_content>
+          <#assign opLabel = op.title?trim>
+        <#elseif op.value?has_content>
+          <#assign opLabel = op.value?trim>
+        </#if>
 
-      <#if op.uri?has_content>
-        {
-          "@type": "StatisticalVariable",
-          "@id": "${op.uri?trim}",
-          "name": "${opLabel}"
-          <#if op.unitsUri?has_content>,"unitCode": "${op.unitsUri?trim}"</#if>
-          <#if op.units?has_content>,"unitText": "${op.units?trim}"</#if>
-        }
-      <#else>
-        <@displayLiteral opLabel/>
-      </#if>
-      <#sep>,
-    </#list>
-    ],
-</#if>
+        <#if op.uri?has_content>
+          {
+            "@type": "StatisticalVariable",
+            "@id": "${op.uri?trim}",
+            "name": "${opLabel}"
+            <#if op.unitsUri?has_content>,"unitCode": "${op.unitsUri?trim}"</#if>
+            <#if op.units?has_content>,"unitText": "${op.units?trim}"</#if>
+          }
+        <#else>
+          <@displayLiteral opLabel/>
+        </#if>
+        <#sep>,
+      </#list>
+      ],
+  </#if>
 </#macro>
 
 <#macro partsList parts>
