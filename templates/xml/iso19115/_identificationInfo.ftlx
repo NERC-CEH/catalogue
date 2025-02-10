@@ -79,57 +79,92 @@
 		</gmd:citation>
 		<#include "__abstract.ftlx">
 		<#if responsibleParties?has_content>
-		<#list responsibleParties as responsibleParty>
-			<@pointOfContact responsibleParty />
-		<#--<gmd:pointOfContact>
-			<gmd:CI_ResponsibleParty>
-				<#if responsibleParty.individualName?has_content>
-				<gmd:individualName><gco:CharacterString>${responsibleParty.individualName}</gco:CharacterString></gmd:individualName>
-				</#if>
-				<#if responsibleParty.organisationName?has_content>
-				<gmd:organisationName><gco:CharacterString>${responsibleParty.organisationName}</gco:CharacterString></gmd:organisationName>
-				</#if>
-				<gmd:contactInfo>
-					<gmd:CI_Contact>
-						<gmd:address>
-							<gmd:CI_Address>
-								<#if responsibleParty.deliveryPoint?has_content>
-								<gmd:deliveryPoint><gco:CharacterString>${responsibleParty.deliveryPoint}</gco:CharacterString></gmd:deliveryPoint>
-								</#if>
-								<#if responsibleParty.city?has_content>
-								<gmd:city><gco:CharacterString>${responsibleParty.city}</gco:CharacterString></gmd:city>
-								</#if>
-								<#if responsibleParty.administrativeArea?has_content>
-								<gmd:administrativeArea><gco:CharacterString>${responsibleParty.administrativeArea}</gco:CharacterString></gmd:administrativeArea>
-								</#if>
-								<#if responsibleParty.postalCode?has_content>
-								<gmd:postalCode><gco:CharacterString>${responsibleParty.postalCode}</gco:CharacterString></gmd:postalCode>
-								</#if>
-								<#if responsibleParty.country?has_content>
-								<gmd:country><gco:CharacterString>${responsibleParty.country}</gco:CharacterString></gmd:country>
-								</#if>
-								<gmd:electronicMailAddress><gco:CharacterString>
-                  <#if responsibleParty.email?has_content>
-                    ${responsibleParty.email}
-                  <#else>
-                    EMAIL NOT PROVIDED
+		<#list responsibleParties as contact>
+      <gmd:pointOfContact>
+        <gmd:CI_ResponsibleParty>
+          <#if contact.individualName?has_content>
+            <gmd:individualName>
+              <#if contact.isOrcid()>
+                <gmx:Anchor xlink:href="${contact.nameIdentifier}" xlink:actuate="onRequest" xlink:title="orcid">${contact.individualName}</gmx:Anchor>
+              <#else>
+                <gco:CharacterString>${contact.individualName}</gco:CharacterString>
+              </#if>
+            </gmd:individualName>
+          </#if>
+          <#if contact.organisationName?has_content>
+            <gmd:organisationName>
+              <#if contact.isRor()>
+                <gmx:Anchor xlink:href="${contact.organisationIdentifier}" xlink:actuate="onRequest" xlink:title="RoR">${contact.organisationName}</gmx:Anchor>
+              <#else>
+                <gco:CharacterString>${contact.organisationName}</gco:CharacterString>
+              </#if>
+            </gmd:organisationName>
+          </#if>
+          <gmd:contactInfo>
+            <gmd:CI_Contact>
+              <gmd:address>
+                <gmd:CI_Address>
+                  <#if contact.deliveryPoint?has_content>
+                  <gmd:deliveryPoint><gco:CharacterString>${contact.deliveryPoint}</gco:CharacterString></gmd:deliveryPoint>
                   </#if>
-                </gco:CharacterString></gmd:electronicMailAddress>
-							</gmd:CI_Address>
-						</gmd:address>
-					</gmd:CI_Contact>
-				</gmd:contactInfo>
-				<gmd:role>
-				<#if responsibleParty.role = "rightsHolder" >
-					<#assign role='owner'>
-				<#else>
-					<#assign role=responsibleParty.role >
-				</#if>
-					<gmd:CI_RoleCode codeList="https://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_RoleCode" codeListValue="${role}">${role}</gmd:CI_RoleCode>
-				</gmd:role>
-			</gmd:CI_ResponsibleParty>
-		</gmd:pointOfContact>-->
-		</#list>
+                  <#if contact.city?has_content>
+                  <gmd:city><gco:CharacterString>${contact.city}</gco:CharacterString></gmd:city>
+                  </#if>
+                  <#if contact.administrativeArea?has_content>
+                  <gmd:administrativeArea><gco:CharacterString>${contact.administrativeArea}</gco:CharacterString></gmd:administrativeArea>
+                  </#if>
+                  <#if contact.postalCode?has_content>
+                  <gmd:postalCode><gco:CharacterString>${contact.postalCode}</gco:CharacterString></gmd:postalCode>
+                  </#if>
+                  <#if contact.country?has_content>
+                  <gmd:country><gco:CharacterString>${contact.country}</gco:CharacterString></gmd:country>
+                  </#if>
+                  <gmd:electronicMailAddress><gco:CharacterString>
+                    <#if contact.email?has_content>
+                      ${contact.email}
+                    <#else>
+                      <#if contact.isRor() && contact.organisationIdentifier?ends_with("04xw4m193") >
+                        info@eidc.ac.uk
+                      <#elseif contact.isRor() && contact.organisationIdentifier?ends_with("00pggkr55") >
+                        enquiries@ceh.ac.uk
+                      <#else>
+                        EMAIL NOT PROVIDED
+                      </#if>
+                    </#if>
+                  </gco:CharacterString></gmd:electronicMailAddress>
+                </gmd:CI_Address>
+              </gmd:address>
+              <#if contact.isOrcid()>
+                         <gmd:onlineResource>
+                           <gmd:CI_OnlineResource>
+                             <gmd:linkage>
+                               <gmd:URL>${contact.nameIdentifier}</gmd:URL>
+                             </gmd:linkage>
+                             <gmd:name>
+                               <gco:CharacterString>ORCID record</gco:CharacterString>
+                             </gmd:name>
+                             <gmd:description>
+                               <gco:CharacterString>ORCID is an open, non-profit, community-driven effort to create and maintain a registry of unique researcher identifiers and a transparent method of linking research activities and outputs to these identifiers.</gco:CharacterString>
+                             </gmd:description>
+                             <gmd:function>
+                               <gmd:CI_OnLineFunctionCode codeList="https://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="information">information</gmd:CI_OnLineFunctionCode>
+                             </gmd:function>
+                           </gmd:CI_OnlineResource>
+                         </gmd:onlineResource>
+              </#if>
+            </gmd:CI_Contact>
+          </gmd:contactInfo>
+          <gmd:role>
+          <#if contact.role = "rightsHolder" >
+            <#assign contactRole='owner'>
+          <#else>
+            <#assign contactRole=contact.role >
+          </#if>
+            <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="${contactRole}">${contactRole}</gmd:CI_RoleCode>
+          </gmd:role>
+        </gmd:CI_ResponsibleParty>
+      </gmd:pointOfContact>
+    </#list>
 		</#if>
     <#if resourceMaintenance??>
       <#list resourceMaintenance as rm>
