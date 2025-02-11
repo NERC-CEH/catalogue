@@ -31,7 +31,7 @@
           "conformsTo": { "@id": "http://mlcommons.org/croissant/1.0" },
           "about": { "@id": "${uri?trim}" }
         },
-        <@schemaDocument docType parts/>
+        <@schemaDocument docType parts "distribution"/>
       ]
     }
   </#if>
@@ -49,12 +49,12 @@
   </#if>
 </#macro>
 
-<#macro schemaDocument docType parts>
+<#macro schemaDocument docType parts predicate="hasPart">
   {
     "@type":<@displayLiteral docType/>,
     "name":<@displayLiteral title/>,
     "@id": "${uri?trim}",
-    <@partsList parts/>
+    <@partsList parts predicate/>
     <@datacite/>
     <#if resourceStatus?lower_case != "deleted">
       <#if description?has_content>"description":<@displayLiteral description/>,</#if>
@@ -72,7 +72,7 @@
       <#if funding?has_content>"funder": [<@itemList funding "fund"/>],</#if>
       <#if docType == "Dataset" || docType == "SoftwareSourceCode">
         <@licencesLink/>
-        <#if downloads?has_content>"distribution": [<@itemList downloads "distribution" />],</#if>
+        <#if downloads?has_content && predicate != "distribution">"distribution": [<@itemList downloads "distribution" />],</#if>
         <@publisherLink/>
       </#if>
       "provider" : {"@id":"https://ror.org/04xw4m193"},
@@ -103,7 +103,7 @@
   <#if incomingCitations?has_content>,<@citationDetails/></#if>
   <#if funding?has_content>,<@fundDetails/></#if>
   <#if parts?has_content>,<@partDetails parts/></#if>
-  <#if downloads?has_content>,<@distributionDetails/></#if>
+  <#if downloads?has_content && predicate != "distribution">,<@distributionDetails/></#if>
   <#if authorPointOfContactWithRORs?has_content>,<@organisationRORs/></#if>
 </#macro>
 
@@ -246,10 +246,10 @@
   </#if>
 </#macro>
 
-<#macro partsList parts>
+<#macro partsList parts predicate>
   <#if parts?size lt 60000>
     <#list parts>
-      "hasPart": [
+      "${predicate}": [
       <#items as part>
         <#if part.id?has_content>{"@id": "#part${part.id}"}</#if><#sep>,
       </#items>
