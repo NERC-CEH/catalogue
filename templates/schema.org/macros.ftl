@@ -27,7 +27,7 @@
       "@graph": [
         {
           "@type": "CreativeWork",
-          "@id": "ro-crate-metadata.json",
+          "@id": "croissant-metadata_${id?trim}",
           "conformsTo": { "@id": "http://mlcommons.org/croissant/1.0" },
           "about": { "@id": "${uri?trim}" }
         },
@@ -36,7 +36,6 @@
     }
   </#if>
 </#macro>
-
 
 <#macro schemaDotOrg docType="", parts=[]>
   <#if docType?has_content>

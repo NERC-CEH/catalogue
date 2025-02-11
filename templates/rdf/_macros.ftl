@@ -171,7 +171,7 @@
       </#if>
 
       ${citationIdentifier?trim} a <http://purl.org/vocab/frbr/core#Work> ;
-        <#if citation.description?has_content>rdfs:label <@displayLiteral citation.description />; </#if>
+        <#if citation.description?has_content>dct:bibliographicCitation <@displayLiteral citation.description />; </#if>
         .
     </#list>
   </#if>
