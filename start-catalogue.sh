@@ -101,6 +101,7 @@ export_default DATA_REPOSITORY_LOCATION "$TOP"/datastore
 export_default DOCUMENTS_BASEURI http://localhost:8080
 export_default DOI_API https://api.test.datacite.org/dois
 export_default GEMET_LOCAL "$TOP"/fixtures/vocabs/gemet.json
+export_default ROR_LOCAL "$TOP"/fixtures/solr/ror
 export_default HUBBUB_LOCATION "$TOP"/dropbox
 export_default HUBBUB_URL http://localhost:8082/v7
 export_default JENA_LOCATION "$TOP"/fixtures/jena
