@@ -90,7 +90,7 @@ vcard:organization-name "UK Centre for Ecology & Hydrology" ;
 vcard:hasEmail "enquiries@ceh.ac.uk" ;
 .
 <https://test-admin-url.ac.uk> a <http://purl.org/spar/fabio/Expression> ;
-rdfs:label "Test Admin details";
+dct:bibliographicCitation "Test Admin details";
 .
 <http://vocabs.lter-europe.net/EnvThes/30347> a skos:Concept;
 skos:prefLabel "water pH of stagnant surface water"; rdfs:label "water pH of stagnant surface water"
