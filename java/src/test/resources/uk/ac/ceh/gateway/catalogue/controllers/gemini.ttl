@@ -8,9 +8,8 @@
 <https://example.com/M3tADATA_ID>
 dct:title "Example Gemini Document" ;
 dct:bbox "POLYGON((-1.091 31.109, -1.091 59.456, 2.574 59.456, 2.574 31.109, -1.091 31.109))"^^geo:wktLiteral ;
-dct:language <http://id.loc.gov/vocabulary/iso639-1/en> ;
-a dcat:Dataset ;
-dcat:CatalogRecord <https://example.com/M3tADATA_ID> ;
+a dcat:Dataset;
 dct:type dcmitype:Dataset ;
+dcat:CatalogRecord <https://example.com/M3tADATA_ID> ;
 dcat:landingPage <https://example.com/M3tADATA_ID>;
 .

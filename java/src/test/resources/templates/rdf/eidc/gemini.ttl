@@ -44,7 +44,7 @@ dct:subject
 sdo:variableMeasured <https://test-observed-properties .ac.uk> ;
 prov:wasGeneratedBy
 <https://testaward.ac.uk> ;
-a dcat:Dataset, dcmitype:Dataset ;
+a dcat:Dataset;
 dct:type dcmitype:Dataset ;
 dct:available "2025-02-05"^^xsd:date ;
 dcat:landingPage <http://localhost:8080/id/f8eb7ef3-cd5d-4931-8a4b-ef9ea2b13a16> ;
