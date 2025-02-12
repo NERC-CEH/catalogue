@@ -1,0 +1,29 @@
+{
+    "hits": {
+        "hits": [
+            {
+                "files": [
+                    {
+                        "links": {
+                            "self": "http://download-url"
+                        }
+                    }
+                ],
+                "submitted": true
+            },
+            {
+                "files": [
+                    {
+                        "links": {
+                            "self": "http://download-url-older"
+                        }
+                    }
+                ],
+                "submitted": true
+            }
+        ]
+    },
+    "links": {
+        "self": "http://dump-url"
+    }
+}

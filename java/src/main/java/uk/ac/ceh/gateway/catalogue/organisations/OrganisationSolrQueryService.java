@@ -28,7 +28,7 @@ public class OrganisationSolrQueryService {
             SolrQuery query = new SolrQuery();
             query.setQuery(term);
             query.setParam("defType", "edismax");
-            query.setParam("qf", "name acronyms aliases");
+            query.setParam("qf", "name^50 acronyms^25 aliases^25");
             query.setSort("score", ORDER.desc);
             query.setRows(50);
             log.debug(query.getQuery());

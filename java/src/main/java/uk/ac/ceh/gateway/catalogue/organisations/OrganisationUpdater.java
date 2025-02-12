@@ -4,11 +4,11 @@ import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opencsv.CSVReader;
+import com.opencsv.CSVWriter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.solr.client.solrj.SolrClient;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -16,15 +16,12 @@ import uk.ac.ceh.gateway.catalogue.TimeConstants;
 
 import java.io.*;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 
 @Slf4j
-@Profile("solr:ror-update")
 @Component
 public class OrganisationUpdater {
 
@@ -34,6 +31,7 @@ public class OrganisationUpdater {
     private static final String COLLECTION = "organisations";
     private final String localPath;
     private final String configFile;
+    private final String dataFile;
     private final String downloadKey = "latest.download";
 
     public OrganisationUpdater(
@@ -47,74 +45,40 @@ public class OrganisationUpdater {
         this.solrClient = solrClient;
         this.localPath = localPath;
         this.configFile = localPath + "/config.properties";
-
+        this.dataFile = localPath + "/ror_v2.csv";
     }
 
     @Scheduled(initialDelay = TimeConstants.ONE_MINUTE, fixedDelay = TimeConstants.SEVEN_DAYS)
-    public void updateROROrganisation() {
+    public void updateOrganisation() {
         try {
             log.info("Start getting the latest ror download url");
-            String response = restTemplate.getForObject(dataDumpUrl, String.class);
-            JsonNode jsonNode = (new ObjectMapper()).readTree(response);
-            JsonPointer jsonPointer = JsonPointer.compile("/hits/hits/0/files/0/links/self");
-            String downloadUrl = jsonNode.at(jsonPointer).asText();
+            String downloadUrl = getDownloadLink(dataDumpUrl);
             log.info("Finish getting the latest ror download url, {}", downloadUrl);
 
-            setupDataPath();
-            Properties properties = new Properties();
-            FileInputStream configInputStream = new FileInputStream(configFile);
-            properties.load(configInputStream);
-            String latestDownload = properties.getProperty(downloadKey);
-            File dataFile = new File(localPath + "/ror_v2.csv");
-            if (!latestDownload.equals(downloadUrl) || !dataFile.exists()) {
-                log.info("Start downloading the latest ror file");
-                InputStream downloadStream = new URL(downloadUrl).openStream();
-                ZipInputStream zipStream = new ZipInputStream(downloadStream);
-                ZipEntry entry;
-                while ((entry = zipStream.getNextEntry()) != null) {
-                    if (entry.getName().contains("ror-data_schema_v2.csv")) {
-                        FileOutputStream dataOutputStream = new FileOutputStream(dataFile);
-                        dataOutputStream.write(zipStream.readAllBytes());
-
+            File data = new File(dataFile);
+            if (!downloadUrl.isBlank()) {
+                setupDataPath();
+                Properties properties = new Properties();
+                FileInputStream configInputStream = new FileInputStream(configFile);
+                properties.load(configInputStream);
+                String latestDownload = properties.getProperty(downloadKey);
+                if (!latestDownload.equals(downloadUrl) || !data.exists()) {
+                    log.info("Start downloading the latest ror file");
+                    if (downloadFile(downloadUrl, data)) {
                         properties.setProperty(downloadKey, downloadUrl);
                         FileOutputStream configOutputStream = new FileOutputStream(configFile);
                         properties.store(configOutputStream, "");
 
-                        log.info("Finish downloading the latest ror file, {}", dataFile);
+                        log.info("Finish downloading the latest ror file, {}", data);
                     }
                 }
             }
-
-            log.info("Start updating ror file {} to solr", dataFile);
-            solrClient.deleteByQuery(COLLECTION, "*:*");
-            FileInputStream dataInputStream = new FileInputStream(dataFile);
-            CSVReader csvReader = new CSVReader(new InputStreamReader(dataInputStream));
-            int idIndex, nameIndex, acronymsIndex, aliasesIndex;
-            idIndex = nameIndex = acronymsIndex = aliasesIndex = -1;
-            String[] header;
-            if ((header = csvReader.readNext()) != null) {
-                for (int i = 0; i < header.length; i++) {
-                    String title = header[i];
-                    switch (title) {
-                        case "id" -> idIndex = i;
-                        case "names.types.ror_display" -> nameIndex = i;
-                        case "names.types.acronym" -> acronymsIndex = i;
-                        case "names.types.alias" -> aliasesIndex = i;
-                    }
-                }
+            data = new File(dataFile);
+            if (data.exists()) {
+                log.info("Start updating ror file {} to solr", data);
+                long recordUpdated = updateToSolr(data);
+                log.info("Finish updating ror data to solr, {} documents", recordUpdated);
             }
-
-            String[] line;
-            while ((line = csvReader.readNext()) != null) {
-                String id = line[idIndex].trim();
-                String name = line[nameIndex].trim();
-                List<String> acronyms = csvStr2List(line[acronymsIndex]);
-                List<String> aliases = csvStr2List(line[aliasesIndex]);
-                solrClient.addBean(COLLECTION, new Organisation(id, name, acronyms, aliases));
-            }
-
-            solrClient.commit(COLLECTION);
-            log.info("Finish updating ror data to solr, {} documents", csvReader.getLinesRead() - 1);
         } catch (Exception e) {
             log.error("Failed to retrieve ror organisations, {}", e.getMessage());
             throw new RuntimeException("Failed to retrieve ror organisation", e);
@@ -126,7 +90,22 @@ public class OrganisationUpdater {
             .map(String::trim).filter(s -> !s.isBlank()).toList();
     }
 
-    private void setupDataPath() throws Exception {
+    private HashMap<String, Integer> getHeaderIndex(String[] header) {
+        HashMap<String, Integer> map = new HashMap<>();
+        for (int i = 0; i < header.length; i++) {
+            String title = header[i];
+            switch (title) {
+                case "id" -> map.put("url", i);
+                case "names.types.ror_display" -> map.put("name", i);
+                case "names.types.acronym" -> map.put("acronym", i);
+                case "names.types.alias" -> map.put("alias", i);
+                case "status" -> map.put("status", i);
+            }
+        }
+        return map;
+    }
+
+    public void setupDataPath() throws Exception {
         File data = new File(localPath);
         if (!data.exists()) {
             data.mkdirs();
@@ -138,5 +117,74 @@ public class OrganisationUpdater {
             properties.setProperty(downloadKey, "");
             properties.store(os, "");
         }
+    }
+
+    public String getDownloadLink(String dataDumpUrl) throws Exception {
+        String response = restTemplate.getForObject(dataDumpUrl, String.class);
+        JsonNode jsonNode = (new ObjectMapper()).readTree(response);
+        JsonPointer jsonPointer = JsonPointer.compile("/hits/hits/0/files/0/links/self");
+        String downloadUrl = jsonNode.at(jsonPointer).asText();
+        return downloadUrl == null ? "" : downloadUrl;
+    }
+
+    public boolean downloadFile(String downloadUrl, File data) throws Exception {
+        return downloadFile(new URL(downloadUrl), data);
+    }
+
+    public boolean downloadFile(URL downloadUrl, File data) throws Exception {
+        InputStream downloadStream = downloadUrl.openStream();
+        ZipInputStream zipStream = new ZipInputStream(downloadStream);
+        ZipEntry entry;
+        while ((entry = zipStream.getNextEntry()) != null) {
+            if (entry.getName().contains("ror-data_schema_v2.csv")) {
+                CSVReader csvReader = new CSVReader(new BufferedReader(new InputStreamReader(zipStream)));
+                String[] header;
+                HashMap<String, Integer> map = null;
+                if ((header = csvReader.readNext()) != null) {
+                    map = getHeaderIndex(header);
+                }
+                if (map != null && !map.isEmpty()) {
+                    CSVWriter csvWriter = new CSVWriter(new BufferedWriter(new FileWriter(data)));
+                    csvWriter.writeNext(new String[] {header[map.get("url")], header[map.get("name")], header[map.get("acronym")], header[map.get("alias")]});
+
+                    String[] line;
+                    while ((line = csvReader.readNext()) != null) {
+                        if (!line[map.get("status")].equals("active")) continue;
+
+                        csvWriter.writeNext(new String[] {line[map.get("url")], line[map.get("name")], line[map.get("acronym")], line[map.get("alias")]});
+                    }
+
+                    csvWriter.close();
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public long updateToSolr(File data) throws Exception {
+        solrClient.deleteByQuery(COLLECTION, "*:*");
+
+        CSVReader csvReader = new CSVReader(new BufferedReader(new FileReader(data)));
+        HashMap<String, Integer> map = getHeaderIndex(csvReader.readNext());
+        String[] line;
+        ArrayList<Organisation> beanList = new ArrayList<>();
+        while ((line = csvReader.readNext()) != null) {
+            String id = line[map.get("url")].trim();
+            String name = line[map.get("name")].trim();
+            List<String> acronyms = csvStr2List(line[map.get("acronym")]);
+            List<String> aliases = csvStr2List(line[map.get("alias")]);
+            beanList.add(new Organisation(id, name, acronyms, aliases));
+            if (beanList.size() >= 2000) {
+                solrClient.addBeans(COLLECTION, beanList);
+                beanList = new ArrayList<>();
+            }
+        }
+        if (!beanList.isEmpty()) {
+            solrClient.addBeans(COLLECTION, beanList);
+        }
+        solrClient.commit(COLLECTION);
+
+        return csvReader.getLinesRead() - 1;
     }
 }

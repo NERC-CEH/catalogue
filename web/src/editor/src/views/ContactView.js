@@ -15,7 +15,7 @@ export default ObjectInputView.extend({
         let query
         const term = request.term.trim()
         if (_.isEmpty(term)) {
-          query = `/organisation/names`
+          query = '/organisation/names'
         } else {
           query = `/organisation/names?query=${request.term}`
         }
