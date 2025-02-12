@@ -89,7 +89,7 @@ vcard:fn "Test contact author" ;
 vcard:organization-name "UK Centre for Ecology & Hydrology" ;
 vcard:hasEmail "enquiries@ceh.ac.uk" ;
 .
-<https://test-admin-url.ac.uk> a <http://purl.org/vocab/frbr/core#Work> ;
+<https://test-admin-url.ac.uk> a <http://purl.org/spar/fabio/Expression> ;
 rdfs:label "Test Admin details";
 .
 <http://vocabs.lter-europe.net/EnvThes/30347> a skos:Concept;
