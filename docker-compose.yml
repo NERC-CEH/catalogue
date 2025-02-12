@@ -41,7 +41,18 @@ services:
       - ./fixtures/upload/eidchub:/mnt/eidchub
       - ./fixtures/upload/supporting-documents:/mnt/supporting-documents
     profiles: [hubbub]
-
+  legilo:
+    image: cehappdev/legilo:latest
+    pull_policy: always
+    environment:
+      DATA_DIR: /opt/data
+      SUPPORTING_DOCS_DIR: /opt/supporting-docs
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./fixtures/upload/eidchub:/opt/data
+      - ./fixtures/upload/supporting-documents:/opt/supporting-docs
+    profiles: [legilo]
 volumes:
   dropbox:
   mapfiles:

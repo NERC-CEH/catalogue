@@ -1,0 +1,150 @@
+SITE,PLOT,BRC_number,BRC_names,Amalgams,Amalgam_names,NEST,COV,YR,Yr_2,Bryo,Woody,Field_sheet
+1,1,9205,Acer pseudoplatanus,9205,Acer pseudoplatanus,2,1,1971,1,,w,Ground flora
+1,1,92040,Agrostis capillaris,92040,Agrostis capillaris,4,3,2003,2,,,Ground flora
+1,1,820395,Plagiomnium undulatum,820395,Plagiomnium undulatum,,-1,1971,1,b,,Ground flora
+1,1,920105,Anemone nemorosa,920105,Anemone nemorosa,4,0.5,2003,2,,,Ground flora
+1,1,920432,Castanea sativa,920432,Castanea sativa,4,0.5,1971,1,,,Ground flora
+1,1,920432,Castanea sativa,920432,Castanea sativa,1,2,2003,2,,,Ground flora
+1,1,920541,Conopodium majus,920541,Conopodium majus,5,0.5,2003,2,,,Ground flora
+1,1,920607,Dactylis glomerata,920607,Dactylis glomerata,3,0.5,1971,1,,,Ground flora
+1,1,920687,Hyacinthoides non-scripta,920687,Hyacinthoides non-scripta,1,30,2003,2,,,Ground flora
+1,1,920810,Fagus sylvatica,920810,Fagus sylvatica,2,0.5,2003,2,,w,Ground flora
+1,1,920816,Festuca gigantea,920816,Festuca gigantea,1,15,1971,1,,,Ground flora
+1,1,920862,Lamiastrum galeobdolon,920862,Lamiastrum galeobdolon,5,0.5,1971,1,,,Ground flora
+1,1,920868,Galeopsis tetrahit agg.,920868,Galeopsis tetrahit agg.,4,0.5,2003,2,,,Ground flora
+1,1,920873,Galium aparine,920873,Galium aparine,5,0.5,2003,2,,,Ground flora
+1,1,920878,Galium saxatile,920878,Galium saxatile,5,0.5,2003,2,,,Ground flora
+1,1,920878,Galium saxatile,920878,Galium saxatile,2,0.5,1971,1,,,Ground flora
+1,1,920983,Holcus lanatus,920983,Holcus lanatus,4,1,2003,2,,,Ground flora
+1,1,920984,Holcus mollis,920984,Holcus mollis,1,35,2003,2,,,Ground flora
+1,1,920984,Holcus mollis,920984,Holcus mollis,4,0.5,1971,1,,,Ground flora
+1,1,820249,Eurhynchium praelongum,8201146,Eurhynchium sp.,,-1,1971,1,b,,Ground flora
+1,1,8201147,Fissidens sp.,8201147,Fissidens sp.,,-1,1971,1,b,,Ground flora
+1,1,9101619,Pteridium aquilinum,9101619,Pteridium aquilinum,1,8,2003,2,,,Ground flora
+1,1,9101619,Pteridium aquilinum,9101619,Pteridium aquilinum,1,90,1971,1,,,Ground flora
+1,1,9201188,Lonicera periclymenum,9201188,Lonicera periclymenum,1,5,1971,1,,w,Ground flora
+1,1,9201305,Moehringia trinervia,9201305,Moehringia trinervia,5,0.5,2003,2,,,Ground flora
+1,1,9201484,Pinus sylvestris,9201484,Pinus sylvestris,,,0,2,,w,Ground flora
+1,1,9201611,Prunus avium,9201611,Prunus avium,1,0.5,2003,2,,w,Ground flora
+1,1,9201728,Rubus fruticosus agg.,9201728,Rubus fruticosus agg.,1,50,1971,1,,,Ground flora
+1,1,9202010,Stellaria holostea,9202010,Stellaria holostea,2,1,2003,2,,,Ground flora
+1,1,9202010,Stellaria holostea,9202010,Stellaria holostea,2,5,1971,1,,,Ground flora
+1,1,9204445,Betula seedling/sp,9204445,Betula seedling/sp,,,1971,1,,w,Ground flora
+1,1,9204445,Betula seedling/sp,9204445,Betula seedling/sp,2,0.5,1971,1,,w,Ground flora
+1,1,9204446,Quercus seedling/sp,9204446,Quercus seedling/sp,,,0,2,,w,Ground flora
+1,1,9204446,Quercus seedling/sp,9204446,Quercus seedling/sp,,,1971,1,,w,Ground flora
+1,1,9204446,Quercus seedling/sp,9204446,Quercus seedling/sp,5,0.5,2003,2,,w,Ground flora
+1,1,82040,Atrichum undulatum,200001537,Atrichum sp.,,-1,1971,1,b,,Ground flora
+1,1,9202218,Viola riviniana,200001595,Viola riviniana/reichenbiana,3,0.5,1971,1,,,Ground flora
+1,1,9202217,Viola reichenbachiana,200001595,Viola riviniana/reichenbiana,3,0.5,1971,1,,,Ground flora
+1,1,20000887,Bare ground/litter/water/rock/mud,,,1,35,2003,,,,Ground flora
+1,1,20000887,Bare ground/litter/water/rock/mud,,,2,5,2003,,,,Ground flora
+1,1,20000887,Bare ground/litter/water/rock/mud,,,,1,1971,,,,Ground flora
+1,1,20000887.1,Litter,,,,90,1971,,,,Ground flora
+1,1,20000887.4,Wood,,,,5,1971,,,,Ground flora
+1,1,20000887.5,Rock,,,,-1,1971,,,,Ground flora
+1,1,20000888,Total bryophyte,,,,5,1971,,,,Ground flora
+1,2,92035,Agrostis canina sens.lat.,92035,Agrostis canina sens.lat.,4,0.5,1971,1,,,Ground flora
+1,2,92046,Ajuga reptans,92046,Ajuga reptans,2,1,1971,1,,,Ground flora
+1,2,820507,Pseudoscleropodium purum,820507,Pseudoscleropodium purum,,-1,1971,1,b,,Ground flora
+1,2,920105,Anemone nemorosa,920105,Anemone nemorosa,5,0.5,2003,2,,,Ground flora
+1,2,920557,Corylus avellana,920557,Corylus avellana,,,1971,1,,w,Ground flora
+1,2,920557,Corylus avellana,920557,Corylus avellana,4,0.5,2003,2,,w,Ground flora
+1,2,920569,Crataegus monogyna,920569,Crataegus monogyna,,,1971,1,,w,Ground flora
+1,2,920607,Dactylis glomerata,920607,Dactylis glomerata,4,0.5,1971,1,,,Ground flora
+1,2,920628,Deschampsia flexuosa,920628,Deschampsia flexuosa,5,0.5,1971,1,,,Ground flora
+1,2,920687,Hyacinthoides non-scripta,920687,Hyacinthoides non-scripta,1,50,2003,2,,,Ground flora
+1,2,920816,Festuca gigantea,920816,Festuca gigantea,3,5,1971,1,,,Ground flora
+1,2,920873,Galium aparine,920873,Galium aparine,4,0.5,1971,1,,,Ground flora
+1,2,920873,Galium aparine,920873,Galium aparine,1,0.5,2003,2,,,Ground flora
+1,2,920983,Holcus lanatus,920983,Holcus lanatus,4,0.5,2003,2,,,Ground flora
+1,2,920984,Holcus mollis,920984,Holcus mollis,1,60,1971,1,,,Ground flora
+1,2,920984,Holcus mollis,920984,Holcus mollis,1,25,2003,2,,,Ground flora
+1,2,8201146,Eurhynchium sp.,8201146,Eurhynchium sp.,5,0.5,2003,2,b,,Ground flora
+1,2,820249,Eurhynchium praelongum,8201146,Eurhynchium sp.,,-1,1971,1,b,,Ground flora
+1,2,820255,Eurhynchium striatum,8201146,Eurhynchium sp.,,-1,1971,1,b,,Ground flora
+1,2,9101619,Pteridium aquilinum,9101619,Pteridium aquilinum,3,0.5,2003,2,,,Ground flora
+1,2,9101619,Pteridium aquilinum,9101619,Pteridium aquilinum,1,65,1971,1,,,Ground flora
+1,2,9201188,Lonicera periclymenum,9201188,Lonicera periclymenum,1,5,1971,1,,w,Ground flora
+1,2,9201207,Luzula pilosa,9201207,Luzula pilosa,2,0.5,1971,1,,,Ground flora
+1,2,9201259,Silene dioica,9201259,Silene dioica,5,0.5,2003,2,,,Ground flora
+1,2,9201296,Milium effusum,9201296,Milium effusum,3,0.5,2003,2,,,Ground flora
+1,2,9201305,Moehringia trinervia,9201305,Moehringia trinervia,4,0.5,2003,2,,,Ground flora
+1,2,9201705,Rosa seedling/sp,9201705,Rosa seedling/sp,2,0.5,1971,1,,w,Ground flora
+1,2,9201728,Rubus fruticosus agg.,9201728,Rubus fruticosus agg.,1,30,1971,1,,,Ground flora
+1,2,9202010,Stellaria holostea,9202010,Stellaria holostea,1,40,2003,2,,,Ground flora
+1,2,9202010,Stellaria holostea,9202010,Stellaria holostea,2,5,1971,1,,,Ground flora
+1,2,9202012,Stellaria media,9202012,Stellaria media,5,0.5,2003,2,,,Ground flora
+1,2,9202063,Tilia cordata,9202063,Tilia cordata,,,0,2,,w,Ground flora
+1,2,9202063,Tilia cordata,9202063,Tilia cordata,4,0.5,2003,2,,w,Ground flora
+1,2,9202122,Ulmus procera,9202122,Ulmus procera,4,0.5,2003,2,,w,Ground flora
+1,2,9204445,Betula seedling/sp,9204445,Betula seedling/sp,,,1971,1,,w,Ground flora
+1,2,9204445,Betula seedling/sp,9204445,Betula seedling/sp,3,0.5,1971,1,,w,Ground flora
+1,2,9204446,Quercus seedling/sp,9204446,Quercus seedling/sp,,,0,2,,w,Ground flora
+1,2,9204446,Quercus seedling/sp,9204446,Quercus seedling/sp,,,1971,1,,w,Ground flora
+1,2,200001583,Dryopteris dilatata/carthusiana,200001583,Dryopteris dilatata/carthusiana,3,0.5,2003,2,,,Ground flora
+1,2,910661,Dryopteris dilatata,200001583,Dryopteris dilatata/carthusiana,5,0.5,1971,1,,,Ground flora
+1,2,9202218,Viola riviniana,200001595,Viola riviniana/reichenbiana,4,0.5,1971,1,,,Ground flora
+1,2,9202217,Viola reichenbachiana,200001595,Viola riviniana/reichenbiana,4,0.5,1971,1,,,Ground flora
+1,2,20000887,Bare ground/litter/water/rock/mud,,,,5,1971,,,,Ground flora
+1,2,20000887.1,Litter,,,,80,1971,,,,Ground flora
+1,2,20000887.4,Wood,,,,1,1971,,,,Ground flora
+1,2,20000887.5,Rock,,,,-1,1971,,,,Ground flora
+1,2,20000888,Total bryophyte,,,,5,1971,,,,Ground flora
+1,3,9205,Acer pseudoplatanus,9205,Acer pseudoplatanus,,,0,2,,w,Ground flora
+1,3,9205,Acer pseudoplatanus,9205,Acer pseudoplatanus,1,0.5,2003,2,,w,Ground flora
+1,3,92046,Ajuga reptans,92046,Ajuga reptans,1,1,2003,2,,,Ground flora
+1,3,910665,Dryopteris filix-mas,910665,Dryopteris filix-mas,1,1,2003,2,,,Ground flora
+1,3,920557,Corylus avellana,920557,Corylus avellana,,,0,2,,w,Ground flora
+1,3,920557,Corylus avellana,920557,Corylus avellana,,,1971,1,,w,Ground flora
+1,3,920627,Deschampsia cespitosa,920627,Deschampsia cespitosa,1,10,2003,2,,,Ground flora
+1,3,920640,Digitalis purpurea,920640,Digitalis purpurea,2,0.5,2003,2,,,Ground flora
+1,3,920687,Hyacinthoides non-scripta,920687,Hyacinthoides non-scripta,3,0.5,2003,2,,,Ground flora
+1,3,920810,Fagus sylvatica,920810,Fagus sylvatica,5,0.5,2003,2,,w,Ground flora
+1,3,920816,Festuca gigantea,920816,Festuca gigantea,3,0.5,1971,1,,,Ground flora
+1,3,920868,Galeopsis tetrahit agg.,920868,Galeopsis tetrahit agg.,2,0.5,2003,2,,,Ground flora
+1,3,920873,Galium aparine,920873,Galium aparine,2,0.5,2003,2,,,Ground flora
+1,3,920983,Holcus lanatus,920983,Holcus lanatus,1,1,2003,2,,,Ground flora
+1,3,920984,Holcus mollis,920984,Holcus mollis,1,80,1971,1,,,Ground flora
+1,3,820249,Eurhynchium praelongum,8201146,Eurhynchium sp.,,-1,1971,1,b,,Ground flora
+1,3,820249,Eurhynchium praelongum,8201146,Eurhynchium sp.,1,0.5,2003,2,b,,Ground flora
+1,3,9101619,Pteridium aquilinum,9101619,Pteridium aquilinum,1,95,1971,1,,,Ground flora
+1,3,9201188,Lonicera periclymenum,9201188,Lonicera periclymenum,1,5,1971,1,,w,Ground flora
+1,3,9201188,Lonicera periclymenum,9201188,Lonicera periclymenum,4,0.5,2003,2,,w,Ground flora
+1,3,9201263,Melica uniflora,9201263,Melica uniflora,5,0.5,2003,2,,,Ground flora
+1,3,9201296,Milium effusum,9201296,Milium effusum,1,30,2003,2,,,Ground flora
+1,3,9201413,Oxalis acetosella,9201413,Oxalis acetosella,2,0.5,2003,2,,,Ground flora
+1,3,9201728,Rubus fruticosus agg.,9201728,Rubus fruticosus agg.,2,5,1971,1,,,Ground flora
+1,3,9201728,Rubus fruticosus agg.,9201728,Rubus fruticosus agg.,2,5,2003,2,,,Ground flora
+1,3,9202010,Stellaria holostea,9202010,Stellaria holostea,2,5,1971,1,,,Ground flora
+1,3,9202010,Stellaria holostea,9202010,Stellaria holostea,1,60,2003,2,,,Ground flora
+1,3,9204445,Betula seedling/sp,9204445,Betula seedling/sp,,,1971,1,,w,Ground flora
+1,3,9204446,Quercus seedling/sp,9204446,Quercus seedling/sp,,,0,2,,w,Ground flora
+1,3,9201507,Poa trivialis,200001593,Poa nemoralis/trivialis,2,1,2003,2,,,Ground flora
+1,3,20000887,Bare ground/litter/water/rock/mud,,,1,10,2003,,,,Ground flora
+1,3,20000887,Bare ground/litter/water/rock/mud,,,,0,1971,,,,Ground flora
+1,3,20000887.1,Litter,,,,95,1971,,,,Ground flora
+1,3,20000887.4,Wood,,,,5,1971,,,,Ground flora
+1,3,20000887.5,Rock,,,,-1,1971,,,,Ground flora
+1,3,20000888,Total bryophyte,,,,5,1971,,,,Ground flora
+1,4,92040,Agrostis capillaris,92040,Agrostis capillaris,1,45,1971,1,,,Ground flora
+1,4,92046,Ajuga reptans,92046,Ajuga reptans,3,1,1971,1,,,Ground flora
+1,4,810814,Lophocolea heterophylla,810814,Lophocolea heterophylla,,-1,1971,1,b,,Ground flora
+1,4,820141,Campylopus introflexus,820141,Campylopus introflexus,5,0.5,2003,2,b,,Ground flora
+1,4,820351,Hypnum cupressiforme sens.lat.,820351,Hypnum cupressiforme sens.lat.,3,1,2003,2,b,,Ground flora
+1,4,820357,Isopterygium elegans,820357,Isopterygium elegans,5,0.5,2003,2,b,,Ground flora
+1,4,820599,Thuidium tamariscinum,820599,Thuidium tamariscinum,5,0.5,2003,2,b,,Ground flora
+1,4,920250,Brachypodium sylvaticum,920250,Brachypodium sylvaticum,1,0.5,1971,1,,,Ground flora
+1,4,920412,Carex remota,920412,Carex remota,5,0.5,2003,2,,,Ground flora
+1,4,920557,Corylus avellana,920557,Corylus avellana,,,1971,1,,w,Ground flora
+1,4,920627,Deschampsia cespitosa,920627,Deschampsia cespitosa,4,1,1971,1,,,Ground flora
+1,4,920640,Digitalis purpurea,920640,Digitalis purpurea,4,0.5,2003,2,,,Ground flora
+1,4,920687,Hyacinthoides non-scripta,920687,Hyacinthoides non-scripta,3,0.5,2003,2,,,Ground flora
+1,4,920816,Festuca gigantea,920816,Festuca gigantea,3,1,1971,1,,,Ground flora
+1,4,920878,Galium saxatile,920878,Galium saxatile,1,0.5,1971,1,,,Ground flora
+1,4,920925,Geum urbanum,920925,Geum urbanum,2,0.5,1971,1,,,Ground flora
+1,4,920983,Holcus lanatus,920983,Holcus lanatus,5,0.5,2003,2,,,Ground flora
+1,4,920984,Holcus mollis,920984,Holcus mollis,1,45,1971,1,,,Ground flora
+1,4,8101308,Lophocolea sp.,8101308,Lophocolea sp.,1,0.5,2003,2,b,,Ground flora
+1,4,8201103,Brachythecium sp.,8201103,Brachythecium sp.,5,0.5,2003,2,b,,Ground flora
+1,4,8201146,Eurhynchium sp.,8201146,Eurhynchium sp.,1,1,2003,2,b,,Ground flora
