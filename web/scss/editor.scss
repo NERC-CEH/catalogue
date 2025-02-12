@@ -236,7 +236,7 @@
 
                 label {
                     font-size: 85%;
-                    font-weight:600;
+                    font-weight: 600;
 
                     a {
                         margin-inline-start: 0.5em;
@@ -331,6 +331,23 @@
                 font-style: italic;
             }
         }
+
+        .supdocContent {
+            fieldset {
+                legend {
+                    margin-block: 1em;
+                }
+
+                label {
+                    margin-inline-start: 2em;
+
+                    input {
+                        margin-inline-end: 0.5em;
+                    }
+                }
+            }
+        }
+
 
         // VOCAB KEYWORD PICKER STYLES
         .vocabularyPicker {

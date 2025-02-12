@@ -1,16 +1,12 @@
 <#compress>
   <#import "../schema.org/macros.ftl" as m>
-  <#assign docType = "">
+
   <#if type=='dataset' || type=='nonGeographicDataset' || type=='signpost'>
-    <#assign docType = "Dataset">
-  <#elseif type=='application'>
-    <#assign docType = "SoftwareSourceCode">
+      <@croissant fileDetails.getDetailsFor(id, false)/>
   </#if>
 
-  <@croissant docType fileDetails.getDetailsFor(id, false)/>
-
-  <#macro croissant docType="" files=[]>
-    <#if docType?has_content && resourceStatus?lower_case != "deleted">
+  <#macro croissant files=[]>
+    <#if resourceStatus?lower_case != "deleted">
       {
       "@context": {
           "@language": "en",
@@ -25,7 +21,8 @@
         "@type": "sc:Dataset", <#--check what if type = model code ?? -->
         "name":<@m.displayLiteral title/>,
         "url": "${uri?trim}",
-        "dct:conformsTo": "http://mlcommons.org/croissant/1.0"
+        "dct:conformsTo": "http://mlcommons.org/croissant/1.0",
+        "version":<#if version?has_content><@m.displayLiteral version/><#else>1</#if>
         <#if description?has_content>,"description":<@m.displayLiteral description/></#if>
         <@citeAs/>
         <@creationDate/>
@@ -75,7 +72,7 @@
 
   <#macro listLicences>
     <#if licences?? && licences?has_content>
-          ,"licence": [
+          ,"license": [
             <#list licences as licence>
               <#if licence.uri?matches("^http[s]?://eidc.ceh.ac.uk/licences/OGL.+$")>
                 {
@@ -112,29 +109,9 @@
     <#if allKeywords??>
       ,"keywords": [
       <#list allKeywords?sort_by("value")?sort_by("uri") as keyword>
-
-           <#if keyword.uri?has_content>
-            <#assign subjectScheme="" schemeURI="">
-              <#if keyword.uri?matches("^http[s]?://inspire.ec.europa.eu/\\S+$")>
-                <#assign subjectScheme="European Union INSPIRE registry" schemeURI="http://inspire.ec.europa.eu/registry/">
-              <#elseif keyword.uri?matches("^http[s]?://www.wikidata.org/entity/\\S+$")>
-                <#assign subjectScheme="Wikidata" schemeURI="https://www.wikidata.org/">
-              <#elseif keyword.uri?matches("^http[s]?://sws.geonames.org/\\S+$")>
-                <#assign subjectScheme="Geonames" schemeURI="https://www.geonames.org/">
-              <#elseif keyword.uri?matches("^http[s]?://www.eionet.europa.eu/gemet/concept/\\S+$")>
-                <#assign subjectScheme="GEMET concepts" schemeURI="https://www.eionet.europa.eu/gemet/">
-              </#if>
-
-              <#t>{
-                  <#t>"@type": "DefinedTerm",
-                  <#t>"@id": "${keyword.uri?trim}",
-                  <#t>"name": <@m.displayLiteral keyword.value/>
-                  <#t><#if subjectScheme?has_content>,"inDefinedTermSet": "${schemeURI}"</#if>
-                }
-           <#else>
+           <#if keyword.value?has_content>
             <@m.displayLiteral keyword.value/>
            </#if>
-
         <#sep>,
       </#list>
       ]
