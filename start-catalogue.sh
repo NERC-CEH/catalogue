@@ -6,12 +6,13 @@ die () { exit 1; }
 
 usage () {
     cat <<EOF
-Usage: ${0##*/} [-hwb] [[--] args ...]
+Usage: ${0##*/} [-hwbl] [[--] args ...]
 Rebuild and start a catalogue instance.
 
-	-h	Show this help and exit
-	-w	Don't build the web assets
-	-b	Start Hubbub docker service and enable its profile
+    -h  Show this help and exit
+    -w  Don't build the web assets
+    -b  Start Hubbub docker service and enable its profile
+    -l  Start Legilo service and enable its profile
 
 Any remaining arguments are passed on to ./gradlew bootRun.  Use
 -- to separate them if they start with something that looks like
@@ -26,7 +27,8 @@ EOF
 
 build_web=true
 with_hubbub=false
-while getopts hwb opt; do
+with_legilo=false
+while getopts hwbl opt; do
     case $opt in
         h)
             usage
@@ -37,6 +39,9 @@ while getopts hwb opt; do
             ;;
         b)
             with_hubbub=true
+            ;;
+        l)
+            with_legilo=true
             ;;
         *)
             usage >&2
@@ -84,6 +89,8 @@ mkdir -p datastore &&
 echo 'Starting dependent services...'
 if [[ $with_hubbub = true ]]; then
     docker compose --profile hubbub up --wait --detach
+elif [[ $with_legilo = true ]]; then
+    docker compose --profile legilo up --wait --detach
 else
     docker compose up --wait --detach
 fi || die
@@ -118,9 +125,14 @@ export_default SPRING_WEB_RESOURCES_STATIC_LOCATIONS file:"$TOP"/static
 export_default UPLOAD_SIMPLE_DATASTORE "$TOP"/datastore
 export_default SPRING_DEVTOOLS_RESTART_ENABLED true
 export_default SPRING_DEVTOOLS_LIVERELOAD_ENABLED true
+export_default LEGILO_URL http://localhost:8000
+export_default LEGILO_USER user
+export_default LEGILO_PASSWORD password
 
 if [[ $with_hubbub = true ]]; then
     export_default SPRING_PROFILES_ACTIVE development,upload:hubbub,server:eidc,search:basic,service-agreement
+elif [[ $with_legilo = true ]]; then
+    export_default SPRING_PROFILES_ACTIVE development,upload:simple,server:eidc,search:basic,service-agreement,keyword-suggestions
 else
     export_default SPRING_PROFILES_ACTIVE development,upload:simple,server:eidc,search:basic,service-agreement
 fi
