@@ -10,7 +10,7 @@ RUN npm run build-css
 RUN npm run build-prod
 
 # Build Java
-FROM gradle:8.12.1-jdk-21-and-23-alpine AS build-java
+FROM gradle:8.12.1-jdk23-alpine AS build-java
 WORKDIR /app
 COPY --chown=gradle:gradle java/build.gradle .
 COPY --chown=gradle:gradle java/lombok.config .
