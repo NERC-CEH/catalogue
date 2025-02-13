@@ -24,7 +24,11 @@ a dct:ProvenanceStatement ;
 rdfs:label "Test quality lineage"
 ] ;
 dct:spatial "POLYGON((-6.452 49.864, -6.452 55.812, 1.768 55.812, 1.768 49.864, -6.452 49.864))"^^geo:wktLiteral ;
-dct:temporal "2025-02-04/2025-02-28"^^dct:PeriodOfTime ;
+dct:temporal
+    [ a dct:PeriodOfTime ;
+        dcat:startDate "2025-02-04"^^xsd:date ;
+        dcat:endDate ""^^xsd:date ;
+    ] ;
 dcat:contactPoint
 <https://orcid.org/0000-2222-2345-6789> ;
 dct:publisher
