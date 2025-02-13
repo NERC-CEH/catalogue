@@ -26,8 +26,8 @@ rdfs:label "Test quality lineage"
 dct:spatial "POLYGON((-6.452 49.864, -6.452 55.812, 1.768 55.812, 1.768 49.864, -6.452 49.864))"^^geo:wktLiteral ;
 dct:temporal
 [ a dct:PeriodOfTime ;
-dcat:startDate "2013-05-25"^^xsd:date ;
-dcat:endDate "2015-08-10"^^xsd:date ;
+dcat:startDate "2025-02-04"^^xsd:date ;
+dcat:endDate "2025-02-28"^^xsd:date ;
 ] ;
 dcat:contactPoint
 <https://orcid.org/0000-2222-2345-6789> ;
@@ -45,7 +45,7 @@ dct:subject
 <http://onto.nerc.ac.uk/CAST/287>,
 <http://onto.nerc.ac.uk/CEHMD/topic/1>,
 <http://vocabs.lter-europe.net/EnvThes/30349> ;
-sdo:variableMeasured <https://test-observed-properties .ac.uk> ;
+sdo:variableMeasured <https://test-observed-properties.ac.uk> ;
 prov:wasGeneratedBy
 <https://testaward.ac.uk> ;
 a dcat:Dataset;
@@ -109,5 +109,5 @@ skos:prefLabel "Agriculture"; rdfs:label "Agriculture"
 . <http://vocabs.lter-europe.net/EnvThes/30349> a skos:Concept;
 skos:prefLabel "water turbidity of stagnant surface water"; rdfs:label "water turbidity of stagnant surface water"
 .
-<https://test-observed-properties .ac.uk> a skos:Concept;skos:prefLabel "Test observed properties title"; rdfs:label "Test observed properties title".
+<https://test-observed-properties.ac.uk> a skos:Concept;skos:prefLabel "Test observed properties title"; rdfs:label "Test observed properties title".
 <https://testaward.ac.uk> a prov:Activity ; rdfs:label "Test supplemental award name" .

@@ -87,7 +87,7 @@
   "observedProperty": [
     {
       "value": "Test observed properties name",
-      "uri": "https://test-observed-properties .ac.uk",
+      "uri": "https://test-observed-properties.ac.uk",
       "title": "Test observed properties title",
       "description": "Test observed properties  description",
       "type": "string",
