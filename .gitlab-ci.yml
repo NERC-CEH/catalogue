@@ -20,7 +20,7 @@ default:
 
 test_java:
   stage: test
-  image: gradle:8.5-jdk17-alpine
+  image: gradle:8.12.1-jdk-21-and-23-alpine
   script: gradle test --no-daemon
   artifacts:
     when: always
@@ -62,7 +62,6 @@ container_scanning:
     CS_REGISTRY_USER: gitlab-ci-token
     CS_REGISTRY_PASSWORD: $CI_JOB_TOKEN
     CS_SEVERITY_THRESHOLD: 'high'
-    GIT_STRATEGY: fetch
   before_script:
   - sudo apt-get update -y && sudo apt-get install -y jq
   script:
