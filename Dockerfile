@@ -10,7 +10,7 @@ RUN npm run build-css
 RUN npm run build-prod
 
 # Build Java
-FROM gradle:8.5-jdk17-alpine AS build-java
+FROM gradle:8.12.1-jdk23-alpine AS build-java
 WORKDIR /app
 COPY --chown=gradle:gradle java/build.gradle .
 COPY --chown=gradle:gradle java/lombok.config .
@@ -20,7 +20,7 @@ WORKDIR build/libs
 RUN java -Djarmode=layertools -jar app.jar extract
 
 # Create production image
-FROM eclipse-temurin:17-alpine AS prod
+FROM eclipse-temurin:23-alpine AS prod
 LABEL maintainer="oss@ceh.ac.uk"
 RUN apk --no-cache add curl
 RUN addgroup -g 1001 -S spring && adduser -u 1001 -S spring -G spring
