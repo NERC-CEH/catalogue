@@ -23,7 +23,7 @@ dct:provenance [
 a dct:ProvenanceStatement ;
 rdfs:label "Test quality lineage"
 ] ;
-dct:spatial "POLYGON((-6.452 49.864, -6.452 55.812, 1.768 55.812, 1.768 49.864, -6.452 49.864))"^^geo:wktLiteral ;
+dct:bbox "POLYGON((-6.452 49.864, -6.452 55.812, 1.768 55.812, 1.768 49.864, -6.452 49.864))"^^geo:wktLiteral ;
 dct:temporal
 [ a dct:PeriodOfTime ;
 dcat:startDate "2025-02-04"^^xsd:date ;
