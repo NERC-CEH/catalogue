@@ -73,7 +73,7 @@ rdf:value "Comma-separated values (CSV)" ; rdfs:label "Comma-separated values (C
 ];
 dct:contributor
 <https://orcid.org/0000-0001-2345-6789> ;
-dct:language "eng" .
+dct:language <http://id.loc.gov/vocabulary/iso639-1/en> .
 <https://orcid.org/0000-2222-2345-6789> a vcard:Individual ;
 vcard:fn "Test contact point of contact" ;
 vcard:organization-name "UK Centre for Ecology & Hydrology" ;

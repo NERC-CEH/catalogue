@@ -9,6 +9,6 @@ a ef:Activity ;
 dct:title "Test activity name" ;
 dct:description "Test activity description" ;
 ef:boundingBox "POLYGON((-6.45 49.864, -6.45 55.812, 1.76 55.812, 1.76 49.864, -6.45 49.864))"^^geo:wktLiteral ;
-dct:language "eng";
+dct:language <http://id.loc.gov/vocabulary/iso639-1/en>;
 ef:uses <https://catalogue.ceh.ac.uk/id/000000001>, <https://catalogue.ceh.ac.uk/id/000000002>;
 .
