@@ -28,9 +28,9 @@ public class OrganisationSolrQueryService {
             SolrQuery query = new SolrQuery();
             query.setQuery(term);
             query.setParam("defType", "edismax");
-            query.setParam("qf", "name^50 acronyms^25 aliases^25");
+            query.setParam("qf", "name^50 acronyms^20 aliases^20");
             query.setSort("score", ORDER.desc);
-            query.setRows(50);
+            query.setRows(10);
             log.debug(query.getQuery());
 
             return solrClient.query(COLLECTION, query, POST).getBeans(Organisation.class);
