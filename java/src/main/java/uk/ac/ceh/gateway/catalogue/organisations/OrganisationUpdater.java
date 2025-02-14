@@ -85,8 +85,12 @@ public class OrganisationUpdater {
         }
     }
 
+    private String removeUnrelatedStr(String str) {
+        return str.replaceFirst("^.+:", "").trim();
+    }
+
     private List<String> csvStr2List(String str) {
-        return Arrays.stream(str.replaceFirst("^.+:", "").split(","))
+        return Arrays.stream(str.split(","))
             .map(String::trim).filter(s -> !s.isBlank()).toList();
     }
 
@@ -151,7 +155,12 @@ public class OrganisationUpdater {
                     while ((line = csvReader.readNext()) != null) {
                         if (!line[map.get("status")].equals("active")) continue;
 
-                        csvWriter.writeNext(new String[] {line[map.get("url")], line[map.get("name")], line[map.get("acronym")], line[map.get("alias")]});
+                        csvWriter.writeNext(new String[] {
+                            line[map.get("url")],
+                            line[map.get("name")],
+                            removeUnrelatedStr(line[map.get("acronym")]),
+                            removeUnrelatedStr(line[map.get("alias")])
+                        });
                     }
 
                     csvWriter.close();
@@ -175,7 +184,7 @@ public class OrganisationUpdater {
             List<String> acronyms = csvStr2List(line[map.get("acronym")]);
             List<String> aliases = csvStr2List(line[map.get("alias")]);
             beanList.add(new Organisation(id, name, acronyms, aliases));
-            if (beanList.size() >= 2000) {
+            if (beanList.size() >= 3000) {
                 solrClient.addBeans(COLLECTION, beanList);
                 beanList = new ArrayList<>();
             }
