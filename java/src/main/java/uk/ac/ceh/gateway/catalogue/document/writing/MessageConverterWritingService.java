@@ -25,7 +25,7 @@ public class MessageConverterWritingService implements DocumentWritingService {
             List<HttpMessageConverter<?>> messageConverters
     ) {
         this.messageConverters = messageConverters;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     public MessageConverterWritingService addMessageConverter(HttpMessageConverter<?> converter) {

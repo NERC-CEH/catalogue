@@ -40,7 +40,7 @@ public class ServiceAgreementPublicationService implements PublicationService {
         this.groupStore = groupStore;
         this.workflow = workflow;
         this.serviceAgreementService = serviceAgreementService;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @Override

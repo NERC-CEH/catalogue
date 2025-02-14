@@ -30,7 +30,7 @@ public class FileSystemStorageService implements StorageService {
         @Value("${upload.simple.datastore}") String datastore
     ) {
         this.datastore = datastore;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @Override

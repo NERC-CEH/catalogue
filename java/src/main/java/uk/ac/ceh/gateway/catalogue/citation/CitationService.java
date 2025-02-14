@@ -30,7 +30,7 @@ public class CitationService {
             @Value("${doi.prefix}") String nercDoiPrefix
             ) {
         this.nercDoiPrefix = nercDoiPrefix;
-        log.info("Creating {}", this);
+        log.info("Creating");
             }
 
     /**

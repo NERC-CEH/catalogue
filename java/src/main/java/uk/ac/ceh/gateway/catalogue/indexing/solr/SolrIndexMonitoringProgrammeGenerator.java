@@ -21,7 +21,7 @@ public class SolrIndexMonitoringProgrammeGenerator implements IndexGenerator<Mon
 
     public SolrIndexMonitoringProgrammeGenerator(SolrIndexMetadataDocumentGenerator metadataDocumentSolrIndex) {
         this.metadataDocumentSolrIndex = metadataDocumentSolrIndex;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @Override

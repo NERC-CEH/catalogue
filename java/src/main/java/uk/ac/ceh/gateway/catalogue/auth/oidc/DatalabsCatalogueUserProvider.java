@@ -34,7 +34,7 @@ public class DatalabsCatalogueUserProvider implements CatalogueUserProvider {
     ) {
         this.restTemplate = restTemplate;
         this.usersEndpoint = UriComponentsBuilder.fromHttpUrl(usersEndpoint).build().toUri();
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @Override

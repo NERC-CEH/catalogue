@@ -54,7 +54,7 @@ public class SparqlKeywordVocabulary implements KeywordVocabulary {
         this.vocabularyName = vocabularyName;
         this.graph = graph;
         this.queryUrl = createQueryUrl(sparqlEndpoint, graph, where);
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     private URI createQueryUrl(String sparqlEndpoint, String graph, String where) {

@@ -44,7 +44,7 @@ public class JiraService {
         this.restTemplate = restTemplate;
         this.username = jiraUsername;
         this.password = jiraPassword;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     public void comment(String key, String comment) throws RestClientResponseException {

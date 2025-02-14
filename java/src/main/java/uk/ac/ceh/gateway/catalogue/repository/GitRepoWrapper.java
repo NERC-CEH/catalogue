@@ -32,7 +32,7 @@ public class GitRepoWrapper {
         this.repo = repo;
         this.documentInfoMapper = documentInfoMapper;
         this.facilityEventService = facilityEventService;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @SneakyThrows

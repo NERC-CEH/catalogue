@@ -20,7 +20,7 @@ public class NetworkFileEventListener {
     public NetworkFileEventListener(NetworkIndexingService service, DocumentListingService listingService) {
         this.service = service;
         this.listingService = listingService;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @Subscribe

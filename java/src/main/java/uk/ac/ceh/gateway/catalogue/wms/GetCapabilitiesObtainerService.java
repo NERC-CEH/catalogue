@@ -24,7 +24,7 @@ public class GetCapabilitiesObtainerService {
     public GetCapabilitiesObtainerService(RestTemplate rest, MapServerDetailsService mapServerDetailsService) {
         this.rest = rest;
         this.mapServerDetailsService = mapServerDetailsService;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @Cacheable(cacheNames = "capabilities", key = "#resource.url")

@@ -49,7 +49,7 @@ public class DataLabsAuthenticationProvider implements AuthenticationProvider {
     ) {
         this.restTemplate = restTemplate;
         this.address = UriComponentsBuilder.fromHttpUrl(address).build().toUri();
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @Override

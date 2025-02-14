@@ -43,7 +43,7 @@ public class UploadController {
     ) {
         this.documentRepository = documentRepository;
         this.storageService = storageService;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @GetMapping(value = "{id}", produces = MediaType.TEXT_HTML_VALUE)

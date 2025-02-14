@@ -42,7 +42,7 @@ public class DownloadOrderDetailsService {
             Pattern.compile(downloadUrlProperties.getRegexOrderManDownload()),
             Pattern.compile(downloadUrlProperties.getRegexOrder())
         );
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     public DownloadOrder from(List<OnlineResource> onlineResources) {

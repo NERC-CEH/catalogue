@@ -49,7 +49,7 @@ public class NercWafController {
     ) {
         this.repo = repo;
         this.listing = listing;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @GetMapping("/")

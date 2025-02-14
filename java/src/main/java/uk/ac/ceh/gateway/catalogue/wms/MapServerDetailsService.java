@@ -39,7 +39,7 @@ public class MapServerDetailsService {
         @Value("${documents.baseUri}") String hostUrl
     ) {
         this.hostUrl = hostUrl;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     /**

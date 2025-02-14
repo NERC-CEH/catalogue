@@ -29,7 +29,7 @@ public class DataciteIndexingService implements DocumentIndexingService {
     ) {
         this.bundleReader = bundleReader;
         this.datacite = datacite;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     /**

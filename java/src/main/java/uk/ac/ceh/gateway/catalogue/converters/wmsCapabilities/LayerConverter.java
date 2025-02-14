@@ -25,7 +25,7 @@ public class LayerConverter {
         this.name = xpath.compile("wms:Name");
         this.title = xpath.compile("wms:Title");
         this.legendUrl = xpath.compile("wms:Style[wms:Name = 'default']/wms:LegendURL/wms:OnlineResource/@xlink:href");
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     public List<Layer> convert(Document document) throws XPathExpressionException {

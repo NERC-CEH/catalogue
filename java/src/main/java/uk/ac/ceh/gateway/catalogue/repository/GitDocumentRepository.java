@@ -49,7 +49,7 @@ public class GitDocumentRepository implements DocumentRepository {
         this.documentWriter = documentWriter;
         this.documentBundleReader = documentBundleReader;
         this.repo = repo;
-        log.info("Creating {}", this);
+        log.info("Creating");
             }
 
     @Override

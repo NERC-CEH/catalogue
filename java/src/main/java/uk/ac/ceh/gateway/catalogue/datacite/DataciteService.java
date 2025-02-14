@@ -76,7 +76,7 @@ public class DataciteService {
         this.identifierService = identifierService;
         this.configuration = configuration;
         this.restTemplate = restTemplate;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     /**

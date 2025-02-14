@@ -28,7 +28,7 @@ public class QualityController {
     ) {
         this.metadataQualityService = metadataQualityService;
         this.metadataListingService = metadataListingService;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @PreAuthorize("@permission.userCanEditRestrictedFields(#catalogue)")

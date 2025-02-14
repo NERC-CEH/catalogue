@@ -35,7 +35,7 @@ public class DocumentIdentifierService {
     ) {
         this.baseUri = baseUri;
         this.replacement = replacement;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     /**

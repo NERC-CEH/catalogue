@@ -23,7 +23,7 @@ public class TMSToWMSGetMapService {
         this. bboxPartFormat = new DecimalFormat("#.##");
         this.height = 256;
         this.width = 256;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     public String getWMSMapRequest(String url, String layer, int z, int x, int y) {

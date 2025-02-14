@@ -24,7 +24,7 @@ public class ServiceAgreementPublicationController {
         @Qualifier("service-agreement") PublicationService publicationService
     ) {
         this.publicationService = publicationService;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @PreAuthorize("@permission.userCanEditServiceAgreement(#file)")

@@ -32,7 +32,7 @@ public class FileDetailsService {
         this.datastore = datastore;
         this.baseUri = baseUri;
         this.pageSize = pageSize;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     public List<Part> getDetailsFor(String fileId, boolean isAttached){

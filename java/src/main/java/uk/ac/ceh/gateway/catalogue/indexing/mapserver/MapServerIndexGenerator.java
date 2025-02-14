@@ -22,7 +22,7 @@ public class MapServerIndexGenerator implements IndexGenerator<MetadataDocument,
     public MapServerIndexGenerator(Configuration templateConfiguration, MapServerDetailsService mapServerDetailsService) {
         this.templateConfiguration = templateConfiguration;
         this.mapServerDetailsService = mapServerDetailsService;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @Override
