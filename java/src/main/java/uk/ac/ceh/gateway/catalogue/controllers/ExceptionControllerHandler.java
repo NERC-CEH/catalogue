@@ -2,7 +2,6 @@ package uk.ac.ceh.gateway.catalogue.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.*;
@@ -32,8 +31,6 @@ import static org.springframework.http.HttpStatus.*;
 @Slf4j
 @ControllerAdvice
 public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
-
-    @Autowired
     private final Environment env;
 
     public ExceptionControllerHandler(Environment env) {
