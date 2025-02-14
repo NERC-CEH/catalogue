@@ -84,7 +84,7 @@ export default _.template(`
         <label for="contacts<%= data.index %>Organisation">Organisation</label>
     </div>
     <div class="col-lg-10">
-        <input data-name='organisationName' class="editor-input" id="contacts<%= data.index %>Organisation" value="<%= data.organisationName %>">
+        <input placeholder="Search for organisation" data-name='organisationName' class="editor-input orgAutocomplete" id="contacts<%= data.index %>Organisation" value="<%= data.organisationName %>">
     </div>
 </div>
 
