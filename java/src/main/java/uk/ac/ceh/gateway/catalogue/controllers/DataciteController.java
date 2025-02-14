@@ -42,7 +42,7 @@ public class DataciteController {
         this.repo = repo;
         this.identifierService = identifierService;
         this.dataciteService = dataciteService;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @GetMapping(value="{file}/datacite.xml")

@@ -44,7 +44,7 @@ public class DownloadController {
             Pattern.compile(packageUrlRegex),
             Pattern.compile(datastoreUrlRegex)
         );
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @GetMapping("download/{uuid}")

@@ -29,7 +29,7 @@ public class TransparentProxyMessageConverter implements HttpMessageConverter<Tr
 
     public TransparentProxyMessageConverter(CloseableHttpClient httpClient) {
         this.httpClient = httpClient;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @Override

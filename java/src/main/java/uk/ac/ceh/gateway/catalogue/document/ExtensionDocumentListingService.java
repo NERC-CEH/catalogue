@@ -24,7 +24,7 @@ public class ExtensionDocumentListingService implements DocumentListingService {
     private final List<String> extensions = Arrays.asList("meta", "raw");
 
     public ExtensionDocumentListingService() {
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @Override

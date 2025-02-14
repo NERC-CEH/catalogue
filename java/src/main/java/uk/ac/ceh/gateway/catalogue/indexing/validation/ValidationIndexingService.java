@@ -43,7 +43,7 @@ public class ValidationIndexingService extends AbstractIndexingService<MetadataD
         this.failed = new HashSet<>();
         this.postProcessingService = postProcessingService;
         this.documentIdentifierService = documentIdentifierService;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @Override

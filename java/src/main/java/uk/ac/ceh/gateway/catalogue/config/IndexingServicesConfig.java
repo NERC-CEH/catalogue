@@ -166,7 +166,7 @@ public class IndexingServicesConfig {
 
         IndexGeneratorRegistry<MetadataDocument, SolrIndex> indexGeneratorRegistry = new IndexGeneratorRegistry<>(mappings);
         linkDocumentGenerator.setIndexGeneratorRegistry(indexGeneratorRegistry);
-        log.info("Set repository & registry on {}", linkDocumentGenerator);
+        log.debug("Set repository & registry on {}", linkDocumentGenerator);
 
         return new SolrIndexingService(
                 bundledReaderService,

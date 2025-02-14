@@ -41,7 +41,7 @@ public class MetadataListingService {
         this.repo = repo;
         this.listingService = listingService;
         this.documentBundleReader = documentBundleReader;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     /**

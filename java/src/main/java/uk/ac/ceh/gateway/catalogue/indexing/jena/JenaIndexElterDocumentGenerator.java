@@ -27,7 +27,7 @@ public class JenaIndexElterDocumentGenerator implements IndexGenerator<ElterDocu
     public JenaIndexElterDocumentGenerator(JenaIndexMetadataDocumentGenerator generator, String baseUri) {
         this.generator = generator;
         this.baseUri = baseUri;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @Override

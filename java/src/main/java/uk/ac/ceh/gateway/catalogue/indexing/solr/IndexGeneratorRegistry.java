@@ -13,7 +13,7 @@ public class IndexGeneratorRegistry<D, I> implements IndexGenerator<D, I> {
 
     public IndexGeneratorRegistry(ClassMap<IndexGenerator<?, I>> lookup) {
         this.lookup = lookup;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @Override

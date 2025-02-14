@@ -30,7 +30,7 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
     public JenaIndexGeminiDocumentGenerator(JenaIndexMetadataDocumentGenerator generator, String baseUri) {
         this.generator = generator;
         this.baseUri = baseUri;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @Override

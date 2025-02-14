@@ -48,8 +48,8 @@ public class DataLabsAuthenticationProvider implements AuthenticationProvider {
         @Value("${datalabs.userPermissions}") String address
     ) {
         this.restTemplate = restTemplate;
-        this.address = UriComponentsBuilder.fromHttpUrl(address).build().toUri();
-        log.info("Creating {}", this);
+        this.address = UriComponentsBuilder.fromUriString(address).build().toUri();
+        log.info("Creating");
     }
 
     @Override

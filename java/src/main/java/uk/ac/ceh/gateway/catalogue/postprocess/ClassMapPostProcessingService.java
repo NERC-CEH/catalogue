@@ -17,7 +17,7 @@ public class ClassMapPostProcessingService implements PostProcessingService<Obje
 
     public ClassMapPostProcessingService(ClassMap<PostProcessingService> lookup) {
         this.lookup = lookup;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @Override

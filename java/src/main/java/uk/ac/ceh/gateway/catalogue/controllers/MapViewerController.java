@@ -40,7 +40,7 @@ public class MapViewerController {
 
     public MapViewerController(@Qualifier("wms") RestTemplate rest) {
         this.rest = rest;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @SuppressWarnings("SpringMVCViewInspection")
@@ -85,7 +85,7 @@ public class MapViewerController {
 
     private URI getLocalWMSRequest(String id, MultiValueMap<String, String> params) {
         return UriComponentsBuilder
-            .fromHttpUrl(MAPSERVER)
+            .fromUriString(MAPSERVER)
             .queryParams(params)
             .buildAndExpand(id)
             .toUri();

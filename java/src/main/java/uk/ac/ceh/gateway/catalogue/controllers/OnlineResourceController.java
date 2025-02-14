@@ -39,7 +39,7 @@ public class OnlineResourceController {
         this.getCapabilitiesObtainerService = getCapabilitiesObtainerService;
         this.tmsToWmsGetMapService = tmsToWmsGetMapService;
         this.mapServerDetailsService = mapServerDetailsService;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @SneakyThrows

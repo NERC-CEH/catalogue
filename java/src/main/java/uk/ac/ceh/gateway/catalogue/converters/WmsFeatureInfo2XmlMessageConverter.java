@@ -32,7 +32,7 @@ import java.io.IOException;
 public class WmsFeatureInfo2XmlMessageConverter extends AbstractHttpMessageConverter<WmsFeatureInfo> {
     public WmsFeatureInfo2XmlMessageConverter() {
         super(MediaType.TEXT_XML);
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @Override

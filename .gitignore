@@ -36,7 +36,7 @@ javac-services*
 .project
 org.eclipse.*
 DevStartupController.java
-docker-compose.override.yml
 *.private.env.json
 /sparql.http
 /oidc-roles.json
+/fixtures/solr/ror/config.properties

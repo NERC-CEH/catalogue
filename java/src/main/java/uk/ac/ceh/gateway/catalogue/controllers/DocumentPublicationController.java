@@ -20,7 +20,7 @@ public class DocumentPublicationController {
 
     public DocumentPublicationController(@Qualifier("document") PublicationService publicationService) {
         this.publicationService = publicationService;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")

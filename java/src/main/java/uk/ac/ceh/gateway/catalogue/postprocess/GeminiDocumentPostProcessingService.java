@@ -22,7 +22,7 @@ public class GeminiDocumentPostProcessingService implements PostProcessingServic
     ) {
         this.citationService = citationService;
         this.dataciteService = dataciteService;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @Override

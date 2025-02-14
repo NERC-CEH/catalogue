@@ -36,7 +36,7 @@ public class DeimsSolrScheduledSiteService {
         this.restTemplate = restTemplate;
         this.solrClient = solrClient;
         this.address = address;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @Scheduled(initialDelay = TimeConstants.ONE_MINUTE, fixedDelay = TimeConstants.SEVEN_DAYS)

@@ -34,7 +34,7 @@ public class Object2TemplatedMessageConverter<T> extends AbstractHttpMessageConv
     public Object2TemplatedMessageConverter(Class<T> clazz, Configuration configuration) {
         this.clazz = clazz;
         this.configuration = configuration;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @Override

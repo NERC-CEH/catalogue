@@ -29,7 +29,7 @@ public class JenaIndexBaseMonitoringTypeGenerator implements IndexGenerator<Base
 
     public JenaIndexBaseMonitoringTypeGenerator(JenaIndexMetadataDocumentGenerator generator) {
         this.generator = generator;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @Override

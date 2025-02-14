@@ -19,7 +19,7 @@ public class DocumentReader {
             @Value("${data.repository.location}") String datastore
     ) {
         this.datastore = datastore;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     public File read(String guid, String extension) {

@@ -29,7 +29,7 @@ public class GeminiExtractor {
     private final static Envelope GLOBAL_EXTENT = new Envelope(-180, 180, -90, 90);
 
     public GeminiExtractor() {
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     public List<String> getKeywords(GeminiDocument document) {

@@ -269,7 +269,7 @@ public class SearchQuery {
      * @return the url to call to perform this solr query.
      */
     public String toUrl() {
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(endpoint);
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(endpoint);
         if(PAGE_DEFAULT != page) {
             builder.queryParam(PAGE_QUERY_PARAM, page);
         }

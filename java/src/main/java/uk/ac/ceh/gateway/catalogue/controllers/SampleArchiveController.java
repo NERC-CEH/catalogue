@@ -21,7 +21,7 @@ public class SampleArchiveController extends AbstractDocumentController {
 
     public SampleArchiveController(DocumentRepository documentRepository) {
         super(documentRepository);
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @PreAuthorize("@permission.userCanCreate(#catalogue)")

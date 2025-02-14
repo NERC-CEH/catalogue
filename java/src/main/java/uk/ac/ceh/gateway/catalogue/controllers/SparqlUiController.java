@@ -17,7 +17,7 @@ public class SparqlUiController {
 
     public SparqlUiController(@Value("${fuseki.url}") String hostname) {
         this.sparqlEndpoint = hostname + "/ds/sparql";
-        log.info("creating {}", this);
+        log.info("Creating");
     }
 
     @GetMapping("sparql")

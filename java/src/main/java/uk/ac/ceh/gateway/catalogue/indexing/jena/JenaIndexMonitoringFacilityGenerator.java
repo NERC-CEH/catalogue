@@ -23,7 +23,7 @@ public class JenaIndexMonitoringFacilityGenerator implements IndexGenerator<Moni
 
     public JenaIndexMonitoringFacilityGenerator(JenaIndexMetadataDocumentGenerator generator, String baseUri) {
         this.generator = generator;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @Override

@@ -50,7 +50,7 @@ public class MapServerIndexingService extends AbstractIndexingService<MetadataDo
     ) {
         super(reader, listingService, repo, indexGenerator);
         this.mapFiles = mapFiles;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @Override

@@ -26,7 +26,7 @@ public class OsdpDocumentController extends AbstractDocumentController {
 
     public OsdpDocumentController(DocumentRepository documentRepository) {
         super(documentRepository);
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @PreAuthorize("@permission.userCanCreate(#catalogue)")

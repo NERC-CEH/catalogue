@@ -33,7 +33,7 @@ public class Jaxb2HttpMessageConverter extends Jaxb2RootElementHttpMessageConver
     public Jaxb2HttpMessageConverter(String namespace, String schemaLocation) {
         this.namespace = checkNotNull(emptyToNull(namespace));
         this.schemaLocation = checkNotNull(emptyToNull(schemaLocation));
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @Override

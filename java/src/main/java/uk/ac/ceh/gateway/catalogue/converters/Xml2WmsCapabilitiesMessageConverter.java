@@ -40,7 +40,7 @@ public class Xml2WmsCapabilitiesMessageConverter extends AbstractHttpMessageConv
         this.layerConverter = new LayerConverter(xpath);
         this.map = xpath.compile(MAP_URL);
         this.featureInfo = xpath.compile(FEATURE_INFO_URL);
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @Override

@@ -32,7 +32,7 @@ public class PermissionController {
     {
         this.permissionService = permissionService;
         this.documentRepository = documentRepository;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @PreAuthorize("@permission.toAccess(#user, #file, 'VIEW')")

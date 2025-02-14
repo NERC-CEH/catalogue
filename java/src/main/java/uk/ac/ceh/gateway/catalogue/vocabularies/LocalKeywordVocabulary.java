@@ -55,7 +55,7 @@ public class LocalKeywordVocabulary implements KeywordVocabulary {
         resultsArrayPointer = JsonPointer.compile(resultsPath);
         uriPointer = JsonPointer.compile(uriPath);
         labelPointer = JsonPointer.compile(labelPath);
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @Override

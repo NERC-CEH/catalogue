@@ -26,7 +26,7 @@ public class DocumentCountService
         this.listingService = listingService;
         this.documentBundleReader = documentBundleReader;
         Metrics.gauge("catalogue_documents", List.of(Tag.of("viewable", "public")), repo, this::countDocuments);
-        log.info("Constructed {}", this);
+        log.info("Creating");
     }
 
     @SneakyThrows
