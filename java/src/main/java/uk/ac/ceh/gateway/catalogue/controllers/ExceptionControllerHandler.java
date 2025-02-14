@@ -34,7 +34,12 @@ import static org.springframework.http.HttpStatus.*;
 public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
 
     @Autowired
-    private Environment env;
+    private final Environment env;
+
+    @Autowired
+    public ExceptionControllerHandler(Environment env) {
+        this.env = env;
+    }
 
     @Override
     @SuppressWarnings("NullableProblems")
