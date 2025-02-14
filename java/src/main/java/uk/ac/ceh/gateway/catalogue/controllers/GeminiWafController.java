@@ -38,7 +38,7 @@ public class GeminiWafController {
                                 MetadataListingService listing) {
         this.repo = repo;
         this.listing = listing;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @GetMapping("/")

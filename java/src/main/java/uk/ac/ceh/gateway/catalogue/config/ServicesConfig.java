@@ -5,7 +5,7 @@ import com.google.common.eventbus.EventBus;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.apache.jena.tdb.TDBFactory;
+import org.apache.jena.tdb1.TDB1Factory;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.impl.HttpJdkSolrClient;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -251,7 +251,7 @@ public class ServicesConfig {
         @Value("${jena.location}") String location
     ) {
         log.info("Creating Dataset at: {}", location);
-        return TDBFactory.createDataset(location);
+        return TDB1Factory.createDataset(location);
     }
 
     @Bean

@@ -39,7 +39,7 @@ public class MapServerDetailsService {
         @Value("${documents.baseUri}") String hostUrl
     ) {
         this.hostUrl = hostUrl;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     /**
@@ -127,7 +127,7 @@ public class MapServerDetailsService {
      * @return
      */
     public String rewriteToLocalWmsRequest(String wmsUrl) {
-        UriComponents uri = UriComponentsBuilder.fromHttpUrl(wmsUrl).build();
+        UriComponents uri = UriComponentsBuilder.fromUriString(wmsUrl).build();
         List<String> pathSegments = uri.getPathSegments();
         if(wmsUrl.startsWith(hostUrl + "/maps") && pathSegments.size() == 2) {
             return getLocalWMSRequest(pathSegments.get(1), uri.getQuery());
@@ -165,7 +165,7 @@ public class MapServerDetailsService {
      */
     public String getLocalWMSRequest(String id, String query) {
         return UriComponentsBuilder
-                .fromHttpUrl(MAPSERVER)
+                .fromUriString(MAPSERVER)
                 .query(query)
                 .buildAndExpand(id)
                 .toUriString();

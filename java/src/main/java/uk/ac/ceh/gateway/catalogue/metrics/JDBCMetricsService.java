@@ -50,7 +50,7 @@ public class JDBCMetricsService implements MetricsService {
 
     public JDBCMetricsService(@NonNull DataSource dataSource,
                               DocumentRepository documentRepository) {
-        log.info("Creating {}", this);
+        log.info("Creating");
         this.documentRepository = documentRepository;
         this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.viewInserter = new SimpleJdbcInsert(dataSource).withTableName(VIEW_TABLE);

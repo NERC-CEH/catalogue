@@ -34,7 +34,7 @@ public class DocumentPublicationService implements PublicationService {
         this.groupStore = groupStore;
         this.workflow = workflow;
         this.documentRepository = documentRepository;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @Override

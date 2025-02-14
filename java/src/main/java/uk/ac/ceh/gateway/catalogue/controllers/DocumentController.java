@@ -51,7 +51,7 @@ public class DocumentController extends AbstractDocumentController {
         super(documentRepository);
         this.metricsService = metricsService;
         this.metricsExcludedUsers = metricExcludedUsers;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @RequestMapping (value = "documents/upload",

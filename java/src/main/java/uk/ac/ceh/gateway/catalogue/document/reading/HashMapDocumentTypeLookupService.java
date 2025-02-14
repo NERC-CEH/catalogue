@@ -15,7 +15,7 @@ public class HashMapDocumentTypeLookupService implements DocumentTypeLookupServi
 
     public HashMapDocumentTypeLookupService() {
         lookup = new HashMap<>();
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @Override

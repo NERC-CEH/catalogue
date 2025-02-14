@@ -49,7 +49,7 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
         this.codeLookupService = codeLookupService;
         this.identifierService = identifierService;
         this.vocabularyService = vocabularyService;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @Override

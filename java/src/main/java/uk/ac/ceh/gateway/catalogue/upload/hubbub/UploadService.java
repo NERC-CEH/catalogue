@@ -48,7 +48,7 @@ public class UploadService {
         this.username = username;
         this.password = password;
         this.uploadLocation = uploadLocation;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     public void accept(String datasetId, String datastore, String path, String user) {

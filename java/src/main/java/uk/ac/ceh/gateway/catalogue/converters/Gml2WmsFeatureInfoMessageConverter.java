@@ -43,7 +43,7 @@ public class Gml2WmsFeatureInfoMessageConverter extends AbstractHttpMessageConve
         this.layers = xpath.compile(LAYERS);
         this.features = xpath.compile(FEATURES);
         this.attributes = xpath.compile(ATTRIBUTES);
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @Override

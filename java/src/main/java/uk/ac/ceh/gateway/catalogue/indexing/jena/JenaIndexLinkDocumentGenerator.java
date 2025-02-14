@@ -22,7 +22,7 @@ public class JenaIndexLinkDocumentGenerator implements IndexGenerator<LinkDocume
 
     public JenaIndexLinkDocumentGenerator(JenaIndexMetadataDocumentGenerator generator) {
         this.generator = generator;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @Override

@@ -19,7 +19,7 @@ public class IndexingFileEventListener {
     public IndexingFileEventListener(DocumentIndexingService service, DocumentListingService listingService) {
         this.service = service;
         this.listingService = listingService;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @Subscribe

@@ -30,7 +30,7 @@ public class BaseMonitoringTypePostProcessingService implements PostProcessingSe
 
     public BaseMonitoringTypePostProcessingService(Dataset jenaTdb) {
         this.jenaTdb = jenaTdb;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @SuppressWarnings("DuplicatedCode")

@@ -22,7 +22,7 @@ public class DataRepositoryOptimizingService {
 
     public DataRepositoryOptimizingService(DataRepository<CatalogueUser> repo) {
         this.repo = repo;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @Scheduled(cron="0 0 0 * * ?")

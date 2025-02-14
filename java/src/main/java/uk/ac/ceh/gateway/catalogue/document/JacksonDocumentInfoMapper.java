@@ -17,7 +17,7 @@ public class JacksonDocumentInfoMapper<T> implements DocumentInfoMapper<T> {
     public JacksonDocumentInfoMapper(ObjectMapper mapper, Class<T> clazz) {
         this.mapper = mapper;
         this.clazz = clazz;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @Override

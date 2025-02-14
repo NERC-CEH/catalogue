@@ -69,7 +69,7 @@ public class UploadController {
         this.permissionService = permissionService;
         this.mapper = mapper;
         this.maxFileSize = maxFileSize;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @SneakyThrows

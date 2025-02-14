@@ -19,7 +19,7 @@ public class SolrIndexLinkDocumentGenerator implements IndexGenerator<LinkDocume
     // Cannot be final as involved in complex construction with SolrIndexMetadataDocumentGenerator in WebConfig
 
     public SolrIndexLinkDocumentGenerator() {
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @Override

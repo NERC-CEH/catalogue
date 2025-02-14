@@ -47,7 +47,7 @@ public class RememberMeServicesDataLabs implements RememberMeServices {
         this.cookieName = cookieName;
         this.jwtProcessor = createJwtProcessor(keySource, issuer);
         this.catalogueUserProvider = catalogueUserProvider;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @SneakyThrows

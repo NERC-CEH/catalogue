@@ -21,7 +21,7 @@ public class InMemoryCatalogueService implements CatalogueService {
             this.catalogues.put(catalogue.getId(), catalogue);
         }
         this.defaultCatalogueKey = defaultCatalogueKey;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @Override

@@ -18,7 +18,7 @@ public class SparqlController {
 
     public SparqlController(Dataset jenaTdb) {
         this.jenaTdb = jenaTdb;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @GetMapping

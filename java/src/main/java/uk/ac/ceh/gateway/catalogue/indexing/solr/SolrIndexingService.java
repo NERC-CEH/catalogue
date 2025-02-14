@@ -52,7 +52,7 @@ public class SolrIndexingService extends AbstractIndexingService<MetadataDocumen
         this.solrClient = solrClient;
         this.lookupService = lookupService;
         this.identifierService = identifierService;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @SneakyThrows

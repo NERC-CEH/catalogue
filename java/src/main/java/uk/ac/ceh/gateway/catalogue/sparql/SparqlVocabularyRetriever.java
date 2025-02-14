@@ -31,7 +31,7 @@ public class SparqlVocabularyRetriever implements VocabularyRetriever {
     public SparqlVocabularyRetriever(RestTemplate template, String sparqlEndpoint) {
         this.template = template;
         this.sparqlEndpoint = sparqlEndpoint;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @Override
@@ -46,12 +46,12 @@ public class SparqlVocabularyRetriever implements VocabularyRetriever {
                 URI query = vocab.isEmpty()
                     ? querySelector(vocabularyFacet, sparqlEndpoint)
                     : querySelector(vocabularyFacet, sparqlEndpoint, vocab);
-                log.info("Facet {} being retrieved using Query: {}", facet, query);
+                log.debug("Facet {} being retrieved using Query: {}", facet, query);
 
                 val response = template.getForEntity(query, SparqlQueryResponse.class);
                 Objects.requireNonNull(response.getBody()).getResults().getBindings().forEach(binding -> toReturn.put(facet, binding.getUri().getValue()));
                 } catch (Exception ex) {
-                    log.info("Failed to retrieve vocabulary - status: {}", ex.getMessage());
+                    log.error("Failed to retrieve vocabulary", ex);
                 }
             }
         return toReturn;

@@ -20,7 +20,7 @@ public class ValidationIndexGenerator implements IndexGenerator<MetadataDocument
 
     public ValidationIndexGenerator(List<Validator> validators) {
         this.validators = validators;
-        log.info("Creating {}", this);
+        log.info("Creating");
     }
 
     @Override
