@@ -65,6 +65,10 @@ public class CatalogueMediaTypes {
     public static final String RDF_SCHEMAORG_VALUE = "application/vnd.schemaorg.ld+json";
     public static final MediaType RDF_SCHEMAORG_JSON = parseMediaType(RDF_SCHEMAORG_VALUE);
 
+    public static final String CROISSANT_SHORT = "croissant";
+    public static final String CROISSANT_VALUE = "application/vnd.croissant.ld+json";
+    public static final MediaType CROISSANT_JSON = parseMediaType(CROISSANT_VALUE);
+
     public static final String ROCRATE_SHORT = "rocrate";
     public static final String ROCRATE_VALUE = "application/vnd.rocrate.ld+json";
     public static final MediaType ROCRATE_JSON = parseMediaType(ROCRATE_VALUE);

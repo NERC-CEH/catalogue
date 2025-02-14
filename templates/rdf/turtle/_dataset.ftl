@@ -1,4 +1,4 @@
-a dcat:Dataset, dcmitype:Dataset ;
+a dcat:Dataset;
 dct:type dcmitype:Dataset ;
 
 <#if datasetReferenceDate?? && datasetReferenceDate.publicationDate?has_content>

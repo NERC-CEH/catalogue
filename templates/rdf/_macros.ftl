@@ -170,8 +170,8 @@
         <#assign citationIdentifier ="\l" + citation.url?trim + "\g">
       </#if>
 
-      ${citationIdentifier?trim} a <http://purl.org/vocab/frbr/core#Work> ;
-        <#if citation.description?has_content>rdfs:label <@displayLiteral citation.description />; </#if>
+      ${citationIdentifier?trim} a <http://purl.org/spar/fabio/Expression> ;
+        <#if citation.description?has_content>dct:bibliographicCitation <@displayLiteral citation.description?replace("–","-")?replace("…","...") />; </#if>
         .
     </#list>
   </#if>
