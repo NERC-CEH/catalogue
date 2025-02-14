@@ -50,7 +50,7 @@ public class JiraService {
     public void comment(String key, String comment) throws RestClientResponseException {
         log.info("Commenting on {}: {}", key, comment);
         val url = UriComponentsBuilder
-                .fromHttpUrl(jiraEndpoint)
+                .fromUriString(jiraEndpoint)
                 .path("issue/{key}")
                 .buildAndExpand(key)
                 .toUri();
@@ -79,7 +79,7 @@ public class JiraService {
     public void transition (String key, String id) {
         log.info("Transitioning {} for data transfer {}", key, id);
         val url = UriComponentsBuilder
-            .fromHttpUrl(jiraEndpoint)
+            .fromUriString(jiraEndpoint)
             .path("issue/{key}/transitions")
             .buildAndExpand(key)
             .toUri();
@@ -99,7 +99,7 @@ public class JiraService {
     public Optional<JiraIssue> retrieveDataTransferIssue(String id) {
         log.info("Retrieving data transfer issues for {}", id);
         val url = UriComponentsBuilder
-            .fromHttpUrl(jiraEndpoint)
+            .fromUriString(jiraEndpoint)
             .path("search")
             .queryParam("jql", jqlTemplate)
             .buildAndExpand(id)

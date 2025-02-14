@@ -89,7 +89,7 @@ public class DataciteService {
             val request = getDatacitationRequest(document);
             log.info("Requesting mint of doi: {}", request);
             val url = UriComponentsBuilder
-                    .fromHttpUrl(api)
+                    .fromUriString(api)
                     .toUriString();
             DataciteRequest dataciteRequest = new DataciteRequest(doi, request, identifierService.generateUri(document.getId()));
             try {
@@ -129,7 +129,7 @@ public class DataciteService {
     public String getDoiMetadata(GeminiDocument document) {
         if (getDoi(document).isPresent()) {
             val url = UriComponentsBuilder
-                    .fromHttpUrl(api)
+                    .fromUriString(api)
                     .pathSegment(prefix, document.getId())
                     .toUriString();
             log.debug("Url to retrieve DOI from Datacite: {}", url);
@@ -165,7 +165,7 @@ public class DataciteService {
                 headers.setContentType(MediaType.valueOf("application/vnd.api+json"));
                 val request = getDatacitationRequest(document);
                 val url = UriComponentsBuilder
-                        .fromHttpUrl(api)
+                        .fromUriString(api)
                         .pathSegment(prefix, document.getId())
                         .toUriString();
 

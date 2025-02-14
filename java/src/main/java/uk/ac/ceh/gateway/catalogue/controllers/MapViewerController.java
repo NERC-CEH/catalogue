@@ -85,7 +85,7 @@ public class MapViewerController {
 
     private URI getLocalWMSRequest(String id, MultiValueMap<String, String> params) {
         return UriComponentsBuilder
-            .fromHttpUrl(MAPSERVER)
+            .fromUriString(MAPSERVER)
             .queryParams(params)
             .buildAndExpand(id)
             .toUri();

@@ -33,7 +33,7 @@ public class DatalabsCatalogueUserProvider implements CatalogueUserProvider {
         @Value("${datalabs.users}") String usersEndpoint
     ) {
         this.restTemplate = restTemplate;
-        this.usersEndpoint = UriComponentsBuilder.fromHttpUrl(usersEndpoint).build().toUri();
+        this.usersEndpoint = UriComponentsBuilder.fromUriString(usersEndpoint).build().toUri();
         log.info("Creating");
     }
 
