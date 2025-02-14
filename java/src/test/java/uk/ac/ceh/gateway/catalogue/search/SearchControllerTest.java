@@ -9,7 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
@@ -51,13 +51,13 @@ import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.UNPR
 )
 @TestPropertySource(locations="classpath:test.properties")
 class SearchControllerTest {
-    @MockBean private SolrClient solrClient;
-    @MockBean private CatalogueService catalogueService;
-    @MockBean private FacetFactory facetFactory;
-    @MockBean private CodeLookupService codeLookupService;
-    @MockBean(name="permission") private PermissionService permissionService;
-    @MockBean private ProfileService profileService;
-    @MockBean private Searcher searcher;
+    @MockitoBean private SolrClient solrClient;
+    @MockitoBean private CatalogueService catalogueService;
+    @MockitoBean private FacetFactory facetFactory;
+    @MockitoBean private CodeLookupService codeLookupService;
+    @MockitoBean(name="permission") private PermissionService permissionService;
+    @MockitoBean private ProfileService profileService;
+    @MockitoBean private Searcher searcher;
 
     @Autowired private MockMvc mvc;
     @Autowired Configuration configuration;

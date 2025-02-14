@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
@@ -52,13 +52,13 @@ import static uk.ac.ceh.gateway.catalogue.controllers.DocumentController.MAINTEN
     properties="spring.freemarker.template-loader-path=file:../templates"
 )
 public class MaintenanceControllerTest {
-    @MockBean DataRepositoryOptimizingService repoService;
-    @MockBean @Qualifier("solr-index") SolrIndexingService indexService;
-    @MockBean @Qualifier("jena-index") JenaIndexingService linkingService;
-    @MockBean @Qualifier("validation-index") ValidationIndexingService validationService;
-    @MockBean @Qualifier("mapserver-index") MapServerIndexingService mapserverService;
-    @MockBean CatalogueService catalogueService;
-    @MockBean ProfileService profileService;
+    @MockitoBean DataRepositoryOptimizingService repoService;
+    @MockitoBean @Qualifier("solr-index") SolrIndexingService indexService;
+    @MockitoBean @Qualifier("jena-index") JenaIndexingService linkingService;
+    @MockitoBean @Qualifier("validation-index") ValidationIndexingService validationService;
+    @MockitoBean @Qualifier("mapserver-index") MapServerIndexingService mapserverService;
+    @MockitoBean CatalogueService catalogueService;
+    @MockitoBean ProfileService profileService;
 
     @Autowired private MockMvc mvc;
     @Autowired private Configuration configuration;

@@ -11,7 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.hateoas.Link;
 import org.springframework.http.MediaType;
@@ -56,13 +56,13 @@ import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.EIDC
     properties="spring.freemarker.template-loader-path=file:../templates"
 )
 class ServiceAgreementControllerTest {
-    @MockBean private ServiceAgreementSearch search;
-    @MockBean private ServiceAgreementService serviceAgreementService;
-    @MockBean private ServiceAgreementModelAssembler assembler;
-    @MockBean private CatalogueService catalogueService;
-    @MockBean(name="permission") private PermissionService permissionService;
-    @MockBean private ProfileService profileService;
-    @MockBean private ServiceAgreementPublicationService serviceAgreementPublicationService;
+    @MockitoBean private ServiceAgreementSearch search;
+    @MockitoBean private ServiceAgreementService serviceAgreementService;
+    @MockitoBean private ServiceAgreementModelAssembler assembler;
+    @MockitoBean private CatalogueService catalogueService;
+    @MockitoBean(name="permission") private PermissionService permissionService;
+    @MockitoBean private ProfileService profileService;
+    @MockitoBean private ServiceAgreementPublicationService serviceAgreementPublicationService;
 
     private static ServiceAgreement serviceAgreement;
     private static final String ID = "test";

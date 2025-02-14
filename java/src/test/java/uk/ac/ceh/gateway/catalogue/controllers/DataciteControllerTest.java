@@ -6,7 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -52,10 +52,10 @@ import static uk.ac.ceh.gateway.catalogue.controllers.DataciteController.DATACIT
     properties="spring.freemarker.template-loader-path=file:../templates"
 )
 class DataciteControllerTest {
-    @MockBean private DocumentRepository documentRepository;
-    @MockBean private DocumentIdentifierService identifierService;
-    @MockBean private DataciteService dataciteService;
-    @MockBean private JenaLookupService jenaLookupService;
+    @MockitoBean private DocumentRepository documentRepository;
+    @MockitoBean private DocumentIdentifierService identifierService;
+    @MockitoBean private DataciteService dataciteService;
+    @MockitoBean private JenaLookupService jenaLookupService;
 
     @Autowired private MockMvc mvc;
     @Autowired private Configuration configuration;

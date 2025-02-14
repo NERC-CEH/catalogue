@@ -9,7 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
@@ -56,12 +56,12 @@ import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.UPLO
     properties="spring.freemarker.template-loader-path=file:../templates"
 )
 class UploadControllerTest {
-    @MockBean private StorageService storageService;
-    @MockBean private DocumentRepository documentRepository;
-    @MockBean private CatalogueService catalogueService;
+    @MockitoBean private StorageService storageService;
+    @MockitoBean private DocumentRepository documentRepository;
+    @MockitoBean private CatalogueService catalogueService;
     // Needed for security preauthorise method decisions
-    @MockBean(name="permission") private PermissionService permission;
-    @MockBean private ProfileService profileService;
+    @MockitoBean(name="permission") private PermissionService permission;
+    @MockitoBean private ProfileService profileService;
 
     @Autowired private MockMvc mvc;
     @Autowired Configuration configuration;

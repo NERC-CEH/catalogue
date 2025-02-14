@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +32,7 @@ import static org.mockito.Mockito.verify;
     properties="spring.freemarker.template-loader-path=file:../templates"
 )
 class UkemsDocumentControllerTest {
-    @MockBean private DocumentRepository documentRepository;
+    @MockitoBean private DocumentRepository documentRepository;
 
     private UkemsDocumentController controller;
 

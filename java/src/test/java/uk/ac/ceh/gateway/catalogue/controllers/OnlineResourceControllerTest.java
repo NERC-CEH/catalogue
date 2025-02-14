@@ -14,7 +14,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
@@ -53,11 +53,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class OnlineResourceControllerTest {
     @Autowired private MockMvc mvc;
 
-    @MockBean private BundledReaderService<MetadataDocument> documentBundleReader;
-    @MockBean private GetCapabilitiesObtainerService getCapabilitiesObtainerService;
-    @MockBean private TMSToWMSGetMapService tmsToWMSGetMapService;
-    @MockBean private MapServerDetailsService mapServerDetailsService;
-    @MockBean private CloseableHttpClient httpClient;
+    @MockitoBean private BundledReaderService<MetadataDocument> documentBundleReader;
+    @MockitoBean private GetCapabilitiesObtainerService getCapabilitiesObtainerService;
+    @MockitoBean private TMSToWMSGetMapService tmsToWMSGetMapService;
+    @MockitoBean private MapServerDetailsService mapServerDetailsService;
+    @MockitoBean private CloseableHttpClient httpClient;
 
     private final String file = "file";
     private final String revision = "revision";

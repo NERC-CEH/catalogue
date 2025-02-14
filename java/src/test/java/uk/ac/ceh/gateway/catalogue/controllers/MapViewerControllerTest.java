@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
@@ -68,10 +68,10 @@ import static uk.ac.ceh.gateway.catalogue.controllers.MapViewerController.INFO_F
     properties="spring.freemarker.template-loader-path=file:../templates"
 )
 public class MapViewerControllerTest {
-    @MockBean @Qualifier("wms") private RestTemplate rest;
-    @MockBean private CatalogueService catalogueService;
-    @MockBean private CloseableHttpClient httpClient;
-    @MockBean private ProfileService profileService;
+    @MockitoBean @Qualifier("wms") private RestTemplate rest;
+    @MockitoBean private CatalogueService catalogueService;
+    @MockitoBean private CloseableHttpClient httpClient;
+    @MockitoBean private ProfileService profileService;
 
     @Autowired private Configuration configuration;
     @Autowired private MockMvc mvc;

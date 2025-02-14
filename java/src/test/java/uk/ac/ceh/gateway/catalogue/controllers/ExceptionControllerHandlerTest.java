@@ -7,13 +7,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
@@ -49,12 +50,16 @@ import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.DATACITE_XML_VALUE
 public class ExceptionControllerHandlerTest {
     private ExceptionControllerHandler controller;
 
-    @MockBean private DocumentRepository repo;
-    @MockBean private DocumentIdentifierService identifierService;
-    @MockBean private DataciteService dataciteService;
-    @MockBean(name="permission") private PermissionService permissionService;
+    @MockitoBean private DocumentRepository repo;
+    @MockitoBean private DocumentIdentifierService identifierService;
+    @MockitoBean private DataciteService dataciteService;
+    @MockitoBean(name="permission") private PermissionService permissionService;
 
     @Autowired private MockMvc mvc;
+    @Autowired
+    private ExceptionControllerHandler exceptionControllerHandler;
+    @Autowired
+    private Environment env;
 
     private final String file = "1234";
 
