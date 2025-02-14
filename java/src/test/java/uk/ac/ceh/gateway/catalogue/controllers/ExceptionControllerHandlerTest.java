@@ -65,7 +65,7 @@ public class ExceptionControllerHandlerTest {
 
     @BeforeEach
     public void setup() {
-        this.controller = new ExceptionControllerHandler();
+        this.controller = new ExceptionControllerHandler(env);
     }
 
     @Test

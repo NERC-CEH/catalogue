@@ -2,6 +2,7 @@ package uk.ac.ceh.gateway.catalogue.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.*;
 import org.springframework.security.access.AccessDeniedException;
@@ -30,6 +31,11 @@ import static org.springframework.http.HttpStatus.*;
 @Slf4j
 @ControllerAdvice
 public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
+    private final Environment env;
+
+    public ExceptionControllerHandler(Environment env) {
+        this.env = env;
+    }
 
     @Override
     @SuppressWarnings("NullableProblems")
@@ -41,10 +47,17 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
         WebRequest request
     ) {
         String message = (body != null) ? body.toString() : statusCode.toString();
-        if(ex instanceof PermissionDeniedException) {
+        String includeStackTrace = env.getProperty("server.error.include-stacktrace");
+        boolean showStackTrace = "always".equalsIgnoreCase(includeStackTrace);
+
+        if (ex instanceof PermissionDeniedException) {
             logger.error("Permission denied: " + ex.getMessage());
         } else {
-            logger.error(message, ex);
+            if (showStackTrace) {
+                logger.error(message, ex);
+            } else {
+                logger.error(message);
+            }
         }
         return new ResponseEntity<>(new ErrorResponse(message), headers, statusCode);
     }
