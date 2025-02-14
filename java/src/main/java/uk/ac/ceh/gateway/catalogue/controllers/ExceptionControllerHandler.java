@@ -36,7 +36,6 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
     @Autowired
     private final Environment env;
 
-    @Autowired
     public ExceptionControllerHandler(Environment env) {
         this.env = env;
     }
