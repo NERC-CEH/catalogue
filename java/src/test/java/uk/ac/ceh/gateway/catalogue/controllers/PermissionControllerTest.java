@@ -8,7 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
@@ -53,10 +53,10 @@ import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.EIDC
     properties="spring.freemarker.template-loader-path=file:../templates"
 )
 public class PermissionControllerTest {
-    @MockBean(name="permission") private PermissionService permissionService;
-    @MockBean private DocumentRepository documentRepository;
-    @MockBean private CatalogueService catalogueService;
-    @MockBean private ProfileService profileService;
+    @MockitoBean(name="permission") private PermissionService permissionService;
+    @MockitoBean private DocumentRepository documentRepository;
+    @MockitoBean private CatalogueService catalogueService;
+    @MockitoBean private ProfileService profileService;
 
     private PermissionController permissionController;
 

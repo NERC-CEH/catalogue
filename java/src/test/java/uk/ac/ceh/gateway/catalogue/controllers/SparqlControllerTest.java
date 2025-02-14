@@ -9,7 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
@@ -47,12 +47,12 @@ import static uk.ac.ceh.gateway.catalogue.controllers.DocumentController.MAINTEN
     properties="spring.freemarker.template-loader-path=file:../templates"
 )
 class SparqlControllerTest {
-    @MockBean private CatalogueService catalogueService;
-    @MockBean private Dataset jenaTdb;
+    @MockitoBean private CatalogueService catalogueService;
+    @MockitoBean private Dataset jenaTdb;
 
     @Autowired private MockMvc mvc;
     @Autowired private Configuration configuration;
-    @MockBean private ProfileService profileService;
+    @MockitoBean private ProfileService profileService;
 
     private final String catalogueKey = "eidc";
 

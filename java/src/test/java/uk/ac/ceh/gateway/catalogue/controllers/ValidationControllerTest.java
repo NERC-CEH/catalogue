@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
@@ -45,12 +45,12 @@ import static uk.ac.ceh.gateway.catalogue.controllers.DocumentController.MAINTEN
     properties="spring.freemarker.template-loader-path=file:../templates"
 )
 class ValidationControllerTest {
-    @MockBean
+    @MockitoBean
     private CatalogueService catalogueService;
     @Qualifier("validation-index")
-    @MockBean
+    @MockitoBean
     private ValidationIndexingService validationIndexingService;
-    @MockBean private ProfileService profileService;
+    @MockitoBean private ProfileService profileService;
 
     @Autowired private MockMvc mvc;
     @Autowired private Configuration configuration;

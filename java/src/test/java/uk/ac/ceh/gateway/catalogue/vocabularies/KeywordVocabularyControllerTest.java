@@ -7,7 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
@@ -43,7 +43,7 @@ class KeywordVocabularyControllerTest {
     public static final String URL_2 = "www.example.com/2";
     public static final String QUERY = "queryTest";
 
-    @MockBean
+    @MockitoBean
     private KeywordVocabularySolrQueryService keywordService;
 
     @Autowired

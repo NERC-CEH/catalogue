@@ -6,7 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -43,10 +43,10 @@ import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.CODE_JSON_VALUE;
     properties="spring.freemarker.template-loader-path=file:../templates"
 )
 class CodeDocumentControllerTest {
-    @MockBean private DocumentRepository documentRepository;
-    @MockBean(name="permission") private PermissionService permissionService;
+    @MockitoBean private DocumentRepository documentRepository;
+    @MockitoBean(name="permission") private PermissionService permissionService;
     @Autowired private Configuration configuration;
-    @MockBean private CatalogueService catalogueService;
+    @MockitoBean private CatalogueService catalogueService;
 
     @Autowired private MockMvc mvc;
 

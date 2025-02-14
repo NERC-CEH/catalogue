@@ -7,7 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -34,9 +34,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 )
 class MetricsReportControllerTest {
 
-    @MockBean private MetricsService metricsService;
-    @MockBean private ProfileService profileService;
-    @MockBean private CatalogueService catalogueService;
+    @MockitoBean private MetricsService metricsService;
+    @MockitoBean private ProfileService profileService;
+    @MockitoBean private CatalogueService catalogueService;
 
     @Autowired private MockMvc mvc;
     @Autowired private Configuration configuration;

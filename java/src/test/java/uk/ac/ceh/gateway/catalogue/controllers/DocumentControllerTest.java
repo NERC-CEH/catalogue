@@ -14,7 +14,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -105,15 +105,15 @@ import static uk.ac.ceh.gateway.catalogue.model.MetadataInfo.PUBLIC_GROUP;
     properties={"spring.freemarker.template-loader-path=file:../templates","metrics.users.excluded=i_am_excluded"}
 )
 class DocumentControllerTest {
-    @MockBean private CatalogueService catalogueService;
-    @MockBean private CodeLookupService codeLookupService;
-    @MockBean private DocumentRepository documentRepository;
-    @MockBean private JenaLookupService jenaLookupService;
-    @MockBean(name="permission") private PermissionService permissionService;
-    @MockBean private ProfileService profileService;
-    @MockBean private MetricsService metricsService;
-    @MockBean private FileDetailsService fileDetailsService;
-    @MockBean private MetadataQualityService metadataQualityService;
+    @MockitoBean private CatalogueService catalogueService;
+    @MockitoBean private CodeLookupService codeLookupService;
+    @MockitoBean private DocumentRepository documentRepository;
+    @MockitoBean private JenaLookupService jenaLookupService;
+    @MockitoBean(name="permission") private PermissionService permissionService;
+    @MockitoBean private ProfileService profileService;
+    @MockitoBean private MetricsService metricsService;
+    @MockitoBean private FileDetailsService fileDetailsService;
+    @MockitoBean private MetadataQualityService metadataQualityService;
 
     @NotNull DownloadUrlProperties downloadUrlProperties;
 

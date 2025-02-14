@@ -7,7 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
@@ -46,9 +46,9 @@ import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.EIDC
     properties="spring.freemarker.template-loader-path=file:../templates"
 )
 class CitationControllerTest {
-    @MockBean DocumentRepository documentRepository;
-    @MockBean CitationService citationService;
-    @MockBean(name="permission") PermissionService permission;
+    @MockitoBean DocumentRepository documentRepository;
+    @MockitoBean CitationService citationService;
+    @MockitoBean(name="permission") PermissionService permission;
 
     @Autowired private MockMvc mvc;
 
