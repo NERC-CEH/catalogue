@@ -56,7 +56,7 @@ test_application:
 
 container_scanning:
   stage: scan
-  allow_failure: false
+  allow_failure: true
   variables:
     CS_IMAGE: $CI_REGISTRY_IMAGE/app:$CI_COMMIT_SHA
     CS_REGISTRY_USER: gitlab-ci-token

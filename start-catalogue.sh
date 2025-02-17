@@ -87,7 +87,9 @@ mkdir -p datastore &&
 ) || die
 
 echo 'Starting dependent services...'
-if [[ $with_hubbub = true ]]; then
+if [[ $with_hubbub = true && $with_legilo = true ]]; then
+    docker compose --profile hubbub --profile legilo up --wait --detach
+elif [[ $with_hubbub = true ]]; then
     docker compose --profile hubbub up --wait --detach
 elif [[ $with_legilo = true ]]; then
     docker compose --profile legilo up --wait --detach
@@ -129,13 +131,16 @@ export_default LEGILO_URL http://localhost:8000
 export_default LEGILO_USER user
 export_default LEGILO_PASSWORD password
 
-if [[ $with_hubbub = true ]]; then
+if [[ $with_hubbub = true && $with_legilo = true ]]; then
+    export_default SPRING_PROFILES_ACTIVE development,upload:hubbub,server:eidc,search:basic,service-agreement,keyword-suggestions
+elif [[ $with_hubbub = true ]]; then
     export_default SPRING_PROFILES_ACTIVE development,upload:hubbub,server:eidc,search:basic,service-agreement
 elif [[ $with_legilo = true ]]; then
     export_default SPRING_PROFILES_ACTIVE development,upload:simple,server:eidc,search:basic,service-agreement,keyword-suggestions
 else
     export_default SPRING_PROFILES_ACTIVE development,upload:simple,server:eidc,search:basic,service-agreement
 fi
+
 
 echo 'Building and starting Java application...'
 
