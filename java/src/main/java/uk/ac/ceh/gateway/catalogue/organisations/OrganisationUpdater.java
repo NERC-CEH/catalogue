@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import uk.ac.ceh.gateway.catalogue.TimeConstants;
 
 import java.io.*;
+import java.net.URI;
 import java.net.URL;
 import java.util.*;
 import java.util.zip.ZipEntry;
@@ -132,7 +133,8 @@ public class OrganisationUpdater {
     }
 
     public boolean downloadFile(String downloadUrl, File data) throws Exception {
-        return downloadFile(new URL(downloadUrl), data);
+        URI uri = new URI(downloadUrl);
+        return downloadFile(uri.toURL(), data);
     }
 
     public boolean downloadFile(URL downloadUrl, File data) throws Exception {

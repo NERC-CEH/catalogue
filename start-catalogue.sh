@@ -6,13 +6,14 @@ die () { exit 1; }
 
 usage () {
     cat <<EOF
-Usage: ${0##*/} [-hwbl] [[--] args ...]
+Usage: ${0##*/} [-hwblf] [[--] args ...]
 Rebuild and start a catalogue instance.
 
     -h  Show this help and exit
     -w  Don't build the web assets
     -b  Start Hubbub docker service and enable its profile
     -l  Start Legilo service and enable its profile
+    -f  Start Fuseki service
 
 Any remaining arguments are passed on to ./gradlew bootRun.  Use
 -- to separate them if they start with something that looks like
@@ -28,6 +29,7 @@ EOF
 build_web=true
 with_hubbub=false
 with_legilo=false
+with_fuseki=false
 while getopts hwbl opt; do
     case $opt in
         h)
@@ -42,6 +44,9 @@ while getopts hwbl opt; do
             ;;
         l)
             with_legilo=true
+            ;;
+        f)
+            with_fuseki=true
             ;;
         *)
             usage >&2
@@ -91,16 +96,13 @@ if [[ $with_hubbub = true && $with_legilo = true ]]; then
     docker compose --profile hubbub --profile legilo up --wait --detach
 elif [[ $with_hubbub = true ]]; then
     docker compose --profile hubbub up --wait --detach
+    docker cp ./hubbub_backup.sql hubbub-db-1:/
+    docker exec -it hubbub-db-1 psql -U gardener -d hubbub -f /hubbub_backup.sql
 elif [[ $with_legilo = true ]]; then
     docker compose --profile legilo up --wait --detach
 else
     docker compose up --wait --detach
 fi || die
-
-readarray -t secrets < <(grep -E -v '^$|^#' secrets.env 2>/dev/null)
-if (( ${#secrets[@]} > 0 )); then
-    export "${secrets[@]}"
-fi
 
 export_default () {
     [[ -v $1 ]] || export "$1"="$2"
@@ -142,6 +144,10 @@ else
     export_default SPRING_PROFILES_ACTIVE development,upload:simple,server:eidc,search:basic,service-agreement
 fi
 
+readarray -t external_env < <(grep -E -vh '^$|^#' secrets.env override.env 2>/dev/null)
+if (( ${#external_env[@]} > 0 )); then
+    export "${external_env[@]}"
+fi
 
 echo 'Building and starting Java application...'
 
