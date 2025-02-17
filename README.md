@@ -15,6 +15,7 @@ Browse to http://localhost:8080/eidc/documents to see the catalogue populated wi
 
 The `start-catalogue.sh` script accepts options and environment variables to control some of the build and run options.  These include:
 - `-b` to enable and launch Hubbub
+- `-l` to enable and launch legilo
 - `-w` to skip building the web components
 
 ## Project Structure
