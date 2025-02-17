@@ -36,6 +36,17 @@ body {
     line-height: $line-height-base;
 }
 
+.option-ukeof,
+.option-eidc,
+.option-ukceh,
+.option-inms,
+.option-elter,
+.option-assist,
+.option-nm,
+.option-inms {
+    display: var(--display-option ,none);
+}
+
 a {
     text-decoration: none;
 }

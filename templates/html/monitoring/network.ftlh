@@ -9,8 +9,8 @@
     <#if inverseRelationshipCombinedGeometriesOutput?has_content>
      <div class="featureMap">${inverseRelationshipCombinedGeometriesOutput}</div>
     </#if>
-    <div class="facilitiesList">
-      <@m.inverseRelationships "http://onto.ceh.ac.uk/EF#belongsTo" "Members"  />
+    <div class="featureList">
+      <@m.inverseRelationships "http://onto.ceh.ac.uk/EF#belongsTo" />
     </div>
   </div>
 

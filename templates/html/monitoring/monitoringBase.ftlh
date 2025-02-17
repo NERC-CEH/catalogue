@@ -12,32 +12,33 @@
           <div ><@b.admin /></div>
 
           <#if operationalStatus?? && operationalStatus == "Inactive">
-            <div class="card"><div class="card-body">
-              <i class="fa-solid fa-ban fa-lg"></i>
-              <strong>This ${codes.lookup('metadata.resourceType', type)?lower_case!''} is inactive</strong>
-            </div></div>
+            <div class="p-3 mb-5 bg-danger-subtle border border-2 border-danger-subtle rounded-3">
+              <i class="text-danger fa-solid fa-circle-info fa-xl mx-2"></i>
+              <b>This ${(facilityType.value)!codes.lookup('metadata.resourceType', type)?lower_case!''} is inactive</b>
+            </div>
           </#if>
 
           <#if title?? && title?has_content>
             <h1>
-               <small>
-                ${codes.lookup('metadata.resourceType', type)!''}
+              <div class="fs-5">
                 <#if (metadata.state == 'draft' || metadata.state == 'pending') >
-                  <span class="text-danger"><b>${codes.lookup('publication.state', metadata.state)?upper_case!''}</b></span>
+                  <b class="text-danger">${codes.lookup('publication.state', metadata.state)?upper_case!''}</b>
                 </#if>
-               <br>
-              </small>
-              ${title}
-
+                <span class="text-body-tertiary">
+                  ${codes.lookup('metadata.resourceType', type)!''}
+                </span>
+              </div>
+              <div> ${title}</div>
               <#if alternateTitles?? && alternateTitles?has_content>
-                <br><small>
+                <div class="fs-5 text-body-tertiary">
                   <#list alternateTitles as alt>
                   ${alt}<#sep>, </#sep>
                   </#list>
-                </small>
+                </div>
               </#if>
             </h1>
           </#if>
+
           <#if permission.userCanEditRestrictedFields(metadata.catalogue)>
             <#include "../dataResource/_metadataqualityAlert.ftlh">
           </#if>
@@ -215,26 +216,27 @@ Operating period
   <#if links?has_content>
     <@keyValue title "">
       <#list links as link>
-        <@b.blockUrl link />
+        <@b.blockUrl link "availability-${link.availability?lower_case}" />
       </#list>
     </@keyValue>
   </#if>
 </#macro>
 
+
 <#macro inverseRelationships relation title="">
   <#local links=jena.inverseRelationships(uri, relation) />
   <#if links?has_content>
-    <#if title?has_content>
-      <@keyValue title "">
+      <#if title?has_content>
+        <@keyValue title "">
+          <#list links as link>
+            <@b.blockUrl link "availability-${link.availability?lower_case}" />
+          </#list>
+        </@keyValue>
+      <#else>
         <#list links as link>
-          <@b.blockUrl link />
+          <@b.blockUrl link "availability-${link.availability?lower_case}" />
         </#list>
-      </@keyValue>
-    <#else>
-      <#list links as link>
-        <@b.blockUrl link />
-      </#list>
-    </#if>
+      </#if>
   </#if>
 </#macro>
 

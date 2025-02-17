@@ -187,16 +187,16 @@ A url that repeats the url as the link text
 <#--
 A url that shows title as the link text
 -->
-<#macro titleUrl link>
-  <a href="<#if link.href??>${link.href}<#else>#</#if>"><#if link.title??>${link.title}<#else>link</#if></a>
+<#macro titleUrl link linkClass="">
+  <a <#if linkClass?has_content>class="${linkClass}"</#if> href="<#if link.href??>${link.href}<#else>#</#if>"><#if link.title??>${link.title}<#else>link</#if></a>
 </#macro>
 
 <#--
 Block link
 -->
-<#macro blockUrl link>
-  <div>
-    <@titleUrl link/>
+<#macro blockUrl link linkClass="">
+  <div >
+    <@titleUrl link linkClass/>
   </div>
 </#macro>
 

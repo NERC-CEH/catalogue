@@ -36,6 +36,7 @@ public class Ontology {
     public static final Property ASSOCIATED_WITH = ResourceFactory.createProperty("http://onto.ceh.ac.uk/EF#associatedWith");
     public static final Property CONTAINS = ResourceFactory.createProperty("http://onto.ceh.ac.uk/EF#contains");
     public static final Property TRIGGERS = ResourceFactory.createProperty("http://onto.ceh.ac.uk/EF#triggers");
+    public static final Property HAS_STATUS = ResourceFactory.createProperty("http://onto.ceh.ac.uk/EF#hasStatus");
 
     public static final Property LINKING_TIME = ResourceFactory.createProperty("http://onto.ceh.ac.uk/EF#linkingTime");
     public static final Property TEMPORAL_BEGIN = ResourceFactory.createProperty("http://def.seegrid.csiro.au/isotc211/iso19108/2002/temporal#begin");
