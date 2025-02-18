@@ -308,7 +308,7 @@ export default EditorView.extend({
           label: 'Instruments',
           ObjectInputView: KeywordVocabularyView,
           vocabs: {
-            eidc: ['envthes','gemet','cast']
+            eidc: ['envthes', 'gemet', 'cast']
           },
           multiline: true,
           helpText: 'Controlled keywords describing instruments/sensors used to generate this data',
