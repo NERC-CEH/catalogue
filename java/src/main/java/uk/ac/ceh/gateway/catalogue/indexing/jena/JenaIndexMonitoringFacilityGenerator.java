@@ -35,11 +35,9 @@ public class JenaIndexMonitoringFacilityGenerator implements IndexGenerator<Moni
             .ifPresent(b -> toReturn.add(createStatement(me, HAS_GEOMETRY, createTypedLiteral(b.getGeometryString(), GEOJSON_LITERAL)))
             );
 
-        toReturn.add(createStatement(me, HAS_STATUS, createTypedLiteral(document.getOperationalStatus())));
-
-        //Optional.ofNullable(document.getOperationalStatus())
-        //    .ifPresent(s -> toReturn.add(createStatement(me, HAS_STATUS, createPlainLiteral(s)))
-        //    );
+        Optional.ofNullable(document.getOperationalStatus())
+            .ifPresent(s -> toReturn.add(createStatement(me, HAS_STATUS, createPlainLiteral(s)))
+            );
 
         return toReturn;
     }

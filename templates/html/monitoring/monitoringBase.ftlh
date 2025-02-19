@@ -9,7 +9,7 @@
     <#else>
       <section class="section section-grey">
         <div class="container">
-          <div ><@b.admin /></div>
+          <@admin />
 
           <#if operationalStatus?? && operationalStatus == "Inactive">
             <div class="p-3 mb-5 bg-danger-subtle border border-2 border-danger-subtle rounded-3">
@@ -39,9 +39,6 @@
             </h1>
           </#if>
 
-          <#if permission.userCanEditRestrictedFields(metadata.catalogue)>
-            <#include "../dataResource/_metadataqualityAlert.ftlh">
-          </#if>
 
           <#if description?? && description?has_content>
             <div class="mt-3"><@b.linebreaksAndLinks description /></div>
@@ -113,21 +110,92 @@
             </#if>
           </div>
 
+          <#if permission.userCanEditRestrictedFields(metadata.catalogue)>
+            <#include "../dataResource/_metadataqualityReport.ftlh">
+          </#if>
+
         </div>
       </section>
-
-      <#if permission.userCanEditRestrictedFields(metadata.catalogue)>
-        <section class="section">
-          <div class="container">
-            <#include "../dataResource/_metadataqualityReport.ftlh">
-          </div>
-        </section>
-      </#if>
 
     </#if>
     </div>
   </@skeleton.master>
 </#macro>
+
+<#macro admin>
+  <#if permission.userCanEdit(id)>
+
+    <#assign
+      MD_checks = metadataQuality.check(id)
+      problems = MD_checks.getProblems()
+      errors = MD_checks.getErrors()
+      infos =  MD_checks.getInfo()
+      warnings = MD_checks.getWarnings()
+      totalIssues = errors + infos +  warnings
+      metadataClass="warning"
+    >
+
+    <#if totalIssues?? && totalIssues gte 1>
+      <#if errors gte 1 >
+          <#assign metadataClass="danger">
+      <#elseif warnings gte 1 >
+          <#assign metadataClass="warning" >
+      <#elseif infos gte 1 >
+          <#assign metadataClass="primary">
+      </#if>
+    </#if>
+
+    <div class="row d-print-none" id="adminPanel">
+      <div class="text-end" id="adminToolbar" role="toolbar">
+        <@editButton />
+      </div>
+    </div>
+
+    </#if>
+</#macro>
+
+<#macro editButton>
+  <div class="btn-group btn-group-sm position-relative">
+    <button type="button" class="btn btn-light border btn-wide edit-control" data-document-type="${metadata.documentType}">
+      Edit
+      <#if totalIssues gte 1>
+        <span class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-${metadataClass}"
+        data-bs-toggle="tooltip" data-bs-placement="right" title="Metadata issues">
+          ${totalIssues}
+          <span class="visually-hidden">Metadata issues</span>
+        </span>
+      </#if>
+    </button>
+    <button type="button" class="btn btn-light border dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+      <span class="caret"></span>
+      <span class="visually-hidden">Toggle Dropdown</span>
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end">
+      <#if totalIssues gte 1>
+        <@menuLink "#segment-metadataQuality">
+          <span class="badge rounded-pill bg-${metadataClass}">${totalIssues}</span>
+          <span class="text-${metadataClass}">metadata issue<#if totalIssues gt 1>s</#if></span>
+        </@menuLink>
+        <li class="dropdown-divider"></li>
+      </#if>
+
+      <@menuLink "/documents/${id}/permission" "fa-solid fa-users">Permissions</@menuLink>
+      <@menuLink "/documents/${id}/publication" "fa-solid fa-eye">Publication status</@menuLink>
+
+      <span class="catalogue-control">
+        <li class="dropdown-divider"></li>
+        <@menuLink "/documents/${id}/catalogue" "fa-solid fa-right-from-bracket">Move to a different catalogue</@menuLink>
+      </span>
+    </ul>
+  </div>
+</#macro>
+
+<#macro menuLink link  target="_self">
+  <li><a class="dropdown-item" href="${link}" target="${target}" rel="noopener noreferrer">
+     <#nested>
+  </a></li>
+</#macro>
+
 
 <#macro keyValue key description="" auto_esc=false>
   <div class="row key-value" title="${description}">
