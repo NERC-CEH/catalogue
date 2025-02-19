@@ -106,7 +106,7 @@ docker compose $profile up --wait --detach
 if [[ $with_hubbub = true ]]; then
     db_init=`docker exec -it catalogue-hubbub-db-1 sh -c "test -f /hubbub_backup.sql && echo -n 'yes'"`
     if [[ $db_init != 'yes' ]]; then
-        docker cp ./hubbub_backup.sql catalogue-hubbub-db-1:/
+        docker cp ./fixtures/hubbub/init/hubbub_backup.sql catalogue-hubbub-db-1:/
         docker exec -it catalogue-hubbub-db-1 psql -U gardener -d hubbub -f /hubbub_backup.sql 1>/dev/null
     fi
 fi
