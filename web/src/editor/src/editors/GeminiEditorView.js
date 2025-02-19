@@ -307,6 +307,9 @@ export default EditorView.extend({
           modelAttribute: 'keywordsInstrument',
           label: 'Instruments',
           ObjectInputView: KeywordVocabularyView,
+          vocabs: {
+            eidc: ['envthes', 'gemet', 'cast']
+          },
           multiline: true,
           helpText: 'Controlled keywords describing instruments/sensors used to generate this data',
           renderLegiloKeywords: true
