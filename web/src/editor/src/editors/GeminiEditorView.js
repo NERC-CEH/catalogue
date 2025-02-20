@@ -297,7 +297,9 @@ export default EditorView.extend({
           modelAttribute: 'keywordsProject',
           label: 'Projects',
           ObjectInputView: KeywordVocabularyView,
-          multiline: true,
+          vocabs: {
+            ukceh: ['research-project']
+          },
           helpText: 'Controlled keywords describing projects that fund/support the creation of this resource',
           fetchKeywordsButton: true,
           renderLegiloKeywords: true
@@ -307,9 +309,6 @@ export default EditorView.extend({
           modelAttribute: 'keywordsInstrument',
           label: 'Instruments',
           ObjectInputView: KeywordVocabularyView,
-          vocabs: {
-            eidc: ['envthes', 'gemet', 'cast']
-          },
           multiline: true,
           helpText: 'Controlled keywords describing instruments/sensors used to generate this data',
           renderLegiloKeywords: true
@@ -320,7 +319,8 @@ export default EditorView.extend({
           label: 'Other keywords',
           ObjectInputView: KeywordVocabularyView,
           vocabs: {
-            eidc: ['envthes', 'gemet', 'cast']
+            eidc: ['envThes', 'gemet', 'cast'],
+            ukceh: ['envThes', 'gemet', 'cast']
           },
           multiline: true,
           helpText: 'All other keywords not described elsewhere',
