@@ -297,16 +297,24 @@ Operating period
       <#if title?has_content>
         <@keyValue title "">
           <#list links as link>
-            <@b.blockUrl link "availability-${link.availability?lower_case}" />
+            <@geomUrl link "availability-${link.availability?lower_case}" />
           </#list>
         </@keyValue>
       <#else>
         <#list links as link>
-          <@b.blockUrl link "availability-${link.availability?lower_case}" />
+          <@geomUrl link "availability-${link.availability?lower_case}" />
         </#list>
       </#if>
   </#if>
 </#macro>
+
+<#macro geomUrl link linkClass="">
+  <div>
+      <a <#if linkClass?has_content>class="${linkClass}"</#if> href="<#if link.href??>${link.href}<#else>#</#if>"><#if link.title??>${link.title}<#else>link</#if></a>
+      <#if !link.geometry?has_content><i class="fa-solid fa-triangle-exclamation text-primary" alt="info" title="No geometry"></i></#if>
+  </div>
+</#macro>
+
 
 <#macro symmetricRelationships relation title="">
   <#local links = jena.inverseRelationships(uri, relation) />
