@@ -310,8 +310,8 @@ Operating period
 
 <#macro geomUrl link linkClass="">
   <div>
+      <#if !link.geometry?has_content><i class="fa-solid fa-thumbtack-slash text-body-tertiary" alt="info" title="This has no location"></i></#if>
       <a <#if linkClass?has_content>class="${linkClass}"</#if> href="<#if link.href??>${link.href}<#else>#</#if>"><#if link.title??>${link.title}<#else>link</#if></a>
-      <#if !link.geometry?has_content><i class="fa-solid fa-triangle-exclamation text-primary" alt="info" title="No geometry"></i></#if>
   </div>
 </#macro>
 
