@@ -6,13 +6,14 @@ die () { exit 1; }
 
 usage () {
     cat <<EOF
-Usage: ${0##*/} [-hwbl] [[--] args ...]
+Usage: ${0##*/} [-hwblf] [[--] args ...]
 Rebuild and start a catalogue instance.
 
     -h  Show this help and exit
     -w  Don't build the web assets
     -b  Start Hubbub docker service and enable its profile
     -l  Start Legilo service and enable its profile
+    -f  Start Fuseki service
 
 Any remaining arguments are passed on to ./gradlew bootRun.  Use
 -- to separate them if they start with something that looks like
@@ -28,7 +29,8 @@ EOF
 build_web=true
 with_hubbub=false
 with_legilo=false
-while getopts hwbl opt; do
+with_fuseki=false
+while getopts hwblf opt; do
     case $opt in
         h)
             usage
@@ -42,6 +44,9 @@ while getopts hwbl opt; do
             ;;
         l)
             with_legilo=true
+            ;;
+        f)
+            with_fuseki=true
             ;;
         *)
             usage >&2
@@ -87,19 +92,23 @@ mkdir -p datastore &&
 ) || die
 
 echo 'Starting dependent services...'
-if [[ $with_hubbub = true && $with_legilo = true ]]; then
-    docker compose --profile hubbub --profile legilo up --wait --detach
-elif [[ $with_hubbub = true ]]; then
-    docker compose --profile hubbub up --wait --detach
-elif [[ $with_legilo = true ]]; then
-    docker compose --profile legilo up --wait --detach
-else
-    docker compose up --wait --detach
-fi || die
-
-readarray -t secrets < <(grep -E -v '^$|^#' secrets.env 2>/dev/null)
-if (( ${#secrets[@]} > 0 )); then
-    export "${secrets[@]}"
+profile=''
+if [[ $with_hubbub = true ]]; then
+    profile="$profile --profile hubbub"
+fi
+if [[ $with_legilo = true ]]; then
+    profile="$profile --profile legilo"
+fi
+if [[ $with_fuseki = true ]]; then
+    profile="$profile --profile fuseki"
+fi
+docker compose $profile up --wait --detach
+if [[ $with_hubbub = true ]]; then
+    db_init=`docker exec -it catalogue-hubbub-db-1 sh -c "test -f /hubbub_backup.sql && echo -n 'yes'"`
+    if [[ $db_init != 'yes' ]]; then
+        docker cp ./fixtures/hubbub/init/hubbub_backup.sql catalogue-hubbub-db-1:/
+        docker exec -it catalogue-hubbub-db-1 psql -U gardener -d hubbub -f /hubbub_backup.sql 1>/dev/null
+    fi
 fi
 
 export_default () {
@@ -132,16 +141,21 @@ export_default LEGILO_URL http://localhost:8000
 export_default LEGILO_USER user
 export_default LEGILO_PASSWORD password
 
-if [[ $with_hubbub = true && $with_legilo = true ]]; then
-    export_default SPRING_PROFILES_ACTIVE development,upload:hubbub,server:eidc,search:basic,service-agreement,keyword-suggestions
-elif [[ $with_hubbub = true ]]; then
-    export_default SPRING_PROFILES_ACTIVE development,upload:hubbub,server:eidc,search:basic,service-agreement
-elif [[ $with_legilo = true ]]; then
-    export_default SPRING_PROFILES_ACTIVE development,upload:simple,server:eidc,search:basic,service-agreement,keyword-suggestions
+spring_profile='development,server:eidc,search:basic,service-agreement'
+if [[ $with_hubbub = true ]]; then
+    spring_profile="$spring_profile,upload:hubbub"
 else
-    export_default SPRING_PROFILES_ACTIVE development,upload:simple,server:eidc,search:basic,service-agreement
+    spring_profile="$spring_profile,upload:simple"
 fi
+if [[ $with_legilo = true ]]; then
+    spring_profile="$spring_profile,keyword-suggestions"
+fi
+export_default SPRING_PROFILES_ACTIVE $spring_profile
 
+readarray -t external_env < <(grep -E -vh '^$|^#' secrets.env override.env 2>/dev/null)
+if (( ${#external_env[@]} > 0 )); then
+    export "${external_env[@]}"
+fi
 
 echo 'Building and starting Java application...'
 

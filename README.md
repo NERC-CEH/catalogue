@@ -15,8 +15,11 @@ Browse to http://localhost:8080/eidc/documents to see the catalogue populated wi
 
 The `start-catalogue.sh` script accepts options and environment variables to control some of the build and run options.  These include:
 - `-b` to enable and launch Hubbub
-- `-l` to enable and launch legilo
+- `-l` to enable and launch Legilo
+- `-f` to enable and launch Fuseki
 - `-w` to skip building the web components
+
+Local or override environment variables can be placed in override.env
 
 ## Project Structure
 
