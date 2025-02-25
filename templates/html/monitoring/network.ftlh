@@ -5,7 +5,7 @@
     <@m.inverseRelationshipCombinedGeometries "http://onto.ceh.ac.uk/EF#belongsTo" />
   </#assign>
 
-  <div class="childFeatures">
+  <div class="displayFeatures">
     <#if inverseRelationshipCombinedGeometriesOutput?has_content>
      <div class="featureMap">${inverseRelationshipCombinedGeometriesOutput}</div>
     </#if>

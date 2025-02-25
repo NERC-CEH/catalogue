@@ -51,7 +51,7 @@
           <#nested>
 
           <#if environmentalDomain??>
-           <@keyValue "Environmental domain" ""><@displayKeywords environmentalDomain/></@keyValue>
+           <@keyValue "Environmental domain" ""><@displayKeywords environmentalDomain ", "/></@keyValue>
           </#if>
 
           <#if purposeOfCollection??>

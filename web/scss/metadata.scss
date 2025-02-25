@@ -840,8 +840,8 @@ body {
         width: 100%;
     }
 
-    .childFeatures {
-        margin-block-end: 1em;
+    .displayFeatures {
+        margin-block: 1em;
         display: flex;
         flex-wrap: wrap;
 
@@ -872,7 +872,7 @@ body {
 
 @media only screen and (min-width: 990px) {
     .metadata-monitoring {
-        .childFeatures {
+        .displayFeatures {
             .featureMap {
                 flex: 1 0 60%;
             }
