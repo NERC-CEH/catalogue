@@ -34,7 +34,7 @@ class FileDetailsServiceTest {
         return new HubbubResponse(
             Collections.nCopies(
                 numFilesOnPage,
-                new HubbubResponse.FileInfo(456L,fileId,datastore,"csv","fc3facd3122cb0250f4bf82746d4bd13",0.32,lastModified,lastValidated,path,"VALID","text/csv")
+                new HubbubResponse.FileInfo(456L,fileId,datastore,"csv","fc3facd3122cb0250f4bf82746d4bd13",0.32,lastModified,lastValidated,path,"VALID", "sha256HASH","text/csv")
             ),
             null,
             new HubbubResponse.Meta(currentPage, lastPage, pageSize, totalFiles)
