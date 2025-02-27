@@ -88,8 +88,7 @@
 			</div>
 			<div>
 				<div class="ukcehcard-type"><small><span>${publicationStatus}</span>${type}</small></div>
-				<div class="ukcehcard-content">${title}
-        </div>
+				<div class="ukcehcard-content">${title}</div>
 			</div>
 		</a>
 	</#if>

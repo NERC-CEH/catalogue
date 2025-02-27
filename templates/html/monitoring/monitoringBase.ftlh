@@ -294,17 +294,17 @@ Operating period
 <#macro inverseRelationships relation title="">
   <#local links=jena.inverseRelationships(uri, relation) />
   <#if links?has_content>
-      <#if title?has_content>
-        <@keyValue title "">
-          <#list links as link>
-            <@geomUrl link "availability-${link.availability?lower_case}" />
-          </#list>
-        </@keyValue>
-      <#else>
+    <#if title?has_content>
+      <@keyValue title "">
         <#list links as link>
           <@geomUrl link "availability-${link.availability?lower_case}" />
         </#list>
-      </#if>
+      </@keyValue>
+    <#else>
+      <#list links as link>
+        <@geomUrl link "availability-${link.availability?lower_case}" />
+      </#list>
+    </#if>
   </#if>
 </#macro>
 
