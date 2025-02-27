@@ -40,3 +40,4 @@ DevStartupController.java
 /sparql.http
 /oidc-roles.json
 /fixtures/solr/ror/config.properties
+/override.env

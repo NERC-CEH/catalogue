@@ -17,7 +17,7 @@ services:
     volumes:
       - mapfiles:/mapserver/maps
       - ./fixtures/mapserver-data:/mapserver/data
-  db:
+  hubbub-db:
     image: postgres:14.1-alpine
     environment:
       POSTGRES_PASSWORD: &db_password cabbages
@@ -29,7 +29,7 @@ services:
   hubbub:
     image: registry.gitlab.ceh.ac.uk/eip/hubbub:7.7.0
     depends_on:
-      - db
+      - hubbub-db
     environment:
       DB_HOST: db
       DB_PASSWORD: *db_password
@@ -53,6 +53,13 @@ services:
       - ./fixtures/upload/eidchub:/opt/data
       - ./fixtures/upload/supporting-documents:/opt/supporting-docs
     profiles: [legilo]
+  fuseki:
+    image: registry.gitlab.ceh.ac.uk/eip/fuseki:4.9.0-ceh2
+    environment:
+      ADMIN_PASSWORD: admin
+    ports:
+      - '3030:3030'
+    profiles: [fuseki]
 volumes:
   dropbox:
   mapfiles:
