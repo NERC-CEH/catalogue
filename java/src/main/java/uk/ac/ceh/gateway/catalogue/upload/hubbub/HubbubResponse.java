@@ -36,6 +36,7 @@ public class HubbubResponse {
         LocalDateTime lastValidated;
         String path;
         String status;
+        String sha256;
         String mimeType;
 
         @JsonCreator
@@ -50,6 +51,7 @@ public class HubbubResponse {
             @JsonProperty("lastValidated") LocalDateTime lastValidated,
             @JsonProperty("path") String path,
             @JsonProperty("status") String status,
+            @JsonProperty("sha256") String sha256,
             @JsonProperty("mimeType") String mimeType
         ) {
             this.bytes = bytes;
@@ -62,6 +64,7 @@ public class HubbubResponse {
             this.lastValidated = lastValidated;
             this.path = path;
             this.status = status;
+            this.sha256 = sha256;
             this.mimeType = mimeType;
         }
     }

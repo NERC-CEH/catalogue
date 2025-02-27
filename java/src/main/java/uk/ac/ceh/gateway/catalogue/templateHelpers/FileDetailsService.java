@@ -63,7 +63,7 @@ public class FileDetailsService {
                     "File",
                     id,
                     file.getMimeType(),
-                    file.getHash(),
+                    file.getSha256(),
                     path,
                     file.getBytes(),
                     file.getLastModified()

@@ -167,6 +167,7 @@ class UploadControllerTest {
                 lastValidated,
                 path,
                 "VALID",
+                "sha256HASH",
                 "text/csv"
             )
         );
@@ -187,6 +188,7 @@ class UploadControllerTest {
                 lastValidated,
                 path,
                 "VALID",
+                "sha256HASH",
                 "text/csv"
             )
         );
@@ -207,6 +209,7 @@ class UploadControllerTest {
                 lastValidated,
                 path,
                 "VALID",
+                "sha256HASH",
                 "text/csv"
             )
         );
@@ -227,6 +230,7 @@ class UploadControllerTest {
                 lastValidated,
                 path,
                 "VALID",
+                "sha256HASH",
                 "text/csv"
             )
         );
