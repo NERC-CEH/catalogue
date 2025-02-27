@@ -7,7 +7,7 @@
 
 
   <#if CombinedGeometriesOutput?has_content>
-    <div class="childFeatures">
+    <div class="displayFeatures">
       <div class="featureMap">${CombinedGeometriesOutput}</div>
       <div class="featureList">
         <@m.relationships "http://onto.ceh.ac.uk/EF#utilises" "Uses"  />

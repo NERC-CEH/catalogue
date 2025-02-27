@@ -72,7 +72,7 @@ public class JenaLookupService {
      * @return list of Links to modelApplications
      */
     public List<Link> modelApplications(String uri) {
-        return links(uri, "PREFIX dc: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> SELECT ?node ?title ?publicationStatus ?type ?rel WHERE {?node ?rel ?me; dc:references ?me; dc:title ?title; pso:PublicationStatus ?publicationStatus; dc:type ?type; dc:type 'modelApplication'}");
+        return links(uri, "PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> SELECT ?node ?title ?publicationStatus ?type ?rel WHERE {?node ?rel ?me; dcterms:references ?me; dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type; dcterms:type 'modelApplication'}");
     }
 
     /**
@@ -81,7 +81,7 @@ public class JenaLookupService {
      * @return list of Links to models
      */
     public List<Link> models(String uri) {
-        return links(uri, "PREFIX dc: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> SELECT ?node ?title ?publicationStatus ?type ?rel WHERE { ?me ?rel ?node; dc:references ?node. ?node dc:title ?title; pso:PublicationStatus ?publicationStatus; dc:type ?type; dc:type 'model'}");
+        return links(uri, "PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> SELECT ?node ?title ?publicationStatus ?type ?rel WHERE { ?me ?rel ?node; dcterms:references ?node. ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type; dcterms:type 'model'}");
     }
 
     /**
@@ -90,7 +90,7 @@ public class JenaLookupService {
      * @return list of Links to modelApplications
      */
     public List<Link> nercModelUses(String uri) {
-        return links(uri, "PREFIX dc: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> SELECT ?node ?title ?publicationStatus ?type ?rel WHERE {?node ?rel ?me; dc:references ?me; dc:title ?title; pso:PublicationStatus ?publicationStatus;  dc:type ?type; dc:type 'nercModelUse'}");
+        return links(uri, "PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> SELECT ?node ?title ?publicationStatus ?type ?rel WHERE {?node ?rel ?me; dcterms:references ?me; dcterms:title ?title; pso:PublicationStatus ?publicationStatus;  dcterms:type ?type; dcterms:type 'nercModelUse'}");
     }
 
     /**
@@ -99,28 +99,21 @@ public class JenaLookupService {
      * @return list of Links to models
      */
     public List<Link> nercModels(String uri) {
-        return links(uri, "PREFIX dc: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> SELECT ?node ?title ?publicationStatus ?type ?rel WHERE { ?me ?rel ?node; dc:references ?node. ?node dc:title ?title; pso:PublicationStatus ?publicationStatus; dc:type ?type; dc:type 'nercModels'}");
+        return links(uri, "PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> SELECT ?node ?title ?publicationStatus ?type ?rel WHERE { ?me ?rel ?node; dcterms:references ?node. ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type; dcterms:type 'nercModels'}");
     }
 
     public List<Link> datasets(String uri) {
-        return links(uri, "PREFIX dc: <http://purl.org/dc/terms/>PREFIX pso: <http://purl.org/spar/pso/>SELECT DISTINCT ?node ?title ?publicationStatus ?type ?rel WHERE{{{?me ?rel ?node; dc:references ?node.} UNION {?node ?rel ?me; dc:references ?me.} ?node dc:title ?title; pso:PublicationStatus ?publicationStatus; dc:type ?type; dc:type 'dataset'.} UNION {?me ?rel ?node; dc:references ?node. ?node dc:source _:n . _:n dc:title ?title; pso:PublicationStatus ?publicationStatus; dc:type ?type; dc:type 'dataset'.}}");
+        return links(uri, "PREFIX dcterms: <http://purl.org/dc/terms/>PREFIX pso: <http://purl.org/spar/pso/>SELECT DISTINCT ?node ?title ?publicationStatus ?type ?rel WHERE{{{?me ?rel ?node; dcterms:references ?node.} UNION {?node ?rel ?me; dcterms:references ?me.} ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type; dcterms:type 'dataset'.} UNION {?me ?rel ?node; dcterms:references ?node. ?node dcterms:source _:n . _:n dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type; dcterms:type 'dataset'.}}");
     }
 
     public List<Link> relationships(String uri, String relation) {
-        String publicationDate = "http://purl.org/dc/terms/available";
-        String sparql = "PREFIX dc: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> SELECT DISTINCT ?node ?title ?publicationStatus ?type ?rel WHERE {?me ?rel ?node; ?relation ?node . ?node dc:title ?title; pso:PublicationStatus ?publicationStatus;  dc:type ?type. OPTIONAL {?node <" + publicationDate + "> ?publicationDate}} ORDER BY DESC(?publicationDate) ?title";
-        ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
-        pss.setIri("me", uri);
-        pss.setIri("relation", relation);
-        return links(pss);
-    }
-
-    public List<Link> relationshipsWithOwner(String uri, String relation) {
-        String sparql = "PREFIX dc: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> PREFIX hasGeometry: <http://www.opengis.net/ont/geosparql#hasGeometry> " +
-            "SELECT DISTINCT ?node ?title ?publicationStatus ?type ?rel ?geom " +
-            "WHERE {{?me dc:title ?title; pso:PublicationStatus ?publicationStatus; dc:type ?type; hasGeometry: ?geom. BIND(?me as ?node)} " +
-            "UNION {?me ?relation ?node. ?node dc:title ?title; pso:PublicationStatus ?publicationStatus; dc:type ?type; hasGeometry: ?geom. BIND(?relation as ?rel)}} " +
-            "ORDER BY ?title";
+        String sparql = "PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> PREFIX eidc: <https://vocabs.ceh.ac.uk/eidc#> PREFIX ef: <http://onto.ceh.ac.uk/EF#> " +
+            "SELECT DISTINCT ?node ?title ?publicationStatus ?availability ?type ?rel " +
+            "WHERE {?me ?rel ?node; ?relation ?node. ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus;  dcterms:type ?type. " +
+            "OPTIONAL {?node dcterms:available ?publicationDate} " +
+            "OPTIONAL {?node eidc:resourceStatus ?availability} " +
+            "OPTIONAL {?node ef:hasStatus ?availability}} " +
+            "ORDER BY DESC(?publicationDate) ?title";
         ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
         pss.setIri("me", uri);
         pss.setIri("relation", relation);
@@ -128,9 +121,26 @@ public class JenaLookupService {
     }
 
     public List<Link> inverseRelationships(String uri, String relation) {
-        String hasGeometry = "http://www.opengis.net/ont/geosparql#hasGeometry";
-        String publicationDate = "http://purl.org/dc/terms/available";
-        String sparql = "PREFIX dc: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> SELECT DISTINCT ?node ?title ?publicationStatus ?type ?rel ?geom ?publicationDate WHERE {?node ?rel ?me ; ?relation ?me. ?node dc:title ?title; pso:PublicationStatus ?publicationStatus; dc:type ?type. OPTIONAL {?node <" + hasGeometry + "> ?geom} OPTIONAL {?node <" + publicationDate + "> ?publicationDate}}ORDER BY DESC(?publicationDate) ?title";
+        String sparql = "PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/>  PREFIX eidc: <https://vocabs.ceh.ac.uk/eidc#> PREFIX geo: <http://www.opengis.net/ont/geosparql#> PREFIX eidc: <https://vocabs.ceh.ac.uk/eidc#> PREFIX ef: <http://onto.ceh.ac.uk/EF#> " +
+            "SELECT DISTINCT ?node ?title ?publicationStatus ?availability ?type ?rel ?geom ?publicationDate " +
+            "WHERE {?node ?rel ?me; ?relation ?me. ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type. " +
+            "OPTIONAL {?node geo:hasGeometry ?geom} " +
+            "OPTIONAL {?node dcterms:available ?publicationDate} " +
+            "OPTIONAL {?node eidc:resourceStatus ?availability} " +
+            "OPTIONAL {?node ef:hasStatus ?availability}} " +
+            "ORDER BY DESC(?publicationDate) ?title";
+        ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
+        pss.setIri("me", uri);
+        pss.setIri("relation", relation);
+        return links(pss);
+    }
+
+    public List<Link> relationshipsWithOwner(String uri, String relation) {
+        String sparql = "PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> PREFIX geo: <http://www.opengis.net/ont/geosparql#> " +
+            "SELECT DISTINCT ?node ?title ?publicationStatus ?type ?rel ?geom " +
+            "WHERE {{?me dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type; geo:hasGeometry ?geom. BIND(?me as ?node)} " +
+            "UNION {?me ?relation ?node. ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type; geo:hasGeometry ?geom. BIND(?relation as ?rel)}} " +
+            "ORDER BY ?title";
         ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
         pss.setIri("me", uri);
         pss.setIri("relation", relation);
@@ -138,8 +148,7 @@ public class JenaLookupService {
     }
 
     public List<Link> programmeFeatures(String uri) {
-        String hasGeometry = "http://www.opengis.net/ont/geosparql#hasGeometry";
-        String sparql = "PREFIX dc: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> PREFIX ef: <http://onto.ceh.ac.uk/EF#> SELECT DISTINCT ?node ?title ?publicationStatus ?type ?rel ?geom WHERE {{?me ef:utilises ?node. ?node dc:title ?title; pso:PublicationStatus ?publicationStatus;  dc:type ?type; <" + hasGeometry + "> ?geom} UNION {?me ef:utilises ?network. ?node ef:belongsTo ?network; dc:title ?title; pso:PublicationStatus ?publicationStatus; dc:type ?type; <" + hasGeometry + "> ?geom.}BIND(ef:utilises as ?rel)}";
+        String sparql = "PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> PREFIX ef: <http://onto.ceh.ac.uk/EF#>  PREFIX geo: <http://www.opengis.net/ont/geosparql#> SELECT DISTINCT ?node ?title ?publicationStatus ?type ?rel ?geom WHERE {{?me ef:utilises ?node. ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus;  dcterms:type ?type; geo:hasGeometry ?geom} UNION {?me ef:utilises ?network. ?node ef:belongsTo ?network; dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type; geo:hasGeometry ?geom.}BIND(ef:utilises as ?rel)}";
         ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
         pss.setIri("me", uri);
         return links(pss);
@@ -238,7 +247,7 @@ public class JenaLookupService {
     }
 
     public List<Link> allRelatedRecords(String uri) {
-        String sparql = "PREFIX dc: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> SELECT ?node ?rel ?title ?publicationStatus ?type WHERE {{?me ?rel ?node. ?node dc:title ?title; pso:PublicationStatus ?publicationStatus; dc:type ?type.} UNION {?node ?rel ?me. ?node dc:title ?title; pso:PublicationStatus ?publicationStatus; dc:type ?type.}FILTER(REGEX(STR(?rel),'^https://vocabs.ceh.ac.uk/eidc#'))}";
+        String sparql = "PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> SELECT ?node ?rel ?title ?publicationStatus ?type WHERE {{?me ?rel ?node. ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type.} UNION {?node ?rel ?me. ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type.}FILTER(REGEX(STR(?rel),'^https://vocabs.ceh.ac.uk/eidc#'))}";
         ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
         pss.setIri("me", uri);
         return links(pss);
@@ -250,7 +259,7 @@ public class JenaLookupService {
      * only the last in the chain
      */
     public List<Link> superseded(String uri) {
-        String sparql = "PREFIX dc: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> PREFIX : <https://vocabs.ceh.ac.uk/eidc#> SELECT DISTINCT ?node ?type ?title ?rel ?publicationStatus WHERE {?node :supersedes+ ?me; dc:title ?title; pso:PublicationStatus ?publicationStatus; dc:type ?type.BIND( :supersedes as ?rel)FILTER (!EXISTS {?x :supersedes ?node})}";
+        String sparql = "PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> PREFIX : <https://vocabs.ceh.ac.uk/eidc#> SELECT DISTINCT ?node ?type ?title ?rel ?publicationStatus WHERE {?node :supersedes+ ?me; dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type.BIND( :supersedes as ?rel)FILTER (!EXISTS {?x :supersedes ?node})}";
         ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
         pss.setIri("me", uri);
         return links(pss);
@@ -262,7 +271,7 @@ public class JenaLookupService {
      * and orders them by distance to the most recent version
      */
     public List<Link> supersedes(String uri) {
-        String sparql = "PREFIX dc: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> PREFIX : <https://vocabs.ceh.ac.uk/eidc#> SELECT ?node ?type ?title ?rel ?publicationStatus WHERE {?me (:supersedes)+ ?mid. ?mid(:supersedes)* ?node. ?node dc:title ?title; pso:PublicationStatus ?publicationStatus;  dc:type ?type. BIND( :supersededBy as ?rel) FILTER (!EXISTS {?x :supersedes ?me})} GROUP BY ?node ?type ?title ?rel ?publicationStatus HAVING (COUNT(?mid) > 0) ORDER BY COUNT(?mid)";
+        String sparql = "PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> PREFIX : <https://vocabs.ceh.ac.uk/eidc#> SELECT ?node ?type ?title ?rel ?publicationStatus WHERE {?me (:supersedes)+ ?mid. ?mid(:supersedes)* ?node. ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus;  dcterms:type ?type. BIND( :supersededBy as ?rel) FILTER (!EXISTS {?x :supersedes ?me})} GROUP BY ?node ?type ?title ?rel ?publicationStatus HAVING (COUNT(?mid) > 0) ORDER BY COUNT(?mid)";
         ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
         pss.setIri("me", uri);
         return links(pss);
@@ -270,7 +279,7 @@ public class JenaLookupService {
 
     public Link metadata(String id) {
         id = nullToEmpty(id);
-        String sparql = "PREFIX dc: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> SELECT ?node ?title ?publicationStatus ?type ?rel WHERE {?node dc:identifier ?id; dc:title ?title; pso:PublicationStatus ?publicationStatus; dc:type ?type. BIND(<https://vocabs.ceh.ac.uk/eidc#> as ?rel)}";
+        String sparql = "PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> SELECT ?node ?title ?publicationStatus ?type ?rel WHERE {?node dcterms:identifier ?id; dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type. BIND(<https://vocabs.ceh.ac.uk/eidc#> as ?rel)}";
         ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
         pss.setLiteral("id", id);
         return links(pss).stream().findFirst().orElse(null);
@@ -290,6 +299,7 @@ public class JenaLookupService {
                 Link.builder()
                     .title(s.getLiteral("title").getString())
                     .publicationStatus(s.getLiteral("publicationStatus").getString())
+                    .availability(s.getLiteral("availability") != null ? s.getLiteral("availability").getString() : "")
                     .href(s.getResource("node").getURI())
                     .associationType(s.getLiteral("type").getString())
                     .rel(s.getResource("rel") != null ? s.getResource("rel").getURI() : "")

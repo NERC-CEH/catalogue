@@ -826,45 +826,60 @@ body {
         padding-block-start: 2em;
     }
 
+
+    a {
+        &.availability-inactive {
+            text-decoration: line-through;
+            color: #BBB;
+        }
+    }
+
     .studyarea-map,
     .geometry-map {
         min-height: 500px;
         width: 100%;
     }
 
-    .networkMap {
-        display: grid;
-        gap: 1em;
-        grid-template-columns: 1fr;
-        margin: 0 1em 1em 0;
+    .displayFeatures {
+        margin-block: 1em;
+        display: flex;
+        flex-wrap: wrap;
 
-        .facilitiesList {
-            max-height: 500px;
+        .featureMap {
+            flex: 0 0 100%;
+        }
+
+        .featureList {
+            flex: 0 0 100%;
+            padding-inline: 1em;
             overflow-y: auto;
-            overflow-x: hidden;
-            scrollbar-gutter: stable;
-            scrollbar-width: thin;
+            overflow-x: none;
+            max-height: 500px;
 
-            &::-webkit-scrollbar {
-                width: 8px;
+            .key {
+                display: none;
             }
         }
     }
 }
 
 @media only screen and (min-width: 1020px) {
-
-
     .col-3:has(#tableOfContents) {
         border-inline-start: 1px solid lightgray;
         padding-inline-start: 2em;
     }
+}
 
-
+@media only screen and (min-width: 990px) {
     .metadata-monitoring {
+        .displayFeatures {
+            .featureMap {
+                flex: 1 0 60%;
+            }
 
-        .networkMap {
-            grid-template-columns: auto 35ch;
+            .featureList {
+                flex: 0 1 40%;
+            }
         }
     }
 }

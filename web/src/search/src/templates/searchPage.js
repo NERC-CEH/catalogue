@@ -18,8 +18,9 @@ export default _.template(`
       <label>Sort by
         <select class="sort-search" aria-label="Select dropdown for sorting serch results">
             <option value="" <%= !sortField ? 'selected' : '' %>>Relevance</option>
-            <option value="publicationDate-desc" <%= sortField === 'publicationDate' && order === 'desc' ? 'selected' : '' %>>Published date (newest first)</option>
-            <option value="publicationDate-asc" <%= sortField === 'publicationDate' && order === 'asc' ? 'selected' : '' %>>Published date (oldest first)</option>
+            <option class="option-eidc" value="publicationDate-desc" <%= sortField === 'publicationDate' && order === 'desc' ? 'selected' : '' %>>Published date (newest first)</option>
+            <option class="option-eidc" value="publicationDate-asc" <%= sortField === 'publicationDate' && order === 'asc' ? 'selected' : '' %>>Published date (oldest first)</option>
+            <option class="option-eidc" value="incomingCitationCount-desc" <%= sortField === 'incomingCitationCount' && order === 'asc' ? 'selected' : '' %>>Number of citatons</option>
             <option value="title-asc" <%= sortField === 'title' && order === 'asc' ? 'selected' : '' %>>Title (A-Z)</option>
             <option value="title-desc" <%= sortField === 'title' && order === 'desc' ? 'selected' : '' %>>Title (Z-A)</option>
         </select>
@@ -39,6 +40,8 @@ export default _.template(`
     <a class="result result--<%=result.state%> <% if (result.operationalStatus != '') { %>opstatus-<%=result.operationalStatus%><% } %> <% if (result.resourceStatus != '') { %>result--<%=result.resourceStatus%><% } %>" id="<%=result.identifier%>" href="/documents/<%=result.identifier%>">
 
         <div class="result__tags">
+            <div class="recordType text-body-tertiary">
+
             <div class="state">
                 <% if(result.state == 'draft') { %>
                     <span class="text-draft"><b>DRAFT</b></span>
@@ -51,7 +54,6 @@ export default _.template(`
                 <div class="opstatus"><%=result.operationalStatus%></div>
             <% } %>
 
-            <div class="recordType small text-body-tertiary">
             <% if (result.documentType != '' && result.documentType == "LINK_DOCUMENT") {  %>
             <i class="fa-solid fa-link"></i> Linked
             <% } %>

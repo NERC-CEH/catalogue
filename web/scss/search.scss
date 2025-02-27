@@ -86,8 +86,7 @@ main {
 
         .sort-search {
             option {
-                &:checked
-                {
+                &:checked {
                     display: none;
                 }
             }
@@ -219,7 +218,7 @@ main {
 
         .result {
             padding: 0.85em;
-            border:1px solid #ccc;
+            border: 1px solid #ccc;
             border-radius: 5px;
             color: var(--text-default-color);
 
@@ -231,26 +230,35 @@ main {
 
             &__tags {
                 display: flex;
-                flex-direction: row;
-                div {
-                    margin-inline-end: 1em;
-                }
+                flex-wrap: nowrap;
+                gap: 1.6em;
+                align-items: center;
 
                 .resourceStatus,
                 .condition,
-                .state {
-                    font-weight: bold;
-                    font-size: 0.9rem;
-                    padding-block-start: 3px;
+                .state,
+                .opstatus {
+                    @extend .rounded-pill !optional;
+                    @extend .px-2 !optional;
+                    @extend .me-3 !optional;
+                    font-weight: 600;
+                    font-size: 0.8rem;
+
                 }
 
                 .opstatus {
+                    color: white;
                     display: none;
+                    background-color: var(--statusColor, transparent);
                 }
             }
 
             &.opstatus-Inactive {
+                background-color: #f1f1f1;
+                @extend .ms-3 !optional;
+
                 .opstatus {
+                    --statusColor: var(--ukceh-colours-teal);
                     display: inline-block;
                 }
             }
@@ -314,27 +322,27 @@ main {
             }
         }
     }
+}
 
-    .results__footer {
-        margin-block-start: auto;
+.results__footer {
+    margin-block-start: auto;
 
-        .pagination {
+    .pagination {
 
-            .previous-item,
-            .next-item {
-                width: max-content;
-                white-space: nowrap;
-            }
+        .previous-item,
+        .next-item {
+            width: max-content;
+            white-space: nowrap;
+        }
 
-            .center-item {
-                width: 100%;
-                text-align: center;
-            }
+        .center-item {
+            width: 100%;
+            text-align: center;
+        }
 
-            .page-link {
-                padding: 6px 20px;
-                border-radius: 18px;
-            }
+        .page-link {
+            padding: 6px 20px;
+            border-radius: 18px;
         }
     }
 }

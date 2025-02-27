@@ -9,38 +9,36 @@
     <#else>
       <section class="section section-grey">
         <div class="container">
-          <div ><@b.admin /></div>
+          <@admin />
 
           <#if operationalStatus?? && operationalStatus == "Inactive">
-            <div class="card"><div class="card-body">
-              <i class="fa-solid fa-ban fa-lg"></i>
-              <strong>This ${codes.lookup('metadata.resourceType', type)?lower_case!''} is inactive</strong>
-            </div></div>
+            <div class="p-3 mb-5 bg-danger-subtle border border-2 border-danger-subtle rounded-3">
+              <i class="text-danger fa-solid fa-circle-info fa-xl mx-2"></i>
+              <b>This ${(facilityType.value)!codes.lookup('metadata.resourceType', type)?lower_case!''} is inactive</b>
+            </div>
           </#if>
 
           <#if title?? && title?has_content>
             <h1>
-               <small>
-                ${codes.lookup('metadata.resourceType', type)!''}
+              <div class="fs-5">
                 <#if (metadata.state == 'draft' || metadata.state == 'pending') >
-                  <span class="text-danger"><b>${codes.lookup('publication.state', metadata.state)?upper_case!''}</b></span>
+                  <b class="text-danger">${codes.lookup('publication.state', metadata.state)?upper_case!''}</b>
                 </#if>
-               <br>
-              </small>
-              ${title}
-
+                <span class="text-body-tertiary">
+                  ${codes.lookup('metadata.resourceType', type)!''}
+                </span>
+              </div>
+              <div> ${title}</div>
               <#if alternateTitles?? && alternateTitles?has_content>
-                <br><small>
+                <div class="fs-5 text-body-tertiary">
                   <#list alternateTitles as alt>
                   ${alt}<#sep>, </#sep>
                   </#list>
-                </small>
+                </div>
               </#if>
             </h1>
           </#if>
-          <#if permission.userCanEditRestrictedFields(metadata.catalogue)>
-            <#include "../dataResource/_metadataqualityAlert.ftlh">
-          </#if>
+
 
           <#if description?? && description?has_content>
             <div class="mt-3"><@b.linebreaksAndLinks description /></div>
@@ -53,7 +51,7 @@
           <#nested>
 
           <#if environmentalDomain??>
-           <@keyValue "Environmental domain" ""><@displayKeywords environmentalDomain/></@keyValue>
+           <@keyValue "Environmental domain" ""><@displayKeywords environmentalDomain ", "/></@keyValue>
           </#if>
 
           <#if purposeOfCollection??>
@@ -112,21 +110,92 @@
             </#if>
           </div>
 
+          <#if permission.userCanEditRestrictedFields(metadata.catalogue)>
+            <#include "../dataResource/_metadataqualityReport.ftlh">
+          </#if>
+
         </div>
       </section>
-
-      <#if permission.userCanEditRestrictedFields(metadata.catalogue)>
-        <section class="section">
-          <div class="container">
-            <#include "../dataResource/_metadataqualityReport.ftlh">
-          </div>
-        </section>
-      </#if>
 
     </#if>
     </div>
   </@skeleton.master>
 </#macro>
+
+<#macro admin>
+  <#if permission.userCanEdit(id)>
+
+    <#assign
+      MD_checks = metadataQuality.check(id)
+      problems = MD_checks.getProblems()
+      errors = MD_checks.getErrors()
+      infos =  MD_checks.getInfo()
+      warnings = MD_checks.getWarnings()
+      totalIssues = errors + infos +  warnings
+      metadataClass="warning"
+    >
+
+    <#if totalIssues?? && totalIssues gte 1>
+      <#if errors gte 1 >
+          <#assign metadataClass="danger">
+      <#elseif warnings gte 1 >
+          <#assign metadataClass="warning" >
+      <#elseif infos gte 1 >
+          <#assign metadataClass="primary">
+      </#if>
+    </#if>
+
+    <div class="row d-print-none" id="adminPanel">
+      <div class="text-end" id="adminToolbar" role="toolbar">
+        <@editButton />
+      </div>
+    </div>
+
+    </#if>
+</#macro>
+
+<#macro editButton>
+  <div class="btn-group btn-group-sm position-relative">
+    <button type="button" class="btn btn-light border btn-wide edit-control" data-document-type="${metadata.documentType}">
+      Edit
+      <#if totalIssues gte 1>
+        <span class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-${metadataClass}"
+        data-bs-toggle="tooltip" data-bs-placement="right" title="Metadata issues">
+          ${totalIssues}
+          <span class="visually-hidden">Metadata issues</span>
+        </span>
+      </#if>
+    </button>
+    <button type="button" class="btn btn-light border dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+      <span class="caret"></span>
+      <span class="visually-hidden">Toggle Dropdown</span>
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end">
+      <#if totalIssues gte 1>
+        <@menuLink "#segment-metadataQuality">
+          <span class="badge rounded-pill bg-${metadataClass}">${totalIssues}</span>
+          <span class="text-${metadataClass}">metadata issue<#if totalIssues gt 1>s</#if></span>
+        </@menuLink>
+        <li class="dropdown-divider"></li>
+      </#if>
+
+      <@menuLink "/documents/${id}/permission" "fa-solid fa-users">Permissions</@menuLink>
+      <@menuLink "/documents/${id}/publication" "fa-solid fa-eye">Publication status</@menuLink>
+
+      <span class="catalogue-control">
+        <li class="dropdown-divider"></li>
+        <@menuLink "/documents/${id}/catalogue" "fa-solid fa-right-from-bracket">Move to a different catalogue</@menuLink>
+      </span>
+    </ul>
+  </div>
+</#macro>
+
+<#macro menuLink link  target="_self">
+  <li><a class="dropdown-item" href="${link}" target="${target}" rel="noopener noreferrer">
+     <#nested>
+  </a></li>
+</#macro>
+
 
 <#macro keyValue key description="" auto_esc=false>
   <div class="row key-value" title="${description}">
@@ -215,11 +284,12 @@ Operating period
   <#if links?has_content>
     <@keyValue title "">
       <#list links as link>
-        <@b.blockUrl link />
+        <@b.blockUrl link "availability-${link.availability?lower_case}" />
       </#list>
     </@keyValue>
   </#if>
 </#macro>
+
 
 <#macro inverseRelationships relation title="">
   <#local links=jena.inverseRelationships(uri, relation) />
@@ -227,16 +297,24 @@ Operating period
     <#if title?has_content>
       <@keyValue title "">
         <#list links as link>
-          <@b.blockUrl link />
+          <@geomUrl link "availability-${link.availability?lower_case}" />
         </#list>
       </@keyValue>
     <#else>
       <#list links as link>
-        <@b.blockUrl link />
+        <@geomUrl link "availability-${link.availability?lower_case}" />
       </#list>
     </#if>
   </#if>
 </#macro>
+
+<#macro geomUrl link linkClass="">
+  <div>
+      <#if !link.geometry?has_content><i class="fa-solid fa-thumbtack-slash text-body-tertiary" alt="info" title="This has no location"></i></#if>
+      <a <#if linkClass?has_content>class="${linkClass}"</#if> href="<#if link.href??>${link.href}<#else>#</#if>"><#if link.title??>${link.title}<#else>link</#if></a>
+  </div>
+</#macro>
+
 
 <#macro symmetricRelationships relation title="">
   <#local links = jena.inverseRelationships(uri, relation) />

@@ -15,8 +15,9 @@
       <label>Sort by
         <select class="sort-search" aria-label="Select dropdown for sorting serch results">
           <option value="">Relevance</option>
-          <option value="publicationDate-desc">Published date (newest first)</option>
-          <option value="publicationDate-asc">Published date (oldest first)</option>
+          <option class="option-eidc" value="publicationDate-desc">Published date (newest first)</option>
+          <option class="option-eidc" value="publicationDate-asc">Published date (oldest first)</option>
+          <option class="option-eidc" value="incomingCitationCount-desc">Number of citatons</option>
           <option value="title-asc">Title (A-Z)</option>
           <option value="title-desc">Title (Z-A)</option>
         </select>
@@ -44,19 +45,19 @@
     <#if (result.resourceStatus??)>result--${result.resourceStatus}</#if>" data-location="${(result.locations?join('|'))!}" id="${result.identifier}">
 
     <div class="result__tags">
+      <div class="recordType text-body-tertiary">
+        <#if result.documentType?? && result.documentType == "LINK_DOCUMENT" >
+          <i class="fa-solid fa-link"></i> Linked
+        </#if>
+        ${result.recordType!""}
+      </div>
+
       <div class="state">${(codes.lookup("publication.state", result.state)!)!?upper_case!''}</div>
 
       <div class="opstatus">
         <#if (result.operationalStatus??)>
           ${result.operationalStatus}
         </#if>
-      </div>
-
-      <div class="recordType small text-body-tertiary">
-        <#if result.documentType?? && result.documentType == "LINK_DOCUMENT" >
-          <i class="fa-solid fa-link"></i> Linked
-        </#if>
-        ${result.recordType!""}
       </div>
 
       <#if result.resourceStatus?? >
