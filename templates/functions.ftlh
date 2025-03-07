@@ -81,9 +81,15 @@
             <#assign orgName = contact.organisationName>
         </#if>
 
-        <#if contact.individualName?has_content>
+        <#if contact.individualName?has_content || (contact.familyName?has_content && contact.givenName?has_content) >
             <div class="individualName" <#if address??>title="${address}"</#if>>
-                ${contact.individualName}
+
+              <#if contact.familyName?has_content && contact.givenName?has_content >
+                <#local contactName = contact.familyName + ", " + contact.givenName >
+              <#else>
+                <#local contactName = contact.individualName >
+              </#if>
+              ${contactName}
             </div>
             <div class="organisationName">
                 ${orgName}

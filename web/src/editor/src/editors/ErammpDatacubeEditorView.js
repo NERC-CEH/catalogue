@@ -3,7 +3,7 @@ import {
   ObservedPropertyView,
   KeywordVocabularyView,
   OnlineResourceSimpleView,
-  ParentView, PointOfContactView, PredefinedParentLargeView,
+  ParentView, ContactView, PredefinedParentLargeView,
   PredefinedParentView, ProcessingStepView,
   ReadOnlyView, ResourceConstraintView,
   SpatialReferenceSystemView, TextareaView
@@ -11,7 +11,7 @@ import {
 import EditorView from '../EditorView'
 import InputView from '../InputView'
 import SelectView from '../SelectView'
-import { ObservedProperty, PointOfContact } from '../models'
+import { ObservedProperty, Contact } from '../models'
 import BoundingBoxView from '../geometryMap/BoundingBoxView'
 import BoundingBox from '../geometryMap/BoundingBox'
 
@@ -64,10 +64,10 @@ export default EditorView.extend({
 
         new PredefinedParentView({
           model: this.model,
-          ModelType: PointOfContact,
+          ModelType: Contact,
           modelAttribute: 'provider',
           label: 'Data provider',
-          ObjectInputView: PointOfContactView,
+          ObjectInputView: ContactView,
           helpText: `
 <p>The contact(s) responsible for this model and who can be contacted if there are questions about it.  A <b>named</b> person is recommended</p>
 `,

@@ -144,8 +144,15 @@
 
 <#macro displayContact contact>
   <div class="contact">
-    <#if contact.individualName?has_content>
-      <div>${contact.individualName}</div>
+
+    <#if contact.familyName?has_content && contact.givenName?has_content >
+      <#local contactName = contact.familyName + ", " + contact.givenName >
+    <#else>
+      <#local contactName = contact.individualName >
+    </#if>
+
+    <#if contactName?has_content>
+      <div>${contactName}</div>
     </#if>
     <#if contact.organisationName?? && contact.organisationName?has_content>
       <div>${contact.organisationName}</div>
@@ -160,3 +167,5 @@
     </#if>
   </div>
 </#macro>
+
+

@@ -2,24 +2,32 @@
   "ownersOfIpr": [
     {
       "individualName": "Author 0",
+      "givenName": "Author",
+      "familyName": "0",
       "organisationName": "Organisation 0",
       "role": "owner",
       "email": "test@test.com"
     },
     {
       "individualName": "Author 1",
+      "givenName": "Author",
+      "familyName": "1",
       "organisationName": "Organisation 0",
       "role": "owner",
       "email": "test@test.com"
     },
     {
       "individualName": "Author 2",
+      "givenName": "Author",
+      "familyName": "2",
       "organisationName": "Organisation 0",
       "role": "owner",
       "email": "test@test.com"
     },
     {
       "individualName": "Distributor 0",
+      "givenName": "Distributor",
+      "familyName": "0",
       "organisationName": "Organisation 0",
       "role": "owner",
       "email": "test@test.com"

@@ -38,8 +38,15 @@
 <#macro responsibleParty rp>
     <ef:responsibleParty>
 		<base2:RelatedParty>
+
+      <#if rp.familyName?has_content && rp.givenName?has_content >
+        <#local rpName = rp.familyName + ", " + rp.givenName >
+      <#else>
+        <#local rpName = rp.individualName >
+      </#if>
+
 			<#if rp.individualName?has_content>
-				<base2:individualName><gco:CharacterString>${rp.individualName}</gco:CharacterString></base2:individualName>
+				<base2:individualName><gco:CharacterString>${rpName}</gco:CharacterString></base2:individualName>
 			</#if>
 			<#if rp.organisationName?has_content>
 				<base2:organisationName><gco:CharacterString>${rp.organisationName}</gco:CharacterString></base2:organisationName>

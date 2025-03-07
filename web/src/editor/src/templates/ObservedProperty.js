@@ -55,7 +55,7 @@ export default _.template(`
         <input data-name="unitsUri" id="schema-unitsUri<%= data.index %>" class="editor-input" value="<%= data.unitsUri %>"/>
     </div>
 </div>
-<div class="extended hidden" id="schemaDetail<%= data.index %>">
+<div class="extended d-none" id="schemaDetail<%= data.index %>">
     <div class="row">
         <div class="col-sm-2">
             <label for="schema-description<%= data.index %>">Description</label>

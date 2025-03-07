@@ -2,10 +2,14 @@
   "ownersOfIpr": [
     {
       "individualName": "Author 0",
+      "givenName": "Author",
+      "familyName": "0",
       "role": "author"
     },
     {
       "individualName": "",
+      "givenName": "",
+      "familyName": "",
       "role": "author"
     },
     {
@@ -14,6 +18,8 @@
     },
     {
       "individualName": "Distributor 0",
+      "givenName": "Distributor",
+      "familyName": "0",
       "organisationName": "Organisation 0",
       "role": "distributor"
     }

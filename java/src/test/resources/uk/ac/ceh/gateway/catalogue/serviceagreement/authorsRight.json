@@ -2,16 +2,22 @@
   "authors": [
     {
       "individualName": "Author, A.",
+      "givenName": "A.",
+      "familyName": "Author",
       "organisationName": "Organisation 0",
       "role": "author"
     },
     {
       "individualName": "Author, B.",
+      "givenName": "B.",
+      "familyName": "Author",
       "organisationName": "Organisation 0",
       "role": "author"
     },
     {
       "individualName": "Author, C.",
+      "givenName": "C.",
+      "familyName": "Author",
       "organisationName": "Organisation 0",
       "role": "author"
     }

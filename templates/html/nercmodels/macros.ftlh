@@ -107,9 +107,17 @@ CEH dataInfo table
 
 <!-- contacts -->
 <#macro displayContact contact showPostal=false>
-    <#if contact.individualName?has_content>
+
+
+    <#if contact.familyName?has_content && contact.givenName?has_content >
+      <#local contactName = contact.familyName + ", " + contact.givenName >
+    <#else>
+      <#local contactName = contact.individualName >
+    </#if>
+
+    <#if contactName?has_content>
       <div class="individualName">
-          ${contact.individualName}
+          ${contactName}
           <#if contact.nameIdentifier?has_content && contact.nameIdentifier?matches("^http(|s)://orcid.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$")>
               <span class="nameIdentifier">
                 <a href="${contact.nameIdentifier}" target="_blank" rel="noopener noreferrer" title="View this authors ORCiD record ${contact.nameIdentifier}">

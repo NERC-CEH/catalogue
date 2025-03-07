@@ -7,8 +7,15 @@
       <#list responsibleParties as rp>
         <div class="col-sm-3 key">${rp.role.title!rp.role.value}</div>
         <div class="col-sm-9 value">
-          <#if rp.individualName?has_content>
-            <span>${rp.individualName}</span><br>
+
+          <#if rp.familyName?has_content && rp.givenName?has_content >
+            <#local rpName = rp.familyName + ", " + rp.givenName >
+          <#else>
+            <#local rpName = rp.individualName >
+          </#if>
+
+          <#if rpName?has_content>
+            <span>${rpName}</span><br>
           </#if>
           <#if rp.organisationName?has_content>
             <span>${rp.organisationName}</span><br>

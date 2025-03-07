@@ -23,6 +23,12 @@ export default Backbone.Model.extend({
       individualName
     } = attrs
     const {
+      familyName
+    } = attrs
+    const {
+      givenName
+    } = attrs
+    const {
       nameIdentifier
     } = attrs
 
@@ -42,7 +48,7 @@ export default Backbone.Model.extend({
       })
     }
 
-    if (!organisationName || !individualName || !email) {
+    if (!organisationName || !givenName || !familyName || !email) {
       errors.push({
         message: 'Author name, affiliation and email address are mandatory.'
       })

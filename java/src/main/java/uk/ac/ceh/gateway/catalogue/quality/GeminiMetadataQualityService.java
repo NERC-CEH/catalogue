@@ -450,7 +450,7 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
     List<MetadataCheck> checkPointOfContact(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
         val pocs = parsed.read(
-                "$.responsibleParties[*][?(@.role == 'pointOfContact')].['organisationName','individualName','email']",
+                "$.responsibleParties[*][?(@.role == 'pointOfContact')].['organisationName','givenName','familyName','email']",
                 typeRefStringString
         );
         if (pocs.isEmpty()) {
@@ -462,8 +462,8 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
         if (pocs.stream().anyMatch(poc -> fieldIsMissing(poc, "email"))) {
             toReturn.add(new MetadataCheck("Point of contact email address is missing", ERROR));
         }
-        if (pocs.stream().anyMatch(poc -> fieldIsMissing(poc, "individualName"))) {
-            toReturn.add(new MetadataCheck("Point of contact name is missing", INFO));
+        if (pocs.stream().anyMatch(poc -> fieldIsMissing(poc, "familyName") || fieldIsMissing(poc, "givenName"))) {
+            toReturn.add(new MetadataCheck("Point of contact name is missing or incomplete", INFO));
         }
         if (pocs.stream().anyMatch(poc -> fieldIsMissing(poc, "organisationName"))) {
             toReturn.add(new MetadataCheck("Point of contact organisation name is missing", ERROR));
@@ -586,14 +586,14 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
     List<MetadataCheck> checkAuthors(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
         val authors = parsed.read(
-                "$.responsibleParties[*][?(@.role == 'author')].['individualName', 'organisationName','email']",
+                "$.responsibleParties[*][?(@.role == 'author')].['familyName','givenName','organisationName','email']",
                 typeRefStringString
         );
         if (authors.isEmpty()) {
             toReturn.add(new MetadataCheck("There are no authors", INFO));
         }
-        if (authors.stream().anyMatch(author -> fieldIsMissing(author, "individualName"))) {
-            toReturn.add(new MetadataCheck("Author's name is missing", INFO));
+        if (authors.stream().anyMatch(author -> fieldIsMissing(author, "familyName") || fieldIsMissing(author, "givenName"))) {
+            toReturn.add(new MetadataCheck("Author's name is missing or incomplete", INFO));
         }
         if (authors.stream().anyMatch(author -> fieldIsMissing(author, "organisationName"))) {
             toReturn.add(new MetadataCheck("Author's affiliation (organisation name) is missing", ERROR));

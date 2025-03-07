@@ -20,8 +20,15 @@
       <gmd:MD_Distributor>
       <gmd:distributorContact>
       <gmd:CI_ResponsibleParty>
-        <#if distributorContact.individualName?has_content>
-        <gmd:individualName><gco:CharacterString>${distributorContact.individualName}</gco:CharacterString></gmd:individualName>
+
+        <#if distributorContact.familyName?has_content && distributorContact.givenName?has_content >
+          <#local distributorContactName = distributorContact.familyName + ", " + distributorContact.givenName >
+        <#else>
+          <#local distributorContactName = distributorContact.individualName >
+        </#if>
+
+        <#if distributorContactName?has_content>
+        <gmd:individualName><gco:CharacterString>${distributorContactName}</gco:CharacterString></gmd:individualName>
         </#if>
         <#if distributorContact.organisationName?has_content>
         <gmd:organisationName><gco:CharacterString>${distributorContact.organisationName}</gco:CharacterString></gmd:organisationName>

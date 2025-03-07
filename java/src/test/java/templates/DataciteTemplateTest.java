@@ -268,20 +268,26 @@ public class DataciteTemplateTest {
             val author1 = ResponsibleParty
                 .builder()
                 .role("author")
-                .individualName("Bob")
+                .individualName("Bob Smith")
+                .familyName("Smith")
+                .givenName("Bob")
                 .organisationName("Example Inc.")
                 .build();
             val author2 = ResponsibleParty
                 .builder()
                 .role("author")
-                .individualName("George")
+                .individualName("George Smith")
+                .familyName("Smith")
+                .givenName("George")
                 .organisationName("Science Inc.")
                 .organisationIdentifier("https://ror.org/00pggkr55")
                 .build();
             val author3 = ResponsibleParty
                 .builder()
                 .role("author")
-                .individualName("Helen")
+                .individualName("Helen Smith")
+                .familyName("Smith")
+                .givenName("Helen")
                 .organisationName("EIDC")
                 .organisationIdentifier("https://ror.org/04xw4m193")
                 .build();
@@ -325,7 +331,9 @@ public class DataciteTemplateTest {
             val pointOfContact = ResponsibleParty
                 .builder()
                 .role("pointOfContact")
-                .individualName("Bob")
+                .individualName("Bob Smith")
+                .familyName("Smith")
+                .givenName("Bob")
                 .organisationName("Example Inc.")
                 .build();
             val rightsHolder = ResponsibleParty

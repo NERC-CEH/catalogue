@@ -5,7 +5,7 @@ import {
   KeywordVocabularyView,
   OnlineResourceSimpleView,
   ParentView,
-  PointOfContactView,
+  ContactView,
   PredefinedParentView,
   SaPhysicalStateView,
   SaSpecimenTypeView,
@@ -15,7 +15,7 @@ import {
   TemporalExtentView,
   TextareaView
 } from '../views'
-import { MultipleDate, PointOfContact, SaPhysicalState, SaSpecimenType, SaTaxa, SaTissue } from '../models'
+import { MultipleDate, Contact, SaPhysicalState, SaSpecimenType, SaTaxa, SaTissue } from '../models'
 import BoundingBoxView from '../geometryMap/BoundingBoxView'
 import BoundingBox from '../geometryMap/BoundingBox'
 
@@ -55,10 +55,10 @@ export default EditorView.extend({
 
         new ParentView({
           model: this.model,
-          ModelType: PointOfContact,
+          ModelType: Contact,
           modelAttribute: 'archiveLocations',
           label: 'Archive locations',
-          ObjectInputView: PointOfContactView,
+          ObjectInputView: ContactView,
           multiline: true,
           helpText: `
 <p>Location(s) of the archiving facility</p>
@@ -67,10 +67,10 @@ export default EditorView.extend({
 
         new ParentView({
           model: this.model,
-          ModelType: PointOfContact,
+          ModelType: Contact,
           modelAttribute: 'archiveContacts',
           label: 'Contacts',
-          ObjectInputView: PointOfContactView,
+          ObjectInputView: ContactView,
           multiline: true,
           helpText: `
 <p>Person/organisation to contact for more information about or access to the sample archive</p>
@@ -324,10 +324,10 @@ export default EditorView.extend({
 
         new ParentView({
           model: this.model,
-          ModelType: PointOfContact,
+          ModelType: Contact,
           modelAttribute: 'metadataContacts',
           label: 'Record owner',
-          ObjectInputView: PointOfContactView,
+          ObjectInputView: ContactView,
           multiline: true,
           helpText: `
 <p>Person responsible for maintaining this metadata record</p>

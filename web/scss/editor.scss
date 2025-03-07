@@ -39,7 +39,6 @@
     }
 }
 
-
 #editorNav li {
     cursor: pointer;
 }
@@ -95,6 +94,13 @@
         }
     }
 
+    .editor-input,
+    .editor-textarea {
+        &:focus {
+            color: inherit !important;
+        }
+    }
+
     .editor-body {
         padding: 1em;
 
@@ -103,6 +109,7 @@
             @extend .form-control-sm !optional;
             color: #000;
             appearance: auto;
+            &::placeholder {color:#AAA;}
         }
 
         .editor-textarea {
@@ -250,9 +257,8 @@
                 &.child {
                     z-index: 0;
 
-                    hr {
-                        border-color: #ddd;
-                        margin: 0.6em 0;
+                    >.row {
+                        @extend .my-2 !optional;
                     }
                 }
             }

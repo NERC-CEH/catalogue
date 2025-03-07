@@ -128,7 +128,7 @@ public class GeminiMetadataQualityServiceTest {
         val addresses = new ArrayList<Map<String, String>>(Arrays.asList(
             ImmutableMap.of("organisationName", "Test organisation 0"),
             ImmutableMap.of("organisationName", "Test organisation 1"),
-            ImmutableMap.of("individualName", "Test individual 0")
+            ImmutableMap.of("familylName", "individual 0")
         ));
 
         //when

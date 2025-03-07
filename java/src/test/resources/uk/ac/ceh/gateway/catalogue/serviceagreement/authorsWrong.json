@@ -2,11 +2,15 @@
   "authors": [
     {
       "individualName": "Author 0",
+      "givenName": "0",
+      "familyName": "Author",
       "organisationName": "Organisation 0",
       "role": "author"
     },
     {
       "individualName": "",
+      "givenName": "",
+      "familyName": "",
       "organisationName": "Organisation 0",
       "role": "author"
     },
