@@ -94,7 +94,6 @@
     <field name="authorRor" type="rors"/>
     <field name="catalogue" type="keywords" multiValued="false"/>
     <field name="incomingCitationCount" type="plong"/>
-    <field name="condition" type="keywords" multiValued="false"/>
     <field name="description" type="text_general" multiValued="false"/>
     <field name="documentType" type="keywords" multiValued="false"/>
     <field name="elterDeimsSite" type="keywords"/>

@@ -32,8 +32,6 @@ import uk.ac.ceh.gateway.catalogue.document.reading.*;
 import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
 import uk.ac.ceh.gateway.catalogue.elter.ElterDocument;
-import uk.ac.ceh.gateway.catalogue.erammp.ErammpDatacube;
-import uk.ac.ceh.gateway.catalogue.erammp.ErammpModel;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.imp.ImpDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.ClassMap;
@@ -150,11 +148,9 @@ public class ServicesConfig {
             .register(CODE, CodeDocument.class)
             .register(DATA_TYPE, DataType.class)
             .register(EF_DOCUMENT, BaseMonitoringType.class)
-            .register(ERAMMP_DATACUBE, ErammpDatacube.class)
             .register(INFRASTRUCTURERECORD, InfrastructureRecord.class)
             .register(METHODRECORD, MethodRecord.class)
             .register(ELTER, ElterDocument.class)
-            .register(ERAMMP_MODEL, ErammpModel.class)
             .register(GEMINI, GeminiDocument.class)
             .register(IMP, ImpDocument.class)
             .register(LINK, LinkDocument.class)

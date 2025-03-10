@@ -146,20 +146,6 @@ public class CatalogueServiceConfig {
                 .build(),
 
             Catalogue.builder()
-                .id("erammp")
-                .title("ERAMMP")
-                .url("")
-                .contactUrl("")
-                .logo("ukceh.png")
-                .facetKey("recordType")
-                .facetKey("condition")
-                .documentType(ERAMMP_MODEL_TYPE)
-                .documentType(ERAMMP_DATACUBE_TYPE)
-                .documentType(LINK_TYPE)
-                .fileUpload(false)
-                .build(),
-
-            Catalogue.builder()
                 .id("inlicensed")
                 .title("UKCEH In-licensed Datasets")
                 .url("http://intranet.ceh.ac.uk/procedures/commercialisation/data-licensing-ipr/in-licensed-data-list")

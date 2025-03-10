@@ -28,8 +28,6 @@ public class CatalogueMediaTypes {
     public static final MediaType EF_INSPIRE_XML = parseMediaType(EF_INSPIRE_XML_VALUE);
 
     public static final String ELTER_JSON_VALUE = "application/vnd.elter+json";
-    public static final String ERAMMP_DATACUBE_JSON_VALUE = "application/vnd.erammp-datacube+json";
-    public static final String ERAMMP_MODEL_JSON_VALUE = "application/vnd.erammp-model+json";
     public static final String GEMINI_JSON_VALUE = "application/gemini+json";
 
     public static final String INFRASTRUCTURERECORD_JSON_VALUE = "application/vnd.infrastructure+json";

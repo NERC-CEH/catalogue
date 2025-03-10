@@ -32,8 +32,6 @@ import uk.ac.ceh.gateway.catalogue.config.DownloadUrlProperties;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
 import uk.ac.ceh.gateway.catalogue.ef.*;
-import uk.ac.ceh.gateway.catalogue.erammp.ErammpDatacube;
-import uk.ac.ceh.gateway.catalogue.erammp.ErammpModel;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.geometry.BoundingBox;
@@ -310,10 +308,6 @@ class DocumentControllerTest {
             Arguments.of(new Dataset(), APPLICATION_JSON, JSON, null),
             Arguments.of(new DataType(), TEXT_HTML, HTML, null),
             Arguments.of(new DataType(), APPLICATION_JSON, JSON, null),
-            Arguments.of(new ErammpModel(), TEXT_HTML, HTML, null),
-            Arguments.of(new ErammpModel(), APPLICATION_JSON, JSON, null),
-            Arguments.of(new ErammpDatacube(), TEXT_HTML, HTML, null),
-            Arguments.of(new ErammpDatacube(), APPLICATION_JSON, JSON, null),
             Arguments.of(new InfrastructureRecord(), TEXT_HTML, HTML, null),
             Arguments.of(new InfrastructureRecord(), APPLICATION_JSON, JSON, null),
             Arguments.of(new MethodRecord(), TEXT_HTML, HTML, null),

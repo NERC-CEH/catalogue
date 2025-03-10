@@ -46,8 +46,6 @@ public class DevelopmentUserStoreConfig {
     public static final String EIDC_PUBLISHER = "role_eidc_publisher";
     public static final String ELTER_EDITOR = "role_elter_editor";
     public static final String ELTER_PUBLISHER = "role_elter_publisher";
-    public static final String ERAMMP_EDITOR = "role_erammp_editor";
-    public static final String ERAMMP_PUBLISHER = "role_erammp_publisher";
     public static final String INMS_EDITOR = "role_inms_editor";
     public static final String INMS_PUBLISHER = "role_inms_publisher";
     public static final String M_EDITOR = "role_m_editor";
@@ -188,22 +186,6 @@ public class DevelopmentUserStoreConfig {
     public CatalogueUser b2shareMetadataImport() throws UsernameAlreadyTakenException {
         val user = new CatalogueUser("B2SHARE metadata import", "info@eudat.eu");
         addUserToGroup(user, ELTER_EDITOR, ELTER_PUBLISHER);
-        userStore().addUser(user, "password");
-        return user;
-    }
-
-    @Bean
-    public CatalogueUser erammpEditor() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser("erammp-editor", "erammp-editor@ceh.ac.uk");
-        addUserToGroup(user, ERAMMP_EDITOR);
-        userStore().addUser(user, "password");
-        return user;
-    }
-
-    @Bean
-    public CatalogueUser erammpPublisher() throws UsernameAlreadyTakenException {
-        val user = new CatalogueUser("erammp-publisher", "erammp-publisher@ceh.ac.uk");
-        addUserToGroup(user, ERAMMP_EDITOR, ERAMMP_PUBLISHER);
         userStore().addUser(user, "password");
         return user;
     }
@@ -356,8 +338,6 @@ public class DevelopmentUserStoreConfig {
         groupStore.createGroup(EIDC_PUBLISHER, "");
         groupStore.createGroup(ELTER_EDITOR, "");
         groupStore.createGroup(ELTER_PUBLISHER, "");
-        groupStore.createGroup(ERAMMP_EDITOR, "");
-        groupStore.createGroup(ERAMMP_PUBLISHER, "");
         groupStore.createGroup(INMS_EDITOR, "");
         groupStore.createGroup(INMS_PUBLISHER, "");
         groupStore.createGroup(M_EDITOR, "");

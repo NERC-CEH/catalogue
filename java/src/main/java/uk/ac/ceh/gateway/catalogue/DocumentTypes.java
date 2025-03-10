@@ -36,18 +36,6 @@ public class DocumentTypes {
         .type(ELTER)
         .build();
 
-    public static final String ERAMMP_DATACUBE = "erammp-datacube";
-    public static DocumentType ERAMMP_DATACUBE_TYPE = DocumentType.builder()
-        .title("ERAMMP data cube")
-        .type(ERAMMP_DATACUBE)
-        .build();
-
-    public static final String ERAMMP_MODEL = "erammp-model";
-    public static DocumentType ERAMMP_MODEL_TYPE = DocumentType.builder()
-        .title("ERAMMP model")
-        .type(ERAMMP_MODEL)
-        .build();
-
     public static final String INFRASTRUCTURERECORD = "infrastructurerecord";
         public static DocumentType INFRASTRUCTURERECORD_TYPE = DocumentType.builder()
             .title("Science infrastructure")
