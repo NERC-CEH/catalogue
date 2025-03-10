@@ -28,8 +28,6 @@ public class DocumentTypes {
         .type(CODE)
         .build();
 
-    public static final String EF_DOCUMENT = "EF_DOCUMENT";
-
     public static final String INFRASTRUCTURERECORD = "infrastructurerecord";
         public static DocumentType INFRASTRUCTURERECORD_TYPE = DocumentType.builder()
             .title("Science infrastructure")

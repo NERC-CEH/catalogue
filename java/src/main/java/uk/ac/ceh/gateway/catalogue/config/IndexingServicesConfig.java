@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.config;
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.jena.query.Dataset;
@@ -15,8 +14,6 @@ import uk.ac.ceh.gateway.catalogue.datacite.DataciteService;
 import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.document.DocumentListingService;
 import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
-import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
-import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.network.NetworkIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.CodeDocument;
@@ -30,8 +27,6 @@ import uk.ac.ceh.gateway.catalogue.indexing.jena.*;
 import uk.ac.ceh.gateway.catalogue.indexing.mapserver.MapServerIndexGenerator;
 import uk.ac.ceh.gateway.catalogue.indexing.mapserver.MapServerIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.solr.*;
-import uk.ac.ceh.gateway.catalogue.indexing.validation.ValidationIndexGenerator;
-import uk.ac.ceh.gateway.catalogue.indexing.validation.ValidationIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.LinkDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
@@ -39,27 +34,15 @@ import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringActivity;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
-import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
 import uk.ac.ceh.gateway.catalogue.sparql.VocabularyService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
-import uk.ac.ceh.gateway.catalogue.validation.MediaTypeValidator;
-import uk.ac.ceh.gateway.catalogue.validation.ValidationReport;
-import uk.ac.ceh.gateway.catalogue.validation.XSDSchemaValidator;
 import uk.ac.ceh.gateway.catalogue.wms.MapServerDetailsService;
 
-import javax.xml.XMLConstants;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.SchemaFactory;
 import java.io.File;
 import java.util.List;
-
-import static java.util.stream.Stream.of;
-import static org.springframework.http.MediaType.TEXT_HTML;
-import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.GEMINI_XML;
 
 @Slf4j
 @Configuration
@@ -94,7 +77,6 @@ public class IndexingServicesConfig {
         JenaIndexMetadataDocumentGenerator documentGenerator = new JenaIndexMetadataDocumentGenerator(documentIdentifierService);
 
         ClassMap<IndexGenerator<?, List<Statement>>> mappings = new PrioritisedClassMap<IndexGenerator<?, List<Statement>>>()
-            .register(BaseMonitoringType.class, new JenaIndexBaseMonitoringTypeGenerator(documentGenerator))
             .register(GeminiDocument.class, new JenaIndexGeminiDocumentGenerator(documentGenerator, baseUri))
             .register(CodeDocument.class, new JenaIndexCodeDocumentGenerator(documentGenerator, baseUri))
             .register(InfrastructureRecord.class, new JenaIndexInfrastructureRecordGenerator(documentGenerator, baseUri))
@@ -173,45 +155,6 @@ public class IndexingServicesConfig {
                 solrClient,
                 jenaLookupService,
                 documentIdentifierService
-                );
-            }
-
-    @Bean
-    @Qualifier("validation-index")
-    @SneakyThrows
-    public ValidationIndexingService validationIndexingService(
-            BundledReaderService<MetadataDocument> bundledReaderService,
-            DataRepository<CatalogueUser> dataRepository,
-            DocumentIdentifierService documentIdentifierService,
-            DocumentListingService documentListingService,
-            DocumentWritingService documentWritingService,
-            PostProcessingService<MetadataDocument> postProcessingService,
-            @Value("${schemas.location}") String schemas
-            ) {
-        val schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        val geminiSchema = schemaFactory.newSchema(
-                of("gemini/srv/srv.xsd", "gemini/gmx/gmx.xsd")
-                .map( (s) -> new StreamSource(new File(schemas, s)))
-                .toArray(Source[]::new)
-                );
-
-        val htmlValidator = new MediaTypeValidator("HTML Generation", TEXT_HTML, documentWritingService);
-        val schemaValidator = new XSDSchemaValidator("Gemini", GEMINI_XML, documentWritingService, geminiSchema);
-
-        val mappings = new PrioritisedClassMap<IndexGenerator<?, ValidationReport>>()
-            .register(GeminiDocument.class, new ValidationIndexGenerator(List.of(
-                            schemaValidator,
-                            htmlValidator
-                            )))
-            .register(MetadataDocument.class, new ValidationIndexGenerator(List.of(htmlValidator)));
-
-        return new ValidationIndexingService(
-                bundledReaderService,
-                documentListingService,
-                dataRepository,
-                postProcessingService,
-                documentIdentifierService,
-                new IndexGeneratorRegistry<>(mappings)
                 );
             }
 }

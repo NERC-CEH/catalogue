@@ -31,7 +31,6 @@ import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.DownloadUrlProperties;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
-import uk.ac.ceh.gateway.catalogue.ef.*;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.geometry.BoundingBox;
@@ -238,12 +237,6 @@ class DocumentControllerTest {
 
     @SuppressWarnings("unused")
     private static Stream<Arguments> provideMetadataDocuments() {
-        val activity = new Activity();
-        activity.setEfMetadata(new Metadata());
-
-        val facility = new Facility();
-        facility.setEfMetadata(new Metadata());
-
         val gemini = new GeminiDocument();
         gemini.setId("da9d9beb-3fe5-4799-a4ed-c558d55159e6");
         gemini.setType("dataset");
@@ -288,16 +281,7 @@ class DocumentControllerTest {
 
         log.debug(link.toString());
 
-        val network = new Network();
-        network.setEfMetadata(new Metadata());
-
-        val programme = new Programme();
-        programme.setEfMetadata(new Metadata());
-
         return Stream.of(
-            Arguments.of(activity, TEXT_HTML, HTML, null),
-            Arguments.of(activity, APPLICATION_JSON, JSON, null),
-            Arguments.of(activity, EF_INSPIRE_XML, EF_INSPIRE_XML_SHORT, null),
             Arguments.of(new Agent(), TEXT_HTML, HTML, null),
             Arguments.of(new Agent(), APPLICATION_JSON, JSON, null),
             Arguments.of(new CehModel(), TEXT_HTML, HTML, null),
@@ -312,9 +296,6 @@ class DocumentControllerTest {
             Arguments.of(new InfrastructureRecord(), APPLICATION_JSON, JSON, null),
             Arguments.of(new MethodRecord(), TEXT_HTML, HTML, null),
             Arguments.of(new MethodRecord(), APPLICATION_JSON, JSON, null),
-            Arguments.of(facility, TEXT_HTML, HTML, null),
-            Arguments.of(facility, APPLICATION_JSON, JSON, null),
-            Arguments.of(facility, EF_INSPIRE_XML, EF_INSPIRE_XML_SHORT, null),
             Arguments.of(gemini, TEXT_HTML, HTML, null),
             Arguments.of(gemini, APPLICATION_JSON, JSON, "gemini.json"),
             Arguments.of(gemini, GEMINI_XML, GEMINI_XML_SHORT,  "gemini.xml"),
@@ -340,12 +321,6 @@ class DocumentControllerTest {
             Arguments.of(new MonitoringNetwork(), APPLICATION_JSON, JSON, null),
             Arguments.of(new MonitoringProgramme(), TEXT_HTML, HTML, null),
             Arguments.of(new MonitoringProgramme(), APPLICATION_JSON, JSON, null),
-            Arguments.of(network, TEXT_HTML, HTML, null),
-            Arguments.of(network, EF_INSPIRE_XML, EF_INSPIRE_XML_SHORT, null),
-            Arguments.of(network, APPLICATION_JSON, JSON, null),
-            Arguments.of(programme, TEXT_HTML, HTML, null),
-            Arguments.of(programme, EF_INSPIRE_XML, EF_INSPIRE_XML_SHORT, null),
-            Arguments.of(programme, APPLICATION_JSON, JSON, null),
             Arguments.of(new Publication(), TEXT_HTML, HTML, null),
             Arguments.of(new Publication(), APPLICATION_JSON, JSON, null),
             Arguments.of(new Sample(), TEXT_HTML, HTML, null),

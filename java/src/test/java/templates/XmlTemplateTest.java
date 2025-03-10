@@ -28,7 +28,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 public class XmlTemplateTest {
     Configuration configuration;
     GeminiDocument gemini;
-    GeminiDocument gemini2;
     Map<String, Object> model;
 
     @SneakyThrows
@@ -79,19 +78,6 @@ public class XmlTemplateTest {
             .build();
         gemini.setResponsibleParties(List.of(contact));
 
-        gemini2 = new GeminiDocument();
-        gemini2.setId("example_identifier");
-        gemini2.setTitle("Example Dataset");
-        gemini2.setDescription("Example description for dataset.");
-        gemini2.setResourceType(resourceType);
-        ResponsibleParty contact2 = ResponsibleParty.builder()
-            .organisationName("Example Environmental Research Center")
-            .email("info@example.org")
-            .role("pointOfContact")
-            .organisationIdentifier("https://ror.org/12345")
-            .build();
-        gemini2.setResponsibleParties(List.of(contact2));
-
         model = new HashMap<>();
     }
 
@@ -104,17 +90,6 @@ public class XmlTemplateTest {
         model.put("resourceType", gemini.getResourceType());
         model.put("type", gemini.getType());
         model.put("responsibleParties", gemini.getResponsibleParties());
-    }
-
-    private void prepareModelForISO19115() {
-        model.clear();
-        model.put("id", gemini2.getId());
-        model.put("title", gemini2.getTitle());
-        model.put("description", gemini2.getDescription());
-        model.put("resourceType", gemini2.getResourceType());
-        model.put("type", gemini2.getType());
-        model.put("metadataDateTime", "2024-08-05");
-        model.put("responsibleParties", gemini2.getResponsibleParties());
     }
 
     @SneakyThrows
@@ -172,20 +147,6 @@ public class XmlTemplateTest {
         // When
         String actual = template("xml/gemini.ftlx");
         String expected = expected("xml/dataQualityInfo.xml");
-
-        // Then
-        compare(expected, actual);
-    }
-
-    @SneakyThrows
-    @Test
-    void testISO19115Xml() {
-        // Given
-        prepareModelForISO19115();
-
-        // When
-        String expected = expected("xml/iso19115.xml");
-        String actual = template("xml/iso19115.ftlx");
 
         // Then
         compare(expected, actual);

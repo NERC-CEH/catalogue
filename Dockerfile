@@ -26,7 +26,6 @@ RUN apk --no-cache add curl
 RUN addgroup -g 1001 -S spring && adduser -u 1001 -S spring -G spring
 RUN mkdir -p /var/ceh-catalogue/datastore /var/ceh-catalogue/dropbox /var/ceh-catalogue/mapfiles /var/ceh-catalogue/tdb /var/upload/datastore /var/ceh-catalogue/metrics-db /var/ceh-catalogue/ror
 WORKDIR /app
-COPY --chown=spring:spring schemas /opt/ceh-catalogue/schemas
 COPY --chown=spring:spring --from=build-java /app/build/libs/dependencies/ ./
 COPY --chown=spring:spring --from=build-java /app/build/libs/spring-boot-loader/ ./
 COPY --chown=spring:spring --from=build-java /app/build/libs/snapshot-dependencies/ ./

@@ -21,8 +21,6 @@ import uk.ac.ceh.components.userstore.AnnotatedUserHelper;
 import uk.ac.ceh.components.userstore.inmemory.InMemoryUserStore;
 import uk.ac.ceh.gateway.catalogue.citation.CitationService;
 import uk.ac.ceh.gateway.catalogue.converters.Gml2WmsFeatureInfoMessageConverter;
-import uk.ac.ceh.gateway.catalogue.converters.UkeofXml2EFDocumentMessageConverter;
-import uk.ac.ceh.gateway.catalogue.converters.Xml2GeminiDocumentMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.Xml2WmsCapabilitiesMessageConverter;
 import uk.ac.ceh.gateway.catalogue.datacite.DataciteService;
 import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
@@ -30,7 +28,6 @@ import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.document.JacksonDocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.document.reading.*;
 import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
-import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.imp.ImpDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.ClassMap;
@@ -49,7 +46,6 @@ import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
 import uk.ac.ceh.gateway.catalogue.osdp.Agent;
 import uk.ac.ceh.gateway.catalogue.osdp.Publication;
 import uk.ac.ceh.gateway.catalogue.osdp.Sample;
-import uk.ac.ceh.gateway.catalogue.postprocess.BaseMonitoringTypePostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.ClassMapPostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.GeminiDocumentPostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
@@ -61,7 +57,6 @@ import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreement;
 import uk.ac.ceh.gateway.catalogue.sparql.SparqlVocabularyRetriever;
 import uk.ac.ceh.gateway.catalogue.sparql.SparqlVocabularyService;
 import uk.ac.ceh.gateway.catalogue.sparql.VocabularyService;
-import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.ukems.UkemsDocument;
 import uk.ac.ceh.gateway.catalogue.wms.GetCapabilitiesObtainerService;
 import uk.ac.ceh.gateway.catalogue.wms.MapServerDetailsService;
@@ -119,23 +114,18 @@ public class ServicesConfig {
     @SuppressWarnings("rawtypes")
     public PostProcessingService postProcessingService(
         CitationService citationService,
-        DataciteService dataciteService,
-        org.apache.jena.query.Dataset tdbModel
+        DataciteService dataciteService
     ) {
         ClassMap<PostProcessingService> mappings = new PrioritisedClassMap<PostProcessingService>()
-            .register(GeminiDocument.class, new GeminiDocumentPostProcessingService(citationService, dataciteService))
-            .register(BaseMonitoringType.class, new BaseMonitoringTypePostProcessingService(tdbModel));
+            .register(GeminiDocument.class, new GeminiDocumentPostProcessingService(citationService, dataciteService));
         return new ClassMapPostProcessingService(mappings);
     }
 
     @Bean
     public DocumentReadingService documentReadingService(
-        CodeLookupService codeLookupService,
         ObjectMapper objectMapper
     ) {
         return new MessageConverterReadingService()
-            .addMessageConverter(new Xml2GeminiDocumentMessageConverter(codeLookupService))
-            .addMessageConverter(new UkeofXml2EFDocumentMessageConverter())
             .addMessageConverter(new MappingJackson2HttpMessageConverter(objectMapper));
     }
 
@@ -146,7 +136,6 @@ public class ServicesConfig {
             .register(CEH_MODEL_APPLICATION, CehModelApplication.class)
             .register(CODE, CodeDocument.class)
             .register(DATA_TYPE, DataType.class)
-            .register(EF_DOCUMENT, BaseMonitoringType.class)
             .register(INFRASTRUCTURERECORD, InfrastructureRecord.class)
             .register(METHODRECORD, MethodRecord.class)
             .register(GEMINI, GeminiDocument.class)

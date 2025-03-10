@@ -23,10 +23,6 @@ public class CatalogueMediaTypes {
     public static final String DATA_TYPE_JSON_VALUE = "application/vnd.data-type+json";
     public static final String CODE_JSON_VALUE = "application/vnd.code-document+json";
 
-    public static final String EF_INSPIRE_XML_SHORT = "efinspire";
-    public static final String EF_INSPIRE_XML_VALUE = "application/vnd.ukeof.inspire+xml";
-    public static final MediaType EF_INSPIRE_XML = parseMediaType(EF_INSPIRE_XML_VALUE);
-
     public static final String GEMINI_JSON_VALUE = "application/gemini+json";
 
     public static final String INFRASTRUCTURERECORD_JSON_VALUE = "application/vnd.infrastructure+json";
