@@ -24,8 +24,8 @@ class NonEidcApplicationContextTest {
     @DisplayName("Simple Uploader present not Hubbub")
     void hubbubUploadBeansPresent() {
         assertNotNull(applicationContext.getBean(UploadController.class));
-        Assertions.assertThrows(NoSuchBeanDefinitionException.class, () -> {
-            applicationContext.getBean(uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadController.class);
-        });
+        Assertions.assertThrows(NoSuchBeanDefinitionException.class, () ->
+            applicationContext.getBean(uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadController.class)
+        );
     }
 }

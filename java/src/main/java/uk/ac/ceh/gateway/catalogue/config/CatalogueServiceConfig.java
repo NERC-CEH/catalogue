@@ -6,9 +6,6 @@ import org.springframework.context.annotation.Profile;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.catalogue.InMemoryCatalogueService;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
-import uk.ac.ceh.gateway.catalogue.vocabularies.KeywordVocabulary;
-
-import java.util.List;
 
 import static uk.ac.ceh.gateway.catalogue.DocumentTypes.*;
 
