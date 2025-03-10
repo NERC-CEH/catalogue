@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.xmlunit.builder.DiffBuilder;
 import org.xmlunit.diff.Diff;
-import uk.ac.ceh.gateway.catalogue.elter.ElterDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.DistributionInfo;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
@@ -29,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 public class XmlTemplateTest {
     Configuration configuration;
     GeminiDocument gemini;
-    ElterDocument elter;
+    GeminiDocument gemini2;
     Map<String, Object> model;
 
     @SneakyThrows
@@ -80,18 +79,18 @@ public class XmlTemplateTest {
             .build();
         gemini.setResponsibleParties(List.of(contact));
 
-        elter = new ElterDocument();
-        elter.setId("example_identifier");
-        elter.setTitle("Example Elter Dataset");
-        elter.setDescription("Example description for Elter dataset.");
-        elter.setResourceType(resourceType);
-        ResponsibleParty elterContact = ResponsibleParty.builder()
+        gemini2 = new GeminiDocument();
+        gemini2.setId("example_identifier");
+        gemini2.setTitle("Example Dataset");
+        gemini2.setDescription("Example description for dataset.");
+        gemini2.setResourceType(resourceType);
+        ResponsibleParty contact2 = ResponsibleParty.builder()
             .organisationName("Example Environmental Research Center")
             .email("info@example.org")
             .role("pointOfContact")
             .organisationIdentifier("https://ror.org/12345")
             .build();
-        elter.setResponsibleParties(List.of(elterContact));
+        gemini2.setResponsibleParties(List.of(contact2));
 
         model = new HashMap<>();
     }
@@ -109,13 +108,13 @@ public class XmlTemplateTest {
 
     private void prepareModelForISO19115() {
         model.clear();
-        model.put("id", elter.getId());
-        model.put("title", elter.getTitle());
-        model.put("description", elter.getDescription());
-        model.put("resourceType", elter.getResourceType());
-        model.put("type", elter.getType());
+        model.put("id", gemini2.getId());
+        model.put("title", gemini2.getTitle());
+        model.put("description", gemini2.getDescription());
+        model.put("resourceType", gemini2.getResourceType());
+        model.put("type", gemini2.getType());
         model.put("metadataDateTime", "2024-08-05");
-        model.put("responsibleParties", elter.getResponsibleParties());
+        model.put("responsibleParties", gemini2.getResponsibleParties());
     }
 
     @SneakyThrows

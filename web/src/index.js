@@ -8,8 +8,6 @@ import {
   CehModelApplicationEditorView,
   CehModelEditorView, CodeDocumentEditorView,
   DataTypeEditorView,
-  ElterEditorView,
-  ElterLinkedEditorView,
   GeminiEditorView, InfrastructureRecordEditorView,
   MethodRecordEditorView,
   LinkEditorView,
@@ -210,16 +208,6 @@ function initEditor () {
       View: DataTypeEditorView,
       Model: EditorMetadata,
       mediaType: 'application/vnd.data-type+json'
-    },
-    elter: {
-      View: ElterEditorView,
-      Model: EditorMetadata,
-      mediaType: 'application/vnd.elter+json'
-    },
-    'linked-elter': {
-      View: ElterLinkedEditorView,
-      Model: EditorMetadata,
-      mediaType: 'application/vnd.linked-elter+json'
     },
     'service-agreement': {
       View: ServiceAgreementEditorView,

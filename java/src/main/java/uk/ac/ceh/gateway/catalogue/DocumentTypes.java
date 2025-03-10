@@ -30,12 +30,6 @@ public class DocumentTypes {
 
     public static final String EF_DOCUMENT = "EF_DOCUMENT";
 
-    public static final String ELTER = "elter";
-    public static DocumentType ELTER_TYPE = DocumentType.builder()
-        .title("eLTER data")
-        .type(ELTER)
-        .build();
-
     public static final String INFRASTRUCTURERECORD = "infrastructurerecord";
         public static DocumentType INFRASTRUCTURERECORD_TYPE = DocumentType.builder()
             .title("Science infrastructure")
@@ -64,12 +58,6 @@ public class DocumentTypes {
     public static DocumentType LINK_TYPE = DocumentType.builder()
         .title("Link")
         .type(LINK)
-        .build();
-
-    public static final String LINKED_ELTER = "linked-elter";
-    public static DocumentType LINKED_ELTER_TYPE = DocumentType.builder()
-        .title("Linked document")
-        .type(LINKED_ELTER)
         .build();
 
     public static final String MONITORING_ACTIVITY = "monitoring-activity";

@@ -121,8 +121,8 @@ The catalogue contains the following Spring profiles:
 The development profile runs code that is only available when developing such as the `DevelopmentUserStoreConfig.java` which makes testing code locally easier as it allows the user access to more user permissions.
 ##### upload:simple/hubbub
 Allows the user to upload their documents using `FileSystemStorageService.java` when `upload:simple` is active or the Hubbub API which `UploadService.java` interfaces with when `upload:hubbub` is active.
-##### server:eidc/elter/datalabs/inms
-The server profile e.g. `server:eidc` decides which catalogue you will use and which documents that you will use with it. For example the EIDC catalogue will use Gemini documents and `server:elter` aka the Elter catalogue will use Elter documents.
+##### server:eidc/datalabs/inms
+The server profile e.g. `server:eidc` decides which catalogue you will use and which documents that you will use with it. For example the EIDC catalogue will use Gemini documents.
 ##### search:basic/enhanced
 Select which algorithm Solr uses to search for documents.
 ##### service-agreement
@@ -140,10 +140,10 @@ will run a process that watches the less directories and recompiles the files on
 
 ## Adding new document types to the catalogue
 
-If you need to add a new document type to the catalogue like  GeminiDocument.java or ElterDocument.java
+If you need to add a new document type to the catalogue like  GeminiDocument.java
 extend your new class with AbstractMetadataDocument.java and configure it in the following classes:
 CatalogueMediaTypes.java, CatalogueServiceConfig.java, ServicesConfig.java and WebConfig.java.
-For an example of how to do this Look at how the GeminiDocuments or ElterDocuments are configured in each of these classes.
+For an example of how to do this Look at how the GeminiDocuments are configured in each of these classes.
 
 ## Multiple Catalogues
 

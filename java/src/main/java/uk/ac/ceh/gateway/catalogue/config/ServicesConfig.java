@@ -31,7 +31,6 @@ import uk.ac.ceh.gateway.catalogue.document.JacksonDocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.document.reading.*;
 import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
-import uk.ac.ceh.gateway.catalogue.elter.ElterDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.imp.ImpDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.ClassMap;
@@ -150,7 +149,6 @@ public class ServicesConfig {
             .register(EF_DOCUMENT, BaseMonitoringType.class)
             .register(INFRASTRUCTURERECORD, InfrastructureRecord.class)
             .register(METHODRECORD, MethodRecord.class)
-            .register(ELTER, ElterDocument.class)
             .register(GEMINI, GeminiDocument.class)
             .register(IMP, ImpDocument.class)
             .register(LINK, LinkDocument.class)

@@ -17,7 +17,6 @@ import uk.ac.ceh.gateway.catalogue.document.DocumentListingService;
 import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
 import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.ef.BaseMonitoringType;
-import uk.ac.ceh.gateway.catalogue.elter.ElterDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.indexing.network.NetworkIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.CodeDocument;
@@ -97,7 +96,6 @@ public class IndexingServicesConfig {
         ClassMap<IndexGenerator<?, List<Statement>>> mappings = new PrioritisedClassMap<IndexGenerator<?, List<Statement>>>()
             .register(BaseMonitoringType.class, new JenaIndexBaseMonitoringTypeGenerator(documentGenerator))
             .register(GeminiDocument.class, new JenaIndexGeminiDocumentGenerator(documentGenerator, baseUri))
-            .register(ElterDocument.class, new JenaIndexElterDocumentGenerator(documentGenerator, baseUri))
             .register(CodeDocument.class, new JenaIndexCodeDocumentGenerator(documentGenerator, baseUri))
             .register(InfrastructureRecord.class, new JenaIndexInfrastructureRecordGenerator(documentGenerator, baseUri))
             .register(LinkDocument.class, new JenaIndexLinkDocumentGenerator(documentGenerator))
@@ -154,7 +152,6 @@ public class IndexingServicesConfig {
 
         val mappings = new PrioritisedClassMap<IndexGenerator<?, SolrIndex>>()
             .register(GeminiDocument.class, new SolrIndexGeminiDocumentGenerator(new ExtractTopicFromDocument(), metadataDocumentGenerator, codeLookupService))
-            .register(ElterDocument.class, new SolrIndexElterDocumentGenerator(metadataDocumentGenerator))
             .register(SampleArchive.class, new SampleArchiveIndexGenerator(metadataDocumentGenerator))
             .register(InfrastructureRecord.class, new InfrastructureRecordIndexGenerator(metadataDocumentGenerator))
             .register(MonitoringFacility.class, new SolrIndexMonitoringFacilityGenerator(metadataDocumentGenerator))

@@ -27,7 +27,6 @@ public class CatalogueMediaTypes {
     public static final String EF_INSPIRE_XML_VALUE = "application/vnd.ukeof.inspire+xml";
     public static final MediaType EF_INSPIRE_XML = parseMediaType(EF_INSPIRE_XML_VALUE);
 
-    public static final String ELTER_JSON_VALUE = "application/vnd.elter+json";
     public static final String GEMINI_JSON_VALUE = "application/gemini+json";
 
     public static final String INFRASTRUCTURERECORD_JSON_VALUE = "application/vnd.infrastructure+json";
@@ -38,7 +37,6 @@ public class CatalogueMediaTypes {
     public static final String GEMINI_XML_VALUE = "application/x-gemini+xml";
     public static final MediaType GEMINI_XML = parseMediaType(GEMINI_XML_VALUE);
 
-    public static final String LINKED_ELTER_JSON_VALUE = "application/vnd.linked-elter+json";
     public static final String LINKED_JSON_VALUE = "application/link+json";
 
     public static final String MAPSERVER_GML_VALUE = "application/vnd.ogc.gml";

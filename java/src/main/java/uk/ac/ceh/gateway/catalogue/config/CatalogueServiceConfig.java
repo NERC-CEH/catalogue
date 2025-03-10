@@ -270,32 +270,6 @@ public class CatalogueServiceConfig {
     }
 
     @Bean
-    @Profile("server:elter")
-    public CatalogueService elterCatalogue() {
-        String defaultCatalogueKey = "elter";
-
-        return new InMemoryCatalogueService(
-            defaultCatalogueKey,
-
-            Catalogue.builder()
-                .id(defaultCatalogueKey)
-                .title("eLTER Digital Asset Register")
-                .url("https://catalogue.lter-europe.net/elter/documents")
-                .contactUrl("https://www.lter-europe.net/lter-europe/about/contacts")
-                .logo("elter.png")
-                .facetKey("dataLevel")
-                .facetKey("elterDeimsSite")
-                .facetKey("elterProjectName")
-                .facetKey("resourceType")
-                .documentType(ELTER_TYPE)
-                .documentType(CODE_TYPE)
-                .documentType(LINKED_ELTER_TYPE)
-                .fileUpload(false)
-                .build()
-        );
-    }
-
-    @Bean
     @Profile("server:inms")
     public CatalogueService inmsCatalogue() {
         String defaultCatalogueKey = "inms";

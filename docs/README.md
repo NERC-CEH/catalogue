@@ -17,5 +17,4 @@ Catalogue.
 - [New Catalogue](./new-catalogue.md)
 - [New Document Type](./newDocumentType.md)
 - [Server Profiles](./profiles.md)
-- [eLTER Imports](./imports.md)
 

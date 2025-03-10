@@ -99,7 +99,6 @@
             <div class="container">
               <div class="metadata-grid">
                 <div class="col1">
-                  <#include "dataResource/_elterSpecific.ftlh">
                   <#include "dataResource/_formats.ftlh">
                   <#include "dataResource/_dataquality.ftlh">
                   <#if resourceType?has_content && resourceType.value !='nonGeographicDataset'><#include "dataResource/_spatial.ftlh"></#if>

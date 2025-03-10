@@ -23,24 +23,9 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .displayName("Topic")
                     .hierarchical(false)
                     .build();
-            case "condition" -> Facet.builder()
-                .fieldName("condition")
-                    .displayName("Status")
-                    .hierarchical(false)
-                    .build();
             case "documentType" -> Facet.builder()
                 .fieldName("documentType")
                     .displayName("Document Type")
-                    .hierarchical(false)
-                    .build();
-            case "elterDeimsSite" -> Facet.builder()
-                .fieldName("elterDeimsSite")
-                    .displayName("Site")
-                    .hierarchical(false)
-                    .build();
-            case "elterProjectName" -> Facet.builder()
-                .fieldName("elterProjectName")
-                    .displayName("Project")
                     .hierarchical(false)
                     .build();
             case "funder" -> Facet.builder()
