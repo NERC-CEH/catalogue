@@ -9,7 +9,6 @@ import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.vocabularies.KeywordVocabulary;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static uk.ac.ceh.gateway.catalogue.DocumentTypes.*;
 
@@ -19,7 +18,7 @@ public class CatalogueServiceConfig {
 
     @Bean
     @Profile("server:datalabs")
-    public CatalogueService datalabsCatalogue(List<KeywordVocabulary> vocabularies) {
+    public CatalogueService datalabsCatalogue() {
         String defaultCatalogueKey = "datalabs";
 
         return new InMemoryCatalogueService(
@@ -44,7 +43,7 @@ public class CatalogueServiceConfig {
 
     @Bean
     @Profile("server:eidc")
-    public CatalogueService eidcCatalogue(List<KeywordVocabulary> vocabularies) {
+    public CatalogueService eidcCatalogue() {
         String defaultCatalogueKey = "eidc";
 
         return new InMemoryCatalogueService(
@@ -272,7 +271,7 @@ public class CatalogueServiceConfig {
 
     @Bean
     @Profile("server:elter")
-    public CatalogueService elterCatalogue(List<KeywordVocabulary> vocabularies) {
+    public CatalogueService elterCatalogue() {
         String defaultCatalogueKey = "elter";
 
         return new InMemoryCatalogueService(
@@ -298,7 +297,7 @@ public class CatalogueServiceConfig {
 
     @Bean
     @Profile("server:inms")
-    public CatalogueService inmsCatalogue(List<KeywordVocabulary> vocabularies) {
+    public CatalogueService inmsCatalogue() {
         String defaultCatalogueKey = "inms";
 
         return new InMemoryCatalogueService(
@@ -328,7 +327,7 @@ public class CatalogueServiceConfig {
 
     @Bean
     @Profile("server:pimfe")
-    public CatalogueService pimfeCatalogue(List<KeywordVocabulary> vocabularies) {
+    public CatalogueService pimfeCatalogue() {
         String defaultCatalogueKey = "pimfe";
 
         return new InMemoryCatalogueService(

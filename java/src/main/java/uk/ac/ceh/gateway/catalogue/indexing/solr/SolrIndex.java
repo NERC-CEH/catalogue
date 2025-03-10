@@ -96,17 +96,6 @@ public class SolrIndex {
     private @Field List<String> infrastructureCategory;
     private @Field List<String> infrastructureClass;
 
-
-    public SolrIndex addLocations(List<String> locations) {
-        this.locations.addAll(locations);
-        return this;
-    }
-
-    public SolrIndex addLocation(String location) {
-        this.locations.add(location);
-        return this;
-    }
-
     public String getShortenedDescription(){
         return shortenLongString(description, MAX_DESCRIPTION_CHARACTER_LENGTH);
     }
