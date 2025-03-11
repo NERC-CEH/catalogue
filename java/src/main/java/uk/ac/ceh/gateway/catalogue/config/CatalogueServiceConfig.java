@@ -99,18 +99,6 @@ public class CatalogueServiceConfig {
                 .build(),
 
             Catalogue.builder()
-                .id("edge")
-                .title("EDgE")
-                .url("https://edge.climate.copernicus.eu")
-                .contactUrl("https://edge.climate.copernicus.eu/")
-                .logo("ukceh.png")
-                .facetKey("recordType")
-                .documentType(GEMINI_TYPE)
-                .documentType(LINK_TYPE)
-                .fileUpload(true)
-                .build(),
-
-            Catalogue.builder()
                 .id(defaultCatalogueKey)
                 .title("EIDC")
                 .url("https://www.eidc.ac.uk")
