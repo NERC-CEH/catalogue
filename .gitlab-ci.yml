@@ -70,7 +70,17 @@ container_scanning:
     - >
       if [[ $SEVERITY_COUNT -gt 0 ]]
       then
-        echo "High/critical severity found"; exit 1
+        cat << EOF
+        ------------------------------------------
+        ------------------------------------------
+        ERROR
+        ------------------------------------------
+        ------------------------------------------
+        HIGH/CRITICAL SEVERITY VULNERABILITY FOUND
+        ------------------------------------------
+        ------------------------------------------
+        EOF
+        exit 1
       else
         echo "No vulnerabilities found"
       fi
