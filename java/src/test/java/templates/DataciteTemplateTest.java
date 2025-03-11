@@ -269,16 +269,14 @@ public class DataciteTemplateTest {
                 .builder()
                 .role("author")
                 .individualName("Bob Smith")
-                .familyName("Smith")
-                .givenName("Bob")
+                .fullName("Bob Smith")
                 .organisationName("Example Inc.")
                 .build();
             val author2 = ResponsibleParty
                 .builder()
                 .role("author")
                 .individualName("George Smith")
-                .familyName("Smith")
-                .givenName("George")
+                .fullNamee("George Smith")
                 .organisationName("Science Inc.")
                 .organisationIdentifier("https://ror.org/00pggkr55")
                 .build();
@@ -286,8 +284,7 @@ public class DataciteTemplateTest {
                 .builder()
                 .role("author")
                 .individualName("Helen Smith")
-                .familyName("Smith")
-                .givenName("Helen")
+                .fullName("Helen Smith")
                 .organisationName("EIDC")
                 .organisationIdentifier("https://ror.org/04xw4m193")
                 .build();
@@ -332,8 +329,7 @@ public class DataciteTemplateTest {
                 .builder()
                 .role("pointOfContact")
                 .individualName("Bob Smith")
-                .familyName("Smith")
-                .givenName("Bob")
+                .fullName("Bob Smith")
                 .organisationName("Example Inc.")
                 .build();
             val rightsHolder = ResponsibleParty

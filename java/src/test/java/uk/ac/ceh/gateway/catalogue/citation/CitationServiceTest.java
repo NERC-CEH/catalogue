@@ -161,8 +161,7 @@ public class CitationServiceTest {
         return ResponsibleParty
                 .builder()
                 .individualName("John Business")
-                .givenName("John")
-                .familyName("Business")
+                .fullName("John Business")
                 .role("author")
                 .build();
     }
