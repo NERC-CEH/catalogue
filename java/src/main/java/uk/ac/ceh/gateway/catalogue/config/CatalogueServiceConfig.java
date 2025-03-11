@@ -321,7 +321,7 @@ public class CatalogueServiceConfig {
             Catalogue.builder()
                 .id(defaultCatalogueKey)
                 .title("International Nitrogen Management System")
-                .url("https://data.inms.international/")
+                .url("https://www.inms.international/")
                 .contactUrl("https://www.inms.international/contact")
                 .logo("inms.png")
                 .facetKey("recordType")
