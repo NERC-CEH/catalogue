@@ -7,7 +7,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
-import org.apache.jena.tdb.TDBFactory;
+import org.apache.jena.tdb1.TDB1Factory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.ac.ceh.gateway.catalogue.model.Link;
@@ -34,7 +34,7 @@ public class JenaLookupServiceTest {
 
     @BeforeEach
     void init() {
-        jenaTdb = TDBFactory.createDataset();
+        jenaTdb = TDB1Factory.createDataset();
         service = new JenaLookupService(jenaTdb);
     }
 
