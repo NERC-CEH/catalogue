@@ -109,8 +109,8 @@ CEH dataInfo table
 <#macro displayContact contact showPostal=false>
 
 
-    <#if contact.familyName?has_content && contact.givenName?has_content >
-      <#local contactName = contact.familyName + ", " + contact.givenName >
+    <#if contact.fullName?has_content >
+      <#local contactName = contact.fullName >
     <#else>
       <#local contactName = contact.individualName >
     </#if>

@@ -39,8 +39,8 @@
     <ef:responsibleParty>
 		<base2:RelatedParty>
 
-      <#if rp.familyName?has_content && rp.givenName?has_content >
-        <#local rpName = rp.familyName + ", " + rp.givenName >
+      <#if rp.fullName?has_content >
+        <#local rpName = rp.fullName>
       <#else>
         <#local rpName = rp.individualName >
       </#if>

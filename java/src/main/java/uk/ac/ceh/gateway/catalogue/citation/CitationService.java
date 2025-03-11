@@ -102,7 +102,7 @@ public class CitationService {
         return geminiDocument.getResponsibleParties()
             .stream()
             .filter((p) -> p.getRole().equals("author"))
-            .map(p -> p.getFamilyName() + ", " + p.getGivenName())
+            .map(p -> p.getFullName() != null ? p.getFullName() : p.getIndividualName())
             .collect(Collectors.toList());
     }
 }

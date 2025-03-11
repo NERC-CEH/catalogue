@@ -21,7 +21,10 @@
     </#if>
 
     <#list boundingBoxes as extent>
-      dct:bbox "${extent.wkt}"^^geo:wktLiteral ;
+     dct:spatial [
+        a dcterms:Location ;
+        dcat:bbox "${extent.wkt}"^^geo:wktLiteral ;
+      ] ;
     </#list>
 
     <#if temporalExtents?has_content>

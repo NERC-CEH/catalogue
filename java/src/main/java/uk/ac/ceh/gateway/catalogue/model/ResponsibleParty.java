@@ -44,6 +44,8 @@ public class ResponsibleParty {
         this.address = (address == null || address.isEmpty()) ? null : address;
     }
 
+
+
     @JsonIgnore
     public boolean isOrcid() {
         return nameIdentifier.matches("^https?://orcid\\.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$");
@@ -57,6 +59,13 @@ public class ResponsibleParty {
     @JsonIgnore
     public boolean isRor() {
         return organisationIdentifier.matches("^https://ror\\.org/\\w{8,10}$");
+    }
+
+    public String getFullName() {
+        if (!familyName.isEmpty() && !givenName.isEmpty()) {
+            return familyName.trim() + ", " + givenName.trim();
+        }
+        return null;
     }
 
     public String getRoleDisplayName() {

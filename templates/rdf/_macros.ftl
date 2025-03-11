@@ -11,8 +11,8 @@
 
       <#assign contactIdentifier= "_:" + prefix +  contact?index>
 
-      <#if contact.familyName?has_content && contact.givenName?has_content >
-        <#local contactName = contact.familyName + ", " + contact.givenName >
+      <#if contact.fullName?has_content >
+        <#local contactName = contact.fullName >
       <#else>
         <#local contactName = contact.individualName >
       </#if>
@@ -36,8 +36,8 @@
   <#if contacts?has_content>
     <#list contacts as contact>
 
-      <#if contact.familyName?has_content && contact.givenName?has_content >
-        <#local contactName = contact.familyName + ", " + contact.givenName >
+      <#if contact.fullName?has_content >
+        <#local contactName = contact.fullName>
       <#else>
         <#local contactName = contact.individualName >
       </#if>

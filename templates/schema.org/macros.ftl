@@ -285,8 +285,8 @@
   <#list contacts as contact>
     <#assign contactid = "#" + idlabel + contact?index>
 
-    <#if contact.familyName?has_content && contact.givenName?has_content >
-      <#local contactName = contact.familyName + ", " + contact.givenName >
+    <#if contact.fullName?has_content >
+      <#local contactName = contact.fullName>
     <#else>
       <#local contactName = contact.individualName >
     </#if>
@@ -308,8 +308,8 @@
   <#list contacts as contact>
     <#assign contactid = "#" + idlabel + contact?index>
 
-    <#if contact.familyName?has_content && contact.givenName?has_content >
-      <#local contactName = contact.familyName + ", " + contact.givenName >
+    <#if contact.fullName?has_content >
+      <#local contactName = contact.fullName>
     <#else>
       <#local contactName = contact.individualName >
     </#if>

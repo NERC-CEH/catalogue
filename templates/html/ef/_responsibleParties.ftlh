@@ -8,8 +8,8 @@
         <div class="col-sm-3 key">${rp.role.title!rp.role.value}</div>
         <div class="col-sm-9 value">
 
-          <#if rp.familyName?has_content && rp.givenName?has_content >
-            <#local rpName = rp.familyName + ", " + rp.givenName >
+          <#if rp.fullName?has_content >
+            <#local rpName = rp.fullName >
           <#else>
             <#local rpName = rp.individualName >
           </#if>

@@ -124,7 +124,7 @@
           <#list contacts as contact>
             <#assign contactid = "#" + type + contact?index>
 
-            <#if contact.individualName?has_content || (contact.familyName?has_content && contact.givenName?has_content) >
+            <#if contact.individualName?has_content || contact.fullName?has_content >
               <#if contact.nameIdentifier?has_content && contact.nameIdentifier?matches("^http(|s)://orcid.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$")>
                 <#assign contactid = contact.nameIdentifier>
               </#if>
@@ -136,10 +136,10 @@
 
               {
               "@id": "${contactid}",
-              <#if contact.individualName?has_content || (contact.familyName?has_content && contact.givenName?has_content) >
+              <#if contact.individualName?has_content || contact.fullName?has_content >
 
-                <#if contact.familyName?has_content && contact.givenName?has_content >
-                  <#local contactName = contact.familyName + ", " + contact.givenName >
+                <#if contact.fullName?has_content >
+                  <#local contactName = contact.fullName >
                 <#else>
                   <#local contactName = contact.individualName >
                 </#if>

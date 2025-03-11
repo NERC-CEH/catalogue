@@ -21,8 +21,8 @@
       <gmd:distributorContact>
       <gmd:CI_ResponsibleParty>
 
-        <#if distributorContact.familyName?has_content && distributorContact.givenName?has_content >
-          <#local distributorContactName = distributorContact.familyName + ", " + distributorContact.givenName >
+        <#if distributorContact.fullName?has_content >
+          <#local distributorContactName = distributorContact.fullName >
         <#else>
           <#local distributorContactName = distributorContact.individualName >
         </#if>
