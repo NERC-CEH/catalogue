@@ -196,21 +196,30 @@
         },
         {
             "individualName": "Rennie, S.",
+            "givenName": "S.",
+            "familyName": "Rennie",
             "organisationName": "Centre for Ecology & Hydrology",
             "organisationIdentifier": "https://ror.org/00pggkr55",
             "role": "author",
             "email": "enquiries@ceh.ac.uk",
-            "nameIdentifier": "https://orcid.org/0000-0002-0027-0436"
+            "nameIdentifier": "https://orcid.org/0000-0002-0027-0436",
+            "fullName": "Rennie, S."
         },
         {
             "individualName": "Adamson, J.",
+            "givenName": "J.",
+            "familyName": "Adamson",
             "organisationName": "Centre for Ecology & Hydrology",
             "organisationIdentifier": "https://ror.org/00pggkr55",
             "role": "author",
-            "email": "enquiries@ceh.ac.uk"
+            "email": "enquiries@ceh.ac.uk",
+            "fullName": "Adamson, J."
         },
         {
             "individualName": "Anderson, R.",
+            "fullName": "Anderson, R.",
+            "givenName": "R.",
+            "familyName": "Anderson",
             "organisationName": "Agri-Food and Biosciences Institute",
             "organisationIdentifier": "https://ror.org/05c5y5q11",
             "role": "author",
@@ -218,28 +227,40 @@
         },
         {
             "individualName": "Andrews, C.",
+            "givenName": "C.",
+            "familyName": "Andrews",
             "organisationName": "Centre for Ecology & Hydrology",
             "organisationIdentifier": "https://ror.org/00pggkr55",
             "role": "author",
             "email": "enquiries@ceh.ac.uk",
-            "nameIdentifier": "https://orcid.org/0000-0003-2428-272X"
+            "nameIdentifier": "https://orcid.org/0000-0003-2428-272X",
+            "fullName": "Andrews, C."
         },
         {
             "individualName": "Bater, J.",
+            "givenName": "J.",
+            "familyName": "Bater",
             "organisationName": "Rothamsted Research",
             "organisationIdentifier": "https://ror.org/0347fy350",
             "role": "author",
-            "email": "enquiries@ceh.ac.uk"
+            "email": "enquiries@ceh.ac.uk",
+            "fullName": "Bater, J."
         },
         {
             "individualName": "Bayfield, N.",
+            "givenName": "N.",
+            "familyName": "Bayfield",
             "organisationName": "Centre for Ecology & Hydrology",
             "organisationIdentifier": "https://ror.org/00pggkr55",
             "role": "author",
-            "email": "enquiries@ceh.ac.uk"
+            "email": "enquiries@ceh.ac.uk",
+            "fullName": "Bayfield, N.",
         },
         {
             "individualName": "Beaton, K.",
+            "fullName": "Beaton, K.",
+            "givenName": "K.",
+            "familyName": "Beaton",
             "organisationName": "The James Hutton Institute",
             "organisationIdentifier": "https://ror.org/03rzp5127",
             "role": "author",
@@ -247,6 +268,9 @@
         },
         {
             "individualName": "Beaumont, D.",
+            "fullName": "Beaumont, D.",
+            "givenName": "D.",
+            "familyName": "Beaumont",
             "organisationName": "Rothamsted Research, North Wyke",
             "organisationIdentifier": "https://ror.org/0347fy350",
             "role": "author",
@@ -254,6 +278,9 @@
         },
         {
             "individualName": "Benham, S.",
+            "fullName": "Benham, S.",
+            "givenName": "S.",
+            "familyName": "Benham",
             "organisationName": "Forest Research",
             "organisationIdentifier": "https://ror.org/03wcc3744",
             "role": "author",
@@ -261,6 +288,9 @@
         },
         {
             "individualName": "Bowmaker, V.",
+            "fullName": "Bowmaker, V.",
+            "givenName": "V.",
+            "familyName": "Bowmaker",
             "organisationName": "Cyfoeth Naturiol Cymru - Natural Resources Wales",
             "organisationIdentifier": "https://ror.org/04x65hs26",
             "role": "author",
@@ -268,6 +298,9 @@
         },
         {
             "individualName": "Britt, C.",
+            "fullName": "Britt, C.",
+            "givenName": "C.",
+            "familyName": "Britt",
             "organisationName": "ADAS",
             "organisationIdentifier": "https://ror.org/006d11e04",
             "role": "author",
@@ -275,6 +308,9 @@
         },
         {
             "individualName": "Brooker, R.",
+            "fullName": "Brooker, R.",
+            "givenName": "R.",
+            "familyName": "Brooker",
             "organisationName": "Centre for Ecology & Hydrology",
             "organisationIdentifier": "https://ror.org/00pggkr55",
             "role": "author",
@@ -282,6 +318,9 @@
         },
         {
             "individualName": "Brooks, D.",
+            "fullName": "Brooks, D.",
+            "givenName": "D.",
+            "familyName": "Brooks",
             "organisationName": "Rothamsted Research",
             "organisationIdentifier": "https://ror.org/0347fy350",
             "role": "author",
@@ -289,6 +328,9 @@
         },
         {
             "individualName": "Brunt, J.",
+            "fullName": "Brunt, J.",
+            "givenName": "J.",
+            "familyName": "Brunt",
             "organisationName": "Forest Research",
             "organisationIdentifier": "https://ror.org/03wcc3744",
             "role": "author",
@@ -296,6 +338,9 @@
         },
         {
             "individualName": "Common, G.",
+            "fullName": "Common, G.",
+            "givenName": "G.",
+            "familyName": "Common",
             "organisationName": "The James Hutton Institute",
             "organisationIdentifier": "https://ror.org/03rzp5127",
             "role": "author",
@@ -303,6 +348,9 @@
         },
         {
             "individualName": "Cooper, R.",
+            "fullName": "Cooper, R.",
+            "givenName": "R.",
+            "familyName": "Cooper",
             "organisationName": "The James Hutton Institute",
             "organisationIdentifier": "https://ror.org/03rzp5127",
             "role": "author",
@@ -310,6 +358,9 @@
         },
         {
             "individualName": "Corbett, S.",
+            "fullName": "Corbett, S.",
+            "givenName": "S.",
+            "familyName": "Corbett",
             "organisationName": "ADAS",
             "organisationIdentifier": "https://ror.org/006d11e04",
             "role": "author",
@@ -317,6 +368,9 @@
         },
         {
             "individualName": "Critchley, N.",
+            "fullName": "Critchley, N.",
+            "givenName": "N.",
+            "familyName": "Critchley",
             "organisationName": "ADAS",
             "organisationIdentifier": "https://ror.org/006d11e04",
             "role": "author",
@@ -324,6 +378,9 @@
         },
         {
             "individualName": "Dennis, P.",
+            "fullName": "Dennis, P.",
+            "givenName": "P.",
+            "familyName": "Dennis",
             "organisationName": "The James Hutton Institute",
             "organisationIdentifier": "https://ror.org/03rzp5127",
             "role": "author",
@@ -331,6 +388,9 @@
         },
         {
             "individualName": "Dick, J.",
+            "fullName": "Dick, J.",
+            "givenName": "J.",
+            "familyName": "Dick",
             "organisationName": "Centre for Ecology & Hydrology",
             "organisationIdentifier": "https://ror.org/00pggkr55",
             "role": "author",
@@ -339,6 +399,9 @@
         },
         {
             "individualName": "Dodd, B.",
+            "fullName": "Dodd, B.",
+            "givenName": "B.",
+            "familyName": "Dodd",
             "organisationName": "Centre for Ecology & Hydrology",
             "organisationIdentifier": "https://ror.org/00pggkr55",
             "role": "author",
@@ -346,6 +409,9 @@
         },
         {
             "individualName": "Dodd, N.",
+            "fullName": "Dodd, N.",
+            "givenName": "N.",
+            "familyName": "Dodd",
             "organisationName": "The James Hutton Institute",
             "organisationIdentifier": "https://ror.org/03rzp5127",
             "role": "author",
@@ -353,6 +419,9 @@
         },
         {
             "individualName": "Donovan, N.",
+            "fullName": "Donovan, N.",
+            "givenName": "N.",
+            "familyName": "Donovan",
             "organisationName": "Rothamsted Research, North Wyke",
             "organisationIdentifier": "https://ror.org/0347fy350",
             "role": "author",
@@ -360,6 +429,9 @@
         },
         {
             "individualName": "Easter, J.",
+            "fullName": "Easter, J.",
+            "givenName": "J.",
+            "familyName": "Easter",
             "organisationName": "Cyfoeth Naturiol Cymru - Natural Resources Wales",
             "organisationIdentifier": "https://ror.org/04x65hs26",
             "role": "author",
@@ -367,6 +439,9 @@
         },
         {
             "individualName": "Eaton, E.",
+            "fullName": "Eaton, E.",
+            "givenName": "E.",
+            "familyName": "Eaton",
             "organisationName": "Forest Research",
             "organisationIdentifier": "https://ror.org/03wcc3744",
             "role": "author",
@@ -374,6 +449,9 @@
         },
         {
             "individualName": "Flexen, M.",
+            "fullName": "Flexen, M.",
+            "givenName": "M.",
+            "familyName": "Flexen",
             "organisationName": "Agri-Food and Biosciences Institute",
             "organisationIdentifier": "https://ror.org/05c5y5q11",
             "role": "author",
@@ -381,6 +459,9 @@
         },
         {
             "individualName": "Gardiner, A.",
+            "fullName": "Gardiner, A.",
+            "givenName": "A.",
+            "familyName": "Gardiner",
             "organisationName": "Centre for Ecology & Hydrology",
             "organisationIdentifier": "https://ror.org/00pggkr55",
             "role": "author",
@@ -388,6 +469,9 @@
         },
         {
             "individualName": "Hamilton, D.",
+            "fullName": "Hamilton, D.",
+            "givenName": "D.",
+            "familyName": "Hamilton",
             "organisationName": "The James Hutton Institute",
             "organisationIdentifier": "https://ror.org/03rzp5127",
             "role": "author",
@@ -395,6 +479,9 @@
         },
         {
             "individualName": "Hargreaves, P.",
+            "fullName": "Hargreaves, P.",
+            "givenName": "P.",
+            "familyName": "Hargreaves",
             "organisationName": "Rothamsted Research",
             "organisationIdentifier": "https://ror.org/0347fy350",
             "role": "author",
@@ -409,6 +496,9 @@
         },
         {
             "individualName": "Howe, M.",
+            "fullName": "Howe, M.",
+            "givenName": "M.",
+            "familyName": "Howe",
             "organisationName": "Rothamsted Research",
             "organisationIdentifier": "https://ror.org/0347fy350",
             "role": "author",
@@ -416,6 +506,9 @@
         },
         {
             "individualName": "Kahl, J.",
+            "fullName": "Kahl, J.",
+            "givenName": "J.",
+            "familyName": "Kahl",
             "organisationName": "Centre for Ecology & Hydrology",
             "organisationIdentifier": "https://ror.org/00pggkr55",
             "role": "author",
@@ -423,6 +516,9 @@
         },
         {
             "individualName": "Lane, M.",
+            "fullName": "Lane, M.",
+            "givenName": "M.",
+            "familyName": "Lane",
             "organisationName": "Centre for Ecology & Hydrology",
             "organisationIdentifier": "https://ror.org/00pggkr55",
             "role": "author",
@@ -430,6 +526,9 @@
         },
         {
             "individualName": "Langan, S.",
+            "fullName": "Langan, S.",
+            "givenName": "S.",
+            "familyName": "Langan",
             "organisationName": "The James Hutton Institute",
             "organisationIdentifier": "https://ror.org/03rzp5127",
             "role": "author",
@@ -437,6 +536,9 @@
         },
         {
             "individualName": "Lloyd, D.",
+            "fullName": "Lloyd, D.",
+            "givenName": "D.",
+            "familyName": "Lloyd",
             "organisationName": "Cyfoeth Naturiol Cymru - Natural Resources Wales",
             "organisationIdentifier": "https://ror.org/04x65hs26",
             "role": "author",
@@ -444,6 +546,9 @@
         },
         {
             "individualName": "McCarney, B.",
+            "fullName": "McCarney, B.",
+            "givenName": "B.",
+            "familyName": "McCarney",
             "organisationName": "Agri-Food and Biosciences Institute",
             "organisationIdentifier": "https://ror.org/05c5y5q11",
             "role": "author",
@@ -451,6 +556,9 @@
         },
         {
             "individualName": "McElarney, Y.",
+            "fullName": "McElarney, Y.",
+            "givenName": "Y.",
+            "familyName": "McElarney",
             "organisationName": "Agri-Food and Biosciences Institute",
             "organisationIdentifier": "https://ror.org/05c5y5q11",
             "role": "author",
@@ -458,6 +566,9 @@
         },
         {
             "individualName": "McKenna, C.",
+            "fullName": "McKenna, C.",
+            "givenName": "C.",
+            "familyName": "McKenna",
             "organisationName": "Agri-Food and Biosciences Institute",
             "organisationIdentifier": "https://ror.org/05c5y5q11",
             "role": "author",
@@ -465,6 +576,9 @@
         },
         {
             "individualName": "McMillan, S.",
+            "fullName": "McMillan, S.",
+            "givenName": "S.",
+            "familyName": "McMillan",
             "organisationName": "ADAS",
             "organisationIdentifier": "https://ror.org/006d11e04",
             "role": "author",
@@ -472,6 +586,9 @@
         },
         {
             "individualName": "Milne, F.",
+            "fullName": "Milne, F.",
+            "givenName": "F.",
+            "familyName": "Milne",
             "organisationName": "The James Hutton Institute",
             "organisationIdentifier": "https://ror.org/03rzp5127",
             "role": "author",
@@ -479,6 +596,9 @@
         },
         {
             "individualName": "Milne, L.",
+            "fullName": "Milne, L.",
+            "givenName": "L.",
+            "familyName": "Milne",
             "organisationName": "Centre for Ecology & Hydrology",
             "organisationIdentifier": "https://ror.org/00pggkr55",
             "role": "author",
@@ -486,6 +606,9 @@
         },
         {
             "individualName": "Morecroft, M.",
+            "fullName": "Morecroft, M.",
+            "givenName": "M.",
+            "familyName": "Morecroft",
             "organisationName": "Centre for Ecology & Hydrology",
             "organisationIdentifier": "https://ror.org/00pggkr55",
             "role": "author",
@@ -493,6 +616,9 @@
         },
         {
             "individualName": "Murphy, M.",
+            "fullName": "Murphy, M.",
+            "givenName": "M.",
+            "familyName": "Murphy",
             "organisationName": "Cyfoeth Naturiol Cymru - Natural Resources Wales",
             "organisationIdentifier": "https://ror.org/04x65hs26",
             "role": "author",
@@ -500,6 +626,9 @@
         },
         {
             "individualName": "Nelson, A.",
+            "fullName": "Nelson, A.",
+            "givenName": "A.",
+            "familyName": "Nelson",
             "organisationName": "Agri-Food and Biosciences Institute",
             "organisationIdentifier": "https://ror.org/05c5y5q11",
             "role": "author",
@@ -507,6 +636,9 @@
         },
         {
             "individualName": "Nicholson, H.",
+            "fullName": "Nicholson, H.",
+            "givenName": "H.",
+            "familyName": "Nicholson",
             "organisationName": "Agri-Food and Biosciences Institute",
             "organisationIdentifier": "https://ror.org/05c5y5q11",
             "role": "author",
@@ -514,6 +646,9 @@
         },
         {
             "individualName": "Pallett, D.",
+            "fullName": "Pallett, D.",
+            "givenName": "D.",
+            "familyName": "Pallett",
             "organisationName": "Centre for Ecology & Hydrology",
             "organisationIdentifier": "https://ror.org/00pggkr55",
             "role": "author",
@@ -521,6 +656,9 @@
         },
         {
             "individualName": "Parry, D.",
+            "fullName": "Parry, D.",
+            "givenName": "D.",
+            "familyName": "Parry",
             "organisationName": "Cyfoeth Naturiol Cymru - Natural Resources Wales",
             "organisationIdentifier": "https://ror.org/04x65hs26",
             "role": "author",
@@ -528,6 +666,9 @@
         },
         {
             "individualName": "Pearce, I.",
+            "fullName": "Pearce, I.",
+            "givenName": "I.",
+            "familyName": "Pearce",
             "organisationName": "Centre for Ecology & Hydrology",
             "organisationIdentifier": "https://ror.org/00pggkr55",
             "role": "author",
@@ -535,6 +676,9 @@
         },
         {
             "individualName": "Pozsgai, G.",
+            "fullName": "Pozsgai, G.",
+            "givenName": "G.",
+            "familyName": "Pozsgai",
             "organisationName": "The James Hutton Institute",
             "organisationIdentifier": "https://ror.org/03rzp5127",
             "role": "author",
@@ -542,6 +686,9 @@
         },
         {
             "individualName": "Rose, R.",
+            "fullName": "Rose, R.",
+            "givenName": "R.",
+            "familyName": "Rose",
             "organisationName": "Centre for Ecology & Hydrology",
             "organisationIdentifier": "https://ror.org/00pggkr55",
             "role": "author",
@@ -549,6 +696,9 @@
         },
         {
             "individualName": "Schafer, S.",
+            "fullName": "Schafer, S.",
+            "givenName": "S.",
+            "familyName": "Schafer",
             "organisationName": "Centre for Ecology & Hydrology",
             "organisationIdentifier": "https://ror.org/00pggkr55",
             "role": "author",
@@ -556,6 +706,9 @@
         },
         {
             "individualName": "Scott, T.",
+            "fullName": "Scott, T.",
+            "givenName": "T.",
+            "familyName": "Scott",
             "organisationName": "Rothamsted Research",
             "organisationIdentifier": "https://ror.org/0347fy350",
             "role": "author",
@@ -564,6 +717,9 @@
         },
         {
             "individualName": "Sherrin, L.",
+            "fullName": "Sherrin, L.",
+            "givenName": "L.",
+            "familyName": "Sherrin",
             "organisationName": "Centre for Ecology & Hydrology",
             "organisationIdentifier": "https://ror.org/00pggkr55",
             "role": "author",
@@ -571,6 +727,9 @@
         },
         {
             "individualName": "Shortall, C.",
+            "fullName": "Shortall, C.",
+            "givenName": "C.",
+            "familyName": "Shortall",
             "organisationName": "Rothamsted Research",
             "organisationIdentifier": "https://ror.org/0347fy350",
             "role": "author",
@@ -578,6 +737,9 @@
         },
         {
             "individualName": "Smith, R.",
+            "fullName": "Smith, R.",
+            "givenName": "R.",
+            "familyName": "Smith",
             "organisationName": "Rothamsted Research, North Wyke",
             "organisationIdentifier": "https://ror.org/0347fy350",
             "role": "author",
@@ -585,6 +747,9 @@
         },
         {
             "individualName": "Smith, P.",
+            "fullName": "Smith, P.",
+            "givenName": "P.",
+            "familyName": "Smith",
             "organisationName": "Centre for Ecology & Hydrology",
             "organisationIdentifier": "https://ror.org/00pggkr55",
             "role": "author",
@@ -592,6 +757,9 @@
         },
         {
             "individualName": "Tait, R.",
+            "fullName": "Tait, R.",
+            "givenName": "R.",
+            "familyName": "Tait",
             "organisationName": "The James Hutton Institute",
             "organisationIdentifier": "https://ror.org/03rzp5127",
             "role": "author",
@@ -599,6 +767,9 @@
         },
         {
             "individualName": "Taylor, C.",
+            "fullName": "Taylor, C.",
+            "givenName": "C.",
+            "familyName": "Taylor",
             "organisationName": "The James Hutton Institute",
             "organisationIdentifier": "https://ror.org/03rzp5127",
             "role": "author",
@@ -606,6 +777,9 @@
         },
         {
             "individualName": "Taylor, M.",
+            "fullName": "Taylor, M.",
+            "givenName": "M.",
+            "familyName": "Taylor",
             "organisationName": "Centre for Ecology & Hydrology",
             "organisationIdentifier": "https://ror.org/00pggkr55",
             "role": "author",
@@ -613,6 +787,9 @@
         },
         {
             "individualName": "Thurlow, M.",
+            "fullName": "Thurlow, M.",
+            "givenName": "M.",
+            "familyName": "Thurlow",
             "organisationName": "Centre for Ecology & Hydrology",
             "organisationIdentifier": "https://ror.org/00pggkr55",
             "role": "author",
@@ -620,6 +797,9 @@
         },
         {
             "individualName": "Turner, A.",
+            "fullName": "Turner, A.",
+            "givenName": "A.",
+            "familyName": "Turner",
             "organisationName": "Cyfoeth Naturiol Cymru - Natural Resources Wales",
             "organisationIdentifier": "https://ror.org/04x65hs26",
             "role": "author",
@@ -627,6 +807,9 @@
         },
         {
             "individualName": "Tyson, K.",
+            "fullName": "Tyson, K.",
+            "givenName": "K.",
+            "familyName": "Tyson",
             "organisationName": "Rothamsted Research, North Wyke",
             "organisationIdentifier": "https://ror.org/0347fy350",
             "role": "author",
@@ -634,6 +817,9 @@
         },
         {
             "individualName": "Watson, H.",
+            "fullName": "Watson, H.",
+            "givenName": "H.",
+            "familyName": "Watson",
             "organisationName": "The James Hutton Institute",
             "organisationIdentifier": "https://ror.org/03rzp5127",
             "role": "author",
@@ -641,6 +827,9 @@
         },
         {
             "individualName": "Whittaker, M.",
+            "fullName": "Whittaker, M.",
+            "givenName": "M.",
+            "familyName": "Whittaker",
             "organisationName": "Cyfoeth Naturiol Cymru - Natural Resources Wales",
             "organisationIdentifier": "https://ror.org/04x65hs26",
             "role": "author",
@@ -648,6 +837,9 @@
         },
         {
             "individualName": "Wilkinson, M.",
+            "fullName": "Wilkinson, M.",
+            "givenName": "M.",
+            "familyName": "Wilkinson",
             "organisationName": "Forest Research",
             "organisationIdentifier": "https://ror.org/03wcc3744",
             "role": "author",
@@ -655,6 +847,9 @@
         },
         {
             "individualName": "Wood, C.",
+            "fullName": "Wood, C.",
+            "givenName": "C.",
+            "familyName": "Wood",
             "organisationName": "Cyfoeth Naturiol Cymru - Natural Resources Wales",
             "organisationIdentifier": "https://ror.org/04x65hs26",
             "role": "author",
@@ -778,6 +973,9 @@
     "authors": [
         {
             "individualName": "Rennie, S.",
+            "fullName": "Rennie, S.",
+            "givenName": "S.",
+            "familyName": "Rennie",
             "organisationName": "Centre for Ecology & Hydrology",
             "organisationIdentifier": "https://ror.org/00pggkr55",
             "role": "author",
@@ -786,6 +984,9 @@
         },
         {
             "individualName": "Adamson, J.",
+            "fullName": "Adamson, J.",
+            "givenName": "J.",
+            "familyName": "Adamson",
             "organisationName": "Centre for Ecology & Hydrology",
             "organisationIdentifier": "https://ror.org/00pggkr55",
             "role": "author",
@@ -793,6 +994,9 @@
         },
         {
             "individualName": "Anderson, R.",
+            "fullName": "Anderson, R.",
+            "givenName": "R.",
+            "familyName": "Anderson",
             "organisationName": "Agri-Food and Biosciences Institute",
             "organisationIdentifier": "https://ror.org/05c5y5q11",
             "role": "author",
@@ -800,6 +1004,9 @@
         },
         {
             "individualName": "Andrews, C.",
+            "fullName": "Andrews, C.",
+            "givenName": "C.",
+            "familyName": "Andrews",
             "organisationName": "Centre for Ecology & Hydrology",
             "organisationIdentifier": "https://ror.org/00pggkr55",
             "role": "author",
@@ -808,6 +1015,9 @@
         },
         {
             "individualName": "Bater, J.",
+            "fullName": "Bater, J.",
+            "givenName": "J.",
+            "familyName": "Bater",
             "organisationName": "Rothamsted Research",
             "organisationIdentifier": "https://ror.org/0347fy350",
             "role": "author",
@@ -815,6 +1025,9 @@
         },
         {
             "individualName": "Bayfield, N.",
+            "fullName": "Bayfield, N.",
+            "givenName": "N.",
+            "familyName": "Bayfield",
             "organisationName": "Centre for Ecology & Hydrology",
             "organisationIdentifier": "https://ror.org/00pggkr55",
             "role": "author",
@@ -822,6 +1035,9 @@
         },
         {
             "individualName": "Beaton, K.",
+            "fullName": "Beaton, K.",
+            "givenName": "K.",
+            "familyName": "Beaton",
             "organisationName": "The James Hutton Institute",
             "organisationIdentifier": "https://ror.org/03rzp5127",
             "role": "author",
@@ -829,6 +1045,9 @@
         },
         {
             "individualName": "Beaumont, D.",
+            "fullName": "Beaumont, D.",
+            "givenName": "D.",
+            "familyName": "Beaumont",
             "organisationName": "Rothamsted Research, North Wyke",
             "organisationIdentifier": "https://ror.org/0347fy350",
             "role": "author",
@@ -836,6 +1055,9 @@
         },
         {
             "individualName": "Benham, S.",
+            "fullName": "Benham, S.",
+            "givenName": "S.",
+            "familyName": "Benham",
             "organisationName": "Forest Research",
             "organisationIdentifier": "https://ror.org/03wcc3744",
             "role": "author",
@@ -843,6 +1065,9 @@
         },
         {
             "individualName": "Bowmaker, V.",
+            "fullName": "Bowmaker, V.",
+            "givenName": "V.",
+            "familyName": "Bowmaker",
             "organisationName": "Cyfoeth Naturiol Cymru - Natural Resources Wales",
             "organisationIdentifier": "https://ror.org/04x65hs26",
             "role": "author",
@@ -850,6 +1075,9 @@
         },
         {
             "individualName": "Britt, C.",
+            "fullName": "Britt, C.",
+            "givenName": "C.",
+            "familyName": "Britt",
             "organisationName": "ADAS",
             "organisationIdentifier": "https://ror.org/006d11e04",
             "role": "author",
@@ -857,6 +1085,9 @@
         },
         {
             "individualName": "Brooker, R.",
+            "fullName": "Brooker, R.",
+            "givenName": "R.",
+            "familyName": "Brooker",
             "organisationName": "Centre for Ecology & Hydrology",
             "organisationIdentifier": "https://ror.org/00pggkr55",
             "role": "author",
@@ -864,6 +1095,9 @@
         },
         {
             "individualName": "Brooks, D.",
+            "fullName": "Brooks, D.",
+            "givenName": "D.",
+            "familyName": "Brooks",
             "organisationName": "Rothamsted Research",
             "organisationIdentifier": "https://ror.org/0347fy350",
             "role": "author",
@@ -871,6 +1105,9 @@
         },
         {
             "individualName": "Brunt, J.",
+            "fullName": "Brunt, J.",
+            "givenName": "J.",
+            "familyName": "Brunt",
             "organisationName": "Forest Research",
             "organisationIdentifier": "https://ror.org/03wcc3744",
             "role": "author",
@@ -878,6 +1115,9 @@
         },
         {
             "individualName": "Common, G.",
+            "fullName": "Common, G.",
+            "givenName": "G.",
+            "familyName": "Common",
             "organisationName": "The James Hutton Institute",
             "organisationIdentifier": "https://ror.org/03rzp5127",
             "role": "author",
@@ -885,6 +1125,9 @@
         },
         {
             "individualName": "Cooper, R.",
+            "fullName": "Cooper, R.",
+            "givenName": "R.",
+            "familyName": "Cooper",
             "organisationName": "The James Hutton Institute",
             "organisationIdentifier": "https://ror.org/03rzp5127",
             "role": "author",
@@ -892,6 +1135,9 @@
         },
         {
             "individualName": "Corbett, S.",
+            "fullName": "Corbett, S.",
+            "givenName": "S.",
+            "familyName": "Corbett",
             "organisationName": "ADAS",
             "organisationIdentifier": "https://ror.org/006d11e04",
             "role": "author",
@@ -899,6 +1145,9 @@
         },
         {
             "individualName": "Critchley, N.",
+            "fullName": "Critchley, N.",
+            "givenName": "N.",
+            "familyName": "Critchley",
             "organisationName": "ADAS",
             "organisationIdentifier": "https://ror.org/006d11e04",
             "role": "author",
@@ -906,6 +1155,9 @@
         },
         {
             "individualName": "Dennis, P.",
+            "fullName": "Dennis, P.",
+            "givenName": "P.",
+            "familyName": "Dennis",
             "organisationName": "The James Hutton Institute",
             "organisationIdentifier": "https://ror.org/03rzp5127",
             "role": "author",
@@ -913,6 +1165,9 @@
         },
         {
             "individualName": "Dick, J.",
+            "fullName": "Dick, J.",
+            "givenName": "J.",
+            "familyName": "Dick",
             "organisationName": "Centre for Ecology & Hydrology",
             "organisationIdentifier": "https://ror.org/00pggkr55",
             "role": "author",
@@ -921,6 +1176,9 @@
         },
         {
             "individualName": "Dodd, B.",
+            "fullName": "Dodd, B.",
+            "givenName": "B.",
+            "familyName": "Dodd",
             "organisationName": "Centre for Ecology & Hydrology",
             "organisationIdentifier": "https://ror.org/00pggkr55",
             "role": "author",
@@ -928,6 +1186,9 @@
         },
         {
             "individualName": "Dodd, N.",
+            "fullName": "Dodd, N.",
+            "givenName": "N.",
+            "familyName": "Dodd",
             "organisationName": "The James Hutton Institute",
             "organisationIdentifier": "https://ror.org/03rzp5127",
             "role": "author",
@@ -935,6 +1196,9 @@
         },
         {
             "individualName": "Donovan, N.",
+            "fullName": "Donovan, N.",
+            "givenName": "N.",
+            "familyName": "Donovan",
             "organisationName": "Rothamsted Research, North Wyke",
             "organisationIdentifier": "https://ror.org/0347fy350",
             "role": "author",
@@ -942,6 +1206,9 @@
         },
         {
             "individualName": "Easter, J.",
+            "fullName": "Easter, J.",
+            "givenName": "J.",
+            "familyName": "Easter",
             "organisationName": "Cyfoeth Naturiol Cymru - Natural Resources Wales",
             "organisationIdentifier": "https://ror.org/04x65hs26",
             "role": "author",
@@ -949,6 +1216,9 @@
         },
         {
             "individualName": "Eaton, E.",
+            "fullName": "Eaton, E.",
+            "givenName": "E.",
+            "familyName": "Eaton",
             "organisationName": "Forest Research",
             "organisationIdentifier": "https://ror.org/03wcc3744",
             "role": "author",
@@ -956,6 +1226,9 @@
         },
         {
             "individualName": "Flexen, M.",
+            "fullName": "Flexen, M.",
+            "givenName": "M.",
+            "familyName": "Flexen",
             "organisationName": "Agri-Food and Biosciences Institute",
             "organisationIdentifier": "https://ror.org/05c5y5q11",
             "role": "author",
@@ -963,6 +1236,9 @@
         },
         {
             "individualName": "Gardiner, A.",
+            "fullName": "Gardiner, A.",
+            "givenName": "A.",
+            "familyName": "Gardiner",
             "organisationName": "Centre for Ecology & Hydrology",
             "organisationIdentifier": "https://ror.org/00pggkr55",
             "role": "author",
@@ -970,6 +1246,9 @@
         },
         {
             "individualName": "Hamilton, D.",
+            "fullName": "Hamilton, D.",
+            "givenName": "D.",
+            "familyName": "Hamilton",
             "organisationName": "The James Hutton Institute",
             "organisationIdentifier": "https://ror.org/03rzp5127",
             "role": "author",
@@ -977,6 +1256,9 @@
         },
         {
             "individualName": "Hargreaves, P.",
+            "fullName": "Hargreaves, P.",
+            "givenName": "P.",
+            "familyName": "Hargreaves",
             "organisationName": "Rothamsted Research",
             "organisationIdentifier": "https://ror.org/0347fy350",
             "role": "author",
@@ -991,6 +1273,9 @@
         },
         {
             "individualName": "Howe, M.",
+            "fullName": "Howe, M.",
+            "givenName": "M.",
+            "familyName": "Howe",
             "organisationName": "Rothamsted Research",
             "organisationIdentifier": "https://ror.org/0347fy350",
             "role": "author",
@@ -998,6 +1283,9 @@
         },
         {
             "individualName": "Kahl, J.",
+            "fullName": "Kahl, J.",
+            "givenName": "J.",
+            "familyName": "Kahl",
             "organisationName": "Centre for Ecology & Hydrology",
             "organisationIdentifier": "https://ror.org/00pggkr55",
             "role": "author",
@@ -1005,6 +1293,9 @@
         },
         {
             "individualName": "Lane, M.",
+            "fullName": "Lane, M.",
+            "givenName": "M.",
+            "familyName": "Lane",
             "organisationName": "Centre for Ecology & Hydrology",
             "organisationIdentifier": "https://ror.org/00pggkr55",
             "role": "author",
@@ -1012,6 +1303,9 @@
         },
         {
             "individualName": "Langan, S.",
+            "fullName": "Langan, S.",
+            "givenName": "S.",
+            "familyName": "Langan",
             "organisationName": "The James Hutton Institute",
             "organisationIdentifier": "https://ror.org/03rzp5127",
             "role": "author",
@@ -1019,6 +1313,9 @@
         },
         {
             "individualName": "Lloyd, D.",
+            "fullName": "Lloyd, D.",
+            "givenName": "D.",
+            "familyName": "Lloyd",
             "organisationName": "Cyfoeth Naturiol Cymru - Natural Resources Wales",
             "organisationIdentifier": "https://ror.org/04x65hs26",
             "role": "author",
@@ -1026,6 +1323,9 @@
         },
         {
             "individualName": "McCarney, B.",
+            "fullName": "McCarney, B.",
+            "givenName": "B.",
+            "familyName": "McCarney",
             "organisationName": "Agri-Food and Biosciences Institute",
             "organisationIdentifier": "https://ror.org/05c5y5q11",
             "role": "author",
@@ -1033,6 +1333,9 @@
         },
         {
             "individualName": "McElarney, Y.",
+            "fullName": "McElarney, Y.",
+            "givenName": "Y.",
+            "familyName": "McElarney",
             "organisationName": "Agri-Food and Biosciences Institute",
             "organisationIdentifier": "https://ror.org/05c5y5q11",
             "role": "author",
@@ -1040,6 +1343,9 @@
         },
         {
             "individualName": "McKenna, C.",
+            "fullName": "McKenna, C.",
+            "givenName": "C.",
+            "familyName": "McKenna",
             "organisationName": "Agri-Food and Biosciences Institute",
             "organisationIdentifier": "https://ror.org/05c5y5q11",
             "role": "author",
@@ -1047,6 +1353,9 @@
         },
         {
             "individualName": "McMillan, S.",
+            "fullName": "McMillan, S.",
+            "givenName": "S.",
+            "familyName": "McMillan",
             "organisationName": "ADAS",
             "organisationIdentifier": "https://ror.org/006d11e04",
             "role": "author",
@@ -1054,6 +1363,9 @@
         },
         {
             "individualName": "Milne, F.",
+            "fullName": "Milne, F.",
+            "givenName": "F.",
+            "familyName": "Milne",
             "organisationName": "The James Hutton Institute",
             "organisationIdentifier": "https://ror.org/03rzp5127",
             "role": "author",
@@ -1061,6 +1373,9 @@
         },
         {
             "individualName": "Milne, L.",
+            "fullName": "Milne, L.",
+            "givenName": "L.",
+            "familyName": "Milne",
             "organisationName": "Centre for Ecology & Hydrology",
             "organisationIdentifier": "https://ror.org/00pggkr55",
             "role": "author",
@@ -1068,6 +1383,9 @@
         },
         {
             "individualName": "Morecroft, M.",
+            "fullName": "Morecroft, M.",
+            "givenName": "M.",
+            "familyName": "Morecroft",
             "organisationName": "Centre for Ecology & Hydrology",
             "organisationIdentifier": "https://ror.org/00pggkr55",
             "role": "author",
@@ -1075,6 +1393,9 @@
         },
         {
             "individualName": "Murphy, M.",
+            "fullName": "Murphy, M.",
+            "givenName": "M.",
+            "familyName": "Murphy",
             "organisationName": "Cyfoeth Naturiol Cymru - Natural Resources Wales",
             "organisationIdentifier": "https://ror.org/04x65hs26",
             "role": "author",
@@ -1082,6 +1403,9 @@
         },
         {
             "individualName": "Nelson, A.",
+            "fullName": "Nelson, A.",
+            "givenName": "A.",
+            "familyName": "Nelson",
             "organisationName": "Agri-Food and Biosciences Institute",
             "organisationIdentifier": "https://ror.org/05c5y5q11",
             "role": "author",
@@ -1089,6 +1413,9 @@
         },
         {
             "individualName": "Nicholson, H.",
+            "fullName": "Nicholson, H.",
+            "givenName": "H.",
+            "familyName": "Nicholson",
             "organisationName": "Agri-Food and Biosciences Institute",
             "organisationIdentifier": "https://ror.org/05c5y5q11",
             "role": "author",
@@ -1096,6 +1423,9 @@
         },
         {
             "individualName": "Pallett, D.",
+            "fullName": "Pallett, D.",
+            "givenName": "D.",
+            "familyName": "Pallett",
             "organisationName": "Centre for Ecology & Hydrology",
             "organisationIdentifier": "https://ror.org/00pggkr55",
             "role": "author",
@@ -1103,6 +1433,9 @@
         },
         {
             "individualName": "Parry, D.",
+            "fullName": "Parry, D.",
+            "givenName": "D.",
+            "familyName": "Parry",
             "organisationName": "Cyfoeth Naturiol Cymru - Natural Resources Wales",
             "organisationIdentifier": "https://ror.org/04x65hs26",
             "role": "author",
@@ -1110,6 +1443,9 @@
         },
         {
             "individualName": "Pearce, I.",
+            "fullName": "Pearce, I.",
+            "givenName": "I.",
+            "familyName": "Pearce",
             "organisationName": "Centre for Ecology & Hydrology",
             "organisationIdentifier": "https://ror.org/00pggkr55",
             "role": "author",
@@ -1117,6 +1453,9 @@
         },
         {
             "individualName": "Pozsgai, G.",
+            "fullName": "Pozsgai, G.",
+            "givenName": "G.",
+            "familyName": "Pozsgai",
             "organisationName": "The James Hutton Institute",
             "organisationIdentifier": "https://ror.org/03rzp5127",
             "role": "author",
@@ -1124,6 +1463,9 @@
         },
         {
             "individualName": "Rose, R.",
+            "fullName": "Rose, R.",
+            "givenName": "R.",
+            "familyName": "Rose",
             "organisationName": "Centre for Ecology & Hydrology",
             "organisationIdentifier": "https://ror.org/00pggkr55",
             "role": "author",
@@ -1131,6 +1473,9 @@
         },
         {
             "individualName": "Schafer, S.",
+            "fullName": "Schafer, S.",
+            "givenName": "S.",
+            "familyName": "Schafer",
             "organisationName": "Centre for Ecology & Hydrology",
             "organisationIdentifier": "https://ror.org/00pggkr55",
             "role": "author",
@@ -1138,6 +1483,9 @@
         },
         {
             "individualName": "Scott, T.",
+            "fullName": "Scott, T.",
+            "givenName": "T.",
+            "familyName": "Scott",
             "organisationName": "Rothamsted Research",
             "organisationIdentifier": "https://ror.org/0347fy350",
             "role": "author",
@@ -1146,6 +1494,9 @@
         },
         {
             "individualName": "Sherrin, L.",
+            "fullName": "Sherrin, L.",
+            "givenName": "L.",
+            "familyName": "Sherrin",
             "organisationName": "Centre for Ecology & Hydrology",
             "organisationIdentifier": "https://ror.org/00pggkr55",
             "role": "author",
@@ -1153,6 +1504,9 @@
         },
         {
             "individualName": "Shortall, C.",
+            "fullName": "Shortall, C.",
+            "givenName": "C.",
+            "familyName": "Shortall",
             "organisationName": "Rothamsted Research",
             "organisationIdentifier": "https://ror.org/0347fy350",
             "role": "author",
@@ -1160,6 +1514,9 @@
         },
         {
             "individualName": "Smith, R.",
+            "fullName": "Smith, R.",
+            "givenName": "R.",
+            "familyName": "Smith",
             "organisationName": "Rothamsted Research, North Wyke",
             "organisationIdentifier": "https://ror.org/0347fy350",
             "role": "author",
@@ -1167,6 +1524,9 @@
         },
         {
             "individualName": "Smith, P.",
+            "fullName": "Smith, P.",
+            "givenName": "P.",
+            "familyName": "Smith",
             "organisationName": "Centre for Ecology & Hydrology",
             "organisationIdentifier": "https://ror.org/00pggkr55",
             "role": "author",
@@ -1174,6 +1534,9 @@
         },
         {
             "individualName": "Tait, R.",
+            "fullName": "Tait, R.",
+            "givenName": "R.",
+            "familyName": "Tait",
             "organisationName": "The James Hutton Institute",
             "organisationIdentifier": "https://ror.org/03rzp5127",
             "role": "author",
@@ -1181,6 +1544,9 @@
         },
         {
             "individualName": "Taylor, C.",
+            "fullName": "Taylor, C.",
+            "givenName": "C.",
+            "familyName": "Taylor",
             "organisationName": "The James Hutton Institute",
             "organisationIdentifier": "https://ror.org/03rzp5127",
             "role": "author",
@@ -1188,6 +1554,9 @@
         },
         {
             "individualName": "Taylor, M.",
+            "fullName": "Taylor, M.",
+            "givenName": "M.",
+            "familyName": "Taylor",
             "organisationName": "Centre for Ecology & Hydrology",
             "organisationIdentifier": "https://ror.org/00pggkr55",
             "role": "author",
@@ -1195,6 +1564,9 @@
         },
         {
             "individualName": "Thurlow, M.",
+            "fullName": "Thurlow, M.",
+            "givenName": "M.",
+            "familyName": "Thurlow",
             "organisationName": "Centre for Ecology & Hydrology",
             "organisationIdentifier": "https://ror.org/00pggkr55",
             "role": "author",
@@ -1202,6 +1574,9 @@
         },
         {
             "individualName": "Turner, A.",
+            "fullName": "Turner, A.",
+            "givenName": "A.",
+            "familyName": "Turner",
             "organisationName": "Cyfoeth Naturiol Cymru - Natural Resources Wales",
             "organisationIdentifier": "https://ror.org/04x65hs26",
             "role": "author",
@@ -1209,6 +1584,9 @@
         },
         {
             "individualName": "Tyson, K.",
+            "fullName": "Tyson, K.",
+            "givenName": "K.",
+            "familyName": "Tyson",
             "organisationName": "Rothamsted Research, North Wyke",
             "organisationIdentifier": "https://ror.org/0347fy350",
             "role": "author",
@@ -1216,6 +1594,9 @@
         },
         {
             "individualName": "Watson, H.",
+            "fullName": "Watson, H.",
+            "givenName": "H.",
+            "familyName": "Watson",
             "organisationName": "The James Hutton Institute",
             "organisationIdentifier": "https://ror.org/03rzp5127",
             "role": "author",
@@ -1223,6 +1604,9 @@
         },
         {
             "individualName": "Whittaker, M.",
+            "fullName": "Whittaker, M.",
+            "givenName": "M.",
+            "familyName": "Whittaker",
             "organisationName": "Cyfoeth Naturiol Cymru - Natural Resources Wales",
             "organisationIdentifier": "https://ror.org/04x65hs26",
             "role": "author",
@@ -1230,6 +1614,9 @@
         },
         {
             "individualName": "Wilkinson, M.",
+            "fullName": "Wilkinson, M.",
+            "givenName": "M.",
+            "familyName": "Wilkinson",
             "organisationName": "Forest Research",
             "organisationIdentifier": "https://ror.org/03wcc3744",
             "role": "author",
@@ -1237,6 +1624,9 @@
         },
         {
             "individualName": "Wood, C.",
+            "fullName": "Wood, C.",
+            "givenName": "C.",
+            "familyName": "Wood",
             "organisationName": "Cyfoeth Naturiol Cymru - Natural Resources Wales",
             "organisationIdentifier": "https://ror.org/04x65hs26",
             "role": "author",

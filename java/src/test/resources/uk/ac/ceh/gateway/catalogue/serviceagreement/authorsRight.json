@@ -5,21 +5,24 @@
       "givenName": "A.",
       "familyName": "Author",
       "organisationName": "Organisation 0",
-      "role": "author"
+      "role": "author",
+      "fullName": "Author, A."
     },
     {
       "individualName": "Author, B.",
       "givenName": "B.",
       "familyName": "Author",
       "organisationName": "Organisation 0",
-      "role": "author"
+      "role": "author",
+      "fullName": "Author, B."
     },
     {
       "individualName": "Author, C.",
       "givenName": "C.",
       "familyName": "Author",
       "organisationName": "Organisation 0",
-      "role": "author"
+      "role": "author",
+      "fullName": "Author, C."
     }
   ]
 }

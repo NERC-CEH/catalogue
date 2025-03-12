@@ -5,28 +5,32 @@
       "givenName": "Author",
       "familyName": "0",
       "organisationName": "Organisation 0",
-      "role": "author"
+      "role": "author",
+      "fullName": "Author 0"
     },
     {
       "individualName": "",
       "givenName": "",
       "familyName": "",
       "organisationName": "Organisation 0",
-      "role": "author"
+      "role": "author",
+      "fullName": ""
     },
     {
       "individualName": "",
       "givenName": "Author",
       "familyName": "",
       "organisationName": "Organisation 0",
-      "role": "author"
+      "role": "author",
+      "fullName": ""
     },
     {
       "individualName": "",
       "givenName": "",
       "familyName": "Author",
       "organisationName": "Organisation 0",
-      "role": "author"
+      "role": "author",
+      "fullName": ""
     },
     {
       "organisationName": "Organisation 0",
@@ -37,7 +41,8 @@
       "givenName": "Distributor",
       "familyName": "0",
       "organisationName": "Organisation 0",
-      "role": "distributor"
+      "role": "distributor",
+      "fullName": "Distributor 0"
     }
   ]
 }

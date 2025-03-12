@@ -6,7 +6,8 @@
       "familyName": "0",
       "organisationName": "Organisation 0",
       "role": "owner",
-      "email": "test@test.com"
+      "email": "test@test.com",
+      "fullName": "Author 0"
     },
     {
       "individualName": "Author 1",
@@ -14,7 +15,8 @@
       "familyName": "1",
       "organisationName": "Organisation 0",
       "role": "owner",
-      "email": "test@test.com"
+      "email": "test@test.com",
+      "fullName": "Author 1"
     },
     {
       "individualName": "Author 2",
@@ -22,7 +24,8 @@
       "familyName": "2",
       "organisationName": "Organisation 0",
       "role": "owner",
-      "email": "test@test.com"
+      "email": "test@test.com",
+      "fullName": "Author 2"
     },
     {
       "individualName": "Distributor 0",
@@ -30,7 +33,8 @@
       "familyName": "0",
       "organisationName": "Organisation 0",
       "role": "owner",
-      "email": "test@test.com"
+      "email": "test@test.com",
+      "fullName": "Distributor 0"
     }
   ]
 }
