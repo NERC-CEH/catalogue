@@ -73,6 +73,8 @@ public class XmlTemplateTest {
         gemini.setResourceType(resourceType);
         ResponsibleParty contact = ResponsibleParty.builder()
             .individualName("John Doe")
+            .givenName("John")
+            .familyName("Doe")
             .organisationName("Example Research Institute")
             .email("contact@example.org")
             .role("pointOfContact")
@@ -145,6 +147,8 @@ public class XmlTemplateTest {
 
         ResponsibleParty distributor = ResponsibleParty.builder()
             .individualName("John Doe")
+            .givenName("John")
+            .familyName("Doe")
             .organisationName("Example Research Institute")
             .email("contact@example.org")
             .role("distributor")
