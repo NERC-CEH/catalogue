@@ -57,7 +57,7 @@ public class CitationServiceTest {
         //Then
         assertNotNull(citation);
         assertEquals(citation.getAuthors().size(), 1);
-        assertTrue(citation.getAuthors().contains("John Business"));
+        assertTrue(citation.getAuthors().contains("Author, A."));
         assertThat("DOI present", citation.getDoi(), equalTo("10.5285/myDoI"));
         assertThat("Title present", citation.getTitle(), equalTo("document title"));
         assertThat("Year is correct", citation.getYear(), equalTo(2000));
@@ -160,9 +160,9 @@ public class CitationServiceTest {
     private ResponsibleParty author() {
         return ResponsibleParty
                 .builder()
-                .individualName("John Business")
-                .givenName("John")
-                .familyName("Business")
+                .individualName("Author, A.")
+                .givenName("A.")
+                .familyName("Author")
                 .role("author")
                 .build();
     }

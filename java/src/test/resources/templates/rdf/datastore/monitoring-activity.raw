@@ -46,7 +46,9 @@
   },
   "responsibleParties": [
     {
-      "individualName": "Test contact person",
+      "individualName": "Test, Person",
+      "givenName": "Person",
+      "familyName": "Test",
       "organisationName": "Natural Resources Wales",
       "organisationIdentifier": "https://ror.org/04x65hs26",
       "role": "pointOfContact",
@@ -59,7 +61,8 @@
         "postalCode": "1234",
         "country": "UK"
       },
-      "pointOfContact": "Natural Resources Wales"
+      "pointOfContact": "Natural Resources Wales",
+      "fullName": "Test, Person",
     }
   ],
   "operatingPeriod": [

@@ -20,13 +20,11 @@
       <gmd:MD_Distributor>
       <gmd:distributorContact>
       <gmd:CI_ResponsibleParty>
-
         <#if distributorContact.fullName?has_content >
           <#local distributorContactName = distributorContact.fullName >
         <#else>
           <#local distributorContactName = distributorContact.individualName >
         </#if>
-
         <#if distributorContactName?has_content>
         <gmd:individualName><gco:CharacterString>${distributorContactName}</gco:CharacterString></gmd:individualName>
         </#if>

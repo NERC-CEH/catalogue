@@ -62,19 +62,21 @@
   },
   "responsibleParties": [
     {
-      "individualName": "Test contact person",
-      "organisationName": "Scottish Government",
-      "organisationIdentifier": "https://ror.org/04v2xmd71",
+      "individualName": "Person, Test",
+      "givenName": "Test",
+      "familyName": "Person",
+      "organisationName": "Defra",
+      "organisationIdentifier": "https://ror.org/00tnppw48",
       "role": "funder",
-      "email": "info@eidc.ac.uk",
-      "nameIdentifier": "https://orcid.org/0000-0001-2345-6789",
+      "email": "defra.helpline@defra.gsi.gov.uk",
       "address": {
         "deliveryPoint": "Test contact address",
         "city": "Test contact City",
         "administrativeArea": "Test contact County",
         "postalCode": "1234",
         "country": "UK"
-      }
+      },
+      "fullName": "Person, Test"
     }
   ],
   "operatingPeriod": [

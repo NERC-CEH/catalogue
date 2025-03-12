@@ -72,7 +72,7 @@ public class XmlTemplateTest {
         Keyword resourceType = Keyword.builder().value("dataset").URI("example_uri").build();
         gemini.setResourceType(resourceType);
         ResponsibleParty contact = ResponsibleParty.builder()
-            .individualName("John Doe")
+            .individualName("Doe, John")
             .givenName("John")
             .familyName("Doe")
             .organisationName("Example Research Institute")
@@ -146,7 +146,7 @@ public class XmlTemplateTest {
         gemini.setDistributionFormats(List.of(format));
 
         ResponsibleParty distributor = ResponsibleParty.builder()
-            .individualName("John Doe")
+            .individualName("Doe, John")
             .givenName("John")
             .familyName("Doe")
             .organisationName("Example Research Institute")

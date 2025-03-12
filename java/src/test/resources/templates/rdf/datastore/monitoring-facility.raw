@@ -55,7 +55,9 @@
   "mobile": true,
   "responsibleParties": [
     {
-      "individualName": "Test contact person",
+      "individualName": "Test, Person",
+      "givenName": "Person",
+      "familyName": "Test",
       "organisationName": "Environment Agency",
       "organisationIdentifier": "https://ror.org/01zewfb16",
       "role": "pointOfContact",
@@ -68,7 +70,8 @@
         "postalCode": "1234",
         "country": "UK"
       },
-      "pointOfContact": "Environment Agency"
+      "pointOfContact": "Environment Agency",
+      "fullName": "Test, Person"
     }
   ],
   "operatingPeriod": [

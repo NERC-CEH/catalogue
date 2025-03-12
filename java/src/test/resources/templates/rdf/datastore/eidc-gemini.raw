@@ -145,7 +145,9 @@
   ],
   "distributorContacts": [
     {
-      "individualName": "Test distribution person",
+      "individualName": "Distribution, person",
+      "givenName": "person",
+      "familyName": "Distribution",
       "organisationName": "NERC EDS Environmental Information Data Centre",
       "organisationIdentifier": "https://ror.org/04xw4m193",
       "role": "distributor",
@@ -157,12 +159,15 @@
         "administrativeArea": "Test distribution County",
         "postalCode": "4321",
         "country": "US"
-      }
+      },
+      "fullName": "Distribution, person"
     }
   ],
   "responsibleParties": [
     {
-      "individualName": "Test contact author",
+      "individualName": "Contact, Author",
+      "givenName": "Author",
+      "familyName": "Contact",
       "organisationName": "UK Centre for Ecology & Hydrology",
       "organisationIdentifier": "https://ror.org/00pggkr55",
       "role": "author",
@@ -174,10 +179,13 @@
         "administrativeArea": "Test author County",
         "postalCode": "1234",
         "country": "UK"
-      }
+      },
+      "fullName": "Contact, Author"
     },
     {
-      "individualName": "Test contact point of contact",
+      "individualName": "Contact, pointOfContact",
+      "givenName": "pointOfContact",
+      "familyName": "Contact",
       "organisationName": "UK Centre for Ecology & Hydrology",
       "organisationIdentifier": "https://ror.org/00pggkr55",
       "role": "pointOfContact",
@@ -190,10 +198,13 @@
         "postalCode": "LA1 4AP",
         "country": "United Kingdom"
       },
-      "pointOfContact": "UK Centre for Ecology & Hydrology"
+      "pointOfContact": "UK Centre for Ecology & Hydrology",
+      "fullName": "Contact, pointOfContact"
     },
     {
-      "individualName": "Test contact custodian",
+      "individualName": "Test, Custodian",
+      "givenName": "Custodian",
+      "familyName": "Test",
       "organisationName": "NERC EDS Environmental Information Data Centre",
       "organisationIdentifier": "https://ror.org/04xw4m193",
       "role": "custodian",
@@ -205,10 +216,13 @@
         "administrativeArea": "Test custodian county",
         "postalCode": "3456",
         "country": "Germany"
-      }
+      },
+      "fullName": "Test, Custodian"
     },
     {
-      "individualName": "Test contact publisher",
+      "individualName": "Test, Publisher",
+      "givenName": "Publisher",
+      "familyName": "Test",
       "organisationName": "NERC EDS Environmental Information Data Centre",
       "organisationIdentifier": "https://ror.org/04xw4m193",
       "role": "publisher",
@@ -220,7 +234,8 @@
         "administrativeArea": "Test publisher county",
         "postalCode": "6789",
         "country": "Finland"
-      }
+      },
+      "fullName": "Test, Publisher"
     }
   ],
   "temporalExtents": [
@@ -330,7 +345,9 @@
   "publicationDate": "2025-02-05T00:00:00.000+00:00",
   "authors": [
     {
-      "individualName": "Test contact author",
+      "individualName": "Contact, Author",
+      "givenName": "Author",
+      "familyName": "Contact",
       "organisationName": "UK Centre for Ecology & Hydrology",
       "organisationIdentifier": "https://ror.org/00pggkr55",
       "role": "author",
@@ -342,7 +359,8 @@
         "administrativeArea": "Test author County",
         "postalCode": "1234",
         "country": "UK"
-      }
+      },
+      "fullName": "Contact, Author"
     }
   ],
   "resourceStatus": "Available",
@@ -351,7 +369,9 @@
   ],
   "custodians": [
     {
-      "individualName": "Test contact custodian",
+      "individualName": "Test, Custodian",
+      "givenName": "Custodian",
+      "familyName": "Test",
       "organisationName": "NERC EDS Environmental Information Data Centre",
       "organisationIdentifier": "https://ror.org/04xw4m193",
       "role": "custodian",
@@ -363,12 +383,15 @@
         "administrativeArea": "Test custodian county",
         "postalCode": "3456",
         "country": "Germany"
-      }
+      },
+      "fullName": "Test, Custodian"
     }
   ],
   "pointsOfContact": [
     {
-      "individualName": "Test contact point of contact",
+      "individualName": "Contact, pointOfContact",
+      "givenName": "pointOfContact",
+      "familyName": "Contact",
       "organisationName": "UK Centre for Ecology & Hydrology",
       "organisationIdentifier": "https://ror.org/00pggkr55",
       "role": "pointOfContact",
@@ -381,12 +404,15 @@
         "postalCode": "LA1 4AP",
         "country": "United Kingdom"
       },
-      "pointOfContact": "UK Centre for Ecology & Hydrology"
+      "pointOfContact": "UK Centre for Ecology & Hydrology",
+      "fullName": "Contact, pointOfContact"
     }
   ],
   "publishers": [
     {
-      "individualName": "Test contact publisher",
+      "individualName": "Test, Publisher",
+      "givenName": "Publisher",
+      "familyName": "Test",
       "organisationName": "NERC EDS Environmental Information Data Centre",
       "organisationIdentifier": "https://ror.org/04xw4m193",
       "role": "publisher",
@@ -398,7 +424,8 @@
         "administrativeArea": "Test publisher county",
         "postalCode": "6789",
         "country": "Finland"
-      }
+      },
+      "fullName": "Test, Publisher"
     }
   ],
   "licences": [
