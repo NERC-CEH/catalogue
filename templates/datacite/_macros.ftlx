@@ -1,9 +1,9 @@
 <#macro dataciteContact contact contactType contributorRole="">
   <${contactType}  <#if contributorRole?has_content>contributorType="${contributorRole}"</#if> >
-    <#if contact.familyName?has_content && contact.givenName?has_content>
-      <${contactType}Name nameType="Personal">${contact.familyName}, ${contact.givenName}</${contactType}Name>
-      <givenName>${contact.givenName}</givenName> ??
-      <familyName>${contact.familyName}</familyName>
+    <#if contact.fullName?has_content>
+      <${contactType}Name nameType="Personal">${contact.fullName}</${contactType}Name>
+      <#if contact.givenName?has_content><givenName>${contact.givenName}</givenName></#if>
+      <#if contact.familyName?has_content><familyName>${contact.familyName}</familyName></#if>
 
       <#if contact.isOrcid()>
       <nameIdentifier nameIdentifierScheme="ORCID" schemeURI="https://orcid.org/">${contact.nameIdentifier}</nameIdentifier>

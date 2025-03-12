@@ -42,7 +42,3 @@ export default _.template(`
     </div>
   </div>
 `)
-
-
-
-

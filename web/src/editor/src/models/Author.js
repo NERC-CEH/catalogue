@@ -20,9 +20,6 @@ export default Backbone.Model.extend({
       email
     } = attrs
     const {
-      individualName
-    } = attrs
-    const {
       familyName
     } = attrs
     const {

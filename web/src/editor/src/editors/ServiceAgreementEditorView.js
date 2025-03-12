@@ -84,7 +84,6 @@ export default EditorView.extend({
           model: this.model,
           label: 'Authors',
           text: `<p>List authors of the dataset below in the order in which they will appear in the citation.</p>
-<p>Authors' names must be in the format <code>Surname, Initial(s)</code>. For example, <code>Smith, K.P.</code> <strong>not</strong> <code>Kim P. Smith</code></p>
 <p>Authors' details will be published in a public data catalogue and held in EIDC systems.  UK law requires us to inform all individuals listed that they are being proposed as an author.  We therefore require a current, valid email address for all living authors.  Those without valid contact details are not eligible for authorship.  Please see our <a href='http://eidc.ceh.ac.uk/policies/privacy' target='_blank' rel='noopener noreferrer'>Privacy Notice</a> for further information</p>\
 `,
           required: true
@@ -385,7 +384,7 @@ export default EditorView.extend({
           label: 'Related Data Holdings',
           text: `
 <p>Please identify any related data resources already curated by, or being deposited with, the EIDC that you wish to link your data resource to, and the nature of the relationship.
-Details of relationships we can accommodate are available at: <a href='eidc.ac.uk/metadata/relationships' target='_blank' rel='noopener noreferrer'>eidc.ac.uk/metadata/relationships</a></p>
+Details of relationships we can accommodate are available at: <a href='https://eidc.ac.uk/metadata/relationships' target='_blank' rel='noopener noreferrer'>eidc.ac.uk/metadata/relationships</a></p>
 <p>e.g. Related data resource: 2e3bec6e-1e62-42d5-a221-016d0ad447d9. Relationship: uses.</p>
 `
         }),

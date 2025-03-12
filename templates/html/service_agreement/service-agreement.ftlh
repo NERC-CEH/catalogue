@@ -267,7 +267,11 @@
     <#if value!=''>
     <div class="row key-value">
         <div class="key">${key}</div>
-        <div class="value">${value}</div>
+        <div class="value">
+              <#list value?split("\n") as line>
+                  ${line}<#sep><br></#sep>
+              </#list>
+        </div>
     </div>
     </#if>
 </#macro>
@@ -283,7 +287,7 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Author name</th>
+                        <th>Name</th>
                         <th>Affiliation</th>
                         <th>Email address</th>
                         <th>ORCiD</th>
@@ -292,7 +296,7 @@
                 <tbody>
                 <#items as author>
                     <tr>
-                        <td><#if author.individualName?has_content >${author.individualName}<#else><span class="text-danger">missing</span></#if></td>
+                        <td><#if author.fullName?has_content >${author.fullName}<#elseif author.individualName?has_content >${author.individualName}<#else><span class="text-danger">missing or incomplete</span></#if></td>
                         <td><#if author.organisationName?has_content >${author.organisationName}<#else><span class="text-danger">missing</span></#if></td>
                         <td><#if author.email?has_content>${author.email}<#else><span class="text-danger">missing</span></#if></td>
                         <td><#if author.nameIdentifier?has_content >${author.nameIdentifier}<#else><small class="text-muted">Not provided</small></#if></td>

@@ -1,6 +1,8 @@
 <contributors>
     <contributor contributorType="ContactPerson">
-        <contributorName nameType="Personal">Bob</contributorName>
+        <contributorName nameType="Personal">Bob Smith</contributorName>
+        <givenName>Bob</givenName>
+        <familyName>Smith</familyName>
         <affiliation>Example Inc.</affiliation>
     </contributor>
     <contributor contributorType="RightsHolder">

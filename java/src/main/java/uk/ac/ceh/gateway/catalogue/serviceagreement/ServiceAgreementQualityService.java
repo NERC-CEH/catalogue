@@ -172,7 +172,7 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
         }
 
         if (authors.stream().anyMatch(author -> !AUTHOR_PATTERN.matcher(author.get("givenName")).matches() || fieldIsMissing(author, "givenName"))) {
-            toReturn.add(new MetadataCheck("Author's given name is missing or incorrect", ERROR));
+            toReturn.add(new MetadataCheck("Author's initials (given name is missing or incorrect", ERROR));
         }
 
         if (authors.stream().anyMatch(author -> fieldIsMissing(author, "organisationName"))) {

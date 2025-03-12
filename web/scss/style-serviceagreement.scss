@@ -1,4 +1,15 @@
 .serviceAgreement {
+
+    .editor {
+        .row.disabled {
+            label {
+                color: #CCC;
+                font-weight: 300;
+                text-decoration: line-through;
+            }
+        }
+    }
+
     .title {
         .eidcLogo {
             display: none;

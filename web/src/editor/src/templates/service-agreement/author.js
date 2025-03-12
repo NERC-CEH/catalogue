@@ -3,7 +3,7 @@ import _ from 'underscore'
 export default _.template(`
   <div class="row">
     <div class="col-lg-2">
-       <label>Name</label>0
+       <label>Name</label>
     </div>
     <div class="col-lg-2">
         <label class="fst-italic" for="contacts<%= data.index %>honorificPrefix">Title</label>
@@ -16,23 +16,23 @@ export default _.template(`
           <option value="Professor">Professor</option>
         </select>
     </div>
-    <div class="col-lg-4">
-        <label class="fst-italic" for="contacts<%= data.index %>givenName">Given name</label>
+    <div class="col-lg-4 required">
+        <label class="fst-italic" for="contacts<%= data.index %>givenName">Initial(s)</label>
         <input data-name='givenName' placeholder="e.g., P.G." class="editor-input" id="contacts<%= data.index %>givenName" value="<%= data.givenName %>">
     </div>
-    <div class="col-lg-4">
+    <div class="col-lg-4 required">
         <label class="fst-italic" for="contacts<%= data.index %>familyName">Family name</label>
         <input data-name='familyName' placeholder="Wodehouse" class="editor-input" id="contacts<%= data.index %>familyName" value="<%= data.familyName %>">
     </div>
   </div>
-  <div class="row">
-    <div class="col-sm-2 required">
+  <div class="row disabled">
+    <div class="col-sm-2">
         <label for="contacts<%= data.index %>Name">
           Full name
         </label>
     </div>
-    <div class="col-sm-10 required">
-       <input data-name='individualName' disabled class="editor-input" id="contacts<%= data.index %>Name" value="<%= data.individualName %>">
+    <div class="col-sm-10">
+       <input data-name='individualName' disabled class="editor-input form-control-sm" id="contacts<%= data.index %>Name" value="<%= data.individualName %>">
     </div>
   </div>
   <div class="row">
