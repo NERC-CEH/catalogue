@@ -225,7 +225,8 @@ public class GeminiDocumentTest {
     private List<ResponsibleParty> getResponsibleParties(String role) {
         ResponsibleParty responsibleParty = ResponsibleParty.builder()
             .individualName("Bob Smith")
-            .fulllName("Bob Smith")
+            .familyName("Smith")
+            .givenName("Bob")
             .role(role)
             .build();
         return Arrays.asList(new ResponsibleParty[] {responsibleParty});

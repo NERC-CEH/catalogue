@@ -332,7 +332,8 @@ public class DataciteTemplateTest {
                 .builder()
                 .role("pointOfContact")
                 .individualName("Bob Smith")
-                .fullName("Bob Smith")
+                .givenName("Bob")
+                .familyName("Smith")
                 .organisationName("Example Inc.")
                 .build();
             val rightsHolder = ResponsibleParty
