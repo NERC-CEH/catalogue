@@ -3,5 +3,5 @@ a dcmitype:Software ;
 
 <#--Authors-->
 <#if authors?has_content>
-  dct:creator <@contactList authors "a" />  ;
+  dcterms:creator <@contactList authors "a" />  ;
 </#if>

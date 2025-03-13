@@ -3,23 +3,23 @@
     <identifier identifierType="DOI">doi:123123</identifier>
     <creators>
         <creator>
-            <creatorName>Bob Smith</creatorName>
+            <creatorName nameType="Personal">Smith, B.</creatorName>
             <givenName>Bob</givenName>
             <familyName>Smith</familyName>
             <affiliation>Example Inc.</affiliation>
         </creator>
         <creator>
-            <creatorName>George Smith</creatorName>
+            <creatorName nameType="Personal">Smith, G.</creatorName>
             <givenName>George</givenName>
             <familyName>Smith</familyName>
-            <affiliation affiliationIdentifier="https://ror.org/00pggkr55" affiliationIdentifierScheme="ROR" SchemeURI="https://ror.org/">Science Inc.</affiliation>
+            <nameIdentifier nameIdentifierScheme="ORCID" schemeURI="https://orcid.org/">https://orcid.org/0000-0001-5727-2427</nameIdentifier>
+            <affiliation>Science Inc.</affiliation>
         </creator>
         <creator>
-            <creatorName>Helen Smith</creatorName>
+            <creatorName nameType="Personal">Smith, H.</creatorName>
             <givenName>Helen</givenName>
             <familyName>Smith</familyName>
-            <nameIdentifier schemeURI="https://orcid.org/" nameIdentifierScheme="ORCID">https://orcid.org/0000-0001-5727-2427</nameIdentifier>
-            <affiliation affiliationIdentifier="https://ror.org/04xw4m193" affiliationIdentifierScheme="ROR" SchemeURI="https://ror.org/">EIDC</affiliation>
+            <affiliation affiliationIdentifier="https://ror.org/04xw4m193" affiliationIdentifierScheme="ROR">EIDC</affiliation>
         </creator>
     </creators>
     <titles>
@@ -29,7 +29,7 @@
     <publicationYear>2025</publicationYear>
     <contributors>
         <contributor contributorType="ContactPerson">
-            <contributorName nameType="Personal">Bob Smith</contributorName>
+            <contributorName nameType="Personal">Smith, B.</contributorName>
             <givenName>Bob</givenName>
             <familyName>Smith</familyName>
             <affiliation>Example Inc.</affiliation>

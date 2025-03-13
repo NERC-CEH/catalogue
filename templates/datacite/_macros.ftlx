@@ -1,32 +1,19 @@
 <#macro dataciteContact contact contactType contributorRole="">
-  <${contactType}  <#if contributorRole?has_content>contributorType="${contributorRole}"</#if> >
+  <${contactType}<#if contributorRole?has_content> contributorType="${contributorRole}"</#if>>
     <#if contact.fullName?has_content>
       <${contactType}Name nameType="Personal">${contact.fullName}</${contactType}Name>
       <#if contact.givenName?has_content><givenName>${contact.givenName}</givenName></#if>
       <#if contact.familyName?has_content><familyName>${contact.familyName}</familyName></#if>
 
       <#if contact.isOrcid()>
-      <nameIdentifier nameIdentifierScheme="ORCID" schemeURI="https://orcid.org/">${contact.nameIdentifier}</nameIdentifier>
-      </#if>
-
-      <#if contact.isRor()>
-        <affiliation affiliationIdentifier="${contact.organisationIdentifier}" affiliationIdentifierScheme="ROR">${contact.organisationName}</affiliation>
-      <#else>
-        <affiliation>${contact.organisationName}</affiliation>
-      </#if>
-
-    <#elseif contact.individualName?has_content>
-      <${contactType}Name nameType="Personal">${contact.individualName}</${contactType}Name>
-      <#if contact.isOrcid()>
         <nameIdentifier nameIdentifierScheme="ORCID" schemeURI="https://orcid.org/">${contact.nameIdentifier}</nameIdentifier>
       </#if>
 
       <#if contact.isRor()>
         <affiliation affiliationIdentifier="${contact.organisationIdentifier}" affiliationIdentifierScheme="ROR">${contact.organisationName}</affiliation>
-      <#else>
+      <#elseif contact.organisationName?has_content>
         <affiliation>${contact.organisationName}</affiliation>
       </#if>
-
     <#else>
       <${contactType}Name nameType="Organizational">${contact.organisationName}</${contactType}Name>
 

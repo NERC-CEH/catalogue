@@ -97,4 +97,52 @@ class ResponsiblePartyTest {
         //then
         assertFalse(responsibleParty.isRor());
     }
+
+    @Test
+    public void testGetFullNameWithFamilyAndGivenName() {
+        ResponsibleParty party = ResponsibleParty.builder()
+            .familyName("Doe")
+            .givenName("john")
+            .build();
+        assertEquals("Doe, J.", party.getFullName());
+    }
+
+    @Test
+    public void testGetFullNameWithFamilyAndMultipleGivenNames() {
+        ResponsibleParty party = ResponsibleParty.builder()
+            .familyName("Doe")
+            .givenName("John Paul")
+            .build();
+        assertEquals("Doe, J.P.", party.getFullName());
+    }
+
+    @Test
+    public void testGetFullNameWithIndividualName() {
+        ResponsibleParty party = ResponsibleParty.builder()
+            .individualName("John, D.")
+            .build();
+        assertEquals("John, D.", party.getFullName());
+    }
+
+    @Test
+    public void testGetFullNameWithEmptyNames() {
+        ResponsibleParty party = ResponsibleParty.builder().build();
+        assertEquals("", party.getFullName());
+    }
+
+    @Test
+    public void testGetFullNameWithOnlyFamilyName() {
+        ResponsibleParty party = ResponsibleParty.builder()
+            .familyName("Doe")
+            .build();
+        assertEquals("", party.getFullName());
+    }
+
+    @Test
+    public void testGetFullNameWithOnlyGivenName() {
+        ResponsibleParty party = ResponsibleParty.builder()
+            .givenName("John")
+            .build();
+        assertEquals("", party.getFullName());
+    }
 }

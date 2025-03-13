@@ -6,7 +6,7 @@ PREFIX : <${baseUri}/id/>
 
 <${catalogue}/documents>
    a dcat:Catalog ;
-  dct:title "${title} digital asset register"@en ;
+  dcterms:title "${title} digital asset register"@en ;
   foaf:homepage <https://catalogue.ceh.ac.uk/${catalogue}/documents> ;
 
   <#list records>

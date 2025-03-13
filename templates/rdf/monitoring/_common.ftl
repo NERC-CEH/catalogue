@@ -9,7 +9,7 @@
 <#macro common rdftype="" other="" prefixed=true>
   <#if prefixed>
   PREFIX : <${uri?replace(id,"")}>
-  PREFIX dct: <http://purl.org/dc/terms/>
+  PREFIX dcterms: <http://purl.org/dc/terms/>
   PREFIX skos: <http://www.w3.org/2008/05/skos#>
   PREFIX ef: <http://onto.ceh.ac.uk/EF#>
   PREFIX sosa: <http://www.w3.org/ns/sosa/>
@@ -18,9 +18,9 @@
 
   :${id}
     a ${rdftype} ;
-    dct:title "${title}" ;
+    dcterms:title "${title}" ;
     <#if description?has_content>
-      dct:description <@displayLiteral description /> ;
+      dcterms:description <@displayLiteral description /> ;
     </#if>
     <#if boundingBox?has_content>
       ef:boundingBox "POLYGON${boundingBox.coordinates?replace('[[[','((')?replace(']]]','))')?replace('[^]], ',' ','r')?replace(']', '')?replace('[', '')}"^^geo:wktLiteral ;
@@ -28,7 +28,7 @@
 
     <#nested>
 
-    dct:language <http://id.loc.gov/vocabulary/iso639-1/en>;
+    dcterms:language <http://id.loc.gov/vocabulary/iso639-1/en>;
     <#-- other triples not about <id>, e.g. authors, organisations -->
     ${other}
 

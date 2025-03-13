@@ -1,27 +1,27 @@
 :${id}
-  dct:title <@displayLiteral title /> ;
+  dcterms:title <@displayLiteral title /> ;
 
   <@identifiers resourceIdentifiers />
 
   <#if datacitable?string=='true' && citation?has_content>
       <#assign citationString =  citation.authors?join(', ') + " (" + citation.year?string("0") +"}. " + citation.title + ". " + citation.publisher + ". " + citation.url?trim>
-      dct:bibliographicCitation <@displayLiteral citationString/> ;
+      dcterms:bibliographicCitation <@displayLiteral citationString/> ;
   </#if>
 
   <#if resourceStatus != "Deleted">
     <#if description?has_content>
-      dct:description <@displayLiteral description /> ;
+      dcterms:description <@displayLiteral description /> ;
     </#if>
 
     <#if lineage?has_content>
-      dct:provenance [
-        a dct:ProvenanceStatement ;
+      dcterms:provenance [
+        a dcterms:ProvenanceStatement ;
         rdfs:label <@displayLiteral lineage />
       ] ;
     </#if>
 
     <#list boundingBoxes as extent>
-     dct:spatial [
+     dcterms:spatial [
         a dcterms:Location ;
         dcat:bbox "${extent.wkt}"^^geo:wktLiteral ;
       ] ;
@@ -38,27 +38,27 @@
 
     <#--Publisher-->
     <#if publishers?has_content>
-      dct:publisher <@contactList publishers "pub" /> ;
+      dcterms:publisher <@contactList publishers "pub" /> ;
     </#if>
 
     <#--Relationships-->
     <#list jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#memberOf")>
-      dct:isPartOf <#items as item><${item.href}><#sep>, </#items> ;
+      dcterms:isPartOf <#items as item><${item.href}><#sep>, </#items> ;
     </#list>
     <#list jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#supersedes")>
-      dct:replaces <#items as item><${item.href}><#sep>, </#items> ;
+      dcterms:replaces <#items as item><${item.href}><#sep>, </#items> ;
     </#list>
     <#list jena.relationships(uri, "https://vocabs.ceh.ac.uk/eidc#relatedTo")>
-      dct:relation <#items as item><${item.href}><#sep>, </#items> ;
+      dcterms:relation <#items as item><${item.href}><#sep>, </#items> ;
     </#list>
 
     <#--Citations-->
     <#if incomingCitations?has_content>
-      dct:isReferencedBy <@incomingCitationList /> ;
+      dcterms:isReferencedBy <@incomingCitationList /> ;
     </#if>
 
     <#if allKeywords?has_content>
-      dct:subject <@keywordList allKeywords/> ;
+      dcterms:subject <@keywordList allKeywords/> ;
     </#if>
 
     <#if observedProperty?has_content>
@@ -79,7 +79,7 @@
       <#include "turtle/_application.ftl">
     </#if>
 
-    dct:language <http://id.loc.gov/vocabulary/iso639-1/en> . <#-- leave here to close all the statements about the dataset -->
+    dcterms:language <http://id.loc.gov/vocabulary/iso639-1/en> . <#-- leave here to close all the statements about the dataset -->
 
     <#if pointsOfContact?has_content>
       <@contactDetail pointsOfContact "c" />
@@ -111,13 +111,13 @@
 
     <@fundingDetail />
   <#else>
-    dct:description "This resource is no longer available please contact the Environmental Information Data Centre for more details" ;
+    dcterms:description "This resource is no longer available please contact the Environmental Information Data Centre for more details" ;
     .
   </#if>
 
   <#macro identifiers resourceIdentifiers>
     <#list resourceIdentifiers >
-    dct:identifier <#t>
+    dcterms:identifier <#t>
       <#items as id>
         "<#t>
         <#if id.codeSpace?starts_with("doi")>

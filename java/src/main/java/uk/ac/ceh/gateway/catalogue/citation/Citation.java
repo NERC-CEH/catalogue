@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.citation;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Value;
 import uk.ac.ceh.gateway.catalogue.converters.ConvertUsing;
@@ -26,10 +25,5 @@ public class Citation {
 
     public String getUrl() {
         return "https://doi.org/" + doi;
-    }
-
-    @JsonIgnore
-    public String getDoiDisplay() {
-        return "doi:" + doi;
     }
 }

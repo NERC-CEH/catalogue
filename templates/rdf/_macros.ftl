@@ -188,7 +188,7 @@
       </#if>
 
       ${citationIdentifier?trim} a <http://purl.org/spar/fabio/Expression> ;
-        <#if citation.description?has_content>dct:bibliographicCitation <@displayLiteral citation.description?replace("–","-")?replace("…","...") />; </#if>
+        <#if citation.description?has_content>dcterms:bibliographicCitation <@displayLiteral citation.description?replace("–","-")?replace("…","...") />; </#if>
         .
     </#list>
   </#if>
@@ -197,8 +197,8 @@
 <#macro temporal>
   <#list temporalExtents as extent>
     <#if extent.begin?has_content || extent.end?has_content>
-      dct:temporal
-        [ a dct:PeriodOfTime ;
+      dcterms:temporal
+        [ a dcterms:PeriodOfTime ;
           <#if extent.begin?has_content>
             dcat:startDate "${extent.begin?date}"^^xsd:date ;
           </#if>

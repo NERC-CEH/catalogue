@@ -1,5 +1,5 @@
 <#if licences?has_content>
-  dct:license <#t>
+  dcterms:license <#t>
   <#list licences as licence>
     <#if licence.uri?has_content>
       <#if licence.uri?contains("/licences/OGL/")>
@@ -8,7 +8,7 @@
         <${licence.uri?trim}>
       </#if>
     <#elseif licence.value?has_content>
-      [ a dct:LicenseDocument;
+      [ a dcterms:LicenseDocument;
       rdfs:label <@displayLiteral licence.value />;
       ]
     </#if>
@@ -17,7 +17,7 @@
 </#if>
 
 <#if accessLimitation?has_content>
-    dct:accessRights [ a dct:RightsStatement ;
+    dcterms:accessRights [ a dcterms:RightsStatement ;
       odrs:attributionText <@displayLiteral accessLimitation.value /> ;
       <#if accessLimitation.uri?has_content>odrs:attributionUrl <${accessLimitation.uri?trim}> </#if>
       ] ;

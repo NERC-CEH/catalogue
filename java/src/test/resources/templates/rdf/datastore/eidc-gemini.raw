@@ -145,8 +145,8 @@
   ],
   "distributorContacts": [
     {
-      "individualName": "Distribution, person",
-      "givenName": "person",
+      "individualName": "Distribution, Person",
+      "givenName": "Person",
       "familyName": "Distribution",
       "organisationName": "NERC EDS Environmental Information Data Centre",
       "organisationIdentifier": "https://ror.org/04xw4m193",
@@ -160,7 +160,7 @@
         "postalCode": "4321",
         "country": "US"
       },
-      "fullName": "Distribution, person"
+      "fullName": "Distribution, P."
     }
   ],
   "responsibleParties": [
@@ -172,7 +172,7 @@
       "organisationIdentifier": "https://ror.org/00pggkr55",
       "role": "author",
       "email": "enquiries@ceh.ac.uk",
-      "nameIdentifier": "https://orcid.org/0000-0001-2345-6789",
+      "nameIdentifier": "https://orcid.org/0000-0001-2345-2903",
       "address": {
         "deliveryPoint": "Test author address",
         "city": "Test author City",
@@ -180,7 +180,7 @@
         "postalCode": "1234",
         "country": "UK"
       },
-      "fullName": "Contact, Author"
+      "fullName": "Contact, A."
     },
     {
       "individualName": "Contact, pointOfContact",
@@ -190,7 +190,7 @@
       "organisationIdentifier": "https://ror.org/00pggkr55",
       "role": "pointOfContact",
       "email": "enquiries@ceh.ac.uk",
-      "nameIdentifier": "https://orcid.org/0000-2222-2345-6789",
+      "nameIdentifier": "https://orcid.org/0000-2222-2345-9482",
       "address": {
         "deliveryPoint": "Lancaster Environment Centre, Library Avenue, Bailrigg",
         "city": "Lancaster",
@@ -199,7 +199,7 @@
         "country": "United Kingdom"
       },
       "pointOfContact": "UK Centre for Ecology & Hydrology",
-      "fullName": "Contact, pointOfContact"
+      "fullName": "Contact, P."
     },
     {
       "individualName": "Test, Custodian",
@@ -209,7 +209,7 @@
       "organisationIdentifier": "https://ror.org/04xw4m193",
       "role": "custodian",
       "email": "info@eidc.ac.uk",
-      "nameIdentifier": "https://orcid.org/0000-3333-2345-6789",
+      "nameIdentifier": "https://orcid.org/0000-3333-2345-5637",
       "address": {
         "deliveryPoint": "Test custodian address",
         "city": "Test custodian city",
@@ -217,7 +217,7 @@
         "postalCode": "3456",
         "country": "Germany"
       },
-      "fullName": "Test, Custodian"
+      "fullName": "Test, C."
     },
     {
       "individualName": "Test, Publisher",
@@ -227,7 +227,7 @@
       "organisationIdentifier": "https://ror.org/04xw4m193",
       "role": "publisher",
       "email": "info@eidc.ac.uk",
-      "nameIdentifier": "https://orcid.org/0000-4444-2345-6789",
+      "nameIdentifier": "https://orcid.org/0000-4444-2345-7382",
       "address": {
         "deliveryPoint": "Test publisher address",
         "city": "Test publisher city",
@@ -235,7 +235,7 @@
         "postalCode": "6789",
         "country": "Finland"
       },
-      "fullName": "Test, Publisher"
+      "fullName": "Test, P."
     }
   ],
   "temporalExtents": [
@@ -246,7 +246,7 @@
   ],
   "onlineResources": [
     {
-      "url": "https://data-package.ceh.ac.uk/data/{fileIdentifier}",
+      "url": "https://data-package.ceh.ac.uk/data/2345-4644-3454-3543534534-4",
       "name": "Download the data",
       "description": "Download a copy of this data",
       "function": "download",
@@ -360,7 +360,7 @@
         "postalCode": "1234",
         "country": "UK"
       },
-      "fullName": "Contact, Author"
+      "fullName": "Contact, A."
     }
   ],
   "resourceStatus": "Available",
@@ -384,7 +384,7 @@
         "postalCode": "3456",
         "country": "Germany"
       },
-      "fullName": "Test, Custodian"
+      "fullName": "Test, C."
     }
   ],
   "pointsOfContact": [

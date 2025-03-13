@@ -63,9 +63,21 @@ public class ResponsibleParty {
 
     public String getFullName() {
         if (!familyName.isEmpty() && !givenName.isEmpty()) {
-            return familyName.trim() + ", " + givenName.trim();
+            String[] givenNames = givenName.split(" ");
+            StringBuilder initials = new StringBuilder();
+            for (String name : givenNames) {
+                if (!name.isEmpty()) {
+                    initials.append(name.toUpperCase().charAt(0)).append(".");
+                }
+            }
+            return familyName + ", " + initials;
         }
-        return null;
+        else if (!individualName.isEmpty()) {
+            return individualName;
+        }
+        else {
+            return "";
+        }
     }
 
     public String getRoleDisplayName() {

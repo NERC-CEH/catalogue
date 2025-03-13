@@ -34,10 +34,9 @@ public class CitationService {
             }
 
     /**
-     * Generate a citation value for the current geminidocument. If the document
-     * is not citable, just return null
-     * @param geminiDocument The geminidocument to cite
-     * @return Either a valid citation object or null
+     * Generate a citation value for the current Gemini document.
+     * @param geminiDocument The Gemini document to cite
+     * @return a possible Citation
      */
     public Optional<Citation> getCitation(GeminiDocument geminiDocument) {
 
@@ -50,6 +49,9 @@ public class CitationService {
             .filter((r)->r.getCodeSpace().equals("doi:"))
             .filter((r)->r.getCode().startsWith(nercDoiPrefix))
             .findFirst();
+        if  (log.isDebugEnabled() && citationResource.isPresent()) {
+            log.debug(citationResource.get().toString());
+        }
 
         //If is present and rest of document is valid
         if(citationResource.isPresent()) {
@@ -62,19 +64,18 @@ public class CitationService {
             Optional<ResponsibleParty> publisher = getPublisher(geminiDocument);
 
             if (pubDate.isPresent() && publisher.isPresent()) {
-                return Optional.of(
-                        Citation
-                        .builder()
-                        .authors(   getAuthors(geminiDocument))
-                        .doi(       doi.getCode())
-                        .title(     geminiDocument.getTitle())
-                        .year(      pubDate.get().getYear())
-                        .publisher( publisher.get().getOrganisationName())
-                        .resourceTypeGeneral( geminiDocument.getType())
-                        .bibtex(    getInAlternateFormat(geminiDocument, BIBTEX_SHORT))
-                        .ris(       getInAlternateFormat(geminiDocument, RESEARCH_INFO_SYSTEMS_SHORT))
-                        .build()
-                        );
+                return Optional.of(Citation
+                    .builder()
+                        .authors(getAuthors(geminiDocument))
+                        .doi(doi.getCode())
+                        .title(geminiDocument.getTitle())
+                        .year(pubDate.get().getYear())
+                        .publisher(publisher.get().getOrganisationName())
+                        .resourceTypeGeneral(geminiDocument.getType())
+                        .bibtex(getInAlternateFormat(geminiDocument, BIBTEX_SHORT))
+                        .ris(getInAlternateFormat(geminiDocument, RESEARCH_INFO_SYSTEMS_SHORT))
+                    .build()
+                );
             }
         }
         return Optional.empty();
@@ -91,18 +92,15 @@ public class CitationService {
     }
 
     protected Optional<ResponsibleParty> getPublisher(GeminiDocument geminiDocument) {
-        return geminiDocument
-            .getResponsibleParties()
+        return geminiDocument.getPublishers()
             .stream()
-            .filter((p) -> "publisher".equals(p.getRole()))
             .findFirst();
     }
 
     protected List<String> getAuthors(GeminiDocument geminiDocument) {
-        return geminiDocument.getResponsibleParties()
+        return geminiDocument.getAuthors()
             .stream()
-            .filter((p) -> p.getRole().equals("author"))
-            .map(p -> p.getFullName() != null ? p.getFullName() : p.getIndividualName())
+            .map(ResponsibleParty::getFullName)
             .collect(Collectors.toList());
     }
 }

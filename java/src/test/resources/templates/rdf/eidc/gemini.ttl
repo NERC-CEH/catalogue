@@ -3,7 +3,7 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX dcat: <http://www.w3.org/ns/dcat#>
 PREFIX dcmitype: <http://purl.org/dc/dcmitype/>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -16,32 +16,32 @@ PREFIX sdo: <https://schema.org/>
 PREFIX ef: <http://www.w3.org/2015/03/inspire/ef#>
 PREFIX : <http://localhost:8080/id/>
 :f8eb7ef3-cd5d-4931-8a4b-ef9ea2b13a16
-dct:title "Test title" ;
-dct:identifier "http://localhost:8080/id/f8eb7ef3-cd5d-4931-8a4b-ef9ea2b13a16" ;
-dct:description "Test description zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz" ;
-dct:provenance [
-a dct:ProvenanceStatement ;
+dcterms:title "Test title" ;
+dcterms:identifier "http://localhost:8080/id/f8eb7ef3-cd5d-4931-8a4b-ef9ea2b13a16" ;
+dcterms:description "Test description zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz" ;
+dcterms:provenance [
+a dcterms:ProvenanceStatement ;
 rdfs:label "Test quality lineage"
 ] ;
-dct:spatial [
-  a dct:Location ;
-  dcat:bbox "POLYGON((-6.452 49.864, -6.452 55.812, 1.768 55.812, 1.768 49.864, -6.452 49.864))"^^geo:wktLiteral ;
- ] ;
-dct:temporal
-[ a dct:PeriodOfTime ;
+dcterms:spatial [
+a dcterms:Location ;
+dcat:bbox "POLYGON((-6.452 49.864, -6.452 55.812, 1.768 55.812, 1.768 49.864, -6.452 49.864))"^^geo:wktLiteral ;
+] ;
+dcterms:temporal
+[ a dcterms:PeriodOfTime ;
 dcat:startDate "2025-02-04"^^xsd:date ;
 dcat:endDate "2025-02-28"^^xsd:date ;
 ] ;
 dcat:contactPoint
-<https://orcid.org/0000-2222-2345-6789> ;
-dct:publisher
-<https://orcid.org/0000-4444-2345-6789> ;
-dct:isPartOf <https://catalogue.ceh.ac.uk/id/000012345>, <https://catalogue.ceh.ac.uk/id/000054321> ;
-dct:replaces <https://catalogue.ceh.ac.uk/id/111112345>, <https://catalogue.ceh.ac.uk/id/111154321> ;
-dct:relation <https://catalogue.ceh.ac.uk/id/222212345>, <https://catalogue.ceh.ac.uk/id/222254321> ;
-dct:isReferencedBy
+<https://orcid.org/0000-2222-2345-9482> ;
+dcterms:publisher
+<https://orcid.org/0000-4444-2345-7382> ;
+dcterms:isPartOf <https://catalogue.ceh.ac.uk/id/000012345>, <https://catalogue.ceh.ac.uk/id/000054321> ;
+dcterms:replaces <https://catalogue.ceh.ac.uk/id/111112345>, <https://catalogue.ceh.ac.uk/id/111154321> ;
+dcterms:relation <https://catalogue.ceh.ac.uk/id/222212345>, <https://catalogue.ceh.ac.uk/id/222254321> ;
+dcterms:isReferencedBy
 <https://test-admin-url.ac.uk> ;
-dct:subject
+dcterms:subject
 <http://vocabs.lter-europe.net/EnvThes/30347>,
 <http://onto.nerc.ac.uk/CAST/276>,
 <http://onto.nerc.ac.uk/CAST/187>,
@@ -52,52 +52,58 @@ sdo:variableMeasured <https://test-observed-properties.ac.uk> ;
 prov:wasGeneratedBy
 <https://testaward.ac.uk> ;
 a dcat:Dataset;
-dct:type dcmitype:Dataset ;
-dct:available "2025-02-05"^^xsd:date ;
+dcterms:type dcmitype:Dataset ;
+dcterms:available "2025-02-05"^^xsd:date ;
 dcat:landingPage <http://localhost:8080/id/f8eb7ef3-cd5d-4931-8a4b-ef9ea2b13a16> ;
-dct:license <https://spdx.org/licenses/OGL-UK-3.0.ttl>
+dcterms:license <https://spdx.org/licenses/OGL-UK-3.0.ttl>
 ;
-dct:accessRights [ a dct:RightsStatement ;
+dcterms:accessRights [ a dcterms:RightsStatement ;
 odrs:attributionText "no limitations to public access" ;
 odrs:attributionUrl <http://purl.org/coar/access_right/c_abf2>
 ] ;
-dct:theme
+dcterms:theme
 <http://onto.nerc.ac.uk/CEHMD/topic/1> ;
 dcat:distribution [
 dcat:accessURL
-<https://data-package.ceh.ac.uk/data/{fileIdentifier}> ;
-dct:license <https://spdx.org/licenses/OGL-UK-3.0.ttl>
+<https://data-package.ceh.ac.uk/data/2345-4644-3454-3543534534-4> ;
+dcterms:license <https://spdx.org/licenses/OGL-UK-3.0.ttl>
 ;
-dct:accessRights [ a dct:RightsStatement ;
+dcterms:accessRights [ a dcterms:RightsStatement ;
 odrs:attributionText "no limitations to public access" ;
 odrs:attributionUrl <http://purl.org/coar/access_right/c_abf2>
 ] ;
-dct:format
+dcterms:format
 [
-a dct:IMT ;
+a dcterms:IMT ;
 rdf:value "Comma-separated values (CSV)" ; rdfs:label "Comma-separated values (CSV)"
 ] ;
 ];
-dct:creator
-<https://orcid.org/0000-0001-2345-6789> ;
-dct:language <http://id.loc.gov/vocabulary/iso639-1/en> .
-<https://orcid.org/0000-2222-2345-6789> a foaf:Person ;
-foaf:name "Test contact point of contact" ;
+dcterms:creator
+<https://orcid.org/0000-0001-2345-2903> ;
+dcterms:language <http://id.loc.gov/vocabulary/iso639-1/en> .
+<https://orcid.org/0000-2222-2345-9482> a foaf:Person ;
+foaf:name "Contact, P." ;
+foaf:familyName "Contact" ;
+foaf:givenName "pointOfContact" ;
 vcard:hasEmail "enquiries@ceh.ac.uk" ;
 foaf:member <https://ror.org/00pggkr55> ;
 .
-<https://orcid.org/0000-4444-2345-6789> a foaf:Person ;
-foaf:name "Test contact publisher" ;
+<https://orcid.org/0000-4444-2345-7382> a foaf:Person ;
+foaf:name "Test, P." ;
+foaf:familyName "Test" ;
+foaf:givenName "Publisher" ;
 vcard:hasEmail "info@eidc.ac.uk" ;
 foaf:member <https://ror.org/04xw4m193> ;
 .
-<https://orcid.org/0000-0001-2345-6789> a foaf:Person ;
-foaf:name "Test contact author" ;
+<https://orcid.org/0000-0001-2345-2903> a foaf:Person ;
+foaf:name "Contact, A." ;
+foaf:familyName "Contact" ;
+foaf:givenName "Author" ;
 vcard:hasEmail "enquiries@ceh.ac.uk" ;
 foaf:member <https://ror.org/00pggkr55> ;
 .
 <https://test-admin-url.ac.uk> a <http://purl.org/spar/fabio/Expression> ;
-dct:bibliographicCitation "Test Admin details";
+dcterms:bibliographicCitation "Test Admin details";
 .
 <http://vocabs.lter-europe.net/EnvThes/30347> a skos:Concept;
 skos:prefLabel "water pH of stagnant surface water"; rdfs:label "water pH of stagnant surface water"

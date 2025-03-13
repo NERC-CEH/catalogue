@@ -7,10 +7,11 @@ import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -21,7 +22,7 @@ import static org.mockito.Mockito.when;
 
 public class CitationServiceTest {
     @Test
-    public void getLinkToCitationWithFormat() throws URISyntaxException {
+    public void getLinkToCitationWithFormat() {
         //Given
         String format = "bibtex";
         GeminiDocument document = mock(GeminiDocument.class);
@@ -37,26 +38,23 @@ public class CitationServiceTest {
     }
 
     @Test
-    public void checkCanGenerateCitationIfDocumentMeetsRequirements() throws URISyntaxException {
+    public void checkCanGenerateCitationIfDocumentMeetsRequirements() {
         //Given
-        GeminiDocument document = mock(GeminiDocument.class);
-        when(document.getTitle()).thenReturn("document title");
-        when(document.getUri()).thenReturn("http://document");
-        when(document.getResourceIdentifiers()).thenReturn(Arrays.asList(
-            nercdoi()
-        ));
-        when(document.getDatasetReferenceDate()).thenReturn(validDate());
-        when(document.getResponsibleParties()).thenReturn(Arrays.asList(
-            author(), publisher()
-        ));
+        GeminiDocument document = new GeminiDocument();
+        document
+            .setDatasetReferenceDate(validDate())
+            .setResponsibleParties(List.of(author(), publisher()))
+            .setTitle("document title")
+            .setUri("http://document")
+            .setResourceIdentifiers(List.of(nercdoi()));
         CitationService service = new CitationService("10.5285/");
 
         //When
-        Citation citation = service.getCitation(document).get();
+        Citation citation = service.getCitation(document).orElseThrow();
 
         //Then
         assertNotNull(citation);
-        assertEquals(citation.getAuthors().size(), 1);
+        assertEquals(1, citation.getAuthors().size());
         assertTrue(citation.getAuthors().contains("Author, A."));
         assertThat("DOI present", citation.getDoi(), equalTo("10.5285/myDoI"));
         assertThat("Title present", citation.getTitle(), equalTo("document title"));
@@ -65,15 +63,15 @@ public class CitationServiceTest {
     }
 
     @Test
-    public void doesntCreateCitationIfNoPublishers() throws URISyntaxException {
+    public void doesntCreateCitationIfNoPublishers() {
         //Given
         GeminiDocument document = mock(GeminiDocument.class);
         when(document.getUri()).thenReturn("http://document");
-        when(document.getResourceIdentifiers()).thenReturn(Arrays.asList(
+        when(document.getResourceIdentifiers()).thenReturn(Collections.singletonList(
             nercdoi()
         ));
         when(document.getDatasetReferenceDate()).thenReturn(validDate());
-        when(document.getResponsibleParties()).thenReturn(Arrays.asList(
+        when(document.getResponsibleParties()).thenReturn(Collections.singletonList(
             author()
         ));
         CitationService service = new CitationService("10.5285/");
@@ -86,11 +84,11 @@ public class CitationServiceTest {
     }
 
     @Test
-    public void doesntCreateCitationIfNoDate() throws URISyntaxException {
+    public void doesntCreateCitationIfNoDate() {
         //Given
         GeminiDocument document = mock(GeminiDocument.class);
         when(document.getUri()).thenReturn("http://document");
-        when(document.getResourceIdentifiers()).thenReturn(Arrays.asList(
+        when(document.getResourceIdentifiers()).thenReturn(Collections.singletonList(
             nercdoi()
         ));
         when(document.getResponsibleParties()).thenReturn(Arrays.asList(
@@ -106,16 +104,16 @@ public class CitationServiceTest {
     }
 
     @Test
-    public void doesntCreateCitationIfNotANercDOI() throws URISyntaxException {
+    public void doesntCreateCitationIfNotANercDOI() {
         //Given
         GeminiDocument document = mock(GeminiDocument.class);
         when(document.getUri()).thenReturn("http://document");
-        when(document.getResourceIdentifiers()).thenReturn(Arrays.asList(
+        when(document.getResourceIdentifiers()).thenReturn(Collections.singletonList(
             ResourceIdentifier
-                        .builder()
-                        .code("10.123456789/myDoI")
-                        .codeSpace("doi:")
-                        .build()
+                .builder()
+                .code("10.123456789/myDoI")
+                .codeSpace("doi:")
+                .build()
         ));
         when(document.getResponsibleParties()).thenReturn(Arrays.asList(
             author(), publisher()
@@ -130,7 +128,7 @@ public class CitationServiceTest {
     }
 
     @Test
-    public void doesntCreateCitationIfNoDOI() throws URISyntaxException {
+    public void doesntCreateCitationIfNoDOI() {
         //Given
         GeminiDocument document = mock(GeminiDocument.class);
         CitationService service = new CitationService("10.5285/");
