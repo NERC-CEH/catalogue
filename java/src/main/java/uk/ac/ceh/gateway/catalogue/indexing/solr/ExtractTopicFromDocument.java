@@ -40,7 +40,7 @@ public class ExtractTopicFromDocument implements TopicIndexer {
     public List<String> index(GeminiDocument document) {
         return document.getTopics()
             .stream()
-            .filter(t -> topicHierarchy.containsKey(t))
+            .filter(topicHierarchy::containsKey)
             .flatMap(t -> topicHierarchy.get(t).stream())
             .distinct()
             .collect(Collectors.toList());

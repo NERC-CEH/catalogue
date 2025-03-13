@@ -4,14 +4,13 @@ export default _.template(`
 <select data-name="value" class="editor-input" id="input-resourceType">
     <option value="" selected>- Select Resource Type -</option>
     <optgroup label="Commonly used">
-      <option class="option-eidc option-ukceh option-inms option-assist option-elter" value="dataset">Dataset</option>
-      <option class="option-eidc option-inms option-elter" value="nonGeographicDataset">Dataset (non-geographic)</option>
-      <option class="option-eidc option-inms option-assist option-elter" value="aggregate">Data collection (aggregation)</option>
-      <option class="option-eidc option-elter" value="application">Model code (application)</option>
+      <option class="option-eidc option-ukceh option-inms option-assist" value="dataset">Dataset</option>
+      <option class="option-eidc option-inms" value="nonGeographicDataset">Dataset (non-geographic)</option>
+      <option class="option-eidc option-inms option-assist" value="aggregate">Data collection (aggregation)</option>
+      <option class="option-eidc" value="application">Model code (application)</option>
       <option class="option-eidc" value="nercSignpost">NERC signpost</option>
-      <option class="option-elter" value="signpost">Signpost</option>
       <option class="option-inms option-assist" value="thirdPartyDataset">Third-party dataset</option>
-      <option class="option-eidc option-inms option-elter" value="service">Web service</option>
+      <option class="option-eidc option-inms" value="service">Web service</option>
     </optgroup>
     <optgroup label="Other">
       <option class="option-iso" value="aggregate">Aggregate</option>

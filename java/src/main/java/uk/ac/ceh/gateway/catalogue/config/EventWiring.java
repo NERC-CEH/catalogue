@@ -19,7 +19,6 @@ public class EventWiring {
     private final DocumentIndexingService solrIndex;
     private final DocumentIndexingService linkIndex;
     private final DocumentIndexingService dataciteIndex;
-    private final DocumentIndexingService validationIndex;
     private final DocumentIndexingService mapserverIndex;
     private final NetworkIndexingService networkIndex;
     private final DocumentListingService listing;
@@ -29,7 +28,6 @@ public class EventWiring {
         @Qualifier("solr-index") DocumentIndexingService solrIndex,
         @Qualifier("jena-index") DocumentIndexingService linkIndex,
         @Qualifier("datacite-index") DocumentIndexingService dataciteIndex,
-        @Qualifier("validation-index") DocumentIndexingService validationIndex,
         @Qualifier("mapserver-index") DocumentIndexingService mapserverIndex,
         @Qualifier("network-index") NetworkIndexingService networkIndex,
         DocumentListingService listing
@@ -38,7 +36,6 @@ public class EventWiring {
         this.solrIndex = solrIndex;
         this.linkIndex = linkIndex;
         this.dataciteIndex = dataciteIndex;
-        this.validationIndex = validationIndex;
         this.mapserverIndex = mapserverIndex;
         this.networkIndex = networkIndex;
         this.listing = listing;
@@ -50,7 +47,6 @@ public class EventWiring {
         bus.register(new IndexingFileEventListener(solrIndex, listing));
         bus.register(new IndexingFileEventListener(linkIndex, listing));
         bus.register(new IndexingFileEventListener(dataciteIndex, listing));
-        bus.register(new IndexingFileEventListener(validationIndex, listing));
         bus.register(new IndexingFileEventListener(mapserverIndex, listing));
         bus.register(new NetworkFileEventListener(networkIndex, listing));
     }

@@ -18,7 +18,6 @@ Which server the catalogue is deployed on
 Choice of:
 * `server:datalabs`
 * `server:eidc`
-* `server:elter`
 * `server:inms`
 * `server:pimfe`
 
@@ -45,8 +44,7 @@ Choice of:
 * `upload:hubbub` Upload managed through EIDC Hubbub server
 * `upload:simple` Upload to directory
 
-## Imports and Exports
-* `imports` Enable import of records from external services (see [imports documentation](imports.md))
+## Exports
 * `exports` Enable exporting records to a Fuseki instance
 
 ## Search

@@ -6,10 +6,6 @@ import org.springframework.context.annotation.Profile;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.catalogue.InMemoryCatalogueService;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
-import uk.ac.ceh.gateway.catalogue.vocabularies.KeywordVocabulary;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static uk.ac.ceh.gateway.catalogue.DocumentTypes.*;
 
@@ -19,7 +15,7 @@ public class CatalogueServiceConfig {
 
     @Bean
     @Profile("server:datalabs")
-    public CatalogueService datalabsCatalogue(List<KeywordVocabulary> vocabularies) {
+    public CatalogueService datalabsCatalogue() {
         String defaultCatalogueKey = "datalabs";
 
         return new InMemoryCatalogueService(
@@ -44,7 +40,7 @@ public class CatalogueServiceConfig {
 
     @Bean
     @Profile("server:eidc")
-    public CatalogueService eidcCatalogue(List<KeywordVocabulary> vocabularies) {
+    public CatalogueService eidcCatalogue() {
         String defaultCatalogueKey = "eidc";
 
         return new InMemoryCatalogueService(
@@ -103,18 +99,6 @@ public class CatalogueServiceConfig {
                 .build(),
 
             Catalogue.builder()
-                .id("edge")
-                .title("EDgE")
-                .url("https://edge.climate.copernicus.eu")
-                .contactUrl("https://edge.climate.copernicus.eu/")
-                .logo("ukceh.png")
-                .facetKey("recordType")
-                .documentType(GEMINI_TYPE)
-                .documentType(LINK_TYPE)
-                .fileUpload(true)
-                .build(),
-
-            Catalogue.builder()
                 .id(defaultCatalogueKey)
                 .title("EIDC")
                 .url("https://www.eidc.ac.uk")
@@ -141,20 +125,6 @@ public class CatalogueServiceConfig {
                 .facetKey("infrastructureScale")
                 .facetKey("infrastructureChallenge")
                 .documentType(INFRASTRUCTURERECORD_TYPE)
-                .documentType(LINK_TYPE)
-                .fileUpload(false)
-                .build(),
-
-            Catalogue.builder()
-                .id("erammp")
-                .title("ERAMMP")
-                .url("")
-                .contactUrl("")
-                .logo("ukceh.png")
-                .facetKey("recordType")
-                .facetKey("condition")
-                .documentType(ERAMMP_MODEL_TYPE)
-                .documentType(ERAMMP_DATACUBE_TYPE)
                 .documentType(LINK_TYPE)
                 .fileUpload(false)
                 .build(),
@@ -285,34 +255,8 @@ public class CatalogueServiceConfig {
     }
 
     @Bean
-    @Profile("server:elter")
-    public CatalogueService elterCatalogue(List<KeywordVocabulary> vocabularies) {
-        String defaultCatalogueKey = "elter";
-
-        return new InMemoryCatalogueService(
-            defaultCatalogueKey,
-
-            Catalogue.builder()
-                .id(defaultCatalogueKey)
-                .title("eLTER Digital Asset Register")
-                .url("https://catalogue.lter-europe.net/elter/documents")
-                .contactUrl("https://www.lter-europe.net/lter-europe/about/contacts")
-                .logo("elter.png")
-                .facetKey("dataLevel")
-                .facetKey("elterDeimsSite")
-                .facetKey("elterProjectName")
-                .facetKey("resourceType")
-                .documentType(ELTER_TYPE)
-                .documentType(CODE_TYPE)
-                .documentType(LINKED_ELTER_TYPE)
-                .fileUpload(false)
-                .build()
-        );
-    }
-
-    @Bean
     @Profile("server:inms")
-    public CatalogueService inmsCatalogue(List<KeywordVocabulary> vocabularies) {
+    public CatalogueService inmsCatalogue() {
         String defaultCatalogueKey = "inms";
 
         return new InMemoryCatalogueService(
@@ -342,7 +286,7 @@ public class CatalogueServiceConfig {
 
     @Bean
     @Profile("server:pimfe")
-    public CatalogueService pimfeCatalogue(List<KeywordVocabulary> vocabularies) {
+    public CatalogueService pimfeCatalogue() {
         String defaultCatalogueKey = "pimfe";
 
         return new InMemoryCatalogueService(

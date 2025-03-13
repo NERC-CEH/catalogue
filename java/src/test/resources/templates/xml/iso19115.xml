@@ -62,12 +62,12 @@
             <gmd:citation>
                 <gmd:CI_Citation>
                     <gmd:title>
-                        <gco:CharacterString>Example Elter Dataset</gco:CharacterString>
+                        <gco:CharacterString>Example Dataset</gco:CharacterString>
                     </gmd:title>
                 </gmd:CI_Citation>
             </gmd:citation>
             <gmd:abstract>
-                <gco:CharacterString>Example description for Elter dataset.</gco:CharacterString>
+                <gco:CharacterString>Example description for dataset.</gco:CharacterString>
             </gmd:abstract>
             <gmd:pointOfContact>
                 <gmd:CI_ResponsibleParty>

@@ -42,24 +42,24 @@ Activate by adding "auth:oidc" to Spring profiles
 
 #### auth.env
 
-Example for eLTER catalogue. In a production system these values would be provided as environment
-variables. `.elter.` and `.elter-oauth-provider.` can be replaced with what ever values you want.
+Example for `example` catalogue. In a production system these values would be provided as environment
+variables. `.example.` and `.example-oauth-provider.` can be replaced with what ever values you want.
 
 ```properties
-spring.security.oauth2.client.registration.elter.client-id=DnAHS5BRmrsdyHnQslzhNFdqk8jkp7R9
-spring.security.oauth2.client.registration.elter.client-secret=<<from Auth0>>
-spring.security.oauth2.client.registration.elter.client-name=eLTER Auth0 Client
-spring.security.oauth2.client.registration.elter.provider=elter-oauth-provider
-spring.security.oauth2.client.registration.elter.scope=openid,email
-spring.security.oauth2.client.registration.elter.redirect-uri=https://catalogue.ceh.ac.uk/login/oauth2/code/elter
-spring.security.oauth2.client.registration.elter.client-authentication-method=client_secret_basic
-spring.security.oauth2.client.registration.elter.authorization-grant-type=authorization_code
-spring.security.oauth2.client.provider.elter-oauth-provider.authorization-uri=https://elter-web.eu.auth0.com/authorize
-spring.security.oauth2.client.provider.elter-oauth-provider.token-uri=https://elter-web.eu.auth0.com/oauth/token
-spring.security.oauth2.client.provider.elter-oauth-provider.user-info-uri=https://elter-web.eu.auth0.com/userinfo
-spring.security.oauth2.client.provider.elter-oauth-provider.user-info-authentication-method=header
-spring.security.oauth2.client.provider.elter-oauth-provider.jwk-set-uri=https://elter-web.eu.auth0.com/.well-known/jwks.json
-spring.security.oauth2.client.provider.elter-oauth-provider.user-name-attribute=email
+spring.security.oauth2.client.registration.example.client-id=DnAHS5BRmrsdyHnQslzhNFdqk8jkp7R9
+spring.security.oauth2.client.registration.example.client-secret=<<from Auth0>>
+spring.security.oauth2.client.registration.example.client-name=Example Auth0 Client
+spring.security.oauth2.client.registration.example.provider=example-oauth-provider
+spring.security.oauth2.client.registration.example.scope=openid,email
+spring.security.oauth2.client.registration.example.redirect-uri=https://catalogue.ceh.ac.uk/login/oauth2/code/example
+spring.security.oauth2.client.registration.example.client-authentication-method=client_secret_basic
+spring.security.oauth2.client.registration.example.authorization-grant-type=authorization_code
+spring.security.oauth2.client.provider.example-oauth-provider.authorization-uri=https://example-web.eu.auth0.com/authorize
+spring.security.oauth2.client.provider.example-oauth-provider.token-uri=https://example-web.eu.auth0.com/oauth/token
+spring.security.oauth2.client.provider.example-oauth-provider.user-info-uri=https://example-web.eu.auth0.com/userinfo
+spring.security.oauth2.client.provider.example-oauth-provider.user-info-authentication-method=header
+spring.security.oauth2.client.provider.example-oauth-provider.jwk-set-uri=https://example-web.eu.auth0.com/.well-known/jwks.json
+spring.security.oauth2.client.provider.example-oauth-provider.user-name-attribute=email
 ```
 
 #### docker-compose.yml
@@ -83,10 +83,10 @@ The key is the authenticated user's email address and then a list of roles.
 
 ```json
 {
-    "admin1@example.com": ["ROLE_ELTER_EDITOR", "ROLE_ELTER_PUBLISHER", "ROLE_CIG_SYSTEM_ADMIN"],
-    "publisher1@example.com": ["ROLE_ELTER_EDITOR", "ROLE_ELTER_PUBLISHER"],
-    "publisher2@example.com": ["ROLE_ELTER_EDITOR", "ROLE_ELTER_PUBLISHER"],
-    "editor1@example.com": ["ROLE_ELTER_EDITOR"],
-    "editor2@example.com": ["ROLE_ELTER_EDITOR"]
+    "admin1@example.com": ["ROLE_EXAMPLE_EDITOR", "ROLE_EXAMPLE_PUBLISHER", "ROLE_CIG_SYSTEM_ADMIN"],
+    "publisher1@example.com": ["ROLE_EXAMPLE_EDITOR", "ROLE_EXAMPLE_PUBLISHER"],
+    "publisher2@example.com": ["ROLE_EXAMPLE_EDITOR", "ROLE_EXAMPLE_PUBLISHER"],
+    "editor1@example.com": ["ROLE_EXAMPLE_EDITOR"],
+    "editor2@example.com": ["ROLE_EXAMPLE_EDITOR"]
 }
 ```

@@ -8,7 +8,7 @@
 * Map viewer
 * Maintenance - Reindex, Re-link, SPARQL query
 * User permissions
-* Multi-catalogue - one application instance can run catalogues for lots of different projects, e.g. EIDC, ASSIST, ERAMMP, etc
+* Multi-catalogue - one application instance can run catalogues for lots of different projects, e.g. EIDC, ASSIST, etc
 
 ## Concepts
 
@@ -105,9 +105,6 @@ Annotation code to specify which Freemarker template to use to convert Java obje
 
 #### ef
 Java classes representing Environmental Facilities i.e Activities, Facilities, Programmes, Networks
-
-#### erammp
-Java classes representing ERAMMP project specific things
 
 #### gemini
 Java classes representing INSPIRE ISO19115 datasets and services

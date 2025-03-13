@@ -8,10 +8,6 @@ import {
   CehModelApplicationEditorView,
   CehModelEditorView, CodeDocumentEditorView,
   DataTypeEditorView,
-  ElterEditorView,
-  ElterLinkedEditorView,
-  ErammpDatacubeEditorView,
-  ErammpModelEditorView,
   GeminiEditorView, InfrastructureRecordEditorView,
   MethodRecordEditorView,
   LinkEditorView,
@@ -198,11 +194,6 @@ function initEditor () {
       Model: EditorMetadata,
       mediaType: 'application/vnd.sample-archive+json'
     },
-    'erammp-model': {
-      View: ErammpModelEditorView,
-      Model: EditorMetadata,
-      mediaType: 'application/vnd.erammp-model+json'
-    },
     'nerc-model': {
       View: NercModelEditorView,
       Model: EditorMetadata,
@@ -213,25 +204,10 @@ function initEditor () {
       Model: EditorMetadata,
       mediaType: 'application/vnd.nerc-model-use+json'
     },
-    'erammp-datacube': {
-      View: ErammpDatacubeEditorView,
-      Model: EditorMetadata,
-      mediaType: 'application/vnd.erammp-datacube+json'
-    },
     'data-type': {
       View: DataTypeEditorView,
       Model: EditorMetadata,
       mediaType: 'application/vnd.data-type+json'
-    },
-    elter: {
-      View: ElterEditorView,
-      Model: EditorMetadata,
-      mediaType: 'application/vnd.elter+json'
-    },
-    'linked-elter': {
-      View: ElterLinkedEditorView,
-      Model: EditorMetadata,
-      mediaType: 'application/vnd.linked-elter+json'
     },
     'service-agreement': {
       View: ServiceAgreementEditorView,
