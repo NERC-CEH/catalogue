@@ -1,5 +1,5 @@
 <#function recordTypeOrResourceType>
-    <#if metadata.catalogue == "eidc" ||  metadata.catalogue == "elter" >
+    <#if metadata.catalogue == "eidc">
         <#return codes.lookup('metadata.recordType', resourceType.value)?lower_case>
     <#else>
         <#return codes.lookup('metadata.resourceType', resourceType.value)?lower_case>

@@ -75,6 +75,9 @@ mkdir -p static &&
 { [[ -d static/webfonts ]] || ln -sr web/node_modules/@fortawesome/fontawesome-free/webfonts static/; } || die
 echo 'Static directory configured.'
 
+echo 'Setting up mapfile directory'
+mkdir -p mapfiles
+
 echo 'Setting up datastore git repo...'
 # shellcheck disable=SC2015
 mkdir -p datastore &&
@@ -127,7 +130,6 @@ export_default JIRA_SERVICEAGREEMENT_PREFIX CT-
 export_default MANAGEMENT_SERVER_PORT 8091
 export_default MAPS_LOCATION "$TOP"/mapfiles
 export_default METRICS_DATABASE_URL jdbc:sqlite:"$TOP"/metrics-db/metrics.db
-export_default SCHEMAS_LOCATION "$TOP"/schemas
 export_default SERVER_PORT 8090
 export_default SOLR_SERVER_URL http://localhost:8983/solr
 export_default SPRING_FREEMARKER_CACHE false

@@ -24,7 +24,6 @@ import uk.ac.ceh.gateway.catalogue.indexing.DocumentIndexingException;
 import uk.ac.ceh.gateway.catalogue.indexing.jena.JenaIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.mapserver.MapServerIndexingService;
 import uk.ac.ceh.gateway.catalogue.indexing.solr.SolrIndexingService;
-import uk.ac.ceh.gateway.catalogue.indexing.validation.ValidationIndexingService;
 import uk.ac.ceh.gateway.catalogue.model.MaintenanceResponse;
 import uk.ac.ceh.gateway.catalogue.profiles.ProfileService;
 import uk.ac.ceh.gateway.catalogue.services.DataRepositoryOptimizingService;
@@ -55,7 +54,6 @@ public class MaintenanceControllerTest {
     @MockitoBean DataRepositoryOptimizingService repoService;
     @MockitoBean @Qualifier("solr-index") SolrIndexingService indexService;
     @MockitoBean @Qualifier("jena-index") JenaIndexingService linkingService;
-    @MockitoBean @Qualifier("validation-index") ValidationIndexingService validationService;
     @MockitoBean @Qualifier("mapserver-index") MapServerIndexingService mapserverService;
     @MockitoBean CatalogueService catalogueService;
     @MockitoBean ProfileService profileService;
@@ -68,7 +66,7 @@ public class MaintenanceControllerTest {
 
     @BeforeEach
     public void createMaintenanceController() {
-        controller = new MaintenanceController(repoService, indexService, linkingService, validationService, mapserverService);
+        controller = new MaintenanceController(repoService, indexService, linkingService, mapserverService);
     }
 
     @SneakyThrows
@@ -151,18 +149,6 @@ public class MaintenanceControllerTest {
 
         //Then
         verify(repoService).performOptimization();
-    }
-
-    @Test
-    public void checkThatReindexingDelegatesToValidationService() throws DocumentIndexingException {
-        //Given
-        //Nothing
-
-        //When
-        controller.validateRepository();
-
-        //Then
-        verify(validationService).rebuildIndex();
     }
 
     @Test

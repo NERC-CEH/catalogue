@@ -4,7 +4,6 @@ import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.junit.jupiter.api.Test;
-import uk.ac.ceh.gateway.catalogue.elter.ElterDocument;
 import uk.ac.ceh.gateway.catalogue.model.Relationship;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.model.Supplemental;
@@ -89,7 +88,7 @@ public class GeminiDocumentTest {
     void relationshipsFromRelatedRecordsNonePopulated() {
         // given
         val expected = Sets.newHashSet();
-        val document = new ElterDocument();
+        val document = new GeminiDocument();
 
         // when
         val actual = document.getRelationships();
@@ -106,7 +105,7 @@ public class GeminiDocumentTest {
             new Relationship(rel1, doc2),
             new Relationship(rel1, doc3)
         );
-        val document = new ElterDocument();
+        val document = new GeminiDocument();
         document.setRelationships(Set.of(
             new Relationship(rel1, doc1),
             new Relationship(rel1, doc2),

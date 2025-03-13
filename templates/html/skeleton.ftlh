@@ -76,7 +76,7 @@
                 <#if catalogue?has_content>
                   <a class="navbar-title" href="${catalogue.url}">${catalogue.title}</a>
 
-                  <#if ["assist", "eidc", "elter", "erammp"]?seq_contains(catalogue.id)>
+                  <#if ["assist", "eidc"]?seq_contains(catalogue.id)>
                     <#include "menus/${catalogue.id}.ftlh">
                   <#else>
                     <a href="/${catalogue.id}/documents">Search</a>

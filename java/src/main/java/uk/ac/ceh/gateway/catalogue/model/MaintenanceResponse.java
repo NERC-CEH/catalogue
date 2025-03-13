@@ -17,7 +17,6 @@ public class MaintenanceResponse {
     private List<String> messages = new ArrayList<>();
     private boolean isLinked;
     private boolean isIndexed;
-    private boolean isValidated;
     private boolean isHasMapFiles;
     private int indexedMapFilesCount;
     private DataRevision<CatalogueUser> latestRevision;

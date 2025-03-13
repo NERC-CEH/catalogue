@@ -69,26 +69,6 @@ public class KeywordVocabulariesConfig {
                 );
             }
 
-    @Profile("server:eidc")
-    @Bean
-    public KeywordVocabulary envThesVocabulary(
-            @Qualifier("sparql") RestTemplate restTemplate,
-            SolrClient solrClient,
-            @Value("${elter.sparql.endpoint}") String sparqlEndpoint
-            ) {
-        // Filters out deprecated concepts
-        val where = "?uri skos:prefLabel ?label . FILTER NOT EXISTS { ?uri <http://www.w3.org/2002/07/owl#deprecated> true}";
-        return new SparqlKeywordVocabulary(
-                restTemplate,
-                solrClient,
-                sparqlEndpoint,
-                "<http://vocabs.lter-europe.net/EnvThes/>",
-                where,
-                "envThes",
-                "EnvThes"
-                );
-            }
-
     @Profile("server:datalabs")
     @Bean
     public KeywordVocabulary dukemsPollutant(
@@ -124,26 +104,6 @@ public class KeywordVocabulariesConfig {
                 where,
                 "dukems-sector",
                 "Sectors"
-                );
-            }
-
-    @Profile("server:elter")
-    @Bean
-    public KeywordVocabulary elterCLVocabulary(
-            @Qualifier("sparql") RestTemplate restTemplate,
-            SolrClient solrClient,
-            @Value("${elter.sparql.endpoint}") String sparqlEndpoint
-            ) {
-        // Filters out deprecated concepts
-        val where = "?uri skos:prefLabel ?label . FILTER NOT EXISTS { ?uri <http://www.w3.org/2002/07/owl#deprecated> true}";
-        return new SparqlKeywordVocabulary(
-                restTemplate,
-                solrClient,
-                sparqlEndpoint,
-                "<http://vocabs.lter-europe.net/elter_cl/>",
-                where,
-                "elterCL",
-                "elterCL"
                 );
             }
 

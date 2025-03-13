@@ -6,10 +6,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WithMockCatalogueUser
-@ActiveProfiles({"server:elter", "test"})
+@ActiveProfiles({"server:eidc", "test"})
 @DisplayName("OrganisationController")
 @Import({SecurityConfigCrowd.class, DevelopmentUserStoreConfig.class})
 @WebMvcTest(OrganisationController.class)
@@ -37,7 +37,7 @@ class OrganisationControllerTest {
     );
     String expectedResponse = "[{\"id\":\"id1\",\"name\":\"name1\",\"acronyms\":[\"acronym1\",\"acronym2\"],\"aliases\":[\"aliase1\",\"aliase2\"]},{\"id\":\"id2\",\"name\":\"name2\"}]";
 
-    @MockBean
+    @MockitoBean
     private OrganisationSolrQueryService organisationService;
 
     @Autowired

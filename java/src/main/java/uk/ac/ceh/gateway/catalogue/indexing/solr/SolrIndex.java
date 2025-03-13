@@ -23,13 +23,8 @@ public class SolrIndex {
     private @Field List<String> authorOrcid;
     private @Field List<String> authorRor;
     private @Field String catalogue;
-    private @Field String condition;
     private @Field String description;
     private @Field String documentType;
-    private @Field List<String> elterDeimsSite;
-    private @Field List<String> elterDeimsUri;
-    private @Field String importId;
-    private @Field List<String> elterProjectName;
     private @Field List<String> funder;
     private @Field List<String> grant;
     private @Field String identifier;
@@ -100,17 +95,6 @@ public class SolrIndex {
     private @Field List<String> infrastructureChallenge;
     private @Field List<String> infrastructureCategory;
     private @Field List<String> infrastructureClass;
-
-
-    public SolrIndex addLocations(List<String> locations) {
-        this.locations.addAll(locations);
-        return this;
-    }
-
-    public SolrIndex addLocation(String location) {
-        this.locations.add(location);
-        return this;
-    }
 
     public String getShortenedDescription(){
         return shortenLongString(description, MAX_DESCRIPTION_CHARACTER_LENGTH);

@@ -12,7 +12,7 @@ import uk.ac.ceh.gateway.catalogue.upload.simple.UploadController;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@ActiveProfiles({"auth:crowd", "upload:simple", "server:elter", "search:basic"})
+@ActiveProfiles({"auth:crowd", "upload:simple", "server:inms", "search:basic"})
 @CatalogueWebTest
 @DisplayName("Non EIDC production context")
 class NonEidcApplicationContextTest {
@@ -24,8 +24,8 @@ class NonEidcApplicationContextTest {
     @DisplayName("Simple Uploader present not Hubbub")
     void hubbubUploadBeansPresent() {
         assertNotNull(applicationContext.getBean(UploadController.class));
-        Assertions.assertThrows(NoSuchBeanDefinitionException.class, () -> {
-            applicationContext.getBean(uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadController.class);
-        });
+        Assertions.assertThrows(NoSuchBeanDefinitionException.class, () ->
+            applicationContext.getBean(uk.ac.ceh.gateway.catalogue.upload.hubbub.UploadController.class)
+        );
     }
 }

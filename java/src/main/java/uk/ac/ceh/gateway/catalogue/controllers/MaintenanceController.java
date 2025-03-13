@@ -29,20 +29,17 @@ public class MaintenanceController {
     private final DataRepositoryOptimizingService repoService;
     private final DocumentIndexingService solrIndex;
     private final DocumentIndexingService linkingService;
-    private final DocumentIndexingService validationService;
     private final MapServerIndexingService mapserverService;
 
     public MaintenanceController(
         DataRepositoryOptimizingService repoService,
         @Qualifier("solr-index") DocumentIndexingService solrIndex,
         @Qualifier("jena-index") DocumentIndexingService linkingService,
-        @Qualifier("validation-index") DocumentIndexingService validationService,
         @Qualifier("mapserver-index") DocumentIndexingService mapserverService
     ) {
         this.repoService = repoService;
         this.solrIndex = solrIndex;
         this.linkingService = linkingService;
-        this.validationService = validationService;
         this.mapserverService = (MapServerIndexingService) mapserverService;
         log.info("Creating");
     }
@@ -59,11 +56,6 @@ public class MaintenanceController {
         }
         try {
             toReturn.setIndexed(!solrIndex.isIndexEmpty());
-        } catch(DocumentIndexingException ex) {
-            toReturn.addMessage(ex.getMessage());
-        }
-        try {
-            toReturn.setValidated(!validationService.isIndexEmpty());
         } catch(DocumentIndexingException ex) {
             toReturn.addMessage(ex.getMessage());
         }
@@ -90,22 +82,6 @@ public class MaintenanceController {
             return ResponseEntity.ok(loadMaintenancePage().addMessage("Optimized repository"));
         }
         catch(DataRepositoryException ex) {
-            MaintenanceResponse response = loadMaintenancePage().addMessage(ex.getMessage());
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(response);
-        }
-    }
-
-    @RequestMapping(value="/documents/validate",
-                    method = RequestMethod.POST)
-    @ResponseBody
-    public HttpEntity<MaintenanceResponse> validateRepository() {
-        try {
-            validationService.rebuildIndex();
-            return ResponseEntity.ok(loadMaintenancePage().addMessage("Validating repository"));
-        }
-        catch(DocumentIndexingException ex) {
             MaintenanceResponse response = loadMaintenancePage().addMessage(ex.getMessage());
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)

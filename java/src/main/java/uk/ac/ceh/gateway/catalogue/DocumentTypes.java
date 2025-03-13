@@ -28,26 +28,6 @@ public class DocumentTypes {
         .type(CODE)
         .build();
 
-    public static final String EF_DOCUMENT = "EF_DOCUMENT";
-
-    public static final String ELTER = "elter";
-    public static DocumentType ELTER_TYPE = DocumentType.builder()
-        .title("eLTER data")
-        .type(ELTER)
-        .build();
-
-    public static final String ERAMMP_DATACUBE = "erammp-datacube";
-    public static DocumentType ERAMMP_DATACUBE_TYPE = DocumentType.builder()
-        .title("ERAMMP data cube")
-        .type(ERAMMP_DATACUBE)
-        .build();
-
-    public static final String ERAMMP_MODEL = "erammp-model";
-    public static DocumentType ERAMMP_MODEL_TYPE = DocumentType.builder()
-        .title("ERAMMP model")
-        .type(ERAMMP_MODEL)
-        .build();
-
     public static final String INFRASTRUCTURERECORD = "infrastructurerecord";
         public static DocumentType INFRASTRUCTURERECORD_TYPE = DocumentType.builder()
             .title("Science infrastructure")
@@ -76,12 +56,6 @@ public class DocumentTypes {
     public static DocumentType LINK_TYPE = DocumentType.builder()
         .title("Link")
         .type(LINK)
-        .build();
-
-    public static final String LINKED_ELTER = "linked-elter";
-    public static DocumentType LINKED_ELTER_TYPE = DocumentType.builder()
-        .title("Linked document")
-        .type(LINKED_ELTER)
         .build();
 
     public static final String MONITORING_ACTIVITY = "monitoring-activity";
