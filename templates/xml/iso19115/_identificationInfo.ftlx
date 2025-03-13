@@ -84,9 +84,9 @@
         <gmd:CI_ResponsibleParty>
 
         <#if contact.fullName?has_content >
-          <#local contactName = contact.fullName >
+          <#assign contactName = contact.fullName >
         <#else>
-          <#local contactName = contact.individualName >
+          <#assign contactName = contact.individualName >
         </#if>
 
           <#if contactName?has_content>
