@@ -40,7 +40,6 @@ export { default as SpatialRepresentationTypeView } from './SpatialRepresentatio
 export { default as SpatialResolutionView } from './SpatialResolutionView'
 export { default as ObservedPropertyView } from './ObservedPropertyView'
 export { default as PredefinedParentLargeView } from './PredefinedParentLargeView'
-export { default as PointOfContactView } from './PointOfContactView'
 export { default as ProcessingStepView } from './ProcessingStepView'
 export { default as KeywordVocabularyView } from './KeywordVocabularyView'
 export { default as LinkDocumentSelectorView } from './LinkDocumentSelectorView'
