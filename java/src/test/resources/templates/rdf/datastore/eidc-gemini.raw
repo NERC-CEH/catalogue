@@ -405,7 +405,7 @@
         "country": "United Kingdom"
       },
       "pointOfContact": "UK Centre for Ecology & Hydrology",
-      "fullName": "Contact, pointOfContact"
+      "fullName": "Contact, P."
     }
   ],
   "publishers": [
@@ -425,7 +425,7 @@
         "postalCode": "6789",
         "country": "Finland"
       },
-      "fullName": "Test, Publisher"
+      "fullName": "Test, P."
     }
   ],
   "licences": [
