@@ -16,9 +16,25 @@
   </#list>;
 </#if>
 
+<#--copyright-->
+<#assign copyrights = filter(useConstraints, "code", "copyright"  ) >
+<#if copyrights?has_content>
+  dcterms:rights <#t>
+  <#list copyrights as copyright>
+      [ a dcterms:RightsStatement ;
+      odrs:copyrightNotice  <@displayLiteral copyright.value?replace("©","copyright") />;
+      ]
+  <#sep>,</#sep>
+  </#list>;
+</#if>
+
 <#if accessLimitation?has_content>
-    dcterms:accessRights [ a dcterms:RightsStatement ;
-      odrs:attributionText <@displayLiteral accessLimitation.value /> ;
-      <#if accessLimitation.uri?has_content>odrs:attributionUrl <${accessLimitation.uri?trim}> </#if>
-      ] ;
+  <#if accessLimitation.uri?has_content>
+    dcterms:accessRights <${accessLimitation.uri?trim}>;
+  <#else>
+    dcterms:accessRights [
+      a dcterms:RightsStatement ;
+      rdfs:label <@displayLiteral accessLimitation.value/>
+    ] ;
+  </#if>
 </#if>
