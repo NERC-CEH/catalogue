@@ -65,10 +65,7 @@ dcat:accessURL
 <https://data-package.ceh.ac.uk/data/2345-4644-3454-3543534534-4> ;
 dcterms:license <https://spdx.org/licenses/OGL-UK-3.0.ttl>
 ;
-dcterms:accessRights [ a dcterms:RightsStatement ;
-odrs:attributionText "no limitations to public access" ;
-odrs:attributionUrl <http://purl.org/coar/access_right/c_abf2>
-] ;
+dcterms:accessRights <http://purl.org/coar/access_right/c_abf2> ;
 dcterms:format
 [
 a dcterms:IMT ;
