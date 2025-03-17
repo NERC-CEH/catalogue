@@ -50,7 +50,7 @@ export default _.template(`
 </div>
 <div class="row">
     <div class="col-lg-2">
-       <label>Name</label>
+       <label>Name</label>0
     </div>
     <div class="col-lg-2">
         <label class="fst-italic" for="contacts<%= data.index %>honorificPrefix">Title</label>

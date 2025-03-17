@@ -593,7 +593,7 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
             toReturn.add(new MetadataCheck("There are no authors", INFO));
         }
         if (authors.stream().anyMatch(author -> fieldIsMissing(author, "familyName") || fieldIsMissing(author, "givenName"))) {
-            toReturn.add(new MetadataCheck("Author's name is missing or incomplete", WARNING));
+            toReturn.add(new MetadataCheck("Author's name is missing or incomplete", INFO));
         }
         if (authors.stream().anyMatch(author -> fieldIsMissing(author, "organisationName"))) {
             toReturn.add(new MetadataCheck("Author's affiliation (organisation name) is missing", ERROR));

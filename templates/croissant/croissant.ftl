@@ -8,50 +8,14 @@
   <#macro croissant files=[]>
     <#if resourceStatus?lower_case != "deleted">
       {
-        "@context": {
+      "@context": {
           "@language": "en",
           "@vocab": "https://schema.org/",
-          "citeAs": "cr:citeAs",
-          "column": "cr:column",
-          "conformsTo": "dct:conformsTo",
-          "cr": "http://mlcommons.org/croissant/",
-          "rai": "http://mlcommons.org/croissant/RAI/",
-          "data": {
-            "@id": "cr:data",
-            "@type": "@json"
-          },
-          "dataType": {
-            "@id": "cr:dataType",
-            "@type": "@vocab"
-          },
-          "dct": "http://purl.org/dc/terms/",
-          "examples": {
-            "@id": "cr:examples",
-            "@type": "@json"
-          },
-          "extract": "cr:extract",
-          "field": "cr:field",
-          "fileProperty": "cr:fileProperty",
-          "fileObject": "cr:fileObject",
-          "fileSet": "cr:fileSet",
-          "format": "cr:format",
-          "includes": "cr:includes",
-          "isLiveDataset": "cr:isLiveDataset",
-          "jsonPath": "cr:jsonPath",
-          "key": "cr:key",
-          "md5": "cr:md5",
-          "parentField": "cr:parentField",
-          "path": "cr:path",
-          "recordSet": "cr:recordSet",
-          "references": "cr:references",
-          "regex": "cr:regex",
-          "repeated": "cr:repeated",
-          "replace": "cr:replace",
           "sc": "https://schema.org/",
-          "separator": "cr:separator",
-          "source": "cr:source",
-          "subField": "cr:subField",
-          "transform": "cr:transform"
+          "cr": "http://mlcommons.org/croissant/",
+          "dct": "http://purl.org/dc/terms/",
+          "wd": "http://www.wikidata.org/wiki/",
+          "citeAs": "cr:citeAs"
         },
         "@id": "${id?trim}_croissant",
         "@type": "sc:Dataset", <#--check what if type = model code ?? -->
@@ -68,7 +32,6 @@
         <@keywords/>
         <@listContacts authors "creator"/>
         <@listContacts publishers "publisher"/>
-        <@recordSet/>
       }
     </#if>
   </#macro>
@@ -76,19 +39,6 @@
   <#macro distribution files>
     <#if files?size gt 0 && files?size lt 60000>
       ,"distribution":[
-          <#--add a default folder and fileset -->
-          {
-            "@type": "cr:FileSet",
-            "@id": "allfiles",
-            "containedIn": { "@id": "parent-folder" },
-            "includes": "*.*"
-          },
-          {
-            "@type": "cr:FileObject",
-            "@id": "parent-folder",
-            "contentUrl": "https://catalogue.ceh.ac.uk/datastore/eidchub/${id?trim}/",
-            "encodingFormat": "inode/directory"
-          },
       <#list files as file>
         <#if file.id?has_content>
           {
@@ -202,7 +152,7 @@
                 <#if contact.organisationName?has_content>
                   ,"affiliation":{
                     "@type":"Organization",
-                     <#if contact.organisationIdentifier?has_content>"@id": "${contact.organisationIdentifier}",</#if>
+                    "@id": "${contact.organisationIdentifier}",
                     "name":"${contact.organisationName}"
                   }
                 </#if>
@@ -218,50 +168,4 @@
       </#if>
   </#macro>
 
-  <#macro recordSet>
-    <#if observedProperty?? && files??>
-      ,"recordSet": [
-        {
-          "@id": "rs-cosmos",
-          "@type": "cr:RecordSet",
-          "field": [
-          <#list observedProperty as op>
-
-            <#if op.type?has_content>
-              <#local dataType ="sc:Text">
-              <#if op.type=="integer">
-                <#local dataType ="sc:Integer">
-              <#elseif op.type=="number">
-                <#local dataType ="sc:Float">
-                <#elseif op.type=="date">
-                <#local dataType ="sc:Date">
-                <#elseif op.type=="datetime">
-                <#local dataType ="sc:DateTime">
-              </#if>
-            </#if>
-
-            {
-              "@type": "cr:Field",
-              "@id": "file/${op.value}",
-              <#if dataType?has_content>"dataType": "${dataType}",</#if>
-              <#if op.title?has_content>"description": "${op.title}",</#if>
-              "source": {
-                "cr:fileObject": {
-                  "@id": "allfiles"
-                },
-                "extract": {
-                  "column": "${op.value}"
-                }
-              }
-            }
-            <#sep>,
-          </#list>
-          ]
-        }
-      ]
-    </#if>
-  </#macro>
-
  </#compress>
-
-
