@@ -59,8 +59,7 @@
         "administrativeArea": "Test contact County",
         "postalCode": "1234",
         "country": "UK"
-      },
-      "fullName": "Person, T."
+      }
     }
   ],
   "environmentalDomain": [

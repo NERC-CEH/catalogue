@@ -17,20 +17,22 @@
 </#if>
 
 <#--copyright-->
-<#assign copyrights = filter(useConstraints, "code", "copyright"  ) >
-<#if copyrights?has_content>
-  dcterms:rights <#t>
-  <#list copyrights as copyright>
-      [ a dcterms:RightsStatement ;
-      odrs:copyrightNotice  <@displayLiteral copyright.value?replace("©","copyright") />;
-      ]
-  <#sep>,</#sep>
-  </#list>;
+<#if useConstraints?has_content>
+  <#assign copyrights = filter(useConstraints, "code", "copyright"  ) >
+  <#if copyrights?has_content>
+    dcterms:rights <#t>
+    <#list copyrights as copyright>
+        [ a dcterms:RightsStatement ;
+        odrs:copyrightNotice  <@displayLiteral copyright.value?replace("©","copyright") />;
+        ]
+    <#sep>,</#sep>
+    </#list>;
+  </#if>
 </#if>
 
 <#if accessLimitation?has_content>
   <#if accessLimitation.uri?has_content>
-    dcterms:accessRights <${accessLimitation.uri?trim}>;
+    dcterms:accessRights <${accessLimitation.uri?trim}> ;
   <#else>
     dcterms:accessRights [
       a dcterms:RightsStatement ;

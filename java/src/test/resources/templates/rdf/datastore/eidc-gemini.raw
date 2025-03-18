@@ -159,8 +159,7 @@
         "administrativeArea": "Test distribution County",
         "postalCode": "4321",
         "country": "US"
-      },
-      "fullName": "Distribution, P."
+      }
     }
   ],
   "responsibleParties": [
@@ -179,8 +178,7 @@
         "administrativeArea": "Test author County",
         "postalCode": "1234",
         "country": "UK"
-      },
-      "fullName": "Contact, A."
+      }
     },
     {
       "individualName": "Contact, pointOfContact",
@@ -198,8 +196,7 @@
         "postalCode": "LA1 4AP",
         "country": "United Kingdom"
       },
-      "pointOfContact": "UK Centre for Ecology & Hydrology",
-      "fullName": "Contact, P."
+      "pointOfContact": "UK Centre for Ecology & Hydrology"
     },
     {
       "individualName": "Test, Custodian",
@@ -216,8 +213,7 @@
         "administrativeArea": "Test custodian county",
         "postalCode": "3456",
         "country": "Germany"
-      },
-      "fullName": "Test, C."
+      }
     },
     {
       "individualName": "Test, Publisher",
@@ -234,8 +230,7 @@
         "administrativeArea": "Test publisher county",
         "postalCode": "6789",
         "country": "Finland"
-      },
-      "fullName": "Test, P."
+      }
     }
   ],
   "temporalExtents": [
@@ -359,8 +354,7 @@
         "administrativeArea": "Test author County",
         "postalCode": "1234",
         "country": "UK"
-      },
-      "fullName": "Contact, A."
+      }
     }
   ],
   "resourceStatus": "Available",
@@ -383,8 +377,7 @@
         "administrativeArea": "Test custodian county",
         "postalCode": "3456",
         "country": "Germany"
-      },
-      "fullName": "Test, C."
+      }
     }
   ],
   "pointsOfContact": [
@@ -404,8 +397,7 @@
         "postalCode": "LA1 4AP",
         "country": "United Kingdom"
       },
-      "pointOfContact": "UK Centre for Ecology & Hydrology",
-      "fullName": "Contact, P."
+      "pointOfContact": "UK Centre for Ecology & Hydrology"
     }
   ],
   "publishers": [
@@ -424,8 +416,7 @@
         "administrativeArea": "Test publisher county",
         "postalCode": "6789",
         "country": "Finland"
-      },
-      "fullName": "Test, P."
+      }
     }
   ],
   "licences": [

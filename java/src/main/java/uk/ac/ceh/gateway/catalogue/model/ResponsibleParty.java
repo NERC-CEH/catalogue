@@ -62,7 +62,7 @@ public class ResponsibleParty {
 
     public String getFullName() {
         if (!familyName.isEmpty() && !givenName.isEmpty()) {
-            String[] givenNames = givenName.split("[ \\.]");
+            String[] givenNames = givenName.split("[ .]");
             StringBuilder initials = new StringBuilder();
             for (String name : givenNames) {
                 if (!name.isEmpty()) {

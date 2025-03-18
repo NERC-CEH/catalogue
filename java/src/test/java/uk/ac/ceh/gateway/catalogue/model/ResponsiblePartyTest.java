@@ -145,4 +145,13 @@ class ResponsiblePartyTest {
             .build();
         assertEquals("", party.getFullName());
     }
+
+    @Test
+    public void testGetFullNameWithMultipleInitials() {
+        ResponsibleParty party = ResponsibleParty.builder()
+            .familyName("Foo")
+            .givenName("J.P.")
+            .build();
+        assertEquals("Foo, J.P.", party.getFullName());
+    }
 }
