@@ -34,11 +34,11 @@ export default _.template(`
     </div>
     <div class="col-lg-4">
         <label class="fst-italic" for="contacts<%= data.index %>givenName">Given name</label>
-        <input data-name='givenName' placeholder="e.g., P.G." class="editor-input" id="contacts<%= data.index %>givenName" value="<%= data.givenName %>">
+        <input data-name='givenName' placeholder="e.g., C."  class="editor-input" id="contacts<%= data.index %>givenName" value="<%= data.givenName %>">
     </div>
     <div class="col-lg-4">
         <label class="fst-italic" for="contacts<%= data.index %>familyName">Family name</label>
-        <input data-name='familyName' placeholder="Wodehouse" class="editor-input" id="contacts<%= data.index %>familyName" value="<%= data.familyName %>">
+        <input data-name='familyName' placeholder="e.g., Darwin" class="editor-input" id="contacts<%= data.index %>familyName" value="<%= data.familyName %>">
     </div>
   </div>
 `)
