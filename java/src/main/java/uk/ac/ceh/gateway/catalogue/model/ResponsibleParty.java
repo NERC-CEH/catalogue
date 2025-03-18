@@ -45,7 +45,6 @@ public class ResponsibleParty {
     }
 
 
-
     @JsonIgnore
     public boolean isOrcid() {
         return nameIdentifier.matches("^https?://orcid\\.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$");
@@ -63,7 +62,7 @@ public class ResponsibleParty {
 
     public String getFullName() {
         if (!familyName.isEmpty() && !givenName.isEmpty()) {
-            String[] givenNames = givenName.split(" ");
+            String[] givenNames = givenName.split("[ .]");
             StringBuilder initials = new StringBuilder();
             for (String name : givenNames) {
                 if (!name.isEmpty()) {
