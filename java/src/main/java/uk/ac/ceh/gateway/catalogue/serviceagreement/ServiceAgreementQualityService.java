@@ -36,7 +36,7 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
 
     private final DocumentReader documentReader;
     private final Configuration config;
-    private final Pattern AUTHOR_PATTERN = Pattern.compile("^[\\w\\-\\s']+, (\\w\\.){1,5}$");
+    private final Pattern AUTHOR_PATTERN = Pattern.compile("^(\\w\\.){1,5}$");
     private final Pattern EMAIL_PATTERN = Pattern.compile("^[a-z0-9\\\\!#$%&'*+/=?^_`{|}~\\-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~\\-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$");
     private final String jiraPrefix;
     private final ImmutableSet<String> mandatoryContentTypes = ImmutableSet.of("generationMethods", "natureUnits", "qc", "dataStructure");
@@ -159,7 +159,7 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
     List<MetadataCheck> checkAuthors(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
         val authors = parsed.read(
-                "$.authors[*][?(@.role == 'author')].['individualName', 'organisationName','email']",
+                "$.authors[*][?(@.role == 'author')].['familyName','givenName','organisationName','email']",
                 typeRefStringString
         );
 
@@ -167,12 +167,12 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
             toReturn.add(new MetadataCheck("There are no authors", ERROR));
         }
 
-        if (authors.stream().anyMatch(author -> fieldIsMissing(author, "individualName"))) {
-            toReturn.add(new MetadataCheck("Author's name is missing", ERROR));
+        if (authors.stream().anyMatch(author -> fieldIsMissing(author, "familyName"))) {
+            toReturn.add(new MetadataCheck("Author's name is incomplete", ERROR));
         }
 
-        if (authors.stream().anyMatch(author -> !AUTHOR_PATTERN.matcher(author.get("individualName")).matches())) {
-            toReturn.add(new MetadataCheck("Author name format incorrect", ERROR));
+        if (authors.stream().anyMatch(author -> !AUTHOR_PATTERN.matcher(author.get("givenName")).matches() || fieldIsMissing(author, "givenName"))) {
+            toReturn.add(new MetadataCheck("Author's initials (given name is missing or incorrect", ERROR));
         }
 
         if (authors.stream().anyMatch(author -> fieldIsMissing(author, "organisationName"))) {
@@ -187,7 +187,7 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
     List<MetadataCheck> checkOwnerOfIpr(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
         val owners = parsed.read(
-                "$.ownersOfIpr[*].['individualName', 'organisationName','email']",
+                "$.ownersOfIpr[*].['familyName','givenName','organisationName','email']",
                 typeRefStringString
         );
 

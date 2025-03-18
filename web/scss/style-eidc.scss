@@ -54,9 +54,21 @@ footer {
                 margin-inline-start: 0.6em;
             }
         }
-        .footer-links {flex-direction: row; gap:0 2em; grid-column: 1 / -1;}
-        .footer-socials {display:none;}
+
+        .footer-links {
+            flex-direction: row;
+            gap: 0 2em;
+            grid-column: 1 / -1;
+        }
+
+        .footer-socials {
+            display: none;
+        }
     }
+}
+
+.option-eidc {
+    --display-option: block;
 }
 
 .adminToolbar {
@@ -143,10 +155,6 @@ footer {
 }
 
 #editor {
-    .option-eidc {
-        --display-option:i block;
-    }
-
     .component.eidconly {
         visibility: visible;
         height: auto;

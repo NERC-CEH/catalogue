@@ -88,7 +88,7 @@
             <gmd:pointOfContact>
                 <gmd:CI_ResponsibleParty>
                     <gmd:individualName>
-                        <gco:CharacterString>John Doe</gco:CharacterString>
+                        <gco:CharacterString>Doe, J.</gco:CharacterString>
                     </gmd:individualName>
                     <gmd:organisationName>
                         <gco:CharacterString>Example Research Institute</gco:CharacterString>

@@ -2,7 +2,7 @@
 <resource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://datacite.org/schema/kernel-3" xsi:schemaLocation="http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd">
 <identifier identifierType="DOI">10.5072/ce54efaa-e847-4f07-b979-b3fe1697c6f4</identifier>
 <creators>
-<creator><creatorName>Author Name</creatorName></creator>
+<creator><creatorName>Author Name</creatorName><givenName>Author</givenName><familyName>Name</familyName></creator>
 </creators>
 <titles>
 <title>Record Title</title>

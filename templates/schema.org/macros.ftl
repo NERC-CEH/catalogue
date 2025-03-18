@@ -284,7 +284,14 @@
 <#macro contactList contacts idlabel="contact">
   <#list contacts as contact>
     <#assign contactid = "#" + idlabel + contact?index>
-    <#if contact.individualName?has_content>
+
+    <#if contact.fullName?has_content >
+      <#local contactName = contact.fullName>
+    <#else>
+      <#local contactName = contact.individualName >
+    </#if>
+
+    <#if contactName?has_content>
       <#if contact.nameIdentifier?has_content && contact.nameIdentifier?matches("^http(|s)://orcid.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$")>
         <#assign contactid = contact.nameIdentifier>
       </#if>
@@ -300,7 +307,14 @@
 <#macro contactDetails contacts idlabel="contact">
   <#list contacts as contact>
     <#assign contactid = "#" + idlabel + contact?index>
-    <#if contact.individualName?has_content>
+
+    <#if contact.fullName?has_content >
+      <#local contactName = contact.fullName>
+    <#else>
+      <#local contactName = contact.individualName >
+    </#if>
+
+    <#if contactName?has_content>
       <#if contact.nameIdentifier?has_content && contact.nameIdentifier?matches("^http(|s)://orcid.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$")>
         <#assign contactid = contact.nameIdentifier>
       </#if>
@@ -311,9 +325,11 @@
     </#if>
     {
     "@id": "${contactid}",
-    <#if contact.individualName?has_content>
+    <#if contactName?has_content>
       "@type": "Person",
-      "name": "${contact.individualName}"
+      "name": "${contactName}"
+      <#if contact.familyName?has_content>, "familyName": "${contact.familyName}"</#if>
+      <#if contact.givenName?has_content>, "givenName": "${contact. givenName}"</#if>
       <#if contact.email?has_content>,"email": "${contact.email}"</#if>
       <#if contact.nameIdentifier?has_content && contact.nameIdentifier?matches("^http(|s)://orcid.org/\\d{4}-\\d{4}-\\d{4}-\\d{3}(X|\\d)$")>
         ,"identifier": {

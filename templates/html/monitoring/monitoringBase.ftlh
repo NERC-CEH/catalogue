@@ -365,9 +365,16 @@ Operating period
 
 <#macro contactDetails contact>
  <@keyValue contact.roleDisplayName?cap_first "">
-    <#if contact.individualName?has_content>
+
+    <#if contact.fullName?has_content >
+      <#local contactName = contact.fullName >
+    <#else>
+      <#local contactName = contact.individualName >
+    </#if>
+
+    <#if contactName?has_content>
       <span>
-        ${contact.individualName}
+        ${contactName}
         <#if contact.nameIdentifier?has_content>
           <a href="${contact.nameIdentifier}" target="_blank" rel="noopener noreferrer">
             <img src="/static/img/orcid_16x16.png" alt="ORCID iD icon" title="ORCID iD">

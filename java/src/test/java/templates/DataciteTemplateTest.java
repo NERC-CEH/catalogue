@@ -216,7 +216,13 @@ public class DataciteTemplateTest {
             gemini
                 .setResponsibleParties(List.of(
                     ResponsibleParty.builder().role("publisher").organisationIdentifier("https://ror.org/1234542").organisationName("EIDC").build(),
-                    ResponsibleParty.builder().role("publisher").organisationName("OTHER").build()
+                    ResponsibleParty.builder().role("publisher").organisationName("OTHER").build(),
+                    ResponsibleParty.builder().role("author").familyName("Smith").givenName("Bob").organisationName("Example Inc.").build(),
+                    ResponsibleParty.builder().role("author").familyName("Smith").givenName("George").nameIdentifier("https://orcid.org/0000-0001-5727-2427").organisationName("Science Inc.").build(),
+                    ResponsibleParty.builder().role("author").familyName("Smith").givenName("Helen").organisationIdentifier("https://ror.org/04xw4m193").organisationName("EIDC").build(),
+                    ResponsibleParty.builder().role("pointOfContact").familyName("Smith").givenName("Bob").organisationName("Example Inc.").build(),
+                    ResponsibleParty.builder().role("rightsHolder").organisationIdentifier("https://ror.org/00pggkr55").organisationName("Science Inc.").build(),
+                    ResponsibleParty.builder().role("custodian").organisationIdentifier("https://ror.org/04xw4m193").organisationName("EIDC").build()
                 ))
                 .setDatasetReferenceDate(DatasetReferenceDate.builder().publicationDate(LocalDate.of(2025, 2, 3)).build())
                 .setTitle("Test")
@@ -258,101 +264,4 @@ public class DataciteTemplateTest {
         }
     }
 
-    @Nested
-    @DisplayName("creators")
-    class Creators {
-        @Test
-        @DisplayName("with creators")
-        void full() {
-            //given
-            val author1 = ResponsibleParty
-                .builder()
-                .role("author")
-                .individualName("Bob")
-                .organisationName("Example Inc.")
-                .build();
-            val author2 = ResponsibleParty
-                .builder()
-                .role("author")
-                .individualName("George")
-                .organisationName("Science Inc.")
-                .organisationIdentifier("https://ror.org/00pggkr55")
-                .build();
-            val author3 = ResponsibleParty
-                .builder()
-                .role("author")
-                .individualName("Helen")
-                .organisationName("EIDC")
-                .organisationIdentifier("https://ror.org/04xw4m193")
-                .build();
-            gemini.setResponsibleParties(List.of(
-                author1,
-                author2,
-                author3
-            ));
-
-            val expected = expected("datacite/creators-full.xml");
-
-            //when
-            val actual = template("datacite/_creators.ftlx");
-
-            //then
-            compare(expected, actual);
-        }
-    }
-
-    @Nested
-    @DisplayName("contributors")
-    class Contributors {
-
-        @Test
-        @DisplayName("without contributors")
-        void empty() {
-            //given
-            val expected = "";
-
-            //when
-            val actual = template("datacite/_contributors.ftlx");
-
-            //then
-            assertThat(actual, equalTo(expected));
-        }
-
-        @Test
-        @DisplayName("with contributors")
-        void full() {
-            //given
-            val pointOfContact = ResponsibleParty
-                .builder()
-                .role("pointOfContact")
-                .individualName("Bob")
-                .organisationName("Example Inc.")
-                .build();
-            val rightsHolder = ResponsibleParty
-                .builder()
-                .role("rightsHolder")
-                .organisationName("Science Inc.")
-                .organisationIdentifier("https://ror.org/00pggkr55")
-                .build();
-            val custodian = ResponsibleParty
-                .builder()
-                .role("custodian")
-                .organisationName("EIDC")
-                .organisationIdentifier("https://ror.org/04xw4m193")
-                .build();
-            gemini.setResponsibleParties(List.of(
-                pointOfContact,
-                rightsHolder,
-                custodian
-            ));
-
-            val expected = expected("datacite/contributors-full.xml");
-
-            //when
-            val actual = template("datacite/_contributors.ftlx");
-
-            //then
-            compare(expected, actual);
-        }
-    }
 }

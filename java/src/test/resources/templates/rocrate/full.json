@@ -162,7 +162,9 @@
         {
             "@id": "https://orcid.org/0000-1234-5678-9101",
             "@type": "Person",
-            "name": "Donald",
+            "name": "Duck, D.",
+            "familyName": "Duck",
+            "givenName": "Donald",
             "email": "donald@example.com",
             "identifier": {
                 "@type": "PropertyValue",

@@ -1,21 +1,47 @@
 import _ from 'underscore'
 
 export default _.template(`
-<div class="row">
-    <div class="col-sm-2 required">
+  <div class="row">
+    <div class="col-lg-2">
+       <label>Name</label>
+    </div>
+    <div class="col-lg-2">
+        <label class="fst-italic" for="contacts<%= data.index %>honorificPrefix">Title</label>
+        <select data-name="honorificPrefix" class="editor-input honorificPrefix" id="contacts<%= data.index %>honorificPrefix">
+          <option value="Dr">Dr</option>
+          <option value="Miss">Miss</option>
+          <option value="Mr">Mr</option>
+          <option value="Mrs">Mrs</option>
+          <option value="Ms">Ms</option>
+          <option value="Professor">Professor</option>
+        </select>
+    </div>
+    <div class="col-lg-4 required">
+        <label class="fst-italic" for="contacts<%= data.index %>givenName">Initial(s)</label>
+        <input data-name='givenName' placeholder="e.g., C."  class="editor-input" id="contacts<%= data.index %>givenName" value="<%= data.givenName %>">
+    </div>
+    <div class="col-lg-4 required">
+        <label class="fst-italic" for="contacts<%= data.index %>familyName">Family name</label>
+        <input data-name='familyName' placeholder="e.g., Darwin" class="editor-input" id="contacts<%= data.index %>familyName" value="<%= data.familyName %>">
+    </div>
+  </div>
+  <div class="row disabled">
+    <div class="col-sm-2">
         <label for="contacts<%= data.index %>Name">
-          Name
+          Full name
         </label>
     </div>
-    <div class="col-sm-4 required">
-        <input data-name='individualName' class="editor-input" id="contacts<%= data.index %>Name" value="<%= data.individualName %>">
+    <div class="col-sm-10">
+       <input data-name='individualName' disabled class="editor-input form-control-sm" id="contacts<%= data.index %>Name" value="<%= data.individualName %>">
     </div>
+  </div>
+  <div class="row">
     <div class="col-sm-2 required">
         <label for="contacts<%= data.index %>Email">
           Email
         </label>
     </div>
-    <div class="col-sm-4 required">
+    <div class="col-sm-10 required">
         <input data-name='email' class="editor-input" id="contacts<%= data.index %>Email" value="<%= data.email %>">
     </div>
 </div>

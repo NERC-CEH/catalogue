@@ -14,13 +14,16 @@ import static com.google.common.base.Strings.nullToEmpty;
 @With
 @JsonIgnoreProperties({"roleDisplayName"})
 public class ResponsibleParty {
-    String individualName, organisationName, organisationIdentifier, role, email, phone, nameIdentifier;
+    String individualName, honorificPrefix, familyName, givenName, organisationName, organisationIdentifier, role, email, phone, nameIdentifier;
     Address address;
 
     @Builder
     @JsonCreator
     private ResponsibleParty(
         @JsonProperty("individualName") String individualName,
+        @JsonProperty("honorificPrefix") String honorificPrefix,
+        @JsonProperty("familyName") String familyName,
+        @JsonProperty("givenName") String givenName,
         @JsonProperty("organisationName") String organisationName,
         @JsonProperty("organisationIdentifier") String organisationIdentifier,
         @JsonProperty("role") String role,
@@ -29,6 +32,9 @@ public class ResponsibleParty {
         @JsonProperty("nameIdentifier") String nameIdentifier,
         @JsonProperty("address") Address address) {
         this.individualName = nullToEmpty(individualName);
+        this.honorificPrefix = nullToEmpty(honorificPrefix);
+        this.familyName = nullToEmpty(familyName);
+        this.givenName = nullToEmpty(givenName);
         this.organisationName = nullToEmpty(organisationName);
         this.organisationIdentifier = nullToEmpty(organisationIdentifier);
         this.role = nullToEmpty(role);
@@ -37,6 +43,7 @@ public class ResponsibleParty {
         this.nameIdentifier = nullToEmpty(nameIdentifier);
         this.address = (address == null || address.isEmpty()) ? null : address;
     }
+
 
     @JsonIgnore
     public boolean isOrcid() {
@@ -51,6 +58,25 @@ public class ResponsibleParty {
     @JsonIgnore
     public boolean isRor() {
         return organisationIdentifier.matches("^https://ror\\.org/\\w{8,10}$");
+    }
+
+    public String getFullName() {
+        if (!familyName.isEmpty() && !givenName.isEmpty()) {
+            String[] givenNames = givenName.split("[ .]");
+            StringBuilder initials = new StringBuilder();
+            for (String name : givenNames) {
+                if (!name.isEmpty()) {
+                    initials.append(name.toUpperCase().charAt(0)).append(".");
+                }
+            }
+            return familyName + ", " + initials;
+        }
+        else if (!individualName.isEmpty()) {
+            return individualName;
+        }
+        else {
+            return "";
+        }
     }
 
     public String getRoleDisplayName() {

@@ -7,6 +7,10 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.commons.io.IOUtils;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFDataMgr;
+import org.apache.jena.tdb1.TDB1Factory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -21,7 +25,9 @@ import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 
 import java.io.File;
+import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -36,6 +42,7 @@ public class RdfTemplateTest {
     Configuration configuration;
     ObjectMapper objectMapper;
     JenaLookupService jena;
+    Model model;
 
     @SneakyThrows
     private String expected(String filename) {
@@ -45,14 +52,48 @@ public class RdfTemplateTest {
 
     @SneakyThrows
     private String template(String templateFilename, Object model) {
-        return FreeMarkerTemplateUtils.processTemplateIntoString(
+        val string = FreeMarkerTemplateUtils.processTemplateIntoString(
             configuration.getTemplate(templateFilename),
             model
         );
+        log.debug("Template: {}",templateFilename);
+        log.debug(string);
+        return string;
     }
 
-    private void compare(String expected, String actual) {
+    private void compare(String expected, String actual, boolean fragment) {
+        if ( !fragment) {
+            RDFDataMgr.read(model, new StringReader(actual), "https://example.com/id/", Lang.TTL);
+        }
+
+        if (log.isDebugEnabled()) {
+            model.listStatements().forEachRemaining(s -> log.debug(s.toString()));
+
+            List<String> differences = findDifferences(expected, actual);
+
+            log.debug("Differences between the two strings:");
+            for (String diff : differences) {
+                log.debug(diff);
+            }
+        }
+
         assertThat(actual.trim(), equalTo(expected.trim()));
+    }
+
+    private List<String> findDifferences(String str1, String str2) {
+        List<String> differences = new ArrayList<>();
+        int length = Math.max(str1.length(), str2.length());
+
+        for (int i = 0; i < length; i++) {
+            char char1 = i < str1.length() ? str1.charAt(i) : ' ';
+            char char2 = i < str2.length() ? str2.charAt(i) : ' ';
+
+            if (char1 != char2) {
+                differences.add("Difference at index " + i + ": '" + char1 + "' vs '" + char2 + "'");
+            }
+        }
+
+        return differences;
     }
 
     @SneakyThrows
@@ -64,6 +105,8 @@ public class RdfTemplateTest {
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         jena = mock(JenaLookupService.class);
         configuration.setSharedVariable("jena", jena);
+        val jenaTdb = TDB1Factory.createDataset();
+        model = jenaTdb.getDefaultModel();
     }
 
     @Nested
@@ -97,7 +140,7 @@ public class RdfTemplateTest {
             val actual = template("rdf/ttl.ftl", geminiDocument);
 
             //then
-            compare(expected, actual);
+            compare(expected, actual, false);
         }
 
         @Test
@@ -118,7 +161,7 @@ public class RdfTemplateTest {
             val actual = template("rdf/turtle/_aggregation.ftl", gemini);
 
             //then
-            compare(expected, actual);
+            compare(expected, actual, true);
         }
     }
 
@@ -154,7 +197,7 @@ public class RdfTemplateTest {
             val actual = template("rdf/monitoring/facility.ftl", facilityDocument);
 
             //then
-            compare(expected, actual);
+            compare(expected, actual, false);
         }
 
         @Test
@@ -182,7 +225,7 @@ public class RdfTemplateTest {
             val actual = template("rdf/monitoring/network.ftl", networkDocument);
 
             //then
-            compare(expected, actual);
+            compare(expected, actual, false);
         }
 
         @Test
@@ -216,7 +259,7 @@ public class RdfTemplateTest {
             val actual = template("rdf/monitoring/programme.ftl", programmeDocument);
 
             //then
-            compare(expected, actual);
+            compare(expected, actual, false);
         }
 
         @Test
@@ -238,7 +281,7 @@ public class RdfTemplateTest {
             val actual = template("rdf/monitoring/activity.ftl", activityDocument);
 
             //then
-            compare(expected, actual);
+            compare(expected, actual, false);
         }
     }
 }

@@ -145,7 +145,9 @@
   ],
   "distributorContacts": [
     {
-      "individualName": "Test distribution person",
+      "individualName": "Distribution, Person",
+      "givenName": "Person",
+      "familyName": "Distribution",
       "organisationName": "NERC EDS Environmental Information Data Centre",
       "organisationIdentifier": "https://ror.org/04xw4m193",
       "role": "distributor",
@@ -162,12 +164,14 @@
   ],
   "responsibleParties": [
     {
-      "individualName": "Test contact author",
+      "individualName": "Contact, Author",
+      "givenName": "Author",
+      "familyName": "Contact",
       "organisationName": "UK Centre for Ecology & Hydrology",
       "organisationIdentifier": "https://ror.org/00pggkr55",
       "role": "author",
       "email": "enquiries@ceh.ac.uk",
-      "nameIdentifier": "https://orcid.org/0000-0001-2345-6789",
+      "nameIdentifier": "https://orcid.org/0000-0001-2345-2903",
       "address": {
         "deliveryPoint": "Test author address",
         "city": "Test author City",
@@ -177,12 +181,14 @@
       }
     },
     {
-      "individualName": "Test contact point of contact",
+      "individualName": "Contact, pointOfContact",
+      "givenName": "pointOfContact",
+      "familyName": "Contact",
       "organisationName": "UK Centre for Ecology & Hydrology",
       "organisationIdentifier": "https://ror.org/00pggkr55",
       "role": "pointOfContact",
       "email": "enquiries@ceh.ac.uk",
-      "nameIdentifier": "https://orcid.org/0000-2222-2345-6789",
+      "nameIdentifier": "https://orcid.org/0000-2222-2345-9482",
       "address": {
         "deliveryPoint": "Lancaster Environment Centre, Library Avenue, Bailrigg",
         "city": "Lancaster",
@@ -193,12 +199,14 @@
       "pointOfContact": "UK Centre for Ecology & Hydrology"
     },
     {
-      "individualName": "Test contact custodian",
+      "individualName": "Test, Custodian",
+      "givenName": "Custodian",
+      "familyName": "Test",
       "organisationName": "NERC EDS Environmental Information Data Centre",
       "organisationIdentifier": "https://ror.org/04xw4m193",
       "role": "custodian",
       "email": "info@eidc.ac.uk",
-      "nameIdentifier": "https://orcid.org/0000-3333-2345-6789",
+      "nameIdentifier": "https://orcid.org/0000-3333-2345-5637",
       "address": {
         "deliveryPoint": "Test custodian address",
         "city": "Test custodian city",
@@ -208,12 +216,14 @@
       }
     },
     {
-      "individualName": "Test contact publisher",
+      "individualName": "Test, Publisher",
+      "givenName": "Publisher",
+      "familyName": "Test",
       "organisationName": "NERC EDS Environmental Information Data Centre",
       "organisationIdentifier": "https://ror.org/04xw4m193",
       "role": "publisher",
       "email": "info@eidc.ac.uk",
-      "nameIdentifier": "https://orcid.org/0000-4444-2345-6789",
+      "nameIdentifier": "https://orcid.org/0000-4444-2345-7382",
       "address": {
         "deliveryPoint": "Test publisher address",
         "city": "Test publisher city",
@@ -231,7 +241,7 @@
   ],
   "onlineResources": [
     {
-      "url": "https://data-package.ceh.ac.uk/data/{fileIdentifier}",
+      "url": "https://data-package.ceh.ac.uk/data/2345-4644-3454-3543534534-4",
       "name": "Download the data",
       "description": "Download a copy of this data",
       "function": "download",
@@ -330,7 +340,9 @@
   "publicationDate": "2025-02-05T00:00:00.000+00:00",
   "authors": [
     {
-      "individualName": "Test contact author",
+      "individualName": "Contact, Author",
+      "givenName": "Author",
+      "familyName": "Contact",
       "organisationName": "UK Centre for Ecology & Hydrology",
       "organisationIdentifier": "https://ror.org/00pggkr55",
       "role": "author",
@@ -351,7 +363,9 @@
   ],
   "custodians": [
     {
-      "individualName": "Test contact custodian",
+      "individualName": "Test, Custodian",
+      "givenName": "Custodian",
+      "familyName": "Test",
       "organisationName": "NERC EDS Environmental Information Data Centre",
       "organisationIdentifier": "https://ror.org/04xw4m193",
       "role": "custodian",
@@ -368,7 +382,9 @@
   ],
   "pointsOfContact": [
     {
-      "individualName": "Test contact point of contact",
+      "individualName": "Contact, pointOfContact",
+      "givenName": "pointOfContact",
+      "familyName": "Contact",
       "organisationName": "UK Centre for Ecology & Hydrology",
       "organisationIdentifier": "https://ror.org/00pggkr55",
       "role": "pointOfContact",
@@ -386,7 +402,9 @@
   ],
   "publishers": [
     {
-      "individualName": "Test contact publisher",
+      "individualName": "Test, Publisher",
+      "givenName": "Publisher",
+      "familyName": "Test",
       "organisationName": "NERC EDS Environmental Information Data Centre",
       "organisationIdentifier": "https://ror.org/04xw4m193",
       "role": "publisher",

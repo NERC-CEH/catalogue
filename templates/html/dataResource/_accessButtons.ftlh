@@ -64,22 +64,46 @@
     </div>
     <div class="offcanvas-body">
 
-      <#assign statusMessage = "By accessing or using this " + recordType?lower_case + ", you agree to the terms of the relevant licence agreement(s). You will ensure that this " + recordType?lower_case + " is cited in any publication that describes research in which the data have been used." />
+      <#assign constraints = "<p class='constraints'>By accessing or using this " + recordType?lower_case + ", you agree to the terms of the relevant licence agreement(s). You will ensure that this " + recordType?lower_case + " is cited in any publication that describes research in which the data have been used.</p>" />
       <#if metadata.catalogue == "eidc" && resourceType.value=="application">
-        <#assign statusMessage += "<br><br>"?no_esc + "Publication of this " + recordType?lower_case + " by the EIDC does not signify any endorsement or approval. By accessing and using the resource, you acknowledge that it is entirely at your own risk and you are solely responsible for any loss or liability that may arise" />
+        <#assign constraints += "<p class='constraints'>Publication of this " + recordType?lower_case + " by the EIDC does not signify any endorsement or approval. By accessing and using the resource, you acknowledge that it is entirely at your own risk and you are solely responsible for any loss or liability that may arise</p>" />
       </#if>
 
       <#if resourceStatus == "Available" || resourceStatus == "Controlled">
-        <div class="alert alert-secondary"><strong>PLEASE NOTE:</strong> ${statusMessage}</div>
+
+        <div class="card text-bg-primary mb-3">
+          <div class="card-body">
+            <strong>PLEASE NOTE:</strong>
+            <hr>
+            ${constraints?no_esc}
+
+            <#if otherConstraints?has_content>
+              <#list otherConstraints as oc>
+
+                <#assign otherConstraintText = oc.value >
+
+                <#if recordType?? && recordType?has_content>
+                  <#assign otherConstraintText = otherConstraintText?replace("resource",recordType) >
+                </#if>
+
+                <#if oc.uri?has_content>
+                  <#assign otherConstraintText = "<a href='${oc.uri}'>"+ otherConstraintText + '</a>'>
+                </#if>
+
+                <p class="constraints">${otherConstraintText}</p>
+              </#list>
+            </#if>
+          </div>
+        </div>
+
         <#include "_licence.ftlh">
 
         <#if downloadOrder?? && ((downloadOrder.orderResources)?has_content || (downloadOrder.supportingDocumentsUrl)?has_content) || ((resourceType.value)?? && distributionFormats?? && distributionFormats?has_content)>
-
           <#list downloadOrder.orderResources as item>
             <@downloadButton item/>
           </#list>
-
         </#if>
+
       </#if>
 
       <#include "_status.ftlh">

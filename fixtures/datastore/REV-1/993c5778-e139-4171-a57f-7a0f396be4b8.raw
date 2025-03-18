@@ -532,7 +532,7 @@
       }
     },
     {
-      "individualName": "Haive, B.",
+     "individualName":"Haive, B.", "givenName":"B.","familyName":"Haive",
       "organisationName": "Aberdeen University",
       "organisationIdentifier": "https://ror.org/016476m91",
       "role": "author",

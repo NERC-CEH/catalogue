@@ -46,7 +46,9 @@
   "operationalStatus": "Active",
   "responsibleParties": [
     {
-      "individualName": "Test contact person",
+      "individualName": "Person, Test",
+      "givenName": "Test",
+      "familyName": "Person",
       "organisationName": "Defra",
       "organisationIdentifier": "https://ror.org/00tnppw48",
       "role": "funder",

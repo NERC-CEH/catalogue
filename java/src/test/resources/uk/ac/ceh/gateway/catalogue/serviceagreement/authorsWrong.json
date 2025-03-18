@@ -1,14 +1,20 @@
 {
   "authors": [
     {
-      "individualName": "Author 0",
+      "individualName": "Author, O.",
+      "givenName": "Olive",
+      "familyName": "Author",
       "organisationName": "Organisation 0",
-      "role": "author"
+      "role": "author",
+      "fullName": "Author, 0."
     },
     {
       "individualName": "",
+      "givenName": "",
+      "familyName": "",
       "organisationName": "Organisation 0",
-      "role": "author"
+      "role": "author",
+      "fullName": ""
     },
     {
       "organisationName": "Organisation 0",

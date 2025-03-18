@@ -17,7 +17,9 @@ public class SolrIndex {
     private @Field List<String> assistResearchThemes;
     private @Field List<String> assistTopics;
     private @Field List<String> authorAffiliation;
-    private @Field List<String> authorName;
+    private @Field List<String> authorGivenName;
+    private @Field List<String> authorFamilyName;
+    private @Field List<String> authorFullName;
     private @Field List<String> authorOrcid;
     private @Field List<String> authorRor;
     private @Field String catalogue;
@@ -32,7 +34,9 @@ public class SolrIndex {
     private @Field List<String> impTopic;
     private @Field List<String> impWaterPollutant;
     private @Field long incomingCitationCount;
-    private @Field List<String> individual;
+    private @Field List<String> givenName;
+    private @Field List<String> familyName;
+    private @Field List<String> fullName;
     private @Field List<String> inmsDemonstrationRegion;
     private @Field List<String> inmsProject;
     private @Field List<String> keyword;

@@ -1,8 +1,8 @@
 a dcat:Dataset;
-dct:type dcmitype:Dataset ;
+dcterms:type dcmitype:Dataset ;
 
 <#if datasetReferenceDate?? && datasetReferenceDate.publicationDate?has_content>
-  dct:available "${datasetReferenceDate.publicationDate}"^^xsd:date ;
+  dcterms:available "${datasetReferenceDate.publicationDate}"^^xsd:date ;
 </#if>
 
  dcat:landingPage <${uri}><#if datacitable?string=="true" && citation?has_content>, <${citation.url?trim}></#if> ;
@@ -10,7 +10,7 @@ dct:type dcmitype:Dataset ;
  <#include "_rights.ftl"> <#--rights at DATASET level-->
 
 <#if keywordsTheme?has_content>
-  dct:theme <@keywordList keywordsTheme/> ;
+  dcterms:theme <@keywordList keywordsTheme/> ;
 </#if>
 
 <#--Distribution-->
@@ -23,10 +23,10 @@ dcat:distribution [
     ;
     <#include "_rights.ftl"> <#--rights at DISTRIBUTION level-->
     <#list distributionFormats>
-    dct:format
+    dcterms:format
       <#items as format>
       [
-      a dct:IMT ;
+      a dcterms:IMT ;
       rdf:value "${format.name}" ; rdfs:label "${format.name}"
       ] <#sep>,
       </#items>
@@ -37,5 +37,5 @@ dcat:distribution [
 
 <#--Authors-->
 <#if authors?has_content>
-  dct:creator <@contactList authors "a" /> ;
+  dcterms:creator <@contactList authors "a" /> ;
 </#if>

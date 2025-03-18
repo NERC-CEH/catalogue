@@ -89,7 +89,9 @@
     <field name="assistResearchThemes" type="keywords"/>
     <field name="assistTopics" type="keywords"/>
     <field name="authorAffiliation" type="keywords_lowercase"/>
-    <field name="authorName" type="keywords"/>
+    <field name="authorGivenName" type="keywords" multiValued="true"/>
+    <field name="authorFamilyName" type="names" multiValued="true"/>
+    <field name="authorFullName" type="names" multiValued="true"/>
     <field name="authorOrcid" type="orcids"/>
     <field name="authorRor" type="rors"/>
     <field name="catalogue" type="keywords" multiValued="false"/>
@@ -105,7 +107,9 @@
     <field name="impScale" type="keywords"/>
     <field name="impTopic" type="keywords"/>
     <field name="impWaterPollutant" type="keywords"/>
-    <field name="individual" type="keywords"/>
+    <field name="givenName" type="keywords" multiValued="true"/>
+    <field name="familyName" type="names" multiValued="true"/>
+    <field name="fullName" type="names" multiValued="true"/>
     <field name="inmsDemonstrationRegion" type="keywords"/>
     <field name="inmsProject" type="keywords"/>
     <field name="keyword" type="keywords_lowercase"/>
@@ -147,7 +151,6 @@
     <field name="state" type="keywords" multiValued="false"/>
     <field name="supplementalDescription" type="text_general"/>
     <field name="supplementalName" type="text_general"/>
-    <field name="surname" type="names"/>
     <field name="title" type="text_general" required="true" multiValued="false"/>
     <field name="topic" type="keywords"/>
     <field name="ukcehResearchProject" type="keywords"/>
@@ -181,7 +184,5 @@
     <copyField source="objectives" dest="objectives_raw"/>
     <field name="infrastructureCapabilities_raw" type="string"/>
     <copyField source="infrastructureCapabilities" dest="infrastructureCapabilities_raw"/>
-
-    <copyField source="individual" dest="surname" multiValued="true"/>
     <dynamicField name="random*" type="random"/>
 </schema>
