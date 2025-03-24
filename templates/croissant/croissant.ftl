@@ -9,13 +9,30 @@
     <#if resourceStatus?lower_case != "deleted">
       {
       "@context": {
-          "@language": "en",
-          "@vocab": "https://schema.org/",
-          "sc": "https://schema.org/",
-          "cr": "http://mlcommons.org/croissant/",
-          "dct": "http://purl.org/dc/terms/",
-          "wd": "http://www.wikidata.org/wiki/",
-          "citeAs": "cr:citeAs"
+        "@language": "en",
+        "@vocab": "https://schema.org/",
+        "sc": "https://schema.org/",
+        "cr": "http://mlcommons.org/croissant/",
+        "rai": "http://mlcommons.org/croissant/RAI/",
+        "dct": "http://purl.org/dc/terms/",
+        "citeAs": "cr:citeAs",
+        "conformsTo": "dct:conformsTo",
+        "data": {
+          "@id": "cr:data",
+          "@type": "@json"
+        },
+        "dataType": {
+          "@id": "cr:dataType",
+          "@type": "@vocab"
+        },
+        "fileProperty": "cr:fileProperty",
+        "fileObject": "cr:fileObject",
+        "fileSet": "cr:fileSet",
+        "format": "cr:format",
+        "includes": "cr:includes",
+        "jsonPath": "cr:jsonPath",
+        "path": "cr:path",
+        "recordSet": "cr:recordSet"
         },
         "@id": "${id?trim}_croissant",
         "@type": "sc:Dataset", <#--check what if type = model code ?? -->
@@ -30,6 +47,7 @@
         <@listLicences/>
         <@distribution files/>
         <@keywords/>
+        <@recordSet/>
         <@listContacts authors "creator"/>
         <@listContacts publishers "publisher"/>
       }
@@ -39,6 +57,21 @@
   <#macro distribution files>
     <#if files?size gt 0 && files?size lt 60000>
       ,"distribution":[
+          <#-- Default folder FileObject-->
+          {
+           "@type": "cr:FileObject",
+            "@id": "waf",
+            "contentUrl": "https://catalogue.ceh.ac.uk/datastore/eidchub/${file.id}",
+            "description": "Top level web-accessible folder for this data"
+          },
+          <#-- Default fileset-->
+          {
+            "@type": "cr:FileSet",
+            "@id": "all-files",
+            "containedIn": { "@id": "waf" },
+            "description": "All files in this dataset",
+            "includes": "*.*"
+          },
       <#list files as file>
         <#if file.id?has_content>
           {
@@ -90,6 +123,39 @@
               </#if><#sep>,</#sep>
             </#list>
           ]
+    </#if>
+  </#macro>
+
+  <#macro recordSet>
+   <#if observedProperty??>
+    ,"recordSet": [
+        {
+          "@type": "cr:RecordSet",
+          "@id": "defaultRecordSet",
+          "key": { "@id": "hash" },
+          "field": [
+          <#list observedProperty as op>
+            <#assign dataType = "sc:Text">
+            <#if op.type == 'integer'>
+              <#assign dataType = "sc:Integer">
+            <#elseif op.type == 'number'>
+              <#assign dataType = "sc:Float">
+            <#elseif op.type == 'date'>
+              <#assign dataType = "sc:Date">
+            <#elseif op.type == 'datetime'>
+              <#assign dataType = "sc:DateTime">
+            </#if>
+            {
+              "@type": "cr:Field",
+              "@id": "${op.value}",
+              "description": "${op.title}",
+              "dataType": "${dataType}",
+              "source": { "@id": "all-files" }
+            }
+          <#sep>,</#sep></#list>
+          ]
+        }
+      ]
     </#if>
   </#macro>
 
@@ -149,7 +215,7 @@
                 <#if contact.familyName?has_content>,"familyName": "${contact.familyName}"</#if>
                 <#if contact.givenName?has_content>,"givenName": "${contact.givenName}"</#if>
                 <#if contact.email?has_content>,"email": "${contact.email}"</#if>
-                <#if contact.organisationName?has_content>
+                <#if contact.organisationName?trim?has_content>
                   ,"affiliation":{
                     "@type":"Organization",
                     "@id": "${contact.organisationIdentifier}",
