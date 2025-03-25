@@ -1,0 +1,102 @@
+{
+    "@context": {
+        "@language": "en",
+        "@vocab": "https://schema.org/",
+        "sc": "https://schema.org/",
+        "cr": "http://mlcommons.org/croissant/",
+        "rai": "http://mlcommons.org/croissant/RAI/",
+        "dct": "http://purl.org/dc/terms/",
+        "citeAs": "cr:citeAs",
+        "conformsTo": "dct:conformsTo",
+        "data": {
+            "@id": "cr:data",
+            "@type": "@json"
+        },
+        "dataType": {
+            "@id": "cr:dataType",
+            "@type": "@vocab"
+        },
+        "fileProperty": "cr:fileProperty",
+        "fileObject": "cr:fileObject",
+        "fileSet": "cr:fileSet",
+        "format": "cr:format",
+        "includes": "cr:includes",
+        "jsonPath": "cr:jsonPath",
+        "path": "cr:path",
+        "recordSet": "cr:recordSet"
+    },
+    "@id": "123456789_croissant",
+    "@type": "sc:Dataset",
+    "name": "Title",
+    "url": "https://example.org/id/123456789",
+    "dct:conformsTo": "http://mlcommons.org/croissant/1.0",
+    "version": 1,
+    "description": "Description of the dataset.",
+    "citeAs": "@Article{doi, doi = 'https://doi.org/doi', url = 'https://doi.org/doi', author = 'Bob AND Helen', publisher = 'EIDC', title = 'Title of dataset', year = '2024'}",
+    "datePublished": "2024-08-22",
+    "license": [
+        {
+            "@type": "CreativeWork",
+            "name": "Open Government Licence v3",
+            "alternateName": "OGL-UK-3.0",
+            "license": "https://spdx.org/licenses/OGL-UK-3.0.html"
+        }
+    ],
+    "distribution": [
+        {
+            "@type": "cr:FileObject",
+            "@id": "waf",
+            "contentUrl": "https://catalogue.ceh.ac.uk/datastore/eidchub/123456789",
+            "description": "Top level web-accessible folder for this data"
+        },
+        {
+            "@type": "cr:FileSet",
+            "@id": "all-files",
+            "containedIn": {
+                "@id": "waf"
+            },
+            "description": "All files in this dataset",
+            "includes": "*.*"
+        },
+        {
+            "@type": "cr:FileObject",
+            "@id": "data0",
+            "encodingFormat": "text/csv",
+            "sha256": "29cd35efe0af017002da20c0f3b5e7c30d7fb5abe6906a3d92967240c5c5b337",
+            "contentUrl": "https://catalogue.ceh.ac.uk/datastore/eidchub/123456789/data0.csv",
+            "contentSize": "997 B"
+        },
+        {
+            "@type": "cr:FileObject",
+            "@id": "data1",
+            "encodingFormat": "text/csv",
+            "sha256": "86e165efe0af017002da20c0f3b5e7c30d7fb5abe6906a3d92967240c5c98ac2",
+            "contentUrl": "https://catalogue.ceh.ac.uk/datastore/eidchub/123456789/data1.csv",
+            "contentSize": "638 B"
+        }
+    ],
+    "keywords": ["Environmental survey"],
+    "creator": [
+        {
+            "@id": "https://orcid.org/0000-0001-9570-7479",
+            "@type": "Person",
+            "name": "Hand, L.",
+            "familyName": "Hand",
+            "givenName": "L.",
+            "affiliation": {
+                "@type": "Organization",
+                "@id": "https://ror.org/01nrxwf90",
+                "name": "University of Edinburgh"
+            }
+        }
+    ],
+    "publisher": [
+        {
+            "@id": "https://ror.org/04xw4m193",
+            "@type": "Organization",
+            "name": "NERC EDS Environmental Information Data Centre",
+            "email": "info@eidc.ac.uk",
+            "identifier": "https://ror.org/04xw4m193"
+        }
+    ]
+}
