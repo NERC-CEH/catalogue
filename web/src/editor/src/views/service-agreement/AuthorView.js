@@ -8,6 +8,12 @@ export default ObjectInputView.extend({
     ObjectInputView.prototype.initialize.call(this)
   },
 
+  render () {
+    ObjectInputView.prototype.render.apply(this)
+    this.$('select.honorificPrefix').val(this.model.get('honorificPrefix'))
+    return this
+  },
+
   modify (event) {
     ObjectInputView.prototype.modify.call(this, event)
     this.model.set('role', 'author')
