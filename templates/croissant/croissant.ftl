@@ -61,7 +61,7 @@
           {
            "@type": "cr:FileObject",
             "@id": "waf",
-            "contentUrl": "https://catalogue.ceh.ac.uk/datastore/eidchub/${file.id}",
+            "contentUrl": "https://catalogue.ceh.ac.uk/datastore/eidchub/${id?trim}",
             "description": "Top level web-accessible folder for this data"
           },
           <#-- Default fileset-->
