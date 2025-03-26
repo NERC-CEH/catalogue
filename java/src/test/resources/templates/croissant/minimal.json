@@ -1,0 +1,34 @@
+{
+    "@context": {
+        "@language": "en",
+        "@vocab": "https://schema.org/",
+        "sc": "https://schema.org/",
+        "cr": "http://mlcommons.org/croissant/",
+        "rai": "http://mlcommons.org/croissant/RAI/",
+        "dct": "http://purl.org/dc/terms/",
+        "citeAs": "cr:citeAs",
+        "conformsTo": "dct:conformsTo",
+        "data": {
+            "@id": "cr:data",
+            "@type": "@json"
+        },
+        "dataType": {
+            "@id": "cr:dataType",
+            "@type": "@vocab"
+        },
+        "fileProperty": "cr:fileProperty",
+        "fileObject": "cr:fileObject",
+        "fileSet": "cr:fileSet",
+        "format": "cr:format",
+        "includes": "cr:includes",
+        "jsonPath": "cr:jsonPath",
+        "path": "cr:path",
+        "recordSet": "cr:recordSet"
+    },
+    "@id": "123456789_croissant",
+    "@type": "sc:Dataset",
+    "name": "Title",
+    "url": "https://example.org/id/123456789",
+    "dct:conformsTo": "http://mlcommons.org/croissant/1.0",
+    "version": 1
+}
