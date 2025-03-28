@@ -22,5 +22,12 @@ export default SingleView.extend({
         model: that.inputModel
       }))
     })
+  },
+
+  show () {
+    SingleView.prototype.show.apply(this)
+    if (this.data.modelAttribute === 'boundingBox') {
+      this.objectInputView.viewMap()
+    }
   }
 })
