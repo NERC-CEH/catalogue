@@ -36,5 +36,6 @@ export default SingleObjectView.extend({
       this.inputModel.clear().set(this.inputModel.defaults)
     }
     this.objectInputView.render()
+    SingleObjectView.prototype.show.apply(this)
   }
 })
