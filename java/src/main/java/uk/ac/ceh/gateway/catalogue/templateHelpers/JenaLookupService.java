@@ -138,10 +138,9 @@ public class JenaLookupService {
 
     public List<Link> relationshipsWithOwner(String uri, String relation) {
         String sparql = "PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> PREFIX geo: <http://www.opengis.net/ont/geosparql#> " +
-            "SELECT DISTINCT ?node ?title ?publicationStatus ?type ?rel (GROUP_CONCAT(?geo; separator=', '') AS ?geom) " +
-            "WHERE {{?me dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type; geo:hasGeometry ?geo. BIND(?me as ?node)} " +
+            "SELECT DISTINCT ?node ?title ?publicationStatus ?type ?rel ?geom " +
+            "WHERE {{?me dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type; geo:hasGeometry ?geom. BIND(?me as ?node)} " +
             "UNION {?me ?relation ?node. ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type; geo:hasGeometry ?geom. BIND(?relation as ?rel)}} " +
-            "GROUP BY ?node ?title ?publicationStatus ?type ?rel " +
             "ORDER BY ?title";
         ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
         pss.setIri("me", uri);
