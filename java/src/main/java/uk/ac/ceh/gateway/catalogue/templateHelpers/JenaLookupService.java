@@ -121,13 +121,14 @@ public class JenaLookupService {
     }
 
     public List<Link> inverseRelationships(String uri, String relation) {
-        String sparql = "PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/>  PREFIX eidc: <https://vocabs.ceh.ac.uk/eidc#> PREFIX geo: <http://www.opengis.net/ont/geosparql#> PREFIX eidc: <https://vocabs.ceh.ac.uk/eidc#> PREFIX ef: <http://onto.ceh.ac.uk/EF#> " +
-            "SELECT DISTINCT ?node ?title ?publicationStatus ?availability ?type ?rel ?geom ?publicationDate " +
+        String sparql = "PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> PREFIX eidc: <https://vocabs.ceh.ac.uk/eidc#> PREFIX geo: <http://www.opengis.net/ont/geosparql#> PREFIX eidc: <https://vocabs.ceh.ac.uk/eidc#> PREFIX ef: <http://onto.ceh.ac.uk/EF#> " +
+            "SELECT DISTINCT ?node ?title ?publicationStatus ?availability ?type ?rel ?publicationDate (GROUP_CONCAT(?geo; separator=', ') AS ?geom)" +
             "WHERE {?node ?rel ?me; ?relation ?me. ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type. " +
-            "OPTIONAL {?node geo:hasGeometry ?geom} " +
+            "OPTIONAL {?node geo:hasGeometry ?geo} " +
             "OPTIONAL {?node dcterms:available ?publicationDate} " +
             "OPTIONAL {?node eidc:resourceStatus ?availability} " +
             "OPTIONAL {?node ef:hasStatus ?availability}} " +
+            "GROUP BY ?node ?title ?publicationStatus ?availability ?type ?rel ?publicationDate " +
             "ORDER BY DESC(?publicationDate) ?title";
         ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
         pss.setIri("me", uri);
@@ -137,9 +138,10 @@ public class JenaLookupService {
 
     public List<Link> relationshipsWithOwner(String uri, String relation) {
         String sparql = "PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> PREFIX geo: <http://www.opengis.net/ont/geosparql#> " +
-            "SELECT DISTINCT ?node ?title ?publicationStatus ?type ?rel ?geom " +
-            "WHERE {{?me dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type; geo:hasGeometry ?geom. BIND(?me as ?node)} " +
+            "SELECT DISTINCT ?node ?title ?publicationStatus ?type ?rel (GROUP_CONCAT(?geo; separator=', '') AS ?geom) " +
+            "WHERE {{?me dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type; geo:hasGeometry ?geo. BIND(?me as ?node)} " +
             "UNION {?me ?relation ?node. ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus; dcterms:type ?type; geo:hasGeometry ?geom. BIND(?relation as ?rel)}} " +
+            "GROUP BY ?node ?title ?publicationStatus ?type ?rel " +
             "ORDER BY ?title";
         ParameterizedSparqlString pss = new ParameterizedSparqlString(sparql);
         pss.setIri("me", uri);
