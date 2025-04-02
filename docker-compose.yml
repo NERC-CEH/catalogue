@@ -27,11 +27,11 @@ services:
       - "5432:5432"
     profiles: [hubbub]
   hubbub:
-    image: registry.gitlab.ceh.ac.uk/eip/hubbub:7.7.0
+    image: registry.gitlab.ceh.ac.uk/eip/hubbub:7.19.0
     depends_on:
       - hubbub-db
     environment:
-      DB_HOST: db
+      DB_HOST: hubbub-db
       DB_PASSWORD: *db_password
       DB_USER: *db_user
     ports:
