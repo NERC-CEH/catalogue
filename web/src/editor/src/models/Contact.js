@@ -41,7 +41,7 @@ export default Backbone.Model.extend({
     if (nameIdentifier && !nameIdentifier.match(orcidRegEx)) {
       errors.push({
         message:
-                    "If that's supposed to be an ORCiD, it's not quite right!"
+                    "Invalid ORCiD"
       })
     }
 
@@ -55,7 +55,7 @@ export default Backbone.Model.extend({
     if (organisationIdentifier && !organisationIdentifier.match(rorRegEx)) {
       errors.push({
         message:
-                    "If that's supposed to be an ROR, it's not quite right!"
+                    "Invalid RoR"
       })
     }
 
