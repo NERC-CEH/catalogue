@@ -22,6 +22,10 @@
         }
     }
 
+    .row.role {
+        @extend .visually-hidden !optional;
+    }
+
     .browseimages {
         text-align: center;
 

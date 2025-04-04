@@ -25,7 +25,7 @@ export default ObjectInputView.extend({
       },
       select: (event, ui) => {
         this.model.set('organisationName', ui.item.label)
-        this.model.set('organisationIdentifier', ui.item.url)//
+        this.model.set('organisationIdentifier', ui.item.url)
         this.$('[data-name=organisationIdentifier]').val(ui.item.url)
       }
     })
