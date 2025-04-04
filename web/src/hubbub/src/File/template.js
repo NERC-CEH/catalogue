@@ -59,10 +59,6 @@ export default _.template(`
                     <span>Move to metadata</span>
                 </button>
             <% } else if (action === 'move-both') { %>
-                <button class="delete btn btn-danger">
-                    <i class="btn-icon fa-solid fa-trash"></i>
-                    <span>Delete</span>
-                </button>
                 <button class="move-both move-metadata btn btn-success">
                     <i class="btn-icon fa-solid fa-level-down-alt"></i>
                     <span>Move to metadata</span>

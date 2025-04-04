@@ -22,6 +22,9 @@ export default Backbone.View.extend({
     if (this.$('.dropzone-container').length) {
       const dropzoneSuccess = (file) => {
         const filename = (file?.fullPath ?? file.name).toLowerCase().replaceAll(' ', '-')
+        if (filename.endsWith('.zip')) {
+          this.reloadPage()
+        }
         const model = new File({
           bytes: file.size,
           datasetId: this.model.get('id'),

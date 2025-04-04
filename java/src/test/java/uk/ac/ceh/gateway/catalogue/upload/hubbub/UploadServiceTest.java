@@ -18,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 import java.io.File;
 import java.io.PrintWriter;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.Optional;
@@ -252,6 +253,46 @@ class UploadServiceTest {
         //then
         mockServer.verify();
         val uploadedFile = Paths.get(directory.getPath(), datasetId, path);
+        assertTrue(Files.exists(uploadedFile));
+    }
+
+    @Test
+    @SneakyThrows
+    void uploadWithZipFile() {
+        //given
+        String zipFile = "data.zip";
+        mockServer
+            .expect(requestTo(startsWith("https://example.com/v7/register/c5db2755-bdbb-470f-987b-da71d9489fd0")))
+            .andExpect(method(HttpMethod.POST))
+            .andExpect(queryParam("path", "data/sub-folder1/data2.txt"))
+            .andExpect(queryParam("username", username))
+            .andExpect(queryParam("size", "22"))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
+            .andRespond(withNoContent());
+        mockServer
+            .expect(requestTo(startsWith("https://example.com/v7/register/c5db2755-bdbb-470f-987b-da71d9489fd0")))
+            .andExpect(method(HttpMethod.POST))
+            .andExpect(queryParam("path", "data/data1.txt"))
+            .andExpect(queryParam("username", username))
+            .andExpect(queryParam("size", "10"))
+            .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic aHViYnViOnBhc3N3b3JkMDEyMzQ="))
+            .andRespond(withNoContent());
+
+        val multipartFile = new MockMultipartFile(
+            "file",
+            null,
+            "application/zip",
+            IOUtils.toByteArray(getClass().getResource(zipFile))
+        );
+
+        //when
+        service.upload(datasetId, username, multipartFile, zipFile);
+
+        //then
+        mockServer.verify();
+        Path uploadedFile = Paths.get(directory.getPath(), datasetId, "data/data1.txt");
+        assertTrue(Files.exists(uploadedFile));
+        uploadedFile = Paths.get(directory.getPath(), datasetId, "data/sub-folder1/data2.txt");
         assertTrue(Files.exists(uploadedFile));
     }
 
