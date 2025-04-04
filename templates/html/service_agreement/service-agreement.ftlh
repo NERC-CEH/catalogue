@@ -188,21 +188,20 @@
                         <div class="value">
                             <#list supportingDocs as doc>
                                 <div class="supportingDoc">
+                                    <div class="supportingDoc__content">
+                                            <#list doc.content![] as kind>
+                                              ${doc.contentTypeToText(kind)}
+                                              <#sep><br></#sep>
+                                            <#else>
+                                              <span class="text-danger">missing</span>
+                                            </#list>
+                                    </div>
                                     <div class="supportingDoc__name">
                                         <#if doc.name?? && doc.format??>
                                           ${doc.name}.${doc.format}
                                         <#else>
                                           <span class="text-danger">missing</span>
                                         </#if>
-                                    </div>
-                                    <div class="supportingDoc__content">
-                                        <ul>
-                                            <#list doc.content![] as kind>
-                                              <li>${doc.contentTypeToText(kind)}</li>
-                                            <#else>
-                                              <span class="text-danger">missing</span>
-                                            </#list>
-                                        </ul>
                                     </div>
                                 </div>
                             </#list>

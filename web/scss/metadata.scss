@@ -293,7 +293,7 @@ body {
             background-color: var(--_ukcehcard-background);
             border: 2px var(--_ukcehcard-border-style) var(--_ukcehcard-border-colour);
             border-radius: 6px;
-            text-decoration: none;
+            text-decoration: none; padding:0.5em;
             text-wrap: balance;
             color: var(--_ukcehcard-text-colour);
 
@@ -304,10 +304,7 @@ body {
             }
 
             .ukcehcard-icon {
-                display: grid;
-                justify-content: center;
-                align-content: center;
-                border-radius: 8px;
+                padding-block:0.5em;
                 color: var(--_ukcehcard-icon-colour);
             }
 

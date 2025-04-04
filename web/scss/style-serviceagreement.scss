@@ -137,7 +137,24 @@
 
     .supportingDoc {
         display: grid;
-        grid-template-columns: 250px auto;
+        gap: 1.6em;
+        grid-template-columns: 450px auto;
+
+        &:not(:last-of-type) {
+            border-block-end: 1px solid lightgray;
+            padding-block-end: .65em;
+            margin-block-end: .65em;
+        }
+
+        &__name {
+            word-wrap: break-word;
+        }
+
+        &__content {
+            font-style: italic;
+            text-align: right;
+            color: gray;
+        }
     }
 
     .tbl {
