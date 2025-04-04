@@ -10,18 +10,6 @@
         animation: fa-spin 1s infinite linear;
     }
 
-    .contact {
-        display: grid;
-        grid-template-columns: 30px auto;
-        margin-block-end: 3em;
-
-        div {
-            >span {
-                display: block;
-            }
-        }
-    }
-
     .browseimages {
         text-align: center;
 

@@ -6,9 +6,9 @@ export default _.template(`
     <div>
       <div class="editor-nav"> </div>
       <div class="editor-buttons">
-        <button id="editorBack" class="btn btn-sm btn-light border" disabled><i class="fa-solid fa-chevron-left"></i> Back</button>
-        <button id="editorNext" class="btn btn-sm btn-light border">Next <i class="fa-solid fa-chevron-right"></i></button>
-        <button id="editorSave" class="btn btn-sm btn-light border">Save <i class="fa-regular fa-save"></i></button>
+        <button id="editorBack" accesskey="<" class="btn btn-sm btn-light border" disabled><i class="fa-solid fa-chevron-left"></i> Back</button>
+        <button id="editorNext" accesskey=">" class="btn btn-sm btn-light border">Next <i class="fa-solid fa-chevron-right"></i></button>
+        <button id="editorSave" accesskey="s" class="btn btn-sm btn-light border">Save <i class="fa-regular fa-save"></i></button>
         <button id="editorExit" class="btn btn-sm btn-light border">Exit <i class="fa-solid fa-power-off"></i></button>
         <button id="editorDelete" class="btn btn-sm btn-danger">Delete <i class="fa-solid fa-times"></i></button>
       </div>

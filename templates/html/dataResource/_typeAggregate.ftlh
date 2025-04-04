@@ -81,8 +81,8 @@
 		<a class="ukcehcard ${cardClass}" href="${address}" ${target}>
 
 			<div class="ukcehcard-icon">
-				<span class="fa-stack fa-2x">
-					<i class="fa-solid fa-square fa-stack-2x"></i>
+				<span class="fa-stack fa-xl">
+					<i class="fa-solid fa-circle fa-stack-2x"></i>
 					<i class="fa-solid ${icon} fa-stack-1x fa-inverse"></i>
 				</span>
 			</div>
