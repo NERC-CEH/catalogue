@@ -113,30 +113,21 @@
             <@displaykey "Contact">
               <#if owners?? >
                 <#list owners as owner>
-                  <div class="contact">
-                    <div>
-                      <#if owner.individualName?has_content>
-                        <span class="fa-solid fa-user"></span>
-                      <#else>
-                        <span class="fa-solid fa-building"></span>
-                      </#if>
-                    </div>
-                    <div>
-                      <#if owner.individualName?has_content>
-                        <span>${owner.individualName}</span>
+                  <div class="mb-3">
+                      <#if owner.fullName?has_content>
+                        ${owner.fullName}<br>
                       </#if>
                       <#if owner.organisationName?? && owner.organisationName?has_content>
-                        <span>${owner.organisationName}</span>
+                        ${owner.organisationName}<br>
                       </#if>
                       <#if owner.address?? && owner.address?has_content>
                         <#if owner.address.city?has_content>
-                          <span>${owner.address.city}</span>
+                          ${owner.address.city}<br>
                         </#if>
                       </#if>
                       <#if owner.email?? && owner.email?has_content>
-                        <span><a href="mailto:${owner.email}"><span class="fa-solid fa-xs fa-envelope"></span> ${owner.email}</a></span>
+                        <a href="mailto:${owner.email}"><span class="fa-solid fa-xs fa-envelope"></span> ${owner.email}</a>
                       </#if>
-                    </div>
                   </div>
                 </#list>
               <#else>
