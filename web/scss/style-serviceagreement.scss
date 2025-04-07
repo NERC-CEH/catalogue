@@ -155,6 +155,11 @@
             text-align: right;
             color: gray;
         }
+
+        .supportingDoc__name {
+            max-width: 60ch;
+            overflow-wrap: break-word !important;
+        }
     }
 
     .tbl {
@@ -233,17 +238,49 @@
         }
     }
 
-    @media (min-width: 600px) {
-        .key-value {
-            grid-template-columns: 200px auto;
-        }
+    @media only screen and (max-width: 1200px) {
+        section.section.section--3 {
+            .key-value {
+                grid-template-columns: 1fr;
 
-        .key {
-            text-align: right;
-            margin-inline-end: 1em;
+                .key {
+                    text-align: left;
+                }
+
+                .supportingDoc {
+                    grid-template-columns: 300px auto;
+                }
+            }
+
+            .supportingDoc__name {
+                max-width: 60ch;
+            }
+        }
+    }
+
+    @media only screen and (max-width: 1410px) {
+        .supportingDoc__name {
+            max-width: 45ch;
         }
     }
 }
+
+@media only screen and (max-width: 990px) {
+    section.section.section--3 {
+        .key-value {
+            grid-template-columns: 1fr;
+
+            .key {
+                text-align: left;
+            }
+
+            .supportingDoc {
+                grid-template-columns: 300px auto;
+            }
+        }
+    }
+}
+
 
 @media only screen and (max-width: 760px),
 (min-device-width: 768px) and (max-device-width: 1024px) {
