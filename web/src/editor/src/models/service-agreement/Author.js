@@ -21,8 +21,12 @@ export default Backbone.Model.extend({
       errors.push({ message: 'That ORCiD is invalid.  ORCiDs should be entered as https://orcid.org/0000-1234-5678-999X <b>not</b> 0000-1234-5678-999X' })
     }
 
-    if (!organisationName || !email) {
-      errors.push({ message: 'Author affiliation and email address are mandatory.' })
+    if (!email) {
+      errors.push({ message: 'Email address is mandatory.' })
+    }
+
+    if (!organisationName) {
+      errors.push({ message: 'Author affiliation is mandatory.' })
     }
 
     if (!displayName && (!familyName || !givenName)) {

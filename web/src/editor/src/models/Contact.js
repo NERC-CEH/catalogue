@@ -32,35 +32,27 @@ export default Backbone.Model.extend({
     } = attrs
 
     if (email && !email.match(emailRegEx)) {
-      errors.push({
-        message:
-                    'That email address is wrong'
-      })
+      errors.push({message: 'That email address is wrong'})
     }
 
     if (nameIdentifier && !nameIdentifier.match(orcidRegEx)) {
-      errors.push({
-        message:
-                    'Invalid ORCiD'
-      })
+      errors.push({message: 'Invalid ORCiD'})
     }
 
     if (nameIdentifier && !nameIdentifier.match(urlRegEx)) {
-      errors.push({
-        message:
-                    'Are you using the <i>fully-qualified</i> name identifier. For example, ORCiDs should be entered as https://orcid.org/0000-1234-5678-999X <b>not</b> 0000-1234-5678-999X'
-      })
+      errors.push({message: 'ORCiDs should be entered as https://orcid.org/0000-1234-5678-999X <b>not</b> 0000-1234-5678-999X'})
     }
 
     if (organisationIdentifier && !organisationIdentifier.match(rorRegEx)) {
-      errors.push({
-        message:
-                    'Invalid RoR'
-      })
+      errors.push({ message: 'Invalid RoR'})
     }
 
-    if (!organisationName || !role) {
-      errors.push({ message: 'The organisation name and role are mandatory.' })
+    if (!role) {
+      errors.push({ message: 'Role is mandatory.' })
+    }
+
+    if (!organisationName ) {
+      errors.push({ message: 'Organisation name is mandatory.' })
     }
 
     if (_.isEmpty(errors)) {

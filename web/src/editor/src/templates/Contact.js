@@ -48,20 +48,6 @@ export default _.template(`
         </select>
     </div>
 </div>
-<div class="row organisation">
-    <div class="col-lg-2">
-        <label for="contacts<%= data.index %>Organisation">Organisation</label>
-    </div>
-    <div class="col-lg-5">
-        <input placeholder="Search for organisation" data-name='organisationName' class="editor-input orgAutocomplete" id="contacts<%= data.index %>Organisation" value="<%= data.organisationName %>">
-    </div>
-    <div class="col-lg-1">
-        <label for="contacts<%= data.index %>organisationIdentifier">RoR</label>
-    </div>
-    <div class="col-lg-4">
-        <input data-name='organisationIdentifier' placeholder="https//ror.org/..." class="editor-input" id="contacts<%= data.index %>organisationIdentifier" value="<%= data.organisationIdentifier %>">
-    </div>
-</div>
 <div class="row contactName">
     <div class="col-lg-2">
        <label>Name</label>
@@ -96,22 +82,21 @@ export default _.template(`
         </div>
       </div>
     </div>
-
-</div>
-<div class="row">
-    <div class="col-lg-2">
-        <label for="contacts<%= data.index %>DisplayName">Display name</label>
-    </div>
-    <div class="col-lg-10">
-        <input data-name='displayName' class="editor-input" placeholder="If different to name" id="contacts<%= data.index %>DisplayName" value="<%= data.displayName %>">
-    </div>
 </div>
 <div class="row">
     <div class="col-lg-2">
         <label for="contacts<%= data.index %>Email">Email</label>
     </div>
-    <div class="col-lg-5">
+    <div class="col-lg-10">
         <input data-name='email' class="editor-input" id="contacts<%= data.index %>Email" value="<%= data.email %>">
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-2">
+        <label for="contacts<%= data.index %>DisplayName">Display name</label>
+    </div>
+    <div class="col-lg-5">
+        <input data-name='displayName' class="editor-input" placeholder="If different to name" id="contacts<%= data.index %>DisplayName" value="<%= data.displayName %>">
     </div>
     <div class="col-lg-1">
         <label for="contacts<%= data.index %>nameIdentifier">ORCID</label>
@@ -120,7 +105,20 @@ export default _.template(`
         <input data-name='nameIdentifier' placeholder='https://orcid.org/0000-...' class="editor-input" id="contacts<%= data.index %>nameIdentifier" value="<%= data.nameIdentifier %>">
     </div>
 </div>
-
+<div class="row organisation">
+    <div class="col-lg-2">
+        <label for="contacts<%= data.index %>Organisation">Organisation</label>
+    </div>
+    <div class="col-lg-5">
+        <input placeholder="Search for organisation" data-name='organisationName' class="editor-input orgAutocomplete" id="contacts<%= data.index %>Organisation" value="<%= data.organisationName %>">
+    </div>
+    <div class="col-lg-1">
+        <label for="contacts<%= data.index %>organisationIdentifier">RoR</label>
+    </div>
+    <div class="col-lg-4">
+        <input data-name='organisationIdentifier' placeholder="https//ror.org/..." class="editor-input" id="contacts<%= data.index %>organisationIdentifier" value="<%= data.organisationIdentifier %>">
+    </div>
+</div>
 <div class="extended d-none" id="addressDetail<%= data.index %>">
     <div class="text-body-tertiary">
       <hr>

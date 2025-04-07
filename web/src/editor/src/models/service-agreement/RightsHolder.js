@@ -12,11 +12,11 @@ export default Backbone.Model.extend({
     const errors = []
 
     if (organisationIdentifier && !organisationIdentifier?.match(rorRegEx)) {
-      errors.push({ message: 'That RoR is invalid' })
+      errors.push({ message: 'Invalid RoR' })
     }
 
     if (!organisationName) {
-      errors.push({ message: 'Affiliation (organisation name) is mandatory.' })
+      errors.push({ message: 'Organisation name is mandatory.' })
     }
 
     if (errors.length) {
