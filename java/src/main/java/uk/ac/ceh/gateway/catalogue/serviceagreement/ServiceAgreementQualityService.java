@@ -159,7 +159,7 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
     List<MetadataCheck> checkAuthors(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
         val authors = parsed.read(
-                "$.authors[*][?(@.role == 'author')].['familyName','givenName','organisationName','email']",
+                "$.authors[*][?(@.role == 'author')].['familyName','givenName','displayName','organisationName','email']",
                 typeRefStringString
         );
 
@@ -171,8 +171,8 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
             toReturn.add(new MetadataCheck("Author's name is incomplete", ERROR));
         }
 
-        if (authors.stream().anyMatch(author -> !AUTHOR_PATTERN.matcher(author.get("givenName")).matches() || fieldIsMissing(author, "givenName"))) {
-            toReturn.add(new MetadataCheck("Author's initials (given name is missing or incorrect", ERROR));
+        if (authors.stream().anyMatch(author -> fieldIsMissing(author, "displayName") && (fieldIsMissing(author, "familyName") || fieldIsMissing(author, "givenName")))) {
+            toReturn.add(new MetadataCheck("Author's name is missing or incomplete", ERROR));
         }
 
         if (authors.stream().anyMatch(author -> fieldIsMissing(author, "organisationName"))) {
@@ -187,7 +187,7 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
     List<MetadataCheck> checkOwnerOfIpr(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
         val owners = parsed.read(
-                "$.ownersOfIpr[*].['familyName','givenName','organisationName','email']",
+                "$.ownersOfIpr[*].['organisationName','email']",
                 typeRefStringString
         );
 

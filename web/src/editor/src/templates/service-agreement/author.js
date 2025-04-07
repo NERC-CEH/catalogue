@@ -26,12 +26,12 @@ export default _.template(`
         <input data-name='familyName' placeholder="e.g., Darwin" class="editor-input" id="contacts<%= data.index %>familyName" value="<%= data.familyName %>">
     </div>
   </div>
-  <div class="row disabled visually-hidden">
+  <div class="row">
     <div class="col-sm-2">
-        <label for="contacts<%= data.index %>Name">Display name</label>
+        <label for="contacts<%= data.index %>DisplayName">Display name</label>
     </div>
     <div class="col-sm-10">
-       <input data-name='individualName' disabled class="editor-input form-control-sm" id="contacts<%= data.index %>Name" value="<%= data.individualName %>">
+       <input data-name='displayName' class="editor-input form-control-sm" id="contacts<%= data.index %>DisplayName" placeholder="Only include a display name if it is different to given/family name" value="<%= data.displayName %>">
     </div>
   </div>
   <div class="row">

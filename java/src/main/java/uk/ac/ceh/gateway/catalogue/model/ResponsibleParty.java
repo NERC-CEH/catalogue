@@ -14,7 +14,7 @@ import static com.google.common.base.Strings.nullToEmpty;
 @With
 @JsonIgnoreProperties({"roleDisplayName"})
 public class ResponsibleParty {
-    String individualName, honorificPrefix, familyName, givenName, organisationName, organisationIdentifier, role, email, phone, nameIdentifier;
+    String individualName, honorificPrefix, familyName, givenName, displayName, organisationName, organisationIdentifier, role, email, phone, nameIdentifier;
     Address address;
 
     @Builder
@@ -24,6 +24,7 @@ public class ResponsibleParty {
         @JsonProperty("honorificPrefix") String honorificPrefix,
         @JsonProperty("familyName") String familyName,
         @JsonProperty("givenName") String givenName,
+        @JsonProperty("displayName") String displayName,
         @JsonProperty("organisationName") String organisationName,
         @JsonProperty("organisationIdentifier") String organisationIdentifier,
         @JsonProperty("role") String role,
@@ -35,6 +36,7 @@ public class ResponsibleParty {
         this.honorificPrefix = nullToEmpty(honorificPrefix);
         this.familyName = nullToEmpty(familyName);
         this.givenName = nullToEmpty(givenName);
+        this.displayName = nullToEmpty(displayName);
         this.organisationName = nullToEmpty(organisationName);
         this.organisationIdentifier = nullToEmpty(organisationIdentifier);
         this.role = nullToEmpty(role);
@@ -71,8 +73,8 @@ public class ResponsibleParty {
             }
             return familyName + ", " + initials;
         }
-        else if (!individualName.isEmpty()) {
-            return individualName;
+        else if (!displayName.isEmpty()) {
+            return displayName;
         }
         else {
             return "";
