@@ -18,6 +18,10 @@
         }
     }
 
+    .row.role {
+        @extend .visually-hidden !optional;
+    }
+
     .footer-ri {
         background-color: transparent;
 

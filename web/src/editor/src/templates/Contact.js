@@ -1,7 +1,7 @@
 import _ from 'underscore'
 
 export default _.template(`
-<div class="row">
+<div class="row role">
     <div class="col-lg-2">
         <label for="contacts<%= data.index %>Role">Role</label>
     </div>

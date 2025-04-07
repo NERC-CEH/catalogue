@@ -1,11 +1,13 @@
 import { ObjectInputView } from '../index'
 import template from '../../templates/service-agreement/rightsHolder'
+import { createOrgAutocomplete } from '../../utils'
 
 export default ObjectInputView.extend({
 
   initialize (options) {
     this.template = template
-    ObjectInputView.prototype.initialize.call(this, options)
+    ObjectInputView.prototype.initialize.apply(this)
+    createOrgAutocomplete('.orgAutocomplete', this)
   },
 
   modify (event) {

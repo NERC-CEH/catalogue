@@ -1,23 +1,15 @@
 import _ from 'underscore'
 
 export default _.template(`
-<div class="row">
-    <div class="col-sm-2">
-        <label for="contacts<%= data.index %>Organisation">Affiliation</label>
-    </div>
-    <div class="col-sm-10">
-        <input data-name='organisationName' class="editor-input" id="contacts<%= data.index %>Organisation" value="<%= data.organisationName %>">
-    </div>
-</div>
-<div class="row">
-    <div class="col-sm-2">
-        <label for="contacts<%= data.index %>organisationIdentifier">Organisation's RoR</label>
-    </div>
-    <div class="col-sm-10">
-        <input data-name='organisationIdentifier' class="editor-input" id="contacts<%= data.index %>organisationIdentifier" value="<%= data.organisationIdentifier %>">
-    </div>
-</div>
-<div class="row">
+  <div class="row">
+      <div class="col-lg-2 required">
+          <label for="contacts<%= data.index %>Organisation">Organisation</label>
+      </div>
+      <div class="col-lg-10">
+          <input placeholder="Search for organisation" data-name='organisationName' class="editor-input orgAutocomplete" id="contacts<%= data.index %>Organisation" value="<%= data.organisationName %>">
+      </div>
+  </div>
+  <div class="row">
     <div class="col-lg-2">
        <label>Name</label>
     </div>
