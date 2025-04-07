@@ -19,9 +19,7 @@ export function createOrgAutocomplete (id, obj) {
     },
     select: (event, ui) => {
       obj.model.set('organisationName', ui.item.label)
-      if (typeof obj.model.attributes.organisationIdentifier !== 'undefined') {
-        obj.model.set('organisationIdentifier', ui.item.url)
-      }
+      obj.model.set('organisationIdentifier', ui.item.url)
       if (obj.$('[data-name=organisationIdentifier]').length) {
         obj.$('[data-name=organisationIdentifier]').val(ui.item.url)
       }
