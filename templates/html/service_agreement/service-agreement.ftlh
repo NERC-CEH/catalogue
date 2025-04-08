@@ -12,7 +12,7 @@
     <div id="metadata" class="metadata serviceAgreement ${mdclass}">
         <div class="container" role="main">
 
-            <div class="title">
+            <div class="title mt-3">
                 <div class="eidcLogo">
                   <img src="/static/img/cataloguelogo/eidc.png">
                 </div>
