@@ -63,7 +63,10 @@ public class ResponsibleParty {
     }
 
     public String getFullName() {
-        if (!familyName.isEmpty() && !givenName.isEmpty()) {
+        if (!displayName.isEmpty()) {
+            return displayName;
+        }
+        else if (!familyName.isEmpty() && !givenName.isEmpty()) {
             String[] givenNames = givenName.split("[ .]");
             StringBuilder initials = new StringBuilder();
             for (String name : givenNames) {
@@ -72,9 +75,6 @@ public class ResponsibleParty {
                 }
             }
             return familyName + ", " + initials;
-        }
-        else if (!displayName.isEmpty()) {
-            return displayName;
         }
         else {
             return "";
