@@ -6,7 +6,6 @@ body {
     min-height: 100vh;
 }
 
-
 .metadata {
 
     a {
@@ -19,10 +18,6 @@ body {
         .key {
             font-weight: 600;
             text-align: left;
-
-            @media only screen and (min-width: 576px) {
-                text-align: right;
-            }
         }
     }
 

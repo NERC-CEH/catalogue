@@ -117,9 +117,9 @@ class ResponsiblePartyTest {
     }
 
     @Test
-    public void testGetFullNameWithIndividualName() {
+    public void testGetFullNameWithDisplayName() {
         ResponsibleParty party = ResponsibleParty.builder()
-            .individualName("John, D.")
+            .displayName("John, D.")
             .build();
         assertEquals("John, D.", party.getFullName());
     }

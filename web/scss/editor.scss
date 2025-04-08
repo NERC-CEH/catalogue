@@ -109,7 +109,10 @@
             @extend .form-control-sm !optional;
             color: #000;
             appearance: auto;
-            &::placeholder {color:#AAA;}
+
+            &::placeholder {
+                color: #AAA;
+            }
         }
 
         .editor-textarea {
@@ -117,6 +120,7 @@
             @extend .form-control-sm !optional;
             height: auto;
             color: #000;
+            field-sizing: content;
         }
 
         .editor-remove {
@@ -129,6 +133,13 @@
                 padding: 0.2em 0.6em;
             }
         }
+
+        .extended {
+            .row {
+                @extend .my-2 !optional;
+            }
+        }
+
 
         .ui-sortable {
             .row {
@@ -168,6 +179,14 @@
             @extend .btn-light !optional;
             @extend .border !optional;
             @extend .btn-sm !optional;
+        }
+
+        .btn-showmore {
+            --bs-btn-padding-y: .25rem;
+            --bs-btn-padding-x: .5rem;
+            --bs-btn-font-size: .75rem;
+            --bs-btn-bg: #ddd;
+            --bs-btn-hover-bg: #ccc;
         }
 
         .editor-help {
@@ -256,6 +275,7 @@
 
                 &.child {
                     z-index: 0;
+                    @extend .my-2 !optional;
 
                     >.row {
                         @extend .my-2 !optional;
@@ -410,6 +430,52 @@
     }
 }
 
+.form-control {
+
+    &[readonly],
+    &[disabled] {
+        background-color: color.adjust($gray-light, $lightness: 30%, $space: hsl);
+        color: $gray;
+    }
+}
+
+#editorValidationMessage {
+    .modal-body {
+        color: #f00;
+        font-weight: bold;
+    }
+}
+
+ul.ui-autocomplete {
+    li.ui-menu-item {
+        font-size: 0.8em;
+        font-family: var(--font-family-sans-serif), serif;
+    }
+}
+
+.ui-autocomplete {
+    max-height: 350px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+
+
+    &::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: #999;
+    }
+}
+
+
+
 @media only screen and (min-width: 600px) {
     .editor {
         flex-direction: row;
@@ -457,46 +523,12 @@
     }
 }
 
-.form-control {
-
-    &[readonly],
-    &[disabled] {
-        background-color: color.adjust($gray-light, $lightness: 30%, $space: hsl);
-        color: $gray;
-    }
-}
-
-#editorValidationMessage {
-    .modal-body {
-        color: #f00;
-        font-weight: bold;
-    }
-}
-
-ul.ui-autocomplete {
-    li.ui-menu-item {
-        font-size: 0.8em;
-        font-family: var(--font-family-sans-serif), serif;
-    }
-}
-
-.ui-autocomplete {
-    max-height: 350px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    scrollbar-gutter: stable;
-    scrollbar-width: thin;
-
-
-    &::-webkit-scrollbar {
-        width: 8px;
-    }
-
-    &::-webkit-scrollbar-track {
-        background: #f1f1f1;
-    }
-
-    &::-webkit-scrollbar-thumb {
-        background: #999;
+@media only screen and (min-width: 995px) {
+    .col-sm-11.dataentry.child.child-large {
+        .row {
+            >div:has(>label) {
+                text-align: right;
+            }
+        }
     }
 }

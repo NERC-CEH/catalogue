@@ -91,7 +91,7 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'description',
           label: 'Description',
-          rows: 12,
+          rows: 5,
           helpText: `\
 <p>The description should describe the data resource in question, NOT the project/activity which produced it.</p>
 <p>The description is an 'executive summary' that allows the reader to determine the relevance and usefulness of the resource.  The text should be concise but should contain sufficient detail to allow the reader to ascertain rapidly the scope and limitations of the resource.</p>
@@ -160,7 +160,7 @@ export default EditorView.extend({
       label: 'Authors & contacts',
       title: 'Authors and other contacts',
       views: [
-        new PredefinedParentView({
+        new PredefinedParentLargeView({
           model: this.model,
           ModelType: Contact,
           modelAttribute: 'responsibleParties',
@@ -640,7 +640,7 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'lineage',
           label: 'Lineage<small>Information about the source data used in the construction of this data resource</small>',
-          rows: 15,
+          rows: 5,
           helpText: '<p>Quality assessments and enhancement processes applied to the data resource can also be noted and summarised here.</p>'
         }),
 
@@ -648,7 +648,7 @@ export default EditorView.extend({
           model: this.model,
           modelAttribute: 'reasonChanged',
           label: 'Reason for change<small>If this record is being retracted, the reasons for withdrawal or replacement should be explained</small>',
-          rows: 7
+          rows: 5
         }),
 
         new ParentView({

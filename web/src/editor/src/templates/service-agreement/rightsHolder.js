@@ -19,6 +19,7 @@ export default _.template(`
     <div class="col-lg-2">
         <label class="fst-italic" for="contacts<%= data.index %>honorificPrefix">Title</label>
         <select data-name="honorificPrefix" class="editor-input honorificPrefix" id="contacts<%= data.index %>honorificPrefix">
+          <option value=""> --  </option>
           <option value="Dr">Dr</option>
           <option value="Miss">Miss</option>
           <option value="Mr">Mr</option>

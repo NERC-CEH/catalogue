@@ -98,12 +98,14 @@ export default _.template(`
             <label>Unique</label>
         </div>
         <div class="col-sm-10">
-                <label class="radio-inline">
-                    <input type="radio" data-name="unique" name="schema-unique<%= data.index %>" value="true" <% if (data.constraints.unique == true) { %> checked="checked" <% } %> /> Yes
-                </label>
-                <label class="radio-inline">
-                    <input type="radio" data-name="unique" name="schema-unique<%= data.index %>" value="false" <% if (data.constraints.unique == false) { %> checked="checked" <% } %> />No
-                </label>
+          <div class="form-check form-check-inline">
+            <input data-name="unique" name="schema-unique<%= data.index %>"  class="form-check-input" type="radio" name="exampleRadios" id="schema-unique<%= data.index %>" value="true" <% if (data.constraints.unique == true) { %> checked="checked" <% } %>>
+            <label class="form-check-label" for="schema-unique<%= data.index %>">Yes</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input type="radio" data-name="unique" name="schema-unique<%= data.index %>" class="form-check-input" type="radio" name="exampleRadios" id="schema-unique<%= data.index %>" value="false" <% if (data.constraints.unique == false) { %> checked="checked" <% } %> >
+            <label class="form-check-label" for="schema-unique<%= data.index %>">No</label>
+          </div>
         </div>
     </div>
 </div>

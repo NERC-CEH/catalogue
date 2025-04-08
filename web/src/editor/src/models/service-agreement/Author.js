@@ -7,7 +7,7 @@ export default Backbone.Model.extend({
     address: {}
   },
 
-  validate ({ organisationName, email, familyName, givenName, nameIdentifier }) {
+  validate ({ organisationName, email, familyName, givenName, displayName, nameIdentifier }) {
     const emailRegEx = '^[a-zA-Z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\\.[a-zA-Z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?'
     const orcidRegEx = '^https?:\\/\\/orcid.org\\/(\\d{4}-){3}\\d{3}[\\dX]$'
 
@@ -21,8 +21,16 @@ export default Backbone.Model.extend({
       errors.push({ message: 'That ORCiD is invalid.  ORCiDs should be entered as https://orcid.org/0000-1234-5678-999X <b>not</b> 0000-1234-5678-999X' })
     }
 
-    if (!organisationName || !familyName || !givenName || !email) {
-      errors.push({ message: 'Author name, affiliation and email address are mandatory.' })
+    if (!email) {
+      errors.push({ message: 'Email address is mandatory.' })
+    }
+
+    if (!organisationName) {
+      errors.push({ message: 'Author affiliation is mandatory.' })
+    }
+
+    if (!displayName && (!familyName || !givenName)) {
+      errors.push({ message: 'Author name is mandatory.' })
     }
 
     if (errors.length) {
