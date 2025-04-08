@@ -4,6 +4,7 @@ import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -14,8 +15,11 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import static java.lang.String.format;
 import static org.springframework.http.HttpMethod.*;
@@ -161,24 +165,50 @@ public class UploadService {
         }
     }
 
-    @SneakyThrows
-    public void upload(String datasetId, String username, MultipartFile multipartFile, String filename) {
-        if (filename == null) {
-            throw new UploadException(format("Missing filename in upload to %s", datasetId));
-        }
-        val sanitisedFilename = filename
+    private String sanitisedFilename(String datasetId, String filename) {
+        String sanitisedFilename = filename
             .toLowerCase(Locale.ROOT)
             .replace(' ', '-');
         if (sanitisedFilename.isBlank()) {
             throw new UploadException(format("Filename is blank in upload to %s", datasetId));
         }
-        log.debug("Adding {} to {}", sanitisedFilename, datasetId);
-        val path = Path.of(uploadLocation, datasetId, sanitisedFilename);
-        Files.createDirectories(path.getParent());
-        val file = path.toFile();
-        log.debug("new file {}", file);
-        register(datasetId, sanitisedFilename, username, multipartFile.getSize());
-        multipartFile.transferTo(file);
+
+        return sanitisedFilename;
+    }
+
+    @SneakyThrows
+    public void upload(String datasetId, String username, MultipartFile multipartFile, String filename) {
+        if (filename == null) {
+            throw new UploadException(format("Missing filename in upload to %s", datasetId));
+        }
+
+        String sanitisedFilename = sanitisedFilename(datasetId, filename);
+        Path path = Path.of(uploadLocation, datasetId, sanitisedFilename);
+        Path uploadPath = path.getParent();
+        Files.createDirectories(uploadPath);
+
+        if (FilenameUtils.getExtension(filename).equals("zip")) {
+            ZipInputStream zipStream = new ZipInputStream(multipartFile.getInputStream());
+            String unzipPath = FilenameUtils.getBaseName(filename);
+            ZipEntry entry;
+            while ((entry = zipStream.getNextEntry()) != null) {
+                String unZipFileName = Paths.get(unzipPath, sanitisedFilename(datasetId, entry.getName())).toString();
+                Path resolvedPath = uploadPath.resolve(unZipFileName);
+                if (entry.isDirectory()) {
+                    Files.createDirectories(resolvedPath);
+                } else {
+                    log.debug("Unzip adding {} to {}", unZipFileName, datasetId);
+                    Files.createDirectories(resolvedPath.getParent());
+                    byte[] file = zipStream.readAllBytes();
+                    register(datasetId, unZipFileName, username, file.length);
+                    Files.write(resolvedPath, file);
+                }
+            }
+        } else {
+            log.debug("Adding {} to {}", sanitisedFilename, datasetId);
+            register(datasetId, sanitisedFilename, username, multipartFile.getSize());
+            multipartFile.transferTo(path.toFile());
+        }
     }
 
     public void validate(String datasetId, String datastore, Optional<String> possiblePath, String user) {
