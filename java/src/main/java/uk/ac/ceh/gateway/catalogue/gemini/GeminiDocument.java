@@ -98,7 +98,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
         this.funding = serviceAgreement.getFunding();
         this.responsibleParties = new ArrayList<>();
         this.responsibleParties.add(ResponsibleParty.builder()
-            .individualName(serviceAgreement.getDepositorName())
+            .displayName(serviceAgreement.getDepositorName())
             .email(convertEmail(serviceAgreement.getDepositorContactDetails()))
             .role("pointOfContact")
             .build()
