@@ -37,7 +37,7 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
     private final DocumentReader documentReader;
     private final Configuration config;
     private final Pattern AUTHOR_PATTERN = Pattern.compile("^(\\w\\.){1,5}$");
-    private final Pattern EMAIL_PATTERN = Pattern.compile("^[a-z0-9\\\\!#$%&'*+/=?^_`{|}~\\-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~\\-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$");
+    private final Pattern EMAIL_PATTERN = Pattern.compile("^[a-zA-Z0-9\\\\!#$%&'*+/=?^_`{|}~\\-]+(?:\\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~\\-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$");
     private final String jiraPrefix;
     private final ImmutableSet<String> mandatoryContentTypes = ImmutableSet.of("generationMethods", "natureUnits", "qc", "dataStructure");
 
@@ -179,7 +179,7 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
             toReturn.add(new MetadataCheck("Author's affiliation (organisation name) is missing", ERROR));
         }
 
-        toReturn.addAll(checkEmail(authors, "Author's email address is incorrect (%s)"));
+        toReturn.addAll(checkEmail(authors, "Author's email address is incorrect (%s)")); //
 
         return toReturn;
     }
