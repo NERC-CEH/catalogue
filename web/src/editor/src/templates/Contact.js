@@ -53,7 +53,7 @@ export default _.template(`
         <label for="contacts<%= data.index %>Organisation">Organisation</label>
     </div>
     <div class="col-lg-10">
-        <input placeholder="Search for organisation" data-name='organisationName' class="editor-input orgAutocomplete" id="contacts<%= data.index %>Organisation" value="<%= data.organisationName %>">
+        <input placeholder="Start typing to show a list of organisation. Pick from the list if possible" data-name='organisationName' class="editor-input orgAutocomplete" id="contacts<%= data.index %>Organisation" value="<%= data.organisationName %>">
     </div>
 </div>
 <div class="row">

@@ -179,7 +179,7 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
             toReturn.add(new MetadataCheck("Author's affiliation (organisation name) is missing", ERROR));
         }
 
-        toReturn.addAll(checkEmail(authors, "Author's email address is incorrect (%s)")); //
+        toReturn.addAll(checkEmail(authors, "Author's email address is incorrect (%s)"));
 
         return toReturn;
     }

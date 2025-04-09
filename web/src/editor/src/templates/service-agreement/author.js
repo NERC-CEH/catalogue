@@ -18,8 +18,8 @@ export default _.template(`
         </select>
     </div>
     <div class="col-lg-4 required">
-        <label class="fst-italic" for="contacts<%= data.index %>givenName">Initial(s)</label>
-        <input data-name='givenName' placeholder="e.g., C."  class="editor-input" id="contacts<%= data.index %>givenName" value="<%= data.givenName %>">
+        <label class="fst-italic" for="contacts<%= data.index %>givenName">Given name/initial(s)</label>
+        <input data-name='givenName' placeholder="e.g., C.R."  class="editor-input" id="contacts<%= data.index %>givenName" value="<%= data.givenName %>">
     </div>
     <div class="col-lg-4 required">
         <label class="fst-italic" for="contacts<%= data.index %>familyName">Family name</label>
@@ -53,7 +53,7 @@ export default _.template(`
         <label for="contacts<%= data.index %>Organisation">Affiliation</label>
     </div>
     <div class="col-lg-10">
-        <input placeholder="Start typing, then pick from the list if possible" data-name='organisationName' class="editor-input orgAutocomplete" id="contacts<%= data.index %>Organisation" value="<%= data.organisationName %>">
+        <input placeholder="Start typing to show a list of organisation. Pick from the list if possible" data-name='organisationName' class="editor-input orgAutocomplete" id="contacts<%= data.index %>Organisation" value="<%= data.organisationName %>">
     </div>
     <div class="visually-hidden">
         <input placeholder="https//ror.org/..." data-name="organisationIdentifier" class="ror editor-input" value="<%= data.organisationIdentifier %>">
