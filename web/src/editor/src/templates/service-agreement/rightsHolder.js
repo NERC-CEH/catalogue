@@ -9,7 +9,7 @@ export default _.template(`
           <input placeholder="Search for organisation" data-name='organisationName' class="editor-input orgAutocomplete" id="contacts<%= data.index %>Organisation" value="<%= data.organisationName %>">
       </div>
       <div class="visually-hidden">
-          <input data-name="organisationIdentifier" class="editor-input" value="<%= data.organisationIdentifier %>">
+          <input data-name="organisationIdentifier" class="ror editor-input" placeholder="https//ror.org/..." value="<%= data.organisationIdentifier %>">
       </div>
   </div>
   <div class="row">

@@ -61,7 +61,7 @@ export default _.template(`
         <label for="contacts<%= data.index %>organisationIdentifier">RoR</label>
     </div>
     <div class="col-lg-10">
-        <input data-name='organisationIdentifier' placeholder="https//ror.org/..." class="editor-input" id="contacts<%= data.index %>organisationIdentifier" value="<%= data.organisationIdentifier %>">
+        <input data-name='organisationIdentifier' placeholder="https//ror.org/..." class="ror editor-input" id="contacts<%= data.index %>organisationIdentifier" value="<%= data.organisationIdentifier %>">
     </div>
 </div>
 <div class="row contactName">

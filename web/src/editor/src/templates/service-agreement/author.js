@@ -48,15 +48,15 @@ export default _.template(`
         <input data-name='email' class="editor-input" id="contacts<%= data.index %>Email" value="<%= data.email %>">
     </div>
 </div>
-<div class="row">
+<div class="row affiliation">
     <div class="col-lg-2 required">
         <label for="contacts<%= data.index %>Organisation">Affiliation</label>
     </div>
     <div class="col-lg-10">
-        <input placeholder="Search for organisation" data-name='organisationName' class="editor-input orgAutocomplete" id="contacts<%= data.index %>Organisation" value="<%= data.organisationName %>">
+        <input placeholder="Start typing, then pick from the list if possible" data-name='organisationName' class="editor-input orgAutocomplete" id="contacts<%= data.index %>Organisation" value="<%= data.organisationName %>">
     </div>
     <div class="visually-hidden">
-        <input data-name="organisationIdentifier" class="editor-input" value="<%= data.organisationIdentifier %>">
+        <input placeholder="https//ror.org/..." data-name="organisationIdentifier" class="ror editor-input" value="<%= data.organisationIdentifier %>">
     </div>
 </div>
 `)

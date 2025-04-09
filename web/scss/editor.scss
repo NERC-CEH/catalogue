@@ -141,6 +141,32 @@
         }
 
 
+        .dataentry:has(.ror) {
+            >div:has(.orgAutocomplete) {
+                anchor-name: --xxxxx;
+
+                &:after {
+                    font-family: 'Font Awesome\ 6 Free';
+                    font-weight: 900;
+                    content: var(--hasrorcontent, "\f06a");
+                    color: var(--hasrorcolor, lightgray);
+                    position: absolute;
+                    position-anchor: --xxxxx;
+                    position-area: center end;
+                    margin-inline-start: -40px;
+                }
+            }
+        }
+
+        .dataentry:not(:has(.ror:placeholder-shown)) {
+            >div:has(.orgAutocomplete) {
+                &:after {
+                    --hasrorcontent: "\f058";
+                    --hasrorcolor: green;
+                }
+            }
+        }
+
         .ui-sortable {
             .row {
                 .provenance {
