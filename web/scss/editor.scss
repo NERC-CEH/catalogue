@@ -126,9 +126,12 @@
 
             .editor-remove {
                 display: grid;
-                align-items: center;
                 grid-template-columns: auto 50px;
                 gap: 0.6em;
+
+                .editor-button-remove {
+                    margin-block-start: 1rem;
+                }
 
                 >div {
                     margin: 0 !important;
@@ -277,6 +280,7 @@
 
                     label {
                         font-weight: 600;
+
                         small {
                             font-weight: normal;
                             color: gray;
