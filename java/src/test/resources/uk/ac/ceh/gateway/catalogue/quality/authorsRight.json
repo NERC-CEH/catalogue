@@ -6,6 +6,7 @@
       "familyName": "0.",
       "organisationName": "Organisation 0",
       "role": "author",
+      "email": "author0@test.ac.uk",
       "fullName": "Author, 0."
     },
     {
@@ -13,12 +14,14 @@
       "familyName": "1.",
       "organisationName": "Organisation 0",
       "role": "author",
+      "email": "author1@test.ac.uk",
       "fullName": "Author, 1."
     },
     {
       "displayName": "Author, 2.",
       "organisationName": "Organisation 0",
       "role": "author",
+      "email": "author2@test.ac.uk",
       "fullName": "Author, 2."
     },
     {
