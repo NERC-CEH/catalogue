@@ -213,14 +213,14 @@
                 tr {
                     margin: 0 0 0.6em 0;
                     padding-block-end: 0.6em;
-                    border-block-end: 1px solid $border-color !important;
+                    border-block-end: 1px solid $border-color;
                 }
 
                 td {
                     border: none;
                     position: relative;
                     margin-inline-start: $head-width*1.2;
-                    padding: 0.3em 5em !important;
+                    padding: 0.3em 5em;
 
                     &:before {
                         position: absolute;

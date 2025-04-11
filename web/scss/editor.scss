@@ -39,10 +39,6 @@
     }
 }
 
-#editorNav li {
-    cursor: pointer;
-}
-
 #editorAjax {
     display: none;
 
@@ -51,498 +47,516 @@
     }
 }
 
-.editor {
-    --_requiredIndicator: rgb(207, 104, 7);
-    display: flex;
-    flex-direction: column;
-    min-height: 100dvh;
+.metadata {
+    .editor {
+        --_requiredIndicator: rgb(207, 104, 7);
+        display: flex;
+        flex-direction: column;
+        min-height: 100dvh;
 
-    .editor-menu {
-        position: sticky;
-        top: var(--header-height);
-        background-color: #eee;
-        z-index: 1000;
-        padding: 0;
-
-        >div {
-            padding-inline: 1em;
-
-            span.active {
-                font-weight: 600;
-            }
-
-            span:not(.active) {
-                display: none;
-            }
-
-            display: flex;
-            flex-direction: row;
-            gap: 0 1em;
-            justify-content: space-between;
-
-            .editor-nav {
-                align-content: center;
-            }
-
-            .editor-buttons {
-                display: flex;
-                flex-direction: row;
-                justify-content: center;
-                gap: 0.25em;
-                padding-block: 1em;
-            }
-        }
-    }
-
-    .editor-input,
-    .editor-textarea {
-        &:focus {
-            color: inherit !important;
-        }
-    }
-
-    .editor-body {
-        padding: 1em;
-
-        .editor-input {
-            @extend .form-control !optional;
-            @extend .form-control-sm !optional;
-            color: #000;
-            appearance: auto;
-
-            &::placeholder {
-                color: #AAA;
-            }
+        #editorNav li {
+            cursor: pointer;
         }
 
-        .editor-textarea {
-            @extend .form-control !optional;
-            @extend .form-control-sm !optional;
-            height: auto;
-            color: #000;
-            field-sizing: content;
-        }
-
-        .editor-remove {
-            display: grid;
-            grid-template-columns: auto 50px;
-            gap: 0.6em;
+        .editor-menu {
+            position: sticky;
+            top: var(--header-height);
+            background-color: #eee;
+            z-index: 1000;
+            padding: 0;
 
             >div {
-                margin: 0 !important;
-                padding: 0.2em 0.6em;
-            }
-        }
+                padding-inline: 1em;
 
-        .extended {
-            .row {
-                @extend .my-2 !optional;
-            }
-        }
-
-
-        .dataentry:has(.ror) {
-            >div:has(.orgAutocomplete) {
-                anchor-name: --orgAutocomplete;
-
-                &:after {
-                    font-family: 'Font Awesome\ 6 Free';
-                    font-weight: 900;
-                    content: var(--hasrorcontent, "\f06a");
-                    color: var(--hasrorcolor, lightgray);
-                    position: absolute;
-                    position-anchor: --orgAutocomplete;
-                    position-area: center end;
-                    margin-inline-start: -40px;
-                }
-            }
-        }
-
-        .dataentry:not(:has(.ror:placeholder-shown)) {
-            >div:has(.orgAutocomplete) {
-                &:after {
-                    --hasrorcontent: "\f058";
-                    --hasrorcolor: green;
-                }
-            }
-        }
-
-        .ui-sortable {
-            .row {
-                .provenance {
-                    border-block-end: 1px solid #eee;
-                    margin-block-end: 0.25em;
-                    padding: 0.5em 0;
-                }
-
-                &:last-child {
-                    .provenance {
-                        border-block-end: none;
-                        padding-bottom: 0;
-                    }
-                }
-            }
-        }
-
-        .editor-button {
-            @extend .btn !optional;
-            @extend .btn-light !optional;
-            @extend .border !optional;
-            @extend .btn-sm !optional;
-            @extend .float-end !optional;
-        }
-
-        .editor-button-xs {
-            @extend .btn !optional;
-            @extend .btn-light !optional;
-            @extend .border !optional;
-            @extend .btn-sm !optional;
-            @extend .float-end !optional;
-        }
-
-        .editor-button-remove {
-            @extend .btn !optional;
-            @extend .btn-light !optional;
-            @extend .border !optional;
-            @extend .btn-sm !optional;
-        }
-
-        .btn-showmore {
-            --bs-btn-padding-y: .25rem;
-            --bs-btn-padding-x: .5rem;
-            --bs-btn-font-size: .75rem;
-            --bs-btn-bg: #ddd;
-            --bs-btn-hover-bg: #ccc;
-        }
-
-        .editor-help {
-            @extend .form-text !optional;
-            @extend .d-print-none !optional;
-            @extend .collapse !optional;
-            padding: 1em;
-            margin-block-start: 1em;
-            background-color: #eee;
-            border-radius: .75em;
-            font-size: 12px;
-            line-height: 1.5;
-        }
-
-        .legilo {
-            margin-inline-start: 0.6em;
-
-            .loader {
-                margin-inline-start: 0.6em;
-            }
-        }
-
-        .component {
-            border-block-end: 1px solid color.adjust($gray-light, $lightness: 25%, $space: hsl);
-            padding-bottom: 1.25em;
-            margin-bottom: 1rem;
-            display: none;
-
-            &.visible {
-                display: block;
-            }
-
-            &.eidconly {
-                visibility: hidden;
-                height: 0;
-            }
-
-            &--textonly {
-                border-block-end: none !important;
-                margin-block-end: 0 !important;
-                padding-bottom: 0 !important;
-            }
-
-            .component {
-                border-style: solid;
-                border-width: 1px;
-                border-color: color.adjust($gray-light, $lightness: 15%, $space: hsl);
-                border-radius: 5px;
-                padding: 0.5em;
-                margin-block-end: 1.25em;
-            }
-
-            .row {
-                label {
-                    small {
-                        font-weight: normal;
-                        color: gray;
-
-                        &:before {
-                            content: "\A";
-                            white-space: pre-wrap;
-                        }
-                    }
-                }
-            }
-
-            .dataentry {
-                legend {
-                    font-size: 18px;
-                    font-weight: bold;
-                    margin-block-end: 0;
-                }
-
-                label {
-                    font-size: 85%;
+                span.active {
                     font-weight: 600;
-
-                    a {
-                        margin-inline-start: 0.5em;
-
-                        &:hover {
-                            text-decoration: none;
-                        }
-                    }
                 }
 
-                &.child {
-                    z-index: 0;
-                    @extend .my-2 !optional;
+                span:not(.active) {
+                    display: none;
+                }
 
-                    >.row {
-                        @extend .my-2 !optional;
+                display: flex;
+                flex-direction: row;
+                gap: 0 1em;
+                justify-content: space-between;
+
+                .editor-nav {
+                    align-content: center;
+                }
+
+                .editor-buttons {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: center;
+                    gap: 0.25em;
+                    padding-block: 1em;
+                }
+            }
+        }
+
+        .editor-input,
+        .editor-textarea {
+            &:focus {
+                color: inherit !important;
+            }
+        }
+
+        .editor-body {
+            padding: 1em;
+
+            .editor-input {
+                @extend .form-control !optional;
+                @extend .form-control-sm !optional;
+                color: #000;
+                appearance: auto;
+
+                &::placeholder {
+                    color: #AAA;
+                }
+            }
+
+            .editor-textarea {
+                @extend .form-control !optional;
+                @extend .form-control-sm !optional;
+                height: auto;
+                color: #000;
+                field-sizing: content;
+            }
+
+            .editor-remove {
+                display: grid;
+                align-items: center;
+                grid-template-columns: auto 50px;
+                gap: 0.6em;
+
+                >div {
+                    margin: 0 !important;
+                    padding: 0.2em 0.6em;
+                }
+            }
+
+            .extended {
+                .row {
+                    @extend .my-2 !optional;
+                }
+            }
+
+
+            .dataentry:has(.ror) {
+                >div:has(.orgAutocomplete) {
+                    anchor-name: --orgAutocomplete;
+
+                    &:after {
+                        font-family: 'Font Awesome\ 6 Free';
+                        font-weight: 900;
+                        content: var(--hasrorcontent, "\f06a");
+                        color: var(--hasrorcolor, lightgray);
+                        position: absolute;
+                        position-anchor: --orgAutocomplete;
+                        position-area: center end;
+                        margin-inline-start: -40px;
                     }
                 }
             }
 
-            .btnSchemaDetail {
+            .dataentry:not(:has(.ror:placeholder-shown)) {
+                >div:has(.orgAutocomplete) {
+                    &:after {
+                        --hasrorcontent: "\f058";
+                        --hasrorcolor: green;
+                    }
+                }
+            }
+
+            .ui-sortable {
+                .row {
+                    .provenance {
+                        border-block-end: 1px solid #eee;
+                        margin-block-end: 0.25em;
+                        padding: 0.5em 0;
+                    }
+
+                    &:last-child {
+                        .provenance {
+                            border-block-end: none;
+                            padding-bottom: 0;
+                        }
+                    }
+                }
+            }
+
+            .editor-button {
                 @extend .btn !optional;
                 @extend .btn-light !optional;
                 @extend .border !optional;
                 @extend .btn-sm !optional;
-                text-align: right;
+                @extend .float-end !optional;
+            }
 
-                span:before {
-                    content: "hide ";
+            .editor-button-xs {
+                @extend .btn !optional;
+                @extend .btn-light !optional;
+                @extend .border !optional;
+                @extend .btn-sm !optional;
+                @extend .float-end !optional;
+            }
+
+            .editor-button-remove {
+                @extend .btn !optional;
+                @extend .btn-light !optional;
+                @extend .border !optional;
+                @extend .btn-sm !optional;
+            }
+
+            .btn-showmore {
+                --bs-btn-padding-y: .25rem;
+                --bs-btn-padding-x: .5rem;
+                --bs-btn-font-size: .75rem;
+                --bs-btn-bg: #ddd;
+                --bs-btn-hover-bg: #ccc;
+            }
+
+            .editor-help {
+                @extend .form-text !optional;
+                @extend .d-print-none !optional;
+                @extend .collapse !optional;
+                padding: 1em;
+                margin-block-start: 1em;
+                background-color: #eee;
+                border-radius: .75em;
+                font-size: 12px;
+                line-height: 1.5;
+            }
+
+            .legilo {
+                margin-inline-start: 0.6em;
+
+                .loader {
+                    margin-inline-start: 0.6em;
                 }
             }
 
-            .btnSchemaDetail.collapsed {
-                span:before {
-                    content: "show " !important;
+            .component {
+                display: none;
+
+                &:not(:last-of-type) {
+                    border-block-end: 1px solid gray;
+                    padding-bottom: 1.25em;
+                    margin-bottom: 1rem;
+                }
+
+                &.visible {
+                    display: block;
+                }
+
+                &.eidconly {
+                    visibility: hidden;
+                    height: 0;
+                }
+
+                &--textonly {
+                    border-block-end: none !important;
+                    margin-block-end: 0 !important;
+                    padding-bottom: 0 !important;
+                }
+
+                .component {
+                    border-style: solid;
+                    border-width: 1px;
+                    border-color: color.adjust($gray-light, $lightness: 15%, $space: hsl);
+                    border-radius: 5px;
+                    padding: 0.5em;
+                    margin-block-end: 1.25em;
+                }
+
+                .row {
+                    &:has(.dataentry) {
+                        margin-block-end: 1.6rem;
+                    }
+
+                    label {
+                        font-weight: 600;
+                        small {
+                            font-weight: normal;
+                            color: gray;
+
+                            &:before {
+                                content: "\A";
+                                white-space: pre-wrap;
+                            }
+                        }
+                    }
+                }
+
+                .dataentry {
+                    legend {
+                        font-size: 18px;
+                        font-weight: bold;
+                        margin-block-end: 0;
+                    }
+
+                    label {
+                        font-size: 85%;
+                        font-weight: 600;
+
+                        a {
+                            margin-inline-start: 0.5em;
+
+                            &:hover {
+                                text-decoration: none;
+                            }
+                        }
+                    }
+
+                    &.child {
+                        z-index: 0;
+                        @extend .my-2 !optional;
+
+                        >.row {
+                            @extend .my-1 !optional;
+                        }
+                    }
+                }
+
+                .btnSchemaDetail {
+                    @extend .btn !optional;
+                    @extend .btn-light !optional;
+                    @extend .border !optional;
+                    @extend .btn-sm !optional;
+                    text-align: right;
+
+                    span:before {
+                        content: "hide ";
+                    }
+                }
+
+                .btnSchemaDetail.collapsed {
+                    span:before {
+                        content: "show " !important;
+                    }
                 }
             }
-        }
 
-        .requiredInfo {
-            color: var(--_requiredIndicator);
-            font-weight: 600;
-        }
-
-        .required:not(:has(.child)) {
-            label {
+            .requiredInfo {
                 color: var(--_requiredIndicator);
+                font-weight: 600;
+            }
 
-                &:before {
-                    content: "*"
+            .required:not(:has(.child)) {
+                label {
+                    color: var(--_requiredIndicator);
+
+                    &:before {
+                        content: "*"
+                    }
+                }
+
+                input,
+                textarea {
+                    border-block-end: 2px var(--_requiredIndicator) solid !important;
                 }
             }
 
-            input,
-            textarea {
-                border-block-end: 2px var(--_requiredIndicator) solid !important;
+            .multiline .existing>.row {
+                border-style: solid;
+                border-width: 1px;
+                border-color: color.adjust($gray-light, $lightness: 15%, $space: hsl);
+                border-radius: 5px;
+                padding: 4px;
+                margin: 0.5rem 0;
             }
-        }
 
-        .multiline .existing>.row {
-            border-style: solid;
-            border-width: 1px;
-            border-color: color.adjust($gray-light, $lightness: 15%, $space: hsl);
-            border-radius: 5px;
-            padding: 4px;
-            margin: 0.5rem 0;
-        }
+            .dropdown {
+                @extend .float-end !optional;
+                display: inline-block;
+            }
 
-        .dropdown {
-            @extend .float-end !optional;
-            display: inline-block;
-        }
+            .keyword-add {
+                display: inline-block;
+                float: left;
+            }
 
-        .keyword-add {
-            display: inline-block;
-            float: left;
-        }
+            .keywords {
+                .uri:disabled {
+                    font-style: italic;
+                }
+            }
 
-        .keywords {
-            .uri:disabled {
+            .supdocContent {
+                fieldset {
+                    legend {
+                        margin-block: 1em;
+                    }
+
+                    label {
+                        margin-inline-start: 2em;
+
+                        input {
+                            margin-inline-end: 0.5em;
+                        }
+                    }
+                }
+            }
+
+
+            // VOCAB KEYWORD PICKER STYLES
+            .vocabularyPicker {
+                display: flex;
+                gap: 0.25em 1.25em;
+                flex-wrap: wrap;
+
+                .vocab {
+                    label {
+                        span {
+                            font-weight: normal;
+                        }
+                    }
+                }
+            }
+
+            .dataentry.child:has(.keywordPicker):not(:has(.d-none)) {
+                padding-bottom: 1.2em;
+                padding-block-start: 1.2em;
+            }
+
+            input.autocomplete::placeholder {
+                font-weight: bold;
                 font-style: italic;
+                opacity: 0.5;
+                color: blue;
+            }
+
+            .dropdown-menu.predefined {
+                margin-block-end: 70px;
+                max-height: 350px;
+                overflow: auto;
+                position: relative;
+            }
+
+            .validation {
+                display: none;
+            }
+
+            .readonly {
+                font-size: 90%;
+                color: #aaa;
+                line-height: 2.5em;
+            }
+
+            .ui-sortable,
+            .ui-sortable-handle {
+                cursor: move;
+            }
+
+            .catalogueSearch {
+                margin-block-end: 1em;
+
+                input {
+                    font-size: 0.9em;
+                }
+            }
+
+            // Hide the leaflet 'save' button as it is never used: https://stackoverflow.com/questions/51360283/how-to-remove-save-option-from-leaflet-draw-api-delete-button
+            .leaflet-draw-actions li:first-child a[title="Save changes"] {
+                visibility: hidden;
+                width: 0;
+                padding: 0;
             }
         }
 
-        .supdocContent {
-            fieldset {
-                legend {
-                    margin-block: 1em;
-                }
 
-                label {
-                    margin-inline-start: 2em;
+        .form-control {
 
-                    input {
-                        margin-inline-end: 0.5em;
-                    }
-                }
+            &[readonly],
+            &[disabled] {
+                background-color: color.adjust($gray-light, $lightness: 30%, $space: hsl);
+                color: $gray;
             }
         }
 
-
-        // VOCAB KEYWORD PICKER STYLES
-        .vocabularyPicker {
-            display: flex;
-            gap: 0.25em 1.25em;
-            flex-wrap: wrap;
-
-            .vocab {
-                label {
-                    span {
-                        font-weight: normal;
-                    }
-                }
+        #editorValidationMessage {
+            .modal-body {
+                color: #f00;
+                font-weight: bold;
             }
         }
 
-        .dataentry.child:has(.keywordPicker):not(:has(.d-none)) {
-            padding-bottom: 1.2em;
-            padding-block-start: 1.2em;
+        ul.ui-autocomplete {
+            li.ui-menu-item {
+                font-size: 0.8em;
+                font-family: var(--font-family-sans-serif), serif;
+            }
         }
 
-        input.autocomplete::placeholder {
-            font-weight: bold;
-            font-style: italic;
-            opacity: 0.5;
-            color: blue;
-        }
-
-        .dropdown-menu.predefined {
-            margin-block-end: 70px;
+        .ui-autocomplete {
             max-height: 350px;
-            overflow: auto;
-            position: relative;
-        }
+            overflow-y: auto;
+            overflow-x: hidden;
+            scrollbar-gutter: stable;
+            scrollbar-width: thin;
 
-        .validation {
-            display: none;
-        }
 
-        .readonly {
-            font-size: 90%;
-            color: #aaa;
-            line-height: 2.5em;
-        }
+            &::-webkit-scrollbar {
+                width: 8px;
+            }
 
-        .ui-sortable,
-        .ui-sortable-handle {
-            cursor: move;
-        }
+            &::-webkit-scrollbar-track {
+                background: #f1f1f1;
+            }
 
-        .catalogueSearch {
-            margin-block-end: 1em;
-
-            input {
-                font-size: 0.9em;
+            &::-webkit-scrollbar-thumb {
+                background: #999;
             }
         }
-
-        // Hide the leaflet 'save' button as it is never used: https://stackoverflow.com/questions/51360283/how-to-remove-save-option-from-leaflet-draw-api-delete-button
-        .leaflet-draw-actions li:first-child a[title="Save changes"] {
-            visibility: hidden;
-            width: 0;
-            padding: 0;
-        }
-    }
-}
-
-.form-control {
-
-    &[readonly],
-    &[disabled] {
-        background-color: color.adjust($gray-light, $lightness: 30%, $space: hsl);
-        color: $gray;
-    }
-}
-
-#editorValidationMessage {
-    .modal-body {
-        color: #f00;
-        font-weight: bold;
-    }
-}
-
-ul.ui-autocomplete {
-    li.ui-menu-item {
-        font-size: 0.8em;
-        font-family: var(--font-family-sans-serif), serif;
-    }
-}
-
-.ui-autocomplete {
-    max-height: 350px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    scrollbar-gutter: stable;
-    scrollbar-width: thin;
-
-
-    &::-webkit-scrollbar {
-        width: 8px;
-    }
-
-    &::-webkit-scrollbar-track {
-        background: #f1f1f1;
-    }
-
-    &::-webkit-scrollbar-thumb {
-        background: #999;
     }
 }
 
 
 
 @media only screen and (min-width: 600px) {
-    .editor {
-        flex-direction: row;
+    .metadata {
+        .editor {
+            flex-direction: row;
 
-        .editor-menu {
-            min-height: 0;
-            flex: 0 0 clamp(200px, 20vw, 300px);
+            .editor-menu {
+                min-height: 0;
+                flex: 0 0 clamp(200px, 20vw, 300px);
 
-            >div {
-                position: sticky;
-                top: var(--header-height);
-                min-height: calc(100dvh - var(--header-height));
-                flex-direction: column;
-                gap: 1em 0;
-                padding-inline: 0;
+                >div {
+                    position: sticky;
+                    top: var(--header-height);
+                    min-height: calc(100dvh - var(--header-height));
+                    flex-direction: column;
+                    gap: 1em 0;
+                    padding-inline: 0;
 
-                .editor-nav {
+                    .editor-nav {
 
-                    span {
-                        display: block;
-                        padding: 0.5em 2em 0.5em 0.5em;
-                        text-align: right;
+                        span {
+                            display: block;
+                            padding: 0.5em 2em 0.5em 0.5em;
+                            text-align: right;
 
-                        &:hover {
-                            background-color: lightgray;
+                            &:hover {
+                                background-color: lightgray;
+                            }
+                        }
+
+                        .active {
+                            background-color: white;
+                            padding: 1em 0.5em;
+
+                            &::after {
+                                content: " >";
+                            }
                         }
                     }
 
-                    .active {
-                        background-color: white;
-                        padding: 1em 0.5em;
-
-                        &::after {
-                            content: " >";
-                        }
+                    .editor-buttons {
+                        flex-wrap: wrap;
+                        gap: 0.5em 1em;
                     }
-                }
-
-                .editor-buttons {
-                    flex-wrap: wrap;
-                    gap: 0.5em 1em;
                 }
             }
         }

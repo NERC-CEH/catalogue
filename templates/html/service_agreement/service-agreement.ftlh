@@ -89,44 +89,7 @@
                 <h1 class="text-red">Historic version<br><small><strong>IMPORTANT</strong> This is a historic version of this Service Agreement</small></h1>
             </#if>
 
-            <div class="terms">
-                <p>This document sets out your rights and responsibilities as depositor and ours as the data distributor.</p>
-                <p>As a depositor you must consent to this service agreement which establishes the terms and conditions of use of your data.</p>
-                <p>This agreement authorises the EIDC to preserve and to distribute the data under the terms specified in this document.  To do so, the EIDC will store the data and, where necessary, duplicate and transform copies.</p>
-                <p>All environmental data deposited into the EIDC are subject to the requirements of the NERC Data Policy.</p>
-                <p>By depositing data, you confirm that the data is compliant with the provisions of UK data protection laws.</p>
-
-                <div class="indent--1">
-                    <h3>Our responsibilities:</h3>
-                    <ul>
-                        <li>We will take every care to preserve the integrity of the data and protect it from loss or damage.</li>
-                        <li>We will make the data publicly available, subject to any conditions specified in this Agreement.</li>
-                        <li>Unless otherwise requested, we will issue a Digital Object Identifier (DOI) to facilitate the proper citation of the dataset. Such data will be kept in perpetuity. </li>
-                        <li>We will ask users of the data to agree to an end user licence.</li>
-                        <li>We require users of the data to acknowledge and cite sources when re-using data.</li>
-                        <li>We will only process personal information in connection with long-term archiving services, in accordance with our <a href="https://eidc.ac.uk/policies/privacy" target="_blank" rel="noopener noreferrer" >Privacy Notice</a></li>
-                    </ul>
-                    <h3>Your responsibilities:</h3>
-                    <ul>
-                        <li>You provide assurances that you are entitled to deposit the data resource in the EIDC and that the agreement of all parties who may have an interest in the resource has been obtained.</li>
-                        <li>You confirm that you have sufficient knowledge of the data resource to deposit it with the EIDC, being either a named author of the data resource, or with written confirmation from the lead author of the data resource of your suitability to act as depositor</li>
-                        <li>You confirm that this is the reference copy of the resource and that you will cite this resource including the NERC DOI it will be assigned in any subsequent publications</li>
-                        <li>You agree to supply sufficient supporting information (metadata) to enable discovery, management and reuse of the data. </li>
-                        <li>You ensure that in the case of research data with human subjects that consents collected are ethically and legally appropriate and sufficient to allow deposit of the resource.</li>
-                        <li>You agree to notify the EIDC promptly of any copyright, confidentiality, privacy, data protection, defamation or similar issues pertaining to the data.</li>
-                        <li>You guarantee that nothing in the resource or supporting information contravenes the UK data protection laws or any other UK law (e.g., the Wildlife and Countryside Act 1981).</li>
-                        <li>You agree to notify the EIDC if it is subsequently found that the data resource is no longer fit for purpose (e.g. if errors are found in the dataset).</li>
-                    </ul>
-
-                    <#if policyExceptions??>
-                        <h3>Exceptions to the general policy are listed below:</h3>
-                        <ul>
-                            <li>${policyExceptions}</li>
-                            <li>otherPoliciesOrLegislation</li>
-                        </ul>
-                    </#if>
-                </div>
-            </div>
+            <@showTerms />
 
             <div class="contactDetails">
                 <div class="row key-value">
@@ -155,7 +118,12 @@
 
             <section class="section section--1">
                 <h2>Data identification and citation</h2>
-                <p><strong class="text-red"><i class="fa-solid fa-triangle-exclamation" ></i> PLEASE NOTE: ONCE A DOI HAS BEEN ISSUED, THE INFORMATION PROVIDED IN THIS SECTION CANNOT BE CHANGED</strong><br>&nbsp;</p>
+                <div class="card text-bg-danger mb-3">
+                   <div class="card-body">
+                   <i class="fa-solid fa-triangle-exclamation" ></i>
+                   PLEASE NOTE: ONCE A DOI HAS BEEN ISSUED, THE INFORMATION PROVIDED IN THIS SECTION CANNOT BE CHANGED
+                   </div>
+                </div>
                 <h4><strong>Title of data resource:</strong> ${title}</h4>
 
                 <div class="authors">
@@ -246,7 +214,7 @@
             </#if>
 
             <#if description?has_content || lineage?has_content || allKeywords?has_content || topicCategories?? ||  inspireTheme?? || boundingBoxes??>
-                <section class="section section--metadata">
+                <section class="section section--metadata d-print-none">
                     <h2>Discovery metadata</h2>
                     <p><i>Information in this section will be used to create a record in the EIDC data catalogue.</i></p>
                     <@displayData "Description" description/>
@@ -260,8 +228,48 @@
     </div>
 </@skeleton.master>
 
-
 <#-- Freemarker macros -->
+<#macro showTerms>
+  <div class="terms id="termsBoilerplate">
+      <p>This document sets out your rights and responsibilities as depositor and ours as the data distributor.</p>
+      <p>As a depositor you must consent to this service agreement which establishes the terms and conditions of use of your data.</p>
+      <p>This agreement authorises the EIDC to preserve and to distribute the data under the terms specified in this document.  To do so, the EIDC will store the data and, where necessary, duplicate and transform copies.</p>
+      <p>All environmental data deposited into the EIDC are subject to the requirements of the NERC Data Policy.</p>
+      <p>By depositing data, you confirm that the data is compliant with the provisions of UK data protection laws.</p>
+
+      <div class="indent--1">
+          <h3>Our responsibilities:</h3>
+          <ul>
+              <li>We will take every care to preserve the integrity of the data and protect it from loss or damage.</li>
+              <li>We will make the data publicly available, subject to any conditions specified in this Agreement.</li>
+              <li>Unless otherwise requested, we will issue a Digital Object Identifier (DOI) to facilitate the proper citation of the dataset. Such data will be kept in perpetuity. </li>
+              <li>We will ask users of the data to agree to an end user licence.</li>
+              <li>We require users of the data to acknowledge and cite sources when re-using data.</li>
+              <li>We will only process personal information in connection with long-term archiving services, in accordance with our <a href="https://eidc.ac.uk/policies/privacy" target="_blank" rel="noopener noreferrer" >Privacy Notice</a></li>
+          </ul>
+          <h3>Your responsibilities:</h3>
+          <ul>
+              <li>You provide assurances that you are entitled to deposit the data resource in the EIDC and that the agreement of all parties who may have an interest in the resource has been obtained.</li>
+              <li>You confirm that you have sufficient knowledge of the data resource to deposit it with the EIDC, being either a named author of the data resource, or with written confirmation from the lead author of the data resource of your suitability to act as depositor</li>
+              <li>You confirm that this is the reference copy of the resource and that you will cite this resource including the NERC DOI it will be assigned in any subsequent publications</li>
+              <li>You agree to supply sufficient supporting information (metadata) to enable discovery, management and reuse of the data. </li>
+              <li>You ensure that in the case of research data with human subjects that consents collected are ethically and legally appropriate and sufficient to allow deposit of the resource.</li>
+              <li>You agree to notify the EIDC promptly of any copyright, confidentiality, privacy, data protection, defamation or similar issues pertaining to the data.</li>
+              <li>You guarantee that nothing in the resource or supporting information contravenes the UK data protection laws or any other UK law (e.g., the Wildlife and Countryside Act 1981).</li>
+              <li>You agree to notify the EIDC if it is subsequently found that the data resource is no longer fit for purpose (e.g. if errors are found in the dataset).</li>
+          </ul>
+
+          <#if policyExceptions?? || otherPoliciesOrLegislation??>
+              <h3>Exceptions to the general policy are listed below:</h3>
+              <ul>
+                <#if policyExceptions??><li>${policyExceptions}</li></#if>
+                <#if otherPoliciesOrLegislation??><li>${otherPoliciesOrLegislation}</li></#if>
+              </ul>
+          </#if>
+      </div>
+  </div>
+</#macro>
+
 <#macro displayData key value=''>
     <#if value!=''>
     <div class="row key-value">
@@ -296,7 +304,14 @@
                 <#items as author>
                     <tr>
                         <td><#if author.fullName?has_content >${author.fullName}<#elseif author.individualName?has_content >${author.individualName}<#else><span class="text-danger">missing or incomplete</span></#if></td>
-                        <td><#if author.organisationName?has_content >${author.organisationName}<#else><span class="text-danger">missing</span></#if></td>
+                        <td>
+                          <#if author.organisationName?has_content >
+                            ${author.organisationName}
+                            <#if author.organisationIdentifier?has_content ><a href="${author.organisationIdentifier}" target="_blank" rel="noopener noreferrer" class="externalVocabularyLink"><sup class="fa-solid fa-xs fa-arrow-up-right-from-square"></sup></a></#if>
+                          <#else>
+                            <span class="text-danger">missing</span>
+                          </#if>
+                          </td>
                         <td><#if author.email?has_content>${author.email}<#else><span class="text-danger">missing</span></#if></td>
                         <td><#if author.nameIdentifier?has_content >${author.nameIdentifier}<#else><small class="text-muted">Not provided</small></#if></td>
                     </tr>
@@ -391,7 +406,6 @@
     </div>
     </#if>
 </#macro>
-
 
 <#macro displayKeywords>
     <div>
