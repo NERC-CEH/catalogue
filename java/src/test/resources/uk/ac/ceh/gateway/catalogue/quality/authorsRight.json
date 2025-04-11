@@ -2,16 +2,16 @@
   "responsibleParties": [
     {
       "displayName": "Author, 0.",
-      "givenName": "Author",
-      "familyName": "0.",
+      "givenName": "0.",
+      "familyName": "Author",
       "organisationName": "Organisation 0",
       "role": "author",
       "email": "author0@test.ac.uk",
       "fullName": "Author, 0."
     },
     {
-      "givenName": "Author",
-      "familyName": "1.",
+      "givenName": "1.",
+      "familyName": "Author",
       "organisationName": "Organisation 0",
       "role": "author",
       "email": "author1@test.ac.uk",
