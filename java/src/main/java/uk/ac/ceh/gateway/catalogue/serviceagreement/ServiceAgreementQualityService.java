@@ -291,7 +291,7 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
             }
 
             if (supportingDoc.getContent() == null) {
-                toReturn.add(new MetadataCheck("Supporting document " + index + " content is missing at index", ERROR));
+                toReturn.add(new MetadataCheck("Supporting document " + index + " content is missing", ERROR));
             }
         }
 
