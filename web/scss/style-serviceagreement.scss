@@ -8,6 +8,29 @@
                 text-decoration: line-through;
             }
         }
+
+        .component {
+            counter-reset: component;
+
+            .author {
+                counter-increment: component;
+                anchor-name: giovanni;
+                position: relative;
+
+                &:before {
+                    content: counter(component);
+                    font-weight: 600;
+                    color: white;
+                    background-color: lightgray;
+                    padding: .2rem;
+                    font-size: 1.2rem;
+                    position: absolute;
+                    top: -1rem;
+                    left: -1.8rem;
+                    border-radius: 5px 0 10px 0;
+                }
+            }
+        }
     }
 
     .title {
