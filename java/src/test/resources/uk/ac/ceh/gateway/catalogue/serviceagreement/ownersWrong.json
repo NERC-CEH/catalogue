@@ -14,6 +14,15 @@
       "role": "author"
     },
     {
+        "displayName": "Author, 2.",
+        "givenName": "Author",
+        "familyName": "2.",
+        "organisationName": "Organisation 0",
+        "role": "owner",
+        "email": "test@test.com",
+        "fullName": "Author, 2"
+    },
+    {
       "organisationName": "Organisation 0",
       "role": "author"
     },

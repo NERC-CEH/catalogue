@@ -7,7 +7,6 @@ export default Backbone.Model.extend({
   },
 
   validate ({ organisationName, familyName, givenName }) {
-
     const errors = []
 
     if (!organisationName && (!familyName || !givenName)) {
