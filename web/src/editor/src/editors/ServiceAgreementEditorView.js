@@ -251,8 +251,8 @@ export default EditorView.extend({
 
         new TextOnlyView({
           model: this.model,
-          text: `
-<p>Intellectual property rights.</p>
+          label: 'Owner of IPR',
+          text: `\
 <p>This is usually the organisation to which the grant is awarded and will be specified in the grant/funding conditions. If no other organisation is specified, IPR should default to the funder.</p>
 `
         }),
@@ -261,7 +261,6 @@ export default EditorView.extend({
           model: this.model,
           ModelType: RightsHolder,
           modelAttribute: 'ownersOfIpr',
-          label: 'Owner of IPR',
           ObjectInputView: RightsHolderView,
           multiline: true,
           required: true
@@ -518,6 +517,9 @@ Details of relationships we can accommodate are available at: <a href='https://e
           model: this.model,
           modelAttribute: 'keywordsOther',
           ObjectInputView: KeywordVocabularyView,
+          vocabs: {
+            eidc: ['envThes', 'gemet', 'cast']
+          },
           multiline: true
         })
       ]

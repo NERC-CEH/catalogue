@@ -1,31 +1,31 @@
 {
   "responsibleParties": [
     {
-      "individualName": "Author, 0.",
-      "givenName": "Author",
-      "familyName": "0.",
+      "displayName": "Author, 0.",
+      "givenName": "0.",
+      "familyName": "Author",
       "organisationName": "Organisation 0",
       "role": "author",
+      "email": "author0@test.ac.uk",
       "fullName": "Author, 0."
     },
     {
-      "individualName": "Author, 1.",
-      "givenName": "Author",
-      "familyName": "1.",
+      "givenName": "1.",
+      "familyName": "Author",
       "organisationName": "Organisation 0",
       "role": "author",
+      "email": "author1@test.ac.uk",
       "fullName": "Author, 1."
     },
     {
-      "individualName": "Author, 2.",
-      "givenName": "Author",
-      "familyName": "2.",
+      "displayName": "Author, 2.",
       "organisationName": "Organisation 0",
       "role": "author",
+      "email": "author2@test.ac.uk",
       "fullName": "Author, 2."
     },
     {
-      "individualName": "Distributor, 0.",
+      "displayName": "Distributor, 0.",
       "givenName": "Distributor",
       "familyName": "0.",
       "organisationName": "Organisation 0",

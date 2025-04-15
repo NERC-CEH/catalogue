@@ -6,17 +6,15 @@ export default Backbone.Model.extend({
     address: {}
   },
 
-  validate ({ organisationName, organisationIdentifier }) {
-    const rorRegEx = /^https?:\/\/ror.org\/\w{8,10}$/
-
+  validate ({ organisationName, familyName, givenName }) {
     const errors = []
 
-    if (organisationIdentifier && !organisationIdentifier?.match(rorRegEx)) {
-      errors.push({ message: 'Invalid RoR' })
+    if (!organisationName && (!familyName || !givenName)) {
+      errors.push({ message: 'You must add either an organisation name or a persons name.' })
     }
 
-    if (!organisationName) {
-      errors.push({ message: 'Organisation name is mandatory.' })
+    if (organisationName && (familyName || givenName)) {
+      errors.push({ message: 'You must add either an organisation name OR a persons name.' })
     }
 
     if (errors.length) {

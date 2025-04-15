@@ -2,14 +2,14 @@ import _ from 'underscore'
 
 export default _.template(`
   <div class="row">
-      <div class="col-lg-2 required">
+      <div class="col-lg-2">
           <label for="contacts<%= data.index %>Organisation">Organisation</label>
       </div>
       <div class="col-lg-10">
-          <input placeholder="Search for organisation" data-name='organisationName' class="editor-input orgAutocomplete" id="contacts<%= data.index %>Organisation" value="<%= data.organisationName %>">
+          <input placeholder="Start typing to show a list of organisation. Pick from the list if possible" data-name='organisationName' class="editor-input orgAutocomplete" id="contacts<%= data.index %>Organisation" value="<%= data.organisationName %>">
       </div>
       <div class="visually-hidden">
-          <input data-name="organisationIdentifier" class="editor-input" value="<%= data.organisationIdentifier %>">
+          <input data-name="organisationIdentifier" class="ror editor-input" placeholder="https//ror.org/..." value="<%= data.organisationIdentifier %>">
       </div>
   </div>
   <div class="row">

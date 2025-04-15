@@ -25,4 +25,12 @@ export function createOrgAutocomplete (id, obj) {
       }
     }
   })
+
+  // Add event listener for changes to the organisationName field
+  obj.$(id).on('input', () => {
+    obj.model.set('organisationIdentifier', '')
+    if (obj.$('[data-name=organisationIdentifier]').length) {
+      obj.$('[data-name=organisationIdentifier]').val('')
+    }
+  })
 }

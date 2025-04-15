@@ -1,27 +1,27 @@
 {
   "authors": [
     {
-      "individualName": "Author, A.",
-      "givenName": "A.",
       "familyName": "Author",
+      "givenName": "A.",
+      "displayName": "Author, A.",
       "organisationName": "Organisation 0",
       "role": "author",
+      "email": "authora@test.ac.uk",
       "fullName": "Author, A."
     },
     {
-      "individualName": "Author, B.",
-      "givenName": "B.",
       "familyName": "Author",
+      "givenName": "B.",
       "organisationName": "Organisation 0",
       "role": "author",
+      "email": "authorb@test.ac.uk",
       "fullName": "Author, B."
     },
     {
-      "individualName": "Author, C.",
-      "givenName": "C.",
-      "familyName": "Author",
+      "displayName": "Author, C.",
       "organisationName": "Organisation 0",
       "role": "author",
+      "email": "authorc@test.ac.uk",
       "fullName": "Author, C."
     }
   ]

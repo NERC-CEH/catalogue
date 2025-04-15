@@ -1,7 +1,7 @@
 {
   "authors": [
     {
-      "individualName": "Author, O.",
+      "displayName": "Author, O.",
       "givenName": "Olive",
       "familyName": "Author",
       "organisationName": "Organisation 0",
@@ -9,7 +9,7 @@
       "fullName": "Author, 0."
     },
     {
-      "individualName": "",
+      "displayName": "",
       "givenName": "",
       "familyName": "",
       "organisationName": "Organisation 0",
