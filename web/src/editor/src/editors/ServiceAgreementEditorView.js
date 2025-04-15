@@ -518,6 +518,9 @@ Details of relationships we can accommodate are available at: <a href='https://e
           model: this.model,
           modelAttribute: 'keywordsOther',
           ObjectInputView: KeywordVocabularyView,
+          vocabs: {
+            eidc: ['envThes', 'gemet', 'cast']
+          },
           multiline: true
         })
       ]

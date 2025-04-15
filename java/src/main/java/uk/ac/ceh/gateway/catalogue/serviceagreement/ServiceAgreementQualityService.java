@@ -167,21 +167,21 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
             toReturn.add(new MetadataCheck("There are no authors", ERROR));
         }
 
-        for (int i = 0; i < authors.size(); i++) {
-            val author = authors.get(i);
-            int index = i + 1;
+        int index = 0;
+        for (val author: authors) {
+            index++;
 
             if (fieldIsMissing(author, "email")) {
                 toReturn.add(new MetadataCheck("Author " + index + " email is missing", ERROR));
-                }
+            }
 
             if (fieldIsMissing(author, "displayName") && (fieldIsMissing(author, "familyName") || fieldIsMissing(author, "givenName"))) {
                 toReturn.add(new MetadataCheck("Author " + index + " name is missing or incomplete", ERROR));
-                }
+            }
 
             if (fieldIsMissing(author, "organisationName")) {
                 toReturn.add(new MetadataCheck("Author " + index + " affiliation (organisation name) is missing", ERROR));
-                }
+            }
 
             toReturn.addAll(checkEmail(authors, "Author " + index + " email address is incorrect (%s)"));
         }
@@ -240,9 +240,9 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
             toReturn.add(new MetadataCheck("Number of files to be deposited is missing", ERROR));
         }
 
-        for (int i = 0; i < files.size(); i++) {
-            val file = files.get(i);
-            int index = i + 1;
+        int index = 0;
+        for (val file: files) {
+            index++;
 
             if (fieldIsMissing(file, "name")) {
                 toReturn.add(new MetadataCheck("File " + index + " name is missing ", ERROR));
@@ -274,9 +274,9 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
             toReturn.add(new MetadataCheck("Supporting documentation is empty", ERROR));
         }
 
-        for (int i = 0; i < supportingDocs.size(); i++) {
-            SupportingDoc supportingDoc = supportingDocs.get(i);
-            int index = i + 1;
+        int index = 0;
+        for (val supportingDoc: supportingDocs) {
+            index++;
 
             if (supportingDoc.getName() == null) {
                 toReturn.add(new MetadataCheck("Supporting document " + index + " name is missing", ERROR));

@@ -146,22 +146,23 @@
             }
 
             .dataentry:has(.ror) {
-                >div:has(.orgAutocomplete) {
+                div:has(>.orgAutocomplete) {
+
                     &:after {
-                        font-family: 'Font Awesome\ 6 Free';
+                        font-family: var(--font-stack-icons);
                         font-weight: 900;
                         content: var(--hasrorcontent, "\f06a");
                         color: var(--hasrorcolor, lightgray);
                         position: relative;
-                        position-area: center end;
-                        margin-inline-start: -40px;
-                        margin-block-start: 4px;
+                        top: -30px;
+                        right: calc(-100% + 25px);
+
                     }
                 }
             }
 
             .dataentry:not(:has(.ror:placeholder-shown)) {
-                >div:has(.orgAutocomplete) {
+                div:has(>.orgAutocomplete) {
                     &:after {
                         --hasrorcontent: "\f058";
                         --hasrorcolor: green;
