@@ -192,7 +192,7 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
     List<MetadataCheck> checkOwnerOfIpr(DocumentContext parsed) {
         val toReturn = new ArrayList<MetadataCheck>();
         val owners = parsed.read(
-                "$.ownersOfIpr[*].['organisationName','email']",
+                "$.ownersOfIpr[*].['organisationName', 'familyName', 'givenName']",
                 typeRefStringString
         );
 
@@ -200,8 +200,12 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
             toReturn.add(new MetadataCheck("There are no IPR owners", ERROR));
         }
 
-        if (owners.stream().anyMatch(owner -> fieldIsMissing(owner, "organisationName"))) {
-            toReturn.add(new MetadataCheck("IPR owner's affiliation (organisation name) is missing", ERROR));
+        if (owners.stream().anyMatch(owner -> fieldIsMissing(owner, "organisationName") && (fieldIsMissing(owner, "familyName") || fieldIsMissing(owner, "givenName")))) {
+            toReturn.add(new MetadataCheck("IPR owner must include an organisation name or a person's name", ERROR));
+        }
+
+       if (owners.stream().anyMatch(owner -> !fieldIsMissing(owner, "organisationName") && (!fieldIsMissing(owner, "familyName") || !fieldIsMissing(owner, "givenName")))) {
+            toReturn.add(new MetadataCheck("IPR owner must be EITHER an organisation name OR a person's name", ERROR));
         }
 
         return toReturn;

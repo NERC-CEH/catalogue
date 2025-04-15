@@ -2,7 +2,7 @@ import _ from 'underscore'
 
 export default _.template(`
   <div class="row">
-      <div class="col-lg-2 required">
+      <div class="col-lg-2">
           <label for="contacts<%= data.index %>Organisation">Organisation</label>
       </div>
       <div class="col-lg-10">
