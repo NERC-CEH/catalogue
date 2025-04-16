@@ -47,7 +47,7 @@
     }
 }
 
-.metadata {
+.metadata, #search {
     .editor {
         --_requiredIndicator: rgb(207, 104, 7);
         display: flex;
@@ -517,7 +517,7 @@
 
 
 @media only screen and (min-width: 600px) {
-    .metadata {
+    .metadata, #search {
         .editor {
             flex-direction: row;
 
