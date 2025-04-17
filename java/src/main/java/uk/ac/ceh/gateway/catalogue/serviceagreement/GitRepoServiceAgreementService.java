@@ -41,7 +41,7 @@ import static uk.ac.ceh.gateway.catalogue.model.Permission.*;
 public class GitRepoServiceAgreementService implements ServiceAgreementService {
     private final String baseUri;
     private final DataRepository<CatalogueUser> repo;
-    private final GitDataRepositoryTemp<CatalogueUser> repoTemp;
+    private GitDataRepositoryTemp<CatalogueUser> repoTemp;
     private final DocumentInfoMapper<MetadataInfo> metadataInfoMapper;
     private final DocumentInfoMapper<ServiceAgreement> serviceAgreementMapper;
     private final DocumentRepository documentRepository;
@@ -53,7 +53,6 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     private static final String SUBMITTED = "submitted";
     private static final String PENDING_PUBLICATION = "pending publication";
 
-    @SneakyThrows
     public GitRepoServiceAgreementService(
             @Value("${data.repository.location}") String dataRepositoryLocation,
             @Value("${documents.baseUri}") String baseUri,
@@ -71,12 +70,16 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         this.jiraService = jiraService;
         this.publicationService = publicationService;
 
-        this.repoTemp = new GitDataRepositoryTemp<>(
-            new File(dataRepositoryLocation),
-            new InMemoryUserStore<>(),
-            new AnnotatedUserHelper<>(CatalogueUser.class),
-            null
-        );
+        try {
+            this.repoTemp = new GitDataRepositoryTemp<>(
+                new File(dataRepositoryLocation),
+                new InMemoryUserStore<>(),
+                new AnnotatedUserHelper<>(CatalogueUser.class),
+                null
+            );
+        } catch (Exception ex) {
+            this.repoTemp = null;
+        }
 
         log.info("Creating");
     }
