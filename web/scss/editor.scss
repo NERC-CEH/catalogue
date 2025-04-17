@@ -101,6 +101,8 @@
         .editor-input,
         .editor-textarea {
             &:focus {
+                field-sizing: content;
+                min-height: 150px;
                 color: inherit !important;
             }
         }
@@ -122,9 +124,9 @@
             .editor-textarea {
                 @extend .form-control !optional;
                 @extend .form-control-sm !optional;
-                height: auto;
                 color: #000;
                 field-sizing: content;
+                min-height: 150px;
             }
 
             .editor-remove {
@@ -156,9 +158,9 @@
                         font-weight: 900;
                         content: var(--hasrorcontent, "\f06a");
                         color: var(--hasrorcolor, lightgray);
-                        position: absolute;
-                        margin-left:-32px;
-                        margin-top:6px;
+                        position: relative;
+                        top: -30px;
+                        right: calc(-100% + 25px);
                     }
                 }
             }
@@ -168,7 +170,8 @@
                     &:after {
                         --hasrorcontent: url(/static/img/ror_16x16.png) "\f00c" / "has valid RoR";
                         --hasrorcolor: green;
-                        font-size:.8rem
+                        font-size: .8rem;
+                        right: calc(-100% + 36px);
                     }
                 }
             }
@@ -252,6 +255,7 @@
 
                 &.visible {
                     display: block;
+
                     &.eidconly {
                         display: var(--eidc-component-display, none);
                     }

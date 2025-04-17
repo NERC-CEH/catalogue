@@ -28,6 +28,7 @@ $card-default-text: #FFF;
     --ukceh-brand-display: none;
 
     --eidc-component-display: block;
+    --display-navbar-title: none;
 }
 
 html {
@@ -62,6 +63,7 @@ footer {
         }
     }
 }
+
 
 .option-eidc {
     --display-option: block;

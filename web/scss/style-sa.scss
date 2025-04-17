@@ -1,7 +1,8 @@
 @use "theme";
 
 .editor-textarea {
-    height: 100%;
+    field-sizing: content;
+    min-height: 150px;
 }
 
 .editor-description {
