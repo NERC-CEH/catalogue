@@ -94,6 +94,7 @@ public class GitDataRepositoryTemp<A extends DataAuthor & User> extends GitDataR
             try {
                 System.out.println(String.format(msg, LocalDateTime.now(), "create log command"));
                 LogCommand logCommand = git.log()
+                    .setMaxCount(4)
                     .add(revision)
                     .addPath(name);
                 System.out.println(String.format(msg, LocalDateTime.now(), "start loop through commit"));
