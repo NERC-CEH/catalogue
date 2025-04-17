@@ -15,9 +15,12 @@ import org.springframework.web.client.RestClientResponseException;
 import uk.ac.ceh.components.datastore.DataDocument;
 import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.components.datastore.DataRepositoryException;
+import uk.ac.ceh.components.userstore.AnnotatedUserHelper;
+import uk.ac.ceh.components.userstore.inmemory.InMemoryUserStore;
 import uk.ac.ceh.gateway.catalogue.config.ServiceAgreementPublicationConfig;
 import uk.ac.ceh.gateway.catalogue.document.DocumentInfoMapper;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
+import uk.ac.ceh.gateway.catalogue.git.GitDataRepositoryTemp;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
@@ -25,6 +28,7 @@ import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.JiraService;
 
+import java.io.File;
 import java.util.Optional;
 
 import static java.lang.String.format;
@@ -37,6 +41,7 @@ import static uk.ac.ceh.gateway.catalogue.model.Permission.*;
 public class GitRepoServiceAgreementService implements ServiceAgreementService {
     private final String baseUri;
     private final DataRepository<CatalogueUser> repo;
+    private final GitDataRepositoryTemp<CatalogueUser> repoTemp;
     private final DocumentInfoMapper<MetadataInfo> metadataInfoMapper;
     private final DocumentInfoMapper<ServiceAgreement> serviceAgreementMapper;
     private final DocumentRepository documentRepository;
@@ -48,7 +53,9 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     private static final String SUBMITTED = "submitted";
     private static final String PENDING_PUBLICATION = "pending publication";
 
+    @SneakyThrows
     public GitRepoServiceAgreementService(
+            @Value("${data.repository.location}") String dataRepositoryLocation,
             @Value("${documents.baseUri}") String baseUri,
             DataRepository<CatalogueUser> repo,
             DocumentInfoMapper<MetadataInfo> metadataInfoMapper,
@@ -63,6 +70,14 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
         this.documentRepository = documentRepository;
         this.jiraService = jiraService;
         this.publicationService = publicationService;
+
+        this.repoTemp = new GitDataRepositoryTemp<>(
+            new File(dataRepositoryLocation),
+            new InMemoryUserStore<>(),
+            new AnnotatedUserHelper<>(CatalogueUser.class),
+            null
+        );
+
         log.info("Creating");
     }
 
@@ -299,7 +314,7 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     @SneakyThrows
     public History getHistory(String id) {
         try {
-            val dataRevisions = repo.getRevisions(FOLDER + id + ".raw");
+            val dataRevisions = repoTemp.getRevisions(FOLDER + id + ".raw");
             return new History(baseUri, id, dataRevisions);
         } catch (DataRepositoryException ex) {
             throw new ServiceAgreementException(ex.getMessage());
