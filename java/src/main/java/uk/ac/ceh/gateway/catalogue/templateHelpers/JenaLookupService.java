@@ -107,9 +107,10 @@ public class JenaLookupService {
     }
 
     public List<Link> relationships(String uri, String relation) {
-        String sparql = "PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> PREFIX eidc: <https://vocabs.ceh.ac.uk/eidc#> PREFIX ef: <http://onto.ceh.ac.uk/EF#> " +
-            "SELECT DISTINCT ?node ?title ?publicationStatus ?availability ?type ?rel " +
+        String sparql = "PREFIX dcterms: <http://purl.org/dc/terms/> PREFIX pso: <http://purl.org/spar/pso/> PREFIX eidc: <https://vocabs.ceh.ac.uk/eidc#> PREFIX geo: <http://www.opengis.net/ont/geosparql#> PREFIX ef: <http://onto.ceh.ac.uk/EF#> " +
+            "SELECT DISTINCT ?node ?title ?publicationStatus ?availability ?type ?rel ?geom (IF(BOUND(?geom), true, false) AS ?hasGeom)" +
             "WHERE {?me ?rel ?node; ?relation ?node. ?node dcterms:title ?title; pso:PublicationStatus ?publicationStatus;  dcterms:type ?type. " +
+            "OPTIONAL {?node geo:hasGeometry ?geom} " +
             "OPTIONAL {?node dcterms:available ?publicationDate} " +
             "OPTIONAL {?node eidc:resourceStatus ?availability} " +
             "OPTIONAL {?node ef:hasStatus ?availability}} " +

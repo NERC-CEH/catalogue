@@ -1,7 +1,7 @@
 <#import "skeleton.ftlh" as skeleton>
 <#assign docroot="documents">
-<@skeleton.master title="Search" catalogue=catalogue searching=true containerClass="container-fluid" >
-  <div class="search facets-mode" id="search">
+<@skeleton.master title="Search" catalogue=catalogue searching=true >
+  <div class="search facets-mode container" id="search">
 
     <div class="filters">
 
@@ -30,7 +30,7 @@
     <div>
       <form class="search-form" action="/${docroot}" method="get">
         <div class="input-group">
-          <input placeholder="Search the catalogue" name="term" type="text" autocomplete="off" class="form-control">
+          <input placeholder="Search…" name="term" type="text" autocomplete="off" class="form-control">
           <div class="input-group-btn">
             <button tabindex="-1" class="btn" type="button" aria-label="Search">
               <span class="fa-solid fa-magnifying-glass"></span>
