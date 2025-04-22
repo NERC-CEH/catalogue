@@ -102,9 +102,12 @@
         .editor-textarea {
             &:focus {
                 field-sizing: content;
-                min-height: 150px;
                 color: inherit !important;
             }
+        }
+
+        .editor-textarea {
+            min-height: 150px;
         }
 
         .editor-body {
