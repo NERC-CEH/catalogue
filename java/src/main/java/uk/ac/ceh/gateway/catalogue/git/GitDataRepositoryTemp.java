@@ -94,7 +94,7 @@ public class GitDataRepositoryTemp<A extends DataAuthor & User> extends GitDataR
             try {
                 System.out.println(String.format(msg, LocalDateTime.now(), "create log command"));
                 LogCommand logCommand = git.log()
-                    .setMaxCount(4)
+                    .setMaxCount(20)
                     .add(revision)
                     .addPath(name);
                 System.out.println(String.format(msg, LocalDateTime.now(), "start loop through commit"));
@@ -103,7 +103,7 @@ public class GitDataRepositoryTemp<A extends DataAuthor & User> extends GitDataR
                     A author = getAuthor(commit.getAuthorIdent());
                     System.out.println(String.format(msg, LocalDateTime.now(), "add revision to DataRevision arraylist"));
                     toReturn.add(new GitDataRevision<>(author, commit));
-                    System.out.println(String.format(msg, LocalDateTime.now(), "revision info: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(commit.getCommitTime() * 1000L)) + " " + commit.getFullMessage()));
+                    System.out.println(String.format(msg, LocalDateTime.now(), "revision info: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(commit.getCommitTime() * 1000L)) + " " + commit.getFullMessage() + " " + commit.getName()));
                 }
                 System.out.println(String.format(msg, LocalDateTime.now(), "end loop through commit and return"));
                 return toReturn;
