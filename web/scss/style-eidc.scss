@@ -15,23 +15,20 @@ $card-default-text: #FFF;
     --link-hover-colour: #e75f22;
 
     --header-height: 95px;
-    --header-background-colour: white;
+    --header-background-colour: var(--primary-colour);
     --header-link-background-colour: var(--header-background-colour);
-    --header-link-hover-background-colour: color-mix(in lab, var(--header-link-background-colour), black 5%);
-    --header-link-colour: var(--eidc-blue);
+    --header-link-hover-background-colour: color-mix(in lab, var(--header-link-background-colour), white 75%);
+    --header-link-colour: white;
     --header-link-hover-colour: var(--link-hover-colour);
     --header-link-weight: 600;
-    --header-border-bottom-colour: var(--eidc-blue);
-    --header-border-bottom-width: 8px;
+    --header-border-bottom-colour:transparent;
+    --header-border-bottom-width: 0;
     --header-logo-border: none;
     --nav-toggle-colour: var(--header-link-colour);
     --ukceh-brand-display: none;
 
-    --filter-background-colour: var(--eidc-blue);
-    --filter-colour: white;
-    --filter-heading-colour: white;
-    --filter-border-colour: white;
-    --filter-border: none;
+    --eidc-component-display: block;
+    --display-navbar-title: none;
 }
 
 html {
@@ -66,6 +63,7 @@ footer {
         }
     }
 }
+
 
 .option-eidc {
     --display-option: block;
@@ -153,14 +151,6 @@ footer {
         }
     }
 }
-
-#editor {
-    .component.eidconly {
-        visibility: visible;
-        height: auto;
-    }
-}
-
 
 a#atlwdg-trigger {
     font-size: 1em;

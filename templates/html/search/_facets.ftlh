@@ -6,7 +6,7 @@
     /web/src/scripts/templates/facetsPanelTemplate.js
 -->
 <#macro facetResults facet>
-  <select style="display: none;" class="form-select search-facet" multiple="multiple" data-placeholder="filter ${facet.displayName?lower_case}">
+  <select style="display: none;" class="form-select search-facet" multiple="multiple">
     <#list facet.results as facetItem>
       <#if facetItem.name?has_content && facetItem.name != 'Unknown' >
         <option <#if facetItem.active> selected="selected"</#if> value="${facetItem.url}">${facetItem.name}</option>
@@ -17,9 +17,9 @@
 
 <#list facets as facet>
   <#if facet.results?size gt 0>
-    <div class="facet">
-      <div class="facet-header">${facet.displayName}</div>
+    <div class="facet form-floating">
       <@facetResults facet/>
+      <label>Filter ${facet.displayName?lower_case}</label>
     </div>
   </#if>
 </#list>

@@ -43,7 +43,7 @@ body {
 .option-assist,
 .option-nm,
 .option-inms {
-    display: var(--display-option ,none);
+    display: var(--display-option, none);
 }
 
 a {
@@ -52,6 +52,14 @@ a {
 
 a:hover {
     text-decoration: underline;
+}
+
+textarea.sparqlquery {
+    field-sizing: content;
+    min-height: 150px;
+    min-width: 100%;
+    border-radius:6px;
+    padding:1em;
 }
 
 header {
@@ -237,8 +245,12 @@ header {
                 flex-wrap: nowrap;
                 align-items: stretch;
 
+                .navbar-title {
+                    display: var(--display-navbar-title, block);
+                }
+
                 a {
-                    padding: calc(var(--header-height, 3.4em) / 4) 1em;
+                    padding-inline: 1em;
                     white-space: nowrap;
                     text-decoration: none;
                     font-weight: var(--header-link-weight);

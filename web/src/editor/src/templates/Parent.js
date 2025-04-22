@@ -27,7 +27,7 @@ export default _.template(`
       </div>
     </div>
     <div class="col-md-9">
-      <div class="existing container-fluid"></div>
+      <div class="existing"></div>
       <% if (data.fetchKeywordsButton) { %>
         <div class="d-flex justify-content-center">
           <span class="legilo-fetch-keywords-loader spinner-border text-secondary loader mx-3" role="status" style="display: none;"></span>

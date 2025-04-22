@@ -7,7 +7,7 @@
         <#if !hasDataTransfer>
             <@noDataTransfer/>
         <#elseif isScheduled>
-            <@documentUploadSection "Upload" "" "file-upload">
+            <@documentUploadSection "Upload" "upload" "file-upload">
                 <@dropZoneContainer/>
             </@documentUploadSection>
         </#if>
@@ -95,7 +95,7 @@
 
 <#macro documentContainer>
     <div class="container is-<#if isAdmin>admin<#else>non-admin</#if>" id="document-upload" data-guid='${id}'>
-        <div class="container-fluid document-upload">
+        <div class="container document-upload">
             <#nested>
         </div>
     </div>
@@ -136,26 +136,15 @@
 <#macro dropZoneContainer>
     <div class='dropzone-container'>
         <div class="dropzone-files">
-            <@row "file-head">
-                <div class="col-md-7">
-                    <@row>
-                        <div class="col-md-6"><b>Name</b></div>
-                        <div class="col-md-2"><b>Size</b></div>
-                        <div class="col-md-4"><b>Status</b></div>
-                    </@row>
-                </div>
-                <div class="col-md-5 file-head-action">
-                    <b>Actions</b>
-                </div>
-            </@row>
+            <div class="p-3 fs-4 text-center text-body-tertiary">Drag and drop files/folders here or click the add files button</div>
         </div>
-        <@row "d-inline-flex gap-2">
-            <@addFilesButton/>
-            <div>
+        <@row "px-3">
+            <div class="p-3 text-center">
               <i class="fa-solid fa-fw fa-info-circle"></i> Maximum individual file size is ${maxFileSize}
             </div>
+            <@addFilesButton/>
         </@row>
-        <@row "p-3">
+        <@row "px-3">
             <@finishUploadingButton/>
         </@row>
     </div>
@@ -173,7 +162,7 @@
     </div>
 </#macro>
 
-<#macro loadMoreRow storage>
+<#macro loadMoreRow storage> <#--hide -->
     <@row>
         <div class="col-md-2 col-md-offset-10">
             <@loadMoreButton storage/>
@@ -181,19 +170,19 @@
     </@row>
 </#macro>
 
-<#macro button text button icon iconClass="fa-solid">
-    <button class="btn btn-outline-dark ${button}">
+<#macro button text button icon iconClass="fa-solid" btnClass="btn-outline-dark">
+    <button class="btn ${btnClass} ${button}">
         <i class="btn-icon fa-fw fa-${icon} ${iconClass}"></i>
         <span>${text}</span>
     </button>
 </#macro>
 
 <#macro addFilesButton>
-    <@button text="Add Files…" button="fileinput-button" icon="file-upload"/>
+    <@button text="Add files" button="fileinput-button" icon="file-upload"/>
 </#macro>
 
 <#macro finishUploadingButton>
-    <@button text="Finish Uploading" button="finish" icon="check"/>
+    <@button text="Finish uploading" button="finish" icon="check"/>
 </#macro>
 
 <#macro hashDropboxButton>
@@ -201,7 +190,7 @@
 </#macro>
 
 <#macro loadMoreButton storage>
-    <@button text="View More" button="load ${storage}" icon="angle-double-down"/>
+    <@button text="View more" button="load ${storage}" icon="angle-double-down"/>
 </#macro>
 
 <#macro registerDropboxButton>
@@ -221,7 +210,7 @@
 </#macro>
 
 <#macro validateAllButton>
-    <@button text="Validate All" button="file-action validate-all" icon="check"/>
+    <@button text="Validate all" button="file-action validate-all" icon="check"/>
 </#macro>
 
 <#macro downloadChecksumButton>

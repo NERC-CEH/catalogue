@@ -12,8 +12,8 @@
       <i id="searchShareIcon" class="fa-solid fa-fw fa-share-square mx-1" data-bs-toggle="tooltip" data-bs-placement="right" role="button"  title="Email search results"></i>
     </div>
     <div class="small">
-      <label>Sort by
-        <select class="sort-search" aria-label="Select dropdown for sorting serch results">
+      <label for="sort-search">Sort by</label>
+        <select class="sort-search" id="sort-search" aria-label="Select dropdown for sorting serch results">
           <option value="">Relevance</option>
           <option class="option-eidc" value="publicationDate-desc">Published date (newest first)</option>
           <option class="option-eidc" value="publicationDate-asc">Published date (oldest first)</option>
@@ -21,7 +21,6 @@
           <option value="title-asc">Title (A-Z)</option>
           <option value="title-desc">Title (Z-A)</option>
         </select>
-      </label>
     </div>
   <#else>
     <div>No results found. Try <a href="./documents">clearing all search filters</a></div>
@@ -44,32 +43,31 @@
     <#if (result.operationalStatus??)>opstatus-${result.operationalStatus}</#if>
     <#if (result.resourceStatus??)>result--${result.resourceStatus}</#if>" data-location="${(result.locations?join('|'))!}" id="${result.identifier}">
 
-    <div class="result__tags">
-      <div class="recordType text-body-tertiary">
-        <#if result.documentType?? && result.documentType == "LINK_DOCUMENT" >
-          <i class="fa-solid fa-link"></i> Linked
-        </#if>
-        ${result.recordType!""}
-      </div>
-
-      <div class="state">${(codes.lookup("publication.state", result.state)!)!?upper_case!''}</div>
-
-      <div class="opstatus">
-        <#if (result.operationalStatus??)>
-          ${result.operationalStatus}
-        </#if>
-      </div>
-
-      <#if result.resourceStatus?? >
-          <div class="resourceStatus">${result.resourceStatus}</div>
-      </#if>
+    <div class="result__state">
+      <span>${(codes.lookup("publication.state", result.state)!)!?upper_case!''}</span>
     </div>
 
-    <div class="result__title">
-      ${result.title}
-    </div>
+    <div>
+      <div>
+          <#if (result.operationalStatus??)>
+            <span class="opstatus">${result.operationalStatus}</span>
+          </#if>
 
-    <div class="result__description">${result.shortenedDescription}</div>
+          <span class="recordType text-body-tertiary">
+            <#if result.documentType?? && result.documentType == "LINK_DOCUMENT" >
+              <i class="fa-solid fa-link"></i> Linked ${result.recordType?lower_case!""}
+            <#else>
+              ${result.recordType!""}
+            </#if>
+          </span>
+
+          <#if result.resourceStatus?? >
+            <span class="resourceStatus">${result.resourceStatus}</span>
+          </#if>
+      </div>
+      <div class="result__title">${result.title} </div>
+      <div class="result__description">${result.shortenedDescription}</div>
+    </div>
 
     <#if result.incomingCitationCount gt 0 >
       <div class="result__citationCount">${result.incomingCitationCount} citation<#if result.incomingCitationCount gt 1 >s</#if></div>
@@ -80,13 +78,15 @@
 </div>
 
 <div class="results__footer">
-<ul class="pagination">
-  <#if prevPage?has_content>
-    <li class="page-item previous-item"><a class="page-link" href="${prevPage}">&larr; Previous</a></li>
+  <#if prevPage?has_content || nextPage?has_content>
+    <ul class="pagination">
+      <#if prevPage?has_content>
+        <li class="page-item previous-item"><a class="page-link" href="${prevPage}">&larr; Previous</a></li>
+      </#if>
+      <li class="page-item center-item">Page ${page}</li>
+      <#if nextPage?has_content>
+        <li class="page-item next-item"><a class="page-link" href="${nextPage}">Next &rarr;</a></li>
+      </#if>
+    </ul>
   </#if>
-  <li class="page-item center-item">Page ${page}</li>
-  <#if nextPage?has_content>
-    <li class="page-item next-item"><a class="page-link" href="${nextPage}">Next &rarr;</a></li>
-  </#if>
-</ul>
 </div>

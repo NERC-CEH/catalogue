@@ -15,8 +15,8 @@ export default _.template(`
       <i id="searchShareIcon" class="fa-solid fa-fw fa-share-square mx-1" data-bs-toggle="tooltip" data-bs-placement="right" role="button" title="Email search results"></i>
     </div>
     <div class="small">
-      <label>Sort by
-        <select class="sort-search" aria-label="Select dropdown for sorting serch results">
+      <label for="sort-search">Sort by</label>
+        <select class="sort-search" id="sort-search" aria-label="Select dropdown for sorting serch results">
             <option value="" <%= !sortField ? 'selected' : '' %>>Relevance</option>
             <option class="option-eidc" value="publicationDate-desc" <%= sortField === 'publicationDate' && order === 'desc' ? 'selected' : '' %>>Published date (newest first)</option>
             <option class="option-eidc" value="publicationDate-asc" <%= sortField === 'publicationDate' && order === 'asc' ? 'selected' : '' %>>Published date (oldest first)</option>
@@ -24,7 +24,6 @@ export default _.template(`
             <option value="title-asc" <%= sortField === 'title' && order === 'asc' ? 'selected' : '' %>>Title (A-Z)</option>
             <option value="title-desc" <%= sortField === 'title' && order === 'desc' ? 'selected' : '' %>>Title (Z-A)</option>
         </select>
-      </label>
     </div>
   <% } else { %>
     <div>No results found. Try <a href="./documents">clearing all search filters</a></div>
@@ -39,38 +38,35 @@ export default _.template(`
 
     <a class="result result--<%=result.state%> <% if (result.operationalStatus != '') { %>opstatus-<%=result.operationalStatus%><% } %> <% if (result.resourceStatus != '') { %>result--<%=result.resourceStatus%><% } %>" id="<%=result.identifier%>" href="/documents/<%=result.identifier%>">
 
-        <div class="result__tags">
-            <div class="recordType text-body-tertiary">
+        <div class="result__state">
+            <% if(result.state == 'draft') { %>
+                <span>DRAFT</span>
+            <% } else if(result.state == 'pending') { %>
+                <span>PENDING PUBLICATION</span>
+            <% } %>
+        </div>
 
-            <div class="state">
-                <% if(result.state == 'draft') { %>
-                    <span class="text-draft"><b>DRAFT</b></span>
-                <% } else if(result.state == 'pending') { %>
-                    <span class="text-pending"><b>PENDING PUBLICATION</b></span>
-                <% } %>
-            </div>
+        <div>
 
+          <div>
             <% if (result.operationalStatus != '') {  %>
-                <div class="opstatus"><%=result.operationalStatus%></div>
+              <span class="opstatus"><%=result.operationalStatus%></span>
             <% } %>
 
-            <% if (result.documentType != '' && result.documentType == "LINK_DOCUMENT") {  %>
-            <i class="fa-solid fa-link"></i> Linked
-            <% } %>
-                <span><%=result.recordType%></span>
-            </div>
+            <span class="recordType text-body-tertiary">
+              <% if (result.documentType != '' && result.documentType == "LINK_DOCUMENT") {  %>
+                <i class="fa-solid fa-link"></i> Linked
+              <% } %>
+              <%=result.recordType %>
+            </span>
 
             <% if (result.resourceStatus != '') {  %>
-                <div class="resourceStatus"><%=result.resourceStatus%></div>
+              <span class="resourceStatus"><%=result.resourceStatus %></span>
             <% } %>
-
+          </div>
+          <div class="result__title"><%=result.title%></div>
+          <div class="result__description"><%=result.shortenedDescription%></div>
         </div>
-
-        <div class="result__title">
-          <%=result.title%>
-        </div>
-
-        <div class="result__description"><%=result.shortenedDescription%></div>
 
         <% if(result.incomingCitationCount != 0) { %>
             <div class="result__citationCount"><%=result.incomingCitationCount%> citation<% if(result.incomingCitationCount >1) { %>s<% } %></div>
@@ -81,14 +77,16 @@ export default _.template(`
 </div>
 
 <div class="results__footer">
-<ul class="pagination">
-    <% if(prevPage) { %>
-        <li class="page-item previous-item"><a class="page-link" href="<%=prevPage%>">&larr; Previous</a></li>
-    <% } %>
-    <li class="page-item center-item">Page <%=page%></li>
-    <% if(nextPage) { %>
-        <li class="page-item next-item"><a class="page-link" href="<%=nextPage%>">Next &rarr;</a></li>
-    <% } %>
-</ul>
+ <% if(prevPage || nextPage) { %>
+  <ul class="pagination">
+      <% if(prevPage) { %>
+          <li class="page-item previous-item"><a class="page-link" href="<%=prevPage%>">&larr; Previous</a></li>
+      <% } %>
+      <li class="page-item center-item">Page <%=page%></li>
+      <% if(nextPage) { %>
+          <li class="page-item next-item"><a class="page-link" href="<%=nextPage%>">Next &rarr;</a></li>
+      <% } %>
+  </ul>
+<% } %>
 </div>
 `)

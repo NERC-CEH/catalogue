@@ -14,8 +14,14 @@
 
             .author {
                 counter-increment: component;
-                anchor-name: giovanni;
                 position: relative;
+
+                .row {
+                    &:not(:last-of-type) {
+                        @extend .mb-2 !optional;
+                    }
+
+                }
 
                 &:before {
                     content: counter(component);
