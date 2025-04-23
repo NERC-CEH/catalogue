@@ -21,8 +21,9 @@ public class Facet {
         this.results = (results != null) ? results : new ArrayList<>();
     }
 
-    public static class FacetBuilder {
-        private boolean admin = false;
-    }
+    private static final boolean DEFAULT_ADMIN = false;
 
+    public static class FacetBuilder {
+        private boolean admin = DEFAULT_ADMIN;
+    }
 }
