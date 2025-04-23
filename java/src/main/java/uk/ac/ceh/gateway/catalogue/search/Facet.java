@@ -9,15 +9,20 @@ import lombok.Builder;
 @Value
 public class Facet {
     private final String fieldName, displayName;
-    private final boolean hierarchical;
+    private final boolean hierarchical, admin;
     private final List<FacetResult> results;
 
     @Builder
-    private Facet(String fieldName, String displayName, boolean hierarchical, List<FacetResult> results) {
+    private Facet(String fieldName, String displayName, boolean hierarchical, boolean admin, List<FacetResult> results) {
         this.fieldName = nullToEmpty(fieldName);
         this.displayName = nullToEmpty(displayName);
         this.hierarchical = hierarchical;
+        this.admin = admin;
         this.results = (results != null) ? results : new ArrayList<>();
+    }
+
+    public static class FacetBuilder {
+        private boolean admin = false;
     }
 
 }

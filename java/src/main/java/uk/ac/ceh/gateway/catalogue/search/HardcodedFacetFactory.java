@@ -78,6 +78,12 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .displayName("Licence")
                     .hierarchical(false)
                     .build();
+            case "grant" -> Facet.builder()
+                .fieldName("grant")
+                    .displayName("grant")
+                    .hierarchical(false)
+                    .admin(true)
+                    .build();
             case "modelType" -> Facet.builder()
                 .fieldName("modelType")
                     .displayName("Model Type")
@@ -122,6 +128,7 @@ public class HardcodedFacetFactory implements FacetFactory {
                 .fieldName("resourceType")
                     .displayName("Resource type")
                     .hierarchical(false)
+                    .admin(true)
                     .build();
             case "environmentalDomains" -> Facet.builder()
                 .fieldName("environmentalDomains")
@@ -168,6 +175,11 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .displayName("Scale")
                     .hierarchical(false)
                     .build();
+            case "resourceStatus" -> Facet.builder()
+                .fieldName("resourceStatus")
+                    .displayName("Availability")
+                    .hierarchical(false)
+                    .build();
             case "saPhysicalState" -> Facet.builder()
                 .fieldName("saPhysicalState")
                     .displayName("Physical State")
@@ -192,11 +204,7 @@ public class HardcodedFacetFactory implements FacetFactory {
                 .fieldName("state")
                     .displayName("Status")
                     .hierarchical(false)
-                    .build();
-            case "status" -> Facet.builder()
-                .fieldName("resourceStatus")
-                    .displayName("Availability")
-                    .hierarchical(false)
+                    .admin(true)
                     .build();
             case "topic" -> Facet.builder()
                 .fieldName("topic")

@@ -143,6 +143,10 @@ main {
                     }
                 }
             }
+
+            .facet-admin {
+                display: var(--display-admin-facets, none)
+            }
         }
 
         // For webkit browsers only

@@ -17,7 +17,7 @@
 
 <#list facets as facet>
   <#if facet.results?size gt 0>
-    <div class="facet form-floating">
+    <div class="facet form-floating <#if facet.admin>facet-admin</#if>">
       <@facetResults facet/>
       <label>Filter ${facet.displayName?lower_case}</label>
     </div>
