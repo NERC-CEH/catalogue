@@ -20,10 +20,4 @@ public class Facet {
         this.admin = admin;
         this.results = (results != null) ? results : new ArrayList<>();
     }
-
-    private static final boolean DEFAULT_ADMIN = false;
-
-    public static class FacetBuilder {
-        private boolean admin = DEFAULT_ADMIN;
-    }
 }
