@@ -3,12 +3,13 @@ import _ from 'underscore'
 export default _.template(`
         <% if(typeof doctype === "undefined"){doctype = "documents"} %>
         <div class="container">
-        <h2><% if(doctype === "service-agreement"){ %>Service Agreement <% } %>Permissions</h2>
-<div>
-    <p><i class="fa-solid fa-info-circle fa-2x float-end"></i>Amend permissions for users or groups. For external users, the username is the email address with which they registered an account.<br>For UKCEH staff it is their login username <b>not</b> their email address.</p>
-    <p><b>NOTE</b>: Catalogue administrators have permission to add and edit all records regardless of permissions defined here.</p>
+        <h1 class="mt-4"><% if(doctype === "service-agreement"){ %>Service Agreement <% } %>Permissions</h1>
+<div class="mb-4">
+    <p><i class="fa-solid fa-info-circle fa-2x float-end"></i>Amend permissions for users or groups.</p>
+    <p>For external users, the username is the email address with which they registered an account.<br>For UKCEH staff it is their login username <b>not</b> their email address.</p>
+    <p><b>NOTE</b>: Catalogue administrators have permission to edit all records regardless of permissions defined here.</p>
 </div>
-<table class="table table-striped">
+<table class="table table-bordered">
     <thead>
     <tr>
         <th>Username/Group</th>
@@ -18,7 +19,7 @@ export default _.template(`
         <th>Can delete</th>
         <th>Can upload</th>
         <% } %>
-        <th>Action</th>
+        <th></th>
     </tr>
     </thead>
     <tfoot>

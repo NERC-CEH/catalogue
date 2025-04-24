@@ -1,7 +1,7 @@
 <#import "skeleton.ftlh" as skeleton>
 <@skeleton.master title="Publication" catalogue=catalogues.retrieve(catalogue)>
   <div id="publication" class="container">
-    <h2>This record is currently <b>${title}</b></h2>
+    <h2 class="mt-5">Current status: <span class="text-primary">${title}</span></h2>
     <div>
     <p><b>Change the publication status of this record</b></p>
 

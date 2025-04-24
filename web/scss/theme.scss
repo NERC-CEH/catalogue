@@ -217,10 +217,9 @@ header {
         height: var(--header-height);
         display: flex;
         flex-wrap: nowrap;
-        font-family: sans-serif;
         color: white;
 
-        .brand {
+        .siteLogo {
             display: flex;
             align-items: center;
             height: var(--header-height);
