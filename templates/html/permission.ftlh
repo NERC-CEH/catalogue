@@ -4,15 +4,14 @@
 <@skeleton.master title="Permissions" catalogue=catalogues.retrieve(catalogue) >
   <div id="metadata" data-id="${id}" class="metadata permission">
     <div class="container">
-      <h1 class="mt-4">Permissions</h1>
+      <h2>Permissions</h2>
 
-      <div class="mb-5">
-        <p><i class="fa-solid fa-circle-info fa-2x float-end"></i>Amend permissions for users or groups.</p>
-        <p>For external users, the username is the email address with which they registered an account.<br>For UKCEH staff it is their login username <b>not</b> their email address.</p>
-        <p><b>NOTE</b>: Catalogue administrators have permission to edit all records regardless of permissions defined here.</p>
+      <div>
+        <p><i class="fa-solid fa-circle-info fa-2x float-end"></i>Amend permissions for users or groups. For external users, the username is the email address with which they registered an account.<br>For UKCEH staff it is their login username <b>not</b> their email address.</p>
+        <p><b>NOTE</b>: Catalogue administrators have permission to add and edit all records regardless of permissions defined here.</p>
       </div>
 
-      <table class="table table-bordered">
+      <table class="table table-striped">
         <thead>
           <tr>
             <th>Username/Group</th>
@@ -20,7 +19,7 @@
             <th>Can edit</th>
             <th>Can delete</th>
             <th>Can upload</th>
-            <th></th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>
