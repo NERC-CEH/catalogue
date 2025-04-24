@@ -194,9 +194,9 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .displayName("Tissue")
                     .hierarchical(false)
                     .build();
-            case "state" -> Facet.builder()
+            case "publicationState" -> Facet.builder()
                 .fieldName("state")
-                    .displayName("Status")
+                    .displayName("Publication status")
                     .hierarchical(false)
                     .admin(true)
                     .build();

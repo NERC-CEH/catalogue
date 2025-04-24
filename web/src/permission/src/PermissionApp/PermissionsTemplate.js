@@ -20,7 +20,7 @@ export default _.template(`
         <th>Can delete</th>
         <th>Can upload</th>
         <% } %>
-        <th>Action</th>
+        <th></th>
     </tr>
     </thead>
     <tfoot>
