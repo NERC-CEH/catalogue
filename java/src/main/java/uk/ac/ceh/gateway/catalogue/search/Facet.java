@@ -9,7 +9,7 @@ import lombok.Builder;
 @Value
 public class Facet {
     private final String fieldName, displayName;
-    private final boolean hierarchical;
+    private final boolean hierarchical, admin;
     private final List<FacetResult> results;
 
     @Builder
