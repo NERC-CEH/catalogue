@@ -73,8 +73,11 @@ main {
             .input-group {
 
                 .input-group-btn {
-                    button {border-radius:0 4px 4px 0 ;}
-                   }
+                    button {
+                        border-radius: 0 4px 4px 0;
+                    }
+                }
+
                 box-shadow: var(--form-boxshadow);
             }
 
@@ -142,6 +145,10 @@ main {
                         }
                     }
                 }
+            }
+
+            .facet-admin {
+                display: var(--display-admin-facet, none)
             }
         }
 
