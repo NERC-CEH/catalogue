@@ -210,7 +210,7 @@ public class CatalogueServiceConfig {
                 .url("https://uk-scape.ceh.ac.uk/our-science/projects/UK-vESB")
                 .contactUrl("https://www.ceh.ac.uk/contact-us")
                 .logo("ukceh.png")
-                .facetKey("saPhysicalpublicationState")
+                .facetKey("saPhysicalState")
                 .facetKey("saSpecimenType")
                 .facetKey("saTaxon")
                 .facetKey("saTissue")
