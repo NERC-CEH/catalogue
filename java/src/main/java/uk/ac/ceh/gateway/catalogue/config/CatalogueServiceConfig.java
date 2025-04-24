@@ -109,6 +109,8 @@ public class CatalogueServiceConfig {
                 .facetKey("status")
                 .facetKey("rightsHolder")
                 .facetKey("funder")
+                .facetKey("state")
+                .facetKey("grant")
                 .documentType(GEMINI_TYPE)
                 .documentType(DATA_TYPE_TYPE)
                 .fileUpload(false)
