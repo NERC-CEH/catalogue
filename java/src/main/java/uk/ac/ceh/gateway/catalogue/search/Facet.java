@@ -13,10 +13,11 @@ public class Facet {
     private final List<FacetResult> results;
 
     @Builder
-    private Facet(String fieldName, String displayName, boolean hierarchical, List<FacetResult> results) {
+    private Facet(String fieldName, String displayName, boolean hierarchical, boolean admin, List<FacetResult> results) {
         this.fieldName = nullToEmpty(fieldName);
         this.displayName = nullToEmpty(displayName);
         this.hierarchical = hierarchical;
+        this.admin = admin;
         this.results = (results != null) ? results : new ArrayList<>();
     }
 
