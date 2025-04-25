@@ -40,7 +40,10 @@
       <link rel="stylesheet" type="text/css" href="/static/css/style-<#if catalogue?has_content>${catalogue.id}<#else>${catalogues.defaultCatalogue().id}</#if>.css">
 
       <#if (searching && catalogue?has_content && permission.userCanCreate(catalogue.id)) || permission.userCanEdit(id) || permission.userInGroup("ROLE_CIG_SYSTEM_ADMIN")>
-        <link rel="stylesheet" type="text/css" href="/static/css/style-admin.css">
+        <!--link rel="stylesheet" type="text/css" href="/static/css/style-admin.css"-->
+        <style>
+          :root {--display-admin-facets: block}
+        </style>
       </#if>
 
       <#if canonical?has_content>
