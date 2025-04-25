@@ -119,15 +119,14 @@
                 }
             }
 
-            textarea.editor-textarea {
+            .editor-textarea {
                 @extend .form-control !optional;
                 @extend .form-control-sm !optional;
                 color: #000;
                 field-sizing: content;
                 min-height: var(--textarea-height, 100px);
 
-                &#input-description,
-                &#input-lineage {
+                &#input-description, &#input-lineage {
                     --textarea-height: 200px;
                 }
             }
