@@ -31,6 +31,11 @@
         <tokenizer class="solr.PatternTokenizerFactory" pattern="(https?:\/\/orcid.org\/)(\d{4}-\d{4}-\d{4}-\d{3}[\d|X])" group="2"/>
       </analyzer>
     </fieldType>
+    <fieldType name="grantID" class="solr.TextField" sortMissingLast="true" omitNorms="true" multiValued="true">
+      <analyzer>
+        <tokenizer class="solr.ClassicTokenizerFactory"/>
+      </analyzer>
+    </fieldType>
     <fieldType name="pdate" class="solr.DatePointField" docValues="true"/>
     <fieldType name="pdates" class="solr.DatePointField" docValues="true" multiValued="true"/>
     <fieldType name="pdaterange" class="solr.DateRangeField"/>
@@ -100,7 +105,7 @@
     <field name="documentType" type="keywords" multiValued="false"/>
     <field name="funder" type="keywords"/>
     <field name="rightsHolder" type="keywords"/>
-    <field name="grant" type="text_general"/>
+    <field name="grant" type="grantID"/>
     <field name="identifier" type="keywords" required="true" multiValued="false"/>
     <field name="impCaMMPIssues" type="keywords"/>
     <field name="impDataType" type="keywords"/>

@@ -9,7 +9,7 @@ import _ from 'underscore'
 export default _.template(`
 <% _.each(facets, function(facet) { %>
   <% if(facet.results) { %>
-   <div class="facet form-floating">
+   <div class="facet form-floating <% if(facet.admin) { %>facet-admin<% } %>">
       <%= template({"facet": facet, "template": template}) %>
       <label>Filter <%=facet.displayName.toLowerCase() %></label>
     </div>

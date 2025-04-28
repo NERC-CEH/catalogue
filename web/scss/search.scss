@@ -73,8 +73,11 @@ main {
             .input-group {
 
                 .input-group-btn {
-                    button {border-radius:0 4px 4px 0 ;}
-                   }
+                    button {
+                        border-radius: 0 4px 4px 0;
+                    }
+                }
+
                 box-shadow: var(--form-boxshadow);
             }
 
@@ -142,6 +145,10 @@ main {
                         }
                     }
                 }
+            }
+
+            .facet-admin {
+                display: var(--display-admin-facets, none)
             }
         }
 
@@ -248,6 +255,7 @@ main {
             }
 
             .result__state {
+                flex:0 0 11ch;
                 padding-inline-end: .6em;
                 border-inline-end: 1px solid var(--border-colour);
             }

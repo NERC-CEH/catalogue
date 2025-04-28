@@ -1,4 +1,4 @@
-<div id="segment-title" class="border-bottom border-2">
+<div id="segment-title" class="mt-2 border-bottom border-2">
   <#if citation?has_content>
     <div class="authorList text-body-secondary">
       <#if citation.authors?size gte 8>

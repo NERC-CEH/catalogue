@@ -38,6 +38,11 @@
       </#if>
       <title>${title}<#if catalogue?has_content> - ${catalogue.title}</#if></title>
       <link rel="stylesheet" type="text/css" href="/static/css/style-<#if catalogue?has_content>${catalogue.id}<#else>${catalogues.defaultCatalogue().id}</#if>.css">
+
+      <#if searching && catalogue?has_content && permission.userCanCreate(catalogue.id)>
+        <link rel="stylesheet" type="text/css" href="/static/css/style-admin.css">
+      </#if>
+
       <#if canonical?has_content>
         <link rel="canonical" href="${canonical}"/>
       </#if>
@@ -65,7 +70,7 @@
               <i class="fa-solid fa-2x fa-xmark"></i>
             </div>
             <div class="navigation">
-              <div class="brand">
+              <div class="siteLogo">
                 <#if catalogue?has_content>
                   <a href="${catalogue.url}"><img src="/static/img/cataloguelogo/${catalogue.logo}" alt="${catalogue.title}"/></a>
                 <#else>
