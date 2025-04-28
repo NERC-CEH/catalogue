@@ -98,20 +98,15 @@
             }
         }
 
-        .editor-input,
-        .editor-textarea {
-            &:focus {
-                field-sizing: content;
-                color: inherit !important;
-            }
-        }
-
-        .editor-textarea {
-            min-height: 150px;
-        }
-
         .editor-body {
             padding: 1em;
+
+            .editor-input,
+            .editor-textarea {
+                &:focus {
+                    color: inherit;
+                }
+            }
 
             .editor-input {
                 @extend .form-control !optional;
@@ -129,7 +124,11 @@
                 @extend .form-control-sm !optional;
                 color: #000;
                 field-sizing: content;
-                min-height: 150px;
+                min-height: var(--textarea-height, 100px);
+
+                &#input-description, &#input-lineage {
+                    --textarea-height: 200px;
+                }
             }
 
             .editor-remove {

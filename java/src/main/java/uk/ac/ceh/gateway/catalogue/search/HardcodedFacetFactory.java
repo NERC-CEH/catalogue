@@ -133,6 +133,12 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .displayName("Facility type")
                     .hierarchical(false)
                     .build();
+            case "grant" -> Facet.builder()
+                .fieldName("grant")
+                    .displayName("grant")
+                    .hierarchical(false)
+                    .admin(true)
+                    .build();
             case "pointOfContact" -> Facet.builder()
                 .fieldName("pointOfContact")
                     .displayName("Point of contact")
@@ -188,10 +194,11 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .displayName("Tissue")
                     .hierarchical(false)
                     .build();
-            case "state" -> Facet.builder()
+            case "publicationState" -> Facet.builder()
                 .fieldName("state")
-                    .displayName("Status")
+                    .displayName("Publication status")
                     .hierarchical(false)
+                    .admin(true)
                     .build();
             case "status" -> Facet.builder()
                 .fieldName("resourceStatus")

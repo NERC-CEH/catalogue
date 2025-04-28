@@ -220,7 +220,7 @@ header {
         font-family: sans-serif;
         color: white;
 
-        .brand {
+        .siteLogo  {
             display: flex;
             align-items: center;
             height: var(--header-height);
@@ -325,7 +325,7 @@ header {
         .toolbar {
             flex-direction: column;
 
-            .brand {
+            .siteLogo  {
                 img {
                     border-inline-end: none;
                 }

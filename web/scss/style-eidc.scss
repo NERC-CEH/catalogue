@@ -21,7 +21,7 @@ $card-default-text: #FFF;
     --header-link-colour: white;
     --header-link-hover-colour: var(--link-hover-colour);
     --header-link-weight: 600;
-    --header-border-bottom-colour:transparent;
+    --header-border-bottom-colour: transparent;
     --header-border-bottom-width: 0;
     --header-logo-border: none;
     --nav-toggle-colour: var(--header-link-colour);
@@ -33,6 +33,12 @@ $card-default-text: #FFF;
 
 html {
     overflow-y: scroll;
+}
+
+header {
+    .siteLogo {
+        margin-inline-end: 3.5rem;
+    }
 }
 
 footer {
@@ -63,7 +69,6 @@ footer {
         }
     }
 }
-
 
 .option-eidc {
     --display-option: block;
