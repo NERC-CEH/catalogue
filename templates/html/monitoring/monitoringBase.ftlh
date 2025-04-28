@@ -19,7 +19,7 @@
           </#if>
 
           <#if title?? && title?has_content>
-            <h1>
+            <h1 class="my-4">
               <div class="fs-5">
                 <#if (metadata.state == 'draft' || metadata.state == 'pending') >
                   <b class="text-danger">${codes.lookup('publication.state', metadata.state)?upper_case!''}</b>
@@ -41,7 +41,7 @@
 
 
           <#if description?? && description?has_content>
-            <div class="mt-3"><@b.linebreaksAndLinks description /></div>
+            <div class="my-4"><@b.linebreaksAndLinks description /></div>
           </#if>
 
         </div>

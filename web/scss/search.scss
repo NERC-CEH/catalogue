@@ -255,6 +255,7 @@ main {
             }
 
             .result__state {
+                flex:0 0 11ch;
                 padding-inline-end: .6em;
                 border-inline-end: 1px solid var(--border-colour);
             }
