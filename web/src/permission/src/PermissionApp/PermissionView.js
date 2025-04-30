@@ -75,7 +75,7 @@ export default Backbone.View.extend({
   },
 
   add () {
-    const identity = this.$('#identity').val()
+    const identity = this.$('#identity').val().trim()
     if (identity) {
       const permission = new IdentityPermission({
         identity,
