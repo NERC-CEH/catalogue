@@ -28,6 +28,7 @@ import uk.ac.ceh.gateway.catalogue.upload.hubbub.JiraService;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.List;
 
@@ -488,7 +489,10 @@ public class GitRepoServiceAgreementServiceTest {
             new TestRevision("current version"),
             new TestRevision("revision1")
         );
-        given(repo.getRevisions(FOLDER + ID + ".raw"))
+
+        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+        long timeLimitInSecond = (currentTimestamp.getTime() / 1000) - 157680000;    // 5 years before
+        given(repo.getRevisions(timeLimitInSecond, "(creating|updating) service agreement " + ID))
                 .willReturn(revisions);
 
         //When
@@ -505,7 +509,10 @@ public class GitRepoServiceAgreementServiceTest {
     @SneakyThrows
     public void cannotGetHistory() {
         //Given
-        given(repo.getRevisions(FOLDER + ID + ".raw"))
+        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+        long timeLimitInSecond = (currentTimestamp.getTime() / 1000) - 157680000;    // 5 years before
+
+        given(repo.getRevisions(timeLimitInSecond, "(creating|updating) service agreement " + ID))
                 .willThrow(new DataRepositoryException("test"));
 
         //When
