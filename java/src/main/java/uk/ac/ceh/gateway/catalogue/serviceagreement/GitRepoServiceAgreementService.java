@@ -25,6 +25,7 @@ import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.upload.hubbub.JiraService;
 
+import java.sql.Timestamp;
 import java.util.Optional;
 
 import static java.lang.String.format;
@@ -299,7 +300,9 @@ public class GitRepoServiceAgreementService implements ServiceAgreementService {
     @SneakyThrows
     public History getHistory(String id) {
         try {
-            val dataRevisions = repo.getRevisions(FOLDER + id + ".raw");
+            Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+            long timeLimitInSecond = (currentTimestamp.getTime() / 1000) - 157680000;    // 5 years before
+            val dataRevisions = repo.getRevisions(timeLimitInSecond, "(creating|updating) service agreement " + id);
             return new History(baseUri, id, dataRevisions);
         } catch (DataRepositoryException ex) {
             throw new ServiceAgreementException(ex.getMessage());

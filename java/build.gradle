@@ -11,7 +11,7 @@ repositories {
 }
 
 ext {
-    cehComponentsVersion = '1.0.46'
+    cehComponentsVersion = '1.0.51'
 }
 
 bootJar {
