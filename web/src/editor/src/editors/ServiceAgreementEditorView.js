@@ -112,8 +112,7 @@ export default EditorView.extend({
 
         new TextareaView({
           model: this.model,
-          modelAttribute: 'policyExceptions',
-          rows: 3
+          modelAttribute: 'policyExceptions'
         }),
 
         new TextOnlyView({
@@ -164,8 +163,7 @@ export default EditorView.extend({
 
         new TextareaView({
           model: this.model,
-          modelAttribute: 'fileNamingConvention',
-          rows: 5
+          modelAttribute: 'fileNamingConvention'
         }),
 
         new TextOnlyView({
@@ -289,8 +287,7 @@ export default EditorView.extend({
         new TextareaView({
           model: this.model,
           modelAttribute: 'useConstraints',
-          label: 'Additional Use Constraints',
-          rows: 3
+          label: 'Additional Use Constraints'
         })
       ]
     },
@@ -310,8 +307,7 @@ export default EditorView.extend({
 
         new TextareaView({
           model: this.model,
-          modelAttribute: 'otherPoliciesOrLegislation',
-          rows: 5
+          modelAttribute: 'otherPoliciesOrLegislation'
         }),
 
         new PredefinedParentView({
@@ -374,13 +370,12 @@ export default EditorView.extend({
 
         new TextareaView({
           model: this.model,
-          modelAttribute: 'supersededData',
-          rows: 5
+          modelAttribute: 'supersededData'
         }),
 
         new TextOnlyView({
           model: this.model,
-          label: 'Related Data Holdings',
+          label: 'Related data holdings',
           text: `
 <p>Please identify any related data resources already curated by, or being deposited with, the EIDC that you wish to link your data resource to, and the nature of the relationship.
 Details of relationships we can accommodate are available at: <a href='https://eidc.ac.uk/metadata/relationships' target='_blank' rel='noopener noreferrer'>eidc.ac.uk/metadata/relationships</a></p>
@@ -390,8 +385,7 @@ Details of relationships we can accommodate are available at: <a href='https://e
 
         new TextareaView({
           model: this.model,
-          modelAttribute: 'relatedDataHoldings',
-          rows: 5
+          modelAttribute: 'relatedDataHoldings'
         }),
 
         new TextOnlyView({
@@ -404,8 +398,7 @@ Details of relationships we can accommodate are available at: <a href='https://e
 
         new TextareaView({
           model: this.model,
-          modelAttribute: 'otherInfo',
-          rows: 7
+          modelAttribute: 'otherInfo'
         })
       ]
     },
@@ -415,10 +408,16 @@ Details of relationships we can accommodate are available at: <a href='https://e
       views: [
         new TextOnlyView({
           model: this.model,
-          text: `<p>A list of words/phrases that will help users to find your data.</p>
-<p>These may be discipline-specific but can also be geographical (e.g. 'hydrology', 'soil chemistry', 'Hampshire').</p>
-<p>You can add multiple keywords under each category using the add button.</p></br>\
-`
+          label: 'Science topic',
+          text: 'These are broad categories that are used to populate the catalogue\'s topic search filter. Try to include at least one ',
+          required: true
+        }),
+        new ParentView({
+          model: this.model,
+          ModelType: KeywordTheme,
+          modelAttribute: 'keywordsTheme',
+          ObjectInputView: KeywordThemeView,
+          multiline: false
         }),
         new TextOnlyView({
           model: this.model,
@@ -433,19 +432,6 @@ Details of relationships we can accommodate are available at: <a href='https://e
           ModelType: TopicCategory,
           modelAttribute: 'topicCategories',
           ObjectInputView: TopicCategoryView
-        }),
-        new TextOnlyView({
-          model: this.model,
-          label: 'Science topic',
-          text: 'These are broad categories that are used to populate the catalogue\'s topic search filter. Try to include at least one ',
-          required: true
-        }),
-        new ParentView({
-          model: this.model,
-          ModelType: KeywordTheme,
-          modelAttribute: 'keywordsTheme',
-          ObjectInputView: KeywordThemeView,
-          multiline: false
         }),
         new TextOnlyView({
           model: this.model,
@@ -501,17 +487,13 @@ Details of relationships we can accommodate are available at: <a href='https://e
         }),
         new TextOnlyView({
           model: this.model,
-          text: `<p>Custom keywords can be added either as plain text or as controlled terms from a vocabulary.</p>
+          label: 'Keywords',
+          text: `<p>Words orphrases that will help users to find your data. These may be discipline-specific (e.g., 'hydrology', 'soil chemistry') but may also be geographical (e.g., 'Hampshire').
+<p>Keywords can be added either as plain text or as controlled terms from a vocabulary.</p>
 <p><strong>Adding plain text:</strong>  Simply type the keyword in the box labelled "keyword".</p>\
-<p><strong>Adding controlled terms using the vocabulary lookup:</strong> We support lookup of terms from the vocabularies listed here. Tick the names of the vocabularies you want to search and then start typing a keyword in the search box (where it says “Start typing to search controlled vocabularies”). If there is a match for your search, a list of candidate terms will be displayed. You can then click on the term you want to add.</p>\
+<p><strong>Adding controlled terms using the vocabulary lookup:</strong> We support lookup of terms from the vocabularies listed. Start typing in the search box (where it says “<i>Start typing to search controlled vocabularies</i>”). If there is a match for your search, a list of candidate terms will be displayed. You can then click on the term you want to add.</p>\
 <p><strong>Adding controlled terms without using the lookup:</strong> If you want to add a controlled term from a vocabulary that isn't included in the catalogue, add the keyword's uri and its label to the appropriate boxes.</p>\
 `
-        }),
-        new TextOnlyView({
-          model: this.model,
-          label: 'Other keywords',
-          text: 'All other keywords not described elsewhere.',
-          required: true
         }),
         new ParentView({
           model: this.model,
@@ -545,7 +527,6 @@ Details of relationships we can accommodate are available at: <a href='https://e
         new TextareaView({
           model: this.model,
           modelAttribute: 'description',
-          rows: 12,
           required: true
         }),
 
@@ -562,7 +543,6 @@ Details of relationships we can accommodate are available at: <a href='https://e
         new TextareaView({
           model: this.model,
           modelAttribute: 'lineage',
-          rows: 10,
           required: true
         }),
 

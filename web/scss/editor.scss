@@ -119,7 +119,7 @@
                 }
             }
 
-            .editor-textarea {
+            textarea.editor-textarea {
                 @extend .form-control !optional;
                 @extend .form-control-sm !optional;
                 color: #000;
