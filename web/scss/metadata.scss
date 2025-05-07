@@ -22,6 +22,9 @@ body {
     }
 
     .tableOfContents {
+
+        @extend .d-print-none !optional;
+
         >div {
             top: 8em;
         }

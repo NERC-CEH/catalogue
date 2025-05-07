@@ -12,14 +12,16 @@
     <div id="metadata" class="metadata serviceAgreement ${mdclass}">
         <div class="container" role="main">
 
-            <div class="title mt-3">
-                <div class="eidcLogo">
-                  <img src="/static/img/cataloguelogo/eidc.png">
+            <div class="title mt-3 d-flex flex-nowrap align-content-start">
+                <div class="eidcLogo me-3">
+                  <img src="/static/img/cataloguelogo/eidc_print.png">
                 </div>
-                <h1>
-                  EIDC Service Agreement for ${title!"NOT PROVIDED"}
-                  <span class="saStatus saStatus-${getStateTitle()?lower_case}">${getStateTitle()?upper_case}</span>
-                </h1>
+                <div class="flex-grow-1">
+                  <h1>
+                    EIDC Service Agreement for ${title!"NOT PROVIDED"}
+                    <span class="saStatus saStatus-${getStateTitle()?lower_case}">${getStateTitle()?upper_case}</span>
+                  </h1>
+                </div>
             </div>
 
             <div class="text-end d-print-none adminPanel" role="toolbar">

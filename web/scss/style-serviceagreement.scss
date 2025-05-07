@@ -41,7 +41,11 @@
 
     .title {
         .eidcLogo {
-            display: none;
+            display: var(--displayLogo, none);
+
+            img {
+                width: 225px;
+            }
         }
     }
 
@@ -187,7 +191,7 @@
 
         .supportingDoc__name {
             max-width: 60ch;
-            overflow-wrap: break-word !important;
+            overflow-wrap: break-word;
         }
     }
 
@@ -356,25 +360,28 @@
     }
 }
 
+
 @media print {
+
+    :root {
+        --displayLogo: block;
+    }
+
+    @page {
+        size: 210mm 297mm;
+        margin: 25mm 16mm;
+    }
 
     header,
     #devbar {
         display: none !important;
     }
 
-    .externalVocabularyLink {
-        sup {
-            display: none;
-        }
-    }
-
     .serviceAgreement {
-        --_font-size: 1.35rem;
+        --_font-size: 1rem;
 
-        @page {
-            size: 210mm 297mm;
-            margin: 25mm 16mm;
+        .container {
+            min-width: 100%;
         }
 
         section,
@@ -416,18 +423,18 @@
             font-size: calc(1.2 * var(--_font-size));
         }
 
-        .title {
-            display: flex;
-            gap: 1em;
-            align-items: center;
-
-            .eidcLogo {
-                display: block;
-
-                img {
-                    min-width: 225px;
-                }
+        .supportingDoc {
+            .supportingDoc__name {
+                max-width: 30ch;
+                overflow-wrap: break-word;
             }
         }
+
+        .externalVocabularyLink {
+            sup {
+                display: none;
+            }
+        }
+
     }
 }
