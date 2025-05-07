@@ -28,7 +28,7 @@ import java.util.stream.StreamSupport;
 @JsonIgnoreProperties(value = {"historical", "transitions", "stateTitle"})
 public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementModel> {
 
-    private String id, title, depositReference, depositorName, depositorContactDetails, eidcName, eidcContactDetails,otherPoliciesOrLegislation, fileNumber,transferMethod, fileNamingConvention, policyExceptions, availability, useConstraints, supersededData, otherInfo, description, lineage;
+    private String id, title, depositReference, depositorName, depositorContactDetails, eidcName, eidcContactDetails, otherPoliciesOrLegislation, fileNumber,transferMethod, fileNamingConvention, policyExceptions, availability, useConstraints, supersededData, relatedDataHoldings, otherInfo, description, lineage;
 
     private List<ResponsibleParty> authors;
 
@@ -82,6 +82,7 @@ public class ServiceAgreementModel extends RepresentationModel<ServiceAgreementM
         this.ownersOfIpr = serviceAgreement.getOwnersOfIpr();
         this.useConstraints = serviceAgreement.getUseConstraints();
         this.supersededData = serviceAgreement.getSupersededData();
+        this.relatedDataHoldings = serviceAgreement.getRelatedDataHoldings();
         this.otherInfo = serviceAgreement.getOtherInfo();
         this.topicCategories = serviceAgreement.getTopicCategories();
         this.keywordsDiscipline = serviceAgreement.getKeywordsDiscipline();
