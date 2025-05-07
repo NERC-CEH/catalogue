@@ -85,13 +85,15 @@ public class DataciteService {
      */
     public ResourceIdentifier generateDoi(GeminiDocument document) throws DataciteException {
         if(isDataciteMintable(document)) {
-            val doi = generateDoiString(document);
+//            val doi = generateDoiString(document);//if still using below getdatacitationrequest this also creates doi string which would be included in the map
             val request = getDatacitationRequest(document);
             log.info("Requesting mint of doi: {}", request);
             val url = UriComponentsBuilder
                     .fromUriString(api)
                     .toUriString();
-            DataciteRequest dataciteRequest = new DataciteRequest(doi, request, identifierService.generateUri(document.getId()));
+            //the request val could now be a Map put into DataCiteRequest, may not need doi string since it's also created in the requestMap
+//            DataciteRequest dataciteRequest = new DataciteRequest(doi, request, identifierService.generateUri(document.getId()));
+            DataciteRequest dataciteRequest = new DataciteRequest(request, identifierService.generateUri(document.getId()));
             try {
                 val headers = withBasicAuth(username, password);
                 headers.setContentType(MediaType.valueOf("application/vnd.api+json"));
@@ -102,7 +104,7 @@ public class DataciteService {
                 );
             }
             catch(HttpClientErrorException ex) {
-                log.error("Failed to mint doi: {} - {}", doi, ex.getResponseBodyAsString());
+                log.error("Failed to mint doi: {} - {}", request.get("doi"), ex.getResponseBodyAsString());
                 throw new DataciteException("Minting of the DOI failed, please review the datacite.xml (is it valid?) then try again", ex);
             }
             catch(RestClientException ex) {
@@ -160,7 +162,7 @@ public class DataciteService {
     public void updateDoiMetadata(GeminiDocument document) {
         if(isDatacitable(document, true)) {
             try {
-                val doi = generateDoiString(document);
+//                val doi = generateDoiString(document);
                 val headers = withBasicAuth(username, password);
                 headers.setContentType(MediaType.valueOf("application/vnd.api+json"));
                 val request = getDatacitationRequest(document);
@@ -169,7 +171,7 @@ public class DataciteService {
                         .pathSegment(prefix, document.getId())
                         .toUriString();
 
-                DataciteRequest dataciteRequest = new DataciteRequest(doi, request, identifierService.generateUri(document.getId()));
+                DataciteRequest dataciteRequest = new DataciteRequest(request, identifierService.generateUri(document.getId()));
                 restTemplate.exchange(
                         url,
                         HttpMethod.PUT,
@@ -268,7 +270,7 @@ public class DataciteService {
      * @param document to get the prepare a datacitation request for
      * @return an xml datacite request
      */
-    public String getDatacitationRequest(GeminiDocument document) {
+    public Map<String, Object> getDatacitationRequest(GeminiDocument document) {//change this to remove the processed val, return a map instead?
         try {
             String doi = generateDoiString(document);
             Map<String, Object> data = new HashMap<>();
@@ -280,7 +282,9 @@ public class DataciteService {
                     data
             );
             log.debug(processed);
-            return processed;
+//            return processed;
+            data.put("processed", processed);//keep this in the object for now as processed is used in dataciteindexingservice.indexdcoument
+            return data;
         }
         catch(IOException | TemplateException ex) {
             throw new DataciteException(ex);

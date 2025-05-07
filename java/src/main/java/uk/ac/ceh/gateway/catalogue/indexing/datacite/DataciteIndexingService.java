@@ -63,7 +63,7 @@ public class DataciteIndexingService implements DocumentIndexingService {
     private void indexDocument(GeminiDocument document) {
         if(datacite.isDatacited(document)) {
             String lastRequest = datacite.getDoiMetadata(document); //Get the latest request
-            String newRequest = datacite.getDatacitationRequest(document);
+            String newRequest = datacite.getDatacitationRequest(document).get("processed").toString();
             if(!newRequest.equals(lastRequest)) {
                 log.info("Submitting datacite update: {}", document.getId());
                 datacite.updateDoiMetadata(document);
