@@ -299,7 +299,8 @@ main {
             }
 
             &--draft {
-                --border-colour: darkred border-inline-start: var(-border-colour) 10px solid;
+                --border-colour: darkred;
+                border-inline-start: var(-border-colour) 10px solid;
                 background-color: color.adjust($gray-light, $lightness: 30%, $space: hsl);
                 background-image: repeating-linear-gradient(315deg,
                         transparent,
