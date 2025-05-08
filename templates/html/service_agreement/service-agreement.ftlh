@@ -216,7 +216,7 @@
             </#if>
 
             <#if description?has_content || lineage?has_content || allKeywords?has_content || topicCategories?? ||  inspireTheme?? || boundingBoxes??>
-                <section class="section section--metadata d-print-none">
+                <section class="section section--metadata">
                     <h2>Discovery metadata</h2>
                     <p><i>Information in this section will be used to create a record in the EIDC data catalogue.</i></p>
                     <@displayData "Description" description/>
