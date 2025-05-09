@@ -1,22 +1,33 @@
 package uk.ac.ceh.gateway.catalogue.datacite;
 
+import lombok.AllArgsConstructor;
 import lombok.Value;
-import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
+import uk.ac.ceh.gateway.catalogue.gemini.*;
+import uk.ac.ceh.gateway.catalogue.geometry.BoundingBox;
+import uk.ac.ceh.gateway.catalogue.model.Link;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
+import uk.ac.ceh.gateway.catalogue.model.Supplemental;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Value
 public class DataciteRequest {
     Data data;
 
-    public DataciteRequest(Map<String, Object> request, String url) {//this will take a Map request which includes the doi string, so separate doi sting not needed?
+    public DataciteRequest(Map<String, Object> request, String url, JenaLookupService jenaLookupService) {//this will take a Map request which includes the doi string, so separate doi sting not needed?
         // url string and requestMap needed
         String doi = request.get("doi").toString();
         GeminiDocument document = (GeminiDocument) request.get("doc");
-        String resourceType = request.get("resourceType").toString();
-        this.data = new Data(doi, new Attributes(doi, document, url, resourceType));
+        String resourceType = Optional.ofNullable(request.get("resourceType"))
+            .map(Object::toString)
+            .orElse(null);
+        this.data = new Data(doi, new Attributes(doi, document, url, resourceType, jenaLookupService));
     }
 
     @Value
@@ -29,24 +40,31 @@ public class DataciteRequest {
     @Value
     public static class Attributes {
 
-        public Attributes(String doi, GeminiDocument document, String url, String resourceType) {
+        public Attributes(String doi, GeminiDocument document, String url, String resourceType, JenaLookupService jenaLookupService) {
             this.doi = doi;
 //            this.xml = new String(Base64.encodeBase64(xml.getBytes()));
             this.url = url;
-            this.document = document;
             this.titles = List.of(new Title(document.getTitle()));
             this.resourceType = resourceType;
             this.creators = dataciteContact(document, "creator");
             this.contributors = dataciteContact(document, "contributor");
-            this.publisher = assignPublisher(document);
-            this.publicationYear = publicationDateCheck(document);
-            this.subjects = extractSubjects(document);
+            this.publisher = assignPublisher(document.getPublishers());
+            this.publicationYear = publicationDateCheck(document.getDatasetReferenceDate().getPublicationDate());
+            this.subjects = extractSubjects(document.getAllKeywords());
+            this.dates = setDateDetails(document.getDatasetReferenceDate());
+            this.language = "en";
+            this.alternateIdentifiers = getAlternateResourceIdentifiers(document.getResourceIdentifiers());
+            this.relatedIdentifiers = createRelatedIdentifiers(document, jenaLookupService);
+            this.formats = gatherDistributionFormats(document.getDistributionFormats());
+            this.rightsList = listRights(document.getLicences());
+            this.descriptions = populateDescriptions(document);
+            this.geoLocations = extractGeoLocations(document.getBoundingBoxes());
+            this.fundingReferences = fundingDetails(document.getFunding());
         }
 
         String doi;
         String event = "publish";
         String url; // url of DOI landing page
-        GeminiDocument document;
         List<Title> titles;
         String resourceType;
         List<Map<String, Object>> creators;
@@ -54,26 +72,29 @@ public class DataciteRequest {
         int publicationYear;
         List<Map<String, Object>> contributors;
         List<Subject> subjects;
+        List<Date> dates;
+        String language;
+        List<AlternateIdentifier> alternateIdentifiers;
+        List<RelatedIdentifier> relatedIdentifiers;
+        List<String> formats;
+        List<Rights> rightsList;
+        List<Description> descriptions;
+        List<GeoLocation> geoLocations;
+        List<FundingReference> fundingReferences;
 
         @Value
+        @AllArgsConstructor
         public static class Title {
             String title;
-            public Title(String title) {
-                this.title = title;
-            }
         }
         @Value
+        @AllArgsConstructor
         public static class Publisher {
             String name;
             String publisherIdentifier;
             String publisherIdentifierScheme;
             String schemeUri;
-            public Publisher(String name, String publisherIdentifier, String publisherIdentifierScheme, String schemeUri) {
-                this.name = name;
-                this.publisherIdentifier = publisherIdentifier;
-                this.publisherIdentifierScheme = publisherIdentifierScheme;
-                this.schemeUri = schemeUri;
-            }
+
             public Publisher(String name) {
                 this.name = name;
                 this.publisherIdentifier = "";
@@ -83,26 +104,257 @@ public class DataciteRequest {
         }
 
         @Value
+        @AllArgsConstructor
         public static class Subject {
             String subject;
             String subjectScheme;
             String schemeUri;
             String valueUri;
             String classificationCode;
-
-            public Subject(String subject, String subjectScheme, String schemeUri, String valueUri, String classificationCode) {
-                this.subject = subject;
-                this.subjectScheme = subjectScheme;
-                this.schemeUri = schemeUri;
-                this.valueUri = valueUri;
-                this.classificationCode = classificationCode;
-            }
         }
 
-        public List<Subject> extractSubjects(GeminiDocument document) {
+        @Value
+        @AllArgsConstructor
+        public static class Date {
+            String date;
+            String dateType;
+            String dateInformation;
+        }
+
+        @Value
+        @AllArgsConstructor
+        public static class AlternateIdentifier {
+            String alternateIdentifier;
+            String alternateIdentifierType;
+        }
+
+        @Value
+        @AllArgsConstructor
+        public static class RelatedIdentifier {
+            String relatedIdentifier;
+            String relatedIdentifierType;
+            String relationType;
+            String relatedMetadataScheme;
+            String schemeUri;
+            String schemeType;
+            String resourceTypeGeneral;
+        }
+
+        @Value
+        @AllArgsConstructor
+        public static class Rights {
+            String rights;
+            String lang;
+            String rightsUri;
+            String rightsIdentifier;
+            String rightsIdentifierScheme;
+            String schemeUri;
+        }
+
+        @Value
+        @AllArgsConstructor
+        public static class Description {
+            String description;
+            String lang;
+            String descriptionType;
+        }
+
+        @Value
+        @AllArgsConstructor
+        public static class GeoLocation {
+            GeoLocationBox geoLocationBox;
+        }
+
+        @Value
+        @AllArgsConstructor
+        public static class GeoLocationBox {
+            BigDecimal westBoundLongitude;
+            BigDecimal eastBoundLongitude;
+            BigDecimal southBoundLatitude;
+            BigDecimal northBoundLatitude;
+        }
+
+        @Value
+        @AllArgsConstructor
+        public static class FundingReference {
+            String funderName;
+            String funderIdentifier;
+            String funderIdentifierType;
+            String schemeUri;
+            String awardNumber;
+            String awardUri;
+            String awardTitle;
+        }
+        //purpose of ticket is to not use xml and the datacite, plus included, templates and instead have the geminidoc contents translated into Attributes
+        //e.g. String title = document.getTitle();
+        //will need to reverse engineer the template to get all required fields into the Attributes object
+//        String xml; // base64 encoded Datacite xml
+        public List<FundingReference> fundingDetails(List<Funding> funders) {
+            return funders.stream()
+                .map(funder -> {
+                    String funderIdentifier = funder.getFunderIdentifier();
+                    String funderIdentifierType = null;
+
+                    if (funderIdentifier != null && !funderIdentifier.isBlank()) {
+                        if (funder.isRor()) {
+                            funderIdentifierType = "ROR";
+                        } else if (funder.isOrcid()) {
+                            funderIdentifierType = "Crossref Funder";
+                        } else {
+                            funderIdentifierType = "Other";
+                        }
+                    }
+
+                    return new FundingReference(
+                        funder.getFunderName(),
+                        funderIdentifier,
+                        funderIdentifierType,
+                        "",
+                        funder.getAwardNumber(),
+                        "",
+                        funder.getAwardTitle()
+                    );
+                })
+                .toList();
+        }
+
+
+        public List<GeoLocation> extractGeoLocations(List<BoundingBox> boundingBoxes) {
+            List<GeoLocation> geoLocations = new ArrayList<>();
+
+            for (BoundingBox boundingBox : boundingBoxes) {
+                GeoLocationBox box = new GeoLocationBox(
+                    boundingBox.getWestBoundLongitude(),
+                    boundingBox.getEastBoundLongitude(),
+                    boundingBox.getSouthBoundLatitude(),
+                    boundingBox.getNorthBoundLatitude()
+                );
+                geoLocations.add(new GeoLocation(box));
+            }
+            return geoLocations;
+        }
+
+
+        public List<Description> populateDescriptions(GeminiDocument document) {
+            return Stream.of(
+                    new Description(document.getDescription(), "", "Abstract"),
+                    document.getLineage().isEmpty() ? null : new Description(document.getLineage(), "", "Methods")
+                )
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        }
+
+
+        public List<Rights> listRights(List<ResourceConstraint> licences) {
+            return licences.stream()
+                .map(resourceConstraint -> {
+                    String value = resourceConstraint.getValue();
+                    String uri = resourceConstraint.getUri();
+                    boolean isLicense = "license".equals(resourceConstraint.getCode()) && !uri.isEmpty();
+
+                    if (isLicense) {
+                        if ("https://eidc.ceh.ac.uk/licences/OGL/plain".equals(uri)) {
+                            return new Rights(value, "", uri, "OGL-UK-3.0", "SPDX", "");
+                        }
+                        return new Rights(value, "", uri, "", "", "");
+                    } else {
+                        return new Rights(value, "", "", "", "", "");
+                    }
+                })
+                .collect(Collectors.toList());
+        }
+
+        public List<String> gatherDistributionFormats(List<DistributionInfo> distributionFormats) {
+            return distributionFormats.stream()
+                .map(distributionInfo -> Stream.of(distributionInfo.getType(), distributionInfo.getName())
+                    .filter(string -> string != null && !string.isEmpty())
+                    .collect(Collectors.joining(" ")))
+                .collect(Collectors.toList());
+        }
+
+        public List<RelatedIdentifier> createRelatedIdentifiers(GeminiDocument document, JenaLookupService jenaLookupService) {
+            List<RelatedIdentifier> relatedIdentifiers = new ArrayList<>();
+
+            List<OnlineResource> infoLinks = document.getInfoLinks();
+            List<OnlineResource> filteredOnlineResources = infoLinks.isEmpty()
+                ? List.of()
+                : filteredOnlineResources(infoLinks);
+
+            List<Link> relSupersedes = jenaLookupService.relationships(
+                document.getUri(),
+                "https://vocabs.ceh.ac.uk/eidc#supersedes"
+            );
+            List<Link> relSupersedesBy = jenaLookupService.inverseRelationships(
+                document.getUri(),
+                "https://vocabs.ceh.ac.uk/eidc#supersedes"
+            );
+
+            for (OnlineResource resource : filteredOnlineResources) {
+                relatedIdentifiers.add(new RelatedIdentifier(
+                    resource.getUrl(), "URL", "IsDescribedBy", "", "", "", "Text"
+                ));
+            }
+            for (Link link : relSupersedes) {
+                relatedIdentifiers.add(new RelatedIdentifier(
+                    link.getHref().replace("https://catalogue.ceh.ac.uk/id/", "10.5285/"),
+                    "DOI", "IsNewVersionOf", "", "", "", "Dataset"
+                ));
+            }
+            for (Link link : relSupersedesBy) {
+                relatedIdentifiers.add(new RelatedIdentifier(
+                    link.getHref().replace("https://catalogue.ceh.ac.uk/id/", "10.5285/"),
+                    "DOI", "IsPreviousVersionOf", "", "", "", "Dataset"
+                ));
+            }
+            for (Supplemental supplemental : document.getIncomingCitations()) {
+                String url = supplemental.getUrl();
+                boolean isDoi = url.matches("^http(s)?://(dx\\.)?doi.org/10\\.\\d{2,9}/.+$");
+                String idType = isDoi ? "DOI" : "URL";
+                String identifier = isDoi
+                    ? url.replaceAll("https?://(dx\\.)?doi.org/", "")
+                    : url;
+
+                relatedIdentifiers.add(new RelatedIdentifier(
+                    identifier, idType, "IsReferencedBy", "", "", "", "Text"
+                ));
+            }
+            return relatedIdentifiers;
+        }
+
+        public List<OnlineResource> filteredOnlineResources(List<OnlineResource> infoLinks) {
+            return infoLinks.stream()
+                .filter(infoLink -> infoLink.getUrl().startsWith("https://data-package.ceh.ac.uk/sd/"))
+                .toList();
+        }
+
+        public List<AlternateIdentifier> getAlternateResourceIdentifiers(List<ResourceIdentifier> resourceIdentifiers) {
+            return resourceIdentifiers.stream()
+                .filter(resourceIdentifier -> !"doi:".equals(resourceIdentifier.getCodeSpace()))
+                .map(resourceIdentifier -> new AlternateIdentifier(
+                    resourceIdentifier.getCoupledResource(),
+                    resourceIdentifier.getCoupledResource().startsWith("http") ? "URL" : "URN"))
+                .collect(Collectors.toList());
+        }
+
+        public List<Date> setDateDetails(DatasetReferenceDate datasetReferenceDate) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            return Stream.of(
+                    new Date(datasetReferenceDate.getPublicationDate().format(formatter), "Submitted", ""),
+                    Optional.ofNullable(datasetReferenceDate.getCreationDate())
+                        .map(date -> new Date(date.format(formatter), "Created", ""))
+                        .orElse(null),
+                    Optional.ofNullable(datasetReferenceDate.getReleasedDate())
+                        .map(date -> new Date(date.format(formatter), "Available", ""))
+                        .orElse(null)
+                )
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        }
+
+        public List<Subject> extractSubjects(List<Keyword> keywords) {
             List<Subject> subjects = new ArrayList<>();
 
-            for (Keyword keyword : document.getAllKeywords()) {
+            for (Keyword keyword : keywords) {
                 String uri = keyword.getUri() != null ? keyword.getUri().trim() : "";
                 String value = keyword.getValue() != null ? keyword.getValue().trim() : "";
 
@@ -139,36 +391,29 @@ public class DataciteRequest {
         }
 
 
-        public int publicationDateCheck(GeminiDocument document) {
+        public int publicationDateCheck(LocalDate publicationDate) {
             int year = 0;
-            if (document.getDatasetReferenceDate().getPublicationDate() != null) {
-                year = document.getDatasetReferenceDate().getPublicationDate().getYear();
+            if (publicationDate != null) {
+                year = publicationDate.getYear();
             }
             return year;
         }
-        public Publisher assignPublisher(GeminiDocument document) {
-            Publisher publisher = null;
-            List<ResponsibleParty> publishers = document.getPublishers();
-            ResponsibleParty assignedPublisher = null;
-            if (publishers != null && !publishers.isEmpty()) {
-                assignedPublisher = document.getPublishers().getFirst();
-            }
-            if (assignedPublisher != null) {
-                if (assignedPublisher.isRor()) {
-                    publisher = new Publisher(assignedPublisher.getOrganisationName(),
-                        assignedPublisher.getOrganisationIdentifier(),
-                        "ROR",
-                        "https://ror.org/");
-                } else {
-                    publisher = new Publisher(assignedPublisher.getOrganisationName());
-                }
-            }
-            return publisher;
+        public Publisher assignPublisher(List<ResponsibleParty> publishers) {
+            return publishers.stream()
+                .findFirst()
+                .map(assignedPublisher -> {
+                    if (assignedPublisher.isRor()) {
+                        return new Publisher(assignedPublisher.getOrganisationName(),
+                            assignedPublisher.getOrganisationIdentifier(),
+                            "ROR",
+                            "https://ror.org/");
+                    } else {
+                        return new Publisher(assignedPublisher.getOrganisationName());
+                    }
+                })
+                .orElse(null);
         }
-        //purpose of ticket is to not use xml and the datacite, plus included, templates and instead have the geminidoc contents translated into Attributes
-        //e.g. String title = document.getTitle();
-        //will need to reverse engineer the template to get all required fields into the Attributes object
-//        String xml; // base64 encoded Datacite xml
+
 
         public List<Map<String, Object>> dataciteContact(GeminiDocument document, String contactType) {
             List<Map<String, Object>> contacts = new LinkedList<>();

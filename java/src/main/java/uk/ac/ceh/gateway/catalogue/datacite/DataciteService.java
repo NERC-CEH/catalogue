@@ -25,6 +25,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
+import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -53,6 +54,7 @@ public class DataciteService {
     private final DocumentIdentifierService identifierService;
     private final Configuration configuration;
     private final RestTemplate restTemplate;
+    private final JenaLookupService jenaLookupService;
 
     public DataciteService(
             @Value("${doi.api}") String api,
@@ -64,7 +66,8 @@ public class DataciteService {
             @Value("${doi.templateLocation}") String templateLocation,
             @NonNull DocumentIdentifierService identifierService,
             @Qualifier("freeMarkerConfiguration") @NonNull Configuration configuration,
-            @Qualifier("normal") RestTemplate restTemplate
+            @Qualifier("normal") RestTemplate restTemplate,
+            @NonNull JenaLookupService jenaLookupService
     ) {
         this.api = api;
         this.prefix = prefix;
@@ -76,6 +79,7 @@ public class DataciteService {
         this.identifierService = identifierService;
         this.configuration = configuration;
         this.restTemplate = restTemplate;
+        this.jenaLookupService = jenaLookupService;
         log.info("Creating");
     }
 
@@ -93,7 +97,7 @@ public class DataciteService {
                     .toUriString();
             //the request val could now be a Map put into DataCiteRequest, may not need doi string since it's also created in the requestMap
 //            DataciteRequest dataciteRequest = new DataciteRequest(doi, request, identifierService.generateUri(document.getId()));
-            DataciteRequest dataciteRequest = new DataciteRequest(request, identifierService.generateUri(document.getId()));
+            DataciteRequest dataciteRequest = new DataciteRequest(request, identifierService.generateUri(document.getId()), jenaLookupService);
             try {
                 val headers = withBasicAuth(username, password);
                 headers.setContentType(MediaType.valueOf("application/vnd.api+json"));
@@ -171,7 +175,7 @@ public class DataciteService {
                         .pathSegment(prefix, document.getId())
                         .toUriString();
 
-                DataciteRequest dataciteRequest = new DataciteRequest(request, identifierService.generateUri(document.getId()));
+                DataciteRequest dataciteRequest = new DataciteRequest(request, identifierService.generateUri(document.getId()), jenaLookupService);
                 restTemplate.exchange(
                         url,
                         HttpMethod.PUT,
