@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -199,9 +200,10 @@ public class UploadService {
                 } else {
                     log.debug("Unzip adding {} to {}", unZipFileName, datasetId);
                     Files.createDirectories(resolvedPath.getParent());
-                    byte[] file = zipStream.readAllBytes();
-                    register(datasetId, unZipFileName, username, file.length);
-                    Files.write(resolvedPath, file);
+                    try (OutputStream out = Files.newOutputStream(resolvedPath)) {
+                        long bytesCopied = zipStream.transferTo(out);
+                        register(datasetId, unZipFileName, username, bytesCopied);
+                    }
                 }
             }
         } else {
