@@ -200,10 +200,9 @@ public class UploadService {
                 } else {
                     log.debug("Unzip adding {} to {}", unZipFileName, datasetId);
                     Files.createDirectories(resolvedPath.getParent());
-                    try (OutputStream out = Files.newOutputStream(resolvedPath)) {
-                        long bytesCopied = zipStream.transferTo(out);
-                        register(datasetId, unZipFileName, username, bytesCopied);
-                    }
+                    byte[] file = zipStream.readAllBytes();
+                    register(datasetId, unZipFileName, username, file.length);
+                    Files.write(resolvedPath, file);
                 }
             }
         } else {
