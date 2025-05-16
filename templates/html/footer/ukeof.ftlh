@@ -1,4 +1,4 @@
-<div class="footer footer-ukeof d-print-none clearfix">
+<div class="footer footer-ukeof pt-3 d-print-none clearfix">
   <div class="container">
 
     <div class="footer-logos">
@@ -11,19 +11,19 @@
     </div>
     <div class="footer-socials">
       <a target="_blank" href="https://ukeof.org.uk/node/18" aria-label="Contact us" class="social">
-          <i class="fa-solid fa-xl fa-fw fa-phone"></i>
+          <i class="fa-solid fa-xl fa-phone"></i>
       </a>
 
       <a target="_blank" href="https://ukeof.us4.list-manage.com/subscribe?u=8db0bba9a5434ccfcddf25ba2&id=b0a4fe2e59" aria-label="Subscribe" class="social">
-          <i class="fa-solid fa-xl fa-fw fa-envelope"></i>
+          <i class="fa-solid fa-xl fa-envelope"></i>
       </a>
 
-      <a class="social" target="_blank" href="https://twitter.com/UKEnvObs" aria-label="Go to our X (Twitter) feed">
-          <i class="fa-brands fa-xl fa-fw fa-x-twitter"></i>
+      <a class="social" target="_blank" href="https://bsky.app/profile/ukeof.bsky.social" aria-label="Bluesky">
+          <i class="fa-brands fa-xl fa-bluesky"></i>
       </a>
 
       <a class="social" target="_blank" href="https://wakelet.com/@UKEOF" aria-label="Wakelet">
-          <i class="fa-solid fa-xl fa-fw fa-w"></i>
+          <i class="fa-solid fa-xl fa-w"></i>
       </a>
     </div>
     <div class="footer-terms">

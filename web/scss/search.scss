@@ -229,6 +229,7 @@ main {
         gap: 1.4em;
 
         .result {
+            position: relative;
             display: flex;
             gap: 1em;
             padding: 0.85em;
@@ -236,10 +237,12 @@ main {
             border-radius: 5px;
             color: var(--text-default-color);
 
-            &:hover {
+            &:hover,
+            &:focus-visible {
                 background-color: rgba(0, 0, 0, 0.06);
                 outline: 2px solid var(--link-hover-colour);
                 text-decoration: none;
+                transform: scale(101%);
             }
 
             .resourceStatus,
@@ -251,11 +254,24 @@ main {
             }
 
             .opstatus {
+                color: white;
+                position: absolute;
+                right: 15px;
+                top: calc(-1 * var(--top-offset, 0));
+                padding: 0.35em;
+                clip-path: polygon(100% 0,
+                        0 0,
+                        0 100%,
+                        50% 100%,
+                        100% 100%,
+                        100% 0,
+                        100% 0);
+                background-color: var(--statusColour, #b92c62);
                 display: var(--display-opstatus, none)
             }
 
             .result__state {
-                flex:0 0 11ch;
+                flex: 0 0 11ch;
                 padding-inline-end: .6em;
                 border-inline-end: 1px solid var(--border-colour);
             }
@@ -267,7 +283,8 @@ main {
 
                 .opstatus {
                     --statusColor: var(--ukceh-colours-teal);
-                    --display-opstatus: inline-block;
+                    --display-opstatus: block;
+                    --top-offset: 4px
                 }
 
                 .result__title {

@@ -301,7 +301,6 @@ export default EditorView.extend({
             ukceh: ['research-project']
           },
           helpText: 'Controlled keywords describing projects that fund/support the creation of this resource',
-          fetchKeywordsButton: true,
           renderLegiloKeywords: true
         }),
         new ParentView({
@@ -324,6 +323,7 @@ export default EditorView.extend({
           },
           multiline: true,
           helpText: 'All other keywords not described elsewhere',
+          fetchKeywordsButton: true,
           renderLegiloKeywords: true
         }),
         new ParentView({

@@ -58,8 +58,8 @@ textarea.sparqlquery {
     field-sizing: content;
     min-height: 150px;
     min-width: 100%;
-    border-radius:6px;
-    padding:1em;
+    border-radius: 6px;
+    padding: 1em;
 }
 
 header {
@@ -140,12 +140,12 @@ footer {
             grid-column-end: 3;
             display: flex;
             gap: 1em;
-            justify-content: space-between;
+            justify-content: var(--align-footer-logos, space-between);
             align-items: center;
             flex-wrap: wrap;
 
             img {
-                max-width: 180px;
+                max-width: 200px;
                 max-height: 90px;
             }
         }
@@ -165,11 +165,17 @@ footer {
             justify-content: flex-end;
 
             a {
-                padding: 0.75em;
-                border: 2px solid transparent;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 55px;
+                aspect-ratio: 1 / 1;
                 border-radius: 1000px;
+                background-color: white;
+                color: black;
 
                 &:hover {
+                    color: white;
                     border-color: white;
                 }
             }
@@ -184,9 +190,9 @@ footer {
     }
 }
 
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 900px) {
     .footer-logos {
-        justify-content: center;
+        --align-footer-logos: space-around;
     }
 }
 
@@ -220,7 +226,7 @@ header {
         font-family: sans-serif;
         color: white;
 
-        .siteLogo  {
+        .siteLogo {
             display: flex;
             align-items: center;
             height: var(--header-height);
@@ -325,7 +331,7 @@ header {
         .toolbar {
             flex-direction: column;
 
-            .siteLogo  {
+            .siteLogo {
                 img {
                     border-inline-end: none;
                 }

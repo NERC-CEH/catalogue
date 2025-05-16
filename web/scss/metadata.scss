@@ -291,7 +291,8 @@ body {
             background-color: var(--_ukcehcard-background);
             border: 2px var(--_ukcehcard-border-style) var(--_ukcehcard-border-colour);
             border-radius: 6px;
-            text-decoration: none; padding:0.5em;
+            text-decoration: none;
+            padding: 0.5em;
             text-wrap: balance;
             color: var(--_ukcehcard-text-colour);
 
@@ -302,7 +303,7 @@ body {
             }
 
             .ukcehcard-icon {
-                padding-block:0.5em;
+                padding-block: 0.5em;
                 color: var(--_ukcehcard-icon-colour);
             }
 
@@ -826,6 +827,16 @@ body {
         &.availability-inactive {
             text-decoration: line-through;
             color: #BBB;
+        }
+
+        &.nogeom {
+            &:before {
+                font-family: var(--font-stack-icons);
+                content: "\e68f ";
+                font-weight: 600;
+                color: #999;
+                font-size: 0.85rem
+            }
         }
     }
 
