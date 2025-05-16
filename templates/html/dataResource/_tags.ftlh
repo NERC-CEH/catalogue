@@ -18,27 +18,32 @@
   <@keywordList allKeywords "Keywords" true/>
 </#if>
 
-<#if observedProperty?has_content>
-  <@displayObservedProperties observedProperty />
+<#if fileset?? && fileset?has_content>
+  <@displayObservedProperties fileset />
 </#if>
 
-<#macro displayObservedProperties op>
+<#macro displayObservedProperties filesetList>
   <div class="row key-value">
     <div class="col-sm-3 key">Observed properties</div>
     <div class="col-sm-9 value">
-    <#list op?sort_by("value") as item>
-      <#local opLabel="unknown">
-      <#if item.title?has_content>
-        <#local opLabel=item.title?trim>
-      <#elseif item.value?has_content>
-        <#local opLabel=item.value?trim>
-      </#if>
+    <#list filesetList as filesetOp>
+      <#if filesetOp.observedProperty?has_content>
+        <#list filesetOp.observedProperty?sort_by("value") as item>
+          <#local opLabel="unknown">
+          <#if item.title?has_content>
+            <#local opLabel=item.title?trim>
+          <#elseif item.value?has_content>
+            <#local opLabel=item.value?trim>
+          </#if>
 
-      <#if item.uri?has_content>
-        <span><abbr title="${item.uri?trim}">${opLabel}</abbr></span>
-        <a href="${item.uri?trim}" target="_blank" rel="noopener noreferrer" class="externalVocabularyLink"><sup class="fa-solid fa-xs fa-arrow-up-right-from-square"></sup></a>
-      <#else>
-        <span>${opLabel}</span>
+          <#if item.uri?has_content>
+            <span><abbr title="${item.uri?trim}">${opLabel}</abbr></span>
+            <a href="${item.uri?trim}" target="_blank" rel="noopener noreferrer" class="externalVocabularyLink"><sup class="fa-solid fa-xs fa-arrow-up-right-from-square"></sup></a>
+          <#else>
+            <span>${opLabel}</span>
+          </#if>
+          <#sep><br></#sep>
+        </#list>
       </#if>
       <#sep><br></#sep>
     </#list>

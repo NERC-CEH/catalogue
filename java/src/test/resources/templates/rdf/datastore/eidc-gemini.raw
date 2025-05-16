@@ -84,23 +84,30 @@
       "uri": "http://vocabs.lter-europe.net/EnvThes/30349"
     }
   ],
-  "observedProperty": [
+  "fileset": [
     {
-      "value": "Test observed properties name",
-      "uri": "https://test-observed-properties.ac.uk",
-      "title": "Test observed properties title",
-      "description": "Test observed properties  description",
-      "type": "string",
-      "units": "kg",
-      "unitsUri": "https://test-unit.ac.uk",
-      "format": "YYYY-MM-DD",
-      "constraints": {
-        "minimum": "5",
-        "maximum": "60",
-        "minLength": "3",
-        "maxLength": "300",
-        "unique": true
-      }
+      "filesetName": "111",
+      "encodingFormat": "112",
+      "includes": "113",
+      "observedProperty": [
+        {
+          "value": "Test observed properties name",
+          "uri": "https://test-observed-properties.ac.uk",
+          "title": "Test observed properties title",
+          "description": "Test observed properties  description",
+          "type": "string",
+          "units": "kg",
+          "unitsUri": "https://test-unit.ac.uk",
+          "format": "YYYY-MM-DD",
+          "constraints": {
+            "minimum": "5",
+            "maximum": "60",
+            "minLength": "3",
+            "maxLength": "300",
+            "unique": true
+          }
+        }
+      ]
     }
   ],
   "distributionFormats": [

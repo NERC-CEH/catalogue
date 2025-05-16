@@ -25,7 +25,7 @@ import {
   SpatialReferenceSystemView,
   SpatialRepresentationTypeView,
   SpatialResolutionView,
-  TemporalExtentView, ObservedPropertyView,
+  TemporalExtentView, FilesetView,
   TextareaView, TopicCategoryView, KeywordThemeView, KeywordVocabularyView, InspireThemeView, CheckboxView
 } from '../views'
 import {
@@ -37,7 +37,7 @@ import {
   MultipleDate,
   OnlineResource,
   ResourceType,
-  Service, ObservedProperty,
+  Service, Fileset,
   SpatialResolution,
   Supplemental, TopicCategory
 } from '../models'
@@ -783,14 +783,17 @@ This is only needed if you configure 'Styling=Classification' for your GeoTiff.<
           multiline: true,
           ObjectInputView: IncomingCitationView
         }),
-        new PredefinedParentLargeView({
+
+        new ParentView({
           model: this.model,
-          ModelType: ObservedProperty,
-          modelAttribute: 'observedProperty',
+          modelAttribute: 'fileset',
+          ModelType: Fileset,
           multiline: true,
           label: 'Observed properties',
-          ObjectInputView: ObservedPropertyView,
+          ObjectInputView: FilesetView,
           predefined: {
+            Custom: {
+            },
             'Decimal number/float': {
               type: 'number'
             },
@@ -815,8 +818,7 @@ This is only needed if you configure 'Styling=Classification' for your GeoTiff.<
               type: 'datetime',
               format: 'YYYY-MM-DDThh:mm:ss'
             }
-          },
-          fetchVariablesButton: true
+          }
         })
       ]
     }

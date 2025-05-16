@@ -198,29 +198,34 @@
 </#macro>
 
 <#macro observedPropertiesList>
-  <#if observedProperty?? && observedProperty?has_content>
+  <#if fileset?? && fileset?has_content>
     "variableMeasured": [
-    <#list observedProperty as op>
-      <#assign opLabel ="unknown">
-      <#if op.title?has_content>
-        <#assign opLabel = op.title?trim>
-      <#elseif op.value?has_content>
-        <#assign opLabel = op.value?trim>
-      </#if>
+      <#list fileset as filesetOp>
+        <#if filesetOp.observedProperty?has_content>
+          <#list filesetOp.observedProperty as op>
+            <#assign opLabel ="unknown">
+            <#if op.title?has_content>
+              <#assign opLabel = op.title?trim>
+            <#elseif op.value?has_content>
+              <#assign opLabel = op.value?trim>
+            </#if>
 
-      <#if op.uri?has_content>
-        {
-        "@type": "StatisticalVariable",
-        "@id": "${op.uri?trim}",
-        "name": "${opLabel}"
-        <#if op.unitsUri?has_content>,"unitCode": "${op.unitsUri?trim}"</#if>
-        <#if op.units?has_content>,"unitText": "${op.units?trim}"</#if>
-        }
-      <#else>
-        <@displayLiteral opLabel/>
-      </#if>
-      <#sep>,
-    </#list>
+            <#if op.uri?has_content>
+              {
+              "@type": "StatisticalVariable",
+              "@id": "${op.uri?trim}",
+              "name": "${opLabel}"
+              <#if op.unitsUri?has_content>,"unitCode": "${op.unitsUri?trim}"</#if>
+              <#if op.units?has_content>,"unitText": "${op.units?trim}"</#if>
+              }
+            <#else>
+              <@displayLiteral opLabel/>
+            </#if>
+            <#sep>,
+          </#list>
+        </#if>
+        <#sep>,
+      </#list>
     ],
   </#if>
 </#macro>

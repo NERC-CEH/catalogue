@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
+import uk.ac.ceh.gateway.catalogue.model.Fileset;
 import uk.ac.ceh.gateway.catalogue.model.ObservedProperty;
 
 import java.util.List;
@@ -57,10 +58,17 @@ class JenaIndexGeminiDocumentGeneratorTest {
         //Given
         val document = new GeminiDocument();
         document.setId("t");
-        document.setObservedProperty(List.of(
-            ObservedProperty.builder()
-                .value("Temperature")
-                .uri("https://example.org/properties/temperature")
+        document.setFileset(List.of(
+            Fileset.builder()
+                .filesetName("name")
+                .encodingFormat("format")
+                .includes("*.*")
+                .observedProperty(List.of(
+                    ObservedProperty.builder()
+                        .value("Temperature")
+                        .uri("https://example.org/properties/temperature")
+                        .build()
+                ))
                 .build()
         ));
         given(service.generateUri("t")).willReturn("https://example.com/t");
@@ -84,10 +92,17 @@ class JenaIndexGeminiDocumentGeneratorTest {
         // Given
         val document = new GeminiDocument();
         document.setId("t");
-        document.setObservedProperty(List.of(
-            ObservedProperty.builder()
-                .title("Temperature")
-                .value("Temp")
+        document.setFileset(List.of(
+            Fileset.builder()
+                .filesetName("name")
+                .encodingFormat("format")
+                .includes("*.*")
+                .observedProperty(List.of(
+                    ObservedProperty.builder()
+                        .title("Temperature")
+                        .value("Temp")
+                        .build()
+                ))
                 .build()
         ));
         given(service.generateUri("t")).willReturn("https://example.com/t");
@@ -112,9 +127,16 @@ class JenaIndexGeminiDocumentGeneratorTest {
         // Given
         val document = new GeminiDocument();
         document.setId("t");
-        document.setObservedProperty(List.of(
-            ObservedProperty.builder()
-                .value("Temp")
+        document.setFileset(List.of(
+            Fileset.builder()
+                .filesetName("name")
+                .encodingFormat("format")
+                .includes("*.*")
+                .observedProperty(List.of(
+                    ObservedProperty.builder()
+                        .value("Temp")
+                        .build()
+                ))
                 .build()
         ));
         given(service.generateUri("t")).willReturn("https://example.com/t");
@@ -139,8 +161,15 @@ class JenaIndexGeminiDocumentGeneratorTest {
         // Given
         val document = new GeminiDocument();
         document.setId("t");
-        document.setObservedProperty(List.of(
-            ObservedProperty.builder().build()
+        document.setFileset(List.of(
+            Fileset.builder()
+                .filesetName("name")
+                .encodingFormat("format")
+                .includes("*.*")
+                .observedProperty(List.of(
+                    ObservedProperty.builder().build()
+                ))
+                .build()
         ));
         given(service.generateUri("t")).willReturn("https://example.com/t");
 
