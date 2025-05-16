@@ -165,6 +165,7 @@ footer {
             justify-content: flex-end;
 
             a {
+                text-decoration: none;
                 display: flex;
                 justify-content: center;
                 align-items: center;
@@ -173,10 +174,12 @@ footer {
                 border-radius: 1000px;
                 background-color: white;
                 color: black;
+                outline-offset: -2px;
 
                 &:hover {
+                    background-color: transparent;
                     color: white;
-                    border-color: white;
+                    outline: 2px solid white;
                 }
             }
         }
