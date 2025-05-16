@@ -11,56 +11,42 @@
                 <@dropZoneContainer/>
             </@documentUploadSection>
         </#if>
+
         <@documentUploadSection "Arrivals" "dropbox" "archive">
             <@loadingContainer "data"/>
             <@loadMoreRow "data"/>
-            <#if isAdmin && isInProgress>
-                <@row>
-                    <div class="col-md-3">
-                        <@moveAllDatastoreButton/>
-                    </div>
-                    <div class="col-md-3">
-                        <@rescheduleButton/>
-                    </div>
-                    <div class="col-md-3">
-                        <@hashDropboxButton/>
-                    </div>
-                    <div class="col-md-3">
-                        <@registerDropboxButton/>
-                    </div>
-                </@row>
-            <#elseif isAdmin && isOpen>
-                <@row>
-                    <div class="col-md-3">
-                        <@moveAllDatastoreButton/>
-                    </div>
-                    <div class="col-md-3">
-                        <@scheduleButton/>
-                    </div>
-                    <div class="col-md-3">
-                        <@hashDropboxButton/>
-                    </div>
-                    <div class="col-md-3">
-                        <@registerDropboxButton/>
-                    </div>
-                </@row>
-            <#elseif isAdmin>
-                <@row>
-                    <div class="d-inline-flex gap-2">
-                        <@moveAllDatastoreButton/>
-                        <@hashDropboxButton/>
-                        <@registerDropboxButton/>
-                    </div>
-                </@row>
+
+            <#if isAdmin>
+             <@row>
+              <div class="d-inline-flex gap-2 justify-content-center flex-wrap">
+                  <@moveAllDatastoreButton/>
+
+                  <#if isInProgress>
+                    <@rescheduleButton/>
+                  <#elseif isOpen>
+                    <@scheduleButton/>
+                  </#if>
+
+                  <@hashDropboxButton/>
+                </div>
+              </@row>
             </#if>
+
         </@documentUploadSection>
 
         <#if isAdmin>
+           <@row>
+              <div class="d-inline-flex gap-2 justify-content-center flex-wrap">
+                  <@registerDropboxButton/>
+              </div>
+            </@row>
+
             <#assign metadataTitle>Metadata <small>Supporting Documents</small></#assign>
             <@documentUploadSection title=metadataTitle name="metadata" icon="copy" iconClass="fa-regular">
                 <@loadingContainer "metadata"/>
                 <@loadMoreRow "metadata"/>
             </@documentUploadSection>
+
             <@documentUploadSection "Datastore" "datastore" "lock">
                 <@loadingContainer "datastore"/>
                 <@loadMoreRow "datastore"/>
@@ -70,7 +56,7 @@
 
         <@row>
             <#if isAdmin>
-                <div class="d-inline-flex gap-2 file-actions">
+                <div class="d-inline-flex gap-2 justify-content-center flex-wrap file-actions">
                     <@validateAllButton/>
                     <@downloadChecksumButton/>
                 </div>
@@ -136,10 +122,10 @@
 <#macro dropZoneContainer>
     <div class='dropzone-container'>
         <div class="dropzone-files">
-            <div class="p-3 fs-4 text-center text-body-tertiary">Drag and drop files/folders here or click the add files button</div>
+            <div class="p-3 fs-4 text-center">Drag and drop files/folders here or click the <b>add files</b> button</div>
         </div>
         <@row "px-3">
-            <div class="p-3 text-center">
+            <div class="p-3 text-center text-body-tertiary">
               <i class="fa-solid fa-fw fa-info-circle"></i> Maximum individual file size is ${maxFileSize}
             </div>
             <@addFilesButton/>
@@ -163,15 +149,15 @@
 </#macro>
 
 <#macro loadMoreRow storage> <#--hide -->
-    <@row>
-        <div class="col-md-2 col-md-offset-10">
-            <@loadMoreButton storage/>
-        </div>
+    <@row "mb-3">
+      <div class="d-inline-flex justify-content-end">
+          <@loadMoreButton storage/>
+      </div>
     </@row>
 </#macro>
 
 <#macro button text button icon iconClass="fa-solid" btnClass="btn-outline-dark">
-    <button class="btn ${btnClass} ${button}">
+    <button class="btn btn-uploader ${btnClass} ${button}">
         <i class="btn-icon fa-fw fa-${icon} ${iconClass}"></i>
         <span>${text}</span>
     </button>
@@ -215,7 +201,7 @@
 
 <#macro downloadChecksumButton>
     <a
-        class="btn btn-outline-dark downloadChecksum"
+        class="btn btn-uploader btn-outline-dark downloadChecksum"
         href="/upload/${id}?format=csv"
         download="checksums_${id}.csv"
     >

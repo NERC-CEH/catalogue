@@ -284,12 +284,11 @@ Operating period
   <#if links?has_content>
     <@keyValue title "">
       <#list links as link>
-        <@b.blockUrl link "availability-${link.availability?lower_case}" />
+        <@geomUrl link />
       </#list>
     </@keyValue>
   </#if>
 </#macro>
-
 
 <#macro inverseRelationships relation title="">
   <#local links=jena.inverseRelationships(uri, relation) />
@@ -297,21 +296,27 @@ Operating period
     <#if title?has_content>
       <@keyValue title "">
         <#list links as link>
-          <@geomUrl link "availability-${link.availability?lower_case}" />
+          <@geomUrl link />
         </#list>
       </@keyValue>
     <#else>
       <#list links as link>
-        <@geomUrl link "availability-${link.availability?lower_case}" />
+        <@geomUrl link  />
       </#list>
     </#if>
   </#if>
 </#macro>
 
-<#macro geomUrl link linkClass="">
+<#macro geomUrl link >
   <div>
-      <#if !link.geometry?has_content><i class="fa-solid fa-thumbtack-slash text-body-tertiary" alt="info" title="This has no location"></i></#if>
-      <a <#if linkClass?has_content>class="${linkClass}"</#if> href="<#if link.href??>${link.href}<#else>#</#if>"><#if link.title??>${link.title}<#else>link</#if></a>
+      <#local linkClass = "">
+      <#if link.availability?has_content>
+        <#local linkClass =  "link-" + link.availability?lower_case>
+      </#if>
+      <#if link.associationType=="monitoringFacility" && !link.geometry?has_content>
+        <#local linkClass += " nogeom">
+      </#if>
+      <a <#if linkClass?has_content>class="${linkClass?trim}"</#if> href="<#if link.href??>${link.href}<#else>#</#if>"><#if link.title??>${link.title}<#else>link</#if></a>
   </div>
 </#macro>
 

@@ -19,6 +19,7 @@
     --header-logo-border: none;
     --ukceh-brand-display: none;
 
+    --align-footer-logos: space-around;
 }
 
 header {
@@ -52,23 +53,6 @@ header {
     }
 
 }
-
-footer {
-    .container {
-        .footer-socials {
-            a {
-                background-color: white;
-                color: black;
-
-                &:hover {
-                    background-color: transparent;
-                    color: white;
-                }
-            }
-        }
-    }
-}
-
 
 @media only screen and (min-width: 800px) {
     footer {

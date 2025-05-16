@@ -5,7 +5,6 @@
     <@m.programmeCombinedGeometries "http://onto.ceh.ac.uk/EF#utilises" />
   </#assign>
 
-
   <#if CombinedGeometriesOutput?has_content>
     <div class="displayFeatures">
       <div class="featureMap">${CombinedGeometriesOutput}</div>
