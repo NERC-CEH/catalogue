@@ -8,9 +8,11 @@ import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.PrintWriter;
 import java.nio.file.Files;
@@ -194,14 +196,21 @@ public class UploadService {
             while ((entry = zipStream.getNextEntry()) != null) {
                 String unZipFileName = Paths.get(unzipPath, sanitisedFilename(datasetId, entry.getName())).toString();
                 Path resolvedPath = uploadPath.resolve(unZipFileName);
+                if (Files.exists(resolvedPath)) {
+                    throw new ResponseStatusException(HttpStatusCode.valueOf(409), unZipFileName + " already exists");
+                }
                 if (entry.isDirectory()) {
                     Files.createDirectories(resolvedPath);
                 } else {
                     log.debug("Unzip adding {} to {}", unZipFileName, datasetId);
                     Files.createDirectories(resolvedPath.getParent());
-                    byte[] file = zipStream.readAllBytes();
-                    register(datasetId, unZipFileName, username, file.length);
-                    Files.write(resolvedPath, file);
+                    long fileSize = zipStream.transferTo(Files.newOutputStream(resolvedPath));
+                    try {
+                        register(datasetId, unZipFileName, username, fileSize);
+                    } catch (Exception ex) {
+                        Files.delete(resolvedPath);
+                        throw ex;
+                    }
                 }
             }
         } else {
