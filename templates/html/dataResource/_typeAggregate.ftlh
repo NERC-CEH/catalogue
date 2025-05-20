@@ -76,7 +76,7 @@
 		</#if>
 
     <#if publicationStatus!="published" && !permission.userCanEdit(id)>
-      <#assign cardClass+="hidden">
+      <#assign cardClass+=" visually-hidden">
     </#if>
 		<a class="ukcehcard ${cardClass}" href="${address}" ${target}>
 
