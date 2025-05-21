@@ -1,20 +1,16 @@
 package uk.ac.ceh.gateway.catalogue.datacite;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
-import freemarker.template.Configuration;
-import freemarker.template.TemplateException;
 import lombok.NonNull;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -27,7 +23,6 @@ import uk.ac.ceh.gateway.catalogue.model.Permission;
 import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.HashMap;
@@ -42,7 +37,7 @@ import static uk.ac.ceh.gateway.catalogue.util.Headers.withBasicAuth;
  */
 @Service
 @Slf4j
-@ToString(exclude = {"password", "configuration", "restTemplate"})
+@ToString(exclude = {"password", "restTemplate"})
 public class DataciteService {
     private final String api;
     private final String prefix;
@@ -52,7 +47,6 @@ public class DataciteService {
     private final String password;
     private final String templateLocation;
     private final DocumentIdentifierService identifierService;
-    private final Configuration configuration;
     private final RestTemplate restTemplate;
     private final JenaLookupService jenaLookupService;
 
@@ -65,7 +59,6 @@ public class DataciteService {
             @Value("${doi.password}") String password,
             @Value("${doi.templateLocation}") String templateLocation,
             @NonNull DocumentIdentifierService identifierService,
-            @Qualifier("freeMarkerConfiguration") @NonNull Configuration configuration,
             @Qualifier("normal") RestTemplate restTemplate,
             @NonNull JenaLookupService jenaLookupService
     ) {
@@ -77,7 +70,6 @@ public class DataciteService {
         this.password = password;
         this.templateLocation = templateLocation;
         this.identifierService = identifierService;
-        this.configuration = configuration;
         this.restTemplate = restTemplate;
         this.jenaLookupService = jenaLookupService;
         log.info("Creating");
@@ -88,15 +80,13 @@ public class DataciteService {
      * gets the that request minted
      */
     public ResourceIdentifier generateDoi(GeminiDocument document) throws DataciteException {
+        log.info("checking for mint");
         if(isDataciteMintable(document)) {
-//            val doi = generateDoiString(document);//if still using below getdatacitationrequest this also creates doi string which would be included in the map
             val request = getDatacitationRequest(document);
             log.info("Requesting mint of doi: {}", request);
             val url = UriComponentsBuilder
                     .fromUriString(api)
                     .toUriString();
-            //the request val could now be a Map put into DataCiteRequest, may not need doi string since it's also created in the requestMap
-//            DataciteRequest dataciteRequest = new DataciteRequest(doi, request, identifierService.generateUri(document.getId()));
             DataciteRequest dataciteRequest = new DataciteRequest(request, identifierService.generateUri(document.getId()), jenaLookupService);
             try {
                 val headers = withBasicAuth(username, password);
@@ -108,7 +98,7 @@ public class DataciteService {
                 );
             }
             catch(HttpClientErrorException ex) {
-                log.error("Failed to mint doi: {} - {}", request.get("doi"), ex.getResponseBodyAsString());
+                log.error("Failed to mint doi: {} - {} - {}", request.get("doi"), ex.getResponseBodyAsString(), ex.getStatusCode());
                 throw new DataciteException("Minting of the DOI failed, please review the datacite.xml (is it valid?) then try again", ex);
             }
             catch(RestClientException ex) {
@@ -130,28 +120,32 @@ public class DataciteService {
     /**
      * Grab the current metadata document from the datacite api. If this gemini
      * document does not have a doi, then return null
-     * @return string containing a doi metadata request, or null if nothing there
+     * @return a populated  datacite request, or null if nothing there
      */
-    public String getDoiMetadata(GeminiDocument document) {
+    public DataciteRequest getDoiMetadata(GeminiDocument document) {
         if (getDoi(document).isPresent()) {
             val url = UriComponentsBuilder
                     .fromUriString(api)
                     .pathSegment(prefix, document.getId())
-                    .toUriString();
-            log.debug("Url to retrieve DOI from Datacite: {}", url);
+                    .toUriString() + "?affiliation=true&publisher=true";
+            log.info("Url to retrieve DOI from Datacite: {}", url);
             try {
                 HttpHeaders headers = withBasicAuth(username, password);
-                headers.set("Accept", "application/vnd.datacite.datacite+xml");
+                headers.set("Accept", "application/vnd.api+json");
 
-                return restTemplate.exchange(
-                        url,
-                        HttpMethod.GET,
-                        new HttpEntity<>(headers),
-                        String.class
+                String retrievedDoiMetadataString = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    new HttpEntity<>(headers),
+                    String.class
                 ).getBody();
+                ObjectMapper objectMapper = new ObjectMapper();
+                return objectMapper.readValue(retrievedDoiMetadataString, DataciteRequest.class);
             }
             catch(RestClientException ex) {
                 throw new DataciteException("Failed to obtain datacite metadata", ex);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
             }
         } else {
             return null;
@@ -166,7 +160,6 @@ public class DataciteService {
     public void updateDoiMetadata(GeminiDocument document) {
         if(isDatacitable(document, true)) {
             try {
-//                val doi = generateDoiString(document);
                 val headers = withBasicAuth(username, password);
                 headers.setContentType(MediaType.valueOf("application/vnd.api+json"));
                 val request = getDatacitationRequest(document);
@@ -176,6 +169,7 @@ public class DataciteService {
                         .toUriString();
 
                 DataciteRequest dataciteRequest = new DataciteRequest(request, identifierService.generateUri(document.getId()), jenaLookupService);
+
                 restTemplate.exchange(
                         url,
                         HttpMethod.PUT,
@@ -232,7 +226,6 @@ public class DataciteService {
                 .map(DatasetReferenceDate::getPublicationDate)
                 .map((d) -> !d.isAfter(LocalDate.now()))
                 .orElse(false);
-
         return isPubliclyViewable
                 && hasNonEmptyTitle
                 && hasAuthor
@@ -272,27 +265,16 @@ public class DataciteService {
      * Process the datacitation request template for the given document and
      * return the request as a string.
      * @param document to get the prepare a datacitation request for
-     * @return an xml datacite request
+     * @return an Map request
      */
-    public Map<String, Object> getDatacitationRequest(GeminiDocument document) {//change this to remove the processed val, return a map instead?
-        try {
-            String doi = generateDoiString(document);
-            Map<String, Object> data = new HashMap<>();
-            data.put("doc", document);
-            data.put("resourceType", getDataciteResourceType(document));
-            data.put("doi", doi);
-            val processed = FreeMarkerTemplateUtils.processTemplateIntoString(
-                    configuration.getTemplate(templateLocation),
-                    data
-            );
-            log.debug(processed);
-//            return processed;
-            data.put("processed", processed);//keep this in the object for now as processed is used in dataciteindexingservice.indexdcoument
-            return data;
-        }
-        catch(IOException | TemplateException ex) {
-            throw new DataciteException(ex);
-        }
+    public Map<String, Object> getDatacitationRequest(GeminiDocument document) {
+        String doi = generateDoiString(document);
+        Map<String, Object> data = new HashMap<>();
+        data.put("doc", document);
+        data.put("resourceType", getDataciteResourceType(document));
+        data.put("doi", doi);
+
+        return data;
     }
 
     public DataciteResponse getDataciteResponse(GeminiDocument geminiDocument) {
@@ -317,6 +299,10 @@ public class DataciteService {
 
     private String generateDoiString(GeminiDocument document) {
         return prefix + "/" + document.getId();
+    }
+
+    public DataciteRequest getNewDataciteRequest(GeminiDocument document) {
+        return new DataciteRequest(getDatacitationRequest(document), identifierService.generateUri(document.getId()), jenaLookupService);
     }
 
 }

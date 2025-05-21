@@ -1,7 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.datacite;
 
-import lombok.AllArgsConstructor;
-import lombok.Value;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
 import uk.ac.ceh.gateway.catalogue.gemini.*;
 import uk.ac.ceh.gateway.catalogue.geometry.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.model.Link;
@@ -16,12 +18,15 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Value
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class DataciteRequest {
+    @JsonProperty("data")
     Data data;
 
-    public DataciteRequest(Map<String, Object> request, String url, JenaLookupService jenaLookupService) {//this will take a Map request which includes the doi string, so separate doi sting not needed?
-        // url string and requestMap needed
+    public DataciteRequest(Map<String, Object> request, String url, JenaLookupService jenaLookupService) {
         String doi = request.get("doi").toString();
         GeminiDocument document = (GeminiDocument) request.get("doc");
         String resourceType = Optional.ofNullable(request.get("resourceType"))
@@ -30,22 +35,38 @@ public class DataciteRequest {
         this.data = new Data(doi, new Attributes(doi, document, url, resourceType, jenaLookupService));
     }
 
-    @Value
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Data {
-        String id; // this is the DOI
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        @JsonProperty("id")
+        String id;
+        @JsonProperty("type")
         String type = "dois";
+        @JsonProperty("attributes")
         Attributes attributes;
+
+        public Data(String id, Attributes attributes) {
+            this.id = id;
+            this.attributes = attributes;
+        }
     }
 
-    @Value
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Attributes {
 
         public Attributes(String doi, GeminiDocument document, String url, String resourceType, JenaLookupService jenaLookupService) {
             this.doi = doi;
-//            this.xml = new String(Base64.encodeBase64(xml.getBytes()));
             this.url = url;
             this.titles = List.of(new Title(document.getTitle()));
-            this.resourceType = resourceType;
+            this.types = new Types(resourceType, resourceType);
             this.creators = dataciteContact(document, "creator");
             this.contributors = dataciteContact(document, "contributor");
             this.publisher = assignPublisher(document.getPublishers());
@@ -53,7 +74,7 @@ public class DataciteRequest {
             this.subjects = extractSubjects(document.getAllKeywords());
             this.dates = setDateDetails(document.getDatasetReferenceDate());
             this.language = "en";
-            this.alternateIdentifiers = getAlternateResourceIdentifiers(document.getResourceIdentifiers());
+            this.identifiers = getAlternateResourceIdentifiers(document.getResourceIdentifiers());
             this.relatedIdentifiers = createRelatedIdentifiers(document, jenaLookupService);
             this.formats = gatherDistributionFormats(document.getDistributionFormats());
             this.rightsList = listRights(document.getLicences());
@@ -62,133 +83,293 @@ public class DataciteRequest {
             this.fundingReferences = fundingDetails(document.getFunding());
         }
 
+        @JsonProperty("doi")
         String doi;
+        @JsonProperty("event")
         String event = "publish";
-        String url; // url of DOI landing page
+        @JsonProperty("url")
+        String url;
+        @JsonProperty("titles")
         List<Title> titles;
-        String resourceType;
-        List<Map<String, Object>> creators;
+        @JsonProperty("types")
+        Types types;
+        @JsonIgnoreProperties(ignoreUnknown = true)
+        @JsonProperty("creators")
+        List<DataciteContact> creators;
+        @JsonProperty("publisher")
         Publisher publisher;
+        @JsonProperty("publicationYear")
         int publicationYear;
-        List<Map<String, Object>> contributors;
+        @JsonProperty("contributors")
+        List<DataciteContact> contributors;
+        @JsonProperty("subjects")
         List<Subject> subjects;
+        @JsonProperty("dates")
         List<Date> dates;
+        @JsonProperty("language")
         String language;
-        List<AlternateIdentifier> alternateIdentifiers;
+        @JsonProperty("identifiers")
+        List<Identifier> identifiers;
+        @JsonProperty("relatedIdentifiers")
         List<RelatedIdentifier> relatedIdentifiers;
+        @JsonProperty("formats")
         List<String> formats;
+        @JsonProperty("rightsList")
         List<Rights> rightsList;
+        @JsonProperty("descriptions")
         List<Description> descriptions;
+        @JsonProperty("geoLocations")
         List<GeoLocation> geoLocations;
+        @JsonProperty("fundingReferences")
         List<FundingReference> fundingReferences;
 
-        @Value
+        @Getter
+        @Setter
+        @NoArgsConstructor
         @AllArgsConstructor
+        @JsonIgnoreProperties(ignoreUnknown = true)
+        public static class DataciteContact {
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            @JsonProperty("contributorType")
+            String contributorType;
+            @JsonProperty("name")
+            String name;
+            @JsonProperty("nameType")
+            String nameType;
+            @JsonProperty("givenName")
+            String givenName;
+            @JsonProperty("familyName")
+            String familyName;
+            @JsonProperty("nameIdentifiers")
+            List<NameIdentifier> nameIdentifiers;
+            @JsonProperty("affiliation")
+            List<Affiliation> affiliation;
+        }
+
+        @Getter
+        @Setter
+        @NoArgsConstructor
+        @AllArgsConstructor
+        @JsonIgnoreProperties(ignoreUnknown = true)
+        public static class NameIdentifier {
+            @JsonProperty("nameIdentifier")
+            String nameIdentifier;
+            @JsonProperty("nameIdentifierScheme")
+            String nameIdentifierScheme;
+            @JsonProperty("schemeUri")
+            String schemeUri;
+        }
+
+        @Getter
+        @Setter
+        @NoArgsConstructor
+        @AllArgsConstructor
+        @JsonIgnoreProperties(ignoreUnknown = true)
+        public static class Affiliation {
+            @JsonProperty("name")
+            String name;
+            @JsonProperty("affiliationIdentifier")
+            String affiliationIdentifier;
+            @JsonProperty("affiliationIdentifierScheme")
+            String affiliationIdentifierScheme;
+            @JsonProperty("schemeUri")
+            String schemeUri;
+        }
+
+        @Getter
+        @Setter
+        @NoArgsConstructor
+        @AllArgsConstructor
+        @JsonIgnoreProperties(ignoreUnknown = true)
         public static class Title {
+            @JsonProperty("title")
             String title;
         }
-        @Value
+        @Getter
+        @Setter
+        @NoArgsConstructor
         @AllArgsConstructor
+        @JsonIgnoreProperties(ignoreUnknown = true)
+        public static class Types {
+            @JsonProperty("resourceType")
+            String resourceType;
+            @JsonProperty("resourceTypeGeneral")
+            String resourceTypeGeneral;
+        }
+        @Getter
+        @Setter
+        @NoArgsConstructor
+        @AllArgsConstructor
+        @JsonIgnoreProperties(ignoreUnknown = true)
         public static class Publisher {
+            @JsonProperty("name")
             String name;
+            @JsonProperty("publisherIdentifier")
+            @JsonInclude(JsonInclude.Include.NON_NULL)
             String publisherIdentifier;
+            @JsonProperty("publisherIdentifierScheme")
+            @JsonInclude(JsonInclude.Include.NON_NULL)
             String publisherIdentifierScheme;
+            @JsonProperty("schemeUri")
+            @JsonInclude(JsonInclude.Include.NON_NULL)
             String schemeUri;
 
             public Publisher(String name) {
                 this.name = name;
-                this.publisherIdentifier = "";
-                this.publisherIdentifierScheme = "";
-                this.schemeUri = "";
+                this.publisherIdentifier = null;
+                this.publisherIdentifierScheme = null;
+                this.schemeUri = null;
             }
         }
 
-        @Value
+        @Getter
+        @Setter
+        @NoArgsConstructor
         @AllArgsConstructor
+        @JsonIgnoreProperties(ignoreUnknown = true)
         public static class Subject {
+            @JsonProperty("subject")
             String subject;
+            @JsonProperty("subjectScheme")
             String subjectScheme;
+            @JsonProperty("schemeUri")
             String schemeUri;
+            @JsonProperty("valueUri")
             String valueUri;
+            @JsonProperty("classificationCode")
             String classificationCode;
         }
 
-        @Value
+        @Getter
+        @Setter
+        @NoArgsConstructor
         @AllArgsConstructor
+        @JsonIgnoreProperties(ignoreUnknown = true)
         public static class Date {
+            @JsonProperty("date")
             String date;
+            @JsonProperty("dateType")
             String dateType;
+            @JsonProperty("dateInformation")
             String dateInformation;
         }
 
-        @Value
+        @Getter
+        @Setter
+        @NoArgsConstructor
         @AllArgsConstructor
-        public static class AlternateIdentifier {
-            String alternateIdentifier;
-            String alternateIdentifierType;
+        @JsonIgnoreProperties(ignoreUnknown = true)
+        public static class Identifier {
+            @JsonProperty("identifier")
+            String identifier;
+            @JsonProperty("identifierType")
+            String identifierType;
         }
 
-        @Value
+        @Getter
+        @Setter
+        @NoArgsConstructor
         @AllArgsConstructor
+        @JsonIgnoreProperties(ignoreUnknown = true)
         public static class RelatedIdentifier {
+            @JsonProperty("relatedIdentifier")
             String relatedIdentifier;
+            @JsonProperty("relatedIdentifierType")
             String relatedIdentifierType;
+            @JsonProperty("relationType")
             String relationType;
+            @JsonProperty("relatedMetadataScheme")
             String relatedMetadataScheme;
+            @JsonProperty("schemeUri")
             String schemeUri;
+            @JsonProperty("schemeType")
             String schemeType;
+            @JsonProperty("resourceTypeGeneral")
             String resourceTypeGeneral;
         }
 
-        @Value
+        @Getter
+        @Setter
+        @NoArgsConstructor
         @AllArgsConstructor
+        @JsonIgnoreProperties(ignoreUnknown = true)
         public static class Rights {
+            @JsonProperty("rights")
             String rights;
+            @JsonProperty("lang")
             String lang;
+            @JsonProperty("rightsUri")
             String rightsUri;
+            @JsonProperty("rightsIdentifier")
             String rightsIdentifier;
+            @JsonProperty("rightsIdentifierScheme")
             String rightsIdentifierScheme;
+            @JsonProperty("schemeUri")
             String schemeUri;
         }
 
-        @Value
+        @Getter
+        @Setter
+        @NoArgsConstructor
         @AllArgsConstructor
+        @JsonIgnoreProperties(ignoreUnknown = true)
         public static class Description {
+            @JsonProperty("description")
             String description;
+            @JsonProperty("lang")
             String lang;
+            @JsonProperty("descriptionType")
             String descriptionType;
         }
 
-        @Value
+        @Getter
+        @Setter
+        @NoArgsConstructor
         @AllArgsConstructor
+        @JsonIgnoreProperties(ignoreUnknown = true)
         public static class GeoLocation {
+            @JsonProperty("geoLocationBox")
             GeoLocationBox geoLocationBox;
         }
 
-        @Value
+        @Getter
+        @Setter
+        @NoArgsConstructor
         @AllArgsConstructor
+        @JsonIgnoreProperties(ignoreUnknown = true)
         public static class GeoLocationBox {
+            @JsonProperty("westBoundLongitude")
             BigDecimal westBoundLongitude;
+            @JsonProperty("eastBoundLongitude")
             BigDecimal eastBoundLongitude;
+            @JsonProperty("southBoundLatitude")
             BigDecimal southBoundLatitude;
+            @JsonProperty("northBoundLatitude")
             BigDecimal northBoundLatitude;
         }
 
-        @Value
+        @Getter
+        @Setter
+        @NoArgsConstructor
         @AllArgsConstructor
+        @JsonIgnoreProperties(ignoreUnknown = true)
         public static class FundingReference {
+            @JsonProperty("funderName")
             String funderName;
+            @JsonProperty("funderIdentifier")
             String funderIdentifier;
+            @JsonProperty("funderIdentifierType")
             String funderIdentifierType;
+            @JsonProperty("schemeUri")
             String schemeUri;
+            @JsonProperty("awardNumber")
             String awardNumber;
+            @JsonProperty("awardUri")
             String awardUri;
+            @JsonProperty("awardTitle")
             String awardTitle;
         }
-        //purpose of ticket is to not use xml and the datacite, plus included, templates and instead have the geminidoc contents translated into Attributes
-        //e.g. String title = document.getTitle();
-        //will need to reverse engineer the template to get all required fields into the Attributes object
-//        String xml; // base64 encoded Datacite xml
+
         public List<FundingReference> fundingDetails(List<Funding> funders) {
             return funders.stream()
                 .map(funder -> {
@@ -218,7 +399,6 @@ public class DataciteRequest {
                 .toList();
         }
 
-
         public List<GeoLocation> extractGeoLocations(List<BoundingBox> boundingBoxes) {
             List<GeoLocation> geoLocations = new ArrayList<>();
 
@@ -234,16 +414,16 @@ public class DataciteRequest {
             return geoLocations;
         }
 
-
         public List<Description> populateDescriptions(GeminiDocument document) {
             return Stream.of(
                     new Description(document.getDescription(), "", "Abstract"),
-                    document.getLineage().isEmpty() ? null : new Description(document.getLineage(), "", "Methods")
+                    (document.getLineage() != null && !document.getLineage().isEmpty())
+                        ? new Description(document.getLineage(), "", "Methods")
+                        : null
                 )
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         }
-
 
         public List<Rights> listRights(List<ResourceConstraint> licences) {
             return licences.stream()
@@ -275,11 +455,12 @@ public class DataciteRequest {
         public List<RelatedIdentifier> createRelatedIdentifiers(GeminiDocument document, JenaLookupService jenaLookupService) {
             List<RelatedIdentifier> relatedIdentifiers = new ArrayList<>();
 
-            List<OnlineResource> infoLinks = document.getInfoLinks();
+            List<OnlineResource> infoLinks = document.getInfoLinks() != null
+                ? document.getInfoLinks()
+                : List.of();
             List<OnlineResource> filteredOnlineResources = infoLinks.isEmpty()
                 ? List.of()
                 : filteredOnlineResources(infoLinks);
-
             List<Link> relSupersedes = jenaLookupService.relationships(
                 document.getUri(),
                 "https://vocabs.ceh.ac.uk/eidc#supersedes"
@@ -306,7 +487,7 @@ public class DataciteRequest {
                     "DOI", "IsPreviousVersionOf", "", "", "", "Dataset"
                 ));
             }
-            for (Supplemental supplemental : document.getIncomingCitations()) {
+            for (Supplemental supplemental : Optional.ofNullable(document.getIncomingCitations()).orElse(List.of())) {
                 String url = supplemental.getUrl();
                 boolean isDoi = url.matches("^http(s)?://(dx\\.)?doi.org/10\\.\\d{2,9}/.+$");
                 String idType = isDoi ? "DOI" : "URL";
@@ -327,10 +508,11 @@ public class DataciteRequest {
                 .toList();
         }
 
-        public List<AlternateIdentifier> getAlternateResourceIdentifiers(List<ResourceIdentifier> resourceIdentifiers) {
+        public List<Identifier> getAlternateResourceIdentifiers(List<ResourceIdentifier> resourceIdentifiers) {
             return resourceIdentifiers.stream()
-                .filter(resourceIdentifier -> !"doi:".equals(resourceIdentifier.getCodeSpace()))
-                .map(resourceIdentifier -> new AlternateIdentifier(
+                .filter(resourceIdentifier -> (!"doi:".equals(resourceIdentifier.getCodeSpace())))
+                .filter(resourceIdentifier -> !url.equals(resourceIdentifier.getCoupledResource()))
+                .map(resourceIdentifier -> new Identifier(
                     resourceIdentifier.getCoupledResource(),
                     resourceIdentifier.getCoupledResource().startsWith("http") ? "URL" : "URN"))
                 .collect(Collectors.toList());
@@ -390,7 +572,6 @@ public class DataciteRequest {
             return subjects;
         }
 
-
         public int publicationDateCheck(LocalDate publicationDate) {
             int year = 0;
             if (publicationDate != null) {
@@ -398,6 +579,7 @@ public class DataciteRequest {
             }
             return year;
         }
+
         public Publisher assignPublisher(List<ResponsibleParty> publishers) {
             return publishers.stream()
                 .findFirst()
@@ -414,9 +596,8 @@ public class DataciteRequest {
                 .orElse(null);
         }
 
-
-        public List<Map<String, Object>> dataciteContact(GeminiDocument document, String contactType) {
-            List<Map<String, Object>> contacts = new LinkedList<>();
+        public List<DataciteContact> dataciteContact(GeminiDocument document, String contactType) {
+            List<DataciteContact> contacts = new LinkedList<>();
 
             if (contactType.equals("creator")) {
                 for (ResponsibleParty author : document.getAuthors()) {
@@ -441,52 +622,49 @@ public class DataciteRequest {
             return contacts;
         }
 
-
-        public Map<String, Object> dataciteContactHelper(ResponsibleParty party, String contactType, String role) {
-            Map<String, Object> details = new HashMap<>();
-
+        public DataciteContact dataciteContactHelper(ResponsibleParty party, String contactType, String role) {
+            DataciteContact details = new DataciteContact();
+            Affiliation affiliation;
             if (contactType.equals("contributor") && role != null && !role.isEmpty()) {
-                details.put("contributorType", role);
+                details.setContributorType(role);
             }
 
             boolean hasFullName = party.getFullName() != null && !party.getFullName().isEmpty();
             if (hasFullName) {
-                details.put("name", party.getFullName());
-                details.put("nameType", "Personal");
+                details.setName(party.getFullName());
+                details.setNameType("Personal");
                 if (!party.getGivenName().isEmpty()) {
-                    details.put("givenName", party.getGivenName());
+                    details.setGivenName(party.getGivenName());
                 }
                 if (!party.getFamilyName().isEmpty()) {
-                    details.put("familyName", party.getFamilyName());
+                    details.setFamilyName(party.getFamilyName());
                 }
+                NameIdentifier identifier = new NameIdentifier(party.getNameIdentifier(), "", "");
                 if (party.isOrcid()) {
-                    Map<String, Object> identifier = Map.of(
-                        "nameIdentifier", party.getNameIdentifier(),
-                        "nameIdentifierScheme", "ORCID",
-                        "schemeUri", "https://orcid.org/"
-                    );
-                    details.put("nameIdentifiers", List.of(identifier));
+                    identifier.setNameIdentifierScheme("ORCID");
+                    identifier.setSchemeUri("https://orcid.org/");
+                    details.setNameIdentifiers(List.of(identifier));
+                } else {
+                    identifier.setNameIdentifierScheme("Other");
+                    details.setNameIdentifiers(List.of(identifier));
                 }
+
                 if (party.isRor()) {
-                    Map<String, Object> affiliation = Map.of(
-                        "name", party.getOrganisationName(),
-                        "affiliationIdentifier", party.getOrganisationIdentifier(),
-                        "affiliationIdentifierScheme", "ROR"
-                    );
-                    details.put("affiliation", List.of(affiliation));
+                    affiliation = new Affiliation(party.getOrganisationName(),party.getOrganisationIdentifier(),
+                                            "ROR","https://ror.org");
+                    details.setAffiliation(List.of(affiliation));
                 } else if (!party.getOrganisationName().isEmpty()) {
-                    Map<String, Object> affiliation = Map.of("name", party.getOrganisationName());
-                    details.put("affiliation", List.of(affiliation));
+                    affiliation = new Affiliation(party.getOrganisationName(),"","","");
+                    details.setAffiliation(List.of(affiliation));
                 }
             } else {
-                details.put("name", party.getOrganisationName());
-                details.put("nameType", "Organizational");
+                details.setName(party.getOrganisationName());
+                details.setNameType("Organizational");
+
                 if (party.isRor()) {
-                    Map<String, Object> identifier = Map.of(
-                        "nameIdentifier", party.getOrganisationIdentifier(),
-                        "nameIdentifierScheme", "ROR"
-                    );
-                    details.put("nameIdentifiers", List.of(identifier));
+                    affiliation = new Affiliation(party.getOrganisationName(), party.getOrganisationIdentifier(),
+                                        "ROR", "");
+                    details.setAffiliation(List.of(affiliation));
                 }
             }
             return details;

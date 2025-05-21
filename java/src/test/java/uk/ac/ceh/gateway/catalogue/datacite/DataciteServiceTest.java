@@ -3,8 +3,6 @@ package uk.ac.ceh.gateway.catalogue.datacite;
 import freemarker.template.Configuration;
 import lombok.SneakyThrows;
 import lombok.val;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,12 +22,10 @@ import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 
 import java.io.File;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -49,13 +45,6 @@ public class DataciteServiceTest {
     Configuration configuration;
     String doiPrefix = "10.8268";
 
-    @SneakyThrows
-    private String encoded(String filename) {
-        val xml = Objects.requireNonNull(getClass().getResourceAsStream(filename));
-        val encoded = Base64.encodeBase64(xml.readAllBytes());
-        return IOUtils.toString(encoded, StandardCharsets.UTF_8.name());
-    }
-
     @BeforeEach
     @SneakyThrows
     public void init() {
@@ -72,8 +61,8 @@ public class DataciteServiceTest {
                 "password",
                 "datacite/datacite.ftlx",
                 identifierService,
-                configuration,
-                restTemplate
+                restTemplate,
+                jenaLookupService
         );
         mockServer = MockRestServiceServer.createServer(restTemplate);
     }
@@ -232,7 +221,6 @@ public class DataciteServiceTest {
                 .andExpect(jsonPath("$.data.id").value(doiPrefix + "/" + ID))
                 .andExpect(jsonPath("$.data.attributes.doi").value(doiPrefix + "/" + ID))
                 .andExpect(jsonPath("$.data.attributes.url").value("https://catalogue.ceh.ac.uk/id/" + ID))
-                .andExpect(jsonPath("$.data.attributes.xml").value(encoded("datacite.xml")))
                 .andRespond(withSuccess());
 
         //When
@@ -257,7 +245,6 @@ public class DataciteServiceTest {
                 .andExpect(jsonPath("$.data.id").value(doiPrefix + "/" + ID))
                 .andExpect(jsonPath("$.data.attributes.doi").value(doiPrefix + "/" + ID))
                 .andExpect(jsonPath("$.data.attributes.url").value("https://catalogue.ceh.ac.uk/id/" + ID))
-                .andExpect(jsonPath("$.data.attributes.xml").value(encoded("datacite-legacy.xml")))
                 .andRespond(withSuccess());
 
         //When
@@ -283,7 +270,6 @@ public class DataciteServiceTest {
                 .andExpect(jsonPath("$.data.id").value(doiPrefix + "/" + ID))
                 .andExpect(jsonPath("$.data.attributes.doi").value(doiPrefix + "/" + ID))
                 .andExpect(jsonPath("$.data.attributes.url").value("https://catalogue.ceh.ac.uk/id/" + ID))
-                .andExpect(jsonPath("$.data.attributes.xml").value(encoded("datacite.xml")))
                 .andRespond(withSuccess());
 
         //When
@@ -333,10 +319,10 @@ public class DataciteServiceTest {
         document.setResourceIdentifiers(Collections.singletonList(
             ResourceIdentifier.builder().codeSpace("doi:").code(doiPrefix + "/" + ID).build()
         ));
-        mockServer.expect(requestTo("https://example.com/doi/10.8268/d4bdc836-5b89-44c5-aca2-2880a5d5a5be"))
+        mockServer.expect(requestTo("https://example.com/doi/10.8268/d4bdc836-5b89-44c5-aca2-2880a5d5a5be?affiliation=true&publisher=true"))
             .andExpect(method(HttpMethod.GET))
-            .andExpect(header("accept", "application/vnd.datacite.datacite+xml"))
-            .andRespond(withSuccess());
+            .andExpect(header("accept", "application/vnd.api+json"))
+            .andRespond(withSuccess("{}", MediaType.APPLICATION_JSON));
 
         //when
         service.getDoiMetadata(document);

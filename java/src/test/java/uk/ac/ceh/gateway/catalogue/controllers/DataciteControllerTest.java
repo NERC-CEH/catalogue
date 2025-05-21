@@ -10,7 +10,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.util.StreamUtils;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfig;
@@ -25,17 +24,14 @@ import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.JenaLookupService;
 
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.DATACITE_XML_VALUE;
 import static uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig.EIDC_PUBLISHER_USERNAME;
 import static uk.ac.ceh.gateway.catalogue.controllers.DataciteController.DATACITE_ROLE;
 
@@ -101,50 +97,6 @@ class DataciteControllerTest {
     private void givenGenerateDoi() {
         given(dataciteService.generateDoi(any(GeminiDocument.class)))
             .willReturn(ResourceIdentifier.builder().code(file).codeSpace("doi").build());
-    }
-
-    @SneakyThrows
-    private String expectedResponse(String filename) {
-        return StreamUtils.copyToString(
-            getClass().getResourceAsStream(filename),
-            StandardCharsets.UTF_8
-        );
-    }
-
-    private String expectedDatacite() {
-        return expectedResponse("datacite.xml");
-    }
-
-    @Test
-    void getDataciteXml() throws Exception {
-        //given
-        givenFreemarkerConfiguration();
-        givenDocumentRepository();
-        givenDataciteService();
-
-        //when
-        mvc.perform(
-            get("/documents/{file}/datacite?format=datacite", file)
-        )
-            .andExpect(status().isOk())
-            .andExpect(content().contentTypeCompatibleWith(DATACITE_XML_VALUE))
-            .andExpect(content().xml(expectedDatacite()));
-    }
-
-    @Test
-    void getDataciteXmlNoAccept() throws Exception {
-        //given
-        givenFreemarkerConfiguration();
-        givenDocumentRepository();
-        givenDataciteService();
-
-        //when
-        mvc.perform(
-            get("/documents/{file}/datacite.xml", file)
-        )
-            .andExpect(status().isOk())
-            .andExpect(content().contentTypeCompatibleWith(DATACITE_XML_VALUE))
-            .andExpect(content().xml(expectedDatacite()));
     }
 
     @Test
