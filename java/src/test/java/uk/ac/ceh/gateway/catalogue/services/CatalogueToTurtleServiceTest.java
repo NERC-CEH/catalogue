@@ -47,7 +47,6 @@ class CatalogueToTurtleServiceTest {
         configuration.setDirectoryForTemplateLoading(new File("../templates"));
         service = new CatalogueToTurtleService(
             catalogueService,
-            documentRepository,
             configuration,
             listing,
             baseUri
