@@ -11,7 +11,6 @@ import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
 import java.util.*;
 
@@ -29,20 +28,17 @@ public class CatalogueToTurtleService implements DocumentsToTurtleService {
     );
     private final CatalogueService catalogueService;
     private final Configuration configuration;
-    private final DocumentRepository documentRepository;
     private final MetadataListingService listing;
     private final String baseUri;
 
     public CatalogueToTurtleService(
         CatalogueService catalogueService,
-        DocumentRepository documentRepository,
         Configuration configuration,
         MetadataListingService listing,
         @Value("${documents.baseUri}") String baseUri
     ) {
         this.catalogueService = catalogueService;
         this.configuration = configuration;
-        this.documentRepository = documentRepository;
         this.baseUri = baseUri;
         this.listing = listing;
     }
@@ -92,11 +88,6 @@ public class CatalogueToTurtleService implements DocumentsToTurtleService {
         model.put("title", catalogue.getTitle());
         model.put("baseUri", baseUri);
         return model;
-    }
-
-    @SneakyThrows
-    private MetadataDocument getMetadataDocument(String id) {
-        return documentRepository.read(id);
     }
 
     @SneakyThrows
