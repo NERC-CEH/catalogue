@@ -10,7 +10,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
-import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
 import java.io.File;
 
@@ -23,8 +22,6 @@ class CatalogueToTurtleServiceTest {
 
     @Mock
     CatalogueService catalogueService;
-    @Mock
-    DocumentRepository documentRepository;
     @Mock
     MetadataListingService listing;
     private static final String baseUri = "https://example.com";
