@@ -14,7 +14,6 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -51,29 +50,33 @@ public class CatalogueToTurtleService implements DocumentsToTurtleService {
     @Override
     public Optional<String> getBigTtl(String catalogueId) {
         return Optional.ofNullable(catalogueService.retrieve(catalogueId)).map(catalogue -> {
-            List<String> ids = getRequiredIds(catalogueId);
-            String catalogueTtl = generateCatalogueTtl(getCatalogueModel(catalogue, ids));
-            List<String> recordsTtl = getRecordsTtl(ids);
-
-            String bigTtl = catalogueTtl.concat(String.join("\n", recordsTtl));
+            String bigTtl =  getCatalogueTtl(catalogueId, catalogue);
             log.debug("Big turtle to send: {}", bigTtl);
             return bigTtl;
         });
     }
 
-    private List<String> getRequiredIds(String catalogueId) {
+    private String getCatalogueTtl(String catalogueId, Catalogue catalogue) {
+        List<String> ids = new ArrayList<>();
+        List<String> recordsTtls = new ArrayList<>();
         try {
-            List<String> ids = listing.getPublicDocumentsOfCatalogue(catalogueId);
-
-            return ids.stream()
-                .map(this::getMetadataDocument)
-                .filter(doc -> REQUIRED_TYPES.contains(doc.getType()))
-                .map(MetadataDocument::getId)
-                .collect(Collectors.toList());
+            List<MetadataDocument> publicDocs = listing.getLatestPublicDocumentsOfCatalogue(catalogueId);
+            for (MetadataDocument doc : publicDocs) {
+                if (REQUIRED_TYPES.contains(doc.getType())) {
+                    ids.add(doc.getId());
+                    String ttl = docToString(doc);
+                    if (!ttl.isBlank()) {
+                        recordsTtls.add(ttl);
+                    }
+                }
+            }
         } catch (NullPointerException e) {
-            // no git commits
-            return Collections.emptyList();
+            ids.clear();
+            recordsTtls.clear();
         }
+
+        String catalogueTtl = generateCatalogueTtl(getCatalogueModel(catalogue, ids));
+        return catalogueTtl.concat(String.join("\n", recordsTtls));
     }
 
     @SneakyThrows
@@ -89,14 +92,6 @@ public class CatalogueToTurtleService implements DocumentsToTurtleService {
         model.put("title", catalogue.getTitle());
         model.put("baseUri", baseUri);
         return model;
-    }
-
-    private List<String> getRecordsTtl(List<String> ids) {
-        return ids.stream()
-            .map(this::getMetadataDocument)
-            .map(this::docToString)
-            .filter(s -> !s.isEmpty())
-            .collect(Collectors.toList());
     }
 
     @SneakyThrows
