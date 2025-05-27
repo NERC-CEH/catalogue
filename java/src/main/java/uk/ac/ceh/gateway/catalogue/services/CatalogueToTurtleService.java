@@ -6,13 +6,17 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
+import uk.ac.ceh.gateway.catalogue.TimeConstants;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 @Slf4j
 @Service
@@ -26,10 +30,14 @@ public class CatalogueToTurtleService implements DocumentsToTurtleService {
         "monitoringNetwork",
         "monitoringProgramme"
     );
+    private static final Set<String> PREFETCH_CATALOGUES = ImmutableSet.of(
+        "eidc"
+    );
     private final CatalogueService catalogueService;
     private final Configuration configuration;
     private final MetadataListingService listing;
     private final String baseUri;
+    private final ConcurrentMap<String, Optional<String>> preFetchCatalogue = new ConcurrentHashMap<>();
 
     public CatalogueToTurtleService(
         CatalogueService catalogueService,
@@ -45,11 +53,19 @@ public class CatalogueToTurtleService implements DocumentsToTurtleService {
 
     @Override
     public Optional<String> getBigTtl(String catalogueId) {
-        return Optional.ofNullable(catalogueService.retrieve(catalogueId)).map(catalogue -> {
-            String bigTtl =  getCatalogueTtl(catalogueId, catalogue);
-            log.debug("Big turtle to send: {}", bigTtl);
-            return bigTtl;
-        });
+        if (PREFETCH_CATALOGUES.contains(catalogueId)) {
+            if (!preFetchCatalogue.containsKey(catalogueId)) {
+                Optional<String> bigTtl = Optional.ofNullable(
+                    catalogueService.retrieve(catalogueId)).map(catalogue -> getCatalogueTtl(catalogueId, catalogue)
+                );
+                preFetchCatalogue.put(catalogueId, bigTtl);
+            }
+            return preFetchCatalogue.get(catalogueId);
+        } else {
+            return Optional.ofNullable(
+                catalogueService.retrieve(catalogueId)).map(catalogue -> getCatalogueTtl(catalogueId, catalogue)
+            );
+        }
     }
 
     private String getCatalogueTtl(String catalogueId, Catalogue catalogue) {
@@ -73,6 +89,16 @@ public class CatalogueToTurtleService implements DocumentsToTurtleService {
 
         String catalogueTtl = generateCatalogueTtl(getCatalogueModel(catalogue, ids));
         return catalogueTtl.concat(String.join("\n", recordsTtls));
+    }
+
+    @Scheduled(initialDelay = TimeConstants.ONE_MINUTE*3, fixedDelay = TimeConstants.ONE_DAY)
+    public void fetchCatalogues() {
+        for (String catalogueId : PREFETCH_CATALOGUES) {
+            Optional<String> bigTtl = Optional.ofNullable(
+                catalogueService.retrieve(catalogueId)).map(catalogue -> getCatalogueTtl(catalogueId, catalogue)
+            );
+            preFetchCatalogue.put(catalogueId, bigTtl);
+        }
     }
 
     @SneakyThrows
