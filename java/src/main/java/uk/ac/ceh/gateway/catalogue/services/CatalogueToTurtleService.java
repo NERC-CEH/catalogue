@@ -54,18 +54,23 @@ public class CatalogueToTurtleService implements DocumentsToTurtleService {
     @Override
     public Optional<String> getBigTtl(String catalogueId) {
         if (PREFETCH_CATALOGUES.contains(catalogueId)) {
-            if (!preFetchCatalogue.containsKey(catalogueId)) {
-                Optional<String> bigTtl = Optional.ofNullable(
-                    catalogueService.retrieve(catalogueId)).map(catalogue -> getCatalogueTtl(catalogueId, catalogue)
-                );
-                preFetchCatalogue.put(catalogueId, bigTtl);
-            }
-            return preFetchCatalogue.get(catalogueId);
+            return getCachedBigTtl(catalogueId);
         } else {
-            return Optional.ofNullable(
-                catalogueService.retrieve(catalogueId)).map(catalogue -> getCatalogueTtl(catalogueId, catalogue)
-            );
+            return getUncachedBigTtl(catalogueId);
         }
+    }
+
+    private Optional<String> getCachedBigTtl(String catalogueId) {
+        if (!preFetchCatalogue.containsKey(catalogueId)) {
+            preFetchCatalogue.put(catalogueId, getUncachedBigTtl(catalogueId));
+        }
+        return preFetchCatalogue.get(catalogueId);
+    }
+
+    private Optional<String> getUncachedBigTtl(String catalogueId) {
+        return Optional.ofNullable(
+            catalogueService.retrieve(catalogueId)).map(catalogue -> getCatalogueTtl(catalogueId, catalogue)
+        );
     }
 
     private String getCatalogueTtl(String catalogueId, Catalogue catalogue) {
@@ -94,10 +99,7 @@ public class CatalogueToTurtleService implements DocumentsToTurtleService {
     @Scheduled(initialDelay = TimeConstants.ONE_MINUTE*3, fixedDelay = TimeConstants.ONE_DAY)
     public void fetchCatalogues() {
         for (String catalogueId : PREFETCH_CATALOGUES) {
-            Optional<String> bigTtl = Optional.ofNullable(
-                catalogueService.retrieve(catalogueId)).map(catalogue -> getCatalogueTtl(catalogueId, catalogue)
-            );
-            preFetchCatalogue.put(catalogueId, bigTtl);
+            preFetchCatalogue.put(catalogueId, getUncachedBigTtl(catalogueId));
         }
     }
 
