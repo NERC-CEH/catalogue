@@ -62,9 +62,9 @@ public class DataciteRequestTest {
         List<DataciteRequest.Attributes.FundingReference> result = attributes.fundingDetails(List.of(rorFunder, orcidFunder, otherFunder));
 
         assertEquals(3, result.size());
-        assertEquals("ROR", result.get(0).getFunderIdentifierType());
-        assertEquals("Crossref Funder", result.get(1).getFunderIdentifierType());
-        assertEquals("Other", result.get(2).getFunderIdentifierType());
+        assertEquals("ROR", result.get(0).funderIdentifierType());
+        assertEquals("Crossref Funder", result.get(1).funderIdentifierType());
+        assertEquals("Other", result.get(2).funderIdentifierType());
     }
 
     @Test
@@ -72,7 +72,7 @@ public class DataciteRequestTest {
         BoundingBox box = BoundingBox.builder().westBoundLongitude("-5.0").eastBoundLongitude("1.0").southBoundLatitude("50.0").northBoundLatitude("60.0").build();
         List<DataciteRequest.Attributes.GeoLocation> geoLocations = attributes.extractGeoLocations(List.of(box));
         assertEquals(1, geoLocations.size());
-        assertNotNull(geoLocations.getFirst().getGeoLocationBox());
+        assertNotNull(geoLocations.getFirst().geoLocationBox());
     }
 
     @Test
@@ -81,7 +81,7 @@ public class DataciteRequestTest {
         when(docMock.getLineage()).thenReturn("Mr Des Cription");
         List<Description> descriptions = attributes.populateDescriptions(docMock);
         assertEquals(2, descriptions.size());
-        assertEquals("Methods", descriptions.get(1).descriptionType);
+        assertEquals("Methods", descriptions.get(1).descriptionType());
     }
 
     @Test
@@ -97,8 +97,8 @@ public class DataciteRequestTest {
         ResourceConstraint rc = new ResourceConstraint("Open Government Licence","license", "https://eidc.ceh.ac.uk/licences/OGL/plain");
         ResourceConstraint rc2 = new ResourceConstraint("Open Government Licence","MPA", "");
         List<Rights> rights = attributes.listRights(List.of(rc,rc2));
-        assertEquals("OGL-UK-3.0", rights.get(0).getRightsIdentifier());
-        assertEquals("", rights.get(1).getRightsUri());
+        assertEquals("OGL-UK-3.0", rights.get(0).rightsIdentifier());
+        assertEquals("", rights.get(1).rightsUri());
     }
 
     @Test
@@ -149,11 +149,11 @@ public class DataciteRequestTest {
         // Then
         assertEquals(2, result.size());
 
-        assertEquals("https://example.org/other1YP", result.get(0).getIdentifier());
-        assertEquals("URL", result.get(0).getIdentifierType());
+        assertEquals("https://example.org/other1YP", result.get(0).identifier());
+        assertEquals("URL", result.get(0).identifierType());
 
-        assertEquals("YP-MPAyum", result.get(1).getIdentifier());
-        assertEquals("URN", result.get(1).getIdentifierType());
+        assertEquals("YP-MPAyum", result.get(1).identifier());
+        assertEquals("URN", result.get(1).identifierType());
     }
     @Test
     void testSetDateDetails() {
@@ -162,7 +162,7 @@ public class DataciteRequestTest {
                                     .publicationDate(LocalDate.of(2022, 6, 1)).build();
         List<Date> dates = attributes.setDateDetails(drd);
         assertEquals(2, dates.size());
-        assertEquals("2022-06-01", dates.getFirst().getDate());
+        assertEquals("2022-06-01", dates.getFirst().date());
     }
 
     @Test
@@ -188,7 +188,7 @@ public class DataciteRequestTest {
                                 .organisationIdentifier("https://ror.org/016476m91")
                                 .familyName("family").build();
         Publisher publisher = attributes.assignPublisher(List.of(rp));
-        assertEquals("ROR", publisher.getPublisherIdentifierScheme());
+        assertEquals("ROR", publisher.publisherIdentifierScheme());
         assertNull(attributes.assignPublisher(List.of()));
     }
 
@@ -202,7 +202,7 @@ public class DataciteRequestTest {
 
         List<DataciteContact> creators = attributes.dataciteContact(docMock, "creator");
         assertEquals(1, creators.size());
-        assertEquals("Personal", creators.getFirst().getNameType());
+        assertEquals("Personal", creators.getFirst().nameType());
 
         ResponsibleParty contact = ResponsibleParty.builder()
             .displayName("Patrick Stewart")
@@ -225,8 +225,8 @@ public class DataciteRequestTest {
             .organisationName("Starfleet")
             .organisationIdentifier("https://ror.org/016476m91").build();
         DataciteContact contact = attributes.dataciteContactHelper(party, "contributor", "ContactPerson");
-        assertEquals("Patrick Stewart", contact.getName());
-        assertEquals("ROR", contact.getAffiliation().getFirst().getAffiliationIdentifierScheme());
+        assertEquals("Patrick Stewart", contact.name());
+        assertEquals("ROR", contact.affiliation().getFirst().affiliationIdentifierScheme());
     }
 
     @Test
@@ -237,8 +237,8 @@ public class DataciteRequestTest {
             .honorificPrefix(null)
             .familyName(null).nameIdentifier("Non-ORC").build();
         DataciteContact contact = attributes.dataciteContactHelper(party, "contributor", "ContactPerson");
-        assertEquals("Starfleet", contact.getName());
-        assertEquals("Organizational", contact.getNameType());
-        assertEquals("ROR", contact.getAffiliation().getFirst().getAffiliationIdentifierScheme());
+        assertEquals("Starfleet", contact.name());
+        assertEquals("Organizational", contact.nameType());
+        assertEquals("ROR", contact.affiliation().getFirst().affiliationIdentifierScheme());
     }
 }

@@ -1,8 +1,6 @@
 package uk.ac.ceh.gateway.catalogue.datacite;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import uk.ac.ceh.gateway.catalogue.gemini.*;
 import uk.ac.ceh.gateway.catalogue.geometry.BoundingBox;
@@ -18,12 +16,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Getter
-@Setter
+@lombok.Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class DataciteRequest {
-    @JsonProperty("data")
     Data data;
 
     public DataciteRequest(Map<String, Object> request, String url, JenaLookupService jenaLookupService) {
@@ -35,18 +31,12 @@ public class DataciteRequest {
         this.data = new Data(doi, new Attributes(doi, document, url, resourceType, jenaLookupService));
     }
 
-    @Getter
-    @Setter
+    @lombok.Data
     @NoArgsConstructor
     @AllArgsConstructor
-    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Data {
-        @JsonInclude(JsonInclude.Include.NON_NULL)
-        @JsonProperty("id")
         String id;
-        @JsonProperty("type")
         String type = "dois";
-        @JsonProperty("attributes")
         Attributes attributes;
 
         public Data(String id, Attributes attributes) {
@@ -55,12 +45,30 @@ public class DataciteRequest {
         }
     }
 
-    @Getter
-    @Setter
+    @lombok.Data
     @NoArgsConstructor
     @AllArgsConstructor
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Attributes {
+        String doi;
+        String event = "publish";
+        String url;
+        List<Title> titles;
+        Types types;
+        List<DataciteContact> creators;
+        Publisher publisher;
+        int publicationYear;
+        List<DataciteContact> contributors;
+        List<Subject> subjects;
+        List<Date> dates;
+        String language;
+        List<Identifier> identifiers;
+        List<RelatedIdentifier> relatedIdentifiers;
+        List<String> formats;
+        List<Rights> rightsList;
+        List<Description> descriptions;
+        List<GeoLocation> geoLocations;
+        List<FundingReference> fundingReferences;
 
         public Attributes(String doi, GeminiDocument document, String url, String resourceType, JenaLookupService jenaLookupService) {
             this.doi = doi;
@@ -83,292 +91,21 @@ public class DataciteRequest {
             this.fundingReferences = fundingDetails(document.getFunding());
         }
 
-        @JsonProperty("doi")
-        String doi;
-        @JsonProperty("event")
-        String event = "publish";
-        @JsonProperty("url")
-        String url;
-        @JsonProperty("titles")
-        List<Title> titles;
-        @JsonProperty("types")
-        Types types;
-        @JsonIgnoreProperties(ignoreUnknown = true)
-        @JsonProperty("creators")
-        List<DataciteContact> creators;
-        @JsonProperty("publisher")
-        Publisher publisher;
-        @JsonProperty("publicationYear")
-        int publicationYear;
-        @JsonProperty("contributors")
-        List<DataciteContact> contributors;
-        @JsonProperty("subjects")
-        List<Subject> subjects;
-        @JsonProperty("dates")
-        List<Date> dates;
-        @JsonProperty("language")
-        String language;
-        @JsonProperty("identifiers")
-        List<Identifier> identifiers;
-        @JsonProperty("relatedIdentifiers")
-        List<RelatedIdentifier> relatedIdentifiers;
-        @JsonProperty("formats")
-        List<String> formats;
-        @JsonProperty("rightsList")
-        List<Rights> rightsList;
-        @JsonProperty("descriptions")
-        List<Description> descriptions;
-        @JsonProperty("geoLocations")
-        List<GeoLocation> geoLocations;
-        @JsonProperty("fundingReferences")
-        List<FundingReference> fundingReferences;
-
-        @Getter
-        @Setter
-        @NoArgsConstructor
-        @AllArgsConstructor
-        @JsonIgnoreProperties(ignoreUnknown = true)
-        public static class DataciteContact {
-            @JsonInclude(JsonInclude.Include.NON_NULL)
-            @JsonProperty("contributorType")
-            String contributorType;
-            @JsonProperty("name")
-            String name;
-            @JsonProperty("nameType")
-            String nameType;
-            @JsonProperty("givenName")
-            String givenName;
-            @JsonProperty("familyName")
-            String familyName;
-            @JsonProperty("nameIdentifiers")
-            List<NameIdentifier> nameIdentifiers;
-            @JsonProperty("affiliation")
-            List<Affiliation> affiliation;
-        }
-
-        @Getter
-        @Setter
-        @NoArgsConstructor
-        @AllArgsConstructor
-        @JsonIgnoreProperties(ignoreUnknown = true)
-        public static class NameIdentifier {
-            @JsonProperty("nameIdentifier")
-            String nameIdentifier;
-            @JsonProperty("nameIdentifierScheme")
-            String nameIdentifierScheme;
-            @JsonProperty("schemeUri")
-            String schemeUri;
-        }
-
-        @Getter
-        @Setter
-        @NoArgsConstructor
-        @AllArgsConstructor
-        @JsonIgnoreProperties(ignoreUnknown = true)
-        public static class Affiliation {
-            @JsonProperty("name")
-            String name;
-            @JsonProperty("affiliationIdentifier")
-            String affiliationIdentifier;
-            @JsonProperty("affiliationIdentifierScheme")
-            String affiliationIdentifierScheme;
-            @JsonProperty("schemeUri")
-            String schemeUri;
-        }
-
-        @Getter
-        @Setter
-        @NoArgsConstructor
-        @AllArgsConstructor
-        @JsonIgnoreProperties(ignoreUnknown = true)
-        public static class Title {
-            @JsonProperty("title")
-            String title;
-        }
-        @Getter
-        @Setter
-        @NoArgsConstructor
-        @AllArgsConstructor
-        @JsonIgnoreProperties(ignoreUnknown = true)
-        public static class Types {
-            @JsonProperty("resourceType")
-            String resourceType;
-            @JsonProperty("resourceTypeGeneral")
-            String resourceTypeGeneral;
-        }
-        @Getter
-        @Setter
-        @NoArgsConstructor
-        @AllArgsConstructor
-        @JsonIgnoreProperties(ignoreUnknown = true)
-        public static class Publisher {
-            @JsonProperty("name")
-            String name;
-            @JsonProperty("publisherIdentifier")
-            @JsonInclude(JsonInclude.Include.NON_NULL)
-            String publisherIdentifier;
-            @JsonProperty("publisherIdentifierScheme")
-            @JsonInclude(JsonInclude.Include.NON_NULL)
-            String publisherIdentifierScheme;
-            @JsonProperty("schemeUri")
-            @JsonInclude(JsonInclude.Include.NON_NULL)
-            String schemeUri;
-
-            public Publisher(String name) {
-                this.name = name;
-                this.publisherIdentifier = null;
-                this.publisherIdentifierScheme = null;
-                this.schemeUri = null;
-            }
-        }
-
-        @Getter
-        @Setter
-        @NoArgsConstructor
-        @AllArgsConstructor
-        @JsonIgnoreProperties(ignoreUnknown = true)
-        public static class Subject {
-            @JsonProperty("subject")
-            String subject;
-            @JsonProperty("subjectScheme")
-            String subjectScheme;
-            @JsonProperty("schemeUri")
-            String schemeUri;
-            @JsonProperty("valueUri")
-            String valueUri;
-            @JsonProperty("classificationCode")
-            String classificationCode;
-        }
-
-        @Getter
-        @Setter
-        @NoArgsConstructor
-        @AllArgsConstructor
-        @JsonIgnoreProperties(ignoreUnknown = true)
-        public static class Date {
-            @JsonProperty("date")
-            String date;
-            @JsonProperty("dateType")
-            String dateType;
-            @JsonProperty("dateInformation")
-            String dateInformation;
-        }
-
-        @Getter
-        @Setter
-        @NoArgsConstructor
-        @AllArgsConstructor
-        @JsonIgnoreProperties(ignoreUnknown = true)
-        public static class Identifier {
-            @JsonProperty("identifier")
-            String identifier;
-            @JsonProperty("identifierType")
-            String identifierType;
-        }
-
-        @Getter
-        @Setter
-        @NoArgsConstructor
-        @AllArgsConstructor
-        @JsonIgnoreProperties(ignoreUnknown = true)
-        public static class RelatedIdentifier {
-            @JsonProperty("relatedIdentifier")
-            String relatedIdentifier;
-            @JsonProperty("relatedIdentifierType")
-            String relatedIdentifierType;
-            @JsonProperty("relationType")
-            String relationType;
-            @JsonProperty("relatedMetadataScheme")
-            String relatedMetadataScheme;
-            @JsonProperty("schemeUri")
-            String schemeUri;
-            @JsonProperty("schemeType")
-            String schemeType;
-            @JsonProperty("resourceTypeGeneral")
-            String resourceTypeGeneral;
-        }
-
-        @Getter
-        @Setter
-        @NoArgsConstructor
-        @AllArgsConstructor
-        @JsonIgnoreProperties(ignoreUnknown = true)
-        public static class Rights {
-            @JsonProperty("rights")
-            String rights;
-            @JsonProperty("lang")
-            String lang;
-            @JsonProperty("rightsUri")
-            String rightsUri;
-            @JsonProperty("rightsIdentifier")
-            String rightsIdentifier;
-            @JsonProperty("rightsIdentifierScheme")
-            String rightsIdentifierScheme;
-            @JsonProperty("schemeUri")
-            String schemeUri;
-        }
-
-        @Getter
-        @Setter
-        @NoArgsConstructor
-        @AllArgsConstructor
-        @JsonIgnoreProperties(ignoreUnknown = true)
-        public static class Description {
-            @JsonProperty("description")
-            String description;
-            @JsonProperty("lang")
-            String lang;
-            @JsonProperty("descriptionType")
-            String descriptionType;
-        }
-
-        @Getter
-        @Setter
-        @NoArgsConstructor
-        @AllArgsConstructor
-        @JsonIgnoreProperties(ignoreUnknown = true)
-        public static class GeoLocation {
-            @JsonProperty("geoLocationBox")
-            GeoLocationBox geoLocationBox;
-        }
-
-        @Getter
-        @Setter
-        @NoArgsConstructor
-        @AllArgsConstructor
-        @JsonIgnoreProperties(ignoreUnknown = true)
-        public static class GeoLocationBox {
-            @JsonProperty("westBoundLongitude")
-            BigDecimal westBoundLongitude;
-            @JsonProperty("eastBoundLongitude")
-            BigDecimal eastBoundLongitude;
-            @JsonProperty("southBoundLatitude")
-            BigDecimal southBoundLatitude;
-            @JsonProperty("northBoundLatitude")
-            BigDecimal northBoundLatitude;
-        }
-
-        @Getter
-        @Setter
-        @NoArgsConstructor
-        @AllArgsConstructor
-        @JsonIgnoreProperties(ignoreUnknown = true)
-        public static class FundingReference {
-            @JsonProperty("funderName")
-            String funderName;
-            @JsonProperty("funderIdentifier")
-            String funderIdentifier;
-            @JsonProperty("funderIdentifierType")
-            String funderIdentifierType;
-            @JsonProperty("schemeUri")
-            String schemeUri;
-            @JsonProperty("awardNumber")
-            String awardNumber;
-            @JsonProperty("awardUri")
-            String awardUri;
-            @JsonProperty("awardTitle")
-            String awardTitle;
-        }
+        public record DataciteContact(String contributorType, String name, String nameType, String givenName, String familyName, List<NameIdentifier> nameIdentifiers, List<Affiliation> affiliation) {}
+        public record NameIdentifier(String nameIdentifier, String nameIdentifierScheme, String schemeUri) {}
+        public record Affiliation(String name, String affiliationIdentifier, String affiliationIdentifierScheme, String schemeUri) {}
+        public record Title(String title) {}
+        public record Types(String resourceType, String resourceTypeGeneral) {}
+        public record Publisher(String name, String publisherIdentifier, String publisherIdentifierScheme, String schemeUri) {}
+        public record Subject(String subject, String subjectScheme, String schemeUri, String valueUri, String classificationCode) {}
+        public record Date(String date, String dateType, String dateInformation) {}
+        public record Identifier(String identifier, String identifierType) {}
+        public record RelatedIdentifier(String relatedIdentifier, String relatedIdentifierType, String relationType, String relatedMetadataScheme, String schemeUri, String schemeType, String resourceTypeGeneral) {}
+        public record Rights(String rights, String lang, String rightsUri, String rightsIdentifier, String rightsIdentifierScheme, String schemeUri) {}
+        public record Description(String description, String lang, String descriptionType) {}
+        public record GeoLocation(GeoLocationBox geoLocationBox) {}
+        public record GeoLocationBox(BigDecimal westBoundLongitude, BigDecimal eastBoundLongitude, BigDecimal southBoundLatitude, BigDecimal northBoundLatitude) {}
+        public record FundingReference(String funderName, String funderIdentifier, String funderIdentifierType, String schemeUri, String awardNumber, String awardUri, String awardTitle) {}
 
         public List<FundingReference> fundingDetails(List<Funding> funders) {
             return funders.stream()
@@ -590,7 +327,10 @@ public class DataciteRequest {
                             "ROR",
                             "https://ror.org/");
                     } else {
-                        return new Publisher(assignedPublisher.getOrganisationName());
+                        return new Publisher(assignedPublisher.getOrganisationName(),
+                        null,
+                        null,
+                        null);
                     }
                 })
                 .orElse(null);
@@ -623,51 +363,72 @@ public class DataciteRequest {
         }
 
         public DataciteContact dataciteContactHelper(ResponsibleParty party, String contactType, String role) {
-            DataciteContact details = new DataciteContact();
-            Affiliation affiliation;
-            if (contactType.equals("contributor") && role != null && !role.isEmpty()) {
-                details.setContributorType(role);
-            }
+            String contributorType = (contactType.equals("contributor") && role != null && !role.isEmpty()) ? role : null;
+
+            String name;
+            String nameType;
+            String givenName = null;
+            String familyName = null;
+            List<NameIdentifier> nameIdentifiers = null;
+            List<Affiliation> affiliation = null;
 
             boolean hasFullName = party.getFullName() != null && !party.getFullName().isEmpty();
+
             if (hasFullName) {
-                details.setName(party.getFullName());
-                details.setNameType("Personal");
+                name = party.getFullName();
+                nameType = "Personal";
+
                 if (!party.getGivenName().isEmpty()) {
-                    details.setGivenName(party.getGivenName());
-                }
-                if (!party.getFamilyName().isEmpty()) {
-                    details.setFamilyName(party.getFamilyName());
-                }
-                NameIdentifier identifier = new NameIdentifier(party.getNameIdentifier(), "", "");
-                if (party.isOrcid()) {
-                    identifier.setNameIdentifierScheme("ORCID");
-                    identifier.setSchemeUri("https://orcid.org/");
-                    details.setNameIdentifiers(List.of(identifier));
-                } else {
-                    identifier.setNameIdentifierScheme("Other");
-                    details.setNameIdentifiers(List.of(identifier));
+                    givenName = party.getGivenName();
                 }
 
+                if (!party.getFamilyName().isEmpty()) {
+                    familyName = party.getFamilyName();
+                }
+
+                NameIdentifier identifier = new NameIdentifier(
+                    party.getNameIdentifier(),
+                    party.isOrcid() ? "ORCID" : "Other",
+                    party.isOrcid() ? "https://orcid.org/" : ""
+                );
+                nameIdentifiers = List.of(identifier);
+
                 if (party.isRor()) {
-                    affiliation = new Affiliation(party.getOrganisationName(),party.getOrganisationIdentifier(),
-                                            "ROR","https://ror.org");
-                    details.setAffiliation(List.of(affiliation));
+                    affiliation = List.of(new Affiliation(
+                        party.getOrganisationName(),
+                        party.getOrganisationIdentifier(),
+                        "ROR",
+                        "https://ror.org"
+                    ));
                 } else if (!party.getOrganisationName().isEmpty()) {
-                    affiliation = new Affiliation(party.getOrganisationName(),"","","");
-                    details.setAffiliation(List.of(affiliation));
+                    affiliation = List.of(new Affiliation(
+                        party.getOrganisationName(), "", "", ""
+                    ));
                 }
             } else {
-                details.setName(party.getOrganisationName());
-                details.setNameType("Organizational");
+                name = party.getOrganisationName();
+                nameType = "Organizational";
 
                 if (party.isRor()) {
-                    affiliation = new Affiliation(party.getOrganisationName(), party.getOrganisationIdentifier(),
-                                        "ROR", "");
-                    details.setAffiliation(List.of(affiliation));
+                    affiliation = List.of(new Affiliation(
+                        party.getOrganisationName(),
+                        party.getOrganisationIdentifier(),
+                        "ROR",
+                        ""
+                    ));
                 }
             }
-            return details;
+
+            return new DataciteContact(
+                contributorType,
+                name,
+                nameType,
+                givenName,
+                familyName,
+                nameIdentifiers,
+                affiliation
+            );
         }
+
     }
 }
