@@ -50,24 +50,15 @@ class DataciteIndexingServiceTest {
     @Test
     void checkThatUpdatesDoiOfDocumentWhichRequestHasChanged() throws Exception {
         //Given
-        DataciteRequest.Data data = new DataciteRequest.Data();
-        data.setId("dataID1");
-        DataciteRequest dataciteRequest = new DataciteRequest();
-        dataciteRequest.setData(data);
-        DataciteRequest.Data data2 = new DataciteRequest.Data();
-        data.setId("dataID2");
-        DataciteRequest dataciteRequest2 = new DataciteRequest();
-        dataciteRequest2.setData(data2);
+        DataciteRequest.Data data = new DataciteRequest.Data("dataID1", "dois", null);
+        DataciteRequest dataciteRequest = new DataciteRequest(data);
+        DataciteRequest.Data data2 = new DataciteRequest.Data("dataID2", "dois", null);
+        DataciteRequest dataciteRequest2 = new DataciteRequest(data2);
         GeminiDocument document = new GeminiDocument();
-        given(datacite.isDatacited(document))
-            .willReturn(true);
-        given(datacite.getDoiMetadata(document))
-            .willReturn(dataciteRequest);
-        given(datacite.getNewDataciteRequest(eq(document)))
-            .willReturn(dataciteRequest2);
-        given(bundleReader.readBundle("document", "latest"))
-            .willReturn(document);
-
+        given(datacite.isDatacited(document)).willReturn(true);
+        given(datacite.getDoiMetadata(document)).willReturn(dataciteRequest);
+        given(datacite.getNewDataciteRequest(eq(document))).willReturn(dataciteRequest2);
+        given(bundleReader.readBundle("document", "latest")).willReturn(document);
 
         //When
         service.indexDocuments(List.of("document"), "latest");
@@ -79,10 +70,7 @@ class DataciteIndexingServiceTest {
     @Test
     void checkThatDoesntUpdateDocumentWhichRequestHasNotChanged() throws Exception {
         //Given
-        DataciteRequest.Data data = new DataciteRequest.Data();
-        data.setId("dataID1");
-        DataciteRequest dataciteRequest = new DataciteRequest();
-        dataciteRequest.setData(data);
+        DataciteRequest dataciteRequest = new DataciteRequest(new DataciteRequest.Data("dataID1", "dois", null));
         GeminiDocument document = new GeminiDocument();
         given(datacite.isDatacited(document))
             .willReturn(true);

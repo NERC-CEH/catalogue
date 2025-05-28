@@ -49,6 +49,7 @@ public class DataciteService {
     private final DocumentIdentifierService identifierService;
     private final RestTemplate restTemplate;
     private final JenaLookupService jenaLookupService;
+    private final DataciteRequestService dataciteRequestService;
 
     public DataciteService(
             @Value("${doi.api}") String api,
@@ -60,7 +61,8 @@ public class DataciteService {
             @Value("${doi.templateLocation}") String templateLocation,
             @NonNull DocumentIdentifierService identifierService,
             @Qualifier("normal") RestTemplate restTemplate,
-            @NonNull JenaLookupService jenaLookupService
+            @NonNull JenaLookupService jenaLookupService,
+            @NonNull DataciteRequestService dataciteRequestService
     ) {
         this.api = api;
         this.prefix = prefix;
@@ -72,6 +74,7 @@ public class DataciteService {
         this.identifierService = identifierService;
         this.restTemplate = restTemplate;
         this.jenaLookupService = jenaLookupService;
+        this.dataciteRequestService = dataciteRequestService;
         log.info("Creating");
     }
 
@@ -87,7 +90,7 @@ public class DataciteService {
             val url = UriComponentsBuilder
                     .fromUriString(api)
                     .toUriString();
-            DataciteRequest dataciteRequest = new DataciteRequest(request, identifierService.generateUri(document.getId()), jenaLookupService);
+            DataciteRequest dataciteRequest = new DataciteRequest(request, identifierService.generateUri(document.getId()), jenaLookupService, dataciteRequestService);
             try {
                 val headers = withBasicAuth(username, password);
                 headers.setContentType(MediaType.valueOf("application/vnd.api+json"));
@@ -168,8 +171,7 @@ public class DataciteService {
                         .pathSegment(prefix, document.getId())
                         .toUriString();
 
-                DataciteRequest dataciteRequest = new DataciteRequest(request, identifierService.generateUri(document.getId()), jenaLookupService);
-
+                DataciteRequest dataciteRequest = new DataciteRequest(request, identifierService.generateUri(document.getId()), jenaLookupService, dataciteRequestService);
                 restTemplate.exchange(
                         url,
                         HttpMethod.PUT,
@@ -302,7 +304,7 @@ public class DataciteService {
     }
 
     public DataciteRequest getNewDataciteRequest(GeminiDocument document) {
-        return new DataciteRequest(getDatacitationRequest(document), identifierService.generateUri(document.getId()), jenaLookupService);
+        return new DataciteRequest(getDatacitationRequest(document), identifierService.generateUri(document.getId()), jenaLookupService, dataciteRequestService);
     }
 
 }
