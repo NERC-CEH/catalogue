@@ -643,6 +643,22 @@ body {
         }
     }
 
+    .alert-linked {
+        @extend .alert-secondary !optional;
+
+        .row {
+            max-width: 900px;
+            justify-self: center;
+        }
+
+        img {
+            max-width: 160px;
+            justify-self: center;
+        }
+    }
+
+
+
     @media only screen and (min-width: 1001px) {
         .description {
             >div {
