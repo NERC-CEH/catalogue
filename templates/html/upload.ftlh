@@ -21,7 +21,7 @@
         <div class="mb-3">
           <label for="metadataType" class="col-sm-3 ">Metadata Type:</label>
           <div class="col-sm-9">
-            <select id="metadataType" name="type" class="form-control">
+            <select id="metadataType" name="type" class="form-select">
               <option value="EF_DOCUMENT">EF</option>
               <option value="GEMINI_DOCUMENT" selected="">GEMINI</option>
             </select>
@@ -30,7 +30,7 @@
         <div class="mb-3">
           <label for="catalogue" class="col-sm-3 ">Catalogue:</label>
           <div class="col-sm-9">
-            <select id="catalogue" name="catalogue" class="form-control">
+            <select id="catalogue" name="catalogue" class="form-select">
               <#list catalogues.retrieveAll() as catalogue>
                 <option value="${catalogue.id}">${catalogue.title}</option>
               </#list>

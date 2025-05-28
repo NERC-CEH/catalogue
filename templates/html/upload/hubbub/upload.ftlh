@@ -20,13 +20,6 @@
              <@row>
               <div class="d-inline-flex gap-2 justify-content-center flex-wrap">
                   <@moveAllDatastoreButton/>
-
-                  <#if isInProgress>
-                    <@rescheduleButton/>
-                  <#elseif isOpen>
-                    <@scheduleButton/>
-                  </#if>
-
                   <@hashDropboxButton/>
                 </div>
               </@row>
@@ -38,6 +31,11 @@
            <@row>
               <div class="d-inline-flex gap-2 justify-content-center flex-wrap">
                   <@registerDropboxButton/>
+                  <#if isInProgress>
+                    <@rescheduleButton/>
+                  <#elseif isOpen>
+                    <@scheduleButton/>
+                  </#if>
               </div>
             </@row>
 

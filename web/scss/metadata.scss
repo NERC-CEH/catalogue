@@ -156,21 +156,17 @@ body {
     }
 
     .topDOI {
-        @extend .py-3 !optional;
-        @extend .border !optional;
-        @extend .border-2 !optional;
-        @extend .border-end-0 !optional;
-        @extend .border-start-0 !optional;
+        @extend .py-2 !optional;
     }
 
     .accessButtons {
-
         gap: .5em 1em;
         --btn_width: 170px;
 
         >.btn {
             flex: 0 1 var(--btn_width);
             text-wrap: nowrap;
+            text-decoration: none;
         }
 
         >div {
@@ -183,7 +179,8 @@ body {
             }
         }
 
-        .btn-download {
+        .btn-download,
+        .btn-explore {
             --bs-btn-bg: var(--eidc-blue);
             --bs-btn-color: var(--bs-white);
             --bs-btn-hover-bg: color-mix(in oklab, lightgray 40%, var(--eidc-blue));
@@ -197,8 +194,8 @@ body {
             --bs-btn-hover-bg: color-mix(in oklab, lightgray 80%, var(--eidc-blue));
             --bs-btn-hover-color: var(--bs-white);
             --bs-btn-hover-border-color: var(--eidc-orange);
-        }
 
+        }
     }
 
     .offcanvas-access {
@@ -207,7 +204,6 @@ body {
 
     #segment-description {
         margin: 1em 0;
-        padding-block-start: 1em;
     }
 
     #segment-thirdparty {

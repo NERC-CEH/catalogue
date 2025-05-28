@@ -1,5 +1,5 @@
 <#if description??>
-<div class="description" id="segment-description">
+<div class="description " id="segment-description">
   <div>
     <div class="description-text">
       <#include "_browseGraphic.ftlh">

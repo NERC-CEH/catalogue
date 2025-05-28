@@ -62,7 +62,7 @@
           </span>
 
           <#if result.resourceStatus?? >
-            <span class="resourceStatus">${result.resourceStatus}</span>
+            <span class="resourceStatus resourceStatus-${result.resourceStatus}">${result.resourceStatus}</span>
           </#if>
       </div>
       <div class="result__title">${result.title} </div>

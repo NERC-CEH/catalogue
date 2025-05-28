@@ -61,7 +61,7 @@ export default _.template(`
             </span>
 
             <% if (result.resourceStatus != '') {  %>
-              <span class="resourceStatus"><%=result.resourceStatus %></span>
+              <span class="resourceStatus resourceStatus-<%=result.resourceStatus %>"><%=result.resourceStatus %></span>
             <% } %>
           </div>
           <div class="result__title"><%=result.title%></div>
