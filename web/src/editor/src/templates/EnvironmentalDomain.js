@@ -1,7 +1,7 @@
 import _ from 'underscore'
 
 export default _.template(`
-<select data-name="value" class="editor-input environmentalDomain">
+<select data-name="value" class="environmentalDomain">
   <option value="Atmosphere">Atmosphere</option>
   <option value="Biosphere">Biosphere</option>
   <option value="Built environment">Built environment</option>

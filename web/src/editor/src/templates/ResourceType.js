@@ -1,7 +1,7 @@
 import _ from 'underscore'
 
 export default _.template(`
-<select data-name="value" class="editor-input" id="input-resourceType">
+<select data-name="value"  id="input-resourceType">
     <option value="" selected>- Select Resource Type -</option>
     <optgroup label="Commonly used">
       <option class="option-eidc option-ukceh option-inms option-assist" value="dataset">Dataset</option>

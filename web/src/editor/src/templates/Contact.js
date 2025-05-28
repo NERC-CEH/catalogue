@@ -6,7 +6,7 @@ export default _.template(`
         <label for="contacts<%= data.index %>Role">Role</label>
     </div>
     <div class="col-lg-10">
-        <select data-name="role" class="editor-input role" id="contacts<%= data.index %>Role">
+        <select data-name="role" class="role" id="contacts<%= data.index %>Role">
             <option value="" selected="">- Select Role -</option>
             <optgroup label="Frequently used">
                 <option class="option-nm option-eidc option-ukceh" value="author">Author</option>
@@ -72,7 +72,7 @@ export default _.template(`
         <div class="row">
           <div class="col-lg-4">
           <div class="form-floating">
-            <select data-name="honorificPrefix" class="editor-input honorificPrefix" id="contacts<%= data.index %>honorificPrefix">
+            <select data-name="honorificPrefix" class="honorificPrefix" id="contacts<%= data.index %>honorificPrefix">
               <option value="">--none--</option>
               <option value="Dr">Dr</option>
               <option value="Miss">Miss</option>
