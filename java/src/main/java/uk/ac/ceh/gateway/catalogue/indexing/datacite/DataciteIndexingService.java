@@ -1,5 +1,9 @@
 package uk.ac.ceh.gateway.catalogue.indexing.datacite;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -60,10 +64,14 @@ public class DataciteIndexingService implements DocumentIndexingService {
      * submit an update.
      * @param document to check if updates are required
      */
-    private void indexDocument(GeminiDocument document) {
+    private void indexDocument(GeminiDocument document) throws JsonProcessingException {
         if(datacite.isDatacited(document)) {
-            String lastRequest = datacite.getDoiMetadata(document); //Get the latest request
-            String newRequest = datacite.getDatacitationRequest(document);
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+                  .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
+                  .enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
+            String lastRequest = mapper.writeValueAsString(datacite.getDoiMetadata(document));
+            String newRequest = mapper.writeValueAsString(datacite.getNewDataciteRequest(document));
             if(!newRequest.equals(lastRequest)) {
                 log.info("Submitting datacite update: {}", document.getId());
                 datacite.updateDoiMetadata(document);

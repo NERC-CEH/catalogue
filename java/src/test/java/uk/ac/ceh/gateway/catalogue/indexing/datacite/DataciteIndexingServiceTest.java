@@ -1,12 +1,12 @@
 package uk.ac.ceh.gateway.catalogue.indexing.datacite;
 
 import lombok.SneakyThrows;
-import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.ac.ceh.gateway.catalogue.datacite.DataciteRequest;
 import uk.ac.ceh.gateway.catalogue.datacite.DataciteService;
 import uk.ac.ceh.gateway.catalogue.document.UnknownContentTypeException;
 import uk.ac.ceh.gateway.catalogue.document.reading.BundledReaderService;
@@ -16,10 +16,7 @@ import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingException;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.eq;
@@ -53,22 +50,15 @@ class DataciteIndexingServiceTest {
     @Test
     void checkThatUpdatesDoiOfDocumentWhichRequestHasChanged() throws Exception {
         //Given
-        String dataciteRequest = IOUtils.toString(
-            Objects.requireNonNull(
-                getClass().getResource("datacite-date-request.xml")
-            ),
-            StandardCharsets.UTF_8
-        );
+        DataciteRequest.Data data = new DataciteRequest.Data("dataID1", "dois", null);
+        DataciteRequest dataciteRequest = new DataciteRequest(data);
+        DataciteRequest.Data data2 = new DataciteRequest.Data("dataID2", "dois", null);
+        DataciteRequest dataciteRequest2 = new DataciteRequest(data2);
         GeminiDocument document = new GeminiDocument();
-        given(datacite.isDatacited(document))
-            .willReturn(true);
-        given(datacite.getDoiMetadata(document))
-            .willReturn(dataciteRequest);
-        given(datacite.getDatacitationRequest(eq(document)))
-            .willReturn("Different doi");
-        given(bundleReader.readBundle("document", "latest"))
-            .willReturn(document);
-
+        given(datacite.isDatacited(document)).willReturn(true);
+        given(datacite.getDoiMetadata(document)).willReturn(dataciteRequest);
+        given(datacite.getNewDataciteRequest(eq(document))).willReturn(dataciteRequest2);
+        given(bundleReader.readBundle("document", "latest")).willReturn(document);
 
         //When
         service.indexDocuments(List.of("document"), "latest");
@@ -80,18 +70,13 @@ class DataciteIndexingServiceTest {
     @Test
     void checkThatDoesntUpdateDocumentWhichRequestHasNotChanged() throws Exception {
         //Given
-        String dataciteRequest = IOUtils.toString(
-            Objects.requireNonNull(
-                getClass().getResource("datacite-date-request.xml")
-            ),
-            StandardCharsets.UTF_8
-        );
+        DataciteRequest dataciteRequest = new DataciteRequest(new DataciteRequest.Data("dataID1", "dois", null));
         GeminiDocument document = new GeminiDocument();
         given(datacite.isDatacited(document))
             .willReturn(true);
         given(datacite.getDoiMetadata(document))
             .willReturn(dataciteRequest);
-        given(datacite.getDatacitationRequest(eq(document)))
+        given(datacite.getNewDataciteRequest(eq(document)))
             .willReturn(dataciteRequest);
         given(bundleReader.readBundle("document", "latest"))
             .willReturn(document);
