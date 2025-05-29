@@ -106,6 +106,12 @@
             select {
                 color: inherit;
 
+            }
+
+            input.editor-input,
+            select.form-select,
+            textarea.editor-textarea {
+
                 &:focus {
                     color: inherit;
                 }
