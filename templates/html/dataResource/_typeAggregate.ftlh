@@ -3,7 +3,7 @@
 	otherSupplemental = func.filter(supplemental, "function", "relatedDataset", true)
 	>
 
-<#assign apps = func.filter(onlineResources, "function", "browser") >
+<#assign apps = func.filter(onlineResources, "function", "browsing") >
 
 <div class="py-3">
 
