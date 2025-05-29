@@ -85,12 +85,10 @@
 </#macro>
 
 <#macro exploreButton>
-  <#if browsers?? && browsers?size gte 1>
-    <#list browsers>
-      <#items as browser>
-          <a class="btn btn-explore" href="${browser.url}" alt="${browser.name}">
-           <span class="fa-solid fa-laptop"></span> ${browser.name}</a>
-      </#items>
+  <#if apps?? && apps?size gte 1>
+    <#list apps as app>
+      <a class="btn btn-explore" href="${app.url}" alt="${app.name}">
+        <span class="fa-solid fa-laptop"></span> ${app.name}</a>
     </#list>
   </#if>
 </#macro>

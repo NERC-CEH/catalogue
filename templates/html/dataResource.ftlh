@@ -36,7 +36,7 @@
     totalIssues = errors + infos +  warnings
     metadataClass="warning"
 >
-<#assign browsers=func.filter(onlineResources, "function", "browser")>
+<#assign apps=func.filter(onlineResources, "function", "browsing")>
 
 <#if totalIssues?? && totalIssues gte 1>
   <#if errors gte 1 >

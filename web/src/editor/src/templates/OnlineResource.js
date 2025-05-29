@@ -33,7 +33,7 @@ export default _.template(`
         <select data-name="function" id="onlineResource<%= data.index %>Function"   <%= data.disabled%>>
             <option value="" selected >- Select Function -</option>
             <option value="browseGraphic">Browse graphic <span>(a static image such as a logo or data preview)</span></option>
-            <option value="browser">Browser <span>(an application that allows you to browse/preview the data)</span></option>
+            <option value="browsing">Browsing <span>(an application that allows you to browse/preview the data)</span></option>
             <option value="download">Download</option>
             <option value="fileAccess">File access</option>
             <option value="information">Information</option>
