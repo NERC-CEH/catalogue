@@ -12,7 +12,9 @@ import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static uk.ac.ceh.gateway.catalogue.indexing.solr.SolrIndexMetadataDocumentGenerator.grab;
@@ -56,8 +58,8 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
             .setAuthorOrcid(grab(document.getAuthors(), ResponsibleParty::getNameIdentifier))
             .setAuthorRor(grab(document.getAuthors(), ResponsibleParty::getOrganisationIdentifier))
             .setKeywordsInstrument(grab(document.getKeywordsInstrument(), Keyword::getValue))
-            .setObservedPropertyValue(grab(document.getObservedProperty(), ObservedProperty::getValue))
-            .setObservedPropertyTitle(grab(document.getObservedProperty(), ObservedProperty::getTitle))
+            .setObservedPropertyValue(grab(getObservedProperty(document), ObservedProperty::getValue))
+            .setObservedPropertyTitle(grab(getObservedProperty(document), ObservedProperty::getTitle))
             .setKeywordsPlace(grab(document.getKeywordsPlace(), Keyword::getValue))
             .setKeywordsProject(grab(document.getKeywordsProject(), Keyword::getValue))
             .setKeywordsTheme(grab(document.getKeywordsTheme(), Keyword::getValue))
@@ -98,4 +100,14 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
             });
     }
 
+    private List<ObservedProperty> getObservedProperty(GeminiDocument document) {
+        List<ObservedProperty> list = new ArrayList<>();
+        Optional.ofNullable(document.getFileset())
+            .orElse(Collections.emptyList())
+            .forEach(fileset -> {
+                list.addAll(fileset.getObservedProperty());
+            });
+
+        return list;
+    }
 }

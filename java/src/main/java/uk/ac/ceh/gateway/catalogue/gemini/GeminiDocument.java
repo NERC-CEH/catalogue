@@ -12,10 +12,7 @@ import uk.ac.ceh.gateway.catalogue.converters.Template;
 import uk.ac.ceh.gateway.catalogue.geometry.BoundingBox;
 import uk.ac.ceh.gateway.catalogue.geometry.Geometry;
 import uk.ac.ceh.gateway.catalogue.indexing.solr.WellKnownText;
-import uk.ac.ceh.gateway.catalogue.model.AbstractMetadataDocument;
-import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
-import uk.ac.ceh.gateway.catalogue.model.Supplemental;
-import uk.ac.ceh.gateway.catalogue.model.ObservedProperty;
+import uk.ac.ceh.gateway.catalogue.model.*;
 import uk.ac.ceh.gateway.catalogue.serviceagreement.ServiceAgreement;
 
 import java.time.ZoneId;
@@ -59,7 +56,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
     private List<Keyword> topicCategories, keywordsDiscipline, keywordsInstrument,
             keywordsPlace, keywordsProject, keywordsTheme, keywordsOther;
     private List<Geometry> geometries;
-    private List<ObservedProperty> observedProperty;
+    private List<Fileset> fileset;
     private List<DistributionInfo> distributionFormats;
     private List<DescriptiveKeywords> descriptiveKeywords;
     private List<InspireTheme> inspireThemes;

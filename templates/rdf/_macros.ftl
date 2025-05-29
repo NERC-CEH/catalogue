@@ -138,29 +138,38 @@
 </#macro>
 
 <#macro opList >
-  <#list observedProperty as op>
-    <#if op.uri?has_content>
-      <#assign keyword ="\l" + op.uri?trim+ "\g">
-    <#elseif op.title?has_content>
-      <#assign keyword ='"' + op.title?replace("\"", "") + '"'>
-    <#else>
-      <#assign keyword ='"' + op.value?replace("\"", "") + '"'>
+  <#list fileset as filesetOp>
+    <#if filesetOp.observedProperty?has_content>
+      <#list filesetOp.observedProperty as op>
+        <#if op.uri?has_content>
+          <#assign keyword ="\l" + op.uri?trim+ "\g">
+        <#elseif op.title?has_content>
+          <#assign keyword ='"' + op.title?replace("\"", "") + '"'>
+        <#else>
+          <#assign keyword ='"' + op.value?replace("\"", "") + '"'>
+        </#if>
+        ${keyword}<#sep>,</#sep><#t>
+      </#list>
     </#if>
-    ${keyword}<#sep>,</#sep><#t>
+    <#sep>,</#sep><#t>
   </#list>
 </#macro>
 
 <#macro opDetail>
-  <#list observedProperty as op>
-    <#assign opLabel = "unknown">
-    <#if op.title?has_content>
-      <#assign opLabel = op.title>
-    <#elseif op.value?has_content>
-      <#assign opLabel = op.value>
-    </#if>
+  <#list fileset as filesetOp>
+    <#if filesetOp.observedProperty?has_content>
+      <#list filesetOp.observedProperty as op>
+        <#assign opLabel = "unknown">
+        <#if op.title?has_content>
+          <#assign opLabel = op.title>
+        <#elseif op.value?has_content>
+          <#assign opLabel = op.value>
+        </#if>
 
-    <#if op.uri?has_content>
-      <${op.uri?trim}> a skos:Concept;skos:prefLabel <@displayLiteral opLabel />; rdfs:label <@displayLiteral opLabel />.
+        <#if op.uri?has_content>
+          <${op.uri?trim}> a skos:Concept;skos:prefLabel <@displayLiteral opLabel />; rdfs:label <@displayLiteral opLabel />.
+        </#if>
+      </#list>
     </#if>
   </#list>
 </#macro>

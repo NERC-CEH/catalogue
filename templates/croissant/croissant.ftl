@@ -118,31 +118,35 @@
 </#macro>
 
 <#macro recordSet>
- <#if observedProperty??>
+  <#if fileset?? && fileset?has_content>
   ,"recordSet": [
       {
         "@type": "cr:RecordSet",
         "@id": "defaultRecordSet",
         "key": { "@id": "hash" },
         "field": [
-        <#list observedProperty as op>
-          <#assign dataType = "sc:Text">
-          <#if op.type == 'integer'>
-            <#assign dataType = "sc:Integer">
-          <#elseif op.type == 'number'>
-            <#assign dataType = "sc:Float">
-          <#elseif op.type == 'date'>
-            <#assign dataType = "sc:Date">
-          <#elseif op.type == 'datetime'>
-            <#assign dataType = "sc:DateTime">
+        <#list fileset as filesetOp>
+          <#if filesetOp.observedProperty?has_content>
+            <#list filesetOp.observedProperty as op>
+              <#assign dataType = "sc:Text">
+              <#if op.type == 'integer'>
+                <#assign dataType = "sc:Integer">
+              <#elseif op.type == 'number'>
+                <#assign dataType = "sc:Float">
+              <#elseif op.type == 'date'>
+                <#assign dataType = "sc:Date">
+              <#elseif op.type == 'datetime'>
+                <#assign dataType = "sc:DateTime">
+              </#if>
+              {
+                "@type": "cr:Field",
+                "@id": "${op.value}",
+                "description": "${op.title}",
+                "dataType": "${dataType}",
+                "source": { "@id": "all-files" }
+              }
+            <#sep>,</#sep></#list>
           </#if>
-          {
-            "@type": "cr:Field",
-            "@id": "${op.value}",
-            "description": "${op.title}",
-            "dataType": "${dataType}",
-            "source": { "@id": "all-files" }
-          }
         <#sep>,</#sep></#list>
         ]
       }

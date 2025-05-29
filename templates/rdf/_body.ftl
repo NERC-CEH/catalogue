@@ -61,7 +61,7 @@
       dcterms:subject <@keywordList allKeywords/> ;
     </#if>
 
-    <#if observedProperty?has_content>
+    <#if fileset?? && fileset?has_content>
       sdo:variableMeasured <@opList /> ;
     </#if>
 
@@ -101,7 +101,7 @@
       <@keywordDetail allKeywords />
     </#if>
 
-    <#if observedProperty?has_content>
+    <#if fileset?? && fileset?has_content>
       <@opDetail />
     </#if>
 

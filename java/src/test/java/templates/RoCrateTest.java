@@ -17,6 +17,7 @@ import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import uk.ac.ceh.gateway.catalogue.citation.Citation;
 import uk.ac.ceh.gateway.catalogue.gemini.*;
 import uk.ac.ceh.gateway.catalogue.geometry.BoundingBox;
+import uk.ac.ceh.gateway.catalogue.model.Fileset;
 import uk.ac.ceh.gateway.catalogue.model.ObservedProperty;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.model.Supplemental;
@@ -179,9 +180,16 @@ public class RoCrateTest {
                 .build());
 
             // observed properties
-            gemini.setObservedProperty(List.of(
-                ObservedProperty.builder().title("observed property 1").uri("https://example.com/op/1").unitsUri("https://example.com/units/m").units("metre").build(),
-                ObservedProperty.builder().value("observed property 2 value").build()
+            gemini.setFileset(List.of(
+                Fileset.builder()
+                    .filesetName("name")
+                    .encodingFormat("format")
+                    .includes("*.*")
+                    .observedProperty(List.of(
+                        ObservedProperty.builder().title("observed property 1").uri("https://example.com/op/1").unitsUri("https://example.com/units/m").units("metre").build(),
+                        ObservedProperty.builder().value("observed property 2 value").build()
+                    ))
+                    .build()
             ));
 
             // keywords

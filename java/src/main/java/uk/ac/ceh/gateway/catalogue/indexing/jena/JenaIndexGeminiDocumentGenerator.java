@@ -40,35 +40,36 @@ public class JenaIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
         Resource me = generator.resource(document.getId());
         toReturn.add(createStatement(me, IDENTIFIER, createPlainLiteral(me.getURI()))); //Add as an identifier of itself
 
-        Optional.ofNullable(document.getObservedProperty())
+        Optional.ofNullable(document.getFileset())
             .orElse(Collections.emptyList())
-            .forEach(op -> {
+            .forEach(fileset -> {
+                fileset.getObservedProperty().forEach(op -> {
+                    Resource observedPropertyResource = createResource(
+                        Stream.of(op.getUri(), op.getTitle(), op.getValue())
+                            .filter(value -> value != null && !value.trim().isEmpty())
+                            .map(String::trim)
+                            .findFirst()
+                            .orElse("")
+                    );
 
-                Resource observedPropertyResource = createResource(
-                    Stream.of(op.getUri(), op.getTitle(), op.getValue())
-                        .filter(value -> value != null && !value.trim().isEmpty())
-                        .map(String::trim)
-                        .findFirst()
-                        .orElse("")
-                );
-
-                if (op.getUri() !=null && !op.getUri().isEmpty()) {
-                    toReturn.add(createStatement(me, HAS_OBSERVED_PROPERTY, observedPropertyResource));
-                } else {
-                    toReturn.add(createStatement(me, HAS_OBSERVED_PROPERTY, createPlainLiteral(String.valueOf(observedPropertyResource))));
-                    observedPropertyResource = generator.resourceObservedProperty(observedPropertyResource, document.getId());
-                }
-
-                toReturn.add(createStatement(observedPropertyResource, RDFS_LABEL, createPlainLiteral(op.getValue())));
-
-                if (op.getUnitsUri() != null && !op.getUnitsUri().isEmpty()) {
-                    Resource unitResource = generator.resource(op.getUnitsUri().trim());
-                    toReturn.add(createStatement(observedPropertyResource, HAS_UNIT, unitResource));
-
-                    if (op.getUnits() != null) {
-                        toReturn.add(createStatement(unitResource, RDFS_LABEL, createPlainLiteral(op.getUnits())));
+                    if (op.getUri() !=null && !op.getUri().isEmpty()) {
+                        toReturn.add(createStatement(me, HAS_OBSERVED_PROPERTY, observedPropertyResource));
+                    } else {
+                        toReturn.add(createStatement(me, HAS_OBSERVED_PROPERTY, createPlainLiteral(String.valueOf(observedPropertyResource))));
+                        observedPropertyResource = generator.resourceObservedProperty(observedPropertyResource, document.getId());
                     }
-                }
+
+                    toReturn.add(createStatement(observedPropertyResource, RDFS_LABEL, createPlainLiteral(op.getValue())));
+
+                    if (op.getUnitsUri() != null && !op.getUnitsUri().isEmpty()) {
+                        Resource unitResource = generator.resource(op.getUnitsUri().trim());
+                        toReturn.add(createStatement(observedPropertyResource, HAS_UNIT, unitResource));
+
+                        if (op.getUnits() != null) {
+                            toReturn.add(createStatement(unitResource, RDFS_LABEL, createPlainLiteral(op.getUnits())));
+                        }
+                    }
+                });
             });
 
         Optional.ofNullable(document.getBoundingBoxes())
