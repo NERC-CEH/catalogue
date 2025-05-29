@@ -235,7 +235,9 @@
   <div class="terms id="termsBoilerplate">
       <p>This document sets out your rights and responsibilities as depositor and ours as the data distributor.</p>
       <p>As a depositor you must consent to this service agreement which establishes the terms and conditions of use of your data.</p>
-      <p>This agreement authorises the EIDC to preserve and to distribute the data under the terms specified in this document.  To do so, the EIDC will store the data and, where necessary, duplicate and transform copies.</p>
+      <p>This agreement authorises the EIDC to preserve and to distribute the data under the terms specified in this document. To do so, the EIDC
+        will store the data and metadata. In order to improve discoverability and to enhance reuse, we may update and enrich metadata as required.
+         We may, if necessary, duplicate and transform copies of the data to improve accessibility.</p>
       <p>All environmental data deposited into the EIDC are subject to the requirements of the NERC Data Policy.</p>
       <p>By depositing data, you confirm that the data is compliant with the provisions of UK data protection laws.</p>
 

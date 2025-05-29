@@ -62,7 +62,8 @@ public class DownloadOrderDetailsService {
             supportingDocumentsUrl = extractSupportingDocumentUrl(onlineResources);
             orderResources = Lists.newArrayList(Iterables.concat(
                 extractDownloadUrl(onlineResources),
-                extractOrderUrl(onlineResources)
+                extractOrderUrl(onlineResources),
+                extractFileAccessUrl(onlineResources)
             ));
             isOrderable = !orderResources.isEmpty();
 
@@ -89,6 +90,13 @@ public class DownloadOrderDetailsService {
             return onlineResources
                 .stream()
                 .filter(r -> r.getFunction().equals("download"))
+                .collect(Collectors.toList());
+        }
+
+        private List<OnlineResource> extractFileAccessUrl(List<OnlineResource> onlineResources) {
+            return onlineResources
+                .stream()
+                .filter(r -> r.getFunction().equals("fileAccess"))
                 .collect(Collectors.toList());
         }
 

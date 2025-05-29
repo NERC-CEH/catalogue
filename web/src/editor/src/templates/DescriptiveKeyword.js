@@ -6,7 +6,7 @@ export default _.template(`
         <label for="descriptiveKeyword<%= data.index %>type">Type</label>
     </div>
     <div class="col-sm-11">
-        <select data-name="type" class="editor-input type" id="descriptiveKeyword<%= data.index %>type">
+        <select data-name="type" class="type" id="descriptiveKeyword<%= data.index %>type">
             <option value="" selected >- Select Type (optional) -</option>
             <option value="Catalogue topic">Catalogue topic</option>
             <option value="dataCentre">Data Centre</option>

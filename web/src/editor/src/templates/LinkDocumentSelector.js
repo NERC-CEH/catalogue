@@ -10,7 +10,7 @@ export default _.template(`
 <div class="form-inline" style="margin-top: 6px">
     <div class="mb-3">
         <label for="catalogue">Catalogue</label>
-        <select id="catalogue" class="form-control"></select>
+        <select id="catalogue" ></select>
     </div>
     <div class="input-group">
         <input placeholder="Search…" id="term" type="text" autocomplete="off" class="form-control" value="<%= data.term %>">

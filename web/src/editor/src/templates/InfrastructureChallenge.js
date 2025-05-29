@@ -1,7 +1,7 @@
 import _ from 'underscore'
 
 export default _.template(`
-<select data-name="value" class="editor-input">
+<select data-name="value" >
     <option value="" selected >--</option>
     <option value="Climate change: mitigation">Climate change: mitigation</option>
     <option value="Climate change: adaptation">Climate change: adaptation</option>

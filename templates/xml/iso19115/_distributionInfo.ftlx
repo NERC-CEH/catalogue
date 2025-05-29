@@ -79,16 +79,22 @@
             <#if onlineResource.description?has_content>
             <gmd:description><gco:CharacterString>${onlineResource.description}</gco:CharacterString></gmd:description>
             </#if>
-            <#if (onlineResource.function??) && (
-              (onlineResource.function == 'download') ||
-              (onlineResource.function == 'information') ||
-              (onlineResource.function == 'offlineAccess') ||
-              (onlineResource.function == 'order') ||
-              (onlineResource.function == 'search')
-            )>
-            <gmd:function>
-              <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="${onlineResource.function}">${onlineResource.function}</gmd:CI_OnLineFunctionCode>
-            </gmd:function>
+              <#if onlineResource.function?? >
+                <#assign function2003 = onlineResource.function>
+                <#if function2003 == 'fileAccess'>
+                  <#assign function2003 = "download">
+                </#if>
+              <#if
+                function2003 == 'download' ||
+                function2003 == 'information' ||
+                function2003 == 'offlineAccess' ||
+                function2003 == 'order' ||
+                function2003 == 'search'
+              >
+                <gmd:function>
+                  <gmd:CI_OnLineFunctionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="${onlineResource.function}">${onlineResource.function}</gmd:CI_OnLineFunctionCode>
+                </gmd:function>
+              </#if>
             </#if>
           </gmd:CI_OnlineResource>
         </gmd:onLine>

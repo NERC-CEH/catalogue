@@ -253,6 +253,20 @@ main {
                 font-size: 0.8rem;
             }
 
+
+            .resourceStatus {
+                @extend .p-1 !optional;
+                @extend .mx-2 !optional;
+
+                &-Embargoed {
+                    @extend .text-bg-primary !optional;
+                }
+
+                &-Superseded {
+                    @extend .text-bg-warning !optional;
+                }
+            }
+
             .opstatus {
                 color: white;
                 position: absolute;

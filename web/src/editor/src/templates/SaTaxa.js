@@ -1,7 +1,7 @@
 import _ from 'underscore'
 
 export default _.template(`
-<select data-name="value" class="editor-input">
+<select data-name="value" >
     <option value="" selected >- Add taxon -</option>
     <option value="Algae">Algae</option>
     <option value="Amphibian">Amphibian</option>

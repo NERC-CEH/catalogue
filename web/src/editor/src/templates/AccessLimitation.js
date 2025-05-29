@@ -1,7 +1,7 @@
 import _ from 'underscore'
 
 export default _.template(`
-<select data-name="value" class="editor-input" id="input-accessLimitation" <%= data.disabled%>>
+<select data-name="value" id="input-accessLimitation" <%= data.disabled%>>
         <option value="unknown"> -- Choose an option -- </option>
 <optgroup label="Available">
     <option value="no limitations to public access">FREELY AVAILABLE and there is NO NEED TO LOG IN to access it (no limitations)</option>

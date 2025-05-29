@@ -101,11 +101,25 @@
         .editor-body {
             padding: 1em;
 
-            .editor-input,
-            .editor-textarea {
+            input,
+            textarea,
+            select {
+                color: inherit;
+
+            }
+
+            input.editor-input,
+            select.form-select,
+            textarea.editor-textarea {
+
                 &:focus {
                     color: inherit;
                 }
+            }
+
+            select {
+                @extend .form-select !optional;
+                @extend .form-select-sm !optional;
             }
 
             .editor-input {
@@ -126,7 +140,8 @@
                 field-sizing: content;
                 min-height: var(--textarea-height, 100px);
 
-                &#input-description, &#input-lineage {
+                &#input-description,
+                &#input-lineage {
                     --textarea-height: 200px;
                 }
             }

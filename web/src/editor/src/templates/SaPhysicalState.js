@@ -1,7 +1,7 @@
 import _ from 'underscore'
 
 export default _.template(`
-<select data-name="value" class="editor-input">
+<select data-name="value" >
     <option value="" selected >- Add physical state -</option>
     <option value="Air dried">Air dried</option>
     <option value="Chemical extract">Chemical extract</option>

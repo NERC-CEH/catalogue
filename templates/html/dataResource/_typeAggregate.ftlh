@@ -3,6 +3,8 @@
 	otherSupplemental = func.filter(supplemental, "function", "relatedDataset", true)
 	>
 
+<#assign apps = func.filter(onlineResources, "function", "browser") >
+
 <div class="py-3">
 
   <#if title?? && title?has_content>
@@ -18,25 +20,31 @@
       <h2>
       This ${recordType} contains <#if rel_hasMember?size gt 1>these<#else>this</#if> resource<#if rel_hasMember?size gt 1>s</#if></h2>
 
-      <#list rel_hasMember>
-        <div class="ukcehcards">
-          <#items as item>
-            <#if item.associationType = 'dataset' ||  item.associationType = 'nonGeographicDataset' ||  item.associationType = 'signpost'>
-              <#assign type="Dataset" icon="fa-solid fa-chart-column" >
-            <#elseif item.associationType = "series" || item.associationType = "collection" || item.associationType = "aggregate">
-              <#assign type="Data collection" icon="fa-layer-group" >
-            <#elseif item.associationType = "application">
-              <#assign type="Model code" icon="fa-terminal" >
-            <#elseif item.associationType = "service">
-              <#assign type="Web service" icon="fa-location-arrow" >
-            <#else>
-              <#assign type=item.associationType icon="" >
-            </#if>
+      <div class="ukcehcards">
+        <#list rel_hasMember>
+            <#items as item>
+              <#if item.associationType = 'dataset' ||  item.associationType = 'nonGeographicDataset' ||  item.associationType = 'signpost'>
+                <#assign type="Dataset" icon="fa-solid fa-chart-column" >
+              <#elseif item.associationType = "series" || item.associationType = "collection" || item.associationType = "aggregate">
+                <#assign type="Data collection" icon="fa-layer-group" >
+              <#elseif item.associationType = "application">
+                <#assign type="Model code" icon="fa-terminal" >
+              <#elseif item.associationType = "service">
+                <#assign type="Web service" icon="fa-location-arrow" >
+              <#else>
+                <#assign type=item.associationType icon="" >
+              </#if>
 
-            <@card item.href item.publicationStatus item.availability type item.title icon/>
-          </#items>
-        </div>
-      </#list>
+              <@card item.href item.publicationStatus item.availability type item.title icon/>
+            </#items>
+        </#list>
+
+        <#if apps?has_content && apps?size gt 0>
+          <#list apps as app>
+            <@card app.url '' '' 'Application' app.name 'fa-solar-panel'/>
+          </#list>
+        </#if>
+      </div>
     </div>
   </#if>
 

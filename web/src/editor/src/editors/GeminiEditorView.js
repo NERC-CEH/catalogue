@@ -371,11 +371,11 @@ export default EditorView.extend({
               description: 'Download a copy of this data',
               function: 'order'
             },
-            'Direct access data': {
+            'Direct access': {
               url: 'https://catalogue.ceh.ac.uk/datastore/eidchub/{fileIdentifier}',
               name: 'Download the data',
               description: 'Download a copy of this data',
-              function: 'download'
+              function: 'fileAccess'
             },
             'Supporting documents': {
               url: 'https://data-package.ceh.ac.uk/sd/{fileIdentifier}.zip',

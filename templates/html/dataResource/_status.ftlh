@@ -6,37 +6,37 @@
 </#if>
 
 <#if resourceStatus == "Superseded" || resourceStatus == "Withdrawn" || resourceStatus == "Deleted">
-    <p>
+    <div>
         <strong>THIS ${recordType?upper_case} HAS BEEN ${resourceStatus?upper_case}</strong>
         <#if superseded?has_content>
             The latest version is <a href="${superseded?first.href}">${superseded?first.title}</a>
         </#if>
-    </p>
+    </div>
     <#if reasonChanged??>
-        <p><@blocks.linebreaksAndLinks reasonChanged/></p>
+        <div><@blocks.linebreaksAndLinks reasonChanged/></div>
     </#if>
 
     <#if resourceStatus == "Superseded" || resourceStatus == "Withdrawn">
-      <p>If you need access to the archived version, please <a href="${catalogue.contactUrl}" target="_blank" rel="noopener noreferrer">contact the ${supersededContact}</a></p>
+      <div>If you need access to the archived version, please <a href="${catalogue.contactUrl}" target="_blank" rel="noopener noreferrer">contact the ${supersededContact}</a></div>
     </#if>
 
 <#elseif resourceStatus == "Restricted">
     <span>ACCESS TO THIS ${recordType?upper_case} IS RESTRICTED</span>
     <br>${accessLimitation.description} If you need access, please <a href="${catalogue.contactUrl}" target="_blank" rel="noopener noreferrer">contact ${supersededContact}</a>
 <#elseif resourceStatus == "Embargoed">
-    <p>
+    <div>
         <strong>This ${recordType} is under embargo</strong>
         <#if datasetReferenceDate?? && datasetReferenceDate.releasedDate?has_content>
             and will be made available by ${datasetReferenceDate.releasedDate?date?string["d MMMM yyyy"]} at the latest
         </#if>
         &nbsp;<a href="https://www.eidc.ac.uk/help/faq/embargos" target="_blank" rel="noopener noreferrer" title="more information about embargoes"> <small> Find out more &raquo;</small></a>
-    </p>
+    </div>
 <#elseif resourceStatus == "In-progress">
-    <p>
+    <div>
         <strong>This ${recordType} is currently being generated</strong>
         <#if datasetReferenceDate?? && datasetReferenceDate.releasedDate?has_content>
             and is expected to become available by ${datasetReferenceDate.releasedDate?date?string["d MMMM yyyy"]}
         </#if>
-    </p>
+    </div>
 </#if>
 

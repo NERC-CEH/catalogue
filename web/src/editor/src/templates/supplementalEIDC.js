@@ -6,7 +6,7 @@ export default _.template(`
         <label for="supplemental<%= data.index %>Function">Type</label>
     </div>
     <div class="col-sm-10">
-        <select data-name="function" class="editor-input function" id="supplemental<%= data.index %>Function">
+        <select data-name="function" class="function" id="supplemental<%= data.index %>Function">
             <option value="" selected>-- Choose one --</option>
             <option value="relatedArticle">RELATED ARTICLE. An article (or grey literature) which is relevant but which DOESN'T cite this resource</option>
             <option value="relatedDataset">RELATED DATASET. A dataset which is related but which is NOT hosted by EIDC)</option>

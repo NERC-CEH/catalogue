@@ -6,7 +6,7 @@ export default _.template(`
         <label for="serviceType">Type</label>
     </div>
     <div class="col-sm-11">
-        <select data-name="type" class="editor-input" id="serviceType" <%= data.disabled%>>
+        <select data-name="type"  id="serviceType" <%= data.disabled%>>
             <option value="">- Select Service Type -</option>
             <optgroup label="INSPIRE">
                 <option value="discovery">Discovery Service</option>

@@ -1,7 +1,7 @@
 import _ from 'underscore'
 import InputView from './InputView'
 
-const template = _.template('<select data-name="<%= data.modelAttribute %>" class="editor-input" id="input-<%= data.modelAttribute %>"></select>')
+const template = _.template('<select data-name="<%= data.modelAttribute %>" id="input-<%= data.modelAttribute %>"></select>')
 export default InputView.extend({
 
   initialize (options) {

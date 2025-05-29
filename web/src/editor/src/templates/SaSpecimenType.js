@@ -1,7 +1,7 @@
 import _ from 'underscore'
 
 export default _.template(`
-<select data-name="value" class="editor-input">
+<select data-name="value" >
     <option value="" selected >- Add specimen type -</option>
     <option value="Air">Air</option>
     <option value="DNA">DNA</option>

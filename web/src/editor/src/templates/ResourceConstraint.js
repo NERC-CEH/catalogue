@@ -6,7 +6,7 @@ export default _.template(`
         <label for="<%= data.modelAttribute %><%= data.index %>Code">Code</label>
     </div>
     <div class="col-sm-11">
-        <select data-name="code" class="editor-input" id="<%= data.modelAttribute %><%= data.index %>Code">
+        <select data-name="code"  id="<%= data.modelAttribute %><%= data.index %>Code">
             <option value="" selected >- Select Type -</option>
             <option value="copyright">Copyright</option>
             <option value="intellectualPropertyRights">Intellectual Property Rights</option>

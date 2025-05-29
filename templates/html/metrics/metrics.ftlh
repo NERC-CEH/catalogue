@@ -24,7 +24,7 @@
           <div class="col-md-6">
             <div class="mb-3">
               <label for="orderBy">Order By</label>
-              <select id="orderBy" name="orderBy" class="form-control">
+              <select id="orderBy" name="orderBy" class="form-select">
                 <option value="docId">Document ID</option>
                 <option value="downloads" selected>Downloads</option>
                 <option value="views">Views</option>
@@ -34,7 +34,7 @@
           <div class="col-md-6">
             <div class="mb-3">
               <label for="ordering">Ordering</label>
-              <select id="ordering" name="ordering" class="form-control">
+              <select id="ordering" name="ordering" class="form-select">
                 <option value="ascending">Ascending</option>
                 <option value="descending" selected>Descending</option>
               </select>

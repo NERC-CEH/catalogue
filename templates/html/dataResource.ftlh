@@ -36,6 +36,7 @@
     totalIssues = errors + infos +  warnings
     metadataClass="warning"
 >
+<#assign browsers=func.filter(onlineResources, "function", "browser")>
 
 <#if totalIssues?? && totalIssues gte 1>
   <#if errors gte 1 >
@@ -46,7 +47,6 @@
       <#assign metadataClass="primary">
   </#if>
 </#if>
-
 
 <#if useConstraints?has_content>
   <#assign

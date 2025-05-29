@@ -2,7 +2,7 @@ import { ObjectInputView } from '../index'
 import _ from 'underscore'
 
 const template = _.template(`
-<select data-name="value" class="editor-input">
+<select data-name="value" >
         <option value="Environmental data">Environmental Data</option>
         <option value="Information product">Information Product</option>
 </select>

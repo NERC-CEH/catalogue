@@ -6,7 +6,7 @@ export default _.template(`
             <label for="qa<%= data.index %>Category">Category</label>
     </div>
     <div class="col-sm-5">
-            <select data-name="category" class="editor-input category" id="qa<%= data.index %>Category">
+            <select data-name="category" class="category" id="qa<%= data.index %>Category">
                 <option value="" selected>-- Choose one --</option>
                 <option value="developerTesting">Developer testing</option>
                 <option value="governance">Governance</option>
