@@ -638,11 +638,15 @@ public class GeminiMetadataQualityService implements MetadataQualityService {
                 "$.onlineResources[*][?(@.function == 'download')]",
                 typeRefStringString
         );
-        val totalOrdersAndDownloads = orders.size() + downloads.size();
+        val fileAccess = parsed.read(
+                "$.onlineResources[*][?(@.function == 'fileAccess')]",
+                typeRefStringString
+        );
+        val dataAccess = orders.size() + downloads.size() + fileAccess.size();
 
-        if (totalOrdersAndDownloads == 0) {
+        if (dataAccess == 0) {
             toReturn.add(new MetadataCheck("There are no orders/downloads", WARNING));
-        } else if (totalOrdersAndDownloads > 1) {
+        } else if (dataAccess > 1) {
             toReturn.add(new MetadataCheck("There are multiple orders/downloads", INFO));
         }
 
