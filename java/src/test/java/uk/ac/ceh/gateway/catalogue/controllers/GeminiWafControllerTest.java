@@ -9,16 +9,11 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.ac.ceh.components.datastore.DataRepository;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
-import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
-import uk.ac.ceh.gateway.catalogue.permission.CrowdPermissionServiceTest;
-import uk.ac.ceh.gateway.catalogue.services.MetadataListingService;
+import uk.ac.ceh.gateway.catalogue.services.GeminiWafService;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -36,8 +31,7 @@ import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.GEMINI_XML_SHORT;
     properties="spring.freemarker.template-loader-path=file:../templates"
 )
 class GeminiWafControllerTest {
-    @MockitoBean private DataRepository<CatalogueUser> repo;
-    @MockitoBean private MetadataListingService listingService;
+    @MockitoBean private GeminiWafService geminiWafService;
 
     @Autowired private MockMvc mvc;
 
@@ -45,11 +39,8 @@ class GeminiWafControllerTest {
     @SneakyThrows
     void checkThatXmlExtensionIsAppendedToGeminiMetadataRecords() {
         //Given
-        List<String> files = Arrays.asList("test1", "test2");
-        List<String> resourceTypes = new ArrayList<>(Arrays.asList("dataset", "service"));
-        given(repo.getLatestRevision()).willReturn(new CrowdPermissionServiceTest.DummyRevision("latest"));
-        given(listingService.getPublicDocuments("latest", GeminiDocument.class, resourceTypes))
-            .willReturn(files);
+        List<String> files = Arrays.asList("test1.xml", "test2.xml");
+        given(geminiWafService.getWafFiles()).willReturn(files);
 
         //When
         mvc.perform(

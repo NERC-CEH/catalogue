@@ -6,15 +6,17 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
+import uk.ac.ceh.gateway.catalogue.TimeConstants;
 import uk.ac.ceh.gateway.catalogue.catalogue.Catalogue;
 import uk.ac.ceh.gateway.catalogue.catalogue.CatalogueService;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
-import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 @Slf4j
 @Service
@@ -28,51 +30,76 @@ public class CatalogueToTurtleService implements DocumentsToTurtleService {
         "monitoringNetwork",
         "monitoringProgramme"
     );
+    private static final Set<String> PREFETCH_CATALOGUES = ImmutableSet.of(
+        "eidc"
+    );
     private final CatalogueService catalogueService;
     private final Configuration configuration;
-    private final DocumentRepository documentRepository;
     private final MetadataListingService listing;
     private final String baseUri;
+    private final ConcurrentMap<String, Optional<String>> preFetchCatalogue = new ConcurrentHashMap<>();
 
     public CatalogueToTurtleService(
         CatalogueService catalogueService,
-        DocumentRepository documentRepository,
         Configuration configuration,
         MetadataListingService listing,
         @Value("${documents.baseUri}") String baseUri
     ) {
         this.catalogueService = catalogueService;
         this.configuration = configuration;
-        this.documentRepository = documentRepository;
         this.baseUri = baseUri;
         this.listing = listing;
     }
 
     @Override
     public Optional<String> getBigTtl(String catalogueId) {
-        return Optional.ofNullable(catalogueService.retrieve(catalogueId)).map(catalogue -> {
-            List<String> ids = getRequiredIds(catalogueId);
-            String catalogueTtl = generateCatalogueTtl(getCatalogueModel(catalogue, ids));
-            List<String> recordsTtl = getRecordsTtl(ids);
-
-            String bigTtl = catalogueTtl.concat(String.join("\n", recordsTtl));
-            log.debug("Big turtle to send: {}", bigTtl);
-            return bigTtl;
-        });
+        if (PREFETCH_CATALOGUES.contains(catalogueId)) {
+            return getCachedBigTtl(catalogueId);
+        } else {
+            return getUncachedBigTtl(catalogueId);
+        }
     }
 
-    private List<String> getRequiredIds(String catalogueId) {
-        try {
-            List<String> ids = listing.getPublicDocumentsOfCatalogue(catalogueId);
+    private Optional<String> getCachedBigTtl(String catalogueId) {
+        if (!preFetchCatalogue.containsKey(catalogueId)) {
+            preFetchCatalogue.put(catalogueId, getUncachedBigTtl(catalogueId));
+        }
+        return preFetchCatalogue.get(catalogueId);
+    }
 
-            return ids.stream()
-                .map(this::getMetadataDocument)
-                .filter(doc -> REQUIRED_TYPES.contains(doc.getType()))
-                .map(MetadataDocument::getId)
-                .collect(Collectors.toList());
+    private Optional<String> getUncachedBigTtl(String catalogueId) {
+        return Optional.ofNullable(
+            catalogueService.retrieve(catalogueId)).map(catalogue -> getCatalogueTtl(catalogueId, catalogue)
+        );
+    }
+
+    private String getCatalogueTtl(String catalogueId, Catalogue catalogue) {
+        List<String> ids = new ArrayList<>();
+        List<String> recordsTtls = new ArrayList<>();
+        try {
+            List<MetadataDocument> publicDocs = listing.getLatestPublicDocumentsOfCatalogue(catalogueId);
+            for (MetadataDocument doc : publicDocs) {
+                if (REQUIRED_TYPES.contains(doc.getType())) {
+                    ids.add(doc.getId());
+                    String ttl = docToString(doc);
+                    if (!ttl.isBlank()) {
+                        recordsTtls.add(ttl);
+                    }
+                }
+            }
         } catch (NullPointerException e) {
-            // no git commits
-            return Collections.emptyList();
+            ids.clear();
+            recordsTtls.clear();
+        }
+
+        String catalogueTtl = generateCatalogueTtl(getCatalogueModel(catalogue, ids));
+        return catalogueTtl.concat(String.join("\n", recordsTtls));
+    }
+
+    @Scheduled(initialDelay = TimeConstants.ONE_MINUTE*3, fixedDelay = TimeConstants.ONE_DAY)
+    public void fetchCatalogues() {
+        for (String catalogueId : PREFETCH_CATALOGUES) {
+            preFetchCatalogue.put(catalogueId, getUncachedBigTtl(catalogueId));
         }
     }
 
@@ -89,19 +116,6 @@ public class CatalogueToTurtleService implements DocumentsToTurtleService {
         model.put("title", catalogue.getTitle());
         model.put("baseUri", baseUri);
         return model;
-    }
-
-    private List<String> getRecordsTtl(List<String> ids) {
-        return ids.stream()
-            .map(this::getMetadataDocument)
-            .map(this::docToString)
-            .filter(s -> !s.isEmpty())
-            .collect(Collectors.toList());
-    }
-
-    @SneakyThrows
-    private MetadataDocument getMetadataDocument(String id) {
-        return documentRepository.read(id);
     }
 
     @SneakyThrows

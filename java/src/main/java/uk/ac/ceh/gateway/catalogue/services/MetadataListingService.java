@@ -108,6 +108,26 @@ public class MetadataListingService {
         return toReturn;
     }
 
+    @SneakyThrows
+    public List<MetadataDocument> getLatestPublicDocumentsOfCatalogue(String catalogue) {
+        List<MetadataDocument> toReturn = Lists.newArrayList();
+        String currentRevision = repo.getLatestRevision().getRevisionID();
+        List<String> documents = listingService.filterFilenames(repo.getFiles(currentRevision));
+        for(String file : documents) {
+            try {
+                MetadataDocument doc = documentBundleReader.readBundle(file);
+                if (doc.getMetadata().isPubliclyViewable(Permission.VIEW) &&
+                    doc.getCatalogue().equalsIgnoreCase(catalogue)) {
+                    toReturn.add(doc);
+                }
+            }
+            catch(RuntimeException ex) {
+                log.error("Failed to read " + file + " @ " + currentRevision);
+            }
+        }
+        return toReturn;
+    }
+
     private boolean caseInsensitiveContains(List<String> referenceList, String testValue){
         return referenceList
             .stream()
