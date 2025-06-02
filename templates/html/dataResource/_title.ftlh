@@ -1,9 +1,3 @@
-<#if resourceStatus?? && resourceStatus?has_content && resourceStatus != "Available" && resourceStatus != "Controlled"  && resourceStatus != "Unknown"  >
-  <div class="alert alert-primary" role="alert">
-    <#include "_status.ftlh">
-  </div>
-</#if>
-
 <div id="segment-title" class="mt-2 border-bottom border-1">
   <#if citation?has_content>
     <div class="authorList text-body-secondary">

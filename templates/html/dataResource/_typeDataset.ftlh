@@ -21,18 +21,23 @@
 
     <div class="${mainColClasses} py-3">
 
-      <#if title?? && title?has_content>
-        <#include "_title.ftlh">
+      <#if resourceStatus?? && resourceStatus?has_content && resourceStatus != "Available" && resourceStatus != "Controlled"  && resourceStatus != "Unknown"  >
+        <div class="alert alert-primary" role="alert">
+          <#include "_status.ftlh">
+        </div>
       </#if>
-
-
-      <#include "_accessButtons.ftlh">
-
-      <@viewAs />
 
       <#if rel_supersedes?has_content && rel_supersedes?size gt 0>
         <#include "_latestVersion.ftlh">
       </#if>
+
+      <#if title?? && title?has_content>
+        <#include "_title.ftlh">
+      </#if>
+
+      <#include "_accessButtons.ftlh">
+
+      <@viewAs />
 
       <#if description??>
         <#include "_description.ftlh">

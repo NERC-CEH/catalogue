@@ -2,104 +2,106 @@
 
 <@skeleton.master title="Metrics Report" catalogue=catalogues.defaultCatalogue()>
   <div id="metrics-report" class="container">
-    <h1>${catalogue?upper_case} Metrics Report</h1>
+    <h1 class="my-5">${catalogue?upper_case} downloads and views</h1>
     <form id="metrics-form" action="/${catalogue}/metrics">
-      <h2>Search Criteria</h2>
-      <fieldset>
-        <div class="row">
+      <h2 class="m-3">Search criteria</h2>
+        <div class="row p-3">
           <div class="col-md-6">
-            <div class="mb-3">
-              <label for="startDate">From</label>
-              <input type="date" id="startDate" name="startDate" class="form-control"/>
+            <div class="form-floating">
+              <input type="text" id="docId" name="docId" class="form-control"/>
+              <label for="docId">Document ID</label>
             </div>
           </div>
           <div class="col-md-6">
-            <div class="mb-3">
-              <label for="endDate">To</label>
-              <input type="date" id="endDate" name="endDate" class="form-control"/>
+            <label>Type</label>
+            <div class="ms-3 mt-1">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="dataset" id="recordTypeDataset" name="recordType">
+                <label class="form-check-label" for="recordTypeDataset">Dataset</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="nonGeographicDataset" id="recordTypeNonGeographic" name="recordType">
+                <label class="form-check-label" for="recordTypeNonGeographic">Dataset (non geographic)</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="application" id="recordTypeModel" name="recordType">
+                <label class="form-check-label" for="recordTypeModel">Model code (application)</label>
+              </div>
             </div>
           </div>
         </div>
-        <div class="row">
+        <div class="row p-3">
           <div class="col-md-6">
-            <div class="mb-3">
-              <label for="orderBy">Order By</label>
+            <div class="form-floating">
+              <input type="date" id="startDate" name="startDate" class="form-control"/>
+              <label for="startDate">From</label>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-floating">
+              <input type="date" id="endDate" name="endDate" class="form-control"/>
+              <label for="endDate">To</label>
+            </div>
+          </div>
+        </div>
+        <div class="row p-3">
+          <div class="col-md-6">
+            <div class="form-floating">
               <select id="orderBy" name="orderBy" class="form-select">
                 <option value="docId">Document ID</option>
                 <option value="downloads" selected>Downloads</option>
                 <option value="views">Views</option>
               </select>
+              <label for="orderBy">Order By</label>
             </div>
           </div>
           <div class="col-md-6">
-            <div class="mb-3">
-              <label for="ordering">Ordering</label>
+            <div class="form-floating">
               <select id="ordering" name="ordering" class="form-select">
                 <option value="ascending">Ascending</option>
                 <option value="descending" selected>Descending</option>
               </select>
+              <label for="ordering">Ordering</label>
             </div>
           </div>
         </div>
-        <div class="row">
+        <div class="row p-3">
           <div class="col-md-6">
-            <div class="mb-3">
-              <label for="docId">Document ID</label>
-              <input type="text" id="docId" name="docId" class="form-control"/>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="mb-3">
-              <label for="recordType">Type</label>
-              <div class="checkbox">
-                <label><input type="checkbox" name="recordType" value="dataset">dataset</label>
-              </div>
-              <div class="checkbox">
-                <label><input type="checkbox" name="recordType" value="nonGeographicDataset">dataset (non geographic)</label>
-              </div>
-              <div class="checkbox">
-                <label><input type="checkbox" name="recordType" value="application">model code (application)</label>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-6">
-            <div class="mb-3">
-              <label for="noOfRecords">Maximum number of documents to show</label>
+            <div class="form-floating">
               <input type="number" id="noOfRecords" name="noOfRecords" value="100" class="form-control"/>
+              <label for="noOfRecords">Maximum number of documents to show</label>
             </div>
           </div>
         </div>
-        <div class="row">
-          <div class="col-md-10">
-            <button type="submit" class="btn btn-primary">&nbsp; &nbsp; &nbsp;OK&nbsp; &nbsp; &nbsp;</button>
+        <div class="row p-3">
+          <div class="d-grid gap-2 mx-auto col-md-3 col-sm-6 col-xs-12">
+            <button type="submit" class="btn btn-primary">OK</button>
           </div>
         </div>
-      </fieldset>
+        </div>
     </form>
 
-    <div id="metrics-results-container">
-      <h2>Results</h2>
+    <div id="metrics-results-container" class="mt-5">
+      <h2 class="my-3">Results</h2>
       <div class="table-responsive">
-        <table id="metrics-table" class="table table-bordered">
+        <table id="metrics-table" class="table table-bordered table-hover">
           <thead>
-            <tr>
-              <th>Document ID</th>
-              <th>Title</th>
-              <th>Type</th>
-              <th>Views</th>
-              <th>Downloads</th>
+            <tr class="table-light">
+              <th class="text-nowrap">Document ID</th>
+              <th class="text-nowrap">Title</th>
+              <th class="text-nowrap">Type</th>
+              <th class="text-nowrap">Views</th>
+              <th class="text-nowrap">Downloads</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody  class="table-group-divider">
             <#list metricsReport![] as record>
               <tr>
-                <td>${record["document"]}</td>
+                <td class="text-nowrap">${record["document"]}</td>
                 <td>${record["docTitle"]}</td>
-                <td>${record["recordType"]}</td>
-                <td>${record["views"]}</td>
-                <td>${record["downloads"]}</td>
+                <td class="text-nowrap">${record["recordType"]}</td>
+                <td class="text-nowrap">${record["views"]}</td>
+                <td class="text-nowrap">${record["downloads"]}</td>
               </tr>
             </#list>
           </tbody>

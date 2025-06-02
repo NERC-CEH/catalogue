@@ -262,7 +262,7 @@ main {
                     @extend .text-bg-primary !optional;
                 }
 
-                &-Superseded {
+                &-Superseded, &-Withdrawn {
                     @extend .text-bg-warning !optional;
                 }
             }
