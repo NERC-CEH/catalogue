@@ -2,7 +2,7 @@
 
 <@skeleton.master title="Metrics Report" catalogue=catalogues.defaultCatalogue()>
   <div id="metrics-report" class="container">
-    <h1 class="my-5">${catalogue?upper_case} downlaods and views</h1>
+    <h1 class="my-5">${catalogue?upper_case} downloads and views</h1>
     <form id="metrics-form" action="/${catalogue}/metrics">
       <h2 class="m-3">Search criteria</h2>
         <div class="row p-3">
