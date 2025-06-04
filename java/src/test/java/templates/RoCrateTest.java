@@ -76,6 +76,14 @@ public class RoCrateTest {
         return gemini;
     }
 
+    private GeminiDocument createGeminiDocumentAttached(String fileId) {
+        val gemini = createGeminiDocument(fileId);
+        gemini.setOnlineResources(List.of(
+            ResponsibleParty.builder().function("fileAccess").url("https://catalogue.ceh.ac.uk/datastore/eidchub/05047b98-26a0-4162-adaf-18f68f802d9f").name("Download the data").type("OTHER").build()
+        ));
+        return gemini;
+    }
+
     @SneakyThrows
     private String expected(String filename) {
         val expected = Objects.requireNonNull(getClass().getResourceAsStream(filename));
@@ -109,7 +117,7 @@ public class RoCrateTest {
             //given
             val expected = expected("rocrate/attached-minimal.json");
             val fileId = "123456789";
-            gemini = createGeminiDocument(fileId);
+            gemini = createGeminiDocumentAttached(fileId);
             givenFileDetailsServiceAttached(fileId);
 
             //when
