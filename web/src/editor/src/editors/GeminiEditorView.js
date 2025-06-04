@@ -130,28 +130,6 @@ export default EditorView.extend({
           modelAttribute: 'version',
           typeAttribute: 'number',
           label: 'Version'
-        }),
-
-        new ParentView({
-          model: this.model,
-          modelAttribute: 'temporalExtents',
-          ModelType: MultipleDate,
-          label: 'Temporal extent',
-          ObjectInputView: TemporalExtentView,
-          helpText: `
-<p>The time period(s) the data resource covers.  This is often the same as the data capture period but it need not be so.</p>
-`
-        }),
-
-        new ParentStringView({
-          model: this.model,
-          modelAttribute: 'temporalResolution',
-          label: 'Temporal resolution',
-          helpText: `\
-<p>This is the <i>smallest</i> interval of time that can be distinguished in the temporal fields of the data.</p>
-<p>For example, for weather station data reporting rainfall once a day, the temporal resolution would be "1 day". For a dataset reporting flux measurements four times per second, the temporal resolution would be "0.25 second or 250 milliseconds".</p>\
-<p>Multiple values are permissible for datasets that measure several variables at different resolutions.</p>\
-`
         })
 
       ]
@@ -524,8 +502,8 @@ export default EditorView.extend({
       ]
     },
     {
-      label: 'Spatial',
-      title: 'Spatial characteristics',
+      label: 'Spatial & temporal',
+      title: 'Spatial & temporal characteristics',
       views: [
         new PredefinedParentView({
           model: this.model,
@@ -581,6 +559,7 @@ export default EditorView.extend({
           helpText: `<p>If you do not wish to reveal the exact location publicly (for example, if locations are sensitive)
             it is recommended that you generalise the location.</p>`
         }),
+
         new PredefinedParentView({
           model: this.model,
           modelAttribute: 'spatialReferenceSystems',
@@ -628,6 +607,28 @@ export default EditorView.extend({
           helpText: `
         <p>This is an indication of the level of spatial detail/accuracy.</p><p>For gridded data, distance is the area of the ground (in metres) represented in each pixel. For point data, it is the degree of confidence in the point's location (e.g. for a point expressed as a six-figure grid reference, SN666781, the resolution would be 100m)</p>
         `
+        }),
+
+        new ParentView({
+          model: this.model,
+          modelAttribute: 'temporalExtents',
+          ModelType: MultipleDate,
+          label: 'Temporal extent',
+          ObjectInputView: TemporalExtentView,
+          helpText: `
+<p>The time period(s) the data resource covers.  This is often the same as the data capture period but it need not be so.</p>
+`
+        }),
+
+        new ParentStringView({
+          model: this.model,
+          modelAttribute: 'temporalResolution',
+          label: 'Temporal resolution',
+          helpText: `\
+<p>This is the <i>smallest</i> interval of time that can be distinguished in the temporal fields of the data.</p>
+<p>For example, for weather station data reporting rainfall once a day, the temporal resolution would be "1 day". For a dataset reporting flux measurements four times per second, the temporal resolution would be "0.25 second or 250 milliseconds".</p>\
+<p>Multiple values are permissible for datasets that measure several variables at different resolutions.</p>\
+`
         })
 
       ]

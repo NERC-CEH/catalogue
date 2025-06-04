@@ -18,6 +18,13 @@ export default Backbone.View.extend({
     this.events[`click a[href='${this.appUrl}']`] = 'defaultState'
     this.events[`click a[href^='${this.appUrl}?']`] = 'handleUrl'
 
+    // Prefill search input when a term is present in the URL or user is redirected from the portal, for better UX
+    const initialParams = deparam(window.location.search.substring(1), true)
+    console.log(initialParams)
+    if (Object.keys(initialParams).length) {
+      this.model.setState(initialParams)
+    }
+
     this.delegateEvents() // Register the mutated events object
 
     this.render()
@@ -68,6 +75,10 @@ export default Backbone.View.extend({
       model: this.model,
       el: this.$('.mapsearch')
     })
+
+    // Pass initial state e.g. (search term) so they render correctly on page load
+    const current = (this.model.getState().term || '')
+    this.$("input[name='term']").val(current).focus()
     return this
   }
 })

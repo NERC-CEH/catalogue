@@ -40,7 +40,7 @@ $link-hover-color:      color.adjust($link-color, $lightness: -15%, $space: hsl)
 //
 //## Font, line-height, and color for body text, headings, and more.
 
-$font-family-sans-serif:  "Lexend", sans-serif;
+$font-family-sans-serif:  "Open Sans", sans-serif;
 //** Default monospace fonts for `<code>`, `<kbd>`, and `<pre>`.
 $font-family-monospace:   monospace;
 $font-family-base:        $font-family-sans-serif;
@@ -755,7 +755,7 @@ $badge-active-bg:             #fff;
 
 $badge-font-weight:           bold;
 $badge-line-height:           1;
-$badge-border-radius:         10px;
+$badge-border-radius:         3px;
 
 
 //== Breadcrumbs

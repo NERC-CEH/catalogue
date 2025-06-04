@@ -8,7 +8,7 @@ import _ from 'underscore'
  */
 export default _.template(`
 
-<div class="d-flex p-1 mx-3 results__header align-items-center justify-content-between">
+<div class="d-flex p-1 m-3 mt-0 results__header align-items-center justify-content-between">
    <% if(numFound > 0) { %>
     <div class="small">
       <span id="num-records"><%=numFound%></span> record<% if(numFound > 1) { %>s<% } %> found
@@ -53,7 +53,7 @@ export default _.template(`
               <span class="opstatus"><%=result.operationalStatus%></span>
             <% } %>
 
-            <span class="recordType text-body-tertiary">
+            <span class="recordType small text-body-tertiary">
               <% if (result.documentType != '' && result.documentType == "LINK_DOCUMENT") {  %>
                 <i class="fa-solid fa-link"></i> Linked
               <% } %>

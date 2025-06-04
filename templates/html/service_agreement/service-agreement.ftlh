@@ -311,7 +311,9 @@
                         <td>
                           <#if author.organisationName?has_content >
                             ${author.organisationName}
-                            <#if author.organisationIdentifier?has_content ><a href="${author.organisationIdentifier}" target="_blank" rel="noopener noreferrer" class="externalVocabularyLink"><sup class="fa-solid fa-xs fa-arrow-up-right-from-square"></sup></a></#if>
+                            <#if author.organisationIdentifier?has_content >
+                              <span title="Organisation has a valid RoR (${author.organisationIdentifier})" class="fa-solid fa-xs fa-circle-check text-success"></span>
+                            </#if>
                           <#else>
                             <span class="text-danger">missing</span>
                           </#if>

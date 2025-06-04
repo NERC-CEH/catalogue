@@ -4,7 +4,9 @@
       <#if citation.authors?size gte 8>
         ${citation.authors?first} <em>et al</em>
       <#else>
-        ${citation.authors?join('; ')}
+        <#list citation.authors as author>
+          <span>${author}</span><#sep>; </#sep>
+        </#list>
       </#if>
     </div>
   </#if>
