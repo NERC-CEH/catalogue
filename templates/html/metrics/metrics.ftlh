@@ -81,7 +81,7 @@
         </div>
     </form>
 
-    <div id="metrics-results-container" class="mt-5">
+    <div id="metrics-results-container" class="container mt-5">
       <h2 class="my-3">Results</h2>
       <div class="table-responsive">
         <table id="metrics-table" class="table table-bordered table-hover">

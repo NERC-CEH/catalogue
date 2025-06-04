@@ -2,7 +2,7 @@
   <div class="container">
 
     <div class="footer-logos">
-      <div><a href="https://www.ceh.ac.uk" target="_blank" target="_blank" rel="noopener noreferrer">Hosted by <img src="/static/img/ukceh_logo_mono.png" alt="UKCEH logo" title="UKCEH" ></a></div>
+      <div><a href="https://www.ceh.ac.uk" target="_blank" target="_blank" rel="noopener noreferrer">Hosted by &nbsp;<img src="/static/img/ukceh_logo_mono.png" alt="UKCEH logo" title="UKCEH" ></a></div>
     </div>
     <div class="footer-links" role="contentinfo">
       <a target="_blank" href="https://ukeof.org.uk/node/18" >Contact us</a>

@@ -95,6 +95,19 @@ body {
             @extend .alert !optional;
             @extend .alert-danger !optional;
         }
+
+        .authorList {
+            span {
+                &:not(:first-child) {
+                    margin-inline-start: .5rem;
+                }
+
+                &:not(:last-child) {
+                    margin-inline-end: .1rem;
+                }
+
+            }
+        }
     }
 
     .publicationDate {
