@@ -11,6 +11,7 @@ main {
         --form-boxshadow: 7px 7px 10px #EEE;
 
         display: flex;
+        gap: 0.65rem;
 
         >div {
             overflow: auto;
@@ -253,16 +254,15 @@ main {
                 font-size: 0.8rem;
             }
 
-
             .resourceStatus {
-                @extend .p-1 !optional;
-                @extend .mx-2 !optional;
+                @extend .badge !optional;
 
                 &-Embargoed {
                     @extend .text-bg-primary !optional;
                 }
 
-                &-Superseded, &-Withdrawn {
+                &-Superseded,
+                &-Withdrawn {
                     @extend .text-bg-warning !optional;
                 }
             }

@@ -2,7 +2,7 @@
   <div class="container">
 
     <div class="footer-logos">
-      <div><a href="https://www.ceh.ac.uk" target="_blank" target="_blank" rel="noopener noreferrer">Hosted by <img src="/static/img/ukceh_logo_mono.png" alt="UKCEH logo" title="UKCEH"></a></div>
+      <div><a href="https://www.ceh.ac.uk" target="_blank" target="_blank" rel="noopener noreferrer">Hosted by &nbsp;<img src="/static/img/ukceh_logo_mono.png" alt="UKCEH logo" title="UKCEH"></a></div>
       <div><a href="https://eds.ukri.org/" target="_blank" target="_blank" rel="noopener noreferrer"><img src="https://eidc.ac.uk/sites/default/files/eidcImages/footer/NERC_EDS.png" alt="NERC EDS logo" title="NERC EDS"></a></div>
       <div><a href="https://eidc.ac.uk/coretrustseal" target="_blank" target="_blank" rel="noopener noreferrer"><img src="https://eidc.ac.uk/sites/default/files/eidcImages/footer/CoreTrustSeal.png" alt="CoreTrustSeal logo" title="CoreTrustSeal" ></a></div>
     </div>

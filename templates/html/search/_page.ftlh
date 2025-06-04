@@ -53,7 +53,7 @@
             <span class="opstatus">${result.operationalStatus}</span>
           </#if>
 
-          <span class="recordType text-body-tertiary">
+          <span class="recordType small text-body-tertiary">
             <#if result.documentType?? && result.documentType == "LINK_DOCUMENT" >
               <i class="fa-solid fa-link"></i> Linked ${result.recordType?lower_case!""}
             <#else>
