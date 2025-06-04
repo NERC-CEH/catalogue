@@ -21,7 +21,6 @@ import uk.ac.ceh.gateway.catalogue.model.Fileset;
 import uk.ac.ceh.gateway.catalogue.model.ObservedProperty;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
 import uk.ac.ceh.gateway.catalogue.model.Supplemental;
-import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.FileDetailsService;
 
@@ -78,7 +77,11 @@ public class RoCrateTest {
     }
 
     private GeminiDocument createGeminiDocumentAttached(String fileId) {
-        val gemini = createGeminiDocument(fileId);
+        val gemini = new GeminiDocument();
+        gemini.setUri("https://example.org/id/" + fileId);
+        gemini.setId(fileId);
+        gemini.setTitle("Title");
+        gemini.setType("dataset");
         gemini.setOnlineResources(List.of(
             OnlineResource.builder().function("fileAccess").url("https://catalogue.ceh.ac.uk/datastore/eidchub/05047b98-26a0-4162-adaf-18f68f802d9f").name("Download the data").build()
         ));
