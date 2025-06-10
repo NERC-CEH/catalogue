@@ -52,7 +52,7 @@ export default _.template(`
         <label for="modelInfo<%= data.index %>AvailableSpatialData">Available spatial data</label>
     </div>
     <div class="col-sm-9 col-lg-9">
-        <select data-name="availableSpatialData" id="modelInfo<%= data.index %>AvailableSpatialData" class="editor-input spatial-data">
+        <select data-name="availableSpatialData" id="modelInfo<%= data.index %>AvailableSpatialData" class="spatial-data">
             <option value="unknown">Unknown</option>
             <option value="shapefile">Shapefile</option>
             <option value="bounding box">Bounding box</option>

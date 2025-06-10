@@ -3,7 +3,7 @@ import $ from 'jquery'
 import SingleView from './SingleView'
 
 const template = _.template(`
-<input  list="<%= data.modelAttribute %>List" data-name="<%= data.modelAttribute %>" type="<%= data.typeAttribute %>" placeholder="<%= data.placeholderAttribute %>" class="editor-input" id="input-<%= data.modelAttribute %>" value="<%= data.value %>" <%= data.disabled%>>
+<input autocomplete="off" aria-autocomplete="none" list="<%= data.modelAttribute %>List" data-name="<%= data.modelAttribute %>" type="<%= data.typeAttribute %>" placeholder="<%= data.placeholderAttribute %>" class="editor-input" id="input-<%= data.modelAttribute %>" value="<%= data.value %>" <%= data.disabled%>>
 <datalist id="<%= data.modelAttribute %>List"><%= data.listAttribute%></datalist>
 `)
 

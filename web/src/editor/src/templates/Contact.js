@@ -69,8 +69,8 @@ export default _.template(`
        <label>Name</label>
     </div>
     <div class="col-lg-10">
-        <div class="row">
-          <div class="col-lg-4">
+        <div class="row g-0">
+          <div class="col-lg-4 pe-1">
           <div class="form-floating">
             <select data-name="honorificPrefix" class="honorificPrefix" id="contacts<%= data.index %>honorificPrefix">
               <option value="">--none--</option>
@@ -84,7 +84,7 @@ export default _.template(`
             <label for="contacts<%= data.index %>honorificPrefix">Title</label>
           </div>
         </div>
-        <div class="col-lg-4">
+        <div class="col-lg-4 pe-1">
           <div class="form-floating">
             <input data-name='givenName' placeholder="e.g., C."  class="editor-input" id="contacts<%= data.index %>givenName" value="<%= data.givenName %>">
             <label for="contacts<%= data.index %>givenName">Given name</label>

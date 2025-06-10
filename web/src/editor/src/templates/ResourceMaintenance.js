@@ -6,7 +6,7 @@ export default _.template(`
         <label for="resourceMaintenance<%= data.index %>Frequency">Frequency of Update</label>
     </div>
     <div class="col-lg-3">
-        <select data-name="frequencyOfUpdate" id="resourceMaintenance<%= data.index %>Frequency" class="editor-input">
+        <select data-name="frequencyOfUpdate" id="resourceMaintenance<%= data.index %>Frequency">
             <option value="" selected>- Select Frequency of Update -</option>
             <optgroup label="Time Period">
                 <option value="daily">Daily</option>

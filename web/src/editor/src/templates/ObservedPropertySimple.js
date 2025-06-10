@@ -12,7 +12,7 @@ export default _.template(`
         <label for="schema-type<%= data.index %>">Type</label>
     </div>
     <div class="col-sm-4">
-        <input list="typeList" data-name="type" id="schema-type<%= data.index %>" class="editor-input" value="<%= data.type %>" placeholder="" />
+        <input list="typeList" data-name="type" id="schema-type<%= data.index %>" class="editor-input" value="<%= data.type %>" autocomplete="off" aria-autocomplete="none" />
     </div>
 </div>
 <div class="row">

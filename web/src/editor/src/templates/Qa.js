@@ -6,7 +6,7 @@ export default _.template(`
         <label for="qa<%= data.index %>Done">Done</label>
     </div>
     <div class="col-sm-5">
-        <select data-name="done" id="qa<%= data.index %>Done" class="editor-input" value="<%= data.done %>">
+        <select data-name="done" id="qa<%= data.index %>Done" value="<%= data.done %>">
             <option value="yes">Yes</option>
             <option value="no">No</option>
             <option value="unknown">Unknown</option>

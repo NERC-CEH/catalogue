@@ -3,7 +3,7 @@ import _ from 'underscore'
 export default _.template(`
 <div class="row" id="input<%= data.modelAttribute %><%= data.index %>">
     <div class="col-sm-11 dataentry">
-        <select data-index="<%= data.index %>" class="editor-input">
+        <select data-index="<%= data.index %>">
             <option value="">- Select Spatial Representation Type -</option>
             <option value="grid">Raster (grid)</option>
             <option value="textTable">Tabular data (e.g. a spreadsheet)</option>
