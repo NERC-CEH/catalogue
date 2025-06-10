@@ -3,7 +3,7 @@ import _ from 'underscore'
 export default _.template(`
 <div class="row">
     <div class="col-md-2 col-sm-4">
-      <select function" data-name="function" >
+      <select class="function" data-name="function" >
         <option value="" selected class="option">-- Type --</option>
         <option value="methods" class="option">Methods</option>
         <option value="technicalInfo" class="option">Technical information</option>
