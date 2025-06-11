@@ -29,7 +29,7 @@ export default _.template(`
             <label for="schema-type<%= data.index %>">Type</label>
         </div>
         <div class="col-sm-4">
-            <input list="typeList" data-name="type" id="schema-type<%= data.index %>" class="editor-input" value="<%= data.type %>" placeholder="" />
+            <input list="typeList" data-name="type" id="schema-type<%= data.index %>" class="editor-input" value="<%= data.type %>" autocomplete="off" aria-autocomplete="none" />
         </div>
         <div class="col-sm-2">
             <div class="d-none d-sm-block text-end">
@@ -37,7 +37,7 @@ export default _.template(`
             </div>
         </div>
         <div class="col-sm-4">
-            <input list="formatList" data-name="format" id="schema-format<%= data.index %>" class="editor-input" value="<%= data.format %>" placeholder="optional (recommended for dates and times)" />
+            <input list="formatList" data-name="format" id="schema-format<%= data.index %>" class="editor-input" value="<%= data.format %>" autocomplete="off" aria-autocomplete="none" placeholder="optional (recommended for dates and times)" />
         </div>
     </div>
     <div class="row">

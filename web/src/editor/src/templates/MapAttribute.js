@@ -14,7 +14,7 @@ export default _.template(`
             <label class="control-label">Data type</label>
         </div>
         <div class="col-sm-2">
-            <select data-name='type' class="editor-input"  <%= data.disabled%>>
+            <select data-name='type' <%= data.disabled%>>
                 <% _.each(data.types, function(d) {%>
                     <option value="<%=d.value%>" <%= d.value==data.type ? 'selected="selected"': '' %>><%=d.name%></option>
                 <%});%>

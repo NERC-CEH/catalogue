@@ -106,14 +106,8 @@
             select {
                 color: inherit;
 
-            }
-
-            input.editor-input,
-            select.form-select,
-            textarea.editor-textarea {
-
-                &:focus {
-                    color: inherit;
+                &:user-invalid {
+                    outline: 3px solid #FF000033;
                 }
             }
 
@@ -138,11 +132,20 @@
                 @extend .form-control-sm !optional;
                 color: #000;
                 field-sizing: content;
-                min-height: var(--textarea-height, 100px);
+                min-height: var(--textarea-height, 0);
 
                 &#input-description,
                 &#input-lineage {
                     --textarea-height: 200px;
+                }
+            }
+
+            input.editor-input,
+            select.form-select,
+            textarea.editor-textarea {
+
+                &:focus {
+                    color: inherit;
                 }
             }
 
@@ -263,6 +266,25 @@
 
             .component {
                 display: none;
+
+                &:not(.multiline) {
+                    .row {
+                        .row {
+                            @extend .m-0 !optional;
+                        }
+                    }
+                }
+
+
+                &.multiline {
+                    .row {
+                        .row {
+                            @extend .mx-0 !optional;
+                            @extend .mt-0 !optional;
+                            @extend .mb-2 !optional;
+                        }
+                    }
+                }
 
                 &:not(:last-of-type) {
                     border-block-end: 1px solid gray;

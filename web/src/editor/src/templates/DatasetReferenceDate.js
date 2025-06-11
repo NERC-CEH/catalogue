@@ -1,7 +1,7 @@
 import _ from 'underscore'
 
 export default _.template(`
-<div class="row referenceDates">
+<div class="row g-1 referenceDates">
     <div class="col-xl-1 col-lg-2 col-md-3">
         <label for="input-creationDate">Created</label><br>
     </div>

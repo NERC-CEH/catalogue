@@ -26,7 +26,7 @@ export default _.template(`
         <label for="modelApplicationModel<%= data.index %>ApplicationScale">Application Scale</label>
     </div>
     <div class="col-sm-5">
-        <select data-name="applicationScale" id="modelApplicationModel<%= data.index %>ApplicationScale" class="editor-input">
+        <select data-name="applicationScale" id="modelApplicationModel<%= data.index %>ApplicationScale" >
             <option value="plot">plot</option>
             <option value="field">field</option>
             <option value="farm">farm</option>
