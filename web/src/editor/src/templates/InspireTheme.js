@@ -48,7 +48,7 @@ export default _.template(`
         <label for="inspireThemes<%= data.index %>Conformity">Conformity</label>
     </div>
     <div class="col-sm-3">
-        <select conformity"  data-name="conformity" id="inspireThemes<%= data.index %>Conformity">
+        <select class="conformity"  data-name="conformity" id="inspireThemes<%= data.index %>Conformity">
                 <option value="" selected>Not evaluated</option>
                 <option value="Conformant">Conformant</option>
                 <option value="Not conformant">Not conformant</option>
