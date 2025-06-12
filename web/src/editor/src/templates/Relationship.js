@@ -6,7 +6,7 @@ export default _.template(`
         <label for="relationship<%= data.index %>Relation">Relation</label>
     </div>
     <div class="col-md-3">
-        <select data-name="relation" id="relationship<%= data.index %>Relation" class="relationshipList " value="<%= data.relation %>">
+        <select data-name="relation" id="relationship<%= data.index %>Relation" class="relationshipList" value="<%= data.relation %>">
         </select>
     </div>
     <div class="col-md-1">
