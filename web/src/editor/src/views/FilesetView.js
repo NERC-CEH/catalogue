@@ -4,6 +4,11 @@ import ObjectInputView from './ObjectInputView'
 import ObservedPropertyView from './ObservedPropertyView'
 import template from '../templates/Fileset'
 import dropdownTemplate from '../templates/PredefinedParentDropdown'
+import { fetchVariablesFromLegilo } from './LegiloFetcher'
+import variablesTemplate from '../templates/LegiloVariables'
+import LegiloView from './LegiloView'
+import { variableOnSelect } from './LegiloEventHandler'
+import { ObservedProperty } from '../models'
 
 import ChildLargeView from './ChildLargeView'
 
@@ -27,7 +32,20 @@ export default ObjectInputView.extend({
 
     this.zIndex = 1
     this.observedPropertyList = this.model.getObservedProperty()
-    this.createList(this.observedPropertyList, '.observedProperty', this.newObservedProperty)
+    this.collection = this.createList(this.observedPropertyList, '.observedProperty', this.newObservedProperty)
+
+    if (options.fetchVariablesButton) {
+      this.legiloVariables = new LegiloView({
+        collection: this.collection,
+        model: options.parentModel,
+        modelType: ObservedProperty,
+        template: variablesTemplate,
+        fetcher: fetchVariablesFromLegilo,
+        fetchButton: this.$('.legilo-variables-btn'),
+        result: this.$('.legilo-variables-view'),
+        onSelect: variableOnSelect
+      })
+    }
   },
 
   addObservedProperty (event) {
