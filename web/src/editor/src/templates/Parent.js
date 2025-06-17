@@ -17,29 +17,17 @@ export default _.template(`
       </label>
       <button class="editor-button add" <%= data.disabled%>>Add <span class="fa-solid fa-plus" aria-hidden="true"></span></button>
       <% if (data.fetchKeywordsButton) { %>
-        <button class="editor-button legilo-fetch-keywords-btn mx-lg-1 px-3"><i class="fa-solid fa-wand-magic-sparkles"></i> Suggest</button>
-      <% } %>
-      <% if (data.fetchVariablesButton) { %>
-        <button class="editor-button legilo-fetch-variables-btn mx-lg-1 px-3"><i class="fa-solid fa-wand-magic-sparkles"></i> Suggest</button>
+        <button class="legilo-keywords-btn editor-button mx-lg-1 px-3"><i class="fa-solid fa-wand-magic-sparkles"></i> Suggest</button>
       <% } %>
       <div id="help-<%= data.modelAttribute %>" class="editor-help w-100">
           <%= data.helpText %>
       </div>
     </div>
     <div class="col-md-9">
+      <% if (data.fetchKeywordsButton || data.renderLegiloKeywords) { %>
+         <div class="legilo-keywords-view"></div>
+      <% } %>
       <div class="existing"></div>
-      <% if (data.fetchKeywordsButton) { %>
-        <div class="d-flex justify-content-center">
-          <span class="legilo-fetch-keywords-loader spinner-border text-secondary loader mx-3" role="status" style="display: none;"></span>
-          <span class="legilo-fetch-keywords-loader-msg"></span>
-        </div>
-      <% } %>
-      <% if (data.fetchVariablesButton) { %>
-        <div class="d-flex justify-content-center">
-          <span class="legilo-fetch-variables-loader spinner-border text-secondary loader mx-3" role="status" style="display: none;"></span>
-          <span class="legilo-fetch-variables-loader-msg"></span>
-        </div>
-      <% } %>
     </div>
 </div>
 `)

@@ -275,6 +275,7 @@ export default EditorView.extend({
           modelAttribute: 'keywordsProject',
           label: 'Projects',
           ObjectInputView: KeywordVocabularyView,
+          multiline: true,
           vocabs: {
             ukceh: ['research-project']
           },
@@ -301,8 +302,7 @@ export default EditorView.extend({
           },
           multiline: true,
           helpText: 'All other keywords not described elsewhere',
-          fetchKeywordsButton: true,
-          renderLegiloKeywords: true
+          fetchKeywordsButton: true
         }),
         new ParentView({
           model: this.model,
@@ -792,6 +792,7 @@ This is only needed if you configure 'Styling=Classification' for your GeoTiff.<
           multiline: true,
           label: 'Observed properties',
           ObjectInputView: FilesetView,
+          fetchVariablesButton: true,
           predefined: {
             Custom: {
             },

@@ -7,8 +7,7 @@ import dropdownTemplate from '../templates/PredefinedParentDropdown'
 export default ParentLargeView.extend({
 
   events: {
-    'click .dropdown-menu': 'setPredefined',
-    'click .legilo-fetch-variables-btn': 'fetchVariables'
+    'click .dropdown-menu': 'setPredefined'
   },
 
   render () {

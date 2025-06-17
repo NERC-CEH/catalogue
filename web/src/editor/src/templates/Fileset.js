@@ -22,13 +22,21 @@ export default _.template(`
       <div class="col-lg-4">
           <input data-name='includes' placeholder="e.g., *.csv" class="editor-input" value="<%= data.includes %>">
       </div>
-      <div class="col-lg-6">
-        <button class="editor-button dropdown-toggle" data-bs-toggle="dropdown" type="button" id="addObservedPropertyBtn" aria-expanded="false">
-            Add property
-        </button>
-        <ul class="dropdown-menu" aria-labelledby="addObservedPropertyBtn"></ul>
+      <div class="col-lg-6 d-flex">
+        <% if (data.fetchVariablesButton) { %>
+          <div>
+            <button class="legilo-variables-btn editor-button  mx-lg-1 px-3"><i class="fa-solid fa-wand-magic-sparkles"></i> Suggest</button>
+          </div>
+        <% } %>
+        <div>
+          <button class="editor-button dropdown-toggle" data-bs-toggle="dropdown" type="button" id="addObservedPropertyBtn" aria-expanded="false">
+              Add property
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="addObservedPropertyBtn"></ul>
+        </div>
       </div>
   </div>
 
-  <div class="styling-box observedProperty mt-4"></div>
+  <div class="legilo-variables-view mt-4"></div>
+  <div class="styling-box observedProperty"></div>
 `)

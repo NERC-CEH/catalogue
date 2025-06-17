@@ -4,14 +4,16 @@ import SingleView from '../SingleView'
 import ChildView from './ChildView'
 import template from '../templates/Parent'
 import { Positionable } from '../collections'
-import { LegiloKeywords, fetchKeywordsFromLegilo } from './index'
-import * as legiloUtil from './LegiloFetcherUtil'
+import { fetchKeywordsFromLegilo } from './LegiloFetcher'
+import keywordsTemplate from '../templates/LegiloKeywords'
+import LegiloView from './LegiloView'
+import { keywordOnSelect } from './LegiloEventHandler'
+import { LegiloKeyword } from '../models'
 
 export default SingleView.extend({
 
   events: {
-    'click button.add': 'add',
-    'click .legilo-fetch-keywords-btn': 'fetchKeywords'
+    'click button.add': 'add'
   },
 
   initialize (options) {
@@ -21,21 +23,10 @@ export default SingleView.extend({
     SingleView.prototype.initialize.call(this, options)
     this.collection = new Positionable([], { model: this.data.ModelType })
 
-    if (this.data.renderLegiloKeywords && this.model.get('id')) {
-      this.legiloKeywords = new LegiloKeywords({
-        collection: this.collection,
-        model: this.model
-      })
-    }
-
     this.listenTo(this.collection, 'add', this.addOne)
     this.listenTo(this.collection, 'reset', this.addAll)
     this.listenTo(this.collection, 'add remove change position', this.updateModel)
     this.listenTo(this.model, 'sync', this.updateCollection)
-
-    if (this.data.renderLegiloKeywords) {
-      this.listenTo(this.model, 'change:fetchedKeywords', this.renderKeywords)
-    }
 
     this.render()
     this.collection.reset(this.getModelData())
@@ -43,44 +34,34 @@ export default SingleView.extend({
     if (this.data.multiline) {
       this.$el.addClass('multiline')
     }
+
+    const that = this
+    $(document).ready(function () {
+      if ((that.data.fetchKeywordsButton || that.data.renderLegiloKeywords) && that.model.get('id')) {
+        that.legiloKeywords = new LegiloView({
+          collection: that.collection,
+          model: that.model,
+          modelType: LegiloKeyword,
+          template: keywordsTemplate,
+          fetcher: fetchKeywordsFromLegilo,
+          fetchButton: that.$('.legilo-keywords-btn'),
+          result: that.$('.legilo-keywords-view'),
+          onSelect: keywordOnSelect
+        })
+        if (that.data.renderLegiloKeywords) {
+          that.listenTo(that.model, 'change:' + that.legiloKeywords.fetcher.name, that.legiloKeywords.render.bind(that.legiloKeywords))
+        }
+      }
+    })
   },
 
   render () {
     this.$el.html(this.template({ data: this.data }))
-
-    if (this.data.renderLegiloKeywords && this.model.get('id')) {
-      this.$el.append(this.legiloKeywords.el)
-      this.legiloKeywords.render()
-      this.legiloKeywords.delegateEvents()
-    }
     return this
   },
 
-  fetchKeywords () {
-    const legiloButtonClass = 'legilo-fetch-keywords'
-    legiloUtil.fetchStartDisplay(legiloButtonClass)
-
-    fetchKeywordsFromLegilo(this.model)
-      .then(keywords => {
-        this.model.set('fetchedKeywords', keywords)
-        this.renderKeywords()
-        legiloUtil.fetchSuccessDisplay(legiloButtonClass)
-      })
-      .catch(error => {
-        console.error('Error fetching keywords:', error)
-        legiloUtil.fetchFailDisplay(legiloButtonClass, error)
-      })
-  },
-
-  renderKeywords () {
-    if (this.legiloKeywords) {
-      const keywords = this.model.get('fetchedKeywords')
-      this.legiloKeywords.renderKeywords(keywords)
-    }
-  },
-
   addOne (model) {
-    const view = new ChildView(_.extend({}, this.data, { model }))
+    const view = new ChildView(_.extend({}, this.data, { model, parentModel: this.model }))
     const that = this
     $(document).ready(function () {
       that.$('.existing').append(view.el)
