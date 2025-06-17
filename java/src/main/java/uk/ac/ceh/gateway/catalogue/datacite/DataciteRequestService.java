@@ -64,9 +64,9 @@ public class DataciteRequestService {
 
     public List<DataciteRequest.Attributes.Description> populateDescriptions(GeminiDocument document) {
         return Stream.of(
-                new DataciteRequest.Attributes.Description(document.getDescription(), "", "Abstract"),
+                new DataciteRequest.Attributes.Description(document.getDescription(), "en", "Abstract"),
                 (document.getLineage() != null && !document.getLineage().isEmpty())
-                    ? new DataciteRequest.Attributes.Description(document.getLineage(), "", "Methods")
+                    ? new DataciteRequest.Attributes.Description(document.getLineage(), "en", "Methods")
                     : null
             )
             .filter(Objects::nonNull)

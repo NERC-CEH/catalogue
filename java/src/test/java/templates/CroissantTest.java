@@ -18,6 +18,7 @@ import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceConstraint;
 import uk.ac.ceh.gateway.catalogue.model.ResponsibleParty;
+import uk.ac.ceh.gateway.catalogue.gemini.OnlineResource;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.FileDetailsService;
 
 import java.io.File;
@@ -59,6 +60,9 @@ public class CroissantTest {
         gemini.setId(fileId);
         gemini.setTitle("Title");
         gemini.setType("dataset");
+        gemini.setOnlineResources(List.of(
+            OnlineResource.builder().function("fileAccess").url("https://catalogue.ceh.ac.uk/datastore/eidchub/05047b98-26a0-4162-adaf-18f68f802d9f").name("Download the data").build()
+        ));
         return gemini;
     }
 

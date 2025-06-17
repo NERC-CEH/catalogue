@@ -1,56 +1,62 @@
-<#compress><#import "../schema.org/macros.ftl" as m>
-<#if type=='dataset' || type=='nonGeographicDataset' || type=='signpost'>
-  <#if resourceStatus?lower_case != "deleted">
-    <@croissant fileDetails.getDetailsFor(id, false)/>
+<#compress>
+<#import "../schema.org/macros.ftl" as m>
+<#assign fileaccess = filter(downloads, "function", "fileAccess")>
+
+  <#if fileaccess?size gt 0 && (type=='dataset' || type=='nonGeographicDataset')>
+      <#if resourceStatus?lower_case != "deleted">
+        <@croissant fileDetails.getDetailsFor(id, false)/>
+      </#if>
+  <#else>
+    not a valid croissant document
   </#if>
-</#if>
+
 </#compress>
 
 <#macro croissant files=[]>
-{
-"@context": {
-  "@language": "en",
-  "@vocab": "https://schema.org/",
-  "sc": "https://schema.org/",
-  "cr": "http://mlcommons.org/croissant/",
-  "rai": "http://mlcommons.org/croissant/RAI/",
-  "dct": "http://purl.org/dc/terms/",
-  "citeAs": "cr:citeAs",
-  "conformsTo": "dct:conformsTo",
-  "data": {
-    "@id": "cr:data",
-    "@type": "@json"
+  {
+  "@context": {
+    "@language": "en",
+    "@vocab": "https://schema.org/",
+    "sc": "https://schema.org/",
+    "cr": "http://mlcommons.org/croissant/",
+    "rai": "http://mlcommons.org/croissant/RAI/",
+    "dct": "http://purl.org/dc/terms/",
+    "citeAs": "cr:citeAs",
+    "conformsTo": "dct:conformsTo",
+    "data": {
+      "@id": "cr:data",
+      "@type": "@json"
+    },
+    "dataType": {
+      "@id": "cr:dataType",
+      "@type": "@vocab"
+    },
+    "fileProperty": "cr:fileProperty",
+    "fileObject": "cr:fileObject",
+    "fileSet": "cr:fileSet",
+    "format": "cr:format",
+    "includes": "cr:includes",
+    "jsonPath": "cr:jsonPath",
+    "path": "cr:path",
+    "recordSet": "cr:recordSet"
   },
-  "dataType": {
-    "@id": "cr:dataType",
-    "@type": "@vocab"
-  },
-  "fileProperty": "cr:fileProperty",
-  "fileObject": "cr:fileObject",
-  "fileSet": "cr:fileSet",
-  "format": "cr:format",
-  "includes": "cr:includes",
-  "jsonPath": "cr:jsonPath",
-  "path": "cr:path",
-  "recordSet": "cr:recordSet"
-},
-"@id": "${id?trim}_croissant",
-"@type": "sc:Dataset", <#--check what if type = model code ?? -->
-"name":<@m.displayLiteral title/>,
-"url": "${uri?trim}",
-"dct:conformsTo": "http://mlcommons.org/croissant/1.0",
-"version":<#if version?has_content><@m.displayLiteral version/><#else>1</#if>
-<#if description?has_content>,"description":<@m.displayLiteral description/></#if>
-<@citeAs/>
-<@creationDate/>
-<@publicationDate/>
-<@listLicences/>
-<@distribution files/>
-<@keywords/>
-<@recordSet/>
-<@listContacts authors "creator"/>
-<@listContacts publishers "publisher"/>
-}
+  "@id": "${id?trim}_croissant",
+  "@type": "sc:Dataset", <#--check what if type = model code ?? -->
+  "name":<@m.displayLiteral title/>,
+  "url": "${uri?trim}",
+  "dct:conformsTo": "http://mlcommons.org/croissant/1.0",
+  "version":<#if version?has_content><@m.displayLiteral version/><#else>1</#if>
+  <#if description?has_content>,"description":<@m.displayLiteral description/></#if>
+  <@citeAs/>
+  <@creationDate/>
+  <@publicationDate/>
+  <@listLicences/>
+  <@distribution files/>
+  <@keywords/>
+  <@recordSet/>
+  <@listContacts authors "creator"/>
+  <@listContacts publishers "publisher"/>
+  }
 </#macro>
 
 <#macro distribution files>
@@ -228,3 +234,13 @@
     ]
     </#if>
 </#macro>
+
+<#function filter listData filterBy value>
+    <#local result = []>
+    <#list listData as item>
+      <#if item[filterBy] == value >
+          <#local result = result + [item]>
+      </#if>
+    </#list>
+    <#return result>
+</#function>

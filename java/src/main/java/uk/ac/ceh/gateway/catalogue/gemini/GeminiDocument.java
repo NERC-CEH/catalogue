@@ -198,7 +198,7 @@ public class GeminiDocument extends AbstractMetadataDocument implements WellKnow
 
     @JsonIgnore
     public List<OnlineResource> getDownloads() {
-        Set<String> downloadRoles = Set.of("download", "order");
+        Set<String> downloadRoles = Set.of("download", "order", "fileAccess");
         return getOnlineResources()
             .stream()
             .filter(onlineResource -> downloadRoles.contains(onlineResource.getFunction()))

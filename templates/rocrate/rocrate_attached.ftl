@@ -7,5 +7,21 @@
   <#elseif type=='application'>
     <#assign docType = "SoftwareSourceCode">
   </#if>
-  <@m.rocrate docType fileDetails.getDetailsFor(id, true)/>
+
+  <#assign fileaccess = filter(downloads, "function", "fileAccess")>
+  <#if fileaccess?size gt 0>
+    <@m.rocrate docType fileDetails.getDetailsFor(id, true)/>
+  <#else>
+    not a valid rocrate document
+  </#if>
 </#compress>
+
+<#function filter listData filterBy value>
+    <#local result = []>
+    <#list listData as item>
+      <#if item[filterBy] == value >
+          <#local result = result + [item]>
+      </#if>
+    </#list>
+    <#return result>
+</#function>
