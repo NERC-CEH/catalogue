@@ -165,7 +165,8 @@
         "administrativeArea": "Test distribution County",
         "postalCode": "4321",
         "country": "US"
-      }
+      },
+      "fullName": "Distribution, P."
     }
   ],
   "responsibleParties": [
@@ -183,7 +184,8 @@
         "administrativeArea": "Test author County",
         "postalCode": "1234",
         "country": "UK"
-      }
+      },
+      "fullName": "Contact, A."
     },
     {
       "givenName": "pointOfContact",
@@ -200,7 +202,7 @@
         "postalCode": "LA1 4AP",
         "country": "United Kingdom"
       },
-      "pointOfContact": "UK Centre for Ecology & Hydrology"
+      "fullName": "Contact, P."
     },
     {
       "givenName": "Custodian",
@@ -216,7 +218,8 @@
         "administrativeArea": "Test custodian county",
         "postalCode": "3456",
         "country": "Germany"
-      }
+      },
+      "fullName": "Test, C."
     },
     {
       "givenName": "Publisher",
@@ -232,7 +235,8 @@
         "administrativeArea": "Test publisher county",
         "postalCode": "6789",
         "country": "Finland"
-      }
+      },
+      "fullName": "Test, P."
     }
   ],
   "temporalExtents": [
