@@ -152,7 +152,6 @@
   ],
   "distributorContacts": [
     {
-      "individualName": "Distribution, Person",
       "givenName": "Person",
       "familyName": "Distribution",
       "organisationName": "NERC EDS Environmental Information Data Centre",
@@ -171,7 +170,6 @@
   ],
   "responsibleParties": [
     {
-      "individualName": "Contact, Author",
       "givenName": "Author",
       "familyName": "Contact",
       "organisationName": "UK Centre for Ecology & Hydrology",
@@ -188,7 +186,6 @@
       }
     },
     {
-      "individualName": "Contact, pointOfContact",
       "givenName": "pointOfContact",
       "familyName": "Contact",
       "organisationName": "UK Centre for Ecology & Hydrology",
@@ -206,7 +203,6 @@
       "pointOfContact": "UK Centre for Ecology & Hydrology"
     },
     {
-      "individualName": "Test, Custodian",
       "givenName": "Custodian",
       "familyName": "Test",
       "organisationName": "NERC EDS Environmental Information Data Centre",
@@ -223,7 +219,6 @@
       }
     },
     {
-      "individualName": "Test, Publisher",
       "givenName": "Publisher",
       "familyName": "Test",
       "organisationName": "NERC EDS Environmental Information Data Centre",
@@ -347,7 +342,6 @@
   "publicationDate": "2025-02-05T00:00:00.000+00:00",
   "authors": [
     {
-      "individualName": "Contact, Author",
       "givenName": "Author",
       "familyName": "Contact",
       "organisationName": "UK Centre for Ecology & Hydrology",
@@ -370,7 +364,6 @@
   ],
   "custodians": [
     {
-      "individualName": "Test, Custodian",
       "givenName": "Custodian",
       "familyName": "Test",
       "organisationName": "NERC EDS Environmental Information Data Centre",
@@ -389,7 +382,6 @@
   ],
   "pointsOfContact": [
     {
-      "individualName": "Contact, pointOfContact",
       "givenName": "pointOfContact",
       "familyName": "Contact",
       "organisationName": "UK Centre for Ecology & Hydrology",
@@ -409,7 +401,6 @@
   ],
   "publishers": [
     {
-      "individualName": "Test, Publisher",
       "givenName": "Publisher",
       "familyName": "Test",
       "organisationName": "NERC EDS Environmental Information Data Centre",

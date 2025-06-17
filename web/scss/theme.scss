@@ -8,7 +8,7 @@
  * https://github.com/divshot/themestrap
  */
 
-@import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap");
 
 @import "customProperties";
 @import "variables";
@@ -24,9 +24,8 @@
 @import "validation";
 @import "documents-upload";
 @import "upload-simple";
+
 // Add CSS Customizations to your theme here.
-
-
 body {
     display: flex;
     flex-direction: column;
@@ -217,6 +216,19 @@ h6 {
         }
     }
 }
+
+h1 {
+    color: var(--colour-hero);
+    font-weight: 400;
+}
+
+h2,
+h3,
+h4 {
+    color: #999;
+    font-weight: 400;
+}
+
 
 /* -- START Navigation*/
 

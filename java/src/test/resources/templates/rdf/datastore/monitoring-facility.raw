@@ -55,7 +55,6 @@
   "mobile": true,
   "responsibleParties": [
     {
-      "individualName": "Test, Person",
       "givenName": "Person",
       "familyName": "Test",
       "organisationName": "Environment Agency",

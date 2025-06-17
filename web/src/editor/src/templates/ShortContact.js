@@ -6,7 +6,7 @@ export default _.template(`
         <label for="contactPerson">Person</label>
     </div>
     <div class="col-sm-10">
-        <input data-name='individualName' class="editor-input" id="contactPerson" value="<%= data.individualName %>">
+        <input data-name='fullName' class="editor-input" id="contactPerson" value="<%= data.fullName %>">
     </div>
 </div>
 <div class="row">

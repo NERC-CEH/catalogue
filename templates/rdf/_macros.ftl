@@ -11,13 +11,7 @@
 
       <#assign contactIdentifier= "_:" + prefix +  contact?index>
 
-      <#if contact.fullName?has_content >
-        <#local contactName = contact.fullName >
-      <#else>
-        <#local contactName = contact.individualName >
-      </#if>
-
-      <#if contactName?has_content>
+      <#if contact.fullName?has_content>
         <#if contact.isOrcid()>
           <#assign contactIdentifier= "\l" + contact.nameIdentifier?trim + "\g">
         </#if>
@@ -36,17 +30,10 @@
   <#if contacts?has_content>
     <#list contacts as contact>
 
-      <#if contact.fullName?has_content >
-        <#local contactName = contact.fullName>
-      <#else>
-        <#local contactName = contact.individualName >
-      </#if>
-
-
-      <#if contactName?has_content || contact.organisationIdentifier?has_content>
+      <#if contact.fullName?has_content || contact.organisationIdentifier?has_content>
         <#assign contactIdentifier= "_:" + prefix + contact?index >
 
-        <#if contactName?has_content>
+        <#if contact.fullName?has_content>
           <#assign contactType="foaf:Person">
 
           <#if contact.organisationName?has_content>
@@ -57,7 +44,7 @@
           </#if>
         <#elseif contact.organisationName?has_content >
           <#assign contactType="foaf:Organization">
-          <#assign contactName=contact.organisationName>
+          <#assign contact.fullName=contact.organisationName>
           <#assign orgName="">
            <#if contact.isRor()>
             <#assign contactIdentifier="\l" + contact.organisationIdentifier?trim + "\g">
@@ -66,7 +53,7 @@
 
         <#if !contactIdentifier?matches("^\lhttp(|s)://ror.org/04xw4m193\g$") && !contactIdentifier?matches("^\lhttp(|s)://ror.org/00pggkr55\g$")>
           ${contactIdentifier} a ${contactType} ;
-          foaf:name "${contactName?trim}" ;
+          foaf:name "${contact.fullName?trim}" ;
           <#if contact.familyName?has_content >foaf:familyName "${contact.familyName?trim}" ;</#if>
           <#if contact.givenName?has_content >foaf:givenName "${contact.givenName?trim}" ;</#if>
           <#if contact.email?has_content>vcard:hasEmail "${contact.email?trim}" ;</#if>

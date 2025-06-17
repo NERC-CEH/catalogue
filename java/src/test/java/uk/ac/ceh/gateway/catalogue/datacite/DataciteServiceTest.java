@@ -303,7 +303,7 @@ public class DataciteServiceTest {
     }
 
     private GeminiDocument getGeminiDocument(){
-        val author = ResponsibleParty.builder().role("author").individualName("Arbor, A.").givenName("Arthur").familyName("Arbor").build();
+        val author = ResponsibleParty.builder().role("author").givenName("Arthur").familyName("Arbor").build();
         val publisher = ResponsibleParty.builder().role("publisher").organisationName("Test publisher").build();
         val metadata = MetadataInfo.builder().state("published").build();
         metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);
@@ -319,7 +319,7 @@ public class DataciteServiceTest {
     }
 
     private GeminiDocument getGeminiDocumentWithLegacyPublisher(){
-        val author = ResponsibleParty.builder().role("author").individualName("Foo, B.").givenName("Bob").familyName("Foo").build();
+        val author = ResponsibleParty.builder().role("author").givenName("Bob").familyName("Foo").build();
         val publisher = ResponsibleParty.builder().role("publisher").organisationName("Test legacy publisher").build();
         val metadata = MetadataInfo.builder().state("published").build();
         metadata.addPermission(Permission.VIEW, PUBLIC_GROUP);

@@ -183,7 +183,7 @@ public class DataciteRequestTest {
     @Test
     void testAssignPublisher() {
         ResponsibleParty rp = ResponsibleParty.builder()
-            .individualName("NERC")
+            .displayName("NERC")
             .organisationIdentifier("https://ror.org/016476m91")
             .familyName("family").build();
         Publisher publisher = attributes.assignPublisher(List.of(rp));
