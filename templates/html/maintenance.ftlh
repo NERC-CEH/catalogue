@@ -1,11 +1,11 @@
 <#import "skeleton.ftlh" as skeleton>
 <@skeleton.master title="Maintenance Page" catalogue=catalogues.defaultCatalogue()>
   <div class="container">
-    <h1>Catalogue Maintenance</h1>
+    <h1 class="my-4">Catalogue Maintenance</h1>
 
     <#if messages?has_content>
       <div class="alert alert-info">
-        <h2>Messages</h2>
+        <h2 class="mt-5 mb-2">Messages</h2>
         <ol>
           <#list messages as message>
             <li>${message}</li>
@@ -15,7 +15,7 @@
     </#if>
 
     <#if latestRevision??>
-      <h2>Latest Git Commit</h2>
+      <h2 class="mt-5 mb-2">Latest Git Commit</h2>
       <dl>
         <dt>Latest Revision</dt><dd>${latestRevision.revisionID}</dd>
         <dt>Author</dt><dd>${latestRevision.author.email}</dd>
@@ -25,28 +25,35 @@
         </#if>
       </dl>
       <form method="POST" action="/maintenance/documents/optimize">
-        <input type="submit" value="Optimize">
+        <input class="btn btn-outline-secondary" type="submit" value="Optimize">
       </form>
     </#if>
 
-    <h2>Indexing</h2>
-    <dl>
-      <dt>Has Solr Index?</dt><dd>${indexed?string("Yes", "No")}
+    <div class="mt-5">
+      <h2>Indexing</h2>
+
+      <div class="my-5">
+        <p><b>Has Solr Index?</b> <span class="ms-5">${indexed?string("Yes", "No")}</span></p>
         <form method="POST" action="/maintenance/documents/reindex">
-          <input type="submit" value="Rebuild">
+          <input class="btn btn-outline-secondary" type="submit" value="Rebuild">
         </form>
-      </dd>
-      <dt>Has Links?</dt><dd>${linked?string("Yes", "No")}
+      </div>
+
+      <div class="my-5">
+        <p><b>Has Links?</b> <span class="ms-5">${linked?string("Yes", "No")}</span></p>
         <form method="POST" action="/maintenance/links/reindex">
-          <input type="submit" value="Rebuild">
+          <input class="btn btn-outline-secondary" type="submit" value="Rebuild">
           <a href="/maintenance/sparql">Sparql tester</a>
         </form>
-      </dd>
-      <dt>Has MapFiles?</dt><dd>${hasMapFiles?string("Yes (${indexedMapFilesCount})", "No")}
+      </div>
+
+      <div class="my-5">
+        <p><b>Has MapFiles?</b> <span class="ms-5">${hasMapFiles?string("Yes (${indexedMapFilesCount})", "No")}</span></p>
         <form method="POST" action="/maintenance/mapfiles/reindex">
-          <input type="submit" value="Rebuild">
+          <input class="btn btn-outline-secondary" type="submit" value="Rebuild">
         </form>
-      </dd>
-    </dl>
+      </div>
+    </div>
+
   </div>
 </@skeleton.master>
