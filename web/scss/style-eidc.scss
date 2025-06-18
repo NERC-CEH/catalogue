@@ -70,6 +70,13 @@ footer {
     }
 }
 
+main {
+    ::selection {
+        background-color: var(--ukceh-colour-teal);
+        color: white;
+    }
+}
+
 .option-eidc {
     --display-option: block;
 }
@@ -106,7 +113,9 @@ footer {
 
 #document-upload-panel {
     a {
-        &:hover {
+
+        &:hover,
+        &:focus {
             color: #FFF;
             text-decoration: none;
         }

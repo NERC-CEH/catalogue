@@ -35,6 +35,16 @@ body {
     line-height: $line-height-base;
 }
 
+a {
+    text-decoration: none;
+
+    &:hover,
+    &:focus {
+        text-decoration: underline;
+        text-underline-offset: 3px;
+    }
+}
+
 .option-ukeof,
 .option-eidc,
 .option-ukceh,
@@ -43,14 +53,6 @@ body {
 .option-nm,
 .option-inms {
     display: var(--display-option, none);
-}
-
-a {
-    text-decoration: none;
-}
-
-a:hover {
-    text-decoration: underline;
 }
 
 textarea.sparqlquery {
