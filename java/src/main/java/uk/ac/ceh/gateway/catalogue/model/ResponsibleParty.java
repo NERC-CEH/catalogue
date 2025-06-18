@@ -14,13 +14,12 @@ import static com.google.common.base.Strings.nullToEmpty;
 @With
 @JsonIgnoreProperties({"roleDisplayName"})
 public class ResponsibleParty {
-    String individualName, honorificPrefix, familyName, givenName, displayName, organisationName, organisationIdentifier, role, email, phone, nameIdentifier;
+    String honorificPrefix, familyName, givenName, displayName, organisationName, organisationIdentifier, role, email, phone, nameIdentifier;
     Address address;
 
     @Builder
     @JsonCreator
     private ResponsibleParty(
-        @JsonProperty("individualName") String individualName,
         @JsonProperty("honorificPrefix") String honorificPrefix,
         @JsonProperty("familyName") String familyName,
         @JsonProperty("givenName") String givenName,
@@ -32,7 +31,6 @@ public class ResponsibleParty {
         @JsonProperty("phone") String phone,
         @JsonProperty("nameIdentifier") String nameIdentifier,
         @JsonProperty("address") Address address) {
-        this.individualName = nullToEmpty(individualName);
         this.honorificPrefix = nullToEmpty(honorificPrefix);
         this.familyName = nullToEmpty(familyName);
         this.givenName = nullToEmpty(givenName);

@@ -83,18 +83,12 @@
       <gmd:pointOfContact>
         <gmd:CI_ResponsibleParty>
 
-        <#if contact.fullName?has_content >
-          <#assign contactName = contact.fullName >
-        <#else>
-          <#assign contactName = contact.individualName >
-        </#if>
-
-          <#if contactName?has_content>
+          <#if contact.fullName?has_content >
             <gmd:individualName>
               <#if contact.isOrcid()>
                 <gmx:Anchor xlink:href="${contact.nameIdentifier}" xlink:actuate="onRequest" xlink:title="orcid">${contactName}</gmx:Anchor>
               <#else>
-                <gco:CharacterString>${contactName}</gco:CharacterString>
+                <gco:CharacterString>${contact.fullName}</gco:CharacterString>
               </#if>
             </gmd:individualName>
           </#if>

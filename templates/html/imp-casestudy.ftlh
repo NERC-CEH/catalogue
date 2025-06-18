@@ -18,7 +18,7 @@
         <#if contact??>
           <div class="key col-sm-3">Contact</div>
           <div class="value col-sm-9">
-            <#if contact.individualName?has_content>${contact.individualName}</#if><#if contact.organisationName?has_content>, ${contact.organisationName}</#if>
+            <#if contact.fullName?has_content>${contact.fullName}</#if><#if contact.organisationName?has_content>, ${contact.organisationName}</#if>
           </div>
         </#if>
         </div>

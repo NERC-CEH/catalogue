@@ -307,7 +307,7 @@
                 <tbody>
                 <#items as author>
                     <tr>
-                        <td><#if author.fullName?has_content >${author.fullName}<#elseif author.individualName?has_content >${author.individualName}<#else><span class="text-danger">missing or incomplete</span></#if></td>
+                        <td><#if author.fullName?has_content >${author.fullName}#else><span class="text-danger">missing or incomplete</span></#if></td>
                         <td>
                           <#if author.organisationName?has_content >
                             ${author.organisationName}

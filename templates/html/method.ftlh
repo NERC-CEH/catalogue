@@ -146,13 +146,7 @@
   <div class="contact">
 
     <#if contact.fullName?has_content >
-      <#local contactName = contact.fullName >
-    <#else>
-      <#local contactName = contact.individualName >
-    </#if>
-
-    <#if contactName?has_content>
-      <div>${contactName}</div>
+      <div>${contact.fullName}</div>
     </#if>
     <#if contact.organisationName?? && contact.organisationName?has_content>
       <div>${contact.organisationName}</div>

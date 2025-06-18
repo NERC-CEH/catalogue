@@ -158,7 +158,6 @@ public class CitationServiceTest {
     private ResponsibleParty author() {
         return ResponsibleParty
                 .builder()
-                .individualName("Author, A.")
                 .givenName("A.")
                 .familyName("Author")
                 .role("author")

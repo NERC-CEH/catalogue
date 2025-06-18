@@ -1,24 +1,49 @@
 :root {
-    /* UKCEH colours */
-    --ukceh-colours-blue: #2f7ece;
-    --ukceh-colours-green: #4da43a;
-    --ukceh-colours-teal: #0383a4;
-    --ukceh-colours-orange: #f39532;
-    --ukceh-colours-lightgrey: #eaeeec;
-    --ukceh-colours-black: #1d1d1b;
+    /* UKCEH primary colour palette */
+    --ukceh-colour-logoblue: hsl(210, 63%, 50%);
+    --ukceh-colour-logogreen: hsl(109, 48%, 44%);
+    --ukceh-colour-teal: hsl(192, 95%, 33%);
+    --ukceh-colour-charcoal: hsl(0, 0%, 20%);
+    --ukceh-colour-lightgrey: hsl(144, 14%, 93%);
+    --ukceh-colour-orange: hsl(31, 90%, 58%);
 
+    /* UKCEH extended colour palette */
+    --ukceh-colour-soil: hsl(27, 24%, 45%);
+    --ukceh-colour-silt: hsl(34, 100%, 90%);
+    --ukceh-colour-palegreen: hsl(92, 43%, 57%);
+    --ukceh-colour-brightgreen: hsl(119, 51%, 43%);
+    --ukceh-colour-gardengreen: hsl(146, 100%, 27%);
+    --ukceh-colour-bottlegreen: hsl(161, 94%, 25%);
+    --ukceh-colour-darkteal: hsl(179, 100%, 23%);
+    --ukceh-colour-iceblue: hsl(196, 63%, 87%);
+    --ukceh-colour-paleblue: hsl(186, 59%, 49%);
+    --ukceh-colour-skyblue: hsl(193, 100%, 40%);
+    --ukceh-colour-cornflowerblue: hsl(205, 70%, 45%);
+    --ukceh-colour-cobaltblue: hsl(208, 89%, 34%);
+    --ukceh-colour-darkblue: hsl(196, 100%, 28%);
+
+    /* UKCEH colour aliases */
+    --ukceh-colour-hero: var(--ukceh-colour-teal);
+    --ukceh-colour-highlight: var(--ukceh-colour-orange);
+
+    /* UKCEH fonts */
+    --ukceh-font-family-Lato: 'Lato', system-ui, sans-serif;
+    --ukceh-font-family-Montserrat: 'Montserrat', system-ui, sans-serif;
+}
+
+:root {
     --body-background-colour: #fff;
-    --text-default-colour: var(--ukceh-colours-black);
+    --text-default-colour: #1d1d1b;
 
-    --primary-colour: var(--ukceh-colours-green);
-    --secondary-colour: var(--ukceh-colours-blue);
-    --tertiary-colour: var(--ukceh-colours-teal);
+    --primary-colour: var(--ukceh-colour-logogreen);
+    --secondary-colour: var(--ukceh-colour-logoblue);
+    --tertiary-colour: var(--ukceh-colour-teal);
 
     --link-colour: var(--primary-colour);
-    --link-hover-colour:  var(--ukceh-colours-blue);
+    --link-hover-colour: var(--ukceh-colour-logblue);
 
-    --font-family-body: 'Open Sans', sans-serif;
-    --font-family-headers: 'Open Sans', sans-serif;
+    --font-family-body: var(--ukceh-font-family-Lato);
+    --font-family-headers: var(--ukceh-font-family-Lato);
 
     --header-background-colour: #FFF;
     --header-height: 80px;
@@ -45,10 +70,10 @@
     --filter-tab-border-colour: var(--filter-border-colour);
     --search-map-header-height: 145px;
 
-    --footer-background-colour:#333;
-    --footer-colour:#fff;
-    --footer-link-colour:#fff;
-    --footer-link-hover-colour:#fff;
+    --footer-background-colour: #333;
+    --footer-colour: #fff;
+    --footer-link-colour: #fff;
+    --footer-link-hover-colour: #fff;
 
     --font-stack-icons: 'Font Awesome\ 6 Free';
 }

@@ -82,6 +82,7 @@ body {
 
         h1 {
             text-wrap: balance;
+            font-weight: 400;
         }
 
         .alert-In-progress,
@@ -602,8 +603,8 @@ body {
         .browseGraphic {
             @extend .float-end !optional;
             margin: 0 0 1em 2em;
-            max-width: 350px;
-            max-height: 197px;
+            max-width: min(100dvw, 350px);
+            max-height: 195px;
         }
 
         .usage {

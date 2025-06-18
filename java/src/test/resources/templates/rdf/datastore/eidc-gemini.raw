@@ -152,7 +152,6 @@
   ],
   "distributorContacts": [
     {
-      "individualName": "Distribution, Person",
       "givenName": "Person",
       "familyName": "Distribution",
       "organisationName": "NERC EDS Environmental Information Data Centre",
@@ -166,12 +165,12 @@
         "administrativeArea": "Test distribution County",
         "postalCode": "4321",
         "country": "US"
-      }
+      },
+      "fullName": "Distribution, P."
     }
   ],
   "responsibleParties": [
     {
-      "individualName": "Contact, Author",
       "givenName": "Author",
       "familyName": "Contact",
       "organisationName": "UK Centre for Ecology & Hydrology",
@@ -185,10 +184,10 @@
         "administrativeArea": "Test author County",
         "postalCode": "1234",
         "country": "UK"
-      }
+      },
+      "fullName": "Contact, A."
     },
     {
-      "individualName": "Contact, pointOfContact",
       "givenName": "pointOfContact",
       "familyName": "Contact",
       "organisationName": "UK Centre for Ecology & Hydrology",
@@ -203,10 +202,9 @@
         "postalCode": "LA1 4AP",
         "country": "United Kingdom"
       },
-      "pointOfContact": "UK Centre for Ecology & Hydrology"
+      "fullName": "Contact, P."
     },
     {
-      "individualName": "Test, Custodian",
       "givenName": "Custodian",
       "familyName": "Test",
       "organisationName": "NERC EDS Environmental Information Data Centre",
@@ -220,10 +218,10 @@
         "administrativeArea": "Test custodian county",
         "postalCode": "3456",
         "country": "Germany"
-      }
+      },
+      "fullName": "Test, C."
     },
     {
-      "individualName": "Test, Publisher",
       "givenName": "Publisher",
       "familyName": "Test",
       "organisationName": "NERC EDS Environmental Information Data Centre",
@@ -237,7 +235,8 @@
         "administrativeArea": "Test publisher county",
         "postalCode": "6789",
         "country": "Finland"
-      }
+      },
+      "fullName": "Test, P."
     }
   ],
   "temporalExtents": [
@@ -347,7 +346,6 @@
   "publicationDate": "2025-02-05T00:00:00.000+00:00",
   "authors": [
     {
-      "individualName": "Contact, Author",
       "givenName": "Author",
       "familyName": "Contact",
       "organisationName": "UK Centre for Ecology & Hydrology",
@@ -361,7 +359,8 @@
         "administrativeArea": "Test author County",
         "postalCode": "1234",
         "country": "UK"
-      }
+      },
+      "fullName": "Contact, A."
     }
   ],
   "resourceStatus": "Available",
@@ -370,7 +369,6 @@
   ],
   "custodians": [
     {
-      "individualName": "Test, Custodian",
       "givenName": "Custodian",
       "familyName": "Test",
       "organisationName": "NERC EDS Environmental Information Data Centre",
@@ -384,12 +382,12 @@
         "administrativeArea": "Test custodian county",
         "postalCode": "3456",
         "country": "Germany"
-      }
+      },
+      "fullName": "Test, C."
     }
   ],
   "pointsOfContact": [
     {
-      "individualName": "Contact, pointOfContact",
       "givenName": "pointOfContact",
       "familyName": "Contact",
       "organisationName": "UK Centre for Ecology & Hydrology",
@@ -404,12 +402,11 @@
         "postalCode": "LA1 4AP",
         "country": "United Kingdom"
       },
-      "pointOfContact": "UK Centre for Ecology & Hydrology"
+      "fullName": "Contact, P."
     }
   ],
   "publishers": [
     {
-      "individualName": "Test, Publisher",
       "givenName": "Publisher",
       "familyName": "Test",
       "organisationName": "NERC EDS Environmental Information Data Centre",
@@ -423,7 +420,8 @@
         "administrativeArea": "Test publisher county",
         "postalCode": "6789",
         "country": "Finland"
-      }
+      },
+      "fullName": "Test, P."
     }
   ],
   "licences": [

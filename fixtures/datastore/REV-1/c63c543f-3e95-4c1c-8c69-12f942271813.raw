@@ -155,7 +155,9 @@
   ],
   "responsibleParties": [
     {
-      "individualName": "Capt. Gladys Stoat-Pamphlet",
+      "honorificPrefix": "Capt.",
+      "familyName": "Stoat-Pamphlet",
+      "givenName": "Gladys",
       "organisationName": "Centre for Ecology & Hydrology",
       "role": "pointOfContact",
       "email": "enquiries@ceh.ac.uk",
@@ -168,7 +170,9 @@
       }
     },
     {
-      "individualName": "Stoat-Pamphlet, G.",
+      "honorificPrefix": "Capt.",
+      "familyName": "Stoat-Pamphlet",
+      "givenName": "Gladys",
       "organisationName": "Centre for Ecology & Hydrology",
       "role": "author",
       "email": "enquiries@ceh.ac.uk",

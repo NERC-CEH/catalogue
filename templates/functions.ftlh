@@ -81,15 +81,9 @@
             <#assign orgName = contact.organisationName>
         </#if>
 
-        <#if contact.individualName?has_content || contact.fullName?has_content >
+        <#if contact.fullName?has_content >
             <div class="individualName" <#if address??>title="${address}"</#if>>
-
-              <#if contact.fullName?has_content >
-                <#local contactName = contact.fullName >
-              <#else>
-                <#local contactName = contact.individualName >
-              </#if>
-              ${contactName}
+              ${contact.fullName}
             </div>
             <div class="organisationName">
                 ${orgName}

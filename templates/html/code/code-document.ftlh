@@ -260,7 +260,7 @@
     <h3>${key}<#if value?size gt 1>s</#if></h3>
     <#list value as item>
       <div>
-        <#if item.individualName?? && item.individualName?has_content>${item.individualName}<br></#if>
+        <#if item.fullName?? && item.fullName?has_content>${item.fullName}<br></#if>
         <#if item.organisationName?? && item.organisationName?has_content>${item.organisationName}<br></#if>
         <#if item.email?? && item.email?has_content><a href="mailto:${item.email}">${item.email}</a></#if>
         </div>
