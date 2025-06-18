@@ -38,6 +38,8 @@ export default SingleView.extend({
     const that = this
     $(document).ready(function () {
       if ((that.data.fetchKeywordsButton || that.data.renderLegiloKeywords) && that.model.get('id')) {
+        const locationSelect = that.$('#location-select')
+
         that.legiloKeywords = new LegiloView({
           collection: that.collection,
           model: that.model,
@@ -46,6 +48,7 @@ export default SingleView.extend({
           fetcher: fetchKeywordsFromLegilo,
           fetchButton: that.$('.legilo-keywords-btn'),
           result: that.$('.legilo-keywords-view'),
+          locationSelectEl: locationSelect,
           onSelect: keywordOnSelect
         })
         if (that.data.renderLegiloKeywords) {

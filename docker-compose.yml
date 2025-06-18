@@ -47,11 +47,13 @@ services:
     environment:
       DATA_DIR: /opt/data
       SUPPORTING_DOCS_DIR: /opt/supporting-docs
+      DROPBOX_DIR: /opt/dropbox
     ports:
       - "8000:8000"
     volumes:
       - ./fixtures/upload/eidchub:/opt/data
       - ./fixtures/upload/supporting-documents:/opt/supporting-docs
+      - ./fixtures/upload/dropbox:/opt/dropbox
     profiles: [legilo]
   fuseki:
     image: registry.gitlab.ceh.ac.uk/eip/fuseki:4.9.0-ceh2

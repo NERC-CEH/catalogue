@@ -12,6 +12,7 @@ export default Backbone.View.extend({
     this.onSelect = options.onSelect
     this.suggestionsToShow = options.suggestionsToShow || 10
     this.result = options.result
+    this.locationSelectEl = options.locationSelectEl
     this.selectedSuggestions = []
     this.suggestions = []
     this.suggestionsToDisplay = []
@@ -47,7 +48,9 @@ export default Backbone.View.extend({
       .removeClass('text-primary')
       .text('It may take a while.')
 
-    this.fetcher(this.model.id)
+    const location = this.locationSelectEl?.val() || 'eidc'
+
+    this.fetcher(this.model.id, location)
       .then(suggestions => {
         this.model.set(this.fetcher.name, suggestions)
         this.render()

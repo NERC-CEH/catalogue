@@ -13,13 +13,13 @@ export function fetchVariablesFromLegilo (id) {
       confidence: variableData.confidence
     })))
     .catch(error => {
-      console.error('Error fetching variaqbles:', error)
+      console.error('Error fetching variables:', error)
       throw error
     })
 }
 
-export function fetchKeywordsFromLegilo (id) {
-  const apiUrl = `/documents/${id}/suggestKeywords`
+export function fetchKeywordsFromLegilo (id, location = 'eidc') {
+  const apiUrl = `/documents/${id}/suggestKeywords?location=${location}`
 
   return $.getJSON(apiUrl)
     .then(data => data.map(keywordData => new LegiloKeyword({
