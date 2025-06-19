@@ -7,7 +7,7 @@ $card-default-text: #FFF;
 
 /* CSS custom properties */
 :root {
-    --eidc-blue: hsl(195, 45%, 36%);
+     --eidc-blue: var(--ukceh-colour-teal);
     --primary-colour: var(--eidc-blue);
     --secondary-colour: white;
     --tertiary-colour: hsl(75, 45%, 36%);
