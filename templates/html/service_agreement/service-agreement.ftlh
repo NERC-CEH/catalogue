@@ -126,9 +126,9 @@
                    PLEASE NOTE: ONCE A DOI HAS BEEN ISSUED, THE INFORMATION PROVIDED IN THIS SECTION CANNOT BE CHANGED
                    </div>
                 </div>
-                <h4><strong>Title of data resource:</strong> ${title}</h4>
+                <h4 class="my-4">Title of data resource: ${title}</h4>
 
-                <div class="authors">
+                <div class="authors mt-4">
                     <h3>Authors</h3>
                     <p>This information will be used in discovery metadata for this dataset (the catalogue record).  <a href="https://eidc.ac.uk/policies/retentionPersonalData">See our policy on retention and use of personal data</a>.</p>
 
@@ -307,7 +307,7 @@
                 <tbody>
                 <#items as author>
                     <tr>
-                        <td><#if author.fullName?has_content >${author.fullName}#else><span class="text-danger">missing or incomplete</span></#if></td>
+                        <td><#if author.fullName?has_content >${author.fullName}<#else><span class="text-danger">missing or incomplete</span></#if></td>
                         <td>
                           <#if author.organisationName?has_content >
                             ${author.organisationName}
