@@ -38,6 +38,8 @@ import { MessageView } from './search/src/views'
 import { ServiceAgreement } from './editor/src/models'
 import { UploadModel, UploadView } from './hubbub/src/Upload'
 import { MetricsReportApp, MetricsReportForm, MetricsReportResults } from './metrics/src'
+import DepositRequestApp from './deposit-request/src/model/DepositRequestApp'
+import DepositRequestFormView from './deposit-request/src/view/DepositRequestFormView'
 
 const $catalogue = $('.catalogue-control')
 const $documentUpload = $('#document-upload')
@@ -91,6 +93,10 @@ if ($('#studyarea-map').length) {
 
 if ($('#metrics-report').length) {
   initMetricsReport()
+}
+
+if ($('#deposit-request').length) {
+  initDepositRequest()
 }
 
 Backbone.history.start()
@@ -361,4 +367,12 @@ function initMetricsReport () {
     model: app
   })
   new SearchRouter({ model: app, location: window.location })
+}
+
+function initDepositRequest () {
+  const app = new DepositRequestApp()
+  new DepositRequestFormView({
+    el: '#deposit-request',
+    model: app
+  })
 }

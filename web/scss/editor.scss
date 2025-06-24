@@ -49,6 +49,46 @@
     }
 }
 
+#deposit-request {
+    #deposit-request-form {
+        background-color: #FBFBFB;
+
+        .editor-remove {
+            display: grid;
+            grid-template-columns: auto 0px;
+            gap: 0.6em;
+
+            .editor-button-remove {
+                @extend .btn !optional;
+                @extend .btn-light !optional;
+                @extend .border !optional;
+                @extend .btn-sm !optional;
+            }
+        }
+
+        .editor-button {
+            @extend .btn !optional;
+            @extend .btn-light !optional;
+            @extend .border !optional;
+            @extend .btn-sm !optional;
+            @extend .float-end !optional;
+        }
+
+        .row {
+            margin-bottom: 1.5em;
+        }
+
+        .item-space {
+            padding-bottom: 1.5em;
+        }
+
+        label, p, button {
+            margin-bottom: 0.3em;
+            font-weight: 500;
+        }
+    }
+}
+
 .metadata,
 #search {
     .editor {

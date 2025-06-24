@@ -32,7 +32,7 @@ export default Backbone.View.extend({
 
   modify (event) {
     const name = $(event.target).data('name')
-    const value = $(event.target).val()
+    const value = $(event.target).val().trim()
 
     if (!value) {
       this.model.unset(name)
@@ -47,7 +47,7 @@ export default Backbone.View.extend({
      * The supplied `view` callback function is required to generate a constructed
      * child view element which will be rendered on to the list
      */
-  createList (collection, selector, view) {
+  createList (collection, selector, view, noSort) {
     const element = this.$(selector)
     const that = this
     const addView = function () {
@@ -65,14 +65,16 @@ export default Backbone.View.extend({
 
     let pos = null
     if (this.data.disabled !== 'disabled') {
-      element.sortable({
-        start: (event, ui) => {
-          pos = ui.item.index()
-        },
-        update: (event, ui) => {
-          collection.position(pos, ui.item.index())
-        }
-      })
+      if (!noSort) {
+        element.sortable({
+          start: (event, ui) => {
+            pos = ui.item.index()
+          },
+          update: (event, ui) => {
+            collection.position(pos, ui.item.index())
+          }
+        })
+      }
     }
 
     resetView()
