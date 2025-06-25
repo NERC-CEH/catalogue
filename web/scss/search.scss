@@ -99,8 +99,12 @@ main {
 //Filters formatting
 main {
     .search {
-
         .sort-search {
+            border-radius: 5px;
+            padding: 3px;
+            border-color: #CCC;
+            box-shadow: 0 3px 5px #DDD;
+            margin-left: .25em;
             option {
                 &:checked {
                     display: none;
