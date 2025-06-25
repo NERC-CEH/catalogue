@@ -34,6 +34,26 @@ class JenaIndexGeminiDocumentGeneratorTest {
     }
 
     @Test
+    void blankStringResourceIdentifiersNotIndexed() {
+        //Given
+        val document = new GeminiDocument();
+        document.setId("t");
+        document.setResourceIdentifiers(List.of(ResourceIdentifier.builder().build()));
+        given(service.generateUri("t")).willReturn("t");
+
+        //When
+        List<Statement> actual = generator.generateIndex(document);
+
+        //Then
+        assertThat("Should be two identifier statements", actual.size(), equalTo(4));
+        assertThat("Statement literal should be identifier", actual.get(0).getLiteral().getString(), equalTo("t"));
+        assertThat("Statement literal should be status", actual.get(1).getLiteral().getString(), equalTo("draft"));
+        assertThat("Statement literal should be identifier", actual.get(2).getLiteral().getString(), equalTo("t"));
+        assertThat("Statement literal should be status", actual.get(3).getLiteral().getString(), equalTo("Unknown"));
+        // No resource identifiers added to statements
+    }
+
+    @Test
     void observedPropertiesAreIndexedCorrectly() {
         //Given
         val document = new GeminiDocument();
