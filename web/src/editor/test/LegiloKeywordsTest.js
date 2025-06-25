@@ -108,7 +108,7 @@ describe('Test LegiloKeywords View', () => {
     legiloButton.trigger('click')
     await new Promise(resolve => setTimeout(resolve, 0))
 
-    expect($.getJSON).toHaveBeenCalledWith('/documents/123/suggestKeywords')
+    expect($.getJSON).toHaveBeenCalledWith('/documents/123/suggestKeywords?location=eidc')
     expect(view.suggestions.length).toBe(2)
     expect(view.suggestions[0].get('name')).toBe('temperature')
     expect(view.suggestions[0].get('confidence')).toBe(0.9)

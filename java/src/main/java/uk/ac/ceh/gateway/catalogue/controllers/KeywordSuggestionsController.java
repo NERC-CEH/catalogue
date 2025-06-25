@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import uk.ac.ceh.gateway.catalogue.services.KeywordSuggestionsService;
@@ -24,8 +25,8 @@ public class KeywordSuggestionsController {
 
     @GetMapping("/documents/{file}/suggestKeywords")
     @PreAuthorize("@permission.userCanEdit(#file)")
-    public List<KeywordSuggestionsService.KeywordsSuggestion> getKeywordsSuggestions(@PathVariable String file) {
-        return service.getKeywordsSuggestions(file);
+    public List<KeywordSuggestionsService.KeywordsSuggestion> getKeywordsSuggestions(@PathVariable String file, @RequestParam(name = "location", defaultValue = "eidc") String location) {
+        return service.getKeywordsSuggestions(file, location);
     }
 
     @GetMapping("/documents/{file}/suggestVariables")
