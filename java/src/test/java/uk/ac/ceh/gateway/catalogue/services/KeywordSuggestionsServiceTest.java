@@ -53,13 +53,13 @@ public class KeywordSuggestionsServiceTest {
         //given
         String keywordsResponse = IOUtils.toString(getClass().getResource("legilo-keywords-response.json"), UTF_8);
         mockServer
-            .expect(requestTo(equalTo(LEGILO_URL + FILE_ID + "/keywords")))
+            .expect(requestTo(equalTo(LEGILO_URL + FILE_ID + "/keywords?location=eidc")))
             .andExpect(method(HttpMethod.GET))
             .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic dXNlcm5hbWU6cGFzc3dvcmQ="))
             .andRespond(withSuccess(keywordsResponse, MediaType.APPLICATION_JSON));
 
         //when
-        List<KeywordSuggestionsService.KeywordsSuggestion> keywordsSuggestions = service.getKeywordsSuggestions(FILE_ID);
+        List<KeywordSuggestionsService.KeywordsSuggestion> keywordsSuggestions = service.getKeywordsSuggestions(FILE_ID, "eidc");
 
         //then
         mockServer.verify();
@@ -75,13 +75,13 @@ public class KeywordSuggestionsServiceTest {
     void getSuggestionsWithException() {
         //given
         mockServer
-            .expect(requestTo(equalTo(LEGILO_URL + FILE_ID + "/keywords")))
+            .expect(requestTo(equalTo(LEGILO_URL + FILE_ID + "/keywords?location=eidc")))
             .andExpect(method(HttpMethod.GET))
             .andExpect(header(HttpHeaders.AUTHORIZATION, "Basic dXNlcm5hbWU6cGFzc3dvcmQ="))
             .andRespond(withStatus(HttpStatus.UNPROCESSABLE_ENTITY));
 
         //when
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> service.getKeywordsSuggestions(FILE_ID));
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> service.getKeywordsSuggestions(FILE_ID, "eidc"));
 
         //then
         assertEquals("422 UNPROCESSABLE_ENTITY \"Unprocessable Entity\"", exception.getMessage());

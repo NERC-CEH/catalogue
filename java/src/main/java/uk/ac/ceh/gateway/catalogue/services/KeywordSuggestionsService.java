@@ -46,10 +46,10 @@ public class KeywordSuggestionsService {
         log.info("Creating");
     }
 
-    public List<KeywordsSuggestion> getKeywordsSuggestions(String file) {
+    public List<KeywordsSuggestion> getKeywordsSuggestions(String file, String location) {
         List<Map<String, Object>> errorList = new ArrayList<>();
 
-        List<KeywordsSuggestion> keywords = getKeywords(restClient, file, errorList)
+        List<KeywordsSuggestion> keywords = getKeywords(restClient, file, location, errorList)
             .flatMap(kw -> Optional.ofNullable(kw.summary()))
             .orElseGet(Collections::emptyList);
 
@@ -95,11 +95,11 @@ public class KeywordSuggestionsService {
             .orElseGet(Collections::emptyList);
     }
 
-    private Optional<KeywordsResponse> getKeywords(RestClient restClient, String file, List<Map<String, Object>> errorList) {
+    private Optional<KeywordsResponse> getKeywords(RestClient restClient, String file, String location, List<Map<String, Object>> errorList) {
         return Optional.ofNullable(
             restClient
                 .get()
-                .uri("/{file}/keywords", file)
+                .uri("/{file}/keywords?location={location}", file, location)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
                     int code = response.getStatusCode().value();
