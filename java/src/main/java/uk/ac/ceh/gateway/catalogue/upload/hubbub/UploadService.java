@@ -196,12 +196,12 @@ public class UploadService {
             while ((entry = zipStream.getNextEntry()) != null) {
                 String unZipFileName = Paths.get(unzipPath, sanitisedFilename(datasetId, entry.getName())).toString();
                 Path resolvedPath = uploadPath.resolve(unZipFileName);
-                if (Files.exists(resolvedPath)) {
-                    throw new ResponseStatusException(HttpStatusCode.valueOf(409), unZipFileName + " already exists");
-                }
                 if (entry.isDirectory()) {
                     Files.createDirectories(resolvedPath);
                 } else {
+                    if (Files.exists(resolvedPath)) {
+                        throw new ResponseStatusException(HttpStatusCode.valueOf(409), unZipFileName + " already exists");
+                    }
                     log.debug("Unzip adding {} to {}", unZipFileName, datasetId);
                     Files.createDirectories(resolvedPath.getParent());
                     long fileSize = zipStream.transferTo(Files.newOutputStream(resolvedPath));
