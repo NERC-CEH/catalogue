@@ -89,9 +89,9 @@ public class UploadService {
     public void csv(PrintWriter writer, String datasetId) {
         log.debug("Getting CSV for {}", datasetId);
         val response = get(datasetId, "eidchub", 1, BIG_PAGE_SIZE);
-        writer.println("path,checksum");
+        writer.println("path,MD5_checksum,SHA256_checksum");
         response.getData().forEach(fileInfo ->
-            writer.println(format("%s/%s,%s", fileInfo.getDatasetId(), fileInfo.getPath(), fileInfo.getHash()))
+            writer.println(format("%s/%s,%s,%s", fileInfo.getDatasetId(), fileInfo.getPath(), fileInfo.getHash(), fileInfo.getSha256()))
         );
     }
 
