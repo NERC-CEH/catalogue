@@ -9,6 +9,7 @@ import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;
 import uk.ac.ceh.gateway.catalogue.model.Permission;
+import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.modelceh.CehModelApplication;
 import uk.ac.ceh.gateway.catalogue.sparql.VocabularyFacet;
 import uk.ac.ceh.gateway.catalogue.templateHelpers.CodeLookupService;
@@ -80,6 +81,7 @@ public class SolrIndexMetadataDocumentGenerator implements IndexGenerator<Metada
             .setUkcehScienceChallenge(grab(getKeywordsByVocabulary(document, VocabularyFacet.UKCEH_SCIENCE_CHALLENGE.getFacetName()), Keyword::getValue))
             .setUkcehService(grab(getKeywordsByVocabulary(document, VocabularyFacet.UKCEH_SERVICE.getFacetName()), Keyword::getValue))
             .setView(getViews(document))
+            .setResourceIdentifier(grab(document.getResourceIdentifiers(), ResourceIdentifier::getCode))
             ;
     }
 

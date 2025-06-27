@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import uk.ac.ceh.gateway.catalogue.gemini.Keyword;
 import uk.ac.ceh.gateway.catalogue.gemini.Funding;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.model.ObservedProperty;
 import uk.ac.ceh.gateway.catalogue.model.Supplemental;
 import uk.ac.ceh.gateway.catalogue.indexing.IndexGenerator;
@@ -74,7 +73,6 @@ public class SolrIndexGeminiDocumentGenerator implements IndexGenerator<GeminiDo
             .setLineage(document.getLineage())
             .setOrcid(grab(document.getResponsibleParties(), ResponsibleParty::getNameIdentifier))
             .setOrganisation(grab(document.getResponsibleParties(), ResponsibleParty::getOrganisationName))
-            .setResourceIdentifier(grab(document.getResourceIdentifiers(), ResourceIdentifier::getCode))
             .setResourceStatus(document.getResourceStatus())
             .setRor(grab(document.getResponsibleParties(), ResponsibleParty::getOrganisationIdentifier))
             .setRightsHolder(grab(document.getRightsHolders(), ResponsibleParty::getOrganisationName))
