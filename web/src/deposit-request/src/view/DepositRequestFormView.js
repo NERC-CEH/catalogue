@@ -129,9 +129,10 @@ export default ObjectInputView.extend({
     this.model.save(modelData, {
       wait: true,
       contentType: 'application/json',
+      dataType: 'text',
       data: JSON.stringify(modelData),
-      success: (model, response) => {
-        this.onSuccess(response)
+      success: (model, response, options) => {
+        this.onSuccess(response, options.xhr)
       },
       error: (model, xhr) => {
         this.onError(xhr)
@@ -142,19 +143,29 @@ export default ObjectInputView.extend({
     })
   },
 
-  onSuccess (response) {
-    const msg = response.responseText
-    if (msg !== '') {
-      const target = this.$('.alert')
-      target.html(msg).show()
-      target[0].scrollIntoView({ behavior: 'smooth', block: 'center' })
+  onSuccess (response, xhr) {
+    const location = xhr && xhr.getResponseHeader
+      ? xhr.getResponseHeader('Location')
+      : null
+    if (location) {
+      window.location.href = location
+      return
     }
+
+    const msg = typeof response === 'string' && response.trim() !== ''
+      ? response
+      : 'Submission successful.'
+
+    const target = this.$('.alert')
+    target.html(msg).show()
+    target[0].scrollIntoView({ behavior: 'smooth', block: 'center' })
   },
 
   onError (xhr) {
-    let msg = xhr.responseText
-    if (msg === '') {
-      msg = `Status: ${xhr.status} - ${xhr.statusText || 'No response text'}`
+    let msg = xhr?.responseText?.trim()
+
+    if (!msg) {
+      msg = `Status: ${xhr.status} - ${xhr.statusText || 'An unknown error occurred'}`
     }
     const target = this.$('.alert')
     target.html(msg).show()
