@@ -27,17 +27,6 @@ export default SingleView.extend({
     if (this.data.multiline) {
       this.$el.addClass('multiline')
     }
-
-    if (!(this.data.disabled === 'disabled')) {
-      this.$('.existing').sortable({
-        start: (event, ui) => {
-          this._oldPosition = ui.item.index()
-        },
-        update: (event, ui) => {
-          this.collection.position(this._oldPosition, ui.item.index())
-        }
-      })
-    }
   },
 
   render () {
@@ -50,6 +39,17 @@ export default SingleView.extend({
     const that = this
     $(document).ready(function () {
       that.$('.existing').append(view.el)
+      if (that.data.disabled !== 'disabled' && that.data.modelAttribute !== 'boundingBoxes') {
+        that.$('.existing').sortable({
+          animation: 150,
+          start: (event, ui) => {
+            that._oldPosition = ui.item.index()
+          },
+          update: (event, ui) => {
+            that.collection.position(that._oldPosition, ui.item.index())
+          }
+        })
+      }
     })
   },
 
