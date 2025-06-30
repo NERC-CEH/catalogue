@@ -84,6 +84,7 @@ export default EditorView.extend({
           model: this.model,
           label: 'Authors',
           text: `<p>List authors of the dataset below in the order in which they will appear in the citation.</p>
+<p>For individuals, enter given name and family name. If the author is an institution, enter the name in the 'display name' field.</p>\
 <p>Authors' details will be published in a public data catalogue and held in EIDC systems.  UK law requires us to inform all individuals listed that they are being proposed as an author.  We therefore require a current, valid email address for all living authors.  Those without valid contact details are not eligible for authorship.  Please see our <a href='http://eidc.ceh.ac.uk/policies/privacy' target='_blank' rel='noopener noreferrer'>Privacy Notice</a> for further information</p>\
 `,
           required: true

@@ -23,27 +23,35 @@
 </#if>
 
 <#macro displayObservedProperties filesetList>
+
+  <#--Combine the observed Properties lists and de-duplicate -->
+  <#assign deDuplicatedList = [] />
+  <#list filesetList as fileset>
+    <#if fileset.observedProperty?has_content>
+      <#list fileset.observedProperty as op>
+        <#if ! deDuplicatedList?seq_contains(op)>
+          <#assign deDuplicatedList = deDuplicatedList + [ op ] />
+        </#if>
+      </#list>
+    </#if>
+  </#list>
+
   <div class="row key-value">
     <div class="col-sm-3 key">Observed properties</div>
     <div class="col-sm-9 value">
-    <#list filesetList as filesetOp>
-      <#if filesetOp.observedProperty?has_content>
-        <#list filesetOp.observedProperty?sort_by("value") as item>
-          <#local opLabel="unknown">
-          <#if item.title?has_content>
-            <#local opLabel=item.title?trim>
-          <#elseif item.value?has_content>
-            <#local opLabel=item.value?trim>
-          </#if>
+    <#list deDuplicatedList?sort_by("title") as op>
+      <#local opLabel="unknown">
+      <#if op.title?has_content>
+        <#local opLabel=op.title?trim>
+      <#elseif op.value?has_content>
+        <#local opLabel=op.value?trim>
+      </#if>
 
-          <#if item.uri?has_content>
-            <span><abbr title="${item.uri?trim}">${opLabel}</abbr></span>
-            <a href="${item.uri?trim}" target="_blank" rel="noopener noreferrer" class="externalVocabularyLink"><sup class="fa-solid fa-xs fa-arrow-up-right-from-square"></sup></a>
-          <#else>
-            <span>${opLabel}</span>
-          </#if>
-          <#sep><br></#sep>
-        </#list>
+      <#if op.uri?has_content>
+        <span><abbr title="${op.uri?trim}">${opLabel}</abbr></span>
+        <a href="${op.uri?trim}" target="_blank" rel="noopener noreferrer" class="externalVocabularyLink"><sup class="fa-solid fa-xs fa-arrow-up-right-from-square"></sup></a>
+      <#else>
+        <span>${opLabel}</span>
       </#if>
       <#sep><br></#sep>
     </#list>

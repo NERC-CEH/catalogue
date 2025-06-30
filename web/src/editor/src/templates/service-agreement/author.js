@@ -18,21 +18,21 @@ export default _.template(`
             <option value="Professor">Professor</option>
           </select>
       </div>
-      <div class="col-lg-4 required">
+      <div class="col-lg-4">
           <label class="fst-italic" for="contacts<%= data.index %>givenName">Given name/initial(s)</label>
-          <input data-name='givenName' placeholder="e.g., C.R."  class="editor-input" id="contacts<%= data.index %>givenName" value="<%= data.givenName %>">
+          <input data-name='givenName' placeholder="e.g., C.R." class="editor-input" id="contacts<%= data.index %>givenName" value="<%= data.givenName %>">
       </div>
-      <div class="col-lg-4 required">
+      <div class="col-lg-4">
           <label class="fst-italic" for="contacts<%= data.index %>familyName">Family name</label>
           <input data-name='familyName' placeholder="e.g., Darwin" class="editor-input" id="contacts<%= data.index %>familyName" value="<%= data.familyName %>">
       </div>
     </div>
     <div class="row">
       <div class="col-sm-2">
-          <label for="contacts<%= data.index %>DisplayName">Display name</label>
+          <label for="contacts<%= data.index %>DisplayName">Display name <small class="text-body-secondary">(for institutional authors)</small></label>
       </div>
       <div class="col-sm-10">
-        <input data-name='displayName' class="editor-input form-control-sm" id="contacts<%= data.index %>DisplayName" placeholder="Only include a display name if it is different to given/family name" value="<%= data.displayName %>">
+        <input data-name='displayName' class="editor-input form-control-sm" id="contacts<%= data.index %>DisplayName" placeholder="Name for institutional authors" value="<%= data.displayName %>">
       </div>
     </div>
     <div class="row">
@@ -54,7 +54,7 @@ export default _.template(`
           <label for="contacts<%= data.index %>Organisation">Affiliation</label>
       </div>
       <div class="col-lg-10">
-          <input placeholder="Start typing to show a list of organisation. Pick from the list if possible" data-name='organisationName' class="editor-input orgAutocomplete" id="contacts<%= data.index %>Organisation" value="<%= data.organisationName %>">
+          <input autocomplete="off" aria-autocomplete="none" placeholder="Start typing to show a list of organisation. Pick from the list if possible" data-name='organisationName' class="editor-input orgAutocomplete" id="contacts<%= data.index %>Organisation" value="<%= data.organisationName %>">
       </div>
       <div class="visually-hidden">
           <input placeholder="https//ror.org/..." data-name="organisationIdentifier" class="ror editor-input" value="<%= data.organisationIdentifier %>">

@@ -22,15 +22,15 @@ export default Backbone.Model.extend({
     }
 
     if (!email) {
-      errors.push({ message: 'Email address is mandatory.' })
+      errors.push({ message: 'Email address is mandatory' })
     }
 
     if (!organisationName) {
-      errors.push({ message: 'Author affiliation is mandatory.' })
+      errors.push({ message: 'Affiliation is mandatory' })
     }
 
     if (!displayName && (!familyName || !givenName)) {
-      errors.push({ message: 'Author name is mandatory.' })
+      errors.push({ message: 'You must include the author\'s full name OR an institional author name ' })
     }
 
     if (errors.length) {
