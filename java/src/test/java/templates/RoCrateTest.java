@@ -67,16 +67,19 @@ public class RoCrateTest {
             ));
     }
 
-    private GeminiDocument createGeminiDocument(String fileId) {
+    private GeminiDocument createGeminiDocumentAttached(String fileId) {
         val gemini = new GeminiDocument();
         gemini.setUri("https://example.org/id/" + fileId);
         gemini.setId(fileId);
         gemini.setTitle("Title");
         gemini.setType("dataset");
+        gemini.setOnlineResources(List.of(
+            OnlineResource.builder().function("download").url("https://data-package.ceh.ac.uk/data/05047b98-26a0-4162-adaf-18f68f802d9f").name("Download the data").build()
+        ));
         return gemini;
     }
 
-    private GeminiDocument createGeminiDocumentAttached(String fileId) {
+    private GeminiDocument createGeminiDocumentDetached(String fileId) {
         val gemini = new GeminiDocument();
         gemini.setUri("https://example.org/id/" + fileId);
         gemini.setId(fileId);
@@ -143,7 +146,7 @@ public class RoCrateTest {
             //given
             val expected = expected("rocrate/minimal.json");
             val fileId = "09837382";
-            gemini = createGeminiDocument(fileId);
+            gemini = createGeminiDocumentDetached(fileId);
             givenFileDetailsServiceDetached(fileId);
 
             //when
@@ -161,7 +164,7 @@ public class RoCrateTest {
             val expected = expected("rocrate/full.json");
 
             val fileId = "882739943";
-            gemini = createGeminiDocument(fileId);
+            gemini = createGeminiDocumentDetached(fileId);
 
             // partsList & partDetails
             givenFileDetailsServiceDetached(fileId);
@@ -244,12 +247,6 @@ public class RoCrateTest {
             // OGL licences
             gemini.setUseConstraints(List.of(
                 ResourceConstraint.builder().code("license").uri("https://eidc.ceh.ac.uk/licences/OGL/plain").build()
-            ));
-
-            // downloads
-            gemini.setOnlineResources(List.of(
-                OnlineResource.builder().function("download").url("https://example.com/download/0").build(),
-                OnlineResource.builder().function("order").url("https://example.com/order/1").build()
             ));
 
             //when

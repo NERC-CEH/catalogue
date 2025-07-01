@@ -86,7 +86,7 @@
           <#if contact.fullName?has_content >
             <gmd:individualName>
               <#if contact.isOrcid()>
-                <gmx:Anchor xlink:href="${contact.nameIdentifier}" xlink:actuate="onRequest" xlink:title="orcid">${contactName}</gmx:Anchor>
+                <gmx:Anchor xlink:href="${contact.nameIdentifier}" xlink:actuate="onRequest" xlink:title="orcid">${contact.fullName}</gmx:Anchor>
               <#else>
                 <gco:CharacterString>${contact.fullName}</gco:CharacterString>
               </#if>
