@@ -59,14 +59,6 @@ public class RoCrateTest {
             ));
     }
 
-    private void givenFileDetailsServiceAttached(String fileId) {
-        given(fileDetailsService.getDetailsFor(fileId, true))
-            .willReturn(List.of(
-                new FileDetailsService.Part(fileId, "File", "name1", "text/csv", "testHash", "data/name4", 542L, LocalDateTime.of(2024,12,9,15, 34)),
-                new FileDetailsService.Part(fileId, "File", "name2", "text/csv", "testHash", "data/name5", 32L, LocalDateTime.of(2020,5,6,23, 59))
-            ));
-    }
-
     private GeminiDocument createGeminiDocument(String fileId) {
         val gemini = new GeminiDocument();
         gemini.setUri("https://example.org/id/" + fileId);
@@ -76,7 +68,7 @@ public class RoCrateTest {
         return gemini;
     }
 
-    private GeminiDocument createGeminiDocumentAttached(String fileId) {
+    private GeminiDocument createGeminiDocumentDetached(String fileId) {
         val gemini = new GeminiDocument();
         gemini.setUri("https://example.org/id/" + fileId);
         gemini.setId(fileId);
@@ -117,15 +109,15 @@ public class RoCrateTest {
 
         @SneakyThrows
         @Test
-        void rocrateAttachedMinimal() {
+        void rocrateMinimal() {
             //given
-            val expected = expected("rocrate/attached-minimal.json");
+            val expected = expected("rocrate/minimal.json");
             val fileId = "123456789";
-            gemini = createGeminiDocumentAttached(fileId);
-            givenFileDetailsServiceAttached(fileId);
+            gemini = createGeminiDocument(fileId);
+            givenFileDetailsService(fileId);
 
             //when
-            val actual = template("rocrate/rocrate_attached.ftl");
+            val actual = template("rocrate/rocrate.ftl");
 
             //then
             JSONAssert.assertEquals(expected, actual, true);
@@ -139,15 +131,15 @@ public class RoCrateTest {
 
         @SneakyThrows
         @Test
-        void rocrateMinimal() {
+        void rocrateDetachedMinimal() {
             //given
-            val expected = expected("rocrate/minimal.json");
+            val expected = expected("rocrate/detached_minimal.json");
             val fileId = "09837382";
-            gemini = createGeminiDocument(fileId);
+            gemini = createGeminiDocumentDetached(fileId);
             givenFileDetailsServiceDetached(fileId);
 
             //when
-            val actual = template("rocrate/rocrate.ftl");
+            val actual = template("rocrate/rocrate_detached.ftl");
 
             //then
             JSONAssert.assertEquals(expected, actual, true);
