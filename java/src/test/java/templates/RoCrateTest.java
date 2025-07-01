@@ -67,6 +67,15 @@ public class RoCrateTest {
             ));
     }
 
+    private GeminiDocument createGeminiDocumentAttached(String fileId) {
+        val gemini = new GeminiDocument();
+        gemini.setUri("https://example.org/id/" + fileId);
+        gemini.setId(fileId);
+        gemini.setTitle("Title");
+        gemini.setType("dataset");
+        return gemini;
+    }
+
     private GeminiDocument createGeminiDocumentDetached(String fileId) {
         val gemini = new GeminiDocument();
         gemini.setUri("https://example.org/id/" + fileId);
@@ -76,15 +85,6 @@ public class RoCrateTest {
         gemini.setOnlineResources(List.of(
             OnlineResource.builder().function("fileAccess").url("https://catalogue.ceh.ac.uk/datastore/eidchub/05047b98-26a0-4162-adaf-18f68f802d9f").name("Download the data").build()
         ));
-        return gemini;
-    }
-
-    private GeminiDocument createGeminiDocumentAttached(String fileId) {
-        val gemini = new GeminiDocument();
-        gemini.setUri("https://example.org/id/" + fileId);
-        gemini.setId(fileId);
-        gemini.setTitle("Title");
-        gemini.setType("dataset");
         return gemini;
     }
 
