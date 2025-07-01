@@ -6,7 +6,7 @@ export default _.template(`
         <label for="inspireThemes<%= data.index %>Theme">Theme</label>
     </div>
     <div class="col-sm-6">
-        <select class="inpireTheme"  data-name="theme" id="inspireThemes<%= data.index %>Theme">
+        <select class="inspireTheme" data-name="theme" id="inspireThemes<%= data.index %>Theme">
             <option value="" selected>Choose a theme</option>
             <option value="Addresses">Addresses</option>
             <option value="Administrative Units">Administrative Units</option>
