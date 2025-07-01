@@ -63,6 +63,12 @@
             "lastModified": "2020-05-06T23:59",
             "bytes": 9832,
             "contentUrl": "https://example.com/name2"
+        },
+        {
+            "@id": "#distribution0",
+            "@type":"DataDownload",
+            "contentUrl":"https://catalogue.ceh.ac.uk/datastore/eidchub/05047b98-26a0-4162-adaf-18f68f802d9f",
+            "encodingFormat":"text/directory"
         }
     ]
 }

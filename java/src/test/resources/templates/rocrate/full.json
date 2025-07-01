@@ -111,9 +111,6 @@
             "distribution": [
                 {
                     "@id": "#distribution0"
-                },
-                {
-                    "@id": "#distribution1"
                 }
             ],
             "provider": {
@@ -226,13 +223,9 @@
         },
         {
             "@id": "#distribution0",
-            "@type": "DataDownload",
-            "contentUrl": "https://example.com/download/0"
-        },
-        {
-            "@id": "#distribution1",
-            "@type": "DataDownload",
-            "contentUrl": "https://example.com/order/1"
+            "@type":"DataDownload",
+            "contentUrl":"https://catalogue.ceh.ac.uk/datastore/eidchub/05047b98-26a0-4162-adaf-18f68f802d9f",
+            "encodingFormat":"text/directory"
         }
     ]
 }

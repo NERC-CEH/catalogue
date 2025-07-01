@@ -73,6 +73,9 @@ public class RoCrateTest {
         gemini.setId(fileId);
         gemini.setTitle("Title");
         gemini.setType("dataset");
+        gemini.setOnlineResources(List.of(
+            OnlineResource.builder().function("download").url("https://data-package.ceh.ac.uk/data/05047b98-26a0-4162-adaf-18f68f802d9f").name("Download the data").build()
+        ));
         return gemini;
     }
 
@@ -244,12 +247,6 @@ public class RoCrateTest {
             // OGL licences
             gemini.setUseConstraints(List.of(
                 ResourceConstraint.builder().code("license").uri("https://eidc.ceh.ac.uk/licences/OGL/plain").build()
-            ));
-
-            // downloads
-            gemini.setOnlineResources(List.of(
-                OnlineResource.builder().function("download").url("https://example.com/download/0").build(),
-                OnlineResource.builder().function("order").url("https://example.com/order/1").build()
             ));
 
             //when
