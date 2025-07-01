@@ -7,5 +7,12 @@
   <#elseif type=='application'>
     <#assign docType = "SoftwareSourceCode">
   </#if>
-  <@m.rocrate docType fileDetails.getDetailsFor(id, false)/>
+
+  <#assign fileaccess = filter(downloads, "function", "fileAccess")>
+  <#if fileaccess?size gt 0>
+    <@m.rocrate docType fileDetails.getDetailsFor(id, false)/>
+  <#else>
+    not a valid rocrate document
+  </#if>
+
 </#compress>
