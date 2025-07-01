@@ -15,6 +15,11 @@
             "@type": "Dataset",
             "name": "Title",
             "@id": "https://example.org/id/09837382",
+            "distribution": [
+                {
+                    "@id": "#distribution0"
+                }
+            ],
             "hasPart": [
                 {
                     "@id": "#part09837382"

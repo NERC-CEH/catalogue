@@ -73,7 +73,7 @@
             "@id": "#distribution0",
             "@type":"DataDownload",
             "contentUrl":"https://data-package.ceh.ac.uk/data/05047b98-26a0-4162-adaf-18f68f802d9f",
-            "encodingFormat":"text/directory"
+            "encodingFormat":"application/zip"
         }
     ]
 }
