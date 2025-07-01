@@ -10,7 +10,7 @@ export default ObjectInputView.extend({
 
   render () {
     ObjectInputView.prototype.render.apply(this)
-    this.$('select.theme').val(this.model.get('theme'))
+    this.$('select.inspireTheme').val(this.model.get('theme'))
     this.$('select.conformity').val(this.model.get('conformity'))
     return this
   }

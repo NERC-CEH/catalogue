@@ -18,14 +18,17 @@ export default _.template(`
       <button class="editor-button add" <%= data.disabled%>>Add <span class="fa-solid fa-plus" aria-hidden="true"></span></button>
       <div class="clearfix"></div>
       <% if (data.fetchKeywordsButton) { %>
-        <div class="btn-group align-items-end mt-1 float-end" role="group">
-          <select id="location-select" class="form-select form-select-sm w-auto">
-            <option value="eidc" selected>EIDC</option>
-            <option value="dropbox">Dropbox</option>
-          </select>
-          <button class="legilo-keywords-btn editor-button mx-lg-1 px-3">
-            <i class="fa-solid fa-wand-magic-sparkles"></i> Suggest
-          </button>
+        <div class="d-inline-flex">
+          <div class="input-group input-group-sm flex-nowrap my-3">
+            <select id="location-select" class="form-select" aria-describedby="button-suggest">
+              <option value=" " selected>Read data from...</option>
+              <option value="eidc">Published data</option>
+              <option value="dropbox">Arrivals (dropbox)</option>
+            </select>
+            <button class="legilo-keywords-btn editor-button" id="button-suggest">
+              Suggest <i class="fa-solid fa-wand-magic-sparkles"></i>
+            </button>
+          </div>
         </div>
       <% } %>
       <div id="help-<%= data.modelAttribute %>" class="editor-help w-100">
