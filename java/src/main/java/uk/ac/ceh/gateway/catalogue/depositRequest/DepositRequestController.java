@@ -27,12 +27,9 @@ public class DepositRequestController {
 
     @GetMapping(produces = MediaType.TEXT_HTML_VALUE)
     public String depositForm(
-        @ActiveUser CatalogueUser user,
-        @Value("${documents.baseUri}") String baseUri,
-        Model model
+        @ActiveUser CatalogueUser user
     ) {
         if (user == null || user.isPublic()) {
-            model.addAttribute("baseUri", baseUri);
             return "html/deposit_request/deposit_login";
         }
         return "html/deposit_request/deposit_form";
@@ -58,10 +55,8 @@ public class DepositRequestController {
     @PreAuthorize("@permission.hasLogin(#user)")
     @GetMapping(value = "/success", produces = MediaType.TEXT_HTML_VALUE)
     public String depositSuccess(
-        @ActiveUser CatalogueUser user,
-        Model model
+        @ActiveUser CatalogueUser user
     ) {
-        model.addAttribute("referenceNumber", "-");
         return "html/deposit_request/deposit_success";
     }
 

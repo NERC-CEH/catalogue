@@ -10,15 +10,15 @@
   </div>
   <div class="text-center fw-bold mt-4">
     <p class="pt-5 fw-bold">If you already have an EIDC account login to get started</p>
-    <a href="/sso/login?success=${baseUri}/deposit-request"
+    <a href="/sso/login"
        class="btn"
        style="background-color: var(--header-background-colour); color: white; min-width: 300px;">
       Login
     </a>
   </div>
-  <div class="text-center fw-bold mt-4">
+  <div class="text-center fw-bold my-4 pb-5">
     <p class="pt-5 fw-bold">New to the Environmental Information Data Centre (EIDC)<br>register as a new user first</p>
-    <a href="/sso/signup?success=${baseUri}/deposit-request"
+    <a href="/sso/signup"
        class="btn"
        style="background-color: var(--header-background-colour); color: white; min-width: 300px;">
       Register to get started
