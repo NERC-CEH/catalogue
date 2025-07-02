@@ -93,6 +93,11 @@ public class CrowdPermissionService implements PermissionService {
     }
 
     @Override
+    public boolean hasLogin(CatalogueUser user) {
+        return !(user == null || user.isPublic());
+    }
+
+    @Override
     public boolean userCanEdit(@NonNull String file) {
         try {
             final CatalogueUser user = getCurrentUser();

@@ -16,6 +16,8 @@ public interface PermissionService {
             @NonNull String permission
     );
 
+    boolean hasLogin(CatalogueUser user);
+
     boolean userCanEdit(@NonNull String file);
 
     boolean userCanEditServiceAgreement(@NonNull String file);
