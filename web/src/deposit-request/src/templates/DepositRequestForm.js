@@ -93,7 +93,7 @@ const template = `
                    class="form-control"
                    data-name="funderOther"
                    style="<%= model.funder === 'Other' ? '' : 'display: none;' %>"
-                   placeholder="Specify funder(s)"
+                   placeholder="Specify funder(s). If listing more than one, separate them with commas."
                    value="<%= model.funderOther || '' %>">
             <div class="invalid-feedback"></div>
           </div>

@@ -12,10 +12,7 @@ export default Backbone.Model.extend({
     size: ''
   },
 
-  validate (attrs) {
-    if (!attrs) {
-      attrs = this.attributes
-    }
+  validate (attrs = this.attributes) {
     const errors = []
 
     if (attrs.title === '') errors.push({ name: 'title', message: 'Working title is required' })

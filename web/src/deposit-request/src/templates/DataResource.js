@@ -42,7 +42,7 @@ export default _.template(`
               data-name="resourceTypeOther"
               class="form-control text-dark"
               value="<%= data.otherResourceType || '' %>"
-              placeholder="Specify resource type"
+              placeholder="Specify the resource(s). If listing more than one, separate them with commas."
               style="<%= data.resourceType === 'Other' ? '' : 'display: none;' %>">
         <div class="invalid-feedback"></div>
       </div>
@@ -92,7 +92,7 @@ export default _.template(`
               data-name="resourceFormatOther"
               class="form-control text-dark"
               value="<%= data.resourceFormatOther || '' %>"
-              placeholder="Specify resource format"
+              placeholder="Specify the resource format(s). If listing more than one, separate them with commas."
               style="<%= data.resourceFormat === 'Other' ? '' : 'display: none;' %>">
         <div class="invalid-feedback"></div>
       </div>
