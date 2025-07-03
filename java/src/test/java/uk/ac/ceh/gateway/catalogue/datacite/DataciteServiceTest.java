@@ -80,7 +80,6 @@ public class DataciteServiceTest {
                 "Test legacy publisher",
                 "username",
                 "password",
-                "datacite/datacite.ftlx",
                 identifierService,
                 restTemplate,
                 jenaLookupService,

@@ -45,7 +45,6 @@ public class DataciteService {
     private final String legacyPublisher;
     private final String username;
     private final String password;
-    private final String templateLocation;
     private final DocumentIdentifierService identifierService;
     private final RestTemplate restTemplate;
     private final JenaLookupService jenaLookupService;
@@ -58,7 +57,6 @@ public class DataciteService {
             @Value("${doi.legacyPublisher}") String legacyPublisher,
             @Value("${doi.username}") String username,
             @Value("${doi.password}") String password,
-            @Value("${doi.templateLocation}") String templateLocation,
             @NonNull DocumentIdentifierService identifierService,
             @Qualifier("normal") RestTemplate restTemplate,
             @NonNull JenaLookupService jenaLookupService,
@@ -70,7 +68,6 @@ public class DataciteService {
         this.legacyPublisher = legacyPublisher;
         this.username = username;
         this.password = password;
-        this.templateLocation = templateLocation;
         this.identifierService = identifierService;
         this.restTemplate = restTemplate;
         this.jenaLookupService = jenaLookupService;
@@ -102,7 +99,7 @@ public class DataciteService {
             }
             catch(HttpClientErrorException ex) {
                 log.error("Failed to mint doi: {} - {} - {}", request.get("doi"), ex.getResponseBodyAsString(), ex.getStatusCode());
-                throw new DataciteException("Minting of the DOI failed, please review the datacite.xml (is it valid?) then try again", ex);
+                throw new DataciteException("Minting of the DOI failed, please review the datacite JSON (is it valid?) then try again", ex);
             }
             catch(RestClientException ex) {
                 throw new DataciteException("Failed to communicate with the datacite api when trying to mint the doi", ex);
@@ -123,7 +120,7 @@ public class DataciteService {
     /**
      * Grab the current metadata document from the datacite api. If this gemini
      * document does not have a doi, then return null
-     * @return a populated  datacite request, or null if nothing there
+     * @return a populated datacite request, or null if nothing there
      */
     public DataciteRequest getDoiMetadata(GeminiDocument document) {
         if (getDoi(document).isPresent()) {
@@ -182,7 +179,7 @@ public class DataciteService {
             }
             catch(HttpClientErrorException ex) {
                 log.error("Failed to upload doi: {} - {}", generateDoiString(document), ex.getResponseBodyAsString());
-                throw new DataciteException("Failed to submit the doi metadata, please review the datacite.xml (is it valid?) then try again", ex);
+                throw new DataciteException("Failed to submit the doi metadata, please review the datacite JSON (is it valid?) then try again", ex);
             }
             catch(RestClientException ex) {
                 throw new DataciteException("Failed to communicate with the datacite api when trying to upload a record", ex);
@@ -265,9 +262,9 @@ public class DataciteService {
 
     /**
      * Process the datacitation request template for the given document and
-     * return the request as a string.
-     * @param document to get the prepare a datacitation request for
-     * @return an Map request
+     * return the request as a Map.
+     * @param document to prepare a datacitation request for
+     * @return a Map request
      */
     public Map<String, Object> getDatacitationRequest(GeminiDocument document) {
         String doi = generateDoiString(document);
@@ -277,14 +274,6 @@ public class DataciteService {
         data.put("doi", doi);
 
         return data;
-    }
-
-    public DataciteResponse getDataciteResponse(GeminiDocument geminiDocument) {
-        return DataciteResponse.builder()
-            .doc(geminiDocument)
-            .resourceType(getDataciteResourceType(geminiDocument))
-            .doi(generateDoiString(geminiDocument))
-            .build();
     }
 
     private String getDataciteResourceType(MetadataDocument document) {

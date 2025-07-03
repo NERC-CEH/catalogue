@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import freemarker.template.Configuration;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,7 +13,6 @@ import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
-import uk.ac.ceh.gateway.catalogue.datacite.DataciteResponse;
 import uk.ac.ceh.gateway.catalogue.datacite.DataciteService;
 import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.gemini.DatasetReferenceDate;
@@ -54,16 +52,9 @@ class DataciteControllerTest {
     @MockitoBean private JenaLookupService jenaLookupService;
 
     @Autowired private MockMvc mvc;
-    @Autowired private Configuration configuration;
 
     private final String file = "1234";
     private final GeminiDocument gemini = new GeminiDocument();
-
-
-    @SneakyThrows
-    private void givenFreemarkerConfiguration() {
-        configuration.setSharedVariable("jena", jenaLookupService);
-    }
 
     @SneakyThrows
     private void givenDocumentRepository() {
@@ -82,16 +73,6 @@ class DataciteControllerTest {
         ));
         given(documentRepository.read(file))
             .willReturn(gemini);
-    }
-
-    private void givenDataciteService() {
-        given(dataciteService.getDataciteResponse(gemini))
-            .willReturn(DataciteResponse.builder()
-                .doc(gemini)
-                .resourceType("Dataset")
-                .doi("10.285/" + file)
-                .build()
-            );
     }
 
     private void givenGenerateDoi() {
