@@ -50,41 +50,33 @@
 }
 
 #deposit-request {
-    #deposit-request-form {
-        background-color: #FBFBFB;
 
-        .editor-remove {
-            display: grid;
-            grid-template-columns: auto 0px;
-            gap: 0.6em;
+    input,
+    select,
+    textarea {
+        border-color: #999;
+    }
 
-            .editor-button-remove {
-                @extend .btn !optional;
-                @extend .btn-light !optional;
-                @extend .border !optional;
-                @extend .btn-sm !optional;
-            }
-        }
+    textarea.form-control {
+        field-sizing: content;
+        min-height: 100px;
+    }
 
-        .editor-button {
+    .editor-remove {
+        display: grid;
+        grid-template-columns: auto 30px;
+        gap: 1em;
+        @extend .border !optional;
+        @extend .border-1 !optional;
+        @extend .p-4 !optional;
+        @extend .my-3 !optional;
+        border-radius: 5px;
+
+        .editor-button-remove {
             @extend .btn !optional;
             @extend .btn-light !optional;
             @extend .border !optional;
             @extend .btn-sm !optional;
-            @extend .float-end !optional;
-        }
-
-        .row {
-            margin-bottom: 1.5em;
-        }
-
-        .item-space {
-            padding-bottom: 1.5em;
-        }
-
-        label, p, button {
-            margin-bottom: 0.3em;
-            font-weight: 500;
         }
     }
 }

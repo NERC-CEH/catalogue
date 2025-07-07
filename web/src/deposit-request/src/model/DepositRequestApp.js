@@ -52,7 +52,7 @@ export default NestedModel.extend({
     if (attrs.replaceExisting === '') errors.push({ name: 'replaceExisting', message: 'Selection is required.' })
     if (attrs.relatedToExisting === '') errors.push({ name: 'relatedToExisting', message: 'Selection is required.' })
 
-    if (attrs.dataResources.length === 0) errors.push({ name: 'dataResources', message: 'At least one data resource is required.' })
+    if (attrs.dataResources.length === 0) errors.push({ name: 'dataResources', message: 'At least one dataset is required.' })
 
     return errors.length > 0 ? errors : undefined
   },
