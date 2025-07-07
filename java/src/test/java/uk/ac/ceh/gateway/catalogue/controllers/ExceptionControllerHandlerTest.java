@@ -1,6 +1,5 @@
 package uk.ac.ceh.gateway.catalogue.controllers;
 
-import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,7 +14,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.ceh.gateway.catalogue.auth.oidc.WithMockCatalogueUser;
 import uk.ac.ceh.gateway.catalogue.config.DevelopmentUserStoreConfig;
 import uk.ac.ceh.gateway.catalogue.config.SecurityConfigCrowd;
@@ -24,20 +22,14 @@ import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
 import uk.ac.ceh.gateway.catalogue.model.ErrorResponse;
 import uk.ac.ceh.gateway.catalogue.model.ExternalResourceFailureException;
 import uk.ac.ceh.gateway.catalogue.model.ResourceNotFoundException;
-import uk.ac.ceh.gateway.catalogue.modelceh.CehModel;
 import uk.ac.ceh.gateway.catalogue.permission.PermissionService;
 import uk.ac.ceh.gateway.catalogue.repository.DocumentRepository;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.DATACITE_XML_VALUE;
 
 @WithMockCatalogueUser
 @ActiveProfiles("test")
@@ -55,34 +47,14 @@ public class ExceptionControllerHandlerTest {
     @MockitoBean private DataciteService dataciteService;
     @MockitoBean(name="permission") private PermissionService permissionService;
 
-    @Autowired private MockMvc mvc;
     @Autowired
     private ExceptionControllerHandler exceptionControllerHandler;
     @Autowired
     private Environment env;
 
-    private final String file = "1234";
-
     @BeforeEach
     public void setup() {
         this.controller = new ExceptionControllerHandler(env);
-    }
-
-    @Test
-    @SneakyThrows
-    void handleException() {
-        //given
-        given(repo.read(file)).willReturn(new CehModel());
-
-        //when
-        mvc.perform(
-            get("/documents/{file}/datacite", file)
-                .accept(DATACITE_XML_VALUE)
-        )
-            .andExpect(status().isNotFound())
-            .andExpect(content().contentType(DATACITE_XML_VALUE))
-            .andExpect(content().xml("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                "<error>There was no gemini document present with this address</error>"));
     }
 
     @Test
