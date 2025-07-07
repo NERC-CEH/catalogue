@@ -22,7 +22,6 @@ import uk.ac.ceh.gateway.catalogue.citation.Citation;
 import uk.ac.ceh.gateway.catalogue.converters.Object2TemplatedMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.TransparentProxyMessageConverter;
 import uk.ac.ceh.gateway.catalogue.converters.WmsFeatureInfo2XmlMessageConverter;
-import uk.ac.ceh.gateway.catalogue.datacite.DataciteResponse;
 import uk.ac.ceh.gateway.catalogue.metrics.MetricsReportModel;
 import uk.ac.ceh.gateway.catalogue.model.CodeDocument;
 import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
@@ -72,7 +71,6 @@ public class WebConfig implements WebMvcConfigurer {
         val cehModel = new Object2TemplatedMessageConverter<>(CehModel.class, freemarkerConfiguration);
         val cehModelApplication = new Object2TemplatedMessageConverter<>(CehModelApplication.class, freemarkerConfiguration);
         val citation = new Object2TemplatedMessageConverter<>(Citation.class, freemarkerConfiguration);
-        val datacite = new Object2TemplatedMessageConverter<>(DataciteResponse.class, freemarkerConfiguration);
         val code = new Object2TemplatedMessageConverter<>(CodeDocument.class, freemarkerConfiguration);
         val dataset = new Object2TemplatedMessageConverter<>(Dataset.class, freemarkerConfiguration);
         val dataType = new Object2TemplatedMessageConverter<>(DataType.class, freemarkerConfiguration);
@@ -106,7 +104,6 @@ public class WebConfig implements WebMvcConfigurer {
         val wmsFeatureInfo = new WmsFeatureInfo2XmlMessageConverter();
 
         this.beforeStandardMessageConverters = Arrays.asList(
-            datacite,
             gemini,
             wmsFeatureInfo
         );
@@ -220,7 +217,6 @@ public class WebConfig implements WebMvcConfigurer {
             .favorParameter(true)
             .mediaType(BIBTEX_SHORT, BIBTEX)
             .mediaType(CSV_SHORT, TEXT_CSV)
-            .mediaType(DATACITE_SHORT, DATACITE_XML)
             .mediaType(GEMINI_XML_SHORT, GEMINI_XML)
             .mediaType("html", MediaType.TEXT_HTML)
             .mediaType("json", MediaType.APPLICATION_JSON)

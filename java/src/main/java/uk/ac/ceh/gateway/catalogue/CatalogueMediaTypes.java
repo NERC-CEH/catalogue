@@ -16,10 +16,7 @@ public class CatalogueMediaTypes {
     public static final String TEXT_CSV_VALUE = "text/csv";
     public static final MediaType TEXT_CSV = parseMediaType(TEXT_CSV_VALUE);
 
-    public static final String DATACITE_SHORT = "datacite";
-    public static final String DATACITE_XML_VALUE = "application/x-datacite+xml";
     public static final String DATACITE_JSON_VALUE = "application/vnd.api+json";
-    public static final MediaType DATACITE_XML = parseMediaType(DATACITE_XML_VALUE);
 
     public static final String DATA_TYPE_JSON_VALUE = "application/vnd.data-type+json";
     public static final String CODE_JSON_VALUE = "application/vnd.code-document+json";
