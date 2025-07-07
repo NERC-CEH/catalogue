@@ -1,11 +1,9 @@
 <#import "../skeleton.ftlh" as skeleton>
 
-<@skeleton.master title="Deposit Success" catalogue=catalogues.defaultCatalogue()>
-  <div class="text-center fw-bold my-4 pb-5">
-    <h1 class="fw-bold py-5">EIDC Deposit Request Form successfully submitted</h1>
-    <p>Thank you</p>
-    <p>Form successfully submitted</p>
-    <p>Someone will be in contact with you</p>
-    <p>Contact <a href="mailto:@info.ac.uk">info@ceh.ac.uk</a></p>
+<@skeleton.master title="Thanks" catalogue=catalogues.defaultCatalogue()>
+  <div class="container">
+    <h1 class="mt-5 mb-4 display-4">Thank you</h1>
+    <p>We'll review your details and someone will be in contact with you soon to discuss next steps.</p>
+    <p>In the meantime, if you need any help, please <a href="mailto:@info.ac.uk">email info@ceh.ac.uk</a></p>
   </div>
 </@skeleton.master>

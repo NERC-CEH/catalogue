@@ -81,7 +81,7 @@ const template = `
         </div>
         <div class="my-5">
           <label class="form-label d-block">
-            Are the data within the remit of the EIDC i.e. environmental data from the terrestrial and freshwater sciences?
+            Are the data within the remit of the EIDC (i.e., environmental data from the terrestrial and freshwater sciences?)
             <div class="text-body-tertiary">For more details on the data we take in, please consult our Acquisition Policy <a href="https://eidc.ac.uk/policies/acquisition" target="_blank" class="text-decoration-underline">https://eidc.ac.uk/policies/acquisition</a></div>
           </label>
           <div class="form-check form-check-inline">
@@ -113,6 +113,15 @@ const template = `
                     value="Some are"
                     <%= model.eidcRemit === 'Some are' ? 'checked' : '' %>>
             <label class="form-check-label" for="eidcRemitSome">Some are</label>
+          </div>
+          <div>
+            <input class="d-none"
+                    type="radio"
+                    name="eidcRemit"
+                    data-name="eidcRemit"
+                    id="eidcRemitNone">
+            <label class="d-none" >None</label>
+            <div class="invalid-feedback"></div>
           </div>
         </div>
         <div class="my-5">
@@ -150,6 +159,15 @@ const template = `
                     <%= model.alternativeData === 'Some are' ? 'checked' : '' %>>
             <label class="form-check-label" for="alternativeDataSome">Some are</label>
           </div>
+          <div>
+            <input class="d-none"
+                    type="radio"
+                    name="alternativeData"
+                    data-name="alternativeData"
+                    id="alternativeDataNone">
+            <label class="d-none" >None</label>
+            <div class="invalid-feedback"></div>
+          </div>
         </div>
         <div class="my-5">
           <label class="form-label d-block">
@@ -177,13 +195,12 @@ const template = `
             <label class="form-check-label" for="hasSupportingDocsNo">No</label>
           </div>
           <div>
-            <input class="form-check-input"
+            <input class="d-none"
                     type="radio"
                     name="hasSupportingDocs"
                     data-name="hasSupportingDocs"
-                    id="hasSupportingDocsNone"
-                    style="display: none">
-            <label class="form-check-label" for="hasSupportingDocsNone" style="display: none">None</label>
+                    id="hasSupportingDocsNone">
+            <label class="d-none" >None</label>
             <div class="invalid-feedback"></div>
           </div>
         </div>
@@ -238,13 +255,12 @@ const template = `
             <label class="form-check-label" for="replaceExistingNo">No</label>
           </div>
           <div>
-            <input class="form-check-input"
+            <input class="d-none"
                     type="radio"
                     name="replaceExisting"
                     data-name="replaceExisting"
-                    id="replaceExistingNone"
-                    style="display: none">
-            <label class="form-check-label" for="replaceExistingNone" style="display: none">None</label>
+                    id="replaceExistingNone">
+            <label class="d-none">None</label>
             <div class="invalid-feedback"></div>
           </div>
         </div>
@@ -273,13 +289,12 @@ const template = `
           <label class="form-check-label" for="relatedToExistingNo">No</label>
         </div>
         <div>
-          <input class="form-check-input"
+          <input class="d-none"
                   type="radio"
                   name="relatedToExisting"
                   data-name="relatedToExisting"
-                  id="relatedToExistingNone"
-                  style="display: none">
-          <label class="form-check-label" for="relatedToExistingNone" style="display: none">None</label>
+                  id="relatedToExistingNone">
+          <label class="d-none">None</label>
           <div class="invalid-feedback"></div>
         </div>
       </div>
