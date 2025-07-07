@@ -175,6 +175,15 @@ const template = `
                     value=false
                     <%= model.hasSupportingDocs === false ? 'checked' : '' %>>
             <label class="form-check-label" for="hasSupportingDocsNo">No</label>
+          </div>
+          <div>
+            <input class="form-check-input"
+                    type="radio"
+                    name="hasSupportingDocs"
+                    data-name="hasSupportingDocs"
+                    id="hasSupportingDocsNone"
+                    style="display: none">
+            <label class="form-check-label" for="hasSupportingDocsNone" style="display: none">None</label>
             <div class="invalid-feedback"></div>
           </div>
         </div>
@@ -227,6 +236,15 @@ const template = `
                     value=false
                     <%= model.replaceExisting === false ? 'checked' : '' %>>
             <label class="form-check-label" for="replaceExistingNo">No</label>
+          </div>
+          <div>
+            <input class="form-check-input"
+                    type="radio"
+                    name="replaceExisting"
+                    data-name="replaceExisting"
+                    id="replaceExistingNone"
+                    style="display: none">
+            <label class="form-check-label" for="replaceExistingNone" style="display: none">None</label>
             <div class="invalid-feedback"></div>
           </div>
         </div>
@@ -253,6 +271,15 @@ const template = `
                   value=false
                   <%= model.relatedToExisting === false ? 'checked' : '' %>>
           <label class="form-check-label" for="relatedToExistingNo">No</label>
+        </div>
+        <div>
+          <input class="form-check-input"
+                  type="radio"
+                  name="relatedToExisting"
+                  data-name="relatedToExisting"
+                  id="relatedToExistingNone"
+                  style="display: none">
+          <label class="form-check-label" for="relatedToExistingNone" style="display: none">None</label>
           <div class="invalid-feedback"></div>
         </div>
       </div>
