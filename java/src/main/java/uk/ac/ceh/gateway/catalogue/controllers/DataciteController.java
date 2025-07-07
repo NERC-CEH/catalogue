@@ -9,7 +9,6 @@ import org.springframework.web.servlet.view.RedirectView;
 import uk.ac.ceh.components.userstore.springsecurity.ActiveUser;
 import uk.ac.ceh.gateway.catalogue.datacite.DataciteRequest;
 import uk.ac.ceh.gateway.catalogue.datacite.DataciteService;
-import uk.ac.ceh.gateway.catalogue.datacite.DataciteResponse;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
 import uk.ac.ceh.gateway.catalogue.gemini.ResourceIdentifier;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
@@ -20,7 +19,6 @@ import uk.ac.ceh.gateway.catalogue.repository.DocumentRepositoryException;
 import uk.ac.ceh.gateway.catalogue.document.DocumentIdentifierService;
 
 import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.DATACITE_JSON_VALUE;
-import static uk.ac.ceh.gateway.catalogue.CatalogueMediaTypes.DATACITE_XML_VALUE;
 
 /**
  * The following controller will handle the generation of Datacite requests.
@@ -45,20 +43,6 @@ public class DataciteController {
         this.identifierService = identifierService;
         this.dataciteService = dataciteService;
         log.info("Creating");
-    }
-
-    @GetMapping(value="{file}/datacite.xml")
-    public DataciteResponse getDataciteRequestXml(
-        @PathVariable("file") String file
-    ) {
-        return getDataciteRequest(file);
-    }
-
-    @GetMapping(value="{file}/datacite", produces=DATACITE_XML_VALUE)
-    public DataciteResponse getDataciteRequest(
-        @PathVariable("file") String file
-    ) {
-        return dataciteService.getDataciteResponse(getDocument(file));
     }
 
     @Secured(DATACITE_ROLE)
