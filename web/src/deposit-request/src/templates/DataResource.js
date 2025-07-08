@@ -67,7 +67,6 @@ export default _.template(`
               <%= data.easilyRecreated === true ? 'checked' : '' %>>
       <label class="form-check-label" for="easilyRecreatedYes">Yes</label>
     </div>
-
     <div class="form-check form-check-inline">
       <input class="form-check-input"
               type="radio"
@@ -77,6 +76,14 @@ export default _.template(`
               value=false
               <%= data.easilyRecreated === false ? 'checked' : '' %>>
       <label class="form-check-label" for="easilyRecreatedNo">No</label>
+    </div>
+    <div>
+      <input class="d-none"
+              type="radio"
+              name="easilyRecreated"
+              data-name="easilyRecreated"
+              id="easilyRecreatedNone">
+      <label class="d-none" >None</label>
       <div class="invalid-feedback"></div>
     </div>
   </div>

@@ -113,36 +113,45 @@ public class DepositRequestService {
     private String buildDescription(DepositRequestModel form) {
         val sb = new StringBuilder();
 
-        sb.append("*NAME:* ").append(form.name()).append("  \n")
-            .append("*EMAIL:* ").append(form.email()).append("  \n")
-            .append("*AFFILIATION:* ").append(form.affiliation()).append("  \n")
-            .append("*Funder:* ").append(resolveOtherField(form.funder(), form.funderOther())).append("  \n")
-            .append("*Grant reference:* ").append(form.fundingRef()).append("  \n")
-            .append("*Are data in EIDC's remit?:* ").append(form.eidcRemit()).append("  \n")
-            .append("*Are data omics, social or model?:* ").append(form.alternativeData()).append("  \n")
-            .append("*Has supporting documentation?* ").append(booleanToYesNo(form.hasSupportingDocs())).append("  \n")
-            .append("*Supporting docs and data correct?:* ").append(booleanToYesNo(form.isSupportingDocsReady())).append("  \n")
-            .append("*Are these data replacing data already held by the EIDC?:* ").append(booleanToYesNo(form.replaceExisting())).append("  \n")
-            .append("*Are these resource(s) related to those already held by the EIDC?:* ").append(booleanToYesNo(form.relatedToExisting())).append("  \n")
-            .append("----\n");
+        sb.append("*Name:* ").append(form.name()).append("  \n  \n")
+            .append("*Email:* ").append(form.email()).append("  \n  \n")
+            .append("*Affiliation:* ").append(form.affiliation()).append("  \n  \n")
+            .append("*Funder:* ").append(resolveOtherField(form.funder(), form.funderOther())).append("  \n  \n");
+
+        if (form.fundingRef() != null && !form.fundingRef().isEmpty()) {
+            sb.append("*Grant reference:* ").append(form.fundingRef()).append("  \n  \n");
+        }
+
+        sb.append("*Are data in EIDC's remit?:* ").append(form.eidcRemit()).append("  \n  \n")
+            .append("*Are data omics, social or model?:* ").append(form.alternativeData()).append("  \n  \n")
+            .append("*Has supporting documentation?:* ").append(booleanToYesNo(form.hasSupportingDocs())).append("  \n  \n")
+            .append("*Supporting docs and data correct?:* ").append(booleanToYesNo(form.isSupportingDocsReady())).append("  \n  \n")
+            .append("*Are these data replacing data already held by the EIDC?:* ").append(booleanToYesNo(form.replaceExisting())).append("  \n  \n")
+            .append("*Are these resource(s) related to those already held by the EIDC?:* ").append(booleanToYesNo(form.relatedToExisting())).append("  \n  \n")
+            .append("  \n  \n");
 
         if (form.dataResources() != null && !form.dataResources().isEmpty()) {
             for (int i = 0; i < form.dataResources().size(); i++) {
                 val r = form.dataResources().get(i);
-                sb.append("h3. Dataset ").append(i + 1).append("  \n")
-                    .append("*Name:* ").append(r.title()).append("  \n")
-                    .append("*Description:* ").append(r.description()).append("  \n")
-                    .append("*Type:* ").append(resolveOtherField(r.resourceType(), r.resourceTypeOther())).append("  \n")
-                    .append("*Format:* ").append(resolveOtherField(r.resourceFormat(), r.resourceFormatOther())).append("  \n")
-                    .append("*Size:* ").append(r.size()).append("  \n")
-                    .append("----\n");
+                sb.append("{panel:borderWidth=2|borderColor=#0484a4|titleBGColor=#0484a4|titleColor=white|title=Dataset ").append(i + 1).append("}")
+                    .append("*Name:* ").append(r.title()).append("  \n  \n")
+                    .append("*Description:* ").append(r.description()).append("  \n  \n")
+                    .append("*Type:* ").append(resolveOtherField(r.resourceType(), r.resourceTypeOther())).append("  \n  \n");
+
+                if ("Model output".equals(r.resourceType())) {
+                    sb.append("*Easily recreated?:* ").append(booleanToYesNo(r.easilyRecreated())).append("  \n  \n");
+                    }
+
+                sb.append("*Format:* ").append(resolveOtherField(r.resourceFormat(), r.resourceFormatOther())).append("  \n  \n")
+                    .append("*Size:* ").append(r.size())
+                    .append("{panel}  \n");
             }
         }
 
-        sb.append("h3. Additional Information  \n")
-            .append(form.additionalInfo() != null && !form.additionalInfo().isBlank()
-                ? form.additionalInfo()
-                : "None");
+        if (form.additionalInfo() != null && !form.additionalInfo().isEmpty()) {
+            sb.append("  \n  \n h1. Additional Information  \n")
+                .append(form.additionalInfo());
+        }
 
         return sb.toString();
     }
