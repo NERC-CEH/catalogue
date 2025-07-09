@@ -10,8 +10,7 @@ const template = `
                 class="form-control"
                 id="your-name"
                 data-name="name"
-                value="<%= model.name %>"
-                placeholder="Enter your name">
+                value="<%= model.name %>">
         <label for="your-name">
           Your name <span class="text-danger">*</span>
         </label>
@@ -22,8 +21,7 @@ const template = `
                 class="form-control"
                 id="your-email"
                 data-name="email"
-                value="<%= model.email %>"
-                placeholder="Enter your email address">
+                value="<%= model.email %>">
         <label for="your-email">
           Your email address <span class="text-danger">*</span>
         </label>
@@ -34,8 +32,7 @@ const template = `
                 class="form-control"
                 id="your-affiliation"
                 data-name="affiliation"
-                value="<%= model.affiliation %>"
-                placeholder="Your university or organisation">
+                value="<%= model.affiliation %>">
         <div class="invalid-feedback"></div>
         <label for="your-affiliation">
           Your affiliation <span class="text-danger">*</span>
@@ -172,7 +169,7 @@ const template = `
         <div class="my-5">
           <label class="form-label d-block">
             We are unable to accept data resources without supporting documentation to enable their re-use. Are you able to provide document(s) to enable re-use of the resource? <span class="text-danger">*</span>
-            <div class="text-body-tertiary">Supporting documentation helps others understand a dataset and supports its potential re-use.  The information is likely to already exist; for example in technical reports, project websites or wikis.  See our guidance at <a href="https://eidc.ac.uk/deposit/supportingDocumentation" target="_blank" class="text-decoration-underline">https://eidc.ac.uk/deposit/supportingDocumentation</a> for further information.</div>
+            <div class="text-body-tertiary">Supporting documentation helps others to understand a data resource and supports its re-use.  The information is likely to already exist; for example in technical reports, project websites or wikis.  See our guidance at <a href="https://eidc.ac.uk/deposit/supportingDocumentation" target="_blank" class="text-decoration-underline">https://eidc.ac.uk/deposit/supportingDocumentation</a> for further information.</div>
           </label>
           <div class="form-check form-check-inline">
             <input class="form-check-input"
@@ -306,7 +303,7 @@ const template = `
         <p>You can include one or more datasets in this deposit request.</p>
         <p>A dataset is a structured collection of data organised and stored together.  Data within a dataset are typically related in some way.  It can include different types or formats of data and may be comprised of one or many files.</p>
         <p>To decide if you have one dataset or many, think about how you will describe the data and what the supporting documentation will consist of.  If the metadata is similar or identical for each dataset, it indicates that you probably have <span class="fw-bold">one</span> dataset.  If it is different, you probably have multiple datasets.</p>
-        <p><span class="text-info">If you need help in deciding whether your deposit consists of one or many resources, please get in touch by emailing </span><a href="mailto:info@eidc.ac.uk">info@eidc.ac.uk</a></p>
+        <p>If you need help in deciding whether your deposit consists of one or several resources, please get in touch by emailing <a href="mailto:info@eidc.ac.uk">info@eidc.ac.uk</a></p>
         <p>Add details about each dataset you want to deposit by clicking the button below.</p>
 
         <div class="mt-3 resource-list" data-name="dataResources"></div>
@@ -330,30 +327,29 @@ const template = `
         </div>
       </div>
 
-      <hr class="my-5 border border-secondary border-2">
-
-      <div>
-        <div class="fw-bold">
-          <p>By proceeding:</p>
+      <div class="card fw-bold mt-5">
+        <div class="card-body">
+          <p>By proceeding, you confirm that:</p>
           <ul>
-            <li>you confirm that you are the owner of the data resource(s) or have permission from the owner to publish.</li>
-            <li>you agree that any third-party data used in the generation or derivation of the resource(s) were <u>not</u> accessed under terms and conditions which would preclude their subsequent publication.</li>
-            <li>you agree that those responsible for funding the generation of these resources, permit their publication by the EIDC.</li>
+            <li>you are the owner of the data resource(s) or have permission from the owner to publish them</li>
+            <li>any third-party data used in the generation or derivation of the data resource(s) were <u>not</u> accessed under terms and conditions which would preclude their subsequent publication</li>
+            <li>those responsible for funding the generation of these resources, permit their publication by the EIDC</li>
           </ul>
-        </div>
-        <div class="form-check mt-3 mx-4">
-          <input class="form-check-input"
-                  type="checkbox"
-                  name="isAgreed"
-                  data-name="isAgreed"
-                  id="isAgreed"
-                  value="Yes"
-                  <%= model.isAgreed ? 'checked' : '' %>>
-          <label class="form-check-label" for="isAgreed">
-            I AGREE
-          </label>
-          <span class="text-danger">*</span>
-          <div class="invalid-feedback"></div>
+
+          <div class="form-check mt-3 mx-4">
+            <input class="form-check-input"
+                    type="checkbox"
+                    name="isAgreed"
+                    data-name="isAgreed"
+                    id="isAgreed"
+                    value="Yes"
+                    <%= model.isAgreed ? 'checked' : '' %>>
+            <label class="form-check-label" for="isAgreed">
+              I CONFIRM
+            </label>
+            <span class="text-danger">*</span>
+            <div class="invalid-feedback"></div>
+          </div>
         </div>
       </div>
 

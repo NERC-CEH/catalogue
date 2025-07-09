@@ -116,13 +116,13 @@ export default _.template(`
   <div class="mt-5">
     <label class="control-label">
       <span class="fw-bold">Size</span> <span class="text-danger">*</span>
-      <br><span class="text-body-tertiary">What is the size (Mb/Gb) and how many files are there?  (A rough estimate will do)</span>
+      <br><span class="text-body-tertiary">What is the total size of the dataset and how many files are there?  (a rough estimate in Mb or Gb will do)</span>
     </label>
     <input type="text"
           data-name="size"
           class="form-control"
           value="<%= data.size || '' %>"
-          placeholder="Enter size">
+          placeholder="Enter a rough estimate of size (Mb or Gb and approx number of files)">
     <div class="invalid-feedback"></div>
   </div>
 `)

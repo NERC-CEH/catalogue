@@ -40,7 +40,7 @@ export default NestedModel.extend({
       }
     }
     if (attrs.affiliation === '') errors.push({ name: 'affiliation', message: 'Affiliation is required' })
-    if (!attrs.isAgreed) errors.push({ name: 'isAgreed', message: 'You must agree to the terms and conditions.' })
+    if (!attrs.isAgreed) errors.push({ name: 'isAgreed', message: 'You must confirm to proceeed' })
     if (attrs.funder === '') {
       errors.push({ name: 'funder', message: 'Funder is required' })
     } else {

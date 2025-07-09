@@ -24,7 +24,7 @@ public record DepositRequestModel(
     @NotBlank(message = "Affiliation is required")
     String affiliation,
 
-    @AssertTrue(message = "You must agree to the terms and conditions.")
+    @AssertTrue(message = "You must confirm to proceeed")
     Boolean isAgreed,
 
     @NotBlank(message = "Funder is required")
