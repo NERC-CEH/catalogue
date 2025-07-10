@@ -53,7 +53,7 @@ export default _.template(`
         <label for="contacts<%= data.index %>Organisation">Organisation</label>
     </div>
     <div class="col-lg-10">
-        <input placeholder="Start typing to show a list of organisation. Pick from the list if possible" data-name='organisationName' class="editor-input orgAutocomplete" id="contacts<%= data.index %>Organisation" value="<%= data.organisationName %>">
+        <input autocomplete="off" aria-autocomplete="none" placeholder="Start typing to show a list of organisation. Pick from the list if possible" data-name='organisationName' class="editor-input orgAutocomplete" id="contacts<%= data.index %>Organisation" value="<%= data.organisationName %>">
     </div>
 </div>
 <div class="row">
@@ -61,7 +61,7 @@ export default _.template(`
         <label for="contacts<%= data.index %>organisationIdentifier">RoR</label>
     </div>
     <div class="col-lg-10">
-        <input data-name='organisationIdentifier' placeholder="https//ror.org/..." class="ror editor-input" id="contacts<%= data.index %>organisationIdentifier" value="<%= data.organisationIdentifier %>">
+        <input autocomplete="off" aria-autocomplete="none" data-name='organisationIdentifier' placeholder="https//ror.org/..." class="ror editor-input" id="contacts<%= data.index %>organisationIdentifier" value="<%= data.organisationIdentifier %>">
     </div>
 </div>
 <div class="row contactName">

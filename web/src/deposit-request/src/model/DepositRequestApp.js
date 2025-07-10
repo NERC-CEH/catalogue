@@ -40,7 +40,7 @@ export default NestedModel.extend({
       }
     }
     if (attrs.affiliation === '') errors.push({ name: 'affiliation', message: 'Affiliation is required' })
-    if (!attrs.isAgreed) errors.push({ name: 'isAgreed', message: 'You must agree to the terms and conditions.' })
+    if (!attrs.isAgreed) errors.push({ name: 'isAgreed', message: 'You must confirm to proceeed' })
     if (attrs.funder === '') {
       errors.push({ name: 'funder', message: 'Funder is required' })
     } else {
@@ -51,6 +51,7 @@ export default NestedModel.extend({
     if (attrs.eidcRemit === '') errors.push({ name: 'eidcRemit', message: 'Please make a choice' })
     if (attrs.alternativeData === '') errors.push({ name: 'alternativeData', message: 'Please make a choice' })
     if (attrs.hasSupportingDocs === '') errors.push({ name: 'hasSupportingDocs', message: 'Please make a choice' })
+    if (attrs.isSupportingDocsReady === '') errors.push({ name: 'isSupportingDocsReady', message: 'Please make a choice' })
     if (attrs.replaceExisting === '') errors.push({ name: 'replaceExisting', message: 'Please make a choice' })
     if (attrs.relatedToExisting === '') errors.push({ name: 'relatedToExisting', message: 'Please make a choice' })
 

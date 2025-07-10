@@ -57,9 +57,32 @@
         border-color: #999;
     }
 
+    select {
+        option {
+            &:checked {
+                display: none;
+            }
+        }
+    }
+
+    input.form-control,
+    textarea.form-control {
+        &::placeholder {
+            color: #BBB;
+        }
+    }
+
     textarea.form-control {
         field-sizing: content;
         min-height: 100px;
+    }
+
+    .is-invalid {
+        outline: 2px solid #FF000055;
+    }
+
+    .invalid-feedback {
+        font-weight: 600;
     }
 
     .editor-remove {

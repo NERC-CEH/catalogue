@@ -30,7 +30,7 @@
     <div>
       <form class="search-form" action="/${docroot}" method="get">
         <div class="input-group">
-          <input placeholder="Search…" name="term" type="text" autocomplete="off" class="form-control">
+          <input placeholder="Search…" name="term" type="text" autocomplete="off" aria-autocomplete="none" class="form-control">
           <div class="input-group-btn">
             <button tabindex="-1" class="btn" type="button" aria-label="Search">
               <span class="fa-solid fa-magnifying-glass"></span>

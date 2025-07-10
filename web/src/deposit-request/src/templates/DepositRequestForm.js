@@ -10,8 +10,7 @@ const template = `
                 class="form-control"
                 id="your-name"
                 data-name="name"
-                value="<%= model.name %>"
-                placeholder="Enter your name">
+                value="<%= model.name %>">
         <label for="your-name">
           Your name <span class="text-danger">*</span>
         </label>
@@ -22,8 +21,7 @@ const template = `
                 class="form-control"
                 id="your-email"
                 data-name="email"
-                value="<%= model.email %>"
-                placeholder="Enter your email address">
+                value="<%= model.email %>">
         <label for="your-email">
           Your email address <span class="text-danger">*</span>
         </label>
@@ -34,8 +32,7 @@ const template = `
                 class="form-control"
                 id="your-affiliation"
                 data-name="affiliation"
-                value="<%= model.affiliation %>"
-                placeholder="Your university or organisation">
+                value="<%= model.affiliation %>">
         <div class="invalid-feedback"></div>
         <label for="your-affiliation">
           Your affiliation <span class="text-danger">*</span>
@@ -49,7 +46,7 @@ const template = `
         <div class="my-2">
           <label class="form-label d-block">
             Who funded the research that produced this data/resource? <span class="text-danger">*</span>
-            <div class="text-body-tertiary">If there are a number of funders, choose 'Other' and specify</div>
+            <div class="text-body-tertiary">If there are a number of funders, choose 'Other' and specify.</div>
           </label>
           <select class="form-select" data-name="funder">
             <option value="">Select funder</option>
@@ -71,7 +68,7 @@ const template = `
         </div>
         <div class="my-5">
           <label class="control-label">
-            Please include any grant/funding reference(s), if known
+            Please include any grant/funding reference(s), if known.
           </label>
           <input type="text"
                   class="form-control"
@@ -81,8 +78,8 @@ const template = `
         </div>
         <div class="my-5">
           <label class="form-label d-block">
-            Are the data within the remit of the EIDC (i.e., environmental data from the terrestrial and freshwater sciences?)
-            <div class="text-body-tertiary">For more details on the data we take in, please consult our Acquisition Policy <a href="https://eidc.ac.uk/policies/acquisition" target="_blank" class="text-decoration-underline">https://eidc.ac.uk/policies/acquisition</a></div>
+            Are the data within the remit of the EIDC (i.e., environmental data from the terrestrial and freshwater sciences)? <span class="text-danger">*</span>
+            <div class="text-body-tertiary">For more details on the data we take in, please consult <a href="https://eidc.ac.uk/policies/acquisition" target="_blank" rel="noopener noreferrer"> our Acquisition Policy</a>.</div>
           </label>
           <div class="form-check form-check-inline">
             <input class="form-check-input"
@@ -126,8 +123,8 @@ const template = `
         </div>
         <div class="my-5">
           <label class="form-label d-block">
-            Are the data, 'omic or social science data, or model code unaccompanied by output data?
-            <div class="text-body-tertiary">We may suggest an alternative repository for this data <a href="https://eidc.ac.uk/approvedrepositories" target="_blank" class="text-decoration-underline">https://eidc.ac.uk/approvedrepositories</a></div>
+            Does the data resource contain omics or social science data, or is it model code that is not accompanied by output data? <span class="text-danger">*</span>
+            <div class="text-body-tertiary">We may suggest an alternative repository for this data (<a href="https://eidc.ac.uk/approvedrepositories" target="_blank" rel="noopener noreferrer">see https://eidc.ac.uk/approvedrepositories</a>).</div>
           </label>
           <div class="form-check form-check-inline">
             <input class="form-check-input"
@@ -169,10 +166,11 @@ const template = `
             <div class="invalid-feedback"></div>
           </div>
         </div>
+
         <div class="my-5">
           <label class="form-label d-block">
-            We are unable to accept data resources without supporting documentation to enable their re-use. Are you able to provide document(s) to enable re-use of the resource? <span class="text-danger">*</span>
-            <div class="text-body-tertiary">Supporting documentation helps others understand a dataset and supports its potential re-use.  The information is likely to already exist; for example in technical reports, project websites or wikis.  See our guidance at <a href="https://eidc.ac.uk/deposit/supportingDocumentation" target="_blank" class="text-decoration-underline">https://eidc.ac.uk/deposit/supportingDocumentation</a> for further information.</div>
+            We are unable to accept data without supporting documentation to enable their re-use. Are you able to provide document(s) to enable their re-use? <span class="text-danger">*</span>
+            <div class="text-body-tertiary">Supporting documentation helps others to understand data and supports re-use.  The information is likely to already exist; for example in technical reports, project websites or wikis.  <a href="https://eidc.ac.uk/deposit/supportingDocumentation" target="_blank" rel="noopener noreferrer">See our guidance</a> for further information.</div>
           </label>
           <div class="form-check form-check-inline">
             <input class="form-check-input"
@@ -204,10 +202,11 @@ const template = `
             <div class="invalid-feedback"></div>
           </div>
         </div>
+
         <div class="my-5">
           <label class="form-label d-block">
-            Are the data and supporting documentation prepared according to our guidance: <a href="https://eidc.ac.uk/deposit" target="_blank" class="text-decoration-underline">https://eidc.ac.uk/deposit</a> and ready to deposit?
-            <div class="text-body-tertiary">If data and supporting documentation are not prepared according to our guidance your deposit may take longer</div>
+            Are the data and supporting documentation <a href="https://eidc.ac.uk/deposit/ready" target="_blank" rel="noopener noreferrer">ready to deposit</a> and prepared according to <a href="https://eidc.ac.uk/deposit/preparingData" target="_blank" rel="noopener noreferrer">our guidance</a>? <span class="text-danger">*</span>
+            <div class="text-body-tertiary">If data and supporting documentation are not prepared according to our guidance your deposit may take longer.</div>
           </label>
           <div class="form-check form-check-inline">
             <input class="form-check-input"
@@ -229,10 +228,20 @@ const template = `
                     <%= model.isSupportingDocsReady === false ? 'checked' : '' %>>
             <label class="form-check-label" for="isSupportingDocsReadyNo">No</label>
           </div>
+          <div>
+            <input class="d-none"
+                    type="radio"
+                    name="isSupportingDocsReady"
+                    data-name="isSupportingDocsReady"
+                    id="isSupportingDocsReadyNone">
+            <label class="d-none" >None</label>
+            <div class="invalid-feedback"></div>
+          </div>
         </div>
+
         <div class="my-5">
           <label class="form-label d-block">
-            Are these resource(s) replacing those already held by the EIDC? <span class="text-danger">*</span>
+            Are any of these data replacing those already held by the EIDC? <span class="text-danger">*</span>
           </label>
           <div class="form-check form-check-inline">
             <input class="form-check-input"
@@ -266,7 +275,7 @@ const template = `
         </div>
       <div class="my-5">
         <label class="form-label d-block">
-          Are these resource(s) related to those already held by the EIDC? <span class="text-danger">*</span>
+          Are any of these data related to those already held by the EIDC? <span class="text-danger">*</span>
         </label>
         <div class="form-check form-check-inline">
           <input class="form-check-input"
@@ -306,7 +315,7 @@ const template = `
         <p>You can include one or more datasets in this deposit request.</p>
         <p>A dataset is a structured collection of data organised and stored together.  Data within a dataset are typically related in some way.  It can include different types or formats of data and may be comprised of one or many files.</p>
         <p>To decide if you have one dataset or many, think about how you will describe the data and what the supporting documentation will consist of.  If the metadata is similar or identical for each dataset, it indicates that you probably have <span class="fw-bold">one</span> dataset.  If it is different, you probably have multiple datasets.</p>
-        <p><span class="text-info">If you need help in deciding whether your deposit consists of one or many resources, please get in touch by emailing </span><a href="mailto:info@eidc.ac.uk">info@eidc.ac.uk</a></p>
+        <p>If you need help in deciding whether your deposit consists of one or several resources, please get in touch by emailing <a href="mailto:info@eidc.ac.uk">info@eidc.ac.uk</a> .</p>
         <p>Add details about each dataset you want to deposit by clicking the button below.</p>
 
         <div class="mt-3 resource-list" data-name="dataResources"></div>
@@ -330,34 +339,34 @@ const template = `
         </div>
       </div>
 
-      <hr class="my-5 border border-secondary border-2">
-
-      <div>
-        <div class="fw-bold">
-          <p>By proceeding:</p>
+      <div class="card fw-bold mt-5">
+        <div class="card-body">
+          <p>To proceed, please confirm that for each data resource offered:</p>
           <ul>
-            <li>you confirm that you are the owner of the data resource(s) or have permission from the owner to publish.</li>
-            <li>you agree that any third-party data used in the generation or derivation of the resource(s) were <u>not</u> accessed under terms and conditions which would preclude their subsequent publication.</li>
-            <li>you agree that those responsible for funding the generation of these resources, permit their publication by the EIDC.</li>
+            <li>you are the owner, or have permission from the owner to publish it</li>
+            <li>any third-party data used in its generation or derivation were <u>not</u> accessed under terms and conditions which would preclude its subsequent publication</li>
+            <li>those responsible for funding it, permit its publication by the EIDC</li>
+            <li>it was generated by research that had all relevant ethical approvals, and adhered to relevant institutional and/or funder requirements</li>
           </ul>
-        </div>
-        <div class="form-check mt-3 mx-4">
-          <input class="form-check-input"
-                  type="checkbox"
-                  name="isAgreed"
-                  data-name="isAgreed"
-                  id="isAgreed"
-                  value="Yes"
-                  <%= model.isAgreed ? 'checked' : '' %>>
-          <label class="form-check-label" for="isAgreed">
-            I AGREE
-          </label>
-          <span class="text-danger">*</span>
-          <div class="invalid-feedback"></div>
+
+          <div class="form-check mt-3 mx-4">
+            <input class="form-check-input"
+                    type="checkbox"
+                    name="isAgreed"
+                    data-name="isAgreed"
+                    id="isAgreed"
+                    value="Yes"
+                    <%= model.isAgreed ? 'checked' : '' %>>
+            <label class="form-check-label" for="isAgreed">
+              I CONFIRM
+            </label>
+            <span class="text-danger">*</span>
+            <div class="invalid-feedback"></div>
+          </div>
         </div>
       </div>
 
-      <div class="d-flex justify-content-center mt-3 mb-5">
+      <div class="d-flex justify-content-center mt-3 pb-5">
         <button type="submit" class="btn btn-outline-dark btn-submit">Submit</button>
       </div>
     </form>
