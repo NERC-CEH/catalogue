@@ -169,8 +169,8 @@ const template = `
 
         <div class="my-5">
           <label class="form-label d-block">
-            We are unable to accept data resources without supporting documentation to enable their re-use. Are you able to provide document(s) to enable re-use of the resource? <span class="text-danger">*</span>
-            <div class="text-body-tertiary">Supporting documentation helps others to understand a data resource and supports its re-use.  The information is likely to already exist; for example in technical reports, project websites or wikis.  <a href="https://eidc.ac.uk/deposit/supportingDocumentation" target="_blank" rel="noopener noreferrer">See our guidance</a> for further information.</div>
+            We are unable to accept data without supporting documentation to enable their re-use. Are you able to provide document(s) to enable their re-use? <span class="text-danger">*</span>
+            <div class="text-body-tertiary">Supporting documentation helps others to understand data and supports re-use.  The information is likely to already exist; for example in technical reports, project websites or wikis.  <a href="https://eidc.ac.uk/deposit/supportingDocumentation" target="_blank" rel="noopener noreferrer">See our guidance</a> for further information.</div>
           </label>
           <div class="form-check form-check-inline">
             <input class="form-check-input"
@@ -241,7 +241,7 @@ const template = `
 
         <div class="my-5">
           <label class="form-label d-block">
-            Are these resource(s) replacing those already held by the EIDC? <span class="text-danger">*</span>
+            Are any of these data replacing those already held by the EIDC? <span class="text-danger">*</span>
           </label>
           <div class="form-check form-check-inline">
             <input class="form-check-input"
@@ -275,7 +275,7 @@ const template = `
         </div>
       <div class="my-5">
         <label class="form-label d-block">
-          Are these resource(s) related to those already held by the EIDC? <span class="text-danger">*</span>
+          Are any of these data related to those already held by the EIDC? <span class="text-danger">*</span>
         </label>
         <div class="form-check form-check-inline">
           <input class="form-check-input"
