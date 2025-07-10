@@ -123,7 +123,7 @@ public class DepositRequestService {
         }
 
         sb.append("*Are data in EIDC's remit?:* ").append(form.eidcRemit()).append("  \n  \n")
-            .append("*Are data omics, social or model?:* ").append(form.alternativeData()).append("  \n  \n")
+            .append("*Is any resource omics, social or model code?:* ").append(form.alternativeData()).append("  \n  \n")
             .append("*Has supporting documentation?:* ").append(booleanToYesNo(form.hasSupportingDocs())).append("  \n  \n")
             .append("*Supporting docs and data correct?:* ").append(booleanToYesNo(form.isSupportingDocsReady())).append("  \n  \n")
             .append("*Are these data replacing data already held by the EIDC?:* ").append(booleanToYesNo(form.replaceExisting())).append("  \n  \n")
@@ -139,7 +139,7 @@ public class DepositRequestService {
                     .append("*Type:* ").append(resolveOtherField(r.resourceType(), r.resourceTypeOther())).append("  \n  \n");
 
                 if ("Model output".equals(r.resourceType())) {
-                    sb.append("*Easily recreated?:* ").append(booleanToYesNo(r.easilyRecreated())).append("  \n  \n");
+                    sb.append("*Could it be easily re-generated?:* ").append(booleanToYesNo(r.easilyRecreated())).append("  \n  \n");
                     }
 
                 sb.append("*Format:* ").append(resolveOtherField(r.resourceFormat(), r.resourceFormatOther())).append("  \n  \n")

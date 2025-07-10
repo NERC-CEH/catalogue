@@ -43,6 +43,7 @@ public record DepositRequestModel(
     @NotNull(message = "Please make a choice")
     Boolean hasSupportingDocs,
 
+    @NotNull(message = "Please make a choice")
     Boolean isSupportingDocsReady,
 
     @NotNull(message = "Please make a choice")

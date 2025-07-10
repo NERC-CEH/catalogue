@@ -46,7 +46,7 @@ const template = `
         <div class="my-2">
           <label class="form-label d-block">
             Who funded the research that produced this data/resource? <span class="text-danger">*</span>
-            <div class="text-body-tertiary">If there are a number of funders, choose 'Other' and specify</div>
+            <div class="text-body-tertiary">If there are a number of funders, choose 'Other' and specify.</div>
           </label>
           <select class="form-select" data-name="funder">
             <option value="">Select funder</option>
@@ -68,7 +68,7 @@ const template = `
         </div>
         <div class="my-5">
           <label class="control-label">
-            Please include any grant/funding reference(s), if known
+            Please include any grant/funding reference(s), if known.
           </label>
           <input type="text"
                   class="form-control"
@@ -78,8 +78,8 @@ const template = `
         </div>
         <div class="my-5">
           <label class="form-label d-block">
-            Are the data within the remit of the EIDC (i.e., environmental data from the terrestrial and freshwater sciences?)
-            <div class="text-body-tertiary">For more details on the data we take in, please consult <a href="https://eidc.ac.uk/policies/acquisition" target="_blank" rel="noopener noreferrer"> our Acquisition Policy</a></div>
+            Are the data within the remit of the EIDC (i.e., environmental data from the terrestrial and freshwater sciences)? <span class="text-danger">*</span>
+            <div class="text-body-tertiary">For more details on the data we take in, please consult <a href="https://eidc.ac.uk/policies/acquisition" target="_blank" rel="noopener noreferrer"> our Acquisition Policy</a>.</div>
           </label>
           <div class="form-check form-check-inline">
             <input class="form-check-input"
@@ -123,8 +123,8 @@ const template = `
         </div>
         <div class="my-5">
           <label class="form-label d-block">
-            Does the data resource contain 'omic or social science data, or is it model code that is not accompanied by output data?
-            <div class="text-body-tertiary">We may suggest an alternative repository for this data (<a href="https://eidc.ac.uk/approvedrepositories" target="_blank" rel="noopener noreferrer">see https://eidc.ac.uk/approvedrepositories</a>)</div>
+            Does the data resource contain 'omic or social science data, or is it model code that is not accompanied by output data? <span class="text-danger">*</span>
+            <div class="text-body-tertiary">We may suggest an alternative repository for this data (<a href="https://eidc.ac.uk/approvedrepositories" target="_blank" rel="noopener noreferrer">see https://eidc.ac.uk/approvedrepositories</a>).</div>
           </label>
           <div class="form-check form-check-inline">
             <input class="form-check-input"
@@ -166,6 +166,7 @@ const template = `
             <div class="invalid-feedback"></div>
           </div>
         </div>
+
         <div class="my-5">
           <label class="form-label d-block">
             We are unable to accept data resources without supporting documentation to enable their re-use. Are you able to provide document(s) to enable re-use of the resource? <span class="text-danger">*</span>
@@ -201,10 +202,11 @@ const template = `
             <div class="invalid-feedback"></div>
           </div>
         </div>
+
         <div class="my-5">
           <label class="form-label d-block">
-            Are the data and supporting documentation <a href="https://eidc.ac.uk/deposit/ready" target="_blank" rel="noopener noreferrer">ready to deposit</a> and prepared according to <a href="https://eidc.ac.uk/deposit/preparingData" target="_blank" rel="noopener noreferrer">our guidance</a>?
-            <div class="text-body-tertiary">If data and supporting documentation are not prepared according to our guidance your deposit may take longer</div>
+            Are the data and supporting documentation <a href="https://eidc.ac.uk/deposit/ready" target="_blank" rel="noopener noreferrer">ready to deposit</a> and prepared according to <a href="https://eidc.ac.uk/deposit/preparingData" target="_blank" rel="noopener noreferrer">our guidance</a>? <span class="text-danger">*</span>
+            <div class="text-body-tertiary">If data and supporting documentation are not prepared according to our guidance your deposit may take longer.</div>
           </label>
           <div class="form-check form-check-inline">
             <input class="form-check-input"
@@ -226,7 +228,17 @@ const template = `
                     <%= model.isSupportingDocsReady === false ? 'checked' : '' %>>
             <label class="form-check-label" for="isSupportingDocsReadyNo">No</label>
           </div>
+          <div>
+            <input class="d-none"
+                    type="radio"
+                    name="isSupportingDocsReady"
+                    data-name="isSupportingDocsReady"
+                    id="isSupportingDocsReadyNone">
+            <label class="d-none" >None</label>
+            <div class="invalid-feedback"></div>
+          </div>
         </div>
+
         <div class="my-5">
           <label class="form-label d-block">
             Are these resource(s) replacing those already held by the EIDC? <span class="text-danger">*</span>
@@ -303,7 +315,7 @@ const template = `
         <p>You can include one or more datasets in this deposit request.</p>
         <p>A dataset is a structured collection of data organised and stored together.  Data within a dataset are typically related in some way.  It can include different types or formats of data and may be comprised of one or many files.</p>
         <p>To decide if you have one dataset or many, think about how you will describe the data and what the supporting documentation will consist of.  If the metadata is similar or identical for each dataset, it indicates that you probably have <span class="fw-bold">one</span> dataset.  If it is different, you probably have multiple datasets.</p>
-        <p>If you need help in deciding whether your deposit consists of one or several resources, please get in touch by emailing <a href="mailto:info@eidc.ac.uk">info@eidc.ac.uk</a></p>
+        <p>If you need help in deciding whether your deposit consists of one or several resources, please get in touch by emailing <a href="mailto:info@eidc.ac.uk">info@eidc.ac.uk</a> .</p>
         <p>Add details about each dataset you want to deposit by clicking the button below.</p>
 
         <div class="mt-3 resource-list" data-name="dataResources"></div>

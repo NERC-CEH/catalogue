@@ -51,6 +51,7 @@ export default NestedModel.extend({
     if (attrs.eidcRemit === '') errors.push({ name: 'eidcRemit', message: 'Please make a choice' })
     if (attrs.alternativeData === '') errors.push({ name: 'alternativeData', message: 'Please make a choice' })
     if (attrs.hasSupportingDocs === '') errors.push({ name: 'hasSupportingDocs', message: 'Please make a choice' })
+    if (attrs.isSupportingDocsReady === '') errors.push({ name: 'isSupportingDocsReady', message: 'Please make a choice' })
     if (attrs.replaceExisting === '') errors.push({ name: 'replaceExisting', message: 'Please make a choice' })
     if (attrs.relatedToExisting === '') errors.push({ name: 'relatedToExisting', message: 'Please make a choice' })
 
