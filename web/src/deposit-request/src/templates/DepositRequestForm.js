@@ -123,7 +123,7 @@ const template = `
         </div>
         <div class="my-5">
           <label class="form-label d-block">
-            Does the data resource contain 'omic or social science data, or is it model code that is not accompanied by output data? <span class="text-danger">*</span>
+            Does the data resource contain omics or social science data, or is it model code that is not accompanied by output data? <span class="text-danger">*</span>
             <div class="text-body-tertiary">We may suggest an alternative repository for this data (<a href="https://eidc.ac.uk/approvedrepositories" target="_blank" rel="noopener noreferrer">see https://eidc.ac.uk/approvedrepositories</a>).</div>
           </label>
           <div class="form-check form-check-inline">
