@@ -79,7 +79,7 @@ const template = `
         <div class="my-5">
           <label class="form-label d-block">
             Are the data within the remit of the EIDC (i.e., environmental data from the terrestrial and freshwater sciences?)
-            <div class="text-body-tertiary">For more details on the data we take in, please consult our Acquisition Policy <a href="https://eidc.ac.uk/policies/acquisition" target="_blank" class="text-decoration-underline">https://eidc.ac.uk/policies/acquisition</a></div>
+            <div class="text-body-tertiary">For more details on the data we take in, please consult <a href="https://eidc.ac.uk/policies/acquisition" target="_blank" rel="noopener noreferrer"> our Acquisition Policy</a></div>
           </label>
           <div class="form-check form-check-inline">
             <input class="form-check-input"
@@ -123,8 +123,8 @@ const template = `
         </div>
         <div class="my-5">
           <label class="form-label d-block">
-            Are the data, 'omic or social science data, or model code unaccompanied by output data?
-            <div class="text-body-tertiary">We may suggest an alternative repository for this data <a href="https://eidc.ac.uk/approvedrepositories" target="_blank" class="text-decoration-underline">https://eidc.ac.uk/approvedrepositories</a></div>
+            Does the data resource contain 'omic or social science data, or is it model code that is not accompanied by output data?
+            <div class="text-body-tertiary">We may suggest an alternative repository for this data (<a href="https://eidc.ac.uk/approvedrepositories" target="_blank" rel="noopener noreferrer">see https://eidc.ac.uk/approvedrepositories</a>)</div>
           </label>
           <div class="form-check form-check-inline">
             <input class="form-check-input"
@@ -169,7 +169,7 @@ const template = `
         <div class="my-5">
           <label class="form-label d-block">
             We are unable to accept data resources without supporting documentation to enable their re-use. Are you able to provide document(s) to enable re-use of the resource? <span class="text-danger">*</span>
-            <div class="text-body-tertiary">Supporting documentation helps others to understand a data resource and supports its re-use.  The information is likely to already exist; for example in technical reports, project websites or wikis.  See our guidance at <a href="https://eidc.ac.uk/deposit/supportingDocumentation" target="_blank" class="text-decoration-underline">https://eidc.ac.uk/deposit/supportingDocumentation</a> for further information.</div>
+            <div class="text-body-tertiary">Supporting documentation helps others to understand a data resource and supports its re-use.  The information is likely to already exist; for example in technical reports, project websites or wikis.  <a href="https://eidc.ac.uk/deposit/supportingDocumentation" target="_blank" rel="noopener noreferrer">See our guidance</a> for further information.</div>
           </label>
           <div class="form-check form-check-inline">
             <input class="form-check-input"
@@ -203,7 +203,7 @@ const template = `
         </div>
         <div class="my-5">
           <label class="form-label d-block">
-            Are the data and supporting documentation prepared according to our guidance: <a href="https://eidc.ac.uk/deposit" target="_blank" class="text-decoration-underline">https://eidc.ac.uk/deposit</a> and ready to deposit?
+            Are the data and supporting documentation <a href="https://eidc.ac.uk/deposit/ready" target="_blank" rel="noopener noreferrer">ready to deposit</a> and prepared according to <a href="https://eidc.ac.uk/deposit/preparingData" target="_blank" rel="noopener noreferrer">our guidance</a>?
             <div class="text-body-tertiary">If data and supporting documentation are not prepared according to our guidance your deposit may take longer</div>
           </label>
           <div class="form-check form-check-inline">
@@ -329,11 +329,12 @@ const template = `
 
       <div class="card fw-bold mt-5">
         <div class="card-body">
-          <p>By proceeding, you confirm that:</p>
+          <p>To proceed, please confirm that for each data resource offered:</p>
           <ul>
-            <li>you are the owner of the data resource(s) or have permission from the owner to publish them</li>
-            <li>any third-party data used in the generation or derivation of the data resource(s) were <u>not</u> accessed under terms and conditions which would preclude their subsequent publication</li>
-            <li>those responsible for funding the generation of these resources, permit their publication by the EIDC</li>
+            <li>you are the owner, or have permission from the owner to publish it</li>
+            <li>any third-party data used in its generation or derivation were <u>not</u> accessed under terms and conditions which would preclude its subsequent publication</li>
+            <li>those responsible for funding it, permit its publication by the EIDC</li>
+            <li>it was generated by research that had all relevant ethical approvals, and adhered to relevant institutional and/or funder requirements</li>
           </ul>
 
           <div class="form-check mt-3 mx-4">
@@ -353,7 +354,7 @@ const template = `
         </div>
       </div>
 
-      <div class="d-flex justify-content-center mt-3 mb-5">
+      <div class="d-flex justify-content-center mt-3 pb-5">
         <button type="submit" class="btn btn-outline-dark btn-submit">Submit</button>
       </div>
     </form>
