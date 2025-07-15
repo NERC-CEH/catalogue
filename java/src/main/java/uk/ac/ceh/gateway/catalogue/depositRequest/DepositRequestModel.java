@@ -24,8 +24,17 @@ public record DepositRequestModel(
     @NotBlank(message = "Affiliation is required")
     String affiliation,
 
-    @AssertTrue(message = "You must confirm to proceeed")
-    Boolean isAgreed,
+    @AssertTrue(message = "Please check to proceed")
+    Boolean checklist1,
+
+    @AssertTrue(message = "Please check to proceed")
+    Boolean checklist2,
+
+    @AssertTrue(message = "Please check to proceed")
+    Boolean checklist3,
+
+    @AssertTrue(message = "Please check to proceed")
+    Boolean checklist4,
 
     @NotBlank(message = "Funder is required")
     String funder,
