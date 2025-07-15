@@ -43,7 +43,7 @@ class DepositRequestControllerTest {
     void postValidDepositRequest() throws Exception {
 
         DepositRequestModel body = new DepositRequestModel(
-            "Alice Smith", "alice@example.com", "UKCEH", true,
+            "Alice Smith", "alice@example.com", "UKCEH", true, true, true, true,
             "NERC", "", "NE123", "Yes", "Model",
             true, true, false, false,
             List.of(new DataResourceModel(
@@ -67,7 +67,7 @@ class DepositRequestControllerTest {
     void postInvalidDepositRequest() throws Exception {
 
         DepositRequestModel bad = new DepositRequestModel(
-            "", "", "", false,
+            "", "", "", false, false, false, false,
             "", "", "", "", "",
             null, null, null, null,
             List.of(), "");
