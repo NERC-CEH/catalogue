@@ -250,15 +250,6 @@ class DocumentControllerTest {
                 .build()
         ));
 
-        val caseStudy = new CaseStudy();
-        caseStudy.setType("dataset");
-
-        val impModel = new Model();
-        impModel.setType("dataset");
-
-        val impModelApplication = new ModelApplication();
-        impModelApplication.setType("dataset");
-
         val original = new GeminiDocument();
         val metadataInfo = MetadataInfo.builder()
             .state("published")
@@ -300,12 +291,6 @@ class DocumentControllerTest {
             Arguments.of(gemini, ROCRATE_JSON, ROCRATE_SHORT, "rocrate.json"),
             Arguments.of(gemini, ROCRATE_ATTACHED_JSON, ROCRATE_ATTACHED_SHORT, "rocrate-attached.json"),
             Arguments.of(gemini, RDF_TTL, RDF_TTL_SHORT, "gemini.ttl"),
-            Arguments.of(caseStudy, TEXT_HTML, HTML, null),
-            Arguments.of(caseStudy, APPLICATION_JSON, JSON, null),
-            Arguments.of(impModel, TEXT_HTML, HTML, null),
-            Arguments.of(impModel, APPLICATION_JSON, JSON, null),
-            Arguments.of(impModelApplication, TEXT_HTML, HTML, null),
-            Arguments.of(impModelApplication, APPLICATION_JSON, JSON, null),
             Arguments.of(link, TEXT_HTML, HTML, null),
             Arguments.of(link, APPLICATION_JSON, JSON, "link.json"),
             Arguments.of(new uk.ac.ceh.gateway.catalogue.osdp.Model(), TEXT_HTML, HTML, null),

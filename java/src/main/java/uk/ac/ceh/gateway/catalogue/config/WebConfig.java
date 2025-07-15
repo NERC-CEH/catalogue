@@ -64,7 +64,6 @@ public class WebConfig implements WebMvcConfigurer {
 
     public WebConfig(freemarker.template.Configuration freemarkerConfiguration) {
         val agent = new Object2TemplatedMessageConverter<>(Agent.class, freemarkerConfiguration);
-        val caseStudy = new Object2TemplatedMessageConverter<>(CaseStudy.class, freemarkerConfiguration);
         val cehModel = new Object2TemplatedMessageConverter<>(CehModel.class, freemarkerConfiguration);
         val cehModelApplication = new Object2TemplatedMessageConverter<>(CehModelApplication.class, freemarkerConfiguration);
         val citation = new Object2TemplatedMessageConverter<>(Citation.class, freemarkerConfiguration);
@@ -79,8 +78,6 @@ public class WebConfig implements WebMvcConfigurer {
         val link = new Object2TemplatedMessageConverter<>(LinkDocument.class, freemarkerConfiguration);
         val maintenanceResponse = new Object2TemplatedMessageConverter<>(MaintenanceResponse.class, freemarkerConfiguration);
         val metricsReportModel = new Object2TemplatedMessageConverter<>(MetricsReportModel.class, freemarkerConfiguration);
-        val model = new Object2TemplatedMessageConverter<>(Model.class, freemarkerConfiguration);
-        val modelApplication = new Object2TemplatedMessageConverter<>(ModelApplication.class, freemarkerConfiguration);
         val monitoringActivity = new Object2TemplatedMessageConverter<>(MonitoringActivity.class, freemarkerConfiguration);
         val monitoringFacility = new Object2TemplatedMessageConverter<>(MonitoringFacility.class, freemarkerConfiguration);
         val monitoringNetwork = new Object2TemplatedMessageConverter<>(MonitoringNetwork.class, freemarkerConfiguration);
@@ -106,7 +103,6 @@ public class WebConfig implements WebMvcConfigurer {
         );
         this.afterStandardMessageConverters = Arrays.asList(
             agent,
-            caseStudy,
             cehModel,
             cehModelApplication,
             citation,
@@ -120,8 +116,6 @@ public class WebConfig implements WebMvcConfigurer {
             link,
             maintenanceResponse,
             metricsReportModel,
-            model,
-            modelApplication,
             monitoringActivity,
             monitoringFacility,
             monitoringNetwork,
