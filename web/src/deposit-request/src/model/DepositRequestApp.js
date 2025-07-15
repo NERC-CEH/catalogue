@@ -6,7 +6,10 @@ export default NestedModel.extend({
     name: '',
     email: '',
     affiliation: '',
-    isAgreed: false,
+    checklist1: false,
+    checklist2: false,
+    checklist3: false,
+    checklist4: false,
     funder: '',
     funderOther: '',
     fundingRef: '',
@@ -40,7 +43,10 @@ export default NestedModel.extend({
       }
     }
     if (attrs.affiliation === '') errors.push({ name: 'affiliation', message: 'Affiliation is required' })
-    if (!attrs.isAgreed) errors.push({ name: 'isAgreed', message: 'You must confirm to proceeed' })
+    if (!attrs.checklist1) errors.push({ name: 'checklist1', message: 'Please check to proceed' })
+    if (!attrs.checklist2) errors.push({ name: 'checklist2', message: 'Please check to proceed' })
+    if (!attrs.checklist3) errors.push({ name: 'checklist3', message: 'Please check to proceed' })
+    if (!attrs.checklist4) errors.push({ name: 'checklist4', message: 'Please check to proceed' })
     if (attrs.funder === '') {
       errors.push({ name: 'funder', message: 'Funder is required' })
     } else {

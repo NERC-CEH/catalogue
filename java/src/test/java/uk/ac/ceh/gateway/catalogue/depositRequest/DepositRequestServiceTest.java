@@ -41,7 +41,7 @@ class DepositRequestServiceTest {
     @DisplayName("Submits request with resolved 'Other' fields")
     void testSubmissionWithOtherFields() {
         DepositRequestModel form = new DepositRequestModel(
-            "Alice Smith", "alice@example.com", "UKCEH", true,
+            "Alice Smith", "alice@example.com", "UKCEH", true, true, true, true,
             "Other", "NERC", "NE123 NE456", "Yes", "Model",
             true, true, false, false,
             List.of(new DataResourceModel(
@@ -65,7 +65,7 @@ class DepositRequestServiceTest {
     @DisplayName("Submits request with normal funder and single ref")
     void testSubmissionWithNormalFields() {
         DepositRequestModel form = new DepositRequestModel(
-            "Bob Jones", "bob@example.com", "CEH", false,
+            "Bob Jones", "bob@example.com", "CEH", false, false, false, false,
             "NERC", "", "NE789", "No", "Omics",
             false, false, false, false,
             List.of(new DataResourceModel(

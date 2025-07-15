@@ -312,49 +312,6 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
         return toReturn;
     }
 
-   /*  List<MetadataCheck> checkSupportingDocs(DocumentContext parsed) {
-        val toReturn = new ArrayList<MetadataCheck>();
-
-        val supportingDocs = parsed.read(
-                "$.supportingDocs[*].['name', 'format', 'content']",
-                new TypeRef<List<SupportingDoc>>(){}
-        );
-
-        if (supportingDocs.isEmpty()) {
-            toReturn.add(new MetadataCheck("Supporting documentation is empty", ERROR));
-        }
-
-        supportingDocs.stream().forEach(supportingDoc -> {
-            if (supportingDoc.getName() == null) {
-                toReturn.add(new MetadataCheck("Supporting document name is missing", ERROR));
-            } else if (!supportingDoc.getName().matches("^[\\w-]+$")) {
-                toReturn.add(new MetadataCheck("Supporting document name should consist of alphanumeric characters, underscore and hyphens", ERROR));
-            }
-
-            if (supportingDoc.getFormat() == null) {
-                toReturn.add(new MetadataCheck("Supporting document format is missing", ERROR));
-            } else if (!supportingDoc.getFormat().matches("^\\p{Alnum}+$")) {
-                toReturn.add(new MetadataCheck("Supporting document format should consist of alphanumeric characters", ERROR));
-            }
-
-            if (supportingDoc.getContent() == null) {
-                toReturn.add(new MetadataCheck("Supporting document content is missing", ERROR));
-            }
-        });
-
-        val allContentTypes = supportingDocs.stream()
-            .map(SupportingDoc::getContent)
-            .flatMap(Stream::ofNullable)
-            .flatMap(List::stream)
-            .collect(Collectors.toSet());
-
-        if (!allContentTypes.containsAll(mandatoryContentTypes)) {
-            toReturn.add(new MetadataCheck("Supporting documents do not cover all mandatory fields", ERROR));
-        }
-
-        return toReturn;
-    } */
-
     private List<MetadataCheck> checkEmail(List<Map<String, String>> maps, String errorMessage) {
         return maps.stream()
             .map(map -> map.get("email"))
@@ -369,6 +326,26 @@ public class ServiceAgreementQualityService implements MetadataQualityService {
             || email.equals("enquiries@ceh.ac.uk")
             || email.equals("info@eidc.ac.uk");
     }
+
+    private List<MetadataCheck> checkAvailability(List<Map<String, String>> maps, String errorMessage) {
+        return maps.stream()
+            .map(map -> map.get("email"))
+            .flatMap(Stream::ofNullable)
+            .filter(this::isInvalidEmail)
+            .map(email -> new MetadataCheck(format(errorMessage, email), ERROR))
+            .toList();
+    }
+
+
+/*     private List<MetadataCheck> checkPublicationDate(DocumentContext parsedDoc, DocumentContext parsedMeta) {
+        val mapTypeRef = new TypeRef<Map<String, String>>() {};
+        val state = parsedMeta.read("$.state", String.class);
+        val datasetReferenceDate = parsedDoc.read("$.datasetReferenceDate", mapTypeRef);
+        if (!state.equals("draft") && fieldIsMissing(datasetReferenceDate, "publicationDate")) {
+            return Collections.singletonList(new MetadataCheck("Publication date is missing", ERROR));
+        }
+        return Collections.emptyList();
+    } */
 
     private boolean isQualifyingDocument(DocumentContext parsedMeta) {
         val docType = parsedMeta.read("$.documentType", String.class);
