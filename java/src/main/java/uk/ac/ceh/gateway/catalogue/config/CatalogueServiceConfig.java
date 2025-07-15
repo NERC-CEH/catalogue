@@ -62,24 +62,6 @@ public class CatalogueServiceConfig {
                 .build(),
 
             Catalogue.builder()
-                .id("cmp")
-                .title("Catchment Management Modelling Platform")
-                .url("https://www.cammp.org.uk")
-                .contactUrl("http://www.cammp.org.uk/contact")
-                .logo("ukceh.png")
-                .facetKey("resourceType")
-                .facetKey("impCaMMPIssues")
-                .facetKey("impDataType")
-                .facetKey("impScale")
-                .facetKey("impTopic")
-                .facetKey("impWaterPollutant")
-                .documentType(GEMINI_TYPE)
-                .documentType(IMP_TYPE)
-                .documentType(LINK_TYPE)
-                .fileUpload(true)
-                .build(),
-
-            Catalogue.builder()
                 .id("ukceh")
                 .title("UKCEH digital assets")
                 .url("https://www.ceh.ac.uk")

@@ -107,11 +107,6 @@
     <field name="rightsHolder" type="keywords"/>
     <field name="grant" type="grantID"/>
     <field name="identifier" type="keywords" required="true" multiValued="false"/>
-    <field name="impCaMMPIssues" type="keywords"/>
-    <field name="impDataType" type="keywords"/>
-    <field name="impScale" type="keywords"/>
-    <field name="impTopic" type="keywords"/>
-    <field name="impWaterPollutant" type="keywords"/>
     <field name="givenName" type="keywords" multiValued="true"/>
     <field name="familyName" type="names" multiValued="true"/>
     <field name="fullName" type="names" multiValued="true"/>

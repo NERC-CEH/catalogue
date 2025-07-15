@@ -62,11 +62,8 @@ public class SparqlVocabularyRetriever implements VocabularyRetriever {
             "?query=" +
             URLEncoder.encode("PREFIX skos:<http://www.w3.org/2004/02/skos/core#> ", StandardCharsets.UTF_8) +
             URLEncoder.encode("PREFIX inms: <http://vocabs.ceh.ac.uk/inms/> ", StandardCharsets.UTF_8) +
-            URLEncoder.encode("PREFIX imp: <http://vocabs.ceh.ac.uk/imp/> ", StandardCharsets.UTF_8) +
-            URLEncoder.encode("SELECT DISTINCT ?uri FROM imp: FROM inms: ", StandardCharsets.UTF_8) +
+            URLEncoder.encode("SELECT DISTINCT ?uri FROM inms: ", StandardCharsets.UTF_8) +
             URLEncoder.encode("WHERE {", StandardCharsets.UTF_8) +
-            URLEncoder.encode(String.format("{imp:%s skos:narrower ?uri.}", facet) , StandardCharsets.UTF_8) +
-            URLEncoder.encode("UNION", StandardCharsets.UTF_8) +
             URLEncoder.encode(String.format("{?uri skos:topConceptOf inms:%s.}", facet), StandardCharsets.UTF_8) +
             URLEncoder.encode("}", StandardCharsets.UTF_8) +
             "&format=json"
@@ -124,7 +121,6 @@ public class SparqlVocabularyRetriever implements VocabularyRetriever {
     private String vocabSelector(VocabularyFacet facet){
         return switch (facet) {
             case ASSIST_RESEARCH_THEMES, ASSIST_TOPICS                                                -> "<http://onto.nerc.ac.uk/CEHMD/>";
-            case IMP_DATE_TYPE                                                                        -> "<http://vocabs.ceh.ac.uk/imp/>";
             case UKCEH_RESEARCH_THEME, UKCEH_RESEARCH_PROJECT, UKCEH_SCIENCE_CHALLENGE, UKCEH_SERVICE -> "<http://vocabs.ceh.ac.uk/ukscape/>";
             case INMS_DEMONSTRATION_REGION, INMS_PROJECT, MODEL_TYPE                                  -> "<http://vocabs.ceh.ac.uk/inms/>";
             default -> ""; // No vocab needed for others

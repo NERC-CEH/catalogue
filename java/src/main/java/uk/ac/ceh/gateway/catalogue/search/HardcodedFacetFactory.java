@@ -33,31 +33,6 @@ public class HardcodedFacetFactory implements FacetFactory {
                     .displayName("Funder")
                     .hierarchical(false)
                     .build();
-            case "impCaMMPIssues" -> Facet.builder()
-                .fieldName("impCaMMPIssues")
-                    .displayName("CaMMP Issues")
-                    .hierarchical(false)
-                    .build();
-            case "impDataType" -> Facet.builder()
-                .fieldName("impDataType")
-                    .displayName("Data Type")
-                    .hierarchical(false)
-                    .build();
-            case "impScale" -> Facet.builder()
-                .fieldName("impScale")
-                    .displayName("Scale")
-                    .hierarchical(false)
-                    .build();
-            case "impTopic" -> Facet.builder()
-                .fieldName("impTopic")
-                    .displayName("Topic")
-                    .hierarchical(false)
-                    .build();
-            case "impWaterPollutant" -> Facet.builder()
-                .fieldName("impWaterPollutant")
-                    .displayName("Water Pollutant")
-                    .hierarchical(false)
-                    .build();
             case "inmsPollutant" -> Facet.builder()
                 .fieldName("impWaterPollutant")
                     .displayName("Pollutant")
