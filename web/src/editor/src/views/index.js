@@ -44,7 +44,6 @@ export { default as PredefinedParentLargeView } from './PredefinedParentLargeVie
 export { default as ProcessingStepView } from './ProcessingStepView'
 export { default as KeywordVocabularyView } from './KeywordVocabularyView'
 export { default as LinkDocumentSelectorView } from './LinkDocumentSelectorView'
-export { default as ModelApplicationModelView } from './ModelApplicationModelView'
 export { default as LinkView } from './LinkView'
 export { default as ShortContactView } from './ShortContactView'
 export { default as RelationshipView } from './RelationshipView'
