@@ -13,7 +13,6 @@ import uk.ac.ceh.gateway.catalogue.document.reading.DocumentReadingService;
 import uk.ac.ceh.gateway.catalogue.document.reading.DocumentTypeLookupService;
 import uk.ac.ceh.gateway.catalogue.document.writing.DocumentWritingService;
 import uk.ac.ceh.gateway.catalogue.gemini.GeminiDocument;
-import uk.ac.ceh.gateway.catalogue.imp.Model;
 import uk.ac.ceh.gateway.catalogue.model.CatalogueUser;
 import uk.ac.ceh.gateway.catalogue.model.MetadataDocument;
 import uk.ac.ceh.gateway.catalogue.model.MetadataInfo;

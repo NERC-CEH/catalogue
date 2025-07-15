@@ -46,12 +46,6 @@ public class DocumentTypes {
         .type(GEMINI)
         .build();
 
-    public static final String IMP = "IMP_DOCUMENT";
-    public static DocumentType IMP_TYPE = DocumentType.builder()
-        .title("Model")
-        .type(IMP)
-        .build();
-
     public static final String LINK = "LINK_DOCUMENT";
     public static DocumentType LINK_TYPE = DocumentType.builder()
         .title("Link")

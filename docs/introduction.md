@@ -109,9 +109,6 @@ Java classes representing Environmental Facilities i.e Activities, Facilities, P
 #### gemini
 Java classes representing INSPIRE ISO19115 datasets and services
 
-#### imp
-Java classes representing IMP models and applications
-
 #### indexing
 Solr and Jena indexing - extracting data from the documentTypes to put into Solr index for searching or Jena for links between documents.
 

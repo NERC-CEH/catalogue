@@ -293,13 +293,7 @@ export default EditorView.extend({
       label: 'Model use',
       title: 'Model use only',
       views: [
-        new InputView({
-          model: this.model,
-          modelAttribute: 'relevanceToCaMMP',
-          label: 'Relevance to CaMMP'
-        }),
-
-        new InputView({
+         new InputView({
           model: this.model,
           modelAttribute: 'date',
           label: 'Date'

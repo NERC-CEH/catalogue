@@ -1,5 +1,4 @@
 export { default as MonitoringEditorView } from './MonitoringEditorView'
-export { default as ModelEditorView } from './ModelEditorView'
 export { default as CehModelEditorView } from './CehModelEditorView'
 export { default as CehModelApplicationEditorView } from './CehModelApplicationEditorView'
 export { default as LinkEditorView } from './LinkEditorView'
