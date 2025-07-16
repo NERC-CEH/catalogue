@@ -18,7 +18,11 @@ export default SingleView.extend({
     if (this.template === undefined) {
       this.template = template
     }
-    this.listenTo(this.model, `change:${this.data.modelAttribute}`, this.render)
+    this.listenTo(this.model, `change:${this.data.modelAttribute}`, () => {
+      if (this.data.typeAttribute !== 'date') {
+        this.render()
+      }
+    })
     this.render()
   },
 
