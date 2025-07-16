@@ -45,12 +45,6 @@ public class CatalogueMediaTypes {
     public static final String NERC_MODEL_JSON_VALUE = "application/vnd.nerc-model+json";
     public static final String NERC_MODEL_USE_JSON_VALUE = "application/vnd.nerc-model-use+json";
 
-    public static final String OSDP_AGENT_JSON_VALUE = "application/vnd.osdp.agent+json";
-    public static final String OSDP_DATASET_JSON_VALUE = "application/vnd.osdp.dataset+json";
-    public static final String OSDP_MODEL_JSON_VALUE = "application/vnd.osdp.model+json";
-    public static final String OSDP_PUBLICATION_JSON_VALUE = "application/vnd.osdp.publication+json";
-    public static final String OSDP_SAMPLE_JSON_VALUE = "application/vnd.osdp.sample+json";
-
     public static final String RDF_SCHEMAORG_SHORT = "schema.org";
     public static final String RDF_SCHEMAORG_VALUE = "application/vnd.schemaorg.ld+json";
     public static final MediaType RDF_SCHEMAORG_JSON = parseMediaType(RDF_SCHEMAORG_VALUE);

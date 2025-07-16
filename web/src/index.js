@@ -19,11 +19,6 @@ import {
   MonitoringProgrammeEditorView,
   NercModelEditorView,
   NercModelUseEditorView,
-  OsdpAgentEditorView,
-  OsdpDatasetEditorView,
-  OsdpModelEditorView,
-  OsdpPublicationEditorView,
-  OsdpSampleEditorView,
   SampleArchiveEditorView, ServiceAgreementEditorView, UkemsDocumentEditorView
 } from './editor/src/editors'
 import { EditorMetadata, LinkEditorMetadata, GeminiEditorMetadata } from './editor/src'
@@ -169,31 +164,6 @@ function initEditor () {
       View: MonitoringNetworkEditorView,
       Model: EditorMetadata,
       mediaType: 'application/vnd.monitoring-network+json'
-    },
-    'osdp-agent': {
-      View: OsdpAgentEditorView,
-      Model: EditorMetadata,
-      mediaType: 'application/vnd.osdp.agent+json'
-    },
-    'osdp-dataset': {
-      View: OsdpDatasetEditorView,
-      Model: EditorMetadata,
-      mediaType: 'application/vnd.osdp.dataset+json'
-    },
-    'osdp-model': {
-      View: OsdpModelEditorView,
-      Model: EditorMetadata,
-      mediaType: 'application/vnd.osdp.model+json'
-    },
-    'osdp-sample': {
-      View: OsdpSampleEditorView,
-      Model: EditorMetadata,
-      mediaType: 'application/vnd.osdp.sample+json'
-    },
-    'osdp-publication': {
-      View: OsdpPublicationEditorView,
-      Model: EditorMetadata,
-      mediaType: 'application/vnd.osdp.publication+json'
     },
     'sample-archive': {
       View: SampleArchiveEditorView,

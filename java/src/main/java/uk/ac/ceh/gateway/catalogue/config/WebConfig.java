@@ -41,7 +41,6 @@ import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringActivity;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
-import uk.ac.ceh.gateway.catalogue.osdp.*;
 import uk.ac.ceh.gateway.catalogue.publication.StateResource;
 import uk.ac.ceh.gateway.catalogue.sa.SampleArchive;
 import uk.ac.ceh.gateway.catalogue.search.SearchResults;
@@ -66,13 +65,11 @@ public class WebConfig implements WebMvcConfigurer {
     private final List<HttpMessageConverter<?>> afterStandardMessageConverters;
 
     public WebConfig(freemarker.template.Configuration freemarkerConfiguration) {
-        val agent = new Object2TemplatedMessageConverter<>(Agent.class, freemarkerConfiguration);
         val caseStudy = new Object2TemplatedMessageConverter<>(CaseStudy.class, freemarkerConfiguration);
         val cehModel = new Object2TemplatedMessageConverter<>(CehModel.class, freemarkerConfiguration);
         val cehModelApplication = new Object2TemplatedMessageConverter<>(CehModelApplication.class, freemarkerConfiguration);
         val citation = new Object2TemplatedMessageConverter<>(Citation.class, freemarkerConfiguration);
         val code = new Object2TemplatedMessageConverter<>(CodeDocument.class, freemarkerConfiguration);
-        val dataset = new Object2TemplatedMessageConverter<>(Dataset.class, freemarkerConfiguration);
         val dataType = new Object2TemplatedMessageConverter<>(DataType.class, freemarkerConfiguration);
         val infrastructureRecord = new Object2TemplatedMessageConverter<>(InfrastructureRecord.class, freemarkerConfiguration);
         val methodRecord = new Object2TemplatedMessageConverter<>(MethodRecord.class, freemarkerConfiguration);
@@ -90,10 +87,7 @@ public class WebConfig implements WebMvcConfigurer {
         val monitoringProgramme = new Object2TemplatedMessageConverter<>(MonitoringProgramme.class, freemarkerConfiguration);
         val nercModel = new Object2TemplatedMessageConverter<>(NercModel.class, freemarkerConfiguration);
         val nercModelUse = new Object2TemplatedMessageConverter<>(NercModelUse.class, freemarkerConfiguration);
-        val osdpModel = new Object2TemplatedMessageConverter<>(uk.ac.ceh.gateway.catalogue.osdp.Model.class, freemarkerConfiguration);
         val permissionResource = new Object2TemplatedMessageConverter<>(PermissionResource.class, freemarkerConfiguration);
-        val publication = new Object2TemplatedMessageConverter<>(Publication.class, freemarkerConfiguration);
-        val sample = new Object2TemplatedMessageConverter<>(Sample.class, freemarkerConfiguration);
         val sampleArchive = new Object2TemplatedMessageConverter<>(SampleArchive.class, freemarkerConfiguration);
         val searchResults = new Object2TemplatedMessageConverter<>(SearchResults.class, freemarkerConfiguration);
         val serviceAgreementModel = new Object2TemplatedMessageConverter<>(ServiceAgreementModel.class, freemarkerConfiguration);
@@ -108,13 +102,11 @@ public class WebConfig implements WebMvcConfigurer {
             wmsFeatureInfo
         );
         this.afterStandardMessageConverters = Arrays.asList(
-            agent,
             caseStudy,
             cehModel,
             cehModelApplication,
             citation,
             code,
-            dataset,
             dataType,
             infrastructureRecord,
             methodRecord,
@@ -131,10 +123,7 @@ public class WebConfig implements WebMvcConfigurer {
             monitoringProgramme,
             nercModel,
             nercModelUse,
-            osdpModel,
             permissionResource,
-            publication,
-            sample,
             sampleArchive,
             searchResults,
             serviceAgreementModel,

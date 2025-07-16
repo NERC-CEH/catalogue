@@ -43,9 +43,6 @@ import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringActivity;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringFacility;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringNetwork;
 import uk.ac.ceh.gateway.catalogue.monitoring.MonitoringProgramme;
-import uk.ac.ceh.gateway.catalogue.osdp.Agent;
-import uk.ac.ceh.gateway.catalogue.osdp.Publication;
-import uk.ac.ceh.gateway.catalogue.osdp.Sample;
 import uk.ac.ceh.gateway.catalogue.postprocess.ClassMapPostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.GeminiDocumentPostProcessingService;
 import uk.ac.ceh.gateway.catalogue.postprocess.PostProcessingService;
@@ -143,15 +140,10 @@ public class ServicesConfig {
             .register(LINK, LinkDocument.class)
             .register(NERC_MODEL, NercModel.class)
             .register(NERC_MODEL_USE, NercModelUse.class)
-            .register(OSDP_AGENT, Agent.class)
-            .register(OSDP_DATASET, uk.ac.ceh.gateway.catalogue.osdp.Dataset.class)
-            .register(OSDP_MODEL, uk.ac.ceh.gateway.catalogue.osdp.Model.class)
             .register(MONITORING_ACTIVITY, MonitoringActivity.class)
             .register(MONITORING_FACILITY, MonitoringFacility.class)
             .register(MONITORING_NETWORK, MonitoringNetwork.class)
             .register(MONITORING_PROGRAMME, MonitoringProgramme.class)
-            .register(OSDP_PUBLICATION, Publication.class)
-            .register(OSDP_SAMPLE, Sample.class)
             .register(SAMPLE_ARCHIVE, SampleArchive.class)
             .register(SERVICE_AGREEMENT, ServiceAgreement.class)
             .register(UKEMS_DOCUMENT, UkemsDocument.class);
